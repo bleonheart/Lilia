@@ -255,3 +255,5 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     category = "Staff",
     type = "Boolean"
 })
+
+sam.config.set("Restrictions.Tool", false)
