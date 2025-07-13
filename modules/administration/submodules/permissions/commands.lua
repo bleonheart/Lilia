@@ -33,6 +33,102 @@
     end
 })
 
+lia.command.add("charunbanoffline", {
+    superAdminOnly = true,
+    privilege = "Unban Offline",
+    desc = "Unban an offline character using their Char ID.",
+    syntax = "[number Char ID]",
+    onRun = function(client, arguments)
+        local charID = tonumber(arguments[1])
+        if not charID then return client:notify("Invalid character ID.") end
+        local charData = lia.char.getCharData(charID)
+        if not charData then return client:notify("Character not found.") end
+        lia.char.setCharData(charID, "banned", nil)
+        lia.char.setCharData(charID, "charBanInfo", nil)
+        client:notify("Offline character ID " .. charID .. " has been unbanned.")
+    end
+})
+
+lia.command.add("charbanoffline", {
+    superAdminOnly = true,
+    privilege = "Ban Offline",
+    desc = "Ban an offline character using their Char ID.",
+    syntax = "[number Char ID]",
+    onRun = function(client, arguments)
+        local charID = tonumber(arguments[1])
+        if not charID then return client:notify("Invalid character ID.") end
+        local charData = lia.char.getCharData(charID)
+        if not charData then return client:notify("Character not found.") end
+        lia.char.setCharData(charID, "banned", true)
+        lia.char.setCharData(charID, "charBanInfo", {
+            name = client:Nick(),
+            steamID = client:SteamID(),
+            rank = client:GetUserGroup()
+        })
+
+        for _, ply in player.Iterator() do
+            if ply:getChar() and ply:getChar():getID() == charID then
+                ply:Kick("You have been banned.")
+                break
+            end
+        end
+
+        client:notify("Offline character ID " .. charID .. " has been banned.")
+    end
+})
+
+lia.command.add("charlist", {
+    adminOnly = true,
+    privilege = "List Characters",
+    desc = "List all characters for a player by name or Steam ID, or yourself if none is provided.",
+    syntax = "[string Player Or Steam ID]",
+    AdminStick = {
+        Name = "Open CharList",
+        Category = L("adminStickCategoryCharManagement"),
+        Icon = "icon16/user_gray.png"
+    },
+    onRun = function(client, arguments)
+        local identifier = arguments[1]
+        local target
+        if identifier then
+            target = lia.util.findPlayer(client, identifier)
+            if not IsValid(target) then return end
+        else
+            target = client
+        end
+
+        local steam64 = target:SteamID64()
+        lia.db.query("SELECT * FROM lia_characters WHERE _steamID = " .. lia.db.convertDataType(steam64), function(data)
+            if #data == 0 then
+                client:notify("No characters found for this player.")
+                return
+            end
+
+            local sendData = {}
+            for _, row in ipairs(data) do
+                local stored = lia.char.loaded[row._id]
+                local info = stored and stored:getData() or util.JSONToTable(row._data) or {}
+                table.insert(sendData, {
+                    ID = row._id,
+                    Name = row._name,
+                    Desc = row._desc,
+                    Faction = row._faction,
+                    Banned = info.banned and "Yes" or "No",
+                    BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
+                    BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
+                    BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
+                    Money = row._money
+                })
+            end
+
+            net.Start("DisplayCharList")
+            net.WriteTable(sendData)
+            net.WriteString(steam64)
+            net.Send(client)
+        end)
+    end
+})
+
 lia.command.add("playglobalsound", {
     superAdminOnly = true,
     privilege = "Play Sounds",
