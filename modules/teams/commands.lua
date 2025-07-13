@@ -36,9 +36,19 @@
     end
 })
 
+local function formatDHM(seconds)
+    seconds = math.max(seconds or 0, 0)
+    local days = math.floor(seconds / 86400)
+    seconds = seconds % 86400
+    local hours = math.floor(seconds / 3600)
+    seconds = seconds % 3600
+    local minutes = math.floor(seconds / 60)
+    return string.format("%dd %dh %dm", days, hours, minutes)
+end
+
 lia.command.add("roster", {
     onRun = function(client)
-        local fields = "_name, _faction, _id, _steamID"
+        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
         local character = client:getChar()
         if not character then
             client:notify("Character data not found for client:", client)
@@ -57,16 +67,21 @@ lia.command.add("roster", {
             return
         end
 
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _faction = " .. lia.db.convertDataType(faction.uniqueID)
-        lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
+        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(faction.uniqueID)
+        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+        lia.db.query(query, function(data)
             local characters = {}
             if data then
                 for k, v in ipairs(data) do
+                    local pdata = util.JSONToTable(v._data or "{}")
+                    local lastDiff = os.time() - os.time(lia.time.toNumber(v._lastJoinTime))
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
                         faction = v._faction,
-                        steamID = v._steamID
+                        steamID = v._steamID,
+                        lastOnline = formatDHM(lastDiff),
+                        hoursPlayed = formatDHM(pdata.totalOnlineTime or 0)
                     })
                 end
             else
@@ -86,7 +101,7 @@ lia.command.add("factionmanagement", {
     privilege = "Manage Faction Members",
     syntax = "[faction Faction]",
     onRun = function(client, arguments)
-        local fields = "_name, _faction, _id, _steamID"
+        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
         local faction
         local arg = table.concat(arguments, " ")
         if arg ~= "" then
@@ -112,16 +127,21 @@ lia.command.add("factionmanagement", {
             end
         end
 
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _faction = " .. lia.db.convertDataType(faction.uniqueID)
-        lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
+        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(faction.uniqueID)
+        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+        lia.db.query(query, function(data)
             local characters = {}
             if data then
                 for k, v in ipairs(data) do
+                    local pdata = util.JSONToTable(v._data or "{}")
+                    local lastDiff = os.time() - os.time(lia.time.toNumber(v._lastJoinTime))
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
                         faction = v._faction,
-                        steamID = v._steamID
+                        steamID = v._steamID,
+                        lastOnline = formatDHM(lastDiff),
+                        hoursPlayed = formatDHM(pdata.totalOnlineTime or 0)
                     })
                 end
             else
