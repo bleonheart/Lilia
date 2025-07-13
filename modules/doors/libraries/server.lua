@@ -41,7 +41,7 @@ function MODULE:PostLoadData()
             end
         end
 
-        lia.information(L("doorDisableAll", count))
+        lia.information(L("doorDisableAll"))
     end
 end
 
