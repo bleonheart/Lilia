@@ -49,3 +49,56 @@ function MODULE:HUDPaint()
         draw.SimpleTextOutlined(label, "liaMediumFont", x, y - size, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
     end
 end
+
+net.Receive("DisplayCharList", function()
+    local sendData = net.ReadTable()
+    local targetSteamIDsafe = net.ReadString()
+    local fr = vgui.Create("DFrame")
+    fr:SetTitle("Charlist for SteamID64: " .. targetSteamIDsafe)
+    fr:SetSize(1000, 500)
+    fr:Center()
+    fr:MakePopup()
+    local listView = vgui.Create("DListView", fr)
+    listView:Dock(FILL)
+    listView:AddColumn("ID")
+    listView:AddColumn("Name")
+    listView:AddColumn("Desc")
+    listView:AddColumn("Faction")
+    listView:AddColumn("Banned")
+    listView:AddColumn("BanningAdminName")
+    listView:AddColumn("BanningAdminSteamID")
+    listView:AddColumn("BanningAdminRank")
+    listView:AddColumn("CharMoney")
+    for _, v in pairs(sendData or {}) do
+        local Line = listView:AddLine(v.ID, v.Name, v.Desc, v.Faction, v.Banned, v.BanningAdminName, v.BanningAdminSteamID, v.BanningAdminRank, v.Money)
+        if v.Banned == "Yes" then
+            Line.DoPaint = Line.Paint
+            Line.Paint = function(pnl, w, h)
+                surface.SetDrawColor(200, 100, 100)
+                surface.DrawRect(0, 0, w, h)
+                pnl:DoPaint(w, h)
+            end
+        end
+
+        Line.CharID = v.ID
+    end
+
+    local function OpenContextMenu(ln)
+        if ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+            local dMenu = DermaMenu()
+            if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                opt1:SetIcon("icon16/cancel.png")
+            end
+
+            if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                opt2:SetIcon("icon16/accept.png")
+            end
+
+            dMenu:Open()
+        end
+    end
+
+    listView.OnRowRightClick = function(_, _, ln) OpenContextMenu(ln) end
+end)
