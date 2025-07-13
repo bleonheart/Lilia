@@ -62,23 +62,6 @@ concommand.Add("plysetgroup", function(ply, cmd, args)
     end
 end)
 
-concommand.Add("createownergroup", function(ply, cmd, args)
-    if not IsValid(ply) then
-        lia.admin.createGroup("owner", {
-            position = 0,
-            admin = false,
-            superadmin = true,
-            permissions = {},
-        })
-
-        for cmd, _ in next, lia.admin.commands do
-            lia.admin.permissions["owner"].permissions[cmd] = true
-        end
-
-        lia.admin.save(true)
-    end
-end)
-
 concommand.Add("wipegroups", function(ply, cmd, args)
     if not IsValid(ply) then
         for k, v in next, player.GetAll() do

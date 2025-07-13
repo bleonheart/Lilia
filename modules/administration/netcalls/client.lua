@@ -25,6 +25,15 @@ net.Receive("cfgSet", function()
     end
 end)
 
+net.Receive("blindTarget", function()
+    local enabled = net.ReadBool()
+    if enabled then
+        hook.Add("HUDPaint", "blindTarget", function() draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255)) end)
+    else
+        hook.Remove("HUDPaint", "blindTarget")
+    end
+end)
+
 net.Receive("AdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
     assert(isnumber(id), "id must be a number")
@@ -104,3 +113,5 @@ net.Receive("managesitrooms", function()
         makeButton("rename", 2)
     end
 end)
+
+net.Receive("lilia_updateAdminPermissions", function() lia.admin.permissions = net.ReadTable() end)
