@@ -89,15 +89,23 @@ lia.command.add("charlist", {
     },
     onRun = function(client, arguments)
         local identifier = arguments[1]
-        local target
+        local steam64
         if identifier then
-            target = lia.util.findPlayer(client, identifier)
-            if not IsValid(target) then return end
+            local target = lia.util.findPlayer(client, identifier)
+            if IsValid(target) then
+                steam64 = target:SteamID64()
+            elseif identifier:match("^STEAM_%d+:%d+:%d+$") then
+                steam64 = util.SteamIDTo64(identifier)
+            elseif identifier:match("^%d+$") then
+                steam64 = identifier
+            else
+                client:notifyLocalized("invalidInput")
+                return
+            end
         else
-            target = client
+            steam64 = client:SteamID64()
         end
 
-        local steam64 = target:SteamID64()
         lia.db.query("SELECT * FROM lia_characters WHERE _steamID = " .. lia.db.convertDataType(steam64), function(data)
             if #data == 0 then
                 client:notify("No characters found for this player.")

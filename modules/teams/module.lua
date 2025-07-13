@@ -7,19 +7,29 @@ if SERVER then
     util.AddNetworkString("CharacterInfo")
     util.AddNetworkString("KickCharacter")
     net.Receive("KickCharacter", function(len, client)
+        local char = client:getChar()
+        if not char or not char:hasFlags("R") then return end
+        if client:isStaffOnDuty() then return end
+        local isLeader = char:getData("factionOwner") or char:getData("factionAdmin")
+        if not isLeader then return end
+
         local citizen = lia.faction.teams["citizen"]
         local characterID = net.ReadUInt(32)
         local IsOnline = false
         for _, target in pairs(player.GetAll()) do
-            if target:getChar():getID() == characterID then
+            local targetChar = target:getChar()
+            if targetChar and targetChar:getID() == characterID then
+                if targetChar:getFaction() ~= char:getFaction() then return end
                 IsOnline = true
                 target:notify("You were kicked from your faction!")
-                target:getChar().vars.faction = citizen.uniqueID
-                target:getChar():setFaction(citizen.index)
+                targetChar.vars.faction = citizen.uniqueID
+                targetChar:setFaction(citizen.index)
             end
         end
 
-        if not IsOnline then lia.char.setCharData(characterID, "kickedFromFaction", true) end
+        if not IsOnline then
+            lia.char.setCharData(characterID, "kickedFromFaction", true)
+        end
     end)
 
     function MODULE:PlayerLoadedChar(client)
@@ -34,9 +44,8 @@ if SERVER then
 else
     net.Receive("CharacterInfo", function()
         local character = LocalPlayer():getChar()
-        local factionIndex = character:getFaction()
-        local faction = lia.faction.indices[factionIndex]
-        local factionID = faction.uniqueID
+        if not character or not character:hasFlags("R") then return end
+        local factionID = net.ReadString()
         local isValidViewer = character:getData("factionOwner") or character:getData("factionAdmin")
         if not isValidViewer then return end
         if IsValid(characterPanel) then characterPanel:Remove() end
@@ -52,16 +61,18 @@ else
         list:AddColumn("Name")
         local characterData = net.ReadTable()
         for _, data in ipairs(characterData) do
-            if data.faction == factionID and data.id ~= character:getID() then list:AddLine(data.id, data.name) end
+            if data.id ~= character:getID() then list:AddLine(data.id, data.name) end
         end
 
         list.OnRowRightClick = function(parent, lineIndex, line)
             local menu = DermaMenu()
             menu:AddOption("Kick", function()
-                net.Start("KickCharacter")
-                net.WriteInt(tonumber(line:GetValue(1)), 32)
-                net.SendToServer()
-                characterPanel:Remove()
+                Derma_Query(L("areYouSure"), L("adminStickKickCharacterName"), L("yes"), function()
+                    net.Start("KickCharacter")
+                    net.WriteInt(tonumber(line:GetValue(1)), 32)
+                    net.SendToServer()
+                    characterPanel:Remove()
+                end, L("no"))
             end)
 
             menu:Open()

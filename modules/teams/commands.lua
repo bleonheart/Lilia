@@ -38,41 +38,34 @@
 
 lia.command.add("roster", {
     onRun = function(client)
-        local fields = "_name, _faction, _id"
         local character = client:getChar()
-        if not character then
-            client:notify("Character data not found for client:", client)
+        if not character or not character:hasFlags("R") then
+            client:notifyLocalized("noPerm")
             return
         end
 
-        local factionIndex = character:getFaction()
-        if not factionIndex then
-            client:notify("Faction data not found for character:", character)
+        if client:isStaffOnDuty() then
+            client:notifyLocalized("staffRestrictedCommand")
             return
         end
 
-        local faction = lia.faction.indices[factionIndex]
+        local faction = lia.faction.indices[character:getFaction()]
         if not faction then
-            client:notify("Faction data not found for index:", factionIndex)
+            client:notifyLocalized("invalidFaction")
             return
         end
 
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "'"
-        lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
+        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _faction = '" .. lia.db.escape(faction.uniqueID) .. "'"
+        lia.db.query("SELECT _name, _faction, _id FROM lia_characters WHERE " .. condition, function(data)
             local characters = {}
             if data then
-                for k, v in ipairs(data) do
-                    table.insert(characters, {
-                        id = v._id,
-                        name = v._name,
-                        faction = v._faction
-                    })
+                for _, v in ipairs(data) do
+                    characters[#characters + 1] = { id = v._id, name = v._name, faction = v._faction }
                 end
-            else
-                client:notify("No data found for the specified condition.")
             end
 
             net.Start("CharacterInfo")
+            net.WriteString(faction.uniqueID)
             net.WriteTable(characters)
             net.Send(client)
         end)
@@ -102,7 +95,7 @@ lia.command.add("factionmanagement", {
             return
         end
 
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "'"
+        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _faction = '" .. lia.db.escape(faction.uniqueID) .. "'"
         lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
             local characters = {}
             if data then
@@ -118,6 +111,7 @@ lia.command.add("factionmanagement", {
             end
 
             net.Start("CharacterInfo")
+            net.WriteString(faction.uniqueID)
             net.WriteTable(characters)
             net.Send(client)
         end)
