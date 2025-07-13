@@ -1,5 +1,6 @@
 local MODULE = MODULE
 local meta = FindMetaTable("Player")
+util.AddNetworkString("blindTarget")
 function lia.admin.save(network)
         file.Write("nutscript/admin_permissions.txt", util.TableToJSON(lia.admin.permissions))
         if network then
@@ -192,11 +193,17 @@ hook.Add("OnDatabaseLoaded", "lia.admin.bans.loadBanlist", function()
 end)
 
 function MODULE:CheckPassword(steamid64, ipAddress, svPassword, clPassword, name)
-	local banned = lia.admin.bans.isBanned(steamid64)
-	local hasExpired = lia.admin.bans.hasExpired(steamid64)
-	if banned and not hasExpired then
+        local banned = lia.admin.bans.isBanned(steamid64)
+        local hasExpired = lia.admin.bans.hasExpired(steamid64)
+        if banned and not hasExpired then
                return false, L("banMessage", banned.duration / 60, banned.reason)
-	elseif banned and hasExpired then
-		lia.admin.bans.remove(steamid64)
-	end
+        elseif banned and hasExpired then
+                lia.admin.bans.remove(steamid64)
+        end
 end
+
+lia.admin.returnPositions = lia.admin.returnPositions or {}
+
+hook.Add("PlayerSay", "liaAdminGag", function(client)
+        if client:getNetVar("liaGagged") then return "" end
+end)
