@@ -80,6 +80,24 @@ function MODULE:PlayerAuthed(client, steamid)
         return
     end
 
+    if lia.admin and lia.admin.bans then
+        local banRecord = lia.admin.bans.isBanned(ownerSteamID64)
+        if banRecord then
+            if lia.admin.bans.hasExpired(ownerSteamID64) then
+                lia.admin.bans.remove(ownerSteamID64)
+            else
+                local duration = 0
+                if banRecord.duration > 0 then
+                    duration = math.max(math.ceil((banRecord.start + banRecord.duration - os.time()) / 60), 0)
+                end
+                lia.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, duration)
+                lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
+                lia.log.add(nil, "altBanned", steamName, steamID)
+                return
+            end
+        end
+    end
+
     if lia.config.get("AltsDisabled", false) and ownerSteamID64 ~= steamID64 then
         lia.applyPunishment(client, L("familySharingDisabled"), true, false)
         lia.notifyAdmin(L("kickedAltNotify", steamName, steamID))
