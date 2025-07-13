@@ -1,14 +1,7 @@
 local PLUGIN = PLUGIN
 nut.admin = nut.admin or {}
 
--- plyslap
--- plygag
--- plysethealth
--- grpsetadmin
--- grpsetsuperadmin
--- editinv
 
-/* Player management commands */
 
 nut.command.add("plykick", {
 	adminOnly = true,
@@ -68,7 +61,6 @@ nut.command.add("plysetgroup", {
 	end
 })
 
-/* Group management commands */
 
 nut.command.add("grpaddgroup", {
 	adminOnly = true,
@@ -100,7 +92,6 @@ nut.command.add("grprmgroup", {
 	end
 })
 
--- i really, really hate these specific notifications, but gotta tell the retards whats wrong when it doesnt work.
 nut.command.add("grpaddperm", {
 	adminOnly = true,
 	syntax = "<string name> <string command>",
