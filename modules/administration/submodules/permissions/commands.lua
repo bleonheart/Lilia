@@ -108,7 +108,6 @@ lia.command.add("charlist", {
             for _, row in ipairs(data) do
                 local stored = lia.char.loaded[row._id]
                 local info = stored and stored:getData() or util.JSONToTable(row._data or "{}") or {}
-
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do
                     local value
@@ -162,7 +161,6 @@ lia.command.add("charlist", {
 
                 entry.extraDetails = {}
                 hook.Run("CharListExtraDetails", client, entry, stored)
-
                 table.insert(sendData, entry)
             end
 
@@ -850,7 +848,7 @@ lia.command.add("charban", {
         if character then
             character:setData("banned", true)
             character:setData("charBanInfo", {
-                name = client:Nick(),
+                name = client.steamName and client:steamName() or client:Name(),
                 steamID = client:SteamID(),
                 rank = client:GetUserGroup()
             })
