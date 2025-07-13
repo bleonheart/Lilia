@@ -10,7 +10,7 @@ lia.command.add("plykick", {
 		if SERVER then
 			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
-				target:Kick(L("kickMessage", target, arguments[2] or "No reason specified."))
+                               target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
 				client:notifyLocalized("plyKicked")
 			end
 		end
@@ -24,7 +24,7 @@ lia.command.add("plyban", {
 		if SERVER then
 			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
-				target:banPlayer(arguments[3] or "No reason specified.", arguments[2])
+                               target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
 				client:notifyLocalized("plyBanned")
 			end
 		end
