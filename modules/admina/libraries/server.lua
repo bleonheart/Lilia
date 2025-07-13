@@ -1,8 +1,12 @@
 local MODULE = MODULE
 local meta = FindMetaTable("Player")
 function lia.admin.save(network)
-	file.Write("nutscript/admin_permissions.txt", util.TableToJSON(lia.admin.permissions))
-	if network then netstream.Start(nil, "lilia_updateAdminPermissions", lia.admin.permissions) end
+        file.Write("nutscript/admin_permissions.txt", util.TableToJSON(lia.admin.permissions))
+        if network then
+                net.Start("lilia_updateAdminPermissions")
+                net.WriteTable(lia.admin.permissions)
+                net.Broadcast()
+        end
 end
 
 function lia.admin.load()
@@ -113,7 +117,11 @@ function MODULE:PlayerAuthed(ply, steamid, uid)
 	lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", util.SteamIDTo64(steamid)), function(data) ply:SetUserGroup(data[1]._userGroup) end)
 end
 
-netstream.Hook("lilia_requestAdminPermissions", function(ply) netstream.Start(ply, "lilia_updateAdminPermissions", lia.admin.permissions) end)
+net.Receive("lilia_requestAdminPermissions", function(_, ply)
+        net.Start("lilia_updateAdminPermissions")
+        net.WriteTable(lia.admin.permissions)
+        net.Send(ply)
+end)
 local MYSQL_FINDCOLUMN = [[SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='lia_players' and column_name='_userGroup';]]
 local MYSQL_CREATECOLUMN = [[ALTER TABLE `lia_players` ADD COLUMN `_userGroup` varchar(255) NOT NULL DEFAULT 'user';]]
 local SQLITE_FINDCOLUMN = [[SELECT EXISTS (SELECT * FROM sqlite_master WHERE tbl_name = 'lia_players' AND sql LIKE '_userGroup');]]
