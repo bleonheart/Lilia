@@ -48,8 +48,16 @@ end
 
 lia.command.add("roster", {
     onRun = function(client)
-        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
         local character = client:getChar()
+        if not character then
+            client:notify("Character data not found for client:", client)
+            return
+        end
+
+        local isLeader = client:IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin") or character:hasFlags("V")
+        if not isLeader then return end
+
+        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
         if not character then
             client:notify("Character data not found for client:", client)
             return

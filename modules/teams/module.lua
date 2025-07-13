@@ -7,15 +7,21 @@ if SERVER then
     util.AddNetworkString("CharacterInfo")
     util.AddNetworkString("KickCharacter")
     net.Receive("KickCharacter", function(len, client)
+        local char = client:getChar()
+        if not char then return end
+        local isLeader = client:IsSuperAdmin() or char:getData("factionOwner") or char:getData("factionAdmin") or char:hasFlags("V")
+        if not isLeader then return end
+
         local citizen = lia.faction.teams["citizen"]
         local characterID = net.ReadUInt(32)
         local IsOnline = false
         for _, target in pairs(player.GetAll()) do
-            if target:getChar():getID() == characterID then
+            local targetChar = target:getChar()
+            if targetChar and targetChar:getID() == characterID and targetChar:getFaction() == char:getFaction() then
                 IsOnline = true
                 target:notify("You were kicked from your faction!")
-                target:getChar().vars.faction = citizen.uniqueID
-                target:getChar():setFaction(citizen.index)
+                targetChar.vars.faction = citizen.uniqueID
+                targetChar:setFaction(citizen.index)
             end
         end
 
@@ -36,7 +42,8 @@ else
         local factionID = net.ReadString()
         local characterData = net.ReadTable()
         local character = LocalPlayer():getChar()
-        local isValidViewer = LocalPlayer():IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin")
+        local isLeader = LocalPlayer():IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin") or character:hasFlags("V")
+        local isValidViewer = isLeader
         if not isValidViewer then return end
         if IsValid(characterPanel) then characterPanel:Remove() end
         characterPanel = vgui.Create("DFrame")
@@ -60,12 +67,16 @@ else
 
         list.OnRowRightClick = function(parent, lineIndex, line)
             local menu = DermaMenu()
-            menu:AddOption("Kick", function()
-                net.Start("KickCharacter")
-                net.WriteInt(tonumber(line:GetValue(1)), 32)
-                net.SendToServer()
-                characterPanel:Remove()
-            end)
+            if isLeader then
+                menu:AddOption("Kick", function()
+                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                        net.Start("KickCharacter")
+                        net.WriteInt(tonumber(line:GetValue(1)), 32)
+                        net.SendToServer()
+                        characterPanel:Remove()
+                    end, "No")
+                end)
+            end
 
             menu:AddOption("View Character List", function()
                 LocalPlayer():ConCommand("say /charlist " .. line.steamID)
