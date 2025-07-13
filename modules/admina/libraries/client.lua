@@ -1,6 +1,7 @@
 local MODULE = MODULE
 function MODULE:InitPostEntity()
-	netstream.Start("lilia_requestAdminPermissions")
+        net.Start("lilia_requestAdminPermissions")
+        net.SendToServer()
 end
 
 function lia.admin.menu.addTab(info)
@@ -13,7 +14,9 @@ lia.admin.menu.addTab({
 	title = "adminWorldMenuTitle",
 })
 
-netstream.Hook("lilia_updateAdminPermissions", function(info) lia.admin.permissions = info end)
+net.Receive("lilia_updateAdminPermissions", function()
+        lia.admin.permissions = net.ReadTable()
+end)
 hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
 	if cmd == "kick" then
 		RunConsoleCommand("sam", "kick", victim:SteamID(), reason or "")
