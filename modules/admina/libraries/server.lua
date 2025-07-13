@@ -115,7 +115,7 @@ function MODULE:ShutDown()
 end
 
 function MODULE:PlayerAuthed(ply, steamid, uid)
-	lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", util.SteamIDTo64(steamid)), function(data) ply:SetUserGroup(data[1]._userGroup) end)
+	lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", util.SteamIDTo64(steamid)), function(data) if data and istable(data) and data[1] then ply:SetUserGroup(data[1]._userGroup) end end)
 end
 
 net.Receive("lilia_requestAdminPermissions", function(_, ply)
