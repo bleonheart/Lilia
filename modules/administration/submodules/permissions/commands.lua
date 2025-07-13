@@ -107,8 +107,47 @@ lia.command.add("charlist", {
             local sendData = {}
             for _, row in ipairs(data) do
                 local stored = lia.char.loaded[row._id]
-                local info = stored and stored:getData() or util.JSONToTable(row._data) or {}
-                table.insert(sendData, {
+                local info = stored and stored:getData() or util.JSONToTable(row._data or "{}") or {}
+
+                local allVars = {}
+                for varName, varInfo in pairs(lia.char.vars) do
+                    local value
+                    if stored then
+                        if varName == "data" then
+                            value = stored:getData()
+                        elseif varName == "var" then
+                            value = stored:getVar()
+                        else
+                            local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
+                            if isfunction(getter) then
+                                value = getter(stored)
+                            else
+                                value = stored.vars and stored.vars[varName]
+                            end
+                        end
+                    else
+                        if varName == "data" then
+                            value = info
+                        elseif varInfo.field and row[varInfo.field] ~= nil then
+                            local raw = row[varInfo.field]
+                            if isnumber(varInfo.default) then
+                                value = tonumber(raw) or varInfo.default
+                            elseif isbool(varInfo.default) then
+                                value = tobool(raw)
+                            elseif istable(varInfo.default) then
+                                value = util.JSONToTable(raw or "{}")
+                            else
+                                value = raw
+                            end
+                        else
+                            value = varInfo.default
+                        end
+                    end
+
+                    allVars[varName] = value
+                end
+
+                local entry = {
                     ID = row._id,
                     Name = row._name,
                     Desc = row._desc,
@@ -117,8 +156,14 @@ lia.command.add("charlist", {
                     BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                     BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                     BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                    Money = row._money
-                })
+                    Money = row._money,
+                    allVars = allVars
+                }
+
+                entry.extraDetails = {}
+                hook.Run("CharListExtraDetails", client, entry, stored)
+
+                table.insert(sendData, entry)
             end
 
             net.Start("DisplayCharList")
@@ -654,6 +699,7 @@ lia.command.add("charunban", {
             if charFound:getData("banned") then
                 charFound:setData("banned", nil)
                 charFound:setData("permakilled", nil)
+                charFound:setData("charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), charFound:getName())
                 lia.log.add(client, "charUnban", charFound:getName(), charFound:getID())
             else
@@ -674,6 +720,7 @@ lia.command.add("charunban", {
                 end
 
                 charData.banned = nil
+                charData.charBanInfo = nil
                 lia.db.updateTable({
                     _data = util.TableToJSON(charData)
                 }, nil, nil, "_id = " .. charID)
@@ -803,7 +850,7 @@ lia.command.add("charban", {
         if character then
             character:setData("banned", true)
             character:setData("charBanInfo", {
-                name = client.steamName and client:steamName() or client:Name(),
+                name = client:Nick(),
                 steamID = client:SteamID(),
                 rank = client:GetUserGroup()
             })
