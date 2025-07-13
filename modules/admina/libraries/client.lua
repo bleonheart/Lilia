@@ -1,7 +1,8 @@
 local MODULE = MODULE
-lia.admin = lia.admin or {}
-lia.admin.menu = lia.admin.menu or {}
-lia.admin.menu.tabs = lia.admin.menu.tabs or {}
+netstream.Hook("lilia_updateAdminPermissions", function(info) lia.admin.permissions = info end)
+function MODULE:InitPostEntity()
+	netstream.Start("lilia_requestAdminPermissions")
+end
 
 function lia.admin.menu.addTab(info)
 	lia.admin.menu.tabs[info.title] = info
@@ -11,4 +12,4 @@ lia.admin.menu.addTab({
 	icon = "icon16/world.png",
 	panelClass = "DAdminWorldMenu",
 	title = "adminWorldMenuTitle",
-})  
+})

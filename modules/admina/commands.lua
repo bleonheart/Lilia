@@ -1,8 +1,4 @@
 local MODULE = MODULE
-lia.admin = lia.admin or {}
-
-
-
 lia.command.add("plykick", {
 	adminOnly = true,
 	syntax = "<string name> [string reason]",
@@ -10,7 +6,7 @@ lia.command.add("plykick", {
 		if SERVER then
 			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
-                               target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
+				target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
 				client:notifyLocalized("plyKicked")
 			end
 		end
@@ -24,7 +20,7 @@ lia.command.add("plyban", {
 		if SERVER then
 			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
-                               target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
+				target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
 				client:notifyLocalized("plyBanned")
 			end
 		end
@@ -54,20 +50,19 @@ lia.command.add("plysetgroup", {
 			if IsValid(target) and lia.admin.permissions[arguments[2]] then
 				lia.admin.setPlayerGroup(target, arguments[2])
 				client:notifyLocalized("plyGroupSet")
-			elseif IsValid(target) and !lia.admin.permissions[arguments[2]] then
+			elseif IsValid(target) and not lia.admin.permissions[arguments[2]] then
 				client:notifyLocalized("groupNotExists")
 			end
 		end
 	end
 })
 
-
 lia.command.add("grpaddgroup", {
 	adminOnly = true,
 	syntax = "<string name>",
 	onRun = function(client, arguments)
 		if SERVER then
-			if !lia.admin.permissions[arguments[1]] then
+			if not lia.admin.permissions[arguments[1]] then
 				lia.admin.createGroup(arguments[1])
 				client:notifyLocalized("groupCreated")
 			else
@@ -97,12 +92,12 @@ lia.command.add("grpaddperm", {
 	syntax = "<string name> <string command>",
 	onRun = function(client, arguments)
 		if SERVER then
-			if lia.admin.permissions[arguments[1]] and lia.admin.commands[arguments[2]] and !lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
+			if lia.admin.permissions[arguments[1]] and lia.admin.commands[arguments[2]] and not lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
 				lia.admin.addPermission(arguments[1], arguments[2])
 				client:notifyLocalized("permissionAdded")
-			elseif !lia.admin.permissions[arguments[1]] then
+			elseif not lia.admin.permissions[arguments[1]] then
 				client:notifyLocalized("groupNotExists")
-			elseif !lia.admin.commands[arguments[2]] then
+			elseif not lia.admin.commands[arguments[2]] then
 				client:notifyLocalized("commandNotExists")
 			elseif lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
 				client:notifyLocalized("groupPermExists")
@@ -119,11 +114,11 @@ lia.command.add("grprmperm", {
 			if lia.admin.permissions[arguments[1]] and lia.admin.commands[arguments[2]] and lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
 				lia.admin.removePermission(arguments[1], arguments[2])
 				client:notifyLocalized("permissionRemoved")
-			elseif !lia.admin.permissions[arguments[1]] then
+			elseif not lia.admin.permissions[arguments[1]] then
 				client:notifyLocalized("groupNotExists")
-			elseif !lia.admin.commands[arguments[2]] then
+			elseif not lia.admin.commands[arguments[2]] then
 				client:notifyLocalized("commandNotExists")
-			elseif !lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
+			elseif not lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
 				client:notifyLocalized("groupNoPermExists")
 			end
 		end
@@ -139,9 +134,9 @@ lia.command.add("grpsetposition", {
 			if lia.admin.permissions[arguments[1]] and isnumber(pos) then
 				lia.admin.setGroupPosition(arguments[1], pos)
 				client:notifyLocalized("groupPosChanged")
-			elseif !lia.admin.permissions[arguments[1]] then
+			elseif not lia.admin.permissions[arguments[1]] then
 				client:notifyLocalized("groupNotExists")
-			elseif !isnumber(pos) then
+			elseif not isnumber(pos) then
 				client:notifyLocalized("invalidArg")
 			end
 		end

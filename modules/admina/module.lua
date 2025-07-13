@@ -1,17 +1,25 @@
-local MODULE = MODULE
-MODULE.name = "Admin"
-MODULE.author = "rusty"
-MODULE.desc = "Stop using paid admin mods, idiots."
-MODULE.language = "english"
 lia.admin = lia.admin or {}
+lia.admin.bans = lia.admin.bans or {}
+lia.admin.bans.list = lia.admin.bans.list or {}
+lia.admin.permissions = lia.admin.permissions or {}
 lia.admin.commands = lia.admin.commands or {
 	noclip = true
 }
 
+MODULE.name = "Admin"
+MODULE.author = "rusty"
+MODULE.desc = "Stop using paid admin mods, idiots."
+MODULE.language = "english"
+MODULE.name = "Attributes"
+MODULE.author = "76561198312513285"
+MODULE.discord = "@liliaplayer"
+MODULE.version = "1.0"
+MODULE.desc = "Introduces character-bound attributes that affect gameplay."
+
+lia.admin = lia.admin or {}
 lia.util.include("sh_permissions.lua")
 lia.util.include("cl_permissions.lua")
 lia.util.include("cl_plugin.lua")
-lia.util.include("sh_commands.lua")
 lia.util.include("sv_permissions.lua")
 lia.util.include("sv_bans.lua")
 function MODULE:PlayerNoClip(client, state)
@@ -28,7 +36,7 @@ function MODULE:PlayerNoClip(client, state)
 				hook.Run("OnPlayerObserve", client, state)
 			else
 				if client.nutObsData then
-					if client:GetInfoNum("nut_obstpback", 0) > 0 then
+					if client:GetInfoNum("lia_obstpback", 0) > 0 then
 						local position, angles = client.nutObsData[1], client.nutObsData[2]
 						timer.Simple(0, function()
 							client:SetPos(position)
