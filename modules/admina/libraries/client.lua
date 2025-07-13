@@ -1,21 +1,21 @@
 local MODULE = MODULE
 function MODULE:InitPostEntity()
-	net.Start("lilia_requestAdminPermissions")
-	net.SendToServer()
+        net.Start("lilia_requestAdminPermissions")
+        net.SendToServer()
 end
 
 function lia.admin.menu.addTab(info)
-	lia.admin.menu.tabs[info.title] = info
+        lia.admin.menu.tabs[info.title] = info
 end
 
 lia.admin.menu.addTab({
-	icon = "icon16/world.png",
-	panelClass = "DAdminWorldMenu",
-	title = "adminWorldMenuTitle",
+        icon = "icon16/world.png",
+        panelClass = "DAdminWorldMenu",
+        title = "adminWorldMenuTitle",
 })
 
 local function quote(str)
-	return string.format("'%s'", tostring(str))
+        return string.format("'%s'", tostring(str))
 end
 
 hook.Add("RunAdminSystemCommand", "liaAdmin", function(cmd, _, victim, dur, reason)
@@ -99,13 +99,10 @@ hook.Add("RunAdminSystemCommand", "liaAdmin", function(cmd, _, victim, dur, reas
 end)
 
 net.Receive("lilia_updateAdminPermissions", function() lia.admin.permissions = net.ReadTable() end)
-
 net.Receive("blindTarget", function()
         local enabled = net.ReadBool()
         if enabled then
-                hook.Add("HUDPaint", "blindTarget", function()
-                        draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255))
-                end)
+                hook.Add("HUDPaint", "blindTarget", function() draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255)) end)
         else
                 hook.Remove("HUDPaint", "blindTarget")
         end

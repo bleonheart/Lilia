@@ -1,5 +1,6 @@
 lia.admin = lia.admin or {}
 lia.admin.bans = lia.admin.bans or {}
+lia.admin.menu = lia.admin.menu or {}
 lia.admin.bans.list = lia.admin.bans.list or {}
 lia.admin.permissions = lia.admin.permissions or {}
 lia.admin.commands = lia.admin.commands or {

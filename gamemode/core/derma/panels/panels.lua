@@ -153,3 +153,7 @@ function PANEL:Init()
 end
 
 vgui.Register("DAdminMenu", PANEL, "DFrame")
+
+concommand.Add("open_admin_menu", function() 
+    vgui.Create("DAdminMenu") 
+end)
