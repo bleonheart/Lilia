@@ -1,9 +1,9 @@
 local PLUGIN = PLUGIN
-nut.admin = nut.admin or {}
-nut.admin.permissions = nut.admin.permissions or {}
+lia.admin = lia.admin or {}
+lia.admin.permissions = lia.admin.permissions or {}
 
 netstream.Hook("nutscript_updateAdminPermissions", function(info)
-	nut.admin.permissions = info
+	lia.admin.permissions = info
 end)
 
 function PLUGIN:InitPostEntity()

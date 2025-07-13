@@ -1,21 +1,21 @@
 local PLUGIN = PLUGIN
 local meta = FindMetaTable("Player")
-nut.admin = nut.admin or {}
-nut.admin.permissions = nut.admin.permissions or {}
+lia.admin = lia.admin or {}
+lia.admin.permissions = lia.admin.permissions or {}
 
 function meta:hasPermission(cmd)
-	return nut.admin.permissions[self:GetUserGroup()] and nut.admin.permissions[self:GetUserGroup()]["permissions"][cmd] or false
+	return lia.admin.permissions[self:GetUserGroup()] and lia.admin.permissions[self:GetUserGroup()]["permissions"][cmd] or false
 end
 
 
 function meta:IsAdmin()
-	if !nut.admin.permissions[self:GetUserGroup()] then return false end
+	if !lia.admin.permissions[self:GetUserGroup()] then return false end
 
-	return (nut.admin.permissions[self:GetUserGroup()].admin or nut.admin.permissions[self:GetUserGroup()].superadmin) or false
+	return (lia.admin.permissions[self:GetUserGroup()].admin or lia.admin.permissions[self:GetUserGroup()].superadmin) or false
 end
 
 function meta:IsSuperAdmin()
-	if !nut.admin.permissions[self:GetUserGroup()] then return false end
+	if !lia.admin.permissions[self:GetUserGroup()] then return false end
 
-	return nut.admin.permissions[self:GetUserGroup()].superadmin or false
+	return lia.admin.permissions[self:GetUserGroup()].superadmin or false
 end

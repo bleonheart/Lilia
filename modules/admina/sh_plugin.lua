@@ -4,18 +4,18 @@ PLUGIN.author = "rusty"
 PLUGIN.desc = "Stop using paid admin mods, idiots."
 PLUGIN.language = "english"
 
-nut.admin = nut.admin or {}
-nut.admin.commands = nut.admin.commands or {noclip = true}
+lia.admin = lia.admin or {}
+lia.admin.commands = lia.admin.commands or {noclip = true}
 
-nut.util.include("sh_permissions.lua")
-nut.util.include("cl_permissions.lua")
-nut.util.include("cl_plugin.lua")
+lia.util.include("sh_permissions.lua")
+lia.util.include("cl_permissions.lua")
+lia.util.include("cl_plugin.lua")
 
-nut.util.include("sh_commands.lua")
+lia.util.include("sh_commands.lua")
 
 if SERVER then
-	nut.util.include("sv_permissions.lua")
-	nut.util.include("sv_bans.lua")
+	lia.util.include("sv_permissions.lua")
+	lia.util.include("sv_bans.lua")
 end
 
 local PLUGIN = PLUGIN
@@ -63,7 +63,7 @@ function PLUGIN:PlayerNoClip(client, state)
 end
 
 function PLUGIN:InitializedPlugins()
-	for cmd,info in next, nut.command.list do
+	for cmd,info in next, lia.command.list do
 		if info.group or info.superAdminOnly or info.adminOnly then
 			info.onCheckAccess = function(client)
 				return client:hasPermission(cmd)
@@ -76,16 +76,16 @@ function PLUGIN:InitializedPlugins()
 				end
 			end
 			
-			nut.admin.commands[cmd] = true
+			lia.admin.commands[cmd] = true
 		end
 	end
 	
-	nut.command.findPlayer = function(client, name)
+	lia.command.findPlayer = function(client, name)
 		local calling_func = debug.getinfo(2)
 		local command
-		local target = type(name) == "string" and nut.util.findPlayer(name) or NULL
+		local target = type(name) == "string" and lia.util.findPlayer(name) or NULL
 
-		for cmd,info in next, nut.command.list do
+		for cmd,info in next, lia.command.list do
 			if info._onRun == calling_func.func then
 				command = info
 			end
@@ -93,8 +93,8 @@ function PLUGIN:InitializedPlugins()
 
 		if (IsValid(target)) then
 			if command and (command.adminOnly or command.superAdminOnly) then
-				local target_group = nut.admin.permissions[target:GetUserGroup()]
-				local client_group = nut.admin.permissions[client:GetUserGroup()]
+				local target_group = lia.admin.permissions[target:GetUserGroup()]
+				local client_group = lia.admin.permissions[client:GetUserGroup()]
 				
 				if target_group.position < client_group.position then
 					client:notifyLocalized("plyCantTarget")
@@ -112,10 +112,10 @@ end
 
 concommand.Add("plysetgroup", function( ply, cmd, args )
     if !IsValid(ply) then
-		local target = nut.util.findPlayer(args[1])
+		local target = lia.util.findPlayer(args[1])
 		if IsValid(target) then
-			if nut.admin.permissions[args[2]] then
-				nut.admin.setPlayerGroup(target, args[2])
+			if lia.admin.permissions[args[2]] then
+				lia.admin.setPlayerGroup(target, args[2])
 			else
 				MsgC(Color(200,20,20), "[NutScript Admin] Error: usergroup not found.\n")
 			end
@@ -128,18 +128,18 @@ end)
 
 concommand.Add("nsadmin_createownergroup", function( ply, cmd, args )
     if !IsValid(ply) then
-		nut.admin.createGroup("owner", {
+		lia.admin.createGroup("owner", {
 			position = 0,
 			admin = false,
 			superadmin = true,
 			permissions = {},
 		})
 		
-		for cmd,_ in next, nut.admin.commands do
-			nut.admin.permissions["owner"].permissions[cmd] = true
+		for cmd,_ in next, lia.admin.commands do
+			lia.admin.permissions["owner"].permissions[cmd] = true
 		end
 		
-		nut.admin.save(true)
+		lia.admin.save(true)
 	end
 end)
 
@@ -149,7 +149,7 @@ concommand.Add("nsadmin_wipegroups", function( ply, cmd, args )
 			v:SetUserGroup("user")
 		end
 	
-		nut.admin.permissions = {}
-		nut.admin.save(true)
+		lia.admin.permissions = {}
+		lia.admin.save(true)
 	end
 end)

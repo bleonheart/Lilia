@@ -1,14 +1,14 @@
 local PLUGIN = PLUGIN
-nut.admin = nut.admin or {}
+lia.admin = lia.admin or {}
 
 
 
-nut.command.add("plykick", {
+lia.command.add("plykick", {
 	adminOnly = true,
 	syntax = "<string name> [string reason]",
 	onRun = function(client, arguments)
 		if SERVER then
-			local target = nut.command.findPlayer(client, arguments[1])
+			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
 				target:Kick(L("kickMessage", target, arguments[2] or "No reason specified."))
 				client:notifyLocalized("plyKicked")
@@ -17,12 +17,12 @@ nut.command.add("plykick", {
 	end
 })
 
-nut.command.add("plyban", {
+lia.command.add("plyban", {
 	adminOnly = true,
 	syntax = "<string name> [number duration] [string reason]",
 	onRun = function(client, arguments)
 		if SERVER then
-			local target = nut.command.findPlayer(client, arguments[1])
+			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
 				target:banPlayer(arguments[3] or "No reason specified.", arguments[2])
 				client:notifyLocalized("plyBanned")
@@ -31,12 +31,12 @@ nut.command.add("plyban", {
 	end
 })
 
-nut.command.add("plykill", {
+lia.command.add("plykill", {
 	adminOnly = true,
 	syntax = "<string name>",
 	onRun = function(client, arguments)
 		if SERVER then
-			local target = nut.command.findPlayer(client, arguments[1])
+			local target = lia.command.findPlayer(client, arguments[1])
 			if IsValid(target) then
 				target:Kill()
 				client:notifyLocalized("plyKilled")
@@ -45,16 +45,16 @@ nut.command.add("plykill", {
 	end
 })
 
-nut.command.add("plysetgroup", {
+lia.command.add("plysetgroup", {
 	adminOnly = true,
 	syntax = "<string name> <string group>",
 	onRun = function(client, arguments)
 		if SERVER then
-			local target = nut.command.findPlayer(client, arguments[1])
-			if IsValid(target) and nut.admin.permissions[arguments[2]] then
-				nut.admin.setPlayerGroup(target, arguments[2])
+			local target = lia.command.findPlayer(client, arguments[1])
+			if IsValid(target) and lia.admin.permissions[arguments[2]] then
+				lia.admin.setPlayerGroup(target, arguments[2])
 				client:notifyLocalized("plyGroupSet")
-			elseif IsValid(target) and !nut.admin.permissions[arguments[2]] then
+			elseif IsValid(target) and !lia.admin.permissions[arguments[2]] then
 				client:notifyLocalized("groupNotExists")
 			end
 		end
@@ -62,13 +62,13 @@ nut.command.add("plysetgroup", {
 })
 
 
-nut.command.add("grpaddgroup", {
+lia.command.add("grpaddgroup", {
 	adminOnly = true,
 	syntax = "<string name>",
 	onRun = function(client, arguments)
 		if SERVER then
-			if !nut.admin.permissions[arguments[1]] then
-				nut.admin.createGroup(arguments[1])
+			if !lia.admin.permissions[arguments[1]] then
+				lia.admin.createGroup(arguments[1])
 				client:notifyLocalized("groupCreated")
 			else
 				client:notifyLocalized("groupExists")
@@ -77,13 +77,13 @@ nut.command.add("grpaddgroup", {
 	end
 })
 
-nut.command.add("grprmgroup", {
+lia.command.add("grprmgroup", {
 	adminOnly = true,
 	syntax = "<string name>",
 	onRun = function(client, arguments)
 		if SERVER then
-			if nut.admin.permissions[arguments[1]] then
-				nut.admin.removeGroup(arguments[1])
+			if lia.admin.permissions[arguments[1]] then
+				lia.admin.removeGroup(arguments[1])
 				client:notifyLocalized("groupRemoved")
 			else
 				client:notifyLocalized("groupNotExists")
@@ -92,54 +92,54 @@ nut.command.add("grprmgroup", {
 	end
 })
 
-nut.command.add("grpaddperm", {
+lia.command.add("grpaddperm", {
 	adminOnly = true,
 	syntax = "<string name> <string command>",
 	onRun = function(client, arguments)
 		if SERVER then
-			if nut.admin.permissions[arguments[1]] and nut.admin.commands[arguments[2]] and !nut.admin.permissions[arguments[1]].permissions[arguments[2]] then
-				nut.admin.addPermission(arguments[1], arguments[2])
+			if lia.admin.permissions[arguments[1]] and lia.admin.commands[arguments[2]] and !lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
+				lia.admin.addPermission(arguments[1], arguments[2])
 				client:notifyLocalized("permissionAdded")
-			elseif !nut.admin.permissions[arguments[1]] then
+			elseif !lia.admin.permissions[arguments[1]] then
 				client:notifyLocalized("groupNotExists")
-			elseif !nut.admin.commands[arguments[2]] then
+			elseif !lia.admin.commands[arguments[2]] then
 				client:notifyLocalized("commandNotExists")
-			elseif nut.admin.permissions[arguments[1]].permissions[arguments[2]] then
+			elseif lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
 				client:notifyLocalized("groupPermExists")
 			end
 		end
 	end
 })
 
-nut.command.add("grprmperm", {
+lia.command.add("grprmperm", {
 	adminOnly = true,
 	syntax = "<string name> <string command>",
 	onRun = function(client, arguments)
 		if SERVER then
-			if nut.admin.permissions[arguments[1]] and nut.admin.commands[arguments[2]] and nut.admin.permissions[arguments[1]].permissions[arguments[2]] then
-				nut.admin.removePermission(arguments[1], arguments[2])
+			if lia.admin.permissions[arguments[1]] and lia.admin.commands[arguments[2]] and lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
+				lia.admin.removePermission(arguments[1], arguments[2])
 				client:notifyLocalized("permissionRemoved")
-			elseif !nut.admin.permissions[arguments[1]] then
+			elseif !lia.admin.permissions[arguments[1]] then
 				client:notifyLocalized("groupNotExists")
-			elseif !nut.admin.commands[arguments[2]] then
+			elseif !lia.admin.commands[arguments[2]] then
 				client:notifyLocalized("commandNotExists")
-			elseif !nut.admin.permissions[arguments[1]].permissions[arguments[2]] then
+			elseif !lia.admin.permissions[arguments[1]].permissions[arguments[2]] then
 				client:notifyLocalized("groupNoPermExists")
 			end
 		end
 	end
 })
 
-nut.command.add("grpsetposition", {
+lia.command.add("grpsetposition", {
 	adminOnly = true,
 	syntax = "<string name> <number position>",
 	onRun = function(client, arguments)
 		if SERVER then
 			local pos = tonumber(arguments[2])
-			if nut.admin.permissions[arguments[1]] and isnumber(pos) then
-				nut.admin.setGroupPosition(arguments[1], pos)
+			if lia.admin.permissions[arguments[1]] and isnumber(pos) then
+				lia.admin.setGroupPosition(arguments[1], pos)
 				client:notifyLocalized("groupPosChanged")
-			elseif !nut.admin.permissions[arguments[1]] then
+			elseif !lia.admin.permissions[arguments[1]] then
 				client:notifyLocalized("groupNotExists")
 			elseif !isnumber(pos) then
 				client:notifyLocalized("invalidArg")

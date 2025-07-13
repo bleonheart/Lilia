@@ -11,7 +11,7 @@ function PANEL:Init()
 	self.menuTabs:Dock(FILL)
 	self.menuTabs.childTabs = {}
 	
-	for _,info in next, nut.admin.menu.tabs do
+	for _,info in next, lia.admin.menu.tabs do
 		local icon = info.icon
 		local panelClass = info.panelClass
 		local title = L(info.title)
