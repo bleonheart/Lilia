@@ -18,7 +18,7 @@ local function quote(str)
         return string.format("'%s'", tostring(str))
 end
 
-hook.Add("RunAdminSystemCommand", "liaAdmin", function(cmd, _, victim, dur, reason)
+function MODULE:RunAdminSystemCommand(cmd, _, victim, dur, reason)
         local id = IsValid(victim) and victim:SteamID() or tostring(victim)
         if cmd == "kick" then
                 RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
@@ -96,7 +96,7 @@ hook.Add("RunAdminSystemCommand", "liaAdmin", function(cmd, _, victim, dur, reas
                 RunConsoleCommand("say", "/plyunblind " .. quote(id))
                 return true
         end
-end)
+end
 
 net.Receive("lilia_updateAdminPermissions", function() lia.admin.permissions = net.ReadTable() end)
 net.Receive("blindTarget", function()

@@ -224,12 +224,20 @@ local logTypeMap = {
     looc = "chatLOOC"
 }
 
-function GM:CheckPassword(steamid64, _, svpass, clpass, name)
+function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
+    local banRecord = lia.admin.bans.isBanned(steamID64)
+    local banExpired = lia.admin.bans.hasExpired(steamID64)
+    if banRecord then
+        if not banExpired then return false, L("banMessage", banRecord.duration / 60, banRecord.reason) end
+        lia.admin.bans.remove(steamID64)
+    end
+
     local convertingMessage = lia.config.isConverting and L("serverConvertingConfig") or lia.data.isConverting and L("serverConvertingData") or lia.log.isConverting and L("serverConvertingLogs")
     if convertingMessage then return false, convertingMessage end
-    if svpass ~= "" and svpass ~= clpass then
-        lia.log.add(nil, "failedPassword", steamid64, name, svpass, clpass)
-        lia.information(L("passwordMismatchInfo", name, steamid64, svpass, clpass))
+    if serverPassword ~= "" and serverPassword ~= clientPassword then
+        lia.log.add(nil, "failedPassword", steamID64, playerName, serverPassword, clientPassword)
+        lia.information(L("passwordMismatchInfo", playerName, steamID64, serverPassword, clientPassword))
+        return false, L("passwordMismatchInfo", playerName, steamID64, serverPassword, clientPassword)
     end
 end
 

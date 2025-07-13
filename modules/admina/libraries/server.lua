@@ -2,12 +2,12 @@ local MODULE = MODULE
 local meta = FindMetaTable("Player")
 util.AddNetworkString("blindTarget")
 function lia.admin.save(network)
-        file.Write("nutscript/admin_permissions.txt", util.TableToJSON(lia.admin.permissions))
-        if network then
-                net.Start("lilia_updateAdminPermissions")
-                net.WriteTable(lia.admin.permissions)
-                net.Broadcast()
-        end
+	file.Write("nutscript/admin_permissions.txt", util.TableToJSON(lia.admin.permissions))
+	if network then
+		net.Start("lilia_updateAdminPermissions")
+		net.WriteTable(lia.admin.permissions)
+		net.Broadcast()
+	end
 end
 
 function lia.admin.load()
@@ -119,23 +119,13 @@ function MODULE:PlayerAuthed(ply, steamid, uid)
 end
 
 net.Receive("lilia_requestAdminPermissions", function(_, ply)
-        net.Start("lilia_updateAdminPermissions")
-        net.WriteTable(lia.admin.permissions)
-        net.Send(ply)
-end)
-local MYSQL_FINDCOLUMN = [[SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='lia_players' and column_name='_userGroup';]]
-local MYSQL_CREATECOLUMN = [[ALTER TABLE `lia_players` ADD COLUMN `_userGroup` varchar(255) NOT NULL DEFAULT 'user';]]
-local SQLITE_FINDCOLUMN = [[SELECT EXISTS (SELECT * FROM sqlite_master WHERE tbl_name = 'lia_players' AND sql LIKE '_userGroup');]]
-hook.Add("OnLoadTables", "lia.admin.permissions.setupUsergroup", function()
-	if lia.db.object then
-		lia.db.query(Format(MYSQL_FINDCOLUMN, lia.db.database), function(data) if not data then lia.db.query(MYSQL_CREATECOLUMN) end end)
-	else
-		lia.db.query(SQLITE_FINDCOLUMN, function(data) if not data then lia.db.query(MYSQL_CREATECOLUMN) end end)
-	end
+	net.Start("lilia_updateAdminPermissions")
+	net.WriteTable(lia.admin.permissions)
+	net.Send(ply)
 end)
 
 function lia.admin.bans.add(steamid, reason, duration)
-       local genericReason = L("genericReason")
+	local genericReason = L("genericReason")
 	if not steamid then Error("[Lilia Administration] lia.admin.bans.add: no steam id specified!") end
 	local banStart = os.time()
 	lia.admin.bans.list[steamid] = {
@@ -192,18 +182,5 @@ hook.Add("OnDatabaseLoaded", "lia.admin.bans.loadBanlist", function()
 	end)
 end)
 
-function MODULE:CheckPassword(steamid64, ipAddress, svPassword, clPassword, name)
-        local banned = lia.admin.bans.isBanned(steamid64)
-        local hasExpired = lia.admin.bans.hasExpired(steamid64)
-        if banned and not hasExpired then
-               return false, L("banMessage", banned.duration / 60, banned.reason)
-        elseif banned and hasExpired then
-                lia.admin.bans.remove(steamid64)
-        end
-end
-
 lia.admin.returnPositions = lia.admin.returnPositions or {}
-
-hook.Add("PlayerSay", "liaAdminGag", function(client)
-        if client:getNetVar("liaGagged") then return "" end
-end)
+hook.Add("PlayerSay", "liaAdminGag", function(client) if client:getNetVar("liaGagged") then return "" end end)
