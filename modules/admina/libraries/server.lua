@@ -134,7 +134,7 @@ hook.Add("OnLoadTables", "lia.admin.permissions.setupUsergroup", function()
 end)
 
 function lia.admin.bans.add(steamid, reason, duration)
-	local genericReason = lia.lang.stored[MODULE.language].genericReason
+       local genericReason = L("genericReason")
 	if not steamid then Error("[Lilia Administration] lia.admin.bans.add: no steam id specified!") end
 	local banStart = os.time()
 	lia.admin.bans.list[steamid] = {
@@ -195,7 +195,7 @@ function MODULE:CheckPassword(steamid64, ipAddress, svPassword, clPassword, name
 	local banned = lia.admin.bans.isBanned(steamid64)
 	local hasExpired = lia.admin.bans.hasExpired(steamid64)
 	if banned and not hasExpired then
-		return false, Format(lia.lang.stored[MODULE.language].banMessage, banned.duration / 60, banned.reason)
+               return false, L("banMessage", banned.duration / 60, banned.reason)
 	elseif banned and hasExpired then
 		lia.admin.bans.remove(steamid64)
 	end
