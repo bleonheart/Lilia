@@ -113,5 +113,3 @@ net.Receive("managesitrooms", function()
         makeButton("rename", 2)
     end
 end)
-
-net.Receive("lilia_updateAdminPermissions", function() lia.admin.permissions = net.ReadTable() end)

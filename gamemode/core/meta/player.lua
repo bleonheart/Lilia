@@ -494,6 +494,11 @@ if SERVER then
         net.Broadcast()
     end
 
+    function playerMeta:banPlayer(reason, duration)
+        lia.admin.bans.add(self:SteamID64(), reason, duration)
+        self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
+    end
+
     function playerMeta:setAction(text, time, callback)
         if time and time <= 0 then
             if callback then callback(self) end

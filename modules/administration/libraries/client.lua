@@ -1,10 +1,4 @@
-﻿local MODULE = MODULE
-function MODULE:InitPostEntity()
-    net.Start("lilia_requestAdminPermissions")
-    net.SendToServer()
-end
-
-local function quote(str)
+﻿local function quote(str)
     return string.format("'%s'", tostring(str))
 end
 
