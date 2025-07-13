@@ -1,8 +1,17 @@
 lia.admin = lia.admin or {}
 lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
+lia.admin.privileges = lia.admin.privileges or {}
 function lia.admin.load()
     lia.admin.groups = lia.data.get("admin_groups", {}, true, true)
+    for name, priv in pairs(CAMI.GetPrivileges() or {}) do
+        lia.admin.privileges[name] = priv
+    end
+    if table.Count(lia.admin.groups) == 0 then
+        lia.admin.createGroup("admin")
+        lia.admin.createGroup("superadmin")
+        lia.admin.save(true)
+    end
 end
 
 function lia.admin.createGroup(groupName, info)
@@ -13,6 +22,11 @@ function lia.admin.createGroup(groupName, info)
 
     lia.admin.groups[groupName] = info or {}
     if SERVER then lia.admin.save(true) end
+end
+
+function lia.admin.registerPrivilege(privilege)
+    if not privilege or not privilege.Name then return end
+    lia.admin.privileges[privilege.Name] = privilege
 end
 
 function lia.admin.removeGroup(groupName)
