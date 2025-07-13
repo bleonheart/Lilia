@@ -49,9 +49,11 @@ else
         list:SetMultiSelect(false)
         list:AddColumn("ID")
         list:AddColumn("Name")
+        list:AddColumn("Last Online")
+        list:AddColumn("Hours Played")
         for _, data in ipairs(characterData) do
             if data.faction == factionID and data.id ~= character:getID() then
-                local line = list:AddLine(data.id, data.name)
+                local line = list:AddLine(data.id, data.name, data.lastOnline, data.hoursPlayed)
                 line.steamID = data.steamID
             end
         end
