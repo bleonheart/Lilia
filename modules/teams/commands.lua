@@ -36,7 +36,52 @@
     end
 })
 
+lia.command.add("roster", {
+    onRun = function(client)
+        local fields = "_name, _faction, _id"
+        local character = client:getChar()
+        if not character then
+            client:notify("Character data not found for client:", client)
+            return
+        end
+
+        local factionIndex = character:getFaction()
+        if not factionIndex then
+            client:notify("Faction data not found for character:", character)
+            return
+        end
+
+        local faction = lia.faction.indices[factionIndex]
+        if not faction then
+            client:notify("Faction data not found for index:", factionIndex)
+            return
+        end
+
+        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "'"
+        lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
+            local characters = {}
+            if data then
+                for k, v in ipairs(data) do
+                    table.insert(characters, {
+                        id = v._id,
+                        name = v._name,
+                        faction = v._faction
+                    })
+                end
+            else
+                client:notify("No data found for the specified condition.")
+            end
+
+            net.Start("CharacterInfo")
+            net.WriteTable(characters)
+            net.Send(client)
+        end)
+    end
+})
+
 lia.command.add("factionmanagement", {
+    superAdminOnly = true,
+    privilege = "Manage Faction Members",
     onRun = function(client)
         local fields = "_name, _faction, _id"
         local character = client:getChar()
