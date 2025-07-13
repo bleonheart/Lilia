@@ -9,7 +9,6 @@ function nut.admin.bans.add(steamid, reason, duration)
 		Error("[NutScript Admin] nut.admin.bans.add: no steam id specified!")
 	end
 
-	-- just dont want two calls with (possibly) different starts for bans
 	local banStart = os.time()
 
 	nut.admin.bans.list[steamid] = {
@@ -33,10 +32,8 @@ function nut.admin.bans.remove(steamid)
 	
 	nut.admin.bans.list[steamid] = nil
 	
-	-- lol, having to escape info. a prepared query would work so much better
-	-- but gotta have sqlite support for the plebs and tmysql4 users (why tf would u use that trash module)
 	nut.db.query(Format("DELETE FROM nut_bans WHERE _steamID = '%s'", nut.db.escape(steamid)), function(data)
-		MsgC(Color(0, 200, 0), "[NutScript Admin] Ban removed.\n") -- gotta switch this over to nut.log
+		MsgC(Color(0, 200, 0), "[NutScript Admin] Ban removed.\n")
 	end)
 end
 
@@ -78,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `nut_bans` (
 );
 ]]
 
-hook.Add("OnLoadTables", "nut.admin.bans.setupDatabase", function() -- cool
+hook.Add("OnLoadTables", "nut.admin.bans.setupDatabase", function()
 	nut.db.query(nut.db.object and nut.admin.bans.mysql_createTables or nut.admin.bans.sqlite_createTables)
 end)
 
