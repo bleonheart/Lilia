@@ -11,12 +11,6 @@ MODULE.author = "76561198312513285"
 MODULE.discord = "@liliaplayer"
 MODULE.version = "1.0"
 MODULE.desc = "Introduces character-bound attributes that affect gameplay."
-lia.admin = lia.admin or {}
-lia.util.include("sh_permissions.lua")
-lia.util.include("cl_permissions.lua")
-lia.util.include("cl_plugin.lua")
-lia.util.include("sv_permissions.lua")
-lia.util.include("sv_bans.lua")
 function MODULE:PlayerNoClip(client, state)
 	if client:hasPermission("noclip") then
 		if SERVER then
