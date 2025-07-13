@@ -1,4 +1,4 @@
-local PLUGIN = PLUGIN
+local MODULE = MODULE
 local meta = FindMetaTable("Player")
 lia.admin = lia.admin or {}
 lia.admin.permissions = lia.admin.permissions or {}

@@ -1,10 +1,10 @@
-local PLUGIN = PLUGIN
+local MODULE = MODULE
 lia.admin = lia.admin or {}
 lia.admin.bans = lia.admin.bans or {}
 lia.admin.bans.list = lia.admin.bans.list or {}
 
 function lia.admin.bans.add(steamid, reason, duration)
-	local genericReason = lia.lang.stored[PLUGIN.language].genericReason
+	local genericReason = lia.lang.stored[MODULE.language].genericReason
 	if !steamid then
 		Error("[NutScript Admin] lia.admin.bans.add: no steam id specified!")
 	end
@@ -96,12 +96,12 @@ hook.Add("OnDatabaseLoaded", "lia.admin.bans.loadBanlist", function()
 	end)
 end)
 
-function PLUGIN:CheckPassword(steamid64, ipAddress, svPassword, clPassword, name)
+function MODULE:CheckPassword(steamid64, ipAddress, svPassword, clPassword, name)
 	local banned = lia.admin.bans.isBanned(steamid64)
 	local hasExpired = lia.admin.bans.hasExpired(steamid64)
 	
 	if banned and !hasExpired then
-		return false, Format(lia.lang.stored[PLUGIN.language].banMessage, banned.duration / 60, banned.reason)
+		return false, Format(lia.lang.stored[MODULE.language].banMessage, banned.duration / 60, banned.reason)
 	elseif banned and hasExpired then
 		lia.admin.bans.remove(steamid64)
 	end

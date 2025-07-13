@@ -1,4 +1,4 @@
-local PLUGIN = PLUGIN
+local MODULE = MODULE
 lia.admin = lia.admin or {}
 lia.admin.menu = lia.admin.menu or {}
 lia.admin.menu.tabs = lia.admin.menu.tabs or {}
