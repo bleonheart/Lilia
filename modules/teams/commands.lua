@@ -38,7 +38,7 @@
 
 lia.command.add("roster", {
     onRun = function(client)
-        local fields = "_name, _faction, _id"
+        local fields = "_name, _faction, _id, _steamID"
         local character = client:getChar()
         if not character then
             client:notify("Character data not found for client:", client)
@@ -57,7 +57,7 @@ lia.command.add("roster", {
             return
         end
 
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "'"
+        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _faction = " .. lia.db.convertDataType(faction.uniqueID)
         lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
             local characters = {}
             if data then
@@ -65,7 +65,8 @@ lia.command.add("roster", {
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
-                        faction = v._faction
+                        faction = v._faction,
+                        steamID = v._steamID
                     })
                 end
             else
@@ -73,6 +74,7 @@ lia.command.add("roster", {
             end
 
             net.Start("CharacterInfo")
+            net.WriteString(faction.uniqueID)
             net.WriteTable(characters)
             net.Send(client)
         end)
@@ -82,27 +84,35 @@ lia.command.add("roster", {
 lia.command.add("factionmanagement", {
     superAdminOnly = true,
     privilege = "Manage Faction Members",
-    onRun = function(client)
-        local fields = "_name, _faction, _id"
-        local character = client:getChar()
-        if not character then
-            client:notify("Character data not found for client:", client)
-            return
+    syntax = "[faction Faction]",
+    onRun = function(client, arguments)
+        local fields = "_name, _faction, _id, _steamID"
+        local faction
+        local arg = table.concat(arguments, " ")
+        if arg ~= "" then
+            faction = lia.util.findFaction(client, arg)
+            if not faction then return end
+        else
+            local character = client:getChar()
+            if not character then
+                client:notify("Character data not found for client:", client)
+                return
+            end
+
+            local factionIndex = character:getFaction()
+            if not factionIndex then
+                client:notify("Faction data not found for character:", character)
+                return
+            end
+
+            faction = lia.faction.indices[factionIndex]
+            if not faction then
+                client:notify("Faction data not found for index:", factionIndex)
+                return
+            end
         end
 
-        local factionIndex = character:getFaction()
-        if not factionIndex then
-            client:notify("Faction data not found for character:", character)
-            return
-        end
-
-        local faction = lia.faction.indices[factionIndex]
-        if not faction then
-            client:notify("Faction data not found for index:", factionIndex)
-            return
-        end
-
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "'"
+        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _faction = " .. lia.db.convertDataType(faction.uniqueID)
         lia.db.query("SELECT " .. fields .. " FROM lia_characters WHERE " .. condition, function(data)
             local characters = {}
             if data then
@@ -110,7 +120,8 @@ lia.command.add("factionmanagement", {
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
-                        faction = v._faction
+                        faction = v._faction,
+                        steamID = v._steamID
                     })
                 end
             else
@@ -118,6 +129,7 @@ lia.command.add("factionmanagement", {
             end
 
             net.Start("CharacterInfo")
+            net.WriteString(faction.uniqueID)
             net.WriteTable(characters)
             net.Send(client)
         end)
