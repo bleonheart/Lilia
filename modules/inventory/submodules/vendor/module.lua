@@ -2,6 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Adds NPC vendors that sell items."
+MODULE.version = "1.08"
 MODULE.CAMIPrivileges = {
     {
         Name = "Staff Permissions - Can Edit Vendors",

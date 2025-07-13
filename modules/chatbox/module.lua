@@ -2,6 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Adds an enhanced in-game chat box with staff controls."
+MODULE.version = "1.08"
 MODULE.CAMIPrivileges = {
     {
         Name = "Staff Permissions - No OOC Cooldown",

@@ -2,6 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides an Admin Stick tool to streamline administration tasks."
+MODULE.version = "1.08"
 MODULE.CAMIPrivileges = {
     {
         Name = "Staff Permissions - Use Admin Stick",

@@ -650,6 +650,28 @@ local function fetchURL(url, onSuccess, onError)
     end
 end
 
+local function versionCompare(localVersion, remoteVersion)
+    local function toParts(v)
+        local parts = {}
+        if not v then return parts end
+        for num in tostring(v):gmatch("%d+") do
+            table.insert(parts, tonumber(num))
+        end
+        return parts
+    end
+
+    local lParts = toParts(localVersion)
+    local rParts = toParts(remoteVersion)
+    local len = math.max(#lParts, #rParts)
+    for i = 1, len do
+        local l = lParts[i] or 0
+        local r = rParts[i] or 0
+        if l < r then return -1 end
+        if l > r then return 1 end
+    end
+    return 0
+end
+
 local publicURL = "https://raw.githubusercontent.com/LiliaFramework/Modules/refs/heads/gh-pages/modules.json"
 local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/modules.json"
 local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/version.json"
@@ -679,7 +701,7 @@ local function checkPublicModules()
                 lia.updater(L("moduleUniqueIDNotFound", info.uniqueID))
             elseif not match.version then
                 lia.updater(L("moduleNoRemoteVersion", info.name))
-            elseif match.version ~= info.localVersion then
+            elseif info.localVersion and versionCompare(info.localVersion, match.version) < 0 then
                 lia.updater(L("moduleOutdated", info.name, match.version))
             end
         end
@@ -701,7 +723,7 @@ local function checkPrivateModules()
 
         for _, info in ipairs(lia.module.privateVersionChecks) do
             for _, m in ipairs(remote) do
-                if m.uniqueID == info.uniqueID and m.version and m.version ~= info.localVersion then
+                if m.uniqueID == info.uniqueID and m.version and info.localVersion and versionCompare(info.localVersion, m.version) < 0 then
                     lia.updater(L("privateModuleOutdated", info.name))
                     break
                 end
@@ -729,7 +751,9 @@ local function checkFrameworkVersion()
             return
         end
 
-        if remote.version ~= localVersion then lia.updater(L("frameworkOutdated")) end
+        if versionCompare(localVersion, remote.version) < 0 then
+            lia.updater(L("frameworkOutdated"))
+        end
     end, function(err) lia.updater(L("frameworkVersionError", err)) end)
 end
 

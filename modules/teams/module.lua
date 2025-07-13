@@ -2,6 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Manages factions and character classes."
+MODULE.version = "1.08"
 if SERVER then
     util.AddNetworkString("CharacterInfo")
     util.AddNetworkString("KickCharacter")
