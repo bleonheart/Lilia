@@ -2,7 +2,7 @@
 local meta = FindMetaTable("Player")
 util.AddNetworkString("blindTarget")
 function lia.admin.save(network)
-    file.Write("nutscript/admin_permissions.txt", util.TableToJSON(lia.admin.permissions))
+    lia.data.set("admin_permissions", lia.admin.permissions, true, true)
     if network then
         net.Start("lilia_updateAdminPermissions")
         net.WriteTable(lia.admin.permissions)
@@ -11,7 +11,7 @@ function lia.admin.save(network)
 end
 
 function lia.admin.load()
-    lia.admin.permissions = util.JSONToTable(file.Read("nutscript/admin_permissions.txt", "DATA") or "")
+    lia.admin.permissions = lia.data.get("admin_permissions", {}, true, true)
 end
 
 function lia.admin.setPlayerGroup(ply, usergroup)
