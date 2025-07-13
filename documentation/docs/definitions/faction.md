@@ -657,7 +657,6 @@ FACTION.commands = {
 }
 ```
 
----
 
 ## Example Faction Definition
 
