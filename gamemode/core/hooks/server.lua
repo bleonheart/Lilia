@@ -225,8 +225,8 @@ local logTypeMap = {
 }
 
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
-    local banRecord = lia.admin.bans.isBanned(steamID64)
-    local banExpired = lia.admin.bans.hasExpired(steamID64)
+    local banRecord = lia.admin.isBanned(steamID64)
+    local banExpired = lia.admin.hasBanExpired(steamID64)
     if banRecord then
         if not banExpired then return false, L("banMessage", banRecord.duration / 60, banRecord.reason) end
         lia.admin.bans.remove(steamID64)

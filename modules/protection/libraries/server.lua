@@ -80,10 +80,10 @@ function MODULE:PlayerAuthed(client, steamid)
         return
     end
 
-    local banRecord = lia.admin.bans.isBanned(ownerSteamID64)
+    local banRecord = lia.admin.isBanned(ownerSteamID64)
     if banRecord then
-        if lia.admin.bans.hasExpired(ownerSteamID64) then
-            lia.admin.bans.remove(ownerSteamID64)
+        if lia.admin.hasBanExpired(ownerSteamID64) then
+            lia.admin.removeBan(ownerSteamID64)
         else
             local duration = 0
             if banRecord.duration > 0 then duration = math.max(math.ceil((banRecord.start + banRecord.duration - os.time()) / 60), 0) end

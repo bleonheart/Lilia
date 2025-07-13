@@ -495,7 +495,7 @@ if SERVER then
     end
 
     function playerMeta:banPlayer(reason, duration)
-        lia.admin.bans.add(self:SteamID64(), reason, duration)
+        lia.admin.addBan(self:SteamID64(), reason, duration)
         self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
     end
 

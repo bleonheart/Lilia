@@ -63,7 +63,7 @@ lia.command.add("plyunban", {
         if SERVER then
             local steamid = arguments[1]
             if steamid and steamid ~= "" then
-                lia.admin.bans.remove(steamid)
+                lia.admin.removeBan(steamid)
                 client:notify("Player unbanned")
             end
         end
