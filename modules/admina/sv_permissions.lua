@@ -4,11 +4,9 @@ nut.admin = nut.admin or {}
 nut.admin.permissions = nut.admin.permissions or {}
 
 function nut.admin.save(network)
-	-- fuck a db
 	file.Write("nutscript/admin_permissions.txt", util.TableToJSON(nut.admin.permissions))
 	
 	if network then
-		-- honestly, networking the whole ass table on every change is bad practice, but who cares lol
 		netstream.Start(nil, "nutscript_updateAdminPermissions", nut.admin.permissions)
 	end
 end
@@ -117,11 +115,11 @@ function nut.admin.setGroupPosition(groupName, position)
 	for name,group in next, nut.admin.permissions do
 		if name == groupName then continue end
 
-		if position - oldPos > 0 then -- moving position down the stack
+		if position - oldPos > 0 then 
 			if group.position > oldPos and group.position <= position then
 				group.position = group.position - 1
 			end
-		elseif position - oldPos < 0 then -- moving position up the stack
+		elseif position - oldPos < 0 then 
 			if group.position < oldPos and group.position >= position then
 				group.position = group.position + 1
 			end
@@ -158,7 +156,7 @@ local MYSQL_CREATECOLUMN = [[ALTER TABLE `nut_players` ADD COLUMN `_userGroup` v
 
 local SQLITE_FINDCOLUMN = [[SELECT EXISTS (SELECT * FROM sqlite_master WHERE tbl_name = 'nut_players' AND sql LIKE '_userGroup');]]
 
-hook.Add("OnLoadTables", "nut.admin.permissions.setupUsergroup", function() -- lame af tbh
+hook.Add("OnLoadTables", "nut.admin.permissions.setupUsergroup", function() 
 	if nut.db.object then
 		nut.db.query(Format(MYSQL_FINDCOLUMN, nut.db.database), function(data)
 			if !data then
