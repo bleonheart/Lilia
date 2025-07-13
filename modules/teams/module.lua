@@ -33,11 +33,10 @@ if SERVER then
     end
 else
     net.Receive("CharacterInfo", function()
+        local factionID = net.ReadString()
+        local characterData = net.ReadTable()
         local character = LocalPlayer():getChar()
-        local factionIndex = character:getFaction()
-        local faction = lia.faction.indices[factionIndex]
-        local factionID = faction.uniqueID
-        local isValidViewer = character:getData("factionOwner") or character:getData("factionAdmin")
+        local isValidViewer = LocalPlayer():IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin")
         if not isValidViewer then return end
         if IsValid(characterPanel) then characterPanel:Remove() end
         characterPanel = vgui.Create("DFrame")
@@ -50,9 +49,11 @@ else
         list:SetMultiSelect(false)
         list:AddColumn("ID")
         list:AddColumn("Name")
-        local characterData = net.ReadTable()
         for _, data in ipairs(characterData) do
-            if data.faction == factionID and data.id ~= character:getID() then list:AddLine(data.id, data.name) end
+            if data.faction == factionID and data.id ~= character:getID() then
+                local line = list:AddLine(data.id, data.name)
+                line.steamID = data.steamID
+            end
         end
 
         list.OnRowRightClick = function(parent, lineIndex, line)
@@ -62,6 +63,10 @@ else
                 net.WriteInt(tonumber(line:GetValue(1)), 32)
                 net.SendToServer()
                 characterPanel:Remove()
+            end)
+
+            menu:AddOption("View Character List", function()
+                LocalPlayer():ConCommand("say /charlist " .. line.steamID)
             end)
 
             menu:Open()
