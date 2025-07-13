@@ -192,6 +192,7 @@ lia.command.add("plyunmute", {
     end
 })
 
+local returnPositions = {}
 lia.command.add("plybring", {
     adminOnly = true,
     syntax = "<string name>",
@@ -199,7 +200,7 @@ lia.command.add("plybring", {
         if SERVER then
             local target = lia.command.findPlayer(client, arguments[1])
             if IsValid(target) then
-                lia.admin.returnPositions[target] = target:GetPos()
+                returnPositions[target] = target:GetPos()
                 target:SetPos(client:GetPos() + client:GetForward() * 50)
             end
         end
@@ -213,7 +214,7 @@ lia.command.add("plygoto", {
         if SERVER then
             local target = lia.command.findPlayer(client, arguments[1])
             if IsValid(target) then
-                lia.admin.returnPositions[client] = client:GetPos()
+                returnPositions[client] = client:GetPos()
                 client:SetPos(target:GetPos() + target:GetForward() * 50)
             end
         end
@@ -227,10 +228,10 @@ lia.command.add("plyreturn", {
         if SERVER then
             local target = lia.command.findPlayer(client, arguments[1])
             target = IsValid(target) and target or client
-            local pos = lia.admin.returnPositions[target]
+            local pos = returnPositions[target]
             if pos then
                 target:SetPos(pos)
-                lia.admin.returnPositions[target] = nil
+                returnPositions[target] = nil
             end
         end
     end
