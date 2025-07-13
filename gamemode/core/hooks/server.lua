@@ -762,7 +762,7 @@ local TalkRanges = {
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) and IsValid(speaker) or listener == speaker then return false, false end
     if speaker:getNetVar("IsDeadRestricted", false) then return false, false end
-    if speaker:getNetVar("liaGagged") then return false, false end
+    if speaker:getNetVar("liaGagged", false) then return false, false end
     local char = speaker:getChar()
     if not (char and not char:getData("VoiceBan", false)) then return false, false end
     if not lia.config.get("IsVoiceEnabled", true) then return false, false end
