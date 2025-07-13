@@ -229,7 +229,7 @@ function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerNa
     local banExpired = lia.admin.hasBanExpired(steamID64)
     if banRecord then
         if not banExpired then return false, L("banMessage", banRecord.duration / 60, banRecord.reason) end
-        lia.admin.bans.remove(steamID64)
+        lia.admin.removeBan(steamID64)
     end
 
     local convertingMessage = lia.config.isConverting and L("serverConvertingConfig") or lia.data.isConverting and L("serverConvertingData") or lia.log.isConverting and L("serverConvertingLogs")

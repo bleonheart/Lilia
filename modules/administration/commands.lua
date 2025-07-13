@@ -46,10 +46,10 @@ lia.command.add("plysetgroup", {
     onRun = function(client, arguments)
         if SERVER then
             local target = lia.command.findPlayer(client, arguments[1])
-            if IsValid(target) and lia.admin.permissions[arguments[2]] then
+            if IsValid(target) and lia.admin.groups[arguments[2]] then
                 lia.admin.setPlayerGroup(target, arguments[2])
                 client:notifyLocalized("plyGroupSet")
-            elseif IsValid(target) and not lia.admin.permissions[arguments[2]] then
+            elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
                 client:notifyLocalized("groupNotExists")
             end
         end
