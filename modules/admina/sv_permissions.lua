@@ -1,4 +1,4 @@
-local PLUGIN = PLUGIN
+local MODULE = MODULE
 local meta = FindMetaTable("Player")
 lia.admin = lia.admin or {}
 lia.admin.permissions = lia.admin.permissions or {}
@@ -133,15 +133,15 @@ function lia.admin.setGroupPosition(groupName, position)
 	end
 end
 
-function PLUGIN:InitPostEntity()
+function MODULE:InitPostEntity()
 	lia.admin.load()
 end
 
-function PLUGIN:ShutDown()
+function MODULE:ShutDown()
 	lia.admin.save()
 end
 
-function PLUGIN:PlayerAuthed(ply, steamid, uid)
+function MODULE:PlayerAuthed(ply, steamid, uid)
 	lia.db.query(Format("SELECT _userGroup FROM nut_players WHERE _steamID = %s", util.SteamIDTo64(steamid)), function(data)
 		ply:SetUserGroup(data[1]._userGroup)
 	end)

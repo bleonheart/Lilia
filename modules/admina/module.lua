@@ -1,8 +1,8 @@
-local PLUGIN = PLUGIN
-PLUGIN.name = "Admin"
-PLUGIN.author = "rusty"
-PLUGIN.desc = "Stop using paid admin mods, idiots."
-PLUGIN.language = "english"
+local MODULE = MODULE
+MODULE.name = "Admin"
+MODULE.author = "rusty"
+MODULE.desc = "Stop using paid admin mods, idiots."
+MODULE.language = "english"
 
 lia.admin = lia.admin or {}
 lia.admin.commands = lia.admin.commands or {noclip = true}
@@ -18,10 +18,9 @@ if SERVER then
 	lia.util.include("sv_bans.lua")
 end
 
-local PLUGIN = PLUGIN
 
 
-function PLUGIN:PlayerNoClip(client, state)
+function MODULE:PlayerNoClip(client, state)
 	if (client:hasPermission("noclip")) then
 		if SERVER then
 			if (state) then
@@ -62,7 +61,7 @@ function PLUGIN:PlayerNoClip(client, state)
 	end
 end
 
-function PLUGIN:InitializedPlugins()
+function MODULE:InitializedModules()
 	for cmd,info in next, lia.command.list do
 		if info.group or info.superAdminOnly or info.adminOnly then
 			info.onCheckAccess = function(client)
