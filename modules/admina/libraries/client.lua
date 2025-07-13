@@ -19,73 +19,94 @@ local function quote(str)
 end
 
 hook.Add("RunAdminSystemCommand", "liaAdmin", function(cmd, _, victim, dur, reason)
-	if cmd == "kick" then
-		RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
-		return true
-	elseif cmd == "ban" then
-		RunConsoleCommand("say", "/plyban " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
-		return true
-	elseif cmd == "unban" then
-		RunConsoleCommand("say", "/plyunban " .. quote(id))
-		return true
-	elseif cmd == "mute" then
-		RunConsoleCommand("sam", "mute", victim:SteamID(), tostring(dur or 0), reason or "")
-		return true
-	elseif cmd == "unmute" then
-		RunConsoleCommand("sam", "unmute", victim:SteamID())
-		return true
-	elseif cmd == "gag" then
-		RunConsoleCommand("sam", "gag", victim:SteamID(), tostring(dur or 0), reason or "")
-		return true
-	elseif cmd == "ungag" then
-		RunConsoleCommand("sam", "ungag", victim:SteamID())
-		return true
-	elseif cmd == "freeze" then
-		RunConsoleCommand("sam", "freeze", victim:SteamID(), tostring(dur or 0))
-		return true
-	elseif cmd == "unfreeze" then
-		RunConsoleCommand("sam", "unfreeze", victim:SteamID())
-		return true
-	elseif cmd == "slay" then
-		RunConsoleCommand("sam", "slay", victim:SteamID())
-		return true
-	elseif cmd == "bring" then
-		RunConsoleCommand("sam", "bring", victim:SteamID())
-		return true
-	elseif cmd == "goto" then
-		RunConsoleCommand("sam", "goto", victim:SteamID())
-		return true
-	elseif cmd == "return" then
-		RunConsoleCommand("sam", "return", victim:SteamID())
-		return true
-	elseif cmd == "jail" then
-		RunConsoleCommand("sam", "jail", victim:SteamID(), tostring(dur or 0))
-		return true
-	elseif cmd == "unjail" then
-		RunConsoleCommand("sam", "unjail", victim:SteamID())
-		return true
-	elseif cmd == "cloak" then
-		RunConsoleCommand("sam", "cloak", victim:SteamID())
-		return true
-	elseif cmd == "uncloak" then
-		RunConsoleCommand("sam", "uncloak", victim:SteamID())
-		return true
-	elseif cmd == "god" then
-		RunConsoleCommand("sam", "god", victim:SteamID())
-		return true
-	elseif cmd == "ungod" then
-		RunConsoleCommand("sam", "ungod", victim:SteamID())
-		return true
-	elseif cmd == "ignite" then
-		RunConsoleCommand("sam", "ignite", victim:SteamID(), tostring(dur or 0))
-		return true
-	elseif cmd == "extinguish" or cmd == "unignite" then
-		RunConsoleCommand("sam", "extinguish", victim:SteamID())
-		return true
-	elseif cmd == "strip" then
-		RunConsoleCommand("sam", "strip", victim:SteamID())
-		return true
-	end
+        local id = IsValid(victim) and victim:SteamID() or tostring(victim)
+        if cmd == "kick" then
+                RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
+                return true
+        elseif cmd == "ban" then
+                RunConsoleCommand("say", "/plyban " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
+                return true
+        elseif cmd == "unban" then
+                RunConsoleCommand("say", "/plyunban " .. quote(id))
+                return true
+        elseif cmd == "mute" then
+                RunConsoleCommand("say", "/plymute " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
+                return true
+        elseif cmd == "unmute" then
+                RunConsoleCommand("say", "/plyunmute " .. quote(id))
+                return true
+        elseif cmd == "gag" then
+                RunConsoleCommand("say", "/plygag " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
+                return true
+        elseif cmd == "ungag" then
+                RunConsoleCommand("say", "/plyungag " .. quote(id))
+                return true
+        elseif cmd == "freeze" then
+                RunConsoleCommand("say", "/plyfreeze " .. quote(id) .. " " .. tostring(dur or 0))
+                return true
+        elseif cmd == "unfreeze" then
+                RunConsoleCommand("say", "/plyunfreeze " .. quote(id))
+                return true
+        elseif cmd == "slay" then
+                RunConsoleCommand("say", "/plyslay " .. quote(id))
+                return true
+        elseif cmd == "bring" then
+                RunConsoleCommand("say", "/plybring " .. quote(id))
+                return true
+        elseif cmd == "goto" then
+                RunConsoleCommand("say", "/plygoto " .. quote(id))
+                return true
+        elseif cmd == "return" then
+                RunConsoleCommand("say", "/plyreturn " .. quote(id))
+                return true
+        elseif cmd == "jail" then
+                RunConsoleCommand("say", "/plyjail " .. quote(id) .. " " .. tostring(dur or 0))
+                return true
+        elseif cmd == "unjail" then
+                RunConsoleCommand("say", "/plyunjail " .. quote(id))
+                return true
+        elseif cmd == "cloak" then
+                RunConsoleCommand("say", "/plycloak " .. quote(id))
+                return true
+        elseif cmd == "uncloak" then
+                RunConsoleCommand("say", "/plyuncloak " .. quote(id))
+                return true
+        elseif cmd == "god" then
+                RunConsoleCommand("say", "/plygod " .. quote(id))
+                return true
+        elseif cmd == "ungod" then
+                RunConsoleCommand("say", "/plyungod " .. quote(id))
+                return true
+        elseif cmd == "ignite" then
+                RunConsoleCommand("say", "/plyignite " .. quote(id) .. " " .. tostring(dur or 0))
+                return true
+        elseif cmd == "extinguish" or cmd == "unignite" then
+                RunConsoleCommand("say", "/plyextinguish " .. quote(id))
+                return true
+        elseif cmd == "strip" then
+                RunConsoleCommand("say", "/plystrip " .. quote(id))
+                return true
+        elseif cmd == "respawn" then
+                RunConsoleCommand("say", "/plyrespawn " .. quote(id))
+                return true
+        elseif cmd == "blind" then
+                RunConsoleCommand("say", "/plyblind " .. quote(id))
+                return true
+        elseif cmd == "unblind" then
+                RunConsoleCommand("say", "/plyunblind " .. quote(id))
+                return true
+        end
 end)
 
 net.Receive("lilia_updateAdminPermissions", function() lia.admin.permissions = net.ReadTable() end)
+
+net.Receive("blindTarget", function()
+        local enabled = net.ReadBool()
+        if enabled then
+                hook.Add("HUDPaint", "blindTarget", function()
+                        draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255))
+                end)
+        else
+                hook.Remove("HUDPaint", "blindTarget")
+        end
+end)
