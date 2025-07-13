@@ -1,7 +1,7 @@
 local MODULE = MODULE
 function MODULE:InitPostEntity()
-        net.Start("lilia_requestAdminPermissions")
-        net.SendToServer()
+	net.Start("lilia_requestAdminPermissions")
+	net.SendToServer()
 end
 
 function lia.admin.menu.addTab(info)
@@ -14,18 +14,19 @@ lia.admin.menu.addTab({
 	title = "adminWorldMenuTitle",
 })
 
-net.Receive("lilia_updateAdminPermissions", function()
-        lia.admin.permissions = net.ReadTable()
-end)
-hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
+local function quote(str)
+	return string.format("'%s'", tostring(str))
+end
+
+hook.Add("RunAdminSystemCommand", "liaAdmin", function(cmd, _, victim, dur, reason)
 	if cmd == "kick" then
-		RunConsoleCommand("sam", "kick", victim:SteamID(), reason or "")
+		RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
 		return true
 	elseif cmd == "ban" then
-		RunConsoleCommand("sam", "ban", victim:SteamID(), tostring(dur or 0), reason or "")
+		RunConsoleCommand("say", "/plyban " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
 		return true
 	elseif cmd == "unban" then
-		RunConsoleCommand("sam", "unban", victim:SteamID())
+		RunConsoleCommand("say", "/plyunban " .. quote(id))
 		return true
 	elseif cmd == "mute" then
 		RunConsoleCommand("sam", "mute", victim:SteamID(), tostring(dur or 0), reason or "")
@@ -86,3 +87,5 @@ hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason
 		return true
 	end
 end)
+
+net.Receive("lilia_updateAdminPermissions", function() lia.admin.permissions = net.ReadTable() end)
