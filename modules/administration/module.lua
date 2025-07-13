@@ -1,4 +1,11 @@
-﻿MODULE.name = "Administration Utilities"
+﻿lia.admin = lia.admin or {}
+lia.admin.bans = lia.admin.bans or {}
+lia.admin.menu = lia.admin.menu or {}
+lia.admin.commands = lia.admin.commands or {}
+lia.admin.menu.tabs = lia.admin.menu.tabs or {}
+lia.admin.bans.list = lia.admin.bans.list or {}
+lia.admin.permissions = lia.admin.permissions or {}
+MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.version = "1.0"
