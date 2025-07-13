@@ -1,0 +1,5 @@
+ITEM.name = "High-Quality Oil"
+ITEM.desc = "A drum of refined high-grade oil."
+ITEM.model = "models/props_c17/oildrum001.mdl"
+ITEM.width = 1
+ITEM.height = 1

@@ -1119,5 +1119,8 @@ Reload: Drop]],
     urlName = "Generic Item",
     urlDesc = "Generic Description",
     weaponsName = "Weapon",
+    oilPumpReady = "Oil Ready",
+    oilPumpNext = "Ready in %s",
+    oilPumping = "Pumping oil...",
     weaponsDesc = "A Weapon.",
 }
