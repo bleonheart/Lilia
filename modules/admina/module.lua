@@ -6,16 +6,11 @@ lia.admin.commands = lia.admin.commands or {
 	noclip = true
 }
 
-MODULE.name = "Admin"
-MODULE.author = "rusty"
-MODULE.desc = "Stop using paid admin mods, idiots."
-MODULE.language = "english"
 MODULE.name = "Attributes"
 MODULE.author = "76561198312513285"
 MODULE.discord = "@liliaplayer"
 MODULE.version = "1.0"
 MODULE.desc = "Introduces character-bound attributes that affect gameplay."
-
 lia.admin = lia.admin or {}
 lia.util.include("sh_permissions.lua")
 lia.util.include("cl_permissions.lua")
@@ -108,15 +103,15 @@ concommand.Add("plysetgroup", function(ply, cmd, args)
 			if lia.admin.permissions[args[2]] then
 				lia.admin.setPlayerGroup(target, args[2])
 			else
-				MsgC(Color(200, 20, 20), "[NutScript Admin] Error: usergroup not found.\n")
+				MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
 			end
 		else
-			MsgC(Color(200, 20, 20), "[NutScript Admin] Error: specified player not found.\n")
+			MsgC(Color(200, 20, 20), "[Lilia Administration] Error: specified player not found.\n")
 		end
 	end
 end)
 
-concommand.Add("nsadmin_createownergroup", function(ply, cmd, args)
+concommand.Add("createownergroup", function(ply, cmd, args)
 	if not IsValid(ply) then
 		lia.admin.createGroup("owner", {
 			position = 0,
@@ -133,7 +128,7 @@ concommand.Add("nsadmin_createownergroup", function(ply, cmd, args)
 	end
 end)
 
-concommand.Add("nsadmin_wipegroups", function(ply, cmd, args)
+concommand.Add("wipegroups", function(ply, cmd, args)
 	if not IsValid(ply) then
 		for k, v in next, player.GetAll() do
 			v:SetUserGroup("user")

@@ -16,7 +16,7 @@ end
 
 function lia.admin.createGroup(groupName, info)
 	if lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup already exists!\n")
+		Error("[Lilia Administration] This usergroup already exists!\n")
 		return
 	end
 
@@ -32,7 +32,7 @@ end
 
 function lia.admin.removeGroup(groupName)
 	if not lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup doesn't exist!\n")
+		Error("[Lilia Administration] This usergroup doesn't exist!\n")
 		return
 	end
 
@@ -42,7 +42,7 @@ end
 
 function lia.admin.addPermission(groupName, permission)
 	if not lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup doesn't exist!\n")
+		Error("[Lilia Administration] This usergroup doesn't exist!\n")
 		return
 	end
 
@@ -52,7 +52,7 @@ end
 
 function lia.admin.removePermission(groupName, permission)
 	if not lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup doesn't exist!\n")
+		Error("[Lilia Administration] This usergroup doesn't exist!\n")
 		return
 	end
 
@@ -62,7 +62,7 @@ end
 
 function lia.admin.setIsAdmin(groupName, isAdmin)
 	if not lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup doesn't exist!\n")
+		Error("[Lilia Administration] This usergroup doesn't exist!\n")
 		return
 	end
 
@@ -72,7 +72,7 @@ end
 
 function lia.admin.setIsSuperAdmin(groupName, isAdmin)
 	if not lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup doesn't exist!\n")
+		Error("[Lilia Administration] This usergroup doesn't exist!\n")
 		return
 	end
 
@@ -82,7 +82,7 @@ end
 
 function lia.admin.setGroupPosition(groupName, position)
 	if not lia.admin.permissions[groupName] then
-		Error("[NutScript Administration] This usergroup doesn't exist!\n")
+		Error("[Lilia Administration] This usergroup doesn't exist!\n")
 		return
 	end
 
@@ -127,7 +127,7 @@ end)
 
 function lia.admin.bans.add(steamid, reason, duration)
 	local genericReason = lia.lang.stored[MODULE.language].genericReason
-	if not steamid then Error("[NutScript Admin] lia.admin.bans.add: no steam id specified!") end
+	if not steamid then Error("[Lilia Administration] lia.admin.bans.add: no steam id specified!") end
 	local banStart = os.time()
 	lia.admin.bans.list[steamid] = {
 		reason = reason or genericReason,
@@ -144,9 +144,9 @@ function lia.admin.bans.add(steamid, reason, duration)
 end
 
 function lia.admin.bans.remove(steamid)
-	if not steamid then Error("[NutScript Admin] lia.admin.bans.remove: no steam id specified!") end
+	if not steamid then Error("[Lilia Administration] lia.admin.bans.remove: no steam id specified!") end
 	lia.admin.bans.list[steamid] = nil
-	lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function(data) MsgC(Color(0, 200, 0), "[NutScript Admin] Ban removed.\n") end)
+	lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function(data) MsgC(Color(0, 200, 0), "[Lilia Administration] Ban removed.\n") end)
 end
 
 function lia.admin.bans.isBanned(steamid)

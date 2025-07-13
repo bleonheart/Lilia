@@ -1,4 +1,3 @@
-local MODULE = MODULE
 lia.command.add("plykick", {
 	adminOnly = true,
 	syntax = "<string name> [string reason]",
