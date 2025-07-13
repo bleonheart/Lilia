@@ -45,7 +45,7 @@ The global `CLASS` table defines per-class settings such as display name, lore, 
 | `uniqueID` | `string` | `filename` | Optional identifier; defaults to the file name when omitted. |
 | `commands` | `table` | `{}` | Command names members may always use. |
 | `canInviteToFaction` | `boolean` | `false` | Allows members of this class to invite players to their faction. |
-| `canInviteToClass4` | `boolean` | `false` | Allows members of this class to invite others to their class. |
+| `canInviteToClass` | `boolean` | `false` | Allows members of this class to invite others to their class. |
 
 ---
 
@@ -639,7 +639,7 @@ CLASS.canInviteToFaction = true
 
 ---
 
-#### `canInviteToClass4`
+#### `canInviteToClass`
 
 **Type:**
 
@@ -652,7 +652,7 @@ Whether members of this class can invite players to join this class.
 **Example Usage:**
 
 ```lua
-CLASS.canInviteToClass4 = true
+CLASS.canInviteToClass = true
 ```
 
 ---
@@ -703,7 +703,7 @@ CLASS.commands = {
     plytransfer = true
 }
 CLASS.canInviteToFaction = true
-CLASS.canInviteToClass4 = true
+CLASS.canInviteToClass = true
 ```
 
 
