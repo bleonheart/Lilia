@@ -53,6 +53,19 @@ end
 net.Receive("DisplayCharList", function()
     local sendData = net.ReadTable()
     local targetSteamIDsafe = net.ReadString()
+
+    local extraColumns, extraOrder = {}, {}
+    for _, v in pairs(sendData or {}) do
+        if istable(v.extraDetails) then
+            for k in pairs(v.extraDetails) do
+                if not extraColumns[k] then
+                    extraColumns[k] = true
+                    table.insert(extraOrder, k)
+                end
+            end
+        end
+    end
+
     local fr = vgui.Create("DFrame")
     fr:SetTitle("Charlist for SteamID64: " .. targetSteamIDsafe)
     fr:SetSize(1000, 500)
@@ -69,8 +82,13 @@ net.Receive("DisplayCharList", function()
     listView:AddColumn("BanningAdminSteamID")
     listView:AddColumn("BanningAdminRank")
     listView:AddColumn("CharMoney")
+    for _, name in ipairs(extraOrder) do
+        listView:AddColumn(name)
+    end
+
     for _, v in pairs(sendData or {}) do
-        local Line = listView:AddLine(v.ID, v.Name, v.Desc, v.Faction, v.Banned, v.BanningAdminName, v.BanningAdminSteamID, v.BanningAdminRank, v.Money)
+        local lineValues = {v.ID, v.Name, v.Desc, v.Faction, v.Banned, v.BanningAdminName, v.BanningAdminSteamID, v.BanningAdminRank, v.Money}
+        local Line = listView:AddLine(unpack(lineValues))
         if v.Banned == "Yes" then
             Line.DoPaint = Line.Paint
             Line.Paint = function(pnl, w, h)
@@ -78,6 +96,12 @@ net.Receive("DisplayCharList", function()
                 surface.DrawRect(0, 0, w, h)
                 pnl:DoPaint(w, h)
             end
+        end
+
+        local colIndex = 10
+        for _, name in ipairs(extraOrder) do
+            Line:SetColumnText(colIndex, tostring(v.extraDetails and v.extraDetails[name] or ""))
+            colIndex = colIndex + 1
         end
 
         Line.CharID = v.ID
