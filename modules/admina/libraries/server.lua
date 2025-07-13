@@ -166,24 +166,6 @@ function meta:banPlayer(reason, duration)
 	self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
 end
 
-lia.admin.bans.sqlite_createTables = [[
-CREATE TABLE IF NOT EXISTS `lia_bans` (
-	`_steamID` TEXT,
-	`_banStart` INTEGER,
-	`_banDuration` INTEGER,
-	`_reason` TEXT
-);
-]]
-lia.admin.bans.mysql_createTables = [[
-CREATE TABLE IF NOT EXISTS `lia_bans` (
-	`_steamID` varchar(64) NOT NULL,
-	`_banStart` int(32) NOT NULL,
-	`_banDuration` int(32) NOT NULL,
-	`_reason` varchar(512) DEFAULT '',
-	PRIMARY KEY (`_steamID`)
-);
-]]
-hook.Add("OnLoadTables", "lia.admin.bans.setupDatabase", function() lia.db.query(lia.db.object and lia.admin.bans.mysql_createTables or lia.admin.bans.sqlite_createTables) end)
 hook.Add("OnDatabaseLoaded", "lia.admin.bans.loadBanlist", function()
 	lia.db.query("SELECT * FROM lia_bans", function(data)
 		if data and istable(data) then
