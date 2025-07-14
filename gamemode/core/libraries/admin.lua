@@ -3,9 +3,6 @@ lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
----Determines whether the built-in admin library should be disabled.
--- Hooks may return `false` to stop Lilia's admin system from loading.
--- @return boolean True if the admin library is disabled.
 function lia.admin.isDisabled()
     return hook.Run("ShouldLiliaAdminLoad") == false
 end
