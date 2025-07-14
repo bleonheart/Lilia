@@ -1,20 +1,48 @@
 local MODULE = MODULE
+local function decodeVector(tbl)
+    if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
+        return Vector(tbl[1], tbl[2], tbl[3])
+    end
+    return tbl
+end
+
+local function encodeVector(vec)
+    return {vec.x, vec.y, vec.z}
+end
+
 function MODULE:LoadData()
     local data = self:getData() or {}
-    if data.factions or data.global then
-        self.spawns = data.factions or {}
-        self.globalSpawns = data.global or {}
-    else
-        self.spawns = data
-        self.globalSpawns = {}
+    self.spawns = {}
+    self.globalSpawns = {}
+
+    local factions = data.factions or data
+    for fac, spawns in pairs(factions or {}) do
+        self.spawns[fac] = {}
+        for _, pos in ipairs(spawns) do
+            self.spawns[fac][#self.spawns[fac] + 1] = decodeVector(pos)
+        end
+    end
+
+    for _, pos in ipairs(data.global or {}) do
+        self.globalSpawns[#self.globalSpawns + 1] = decodeVector(pos)
     end
 end
 
 function MODULE:SaveData()
-    self:setData({
-        factions = self.spawns,
-        global = self.globalSpawns
-    })
+    local factions = {}
+    for fac, spawns in pairs(self.spawns or {}) do
+        factions[fac] = {}
+        for _, pos in ipairs(spawns) do
+            factions[fac][#factions[fac] + 1] = encodeVector(pos)
+        end
+    end
+
+    local global = {}
+    for _, pos in ipairs(self.globalSpawns or {}) do
+        global[#global + 1] = encodeVector(pos)
+    end
+
+    self:setData({factions = factions, global = global})
 end
 
 local function SpawnPlayer(client)
