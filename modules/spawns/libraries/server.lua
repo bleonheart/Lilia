@@ -18,47 +18,63 @@ function MODULE:SaveData()
 end
 
 local function SpawnPlayer(client)
-    local spawnCount = MODULE.spawns and table.Count(MODULE.spawns) or 0
-    local globalCount = MODULE.globalSpawns and #MODULE.globalSpawns or 0
-    if spawnCount == 0 and globalCount == 0 then return end
-    local factionInfo
+    if not IsValid(client) then
+        print("[SpawnPlayer] invalid client")
+        return
+    end
+
+    local character = client:getChar()
+    if character then
+        print("[SpawnPlayer] character found for client:", client)
+        local posData = character:getData("pos")
+        if posData and posData[3] and posData[3]:lower() == game.GetMap():lower() then
+            print("[SpawnPlayer] restoring saved position on map:", posData[3])
+            client:SetPos(posData[1].x and posData[1] or client:GetPos())
+            client:SetEyeAngles(posData[2].p and posData[2] or angle_zero)
+            character:setData("pos", nil)
+            return
+        end
+
+        print("[SpawnPlayer] no valid saved position found or map mismatch")
+    else
+        print("[SpawnPlayer] no character for client:", client)
+    end
+
+    local factionID
     for _, info in ipairs(lia.faction.indices) do
         if info.index == client:Team() then
-            factionInfo = info
+            factionID = info.uniqueID
+            print("[SpawnPlayer] detected factionID:", factionID)
             break
         end
     end
 
-    local spawnPosition
-    if factionInfo then
-        local factionSpawns = MODULE.spawns[factionInfo.uniqueID] or {}
-        if #factionSpawns > 0 then spawnPosition = table.Random(factionSpawns) end
+    local spawnPos
+    if factionID and MODULE.spawns then
+        local factionSpawns = MODULE.spawns[factionID]
+        if factionSpawns and #factionSpawns > 0 then
+            spawnPos = table.Random(factionSpawns)
+            print("[SpawnPlayer] selected faction spawn:", tostring(spawnPos))
+        end
     end
 
-    if not spawnPosition and MODULE.globalSpawns and #MODULE.globalSpawns > 0 then spawnPosition = table.Random(MODULE.globalSpawns) end
-    if spawnPosition then client:SetPos(spawnPosition) end
+    if not spawnPos and MODULE.globalSpawns and #MODULE.globalSpawns > 0 then
+        spawnPos = table.Random(MODULE.globalSpawns)
+        print("[SpawnPlayer] selected global spawn:", tostring(spawnPos))
+    end
+
+    if spawnPos then
+        client:SetPos(spawnPos)
+        print("[SpawnPlayer] final spawn position set to:", tostring(spawnPos))
+    else
+        print("[SpawnPlayer] no spawn position available")
+    end
 end
 
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
     local InVehicle = client:hasValidVehicle()
     if IsValid(client) and not InVehicle and client:Alive() then character:setData("pos", {client:GetPos(), client:EyeAngles(), game.GetMap()}) end
-end
-
-function MODULE:PlayerLoadedChar(client, character)
-    timer.Simple(0, function()
-        if IsValid(client) then
-            local position = character:getData("pos")
-            if position then
-                if position[3] and position[3]:lower() == game.GetMap():lower() then
-                    client:SetPos(position[1].x and position[1] or client:GetPos())
-                    client:SetEyeAngles(position[2].p and position[2] or angle_zero)
-                end
-
-                character:setData("pos", nil)
-            end
-        end
-    end)
 end
 
 function MODULE:PlayerDeath(client, _, attacker)
