@@ -20,41 +20,23 @@ end
 local function SpawnPlayer(client)
     local spawnCount = MODULE.spawns and table.Count(MODULE.spawns) or 0
     local globalCount = MODULE.globalSpawns and #MODULE.globalSpawns or 0
-    if spawnCount == 0 and globalCount == 0 then
-        print("[MODULE] PostPlayerLoadout: no spawns available (spawns=" .. spawnCount .. ", globalSpawns=" .. globalCount .. ")")
-        return
-    end
-
-    print("[MODULE] PostPlayerLoadout: spawnCount=" .. spawnCount .. ", globalCount=" .. globalCount)
+    if spawnCount == 0 and globalCount == 0 then return end
     local factionInfo
-    for _, v in ipairs(lia.faction.indices) do
-        if v.index == client:Team() then
-            factionInfo = v
+    for _, info in ipairs(lia.faction.indices) do
+        if info.index == client:Team() then
+            factionInfo = info
             break
         end
     end
 
-    print("[MODULE] PostPlayerLoadout: factionInfo=" .. (factionInfo and factionInfo.uniqueID or "nil"))
-    local spawnPos
+    local spawnPosition
     if factionInfo then
         local factionSpawns = MODULE.spawns[factionInfo.uniqueID] or {}
-        print("[MODULE] PostPlayerLoadout: factionSpawns count=" .. #factionSpawns)
-        if #factionSpawns > 0 then
-            spawnPos = table.Random(factionSpawns)
-            print("[MODULE] PostPlayerLoadout: picked faction spawn " .. tostring(spawnPos))
-        end
+        if #factionSpawns > 0 then spawnPosition = table.Random(factionSpawns) end
     end
 
-    if not spawnPos and MODULE.globalSpawns and #MODULE.globalSpawns > 0 then
-        print("[MODULE] PostPlayerLoadout: picking from globalSpawns count=" .. #MODULE.globalSpawns)
-        spawnPos = table.Random(MODULE.globalSpawns)
-        print("[MODULE] PostPlayerLoadout: picked global spawn " .. tostring(spawnPos))
-    end
-
-    if spawnPos then
-        print("[MODULE] PostPlayerLoadout: setting position to " .. tostring(spawnPos))
-        client:SetPos(spawnPos)
-    end
+    if not spawnPosition and MODULE.globalSpawns and #MODULE.globalSpawns > 0 then spawnPosition = table.Random(MODULE.globalSpawns) end
+    if spawnPosition then client:SetPos(spawnPosition) end
 end
 
 function MODULE:CharPreSave(character)
