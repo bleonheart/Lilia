@@ -89,15 +89,3 @@ end)
 ```
 
 ---
-
-
-### Hooks
-
-`WebSoundDownloaded` is fired on the client once a remote sound finishes downloading.
-It provides the saved file name and the local data path to the sound.
-
-```lua
-hook.Add("WebSoundDownloaded", "Notify", function(name, path)
-    print("Sound ready:", name, path)
-end)
-```
