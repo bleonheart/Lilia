@@ -11,6 +11,5 @@ LANGUAGE = {
 	areaRemoveTip = "Press reload to remove the area you're currently in.",
 	areaDeleteConfirm = "Are you sure you want to delete the area \"%s\"?",
 	areaDelete = "Delete Area",
-
 	cmdAreaEdit = "Enters area edit mode."
 }

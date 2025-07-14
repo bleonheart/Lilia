@@ -14,7 +14,7 @@ function PANEL:Init()
 	self:SetSize(self:GetParent():GetWide(), 0)
 	self.label = self:Add("DLabel")
 	self.label:Dock(FILL)
-        self.label:SetFont("liaMediumLightFont")
+	self.label:SetFont("liaMediumLightFont")
 	self.label:SetTextColor(color_white)
 	self.label:SetExpensiveShadow(1, color_black)
 	self.label:SetText("Area")
@@ -116,16 +116,16 @@ function PANEL:Init()
 	self:SetSize(chatWidth, chatY)
 	self:SetPos(32, 0)
 	self:ParentToHUD()
-        self.entries = {}
-        lia.gui.area = self
+	self.entries = {}
+	lia.gui.area = self
 end
 
 function PANEL:AddEntry(entry, color)
-        color = color or lia.config.get("color")
+	color = color or lia.config.get("color")
 	local id = #self.entries + 1
 	local panel = entry
 	if isstring(entry) then
-                panel = self:Add("liaAreaEntry")
+		panel = self:Add("liaAreaEntry")
 		panel:SetText(entry)
 	end
 
@@ -153,8 +153,8 @@ end
 vgui.Register("liaArea", PANEL, "Panel")
 local PANEL = {}
 function PANEL:Init()
-        if IsValid(lia.gui.areaEdit) then lia.gui.areaEdit:Remove() end
-        lia.gui.areaEdit = self
+	if IsValid(lia.gui.areaEdit) then lia.gui.areaEdit:Remove() end
+	lia.gui.areaEdit = self
 	self.list = {}
 	self.properties = {}
 	self:SetDeleteOnClose(true)
@@ -164,10 +164,10 @@ function PANEL:Init()
 	self.canvas = self:Add("DScrollPanel")
 	self.canvas:Dock(FILL)
 	-- name entry
-        self.nameEntry = vgui.Create("DTextEntry")
-        self.nameEntry:SetFont("liaMediumLightFont")
+	self.nameEntry = vgui.Create("DTextEntry")
+	self.nameEntry:SetFont("liaMediumLightFont")
 	self.nameEntry:SetText(L("areaNew"))
-        local listRow = self.canvas:Add("DPanel")
+	local listRow = self.canvas:Add("DPanel")
 	listRow:SetList(self.list)
 	listRow:SetLabelText(L("name"))
 	listRow:SetRightPanel(self.nameEntry)
@@ -176,39 +176,39 @@ function PANEL:Init()
 	-- type entry
 	self.typeEntry = self.canvas:Add("DComboBox")
 	self.typeEntry:Dock(RIGHT)
-        self.typeEntry:SetFont("liaMediumLightFont")
+	self.typeEntry:SetFont("liaMediumLightFont")
 	self.typeEntry:SetTextColor(color_black)
 	self.typeEntry.OnSelect = function(panel)
 		panel:SizeToContents()
 		panel:SetWide(panel:GetWide() + 12) -- padding for arrow (nice)
 	end
 
-        for id, name in pairs(lia.area.types) do
+	for id, name in pairs(lia.area.types) do
 		self.typeEntry:AddChoice(L(name), id, id == "area")
 	end
 
-        listRow = self.canvas:Add("DPanel")
-        listRow:SetList(self.list)
-        listRow:SetLabelText(L("type"))
-        listRow:SetRightPanel(self.typeEntry)
+	listRow = self.canvas:Add("DPanel")
+	listRow:SetList(self.list)
+	listRow:SetLabelText(L("type"))
+	listRow:SetRightPanel(self.typeEntry)
 	listRow:Dock(TOP)
 	listRow:SizeToContents()
 	-- properties
-        for k, v in pairs(lia.area.properties) do
-                local panel
-                if v.type == "string" or v.type == "number" then
-                        panel = vgui.Create("DTextEntry")
-                        panel:SetFont("liaMenuButtonFont")
-                        panel:SetText(tostring(v.default))
-                        if v.type == "number" then
-                                panel.realGetValue = panel.GetValue
-                                panel.GetValue = function() return tonumber(panel:realGetValue()) or v.default end
-                        end
-                elseif v.type == "bool" then
-                        panel = vgui.Create("DCheckBoxLabel")
-                        panel:SetChecked(v.default, true)
-                        panel:SetFont("liaMediumLightFont")
-                elseif v.type == "color" then
+	for k, v in pairs(lia.area.properties) do
+		local panel
+		if v.type == "string" or v.type == "number" then
+			panel = vgui.Create("DTextEntry")
+			panel:SetFont("liaMenuButtonFont")
+			panel:SetText(tostring(v.default))
+			if v.type == "number" then
+				panel.realGetValue = panel.GetValue
+				panel.GetValue = function() return tonumber(panel:realGetValue()) or v.default end
+			end
+		elseif v.type == "bool" then
+			panel = vgui.Create("DCheckBoxLabel")
+			panel:SetChecked(v.default, true)
+			panel:SetFont("liaMediumLightFont")
+		elseif v.type == "color" then
 			panel = vgui.Create("DButton")
 			panel.value = v.default
 			panel:SetText("")
@@ -241,7 +241,7 @@ function PANEL:Init()
 		end
 
 		if IsValid(panel) then
-                        local row = self.canvas:Add("DPanel")
+			local row = self.canvas:Add("DPanel")
 			row:SetList(self.list)
 			row:SetLabelText(L(k))
 			row:SetRightPanel(panel)
@@ -277,8 +277,8 @@ end
 
 function PANEL:Submit()
 	local name = self.nameEntry:GetValue()
-        if lia.area.stored[name] then
-                LocalPlayer():notifyLocalized("areaAlreadyExists")
+	if lia.area.stored[name] then
+		LocalPlayer():notifyLocalized("areaAlreadyExists")
 		return
 	end
 
@@ -288,19 +288,19 @@ function PANEL:Submit()
 	end
 
 	local _, type = self.typeEntry:GetSelected()
-        net.Start("liaAreaAdd")
+	net.Start("liaAreaAdd")
 	net.WriteString(name)
 	net.WriteString(type)
-        net.WriteVector(MODULE.editStart)
-        net.WriteVector(MODULE:GetPlayerAreaTrace().HitPos)
+	net.WriteVector(MODULE.editStart)
+	net.WriteVector(MODULE:GetPlayerAreaTrace().HitPos)
 	net.WriteTable(properties)
 	net.SendToServer()
-        MODULE.editStart = nil
+	MODULE.editStart = nil
 	self:Remove()
 end
 
 function PANEL:OnRemove()
-        MODULE.editProperties = nil
+	MODULE.editProperties = nil
 end
 
 vgui.Register("liaAreaEdit", PANEL, "DFrame")
