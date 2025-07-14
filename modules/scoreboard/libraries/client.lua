@@ -29,5 +29,5 @@ end
 
 function MODULE:ShouldShowPlayerOnScoreboard(client)
     local faction = lia.faction.indices[client:Team()]
-    if faction and faction.ScoreboardHidden then return false end
+    if faction and faction.scoreboardHidden then return false end
 end
