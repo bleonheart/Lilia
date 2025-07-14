@@ -1,12 +1,14 @@
 lia.admin = lia.admin or {}
 lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
+lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
 function lia.admin.load()
     lia.admin.groups = lia.data.get("admin_groups", {}, true, true)
     for name, priv in pairs(CAMI.GetPrivileges() or {}) do
         lia.admin.privileges[name] = priv
     end
+
     if table.Count(lia.admin.groups) == 0 then
         lia.admin.createGroup("admin")
         lia.admin.createGroup("superadmin")
@@ -107,6 +109,9 @@ if SERVER then
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
     end
+
+    hook.Add("InitPostEntity", "lia_LoadAdmin", function() lia.admin.load() end)
+    hook.Add("ShutDown", "lia_SaveAdmin", function() lia.admin.save() end)
 end
 
 hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
@@ -145,6 +150,3 @@ concommand.Add("plysetgroup", function(ply, cmd, args)
         end
     end
 end)
-
-hook.Add("InitPostEntity", "lia_LoadAdmin", function() lia.admin.load() end)
-hook.Add("ShutDown", "lia_SaveAdmin", function() lia.admin.save() end)
