@@ -103,8 +103,12 @@ function MODULE:OnPlayerInteractItem(client, action, item)
     end
 end
 
+function MODULE:PlayerConnect(name)
+    lia.log.add(name, "playerConnected")
+end
+
 function MODULE:PlayerInitialSpawn(client)
-    lia.log.add(client, "playerConnected")
+    lia.log.add(client, "playerInitialSpawn")
 end
 
 function MODULE:PlayerDisconnect(client)
