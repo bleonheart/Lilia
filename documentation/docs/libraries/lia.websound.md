@@ -40,7 +40,7 @@ filename. On HTTP failure the callback receives `nil` and an error string.
 
 * *nil*: This function does not return a value.
 
-**Example**
+**Example Usage**
 
 ```lua
 -- Download a sound and play it when ready
@@ -73,7 +73,7 @@ internally when a cached name or matching URL is supplied.
 
 * *string | nil*: Local data path or `nil` if not found.
 
-**Example**
+**Example Usage**
 
 ```lua
 -- Retrieve a cached sound and play it
