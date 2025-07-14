@@ -400,6 +400,34 @@ end)
 
 ---
 
+### CanPlayerOpenScoreboard
+
+**Purpose**
+Checks if the local player may open the scoreboard. Return false to prevent it from showing.
+
+**Parameters**
+
+- `player` (`Player`): Local player.
+
+**Realm**
+`Client`
+
+**Returns**
+- boolean: False to disallow opening.
+
+**Example**
+
+```lua
+-- Only allow the scoreboard while alive.
+hook.Add("CanPlayerOpenScoreboard", "AliveOnly", function(ply)
+    if not ply:Alive() then
+        return false
+    end
+end)
+```
+
+---
+
 ### ShowPlayerOptions
 
 **Purpose**
