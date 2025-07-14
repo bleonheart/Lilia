@@ -120,7 +120,7 @@ lia.command.add("plyrespawn", {
 
 lia.command.add("plyblind", {
     adminOnly = true,
-    syntax = "<string name>",
+    syntax = "<string name> [number time]",
     onRun = function(client, arguments)
         if SERVER then
             local target = lia.command.findPlayer(client, arguments[1])
@@ -128,6 +128,17 @@ lia.command.add("plyblind", {
                 net.Start("blindTarget")
                 net.WriteBool(true)
                 net.Send(target)
+
+                local dur = tonumber(arguments[2])
+                if dur and dur > 0 then
+                    timer.Create("liaBlind" .. target:SteamID(), dur, 1, function()
+                        if IsValid(target) then
+                            net.Start("blindTarget")
+                            net.WriteBool(false)
+                            net.Send(target)
+                        end
+                    end)
+                end
             end
         end
     end
@@ -143,6 +154,57 @@ lia.command.add("plyunblind", {
                 net.Start("blindTarget")
                 net.WriteBool(false)
                 net.Send(target)
+            end
+        end
+    end
+})
+
+lia.command.add("plyblindfade", {
+    adminOnly = true,
+    syntax = "<string name> <number time> [string color] [number fadein] [number fadeout]",
+    onRun = function(client, arguments)
+        if SERVER then
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                local duration = tonumber(arguments[2]) or 0
+                local colorName = (arguments[3] or "black"):lower()
+                local fadeIn = tonumber(arguments[4])
+                local fadeOut = tonumber(arguments[5])
+
+                fadeIn = fadeIn or duration * 0.05
+                fadeOut = fadeOut or duration * 0.05
+
+                net.Start("blindFade")
+                net.WriteBool(colorName == "white")
+                net.WriteFloat(duration)
+                net.WriteFloat(fadeIn)
+                net.WriteFloat(fadeOut)
+                net.Send(target)
+            end
+        end
+    end
+})
+
+lia.command.add("blindfadeall", {
+    adminOnly = true,
+    syntax = "<number time> [string color] [number fadein] [number fadeout]",
+    onRun = function(client, arguments)
+        if SERVER then
+            local duration = tonumber(arguments[1]) or 0
+            local colorName = (arguments[2] or "black"):lower()
+            local fadeIn = tonumber(arguments[3]) or (duration * 0.05)
+            local fadeOut = tonumber(arguments[4]) or (duration * 0.05)
+            local isWhite = colorName == "white"
+
+            for _, ply in ipairs(player.GetAll()) do
+                if not ply:isStaffOnDuty() then
+                    net.Start("blindFade")
+                    net.WriteBool(isWhite)
+                    net.WriteFloat(duration)
+                    net.WriteFloat(fadeIn)
+                    net.WriteFloat(fadeOut)
+                    net.Send(ply)
+                end
             end
         end
     end
