@@ -3,10 +3,10 @@ lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
-
 function lia.admin.isDisabled()
-    return sam ~= nil or serverguard ~= nil
+    return hook.Run("ShouldLiliaAdminLoad") ~= false
 end
+
 function lia.admin.load()
     if lia.admin.isDisabled() then return end
     lia.admin.groups = lia.data.get("admin_groups", {}, true, true)
@@ -130,6 +130,7 @@ if SERVER then
         if lia.admin.isDisabled() then return end
         lia.admin.load()
     end)
+
     hook.Add("ShutDown", "lia_SaveAdmin", function()
         if lia.admin.isDisabled() then return end
         lia.admin.save()
