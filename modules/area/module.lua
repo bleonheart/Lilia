@@ -30,19 +30,11 @@ function lia.area.AddProperty(name, type, default, data)
 	}
 end
 
-function lia.area.AddType(type, name)
-	name = name or type
-	-- only store localized strings on the client
-	lia.area.types[type] = CLIENT and name or true
-end
-
 function MODULE:SetupAreaProperties()
-	lia.area.AddType("area")
 	lia.area.AddProperty("color", lia.type and lia.type.color or "color", lia.config.get("color"))
 	lia.area.AddProperty("display", lia.type and lia.type.bool or "Boolean", true)
 end
 
--- return world center, local min, and local max from world start/end positions
 function MODULE:GetLocalAreaPosition(startPosition, endPosition)
 	local center = LerpVector(0.5, startPosition, endPosition)
 	local min = WorldToLocal(startPosition, angle_zero, center, angle_zero)
@@ -65,12 +57,10 @@ end
 
 do
 	local PLAYER = FindMetaTable("Player")
-	-- returns the current area the player is in, or the last valid one if the player is not in an area
 	function PLAYER:GetArea()
 		return self.liaArea
 	end
 
-	-- returns true if the player is in any area, this does not use the last valid area like GetArea does
 	function PLAYER:IsInArea()
 		return self.liaInArea
 	end
