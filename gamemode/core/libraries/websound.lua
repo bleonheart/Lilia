@@ -38,6 +38,9 @@ function lia.websound.register(name, url, cb)
         local path = buildPath(savePath)
         cache[name] = path
         if cb then cb(path, fromCache) end
+        if not fromCache then
+            hook.Run("WebSoundDownloaded", name, path)
+        end
     end
 
     if file.Exists(savePath, "DATA") then

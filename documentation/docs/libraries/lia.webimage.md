@@ -99,3 +99,13 @@ local byURL = Material("https://example.com/logo.png")
 ```
 
 ---
+### Hooks
+
+`WebImageDownloaded` is fired on the client after an image successfully downloads.
+It receives the saved file name and the local data path to the image.
+
+```lua
+hook.Add("WebImageDownloaded", "Notify", function(name, path)
+    print("Image ready:", name, path)
+end)
+```

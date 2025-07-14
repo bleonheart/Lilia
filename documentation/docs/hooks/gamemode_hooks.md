@@ -54,6 +54,58 @@ end)
 
 ---
 
+### WebImageDownloaded
+
+**Purpose**
+Triggered after a remote image finishes downloading to the data folder.
+
+**Parameters**
+
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the image.
+
+**Realm**
+`Client`
+
+**Returns**
+- None
+
+**Example**
+
+```lua
+hook.Add("WebImageDownloaded", "LogImage", function(name, path)
+    print("Image downloaded:", name, path)
+end)
+```
+
+---
+
+### WebSoundDownloaded
+
+**Purpose**
+Triggered after a remote sound file finishes downloading to the data folder.
+
+**Parameters**
+
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the sound file.
+
+**Realm**
+`Client`
+
+**Returns**
+- None
+
+**Example**
+
+```lua
+hook.Add("WebSoundDownloaded", "LogSound", function(name, path)
+    print("Sound downloaded:", name, path)
+end)
+```
+
+---
+
 ### CreateMenuButtons
 
 **Purpose**
@@ -8210,3 +8262,54 @@ hook.Add("WarningRemoved", "LogRemoval", function(admin, ply, warn, index)
 end)
 ```
 
+
+
+---
+
+### WebImageDownloaded
+
+**Purpose**
+Triggered after a remote image finishes downloading to the data folder.
+
+**Parameters**
+
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the image.
+
+**Realm**
+`Client`
+
+**Returns**
+- None
+
+**Example**
+```lua
+hook.Add("WebImageDownloaded", "LogImage", function(name, path)
+    print("Image downloaded:", name, path)
+end)
+```
+
+---
+
+### WebSoundDownloaded
+
+**Purpose**
+Triggered after a remote sound file finishes downloading to the data folder.
+
+**Parameters**
+
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the sound file.
+
+**Realm**
+`Client`
+
+**Returns**
+- None
+
+**Example**
+```lua
+hook.Add("WebSoundDownloaded", "LogSound", function(name, path)
+    print("Sound downloaded:", name, path)
+end)
+```
