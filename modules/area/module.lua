@@ -1,58 +1,61 @@
 
-local PLUGIN = PLUGIN
+local MODULE = MODULE
 
-PLUGIN.name = "Areas"
-PLUGIN.author = "`impulse"
-PLUGIN.description = "Provides customizable area definitions."
+MODULE.name = "Areas"
+MODULE.author = "`impulse"
+MODULE.description = "Provides customizable area definitions."
 
-ix.area = ix.area or {}
-ix.area.types = ix.area.types or {}
-ix.area.properties = ix.area.properties or {}
-ix.area.stored = ix.area.stored or {}
+lia.area = lia.area or {}
+lia.area.types = lia.area.types or {}
+lia.area.properties = lia.area.properties or {}
+lia.area.stored = lia.area.stored or {}
 
-ix.config.Add("areaTickTime", 1, "How many seconds between each time a character's current area is calculated.",
-	function(oldValue, newValue)
-		if (SERVER) then
-			timer.Remove("ixAreaThink")
-			timer.Create("ixAreaThink", newValue, 0, function()
-				PLUGIN:AreaThink()
-			end)
-		end
-	end,
-	{
-		data = {min = 0.1, max = 4},
-		category = "areas"
-	}
-)
+lia.config.add("areaTickTime", "Area Tick Time", 1, nil, {
+        desc = "How many seconds between each time a character's current area is calculated.",
+        category = "areas",
+        min = 0.1,
+        max = 4,
+        type = "Float"
+})
 
-function ix.area.AddProperty(name, type, default, data)
-	ix.area.properties[name] = {
-		type = type,
-		default = default
-	}
+hook.Add("liaConfigChanged", "AreaTickTimeRestart", function(key, oldValue, newValue)
+        if key ~= "areaTickTime" then return end
+        if SERVER then
+                timer.Remove("liaAreaThink")
+                timer.Create("liaAreaThink", newValue, 0, function()
+                        MODULE:AreaThink()
+                end)
+        end
+end)
+
+function lia.area.AddProperty(name, type, default, data)
+        lia.area.properties[name] = {
+                type = type,
+                default = default
+        }
 end
 
-function ix.area.AddType(type, name)
-	name = name or type
+function lia.area.AddType(type, name)
+        name = name or type
 
-	-- only store localized strings on the client
-	ix.area.types[type] = CLIENT and name or true
+        -- only store localized strings on the client
+        lia.area.types[type] = CLIENT and name or true
 end
 
-function PLUGIN:SetupAreaProperties()
-	ix.area.AddType("area")
+function MODULE:SetupAreaProperties()
+        lia.area.AddType("area")
 
-	ix.area.AddProperty("color", ix.type.color, ix.config.Get("color"))
-	ix.area.AddProperty("display", ix.type.bool, true)
+        lia.area.AddProperty("color", lia.type and lia.type.color or "color", lia.config.get("color"))
+        lia.area.AddProperty("display", lia.type and lia.type.bool or "Boolean", true)
 end
 
-ix.util.Include("sv_plugin.lua")
-ix.util.Include("cl_plugin.lua")
-ix.util.Include("sv_hooks.lua")
-ix.util.Include("cl_hooks.lua")
+lia.include("sv_plugin.lua")
+lia.include("cl_plugin.lua")
+lia.include("sv_hooks.lua")
+lia.include("cl_hooks.lua")
 
 -- return world center, local min, and local max from world start/end positions
-function PLUGIN:GetLocalAreaPosition(startPosition, endPosition)
+function MODULE:GetLocalAreaPosition(startPosition, endPosition)
 	local center = LerpVector(0.5, startPosition, endPosition)
 	local min = WorldToLocal(startPosition, angle_zero, center, angle_zero)
 	local max = WorldToLocal(endPosition, angle_zero, center, angle_zero)
@@ -61,30 +64,30 @@ function PLUGIN:GetLocalAreaPosition(startPosition, endPosition)
 end
 
 do
-	local COMMAND = {}
-	COMMAND.description = "@cmdAreaEdit"
-	COMMAND.adminOnly = true
+        local COMMAND = {}
+        COMMAND.description = "@cmdAreaEdit"
+        COMMAND.adminOnly = true
 
-	function COMMAND:OnRun(client)
-		client:SetWepRaised(false)
+        function COMMAND:OnRun(client)
+                client:SetWepRaised(false)
 
-		net.Start("ixAreaEditStart")
-		net.Send(client)
-	end
+                net.Start("liaAreaEditStart")
+                net.Send(client)
+        end
 
-	ix.command.Add("AreaEdit", COMMAND)
+        lia.command.add("AreaEdit", COMMAND)
 end
 
 do
 	local PLAYER = FindMetaTable("Player")
 
-	-- returns the current area the player is in, or the last valid one if the player is not in an area
-	function PLAYER:GetArea()
-		return self.ixArea
-	end
+        -- returns the current area the player is in, or the last valid one if the player is not in an area
+        function PLAYER:GetArea()
+                return self.liaArea
+        end
 
-	-- returns true if the player is in any area, this does not use the last valid area like GetArea does
-	function PLAYER:IsInArea()
-		return self.ixInArea
-	end
+        -- returns true if the player is in any area, this does not use the last valid area like GetArea does
+        function PLAYER:IsInArea()
+                return self.liaInArea
+        end
 end

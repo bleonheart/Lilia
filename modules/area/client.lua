@@ -1,12 +1,12 @@
-local PLUGIN = PLUGIN
+local MODULE = MODULE
 local function DrawTextBackground(x, y, text, font, backgroundColor, padding)
-	font = font or "ixSubTitleFont"
+        font = font or "liaSubTitleFont"
 	padding = padding or 8
 	backgroundColor = backgroundColor or Color(88, 88, 88, 255)
 	surface.SetFont(font)
 	local textWidth, textHeight = surface.GetTextSize(text)
 	local width, height = textWidth + padding * 2, textHeight + padding * 2
-	ix.util.DrawBlurAt(x, y, width, height)
+        lia.util.drawBlurAt(x, y, width, height)
 	surface.SetDrawColor(0, 0, 0, 40)
 	surface.DrawRect(x, y, width, height)
 	derma.SkinFunc("DrawImportantBackground", x, y, width, height, backgroundColor)
@@ -16,27 +16,27 @@ local function DrawTextBackground(x, y, text, font, backgroundColor, padding)
 	return height
 end
 
-function PLUGIN:InitPostEntity()
+function MODULE:InitPostEntity()
 	hook.Run("SetupAreaProperties")
 end
 
-function PLUGIN:ChatboxCreated()
+function MODULE:ChatboxCreated()
 	if IsValid(self.panel) then self.panel:Remove() end
-	self.panel = vgui.Create("ixArea")
+        self.panel = vgui.Create("liaArea")
 end
 
-function PLUGIN:ChatboxPositionChanged(x, y, width, height)
+function MODULE:ChatboxPositionChanged(x, y, width, height)
 	if not IsValid(self.panel) then return end
 	self.panel:SetSize(width, y)
 	self.panel:SetPos(32, 0)
 end
 
-function PLUGIN:ShouldDrawCrosshair()
-	if ix.area.bEditing then return true end
+function MODULE:ShouldDrawCrosshair()
+        if lia.area.bEditing then return true end
 end
 
-function PLUGIN:PlayerBindPress(client, bind, bPressed)
-	if not ix.area.bEditing then return end
+function MODULE:PlayerBindPress(client, bind, bPressed)
+        if not lia.area.bEditing then return end
 	if (bind:find("invnext") or bind:find("invprev")) and bPressed then
 		return true
 	elseif bind:find("attack2") and bPressed then
@@ -51,29 +51,29 @@ function PLUGIN:PlayerBindPress(client, bind, bPressed)
 	end
 end
 
-function PLUGIN:HUDPaint()
-	if not ix.area.bEditing then return end
+function MODULE:HUDPaint()
+        if not lia.area.bEditing then return end
 	local id = LocalPlayer():GetArea()
-	local area = ix.area.stored[id]
+        local area = lia.area.stored[id]
 	local height = ScrH()
 	local y = 64
-	y = y + DrawTextBackground(64, y, L("areaEditMode"), nil, ix.config.Get("color"))
+        y = y + DrawTextBackground(64, y, L("areaEditMode"), nil, lia.config.get("color"))
 	if not self.editStart then
-		y = y + DrawTextBackground(64, y, L("areaEditTip"), "ixSmallTitleFont")
-		DrawTextBackground(64, y, L("areaRemoveTip"), "ixSmallTitleFont")
+                y = y + DrawTextBackground(64, y, L("areaEditTip"), "liaSmallFont")
+                DrawTextBackground(64, y, L("areaRemoveTip"), "liaSmallFont")
 	else
-		DrawTextBackground(64, y, L("areaFinishTip"), "ixSmallTitleFont")
+                DrawTextBackground(64, y, L("areaFinishTip"), "liaSmallFont")
 	end
 
-	if area then DrawTextBackground(64, height - 64 - ScreenScale(12), id, "ixSmallTitleFont", area.properties.color) end
+        if area then DrawTextBackground(64, height - 64 - ScreenScale(12), id, "liaSmallFont", area.properties.color) end
 end
 
-function PLUGIN:PostDrawTranslucentRenderables(bDepth, bSkybox)
-	if bSkybox or not ix.area.bEditing then return end
+function MODULE:PostDrawTranslucentRenderables(bDepth, bSkybox)
+        if bSkybox or not lia.area.bEditing then return end
 	-- draw all areas
-	for k, v in pairs(ix.area.stored) do
+        for k, v in pairs(lia.area.stored) do
 		local center, min, max = self:GetLocalAreaPosition(v.startPosition, v.endPosition)
-		local color = ColorAlpha(v.properties.color or ix.config.Get("color"), 255)
+                local color = ColorAlpha(v.properties.color or lia.config.get("color"), 255)
 		render.DrawWireframeBox(center, angle_zero, min, max, color)
 		cam.Start2D()
 		local centerScreen = center:ToScreen()
@@ -94,7 +94,7 @@ function PLUGIN:PostDrawTranslucentRenderables(bDepth, bSkybox)
 	end
 end
 
-function PLUGIN:EditRightClick()
+function MODULE:EditRightClick()
 	if self.editStart then
 		self.editStart = nil
 	else
@@ -102,57 +102,61 @@ function PLUGIN:EditRightClick()
 	end
 end
 
-function PLUGIN:EditClick()
+function MODULE:EditClick()
 	if not self.editStart then
 		self.editStart = LocalPlayer():GetEyeTraceNoCursor().HitPos
 	elseif self.editStart and not self.editProperties then
 		self.editProperties = true
-		local panel = vgui.Create("ixAreaEdit")
+                local panel = vgui.Create("liaAreaEdit")
 		panel:MakePopup()
 	end
 end
 
-function PLUGIN:EditReload()
+function MODULE:EditReload()
 	if self.editStart then return end
 	local id = LocalPlayer():GetArea()
-	local area = ix.area.stored[id]
+        local area = lia.area.stored[id]
 	if not area then return end
 	Derma_Query(L("areaDeleteConfirm", id), L("areaDelete"), L("no"), nil, L("yes"), function()
-		net.Start("ixAreaRemove")
+                net.Start("liaAreaRemove")
 		net.WriteString(id)
 		net.SendToServer()
 	end)
 end
 
-function PLUGIN:ShouldDisplayArea(id)
-	if ix.area.bEditing then return false end
+function MODULE:ShouldDisplayArea(id)
+        if lia.area.bEditing then return false end
 end
 
-function PLUGIN:OnAreaChanged(oldID, newID)
+function MODULE:OnAreaChanged(oldID, newID)
 	local client = LocalPlayer()
-	client.ixArea = newID
-	local area = ix.area.stored[newID]
+        client.liaArea = newID
+        local area = lia.area.stored[newID]
 	if not area then
-		client.ixInArea = false
+                client.liaInArea = false
 		return
 	end
 
-	client.ixInArea = true
-	if hook.Run("ShouldDisplayArea", newID) == false or not area.properties.display then return end
-	local format = newID .. (ix.option.Get("24hourTime", false) and ", %H:%M." or ", %I:%M %p.")
-	format = ix.date.GetFormatted(format)
-	self.panel:AddEntry(format, area.properties.color)
+        client.liaInArea = true
+        if hook.Run("ShouldDisplayArea", newID) == false or not area.properties.display then return end
+        local format = newID .. (lia.option.get("24hourTime", false) and ", %H:%M." or ", %I:%M %p.")
+        if lia.time and lia.time.GetDate then
+                format = os.date(format)
+        else
+                format = os.date(format)
+        end
+        self.panel:AddEntry(format, area.properties.color)
 end
 
-net.Receive("ixAreaEditStart", function() PLUGIN:StartEditing() end)
-net.Receive("ixAreaEditEnd", function() PLUGIN:StopEditing() end)
-net.Receive("ixAreaAdd", function()
+net.Receive("liaAreaEditStart", function() MODULE:StartEditing() end)
+net.Receive("liaAreaEditEnd", function() MODULE:StopEditing() end)
+net.Receive("liaAreaAdd", function()
 	local name = net.ReadString()
 	local type = net.ReadString()
 	local startPosition, endPosition = net.ReadVector(), net.ReadVector()
 	local properties = net.ReadTable()
 	if name ~= "" then
-		ix.area.stored[name] = {
+                lia.area.stored[name] = {
 			type = type,
 			startPosition = startPosition,
 			endPosition = endPosition,
@@ -161,31 +165,31 @@ net.Receive("ixAreaAdd", function()
 	end
 end)
 
-net.Receive("ixAreaRemove", function()
+net.Receive("liaAreaRemove", function()
 	local name = net.ReadString()
-	if ix.area.stored[name] then ix.area.stored[name] = nil end
+        if lia.area.stored[name] then lia.area.stored[name] = nil end
 end)
 
-net.Receive("ixAreaSync", function()
+net.Receive("liaAreaSync", function()
 	local length = net.ReadUInt(32)
 	local data = net.ReadData(length)
 	local uncompressed = util.Decompress(data)
-	if not uncompressed then
-		ErrorNoHalt("[Helix] Unable to decompress area data!\n")
+        if not uncompressed then
+                ErrorNoHalt("[Lilia] Unable to decompress area data!\n")
 		return
 	end
 
 	-- Set the list of texts to the ones provided by the server.
-	ix.area.stored = util.JSONToTable(uncompressed)
+        lia.area.stored = util.JSONToTable(uncompressed)
 end)
 
-net.Receive("ixAreaChanged", function()
-	local oldID, newID = net.ReadString(), net.ReadString()
-	hook.Run("OnAreaChanged", oldID, newID)
+net.Receive("liaAreaChanged", function()
+        local oldID, newID = net.ReadString(), net.ReadString()
+        hook.Run("OnAreaChanged", oldID, newID)
 end)
 
-local PLUGIN = PLUGIN
-function PLUGIN:GetPlayerAreaTrace()
+local PLUGIN = MODULE
+function MODULE:GetPlayerAreaTrace()
 	local client = LocalPlayer()
 	return util.TraceLine({
 		start = client:GetShootPos(),
@@ -194,13 +198,13 @@ function PLUGIN:GetPlayerAreaTrace()
 	})
 end
 
-function PLUGIN:StartEditing()
-	ix.area.bEditing = true
+function MODULE:StartEditing()
+        lia.area.bEditing = true
 	self.editStart = nil
 	self.editProperties = nil
 end
 
-function PLUGIN:StopEditing()
-	ix.area.bEditing = false
-	if IsValid(ix.gui.areaEdit) then ix.gui.areaEdit:Remove() end
+function MODULE:StopEditing()
+        lia.area.bEditing = false
+        if IsValid(lia.gui.areaEdit) then lia.gui.areaEdit:Remove() end
 end
