@@ -806,7 +806,7 @@ end
 concommand.Add("bots", function(ply)
     if IsValid(ply) then return end
     local maxPlayers = game.MaxPlayers()
-    local currentCount = #player.GetAll()
+    local currentCount = player.GetCount()
     local toSpawn = maxPlayers - currentCount
     if toSpawn <= 0 then return end
     timer.Remove("BotsSpawnTimer")

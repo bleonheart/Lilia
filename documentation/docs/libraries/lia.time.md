@@ -113,7 +113,7 @@ Returns the full current date/time using the `AmericanTimeStamps` config:
 -- Announce the current server date every hour
 timer.Create("ServerTimeAnnounce", 3600, 0, function()
     local text = lia.time.GetDate()
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         ply:ChatPrint("Server time: " .. text)
     end
 end)
