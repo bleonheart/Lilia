@@ -2318,6 +2318,31 @@ end)
 
 ---
 
+### ShouldLiliaAdminLoad
+
+**Purpose**
+Determines whether Lilia's built-in administration system should initialize. Compatibility modules can return `false` to prevent the default admin library from loading.
+
+**Parameters**
+
+- None
+
+**Realm**
+`Shared`
+
+**Returns**
+- `boolean`|`nil`: Return `false` to stop the admin system from loading.
+
+**Example Usage**
+```lua
+-- Disable Lilia admin when SAM is installed
+hook.Add("ShouldLiliaAdminLoad", "liaSam", function()
+    return false
+end)
+```
+
+---
+
 ### InventoryDataChanged
 
 **Purpose**
