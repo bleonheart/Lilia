@@ -12,16 +12,17 @@ end
 
 function lia.area.Create(name, type, startPosition, endPosition, bNoReplicate, properties)
 	local min, max = SortVector(startPosition, endPosition)
-        lia.area.stored[name] = {
-		type = type or "area",
-		startPosition = min,
-		endPosition = max,
-		bNoReplicate = bNoReplicate,
-		properties = properties
-	}
+       lia.area.stored[name] = {
+               type = type or "area",
+               startPosition = min,
+               endPosition = max,
+               bNoReplicate = bNoReplicate,
+               properties = properties
+       }
 
-	-- network to clients if needed
-        if not bNoReplicate then
+       hook.Run("OnAreaAdded", name, lia.area.stored[name])
+
+       if not bNoReplicate then
                 net.Start("liaAreaAdd")
                 net.WriteString(name)
                 net.WriteString(type)
@@ -33,9 +34,10 @@ function lia.area.Create(name, type, startPosition, endPosition, bNoReplicate, p
 end
 
 function lia.area.Remove(name, bNoReplicate)
-        lia.area.stored[name] = nil
-	-- network to clients if needed
-        if not bNoReplicate then
+       lia.area.stored[name] = nil
+
+       hook.Run("OnAreaRemoved", name)
+       if not bNoReplicate then
                 net.Start("liaAreaRemove")
                 net.WriteString(name)
                 net.Broadcast()
@@ -106,6 +108,7 @@ function MODULE:OnPlayerAreaChanged(client, oldID, newID)
         net.WriteString(oldID)
         net.WriteString(newID)
         net.Send(client)
+        hook.Run("OnAreaChanged", client, oldID, newID)
 end
 
 net.Receive("liaAreaAdd", function(length, client)

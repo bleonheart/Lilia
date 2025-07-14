@@ -70,7 +70,7 @@ end
 
 function MODULE:PostDrawTranslucentRenderables(bDepth, bSkybox)
         if bSkybox or not lia.area.bEditing then return end
-	-- draw all areas
+
         for k, v in pairs(lia.area.stored) do
 		local center, min, max = self:GetLocalAreaPosition(v.startPosition, v.endPosition)
                 local color = ColorAlpha(v.properties.color or lia.config.get("color"), 255)
@@ -82,8 +82,7 @@ function MODULE:PostDrawTranslucentRenderables(bDepth, bSkybox)
 		cam.End2D()
 	end
 
-	-- draw currently edited area
-	if self.editStart then
+        if self.editStart then
 		local center, min, max = self:GetLocalAreaPosition(self.editStart, self:GetPlayerAreaTrace().HitPos)
 		local color = Color(255, 255, 255, 25 + (1 + math.sin(SysTime() * 6)) * 115)
 		render.DrawWireframeBox(center, angle_zero, min, max, color)
@@ -128,14 +127,15 @@ function MODULE:ShouldDisplayArea(id)
         if lia.area.bEditing then return false end
 end
 
-function MODULE:OnAreaChanged(oldID, newID)
-	local client = LocalPlayer()
+function MODULE:OnAreaChanged(client, oldID, newID)
+        if client ~= LocalPlayer() then return end
+
         client.liaArea = newID
         local area = lia.area.stored[newID]
-	if not area then
+        if not area then
                 client.liaInArea = false
-		return
-	end
+                return
+        end
 
         client.liaInArea = true
         if hook.Run("ShouldDisplayArea", newID) == false or not area.properties.display then return end
@@ -155,19 +155,23 @@ net.Receive("liaAreaAdd", function()
 	local type = net.ReadString()
 	local startPosition, endPosition = net.ReadVector(), net.ReadVector()
 	local properties = net.ReadTable()
-	if name ~= "" then
-                lia.area.stored[name] = {
-			type = type,
-			startPosition = startPosition,
-			endPosition = endPosition,
-			properties = properties
-		}
-	end
+       if name ~= "" then
+               lia.area.stored[name] = {
+                       type = type,
+                       startPosition = startPosition,
+                       endPosition = endPosition,
+                       properties = properties
+               }
+               hook.Run("OnAreaAdded", name, lia.area.stored[name])
+       end
 end)
 
 net.Receive("liaAreaRemove", function()
 	local name = net.ReadString()
-        if lia.area.stored[name] then lia.area.stored[name] = nil end
+       if lia.area.stored[name] then
+               lia.area.stored[name] = nil
+               hook.Run("OnAreaRemoved", name)
+       end
 end)
 
 net.Receive("liaAreaSync", function()
@@ -179,13 +183,14 @@ net.Receive("liaAreaSync", function()
 		return
 	end
 
-	-- Set the list of texts to the ones provided by the server.
         lia.area.stored = util.JSONToTable(uncompressed)
 end)
 
 net.Receive("liaAreaChanged", function()
         local oldID, newID = net.ReadString(), net.ReadString()
-        hook.Run("OnAreaChanged", oldID, newID)
+        local client = LocalPlayer()
+        hook.Run("OnPlayerAreaChanged", client, oldID, newID)
+        hook.Run("OnAreaChanged", client, oldID, newID)
 end)
 
 local PLUGIN = MODULE
