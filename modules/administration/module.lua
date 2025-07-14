@@ -2,7 +2,6 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides utility commands and tools for server administration."
-MODULE.version = "1.08"
 MODULE.CAMIPrivileges = {
     {
         Name = "Staff Permissions - Can Remove Warns",
