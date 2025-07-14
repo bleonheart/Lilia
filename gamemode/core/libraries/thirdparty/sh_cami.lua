@@ -67,9 +67,7 @@ end
 
 function CAMI.RegisterPrivilege(privilege)
     privileges[privilege.Name] = privilege
-    if lia and lia.admin and lia.admin.registerPrivilege then
-        lia.admin.registerPrivilege(privilege)
-    end
+    if lia.admin and lia.admin.registerPrivilege then lia.admin.registerPrivilege(privilege) end
     hook.Run("CAMI.OnPrivilegeRegistered", privilege)
     return privilege
 end
@@ -78,9 +76,7 @@ function CAMI.UnregisterPrivilege(privilegeName)
     if not privileges[privilegeName] then return false end
     local privilege = privileges[privilegeName]
     privileges[privilegeName] = nil
-    if lia and lia.admin and lia.admin.privileges then
-        lia.admin.privileges[privilegeName] = nil
-    end
+    if lia.admin and lia.admin.privileges then lia.admin.privileges[privilegeName] = nil end
     hook.Run("CAMI.OnPrivilegeUnregistered", privilege)
     return true
 end
