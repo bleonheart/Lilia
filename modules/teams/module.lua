@@ -15,7 +15,7 @@ if SERVER then
         local citizen = lia.faction.teams["citizen"]
         local characterID = net.ReadUInt(32)
         local IsOnline = false
-        for _, target in pairs(player.GetAll()) do
+        for _, target in player.Iterator() do
             local targetChar = target:getChar()
             if targetChar and targetChar:getID() == characterID and targetChar:getFaction() == char:getFaction() then
                 IsOnline = true

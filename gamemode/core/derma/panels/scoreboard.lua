@@ -165,7 +165,7 @@ end
 
 function PANEL:updateStaff()
     local total, duty = 0, 0
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:isStaff() then total = total + 1 end
         if ply:isStaffOnDuty() then duty = duty + 1 end
     end
@@ -181,7 +181,7 @@ end
 
 function PANEL:Think()
     if (self.nextUpdate or 0) > CurTime() then return end
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false then continue end
         local char = ply:getChar()
         if not char then continue end

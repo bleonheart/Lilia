@@ -196,7 +196,7 @@ lia.command.add("blindfadeall", {
             local fadeOut = tonumber(arguments[4]) or (duration * 0.05)
             local isWhite = colorName == "white"
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if not ply:isStaffOnDuty() then
                     net.Start("blindFade")
                     net.WriteBool(isWhite)
