@@ -50,6 +50,7 @@ local function SpawnPlayer(client)
     end
 
     local spawnPos
+    print("Found " .. #MODULE.spawns .. " faction spawns")
     if factionID and MODULE.spawns then
         local factionSpawns = MODULE.spawns[factionID]
         if factionSpawns and #factionSpawns > 0 then
@@ -58,6 +59,7 @@ local function SpawnPlayer(client)
         end
     end
 
+    print("Found " .. #MODULE.globalSpawns .. " faction spawns")
     if not spawnPos and MODULE.globalSpawns and #MODULE.globalSpawns > 0 then
         spawnPos = table.Random(MODULE.globalSpawns)
         print("[SpawnPlayer] selected global spawn:", tostring(spawnPos))
