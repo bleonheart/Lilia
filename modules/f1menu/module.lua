@@ -2,7 +2,6 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Adds an F1 menu offering access to various character submenus."
-MODULE.version = "1.08"
 MODULE.CAMIPrivileges = {
     {
         Name = "Staff Permission — Access Entity List",
