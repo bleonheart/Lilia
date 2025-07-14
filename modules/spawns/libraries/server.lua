@@ -11,14 +11,21 @@ function MODULE:LoadData()
 end
 
 function MODULE:SaveData()
-    self:setData({factions = self.spawns, global = self.globalSpawns})
+    self:setData({
+        factions = self.spawns,
+        global = self.globalSpawns
+    })
 end
 
-function MODULE:PostPlayerLoadout(client)
-    if not IsValid(client) then return end
-    local character = client:getChar()
-    if not character then return end
-    if (not self.spawns or table.Count(self.spawns) == 0) and (#(self.globalSpawns or {}) == 0) then return end
+local function SpawnPlayer(client)
+    local spawnCount = MODULE.spawns and table.Count(MODULE.spawns) or 0
+    local globalCount = MODULE.globalSpawns and #MODULE.globalSpawns or 0
+    if spawnCount == 0 and globalCount == 0 then
+        print("[MODULE] PostPlayerLoadout: no spawns available (spawns=" .. spawnCount .. ", globalSpawns=" .. globalCount .. ")")
+        return
+    end
+
+    print("[MODULE] PostPlayerLoadout: spawnCount=" .. spawnCount .. ", globalCount=" .. globalCount)
     local factionInfo
     for _, v in ipairs(lia.faction.indices) do
         if v.index == client:Team() then
@@ -27,19 +34,27 @@ function MODULE:PostPlayerLoadout(client)
         end
     end
 
-    local spawnPosition
+    print("[MODULE] PostPlayerLoadout: factionInfo=" .. (factionInfo and factionInfo.uniqueID or "nil"))
+    local spawnPos
     if factionInfo then
-        local spawns = self.spawns[factionInfo.uniqueID] or {}
-        if #spawns > 0 then
-            spawnPosition = table.Random(spawns)
+        local factionSpawns = MODULE.spawns[factionInfo.uniqueID] or {}
+        print("[MODULE] PostPlayerLoadout: factionSpawns count=" .. #factionSpawns)
+        if #factionSpawns > 0 then
+            spawnPos = table.Random(factionSpawns)
+            print("[MODULE] PostPlayerLoadout: picked faction spawn " .. tostring(spawnPos))
         end
     end
 
-    if not spawnPosition and self.globalSpawns and #self.globalSpawns > 0 then
-        spawnPosition = table.Random(self.globalSpawns)
+    if not spawnPos and MODULE.globalSpawns and #MODULE.globalSpawns > 0 then
+        print("[MODULE] PostPlayerLoadout: picking from globalSpawns count=" .. #MODULE.globalSpawns)
+        spawnPos = table.Random(MODULE.globalSpawns)
+        print("[MODULE] PostPlayerLoadout: picked global spawn " .. tostring(spawnPos))
     end
 
-    if spawnPosition then client:SetPos(spawnPosition) end
+    if spawnPos then
+        print("[MODULE] PostPlayerLoadout: setting position to " .. tostring(spawnPos))
+        client:SetPos(spawnPos)
+    end
 end
 
 function MODULE:CharPreSave(character)
@@ -125,3 +140,6 @@ net.Receive("request_respawn", function(_, client)
     if timePassed < respawnTime then return end
     if not client:Alive() and not client:getNetVar("IsDeadRestricted", false) then client:Spawn() end
 end)
+
+hook.Add("PostPlayerLoadout", "liaSpawns", SpawnPlayer)
+hook.Add("PostPlayerLoadedChar", "liaSpawns", SpawnPlayer)
