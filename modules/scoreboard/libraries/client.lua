@@ -9,6 +9,9 @@
 end
 
 function MODULE:ScoreboardShow()
+    if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then
+        return false
+    end
     local pimEnabled = lia.module.list.interactionmenu:checkInteractionPossibilities()
     if IsValid(lia.gui.score) then
         lia.gui.score:SetVisible(true)
