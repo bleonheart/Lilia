@@ -37,6 +37,7 @@ The global `CLASS` table defines per-class settings such as display name, lore, 
 | `bloodcolor` | `number` | `0` | Blood color enumeration constant. |
 | `bodyGroups` | `table` | `{}` | List of {id, value} pairs applied on spawn. |
 | `logo` | `string` | `""` | Material path for the class logo. |
+| `scoreboardHidden` | `boolean` | `false` | Hide class headers and logos in the scoreboard. |
 | `skin` | `number` | `0` | Player model skin index. |
 | `subMaterials` | `table` | `{}` | Sub-material overrides for the model. |
 | `model` | `string` | `""` | Model path or list of paths used by this class. |
@@ -526,6 +527,24 @@ CLASS.logo = "materials/example/eng_logo.png"
 
 ---
 
+#### `scoreboardHidden`
+
+**Type:**
+
+`boolean`
+
+**Description:**
+
+If `true`, this class will not display a header or logo on the scoreboard.
+
+**Example Usage:**
+
+```lua
+CLASS.scoreboardHidden = true
+```
+
+---
+
 #### `skin`
 
 **Type:**
@@ -681,6 +700,7 @@ CLASS.walkSpeedMultiplier = true
 CLASS.jumpPower = 200
 CLASS.jumpPowerMultiplier = false
 CLASS.logo = "materials/example/eng_logo.png"
+CLASS.scoreboardHidden = true
 CLASS.skin = 0
 CLASS.subMaterials = {
     "models/example/custom_cloth", -- sub-material 0
