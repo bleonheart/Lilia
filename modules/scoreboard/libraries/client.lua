@@ -10,17 +10,16 @@ function MODULE:ScoreboardHide()
 end
 
 function MODULE:ScoreboardShow()
-    if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then
-        return false
-    end
-    local pimEnabled = lia.module.list.interactionmenu:checkInteractionPossibilities()
-    if IsValid(lia.gui.score) then
-        if not lia.gui.score:IsVisible() then
-            lia.gui.score:SetVisible(true)
-            hook.Run("ScoreboardOpened", lia.gui.score)
+    if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
+    if not lia.module.list.interactionmenu:checkInteractionPossibilities() then
+        if IsValid(lia.gui.score) then
+            if not lia.gui.score:IsVisible() then
+                lia.gui.score:SetVisible(true)
+                hook.Run("ScoreboardOpened", lia.gui.score)
+            end
+        elseif not pimEnabled then
+            vgui.Create("liaScoreboard")
         end
-    elseif not pimEnabled then
-        vgui.Create("liaScoreboard")
     end
 
     gui.EnableScreenClicker(true)
