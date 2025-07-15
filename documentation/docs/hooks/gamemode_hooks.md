@@ -1907,7 +1907,7 @@ end)
 
 ---
 
-### OnDataPersisted
+### OnDataSet
 
 **Purpose**
 Triggered after `lia.data.set` successfully writes a key/value pair to the database.
@@ -1929,7 +1929,7 @@ Triggered after `lia.data.set` successfully writes a key/value pair to the datab
 
 ```lua
 -- Debug message whenever data is persisted.
-hook.Add("OnDataPersisted", "PrintPersist", function(k, v)
+hook.Add("OnDataSet", "PrintPersist", function(k, v)
     print("Persisted", k, v)
 end)
 ```

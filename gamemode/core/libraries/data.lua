@@ -108,7 +108,7 @@ if SERVER then
                 _map = map,
                 _value = {value}
             }, "data"):next(function()
-                hook.Run("OnDataPersisted", key, value, folder, map)
+                hook.Run("OnDataSet", key, value, folder, map)
             end)
         end)
         return "lilia/" .. (folder and folder .. "/" or "") .. (map and map .. "/" or "")
