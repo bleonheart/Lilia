@@ -1,7 +1,8 @@
-﻿function MODULE:ScoreboardHide()
+function MODULE:ScoreboardHide()
     if IsValid(lia.gui.score) then
         lia.gui.score:SetVisible(false)
         CloseDermaMenus()
+        hook.Run("ScoreboardClosed", lia.gui.score)
     end
 
     gui.EnableScreenClicker(false)
@@ -15,6 +16,7 @@ function MODULE:ScoreboardShow()
     local pimEnabled = lia.module.list.interactionmenu:checkInteractionPossibilities()
     if IsValid(lia.gui.score) then
         lia.gui.score:SetVisible(true)
+        hook.Run("ScoreboardOpened", lia.gui.score)
     elseif not pimEnabled then
         vgui.Create("liaScoreboard")
     end
