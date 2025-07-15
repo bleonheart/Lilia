@@ -1907,6 +1907,35 @@ end)
 
 ---
 
+### OnDataPersisted
+
+**Purpose**
+Triggered after `lia.data.set` successfully writes a key/value pair to the database.
+
+**Parameters**
+
+- `key` (`string`): Data key that was saved.
+- `value` (`any`): Value that was written.
+- `folder` (`string|nil`): Schema folder when not global.
+- `map` (`string|nil`): Map name when not global or ignored.
+
+**Realm**
+`Server`
+
+**Returns**
+- None
+
+**Example Usage**
+
+```lua
+-- Debug message whenever data is persisted.
+hook.Add("OnDataPersisted", "PrintPersist", function(k, v)
+    print("Persisted", k, v)
+end)
+```
+
+---
+
 ### PersistenceSave
 
 **Purpose**
