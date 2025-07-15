@@ -31,7 +31,7 @@ Initialises the logging system and converts any legacy text logs.
 **Example Usage**
 
 ```lua
-hook.Add("LiliaDatabaseInitialized", nil, function()
+hook.Add("DatabaseConnected", "LoadLogs", function()
     lia.log.loadTables()
 end)
 ```
