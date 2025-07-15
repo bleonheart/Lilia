@@ -8850,3 +8850,29 @@ hook.Add("WebSoundDownloaded", "LogSound", function(name, path)
     print("Sound downloaded:", name, path)
 end)
 ```
+
+---
+
+### PlayerCheatDetected
+
+**Purpose**
+Triggered when the anti-cheat system flags a player for hacking.
+
+**Parameters**
+
+- `client` (`Player`): Player detected using cheats.
+
+**Realm**
+`Server`
+
+**Returns**
+- boolean: Return true to override default punishment.
+
+**Example Usage**
+```lua
+-- Log all cheat detections without banning
+hook.Add("PlayerCheatDetected", "LogCheaters", function(ply)
+    print(ply:Name() .. " was flagged for cheating")
+    return true -- handled, skip default ban
+end)
+```
