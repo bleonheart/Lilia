@@ -1,8 +1,6 @@
 local MODULE = MODULE
 local function decodeVector(tbl)
-    if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
-        return Vector(tbl[1], tbl[2], tbl[3])
-    end
+    if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then return Vector(tbl[1], tbl[2], tbl[3]) end
     return tbl
 end
 
@@ -14,35 +12,59 @@ function MODULE:LoadData()
     local data = self:getData(nil, true) or {}
     self.spawns = {}
     self.globalSpawns = {}
-
+    print("[MODULE] LoadData: fetched data")
     local factions = data.factions or data
     for fac, spawns in pairs(factions or {}) do
         self.spawns[fac] = {}
-        for _, pos in ipairs(spawns) do
-            self.spawns[fac][#self.spawns[fac] + 1] = decodeVector(pos)
+        print(string.format("[MODULE] LoadData: faction '%s' has %d raw entries", fac, #spawns))
+        for i, pos in ipairs(spawns) do
+            local vec = decodeVector(pos)
+            print(string.format("[MODULE] LoadData: decoded %s spawn #%d → %s", fac, i, tostring(vec)))
+            self.spawns[fac][#self.spawns[fac] + 1] = vec
         end
+
+        print(string.format("[MODULE] LoadData: faction '%s' total spawns = %d", fac, #self.spawns[fac]))
     end
 
-    for _, pos in ipairs(data.global or {}) do
-        self.globalSpawns[#self.globalSpawns + 1] = decodeVector(pos)
+    for i, pos in ipairs(data.global or {}) do
+        local vec = decodeVector(pos)
+        print(string.format("[MODULE] LoadData: decoded global spawn #%d → %s", i, tostring(vec)))
+        self.globalSpawns[#self.globalSpawns + 1] = vec
     end
+
+    print(string.format("[MODULE] LoadData: total global spawns = %d", #self.globalSpawns))
 end
 
 function MODULE:SaveData()
     local factions = {}
+    print("[MODULE] SaveData: preparing faction data")
     for fac, spawns in pairs(self.spawns or {}) do
         factions[fac] = {}
-        for _, pos in ipairs(spawns) do
-            factions[fac][#factions[fac] + 1] = encodeVector(pos)
+        print(string.format("[MODULE] SaveData: faction '%s' has %d spawns to encode", fac, #spawns))
+        for i, pos in ipairs(spawns) do
+            local enc = encodeVector(pos)
+            print(string.format("[MODULE] SaveData: encoded %s spawn #%d → %s", fac, i, enc))
+            factions[fac][#factions[fac] + 1] = enc
         end
+
+        print(string.format("[MODULE] SaveData: faction '%s' total encoded = %d", fac, #factions[fac]))
     end
 
     local global = {}
-    for _, pos in ipairs(self.globalSpawns or {}) do
-        global[#global + 1] = encodeVector(pos)
+    print("[MODULE] SaveData: preparing global spawns")
+    for i, pos in ipairs(self.globalSpawns or {}) do
+        local enc = encodeVector(pos)
+        print(string.format("[MODULE] SaveData: encoded global spawn #%d → %s", i, enc))
+        global[#global + 1] = enc
     end
 
-    self:setData({factions = factions, global = global}, true)
+    print(string.format("[MODULE] SaveData: total global encoded = %d", #global))
+    self:setData({
+        factions = factions,
+        global = global
+    }, true)
+
+    print("[MODULE] SaveData: data saved successfully")
 end
 
 local function SpawnPlayer(client)
