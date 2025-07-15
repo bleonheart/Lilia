@@ -2343,6 +2343,42 @@ end)
 
 ---
 
+### RunAdminSystemCommand
+
+**Purpose**
+
+Allows external admin mods to intercept and handle admin actions. Returning
+`true` prevents the default command behaviour.
+
+**Parameters**
+
+- `cmd` (`string`): Action identifier such as `kick` or `ban`.
+- `executor` (`Player`|`nil`): Player running the command, if any.
+- `target` (`Player`|`string`): Target player or SteamID.
+- `duration` (`number`|`nil`): Optional duration for timed actions.
+- `reason` (`string`|`nil`): Optional reason text.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+- `boolean?`: Return `true` if the command was handled.
+
+**Example Usage**
+
+```lua
+hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, exec, victim, dur, reason)
+    if SAM and SAM.Commands[cmd] then
+        SAM.Commands[cmd](exec, victim, dur, reason)
+        return true
+    end
+end)
+```
+
+---
+
 ### InventoryDataChanged
 
 **Purpose**
@@ -6280,6 +6316,36 @@ hook.Add("OnMySQLOOConnected", "PrepareDatabaseStatements", function()
         { MYSQLOO_NUMBER, MYSQLOO_NUMBER, MYSQLOO_STRING }
     )
     print("Prepared MySQLOO statements.")
+end)
+```
+
+### OnDatabaseLoaded
+
+**Purpose**
+
+Triggered once all required database tables have been created and initial data has been loaded. Use this hook to run custom queries or additional setup after Lilia prepares its schema.
+
+**Parameters**
+
+- None
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
+    lia.db.query("SELECT * FROM lia_bans", function(data)
+        if istable(data) then
+            print("Loaded", #data, "bans from the database")
+        end
+    end)
 end)
 ```
 
