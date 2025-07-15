@@ -24,7 +24,7 @@
     },
     ["playerDeath"] = {
         func = function(client, attacker) return string.format("Player '%s' was killed by '%s'.", client:Name(), attacker) end,
-        category = "Death"
+        category = "Deaths"
     },
     ["playerSpawn"] = {
         func = function(client) return string.format("Player '%s' spawned.", client:Name()) end,
@@ -32,31 +32,31 @@
     },
     ["spawned_prop"] = {
         func = function(client, model) return string.format("Player '%s' spawned prop: %s.", client:Name(), model) end,
-        category = "Spawn"
+        category = "Spawns"
     },
     ["spawned_ragdoll"] = {
         func = function(client, model) return string.format("Player '%s' spawned ragdoll: %s.", client:Name(), model) end,
-        category = "Spawn"
+        category = "Spawns"
     },
     ["spawned_effect"] = {
         func = function(client, effect) return string.format("Player '%s' spawned effect: %s.", client:Name(), effect) end,
-        category = "Spawn"
+        category = "Spawns"
     },
     ["spawned_vehicle"] = {
         func = function(client, vehicle, model) return string.format("Player '%s' spawned vehicle '%s' with model '%s'.", client:Name(), vehicle, model) end,
-        category = "Spawn"
+        category = "Spawns"
     },
     ["spawned_npc"] = {
         func = function(client, npc, model) return string.format("Player '%s' spawned NPC '%s' with model '%s'.", client:Name(), npc, model) end,
-        category = "Spawn"
+        category = "Spawns"
     },
     ["spawned_sent"] = {
         func = function(client, class, model) return string.format("Player '%s' spawned entity '%s' with model '%s'.", client:Name(), class, model) end,
-        category = "Spawn"
+        category = "Spawns"
     },
     ["swep_spawning"] = {
         func = function(client, swep) return string.format("Player '%s' spawned SWEP '%s'.", client:Name(), swep) end,
-        category = "SWEP"
+        category = "Weapons"
     },
     ["physgunPickup"] = {
         func = function(client, class, model) return string.format("Player '%s' picked up '%s' (%s) with the physgun.", client:Name(), class, model) end,
@@ -270,11 +270,11 @@
     },
     ["spawnItem"] = {
         func = function(client, displayName, message) return string.format("Player '%s' spawned an item: '%s' %s.", client:Name(), displayName, message) end,
-        category = "Item Spawner"
+        category = "Items"
     },
     ["chargiveItem"] = {
         func = function(client, itemName, target, message) return string.format("Player '%s' gave item '%s' to %s. Info: %s", client:Name(), itemName, target:Name(), message) end,
-        category = "Item Spawner"
+        category = "Items"
     },
     ["vendorAccess"] = {
         func = function(client, vendor)
@@ -438,29 +438,29 @@
     },
     ["sitRoomSet"] = {
         func = function(client, pos, message) return string.format("Sit room set at %s by '%s': %s. Position: %s", os.date("%Y-%m-%d %H:%M:%S"), client:Name(), message, pos) end,
-        category = "Sit Rooms"
+        category = "SitRooms"
     },
     ["sitRoomRenamed"] = {
         func = function(client, details) return string.format("%s renamed a SitRoom: %s", client:Name(), details) end,
-        category = "Sit Rooms"
+        category = "SitRooms"
     },
     ["sitRoomRepositioned"] = {
         func = function(client, details) return string.format("%s repositioned a SitRoom: %s", client:Name(), details) end,
-        category = "Sit Rooms"
+        category = "SitRooms"
     },
     ["sendToSitRoom"] = {
         func = function(client, targetName, roomName)
             if targetName == client:Name() then return string.format("Player '%s' teleported to SitRoom '%s'.", client:Name(), roomName) end
             return string.format("Player '%s' sent '%s' to SitRoom '%s'.", client:Name(), targetName, roomName)
         end,
-        category = "Sit Rooms"
+        category = "SitRooms"
     },
     ["sitRoomReturn"] = {
         func = function(client, targetName)
             if targetName == client:Name() then return string.format("Player '%s' returned from a SitRoom.", client:Name()) end
             return string.format("Player '%s' returned '%s' from a SitRoom.", client:Name(), targetName)
         end,
-        category = "Sit Rooms"
+        category = "SitRooms"
     },
     ["attribSet"] = {
         func = function(client, targetName, attrib, value) return string.format("Admin '%s' set %s's '%s' attribute to %d.", client:Name(), targetName, attrib, value) end,
