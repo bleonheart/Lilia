@@ -9,7 +9,8 @@ local function encodeVector(vec)
 end
 
 function MODULE:LoadData()
-    local data = self:getData(nil, true) or {}
+    local data = self:getData() or {}
+    if not next(data) then data = self:getData(nil, true) or {} end
     self.spawns = {}
     self.globalSpawns = {}
     print("[MODULE] LoadData: fetched data")
@@ -62,7 +63,7 @@ function MODULE:SaveData()
     self:setData({
         factions = factions,
         global = global
-    }, true)
+    })
 
     print("[MODULE] SaveData: data saved successfully")
 end
