@@ -2000,6 +2000,90 @@ end)
 
 ---
 
+### GetEntitySaveData
+
+**Purpose**
+Allows adding custom data to each persisted entity during `SaveData`.
+
+**Parameters**
+
+- `entity` (`Entity`): Entity being persisted.
+
+**Realm**
+`Server`
+
+**Returns**
+- `table|nil`: Extra data to store with the entity.
+
+**Example Usage**
+
+```lua
+-- Store door color so it can be restored later.
+hook.Add("GetEntitySaveData", "DoorTint", function(ent)
+    if ent:GetClass() == "prop_door_rotating" then
+        return { color = ent:GetColor() }
+    end
+end)
+```
+
+---
+
+### OnEntityPersisted
+
+**Purpose**
+Runs when an entity is added to the persistence table.
+
+**Parameters**
+
+- `entity` (`Entity`): Entity that was saved.
+- `data` (`table`): Persistence data for that entity.
+
+**Realm**
+`Server`
+
+**Returns**
+- None
+
+**Example Usage**
+
+```lua
+-- Log each entity that is persisted.
+hook.Add("OnEntityPersisted", "PrintEntity", function(ent, data)
+    print("Persisted", ent, "with", table.Count(data or {}) .. " fields")
+end)
+```
+
+---
+
+### OnEntityLoaded
+
+**Purpose**
+Called for each entity spawned from saved persistence data.
+
+**Parameters**
+
+- `entity` (`Entity`): The newly created entity.
+- `data` (`table|nil`): Extra data stored for the entity.
+
+**Realm**
+`Server`
+
+**Returns**
+- None
+
+**Example Usage**
+
+```lua
+-- Restore door color from saved data.
+hook.Add("OnEntityLoaded", "RestoreTint", function(ent, data)
+    if IsValid(ent) and data and data.color then
+        ent:SetColor(data.color)
+    end
+end)
+```
+
+---
+
 ### LoadData
 
 **Purpose**
