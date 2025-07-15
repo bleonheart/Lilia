@@ -66,63 +66,64 @@ net.Receive("DisplayCharList", function()
         end
     end
 
-    local fr = vgui.Create("DFrame")
-    fr:SetTitle("Charlist for SteamID64: " .. targetSteamIDsafe)
-    fr:SetSize(1000, 500)
-    fr:Center()
-    fr:MakePopup()
-    local listView = vgui.Create("DListView", fr)
-    listView:Dock(FILL)
-    listView:AddColumn("ID")
-    listView:AddColumn("Name")
-    listView:AddColumn("Desc")
-    listView:AddColumn("Faction")
-    listView:AddColumn("Banned")
-    listView:AddColumn("BanningAdminName")
-    listView:AddColumn("BanningAdminSteamID")
-    listView:AddColumn("BanningAdminRank")
-    listView:AddColumn("CharMoney")
+    local columns = {
+        {name = "ID", field = "ID"},
+        {name = "Name", field = "Name"},
+        {name = "Desc", field = "Desc"},
+        {name = "Faction", field = "Faction"},
+        {name = "Banned", field = "Banned"},
+        {name = "BanningAdminName", field = "BanningAdminName"},
+        {name = "BanningAdminSteamID", field = "BanningAdminSteamID"},
+        {name = "BanningAdminRank", field = "BanningAdminRank"},
+        {name = "CharMoney", field = "Money"}
+    }
     for _, name in ipairs(extraOrder) do
-        listView:AddColumn(name)
+        table.insert(columns, {name = name, field = name})
     end
 
-    for _, v in pairs(sendData or {}) do
-        local lineValues = {v.ID, v.Name, v.Desc, v.Faction, v.Banned, v.BanningAdminName, v.BanningAdminSteamID, v.BanningAdminRank, v.Money}
-        local Line = listView:AddLine(unpack(lineValues))
-        if v.Banned == "Yes" then
-            Line.DoPaint = Line.Paint
-            Line.Paint = function(pnl, w, h)
-                surface.SetDrawColor(200, 100, 100)
-                surface.DrawRect(0, 0, w, h)
-                pnl:DoPaint(w, h)
+    local frame, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
+
+    if IsValid(listView) then
+        for _, line in ipairs(listView:GetLines()) do
+            local dataIndex = line:GetID()
+            local rowData = sendData[dataIndex]
+            if rowData and rowData.Banned == "Yes" then
+                line.DoPaint = line.Paint
+                line.Paint = function(pnl, w, h)
+                    surface.SetDrawColor(200, 100, 100)
+                    surface.DrawRect(0, 0, w, h)
+                    pnl:DoPaint(w, h)
+                end
+            end
+            line.CharID = rowData and rowData.ID
+            if rowData and rowData.extraDetails then
+                local colIndex = 10
+                for _, name in ipairs(extraOrder) do
+                    line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
+                    colIndex = colIndex + 1
+                end
             end
         end
 
-        local colIndex = 10
-        for _, name in ipairs(extraOrder) do
-            Line:SetColumnText(colIndex, tostring(v.extraDetails and v.extraDetails[name] or ""))
-            colIndex = colIndex + 1
-        end
+        listView.OnRowRightClick = function(_, _, ln)
+            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+                local dMenu = DermaMenu()
+                if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                    local opt1 = dMenu:AddOption("Ban Character", function()
+                        LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
+                    end)
+                    opt1:SetIcon("icon16/cancel.png")
+                end
 
-        Line.CharID = v.ID
-    end
+                if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                    local opt2 = dMenu:AddOption("Unban Character", function()
+                        LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
+                    end)
+                    opt2:SetIcon("icon16/accept.png")
+                end
 
-    local function OpenContextMenu(ln)
-        if ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-            local dMenu = DermaMenu()
-            if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
-                opt1:SetIcon("icon16/cancel.png")
+                dMenu:Open()
             end
-
-            if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
-                opt2:SetIcon("icon16/accept.png")
-            end
-
-            dMenu:Open()
         end
     end
-
-    listView.OnRowRightClick = function(_, _, ln) OpenContextMenu(ln) end
 end)
