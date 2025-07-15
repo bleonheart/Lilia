@@ -119,6 +119,7 @@ local function SpawnPlayer(client)
     if spawnPos then
         spawnPos = spawnPos + Vector(0, 0, 16)
         client:SetPos(spawnPos)
+        hook.Run("PlayerSpawnPointSelected", client, spawnPos)
         print("[SpawnPlayer] final spawn position set to:", tostring(spawnPos))
     else
         print("[SpawnPlayer] no spawn position available")
