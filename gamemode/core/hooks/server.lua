@@ -530,12 +530,18 @@ function GM:SaveData()
             local key = makeKey(ent)
             if not seen[key] then
                 seen[key] = true
-                data.entities[#data.entities + 1] = {
+                local entData = {
                     pos = ent:GetPos(),
                     class = ent:GetClass(),
                     model = ent:GetModel(),
-                    angles = ent:GetAngles(),
+                    angles = ent:GetAngles()
                 }
+
+                local extra = hook.Run("GetEntitySaveData", ent)
+                if extra ~= nil then entData.data = extra end
+
+                data.entities[#data.entities + 1] = entData
+                hook.Run("OnEntityPersisted", ent, entData)
             end
         end
     end
@@ -587,6 +593,8 @@ function GM:LoadData()
                 if ent.model then createdEnt:SetModel(ent.model) end
                 createdEnt:Spawn()
                 createdEnt:Activate()
+
+                hook.Run("OnEntityLoaded", createdEnt, ent.data)
             end
         else
             lia.error(L("entityCreationAborted", ent.class, ent.pos.x, ent.pos.y, ent.pos.z))
