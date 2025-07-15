@@ -185,7 +185,10 @@ lia.command.add("plygag", {
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then target:setNetVar("liaGagged", true) end
+        if IsValid(target) then
+            target:setNetVar("liaGagged", true)
+            hook.Run("PlayerGagged", target, client)
+        end
     end
 })
 
@@ -194,7 +197,10 @@ lia.command.add("plyungag", {
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then target:setNetVar("liaGagged", false) end
+        if IsValid(target) then
+            target:setNetVar("liaGagged", false)
+            hook.Run("PlayerUngagged", target, client)
+        end
     end
 })
 
@@ -203,7 +209,10 @@ lia.command.add("plymute", {
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and target:getChar() then target:getChar():setData("VoiceBan", true) end
+        if IsValid(target) and target:getChar() then
+            target:getChar():setData("VoiceBan", true)
+            hook.Run("PlayerMuted", target, client)
+        end
     end
 })
 
@@ -212,7 +221,10 @@ lia.command.add("plyunmute", {
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and target:getChar() then target:getChar():setData("VoiceBan", false) end
+        if IsValid(target) and target:getChar() then
+            target:getChar():setData("VoiceBan", false)
+            hook.Run("PlayerUnmuted", target, client)
+        end
     end
 })
 
