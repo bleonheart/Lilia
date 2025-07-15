@@ -1,5 +1,0 @@
-ITEM.name = "Low-Quality Oil"
-ITEM.desc = "A drum of low-grade oil."
-ITEM.model = "models/props_c17/oildrum001.mdl"
-ITEM.width = 1
-ITEM.height = 1
