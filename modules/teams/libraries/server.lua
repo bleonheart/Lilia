@@ -218,15 +218,5 @@ net.Receive("KickCharacter", function(_, client)
     if not IsOnline then lia.char.setCharData(characterID, "kickedFromFaction", true) end
 end)
 
-function MODULE:PlayerLoadedChar(client)
-    local citizen = lia.faction.teams["citizen"]
-    if client:getChar():getData("kickedFromFaction", false) then
-        client:notify("You were kicked from a faction while offline!")
-        client:getChar().vars.faction = citizen.uniqueID
-        client:getChar():setFaction(citizen.index)
-        client:getChar():setData("kickedFromFaction", false)
-    end
-end
-
 util.AddNetworkString("CharacterInfo")
 util.AddNetworkString("KickCharacter")
