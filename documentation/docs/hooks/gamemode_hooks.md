@@ -3053,6 +3053,35 @@ end)
 
 ---
 
+### CharListExtraDetails
+
+**Purpose**
+Allows modules to append extra information to each character entry
+when an administrator requests the character list.
+
+**Parameters**
+
+- `client` (`Player`): Admin requesting the list.
+- `entry` (`table`): Table of character data being sent.
+- `stored` (`table`): Raw database row for the character.
+
+**Realm**
+`Server`
+
+**Returns**
+- None
+
+**Example Usage**
+
+```lua
+-- Add a play time field to every entry
+hook.Add("CharListExtraDetails", "PlayTime", function(admin, entry, stored)
+    entry.extraDetails.playTime = stored._playTime or 0
+end)
+```
+
+---
+
 ### getCharMaxStamina
 
 **Purpose**
