@@ -16,6 +16,7 @@
 
     client:setLocalVar("stamina", char:getMaxStamina())
     local uniqueID = "liaStam" .. client:SteamID()
+    timer.Remove(uniqueID)
     timer.Create(uniqueID, 0.25, 0, function()
         if not IsValid(client) then
             timer.Remove(uniqueID)
@@ -28,6 +29,14 @@ end
 
 function MODULE:PlayerDisconnected(client)
     timer.Remove("liaStam" .. client:SteamID())
+end
+
+function MODULE:OnReloaded()
+    for _, client in player.Iterator() do
+        if IsValid(client) and client:getChar() then
+            self:PostPlayerLoadout(client)
+        end
+    end
 end
 
 function MODULE:KeyPress(client, key)
