@@ -82,7 +82,11 @@ lia.command.add("roster", {
             if data then
                 for k, v in ipairs(data) do
                     local pdata = util.JSONToTable(v._data or "{}")
-                    local lastDiff = os.time() - os.time(lia.time.toNumber(v._lastJoinTime))
+                    local last = pdata.lastOnline
+                    if not isnumber(last) then
+                        last = os.time(lia.time.toNumber(v._lastJoinTime))
+                    end
+                    local lastDiff = os.time() - last
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
@@ -142,7 +146,11 @@ lia.command.add("factionmanagement", {
             if data then
                 for k, v in ipairs(data) do
                     local pdata = util.JSONToTable(v._data or "{}")
-                    local lastDiff = os.time() - os.time(lia.time.toNumber(v._lastJoinTime))
+                    local last = pdata.lastOnline
+                    if not isnumber(last) then
+                        last = os.time(lia.time.toNumber(v._lastJoinTime))
+                    end
+                    local lastDiff = os.time() - last
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
