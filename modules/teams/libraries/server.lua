@@ -217,6 +217,3 @@ net.Receive("KickCharacter", function(_, client)
 
     if not IsOnline then lia.char.setCharData(characterID, "kickedFromFaction", true) end
 end)
-
-util.AddNetworkString("CharacterInfo")
-util.AddNetworkString("KickCharacter")
