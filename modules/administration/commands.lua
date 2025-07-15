@@ -207,6 +207,7 @@ lia.command.add("plygag", {
         if IsValid(target) then
             target:setNetVar("liaGagged", true)
             lia.log.add(client, "plyGag", target:Name())
+            hook.Run("PlayerGagged", target, client)
         end
     end
 })
@@ -219,6 +220,7 @@ lia.command.add("plyungag", {
         if IsValid(target) then
             target:setNetVar("liaGagged", false)
             lia.log.add(client, "plyUngag", target:Name())
+            hook.Run("PlayerUngagged", target, client)
         end
     end
 })
@@ -231,6 +233,7 @@ lia.command.add("plymute", {
         if IsValid(target) and target:getChar() then
             target:getChar():setData("VoiceBan", true)
             lia.log.add(client, "plyMute", target:Name())
+            hook.Run("PlayerMuted", target, client)
         end
     end
 })
@@ -243,6 +246,7 @@ lia.command.add("plyunmute", {
         if IsValid(target) and target:getChar() then
             target:getChar():setData("VoiceBan", false)
             lia.log.add(client, "plyUnmute", target:Name())
+            hook.Run("PlayerUnmuted", target, client)
         end
     end
 })
