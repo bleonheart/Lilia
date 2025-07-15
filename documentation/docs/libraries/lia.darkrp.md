@@ -1,4 +1,4 @@
-# DarkRP Compatibility
+# DarkRP Compatibility Library
 
 This page describes helpers for integrating with DarkRP.
 
@@ -221,4 +221,3 @@ lia.darkrp.createCategory()
 ```
 
 ---
-
