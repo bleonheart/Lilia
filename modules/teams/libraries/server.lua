@@ -196,3 +196,37 @@ function MODULE:CanPlayerSwitchChar(client, _, newCharacter)
     local faction = lia.faction.indices[newCharacter:getFaction()]
     if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
 end
+
+net.Receive("KickCharacter", function(_, client)
+    local char = client:getChar()
+    if not char then return end
+    local isLeader = client:IsSuperAdmin() or char:getData("factionOwner") or char:getData("factionAdmin") or char:hasFlags("V")
+    if not isLeader then return end
+    local citizen = lia.faction.teams["citizen"]
+    local characterID = net.ReadUInt(32)
+    local IsOnline = false
+    for _, target in player.Iterator() do
+        local targetChar = target:getChar()
+        if targetChar and targetChar:getID() == characterID and targetChar:getFaction() == char:getFaction() then
+            IsOnline = true
+            target:notify("You were kicked from your faction!")
+            targetChar.vars.faction = citizen.uniqueID
+            targetChar:setFaction(citizen.index)
+        end
+    end
+
+    if not IsOnline then lia.char.setCharData(characterID, "kickedFromFaction", true) end
+end)
+
+function MODULE:PlayerLoadedChar(client)
+    local citizen = lia.faction.teams["citizen"]
+    if client:getChar():getData("kickedFromFaction", false) then
+        client:notify("You were kicked from a faction while offline!")
+        client:getChar().vars.faction = citizen.uniqueID
+        client:getChar():setFaction(citizen.index)
+        client:getChar():setData("kickedFromFaction", false)
+    end
+end
+
+util.AddNetworkString("CharacterInfo")
+util.AddNetworkString("KickCharacter")
