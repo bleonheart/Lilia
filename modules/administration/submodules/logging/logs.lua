@@ -542,6 +542,18 @@
         func = function(_, name, steamID) return string.format("Alt account '%s' (%s) was banned due to blacklist.", name, steamID) end,
         category = "Admin"
     },
+    ["plyKick"] = {
+        func = function(client, targetName) return string.format("Admin '%s' kicked player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyBan"] = {
+        func = function(client, targetName) return string.format("Admin '%s' banned player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyUnban"] = {
+        func = function(client, targetIdentifier) return string.format("Admin '%s' unbanned player '%s'.", client:Name(), targetIdentifier) end,
+        category = "Admin"
+    },
     ["viewPlayerClaims"] = {
         func = function(client, targetName) return string.format("Admin '%s' viewed claims for %s.", client:Name(), targetName) end,
         category = "Admin"
@@ -556,6 +568,122 @@
     },
     ["ticketClosed"] = {
         func = function(client, requester, count) return string.format("Admin '%s' closed a ticket for %s. Total claims: %d.", client:Name(), requester, count or 0) end,
+        category = "Admin"
+    },
+    ["teleportToEntity"] = {
+        func = function(client, entClass) return string.format("Admin '%s' teleported to entity '%s'.", client:Name(), entClass) end,
+        category = "Admin"
+    },
+    ["plyBring"] = {
+        func = function(client, targetName) return string.format("Admin '%s' brought player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyGoto"] = {
+        func = function(client, targetName) return string.format("Admin '%s' teleported to player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyReturn"] = {
+        func = function(client, targetName) return string.format("Admin '%s' returned player '%s' to their previous position.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyJail"] = {
+        func = function(client, targetName) return string.format("Admin '%s' jailed player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyUnjail"] = {
+        func = function(client, targetName) return string.format("Admin '%s' unjailed player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyKill"] = {
+        func = function(client, targetName) return string.format("Admin '%s' killed player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plySlay"] = {
+        func = function(client, targetName) return string.format("Admin '%s' slayed player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyRespawn"] = {
+        func = function(client, targetName) return string.format("Admin '%s' respawned player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyFreeze"] = {
+        func = function(client, targetName, duration) return string.format("Admin '%s' froze player '%s' for %s seconds.", client:Name(), targetName, tostring(duration)) end,
+        category = "Admin"
+    },
+    ["plyUnfreeze"] = {
+        func = function(client, targetName) return string.format("Admin '%s' unfroze player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plySetGroup"] = {
+        func = function(client, targetName, group) return string.format("Admin '%s' set %s's group to '%s'.", client:Name(), targetName, group) end,
+        category = "Admin"
+    },
+    ["plyBlind"] = {
+        func = function(client, targetName, duration) return string.format("Admin '%s' blinded player '%s' for %s seconds.", client:Name(), targetName, tostring(duration)) end,
+        category = "Admin"
+    },
+    ["plyUnblind"] = {
+        func = function(client, targetName) return string.format("Admin '%s' unblinded player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyBlindFade"] = {
+        func = function(client, targetName, duration, color) return string.format("Admin '%s' blind-faded player '%s' for %s seconds with color '%s'.", client:Name(), targetName, tostring(duration), color) end,
+        category = "Admin"
+    },
+    ["blindFadeAll"] = {
+        func = function(_, duration, color) return string.format("All players blind-faded for %s seconds with color '%s'.", tostring(duration), color) end,
+        category = "Admin"
+    },
+    ["plyGag"] = {
+        func = function(client, targetName) return string.format("Admin '%s' gagged player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyUngag"] = {
+        func = function(client, targetName) return string.format("Admin '%s' ungagged player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyMute"] = {
+        func = function(client, targetName) return string.format("Admin '%s' muted player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyUnmute"] = {
+        func = function(client, targetName) return string.format("Admin '%s' unmuted player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyCloak"] = {
+        func = function(client, targetName) return string.format("Admin '%s' cloaked player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyUncloak"] = {
+        func = function(client, targetName) return string.format("Admin '%s' uncloaked player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyGod"] = {
+        func = function(client, targetName) return string.format("Admin '%s' enabled god mode for '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyUngod"] = {
+        func = function(client, targetName) return string.format("Admin '%s' disabled god mode for '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyIgnite"] = {
+        func = function(client, targetName, duration) return string.format("Admin '%s' ignited player '%s' for %s seconds.", client:Name(), targetName, tostring(duration)) end,
+        category = "Admin"
+    },
+    ["plyExtinguish"] = {
+        func = function(client, targetName) return string.format("Admin '%s' extinguished player '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["plyStrip"] = {
+        func = function(client, targetName) return string.format("Admin '%s' stripped weapons from '%s'.", client:Name(), targetName) end,
+        category = "Admin"
+    },
+    ["charBanOffline"] = {
+        func = function(client, charID) return string.format("Admin '%s' banned offline character ID %s.", client:Name(), tostring(charID)) end,
+        category = "Admin"
+    },
+    ["charUnbanOffline"] = {
+        func = function(client, charID) return string.format("Admin '%s' unbanned offline character ID %s.", client:Name(), tostring(charID)) end,
         category = "Admin"
     },
 }
