@@ -38,24 +38,23 @@ end
 function MODULE:KeyPress(client, key)
     if key == IN_ATTACK2 then
         local wep = client:GetActiveWeapon()
-        if IsValid(wep) and wep.IsHands and wep.ReadyToPickup then wep:Pickup() end
+        if IsValid(wep) and wep.IsHands and wep.ReadyToPickup then
+            wep:Pickup()
+        elseif IsValid(client.Grabbed) then
+            client:DropObject(client.Grabbed)
+            client.Grabbed = NULL
+        end
     end
 
     if key == IN_JUMP and not client:isNoClipping() and client:getChar() and not client:InVehicle() and client:Alive() then
         local cost = lia.config.get("JumpStaminaCost", 25)
         client:consumeStamina(cost)
+
         local stm = client:getLocalVar("stamina", 0)
         if stm == 0 then
             client:setNetVar("brth", true)
             client:ConCommand("-speed")
         end
-    end
-end
-
-function MODULE:KeyPress(client, key)
-    if key == IN_ATTACK2 and IsValid(client.Grabbed) then
-        client:DropObject(client.Grabbed)
-        client.Grabbed = NULL
     end
 end
 
