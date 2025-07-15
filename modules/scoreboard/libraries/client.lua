@@ -11,7 +11,7 @@ end
 
 function MODULE:ScoreboardShow()
     if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
-    if not lia.module.list.interactionmenu:checkInteractionPossibilities() then
+    if not lia.module.list.interactionmenu:checkInteractionPossibilities() and not lia.module.list.interactionmenu.Menu then
         if IsValid(lia.gui.score) then
             if not lia.gui.score:IsVisible() then
                 lia.gui.score:SetVisible(true)
@@ -24,6 +24,10 @@ function MODULE:ScoreboardShow()
 
     gui.EnableScreenClicker(true)
     return true
+end
+
+function MODULE:InteractionMenuOpened()
+    self:ScoreboardHide()
 end
 
 function MODULE:OnReloaded()
