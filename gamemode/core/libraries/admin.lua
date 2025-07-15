@@ -19,6 +19,8 @@ function lia.admin.load()
         lia.admin.createGroup("superadmin")
         lia.admin.save(true)
     end
+
+    lia.bootstrap("Administration", L("adminSystemLoaded"))
 end
 
 function lia.admin.createGroup(groupName, info)
