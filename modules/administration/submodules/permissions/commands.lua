@@ -84,7 +84,7 @@ lia.command.add("charlist", {
     syntax = "[string Player Or Steam ID]",
     AdminStick = {
         Name = "Open CharList",
-        Category = L("adminStickCategoryCharManagement"),
+        Category = "characterManagement",
         Icon = "icon16/user_gray.png"
     },
     onRun = function(client, arguments)
