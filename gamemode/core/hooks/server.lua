@@ -539,7 +539,6 @@ function GM:SaveData()
 
                 local extra = hook.Run("GetEntitySaveData", ent)
                 if extra ~= nil then entData.data = extra end
-
                 data.entities[#data.entities + 1] = entData
                 hook.Run("OnEntityPersisted", ent, entData)
             end
@@ -552,27 +551,6 @@ function GM:SaveData()
 
     lia.data.set("persistance", data.entities, true)
     lia.data.set("itemsave", data.items, true)
-end
-
-function GM:OnEntityCreated(ent)
-    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-    local saved = lia.data.get("persistance", {}, true) or {}
-    local seen = {}
-    for _, e in ipairs(saved) do
-        seen[makeKey(e)] = true
-    end
-
-    local key = makeKey(ent)
-    if not seen[key] then
-        saved[#saved + 1] = {
-            pos = ent:GetPos(),
-            class = ent:GetClass(),
-            model = ent:GetModel(),
-            angles = ent:GetAngles(),
-        }
-
-        lia.data.set("persistance", saved, true)
-    end
 end
 
 function GM:LoadData()
@@ -593,7 +571,6 @@ function GM:LoadData()
                 if ent.model then createdEnt:SetModel(ent.model) end
                 createdEnt:Spawn()
                 createdEnt:Activate()
-
                 hook.Run("OnEntityLoaded", createdEnt, ent.data)
             end
         else
@@ -640,6 +617,27 @@ function GM:LoadData()
                 end)
             end
         end
+    end
+end
+
+function GM:OnEntityCreated(ent)
+    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+    local saved = lia.data.get("persistance", {}, true) or {}
+    local seen = {}
+    for _, e in ipairs(saved) do
+        seen[makeKey(e)] = true
+    end
+
+    local key = makeKey(ent)
+    if not seen[key] then
+        saved[#saved + 1] = {
+            pos = ent:GetPos(),
+            class = ent:GetClass(),
+            model = ent:GetModel(),
+            angles = ent:GetAngles(),
+        }
+
+        lia.data.set("persistance", saved, true)
     end
 end
 
