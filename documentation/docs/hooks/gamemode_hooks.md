@@ -2,11 +2,11 @@
 
 This document lists global hooks triggered by the gamemode. You can define them on the `GM` table, inside a `MODULE`, on the `SCHEMA`, or call them anywhere with `hook.Add`.
 
-* **MODULE** functions load only from `/modules`.
+- **MODULE** functions load only from `/modules`.
 
-* **SCHEMA** functions live in `/schema`.
+- **SCHEMA** functions live in `/schema`.
 
-* **hook.Add** may be used from any file.
+- **hook.Add** may be used from any file.
 
 If multiple definitions of the same hook exist on `GM`, `MODULE`, or `SCHEMA`, the one loaded last overrides the others.
 
@@ -25,13 +25,13 @@ Called after the F1 menu panel is created so additional sections can be added. P
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -61,14 +61,14 @@ Triggered after a remote image finishes downloading to the data folder.
 
 **Parameters**
 
-* `name` (`string`): Saved file name including extension.
-* `path` (`string`): Local `data/` path to the image.
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the image.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -87,14 +87,14 @@ Triggered after a remote sound file finishes downloading to the data folder.
 
 **Parameters**
 
-* `name` (`string`): Saved file name including extension.
-* `path` (`string`): Local `data/` path to the sound file.
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the sound file.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -113,13 +113,13 @@ Executed during menu creation allowing you to define custom tabs. Allows modules
 
 **Parameters**
 
-* `tabs` (`table`): Table to add menu definitions to.
+- `tabs` (`table`): Table to add menu definitions to.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -154,15 +154,15 @@ Runs every frame when the character model panel draws. Lets code draw over the m
 
 **Parameters**
 
-* `panel` (`Panel`): The model panel being drawn.
+- `panel` (`Panel`): The model panel being drawn.
 
-* `entity` (`Entity`): Model entity displayed.
+- `entity` (`Entity`): Model entity displayed.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -198,15 +198,15 @@ replace the displayed name, model or description for a player.
 
 **Parameters**
 
-* `client` (`Player`): Player being displayed.
+- `client` (`Player`): Player being displayed.
 
-* `var` (`string`): Field identifier such as "name", "model" or "desc".
+- `var` (`string`): Field identifier such as "name", "model" or "desc".
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: Return true to allow override
+- boolean: Return true to allow override
 
 **Example Usage**
 
@@ -228,13 +228,13 @@ Returns the name text to display for a player in UI panels.
 
 **Parameters**
 
-* `client` (`Player`): Player to query.
+- `client` (`Player`): Player to query.
 
 **Realm**
 `Client`
 
 **Returns**
-* string or nil: Name text to display
+- string or nil: Name text to display
 
 **Example Usage**
 
@@ -256,13 +256,13 @@ Triggered when the local HUD begins displaying a voice panel for a player.
 
 **Parameters**
 
-* `client` (`Player`): Player who started speaking.
+- `client` (`Player`): Player who started speaking.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -282,13 +282,13 @@ Fired when the voice panel for a player is removed from the HUD.
 
 **Parameters**
 
-* `client` (`Player`): Player whose panel ended.
+- `client` (`Player`): Player whose panel ended.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -309,13 +309,13 @@ Triggered when a spawn icon is removed from the extended spawn menu. Fired when 
 
 **Parameters**
 
-* `icon` (`Panel`): Icon affected.
+- `icon` (`Panel`): Icon affected.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -337,19 +337,19 @@ Gives a chance to draw additional info over item icons. Allows drawing over item
 
 **Parameters**
 
-* `panel` (`Panel`): Icon panel.
+- `panel` (`Panel`): Icon panel.
 
-* `itemTable` (`table`): Item data.
+- `itemTable` (`table`): Item data.
 
-* `width` (`number`): Panel width.
+- `width` (`number`): Panel width.
 
-* `height` (`number`): Panel height.
+- `height` (`number`): Panel height.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -369,17 +369,17 @@ Allows extensions to populate the right-click menu for an item. Allows overridin
 
 **Parameters**
 
-* `panel` (`Panel`): Icon panel.
+- `panel` (`Panel`): Icon panel.
 
-* `menu` (`Panel`): Menu being built.
+- `menu` (`Panel`): Menu being built.
 
-* `itemTable` (`table`): Item data.
+- `itemTable` (`table`): Item data.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -401,15 +401,15 @@ Determines whether an item action should be displayed. Determines whether a spec
 
 **Parameters**
 
-* `itemTable` (`table`): Item data.
+- `itemTable` (`table`): Item data.
 
-* `action` (`string`): Action key.
+- `action` (`string`): Action key.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: True if the action can run.
+- boolean: True if the action can run.
 
 **Example Usage**
 
@@ -431,13 +431,13 @@ Return false to omit players from the scoreboard. Determines if a player should 
 
 **Parameters**
 
-* `player` (`Player`): Player to test.
+- `player` (`Player`): Player to test.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to hide the player
+- boolean: False to hide the player
 
 **Example Usage**
 
@@ -459,13 +459,13 @@ Checks if the local player may open the scoreboard. Return false to prevent it f
 
 **Parameters**
 
-* `player` (`Player`): Local player.
+- `player` (`Player`): Local player.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to disallow opening.
+- boolean: False to disallow opening.
 
 **Example Usage**
 
@@ -487,15 +487,15 @@ Populate the scoreboard context menu with extra options. Allows modules to add s
 
 **Parameters**
 
-* `player` (`Player`): Target player.
+- `player` (`Player`): Target player.
 
-* `options` (`table`): Options table to populate.
+- `options` (`table`): Options table to populate.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -521,14 +521,14 @@ Allows modules to customize the model entity displayed for scoreboard entries. T
 
 **Parameters**
 
-* `entity` (`Entity`): Model entity being shown.
-* `player` (`Player`): Player this entry represents.
+- `entity` (`Entity`): Model entity being shown.
+- `player` (`Player`): Player this entry represents.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -550,15 +550,15 @@ Supplies the description text shown on the scoreboard. Returns the description t
 
 **Parameters**
 
-* `player` (`Player`): Target player.
+- `player` (`Player`): Target player.
 
-* `isHUD` (`boolean`): True when drawing overhead text rather than in menus.
+- `isHUD` (`boolean`): True when drawing overhead text rather than in menus.
 
 **Realm**
 `Client`
 
 **Returns**
-* string: Description text
+- string: Description text
 
 **Example Usage**
 
@@ -580,13 +580,13 @@ Triggered when the scoreboard becomes visible on the client.
 
 **Parameters**
 
-* `panel` (`Panel`): Scoreboard panel instance.
+- `panel` (`Panel`): Scoreboard panel instance.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -605,13 +605,13 @@ Called after the scoreboard is hidden or removed.
 
 **Parameters**
 
-* `panel` (`Panel`): Scoreboard panel instance.
+- `panel` (`Panel`): Scoreboard panel instance.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -630,13 +630,13 @@ Runs when the F1 main menu panel initializes.
 
 **Parameters**
 
-* `panel` (`Panel`): Menu panel.
+- `panel` (`Panel`): Menu panel.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -655,13 +655,13 @@ Fires when the F1 main menu panel is removed.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -680,13 +680,13 @@ Called when the character selection menu is created.
 
 **Parameters**
 
-* `panel` (`Panel`): Character menu panel.
+- `panel` (`Panel`): Character menu panel.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -705,13 +705,13 @@ Fired when the character menu panel is removed.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -730,14 +730,14 @@ Triggered when an item detail panel is created.
 
 **Parameters**
 
-* `panel` (`Panel`): Item panel instance.
-* `entity` (`Entity`): Item entity represented.
+- `panel` (`Panel`): Item panel instance.
+- `entity` (`Entity`): Item entity represented.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -756,14 +756,14 @@ Runs after an item panel is removed.
 
 **Parameters**
 
-* `panel` (`Panel`): Item panel instance.
-* `entity` (`Entity`): Item entity represented.
+- `panel` (`Panel`): Item panel instance.
+- `entity` (`Entity`): Item entity represented.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -782,14 +782,14 @@ Called when an inventory panel is created.
 
 **Parameters**
 
-* `panel` (`Panel`): Inventory panel.
-* `inventory` (`table`): Inventory shown.
+- `panel` (`Panel`): Inventory panel.
+- `inventory` (`table`): Inventory shown.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -808,14 +808,14 @@ Fired when an inventory panel is removed.
 
 **Parameters**
 
-* `panel` (`Panel`): Inventory panel.
-* `inventory` (`table`): Inventory shown.
+- `panel` (`Panel`): Inventory panel.
+- `inventory` (`table`): Inventory shown.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -834,13 +834,13 @@ Called when the interaction menu pops up.
 
 **Parameters**
 
-* `frame` (`Panel`): Interaction menu frame.
+- `frame` (`Panel`): Interaction menu frame.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -859,13 +859,13 @@ Runs when the interaction menu frame is removed.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -884,13 +884,13 @@ Runs whenever the chat entry text is modified. Called whenever the chat entry te
 
 **Parameters**
 
-* `text` (`string`): Current text.
+- `text` (`string`): Current text.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -912,13 +912,13 @@ Fires when the chat box closes. Fired when the chat box is closed.
 
 **Parameters**
 
-* `chatType` (`string`): The chat command being checked.
+- `chatType` (`string`): The chat command being checked.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -942,13 +942,13 @@ Fires when the chat box opens. Fired when the chat box is opened.
 
 **Parameters**
 
-* `chatType` (`string`): The chat command being checked.
+- `chatType` (`string`): The chat command being checked.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -971,15 +971,15 @@ Allows modification of the markup before chat messages are printed. Allows modif
 
 **Parameters**
 
-* `text` (`string`): Base markup text.
+- `text` (`string`): Base markup text.
 
-* ...: Additional segments.
+- ...: Additional segments.
 
 **Realm**
 `Client`
 
 **Returns**
-* string: Modified markup text.
+- string: Modified markup text.
 
 **Example Usage**
 
@@ -1000,17 +1000,17 @@ Add extra lines to an item tooltip. Populates additional information for an item
 
 **Parameters**
 
-* `extra` (`table`): Info table to fill.
+- `extra` (`table`): Info table to fill.
 
-* `client` (`Player`): Local player.
+- `client` (`Player`): Local player.
 
-* `item` (`table`): Item being displayed.
+- `item` (`table`): Item being displayed.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1030,13 +1030,13 @@ Returns the camera position and angle for the main menu character preview. Provi
 
 **Parameters**
 
-* `character` (`Character`): Character being viewed.
+- `character` (`Character`): Character being viewed.
 
 **Realm**
 `Client`
 
 **Returns**
-* Vector, Angle: Position and angle values.
+- Vector, Angle: Position and angle values.
 
 **Example Usage**
 
@@ -1056,13 +1056,13 @@ Return false here to prevent character deletion. Determines if a character can b
 
 **Parameters**
 
-* `characterID` (`number`): Identifier of the character.
+- `characterID` (`number`): Identifier of the character.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to disallow deletion.
+- boolean: False to disallow deletion.
 
 **Example Usage**
 
@@ -1084,15 +1084,15 @@ Lets modules insert additional information on the main menu info panel. Allows m
 
 **Parameters**
 
-* `info` (`table`): Table to receive information.
+- `info` (`table`): Table to receive information.
 
-* `character` (`Character`): Selected character.
+- `character` (`Character`): Selected character.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1114,13 +1114,13 @@ Checks if the local player may start creating a character. Determines if the pla
 
 **Parameters**
 
-* `player` (`Player`): Local player.
+- `player` (`Player`): Local player.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to disallow creation.
+- boolean: False to disallow creation.
 
 **Example Usage**
 
@@ -1142,15 +1142,15 @@ Lets you edit the clientside model used in the main menu. Allows adjustments to 
 
 **Parameters**
 
-* `entity` (`Entity`): Model entity.
+- `entity` (`Entity`): Model entity.
 
-* `character` (`Character|nil`): Character data if available.
+- `character` (`Character|nil`): Character data if available.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1174,13 +1174,13 @@ Add or reorder steps in the character creation flow. Lets modules alter the char
 
 **Parameters**
 
-* `panel` (`Panel`): Creation panel.
+- `panel` (`Panel`): Creation panel.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1201,13 +1201,13 @@ Override to change how many characters a player can have. Returns the maximum nu
 
 **Parameters**
 
-* `player` (`Player`): Local player.
+- `player` (`Player`): Local player.
 
 **Realm**
 `Client`
 
 **Returns**
-* number: Maximum character count.
+- number: Maximum character count.
 
 **Example Usage**
 
@@ -1227,13 +1227,13 @@ Return false and a reason to hide buttons on the main menu. Determines if a butt
 
 **Parameters**
 
-* `name` (`string`): Button identifier.
+- `name` (`string`): Button identifier.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean, string: False and reason to hide.
+- boolean, string: False and reason to hide.
 
 **Example Usage**
 
@@ -1255,13 +1255,13 @@ Called when the character creation panel should reset. Called to reset the chara
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1281,13 +1281,13 @@ Notifies when the EasyIcons font sheet has loaded. Fired when the EasyIcons libr
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1309,15 +1309,15 @@ Called when CAMI registers a new usergroup. CAMI notification that a usergroup w
 
 **Parameters**
 
-* `usergroup` (`table`): Registered usergroup data.
+- `usergroup` (`table`): Registered usergroup data.
 
-* `source` (`string`): Source identifier.
+- `source` (`string`): Source identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1337,15 +1337,15 @@ Called when a usergroup is removed from CAMI. CAMI notification that a usergroup
 
 **Parameters**
 
-* `usergroup` (`table`): Unregistered usergroup data.
+- `usergroup` (`table`): Unregistered usergroup data.
 
-* `source` (`string`): Source identifier.
+- `source` (`string`): Source identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1365,13 +1365,13 @@ Fired when a privilege is created in CAMI. CAMI notification that a privilege wa
 
 **Parameters**
 
-* `privilege` (`table`): Privilege data.
+- `privilege` (`table`): Privilege data.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1391,13 +1391,13 @@ Fired when a privilege is removed from CAMI. CAMI notification that a privilege 
 
 **Parameters**
 
-* `privilege` (`table`): Privilege data.
+- `privilege` (`table`): Privilege data.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1417,23 +1417,23 @@ Allows an override of player privilege checks. Allows external libraries to over
 
 **Parameters**
 
-* `handler` (`function`): Default handler.
+- `handler` (`function`): Default handler.
 
-* `actor` (`Player`): Player requesting access.
+- `actor` (`Player`): Player requesting access.
 
-* `privilegeName` (`string`): Privilege identifier.
+- `privilegeName` (`string`): Privilege identifier.
 
-* `callback` (`function`): Callback to receive result.
+- `callback` (`function`): Callback to receive result.
 
-* `target` (`Player`): Optional target player.
+- `target` (`Player`): Optional target player.
 
-* `extra` (`table`): Extra information table.
+- `extra` (`table`): Extra information table.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1456,23 +1456,23 @@ Allows an override of SteamID-based privilege checks. Similar to PlayerHasAccess
 
 **Parameters**
 
-* `handler` (`function`): Default handler.
+- `handler` (`function`): Default handler.
 
-* `steamID` (`string`): SteamID to check.
+- `steamID` (`string`): SteamID to check.
 
-* `privilegeName` (`string`): Privilege identifier.
+- `privilegeName` (`string`): Privilege identifier.
 
-* `callback` (`function`): Callback to receive result.
+- `callback` (`function`): Callback to receive result.
 
-* `targetID` (`string`): Target SteamID.
+- `targetID` (`string`): Target SteamID.
 
-* `extra` (`table`): Extra information table.
+- `extra` (`table`): Extra information table.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1495,19 +1495,19 @@ Notification that a player's group changed. Fired when a player's usergroup has 
 
 **Parameters**
 
-* `player` (`Player`): Affected player.
+- `player` (`Player`): Affected player.
 
-* `oldGroup` (`string`): Previous group.
+- `oldGroup` (`string`): Previous group.
 
-* `newGroup` (`string`): New group.
+- `newGroup` (`string`): New group.
 
-* `source` (`string`): Source identifier.
+- `source` (`string`): Source identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1527,19 +1527,19 @@ Notification that a SteamID's group changed. Fired when a SteamID's usergroup ha
 
 **Parameters**
 
-* `steamID` (`string`): Affected SteamID.
+- `steamID` (`string`): Affected SteamID.
 
-* `oldGroup` (`string`): Previous group.
+- `oldGroup` (`string`): Previous group.
 
-* `newGroup` (`string`): New group.
+- `newGroup` (`string`): New group.
 
-* `source` (`string`): Source identifier.
+- `source` (`string`): Source identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1559,13 +1559,13 @@ Customize tooltip sizing and layout before it appears.
 
 **Parameters**
 
-* `panel` (`Panel`): Tooltip panel being laid out.
+- `panel` (`Panel`): Tooltip panel being laid out.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1585,17 +1585,17 @@ Draw custom visuals on the tooltip, returning true skips default painting.
 
 **Parameters**
 
-* `panel` (`Panel`): Tooltip panel.
+- `panel` (`Panel`): Tooltip panel.
 
-* `width` (`number`): Panel width.
+- `width` (`number`): Panel width.
 
-* `height` (`number`): Panel height.
+- `height` (`number`): Panel height.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1617,15 +1617,15 @@ Runs when a tooltip is opened for a panel.
 
 **Parameters**
 
-* `panel` (`Panel`): Tooltip panel.
+- `panel` (`Panel`): Tooltip panel.
 
-* `target` (`Panel`): Target panel that opened the tooltip.
+- `target` (`Panel`): Target panel that opened the tooltip.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1646,13 +1646,13 @@ Runs when a player spawns and equips items. Allows modification of the default l
 
 **Parameters**
 
-* `client` (`Player`): Player being loaded out.
+- `client` (`Player`): Player being loaded out.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1674,17 +1674,17 @@ Determines if a player's death should permanently kill their character. Return t
 
 **Parameters**
 
-* `client` (`Player`): Player that died.
+- `client` (`Player`): Player that died.
 
-* `inflictor` (`Entity`): Damage inflictor.
+- `inflictor` (`Entity`): Damage inflictor.
 
-* `attacker` (`Entity`): Damage attacker.
+- `attacker` (`Entity`): Damage attacker.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: Return true to mark for permanent death
+- boolean: Return true to mark for permanent death
 
 **Example Usage**
 
@@ -1706,15 +1706,15 @@ Checks if a player may drop an item. Return false to block dropping.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting to drop.
+- `client` (`Player`): Player attempting to drop.
 
-* `item` (`table`): Item being dropped.
+- `item` (`table`): Item being dropped.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to block dropping
+- boolean: False to block dropping
 
 **Example Usage**
 
@@ -1736,15 +1736,15 @@ Determines if a player can pick up an item. Return false to prevent taking.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting pickup.
+- `client` (`Player`): Player attempting pickup.
 
-* `item` (`table`): Item in question.
+- `item` (`table`): Item in question.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to prevent pickup
+- boolean: False to prevent pickup
 
 **Example Usage**
 
@@ -1766,15 +1766,15 @@ Queries if a player can equip an item. Returning false stops the equip action.
 
 **Parameters**
 
-* `client` (`Player`): Player equipping.
+- `client` (`Player`): Player equipping.
 
-* `item` (`table`): Item to equip.
+- `item` (`table`): Item to equip.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to block equipping
+- boolean: False to block equipping
 
 **Example Usage**
 
@@ -1796,15 +1796,15 @@ Called before an item is unequipped. Return false to keep the item equipped.
 
 **Parameters**
 
-* `client` (`Player`): Player unequipping.
+- `client` (`Player`): Player unequipping.
 
-* `item` (`table`): Item being unequipped.
+- `item` (`table`): Item being unequipped.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to prevent unequipping
+- boolean: False to prevent unequipping
 
 **Example Usage**
 
@@ -1826,19 +1826,19 @@ Runs after chat messages are processed. Allows reacting to player chat.
 
 **Parameters**
 
-* `client` (`Player`): Speaking player.
+- `client` (`Player`): Speaking player.
 
-* `message` (`string`): Chat text.
+- `message` (`string`): Chat text.
 
-* `chatType` (`string`): Chat channel.
+- `chatType` (`string`): Chat channel.
 
-* `anonymous` (`boolean`): Whether the message was anonymous.
+- `anonymous` (`boolean`): Whether the message was anonymous.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1860,13 +1860,13 @@ Decides if a corpse ragdoll should spawn for a player. Return false to skip ragd
 
 **Parameters**
 
-* `client` (`Player`): Player that died.
+- `client` (`Player`): Player that died.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to skip ragdoll
+- boolean: False to skip ragdoll
 
 **Example Usage**
 
@@ -1888,13 +1888,13 @@ Called when the framework saves persistent data. Modules can store custom inform
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1914,16 +1914,16 @@ Triggered after `lia.data.set` successfully writes a key/value pair to the datab
 
 **Parameters**
 
-* `key` (`string`): Data key that was saved.
-* `value` (`any`): Value that was written.
-* `folder` (`string|nil`): Schema folder when not global.
-* `map` (`string|nil`): Map name when not global or ignored.
+- `key` (`string`): Data key that was saved.
+- `value` (`any`): Value that was written.
+- `folder` (`string|nil`): Schema folder when not global.
+- `map` (`string|nil`): Map name when not global or ignored.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1943,13 +1943,13 @@ Fires when map persistence should be written to disk. Allows adding extra persis
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -1979,13 +1979,13 @@ Invoked before an entity is saved as persistent. Return false to disallow persis
 
 **Parameters**
 
-* `entity` (`Entity`): Entity being considered for persistence.
+- `entity` (`Entity`): Entity being considered for persistence.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to prevent the entity from being saved.
+- boolean: False to prevent the entity from being saved.
 
 **Example Usage**
 
@@ -2007,13 +2007,13 @@ Allows adding custom data to each persisted entity during `SaveData`.
 
 **Parameters**
 
-* `entity` (`Entity`): Entity being persisted.
+- `entity` (`Entity`): Entity being persisted.
 
 **Realm**
 `Server`
 
 **Returns**
-* `table|nil`: Extra data to store with the entity.
+- `table|nil`: Extra data to store with the entity.
 
 **Example Usage**
 
@@ -2035,14 +2035,14 @@ Runs when an entity is added to the persistence table.
 
 **Parameters**
 
-* `entity` (`Entity`): Entity that was saved.
-* `data` (`table`): Persistence data for that entity.
+- `entity` (`Entity`): Entity that was saved.
+- `data` (`table`): Persistence data for that entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2062,14 +2062,14 @@ Called for each entity spawned from saved persistence data.
 
 **Parameters**
 
-* `entity` (`Entity`): The newly created entity.
-* `data` (`table|nil`): Extra data stored for the entity.
+- `entity` (`Entity`): The newly created entity.
+- `data` (`table|nil`): Extra data stored for the entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2091,13 +2091,13 @@ Triggered when stored data should be loaded. Modules can restore custom informat
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2128,13 +2128,13 @@ Called after all persistent data has loaded. Useful for post-processing.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2160,13 +2160,13 @@ Queries if data saving should occur during shutdown. Return false to cancel savi
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to cancel saving
+- boolean: False to cancel saving
 
 **Example Usage**
 
@@ -2186,15 +2186,15 @@ Called when a player's character disconnects. Provides a last chance to handle d
 
 **Parameters**
 
-* `client` (`Player`): Disconnecting player.
+- `client` (`Player`): Disconnecting player.
 
-* `character` (`Character`): Their character.
+- `character` (`Character`): Their character.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2214,13 +2214,13 @@ Initializes a bot's character when it first joins. Allows custom bot setup.
 
 **Parameters**
 
-* `client` (`Player`): Bot player.
+- `client` (`Player`): Bot player.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2242,13 +2242,13 @@ Fired after a player's personal data has loaded. Useful for syncing additional i
 
 **Parameters**
 
-* `client` (`Player`): Player that loaded data.
+- `client` (`Player`): Player that loaded data.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2272,13 +2272,13 @@ Runs after the player entity has spawned and data is ready. Allows post-initiali
 
 **Parameters**
 
-* `client` (`Player`): Newly spawned player.
+- `client` (`Player`): Newly spawned player.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2299,13 +2299,13 @@ Gives factions a chance to modify player loadouts. Runs before weapons are equip
 
 **Parameters**
 
-* `client` (`Player`): Player being equipped.
+- `client` (`Player`): Player being equipped.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2327,13 +2327,13 @@ Allows classes to modify the player's starting gear. Executed prior to PostPlaye
 
 **Parameters**
 
-* `client` (`Player`): Player being equipped.
+- `client` (`Player`): Player being equipped.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2355,13 +2355,13 @@ Called after the player has been equipped. Last chance to modify the loadout.
 
 **Parameters**
 
-* `client` (`Player`): Player loaded out.
+- `client` (`Player`): Player loaded out.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2381,13 +2381,13 @@ Runs after faction loadout logic completes. Allows post-loadout tweaks.
 
 **Parameters**
 
-* `client` (`Player`): Player affected.
+- `client` (`Player`): Player affected.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2409,13 +2409,13 @@ Runs after class loadout logic completes. Allows post-loadout tweaks for classes
 
 **Parameters**
 
-* `client` (`Player`): Player affected.
+- `client` (`Player`): Player affected.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2435,13 +2435,13 @@ Returns the inventory type used for new characters. Modules can override to prov
 
 **Parameters**
 
-* `character` (`Character`): Character being created.
+- `character` (`Character`): Character being created.
 
 **Realm**
 `Server`
 
 **Returns**
-* string: Inventory type
+- string: Inventory type
 
 **Example Usage**
 
@@ -2461,13 +2461,13 @@ Decides whether saved persistent items should be deleted on load. Return true to
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: True to delete items
+- boolean: True to delete items
 
 **Example Usage**
 
@@ -2489,13 +2489,13 @@ Called after map items have been loaded from storage. Provides the table of crea
 
 **Parameters**
 
-* `items` (`table`): Loaded item entities.
+- `items` (`table`): Loaded item entities.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2518,13 +2518,13 @@ Determines if world-space info should be rendered for an entity. Return false to
 
 **Parameters**
 
-* `entity` (`Entity`): Entity being considered.
+- `entity` (`Entity`): Entity being considered.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to hide info
+- boolean: False to hide info
 
 **Example Usage**
 
@@ -2546,17 +2546,17 @@ Allows custom drawing of entity information in the world. Drawn every frame whil
 
 **Parameters**
 
-* `entity` (`Entity`): Entity to draw info for.
+- `entity` (`Entity`): Entity to draw info for.
 
-* `alpha` (`number`): Current alpha value.
+- `alpha` (`number`): Current alpha value.
 
-* `position` (`table`): Screen position table.
+- `position` (`table`): Screen position table.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2576,13 +2576,13 @@ Provides the health status text and color for a player. Return a table with text
 
 **Parameters**
 
-* `client` (`Player`): Player to check.
+- `client` (`Player`): Player to check.
 
 **Realm**
 `Client`
 
 **Returns**
-* table: {text, color} info
+- table: {text, color} info
 
 **Example Usage**
 
@@ -2604,13 +2604,13 @@ Determines if character info should draw above a player. Return false to suppres
 
 **Parameters**
 
-* `player` (`Player`): Player being rendered.
+- `player` (`Player`): Player being rendered.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to hide info
+- boolean: False to hide info
 
 **Example Usage**
 
@@ -2632,17 +2632,17 @@ Allows modules to add lines to the character info display. Called when building 
 
 **Parameters**
 
-* `player` (`Player`): Player being displayed.
+- `player` (`Player`): Player being displayed.
 
-* `character` (`Character`): Their character data.
+- `character` (`Character`): Their character data.
 
-* `info` (`table`): Table to add lines to.
+- `info` (`table`): Table to add lines to.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2662,13 +2662,13 @@ Opens the context menu for a world item when used. Allows replacing the default 
 
 **Parameters**
 
-* `entity` (`Entity`): Item entity clicked.
+- `entity` (`Entity`): Item entity clicked.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2690,13 +2690,13 @@ Fired just before the client finishes loading the framework. Useful for setup ta
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2716,13 +2716,13 @@ Indicates the client finished initializing the framework. Modules can start crea
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2742,13 +2742,13 @@ Determines whether Lilia's built-in administration system should initialize. Com
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `boolean`|`nil`: Return `false` to stop the admin system from loading.
+- `boolean`|`nil`: Return `false` to stop the admin system from loading.
 
 **Example Usage**
 ```lua
@@ -2769,11 +2769,11 @@ Allows external admin mods to intercept and handle admin actions. Returning
 
 **Parameters**
 
-* `cmd` (`string`): Action identifier such as `kick` or `ban`.
-* `executor` (`Player`|`nil`): Player running the command, if any.
-* `target` (`Player`|`string`): Target player or SteamID.
-* `duration` (`number`|`nil`): Optional duration for timed actions.
-* `reason` (`string`|`nil`): Optional reason text.
+- `cmd` (`string`): Action identifier such as `kick` or `ban`.
+- `executor` (`Player`|`nil`): Player running the command, if any.
+- `target` (`Player`|`string`): Target player or SteamID.
+- `duration` (`number`|`nil`): Optional duration for timed actions.
+- `reason` (`string`|`nil`): Optional reason text.
 
 **Realm**
 
@@ -2781,7 +2781,7 @@ Allows external admin mods to intercept and handle admin actions. Returning
 
 **Returns**
 
-* `boolean?`: Return `true` if the command was handled.
+- `boolean?`: Return `true` if the command was handled.
 
 **Example Usage**
 
@@ -2803,19 +2803,19 @@ Notifies when inventory metadata changes. Provides old and new values.
 
 **Parameters**
 
-* `inventory` (`table`): Inventory affected.
+- `inventory` (`table`): Inventory affected.
 
-* `key` (`string`): Data key.
+- `key` (`string`): Data key.
 
-* `oldValue` (`any`): Previous value.
+- `oldValue` (`any`): Previous value.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2837,13 +2837,13 @@ Called when a new item instance is created clientside. Allows additional setup f
 
 **Parameters**
 
-* `item` (`table`): Item created.
+- `item` (`table`): Item created.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2863,13 +2863,13 @@ Fired when an inventory instance finishes loading. Modules may modify it here.
 
 **Parameters**
 
-* `inventory` (`table`): Inventory initialized.
+- `inventory` (`table`): Inventory initialized.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2889,15 +2889,15 @@ Invoked when an item is placed into an inventory. Lets code react to the additio
 
 **Parameters**
 
-* `inventory` (`table`): Inventory receiving the item.
+- `inventory` (`table`): Inventory receiving the item.
 
-* `item` (`table`): Item added.
+- `item` (`table`): Item added.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2917,15 +2917,15 @@ Called when an item is removed from an inventory. Runs after the item table is u
 
 **Parameters**
 
-* `inventory` (`table`): Inventory modified.
+- `inventory` (`table`): Inventory modified.
 
-* `item` (`table`): Item removed.
+- `item` (`table`): Item removed.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2945,13 +2945,13 @@ Signals that an inventory was deleted clientside. Allows cleanup of references.
 
 **Parameters**
 
-* `inventory` (`table`): Deleted inventory.
+- `inventory` (`table`): Deleted inventory.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2971,13 +2971,13 @@ Fired when an item is removed entirely. Modules should clear any cached data.
 
 **Parameters**
 
-* `item` (`table`): Item that was deleted.
+- `item` (`table`): Item that was deleted.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -2997,19 +2997,19 @@ Runs when a networked character variable changes. Gives both old and new values.
 
 **Parameters**
 
-* `character` (`Character`): Affected character.
+- `character` (`Character`): Affected character.
 
-* `key` (`string`): Variable name.
+- `key` (`string`): Variable name.
 
-* `oldValue` (`any`): Previous value.
+- `oldValue` (`any`): Previous value.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3031,19 +3031,19 @@ Similar to OnCharVarChanged but for local-only variables. Called after the table
 
 **Parameters**
 
-* `character` (`Character`): Affected character.
+- `character` (`Character`): Affected character.
 
-* `key` (`string`): Variable name.
+- `key` (`string`): Variable name.
 
-* `oldVar` (`any`): Old value.
+- `oldVar` (`any`): Old value.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3065,19 +3065,19 @@ Triggered when `setLocalVar` updates a player's local variable. Provides both th
 
 **Parameters**
 
-* `player` (`Player`): Affected player.
+- `player` (`Player`): Affected player.
 
-* `key` (`string`): Variable name.
+- `key` (`string`): Variable name.
 
-* `oldValue` (`any`): Previous value.
+- `oldValue` (`any`): Previous value.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3099,19 +3099,19 @@ Runs when `setNetVar` changes an entity's networked variable. Works for global v
 
 **Parameters**
 
-* `entity` (`Entity|nil`): Entity with the updated variable, or nil for global vars.
+- `entity` (`Entity|nil`): Entity with the updated variable, or nil for global vars.
 
-* `key` (`string`): Variable name.
+- `key` (`string`): Variable name.
 
-* `oldValue` (`any`): Previous value.
+- `oldValue` (`any`): Previous value.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3133,19 +3133,19 @@ Called when item data values change clientside. Provides both the old and new va
 
 **Parameters**
 
-* `item` (`table`): Item modified.
+- `item` (`table`): Item modified.
 
-* `key` (`string`): Key that changed.
+- `key` (`string`): Key that changed.
 
-* `oldValue` (`any`): Previous value.
+- `oldValue` (`any`): Previous value.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3167,17 +3167,17 @@ Runs when an item's quantity value updates. Allows reacting to stack changes.
 
 **Parameters**
 
-* `item` (`table`): Item affected.
+- `item` (`table`): Item affected.
 
-* `oldQuantity` (`number`): Previous quantity.
+- `oldQuantity` (`number`): Previous quantity.
 
-* `quantity` (`number`): New quantity.
+- `quantity` (`number`): New quantity.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3197,15 +3197,15 @@ Indicates that a character was forcefully removed. isCurrentChar denotes if it w
 
 **Parameters**
 
-* `id` (`number`): Character identifier.
+- `id` (`number`): Character identifier.
 
-* `isCurrentChar` (`boolean`): Was this the active character?
+- `isCurrentChar` (`boolean`): Was this the active character?
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3225,21 +3225,21 @@ Called when the server receives a request to move an item to another inventory. 
 
 **Parameters**
 
-* `client` (`Player`): Requesting player.
+- `client` (`Player`): Requesting player.
 
-* `itemID` (`number`): Item identifier.
+- `itemID` (`number`): Item identifier.
 
-* `x` (`number`): X grid position.
+- `x` (`number`): X grid position.
 
-* `y` (`number`): Y grid position.
+- `y` (`number`): Y grid position.
 
-* `inventoryID` (`number|string`): Target inventory identifier.
+- `inventoryID` (`number|string`): Target inventory identifier.
 
 **Realm**
 `Server`
 
 **Returns**
-* DPromise|nil: Promise for the transfer or nil to block.
+- DPromise|nil: Promise for the transfer or nil to block.
 
 **Example Usage**
 
@@ -3259,13 +3259,13 @@ Fired when a character object is fully loaded. Receives the character ID.
 
 **Parameters**
 
-* `id` (`number`): Character identifier.
+- `id` (`number`): Character identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3285,13 +3285,13 @@ Called before a character is removed. Return false to cancel deletion.
 
 **Parameters**
 
-* `id` (`number`): Character identifier.
+- `id` (`number`): Character identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3313,15 +3313,15 @@ Fired when a character is deleted. Provides the owning player if available.
 
 **Parameters**
 
-* `client` (`Player`): Player who deleted.
+- `client` (`Player`): Player who deleted.
 
-* `id` (`number`): Character identifier.
+- `id` (`number`): Character identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3341,17 +3341,17 @@ Invoked after a new character is created. Supplies the character table and creat
 
 **Parameters**
 
-* `client` (`Player`): Owner player.
+- `client` (`Player`): Owner player.
 
-* `character` (`table`): New character object.
+- `character` (`table`): New character object.
 
-* `data` (`table`): Raw creation info.
+- `data` (`table`): Raw creation info.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3371,13 +3371,13 @@ Runs when a player transfers to another server. Useful for cleanup.
 
 **Parameters**
 
-* `client` (`Player`): Transferring player.
+- `client` (`Player`): Transferring player.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3397,13 +3397,13 @@ Executed before a character is saved to disk. Allows writing custom data.
 
 **Parameters**
 
-* `character` (`Character`): Character being saved.
+- `character` (`Character`): Character being saved.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3423,13 +3423,13 @@ Called when the character selection list finishes loading. Provides the loaded l
 
 **Parameters**
 
-* `newCharList` (`table`): Table of characters.
+- `newCharList` (`table`): Table of characters.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3449,15 +3449,15 @@ Fires when the character list is refreshed. Gives both old and new tables.
 
 **Parameters**
 
-* `oldCharList` (`table`): Previous list.
+- `oldCharList` (`table`): Previous list.
 
-* `newCharList` (`table`): Updated list.
+- `newCharList` (`table`): Updated list.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3478,15 +3478,15 @@ when an administrator requests the character list.
 
 **Parameters**
 
-* `client` (`Player`): Admin requesting the list.
-* `entry` (`table`): Table of character data being sent.
-* `stored` (`table`): Raw database row for the character.
+- `client` (`Player`): Admin requesting the list.
+- `entry` (`table`): Table of character data being sent.
+- `stored` (`table`): Raw database row for the character.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3506,13 +3506,13 @@ Returns the maximum stamina for a character. Override to change stamina capacity
 
 **Parameters**
 
-* `character` (`Character`): Character queried.
+- `character` (`Character`): Character queried.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3532,15 +3532,15 @@ Final hook for tweaking the calculated stamina offset. Return the modified offse
 
 **Parameters**
 
-* `client` (`Player`): Player whose stamina is updating.
+- `client` (`Player`): Player whose stamina is updating.
 
-* `offset` (`number`): Current offset after other adjustments.
+- `offset` (`number`): Current offset after other adjustments.
 
 **Realm**
 `Shared`
 
 **Returns**
-* number: New offset to apply.
+- number: New offset to apply.
 
 **Example Usage**
 
@@ -3560,15 +3560,15 @@ Runs after all font files have loaded. Allows registering additional fonts.
 
 **Parameters**
 
-* `currentFont` (`string`): Name of the primary UI font.
+- `currentFont` (`string`): Name of the primary UI font.
 
-* `genericFont` (`string`): Name of the generic fallback font.
+- `genericFont` (`string`): Name of the generic fallback font.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3588,23 +3588,23 @@ Called when the F1 menu builds status bars so new fields can be added.
 
 **Parameters**
 
-* `sectionName` (`string`): Section identifier.
+- `sectionName` (`string`): Section identifier.
 
-* `fieldName` (`string`): Unique field name.
+- `fieldName` (`string`): Unique field name.
 
-* `labelText` (`string`): Display label for the bar.
+- `labelText` (`string`): Display label for the bar.
 
-* `minFunc` (`function`): Returns the minimum value.
+- `minFunc` (`function`): Returns the minimum value.
 
-* `maxFunc` (`function`): Returns the maximum value.
+- `maxFunc` (`function`): Returns the maximum value.
 
-* `valueFunc` (`function`): Returns the current value.
+- `valueFunc` (`function`): Returns the current value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3624,19 +3624,19 @@ Fired when building the F1 menu so modules can insert additional sections.
 
 **Parameters**
 
-* `sectionName` (`string`): Name of the section.
+- `sectionName` (`string`): Name of the section.
 
-* `color` (`Color`): Display color.
+- `color` (`Color`): Display color.
 
-* `priority` (`number`): Sort order priority.
+- `priority` (`number`): Sort order priority.
 
-* `location` (`number`): Column/location index.
+- `location` (`number`): Column/location index.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -3659,19 +3659,19 @@ Determines whether an item may move between inventories.
 
 **Parameters**
 
-* `item` (`Item`): Item being transferred.
+- `item` (`Item`): Item being transferred.
 
-* `oldInventory` (`Inventory`): Source inventory.
+- `oldInventory` (`Inventory`): Source inventory.
 
-* `newInventory` (`Inventory`): Destination inventory.
+- `newInventory` (`Inventory`): Destination inventory.
 
-* `client` (`Player`): Owning player.
+- `client` (`Player`): Owning player.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean, string: False and reason to block
+- boolean, string: False and reason to block
 
 **Example Usage**
 
@@ -3693,13 +3693,13 @@ Called right before a bag inventory UI opens. Return false to block opening.
 
 **Parameters**
 
-* `item` (`Item`): Bag item being opened.
+- `item` (`Item`): Bag item being opened.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to block opening.
+- boolean: False to block opening.
 
 **Example Usage**
 
@@ -3721,13 +3721,13 @@ Checks if an outfit is allowed to change the player model.
 
 **Parameters**
 
-* `item` (`Item`): Outfit item attempting to change the model.
+- `item` (`Item`): Outfit item attempting to change the model.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to block the change.
+- boolean: False to block the change.
 
 **Example Usage**
 
@@ -3749,15 +3749,15 @@ Determines if a player can modify a vendor's settings.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting the edit.
+- `client` (`Player`): Player attempting the edit.
 
-* `vendor` (`Entity`): Vendor entity targeted.
+- `vendor` (`Entity`): Vendor entity targeted.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to disallow editing.
+- boolean: False to disallow editing.
 
 **Example Usage**
 
@@ -3777,15 +3777,15 @@ Called when a player attempts to pick up a money entity.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting to pick up the money.
+- `client` (`Player`): Player attempting to pick up the money.
 
-* `moneyEntity` (`Entity`): The money entity.
+- `moneyEntity` (`Entity`): The money entity.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to disallow pickup.
+- boolean: False to disallow pickup.
 
 **Example Usage**
 
@@ -3807,17 +3807,17 @@ Determines if a player can open or lock a door entity.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting access.
+- `client` (`Player`): Player attempting access.
 
-* `door` (`Entity`): Door entity in question.
+- `door` (`Entity`): Door entity in question.
 
-* `access` (`number`): Desired access level.
+- `access` (`number`): Desired access level.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to deny access.
+- boolean: False to deny access.
 
 **Example Usage**
 
@@ -3839,15 +3839,15 @@ Checks if a player is permitted to open a vendor menu.
 
 **Parameters**
 
-* `client` (`Player`): Player requesting access.
+- `client` (`Player`): Player requesting access.
 
-* `vendor` (`Entity`): Vendor entity.
+- `vendor` (`Entity`): Vendor entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to deny access.
+- boolean: False to deny access.
 
 **Example Usage**
 
@@ -3869,15 +3869,15 @@ Determines if the player can pick up an entity with the hands swep.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting to hold the entity.
+- `client` (`Player`): Player attempting to hold the entity.
 
-* `entity` (`Entity`): Target entity.
+- `entity` (`Entity`): Target entity.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to prevent holding.
+- boolean: False to prevent holding.
 
 **Example Usage**
 
@@ -3899,17 +3899,17 @@ Called when a player tries to use or drop an item.
 
 **Parameters**
 
-* `client` (`Player`): Player interacting with the item.
+- `client` (`Player`): Player interacting with the item.
 
-* `action` (`string`): Action name such as "use" or "drop".
+- `action` (`string`): Action name such as "use" or "drop".
 
-* `item` (`Item`): Item being interacted with.
+- `item` (`Item`): Item being interacted with.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to block the action.
+- boolean: False to block the action.
 
 **Example Usage**
 
@@ -3931,15 +3931,15 @@ Called when a player attempts to knock on a door.
 
 **Parameters**
 
-* `client` (`Player`): Player knocking.
+- `client` (`Player`): Player knocking.
 
-* `door` (`Entity`): Door being knocked on.
+- `door` (`Entity`): Door being knocked on.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to block knocking.
+- boolean: False to block knocking.
 
 **Example Usage**
 
@@ -3961,17 +3961,17 @@ Checks if the player is allowed to spawn a storage container.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting to spawn.
+- `client` (`Player`): Player attempting to spawn.
 
-* `entity` (`Entity`): Prop that will become storage.
+- `entity` (`Entity`): Prop that will become storage.
 
-* `data` (`table`): Storage definition data.
+- `data` (`table`): Storage definition data.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to deny spawning.
+- boolean: False to deny spawning.
 
 **Example Usage**
 
@@ -3993,13 +3993,13 @@ Called when the fists weapon tries to punch.
 
 **Parameters**
 
-* `client` (`Player`): Player performing the punch.
+- `client` (`Player`): Player performing the punch.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean: False to block punching.
+- boolean: False to block punching.
 
 **Example Usage**
 
@@ -4021,19 +4021,19 @@ Checks whether a vendor trade is allowed.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting the trade.
+- `client` (`Player`): Player attempting the trade.
 
-* `vendor` (`Entity`): Vendor entity involved.
+- `vendor` (`Entity`): Vendor entity involved.
 
-* `itemType` (`string`): Item identifier.
+- `itemType` (`string`): Item identifier.
 
-* `selling` (`boolean`): True if the player is selling to the vendor.
+- `selling` (`boolean`): True if the player is selling to the vendor.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean, string: False and reason to deny trade
+- boolean, string: False and reason to deny trade
 
 **Example Usage**
 
@@ -4055,13 +4055,13 @@ Called before any inventory menu is shown.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean: False to prevent opening
+- boolean: False to prevent opening
 
 **Example Usage**
 
@@ -4081,15 +4081,15 @@ Called before persistent storage saves.
 
 **Parameters**
 
-* `entity` (`Entity`): Storage entity being saved.
+- `entity` (`Entity`): Storage entity being saved.
 
-* `inventory` (`Inventory`): Inventory associated with the entity.
+- `inventory` (`Inventory`): Inventory associated with the entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to cancel saving
+- boolean: False to cancel saving
 
 **Example Usage**
 
@@ -4111,15 +4111,15 @@ Allows custom checks for a character's permission flags.
 
 **Parameters**
 
-* `character` (`Character`): Character to check.
+- `character` (`Character`): Character to check.
 
-* `flags` (`string`): Flags being queried.
+- `flags` (`string`): Flags being queried.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4142,13 +4142,13 @@ Runs after a character's data has been saved to the database.
 
 **Parameters**
 
-* `character` (`Character`): Character that finished saving.
+- `character` (`Character`): Character that finished saving.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4168,13 +4168,13 @@ Fired after the database has been successfully connected.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4194,21 +4194,21 @@ Called when an item entity draws its description text.
 
 **Parameters**
 
-* `entity` (`Entity`): Item entity being drawn.
+- `entity` (`Entity`): Item entity being drawn.
 
-* `x` (`number`): X screen position.
+- `x` (`number`): X screen position.
 
-* `y` (`number`): Y screen position.
+- `y` (`number`): Y screen position.
 
-* `color` (`Color`): Text color.
+- `color` (`Color`): Text color.
 
-* `alpha` (`number`): Current alpha value.
+- `alpha` (`number`): Current alpha value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4228,13 +4228,13 @@ Returns the default width and height for new inventories.
 
 **Parameters**
 
-* `client` (`Player`): Player the inventory belongs to.
+- `client` (`Player`): Player the inventory belongs to.
 
 **Realm**
 `Server`
 
 **Returns**
-* number, number: Width and height
+- number, number: Width and height
 
 **Example Usage**
 
@@ -4256,13 +4256,13 @@ Allows overriding the entity model used for dropped money.
 
 **Parameters**
 
-* `amount` (`number`): Money amount being dropped.
+- `amount` (`number`): Money amount being dropped.
 
 **Realm**
 `Shared`
 
 **Returns**
-* string: Model path to use
+- string: Model path to use
 
 **Example Usage**
 
@@ -4284,17 +4284,17 @@ Lets addons modify how much damage the fists weapon deals.
 
 **Parameters**
 
-* `client` (`Player`): Punching player.
+- `client` (`Player`): Punching player.
 
-* `damage` (`number`): Base damage value.
+- `damage` (`number`): Base damage value.
 
-* `context` (`table`): Additional context table.
+- `context` (`table`): Additional context table.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4314,17 +4314,17 @@ Allows overriding default clicks on inventory icons.
 
 **Parameters**
 
-* `self` (`Panel`): Inventory panel.
+- `self` (`Panel`): Inventory panel.
 
-* `itemIcon` (`Panel`): Icon that was clicked.
+- `itemIcon` (`Panel`): Icon that was clicked.
 
-* `keyCode` (`number`): Key that was pressed.
+- `keyCode` (`number`): Key that was pressed.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4346,17 +4346,17 @@ Called when the system attempts to combine one item with another in an inventory
 
 **Parameters**
 
-* `client` (`Player`): Owning player.
+- `client` (`Player`): Owning player.
 
-* `item` (`Item`): Item being combined.
+- `item` (`Item`): Item being combined.
 
-* `targetItem` (`Item`): Item it is being combined with.
+- `targetItem` (`Item`): Item it is being combined with.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: true if combination succeeds and items are consumed, false otherwise.
+- boolean: true if combination succeeds and items are consumed, false otherwise.
 
 **Example Usage**
 
@@ -4380,15 +4380,15 @@ Called when an item icon is dragged completely out of an inventory.
 
 **Parameters**
 
-* `client` (`Player`): Player dragging the item.
+- `client` (`Player`): Player dragging the item.
 
-* `item` (`Item`): Item being removed.
+- `item` (`Item`): Item being removed.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4408,21 +4408,21 @@ Triggered whenever an item function is executed by a player.
 
 **Parameters**
 
-* `item` (`Item`): Item on which the function ran.
+- `item` (`Item`): Item on which the function ran.
 
-* `action` (`string`): Action identifier.
+- `action` (`string`): Action identifier.
 
-* `client` (`Player`): Player performing the action.
+- `client` (`Player`): Player performing the action.
 
-* `entity` (`Entity|nil`): Target entity if any.
+- `entity` (`Entity|nil`): Target entity if any.
 
-* `result` (`any`): Result returned by the item function.
+- `result` (`any`): Result returned by the item function.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4442,13 +4442,13 @@ Called when an item has successfully moved between inventories. The context tabl
 
 **Parameters**
 
-* `context` (`table`): Transfer context table containing client, item, from and to inventories.
+- `context` (`table`): Transfer context table containing client, item, from and to inventories.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4468,17 +4468,17 @@ Called when a character ragdolls or is forced to fall over.
 
 **Parameters**
 
-* `client` (`Player`): Player being ragdolled.
+- `client` (`Player`): Player being ragdolled.
 
-* `ragdoll` (`Entity|nil`): Created ragdoll entity if any.
+- `ragdoll` (`Entity|nil`): Created ragdoll entity if any.
 
-* `forced` (`boolean`): True when the ragdoll was forced.
+- `forced` (`boolean`): True when the ragdoll was forced.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4500,15 +4500,15 @@ Called when a character is kicked from the server.
 
 **Parameters**
 
-* `character` (`Character`): Character that was kicked.
+- `character` (`Character`): Character that was kicked.
 
-* `client` (`Player`): Player owning the character.
+- `client` (`Player`): Player owning the character.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4528,15 +4528,15 @@ Called when a character is permanently killed.
 
 **Parameters**
 
-* `character` (`Character`): Character being permanently killed.
+- `character` (`Character`): Character being permanently killed.
 
-* `time` (`number|nil`): Ban duration or nil for permanent.
+- `time` (`number|nil`): Ban duration or nil for permanent.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4556,13 +4556,13 @@ Called clientside when your character recognizes another.
 
 **Parameters**
 
-* `client` (`Player`): Player that initiated recognition.
+- `client` (`Player`): Player that initiated recognition.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4582,25 +4582,25 @@ Called after a character buys from or sells to a vendor.
 
 **Parameters**
 
-* `client` (`Player`): Player completing the trade.
+- `client` (`Player`): Player completing the trade.
 
-* `vendor` (`Entity`): Vendor entity involved.
+- `vendor` (`Entity`): Vendor entity involved.
 
-* `item` (`Item|nil`): Item traded, if any.
+- `item` (`Item|nil`): Item traded, if any.
 
-* `selling` (`boolean`): True if selling to the vendor.
+- `selling` (`boolean`): True if selling to the vendor.
 
-* `character` (`Character`): Player's character.
+- `character` (`Character`): Player's character.
 
-* `itemType` (`string|nil`): Item identifier when item is nil.
+- `itemType` (`string|nil`): Item identifier when item is nil.
 
-* `failed` (`boolean|nil`): True if the trade failed.
+- `failed` (`boolean|nil`): True if the trade failed.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4620,17 +4620,17 @@ Called when a ragdoll entity is created for a player.
 
 **Parameters**
 
-* `client` (`Player`): The player the ragdoll belongs to.
+- `client` (`Player`): The player the ragdoll belongs to.
 
-* `entity` (`Entity`): The ragdoll entity.
+- `entity` (`Entity`): The ragdoll entity.
 
-* `dead` (`boolean`): True if the player died.
+- `dead` (`boolean`): True if the player died.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4652,17 +4652,17 @@ Called when both the player's inventory and storage panels are created.
 
 **Parameters**
 
-* `localPanel` (`Panel`): The player's inventory panel.
+- `localPanel` (`Panel`): The player's inventory panel.
 
-* `storagePanel` (`Panel`): The storage entity's panel.
+- `storagePanel` (`Panel`): The storage entity's panel.
 
-* `storage` (`Entity`): The storage entity.
+- `storage` (`Entity`): The storage entity.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4684,15 +4684,15 @@ Called when a new item instance is placed into an inventory.
 
 **Parameters**
 
-* `client` (`Player|nil`): Owner of the inventory the item was added to.
+- `client` (`Player|nil`): Owner of the inventory the item was added to.
 
-* `item` (`Item`): Item that was inserted.
+- `item` (`Item`): Item that was inserted.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4714,15 +4714,15 @@ Called when a new item instance table is initialized.
 
 **Parameters**
 
-* `itemTable` (`table`): Item definition table.
+- `itemTable` (`table`): Item definition table.
 
-* `entity` (`Entity`): Spawned item entity.
+- `entity` (`Entity`): Spawned item entity.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4742,13 +4742,13 @@ Called when an item entity has been spawned in the world.
 
 **Parameters**
 
-* `entity` (`Entity`): Spawned item entity.
+- `entity` (`Entity`): Spawned item entity.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4770,15 +4770,15 @@ Called when the vendor dialog panel is opened.
 
 **Parameters**
 
-* `panel` (`Panel`): The vendor menu panel.
+- `panel` (`Panel`): The vendor menu panel.
 
-* `vendor` (`Entity`): The vendor entity.
+- `vendor` (`Entity`): The vendor entity.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4798,15 +4798,15 @@ Called after a player picks up a money entity.
 
 **Parameters**
 
-* `client` (`Player`): The player picking up the money.
+- `client` (`Player`): The player picking up the money.
 
-* `moneyEntity` (`Entity`): The money entity collected.
+- `moneyEntity` (`Entity`): The money entity collected.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4826,21 +4826,21 @@ Fired when a scripted animation sequence begins.
 
 **Parameters**
 
-* `client` (`Player`): Player starting the sequence.
+- `client` (`Player`): Player starting the sequence.
 
-* `sequence` (`string`): Sequence name.
+- `sequence` (`string`): Sequence name.
 
-* `callback` (`function`): Completion callback.
+- `callback` (`function`): Completion callback.
 
-* `time` (`number`): Duration in seconds.
+- `time` (`number`): Duration in seconds.
 
-* `noFreeze` (`boolean`): True if the player should not be frozen.
+- `noFreeze` (`boolean`): True if the player should not be frozen.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4862,21 +4862,21 @@ Runs after a player has interacted with an item.
 
 **Parameters**
 
-* `client` (`Player`): Player performing the interaction.
+- `client` (`Player`): Player performing the interaction.
 
-* `action` (`string`): Action key used.
+- `action` (`string`): Action key used.
 
-* `item` (`Item`): Item affected.
+- `item` (`Item`): Item affected.
 
-* `result` (`any`): Result returned by the action.
+- `result` (`any`): Result returned by the action.
 
-* `data` (`table|nil`): Additional data table.
+- `data` (`table|nil`): Additional data table.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4896,17 +4896,17 @@ Called when a player changes to a new class.
 
 **Parameters**
 
-* `client` (`Player`): The player switching classes.
+- `client` (`Player`): The player switching classes.
 
-* `class` (`table|number`): New class table or index.
+- `class` (`table|number`): New class table or index.
 
-* `oldClass` (`table|number`): Previous class table or index.
+- `oldClass` (`table|number`): Previous class table or index.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4928,13 +4928,13 @@ Fired when a scripted animation sequence ends for a player.
 
 **Parameters**
 
-* `client` (`Player`): Player that finished the sequence.
+- `client` (`Player`): Player that finished the sequence.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4954,13 +4954,13 @@ Called if a stackable item is removed unexpectedly.
 
 **Parameters**
 
-* `item` (`Item`): The item that disappeared.
+- `item` (`Item`): The item that disappeared.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -4982,17 +4982,17 @@ Occurs right before a player's class changes.
 
 **Parameters**
 
-* `client` (`Player`): Player who is switching.
+- `client` (`Player`): Player who is switching.
 
-* `class` (`table|number`): Class being joined.
+- `class` (`table|number`): Class being joined.
 
-* `oldClass` (`table|number`): Class being left.
+- `oldClass` (`table|number`): Class being left.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5014,21 +5014,21 @@ Called when the UI asks to move an item between inventories.
 
 **Parameters**
 
-* `panel` (`Panel`): Inventory panel requesting the move.
+- `panel` (`Panel`): Inventory panel requesting the move.
 
-* `itemID` (`number`): Identifier of the item to move.
+- `itemID` (`number`): Identifier of the item to move.
 
-* `inventoryID` (`number|string`): Destination inventory ID.
+- `inventoryID` (`number|string`): Destination inventory ID.
 
-* `x` (`number`): Destination X coordinate.
+- `x` (`number`): Destination X coordinate.
 
-* `y` (`number`): Destination Y coordinate.
+- `y` (`number`): Destination Y coordinate.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5048,13 +5048,13 @@ Called when map persistence data is loaded.
 
 **Parameters**
 
-* `name` (`string`): Name of the persistence file.
+- `name` (`string`): Name of the persistence file.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5074,15 +5074,15 @@ Occurs when a player successfully opens a vendor.
 
 **Parameters**
 
-* `client` (`Player`): Player accessing the vendor.
+- `client` (`Player`): Player accessing the vendor.
 
-* `vendor` (`Entity`): Vendor entity opened.
+- `vendor` (`Entity`): Vendor entity opened.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5102,13 +5102,13 @@ Called when a player regenerates stamina points.
 
 **Parameters**
 
-* `client` (`Player`): Player gaining stamina.
+- `client` (`Player`): Player gaining stamina.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5130,13 +5130,13 @@ Called when a player's stamina decreases.
 
 **Parameters**
 
-* `client` (`Player`): Player losing stamina.
+- `client` (`Player`): Player losing stamina.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5158,15 +5158,15 @@ Fires when a player lands a punch with the fists weapon.
 
 **Parameters**
 
-* `client` (`Player`): Punching player.
+- `client` (`Player`): Punching player.
 
-* `trace` (`table`): Trace result of the punch.
+- `trace` (`table`): Trace result of the punch.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5186,15 +5186,15 @@ Called each frame after the inventory panel draws.
 
 **Parameters**
 
-* `panel` (`Panel`): The inventory panel being drawn.
+- `panel` (`Panel`): The inventory panel being drawn.
 
-* `parentPanel` (`Panel|nil`): Parent panel if any.
+- `parentPanel` (`Panel|nil`): Parent panel if any.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5214,17 +5214,17 @@ Called just before a player interacts with an item.
 
 **Parameters**
 
-* `client` (`Player`): Player performing the action.
+- `client` (`Player`): Player performing the action.
 
-* `action` (`string`): Action identifier.
+- `action` (`string`): Action identifier.
 
-* `item` (`Item`): Target item.
+- `item` (`Item`): Target item.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5246,13 +5246,13 @@ Allows modules to define who can access a bag inventory.
 
 **Parameters**
 
-* `inventory` (`Inventory`): Bag inventory object.
+- `inventory` (`Inventory`): Bag inventory object.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5272,13 +5272,13 @@ Runs before the gamemode initializes its database connection.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5298,17 +5298,17 @@ Determines if an item can move in or out of a storage entity.
 
 **Parameters**
 
-* `client` (`Player`): Player moving the item.
+- `client` (`Player`): Player moving the item.
 
-* `storage` (`Entity`): Storage entity.
+- `storage` (`Entity`): Storage entity.
 
-* `item` (`Item`): Item being transferred.
+- `item` (`Item`): Item being transferred.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: False to disallow transfer
+- boolean: False to disallow transfer
 
 **Example Usage**
 
@@ -5330,15 +5330,15 @@ Fired when a storage entity is removed from the world.
 
 **Parameters**
 
-* `entity` (`Entity`): The storage entity being removed.
+- `entity` (`Entity`): The storage entity being removed.
 
-* `inventory` (`Inventory`): Inventory associated with the entity.
+- `inventory` (`Inventory`): Inventory associated with the entity.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5358,17 +5358,17 @@ Called when a storage entity is assigned an inventory.
 
 **Parameters**
 
-* `entity` (`Entity`): The storage entity.
+- `entity` (`Entity`): The storage entity.
 
-* `inventory` (`Inventory`): Inventory assigned.
+- `inventory` (`Inventory`): Inventory assigned.
 
-* `isCar` (`boolean`): True if the entity is a vehicle trunk.
+- `isCar` (`boolean`): True if the entity is a vehicle trunk.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5390,15 +5390,15 @@ Called clientside when a storage menu is opened.
 
 **Parameters**
 
-* `entity` (`Entity`): Storage entity opened.
+- `entity` (`Entity`): Storage entity opened.
 
-* `isCar` (`boolean`): True if opening a vehicle trunk.
+- `isCar` (`boolean`): True if opening a vehicle trunk.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5418,15 +5418,15 @@ Called when a storage's contents are loaded from disk.
 
 **Parameters**
 
-* `storage` (`Entity`): Storage entity.
+- `storage` (`Entity`): Storage entity.
 
-* `inventory` (`Inventory`): Inventory loaded.
+- `inventory` (`Inventory`): Inventory loaded.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5446,13 +5446,13 @@ Called clientside when you must enter a storage password.
 
 **Parameters**
 
-* `entity` (`Entity`): Storage entity being opened.
+- `entity` (`Entity`): Storage entity being opened.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5472,13 +5472,13 @@ Called when a vendor's allowed classes are updated.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5498,13 +5498,13 @@ Called after a delay when a vendor's data is edited.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5524,13 +5524,13 @@ Called when a player exits from interacting with a vendor.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5550,13 +5550,13 @@ Called when a vendor's allowed factions are updated.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5576,13 +5576,13 @@ Called when a vendor's item max stock value changes.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5602,13 +5602,13 @@ Called when a vendor's item mode is changed.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5628,13 +5628,13 @@ Called when a vendor's item price is changed.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5654,13 +5654,13 @@ Called when a vendor's item stock value changes.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5680,13 +5680,13 @@ Called when a vendor's available money changes.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5706,13 +5706,13 @@ Called when a vendor menu is opened on the client.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5732,13 +5732,13 @@ Called when vendor synchronization data is received.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5758,13 +5758,13 @@ Called when a player attempts to trade with a vendor.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -5785,13 +5785,13 @@ Returns an alternate model path for a dropped item.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* string|nil: Alternate model path or nil for default.
+- string|nil: Alternate model path or nil for default.
 
 **Example Usage**
 
@@ -5813,13 +5813,13 @@ Allows modules to override a vendor item's price dynamically.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* integer|nil: New price or nil for default.
+- integer|nil: New price or nil for default.
 
 **Example Usage**
 
@@ -5845,13 +5845,13 @@ Checks if a character is fake recognized rather than truly known.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -5873,15 +5873,15 @@ Determines whether one character recognizes another.
 
 **Parameters**
 
-* `character` (`Character`): Character performing the check.
+- `character` (`Character`): Character performing the check.
 
-* `id` (`number`): Identifier of the other character.
+- `id` (`number`): Identifier of the other character.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -5901,13 +5901,13 @@ Determines if a chat type counts toward recognition.
 
 **Parameters**
 
-* `chatType` (`string`): The chat command being checked.
+- `chatType` (`string`): The chat command being checked.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -5928,13 +5928,13 @@ Determines whether an entity can be used as trunk storage.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -5954,17 +5954,17 @@ Determines if a player is allowed to earn salary.
 
 **Parameters**
 
-* `client` (`Player`): Player to check.
+- `client` (`Player`): Player to check.
 
-* `faction` (`table`): Faction data for the player.
+- `faction` (`table`): Faction data for the player.
 
-* `class` (`table`): Class table for the player.
+- `class` (`table`): Class table for the player.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -5987,17 +5987,17 @@ Determines whether a player can join a certain class. Return `false` to block.
 
 **Parameters**
 
-* `client` (`Player`): Player requesting the class.
+- `client` (`Player`): Player requesting the class.
 
-* `class` (`number`): Class index being joined.
+- `class` (`number`): Class index being joined.
 
-* `info` (`table`): Additional class info table.
+- `info` (`table`): Additional class info table.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean|nil: false to block, nil to allow.
+- boolean|nil: false to block, nil to allow.
 
 **Example Usage**
 
@@ -6023,15 +6023,15 @@ Determines if a player can use a specific command. Returning either
 
 **Parameters**
 
-* `client` (`Player`): Player running the command.
+- `client` (`Player`): Player running the command.
 
-* `command` (`string`): Command name.
+- `command` (`string`): Command name.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean|nil: non-nil values override the result; return `nil` to
+- boolean|nil: non-nil values override the result; return `nil` to
 
 allow built‑in checks to decide.
 
@@ -6056,17 +6056,17 @@ Determines if a player is allowed to use a door entity, such as opening, locking
 
 **Parameters**
 
-* `client` (`Player`): The player attempting to use the door.
+- `client` (`Player`): The player attempting to use the door.
 
-* `door` (`Entity`): The door entity being used.
+- `door` (`Entity`): The door entity being used.
 
-* `access` (`int`): Access type attempted (e.g. DOOR_LOCK).
+- `access` (`int`): Access type attempted (e.g. DOOR_LOCK).
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean: false to block, nil or true to allow.
+- boolean: false to block, nil or true to allow.
 
 **Example Usage**
 
@@ -6089,13 +6089,13 @@ Used during character cleanup routines for additional steps when removing or tra
 
 **Parameters**
 
-* `character` (`Character`): The character being cleaned up.
+- `character` (`Character`): The character being cleaned up.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6121,13 +6121,13 @@ Called after a character has been restored from the database. Useful for post-re
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6151,13 +6151,13 @@ Called when creating a default inventory for a character. Should return a [defer
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6187,15 +6187,15 @@ Client-side call when creating the graphical representation of an inventory.
 
 **Parameters**
 
-* `inventory` (`Inventory`): Inventory instance to draw.
+- `inventory` (`Inventory`): Inventory instance to draw.
 
-* `parent` (`Panel`): Parent container panel.
+- `parent` (`Panel`): Parent container panel.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6231,13 +6231,13 @@ Creates a timer to manage player salary.
 
 **Parameters**
 
-* `client` (`Player`): Player receiving the salary timer.
+- `client` (`Player`): Player receiving the salary timer.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6265,15 +6265,15 @@ Called when modules include submodules. Useful for advanced module handling or d
 
 **Parameters**
 
-* `path` (`string`): Directory path containing the submodule.
+- `path` (`string`): Directory path containing the submodule.
 
-* `module` (`table`): Module performing the include.
+- `module` (`table`): Module performing the include.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6295,17 +6295,17 @@ Retrieves a default description for a character during creation. Return `(defaul
 
 **Parameters**
 
-* `client` (`Player`): Player creating the character.
+- `client` (`Player`): Player creating the character.
 
-* `faction` (`number`): Faction index of the new character.
+- `faction` (`number`): Faction index of the new character.
 
 **Realm**
 `Server`
 
 **Returns**
-* string: The default description.
+- string: The default description.
 
-* boolean: Whether to override.
+- boolean: Whether to override.
 
 **Example Usage**
 
@@ -6329,19 +6329,19 @@ If the character's faction defines a prefix it will automatically be prepended t
 
 **Parameters**
 
-* `client` (`Player`): Player creating the character.
+- `client` (`Player`): Player creating the character.
 
-* `faction` (`number`): Faction index.
+- `faction` (`number`): Faction index.
 
-* `data` (`table`): Additional creation data.
+- `data` (`table`): Additional creation data.
 
 **Realm**
 `Server`
 
 **Returns**
-* string: The default name.
+- string: The default name.
 
-* boolean: Whether to override the user-provided name.
+- boolean: Whether to override the user-provided name.
 
 **Example Usage**
 
@@ -6363,17 +6363,17 @@ Retrieves the amount of salary a player should receive.
 
 **Parameters**
 
-* `client` (`Player`): Player receiving salary.
+- `client` (`Player`): Player receiving salary.
 
-* `faction` (`table`): Player's faction data.
+- `faction` (`table`): Player's faction data.
 
-* `class` (`table`): Player's class data.
+- `class` (`table`): Player's class data.
 
 **Realm**
 `Shared`
 
 **Returns**
-* any: The salary amount
+- any: The salary amount
 
 **Example Usage**
 
@@ -6395,17 +6395,17 @@ Retrieves the salary limit for a player.
 
 **Parameters**
 
-* `client` (`Player`): Player being checked.
+- `client` (`Player`): Player being checked.
 
-* `faction` (`table`): Player's faction data.
+- `faction` (`table`): Player's faction data.
 
-* `class` (`table`): Player's class data.
+- `class` (`table`): Player's class data.
 
 **Realm**
 `Shared`
 
 **Returns**
-* any: The salary limit
+- any: The salary limit
 
 **Example Usage**
 
@@ -6429,13 +6429,13 @@ Called when `lia.config` is fully initialized.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6460,13 +6460,13 @@ Called once all item modules have been loaded from a directory.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6495,13 +6495,13 @@ Called after all modules are fully initialized.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6521,13 +6521,13 @@ Called when `lia.option` is fully initialized.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6547,13 +6547,13 @@ Called after the schema has finished initializing.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6574,17 +6574,17 @@ Called when a player attempts to lock a door.
 
 **Parameters**
 
-* `owner` (`Player`): Player locking the door.
+- `owner` (`Player`): Player locking the door.
 
-* `entity` (`Entity`): Door entity being locked.
+- `entity` (`Entity`): Door entity being locked.
 
-* `time` (`float`): Duration of the locking animation.
+- `time` (`float`): Duration of the locking animation.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6610,17 +6610,17 @@ Called when a player attempts to unlock a door.
 
 **Parameters**
 
-* `owner` (`Player`): Player unlocking the door.
+- `owner` (`Player`): Player unlocking the door.
 
-* `entity` (`Entity`): Door entity being unlocked.
+- `entity` (`Entity`): Door entity being unlocked.
 
-* `time` (`float`): How long the process took.
+- `time` (`float`): How long the process took.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6646,13 +6646,13 @@ Called after all essential DB tables have been loaded.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6674,13 +6674,13 @@ Called after an item has been registered. Useful for customizing item behavior o
 
 **Parameters**
 
-* `item` (`Item`): Item definition being registered.
+- `item` (`Item`): Item definition being registered.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6710,13 +6710,13 @@ Called before the faction tables are loaded. Good spot for data setup prior to f
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6738,13 +6738,13 @@ Called when MySQLOO successfully connects to the database. Use to register prepa
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6773,7 +6773,7 @@ Triggered once all required database tables have been created and initial data h
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 
@@ -6781,7 +6781,7 @@ Triggered once all required database tables have been created and initial data h
 
 **Returns**
 
-* None
+- None
 
 **Example Usage**
 
@@ -6804,19 +6804,19 @@ Called when a player purchases or sells a door.
 
 **Parameters**
 
-* `client` (`Player`): Player buying or selling the door.
+- `client` (`Player`): Player buying or selling the door.
 
-* `entity` (`Entity`): Door entity affected.
+- `entity` (`Entity`): Door entity affected.
 
-* `buying` (`boolean`): True if buying, false if selling.
+- `buying` (`boolean`): True if buying, false if selling.
 
-* `CallOnDoorChild` (`function`): Optional callback for door children.
+- `CallOnDoorChild` (`function`): Optional callback for door children.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6845,21 +6845,21 @@ Called whenever a new log message is added. Allows for custom logic or modificat
 
 **Parameters**
 
-* `client` (`Player`): Player associated with the log or nil.
+- `client` (`Player`): Player associated with the log or nil.
 
-* `logType` (`string`): Type identifier for the log entry.
+- `logType` (`string`): Type identifier for the log entry.
 
-* `logString` (`string`): Formatted log text.
+- `logString` (`string`): Formatted log text.
 
-* `category` (`string`): Category name.
+- `category` (`string`): Category name.
 
-* `color` (`Color`): Display color.
+- `color` (`Color`): Display color.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6885,13 +6885,13 @@ Called after wiping tables in the DB, typically after major resets/cleanups.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6913,19 +6913,19 @@ Called before a chat message is sent. Return `false` to cancel, or modify the me
 
 **Parameters**
 
-* `speaker` (`Player`): Player sending the message.
+- `speaker` (`Player`): Player sending the message.
 
-* `chatType` (`string`): Chat type key.
+- `chatType` (`string`): Chat type key.
 
-* `message` (`string`): Message contents.
+- `message` (`string`): Message contents.
 
-* `anonymous` (`boolean`): True if the speaker is hidden.
+- `anonymous` (`boolean`): True if the speaker is hidden.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean|nil|modifiedString: false to cancel, or return a modified string to change the message.
+- boolean|nil|modifiedString: false to cancel, or return a modified string to change the message.
 
 **Example Usage**
 
@@ -6948,15 +6948,15 @@ Called when a player's model changes.
 
 **Parameters**
 
-* `client` (`Player`): The player whose model changed.
+- `client` (`Player`): The player whose model changed.
 
-* `model` (`string`): The new model path.
+- `model` (`string`): The new model path.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -6978,14 +6978,14 @@ Lets modules modify player models after the base model, skin and bodygroups are 
 
 **Parameters**
 
-* `ent` (`Entity`): Player or menu model entity being initialized.
-* `character` (`table|nil`): Active character table if available.
+- `ent` (`Entity`): Player or menu model entity being initialized.
+- `character` (`table|nil`): Active character table if available.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7007,15 +7007,15 @@ Called when a player attempts to use a door entity.
 
 **Parameters**
 
-* `client` (`Player`): Player using the door.
+- `client` (`Player`): Player using the door.
 
-* `entity` (`Entity`): Door entity targeted.
+- `entity` (`Entity`): Door entity targeted.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to disallow, true to allow, or nil to let other hooks decide.
+- boolean|nil: false to disallow, true to allow, or nil to let other hooks decide.
 
 **Example Usage**
 
@@ -7039,13 +7039,13 @@ Called for registering DB prepared statements post-MySQLOO connection.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7065,13 +7065,13 @@ Determines whether a specific HUD bar should be drawn.
 
 **Parameters**
 
-* `barName` (`string`): HUD bar identifier, e.g. "health" or "armor".
+- `barName` (`string`): HUD bar identifier, e.g. "health" or "armor".
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean|nil: false to hide, nil to allow.
+- boolean|nil: false to hide, nil to allow.
 
 **Example Usage**
 
@@ -7093,13 +7093,13 @@ Checks if third-person view is allowed or disabled.
 
 **Parameters**
 
-* `client` (`Player`): Player to test.
+- `client` (`Player`): Player to test.
 
 **Realm**
 `Client`
 
 **Returns**
-* `boolean` (`true if 3rd-person should be disabled`)
+- `boolean` (`true if 3rd-person should be disabled`)
 
 **Example Usage**
 
@@ -7121,13 +7121,13 @@ Determines whether all HUD bars should be hidden.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean|nil: true to hide, nil to allow rendering.
+- boolean|nil: true to hide, nil to allow rendering.
 
 **Example Usage**
 
@@ -7149,13 +7149,13 @@ Called when third-person mode is toggled on or off. Allows for custom handling o
 
 **Parameters**
 
-* `state` (`boolean`): true if third-person is enabled, false if disabled.
+- `state` (`boolean`): true if third-person is enabled, false if disabled.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7180,19 +7180,19 @@ Called when a text field is added to an F1 menu information section. Allows modu
 
 **Parameters**
 
-* `sectionName` (`string`): Target section name.
+- `sectionName` (`string`): Target section name.
 
-* `fieldName` (`string`): Unique field identifier.
+- `fieldName` (`string`): Unique field identifier.
 
-* `labelText` (`string`): Text shown for the field.
+- `labelText` (`string`): Text shown for the field.
 
-* `valueFunc` (`function`): Function returning the value string.
+- `valueFunc` (`function`): Function returning the value string.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7214,19 +7214,19 @@ Fired after AddTextField so other modules can react to new fields.
 
 **Parameters**
 
-* `sectionName` (`string`): Section name that received the field.
+- `sectionName` (`string`): Section name that received the field.
 
-* `fieldName` (`string`): Identifier of the new field.
+- `fieldName` (`string`): Identifier of the new field.
 
-* `labelText` (`string`): Field label.
+- `labelText` (`string`): Field label.
 
-* `valueFunc` (`function`): Function returning the field value.
+- `valueFunc` (`function`): Function returning the field value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7246,23 +7246,23 @@ Triggered after AddBarField inserts a status bar into the F1 menu.
 
 **Parameters**
 
-* `sectionName` (`string`): Section identifier.
+- `sectionName` (`string`): Section identifier.
 
-* `fieldName` (`string`): Bar field name.
+- `fieldName` (`string`): Bar field name.
 
-* `labelText` (`string`): Bar label text.
+- `labelText` (`string`): Bar label text.
 
-* `minFunc` (`function`): Function returning the minimum value.
+- `minFunc` (`function`): Function returning the minimum value.
 
-* `maxFunc` (`function`): Function returning the maximum value.
+- `maxFunc` (`function`): Function returning the maximum value.
 
-* `valueFunc` (`function`): Function returning the current value.
+- `valueFunc` (`function`): Function returning the current value.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7282,13 +7282,13 @@ Called while building the F1 information menu to populate navigation buttons.
 
 **Parameters**
 
-* `pages` (`table`): Table to add page definitions into.
+- `pages` (`table`): Table to add page definitions into.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7308,13 +7308,13 @@ Invoked when the settings tab is constructed allowing new configuration pages.
 
 **Parameters**
 
-* `pages` (`table`): Table to populate with config pages.
+- `pages` (`table`): Table to populate with config pages.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7334,13 +7334,13 @@ Called after keybinds have been loaded from disk.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7360,13 +7360,13 @@ Allows modification of the cooldown delay between OOC messages.
 
 **Parameters**
 
-* `client` (`Player`): Player sending OOC chat.
+- `client` (`Player`): Player sending OOC chat.
 
 **Realm**
 `Server`
 
 **Returns**
-* number|nil: Custom cooldown in seconds.
+- number|nil: Custom cooldown in seconds.
 
 **Example Usage**
 
@@ -7388,19 +7388,19 @@ Runs on the client when chat text is received before display. Returning modified
 
 **Parameters**
 
-* `client` (`Player`): Player that sent the chat.
+- `client` (`Player`): Player that sent the chat.
 
-* `chatType` (`string`): Chat type identifier.
+- `chatType` (`string`): Chat type identifier.
 
-* `text` (`string`): Message text.
+- `text` (`string`): Message text.
 
-* `anonymous` (`boolean`): True if anonymous chat.
+- `anonymous` (`boolean`): True if anonymous chat.
 
 **Realm**
 `Client`
 
 **Returns**
-* string|nil: Replacement text.
+- string|nil: Replacement text.
 
 **Example Usage**
 
@@ -7420,15 +7420,15 @@ Requests PAC3 part data after adjustments have been applied.
 
 **Parameters**
 
-* `wearer` (`Entity`): Entity wearing the outfit.
+- `wearer` (`Entity`): Entity wearing the outfit.
 
-* `id` (`string`): Part identifier.
+- `id` (`string`): Part identifier.
 
 **Realm**
 `Client`
 
 **Returns**
-* table|nil: Adjusted part data.
+- table|nil: Adjusted part data.
 
 **Example Usage**
 
@@ -7448,17 +7448,17 @@ Allows modules to modify PAC3 part data before it is attached.
 
 **Parameters**
 
-* `wearer` (`Entity`): Entity wearing the part.
+- `wearer` (`Entity`): Entity wearing the part.
 
-* `id` (`string`): Part identifier.
+- `id` (`string`): Part identifier.
 
-* `data` (`table`): Part data table.
+- `data` (`table`): Part data table.
 
 **Realm**
 `Client`
 
 **Returns**
-* table|nil: Modified data table.
+- table|nil: Modified data table.
 
 **Example Usage**
 
@@ -7479,15 +7479,15 @@ Called when a PAC3 part should be attached to a player.
 
 **Parameters**
 
-* `client` (`Player`): Player receiving the part.
+- `client` (`Player`): Player receiving the part.
 
-* `id` (`string`): Part identifier.
+- `id` (`string`): Part identifier.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7507,15 +7507,15 @@ Triggered when a PAC3 part is removed from a player.
 
 **Parameters**
 
-* `client` (`Player`): Player losing the part.
+- `client` (`Player`): Player losing the part.
 
-* `id` (`string`): Part identifier being removed.
+- `id` (`string`): Part identifier being removed.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7535,13 +7535,13 @@ Fired when a PAC3 outfit part transfers ownership to a ragdoll.
 
 **Parameters**
 
-* `part` (`Entity`): The outfit part being transferred.
+- `part` (`Entity`): The outfit part being transferred.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7561,13 +7561,13 @@ Allows custom rendering of a player's ragdoll created by PAC3.
 
 **Parameters**
 
-* `entity` (`Entity`): Ragdoll entity to draw.
+- `entity` (`Entity`): Ragdoll entity to draw.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7587,13 +7587,13 @@ Initializes PAC3 outfits from equipped items after modules load.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7613,13 +7613,13 @@ Allows PAC3 to swap the view model entity for event checks.
 
 **Parameters**
 
-* `entity` (`Entity`): The view model entity.
+- `entity` (`Entity`): The view model entity.
 
 **Realm**
 `Client`
 
 **Returns**
-* Entity: Replacement entity.
+- Entity: Replacement entity.
 
 **Example Usage**
 
@@ -7639,15 +7639,15 @@ Lets modules provide a custom sound when cycling weapons in the selector.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* string|nil: Sound path.
+- string|nil: Sound path.
 
-* number|nil: Playback pitch.
+- number|nil: Playback pitch.
 
 **Example Usage**
 
@@ -7667,15 +7667,15 @@ Similar to WeaponCycleSound but used when confirming a weapon choice.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* string|nil: Sound path.
+- string|nil: Sound path.
 
-* number|nil: Playback pitch.
+- number|nil: Playback pitch.
 
 **Example Usage**
 
@@ -7695,13 +7695,13 @@ Determines if the weapon selection UI should be visible.
 
 **Parameters**
 
-* `client` (`Player`): Player whose UI is drawing.
+- `client` (`Player`): Player whose UI is drawing.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -7721,13 +7721,13 @@ Checks whether the active weapon can be selected via the weapon wheel.
 
 **Parameters**
 
-* `weapon` (`Weapon`): Weapon to name.
+- `weapon` (`Weapon`): Weapon to name.
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean|nil: false to block selection.
+- boolean|nil: false to block selection.
 
 **Example Usage**
 
@@ -7749,15 +7749,15 @@ Allows modules to modify the respawn delay after death.
 
 **Parameters**
 
-* `client` (`Player`): Respawning player.
+- `client` (`Player`): Respawning player.
 
-* `baseTime` (`number`): Default respawn delay.
+- `baseTime` (`number`): Default respawn delay.
 
 **Realm**
 `Client`
 
 **Returns**
-* number|nil: New respawn time.
+- number|nil: New respawn time.
 
 **Example Usage**
 
@@ -7779,13 +7779,13 @@ Lets modules suppress the respawn HUD from showing.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* boolean|nil: false to hide.
+- boolean|nil: false to hide.
 
 **Example Usage**
 
@@ -7805,13 +7805,13 @@ Fired when voice chat is enabled or disabled via config.
 
 **Parameters**
 
-* `enabled` (`boolean`): Current voice chat state.
+- `enabled` (`boolean`): Current voice chat state.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7831,13 +7831,13 @@ Fired when the Derma UI skin configuration value changes. Allows modules to reac
 
 **Parameters**
 
-* `skin` (`string`): Name of the new Derma skin.
+- `skin` (`string`): Name of the new Derma skin.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7857,13 +7857,13 @@ Requests recreation of all registered UI fonts.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7883,19 +7883,19 @@ Allows modification of character creation data before the character is saved.
 
 **Parameters**
 
-* `client` (`Player`): Player creating the character.
+- `client` (`Player`): Player creating the character.
 
-* `data` (`table`): Sanitized creation data.
+- `data` (`table`): Sanitized creation data.
 
-* `newData` (`table`): Table to modify.
+- `newData` (`table`): Table to modify.
 
-* `originalData` (`table`): Raw data before adjustments.
+- `originalData` (`table`): Raw data before adjustments.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -7917,17 +7917,17 @@ Determines if a character may switch factions.
 
 **Parameters**
 
-* `character` (`table`): Character being transferred.
+- `character` (`table`): Character being transferred.
 
-* `newFaction` (`table`): Faction to join.
+- `newFaction` (`table`): Faction to join.
 
-* `oldFaction` (`number`): Index of the current faction.
+- `oldFaction` (`number`): Index of the current faction.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to block.
+- boolean|nil: false to block.
 
 **Example Usage**
 
@@ -7949,15 +7949,15 @@ Checks if `client` can invite `target` to the same faction. Return false to deny
 
 **Parameters**
 
-* `client` (`Player`): Player sending the invitation.
+- `client` (`Player`): Player sending the invitation.
 
-* `target` (`Player`): Player being invited.
+- `target` (`Player`): Player being invited.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to block.
+- boolean|nil: false to block.
 
 **Example Usage**
 
@@ -7977,14 +7977,14 @@ Checks if `client` can invite `target` to their current class. Return false to d
 
 **Parameters**
 
-* `client` (`Player`): Player sending the invitation.
-* `target` (`Player`): Player being invited.
+- `client` (`Player`): Player sending the invitation.
+- `target` (`Player`): Player being invited.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to block.
+- boolean|nil: false to block.
 
 **Example Usage**
 
@@ -8004,15 +8004,15 @@ Called when a player attempts to load one of their characters.
 
 **Parameters**
 
-* `client` (`Player`): Player loading the character.
+- `client` (`Player`): Player loading the character.
 
-* `character` (`table`): Character being loaded.
+- `character` (`table`): Character being loaded.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to deny.
+- boolean|nil: false to deny.
 
 **Example Usage**
 
@@ -8034,17 +8034,17 @@ Checks if a player can switch from their current character to another.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting the switch.
+- `client` (`Player`): Player attempting the switch.
 
-* `currentChar` (`table`): Currently loaded character.
+- `currentChar` (`table`): Currently loaded character.
 
-* `newChar` (`table`): Character to switch to.
+- `newChar` (`table`): Character to switch to.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to block the switch.
+- boolean|nil: false to block the switch.
 
 **Example Usage**
 
@@ -8066,15 +8066,15 @@ Determines whether the player may lock the given door or vehicle.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting to lock.
+- `client` (`Player`): Player attempting to lock.
 
-* `door` (`Entity`): Door or vehicle entity.
+- `door` (`Entity`): Door or vehicle entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to disallow.
+- boolean|nil: false to disallow.
 
 **Example Usage**
 
@@ -8096,15 +8096,15 @@ Determines whether the player may unlock the given door or vehicle.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting to unlock.
+- `client` (`Player`): Player attempting to unlock.
 
-* `door` (`Entity`): Door or vehicle entity.
+- `door` (`Entity`): Door or vehicle entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to disallow.
+- boolean|nil: false to disallow.
 
 **Example Usage**
 
@@ -8126,15 +8126,15 @@ Lets you change how many attribute points a new character receives. Retrieves th
 
 **Parameters**
 
-* `client` (`Player`): Viewing player.
+- `client` (`Player`): Viewing player.
 
-* `context` (`string`): Creation context.
+- `context` (`string`): Creation context.
 
 **Realm**
 `Client`
 
 **Returns**
-* number: Maximum starting points
+- number: Maximum starting points
 
 **Example Usage**
 
@@ -8154,15 +8154,15 @@ Sets a limit for a specific attribute at character creation. Returns the startin
 
 **Parameters**
 
-* `client` (`Player`): Viewing player.
+- `client` (`Player`): Viewing player.
 
-* `attribute` (`string`): Attribute identifier.
+- `attribute` (`string`): Attribute identifier.
 
 **Realm**
 `Client`
 
 **Returns**
-* number: Maximum starting value
+- number: Maximum starting value
 
 **Example Usage**
 
@@ -8184,15 +8184,15 @@ Returns the maximum value allowed for an attribute.
 
 **Parameters**
 
-* `client` (`Player`): Player being queried.
+- `client` (`Player`): Player being queried.
 
-* `attribute` (`string`): Attribute identifier.
+- `attribute` (`string`): Attribute identifier.
 
 **Realm**
 `Shared`
 
 **Returns**
-* number: Maximum attribute value
+- number: Maximum attribute value
 
 **Example Usage**
 
@@ -8214,21 +8214,21 @@ Fired when an attribute boost is added or removed.
 
 **Parameters**
 
-* `client` (`Player`): Player owning the character.
+- `client` (`Player`): Player owning the character.
 
-* `character` (`Character`): Character affected.
+- `character` (`Character`): Character affected.
 
-* `key` (`string`): Attribute identifier.
+- `key` (`string`): Attribute identifier.
 
-* `boostID` (`string`): Unique boost key.
+- `boostID` (`string`): Unique boost key.
 
-* `amount` (`number|boolean`): Amount added or true when removed.
+- `amount` (`number|boolean`): Amount added or true when removed.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8250,19 +8250,19 @@ Fired when a character attribute value is changed.
 
 **Parameters**
 
-* `client` (`Player`): Player owning the character.
+- `client` (`Player`): Player owning the character.
 
-* `character` (`Character`): Character updated.
+- `character` (`Character`): Character updated.
 
-* `key` (`string`): Attribute identifier.
+- `key` (`string`): Attribute identifier.
 
-* `value` (`number`): New attribute value.
+- `value` (`number`): New attribute value.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8284,15 +8284,15 @@ Called when a player attempts to change a configuration value.
 
 **Parameters**
 
-* `client` (`Player`): Player attempting the change.
+- `client` (`Player`): Player attempting the change.
 
-* `key` (`string`): Config key being modified.
+- `key` (`string`): Config key being modified.
 
 **Realm**
 `Server`
 
 **Returns**
-* boolean|nil: false to deny modification.
+- boolean|nil: false to deny modification.
 
 **Example Usage**
 
@@ -8312,15 +8312,15 @@ Fired after a character is permanently removed.
 
 **Parameters**
 
-* `client` (`Player`): Player who owned the character.
+- `client` (`Player`): Player who owned the character.
 
-* `character` (`table`): Character that was deleted.
+- `character` (`table`): Character that was deleted.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8340,17 +8340,17 @@ Allows custom logic for determining if a faction has reached its player limit.
 
 **Parameters**
 
-* `faction` (`table`): Faction being checked.
+- `faction` (`table`): Faction being checked.
 
-* `character` (`table`): Character requesting to join.
+- `character` (`table`): Character requesting to join.
 
-* `client` (`Player`): Owning player.
+- `client` (`Player`): Owning player.
 
 **Realm**
 `Shared`
 
 **Returns**
-* boolean
+- boolean
 
 **Example Usage**
 
@@ -8372,19 +8372,19 @@ Triggered after AddSection inserts a new information section.
 
 **Parameters**
 
-* `sectionName` (`string`): Name of the inserted section.
+- `sectionName` (`string`): Name of the inserted section.
 
-* `color` (`Color`): Display color for the section.
+- `color` (`Color`): Display color for the section.
 
-* `priority` (`number`): Sorting priority.
+- `priority` (`number`): Sorting priority.
 
-* `location` (`number`): Column index.
+- `location` (`number`): Column index.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8404,13 +8404,13 @@ Allows overriding of the displayed weapon name in the selector.
 
 **Parameters**
 
-* `weapon` (`Weapon`): Weapon to name.
+- `weapon` (`Weapon`): Weapon to name.
 
 **Realm**
 `Client`
 
 **Returns**
-* string|nil: Replacement name.
+- string|nil: Replacement name.
 
 **Example Usage**
 
@@ -8430,15 +8430,15 @@ Called when a ragdolled character finishes getting up.
 
 **Parameters**
 
-* `client` (`Player`): Player getting up.
+- `client` (`Player`): Player getting up.
 
-* `entity` (`Entity`): Ragdoll entity.
+- `entity` (`Entity`): Ragdoll entity.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8458,13 +8458,13 @@ Fired once language files finish loading.
 
 **Parameters**
 
-* None
+- None
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8484,15 +8484,15 @@ Called when a player's observe mode is toggled.
 
 **Parameters**
 
-* `client` (`Player`): Player toggling observe mode.
+- `client` (`Player`): Player toggling observe mode.
 
-* `state` (`boolean`): True to enable observing.
+- `state` (`boolean`): True to enable observing.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8512,17 +8512,17 @@ Called after a player finishes loading a character. The client receives the same
 
 **Parameters**
 
-* `client` (`Player`): Player who loaded the character.
+- `client` (`Player`): Player who loaded the character.
 
-* `character` (`table`): New character object.
+- `character` (`table`): New character object.
 
-* `previousChar` (`table|nil`): Previously active character.
+- `previousChar` (`table|nil`): Previously active character.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8542,17 +8542,17 @@ Runs just before a new character becomes active for the player. The client side 
 
 **Parameters**
 
-* `client` (`Player`): Player switching characters.
+- `client` (`Player`): Player switching characters.
 
-* `newChar` (`table`): Character being loaded.
+- `newChar` (`table`): Character being loaded.
 
-* `oldChar` (`table|nil`): Character being left.
+- `oldChar` (`table|nil`): Character being left.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8572,17 +8572,17 @@ Runs after `PlayerLoadedChar` so modules can perform additional setup. The clien
 
 **Parameters**
 
-* `client` (`Player`): Player that finished loading.
+- `client` (`Player`): Player that finished loading.
 
-* `character` (`table`): Active character table.
+- `character` (`table`): Active character table.
 
-* `previousChar` (`table|nil`): Previous character if any.
+- `previousChar` (`table|nil`): Previous character if any.
 
 **Realm**
 `Shared`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8602,15 +8602,15 @@ Custom hook executed when a player sends a chat message server-side.
 
 **Parameters**
 
-* `client` (`Player`): Speaking player.
+- `client` (`Player`): Speaking player.
 
-* `text` (`string`): Message content.
+- `text` (`string`): Message content.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8630,15 +8630,15 @@ Called after the admin stick menu is created so additional commands can be added
 
 **Parameters**
 
-* `menu` (`DermaPanel`): Context menu panel.
+- `menu` (`DermaPanel`): Context menu panel.
 
-* `target` (`Entity`): Target entity of the admin stick.
+- `target` (`Entity`): Target entity of the admin stick.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8660,15 +8660,15 @@ Fired when a staff member claims a help ticket.
 
 **Parameters**
 
-* `admin` (`Player`): Staff member claiming the ticket.
+- `admin` (`Player`): Staff member claiming the ticket.
 
-* `requester` (`Player`): Player who opened the ticket.
+- `requester` (`Player`): Player who opened the ticket.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8688,15 +8688,15 @@ Fired when a staff member closes a help ticket.
 
 **Parameters**
 
-* `admin` (`Player`): Staff member closing the ticket.
+- `admin` (`Player`): Staff member closing the ticket.
 
-* `requester` (`Player`): Player who opened the ticket.
+- `requester` (`Player`): Player who opened the ticket.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8716,17 +8716,17 @@ Triggered when a shared option value is changed.
 
 **Parameters**
 
-* `client` (`Player|nil`): Player that changed the option or nil if server.
+- `client` (`Player|nil`): Player that changed the option or nil if server.
 
-* `key` (`string`): Option identifier.
+- `key` (`string`): Option identifier.
 
-* `value` (`any`): New value.
+- `value` (`any`): New value.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8746,19 +8746,19 @@ Fired when an administrator issues a warning to a player.
 
 **Parameters**
 
-* `admin` (`Player`): Staff member giving the warning.
+- `admin` (`Player`): Staff member giving the warning.
 
-* `target` (`Player`): Player receiving the warning.
+- `target` (`Player`): Player receiving the warning.
 
-* `reason` (`string`): Text reason for the warning.
+- `reason` (`string`): Text reason for the warning.
 
-* `index` (`number`): Current warning count on the player.
+- `index` (`number`): Current warning count on the player.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8777,19 +8777,19 @@ Fired when an administrator removes one of a player's warnings.
 
 **Parameters**
 
-* `admin` (`Player`): Staff member removing the warning.
+- `admin` (`Player`): Staff member removing the warning.
 
-* `target` (`Player`): Player that had the warning.
+- `target` (`Player`): Player that had the warning.
 
-* `warning` (`table`): Table containing the warning data.
+- `warning` (`table`): Table containing the warning data.
 
-* `index` (`number`): Index of the removed warning.
+- `index` (`number`): Index of the removed warning.
 
 **Realm**
 `Server`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 
@@ -8810,14 +8810,14 @@ Triggered after a remote image finishes downloading to the data folder.
 
 **Parameters**
 
-* `name` (`string`): Saved file name including extension.
-* `path` (`string`): Local `data/` path to the image.
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the image.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 ```lua
@@ -8835,14 +8835,14 @@ Triggered after a remote sound file finishes downloading to the data folder.
 
 **Parameters**
 
-* `name` (`string`): Saved file name including extension.
-* `path` (`string`): Local `data/` path to the sound file.
+- `name` (`string`): Saved file name including extension.
+- `path` (`string`): Local `data/` path to the sound file.
 
 **Realm**
 `Client`
 
 **Returns**
-* `nil`: This function does not return a value.
+- None
 
 **Example Usage**
 ```lua
