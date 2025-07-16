@@ -1,4 +1,4 @@
-lia.admin = lia.admin or {}
+﻿lia.admin = lia.admin or {}
 lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}

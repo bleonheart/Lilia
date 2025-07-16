@@ -240,8 +240,8 @@ lia.command.add("doortogglehidden", {
                 child:setNetVar("hidden", newState)
                 lia.log.add(client, "doorSetHidden", child, newState)
             end)
-            hook.Run("DoorHiddenToggled", client, entity, newState)
 
+            hook.Run("DoorHiddenToggled", client, entity, newState)
             client:notify(newState and L("doorSetHidden") or L("doorSetNotHidden"))
             MODULE:SaveData()
         else

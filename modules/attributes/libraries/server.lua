@@ -65,7 +65,6 @@ function MODULE:KeyPress(client, key)
     end
 end
 
-
 function MODULE:PlayerLoadedChar(client, character)
     timer.Simple(0.25, function() if IsValid(client) then client:setLocalVar("stamina", character:getMaxStamina()) end end)
 end

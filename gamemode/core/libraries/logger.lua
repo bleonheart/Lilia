@@ -171,12 +171,10 @@ if SERVER then
                 return
             end
 
-            lia.db.bulkInsert("logs", entries)
-                :next(finalize)
-                :catch(function(err)
-                    lia.printLog("Database", "Log conversion error: " .. tostring(err))
-                    finalize()
-                end)
+            lia.db.bulkInsert("logs", entries):next(finalize):catch(function(err)
+                lia.printLog("Database", "Log conversion error: " .. tostring(err))
+                finalize()
+            end)
         end)
     end
 

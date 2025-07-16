@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:SendLogsInChunks(client, categorizedLogs)
     local json = util.TableToJSON(categorizedLogs)
     local data = util.Compress(json)

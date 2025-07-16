@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 MODULE.spawns = MODULE.spawns or {}
 local function decodeVector(tbl)
     if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then return Vector(tbl[1], tbl[2], tbl[3]) end

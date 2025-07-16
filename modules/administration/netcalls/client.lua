@@ -43,7 +43,6 @@ net.Receive("blindFade", function()
     local endTime = startTime + duration
     local color = isWhite and Color(255, 255, 255) or Color(0, 0, 0)
     local hookName = "blindFade" .. startTime
-
     hook.Add("HUDPaint", hookName, function()
         local ct = CurTime()
         if ct >= endTime then

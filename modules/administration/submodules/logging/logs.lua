@@ -147,9 +147,7 @@
         category = "Connections",
     },
     ["playerConnected"] = {
-        func = function(client)
-            return string.format("Player finished loading: '%s'.", client:Name())
-        end,
+        func = function(client) return string.format("Player finished loading: '%s'.", client:Name()) end,
         category = "Connections"
     },
     ["playerDisconnected"] = {

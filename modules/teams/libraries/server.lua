@@ -217,10 +217,12 @@ net.Receive("KickCharacter", function(_, client)
             break
         end
     end
+
     if not defaultFaction then
         local _, fac = next(lia.faction.teams)
         defaultFaction = fac
     end
+
     local characterID = net.ReadUInt(32)
     local IsOnline = false
     for _, target in player.Iterator() do
@@ -242,6 +244,7 @@ net.Receive("KickCharacter", function(_, client)
         lia.db.updateTable({
             _faction = defaultFaction.uniqueID
         }, nil, "characters", "_id = " .. characterID)
+
         lia.char.setCharData(characterID, "factionKickWarn", true)
     end
 end)

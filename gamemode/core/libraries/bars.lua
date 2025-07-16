@@ -84,11 +84,10 @@ end
 function lia.bar.drawAll()
     if hook.Run("ShouldHideBars") then return end
     table.sort(lia.bar.list, function(a, b)
-        if a.priority == b.priority then
-            return (a.order or 0) < (b.order or 0)
-        end
+        if a.priority == b.priority then return (a.order or 0) < (b.order or 0) end
         return a.priority < b.priority
     end)
+
     local w, h = ScrW() * 0.35, 14
     local x, y = 4, 4
     local deltas = lia.bar.delta
@@ -110,7 +109,7 @@ function lia.bar.drawAll()
             bar.lifeTime = now + 5
         end
 
-        if (always and value > 0) or bar.lifeTime >= now or bar.visible or hook.Run("ShouldBarDraw", bar) then
+        if always and value > 0 or bar.lifeTime >= now or bar.visible or hook.Run("ShouldBarDraw", bar) then
             lia.bar.drawBar(x, y, w, h, value, 1, bar.color)
             y = y + h + 2
         end

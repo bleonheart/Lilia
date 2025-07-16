@@ -54,7 +54,6 @@ lia.command.add("trunk", {
             entity.receivers[client] = true
             local invID = entity:getNetVar("inv")
             local inv = invID and lia.inventory.instances[invID]
-
             local function openStorage(storageInv)
                 if not storageInv then
                     client:notifyLocalized("noInventory")

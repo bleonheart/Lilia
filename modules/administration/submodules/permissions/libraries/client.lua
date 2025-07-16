@@ -53,7 +53,6 @@ end
 net.Receive("DisplayCharList", function()
     local sendData = net.ReadTable()
     local targetSteamIDsafe = net.ReadString()
-
     local extraColumns, extraOrder = {}, {}
     for _, v in pairs(sendData or {}) do
         if istable(v.extraDetails) then
@@ -67,22 +66,52 @@ net.Receive("DisplayCharList", function()
     end
 
     local columns = {
-        {name = "ID", field = "ID"},
-        {name = "Name", field = "Name"},
-        {name = "Desc", field = "Desc"},
-        {name = "Faction", field = "Faction"},
-        {name = "Banned", field = "Banned"},
-        {name = "BanningAdminName", field = "BanningAdminName"},
-        {name = "BanningAdminSteamID", field = "BanningAdminSteamID"},
-        {name = "BanningAdminRank", field = "BanningAdminRank"},
-        {name = "CharMoney", field = "Money"}
+        {
+            name = "ID",
+            field = "ID"
+        },
+        {
+            name = "Name",
+            field = "Name"
+        },
+        {
+            name = "Desc",
+            field = "Desc"
+        },
+        {
+            name = "Faction",
+            field = "Faction"
+        },
+        {
+            name = "Banned",
+            field = "Banned"
+        },
+        {
+            name = "BanningAdminName",
+            field = "BanningAdminName"
+        },
+        {
+            name = "BanningAdminSteamID",
+            field = "BanningAdminSteamID"
+        },
+        {
+            name = "BanningAdminRank",
+            field = "BanningAdminRank"
+        },
+        {
+            name = "CharMoney",
+            field = "Money"
+        }
     }
+
     for _, name in ipairs(extraOrder) do
-        table.insert(columns, {name = name, field = name})
+        table.insert(columns, {
+            name = name,
+            field = name
+        })
     end
 
     local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
-
     if IsValid(listView) then
         for _, line in ipairs(listView:GetLines()) do
             local dataIndex = line:GetID()
@@ -95,6 +124,7 @@ net.Receive("DisplayCharList", function()
                     pnl:DoPaint(w, h)
                 end
             end
+
             line.CharID = rowData and rowData.ID
             if rowData and rowData.extraDetails then
                 local colIndex = 10
@@ -109,16 +139,12 @@ net.Receive("DisplayCharList", function()
             if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
                 local dMenu = DermaMenu()
                 if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                    local opt1 = dMenu:AddOption("Ban Character", function()
-                        LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
-                    end)
+                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt1:SetIcon("icon16/cancel.png")
                 end
 
                 if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                    local opt2 = dMenu:AddOption("Unban Character", function()
-                        LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
-                    end)
+                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt2:SetIcon("icon16/accept.png")
                 end
 

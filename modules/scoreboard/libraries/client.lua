@@ -1,4 +1,4 @@
-function MODULE:ScoreboardHide()
+﻿function MODULE:ScoreboardHide()
     if IsValid(lia.gui.score) and lia.gui.score:IsVisible() then
         lia.gui.score:SetVisible(false)
         CloseDermaMenus()
@@ -11,9 +11,8 @@ end
 
 function MODULE:ScoreboardShow()
     if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
-
     local pim = lia.module.list and lia.module.list.interactionmenu
-    if (not pim) or (not pim:checkInteractionPossibilities() and not pim.Menu) then
+    if not pim or not pim:checkInteractionPossibilities() and not pim.Menu then
         if IsValid(lia.gui.score) then
             if not lia.gui.score:IsVisible() then
                 lia.gui.score:SetVisible(true)

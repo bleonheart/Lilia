@@ -134,6 +134,7 @@ lia.command.add("plyblind", {
                     end
                 end)
             end
+
             lia.log.add(client, "plyBlind", target:Name(), dur or 0)
         end
     end
@@ -195,6 +196,7 @@ lia.command.add("blindfadeall", {
                 net.Send(ply)
             end
         end
+
         lia.log.add(nil, "blindFadeAll", duration, colorName)
     end
 })

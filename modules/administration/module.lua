@@ -19,8 +19,6 @@ MODULE.CAMIPrivileges = {
         Name = "Staff Permissions - Access Edit Configuration Menu",
         MinAccess = "superadmin"
     },
-
-
 }
 
 function MODULE:ModuleLoaded()

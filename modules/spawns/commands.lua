@@ -29,7 +29,6 @@ lia.command.add("spawnadd", {
     end
 })
 
-
 lia.command.add("spawnremoveinradius", {
     privilege = "Manage Spawns",
     adminOnly = true,
