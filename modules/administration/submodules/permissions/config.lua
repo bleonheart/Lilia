@@ -146,3 +146,8 @@ lia.option.add("ChatShowTime", "Show Chat Timestamp", "Should chat show timestam
     category = "Chat",
     type = "Boolean"
 })
+
+lia.option.add("voiceRange", "Voice Range", "Display a circle showing your current voice range", false, nil, {
+    category = "HUD",
+    type = "Boolean"
+})
