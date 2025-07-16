@@ -9,11 +9,11 @@ local function encodeVector(vec)
 end
 
 function MODULE:LoadData()
-    local data = self:getData() or {}
-    if not next(data) then data = self:getData(nil, true) or {} end
+    local data = self:getData()
     self.spawns = {}
     self.globalSpawns = {}
     print("[MODULE] LoadData: fetched data")
+    PrintTable(data, 1)
     local factions = data.factions or data
     for fac, spawns in pairs(factions or {}) do
         self.spawns[fac] = {}
@@ -68,6 +68,9 @@ function MODULE:SaveData()
 
         print(string.format("[MODULE] SaveData: total global encoded = %d on %s", #global[map], map))
     end
+    PrintTable(factions)
+    print("--------------------------")
+    PrintTable(global)
     self:setData({
         factions = factions,
         global = global
