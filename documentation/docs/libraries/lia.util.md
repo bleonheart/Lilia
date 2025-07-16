@@ -868,7 +868,7 @@ lia.util.requestArguments("User Info",
 
 ---
 
-### lia.util.CreateTableUI (client implementation)
+### lia.util.CreateTableUI - client implementation
 
 **Purpose**
 

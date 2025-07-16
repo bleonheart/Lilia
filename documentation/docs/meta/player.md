@@ -1,5 +1,3 @@
----
-
 # Player Meta
 
 Lilia extends Garry's Mod players with characters, inventories, and permission checks.
