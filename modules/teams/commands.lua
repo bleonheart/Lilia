@@ -84,12 +84,15 @@ lia.command.add("roster", {
                     local last = tonumber(v._lastOnline)
                     if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
                     local lastDiff = os.time() - last
+                    local timeSince = lia.time.TimeSince(last)
+                    local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
+                    local lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
                         faction = v._faction,
                         steamID = v._steamID,
-                        lastOnline = formatDHM(lastDiff),
+                        lastOnline = lastOnlineText,
                         hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
                     })
                 end
@@ -146,12 +149,15 @@ lia.command.add("factionmanagement", {
                     local last = tonumber(v._lastOnline)
                     if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
                     local lastDiff = os.time() - last
+                    local timeSince = lia.time.TimeSince(last)
+                    local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
+                    local lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
                     table.insert(characters, {
                         id = v._id,
                         name = v._name,
                         faction = v._faction,
                         steamID = v._steamID,
-                        lastOnline = formatDHM(lastDiff),
+                        lastOnline = lastOnlineText,
                         hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
                     })
                 end
