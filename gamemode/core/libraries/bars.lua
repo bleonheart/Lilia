@@ -110,7 +110,7 @@ function lia.bar.drawAll()
             bar.lifeTime = now + 5
         end
 
-        if always or bar.lifeTime >= now or bar.visible or hook.Run("ShouldBarDraw", bar) then
+        if (always and value > 0) or bar.lifeTime >= now or bar.visible or hook.Run("ShouldBarDraw", bar) then
             lia.bar.drawBar(x, y, w, h, value, 1, bar.color)
             y = y + h + 2
         end
