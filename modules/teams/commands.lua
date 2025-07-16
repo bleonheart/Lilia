@@ -47,6 +47,7 @@ local function formatDHM(seconds)
 end
 
 lia.command.add("roster", {
+    desc = "rosterDesc",
     onRun = function(client)
         local character = client:getChar()
         if not character then
@@ -108,6 +109,7 @@ lia.command.add("roster", {
 lia.command.add("factionmanagement", {
     superAdminOnly = true,
     privilege = "Manage Faction Members",
+    desc = "factionManagementDesc",
     syntax = "[faction Faction]",
     onRun = function(client, arguments)
         local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
