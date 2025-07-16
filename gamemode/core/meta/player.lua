@@ -303,8 +303,9 @@ end
 
 if SERVER then
     function playerMeta:restoreStamina(amount)
-        local current = self:getLocalVar("stamina",  char:getMaxStamina())
-        local maxStamina = self:getChar():getMaxStamina()
+        local char = self:getChar()
+        local current = self:getLocalVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
+        local maxStamina = char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100)
         local value = math.Clamp(current + amount, 0, maxStamina)
         self:setLocalVar("stamina", value)
         if value >= maxStamina * 0.5 and self:getNetVar("brth", false) then
@@ -314,8 +315,9 @@ if SERVER then
     end
 
     function playerMeta:consumeStamina(amount)
-        local current = self:getLocalVar("stamina",  char:getMaxStamina())
-        local value = math.Clamp(current - amount, 0, self:getChar():getMaxStamina())
+        local char = self:getChar()
+        local current = self:getLocalVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
+        local value = math.Clamp(current - amount, 0, char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
         self:setLocalVar("stamina", value)
         if value == 0 and not self:getNetVar("brth", false) then
             self:setNetVar("brth", true)

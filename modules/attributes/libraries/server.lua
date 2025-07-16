@@ -53,7 +53,8 @@ function MODULE:KeyPress(client, key)
     if key == IN_JUMP and not client:isNoClipping() and client:getChar() and not client:InVehicle() and client:Alive() then
         local cost = lia.config.get("JumpStaminaCost", 25)
         client:consumeStamina(cost)
-        local stm = client:getLocalVar("stamina",  char:getMaxStamina())
+        local character = client:getChar()
+        local stm = client:getLocalVar("stamina", character and character:getMaxStamina() or lia.config.get("DefaultStamina", 100))
         if stm == 0 then
             client:setNetVar("brth", true)
             client:ConCommand("-speed")
@@ -78,7 +79,8 @@ function MODULE:PlayerStaminaLost(client)
             return
         end
 
-        local currentStamina = client:getLocalVar("stamina",  char:getMaxStamina())
+        local char = client:getChar()
+        local currentStamina = client:getLocalVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
         if currentStamina <= breathThreshold then
             client:EmitSound("player/breathe1.wav", 35, 100)
             return
