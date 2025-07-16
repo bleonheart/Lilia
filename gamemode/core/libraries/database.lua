@@ -599,13 +599,17 @@ function lia.db.addDatabaseFields()
         text = function(d) return ("%s TEXT"):format(d.field) end
     }
 
+    local ignore = function() end
+
     for _, v in pairs(lia.char.vars) do
         if v.field and typeMap[v.fieldType] then
             lia.db.fieldExists("lia_characters", v.field):next(function(exists)
                 if not exists then
                     local colDef = typeMap[v.fieldType](v)
-                    if v.default ~= nil then colDef = colDef .. " DEFAULT '" .. tostring(v.default) .. "'" end
-                    lia.db.query("ALTER TABLE lia_characters ADD COLUMN " .. colDef)
+                    if v.default ~= nil then
+                        colDef = colDef .. " DEFAULT '" .. tostring(v.default) .. "'"
+                    end
+                    lia.db.query("ALTER TABLE lia_characters ADD COLUMN " .. colDef):catch(ignore)
                 end
             end)
         end
