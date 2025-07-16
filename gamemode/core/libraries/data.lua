@@ -203,7 +203,10 @@ if SERVER then
                     local tbl = tables[i]
                     if not tbl then return end
                     local key = tbl:match("^lia_data_(.+)$")
-                    lia.db.select({"_folder", "_map", "_value"}, "data_" .. key):next(function(res2)
+                    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+                    local map = game.GetMap()
+                    local condition = buildCondition(folder, map)
+                    lia.db.select({"_folder", "_map", "_value"}, "data_" .. key, condition):next(function(res2)
                         local rows = res2.results or {}
                         for _, row in ipairs(rows) do
                             local decoded = util.JSONToTable(row._value or "[]")
