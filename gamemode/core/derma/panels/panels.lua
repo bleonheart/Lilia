@@ -92,18 +92,18 @@ function Derma_SetCvar_Safe(name, value)
     end
 end
 
-function Derma_Install_Convar_Functions(PANEL)
-    function PANEL:SetConVar(strConVar)
+function Derma_Install_Convar_Functions(panel)
+    function panel:SetConVar(strConVar)
         self.m_strConVar = strConVar
     end
 
-    function PANEL:ConVarChanged(strNewValue)
+    function panel:ConVarChanged(strNewValue)
         local cvar = self.m_strConVar
         if not cvar or string.len(cvar) < 2 then return end
         Derma_SetCvar_Safe(cvar, strNewValue)
     end
 
-    function PANEL:SetConVar(name, isNumber)
+    function panel:SetConVar(name, isNumber)
         self.m_conVar = GetConVar(name)
         if not self.m_conVar then return end
         self.m_isNumber = isNumber
@@ -111,7 +111,7 @@ function Derma_Install_Convar_Functions(PANEL)
         self:SetValue(self.m_prevValue)
     end
 
-    function PANEL:Think()
+    function panel:Think()
         local cvar = self.m_conVar
         if not cvar then return end
         local current = self.m_isNumber and cvar:GetFloat() or cvar:GetString()
@@ -122,12 +122,8 @@ function Derma_Install_Convar_Functions(PANEL)
     end
 end
 
-local PANEL = {}
-local color_blackTransparent = Color(0, 0, 0, 175)
-local color_blackTransparent2 = Color(0, 0, 0, 150)
-local gradientR = lia.util.getMaterial("vgui/gradient-r")
-local gradientL = lia.util.getMaterial("vgui/gradient-l")
-function PANEL:Init()
+local QuickPanel = {}
+function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
     self:SetSize(400, 36)
@@ -144,7 +140,7 @@ function PANEL:Init()
     self.title:SetContentAlignment(4)
     self.title:SetTextInset(44, 0)
     self.title:SetTextColor(color_white)
-    self.title:SetExpensiveShadow(1, color_blackTransparent)
+    self.title:SetExpensiveShadow(1, Color(0, 0, 0, 175))
     self.title.Paint = function(_, w, h)
         surface.SetDrawColor(lia.config.get("Color"))
         surface.DrawRect(0, 0, w, h)
@@ -156,7 +152,7 @@ function PANEL:Init()
     self.expand:SetFont("liaIconsMedium")
     self.expand:SetPaintBackground(false)
     self.expand:SetTextColor(color_white)
-    self.expand:SetExpensiveShadow(1, color_blackTransparent2)
+    self.expand:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     self.expand:SetSize(36, 36)
     self.expand.DoClick = function()
         if self.expanded then
@@ -195,9 +191,9 @@ local function paintButton(button, w, h)
     end
 
     surface.SetDrawColor(r, g, b, alpha)
-    surface.SetMaterial(gradientR)
+    surface.SetMaterial(lia.util.getMaterial("vgui/gradient-r"))
     surface.DrawTexturedRect(0, 0, w / 2, h)
-    surface.SetMaterial(gradientL)
+    surface.SetMaterial(lia.util.getMaterial("vgui/gradient-l"))
     surface.DrawTexturedRect(w / 2, 0, w / 2, h)
 end
 
@@ -212,7 +208,7 @@ local categoryDoClick = function(this)
     end
 end
 
-function PANEL:addCategory(text)
+function QuickPanel:addCategory(text)
     local label = self:addButton(text, categoryDoClick)
     label.categoryLabel = true
     label.expanded = true
@@ -222,19 +218,19 @@ function PANEL:addCategory(text)
     label:DockMargin(0, 1, 0, 0)
     label:SetFont("liaMediumFont")
     label:SetTextColor(color_white)
-    label:SetExpensiveShadow(1, color_blackTransparent2)
+    label:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     label:SetContentAlignment(5)
     label.Paint = function() end
 end
 
-function PANEL:addButton(text, callback)
+function QuickPanel:addButton(text, callback)
     local button = self.scroll:Add("DButton")
     button:SetText(text)
     button:SetTall(36)
     button:Dock(TOP)
     button:DockMargin(0, 1, 0, 0)
     button:SetFont("liaMediumLightFont")
-    button:SetExpensiveShadow(1, color_blackTransparent2)
+    button:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     button:SetContentAlignment(4)
     button:SetTextInset(8, 0)
     button:SetTextColor(color_white)
@@ -244,7 +240,7 @@ function PANEL:addButton(text, callback)
     return button
 end
 
-function PANEL:addSpacer()
+function QuickPanel:addSpacer()
     local panel = self.scroll:Add("DPanel")
     panel:SetTall(1)
     panel:Dock(TOP)
@@ -258,7 +254,7 @@ function PANEL:addSpacer()
     return panel
 end
 
-function PANEL:addSlider(text, callback, value, min, max, decimal)
+function QuickPanel:addSlider(text, callback, value, min, max, decimal)
     local slider = self.scroll:Add("DNumSlider")
     slider:SetText(text)
     slider:SetTall(36)
@@ -287,7 +283,7 @@ function PANEL:addSlider(text, callback, value, min, max, decimal)
 end
 
 local color_dark = Color(255, 255, 255, 5)
-function PANEL:addCheck(text, callback, checked)
+function QuickPanel:addCheck(text, callback, checked)
     local x, y
     local color
     local button = self:addButton(text, function(panel)
@@ -310,11 +306,11 @@ function PANEL:addCheck(text, callback, checked)
     return button
 end
 
-function PANEL:setIcon(char)
+function QuickPanel:setIcon(char)
     self.icon = char
 end
 
-function PANEL:Paint(w, h)
+function QuickPanel:Paint(w, h)
     surface.SetDrawColor(0, 0, 0, 200)
     surface.DrawRect(0, 0, w, h)
     lia.util.drawBlur(self)
@@ -322,4 +318,4 @@ function PANEL:Paint(w, h)
     surface.DrawRect(0, 0, w, 36)
 end
 
-vgui.Register("liaQuick", PANEL, "EditablePanel")
+vgui.Register("liaQuick", QuickPanel, "EditablePanel")
