@@ -1,5 +1,7 @@
-﻿lia.command.add("plykick", {
+if not lia.admin.isDisabled() then
+lia.command.add("plykick", {
     adminOnly = true,
+    desc = "plyKickDesc",
     syntax = "<string name> [string reason]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -13,6 +15,7 @@
 
 lia.command.add("plyban", {
     adminOnly = true,
+    desc = "plyBanDesc",
     syntax = "<string name> [number duration] [string reason]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -26,6 +29,7 @@ lia.command.add("plyban", {
 
 lia.command.add("plykill", {
     adminOnly = true,
+    desc = "plyKillDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -39,6 +43,7 @@ lia.command.add("plykill", {
 
 lia.command.add("plysetgroup", {
     adminOnly = true,
+    desc = "plySetGroupDesc",
     syntax = "<string name> <string group>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -54,6 +59,7 @@ lia.command.add("plysetgroup", {
 
 lia.command.add("plyunban", {
     adminOnly = true,
+    desc = "plyUnbanDesc",
     syntax = "<string steamid>",
     onRun = function(client, arguments)
         local steamid = arguments[1]
@@ -67,6 +73,7 @@ lia.command.add("plyunban", {
 
 lia.command.add("plyfreeze", {
     adminOnly = true,
+    desc = "plyFreezeDesc",
     syntax = "<string name> [number duration]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -81,6 +88,7 @@ lia.command.add("plyfreeze", {
 
 lia.command.add("plyunfreeze", {
     adminOnly = true,
+    desc = "plyUnfreezeDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -93,6 +101,7 @@ lia.command.add("plyunfreeze", {
 
 lia.command.add("plyslay", {
     adminOnly = true,
+    desc = "plySlayDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -105,6 +114,7 @@ lia.command.add("plyslay", {
 
 lia.command.add("plyrespawn", {
     adminOnly = true,
+    desc = "plyRespawnDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -117,6 +127,7 @@ lia.command.add("plyrespawn", {
 
 lia.command.add("plyblind", {
     adminOnly = true,
+    desc = "plyBlindDesc",
     syntax = "<string name> [number time]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -141,6 +152,7 @@ lia.command.add("plyblind", {
 
 lia.command.add("plyunblind", {
     adminOnly = true,
+    desc = "plyUnblindDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -155,6 +167,7 @@ lia.command.add("plyunblind", {
 
 lia.command.add("plyblindfade", {
     adminOnly = true,
+    desc = "plyBlindFadeDesc",
     syntax = "<string name> <number time> [string color] [number fadein] [number fadeout]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -178,6 +191,7 @@ lia.command.add("plyblindfade", {
 
 lia.command.add("blindfadeall", {
     adminOnly = true,
+    desc = "blindFadeAllDesc",
     syntax = "<number time> [string color] [number fadein] [number fadeout]",
     onRun = function(_, arguments)
         local duration = tonumber(arguments[1]) or 0
@@ -201,6 +215,7 @@ lia.command.add("blindfadeall", {
 
 lia.command.add("plygag", {
     adminOnly = true,
+    desc = "plyGagDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -214,6 +229,7 @@ lia.command.add("plygag", {
 
 lia.command.add("plyungag", {
     adminOnly = true,
+    desc = "plyUngagDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -227,6 +243,7 @@ lia.command.add("plyungag", {
 
 lia.command.add("plymute", {
     adminOnly = true,
+    desc = "plyMuteDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -240,6 +257,7 @@ lia.command.add("plymute", {
 
 lia.command.add("plyunmute", {
     adminOnly = true,
+    desc = "plyUnmuteDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -254,6 +272,7 @@ lia.command.add("plyunmute", {
 local returnPositions = {}
 lia.command.add("plybring", {
     adminOnly = true,
+    desc = "plyBringDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -267,6 +286,7 @@ lia.command.add("plybring", {
 
 lia.command.add("plygoto", {
     adminOnly = true,
+    desc = "plyGotoDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -280,6 +300,7 @@ lia.command.add("plygoto", {
 
 lia.command.add("plyreturn", {
     adminOnly = true,
+    desc = "plyReturnDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -295,6 +316,7 @@ lia.command.add("plyreturn", {
 
 lia.command.add("plyjail", {
     adminOnly = true,
+    desc = "plyJailDesc",
     syntax = "<string name> [number duration]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -308,6 +330,7 @@ lia.command.add("plyjail", {
 
 lia.command.add("plyunjail", {
     adminOnly = true,
+    desc = "plyUnjailDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -321,6 +344,7 @@ lia.command.add("plyunjail", {
 
 lia.command.add("plycloak", {
     adminOnly = true,
+    desc = "plyCloakDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -333,6 +357,7 @@ lia.command.add("plycloak", {
 
 lia.command.add("plyuncloak", {
     adminOnly = true,
+    desc = "plyUncloakDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -345,6 +370,7 @@ lia.command.add("plyuncloak", {
 
 lia.command.add("plygod", {
     adminOnly = true,
+    desc = "plyGodDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -357,6 +383,7 @@ lia.command.add("plygod", {
 
 lia.command.add("plyungod", {
     adminOnly = true,
+    desc = "plyUngodDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -369,6 +396,7 @@ lia.command.add("plyungod", {
 
 lia.command.add("plyignite", {
     adminOnly = true,
+    desc = "plyIgniteDesc",
     syntax = "<string name> [number duration]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -382,6 +410,7 @@ lia.command.add("plyignite", {
 
 lia.command.add("plyextinguish", {
     adminOnly = true,
+    desc = "plyExtinguishDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -394,6 +423,7 @@ lia.command.add("plyextinguish", {
 
 lia.command.add("plystrip", {
     adminOnly = true,
+    desc = "plyStripDesc",
     syntax = "<string name>",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
@@ -403,6 +433,7 @@ lia.command.add("plystrip", {
         end
     end
 })
+end
 
 lia.command.add("adminmode", {
     desc = "adminModeDesc",
