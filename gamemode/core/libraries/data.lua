@@ -92,7 +92,7 @@ if SERVER then
     end
 
     local function ensureTable(key)
-        local tbl = "lia_" .. key
+        local tbl = "lia_data_" .. key
         return lia.db.tableExists(tbl):next(function(exists) if not exists then return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
                     _folder TEXT,
                     _map TEXT,
@@ -115,7 +115,7 @@ if SERVER then
                 _folder = folder,
                 _map = map,
                 _value = {value}
-            }, key)
+            }, "data_" .. key)
         end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
         return "lilia/" .. (folder and folder .. "/" or "") .. (map and map .. "/" or "")
     end
@@ -130,7 +130,7 @@ if SERVER then
 
         lia.data.stored[key] = nil
         local condition = buildCondition(folder, map)
-        lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function() lia.db.delete(key, condition) end)
+        lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function() lia.db.delete("data_" .. key, condition) end)
         return true
     end
 
@@ -156,7 +156,7 @@ if SERVER then
         end):next(function()
             local queries = {}
             for key, entries in pairs(tableData) do
-                local tbl = lia.db.escapeIdentifier("lia_" .. key)
+                local tbl = lia.db.escapeIdentifier("lia_data_" .. key)
                 queries[#queries + 1] = "DELETE FROM " .. tbl
                 for _, entry in ipairs(entries) do
                     queries[#queries + 1] = "INSERT INTO " .. tbl .. " (_folder,_map,_value) VALUES (" .. lia.db.convertDataType(entry.folder or NULL) .. ", " .. lia.db.convertDataType(entry.map or NULL) .. ", " .. lia.db.convertDataType({entry.value}) .. ")"
@@ -182,7 +182,7 @@ if SERVER then
 
     function lia.data.loadTables()
         lia.db.waitForTablesToLoad():next(function()
-            local query = lia.db.module == "sqlite" and "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_%'" or "SHOW TABLES LIKE 'lia_%'"
+            local query = lia.db.module == "sqlite" and "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_data_%'" or "SHOW TABLES LIKE 'lia_data_%'"
             lia.db.query(query, function(res)
                 local tables = {}
                 if res then
@@ -198,25 +198,12 @@ if SERVER then
                     end
                 end
 
-                local builtin = {
-                    players = true,
-                    characters = true,
-                    inventories = true,
-                    items = true,
-                    invdata = true,
-                    config = true,
-                    bans = true,
-                    logs = true,
-                    data = true
-                }
-
                 local function loadNext(i)
                     i = i or 1
                     local tbl = tables[i]
                     if not tbl then return end
-                    local key = tbl:match("^lia_(.+)$")
-                    if builtin[key] then return loadNext(i + 1) end
-                    lia.db.select({"_folder", "_map", "_value"}, key):next(function(res2)
+                    local key = tbl:match("^lia_data_(.+)$")
+                    lia.db.select({"_folder", "_map", "_value"}, "data_" .. key):next(function(res2)
                         local rows = res2.results or {}
                         for _, row in ipairs(rows) do
                             local decoded = util.JSONToTable(row._value or "[]")
