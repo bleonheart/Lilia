@@ -1,6 +1,6 @@
-﻿function MODULE:CalcStaminaChange(client)
-    local character = client:getChar()
-    if not character or client:isNoClipping() then return 1 end
+function MODULE:CalcStaminaChange(client)
+    local char = client:getChar()
+    if not char or client:isNoClipping() then return 1 end
     local walkSpeed = lia.config.get("WalkSpeed", client:GetWalkSpeed())
     local offset
     if client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() >= walkSpeed * walkSpeed then
@@ -11,8 +11,8 @@
 
     offset = hook.Run("AdjustStaminaOffset", client, offset) or offset
     if CLIENT then return offset end
-    local max = character:getMaxStamina()
-    local current = client:getLocalVar("stamina", character:getMaxStamina())
+    local max = char:getMaxStamina()
+    local current = client:getLocalVar("stamina", char:getMaxStamina())
     local value = math.Clamp(current + offset, 0, max)
     if current ~= value then
         client:setLocalVar("stamina", value)
