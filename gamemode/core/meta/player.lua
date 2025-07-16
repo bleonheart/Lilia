@@ -628,6 +628,25 @@ if SERVER then
         self.binaryQuestionCallback = callback
     end
 
+    function playerMeta:requestButtons(title, buttons)
+        self.buttonRequests = self.buttonRequests or {}
+        local labels = {}
+        local callbacks = {}
+        for i, data in ipairs(buttons) do
+            labels[i] = data.text or data[1] or ""
+            callbacks[i] = data.callback or data[2]
+        end
+        local id = table.insert(self.buttonRequests, callbacks)
+        net.Start("ButtonRequest")
+        net.WriteUInt(id, 32)
+        net.WriteString(title or "")
+        net.WriteUInt(#labels, 8)
+        for _, lbl in ipairs(labels) do
+            net.WriteString(lbl)
+        end
+        net.Send(self)
+    end
+
     function playerMeta:getPlayTime()
         local diff = os.time(lia.time.toNumber(self.lastJoin)) - os.time(lia.time.toNumber(self.firstJoin))
         return diff + RealTime() - (self.liaJoinTime or RealTime())
