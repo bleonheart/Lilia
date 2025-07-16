@@ -33,13 +33,13 @@ end
 
 function MODULE:OnReloaded()
     for _, client in player.Iterator() do
-        if IsValid(client) and client:getChar() then
-            self:PostPlayerLoadout(client)
-        end
+        if IsValid(client) and client:getChar() then self:PostPlayerLoadout(client) end
     end
 end
 
 function MODULE:KeyPress(client, key)
+    local char = client:getChar()
+    if not char then return end
     if key == IN_ATTACK2 then
         local wep = client:GetActiveWeapon()
         if IsValid(wep) and wep.IsHands and wep.ReadyToPickup then
@@ -50,17 +50,20 @@ function MODULE:KeyPress(client, key)
         end
     end
 
-    if key == IN_JUMP and not client:isNoClipping() and client:getChar() and not client:InVehicle() and client:Alive() then
+    if key == IN_JUMP and not client:isNoClipping() and not client:InVehicle() and client:Alive() then
         local cost = lia.config.get("JumpStaminaCost", 25)
+        local maxStamina = char:getMaxStamina() or lia.config.get("DefaultStamina", 100)
+        local currentStamina = client:getLocalVar("stamina", maxStamina)
+        client:ChatPrint("Just lost " .. cost .. " stamina (" .. currentStamina .. "/" .. maxStamina .. ")")
         client:consumeStamina(cost)
-        local character = client:getChar()
-        local stm = client:getLocalVar("stamina", character and character:getMaxStamina() or lia.config.get("DefaultStamina", 100))
-        if stm == 0 then
+        local newStamina = client:getLocalVar("stamina", maxStamina)
+        if newStamina <= 0 then
             client:setNetVar("brth", true)
             client:ConCommand("-speed")
         end
     end
 end
+
 
 function MODULE:PlayerLoadedChar(client, character)
     timer.Simple(0.25, function() if IsValid(client) then client:setLocalVar("stamina", character:getMaxStamina()) end end)
