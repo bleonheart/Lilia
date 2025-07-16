@@ -3,9 +3,15 @@ function MODULE:CanPlayerSwitchChar(client, character)
     if not client:isStaffOnDuty() then
         local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
         local switchCooldown = lia.config.get("CharacterSwitchCooldownTimer", 5)
-        if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then return false, L("tookDamageSwitchCooldown") end
+        if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then
+            lia.log.add(client, "permissionDenied", "switch character (recent damage)")
+            return false, L("tookDamageSwitchCooldown")
+        end
         local loginTime = character:getData("loginTime", 0)
-        if switchCooldown > 0 and loginTime + switchCooldown > os.time() then return false, L("switchCooldown") end
+        if switchCooldown > 0 and loginTime + switchCooldown > os.time() then
+            lia.log.add(client, "permissionDenied", "switch character (cooldown)")
+            return false, L("switchCooldown")
+        end
     end
     return true
 end

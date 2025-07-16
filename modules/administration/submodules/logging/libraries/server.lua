@@ -73,7 +73,7 @@ function MODULE:OnCharDelete(client, id)
     lia.log.add(client, "charDelete", id)
 end
 
-function MODULE:OnPlayerInteractItem(client, action, item)
+function MODULE:OnPlayerInteractItem(client, action, item, result)
     if isentity(item) then
         if IsValid(item) then
             local itemID = item.liaItemID
@@ -88,6 +88,10 @@ function MODULE:OnPlayerInteractItem(client, action, item)
     action = string.lower(action)
     if not item then return end
     local name = item.name
+    if result == false then
+        lia.log.add(client, "itemInteractionFailed", action, name)
+        return
+    end
     if action == "use" then
         lia.log.add(client, "use", name)
     elseif action == "drop" then
@@ -195,4 +199,34 @@ end
 function MODULE:WarningRemoved(admin, target, warning, index)
     local warns = target:getLiliaData("warns") or {}
     lia.log.add(admin, "warningRemoved", target, warning, #warns, index)
+end
+
+function MODULE:ItemTransfered(context)
+    local client = context.client
+    local item = context.item
+    if not (IsValid(client) and item) then return end
+    local fromID = context.from and context.from:getID() or 0
+    local toID = context.to and context.to:getID() or 0
+    lia.log.add(client, "itemTransfer", item:getName(), fromID, toID)
+end
+
+function MODULE:OnItemAdded(owner, item)
+    lia.log.add(owner, "itemAdded", item:getName())
+end
+
+function MODULE:OnItemCreated(item)
+    lia.log.add(nil, "itemCreated", item:getName())
+end
+
+function MODULE:OnItemSpawned(entity)
+    local item = entity.getItemTable and entity:getItemTable()
+    if item then lia.log.add(nil, "itemSpawned", item:getName()) end
+end
+
+function MODULE:ItemFunctionCalled(item, action, client)
+    if IsValid(client) then lia.log.add(client, "itemFunction", action, item:getName()) end
+end
+
+function MODULE:ItemDraggedOutOfInventory(client, item)
+    lia.log.add(client, "itemDraggedOut", item:getName())
 end
