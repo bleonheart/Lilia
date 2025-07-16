@@ -261,7 +261,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_items`;
     DROP TABLE IF EXISTS `lia_invdata`;
     DROP TABLE IF EXISTS `lia_config`;
-    DROP TABLE IF EXISTS `lia_data`;
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
 ]])
@@ -288,7 +287,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_items;
     DROP TABLE IF EXISTS lia_invdata;
     DROP TABLE IF EXISTS lia_config;
-    DROP TABLE IF EXISTS lia_data;
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
 ]], realCallback)
@@ -367,13 +365,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (_schema, _key)
             );
 
-            CREATE TABLE IF NOT EXISTS lia_data (
-                _key text,
-                _folder text,
-                _map text,
-                _value text,
-                PRIMARY KEY (_key, _folder, _map)
-            );
 
             CREATE TABLE IF NOT EXISTS lia_bans (
                 _steamID TEXT,
@@ -456,13 +447,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (`_schema`, `_key`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_data` (
-                `_key` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_folder` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-                `_map` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-                `_value` TEXT NULL COLLATE 'utf8mb4_general_ci',
-                PRIMARY KEY (`_key`, `_folder`, `_map`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_bans` (
                 `_steamID` varchar(64) NOT NULL,
