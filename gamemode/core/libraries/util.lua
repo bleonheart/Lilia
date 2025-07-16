@@ -586,7 +586,7 @@ else
     end
 
     function lia.util.CreateTableUI(title, columns, data, options, charID)
-        local frameWidth, frameHeight = ScrH() * 0.8, ScrH() * 0.8
+        local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
         local frame = vgui.Create("DFrame")
         frame:SetTitle(title or L("tableListTitle"))
         frame:SetSize(frameWidth, frameHeight)
