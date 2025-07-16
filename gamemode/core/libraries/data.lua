@@ -87,22 +87,18 @@ if SERVER then
             end
         end
 
-    scan(base)
-    return ported, total
+        scan(base)
+        return ported, total
     end
 
     local function ensureTable(key)
         local tbl = "lia_" .. key
-        return lia.db.tableExists(tbl):next(function(exists)
-            if not exists then
-                return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
+        return lia.db.tableExists(tbl):next(function(exists) if not exists then return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
                     _folder TEXT,
                     _map TEXT,
                     _value TEXT,
                     PRIMARY KEY (_folder, _map)
-                );]])
-            end
-        end)
+                );]]) end end)
     end
 
     function lia.data.set(key, value, global, ignoreMap)
@@ -114,17 +110,13 @@ if SERVER then
         end
 
         lia.data.stored[key] = value
-        lia.db.waitForTablesToLoad():next(function()
-            return ensureTable(key)
-        end):next(function()
+        lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function()
             return lia.db.upsert({
                 _folder = folder,
                 _map = map,
                 _value = {value}
             }, key)
-        end):next(function()
-            hook.Run("OnDataSet", key, value, folder, map)
-        end)
+        end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
         return "lilia/" .. (folder and folder .. "/" or "") .. (map and map .. "/" or "")
     end
 
@@ -138,11 +130,7 @@ if SERVER then
 
         lia.data.stored[key] = nil
         local condition = buildCondition(folder, map)
-        lia.db.waitForTablesToLoad():next(function()
-            return ensureTable(key)
-        end):next(function()
-            lia.db.delete(key, condition)
-        end)
+        lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function() lia.db.delete(key, condition) end)
         return true
     end
 
@@ -171,23 +159,18 @@ if SERVER then
                 local tbl = lia.db.escapeIdentifier("lia_" .. key)
                 queries[#queries + 1] = "DELETE FROM " .. tbl
                 for _, entry in ipairs(entries) do
-                    queries[#queries + 1] = "INSERT INTO " .. tbl .. " (_folder,_map,_value) VALUES (" ..
-                        lia.db.convertDataType(entry.folder or NULL) .. ", " ..
-                        lia.db.convertDataType(entry.map or NULL) .. ", " ..
-                        lia.db.convertDataType({entry.value}) .. ")"
+                    queries[#queries + 1] = "INSERT INTO " .. tbl .. " (_folder,_map,_value) VALUES (" .. lia.db.convertDataType(entry.folder or NULL) .. ", " .. lia.db.convertDataType(entry.map or NULL) .. ", " .. lia.db.convertDataType({entry.value}) .. ")"
                 end
             end
-
             return lia.db.transaction(queries)
         end):next(function()
-                lia.data.isConverting = false
-                lia.bootstrap("Database", L("convertDataToDatabaseDone", entryCount))
-                for _, path in ipairs(paths) do
-                    file.Delete(path)
-                end
+            lia.data.isConverting = false
+            lia.bootstrap("Database", L("convertDataToDatabaseDone", entryCount))
+            for _, path in ipairs(paths) do
+                file.Delete(path)
+            end
 
-                if changeMap then game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n") end
-            end)
+            if changeMap then game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n") end
         end)
     end
 
@@ -199,33 +182,47 @@ if SERVER then
 
     function lia.data.loadTables()
         lia.db.waitForTablesToLoad():next(function()
-            local query = lia.db.module == "sqlite" and
-                "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_%'" or
-                "SHOW TABLES LIKE 'lia_%'"
+            local query = lia.db.module == "sqlite" and "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_%'" or "SHOW TABLES LIKE 'lia_%'"
             lia.db.query(query, function(res)
                 local tables = {}
                 if res then
                     if lia.db.module == "sqlite" then
-                        for _, row in ipairs(res) do tables[#tables + 1] = row.name end
+                        for _, row in ipairs(res) do
+                            tables[#tables + 1] = row.name
+                        end
                     else
                         local k = next(res[1] or {})
-                        for _, row in ipairs(res) do tables[#tables + 1] = row[k] end
+                        for _, row in ipairs(res) do
+                            tables[#tables + 1] = row[k]
+                        end
                     end
                 end
 
-                local builtin = {players=true,characters=true,inventories=true,items=true,invdata=true,config=true,bans=true,logs=true,data=true}
+                local builtin = {
+                    players = true,
+                    characters = true,
+                    inventories = true,
+                    items = true,
+                    invdata = true,
+                    config = true,
+                    bans = true,
+                    logs = true,
+                    data = true
+                }
+
                 local function loadNext(i)
                     i = i or 1
                     local tbl = tables[i]
                     if not tbl then return end
                     local key = tbl:match("^lia_(.+)$")
                     if builtin[key] then return loadNext(i + 1) end
-                    lia.db.select({"_folder","_map","_value"}, key):next(function(res2)
+                    lia.db.select({"_folder", "_map", "_value"}, key):next(function(res2)
                         local rows = res2.results or {}
                         for _, row in ipairs(rows) do
                             local decoded = util.JSONToTable(row._value or "[]")
                             lia.data.stored[key] = decoded and decoded[1]
                         end
+
                         loadNext(i + 1)
                     end)
                 end
