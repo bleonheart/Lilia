@@ -57,8 +57,10 @@ local function openMenu(options, isInteraction, titleText, closeKey, netMsg)
     local oldOnRemove = frame.OnRemove
     function frame:OnRemove()
         if oldOnRemove then oldOnRemove(self) end
+        MODULE.Menu = nil
         hook.Run("InteractionMenuClosed")
     end
+
     frame:SetAlpha(0)
     frame:AlphaTo(255, fadeSpeed)
     function frame:Paint(w, h)
