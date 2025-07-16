@@ -11,7 +11,6 @@ end
 function MODULE:LoadData()
     local data = self:getData()
     self.spawns = {}
-    self.globalSpawns = {}
     print("[MODULE] LoadData: fetched data")
     PrintTable(data, 1)
     local factions = data.factions or data
@@ -27,18 +26,6 @@ function MODULE:LoadData()
         print(string.format("[MODULE] LoadData: faction '%s' total spawns = %d", fac, #self.spawns[fac]))
     end
 
-    local gData = data.global or {}
-    for map, spawns in pairs(gData) do
-        local lMap = map:lower()
-        self.globalSpawns[lMap] = {}
-        for i, pos in ipairs(spawns) do
-            local vec = decodeVector(pos)
-            print(string.format("[MODULE] LoadData: decoded global spawn #%d on %s → %s", i, lMap, tostring(vec)))
-            self.globalSpawns[lMap][#self.globalSpawns[lMap] + 1] = vec
-        end
-
-        print(string.format("[MODULE] LoadData: total global spawns = %d on %s", #self.globalSpawns[lMap], lMap))
-    end
 end
 
 function MODULE:SaveData()
@@ -56,24 +43,10 @@ function MODULE:SaveData()
         print(string.format("[MODULE] SaveData: faction '%s' total encoded = %d", fac, #factions[fac]))
     end
 
-    local global = {}
-    print("[MODULE] SaveData: preparing global spawns")
-    for map, spawns in pairs(self.globalSpawns or {}) do
-        global[map] = {}
-        for i, pos in ipairs(spawns) do
-            local enc = encodeVector(pos)
-            print(string.format("[MODULE] SaveData: encoded global spawn #%d on %s → %s", i, map, enc))
-            global[map][#global[map] + 1] = enc
-        end
-
-        print(string.format("[MODULE] SaveData: total global encoded = %d on %s", #global[map], map))
-    end
     PrintTable(factions)
     print("--------------------------")
-    PrintTable(global)
     self:setData({
-        factions = factions,
-        global = global
+        factions = factions
     })
 
     print("[MODULE] SaveData: data saved successfully")
@@ -119,15 +92,6 @@ local function SpawnPlayer(client)
             spawnPos = table.Random(factionSpawns)
             print("[SpawnPlayer] selected faction spawn:", tostring(spawnPos))
         end
-    end
-
-    local map = game.GetMap():lower()
-    local mapSpawns = MODULE.globalSpawns and MODULE.globalSpawns[map]
-    local gCount = mapSpawns and #mapSpawns or 0
-    print("Found " .. gCount .. " global spawns for map " .. map)
-    if not spawnPos and mapSpawns and gCount > 0 then
-        spawnPos = table.Random(mapSpawns)
-        print("[SpawnPlayer] selected global spawn:", tostring(spawnPos))
     end
 
     if spawnPos then

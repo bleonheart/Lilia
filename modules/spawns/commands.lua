@@ -29,20 +29,6 @@ lia.command.add("spawnadd", {
     end
 })
 
-lia.command.add("spawnaddglobal", {
-    privilege = "Manage Spawns",
-    adminOnly = true,
-    desc = "spawnAddGlobalDesc",
-    onRun = function(client)
-        MODULE.globalSpawns = MODULE.globalSpawns or {}
-        local map = game.GetMap():lower()
-        MODULE.globalSpawns[map] = MODULE.globalSpawns[map] or {}
-        table.insert(MODULE.globalSpawns[map], client:GetPos())
-        MODULE:SaveData()
-        lia.log.add(client, "spawnAddGlobal")
-        return L("spawnAddedGlobal")
-    end
-})
 
 lia.command.add("spawnremoveinradius", {
     privilege = "Manage Spawns",
@@ -61,16 +47,6 @@ lia.command.add("spawnremoveinradius", {
                 end
             end
         end
-
-        local map = game.GetMap():lower()
-        local gSpawns = MODULE.globalSpawns[map] or {}
-        for i = #gSpawns, 1, -1 do
-            if gSpawns[i]:Distance(position) <= radius then
-                table.remove(gSpawns, i)
-                removedCount = removedCount + 1
-            end
-        end
-        MODULE.globalSpawns[map] = gSpawns
 
         if removedCount > 0 then MODULE:SaveData() end
         lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
