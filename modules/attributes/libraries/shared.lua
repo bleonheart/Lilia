@@ -12,7 +12,7 @@
     offset = hook.Run("AdjustStaminaOffset", client, offset) or offset
     if CLIENT then return offset end
     local max = character:getMaxStamina()
-    local current = client:getLocalVar("stamina",  char:getMaxStamina())
+    local current = client:getLocalVar("stamina", char:getMaxStamina())
     local value = math.Clamp(current + offset, 0, max)
     if current ~= value then
         client:setLocalVar("stamina", value)
