@@ -299,6 +299,9 @@ function lia.db.loadTables()
         lia.db.fieldExists("lia_players", "_firstJoin"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _firstJoin DATETIME"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_lastJoin"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastJoin DATETIME"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_userGroup"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _userGroup VARCHAR(32)"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_lastIP"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastIP VARCHAR(64)"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_lastOnline"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastOnline INTEGER"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_totalOnlineTime"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _totalOnlineTime FLOAT"):catch(ignore) end end)
         lia.db.fieldExists("lia_items", "_quantity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_items ADD COLUMN _quantity INTEGER"):catch(ignore) end end)
         lia.db.addDatabaseFields()
         lia.db.tablesLoaded = true
@@ -314,7 +317,10 @@ function lia.db.loadTables()
                 _lastJoin datetime,
                 _userGroup varchar,
                 _data varchar,
-                _intro binary
+                _intro binary,
+                _lastIP varchar,
+                _lastOnline integer,
+                _totalOnlineTime float
             );
 
             CREATE TABLE IF NOT EXISTS lia_characters (
@@ -393,6 +399,9 @@ function lia.db.loadTables()
                 `_userGroup` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_intro` BINARY(1) NULL DEFAULT 0,
+                `_lastIP` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+                `_lastOnline` INT(32) NULL DEFAULT 0,
+                `_totalOnlineTime` FLOAT NULL DEFAULT 0,
                 PRIMARY KEY (`_steamID`)
             );
 
