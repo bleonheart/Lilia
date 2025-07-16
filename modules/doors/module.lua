@@ -12,6 +12,3 @@ ACCESS_LABELS = {
     [DOOR_TENANT] = "tenant",
     [DOOR_OWNER] = "owner"
 }
-
-function MODULE:ModuleLoaded()
-end

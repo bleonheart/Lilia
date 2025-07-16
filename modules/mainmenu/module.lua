@@ -123,6 +123,3 @@ function MODULE:CanPlayerCreateChar(client)
         if (count or 0) >= maxChars then return false end
     end
 end
-
-function MODULE:ModuleLoaded()
-end

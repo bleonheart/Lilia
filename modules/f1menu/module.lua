@@ -43,6 +43,3 @@ function MODULE:InitializedModules()
         options = CLIENT and getMenuTabNames() or {"Status"}
     })
 end
-
-function MODULE:ModuleLoaded()
-end

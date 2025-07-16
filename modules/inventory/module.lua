@@ -15,6 +15,3 @@ MODULE.Dependencies = {
         Realm = "shared"
     },
 }
-
-function MODULE:ModuleLoaded()
-end

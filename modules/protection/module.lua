@@ -8,6 +8,3 @@ MODULE.CAMIPrivileges = {
         MinAccess = "admin"
     },
 }
-
-function MODULE:ModuleLoaded()
-end

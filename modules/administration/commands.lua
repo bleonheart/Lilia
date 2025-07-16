@@ -1,443 +1,4 @@
-if not lia.admin.isDisabled() then
-lia.command.add("plykick", {
-    adminOnly = true,
-    desc = "plyKickDesc",
-    syntax = "<string name> [string reason]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
-            client:notifyLocalized("plyKicked")
-            lia.log.add(client, "plyKick", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyban", {
-    adminOnly = true,
-    desc = "plyBanDesc",
-    syntax = "<string name> [number duration] [string reason]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
-            client:notifyLocalized("plyBanned")
-            lia.log.add(client, "plyBan", target:Name())
-        end
-    end
-})
-
-lia.command.add("plykill", {
-    adminOnly = true,
-    desc = "plyKillDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kill()
-            client:notifyLocalized("plyKilled")
-            lia.log.add(client, "plyKill", target:Name())
-        end
-    end
-})
-
-lia.command.add("plysetgroup", {
-    adminOnly = true,
-    desc = "plySetGroupDesc",
-    syntax = "<string name> <string group>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and lia.admin.groups[arguments[2]] then
-            lia.admin.setPlayerGroup(target, arguments[2])
-            client:notifyLocalized("plyGroupSet")
-            lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
-        elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
-            client:notifyLocalized("groupNotExists")
-        end
-    end
-})
-
-lia.command.add("plyunban", {
-    adminOnly = true,
-    desc = "plyUnbanDesc",
-    syntax = "<string steamid>",
-    onRun = function(client, arguments)
-        local steamid = arguments[1]
-        if steamid and steamid ~= "" then
-            lia.admin.removeBan(steamid)
-            client:notify("Player unbanned")
-            lia.log.add(client, "plyUnban", steamid)
-        end
-    end
-})
-
-lia.command.add("plyfreeze", {
-    adminOnly = true,
-    desc = "plyFreezeDesc",
-    syntax = "<string name> [number duration]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Freeze(true)
-            local dur = tonumber(arguments[2]) or 0
-            if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
-            lia.log.add(client, "plyFreeze", target:Name(), dur)
-        end
-    end
-})
-
-lia.command.add("plyunfreeze", {
-    adminOnly = true,
-    desc = "plyUnfreezeDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Freeze(false)
-            lia.log.add(client, "plyUnfreeze", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyslay", {
-    adminOnly = true,
-    desc = "plySlayDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kill()
-            lia.log.add(client, "plySlay", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyrespawn", {
-    adminOnly = true,
-    desc = "plyRespawnDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Spawn()
-            lia.log.add(client, "plyRespawn", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyblind", {
-    adminOnly = true,
-    desc = "plyBlindDesc",
-    syntax = "<string name> [number time]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            net.Start("blindTarget")
-            net.WriteBool(true)
-            net.Send(target)
-            local dur = tonumber(arguments[2])
-            if dur and dur > 0 then
-                timer.Create("liaBlind" .. target:SteamID(), dur, 1, function()
-                    if IsValid(target) then
-                        net.Start("blindTarget")
-                        net.WriteBool(false)
-                        net.Send(target)
-                    end
-                end)
-            end
-
-            lia.log.add(client, "plyBlind", target:Name(), dur or 0)
-        end
-    end
-})
-
-lia.command.add("plyunblind", {
-    adminOnly = true,
-    desc = "plyUnblindDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            net.Start("blindTarget")
-            net.WriteBool(false)
-            net.Send(target)
-            lia.log.add(client, "plyUnblind", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyblindfade", {
-    adminOnly = true,
-    desc = "plyBlindFadeDesc",
-    syntax = "<string name> <number time> [string color] [number fadein] [number fadeout]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            local duration = tonumber(arguments[2]) or 0
-            local colorName = (arguments[3] or "black"):lower()
-            local fadeIn = tonumber(arguments[4])
-            local fadeOut = tonumber(arguments[5])
-            fadeIn = fadeIn or duration * 0.05
-            fadeOut = fadeOut or duration * 0.05
-            net.Start("blindFade")
-            net.WriteBool(colorName == "white")
-            net.WriteFloat(duration)
-            net.WriteFloat(fadeIn)
-            net.WriteFloat(fadeOut)
-            net.Send(target)
-            lia.log.add(client, "plyBlindFade", target:Name(), duration, colorName)
-        end
-    end
-})
-
-lia.command.add("blindfadeall", {
-    adminOnly = true,
-    desc = "blindFadeAllDesc",
-    syntax = "<number time> [string color] [number fadein] [number fadeout]",
-    onRun = function(_, arguments)
-        local duration = tonumber(arguments[1]) or 0
-        local colorName = (arguments[2] or "black"):lower()
-        local fadeIn = tonumber(arguments[3]) or duration * 0.05
-        local fadeOut = tonumber(arguments[4]) or duration * 0.05
-        local isWhite = colorName == "white"
-        for _, ply in player.Iterator() do
-            if not ply:isStaffOnDuty() then
-                net.Start("blindFade")
-                net.WriteBool(isWhite)
-                net.WriteFloat(duration)
-                net.WriteFloat(fadeIn)
-                net.WriteFloat(fadeOut)
-                net.Send(ply)
-            end
-        end
-
-        lia.log.add(nil, "blindFadeAll", duration, colorName)
-    end
-})
-
-lia.command.add("plygag", {
-    adminOnly = true,
-    desc = "plyGagDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:setNetVar("liaGagged", true)
-            lia.log.add(client, "plyGag", target:Name())
-            hook.Run("PlayerGagged", target, client)
-        end
-    end
-})
-
-lia.command.add("plyungag", {
-    adminOnly = true,
-    desc = "plyUngagDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:setNetVar("liaGagged", false)
-            lia.log.add(client, "plyUngag", target:Name())
-            hook.Run("PlayerUngagged", target, client)
-        end
-    end
-})
-
-lia.command.add("plymute", {
-    adminOnly = true,
-    desc = "plyMuteDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and target:getChar() then
-            target:getChar():setData("VoiceBan", true)
-            lia.log.add(client, "plyMute", target:Name())
-            hook.Run("PlayerMuted", target, client)
-        end
-    end
-})
-
-lia.command.add("plyunmute", {
-    adminOnly = true,
-    desc = "plyUnmuteDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and target:getChar() then
-            target:getChar():setData("VoiceBan", false)
-            lia.log.add(client, "plyUnmute", target:Name())
-            hook.Run("PlayerUnmuted", target, client)
-        end
-    end
-})
-
-local returnPositions = {}
-lia.command.add("plybring", {
-    adminOnly = true,
-    desc = "plyBringDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            returnPositions[target] = target:GetPos()
-            target:SetPos(client:GetPos() + client:GetForward() * 50)
-            lia.log.add(client, "plyBring", target:Name())
-        end
-    end
-})
-
-lia.command.add("plygoto", {
-    adminOnly = true,
-    desc = "plyGotoDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            returnPositions[client] = client:GetPos()
-            client:SetPos(target:GetPos() + target:GetForward() * 50)
-            lia.log.add(client, "plyGoto", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyreturn", {
-    adminOnly = true,
-    desc = "plyReturnDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        target = IsValid(target) and target or client
-        local pos = returnPositions[target]
-        if pos then
-            target:SetPos(pos)
-            returnPositions[target] = nil
-            lia.log.add(client, "plyReturn", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyjail", {
-    adminOnly = true,
-    desc = "plyJailDesc",
-    syntax = "<string name> [number duration]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Lock()
-            target:Freeze(true)
-            lia.log.add(client, "plyJail", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyunjail", {
-    adminOnly = true,
-    desc = "plyUnjailDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:UnLock()
-            target:Freeze(false)
-            lia.log.add(client, "plyUnjail", target:Name())
-        end
-    end
-})
-
-lia.command.add("plycloak", {
-    adminOnly = true,
-    desc = "plyCloakDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:SetNoDraw(true)
-            lia.log.add(client, "plyCloak", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyuncloak", {
-    adminOnly = true,
-    desc = "plyUncloakDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:SetNoDraw(false)
-            lia.log.add(client, "plyUncloak", target:Name())
-        end
-    end
-})
-
-lia.command.add("plygod", {
-    adminOnly = true,
-    desc = "plyGodDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:GodEnable()
-            lia.log.add(client, "plyGod", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyungod", {
-    adminOnly = true,
-    desc = "plyUngodDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:GodDisable()
-            lia.log.add(client, "plyUngod", target:Name())
-        end
-    end
-})
-
-lia.command.add("plyignite", {
-    adminOnly = true,
-    desc = "plyIgniteDesc",
-    syntax = "<string name> [number duration]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            local dur = tonumber(arguments[2]) or 5
-            target:Ignite(dur)
-            lia.log.add(client, "plyIgnite", target:Name(), dur)
-        end
-    end
-})
-
-lia.command.add("plyextinguish", {
-    adminOnly = true,
-    desc = "plyExtinguishDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Extinguish()
-            lia.log.add(client, "plyExtinguish", target:Name())
-        end
-    end
-})
-
-lia.command.add("plystrip", {
-    adminOnly = true,
-    desc = "plyStripDesc",
-    syntax = "<string name>",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:StripWeapons()
-            lia.log.add(client, "plyStrip", target:Name())
-        end
-    end
-})
-end
-
-lia.command.add("adminmode", {
+﻿lia.command.add("adminmode", {
     desc = "adminModeDesc",
     onRun = function(client)
         if not IsValid(client) then return end
@@ -586,3 +147,442 @@ lia.command.add("returnsitroom", {
         lia.log.add(client, "sitRoomReturn", target:Nick())
     end
 })
+
+if not lia.admin.isDisabled() then
+    lia.command.add("plykick", {
+        adminOnly = true,
+        desc = "plyKickDesc",
+        syntax = "<string name> [string reason]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
+                client:notifyLocalized("plyKicked")
+                lia.log.add(client, "plyKick", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyban", {
+        adminOnly = true,
+        desc = "plyBanDesc",
+        syntax = "<string name> [number duration] [string reason]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
+                client:notifyLocalized("plyBanned")
+                lia.log.add(client, "plyBan", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plykill", {
+        adminOnly = true,
+        desc = "plyKillDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Kill()
+                client:notifyLocalized("plyKilled")
+                lia.log.add(client, "plyKill", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plysetgroup", {
+        adminOnly = true,
+        desc = "plySetGroupDesc",
+        syntax = "<string name> <string group>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) and lia.admin.groups[arguments[2]] then
+                lia.admin.setPlayerGroup(target, arguments[2])
+                client:notifyLocalized("plyGroupSet")
+                lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
+            elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
+                client:notifyLocalized("groupNotExists")
+            end
+        end
+    })
+
+    lia.command.add("plyunban", {
+        adminOnly = true,
+        desc = "plyUnbanDesc",
+        syntax = "<string steamid>",
+        onRun = function(client, arguments)
+            local steamid = arguments[1]
+            if steamid and steamid ~= "" then
+                lia.admin.removeBan(steamid)
+                client:notify("Player unbanned")
+                lia.log.add(client, "plyUnban", steamid)
+            end
+        end
+    })
+
+    lia.command.add("plyfreeze", {
+        adminOnly = true,
+        desc = "plyFreezeDesc",
+        syntax = "<string name> [number duration]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Freeze(true)
+                local dur = tonumber(arguments[2]) or 0
+                if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
+                lia.log.add(client, "plyFreeze", target:Name(), dur)
+            end
+        end
+    })
+
+    lia.command.add("plyunfreeze", {
+        adminOnly = true,
+        desc = "plyUnfreezeDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Freeze(false)
+                lia.log.add(client, "plyUnfreeze", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyslay", {
+        adminOnly = true,
+        desc = "plySlayDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Kill()
+                lia.log.add(client, "plySlay", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyrespawn", {
+        adminOnly = true,
+        desc = "plyRespawnDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Spawn()
+                lia.log.add(client, "plyRespawn", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyblind", {
+        adminOnly = true,
+        desc = "plyBlindDesc",
+        syntax = "<string name> [number time]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                net.Start("blindTarget")
+                net.WriteBool(true)
+                net.Send(target)
+                local dur = tonumber(arguments[2])
+                if dur and dur > 0 then
+                    timer.Create("liaBlind" .. target:SteamID(), dur, 1, function()
+                        if IsValid(target) then
+                            net.Start("blindTarget")
+                            net.WriteBool(false)
+                            net.Send(target)
+                        end
+                    end)
+                end
+
+                lia.log.add(client, "plyBlind", target:Name(), dur or 0)
+            end
+        end
+    })
+
+    lia.command.add("plyunblind", {
+        adminOnly = true,
+        desc = "plyUnblindDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                net.Start("blindTarget")
+                net.WriteBool(false)
+                net.Send(target)
+                lia.log.add(client, "plyUnblind", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyblindfade", {
+        adminOnly = true,
+        desc = "plyBlindFadeDesc",
+        syntax = "<string name> <number time> [string color] [number fadein] [number fadeout]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                local duration = tonumber(arguments[2]) or 0
+                local colorName = (arguments[3] or "black"):lower()
+                local fadeIn = tonumber(arguments[4])
+                local fadeOut = tonumber(arguments[5])
+                fadeIn = fadeIn or duration * 0.05
+                fadeOut = fadeOut or duration * 0.05
+                net.Start("blindFade")
+                net.WriteBool(colorName == "white")
+                net.WriteFloat(duration)
+                net.WriteFloat(fadeIn)
+                net.WriteFloat(fadeOut)
+                net.Send(target)
+                lia.log.add(client, "plyBlindFade", target:Name(), duration, colorName)
+            end
+        end
+    })
+
+    lia.command.add("blindfadeall", {
+        adminOnly = true,
+        desc = "blindFadeAllDesc",
+        syntax = "<number time> [string color] [number fadein] [number fadeout]",
+        onRun = function(_, arguments)
+            local duration = tonumber(arguments[1]) or 0
+            local colorName = (arguments[2] or "black"):lower()
+            local fadeIn = tonumber(arguments[3]) or duration * 0.05
+            local fadeOut = tonumber(arguments[4]) or duration * 0.05
+            local isWhite = colorName == "white"
+            for _, ply in player.Iterator() do
+                if not ply:isStaffOnDuty() then
+                    net.Start("blindFade")
+                    net.WriteBool(isWhite)
+                    net.WriteFloat(duration)
+                    net.WriteFloat(fadeIn)
+                    net.WriteFloat(fadeOut)
+                    net.Send(ply)
+                end
+            end
+
+            lia.log.add(nil, "blindFadeAll", duration, colorName)
+        end
+    })
+
+    lia.command.add("plygag", {
+        adminOnly = true,
+        desc = "plyGagDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:setNetVar("liaGagged", true)
+                lia.log.add(client, "plyGag", target:Name())
+                hook.Run("PlayerGagged", target, client)
+            end
+        end
+    })
+
+    lia.command.add("plyungag", {
+        adminOnly = true,
+        desc = "plyUngagDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:setNetVar("liaGagged", false)
+                lia.log.add(client, "plyUngag", target:Name())
+                hook.Run("PlayerUngagged", target, client)
+            end
+        end
+    })
+
+    lia.command.add("plymute", {
+        adminOnly = true,
+        desc = "plyMuteDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) and target:getChar() then
+                target:getChar():setData("VoiceBan", true)
+                lia.log.add(client, "plyMute", target:Name())
+                hook.Run("PlayerMuted", target, client)
+            end
+        end
+    })
+
+    lia.command.add("plyunmute", {
+        adminOnly = true,
+        desc = "plyUnmuteDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) and target:getChar() then
+                target:getChar():setData("VoiceBan", false)
+                lia.log.add(client, "plyUnmute", target:Name())
+                hook.Run("PlayerUnmuted", target, client)
+            end
+        end
+    })
+
+    local returnPositions = {}
+    lia.command.add("plybring", {
+        adminOnly = true,
+        desc = "plyBringDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                returnPositions[target] = target:GetPos()
+                target:SetPos(client:GetPos() + client:GetForward() * 50)
+                lia.log.add(client, "plyBring", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plygoto", {
+        adminOnly = true,
+        desc = "plyGotoDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                returnPositions[client] = client:GetPos()
+                client:SetPos(target:GetPos() + target:GetForward() * 50)
+                lia.log.add(client, "plyGoto", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyreturn", {
+        adminOnly = true,
+        desc = "plyReturnDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            target = IsValid(target) and target or client
+            local pos = returnPositions[target]
+            if pos then
+                target:SetPos(pos)
+                returnPositions[target] = nil
+                lia.log.add(client, "plyReturn", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyjail", {
+        adminOnly = true,
+        desc = "plyJailDesc",
+        syntax = "<string name> [number duration]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Lock()
+                target:Freeze(true)
+                lia.log.add(client, "plyJail", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyunjail", {
+        adminOnly = true,
+        desc = "plyUnjailDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:UnLock()
+                target:Freeze(false)
+                lia.log.add(client, "plyUnjail", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plycloak", {
+        adminOnly = true,
+        desc = "plyCloakDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:SetNoDraw(true)
+                lia.log.add(client, "plyCloak", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyuncloak", {
+        adminOnly = true,
+        desc = "plyUncloakDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:SetNoDraw(false)
+                lia.log.add(client, "plyUncloak", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plygod", {
+        adminOnly = true,
+        desc = "plyGodDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:GodEnable()
+                lia.log.add(client, "plyGod", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyungod", {
+        adminOnly = true,
+        desc = "plyUngodDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:GodDisable()
+                lia.log.add(client, "plyUngod", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyignite", {
+        adminOnly = true,
+        desc = "plyIgniteDesc",
+        syntax = "<string name> [number duration]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                local dur = tonumber(arguments[2]) or 5
+                target:Ignite(dur)
+                lia.log.add(client, "plyIgnite", target:Name(), dur)
+            end
+        end
+    })
+
+    lia.command.add("plyextinguish", {
+        adminOnly = true,
+        desc = "plyExtinguishDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Extinguish()
+                lia.log.add(client, "plyExtinguish", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plystrip", {
+        adminOnly = true,
+        desc = "plyStripDesc",
+        syntax = "<string name>",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:StripWeapons()
+                lia.log.add(client, "plyStrip", target:Name())
+            end
+        end
+    })
+end
