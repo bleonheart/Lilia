@@ -191,6 +191,9 @@ function GM:CanPlayerTakeItem(client, item)
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
         client:notifyLocalized("forbiddenActionStorage")
         return false
+    elseif client:OwnerSteamID64() ~= client:SteamID64() then
+        client:notifyLocalized("familySharedPickupDisabled")
+        return false
     elseif IsValid(item.entity) then
         local character = client:getChar()
         if item.entity.SteamID64 == client:SteamID64() and item.entity.liaCharID ~= character:getID() then
@@ -421,6 +424,7 @@ function GM:PlayerInitialSpawn(client)
         if not IsValid(client) then return end
         local address = client:IPAddress()
         client:setLiliaData("lastIP", address)
+        lia.db.updateTable({ _lastIP = address }, nil, "players", "_steamID = " .. client:SteamID64())
         net.Start("liaDataSync")
         net.WriteTable(data)
         net.WriteType(client.firstJoin)

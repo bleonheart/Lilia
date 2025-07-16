@@ -207,7 +207,9 @@ if SERVER then
                         local rows = res2.results or {}
                         for _, row in ipairs(rows) do
                             local decoded = util.JSONToTable(row._value or "[]")
-                            lia.data.stored[key] = decoded and decoded[1]
+                            if istable(decoded) then
+                                lia.data.stored[key] = decoded[1] or decoded
+                            end
                         end
 
                         loadNext(i + 1)
