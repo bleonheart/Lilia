@@ -1,4 +1,3 @@
-MODULE.spawns = MODULE.spawns or {}
 MODULE.name = "Spawns"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"

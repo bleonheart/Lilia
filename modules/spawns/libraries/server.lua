@@ -1,4 +1,5 @@
 local MODULE = MODULE
+MODULE.spawns = MODULE.spawns or {}
 local function decodeVector(tbl)
     if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then return Vector(tbl[1], tbl[2], tbl[3]) end
     return tbl
@@ -25,7 +26,6 @@ function MODULE:LoadData()
 
         print(string.format("[MODULE] LoadData: faction '%s' total spawns = %d", fac, #self.spawns[fac]))
     end
-
 end
 
 function MODULE:SaveData()
