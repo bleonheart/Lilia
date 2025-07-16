@@ -553,8 +553,8 @@ function GM:SaveData()
         if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, item:GetPos()} end
     end
 
-    lia.data.set("persistance", data.entities, true)
-    lia.data.set("itemsave", data.items, true)
+    lia.data.set("persistance", data.entities)
+    lia.data.set("itemsave", data.items)
 end
 
 function GM:LoadData()
@@ -565,7 +565,7 @@ function GM:LoadData()
         return false
     end
 
-    local entities = lia.data.get("persistance", {}, true)
+    local entities = lia.data.get("persistance", {})
     for _, ent in ipairs(entities or {}) do
         if not IsEntityNearby(ent.pos, ent.class) then
             local createdEnt = ents.Create(ent.class)
@@ -582,7 +582,7 @@ function GM:LoadData()
         end
     end
 
-    local items = lia.data.get("itemsave", {}, true)
+    local items = lia.data.get("itemsave", {})
     if items then
         local idRange = {}
         local positions = {}
@@ -626,7 +626,7 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-    local saved = lia.data.get("persistance", {}, true) or {}
+    local saved = lia.data.get("persistance", {}) or {}
     local seen = {}
     for _, e in ipairs(saved) do
         seen[makeKey(e)] = true
@@ -641,7 +641,7 @@ function GM:OnEntityCreated(ent)
             angles = ent:GetAngles(),
         }
 
-        lia.data.set("persistance", saved, true)
+        lia.data.set("persistance", saved)
     end
 end
 
