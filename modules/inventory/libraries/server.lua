@@ -41,6 +41,7 @@ end
 function MODULE:ItemCombine(client, item, target)
     if target.onCombine and target:call("onCombine", client, nil, item) then return end
     if item.onCombineTo and item and item:call("onCombineTo", client, nil, target) then return end
+    lia.log.add(client, "itemCombine", item:getName(), target:getName())
 end
 
 function MODULE:ItemDraggedOutOfInventory(client, item)
@@ -106,6 +107,10 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID)
         if err then
             print(err)
             debug.Trace()
+        end
+
+        if IsValid(client) then
+            lia.log.add(client, "itemTransferFailed", item:getName(), oldInventory:getID(), newInventory and newInventory:getID() or 0)
         end
 
         if IsValid(client) then client:notifyLocalized("itemOnGround") end

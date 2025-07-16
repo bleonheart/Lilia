@@ -111,7 +111,7 @@ function ENT:removeReceiver(client, requestedByPlayer)
     if requestedByPlayer then return end
     net.Start("VendorExit")
     net.Send(client)
-    lia.log.add(activator, "vendorExit", self:getNetVar("name"))
+    lia.log.add(client, "vendorExit", self:getNetVar("name"))
 end
 
 local ALLOWED_MODES = {
