@@ -102,7 +102,7 @@ surface.SetDrawColor(colors.background)
 
 ---
 
-### Color(name)
+### Color
 
 **Purpose**
 
