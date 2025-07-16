@@ -420,6 +420,7 @@ if SERVER then
                     _steamName = name,
                     _firstJoin = timeStamp,
                     _lastJoin = timeStamp,
+                    _userGroup = "user",
                     _data = {},
                     _lastIP = "",
                     _lastOnline = os.time(lia.time.toNumber(timeStamp)),
