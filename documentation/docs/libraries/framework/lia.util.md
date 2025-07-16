@@ -780,6 +780,8 @@ Draws a blur effect over a panel.
 
 * `passes` (*number*): Iteration multiplier (default 0.2).
 
+* `alpha` (*number*): Optional alpha transparency (default 255).
+
 **Realm**
 
 `Client`
@@ -811,6 +813,8 @@ Draws blur over a rectangle on screen.
 * `amount` (*number*): Blur strength.
 
 * `passes` (*number*): Iteration multiplier.
+
+* `alpha` (*number*): Optional alpha transparency (default 255).
 
 **Realm**
 
