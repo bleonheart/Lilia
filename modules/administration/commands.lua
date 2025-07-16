@@ -151,6 +151,7 @@ lia.command.add("returnsitroom", {
 if not lia.admin.isDisabled() then
     lia.command.add("plykick", {
         adminOnly = true,
+        privilege = "Kick Player",
         desc = "plyKickDesc",
         syntax = "<string name> [string reason]",
         onRun = function(client, arguments)
@@ -165,6 +166,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyban", {
         adminOnly = true,
+        privilege = "Ban Player",
         desc = "plyBanDesc",
         syntax = "<string name> [number duration] [string reason]",
         onRun = function(client, arguments)
@@ -179,6 +181,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plykill", {
         adminOnly = true,
+        privilege = "Kill Player",
         desc = "plyKillDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -193,6 +196,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plysetgroup", {
         adminOnly = true,
+        privilege = "Set Player Group",
         desc = "plySetGroupDesc",
         syntax = "<string name> <string group>",
         onRun = function(client, arguments)
@@ -209,6 +213,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyunban", {
         adminOnly = true,
+        privilege = "Unban Player",
         desc = "plyUnbanDesc",
         syntax = "<string steamid>",
         onRun = function(client, arguments)
@@ -223,6 +228,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyfreeze", {
         adminOnly = true,
+        privilege = "Freeze Player",
         desc = "plyFreezeDesc",
         syntax = "<string name> [number duration]",
         onRun = function(client, arguments)
@@ -238,6 +244,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyunfreeze", {
         adminOnly = true,
+        privilege = "Unfreeze Player",
         desc = "plyUnfreezeDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -251,6 +258,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyslay", {
         adminOnly = true,
+        privilege = "Slay Player",
         desc = "plySlayDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -264,6 +272,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyrespawn", {
         adminOnly = true,
+        privilege = "Respawn Player",
         desc = "plyRespawnDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -277,6 +286,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyblind", {
         adminOnly = true,
+        privilege = "Blind Player",
         desc = "plyBlindDesc",
         syntax = "<string name> [number time]",
         onRun = function(client, arguments)
@@ -303,6 +313,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyunblind", {
         adminOnly = true,
+        privilege = "Unblind Player",
         desc = "plyUnblindDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -318,6 +329,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyblindfade", {
         adminOnly = true,
+        privilege = "Blind Fade Player",
         desc = "plyBlindFadeDesc",
         syntax = "<string name> <number time> [string color] [number fadein] [number fadeout]",
         onRun = function(client, arguments)
@@ -342,6 +354,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("blindfadeall", {
         adminOnly = true,
+        privilege = "Blind Fade All",
         desc = "blindFadeAllDesc",
         syntax = "<number time> [string color] [number fadein] [number fadeout]",
         onRun = function(_, arguments)
@@ -367,6 +380,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plygag", {
         adminOnly = true,
+        privilege = "Gag Player",
         desc = "plyGagDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -381,6 +395,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyungag", {
         adminOnly = true,
+        privilege = "Ungag Player",
         desc = "plyUngagDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -395,6 +410,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plymute", {
         adminOnly = true,
+        privilege = "Mute Player",
         desc = "plyMuteDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -409,6 +425,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyunmute", {
         adminOnly = true,
+        privilege = "Unmute Player",
         desc = "plyUnmuteDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -424,6 +441,7 @@ if not lia.admin.isDisabled() then
     local returnPositions = {}
     lia.command.add("plybring", {
         adminOnly = true,
+        privilege = "Bring Player",
         desc = "plyBringDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -438,6 +456,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plygoto", {
         adminOnly = true,
+        privilege = "Goto Player",
         desc = "plyGotoDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -452,6 +471,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyreturn", {
         adminOnly = true,
+        privilege = "Return Player",
         desc = "plyReturnDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -468,6 +488,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyjail", {
         adminOnly = true,
+        privilege = "Jail Player",
         desc = "plyJailDesc",
         syntax = "<string name> [number duration]",
         onRun = function(client, arguments)
@@ -482,6 +503,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyunjail", {
         adminOnly = true,
+        privilege = "Unjail Player",
         desc = "plyUnjailDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -496,6 +518,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plycloak", {
         adminOnly = true,
+        privilege = "Cloak Player",
         desc = "plyCloakDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -509,6 +532,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyuncloak", {
         adminOnly = true,
+        privilege = "Uncloak Player",
         desc = "plyUncloakDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -522,6 +546,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plygod", {
         adminOnly = true,
+        privilege = "God Player",
         desc = "plyGodDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -535,6 +560,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyungod", {
         adminOnly = true,
+        privilege = "Ungod Player",
         desc = "plyUngodDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -548,6 +574,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyignite", {
         adminOnly = true,
+        privilege = "Ignite Player",
         desc = "plyIgniteDesc",
         syntax = "<string name> [number duration]",
         onRun = function(client, arguments)
@@ -562,6 +589,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plyextinguish", {
         adminOnly = true,
+        privilege = "Extinguish Player",
         desc = "plyExtinguishDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
@@ -575,6 +603,7 @@ if not lia.admin.isDisabled() then
 
     lia.command.add("plystrip", {
         adminOnly = true,
+        privilege = "Strip Player",
         desc = "plyStripDesc",
         syntax = "<string name>",
         onRun = function(client, arguments)
