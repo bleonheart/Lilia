@@ -191,6 +191,9 @@ function GM:CanPlayerTakeItem(client, item)
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
         client:notifyLocalized("forbiddenActionStorage")
         return false
+    elseif client:OwnerSteamID64() ~= client:SteamID64() then
+        client:notifyLocalized("familySharedPickupDisabled")
+        return false
     elseif IsValid(item.entity) then
         local character = client:getChar()
         if item.entity.SteamID64 == client:SteamID64() and item.entity.liaCharID ~= character:getID() then
