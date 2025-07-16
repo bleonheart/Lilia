@@ -57,7 +57,7 @@ lia.command.add("roster", {
 
         local isLeader = client:IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin") or character:hasFlags("V")
         if not isLeader then return end
-        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
+        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
         if not character then
             client:notify("Character data not found for client:", client)
             return
@@ -81,8 +81,7 @@ lia.command.add("roster", {
             local characters = {}
             if data then
                 for _, v in ipairs(data) do
-                    local pdata = util.JSONToTable(v._data or "{}")
-                    local last = pdata.lastOnline
+                    local last = tonumber(v._lastOnline)
                     if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
                     local lastDiff = os.time() - last
                     table.insert(characters, {
@@ -91,7 +90,7 @@ lia.command.add("roster", {
                         faction = v._faction,
                         steamID = v._steamID,
                         lastOnline = formatDHM(lastDiff),
-                        hoursPlayed = formatDHM(pdata.totalOnlineTime or 0)
+                        hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
                     })
                 end
             else
@@ -112,7 +111,7 @@ lia.command.add("factionmanagement", {
     desc = "factionManagementDesc",
     syntax = "[faction Faction]",
     onRun = function(client, arguments)
-        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._data"
+        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
         local faction
         local arg = table.concat(arguments, " ")
         if arg ~= "" then
@@ -144,8 +143,7 @@ lia.command.add("factionmanagement", {
             local characters = {}
             if data then
                 for _, v in ipairs(data) do
-                    local pdata = util.JSONToTable(v._data or "{}")
-                    local last = pdata.lastOnline
+                    local last = tonumber(v._lastOnline)
                     if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
                     local lastDiff = os.time() - last
                     table.insert(characters, {
@@ -154,7 +152,7 @@ lia.command.add("factionmanagement", {
                         faction = v._faction,
                         steamID = v._steamID,
                         lastOnline = formatDHM(lastDiff),
-                        hoursPlayed = formatDHM(pdata.totalOnlineTime or 0)
+                        hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
                     })
                 end
             else
