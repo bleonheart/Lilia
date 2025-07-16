@@ -21,10 +21,7 @@ MODULE.CAMIPrivileges = {
     },
 
 
-}function MODULE:ModuleLoaded()
-    hook.Run("AdministrationModuleLoaded", self)
-    hook.Run("AdministrationDataInitialized", self)
-    hook.Run("AdministrationPermissionsLoaded", self)
-    hook.Run("AdministrationCommandsReady", self)
-    hook.Run("AdministrationFinished", self)
+}
+
+function MODULE:ModuleLoaded()
 end

@@ -14,9 +14,4 @@ ACCESS_LABELS = {
 }
 
 function MODULE:ModuleLoaded()
-    hook.Run("DoorsModuleLoaded", self)
-    hook.Run("DoorsDataLoaded", self)
-    hook.Run("DoorsKeysRegistered", self)
-    hook.Run("DoorsLocksInitialized", self)
-    hook.Run("DoorsReady", self)
 end
