@@ -23,7 +23,8 @@ function lia.option.add(key, name, desc, default, callback, data)
         callback = callback,
         type = optionType,
         visible = data.visible,
-        shouldNetwork = data.shouldNetwork
+        shouldNetwork = data.shouldNetwork,
+        isQuick = data.isQuick
     }
 end
 
