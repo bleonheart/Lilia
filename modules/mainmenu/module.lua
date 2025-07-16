@@ -125,9 +125,4 @@ function MODULE:CanPlayerCreateChar(client)
 end
 
 function MODULE:ModuleLoaded()
-    hook.Run("MainMenuModuleLoaded", self)
-    hook.Run("MainMenuCharListSynced", self)
-    hook.Run("MainMenuPanelsCreated", self)
-    hook.Run("MainMenuButtonsAdded", self)
-    hook.Run("MainMenuReady", self)
 end
