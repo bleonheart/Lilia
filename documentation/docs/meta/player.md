@@ -2133,7 +2133,7 @@ Retrieves a networked local variable stored on the player.
 **Example Usage**
 
 ```lua
-local stamina = player:getLocalVar("stamina", 0)
+local stamina = player:getLocalVar("stamina",  char:getMaxStamina())
 ```
 
 ---

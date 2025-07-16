@@ -2,9 +2,7 @@
 local stmBlurAmount = 0
 local stmBlurAlpha = 0
 function MODULE:ConfigureCharacterCreationSteps(panel)
-    if table.Count(lia.attribs.list) > 0 then
-        panel:addStep(vgui.Create("liaCharacterAttribs"), 98)
-    end
+    if table.Count(lia.attribs.list) > 0 then panel:addStep(vgui.Create("liaCharacterAttribs"), 98) end
 end
 
 function MODULE:PlayerBindPress(client, bind, pressed)
@@ -12,7 +10,7 @@ function MODULE:PlayerBindPress(client, bind, pressed)
     local char = client:getChar()
     if not char then return end
     local predicted = predictedStamina or 0
-    local actual = client:getLocalVar("stamina", 0)
+    local actual = client:getLocalVar("stamina",  char:getMaxStamina())
     local jumpReq = lia.config.get("JumpStaminaCost", 25)
     if bind == "+jump" and predicted < jumpReq and actual < jumpReq then return true end
     local stamina = math.min(predicted, actual)
@@ -33,8 +31,10 @@ function MODULE:Think()
 end
 
 function MODULE:LocalVarChanged(client, key, _, newVar)
+    print("ran", key)
     if client ~= LocalPlayer() or key ~= "stamina" then return end
-    if math.abs(predictedStamina - newVar) > 5 then predictedStamina = newVar end
+    print("hi", predictedStamina)
+    predictedStamina = newVar
 end
 
 function MODULE:HUDPaintBackground()

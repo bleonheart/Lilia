@@ -303,7 +303,7 @@ end
 
 if SERVER then
     function playerMeta:restoreStamina(amount)
-        local current = self:getLocalVar("stamina", 0)
+        local current = self:getLocalVar("stamina",  char:getMaxStamina())
         local maxStamina = self:getChar():getMaxStamina()
         local value = math.Clamp(current + amount, 0, maxStamina)
         self:setLocalVar("stamina", value)
@@ -314,7 +314,7 @@ if SERVER then
     end
 
     function playerMeta:consumeStamina(amount)
-        local current = self:getLocalVar("stamina", 0)
+        local current = self:getLocalVar("stamina",  char:getMaxStamina())
         local value = math.Clamp(current - amount, 0, self:getChar():getMaxStamina())
         self:setLocalVar("stamina", value)
         if value == 0 and not self:getNetVar("brth", false) then

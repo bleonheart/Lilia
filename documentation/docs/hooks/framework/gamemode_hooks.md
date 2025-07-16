@@ -5409,7 +5409,7 @@ Called when a player's stamina decreases.
 ```lua
 -- Play a sound when the player runs out of stamina.
 hook.Add("PlayerStaminaLost", "TiredSound", function(client)
-    if client:getLocalVar("stamina", 0) <= 0 then
+    if client:getLocalVar("stamina",  char:getMaxStamina()) <= 0 then
         client:EmitSound("player/suit_denydevice.wav")
     end
 end)

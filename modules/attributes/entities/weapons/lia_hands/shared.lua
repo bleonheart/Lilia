@@ -237,7 +237,7 @@ function SWEP:PrimaryAttack()
     local staminaUse = lia.config.get("PunchStamina")
     if staminaUse > 0 then
         local owner = self:GetOwner()
-        local currentStamina = owner:getLocalVar("stamina", 0)
+        local currentStamina = owner:getLocalVar("stamina",  char:getMaxStamina())
         if currentStamina < staminaUse then return end
         if SERVER then owner:consumeStamina(staminaUse) end
     end
