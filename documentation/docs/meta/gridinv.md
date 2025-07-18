@@ -40,6 +40,7 @@ If no width has been set, the value from `lia.config.invW` is used.
 local width = inv:getWidth()
 print("Inventory width:", width)
 ```
+
 ---
 
 ### getHeight
@@ -68,6 +69,7 @@ Defaults to `lia.config.invH` when unset.
 local height = inv:getHeight()
 print("Inventory height:", height)
 ```
+
 ---
 
 ### getSize
@@ -94,6 +96,7 @@ Returns both grid dimensions at once.
 local w, h = inv:getSize()
 print(string.format("Size: %dx%d", w, h))
 ```
+
 ---
 
 ### canItemFitInInventory
@@ -127,6 +130,7 @@ if inv:canItemFitInInventory(item, 2, 3) then
     print("Item fits at (2,3)")
 end
 ```
+
 ---
 
 ### canAdd
@@ -156,6 +160,7 @@ if inv:canAdd("pistol_ammo") then
     print("Ammo can be stored")
 end
 ```
+
 ---
 
 ### doesItemOverlapWithOther
@@ -194,6 +199,7 @@ for _, existing in pairs(inv:getItems(true)) do
     end
 end
 ```
+
 ---
 
 ### doesFitInventory
@@ -221,6 +227,7 @@ if inv:doesFitInventory(item) then
     print("There is room for the item")
 end
 ```
+
 ---
 
 ### doesItemFitAtPos
@@ -255,6 +262,7 @@ if not ok and blocking then
     print("Item collides with", blocking:getName())
 end
 ```
+
 ---
 
 ### findFreePosition
@@ -283,6 +291,7 @@ if x and y then
     print("Space found at", x, y)
 end
 ```
+
 ---
 
 ### configure
@@ -312,6 +321,7 @@ function MyInv:configure()
     self:super().configure(self)
 end
 ```
+
 ---
 
 ### getItems
@@ -341,6 +351,7 @@ for id, itm in pairs(inv:getItems()) do
     print(id, itm.uniqueID)
 end
 ```
+
 ---
 
 ### setSize
@@ -369,6 +380,7 @@ Updates the stored grid dimensions **on the server**.
 -- Expand the inventory to 6×4 slots
 inv:setSize(6, 4)
 ```
+
 ---
 
 ### wipeItems
@@ -394,6 +406,7 @@ Removes **all** items from the inventory.
 ```lua
 inv:wipeItems()
 ```
+
 ---
 
 ### setOwner
@@ -425,6 +438,7 @@ When `fullUpdate` is `true` the inventory is synced to that owner immediately.
 ```lua
 inv:setOwner(client, true)
 ```
+
 ---
 
 ### add
@@ -466,6 +480,7 @@ inv:add("pistol_ammo", 1, 1):next(function(itm)
     print("Added", itm.uniqueID)
 end)
 ```
+
 ---
 
 ### remove
@@ -497,6 +512,7 @@ inv:remove("pistol_ammo", 2):next(function()
     print("Ammo removed")
 end)
 ```
+
 ---
 
 ### requestTransfer
@@ -531,5 +547,5 @@ The server processes this call through the `HandleItemTransferRequest` hook.
 -- Move the item into another inventory
 inv:requestTransfer(id, bag:getID(), 1, 2)
 ```
----
 
+---

@@ -40,6 +40,7 @@ Returns a printable identifier for this character.
 -- Print a readable identifier when saving debug logs
 print("Active char: " .. char:tostring())
 ```
+
 ---
 
 ### eq
@@ -72,6 +73,7 @@ if owner and char:eq(owner) then
     door:Fire("unlock", "", 0)
 end
 ```
+
 ---
 
 ### getID
@@ -100,6 +102,7 @@ local id = char:getID()
 
 session.lastCharID = id
 ```
+
 ---
 
 ### getPlayer
@@ -130,6 +133,7 @@ if IsValid(ply) then
     ply:ChatPrint("Character ready")
 end
 ```
+
 ---
 
 ### getDisplayedName
@@ -156,6 +160,7 @@ Returns the character's name as it should be shown to the given player.
 -- Announce the character's name to a viewer
 client:ChatPrint(string.format("You see %s", char:getDisplayedName(client)))
 ```
+
 ---
 
 ### hasMoney
@@ -184,6 +189,7 @@ if char:hasMoney(item.price) then
     char:takeMoney(item.price)
 end
 ```
+
 ---
 
 ### getFlags
@@ -212,6 +218,7 @@ if char:getFlags():find("A") then
     print("Admin privileges detected")
 end
 ```
+
 ---
 
 ### hasFlags
@@ -240,6 +247,7 @@ if char:hasFlags("abc") then
     performSpecialAction()
 end
 ```
+
 ---
 
 ### getItemWeapon
@@ -270,6 +278,7 @@ if char:getItemWeapon(true) then
     print("Item weapon equipped")
 end
 ```
+
 ---
 
 ### getMaxStamina
@@ -296,6 +305,7 @@ Returns the maximum stamina value for this character.
 -- Calculate the proportion of stamina remaining
 local pct = char:getStamina() / char:getMaxStamina()
 ```
+
 ---
 
 ### getStamina
@@ -324,6 +334,7 @@ local stamina = char:getStamina()
 
 drawStaminaBar(stamina)
 ```
+
 ---
 
 ### hasClassWhitelist
@@ -352,6 +363,7 @@ if char:hasClassWhitelist(CLASS_MEDIC) then
     print("You may become a medic")
 end
 ```
+
 ---
 
 ### isFaction
@@ -380,6 +392,7 @@ if char:isFaction(FACTION_CITIZEN) then
     door:keysOwn(char:getPlayer())
 end
 ```
+
 ---
 
 ### isClass
@@ -408,6 +421,7 @@ if char:isClass(CLASS_ENGINEER) then
     char:restoreStamina(10)
 end
 ```
+
 ---
 
 ### getAttrib
@@ -438,6 +452,7 @@ local strength = char:getAttrib("str", 0)
 
 local dmg = baseDamage + strength * 0.5
 ```
+
 ---
 
 ### getBoost
@@ -464,6 +479,7 @@ Returns the boost table for the given attribute.
 -- Inspect active boosts on agility
 PrintTable(char:getBoost("agi"))
 ```
+
 ---
 
 ### getBoosts
@@ -492,6 +508,7 @@ for id, data in pairs(char:getBoosts()) do
     print(id, data)
 end
 ```
+
 ---
 
 ### doesRecognize
@@ -520,6 +537,7 @@ if char:doesRecognize(targetChar) then
     print("Known: " .. targetChar:getName())
 end
 ```
+
 ---
 
 ### doesFakeRecognize
@@ -548,6 +566,7 @@ if char:doesFakeRecognize(targetChar) then
     print("Recognition is fake")
 end
 ```
+
 ---
 
 ### recognize
@@ -578,6 +597,7 @@ When a custom `name` is provided that alias will be shown whenever the character
 -- Remember the rival using a codename and by ID
 char:recognize(rivalChar:getID(), "Mysterious Stranger")
 ```
+
 ---
 
 ### WhitelistAllClasses
@@ -604,6 +624,7 @@ Grants class whitelist access for every class defined by the schema.
 -- Allow this character to choose any class
 char:WhitelistAllClasses()
 ```
+
 ---
 
 ### WhitelistAllFactions
@@ -630,6 +651,7 @@ Marks the character as whitelisted for every faction.
 -- Grant access to all factions for testing
 char:WhitelistAllFactions()
 ```
+
 ---
 
 ### WhitelistEverything
@@ -656,6 +678,7 @@ Convenience wrapper that whitelists the character for all factions and classes.
 -- Unlock every faction and class
 char:WhitelistEverything()
 ```
+
 ---
 
 ### classWhitelist
@@ -682,6 +705,7 @@ Adds the specified class to this character's whitelist.
 -- Permit switching to the engineer class
 char:classWhitelist(CLASS_ENGINEER)
 ```
+
 ---
 
 ### classUnWhitelist
@@ -708,6 +732,7 @@ Removes the specified class from the character's whitelist.
 -- Revoke access to the medic class
 char:classUnWhitelist(CLASS_MEDIC)
 ```
+
 ---
 
 ### joinClass
@@ -738,6 +763,7 @@ When `isForced` is `true` the normal eligibility checks are skipped.
 -- Force the character into the soldier class
 char:joinClass(CLASS_SOLDIER, true)
 ```
+
 ---
 
 ### kickClass
@@ -764,6 +790,7 @@ Removes the character from their current class, reverting to the default for the
 -- Reset the character's class after leaving the group
 char:kickClass()
 ```
+
 ---
 
 ### updateAttrib
@@ -792,6 +819,7 @@ Increases an attribute by the specified value, clamped to the maximum allowed.
 -- Award experience toward agility
 char:updateAttrib("agi", 5)
 ```
+
 ---
 
 ### setAttrib
@@ -820,6 +848,7 @@ Directly sets an attribute to the given value.
 -- Reset strength after an event
 char:setAttrib("str", 10)
 ```
+
 ---
 
 ### addBoost
@@ -850,6 +879,7 @@ Applies a temporary boost to one of the character's attributes.
 -- Grant a strength bonus while an item is equipped
 char:addBoost("powerGloves", "str", 2)
 ```
+
 ---
 
 ### removeBoost
@@ -878,6 +908,7 @@ Removes a previously applied attribute boost.
 -- Clear the item bonus when unequipped
 char:removeBoost("powerGloves", "str")
 ```
+
 ---
 
 ### setFlags
@@ -904,6 +935,7 @@ Replaces the character's flag string with the provided value.
 -- Reset all flags before assigning new ones
 char:setFlags("")
 ```
+
 ---
 
 ### giveFlags
@@ -930,6 +962,7 @@ Adds the specified flag characters to the character.
 -- Grant temporary admin powers
 char:giveFlags("A")
 ```
+
 ---
 
 ### takeFlags
@@ -956,6 +989,7 @@ Removes the given flag characters from the character.
 -- Strip special permissions when demoted
 char:takeFlags("A")
 ```
+
 ---
 
 ### save
@@ -984,6 +1018,7 @@ char:save(function()
     print("character saved")
 end)
 ```
+
 ---
 
 ### sync
@@ -1014,6 +1049,7 @@ When the receiver is the character's own player, only local variables intended f
 -- Send updates only to one player
 char:sync(targetPlayer)
 ```
+
 ---
 
 ### setup
@@ -1042,6 +1078,7 @@ Use `noNetworking` to skip network updates during initialization.
 -- Fully prepare the character after selection
 char:setup()
 ```
+
 ---
 
 ### kick
@@ -1070,6 +1107,7 @@ The player is killed silently and immediately respawns with no character loaded.
 -- Eject the player from their character
 char:kick() -- they will respawn without a character
 ```
+
 ---
 
 ### ban
@@ -1098,6 +1136,7 @@ This also triggers the `OnCharPermakilled` hook.
 -- Ban the character for one hour
 char:ban(3600)
 ```
+
 ---
 
 ### delete
@@ -1124,6 +1163,7 @@ Completely removes the character from the database along with any inventories it
 -- Permanently remove this character
 char:delete()
 ```
+
 ---
 
 ### destroy
@@ -1152,6 +1192,7 @@ Useful after deleting a character or when cleaning up disconnected players.
 -- Clean up a removed character instance
 char:destroy()
 ```
+
 ---
 
 ### giveMoney
@@ -1180,6 +1221,7 @@ local reward = 250
 
 char:giveMoney(reward)
 ```
+
 ---
 
 ### takeMoney
@@ -1210,6 +1252,7 @@ local fine = 50
 
 char:takeMoney(fine)
 ```
+
 ---
 
 ### getName
@@ -1235,6 +1278,7 @@ Returns the character's stored name or a default value.
 ```lua
 print("Character name:", char:getName("Unknown"))
 ```
+
 ---
 
 ### setName
@@ -1260,6 +1304,7 @@ Updates the character's name and replicates the change to players.
 ```lua
 char:setName("Alyx Vance")
 ```
+
 ---
 
 ### getDesc
@@ -1285,6 +1330,7 @@ Fetches the character's description text or returns the given default.
 ```lua
 local about = char:getDesc("No bio")
 ```
+
 ---
 
 ### setDesc
@@ -1310,6 +1356,7 @@ Assigns a new description for the character.
 ```lua
 char:setDesc("Hardened wasteland survivor")
 ```
+
 ---
 
 ### getModel
@@ -1335,6 +1382,7 @@ Retrieves the model path assigned to the character.
 ```lua
 local mdl = char:getModel("models/error.mdl")
 ```
+
 ---
 
 ### setModel
@@ -1360,6 +1408,7 @@ Sets the character's player model and broadcasts the update.
 ```lua
 char:setModel("models/alyx.mdl")
 ```
+
 ---
 
 ### getClass
@@ -1387,6 +1436,7 @@ if char:getClass() == CLASS_ENGINEER then
     print("Engineer present")
 end
 ```
+
 ---
 
 ### setClass
@@ -1412,6 +1462,7 @@ Stores a new class index for the character.
 ```lua
 char:setClass(CLASS_ENGINEER)
 ```
+
 ---
 
 ### getFaction
@@ -1437,6 +1488,7 @@ Gets the faction index of the character or a fallback value.
 ```lua
 print("Faction:", char:getFaction())
 ```
+
 ---
 
 ### setFaction
@@ -1462,6 +1514,7 @@ Sets the character's faction team.
 ```lua
 char:setFaction(FACTION_CITIZEN)
 ```
+
 ---
 
 ### getMoney
@@ -1487,6 +1540,7 @@ Retrieves the amount of currency this character holds.
 ```lua
 local cash = char:getMoney(0)
 ```
+
 ---
 
 ### setMoney
@@ -1512,6 +1566,7 @@ Overwrites the character's stored money total.
 ```lua
 char:setMoney(1000)
 ```
+
 ---
 
 ### getData
@@ -1539,6 +1594,7 @@ Returns arbitrary data previously stored on the character.
 ```lua
 local rank = char:getData("rank", "rookie")
 ```
+
 ---
 
 ### setData
@@ -1570,6 +1626,7 @@ Writes a data entry on the character and optionally syncs it.
 ```lua
 char:setData("rank", "veteran")
 ```
+
 ---
 
 ### getVar
@@ -1597,6 +1654,7 @@ Fetches a temporary variable from the character.
 ```lua
 local mood = char:getVar("mood", "neutral")
 ```
+
 ---
 
 ### setVar
@@ -1629,6 +1687,7 @@ Stores a temporary variable on the character.
 -- Store a temporary value and send it only to the owner
 char:setVar("mood", "happy", nil, char:getPlayer())
 ```
+
 ---
 
 ### getInv
@@ -1654,6 +1713,7 @@ Retrieves the character's inventory instance.
 ```lua
 local inv = char:getInv()
 ```
+
 ---
 
 ### setInv
@@ -1679,6 +1739,7 @@ Directly sets the character's inventory table.
 ```lua
 char:setInv({})
 ```
+
 ---
 
 ### getAttribs
@@ -1704,6 +1765,7 @@ Returns the table of raw attribute values for the character.
 ```lua
 local stats = char:getAttribs()
 ```
+
 ---
 
 ### setAttribs
@@ -1729,6 +1791,7 @@ Overwrites the character's attribute table.
 ```lua
 char:setAttribs({ strength = 10 })
 ```
+
 ---
 
 ### getRecognizedAs
@@ -1754,6 +1817,7 @@ Gets the mapping of disguised names this character uses to recognize others.
 ```lua
 local aliases = char:getRecognizedAs()
 ```
+
 ---
 
 ### setRecognizedAs
@@ -1779,5 +1843,5 @@ Updates the table of fake recognition names for this character.
 ```lua
 char:setRecognizedAs({ [123] = "Masked Stranger" })
 ```
----
 
+---

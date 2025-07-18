@@ -49,6 +49,7 @@ end)
 -- Load a folder module and skip its sub-modules
 lia.module.load("example", "lilia/gamemode/modules/example", false, nil, true)
 ```
+
 ---
 
 ### lia.module.initialize
@@ -78,6 +79,7 @@ end)
 
 lia.module.initialize()
 ```
+
 ---
 
 ### lia.module.loadFromDir
@@ -108,6 +110,7 @@ Finds and loads every module located in a directory.
 -- Manually load all core modules (usually done by lia.module.initialize)
 lia.module.loadFromDir("lilia/gamemode/modules/core", "module")
 ```
+
 ---
 
 ### lia.module.get
@@ -137,5 +140,5 @@ if main then
     print("Loaded module:", main.name)
 end
 ```
----
 
+---

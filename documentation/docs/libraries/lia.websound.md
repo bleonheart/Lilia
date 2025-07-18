@@ -64,6 +64,7 @@ lia.websound.register("alert.mp3", "https://example.com/alert.mp3", function(pat
     end
 end)
 ```
+
 ---
 
 ### lia.websound.get
@@ -106,5 +107,5 @@ end)
 local ply = LocalPlayer()
 ply:EmitSound("https://example.com/alert.mp3")
 ```
----
 
+---

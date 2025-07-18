@@ -62,6 +62,7 @@ alias = "chargiveflag"
 -- or multiple aliases
 alias = {"chargiveflag", "giveflag"}
 ```
+
 ---
 
 #### `adminOnly`
@@ -79,6 +80,7 @@ If `true`, only players with the generated CAMI privilege may run the command. T
 ```lua
 adminOnly = true
 ```
+
 ---
 
 #### `superAdminOnly`
@@ -96,6 +98,7 @@ If `true`, only superadmins with the automatically registered privilege `Command
 ```lua
 superAdminOnly = true
 ```
+
 ---
 
 #### `privilege`
@@ -113,6 +116,7 @@ Custom CAMI privilege name checked when running the command. If omitted, `adminO
 ```lua
 privilege = "Manage Doors"
 ```
+
 ---
 
 ### Syntax & Description
@@ -136,11 +140,13 @@ The in-game prompt only appears when every argument follows the `[type Name]` fo
 ```lua
 syntax = "[string Target Name] [number Amount]"
 ```
+
 Include the word `optional` inside the brackets to make an argument optional:
 
 ```lua
 syntax = "[string Target Name] [number Amount optional]"
 ```
+
 ---
 
 #### `desc`
@@ -158,6 +164,7 @@ Short description of what the command does, displayed in command lists and menus
 ```lua
 desc = "Purchase a door if it is available and you can afford it."
 ```
+
 ---
 
 ### AdminStick Integration
@@ -195,6 +202,7 @@ AdminStick = {
     TargetClass = "lia_vendor"
 }
 ```
+
 ---
 
 ### Execution Hook
@@ -221,6 +229,7 @@ onRun = function(client, arguments)
     end
 end
 ```
+
 ---
 
 ### Full Command Example
@@ -256,6 +265,7 @@ lia.command.add("restockvendor", {
     end
 })
 ```
+
 ---
 
 ```lua

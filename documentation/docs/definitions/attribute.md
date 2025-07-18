@@ -41,6 +41,7 @@ string "Unknown" if no name is provided.
 ```lua
 ATTRIBUTE.name = "Strength"
 ```
+
 ---
 
 #### `desc`
@@ -52,6 +53,7 @@ translation "No Description" when omitted.
 ```lua
 ATTRIBUTE.desc = "Determines physical power and carrying capacity."
 ```
+
 ---
 
 #### `startingMax`
@@ -65,6 +67,7 @@ the fallback value when this field is not defined.
 ```lua
 ATTRIBUTE.startingMax = 15
 ```
+
 ---
 
 #### `noStartBonus`
@@ -78,6 +81,7 @@ through normal gameplay or boosts.
 ```lua
 ATTRIBUTE.noStartBonus = false
 ```
+
 ---
 
 #### `maxValue`
@@ -89,6 +93,7 @@ Absolute ceiling an attribute can ever reach. Defaults to the
 ```lua
 ATTRIBUTE.maxValue = 50
 ```
+
 ### Full Attribute Example
 
 ```lua

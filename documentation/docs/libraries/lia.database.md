@@ -37,6 +37,7 @@ lia.db.connect(function()
     print("Database connected")
 end)
 ```
+
 ---
 
 ### lia.db.wipeTables
@@ -64,6 +65,7 @@ lia.db.wipeTables(function()
     print("Tables wiped")
 end)
 ```
+
 ---
 
 ### lia.db.loadTables
@@ -89,6 +91,7 @@ Creates required tables if they do not already exist. Ensures the schema is set 
 ```lua
 lia.db.loadTables()
 ```
+
 ---
 
 ### lia.db.waitForTablesToLoad
@@ -116,6 +119,7 @@ lia.db.waitForTablesToLoad():next(function()
     print("Tables loaded")
 end)
 ```
+
 ---
 
 ### lia.db.convertDataType
@@ -143,6 +147,7 @@ Converts a Lua value into a string appropriate for SQL insertion, handling escap
 ```lua
 local str = lia.db.convertDataType({ name = "Lilia" })
 ```
+
 ---
 
 ### lia.db.insertTable
@@ -174,6 +179,7 @@ lia.db.insertTable({ name = "Test" }, function(id)
     print("Inserted", id)
 end, "characters")
 ```
+
 ---
 
 ### lia.db.updateTable
@@ -207,6 +213,7 @@ lia.db.updateTable({ name = "Updated" }, function()
     print("Row updated")
 end, "characters", "id = 1")
 ```
+
 ---
 
 ### lia.db.select
@@ -240,6 +247,7 @@ lia.db.select("*", "characters", "id = 1"):next(function(rows)
     PrintTable(rows)
 end)
 ```
+
 ---
 
 ### lia.db.upsert
@@ -267,6 +275,7 @@ Inserts or updates a row depending on unique-key conflict. Returns a deferred.
 ```lua
 lia.db.upsert({ id = 1, name = "John" }, "characters")
 ```
+
 ---
 
 ### lia.db.delete
@@ -296,6 +305,7 @@ lia.db.delete("characters", "id = 1"):next(function()
     print("Row deleted")
 end)
 ```
+
 ---
 
 ### lia.db.GetCharacterTable
@@ -323,6 +333,7 @@ lia.db.GetCharacterTable(function(cols)
     PrintTable(cols)
 end)
 ```
+
 ---
 
 ### lia.db.count
@@ -352,6 +363,7 @@ lia.db.count("characters", "faction = 1"):next(function(n)
     print("Character count:", n)
 end)
 ```
+
 ---
 
 ### lia.db.addDatabaseFields
@@ -382,6 +394,7 @@ multiple times; existing columns will be ignored.
 -- After creating custom character variables
 lia.db.addDatabaseFields()
 ```
+
 ---
 
 ### lia.db.exists
@@ -411,6 +424,7 @@ lia.db.exists("characters", "id = 5"):next(function(found)
     print("Character exists:", found)
 end)
 ```
+
 ---
 
 ### lia.db.selectOne
@@ -444,6 +458,7 @@ lia.db.selectOne("*", "characters", "id = 1"):next(function(row)
     end
 end)
 ```
+
 ---
 
 ### lia.db.bulkInsert
@@ -474,6 +489,7 @@ lia.db.bulkInsert("items", {
     { _invID = 1, _uniqueID = "ammo",   _x = 1, _y = 0, _quantity = 30 },
 })
 ```
+
 ---
 
 ### lia.db.insertOrIgnore
@@ -503,6 +519,7 @@ lia.db.insertOrIgnore({ id = 1, name = "Bob" }, "characters"):next(function(r)
     print("Insert ID:", r.lastID)
 end)
 ```
+
 ---
 
 ### lia.db.transaction
@@ -533,6 +550,7 @@ lia.db.transaction({
     print("Transaction complete")
 end)
 ```
+
 ---
 
 ### lia.db.escapeIdentifier
@@ -559,6 +577,7 @@ Escapes an identifier (column/table name) for SQL.
 local col = lia.db.escapeIdentifier("desc")
 print(col)
 ```
+
 ---
 
 ### lia.db.prepare
@@ -592,6 +611,7 @@ lia.db.prepare(
     { MYSQLOO_STRING, MYSQLOO_INTEGER }
 )
 ```
+
 ---
 
 ### lia.db.preparedCall
@@ -621,6 +641,7 @@ Executes a prepared statement registered with `lia.db.prepare`. *(MySQLOO only)*
 ```lua
 lia.db.preparedCall("updateName", nil, "Alice", 1)
 ```
+
 ---
 
 ### lia.db.query
@@ -650,6 +671,7 @@ lia.db.query("SELECT 1"):next(function(res)
     PrintTable(res.results)
 end)
 ```
+
 ---
 
 ### lia.db.escape
@@ -675,6 +697,7 @@ Escapes a string for safe inclusion in SQL queries.
 ```lua
 local safe = lia.db.escape(userInput)
 ```
+
 ---
 
 ### lia.db.queue
@@ -700,6 +723,7 @@ Returns the number of queued SQL queries. *(MySQLOO only)*
 ```lua
 print("Queue size:", lia.db.queue())
 ```
+
 ---
 
 ### lia.db.abort
@@ -725,6 +749,7 @@ Cancels all running queries on every connection. *(MySQLOO only)*
 ```lua
 lia.db.abort()
 ```
+
 ---
 
 ### lia.db.getObject
@@ -750,6 +775,7 @@ Returns the least busy database object and its pool index. *(MySQLOO only)*
 ```lua
 local db = lia.db.getObject()
 ```
+
 ---
 
 ### lia.db.tableExists
@@ -777,6 +803,7 @@ lia.db.tableExists("characters"):next(function(exists)
     print("Characters table present:", exists)
 end)
 ```
+
 ---
 
 ### lia.db.fieldExists
@@ -806,5 +833,5 @@ lia.db.fieldExists("characters", "name"):next(function(hasField)
     print("Name column exists:", hasField)
 end)
 ```
----
 
+---

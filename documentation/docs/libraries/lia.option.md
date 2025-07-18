@@ -76,6 +76,7 @@ lia.option.add(
     { category = "Third Person" }
 )
 ```
+
 ---
 
 ### lia.option.set
@@ -105,6 +106,7 @@ Changes the value of an option, runs its callback, saves it, and networks if `sh
 local enabled = lia.option.get("thirdPersonEnabled", false)
 lia.option.set("thirdPersonEnabled", not enabled)
 ```
+
 ---
 
 ### lia.option.get
@@ -132,6 +134,7 @@ Retrieves an option value or returns a fallback.
 ```lua
 local dist = lia.option.get("thirdPersonDistance", 50)
 ```
+
 ---
 
 ### lia.option.save
@@ -157,6 +160,7 @@ Writes all current option values to disk (file is keyed by server IP).
 ```lua
 lia.option.save()
 ```
+
 ---
 
 ### lia.option.load
@@ -182,5 +186,5 @@ Loads saved option values from disk, applies them to `lia.option.stored`, and fi
 ```lua
 lia.option.load()
 ```
----
 
+---

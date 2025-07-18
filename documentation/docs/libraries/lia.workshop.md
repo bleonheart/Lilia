@@ -40,6 +40,7 @@ Registers a Steam Workshop addon ID so clients will download it.
 -- Add a custom model pack
 lia.workshop.AddWorkshop("1234567890")
 ```
+
 ---
 
 ### lia.workshop.gather
@@ -68,6 +69,7 @@ for id in pairs(ids) do
     print("Needs addon:", id)
 end
 ```
+
 ---
 
 ### lia.workshop.send
@@ -95,5 +97,5 @@ hook.Add("PlayerInitialSpawn", "SendWorkshopList", function(ply)
     lia.workshop.send(ply)
 end)
 ```
----
 
+---

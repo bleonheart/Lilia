@@ -33,6 +33,7 @@ Retrieves an item definition by its identifier, checking both `lia.item.base` an
 ```lua
 local itemDef = lia.item.get("testItem")
 ```
+
 ---
 
 ### lia.item.getItemByID
@@ -61,6 +62,7 @@ if result then
     print("Item location:", result.location)
 end
 ```
+
 ---
 
 ### lia.item.getInstancedItemByID
@@ -89,6 +91,7 @@ if inst then
     print("Got item:", inst.name)
 end
 ```
+
 ---
 
 ### lia.item.getItemDataByID
@@ -117,6 +120,7 @@ if data then
     print("Item data found.")
 end
 ```
+
 ---
 
 ### lia.item.load
@@ -146,6 +150,7 @@ Generates a `uniqueID` from a file path and registers the item via `lia.item.reg
 ```lua
 lia.item.load("lilia/gamemode/items/base/outfit.lua", nil, true)
 ```
+
 ---
 
 ### lia.item.isItem
@@ -173,6 +178,7 @@ if lia.item.isItem(myObject) then
     print("It's an item!")
 end
 ```
+
 ---
 
 ### lia.item.getInv
@@ -201,6 +207,7 @@ if inv then
     print("Got inventory with ID 5")
 end
 ```
+
 ---
 
 ### lia.item.register
@@ -234,6 +241,7 @@ Registers a new item or base item. Sets up its metatable, merges data from the s
 ```lua
 lia.item.register("special_item", "base_item", false, "path/to/item.lua")
 ```
+
 ---
 
 ### lia.item.loadFromDir
@@ -259,6 +267,7 @@ Loads item Lua files from a directory. Base items load first, then sub-folders (
 ```lua
 lia.item.loadFromDir("lilia/gamemode/items")
 ```
+
 ---
 
 ### lia.item.new
@@ -287,6 +296,7 @@ Creates an item instance from a registered definition and stores it in `lia.item
 local item = lia.item.new("testItem", 101)
 print(item.id) -- 101
 ```
+
 ---
 
 ### lia.item.registerInv
@@ -316,6 +326,7 @@ Registers an inventory type with fixed width and height.
 ```lua
 lia.item.registerInv("smallInv", 4, 4)
 ```
+
 ---
 
 ### lia.item.newInv
@@ -347,6 +358,7 @@ lia.item.newInv(10, "smallInv", function(inv)
     print("New inventory created:", inv.id)
 end)
 ```
+
 ---
 
 ### lia.item.createInv
@@ -377,6 +389,7 @@ Creates a `GridInv` instance with given size and ID, caching it in `lia.inventor
 local inv = lia.item.createInv(6, 6, 200)
 print("Inventory ID:", inv.id)
 ```
+
 ---
 
 ### lia.item.addWeaponOverride
@@ -407,6 +420,7 @@ lia.item.addWeaponOverride("weapon_pistol", {
     model = "models/weapons/w_pist_deagle.mdl"
 })
 ```
+
 ---
 
 ### lia.item.addWeaponToBlacklist
@@ -432,6 +446,7 @@ Prevents a weapon class from being auto-generated as an item.
 ```lua
 lia.item.addWeaponToBlacklist("weapon_physgun")
 ```
+
 ---
 
 ### lia.item.generateWeapons
@@ -457,6 +472,7 @@ Registers item definitions for all scripted weapons that are not blacklisted. Ca
 ```lua
 lia.item.generateWeapons()
 ```
+
 ---
 
 ### lia.item.setItemDataByID
@@ -495,6 +511,7 @@ if not ok then
     print("Error:", err)
 end
 ```
+
 ---
 
 ### lia.item.instance
@@ -532,6 +549,7 @@ lia.item.instance("testItem", { quality = 1 }):next(function(item)
     print("Item created:", item.id)
 end)
 ```
+
 ---
 
 ### lia.item.deleteByID
@@ -557,6 +575,7 @@ Deletes an item from memory and the database.
 ```lua
 lia.item.deleteByID(42)
 ```
+
 ---
 
 ### lia.item.loadItemByID
@@ -582,6 +601,7 @@ Loads one or multiple items from the database by ID and builds instances in memo
 ```lua
 lia.item.loadItemByID({ 10, 11, 12 })
 ```
+
 ---
 
 ### lia.item.spawn
@@ -617,6 +637,7 @@ lia.item.spawn("testItem", vector_origin, function(item, ent)
     print("Spawned", item.uniqueID, "at", ent:GetPos())
 end)
 ```
+
 ---
 
 ### lia.item.restoreInv
@@ -650,5 +671,5 @@ lia.item.restoreInv(101, 5, 5, function(inv)
     print("Restored inventory 101")
 end)
 ```
----
 
+---

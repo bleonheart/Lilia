@@ -22,4 +22,3 @@ Each bar represents a progress value such as health, armor, or stamina. The bar 
 | `lifeTime` | `number` | Internal timer used for fading; managed automatically. |
 
 ---
-

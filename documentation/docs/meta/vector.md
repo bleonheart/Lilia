@@ -24,6 +24,7 @@ hook.Add("CalcView", "TiltView", function(ply, pos, angles, fov)
     return {origin = pos + offset, angles = angles, fov = fov}
 end)
 ```
+
 ---
 
 ### Center
@@ -53,6 +54,7 @@ local b = Vector(10, 10, 10)
 local result = a:Center(b)
 print(result)
 ```
+
 ---
 
 ### Distance
@@ -82,6 +84,7 @@ local p2 = Vector(3, 4, 0)
 local result = p1:Distance(p2)
 print(result)
 ```
+
 ---
 
 ### RotateAroundAxis
@@ -112,6 +115,7 @@ local axis = Vector(0, 0, 1)
 local result = Vector(1, 0, 0):RotateAroundAxis(axis, 90)
 print(result)
 ```
+
 ---
 
 ### Right
@@ -148,6 +152,7 @@ local forward = Vector(1, 0, 0)
 local result = forward:Right()
 print(result)
 ```
+
 ---
 
 ### Up
@@ -180,5 +185,5 @@ local forward = Vector(1, 0, 0)
 local result = forward:Up()
 print(result)
 ```
----
 
+---

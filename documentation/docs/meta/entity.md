@@ -40,6 +40,7 @@ if ent:isProp() then
     ent:TakeDamage(50)
 end
 ```
+
 ---
 
 ### isItem
@@ -68,6 +69,7 @@ if ent:isItem() then
     lia.item.pickup(client, ent)
 end
 ```
+
 ---
 
 ### isMoney
@@ -96,6 +98,7 @@ if ent:isMoney() then
     char:addMoney(ent:getAmount())
 end
 ```
+
 ---
 
 ### isSimfphysCar
@@ -123,6 +126,7 @@ if ent:isSimfphysCar() then
     print("Simfphys vehicle detected")
 end
 ```
+
 ---
 
 ### isLiliaPersistent
@@ -151,6 +155,7 @@ if ent:isLiliaPersistent() then
     lia.persist.saveEntity(ent)
 end
 ```
+
 ---
 
 ### checkDoorAccess
@@ -183,6 +188,7 @@ if not door:checkDoorAccess(client, DOOR_ACCESS_OPEN) then
     client:notifyLocalized("doorLocked")
 end
 ```
+
 ---
 
 ### keysOwn
@@ -209,6 +215,7 @@ Assigns vehicle ownership to the given player using CPPI and network variables.
 -- Assign ownership when a player buys the vehicle
 car:keysOwn(client)
 ```
+
 ---
 
 ### keysLock
@@ -235,6 +242,7 @@ Triggers the `lock` input on the entity if it is a vehicle.
 -- Lock the vehicle after the driver exits
 car:keysLock()
 ```
+
 ---
 
 ### keysUnLock
@@ -261,6 +269,7 @@ Triggers the `unlock` input on the entity if it is a vehicle.
 -- Unlock the vehicle when the owner presses a key
 car:keysUnLock()
 ```
+
 ---
 
 ### getDoorOwner
@@ -290,6 +299,7 @@ if owner then
     print("Owned by", owner:Name())
 end
 ```
+
 ---
 
 ### isLocked
@@ -318,6 +328,7 @@ if door:isLocked() then
     DrawLockedIcon(door)
 end
 ```
+
 ---
 
 ### isDoorLocked
@@ -346,6 +357,7 @@ if door:isDoorLocked() then
     door:EmitSound("doors/door_locked2.wav")
 end
 ```
+
 ---
 
 ### getEntItemDropPos
@@ -373,6 +385,7 @@ Calculates a drop position in front of the entity's eyes, using a trace to ensur
 local pos, ang = ent:getEntItemDropPos(16)
 lia.item.spawn("item_water", pos, ang)
 ```
+
 ---
 
 ### isNearEntity
@@ -405,6 +418,7 @@ if ent:isNearEntity(128, otherChest) then
     client:notifyLocalized("chestTooClose")
 end
 ```
+
 ---
 
 ### GetCreator
@@ -434,6 +448,7 @@ if IsValid(creator) then
     creator:notifyLocalized("propRemoved")
 end
 ```
+
 ---
 
 ### SetCreator
@@ -460,6 +475,7 @@ Stores the creator player on the entity.
 -- Record the spawner for cleanup tracking
 ent:SetCreator(client)
 ```
+
 ---
 
 ### sendNetVar
@@ -489,6 +505,7 @@ Usually called from `setNetVar`.
 ```lua
 ent:sendNetVar("doorState")
 ```
+
 ---
 
 ### clearNetVars
@@ -514,6 +531,7 @@ Clears all network variables on this entity and tells clients to remove them.
 ```lua
 ent:clearNetVars(client)
 ```
+
 ---
 
 ### removeDoorAccessData
@@ -540,6 +558,7 @@ Clears the door's saved access table and informs all clients.
 -- Wipe door permissions during cleanup
 ent:removeDoorAccessData()
 ```
+
 ---
 
 ### setLocked
@@ -567,6 +586,7 @@ Stores the locked state in a network variable so clients know if the door is sec
 door:setLocked(true)
 door:EmitSound("doors/door_latch3.wav")
 ```
+
 ---
 
 ### isDoor
@@ -593,6 +613,7 @@ Checks the entity's class for common door prefixes to determine if it is a door.
 -- Check if the entity behaves like a door
 local result = ent:isDoor()
 ```
+
 ---
 
 ### getDoorPartner
@@ -622,6 +643,7 @@ if IsValid(partner) then
     partner:setLocked(false)
 end
 ```
+
 ---
 
 ### setNetVar
@@ -653,6 +675,7 @@ This will trigger the **NetVarChanged** hook on both server and client.
 ```lua
 ent:setNetVar("locked", true)
 ```
+
 ---
 
 ### getNetVar
@@ -680,6 +703,7 @@ Retrieves a stored network variable or a default value.
 ```lua
 local locked = ent:getNetVar("locked", false)
 ```
+
 ---
 
 ### getNetVar
@@ -708,6 +732,7 @@ Retrieves a network variable for this entity on the client.
 -- Access a synced variable on the client side
 local result = ent:getNetVar(key, default)
 ```
+
 ---
 
 ### isDoor
@@ -734,6 +759,7 @@ Client-side door check using the class name.
 -- Determine if this entity's class name contains "door"
 local result = ent:isDoor()
 ```
+
 ---
 
 ### getDoorPartner
@@ -763,6 +789,7 @@ if IsValid(partner) then
     partner:SetColor(Color(0, 255, 0))
 end
 ```
+
 ---
 
 ### getParts
@@ -791,6 +818,7 @@ for id in pairs(client:getParts()) do
     print(id)
 end
 ```
+
 ---
 
 ### syncParts
@@ -817,6 +845,7 @@ Broadcasts the entity's PAC3 part list to synchronize with clients.
 -- Resend parts when a player respawns
 client:syncParts()
 ```
+
 ---
 
 ### addPart
@@ -843,6 +872,7 @@ Attaches a PAC3 part to this entity and networks the change.
 -- Give the player a custom hat part
 client:addPart("hat01")
 ```
+
 ---
 
 ### removePart
@@ -869,6 +899,7 @@ Detaches a PAC3 part from this entity and updates clients.
 -- Remove the previously equipped hat part
 client:removePart("hat01")
 ```
+
 ---
 
 ### resetParts
@@ -895,5 +926,5 @@ Clears all PAC3 parts from this entity and notifies clients.
 -- Remove all PAC3 outfits from the player
 client:resetParts()
 ```
----
 
+---

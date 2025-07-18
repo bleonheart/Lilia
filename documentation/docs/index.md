@@ -29,4 +29,3 @@ If you'd like to contribute code, you can visit the [GitHub repository](https://
 Getting started with developing using the Lilia framework requires an intermediate level of Garry's Mod Lua knowledge. You'll want to learn the basics before you start making a schema. The [Garry's Mod Wiki](https://wiki.facepunch.com/gmod/) is a good place to start.
 
 ---
-

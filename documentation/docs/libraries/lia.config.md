@@ -58,6 +58,7 @@ lia.config.add(
     }
 )
 ```
+
 ---
 
 ### lia.config.setDefault
@@ -86,6 +87,7 @@ Changes the stored default for an existing config option without affecting its c
 -- Update the default maximum players
 lia.config.setDefault("maxPlayers", 32)
 ```
+
 ---
 
 ### lia.config.forceSet
@@ -115,6 +117,7 @@ Sets a config value directly without running callbacks or networking the update.
 ```lua
 lia.config.forceSet("someSetting", true, true)
 ```
+
 ---
 
 ### lia.config.set
@@ -142,6 +145,7 @@ Sets a config value, saves it server-side, triggers callbacks with the old and n
 ```lua
 lia.config.set("maxPlayers", 24)
 ```
+
 ---
 
 ### lia.config.get
@@ -169,6 +173,7 @@ Retrieves the current value of a config entry. If unset, returns the stored defa
 ```lua
 local players = lia.config.get("maxPlayers", 64)
 ```
+
 ---
 
 ### lia.config.load
@@ -194,6 +199,7 @@ Loads config values from the database and stores them in `lia.config`. Missing e
 ```lua
 lia.config.load()
 ```
+
 ---
 
 ### lia.config.getChangedValues
@@ -219,6 +225,7 @@ Returns a table of all config entries whose current value differs from the defau
 ```lua
 local changed = lia.config.getChangedValues()
 ```
+
 ---
 
 ### lia.config.send
@@ -245,6 +252,7 @@ Sends all changed config values to a client. If no client is provided, the value
 -- Broadcast current config to every player
 lia.config.send()
 ```
+
 ---
 
 ### lia.config.save
@@ -270,6 +278,7 @@ Writes all changed config values to the database so they persist across restarts
 ```lua
 lia.config.save()
 ```
+
 ---
 
 ### lia.config.convertToDatabase
@@ -297,5 +306,5 @@ Migrates legacy config files from `data/lilia` into the `lia_config` SQL table. 
 ```lua
 lia.config.convertToDatabase(true)
 ```
----
 
+---

@@ -38,6 +38,7 @@ Returns the currently loaded character object for this player.
 -- Retrieve the character to modify inventory
 local char = player:getChar()
 ```
+
 ---
 
 ### Name
@@ -64,6 +65,7 @@ Returns either the character's role-play name or the player's Steam name.
 -- Print the role-play name in chat
 chat.AddText(player:Name())
 ```
+
 ---
 
 ### hasPrivilege
@@ -92,6 +94,7 @@ if not player:hasPrivilege("Manage") then
     return false
 end
 ```
+
 ---
 
 ### getCurrentVehicle
@@ -121,6 +124,7 @@ if IsValid(veh) then
     AttachCamera(veh)
 end
 ```
+
 ---
 
 ### hasValidVehicle
@@ -149,6 +153,7 @@ if player:hasValidVehicle() then
     player:GetVehicle():EmitSound("Horn")
 end
 ```
+
 ---
 
 ### isNoClipping
@@ -175,6 +180,7 @@ Returns `true` if the player is in noclip mode and not inside a vehicle.
 -- Disable certain actions while noclipping
 if player:isNoClipping() then return end
 ```
+
 ---
 
 ### hasRagdoll
@@ -202,6 +208,7 @@ if player:hasRagdoll() then
     print("Player is ragdolled")
 end
 ```
+
 ---
 
 ### CanOverrideView
@@ -233,6 +240,7 @@ if player:CanOverrideView() then
     -- Place the camera behind the player
 end
 ```
+
 ---
 
 ### IsInThirdPerson
@@ -260,6 +268,7 @@ if player:IsInThirdPerson() then
     print("Third person active")
 end
 ```
+
 ---
 
 ### removeRagdoll
@@ -286,6 +295,7 @@ Safely removes the player's ragdoll entity if present.
 -- Clean up any ragdoll left behind
 player:removeRagdoll()
 ```
+
 ---
 
 ### getRagdoll
@@ -311,6 +321,7 @@ Retrieves the ragdoll entity associated with the player.
 ```lua
 local ragdoll = player:getRagdoll()
 ```
+
 ---
 
 ### isStuck
@@ -338,6 +349,7 @@ if player:isStuck() then
     player:SetPos(player:GetPos() + Vector(0, 0, 16))
 end
 ```
+
 ---
 
 ### isNearPlayer
@@ -367,6 +379,7 @@ if player:isNearPlayer(128, target) then
     print("Target is nearby")
 end
 ```
+
 ---
 
 ### entitiesNearPlayer
@@ -400,6 +413,7 @@ for _, ent in ipairs(player:entitiesNearPlayer(256)) do
     end
 end
 ```
+
 ---
 
 ### getItemWeapon
@@ -427,6 +441,7 @@ Returns the active weapon entity and associated item if equipped.
 ```lua
 local weapon, item = player:getItemWeapon()
 ```
+
 ---
 
 ### isRunning
@@ -454,6 +469,7 @@ if player:isRunning() then
     -- player is sprinting
 end
 ```
+
 ---
 
 ### isFemale
@@ -481,6 +497,7 @@ if player:isFemale() then
     print("Female model detected")
 end
 ```
+
 ---
 
 ### getItemDropPos
@@ -506,6 +523,7 @@ Finds a safe position in front of the player to drop items.
 ```lua
 local pos = player:getItemDropPos()
 ```
+
 ---
 
 ### getItems
@@ -536,6 +554,7 @@ for _, it in pairs(player:getItems() or {}) do
     total = total + it.weight
 end
 ```
+
 ---
 
 ### getTracedEntity
@@ -562,6 +581,7 @@ Performs a simple trace from the player's shoot position.
 -- Grab the entity the player is pointing at
 local entity = player:getTracedEntity(96)
 ```
+
 ---
 
 ### getTrace
@@ -588,6 +608,7 @@ Returns a hull trace in front of the player.
 -- Use a hull trace for melee attacks
 local tr = player:getTrace(48)
 ```
+
 ---
 
 ### getEyeEnt
@@ -618,6 +639,7 @@ if IsValid(target) then
     player:ChatPrint(string.format("Class: %s", target:GetClass()))
 end
 ```
+
 ---
 
 ### notify
@@ -645,6 +667,7 @@ Sends a plain notification message to the player.
 player:notify("Welcome to the server!")
 file.Append("welcome.txt", player:SteamID() .. " joined\n")
 ```
+
 ---
 
 ### notifyLocalized
@@ -674,6 +697,7 @@ Sends a localized notification to the player.
 local score = player:GetFrags()
 player:notifyLocalized("greeting_key", player:Name(), score)
 ```
+
 ---
 
 ### CanEditVendor
@@ -701,6 +725,7 @@ if player:CanEditVendor(vendor) then
     vendor:OpenEditor(player)
 end
 ```
+
 ---
 
 ### isUser
@@ -727,6 +752,7 @@ Convenience wrapper to check if the player is in the `"user"` group.
 -- Check if the player belongs to the default user group
 local result = player:isUser()
 ```
+
 ---
 
 ### isStaff
@@ -753,6 +779,7 @@ Returns `true` if the player belongs to a staff group.
 -- Verify staff permissions for administrative actions
 local result = player:isStaff()
 ```
+
 ---
 
 ### isVIP
@@ -779,6 +806,7 @@ Checks whether the player is in the VIP group.
 -- Test if the player has VIP status
 local result = player:isVIP()
 ```
+
 ---
 
 ### isStaffOnDuty
@@ -805,6 +833,7 @@ Determines if the player is currently in the staff faction.
 -- Confirm the player is currently in a staff role
 local result = player:isStaffOnDuty()
 ```
+
 ---
 
 ### isFaction
@@ -831,6 +860,7 @@ Checks if the player's character belongs to the given faction.
 -- Compare the player's faction to a requirement
 local result = player:isFaction(faction)
 ```
+
 ---
 
 ### isClass
@@ -857,6 +887,7 @@ Returns `true` if the player's character is of the given class.
 -- Determine if the player's class matches
 local result = player:isClass(class)
 ```
+
 ---
 
 ### hasWhitelist
@@ -883,6 +914,7 @@ Determines if the player has whitelist access for a faction.
 -- Check for whitelist permission on a faction
 local result = player:hasWhitelist(faction)
 ```
+
 ---
 
 ### getClass
@@ -909,6 +941,7 @@ Retrieves the class index of the player's character.
 -- Retrieve the current class index
 local result = player:getClass()
 ```
+
 ---
 
 ### hasClassWhitelist
@@ -935,6 +968,7 @@ Checks if the player's character is whitelisted for a class.
 -- Verify the player is approved for a specific class
 local result = player:hasClassWhitelist(class)
 ```
+
 ---
 
 ### getClassData
@@ -961,6 +995,7 @@ Returns the class table of the player's current class.
 -- Access data table for the player's class
 local result = player:getClassData()
 ```
+
 ---
 
 ### getDarkRPVar
@@ -987,6 +1022,7 @@ Compatibility helper for retrieving money with DarkRP-style calls.
 -- Read money amount in a DarkRP-compatible way
 local result = player:getDarkRPVar(var)
 ```
+
 ---
 
 ### getMoney
@@ -1013,6 +1049,7 @@ Convenience function to get the character's money amount.
 -- Fetch the character's stored funds
 local result = player:getMoney()
 ```
+
 ---
 
 ### canAfford
@@ -1039,6 +1076,7 @@ Checks if the player has enough money for a purchase.
 -- Check if the player has enough money to buy something
 local result = player:canAfford(amount)
 ```
+
 ---
 
 ### hasSkillLevel
@@ -1067,6 +1105,7 @@ Verifies the player's character meets an attribute level.
 -- Ensure the player meets a single skill requirement
 local result = player:hasSkillLevel(skill, level)
 ```
+
 ---
 
 ### meetsRequiredSkills
@@ -1093,6 +1132,7 @@ Checks a table of skill requirements against the player.
 -- Validate multiple skill requirements at once
 local result = player:meetsRequiredSkills(requiredSkillLevels)
 ```
+
 ---
 
 ### forceSequence
@@ -1125,6 +1165,7 @@ Plays an animation sequence and optionally freezes the player.
 -- Play an animation while freezing the player
 local result = player:forceSequence(sequenceName, callback, time, noFreeze)
 ```
+
 ---
 
 ### leaveSequence
@@ -1151,6 +1192,7 @@ Stops any forced sequence and restores player movement.
 -- Stop the player's forced animation sequence
 player:leaveSequence()
 ```
+
 ---
 
 ### restoreStamina
@@ -1177,6 +1219,7 @@ Increases the player's stamina value.
 -- Give the player extra stamina points
 player:restoreStamina(amount)
 ```
+
 ---
 
 ### consumeStamina
@@ -1203,6 +1246,7 @@ Reduces the player's stamina value.
 -- Spend stamina as the player performs an action
 player:consumeStamina(amount)
 ```
+
 ---
 
 ### addMoney
@@ -1230,6 +1274,7 @@ Adds funds to the player's character, clamping to limits.
 player:addMoney(100)
 player:notifyLocalized("questReward", lia.currency.get(100))
 ```
+
 ---
 
 ### takeMoney
@@ -1256,6 +1301,7 @@ Removes money from the player's character.
 -- Remove money from the player's character
 player:takeMoney(amount)
 ```
+
 ---
 
 ### WhitelistAllClasses
@@ -1282,6 +1328,7 @@ Grants whitelist access to every registered class.
 -- Unlock every class for the player
 player:WhitelistAllClasses()
 ```
+
 ---
 
 ### WhitelistAllFactions
@@ -1307,6 +1354,7 @@ Whitelists the player for all factions.
 ```lua
 player:WhitelistAllFactions()
 ```
+
 ---
 
 ### WhitelistEverything
@@ -1333,6 +1381,7 @@ Convenience method to whitelist all factions and classes.
 -- Give the player access to all content
 player:WhitelistEverything()
 ```
+
 ---
 
 ### classWhitelist
@@ -1358,6 +1407,7 @@ Adds a single class to the character's whitelist table.
 ```lua
 player:classWhitelist(CLASS_MEDIC)
 ```
+
 ---
 
 ### classUnWhitelist
@@ -1383,6 +1433,7 @@ Removes a class from the character's whitelist table.
 ```lua
 player:classUnWhitelist(CLASS_MEDIC)
 ```
+
 ---
 
 ### setWhitelisted
@@ -1410,6 +1461,7 @@ Sets or clears whitelist permission for a faction.
 ```lua
 player:setWhitelisted(FACTION_POLICE, true)
 ```
+
 ---
 
 ### loadLiliaData
@@ -1435,6 +1487,7 @@ Loads persistent Lilia data for the player from the database.
 ```lua
 player:loadLiliaData(function(data) print(data) end)
 ```
+
 ---
 
 ### saveLiliaData
@@ -1460,6 +1513,7 @@ Saves the player's Lilia data back to the database.
 ```lua
 player:saveLiliaData()
 ```
+
 ---
 
 ### setLiliaData
@@ -1489,6 +1543,7 @@ Stores a value in the player's persistent data table.
 ```lua
 player:setLiliaData("settings", {foo = true})
 ```
+
 ---
 
 ### setWaypoint
@@ -1516,6 +1571,7 @@ Sends a waypoint to the client at the specified position.
 ```lua
 player:setWaypoint("Objective", vector_origin)
 ```
+
 ---
 
 ### setWeighPoint
@@ -1543,6 +1599,7 @@ Alias of `setWaypoint()` for backwards compatibility.
 ```lua
 player:setWeighPoint("Target", Vector(100, 100, 0))
 ```
+
 ---
 
 ### setWaypointWithLogo
@@ -1572,6 +1629,7 @@ Creates a waypoint using a custom logo material.
 ```lua
 player:setWaypointWithLogo("Objective", vector_origin, "path/to/icon.png")
 ```
+
 ---
 
 ### getLiliaData
@@ -1599,6 +1657,7 @@ Retrieves a stored value from the player's data table.
 ```lua
 local settings = player:getLiliaData("settings", {})
 ```
+
 ---
 
 ### getAllLiliaData
@@ -1624,6 +1683,7 @@ Returns the entire table of persistent data for the player.
 ```lua
 local data = player:getAllLiliaData()
 ```
+
 ---
 
 ### setRagdoll
@@ -1649,6 +1709,7 @@ Associates a ragdoll entity with the player for later retrieval.
 ```lua
 player:setRagdoll(ragdollEnt)
 ```
+
 ---
 
 ### NetworkAnimation
@@ -1678,6 +1739,7 @@ player:NetworkAnimation(true, {
     ["ValveBiped.Bip01_Head"] = Angle(0, 90, 0)
 })
 ```
+
 ---
 
 ### setAction
@@ -1707,6 +1769,7 @@ Displays an action bar for a set duration and optionally runs a callback.
 ```lua
 player:setAction("Lockpicking", 5)
 ```
+
 ---
 
 ### doStaredAction
@@ -1740,6 +1803,7 @@ Runs an action only while the player stares at the entity.
 ```lua
 player:doStaredAction(door, function() door:Open() end, 3)
 ```
+
 ---
 
 ### stopAction
@@ -1765,6 +1829,7 @@ Cancels any running action bar on the player.
 ```lua
 player:stopAction()
 ```
+
 ---
 
 ### requestDropdown
@@ -1796,6 +1861,7 @@ Prompts the client with a dropdown selection dialog.
 ```lua
 player:requestDropdown("Choose", "Pick one", {"A", "B"}, print)
 ```
+
 ---
 
 ### requestOptions
@@ -1829,6 +1895,7 @@ Asks the client to select one or more options from a list.
 ```lua
 player:requestOptions("Permissions", "Select", {"A", "B"}, 2, print)
 ```
+
 ---
 
 ### requestString
@@ -1860,6 +1927,7 @@ Requests a string from the client.
 ```lua
 player:requestString("Name", "Enter text", print)
 ```
+
 ---
 
 ### requestArguments
@@ -1889,6 +1957,7 @@ Prompts the client for multiple typed values.
 ```lua
 player:requestArguments("Info", {Name = "string", Age = "int"}, print)
 ```
+
 ---
 
 ### binaryQuestion
@@ -1922,6 +1991,7 @@ Displays a yes/no style question to the player.
 ```lua
 player:binaryQuestion("Proceed?", "Yes", "No", false, print)
 ```
+
 ---
 
 ### requestButtons
@@ -1952,6 +2022,7 @@ player:requestButtons("Select one", {
     {"B", function(client) print("Chose B") end}
 })
 ```
+
 ---
 
 ### getPlayTime
@@ -1977,6 +2048,7 @@ Calculates how long the player has been on the server.
 ```lua
 print(player:getPlayTime())
 ```
+
 ---
 
 ### createRagdoll
@@ -2004,6 +2076,7 @@ Spawns a ragdoll copy of the player and optionally freezes it.
 ```lua
 local rag = player:createRagdoll(true)
 ```
+
 ---
 
 ### setRagdolled
@@ -2035,6 +2108,7 @@ Toggles the player's ragdoll state for a duration.
 ```lua
 player:setRagdolled(true, 5)
 ```
+
 ---
 
 ### syncVars
@@ -2060,6 +2134,7 @@ Sends all networked variables to the player.
 ```lua
 player:syncVars()
 ```
+
 ---
 
 ### setLocalVar
@@ -2087,6 +2162,7 @@ Sets a networked local variable on the player and triggers the **LocalVarChanged
 ```lua
 player:setLocalVar("health", 75)
 ```
+
 ---
 
 ### getLocalVar
@@ -2114,6 +2190,7 @@ Retrieves a networked local variable stored on the player.
 ```lua
 local stamina = player:getLocalVar("stamina",  char:getMaxStamina())
 ```
+
 ---
 
 ### getPlayTime
@@ -2139,6 +2216,7 @@ Returns play-time calculated client-side when called on a client.
 ```lua
 print(LocalPlayer():getPlayTime())
 ```
+
 ---
 
 ### setWaypoint
@@ -2168,6 +2246,7 @@ Displays a waypoint on the HUD until the player reaches it.
 ```lua
 LocalPlayer():setWaypoint("Home", vector_origin)
 ```
+
 ---
 
 ### setWeighPoint
@@ -2197,6 +2276,7 @@ Alias of the client version of `setWaypoint`.
 ```lua
 LocalPlayer():setWeighPoint("Spot", Vector(10, 10, 0))
 ```
+
 ---
 
 ### setWaypointWithLogo
@@ -2228,6 +2308,7 @@ Places a waypoint using a logo material on the client HUD.
 ```lua
 LocalPlayer():setWaypointWithLogo("Loot", Vector(1, 1, 1), "icon.png")
 ```
+
 ---
 
 ### getLiliaData
@@ -2255,6 +2336,7 @@ Client-side accessor for stored player data.
 ```lua
 local data = LocalPlayer():getLiliaData("settings")
 ```
+
 ---
 
 ### getAllLiliaData
@@ -2280,6 +2362,7 @@ Returns the entire local data table for the player.
 ```lua
 local data = LocalPlayer():getAllLiliaData()
 ```
+
 ---
 
 ### NetworkAnimation
@@ -2309,6 +2392,7 @@ LocalPlayer():NetworkAnimation(true, {
     ["ValveBiped.Bip01_Head"] = Angle(0, 90, 0)
 })
 ```
+
 ---
 
 ### getParts
@@ -2336,6 +2420,7 @@ for id in pairs(player:getParts()) do
     print("equipped part", id)
 end
 ```
+
 ---
 
 ### syncParts
@@ -2361,6 +2446,7 @@ Sends the player's PAC3 part data to their client.
 ```lua
 player:syncParts()
 ```
+
 ---
 
 ### addPart
@@ -2386,6 +2472,7 @@ Adds the given PAC3 part to the player and broadcasts it.
 ```lua
 player:addPart("hat_01")
 ```
+
 ---
 
 ### removePart
@@ -2411,6 +2498,7 @@ Removes a previously added PAC3 part from the player.
 ```lua
 player:removePart("hat_01")
 ```
+
 ---
 
 ### resetParts
@@ -2436,5 +2524,5 @@ Clears all PAC3 parts that are currently attached to the player.
 ```lua
 player:resetParts()
 ```
----
 
+---

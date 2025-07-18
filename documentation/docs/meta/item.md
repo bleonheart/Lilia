@@ -42,6 +42,7 @@ If the item has not yet been instanced (`id` equals `0`), this returns the `maxQ
 -- Give the player ammo equal to the stack quantity
 player:GiveAmmo(item:getQuantity(), "pistol")
 ```
+
 ---
 
 ### eq
@@ -70,6 +71,7 @@ if item:eq(slotItem) then
     print("Same item instance")
 end
 ```
+
 ---
 
 ### tostring
@@ -96,6 +98,7 @@ Returns a printable representation of this item.
 -- Log the item identifier during saving
 print("Saving " .. item:tostring())
 ```
+
 ---
 
 ### getID
@@ -122,6 +125,7 @@ Retrieves the unique identifier of this item.
 -- Use the ID when updating the database
 lia.db.updateItem(item:getID(), {price = 50})
 ```
+
 ---
 
 ### getModel
@@ -150,6 +154,7 @@ local prop = ents.Create("prop_physics")
 prop:SetModel(item:getModel())
 prop:Spawn()
 ```
+
 ---
 
 ### getSkin
@@ -176,6 +181,7 @@ Retrieves the skin index this item uses.
 -- Apply the correct skin when displaying the item
 model:SetSkin(item:getSkin())
 ```
+
 ---
 
 ### getPrice
@@ -204,6 +210,7 @@ if char:hasMoney(item:getPrice()) then
     char:takeMoney(item:getPrice())
 end
 ```
+
 ---
 
 ### call
@@ -239,6 +246,7 @@ if success then
     client:notify("Repaired!")
 end
 ```
+
 ---
 
 ### getOwner
@@ -268,6 +276,7 @@ if IsValid(owner) then
     owner:notifyLocalized("itemGlows")
 end
 ```
+
 ---
 
 ### getData
@@ -296,6 +305,7 @@ Retrieves a piece of persistent data stored on the item.
 -- Retrieve a custom paint color stored on the item
 local color = item:getData("paintColor", Color(255, 255, 255))
 ```
+
 ---
 
 ### getAllData
@@ -322,6 +332,7 @@ Returns a merged table of this item's stored data and any networked values on it
 -- Print all stored data for debugging
 PrintTable(item:getAllData())
 ```
+
 ---
 
 ### hook
@@ -350,6 +361,7 @@ Registers a hook callback for this item instance.
 -- Run code when the item is used
 item:hook("use", function(ply) ply:ChatPrint("Used!") end)
 ```
+
 ---
 
 ### postHook
@@ -378,6 +390,7 @@ Registers a post-hook callback for this item.
 -- Give a pistol after the item is picked up
 item:postHook("pickup", function(ply) ply:Give("weapon_pistol") end)
 ```
+
 ---
 
 ### onRegistered
@@ -405,6 +418,7 @@ function ITEM:onRegistered()
     print("Registered item " .. self.uniqueID)
 end
 ```
+
 ---
 
 ### print
@@ -431,6 +445,7 @@ Prints a simple representation of the item to the console.
 -- Output item info while debugging spawn issues
 item:print(true)
 ```
+
 ---
 
 ### printData
@@ -457,6 +472,7 @@ Debug helper that prints all stored item data.
 -- Dump all stored data to the console
 item:printData()
 ```
+
 ---
 
 ### addQuantity
@@ -488,6 +504,7 @@ Increases the stored quantity for this item instance.
 item:addQuantity(5, {player})
 player:notifyLocalized("item_added", item.name, 5)
 ```
+
 ---
 
 ### setQuantity
@@ -518,6 +535,7 @@ Sets the current stack quantity and replicates the change.
 -- Set quantity to 1 after splitting the stack
 item:setQuantity(1, nil, true)
 ```
+
 ---
 
 ### getName
@@ -546,6 +564,7 @@ On the client this value is localized.
 -- Inform the player which item they found
 client:ChatPrint(string.format("Picked up: %s", item:getName()))
 ```
+
 ---
 
 ### getDesc
@@ -572,6 +591,7 @@ Retrieves the description text for this item.
 -- Display a tooltip describing the item
 tooltip:AddRowAfter("name", "desc"):SetText(item:getDesc())
 ```
+
 ---
 
 ### removeFromInventory
@@ -600,6 +620,7 @@ item:removeFromInventory(true):next(function()
     client:ChatPrint("Item unequipped")
 end)
 ```
+
 ---
 
 ### delete
@@ -628,6 +649,7 @@ item:delete():next(function()
     print("Item purged")
 end)
 ```
+
 ---
 
 ### remove
@@ -656,6 +678,7 @@ item:remove():next(function()
     print("Removed and deleted")
 end)
 ```
+
 ---
 
 ### destroy
@@ -682,6 +705,7 @@ Broadcasts deletion of this item and removes it from memory.
 -- Instantly delete the item across the network
 item:destroy()
 ```
+
 ---
 
 ### onDisposed
@@ -709,6 +733,7 @@ function ITEM:onDisposed()
     print(self:getName() .. " was cleaned up")
 end
 ```
+
 ---
 
 ### getEntity
@@ -738,6 +763,7 @@ if IsValid(ent) then
     ent:SetColor(Color(255, 0, 0))
 end
 ```
+
 ---
 
 ### spawn
@@ -771,6 +797,7 @@ if IsValid(ent) then
     ent:SetOwner(client)
 end
 ```
+
 ---
 
 ### transfer
@@ -801,6 +828,7 @@ item:transfer(targetInv):next(function()
     print("Transferred successfully")
 end)
 ```
+
 ---
 
 ### onInstanced
@@ -840,6 +868,7 @@ function ITEM:onInstanced(invID, x, y, newItem)
     ))
 end
 ```
+
 ---
 
 ### onSync
@@ -867,6 +896,7 @@ function ITEM:onSync(ply)
     print("Sent item to", IsValid(ply) and ply:Name() or "all clients")
 end
 ```
+
 ---
 
 ### onRemoved
@@ -894,6 +924,7 @@ function ITEM:onRemoved()
     print(self.uniqueID .. " permanently deleted")
 end
 ```
+
 ---
 
 ### onRestored
@@ -924,6 +955,7 @@ function ITEM:onRestored(inv)
     end
 end
 ```
+
 ---
 
 ### sync
@@ -950,6 +982,7 @@ Sends this item's data to a player or broadcasts to all.
 -- Resend the item data to a specific player
 item:sync(player)
 ```
+
 ---
 
 ### setData
@@ -984,6 +1017,7 @@ Sets a data field on the item and optionally networks and saves it.
 -- Mark the item as legendary and notify the owner
 item:setData("rarity", "legendary", player)
 ```
+
 ---
 
 ### interact
@@ -1016,5 +1050,5 @@ Processes an interaction action performed by `client` on this item.
 -- Trigger the "use" interaction from code
 item:interact("use", client, nil)
 ```
----
 
+---
