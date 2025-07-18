@@ -48,6 +48,7 @@ Each faction in the game is defined by a set of fields on the global `FACTION` t
 | `isGloballyRecognized` | `boolean` | `false` | Everyone automatically recognizes this faction.
 | `scoreboardHidden` | `boolean` | `false` | Hide members from the scoreboard. |
 | `commands` | `table` | `{}` | Command names members may always use. |
+
 ---
 
 ## Field Details

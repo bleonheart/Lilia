@@ -69,6 +69,7 @@ The global `ITEM` table defines per-item settings such as sounds, inventory dime
 | `url` | `string` | `""` | Web address opened when using the item. |
 | `weaponCategory` | `string` | `""` | Slot category for the weapon. |
 | `width` | `number` | `1` | Width in inventory grid. |
+
 ---
 
 ## Field Details
