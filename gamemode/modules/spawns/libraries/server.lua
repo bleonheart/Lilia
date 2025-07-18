@@ -9,13 +9,26 @@ local function encodeVector(vec)
     return {vec.x, vec.y, vec.z}
 end
 
-function MODULE:LoadData()
+function MODULE:LoadData(attempt)
+    attempt = attempt or 1
     local data = self:getData()
+
+    -- Retry a few times if the data library hasn't loaded yet
+    local factions = data and (data.factions or data) or nil
+    if (not factions or next(factions) == nil) and attempt < 5 then
+        timer.Simple(1, function()
+            if not self.loaded then
+                self:LoadData(attempt + 1)
+            end
+        end)
+        return
+    end
+
     self.spawns = {}
+    factions = factions or {}
     print("[MODULE] LoadData: fetched data")
     PrintTable(data, 1)
-    local factions = data.factions or data
-    for fac, spawns in pairs(factions or {}) do
+    for fac, spawns in pairs(factions) do
         self.spawns[fac] = {}
         print(string.format("[MODULE] LoadData: faction '%s' has %d raw entries", fac, #spawns))
         for i, pos in ipairs(spawns) do
@@ -26,6 +39,8 @@ function MODULE:LoadData()
 
         print(string.format("[MODULE] LoadData: faction '%s' total spawns = %d", fac, #self.spawns[fac]))
     end
+
+    self.loaded = true
 end
 
 function MODULE:SaveData()
