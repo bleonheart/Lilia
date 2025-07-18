@@ -3,7 +3,7 @@
 Helper functions for tracking a player's blood alcohol content.
 
 ---
-### Player:ResetBAC (Server)
+### Player:ResetBAC
 
 **Purpose**
 
@@ -29,7 +29,7 @@ client:ResetBAC()
 
 ---
 
-### Player:AddBAC (Server)
+### Player:AddBAC
 
 **Purpose**
 
@@ -55,7 +55,7 @@ client:AddBAC(15)
 
 ---
 
-### Player:IsDrunk (Shared)
+### Player:IsDrunk
 
 **Purpose**
 
@@ -75,7 +75,7 @@ Shared
 
 ---
 
-### Player:GetBAC (Shared)
+### Player:GetBAC
 
 **Purpose**
 

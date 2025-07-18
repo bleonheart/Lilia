@@ -3,7 +3,7 @@
 A collection of player and entity utility helpers.
 
 ---
-### Player:squaredDistanceFromEnt (Shared)
+### Player:squaredDistanceFromEnt
 
 **Purpose**
 
@@ -29,7 +29,7 @@ local dist = client:squaredDistanceFromEnt(ent)
 
 ---
 
-### Player:distanceFromEnt (Shared)
+### Player:distanceFromEnt
 
 **Purpose**
 
@@ -49,7 +49,7 @@ Shared
 
 ---
 
-### Player:isMoving (Shared)
+### Player:isMoving
 
 **Purpose**
 
@@ -69,7 +69,7 @@ Shared
 
 ---
 
-### Player:isOutside (Shared)
+### Player:isOutside
 
 **Purpose**
 
@@ -89,7 +89,7 @@ Shared
 
 ---
 
-### Player:openPage (Server)
+### Player:openPage
 
 **Purpose**
 
@@ -109,7 +109,7 @@ Server
 
 ---
 
-### Player:openUI (Server)
+### Player:openUI
 
 **Purpose**
 
@@ -129,7 +129,7 @@ Server
 
 ---
 
-### Entity:getViewAngle (Shared)
+### Entity:getViewAngle
 
 **Purpose**
 
@@ -149,7 +149,7 @@ Shared
 
 ---
 
-### Entity:inFov (Shared)
+### Entity:inFov
 
 **Purpose**
 
@@ -170,7 +170,7 @@ Shared
 
 ---
 
-### Entity:isInRoom (Shared)
+### Entity:isInRoom
 
 **Purpose**
 
@@ -190,7 +190,7 @@ Shared
 
 ---
 
-### Entity:isScreenVisible (Shared)
+### Entity:isScreenVisible
 
 **Purpose**
 
@@ -212,7 +212,7 @@ Shared
 
 ---
 
-### Entity:canSeeEntity (Shared)
+### Entity:canSeeEntity
 
 **Purpose**
 

@@ -2025,7 +2025,7 @@ player:requestButtons("Select one", {
 
 ---
 
-### getPlayTime (Server)
+### getPlayTime
 
 **Purpose**
 
@@ -2193,7 +2193,7 @@ local stamina = player:getLocalVar("stamina",  char:getMaxStamina())
 
 ---
 
-### getPlayTime (Client)
+### getPlayTime
 
 **Purpose**
 
@@ -2219,7 +2219,7 @@ print(LocalPlayer():getPlayTime())
 
 ---
 
-### setWaypoint (Client)
+### setWaypoint
 
 **Purpose**
 
@@ -2249,7 +2249,7 @@ LocalPlayer():setWaypoint("Home", vector_origin)
 
 ---
 
-### setWeighPoint (Client)
+### setWeighPoint
 
 **Purpose**
 
@@ -2279,7 +2279,7 @@ LocalPlayer():setWeighPoint("Spot", Vector(10, 10, 0))
 
 ---
 
-### setWaypointWithLogo (Client)
+### setWaypointWithLogo
 
 **Purpose**
 
@@ -2311,7 +2311,7 @@ LocalPlayer():setWaypointWithLogo("Loot", Vector(1, 1, 1), "icon.png")
 
 ---
 
-### getLiliaData (Client)
+### getLiliaData
 
 **Purpose**
 
@@ -2339,7 +2339,7 @@ local data = LocalPlayer():getLiliaData("settings")
 
 ---
 
-### getAllLiliaData (Client)
+### getAllLiliaData
 
 **Purpose**
 
@@ -2365,7 +2365,7 @@ local data = LocalPlayer():getAllLiliaData()
 
 ---
 
-### NetworkAnimation (Client)
+### NetworkAnimation
 
 **Purpose**
 
