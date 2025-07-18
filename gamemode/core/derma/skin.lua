@@ -1,7 +1,7 @@
 ﻿local surface = surface
 local Color = Color
-local MAT_CLOSE = Material("close_button.png", "noclamp smooth")
-local MAT_CLOSE_IDLE = Material("close_button_clear.png", "noclamp smooth")
+local MAT_CLOSE = Material("close_button_pressed.png", "noclamp smooth")
+local MAT_CLOSE_IDLE = Material("close_button.png", "noclamp smooth")
 local function drawAltBg(panel, w, h)
     lia.util.drawBlur(panel, 10)
     surface.SetDrawColor(45, 45, 45, 200)
