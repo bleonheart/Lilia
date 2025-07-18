@@ -234,10 +234,17 @@ function lia.data.get(key, default, _, _, refresh)
         if stored ~= nil then
             if isstring(stored) then
                 local decoded = util.JSONToTable(stored)
+                local depth = 0
+                while isstring(decoded) and depth < 5 do
+                    depth = depth + 1
+                    decoded = util.JSONToTable(decoded)
+                end
                 if istable(decoded) then
                     stored = decoded[1] or decoded
-                    lia.data.stored[key] = stored
+                elseif decoded ~= nil then
+                    stored = decoded
                 end
+                lia.data.stored[key] = stored
             end
             return stored
         end
