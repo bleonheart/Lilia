@@ -34,6 +34,7 @@ The command name itself is the first argument to `lia.command.add` and is stored
 | `desc` | `string` | `""` | Short description shown in command lists and menus. |
 | `AdminStick` | `table` | `nil` | Defines how the command appears in admin utilities. |
 | `onRun(client, args)` | `function(client, table)` | **required** | Function executed when the command is invoked. |
+
 ---
 
 ## Field Details
