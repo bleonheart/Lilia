@@ -54,6 +54,7 @@ hook.Add("LoadCharInformation", "AddHungerField", function()
     hook.Run("AddTextField", "General Info", "hunger", "Hunger", hungerField)
 end)
 ```
+
 ---
 
 ### liaOptionChanged
@@ -86,6 +87,7 @@ hook.Add("liaOptionChanged", "LogOptionChange", function(k, oldV, newV)
     print(k .. " changed from " .. tostring(oldV) .. " to " .. tostring(newV))
 end)
 ```
+
 ---
 
 ### WebImageDownloaded
@@ -115,6 +117,7 @@ hook.Add("WebImageDownloaded", "LogImage", function(name, path)
     print("Image downloaded:", name, path)
 end)
 ```
+
 ---
 
 ### WebSoundDownloaded
@@ -144,6 +147,7 @@ hook.Add("WebSoundDownloaded", "LogSound", function(name, path)
     print("Sound downloaded:", name, path)
 end)
 ```
+
 ---
 
 ### CreateMenuButtons
@@ -187,6 +191,7 @@ hook.Add("CreateMenuButtons", "AddHelpTab", function(tabs)
     }
 end)
 ```
+
 ---
 
 ### DrawLiliaModelView
@@ -231,6 +236,7 @@ hook.Add("DrawLiliaModelView", "ShowName", function(panel, entity)
     )
 end)
 ```
+
 ---
 
 ### ShouldAllowScoreboardOverride
@@ -265,6 +271,7 @@ hook.Add("ShouldAllowScoreboardOverride", "OverrideNames", function(ply, var)
     end
 end)
 ```
+
 ---
 
 ### GetDisplayedName
@@ -295,6 +302,7 @@ hook.Add("GetDisplayedName", "AdminPrefix", function(ply)
     end
 end)
 ```
+
 ---
 
 ### PlayerStartVoice
@@ -323,6 +331,7 @@ hook.Add("PlayerStartVoice", "VoiceNotify", function(ply)
     surface.PlaySound("buttons/button15.wav")
 end)
 ```
+
 ---
 
 ### PlayerEndVoice
@@ -352,6 +361,7 @@ hook.Add("PlayerEndVoice", "NotifyVoiceStop", function(ply)
     surface.PlaySound("buttons/button19.wav")
 end)
 ```
+
 ---
 
 ### SpawnlistContentChanged
@@ -382,6 +392,7 @@ hook.Add("SpawnlistContentChanged", "IconRemovedNotify", function(icon)
     print("Removed spawn icon", name)
 end)
 ```
+
 ---
 
 ### ItemPaintOver
@@ -416,6 +427,7 @@ hook.Add("ItemPaintOver", "ShowQuantity", function(panel, item, w, h)
     draw.SimpleText(item.qty or 1, "DermaDefault", w - 4, h - 4, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
 end)
 ```
+
 ---
 
 ### OnCreateItemInteractionMenu
@@ -450,6 +462,7 @@ hook.Add("OnCreateItemInteractionMenu", "AddInspect", function(panel, menu, item
     end)
 end)
 ```
+
 ---
 
 ### CanRunItemAction
@@ -482,6 +495,7 @@ hook.Add("CanRunItemAction", "BlockDrop", function(item, action)
     end
 end)
 ```
+
 ---
 
 ### ShouldShowPlayerOnScoreboard
@@ -512,6 +526,7 @@ hook.Add("ShouldShowPlayerOnScoreboard", "HideBots", function(ply)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerOpenScoreboard
@@ -542,6 +557,7 @@ hook.Add("CanPlayerOpenScoreboard", "AliveOnly", function(ply)
     end
 end)
 ```
+
 ---
 
 ### ShowPlayerOptions
@@ -578,6 +594,7 @@ hook.Add("ShowPlayerOptions", "WaveOption", function(ply, options)
     }
 end)
 ```
+
 ---
 
 ### ModifyScoreboardModel
@@ -610,6 +627,7 @@ hook.Add("ModifyScoreboardModel", "ConeHat", function(ent, ply)
     hat:AddEffects(EF_BONEMERGE)
 end)
 ```
+
 ---
 
 ### GetDisplayedDescription
@@ -642,6 +660,7 @@ hook.Add("GetDisplayedDescription", "OOCDesc", function(ply, isHUD)
     end
 end)
 ```
+
 ---
 
 ### ScoreboardOpened
@@ -669,6 +688,7 @@ hook.Add("ScoreboardOpened", "PlaySound", function(pnl)
     surface.PlaySound("buttons/button15.wav")
 end)
 ```
+
 ---
 
 ### ScoreboardClosed
@@ -696,6 +716,7 @@ hook.Add("ScoreboardClosed", "LogClose", function(pnl)
     print("Closed scoreboard")
 end)
 ```
+
 ---
 
 ### ScoreboardRowCreated
@@ -727,6 +748,7 @@ hook.Add("ScoreboardRowCreated", "AddGlow", function(pnl, ply)
     pnl:SetAlpha(200)
 end)
 ```
+
 ---
 
 ### ScoreboardRowRemoved
@@ -758,6 +780,7 @@ hook.Add("ScoreboardRowRemoved", "RowGone", function(pnl, ply)
     print(ply:Nick(), "left the scoreboard")
 end)
 ```
+
 ---
 
 ### F1MenuOpened
@@ -785,6 +808,7 @@ hook.Add("F1MenuOpened", "Notify", function(menu)
     print("F1 menu opened")
 end)
 ```
+
 ---
 
 ### F1MenuClosed
@@ -812,6 +836,7 @@ hook.Add("F1MenuClosed", "MenuGone", function()
     print("F1 menu closed")
 end)
 ```
+
 ---
 
 ### CharacterMenuOpened
@@ -839,6 +864,7 @@ hook.Add("CharacterMenuOpened", "PlayMusic", function(panel)
     surface.PlaySound("music/hl2_song17.mp3")
 end)
 ```
+
 ---
 
 ### CharacterMenuClosed
@@ -866,6 +892,7 @@ hook.Add("CharacterMenuClosed", "StopMusic", function()
     print("Character menu closed")
 end)
 ```
+
 ---
 
 ### ItemPanelOpened
@@ -895,6 +922,7 @@ hook.Add("ItemPanelOpened", "Inspect", function(pnl, ent)
     print("Viewing item", ent)
 end)
 ```
+
 ---
 
 ### ItemPanelClosed
@@ -924,6 +952,7 @@ hook.Add("ItemPanelClosed", "LogClose", function(pnl, ent)
     print("Closed item panel for", ent)
 end)
 ```
+
 ---
 
 ### InventoryOpened
@@ -953,6 +982,7 @@ hook.Add("InventoryOpened", "Flash", function(pnl, inv)
     print("Opened inventory", inv:getID())
 end)
 ```
+
 ---
 
 ### InventoryClosed
@@ -982,6 +1012,7 @@ hook.Add("InventoryClosed", "StopFlash", function(pnl, inv)
     print("Closed inventory", inv:getID())
 end)
 ```
+
 ---
 
 ### InteractionMenuOpened
@@ -1009,6 +1040,7 @@ hook.Add("InteractionMenuOpened", "Notify", function(frame)
     print("Opened interaction menu")
 end)
 ```
+
 ---
 
 ### InteractionMenuClosed
@@ -1036,6 +1068,7 @@ hook.Add("InteractionMenuClosed", "Notify", function()
     print("Interaction menu closed")
 end)
 ```
+
 ---
 
 ### ChatTextChanged
@@ -1066,6 +1099,7 @@ hook.Add("ChatTextChanged", "CommandHint", function(text)
     end
 end)
 ```
+
 ---
 
 ### FinishChat
@@ -1098,6 +1132,7 @@ hook.Add("FinishChat", "ChatClosed", function()
     end
 end)
 ```
+
 ---
 
 ### StartChat
@@ -1129,6 +1164,7 @@ hook.Add("StartChat", "ChatOpened", function()
     end
 end)
 ```
+
 ---
 
 ### ChatAddText
@@ -1160,6 +1196,7 @@ hook.Add("ChatAddText", "GreenSystem", function(text, ...)
     return Color(0, 255, 0), stamp .. text, ...
 end)
 ```
+
 ---
 
 ### ChatboxPanelCreated
@@ -1187,6 +1224,7 @@ hook.Add("ChatboxPanelCreated", "StyleChat", function(pnl)
     pnl:SetFontInternal("liaChatFont")
 end)
 ```
+
 ---
 
 ### ChatboxTextAdded
@@ -1214,6 +1252,7 @@ hook.Add("ChatboxTextAdded", "Notify", function(...)
     print("A chat message was added")
 end)
 ```
+
 ---
 
 ### DisplayItemRelevantInfo
@@ -1246,6 +1285,7 @@ hook.Add("DisplayItemRelevantInfo", "ShowWeight", function(extra, client, item)
     extra[#extra + 1] = "Weight: " .. (item.weight or 0)
 end)
 ```
+
 ---
 
 ### GetMainMenuPosition
@@ -1274,6 +1314,7 @@ hook.Add("GetMainMenuPosition", "OffsetCharView", function(character)
     return Vector(30, 10, 60), Angle(0, 30, 0)
 end)
 ```
+
 ---
 
 ### CanDeleteChar
@@ -1304,6 +1345,7 @@ hook.Add("CanDeleteChar", "ProtectSlot1", function(id)
     end
 end)
 ```
+
 ---
 
 ### LoadMainMenuInformation
@@ -1336,6 +1378,7 @@ hook.Add("LoadMainMenuInformation", "AddFactionInfo", function(info, character)
     info[#info + 1] = "Faction" .. ": " .. facName
 end)
 ```
+
 ---
 
 ### CanPlayerCreateChar
@@ -1366,6 +1409,7 @@ hook.Add("CanPlayerCreateChar", "AdminsOnly", function(ply)
     end
 end)
 ```
+
 ---
 
 ### ModifyCharacterModel
@@ -1400,6 +1444,7 @@ hook.Add("ModifyCharacterModel", "ApplyBodygroup", function(ent, character)
     end
 end)
 ```
+
 ---
 
 ### ConfigureCharacterCreationSteps
@@ -1429,6 +1474,7 @@ hook.Add("ConfigureCharacterCreationSteps", "InsertBackground", function(panel)
     panel:addStep(step, 99)
 end)
 ```
+
 ---
 
 ### GetMaxPlayerChar
@@ -1457,6 +1503,7 @@ hook.Add("GetMaxPlayerChar", "AdminSlots", function(ply)
     return ply:IsAdmin() and 10 or 5
 end)
 ```
+
 ---
 
 ### ShouldMenuButtonShow
@@ -1487,6 +1534,7 @@ hook.Add("ShouldMenuButtonShow", "HideDelete", function(name)
     end
 end)
 ```
+
 ---
 
 ### ResetCharacterPanel
@@ -1515,6 +1563,7 @@ hook.Add("ResetCharacterPanel", "ClearFields", function()
     print("Character creator reset")
 end)
 ```
+
 ---
 
 ### EasyIconsLoaded
@@ -1545,6 +1594,7 @@ hook.Add("EasyIconsLoaded", "Notify", function()
     hook.Run("RefreshFonts")
 end)
 ```
+
 ---
 
 ### CAMI.OnUsergroupRegistered
@@ -1575,6 +1625,7 @@ hook.Add("CAMI.OnUsergroupRegistered", "LogGroup", function(group)
     print("Registered group:", group.Name)
 end)
 ```
+
 ---
 
 ### CAMI.OnUsergroupUnregistered
@@ -1605,6 +1656,7 @@ hook.Add("CAMI.OnUsergroupUnregistered", "LogRemoval", function(group)
     print("Removed group:", group.Name)
 end)
 ```
+
 ---
 
 ### CAMI.OnPrivilegeRegistered
@@ -1633,6 +1685,7 @@ hook.Add("CAMI.OnPrivilegeRegistered", "LogPrivilege", function(priv)
     print("Registered privilege:", priv.Name)
 end)
 ```
+
 ---
 
 ### CAMI.OnPrivilegeUnregistered
@@ -1661,6 +1714,7 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "LogPrivRemoval", function(priv)
     print("Removed privilege:", priv.Name)
 end)
 ```
+
 ---
 
 ### CAMI.PlayerHasAccess
@@ -1702,6 +1756,7 @@ hook.Add("CAMI.PlayerHasAccess", "AllowSuperadmins", function(_, actor, priv, cb
     end
 end)
 ```
+
 ---
 
 ### CAMI.SteamIDHasAccess
@@ -1743,6 +1798,7 @@ hook.Add("CAMI.SteamIDHasAccess", "AllowSteamID", function(_, steamID, priv, cb)
     end
 end)
 ```
+
 ---
 
 ### CAMI.PlayerUsergroupChanged
@@ -1777,6 +1833,7 @@ hook.Add("CAMI.PlayerUsergroupChanged", "AnnounceChange", function(ply, old, new
     print(ply:Nick() .. " moved from " .. old .. " to " .. new)
 end)
 ```
+
 ---
 
 ### CAMI.SteamIDUsergroupChanged
@@ -1811,6 +1868,7 @@ hook.Add("CAMI.SteamIDUsergroupChanged", "LogSIDChange", function(sid, old, new)
     print(sid .. " changed from " .. old .. " to " .. new)
 end)
 ```
+
 ---
 
 ### TooltipLayout
@@ -1839,6 +1897,7 @@ hook.Add("TooltipLayout", "FixedWidth", function(panel)
     panel:SetWide(200)
 end)
 ```
+
 ---
 
 ### TooltipPaint
@@ -1873,6 +1932,7 @@ hook.Add("TooltipPaint", "BlurBackground", function(panel, w, h)
     return true
 end)
 ```
+
 ---
 
 ### TooltipInitialize
@@ -1904,6 +1964,7 @@ hook.Add("TooltipInitialize", "SetupFade", function(panel, target)
     panel:AlphaTo(255, 0.2, 0)
 end)
 ```
+
 ---
 
 ### PlayerLoadout
@@ -1934,6 +1995,7 @@ hook.Add("PlayerLoadout", "GiveCrowbar", function(ply)
     ply:SelectWeapon("weapon_crowbar")
 end)
 ```
+
 ---
 
 ### PlayerShouldPermaKill
@@ -1968,6 +2030,7 @@ hook.Add("PlayerShouldPermaKill", "NoFallPK", function(ply, inflictor)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerDropItem
@@ -2000,6 +2063,7 @@ hook.Add("CanPlayerDropItem", "NoLockedDrop", function(ply, item)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerTakeItem
@@ -2032,6 +2096,7 @@ hook.Add("CanPlayerTakeItem", "NoAdminPickup", function(ply, item)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerEquipItem
@@ -2064,6 +2129,7 @@ hook.Add("CanPlayerEquipItem", "CheckLevel", function(ply, item)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerUnequipItem
@@ -2096,6 +2162,7 @@ hook.Add("CanPlayerUnequipItem", "Cursed", function(ply, item)
     end
 end)
 ```
+
 ---
 
 ### PostPlayerSay
@@ -2132,6 +2199,7 @@ hook.Add("PostPlayerSay", "LogOOC", function(ply, msg, chatType)
     end
 end)
 ```
+
 ---
 
 ### ShouldSpawnClientRagdoll
@@ -2162,6 +2230,7 @@ hook.Add("ShouldSpawnClientRagdoll", "NoBotRagdoll", function(ply)
     end
 end)
 ```
+
 ---
 
 ### SaveData
@@ -2190,6 +2259,7 @@ hook.Add("SaveData", "RecordTime", function()
     file.Write("lastsave.txt", os.time())
 end)
 ```
+
 ---
 
 ### OnDataSet
@@ -2224,6 +2294,7 @@ hook.Add("OnDataSet", "PrintPersist", function(k, v)
     print("Persisted", k, v)
 end)
 ```
+
 ---
 
 ### PersistenceSave
@@ -2262,6 +2333,7 @@ hook.Add("PersistenceSave", "BackupEntities", function()
     file.Write("backup/entities.txt", util.TableToJSON(entities, true))
 end)
 ```
+
 ---
 
 ### CanPersistEntity
@@ -2292,6 +2364,7 @@ hook.Add("CanPersistEntity", "BlockWeapons", function(entity)
     end
 end)
 ```
+
 ---
 
 ### GetEntitySaveData
@@ -2322,6 +2395,7 @@ hook.Add("GetEntitySaveData", "DoorTint", function(ent)
     end
 end)
 ```
+
 ---
 
 ### OnEntityPersisted
@@ -2352,6 +2426,7 @@ hook.Add("OnEntityPersisted", "PrintEntity", function(ent, data)
     print("Persisted", ent, "with", table.Count(data or {}) .. " fields")
 end)
 ```
+
 ---
 
 ### OnEntityLoaded
@@ -2384,6 +2459,7 @@ hook.Add("OnEntityLoaded", "RestoreTint", function(ent, data)
     end
 end)
 ```
+
 ---
 
 ### LoadData
@@ -2423,6 +2499,7 @@ hook.Add("LoadData", "LoadCustomProps", function()
     end
 end)
 ```
+
 ---
 
 ### PostLoadData
@@ -2457,6 +2534,7 @@ hook.Add("PostLoadData", "SpawnCrate", function()
     end
 end)
 ```
+
 ---
 
 ### ShouldDataBeSaved
@@ -2485,6 +2563,7 @@ hook.Add("ShouldDataBeSaved", "NoSave", function()
     return game.IsDedicated() and os.getenv("NOSAVE")
 end)
 ```
+
 ---
 
 ### OnCharDisconnect
@@ -2515,6 +2594,7 @@ hook.Add("OnCharDisconnect", "SaveLogoutPos", function(ply, char)
     char:setData("logoutPos", ply:GetPos())
 end)
 ```
+
 ---
 
 ### SetupBotPlayer
@@ -2545,6 +2625,7 @@ hook.Add("SetupBotPlayer", "InitBot", function(bot)
     bot:Give("weapon_pistol")
 end)
 ```
+
 ---
 
 ### PlayerLiliaDataLoaded
@@ -2577,6 +2658,7 @@ hook.Add("PlayerLiliaDataLoaded", "CacheFactionColor", function(ply)
     end
 end)
 ```
+
 ---
 
 ### PostPlayerInitialSpawn
@@ -2606,6 +2688,7 @@ hook.Add("PostPlayerInitialSpawn", "SetupTutorialState", function(ply)
     ply:ChatPrint("Welcome! Follow the arrows to begin the tutorial.")
 end)
 ```
+
 ---
 
 ### FactionOnLoadout
@@ -2636,6 +2719,7 @@ hook.Add("FactionOnLoadout", "GiveRadio", function(ply)
     end
 end)
 ```
+
 ---
 
 ### ClassOnLoadout
@@ -2666,6 +2750,7 @@ hook.Add("ClassOnLoadout", "MedicItems", function(ply)
     end
 end)
 ```
+
 ---
 
 ### PostPlayerLoadout
@@ -2694,6 +2779,7 @@ hook.Add("PostPlayerLoadout", "SetColor", function(ply)
     ply:SetPlayerColor(Vector(0, 1, 0))
 end)
 ```
+
 ---
 
 ### FactionPostLoadout
@@ -2724,6 +2810,7 @@ hook.Add("FactionPostLoadout", "Shout", function(ply)
     end
 end)
 ```
+
 ---
 
 ### ClassPostLoadout
@@ -2752,6 +2839,7 @@ hook.Add("ClassPostLoadout", "Pose", function(ply)
     ply:ConCommand("act muscle")
 end)
 ```
+
 ---
 
 ### GetDefaultInventoryType
@@ -2780,6 +2868,7 @@ hook.Add("GetDefaultInventoryType", "UseGrid", function()
     return "GridInv"
 end)
 ```
+
 ---
 
 ### ShouldDeleteSavedItems
@@ -2810,6 +2899,7 @@ hook.Add("ShouldDeleteSavedItems", "ClearDrops", function()
     end
 end)
 ```
+
 ---
 
 ### OnSavedItemLoaded
@@ -2841,6 +2931,7 @@ hook.Add("OnSavedItemLoaded", "PrintCount", function(items)
     print("Loaded", #items, "items")
 end)
 ```
+
 ---
 
 ### ShouldDrawEntityInfo
@@ -2871,6 +2962,7 @@ hook.Add("ShouldDrawEntityInfo", "HideNPCs", function(ent)
     end
 end)
 ```
+
 ---
 
 ### DrawEntityInfo
@@ -2903,6 +2995,7 @@ hook.Add("DrawEntityInfo", "LabelProps", function(ent, a, pos)
     draw.SimpleText(ent:GetClass(), "DermaDefault", pos.x, pos.y, Color(255, 255, 255, a))
 end)
 ```
+
 ---
 
 ### GetInjuredText
@@ -2933,6 +3026,7 @@ hook.Add("GetInjuredText", "SimpleHealth", function(ply)
     end
 end)
 ```
+
 ---
 
 ### ShouldDrawPlayerInfo
@@ -2963,6 +3057,7 @@ hook.Add("ShouldDrawPlayerInfo", "HideLocal", function(ply)
     end
 end)
 ```
+
 ---
 
 ### DrawCharInfo
@@ -2995,6 +3090,7 @@ hook.Add("DrawCharInfo", "JobTitle", function(ply, char, info)
     info[#info + 1] = {"Job: " .. (char:getClass() or "None")}
 end)
 ```
+
 ---
 
 ### ItemShowEntityMenu
@@ -3025,6 +3121,7 @@ hook.Add("ItemShowEntityMenu", "QuickTake", function(ent)
     end, "No")
 end)
 ```
+
 ---
 
 ### PreLiliaLoaded
@@ -3053,6 +3150,7 @@ hook.Add("PreLiliaLoaded", "Prep", function()
     surface.CreateFont("MyUI", {font = "Roboto", size = 18, weight = 500})
 end)
 ```
+
 ---
 
 ### LiliaLoaded
@@ -3081,6 +3179,7 @@ hook.Add("LiliaLoaded", "Ready", function()
     vgui.Create("liaWelcome")
 end)
 ```
+
 ---
 
 ### ShouldLiliaAdminLoad
@@ -3109,6 +3208,7 @@ hook.Add("ShouldLiliaAdminLoad", "liaSam", function()
     return false
 end)
 ```
+
 ---
 
 ### RunAdminSystemCommand
@@ -3149,6 +3249,7 @@ hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, exec, victim, dur, rea
     end
 end)
 ```
+
 ---
 
 ### liaCommandAdded
@@ -3178,6 +3279,7 @@ hook.Add("liaCommandAdded", "LogCommand", function(name, data)
     print("Command registered:", name)
 end)
 ```
+
 ---
 
 ### liaCommandRan
@@ -3211,6 +3313,7 @@ hook.Add("liaCommandRan", "PrintCommandResult", function(ply, name, args, res)
     print(name .. " returned", res[1])
 end)
 ```
+
 ---
 
 ### InventoryDataChanged
@@ -3247,6 +3350,7 @@ hook.Add("InventoryDataChanged", "TrackWeight", function(inv, k, old, new)
     end
 end)
 ```
+
 ---
 
 ### ItemInitialized
@@ -3275,6 +3379,7 @@ hook.Add("ItemInitialized", "PrintID", function(item)
     print("Created item", item.uniqueID)
 end)
 ```
+
 ---
 
 ### InventoryInitialized
@@ -3303,6 +3408,7 @@ hook.Add("InventoryInitialized", "AnnounceInv", function(inv)
     print("Inventory", inv:getID(), "ready")
 end)
 ```
+
 ---
 
 ### InventoryItemAdded
@@ -3333,6 +3439,7 @@ hook.Add("InventoryItemAdded", "NotifyAdd", function(inv, item)
     print("Added", item.name)
 end)
 ```
+
 ---
 
 ### InventoryItemRemoved
@@ -3363,6 +3470,7 @@ hook.Add("InventoryItemRemoved", "NotifyRemove", function(inv, item)
     print("Removed", item.name)
 end)
 ```
+
 ---
 
 ### InventoryDeleted
@@ -3391,6 +3499,7 @@ hook.Add("InventoryDeleted", "Clear", function(inv)
     print("Inventory", inv:getID(), "deleted")
 end)
 ```
+
 ---
 
 ### ItemDeleted
@@ -3419,6 +3528,7 @@ hook.Add("ItemDeleted", "Log", function(item)
     print("Item", item.uniqueID, "gone")
 end)
 ```
+
 ---
 
 ### OnCharVarChanged
@@ -3455,6 +3565,7 @@ hook.Add("OnCharVarChanged", "WatchMoney", function(char, k, old, new)
     end
 end)
 ```
+
 ---
 
 ### OnCharLocalVarChanged
@@ -3491,6 +3602,7 @@ hook.Add("OnCharLocalVarChanged", "WatchFlags", function(char, k, old, new)
     end
 end)
 ```
+
 ---
 
 ### LocalVarChanged
@@ -3527,6 +3639,7 @@ hook.Add("LocalVarChanged", "TrackStamina", function(ply, k, old, new)
     end
 end)
 ```
+
 ---
 
 ### NetVarChanged
@@ -3563,6 +3676,7 @@ hook.Add("NetVarChanged", "WatchDoors", function(ent, k, old, new)
     end
 end)
 ```
+
 ---
 
 ### ItemDataChanged
@@ -3599,6 +3713,7 @@ hook.Add("ItemDataChanged", "TrackDurability", function(item, key)
     end
 end)
 ```
+
 ---
 
 ### ItemQuantityChanged
@@ -3631,6 +3746,7 @@ hook.Add("ItemQuantityChanged", "CountStacks", function(item, old, new)
     print("Quantity now", new)
 end)
 ```
+
 ---
 
 ### KickedFromChar
@@ -3661,6 +3777,7 @@ hook.Add("KickedFromChar", "Notify", function(id, current)
     print("Kicked from", id, current and "(current)" or "")
 end)
 ```
+
 ---
 
 ### HandleItemTransferRequest
@@ -3697,6 +3814,7 @@ hook.Add("HandleItemTransferRequest", "LogMove", function(ply, itemID, x, y, inv
     print(ply, "moved item", itemID, "to", x, y)
 end)
 ```
+
 ---
 
 ### CharLoaded
@@ -3725,6 +3843,7 @@ hook.Add("CharLoaded", "Notify", function(id)
     print("Character", id, "loaded")
 end)
 ```
+
 ---
 
 ### PreCharDelete
@@ -3755,6 +3874,7 @@ hook.Add("PreCharDelete", "Protect", function(id)
     end
 end)
 ```
+
 ---
 
 ### OnCharDelete
@@ -3785,6 +3905,7 @@ hook.Add("OnCharDelete", "Announce", function(ply, id)
     print(ply, "deleted char", id)
 end)
 ```
+
 ---
 
 ### OnCharCreated
@@ -3817,6 +3938,7 @@ hook.Add("OnCharCreated", "Welcome", function(ply, char)
     print("Created", char:getName())
 end)
 ```
+
 ---
 
 ### OnTransferred
@@ -3845,6 +3967,7 @@ hook.Add("OnTransferred", "Goodbye", function(ply)
     print(ply, "left the server")
 end)
 ```
+
 ---
 
 ### CharPreSave
@@ -3873,6 +3996,7 @@ hook.Add("CharPreSave", "Record", function(char)
     char:setData("lastSave", os.time())
 end)
 ```
+
 ---
 
 ### CharListLoaded
@@ -3901,6 +4025,7 @@ hook.Add("CharListLoaded", "CountChars", function(list)
     print("Loaded", #list, "characters")
 end)
 ```
+
 ---
 
 ### CharListUpdated
@@ -3931,6 +4056,7 @@ hook.Add("CharListUpdated", "Diff", function(old, new)
     print("Characters updated")
 end)
 ```
+
 ---
 
 ### CharListExtraDetails
@@ -3965,6 +4091,7 @@ hook.Add("CharListExtraDetails", "PlayTime", function(admin, entry, stored)
     entry.extraDetails.playTime = stored._playTime or 0
 end)
 ```
+
 ---
 
 ### getCharMaxStamina
@@ -3993,6 +4120,7 @@ hook.Add("getCharMaxStamina", "Double", function(char)
     return 200
 end)
 ```
+
 ---
 
 ### AdjustStaminaOffset
@@ -4023,6 +4151,7 @@ hook.Add("AdjustStaminaOffset", "MinimumDrain", function(ply, off)
     return math.max(off, -1)
 end)
 ```
+
 ---
 
 ### PostLoadFonts
@@ -4053,6 +4182,7 @@ hook.Add("PostLoadFonts", "LogoFont", function()
     surface.CreateFont("Logo", { size = 32, font = "Tahoma" })
 end)
 ```
+
 ---
 
 ### AddBarField
@@ -4091,6 +4221,7 @@ hook.Add("AddBarField", "AddThirstBar", function(section, id, label, min, max, v
     lia.bar.add(value, Color(0, 150, 255), nil, id)
 end)
 ```
+
 ---
 
 ### AddSection
@@ -4128,6 +4259,7 @@ hook.Add("AddSection", "AddSettingsSection", function(name, color, priority)
     end
 end)
 ```
+
 ---
 
 ### CanItemBeTransfered
@@ -4164,6 +4296,7 @@ hook.Add("CanItemBeTransfered", "BlockQuestItemDrop", function(item, newInv, old
     end
 end)
 ```
+
 ---
 
 ### CanOpenBagPanel
@@ -4194,6 +4327,7 @@ hook.Add("CanOpenBagPanel", "BlockBagInCombat", function(item)
     end
 end)
 ```
+
 ---
 
 ### CanOutfitChangeModel
@@ -4224,6 +4358,7 @@ hook.Add("CanOutfitChangeModel", "RestrictModelSwap", function(item)
     end
 end)
 ```
+
 ---
 
 ### CanPerformVendorEdit
@@ -4254,6 +4389,7 @@ hook.Add("CanPerformVendorEdit", "AdminVendorEdit", function(client)
     return client:IsAdmin()
 end)
 ```
+
 ---
 
 ### CanPickupMoney
@@ -4286,6 +4422,7 @@ hook.Add("CanPickupMoney", "BlockWhileCuffed", function(client)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerAccessDoor
@@ -4320,6 +4457,7 @@ hook.Add("CanPlayerAccessDoor", "PoliceDoors", function(client, door, access)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerAccessVendor
@@ -4352,6 +4490,7 @@ hook.Add("CanPlayerAccessVendor", "CheckVendorFaction", function(client, vendor)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerHoldObject
@@ -4384,6 +4523,7 @@ hook.Add("CanPlayerHoldObject", "WeightLimit", function(client, ent)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerInteractItem
@@ -4418,6 +4558,7 @@ hook.Add("CanPlayerInteractItem", "SafeZoneBlock", function(client, action, item
     end
 end)
 ```
+
 ---
 
 ### CanPlayerKnock
@@ -4450,6 +4591,7 @@ hook.Add("CanPlayerKnock", "BlockDisguisedKnock", function(client, door)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerSpawnStorage
@@ -4484,6 +4626,7 @@ hook.Add("CanPlayerSpawnStorage", "LimitStorage", function(client, ent, data)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerThrowPunch
@@ -4514,6 +4657,7 @@ hook.Add("CanPlayerThrowPunch", "NoPunchWhenTied", function(client)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerTradeWithVendor
@@ -4550,6 +4694,7 @@ hook.Add("CanPlayerTradeWithVendor", "DisallowStolenItems", function(client, ven
     end
 end)
 ```
+
 ---
 
 ### CanPlayerViewInventory
@@ -4578,6 +4723,7 @@ hook.Add("CanPlayerViewInventory", "BlockDuringCutscene", function()
     return not LocalPlayer():getNetVar("cutscene")
 end)
 ```
+
 ---
 
 ### CanSaveData
@@ -4610,6 +4756,7 @@ hook.Add("CanSaveData", "NoEventSaves", function(entity, inv)
     end
 end)
 ```
+
 ---
 
 ### CharHasFlags
@@ -4643,6 +4790,7 @@ hook.Add("CharHasFlags", "AdminExtraFlags", function(char, flags)
     end
 end)
 ```
+
 ---
 
 ### CharPostSave
@@ -4671,6 +4819,7 @@ hook.Add("CharPostSave", "LogCharSaves", function(char)
     print(char:getName() .. " saved")
 end)
 ```
+
 ---
 
 ### DatabaseConnected
@@ -4699,6 +4848,7 @@ hook.Add("DatabaseConnected", "CreateCustomTables", function()
     lia.db.query("CREATE TABLE IF NOT EXISTS extras(id INT)")
 end)
 ```
+
 ---
 
 ### DrawItemDescription
@@ -4735,6 +4885,7 @@ hook.Add("DrawItemDescription", "AddUseCount", function(item, x, y, color, alpha
     draw.SimpleText("Uses: " .. item:getData("uses", 0), "DermaDefault", x, y + 20, color)
 end)
 ```
+
 ---
 
 ### GetDefaultInventorySize
@@ -4765,6 +4916,7 @@ hook.Add("GetDefaultInventorySize", "AdminBags", function(client)
     end
 end)
 ```
+
 ---
 
 ### GetMoneyModel
@@ -4795,6 +4947,7 @@ hook.Add("GetMoneyModel", "GoldMoneyModel", function(amount)
     end
 end)
 ```
+
 ---
 
 ### GetPlayerPunchDamage
@@ -4827,6 +4980,7 @@ hook.Add("GetPlayerPunchDamage", "StrengthPunch", function(client, dmg, context)
     return dmg * (1 + client:getChar():getAttrib("str", 0) / 100)
 end)
 ```
+
 ---
 
 ### InterceptClickItemIcon
@@ -4861,6 +5015,7 @@ hook.Add("InterceptClickItemIcon", "ShiftQuickMove", function(panel, icon, key)
     end
 end)
 ```
+
 ---
 
 ### InventoryPanelCreated
@@ -4892,6 +5047,7 @@ hook.Add("InventoryPanelCreated", "Style", function(pnl)
     pnl:SetBackgroundColor(Color(0,0,0,150))
 end)
 ```
+
 ---
 
 ### InventoryItemIconCreated
@@ -4923,6 +5079,7 @@ hook.Add("InventoryItemIconCreated", "OutlineRare", function(icon, item)
     if item.isRare then icon:SetBorder(2) end
 end)
 ```
+
 ---
 
 ### ItemCombine
@@ -4959,6 +5116,7 @@ hook.Add("ItemCombine", "StackAmmo", function(client, base, other)
     end
 end)
 ```
+
 ---
 
 ### ItemDraggedOutOfInventory
@@ -4989,6 +5147,7 @@ hook.Add("ItemDraggedOutOfInventory", "DropOnDragOut", function(_, item)
     item:spawn(LocalPlayer():getItemDropPos())
 end)
 ```
+
 ---
 
 ### ItemFunctionCalled
@@ -5025,6 +5184,7 @@ hook.Add("ItemFunctionCalled", "TrackItemUse", function(item, action, client, en
     lia.log.add(client, "item_use", item.uniqueID, action)
 end)
 ```
+
 ---
 
 ### ItemTransfered
@@ -5053,6 +5213,7 @@ hook.Add("ItemTransfered", "NotifyTransfer", function(context)
     context.client:notifyLocalized("itemMoved")
 end)
 ```
+
 ---
 
 ### OnCharFallover
@@ -5087,6 +5248,7 @@ hook.Add("OnCharFallover", "ApplyStun", function(client, _, forced)
     end
 end)
 ```
+
 ---
 
 ### OnCharKick
@@ -5117,6 +5279,7 @@ hook.Add("OnCharKick", "LogKickReason", function(char, client)
     print(char:getName(), "was kicked")
 end)
 ```
+
 ---
 
 ### OnCharPermakilled
@@ -5147,6 +5310,7 @@ hook.Add("OnCharPermakilled", "AnnouncePK", function(char, time)
     PrintMessage(HUD_PRINTTALK, char:getName() .. " has met their end!")
 end)
 ```
+
 ---
 
 ### OnCharRecognized
@@ -5175,6 +5339,7 @@ hook.Add("OnCharRecognized", "PlayRecognizeSound", function(client)
     surface.PlaySound("buttons/button17.wav")
 end)
 ```
+
 ---
 
 ### CharacterForceRecognized
@@ -5204,6 +5369,7 @@ hook.Add("CharacterForceRecognized", "Notify", function(ply, kind)
     print(ply:Name(), "was force recognized via", kind)
 end)
 ```
+
 ---
 
 ### OnCharTradeVendor
@@ -5244,6 +5410,7 @@ hook.Add("OnCharTradeVendor", "LogVendorTrade", function(client, vendor, item, s
     print(client:Nick(), selling and "sold" or "bought", item and item:getName() or "unknown")
 end)
 ```
+
 ---
 
 ### OnCreatePlayerRagdoll
@@ -5278,6 +5445,7 @@ hook.Add("OnCreatePlayerRagdoll", "RedRagdoll", function(client, ent, dead)
     end
 end)
 ```
+
 ---
 
 ### OnCreateStoragePanel
@@ -5312,6 +5480,7 @@ hook.Add("OnCreateStoragePanel", "AddSortTab", function(localPanel, storagePanel
     end)
 end)
 ```
+
 ---
 
 ### OnItemAdded
@@ -5344,6 +5513,7 @@ hook.Add("OnItemAdded", "AmmoPickupSound", function(ply, item)
     end
 end)
 ```
+
 ---
 
 ### OnItemCreated
@@ -5374,6 +5544,7 @@ hook.Add("OnItemCreated", "InitCustomData", function(item)
     item:setData("born", os.time())
 end)
 ```
+
 ---
 
 ### OnItemSpawned
@@ -5404,6 +5575,7 @@ hook.Add("OnItemSpawned", "RareSpawnSound", function(itemEnt)
     end
 end)
 ```
+
 ---
 
 ### OnOpenVendorMenu
@@ -5434,6 +5606,7 @@ hook.Add("OnOpenVendorMenu", "DefaultBuyTab", function(panel, vendor)
     panel:openTab("Buy")
 end)
 ```
+
 ---
 
 ### OnPickupMoney
@@ -5464,6 +5637,7 @@ hook.Add("OnPickupMoney", "MoneyAchievement", function(client, ent)
     client:addProgress("rich", ent:getAmount())
 end)
 ```
+
 ---
 
 ### OnPlayerEnterSequence
@@ -5502,6 +5676,7 @@ hook.Add("OnPlayerEnterSequence", "FreezeDuringSeq", function(client, seq, callb
     end
 end)
 ```
+
 ---
 
 ### OnPlayerInteractItem
@@ -5538,6 +5713,7 @@ hook.Add("OnPlayerInteractItem", "Analytics", function(client, action, item, res
     lia.analytics.log(client, action, item.uniqueID)
 end)
 ```
+
 ---
 
 ### OnPlayerJoinClass
@@ -5572,6 +5748,7 @@ hook.Add("OnPlayerJoinClass", "ClassWeapons", function(client, class, oldClass)
     end
 end)
 ```
+
 ---
 
 ### OnPlayerLeaveSequence
@@ -5600,6 +5777,7 @@ hook.Add("OnPlayerLeaveSequence", "UnfreezeAfterSeq", function(client)
     client:Freeze(false)
 end)
 ```
+
 ---
 
 ### OnPlayerLostStackItem
@@ -5630,6 +5808,7 @@ hook.Add("OnPlayerLostStackItem", "WarnLostAmmo", function(item)
     end
 end)
 ```
+
 ---
 
 ### OnPlayerSwitchClass
@@ -5664,6 +5843,7 @@ hook.Add("OnPlayerSwitchClass", "NoCombatSwap", function(client, class, oldClass
     end
 end)
 ```
+
 ---
 
 ### OnRequestItemTransfer
@@ -5700,6 +5880,7 @@ hook.Add("OnRequestItemTransfer", "ValidateTransfer", function(panel, itemID, in
     return itemID ~= 0 -- block invalid ids
 end)
 ```
+
 ---
 
 ### PersistenceLoad
@@ -5728,6 +5909,7 @@ hook.Add("PersistenceLoad", "CheckPersistent", function(name)
     print("Loading persistence file", name)
 end)
 ```
+
 ---
 
 ### PlayerAccessVendor
@@ -5758,6 +5940,7 @@ hook.Add("PlayerAccessVendor", "VendorAnalytics", function(client, vendor)
     lia.log.add(client, "vendor_open", vendor:GetClass())
 end)
 ```
+
 ---
 
 ### PlayerStaminaGained
@@ -5788,6 +5971,7 @@ hook.Add("PlayerStaminaGained", "PrintStaminaGain", function(client)
     end
 end)
 ```
+
 ---
 
 ### PlayerStaminaLost
@@ -5818,6 +6002,7 @@ hook.Add("PlayerStaminaLost", "TiredSound", function(client)
     end
 end)
 ```
+
 ---
 
 ### PlayerThrowPunch
@@ -5848,6 +6033,7 @@ hook.Add("PlayerThrowPunch", "PunchSound", function(client, trace)
     client:EmitSound("npc/vort/claw_swing1.wav")
 end)
 ```
+
 ---
 
 ### PostDrawInventory
@@ -5878,6 +6064,7 @@ hook.Add("PostDrawInventory", "InventoryWatermark", function(panel)
     draw.SimpleText("MY SERVER", "DermaLarge", panel:GetWide() - 100, 8, color_white)
 end)
 ```
+
 ---
 
 ### PrePlayerInteractItem
@@ -5912,6 +6099,7 @@ hook.Add("PrePlayerInteractItem", "BlockChestKeys", function(client, action, ite
     end
 end)
 ```
+
 ---
 
 ### SetupBagInventoryAccessRules
@@ -5940,6 +6128,7 @@ hook.Add("SetupBagInventoryAccessRules", "OwnerOnlyBags", function(inv)
     inv:allowAccess("transfer", inv:getOwner())
 end)
 ```
+
 ---
 
 ### BagInventoryReady
@@ -5969,6 +6158,7 @@ hook.Add("BagInventoryReady", "SetOwnerRules", function(item, inv)
     inv:allowAccess("transfer", item.player)
 end)
 ```
+
 ---
 
 ### BagInventoryRemoved
@@ -5998,6 +6188,7 @@ hook.Add("BagInventoryRemoved", "SaveBagItems", function(item, inv)
     print("Bag" .. item:getID() .. " removed")
 end)
 ```
+
 ---
 
 ### SetupDatabase
@@ -6026,6 +6217,7 @@ hook.Add("SetupDatabase", "AddExtraTables", function()
     lia.db.query("CREATE TABLE IF NOT EXISTS mytable(id INT)")
 end)
 ```
+
 ---
 
 ### StorageCanTransferItem
@@ -6060,6 +6252,7 @@ hook.Add("StorageCanTransferItem", "NoWeaponsInCars", function(client, storage, 
     end
 end)
 ```
+
 ---
 
 ### StorageEntityRemoved
@@ -6090,6 +6283,7 @@ hook.Add("StorageEntityRemoved", "DropContents", function(entity, inv)
     inv:dropItems(entity:GetPos())
 end)
 ```
+
 ---
 
 ### StorageInventorySet
@@ -6124,6 +6318,7 @@ hook.Add("StorageInventorySet", "NotifyStorage", function(entity, inv, isCar)
     end
 end)
 ```
+
 ---
 
 ### StorageOpen
@@ -6154,6 +6349,7 @@ hook.Add("StorageOpen", "AnnounceStorage", function(entity, isCar)
     chat.AddText("Opened storage:", entity:GetClass())
 end)
 ```
+
 ---
 
 ### StorageRestored
@@ -6184,6 +6380,7 @@ hook.Add("StorageRestored", "PrintRestore", function(storage, inv)
     print("Storage restored with", #inv:getItems(), "items")
 end)
 ```
+
 ---
 
 ### StorageUnlockPrompt
@@ -6212,6 +6409,7 @@ hook.Add("StorageUnlockPrompt", "AutoFill", function(entity)
     return "1234" -- automatically send this string
 end)
 ```
+
 ---
 
 ### VendorClassUpdated
@@ -6240,6 +6438,7 @@ hook.Add("VendorClassUpdated", "LogVendorClassChange", function(vendor, id, allo
     print("Vendor class", id, "now", allowed and "allowed" or "blocked")
 end)
 ```
+
 ---
 
 ### VendorEdited
@@ -6268,6 +6467,7 @@ hook.Add("VendorEdited", "PrintVendorEdit", function(vendor, key)
     print("Vendor", vendor:GetClass(), "edited key", key)
 end)
 ```
+
 ---
 
 ### VendorExited
@@ -6296,6 +6496,7 @@ hook.Add("VendorExited", "PrintVendorExit", function()
     print("Stopped interacting with vendor")
 end)
 ```
+
 ---
 
 ### VendorFactionUpdated
@@ -6324,6 +6525,7 @@ hook.Add("VendorFactionUpdated", "LogVendorFactionUpdate", function(vendor, id, 
     print("Vendor faction", id, "now", allowed and "allowed" or "blocked")
 end)
 ```
+
 ---
 
 ### VendorItemMaxStockUpdated
@@ -6352,6 +6554,7 @@ hook.Add("VendorItemMaxStockUpdated", "LogVendorStockLimits", function(vendor, i
     print("Vendor stock limit for", itemType, "set to", value)
 end)
 ```
+
 ---
 
 ### VendorItemModeUpdated
@@ -6380,6 +6583,7 @@ hook.Add("VendorItemModeUpdated", "PrintVendorMode", function(vendor, itemType, 
     print("Vendor mode for", itemType, "changed to", value)
 end)
 ```
+
 ---
 
 ### VendorItemPriceUpdated
@@ -6408,6 +6612,7 @@ hook.Add("VendorItemPriceUpdated", "LogVendorItemPrice", function(vendor, itemTy
     print("Vendor price for", itemType, "is now", value)
 end)
 ```
+
 ---
 
 ### VendorItemStockUpdated
@@ -6436,6 +6641,7 @@ hook.Add("VendorItemStockUpdated", "LogVendorItemStock", function(vendor, itemTy
     print("Vendor stock for", itemType, "is now", value)
 end)
 ```
+
 ---
 
 ### VendorMoneyUpdated
@@ -6464,6 +6670,7 @@ hook.Add("VendorMoneyUpdated", "LogVendorMoney", function(vendor, money, oldMone
     print("Vendor money changed from", oldMoney, "to", money)
 end)
 ```
+
 ---
 
 ### VendorOpened
@@ -6492,6 +6699,7 @@ hook.Add("VendorOpened", "PrintVendorOpened", function(vendor)
     print("Opened vendor", vendor:GetClass())
 end)
 ```
+
 ---
 
 ### VendorSynchronized
@@ -6520,6 +6728,7 @@ hook.Add("VendorSynchronized", "LogVendorSync", function(vendor)
     print("Vendor", vendor:GetClass(), "synchronized")
 end)
 ```
+
 ---
 
 ### VendorTradeEvent
@@ -6549,6 +6758,7 @@ hook.Add("VendorTradeEvent", "LogVendorTrades", function(client, entity, uniqueI
     print(client:Name() .. " " .. action .. " " .. uniqueID .. " with " .. entity:GetClass())
 end)
 ```
+
 ---
 
 ### getItemDropModel
@@ -6579,6 +6789,7 @@ hook.Add("getItemDropModel", "CustomDropModelForWeapons", function(itemTable, en
     end
 end)
 ```
+
 ---
 
 ### getPriceOverride
@@ -6613,6 +6824,7 @@ hook.Add("getPriceOverride", "DynamicPricing", function(vendor, uniqueID, price,
     end
 end)
 ```
+
 ---
 
 ### isCharFakeRecognized
@@ -6643,6 +6855,7 @@ hook.Add("isCharFakeRecognized", "DetectFakeCharacters", function(character, id)
     end
 end)
 ```
+
 ---
 
 ### isCharRecognized
@@ -6673,6 +6886,7 @@ hook.Add("isCharRecognized", "ValidateCharacterRecognition", function(character,
     return character:getFaction() == lia.char.loaded[id]:getFaction()
 end)
 ```
+
 ---
 
 ### isRecognizedChatType
@@ -6702,6 +6916,7 @@ hook.Add("isRecognizedChatType", "ValidateRecognitionChat", function(chatType)
     return table.HasValue(recognized, chatType)
 end)
 ```
+
 ---
 
 ### isSuitableForTrunk
@@ -6730,6 +6945,7 @@ hook.Add("isSuitableForTrunk", "AllowOnlyCars", function(entity)
     return entity:IsVehicle()
 end)
 ```
+
 ---
 
 ### CanPlayerEarnSalary
@@ -6765,6 +6981,7 @@ hook.Add("CanPlayerEarnSalary", "RestrictSalaryToActivePlayers", function(client
     return true
 end)
 ```
+
 ---
 
 ### CanPlayerJoinClass
@@ -6799,6 +7016,7 @@ hook.Add("CanPlayerJoinClass", "RestrictEliteClass", function(client, class, inf
     end
 end)
 ```
+
 ---
 
 ### CanPlayerUseCommand
@@ -6838,6 +7056,7 @@ hook.Add("CanPlayerUseCommand", "BlockSensitiveCommands", function(client, comma
     end
 end)
 ```
+
 ---
 
 ### CanPlayerUseDoor
@@ -6873,6 +7092,7 @@ hook.Add("CanPlayerUseDoor", "AllowOnlyOwners", function(client, door, access)
     return true
 end)
 ```
+
 ---
 
 ### CharCleanUp
@@ -6907,6 +7127,7 @@ hook.Add("CharCleanUp", "RemoveTemporaryItems", function(character)
     end
 end)
 ```
+
 ---
 
 ### CharRestored
@@ -6939,6 +7160,7 @@ hook.Add("CharRestored", "AwardWelcomePackage", function(character)
     print("Welcome package awarded to:", character:getName())
 end)
 ```
+
 ---
 
 ### CreateDefaultInventory
@@ -6977,6 +7199,7 @@ hook.Add("CreateDefaultInventory", "InitializeStarterInventory", function(charac
     return d
 end)
 ```
+
 ---
 
 ### CreateInventoryPanel
@@ -7023,6 +7246,7 @@ hook.Add("CreateInventoryPanel", "CustomInventoryUI", function(inventory, parent
     return panel
 end)
 ```
+
 ---
 
 ### CreateSalaryTimer
@@ -7059,6 +7283,7 @@ hook.Add("CreateSalaryTimer", "SetupSalaryTimer", function(client)
     print("Salary timer created for:", client:Name())
 end)
 ```
+
 ---
 
 ### DoModuleIncludes
@@ -7091,6 +7316,7 @@ hook.Add("DoModuleIncludes", "TrackModuleDependencies", function(path, module)
     table.insert(module.dependencies, "base_module")
 end)
 ```
+
 ---
 
 ### GetDefaultCharDesc
@@ -7125,6 +7351,7 @@ hook.Add("GetDefaultCharDesc", "CitizenDefaultDesc", function(client, faction)
     end
 end)
 ```
+
 ---
 
 ### GetDefaultCharName
@@ -7163,6 +7390,7 @@ hook.Add("GetDefaultCharName", "PoliceDefaultName", function(client, faction, da
     end
 end)
 ```
+
 ---
 
 ### GetSalaryAmount
@@ -7197,6 +7425,7 @@ hook.Add("GetSalaryAmount", "CalculateDynamicSalary", function(client, faction, 
     return baseSalary + classBonus
 end)
 ```
+
 ---
 
 ### GetSalaryLimit
@@ -7233,6 +7462,7 @@ hook.Add("GetSalaryLimit", "SetSalaryLimitsBasedOnRole", function(client, factio
     end
 end)
 ```
+
 ---
 
 ### InitializedConfig
@@ -7266,6 +7496,7 @@ function MODULE:InitializedConfig()
     end
 end
 ```
+
 ---
 
 ### InitializedItems
@@ -7303,6 +7534,7 @@ hook.Add("InitializedItems", "SetupSpecialItems", function()
     print("Special items have been set up.")
 end)
 ```
+
 ---
 
 ### InitializedModules
@@ -7331,6 +7563,7 @@ hook.Add("InitializedModules", "NotifyModulesLoaded", function()
     print("All modules have been fully initialized.")
 end)
 ```
+
 ---
 
 ### InitializedOptions
@@ -7359,6 +7592,7 @@ function MODULE:InitializedOptions()
     LocalPlayer():ChatPrint("LOADED OPTIONS!")
 end
 ```
+
 ---
 
 ### InitializedSchema
@@ -7388,6 +7622,7 @@ hook.Add("InitializedSchema", "SchemaReadyNotification", function()
     lia.notifications.broadcast("Welcome to the server! The schema is now active.")
 end)
 ```
+
 ---
 
 ### KeyLock
@@ -7426,6 +7661,7 @@ hook.Add("KeyLock", "LogDoorLock", function(owner, entity, time)
     print(owner:Name() .. " locked door ID:", entity:EntIndex(), "for", time, "seconds.")
 end)
 ```
+
 ---
 
 ### KeyUnlock
@@ -7464,6 +7700,7 @@ hook.Add("KeyUnlock", "LogDoorUnlock", function(owner, entity, time)
     print(owner:Name() .. " unlocked door ID:", entity:EntIndex(), "after", time, "seconds.")
 end)
 ```
+
 ---
 
 ### DoorLockToggled
@@ -7495,6 +7732,7 @@ hook.Add("DoorLockToggled", "Announce", function(ply, door, locked)
     print(door, locked and "locked" or "unlocked")
 end)
 ```
+
 ---
 
 ### DoorOwnableToggled
@@ -7526,6 +7764,7 @@ hook.Add("DoorOwnableToggled", "Log", function(ply, door, unownable)
     print("Door", door, unownable and "made unownable" or "can be owned")
 end)
 ```
+
 ---
 
 ### DoorEnabledToggled
@@ -7557,6 +7796,7 @@ hook.Add("DoorEnabledToggled", "Announce", function(ply, door, disabled)
     print("Door", door, disabled and "disabled" or "enabled")
 end)
 ```
+
 ---
 
 ### DoorHiddenToggled
@@ -7588,6 +7828,7 @@ hook.Add("DoorHiddenToggled", "Announce", function(ply, door, hidden)
     print("Door", door, hidden and "hidden" or "visible")
 end)
 ```
+
 ---
 
 ### DoorPriceSet
@@ -7619,6 +7860,7 @@ hook.Add("DoorPriceSet", "LogPrice", function(ply, door, price)
     print("Door", door, "price set to", price)
 end)
 ```
+
 ---
 
 ### DoorTitleSet
@@ -7650,6 +7892,7 @@ hook.Add("DoorTitleSet", "AnnounceTitle", function(ply, door, text)
     print("Door", door, "renamed to", text)
 end)
 ```
+
 ---
 
 ### DoorParentSet
@@ -7679,6 +7922,7 @@ hook.Add("DoorParentSet", "Notify", function(ply, door)
     print("Parent door selected:", door)
 end)
 ```
+
 ---
 
 ### DoorChildAdded
@@ -7710,6 +7954,7 @@ hook.Add("DoorChildAdded", "AnnounceChild", function(ply, child, parent)
     print(child, "assigned to", parent)
 end)
 ```
+
 ---
 
 ### DoorChildRemoved
@@ -7741,6 +7986,7 @@ hook.Add("DoorChildRemoved", "LogRemoval", function(ply, child, parent)
     print(child, "removed from", parent)
 end)
 ```
+
 ---
 
 ### LiliaTablesLoaded
@@ -7771,6 +8017,7 @@ hook.Add("LiliaTablesLoaded", "InitializeGameState", function()
     print("All essential Lilia tables have been loaded. Game state initialized.")
 end)
 ```
+
 ---
 
 ### OnItemRegistered
@@ -7809,6 +8056,7 @@ hook.Add("OnItemRegistered", "AddItemDurability", function(item)
     end
 end)
 ```
+
 ---
 
 ### OnLoadTables
@@ -7839,6 +8087,7 @@ hook.Add("OnLoadTables", "SetupFactionDefaults", function()
     print("Faction defaults have been set up.")
 end)
 ```
+
 ---
 
 ### OnMySQLOOConnected
@@ -7877,6 +8126,7 @@ hook.Add("OnMySQLOOConnected", "PrepareDatabaseStatements", function()
     print("Prepared MySQLOO statements.")
 end)
 ```
+
 ### OnDatabaseLoaded
 
 **Purpose**
@@ -7906,6 +8156,7 @@ hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
     end)
 end)
 ```
+
 ---
 
 ### OnPlayerPurchaseDoor
@@ -7949,6 +8200,7 @@ hook.Add("OnPlayerPurchaseDoor", "HandleDoorPurchase", function(client, entity, 
     CallOnDoorChild(entity)
 end)
 ```
+
 ---
 
 ### OnServerLog
@@ -7991,6 +8243,7 @@ hook.Add("OnServerLog", "AlertAdminsOnHighSeverity", function(client, logType, l
     end
 end)
 ```
+
 ---
 
 ### OnWipeTables
@@ -8021,6 +8274,7 @@ hook.Add("OnWipeTables", "ReinitializeDefaults", function()
     print("Database tables wiped and defaults reinitialized.")
 end)
 ```
+
 ---
 
 ### PlayerMessageSend
@@ -8058,6 +8312,7 @@ hook.Add("PlayerMessageSend", "FilterProfanity", function(speaker, chatType, mes
     end
 end)
 ```
+
 ---
 
 ### ChatParsed
@@ -8094,6 +8349,7 @@ hook.Add("ChatParsed", "PrefixOOC", function(ply, cType, msg, anon)
     end
 end)
 ```
+
 ---
 
 ### PlayerModelChanged
@@ -8126,6 +8382,7 @@ hook.Add("PlayerModelChanged", "UpdatePlayerAppearance", function(client, model)
     client:setBodygroup(1, 2) -- Example of setting a bodygroup based on the new model
 end)
 ```
+
 ---
 
 ### SetupPlayerModel
@@ -8158,6 +8415,7 @@ hook.Add("SetupPlayerModel", "ApplyParts", function(ent, char)
     end
 end)
 ```
+
 ---
 
 ### PlayerUseDoor
@@ -8192,6 +8450,7 @@ hook.Add("PlayerUseDoor", "LogDoorUsage", function(client, entity)
     end
 end)
 ```
+
 ---
 
 ### RegisterPreparedStatements
@@ -8220,6 +8479,7 @@ hook.Add("RegisterPreparedStatements", "InitLogStatement", function()
     lia.db.prepare("insert_log", "INSERT INTO logs(text) VALUES(?)")
 end)
 ```
+
 ---
 
 ### ShouldBarDraw
@@ -8250,6 +8510,7 @@ hook.Add("ShouldBarDraw", "HideArmorHUD", function(barName)
     end
 end)
 ```
+
 ---
 
 ### ShouldDisableThirdperson
@@ -8280,6 +8541,7 @@ hook.Add("ShouldDisableThirdperson", "DisableForInvisibles", function(client)
     end
 end)
 ```
+
 ---
 
 ### ShouldHideBars
@@ -8310,6 +8572,7 @@ hook.Add("ShouldHideBars", "HideHUDInCinematic", function()
     end
 end)
 ```
+
 ---
 
 ### thirdPersonToggled
@@ -8343,6 +8606,7 @@ hook.Add("thirdPersonToggled", "NotifyThirdPersonChange", function(state)
     print("Third-person mode toggled to:", state)
 end)
 ```
+
 ---
 
 ### AddTextField
@@ -8379,6 +8643,7 @@ hook.Add("AddTextField", "RenameMoneyField", function(section, name, label, valu
     end
 end)
 ```
+
 ---
 
 ### F1OnAddTextField
@@ -8413,6 +8678,7 @@ hook.Add("F1OnAddTextField", "LogFields", function(section, name)
     print("Added field", name, "to section", section)
 end)
 ```
+
 ---
 
 ### F1OnAddBarField
@@ -8451,6 +8717,7 @@ hook.Add("F1OnAddBarField", "TrackBars", function(section, name)
     print("Added bar", name)
 end)
 ```
+
 ---
 
 ### CreateInformationButtons
@@ -8479,6 +8746,7 @@ hook.Add("CreateInformationButtons", "AddHelpPage", function(pages)
     table.insert(pages, { name = "Help", drawFunc = function(parent) end })
 end)
 ```
+
 ---
 
 ### PopulateConfigurationButtons
@@ -8507,6 +8775,7 @@ hook.Add("PopulateConfigurationButtons", "AddControlsPage", function(pages)
     table.insert(pages, { name = "Controls", drawFunc = function(p) end })
 end)
 ```
+
 ---
 
 ### InitializedKeybinds
@@ -8535,6 +8804,7 @@ hook.Add("InitializedKeybinds", "NotifyKeybinds", function()
     chat.AddText("Keybinds loaded")
 end)
 ```
+
 ---
 
 ### getOOCDelay
@@ -8565,6 +8835,7 @@ hook.Add("getOOCDelay", "AdminOOC", function(ply)
     end
 end)
 ```
+
 ---
 
 ### OnChatReceived
@@ -8599,6 +8870,7 @@ hook.Add("OnChatReceived", "CensorChat", function(ply, type, msg)
     return msg:gsub("badword", "****")
 end)
 ```
+
 ---
 
 ### getAdjustedPartData
@@ -8629,6 +8901,7 @@ hook.Add("getAdjustedPartData", "DebugParts", function(ply, partID)
     print("Requesting part", partID)
 end)
 ```
+
 ---
 
 ### AdjustPACPartData
@@ -8662,6 +8935,7 @@ hook.Add("AdjustPACPartData", "ColorParts", function(ply, partID, d)
     return d
 end)
 ```
+
 ---
 
 ### attachPart
@@ -8692,6 +8966,7 @@ hook.Add("attachPart", "AnnouncePart", function(ply, partID)
     print(ply, "received part", partID)
 end)
 ```
+
 ---
 
 ### removePart
@@ -8722,6 +8997,7 @@ hook.Add("removePart", "LogPartRemoval", function(ply, partID)
     print(partID, "removed from", ply)
 end)
 ```
+
 ---
 
 ### OnPAC3PartTransfered
@@ -8750,6 +9026,7 @@ hook.Add("OnPAC3PartTransfered", "TrackTransfers", function(p)
     print("Part transferred", p)
 end)
 ```
+
 ---
 
 ### DrawPlayerRagdoll
@@ -8778,6 +9055,7 @@ hook.Add("DrawPlayerRagdoll", "TintRagdoll", function(ent)
     render.SetColorModulation(1, 0, 0)
 end)
 ```
+
 ---
 
 ### setupPACDataFromItems
@@ -8806,6 +9084,7 @@ hook.Add("setupPACDataFromItems", "InitPAC", function()
     print("Equipped PAC data loaded")
 end)
 ```
+
 ---
 
 ### TryViewModel
@@ -8834,6 +9113,7 @@ hook.Add("TryViewModel", "UsePlayerViewModel", function(ent)
     return ent == LocalPlayer():GetViewModel() and LocalPlayer() or ent
 end)
 ```
+
 ---
 
 ### WeaponCycleSound
@@ -8864,6 +9144,7 @@ hook.Add("WeaponCycleSound", "SilentCycle", function()
     return "buttons/button15.wav", 100
 end)
 ```
+
 ---
 
 ### WeaponSelectSound
@@ -8894,6 +9175,7 @@ hook.Add("WeaponSelectSound", "CustomSelectSound", function()
     return "buttons/button24.wav", 90
 end)
 ```
+
 ---
 
 ### ShouldDrawWepSelect
@@ -8922,6 +9204,7 @@ hook.Add("ShouldDrawWepSelect", "HideInVehicles", function(ply)
     return not ply:InVehicle()
 end)
 ```
+
 ---
 
 ### CanPlayerChooseWeapon
@@ -8952,6 +9235,7 @@ hook.Add("CanPlayerChooseWeapon", "BlockPhysgun", function(wep)
     end
 end)
 ```
+
 ---
 
 ### OverrideSpawnTime
@@ -8984,6 +9268,7 @@ hook.Add("OverrideSpawnTime", "ShortRespawns", function(ply, time)
     end
 end)
 ```
+
 ---
 
 ### ShouldRespawnScreenAppear
@@ -9012,6 +9297,7 @@ hook.Add("ShouldRespawnScreenAppear", "NoRespawnHUD", function()
     return false
 end)
 ```
+
 ---
 
 ### PlayerSpawnPointSelected
@@ -9041,6 +9327,7 @@ hook.Add("PlayerSpawnPointSelected", "AnnounceSpawn", function(ply, pos)
     print(ply, "will spawn at", pos)
 end)
 ```
+
 ---
 
 ### VoiceToggled
@@ -9069,6 +9356,7 @@ hook.Add("VoiceToggled", "AnnounceVoice", function(state)
     print("Voice chat set to", state)
 end)
 ```
+
 ---
 
 ### DermaSkinChanged
@@ -9097,6 +9385,7 @@ hook.Add("DermaSkinChanged", "UpdatePanels", function(skin)
     MyPanel:ReloadSkin(skin)
 end)
 ```
+
 ---
 
 ### RefreshFonts
@@ -9125,6 +9414,7 @@ hook.Add("RefreshFonts", "ReloadFonts", function()
     print("Fonts refreshed")
 end)
 ```
+
 ---
 
 ### AdjustCreationData
@@ -9161,6 +9451,7 @@ hook.Add("AdjustCreationData", "EnforceName", function(ply, data, newData)
     end
 end)
 ```
+
 ---
 
 ### CanCharBeTransfered
@@ -9195,6 +9486,7 @@ hook.Add("CanCharBeTransfered", "BlockRestrictedFactions", function(char, factio
     end
 end)
 ```
+
 ---
 
 ### CanInviteToFaction
@@ -9225,6 +9517,7 @@ hook.Add("CanInviteToFaction", "OfficerOnlyInvites", function(ply, target)
     return ply:hasFlags("Z")
 end)
 ```
+
 ---
 
 ### CanInviteToClass
@@ -9255,6 +9548,7 @@ hook.Add("CanInviteToClass", "InstructorOnlyInvites", function(ply, target)
     return ply:hasFlags("Z")
 end)
 ```
+
 ---
 
 ### CanPlayerUseChar
@@ -9287,6 +9581,7 @@ hook.Add("CanPlayerUseChar", "CheckBans", function(ply, char)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerSwitchChar
@@ -9321,6 +9616,7 @@ hook.Add("CanPlayerSwitchChar", "NoSwitchInCombat", function(ply)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerLock
@@ -9353,6 +9649,7 @@ hook.Add("CanPlayerLock", "AdminsAlwaysLock", function(ply)
     end
 end)
 ```
+
 ---
 
 ### CanPlayerUnlock
@@ -9385,6 +9682,7 @@ hook.Add("CanPlayerUnlock", "AdminsAlwaysUnlock", function(ply)
     end
 end)
 ```
+
 ---
 
 ### GetMaxStartingAttributePoints
@@ -9415,6 +9713,7 @@ hook.Add("GetMaxStartingAttributePoints", "DoublePoints", function(client)
     return 60
 end)
 ```
+
 ---
 
 ### GetAttributeStartingMax
@@ -9447,6 +9746,7 @@ hook.Add("GetAttributeStartingMax", "CapStrength", function(client, attribute)
     end
 end)
 ```
+
 ---
 
 ### GetAttributeMax
@@ -9479,6 +9779,7 @@ hook.Add("GetAttributeMax", "AdminStamina", function(client, attrib)
     end
 end)
 ```
+
 ---
 
 ### OnCharAttribBoosted
@@ -9517,6 +9818,7 @@ hook.Add("OnCharAttribBoosted", "BoostNotice", function(client, char, key, id, a
     end
 end)
 ```
+
 ---
 
 ### OnCharAttribUpdated
@@ -9553,6 +9855,7 @@ hook.Add("OnCharAttribUpdated", "PrintAttribChange", function(client, char, key,
     end
 end)
 ```
+
 ---
 
 ### CanPlayerModifyConfig
@@ -9583,6 +9886,7 @@ hook.Add("CanPlayerModifyConfig", "RestrictConfig", function(ply, k)
     return ply:IsSuperAdmin()
 end)
 ```
+
 ---
 
 ### ConfigChanged
@@ -9616,6 +9920,7 @@ hook.Add("ConfigChanged", "LogConfig", function(k, v, old, ply)
     print(ply:Name(), "changed", k, "from", tostring(old), "to", tostring(v))
 end)
 ```
+
 ---
 
 ### CharDeleted
@@ -9646,6 +9951,7 @@ hook.Add("CharDeleted", "LogDeletion", function(ply, char)
     print(ply:Name(), "deleted character", char:getName())
 end)
 ```
+
 ---
 
 ### CheckFactionLimitReached
@@ -9680,6 +9986,7 @@ hook.Add("CheckFactionLimitReached", "IgnoreAdmins", function(faction, char, ply
     end
 end)
 ```
+
 ---
 
 ### F1OnAddSection
@@ -9714,6 +10021,7 @@ hook.Add("F1OnAddSection", "PrintSection", function(name)
     print("Added section", name)
 end)
 ```
+
 ---
 
 ### GetWeaponName
@@ -9742,6 +10050,7 @@ hook.Add("GetWeaponName", "UppercaseName", function(wep)
     return wep:GetClass():upper()
 end)
 ```
+
 ---
 
 ### OnCharGetup
@@ -9772,6 +10081,7 @@ hook.Add("OnCharGetup", "NotifyGetup", function(ply)
     ply:ChatPrint("You stood up")
 end)
 ```
+
 ---
 
 ### OnLocalizationLoaded
@@ -9800,6 +10110,7 @@ hook.Add("OnLocalizationLoaded", "PrintLang", function()
     print("Localization ready")
 end)
 ```
+
 ---
 
 ### OnPlayerObserve
@@ -9830,6 +10141,7 @@ hook.Add("OnPlayerObserve", "AnnounceObserve", function(ply, s)
     print(ply, s and "entered" or "left", "observe mode")
 end)
 ```
+
 ---
 
 ### PlayerLoadedChar
@@ -9862,6 +10174,7 @@ hook.Add("PlayerLoadedChar", "WelcomeBack", function(ply, char)
     ply:ChatPrint(string.format("Welcome, %s", char:getName()))
 end)
 ```
+
 ---
 
 ### PrePlayerLoadedChar
@@ -9894,6 +10207,7 @@ hook.Add("PrePlayerLoadedChar", "SaveStuff", function(ply, new, old)
     print("Switching characters")
 end)
 ```
+
 ---
 
 ### PostPlayerLoadedChar
@@ -9926,6 +10240,7 @@ hook.Add("PostPlayerLoadedChar", "GiveItems", function(ply, char)
     -- Give starter items here
 end)
 ```
+
 ---
 
 ### PlayerSay
@@ -9956,6 +10271,7 @@ hook.Add("PlayerSay", "LogChat", function(ply, msg)
     print(ply:Name() .. ": " .. msg)
 end)
 ```
+
 ---
 
 ### PopulateAdminStick
@@ -9988,6 +10304,7 @@ hook.Add("PopulateAdminStick", "AddCustomOption", function(menu, ent)
     end)
 end)
 ```
+
 ---
 
 ### TicketSystemClaim
@@ -10018,6 +10335,7 @@ hook.Add("TicketSystemClaim", "NotifyClaim", function(staff, ply)
     staff:ChatPrint(string.format("Claimed ticket from %s", ply:Name()))
 end)
 ```
+
 ---
 
 ### TicketSystemClose
@@ -10048,6 +10366,7 @@ hook.Add("TicketSystemClose", "AlertRequester", function(admin, requester)
     requester:ChatPrint(admin:Nick() .. " closed your help ticket.")
 end)
 ```
+
 ---
 
 ### liaOptionReceived
@@ -10080,6 +10399,7 @@ hook.Add("liaOptionReceived", "PrintOptionChange", function(_, k, v)
     print("Option", k, "set to", v)
 end)
 ```
+
 ---
 
 ### WarningIssued
@@ -10113,6 +10433,7 @@ hook.Add("WarningIssued", "NotifyWarning", function(admin, ply, reason)
     ply:ChatPrint(admin:Name() .. " warned you: " .. reason)
 end)
 ```
+
 ---
 
 ### WarningRemoved
@@ -10146,6 +10467,7 @@ hook.Add("WarningRemoved", "LogRemoval", function(admin, ply, warn, index)
     print(admin:Name() .. " removed warning #" .. index .. " from " .. ply:Name())
 end)
 ```
+
 ---
 
 ### PlayerGagged
@@ -10175,6 +10497,7 @@ hook.Add("PlayerGagged", "Announce", function(ply, admin)
     print(admin:Name(), "gagged", ply:Name())
 end)
 ```
+
 ---
 
 ### PlayerUngagged
@@ -10204,6 +10527,7 @@ hook.Add("PlayerUngagged", "Announce", function(ply, admin)
     print(admin:Name(), "ungagged", ply:Name())
 end)
 ```
+
 ---
 
 ### PlayerMuted
@@ -10233,6 +10557,7 @@ hook.Add("PlayerMuted", "LogMute", function(ply, admin)
     print(admin:Name(), "muted", ply:Name())
 end)
 ```
+
 ---
 
 ### PlayerUnmuted
@@ -10262,6 +10587,7 @@ hook.Add("PlayerUnmuted", "LogMuteLifted", function(ply, admin)
     print(admin:Name(), "unmuted", ply:Name())
 end)
 ```
+
 ---
 
 ### WebImageDownloaded
@@ -10291,6 +10617,7 @@ hook.Add("WebImageDownloaded", "LogImage", function(name, path)
     print("Image downloaded:", name, path)
 end)
 ```
+
 ---
 
 ### WebSoundDownloaded
@@ -10320,6 +10647,7 @@ hook.Add("WebSoundDownloaded", "LogSound", function(name, path)
     print("Sound downloaded:", name, path)
 end)
 ```
+
 ---
 
 ### PlayerCheatDetected

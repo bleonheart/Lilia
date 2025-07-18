@@ -35,6 +35,7 @@ Depends on the file realm.
 ```lua
 lia.include("lilia/gamemode/core/libraries/util.lua")
 ```
+
 ---
 
 ### lia.includeDir
@@ -66,6 +67,7 @@ Depends on included files.
 ```lua
 lia.includeDir("lilia/gamemode/core/modules/admin", true, true, "server")
 ```
+
 ---
 
 ### lia.includeGroupedDir
@@ -97,6 +99,7 @@ Recursively includes Lua files while preserving alphabetical order.
 ```lua
 lia.includeGroupedDir("core/modules", false, true)
 ```
+
 ---
 
 ### lia.error
@@ -122,6 +125,7 @@ Prints a coloured error message prefixed with “$Lilia$”.
 ```lua
 lia.error("Something went wrong")
 ```
+
 ---
 
 ### lia.deprecated
@@ -151,6 +155,7 @@ lia.deprecated("OldFunction", function()
     print("Called fallback")
 end)
 ```
+
 ---
 
 ### lia.updater
@@ -176,6 +181,7 @@ Prints an updater message in cyan with the Lilia prefix.
 ```lua
 lia.updater("Loading additional content…")
 ```
+
 ---
 
 ### lia.information
@@ -201,6 +207,7 @@ Prints an informational message with the Lilia prefix.
 ```lua
 lia.information("Server started successfully")
 ```
+
 ---
 
 ### lia.bootstrap
@@ -228,6 +235,7 @@ Logs a bootstrap message with a coloured section tag.
 ```lua
 lia.bootstrap("Database", "Connection established")
 ```
+
 ---
 
 ### lia.notifyAdmin
@@ -253,6 +261,7 @@ Broadcasts a chat message to all staff members permitted to view alt-account not
 ```lua
 lia.notifyAdmin("Possible alt account detected")
 ```
+
 ---
 
 ### lia.printLog
@@ -280,6 +289,7 @@ Prints a colour-coded log entry to the console.
 ```lua
 lia.printLog("Gameplay", "Third round started")
 ```
+
 ---
 
 ### lia.applyPunishment
@@ -317,6 +327,7 @@ Applies standardised kick/ban commands for a player infraction.
 ```lua
 lia.applyPunishment(ply, "Cheating", true, true, 0)
 ```
+
 ---
 
 ### lia.includeEntities
@@ -342,5 +353,5 @@ Recursively loads entity-related files from a directory.
 ```lua
 lia.includeEntities("lilia/entities")
 ```
----
 
+---

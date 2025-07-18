@@ -36,6 +36,7 @@ Registers a new inventory type.
 -- Register a simple “bag” type
 lia.inventory.newType("bag", { className = "liaBag" })
 ```
+
 ---
 
 ### lia.inventory.new
@@ -61,6 +62,7 @@ Instantiates a new inventory instance.
 ```lua
 local inv = lia.inventory.new("bag")
 ```
+
 ---
 
 ### lia.inventory.loadByID
@@ -94,6 +96,7 @@ lia.inventory.loadByID(1):next(function(inv)
     end
 end)
 ```
+
 ---
 
 ### lia.inventory.loadFromDefaultStorage
@@ -127,6 +130,7 @@ lia.inventory.loadFromDefaultStorage(1):next(function(inv)
     end
 end)
 ```
+
 ---
 
 ### lia.inventory.instance
@@ -156,6 +160,7 @@ lia.inventory.instance("bag", { char = 1 }):next(function(inventory)
     print("New inventory", inventory:getID())
 end)
 ```
+
 ---
 
 ### lia.inventory.loadAllFromCharID
@@ -185,6 +190,7 @@ lia.inventory.loadAllFromCharID(charID):next(function(inventories)
     PrintTable(inventories)
 end)
 ```
+
 ---
 
 ### lia.inventory.deleteByID
@@ -210,6 +216,7 @@ Deletes an inventory from memory and persistent storage.
 ```lua
 lia.inventory.deleteByID(1)
 ```
+
 ---
 
 ### lia.inventory.cleanUpForCharacter
@@ -235,6 +242,7 @@ Destroys every inventory associated with a character.
 ```lua
 lia.inventory.cleanUpForCharacter(client:getChar())
 ```
+
 ---
 
 ### lia.inventory.show
@@ -266,5 +274,5 @@ if inv then
     local panel = lia.inventory.show(inv)
 end
 ```
----
 
+---

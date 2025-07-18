@@ -44,6 +44,7 @@ function CLASS:OnCanBe(client)
     return false
 end
 ```
+
 ---
 
 ### OnLeave
@@ -82,6 +83,7 @@ function CLASS:OnLeave(client)
     client:SetRunSpeed(lia.config.get("RunSpeed"))
 end
 ```
+
 ---
 
 ### OnSet
@@ -124,6 +126,7 @@ function CLASS:OnSet(client)
     end
 end
 ```
+
 ---
 
 ### OnSpawn
@@ -165,6 +168,7 @@ function CLASS:OnSpawn(client)
     end
 end
 ```
+
 ---
 
 ### OnTransferred
@@ -201,5 +205,5 @@ function CLASS:OnTransferred(client, oldClass)
     char:setData("previousClass", oldClass)
 end
 ```
----
 
+---

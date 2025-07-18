@@ -37,6 +37,7 @@ lia.currency.plural = "dollars"
 
 print(lia.currency.get(10))
 ```
+
 ---
 
 ### lia.currency.spawn
@@ -69,5 +70,5 @@ local ang = Angle(0, client:EyeAngles().y, 0)
 
 local money = lia.currency.spawn(pos, 100, ang)
 ```
----
 
+---

@@ -53,6 +53,7 @@ lia.keybind.add(
     end
 )
 ```
+
 ---
 
 ### lia.keybind.get
@@ -81,6 +82,7 @@ Returns the key code assigned to a keybind action, falling back to the registere
 local invKey = lia.keybind.get("Open Inventory", KEY_I)
 print("Inventory key:", input.GetKeyName(invKey))
 ```
+
 ---
 
 ### lia.keybind.save
@@ -107,6 +109,7 @@ Writes all current keybinds to `data/lilia/keybinds/<gamemode>/<server-ip>.json`
 -- Manually save current keybinds
 lia.keybind.save()
 ```
+
 ---
 
 ### lia.keybind.load
@@ -137,5 +140,5 @@ end)
 -- Reload keybinds
 lia.keybind.load()
 ```
----
 
+---

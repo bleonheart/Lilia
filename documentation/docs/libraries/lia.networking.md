@@ -46,6 +46,7 @@ setNetVar("last_winner", champion, champion)
 
 hook.Run("RoundStarted", nextRound)
 ```
+
 ---
 
 ### getNetVar
@@ -82,5 +83,5 @@ hook.Add("PlayerInitialSpawn", "ShowRound", function(ply)
     end
 end)
 ```
----
 
+---

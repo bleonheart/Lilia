@@ -91,6 +91,7 @@ Sound played when moving items to/from the bag; specified as `{path, volume}`.
 ```lua
 ITEM.BagSound = {"physics/cardboard/cardboard_box_impact_soft2.wav", 50}
 ```
+
 ---
 
 #### `equipSound`
@@ -108,6 +109,7 @@ Sound played when equipping the item.
 ```lua
 ITEM.equipSound = "items/ammo_pickup.wav"
 ```
+
 ---
 
 #### `unequipSound`
@@ -125,6 +127,7 @@ Sound played when unequipping the item.
 ```lua
 ITEM.unequipSound = "items/ammo_pickup.wav"
 ```
+
 ---
 
 #### `useSound`
@@ -142,6 +145,7 @@ Sound played when using the item.
 ```lua
 ITEM.useSound = "items/ammo_pickup.wav"
 ```
+
 ---
 
 ### Restrictions & Whitelists
@@ -161,6 +165,7 @@ Deletes the item upon player death.
 ```lua
 ITEM.DropOnDeath = true
 ```
+
 ---
 
 #### `noDrop`
@@ -178,6 +183,7 @@ Prevents the item from being dropped or given to another player.
 ```lua
 ITEM.noDrop = true
 ```
+
 ---
 
 #### `FactionWhitelist`
@@ -195,6 +201,7 @@ Allowed faction indices for vendor interaction.
 ```lua
 ITEM.FactionWhitelist = {FACTION_CITIZEN}
 ```
+
 ---
 
 #### `RequiredSkillLevels`
@@ -212,6 +219,7 @@ Skill requirements needed to use the item.
 ```lua
 ITEM.RequiredSkillLevels = {Strength = 5}
 ```
+
 ---
 
 #### `SteamIDWhitelist`
@@ -229,6 +237,7 @@ Allowed Steam IDs for vendor interaction.
 ```lua
 ITEM.SteamIDWhitelist = {"STEAM_0:1:123"}
 ```
+
 ---
 
 #### `UsergroupWhitelist`
@@ -246,6 +255,7 @@ Allowed user groups for vendor interaction.
 ```lua
 ITEM.UsergroupWhitelist = {"admin"}
 ```
+
 ---
 
 #### `VIPWhitelist`
@@ -263,6 +273,7 @@ Restricts usage to VIP players.
 ```lua
 ITEM.VIPWhitelist = true
 ```
+
 ---
 
 ### Inventory & Stacking
@@ -282,6 +293,7 @@ Marks the item as a bag providing extra inventory.
 ```lua
 ITEM.isBag = true
 ```
+
 ---
 
 #### `invWidth`
@@ -299,6 +311,7 @@ Internal bag inventory width.
 ```lua
 ITEM.invWidth = 2
 ```
+
 ---
 
 #### `invHeight`
@@ -316,6 +329,7 @@ Internal bag inventory height.
 ```lua
 ITEM.invHeight = 2
 ```
+
 ---
 
 #### `width`
@@ -333,6 +347,7 @@ Width in the external inventory grid.
 ```lua
 ITEM.width = 2
 ```
+
 ---
 
 #### `height`
@@ -350,6 +365,7 @@ Height in the external inventory grid.
 ```lua
 ITEM.height = 1
 ```
+
 ---
 
 #### `canSplit`
@@ -367,6 +383,7 @@ Whether the item stack can be divided.
 ```lua
 ITEM.canSplit = true
 ```
+
 ---
 
 #### `isStackable`
@@ -384,6 +401,7 @@ Allows stacking multiple quantities.
 ```lua
 ITEM.isStackable = false
 ```
+
 ---
 
 #### `maxQuantity`
@@ -401,6 +419,7 @@ Maximum stack size.
 ```lua
 ITEM.maxQuantity = 10
 ```
+
 ---
 
 #### `quantity`
@@ -418,6 +437,7 @@ Current amount in the item stack.
 ```lua
 print(item:getQuantity())
 ```
+
 ---
 
 ### Categorization & Metadata
@@ -437,6 +457,7 @@ Base item this item derives from.
 ```lua
 ITEM.base = "base_weapons"
 ```
+
 When loading items from a folder such as `items/weapons/`, the framework
 
 automatically sets `ITEM.base` to match that folder (e.g. `base_weapons`).
@@ -462,6 +483,7 @@ Indicates the table is a base item.
 ```lua
 ITEM.isBase = true
 ```
+
 ---
 
 #### `category`
@@ -479,6 +501,7 @@ Inventory grouping category.
 ```lua
 ITEM.category = "Storage"
 ```
+
 ---
 
 #### `name`
@@ -496,6 +519,7 @@ Displayed name of the item.
 ```lua
 ITEM.name = "Example Item"
 ```
+
 ---
 
 #### `desc`
@@ -513,6 +537,7 @@ Short description shown to players.
 ```lua
 ITEM.desc = "An example item"
 ```
+
 ---
 
 #### `uniqueID`
@@ -532,6 +557,7 @@ from the file path, but you may override it to provide a custom ID.
 ```lua
 ITEM.uniqueID = "custom_unique_id"
 ```
+
 ---
 
 #### `id`
@@ -553,6 +579,7 @@ manually set.
 ```lua
 print(item.id)
 ```
+
 ---
 
 ### Equipment & Stats
@@ -572,6 +599,7 @@ Armor value granted when equipped.
 ```lua
 ITEM.armor = 50
 ```
+
 ---
 
 #### `health`
@@ -589,6 +617,7 @@ Amount of health restored when used.
 ```lua
 ITEM.health = 50
 ```
+
 ---
 
 #### `attribBoosts`
@@ -606,6 +635,7 @@ Attribute boosts applied on equip.
 ```lua
 ITEM.attribBoosts = {strength = 5}
 ```
+
 ---
 
 #### `isOutfit`
@@ -623,6 +653,7 @@ Marks the item as an outfit.
 ```lua
 ITEM.isOutfit = true
 ```
+
 ---
 
 #### `newSkin`
@@ -640,6 +671,7 @@ Skin index applied to the player model.
 ```lua
 ITEM.newSkin = 1
 ```
+
 ---
 
 #### `outfitCategory`
@@ -657,6 +689,7 @@ Slot or category for the outfit.
 ```lua
 ITEM.outfitCategory = "body"
 ```
+
 ---
 
 #### `pacData`
@@ -698,6 +731,7 @@ ITEM.pacData = {
 	},
 }
 ```
+
 #### `bodyGroups`
 
 **Type:**
@@ -713,6 +747,7 @@ Bodygroup values applied when the outfit is equipped.
 ```lua
 ITEM.bodyGroups = { head = 1, torso = 2 }
 ```
+
 ---
 
 #### `replacements`
@@ -755,6 +790,7 @@ Weapon entity class. Also used by grenade items to determine the weapon entity s
 **Example Usage:**
 
 ```lua
+
 ITEM.class = "weapon_pistol"
 
 ```
@@ -774,6 +810,7 @@ Marks the item as a weapon.
 **Example Usage:**
 
 ```lua
+
 ITEM.isWeapon = true
 
 ```
@@ -794,6 +831,7 @@ Ammo type provided.
 **Example Usage:**
 
 ```lua
+
 ITEM.ammo = "pistol"
 
 ```
@@ -813,6 +851,7 @@ Amount of ammo contained.
 **Example Usage:**
 
 ```lua
+
 ITEM.ammoAmount = 30
 
 ```
@@ -832,6 +871,7 @@ Slot category for the weapon.
 **Example Usage:**
 
 ```lua
+
 ITEM.weaponCategory = "sidearm"
 
 ```
@@ -853,6 +893,7 @@ ITEM.weaponCategory = "sidearm"
 **Example Usage:**
 
 ```lua
+
 ITEM.model = "models/props_c17/oildrum001.mdl"
 
 ```
@@ -870,6 +911,7 @@ Custom camera parameters used when rendering the item's spawn icon. Contains `po
 **Example Usage:**
 
 ```lua
+
 ITEM.iconCam = {
 
     pos = Vector(0, 0, 32),
@@ -895,6 +937,7 @@ When `true`, forces the spawn icon to regenerate even if an icon for the model a
 **Example Usage:**
 
 ```lua
+
 ITEM.forceRender = true
 
 ```
@@ -916,6 +959,7 @@ Entity class spawned by the item.
 **Example Usage:**
 
 ```lua
+
 ITEM.entityid = "item_suit"
 
 ```
@@ -935,6 +979,7 @@ HTML contents of a readable book.
 **Example Usage:**
 
 ```lua
+
 ITEM.contents = "<h1>Book</h1>"
 
 ```
@@ -956,6 +1001,7 @@ Item cost for trading or selling.
 **Example Usage:**
 
 ```lua
+
 ITEM.price = 100
 
 ```
@@ -975,6 +1021,7 @@ Flag required to purchase the item.
 **Example Usage:**
 
 ```lua
+
 ITEM.flag = "Y"
 
 ```
@@ -994,6 +1041,7 @@ Rarity level affecting vendor color.
 **Example Usage:**
 
 ```lua
+
 ITEM.rarity = "Legendary"
 
 ```
@@ -1013,6 +1061,7 @@ Web address opened when using the item.
 **Example Usage:**
 
 ```lua
+
 ITEM.url = "https://example.com"
 
 ```
@@ -1039,6 +1088,7 @@ keys instead of raw strings.
 **Example Usage:**
 
 ```lua
+
 ITEM.functions = {}
 
 ```
@@ -1055,6 +1105,7 @@ Callbacks triggered on specific item events. Use `ITEM:hook("event", func)` to a
 **Example Usage:**
 
 ```lua
+
 ITEM:hook("drop", function(itm)
 
     print(itm.name .. " was dropped")
@@ -1079,6 +1130,7 @@ Table of post-hook callbacks.
 **Example Usage:**
 
 ```lua
+
 -- Defined in base_weapons
 
 function ITEM.postHooks:drop(result)
@@ -1098,6 +1150,7 @@ end
 Additional post hooks can be registered dynamically using `ITEM:postHook`:
 
 ```lua
+
 ITEM:postHook("drop", function(itm, res)
 
     print("Post drop result: " .. tostring(res))
@@ -1115,6 +1168,7 @@ Minimal definitions for each built-in item type are shown below.
 ### [Weapon](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/weapons/smg1.txt)
 
 ```lua
+
 ITEM.name = "Sub Machine Gun"
 
 ITEM.model = "models/weapons/w_smg1.mdl"
@@ -1130,6 +1184,7 @@ ITEM.isWeapon = true
 ### [Ammo](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/ammo/pistolammo.txt)
 
 ```lua
+
 ITEM.name = "Pistol Ammo"
 
 ITEM.model = "models/items/357ammo.mdl"
@@ -1143,6 +1198,7 @@ ITEM.ammoAmount = 30
 ### [Outfit](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/outfit/rebel_armor.txt)
 
 ```lua
+
 ITEM.name = "Combine Armor"
 
 ITEM.model = "models/props_c17/BriefCase001a.mdl"
@@ -1158,6 +1214,7 @@ ITEM.newSkin = 1
 ### [PAC Outfit](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/pacoutfit/skullmask.txt)
 
 ```lua
+
 ITEM.name = "Skull Mask"
 
 ITEM.outfitCategory = "hat"
@@ -1169,6 +1226,7 @@ ITEM.pacData = { ... }
 ### [Aid Item](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/aid/bandages.txt)
 
 ```lua
+
 ITEM.name = "Bandages"
 
 ITEM.model = "models/weapons/w_package.mdl"
@@ -1180,6 +1238,7 @@ ITEM.health = 50
 ### [Book](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/books/book.txt)
 
 ```lua
+
 ITEM.name = "Example"
 
 ITEM.contents = "<h1>An Example</h1>"
@@ -1189,6 +1248,7 @@ ITEM.contents = "<h1>An Example</h1>"
 ### [URL Item](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/url/hi_barbie.txt)
 
 ```lua
+
 ITEM.name = "Hi Barbie"
 
 ITEM.url = "https://www.youtube.com/watch?v=9ezbBugUQiQ"
@@ -1198,6 +1258,7 @@ ITEM.url = "https://www.youtube.com/watch?v=9ezbBugUQiQ"
 ### [Entity Spawner](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/entities/item_suit.txt)
 
 ```lua
+
 ITEM.name = "Item Suit"
 
 ITEM.entityid = "item_suit"
@@ -1207,6 +1268,7 @@ ITEM.entityid = "item_suit"
 ### [Grenade](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/items/grenade/weapon_frag.txt)
 
 ```lua
+
 ITEM.name = "Grenade"
 
 ITEM.class = "weapon_frag"
@@ -1218,6 +1280,7 @@ ITEM.DropOnDeath = true
 ### [Bag](https://github.com/LiliaFramework/Lilia/tree/main/gamemode/modules/inventory/items/bags/small.txt)
 
 ```lua
+
 ITEM.name = "Small Bag"
 
 ITEM.isBag = true

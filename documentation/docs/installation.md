@@ -103,6 +103,7 @@ If you haven't already, set up your Garry's Mod server and ensure it is running 
     garrysmod/gamemodes/lilia
 
     ```
+
 ---
 
 ## Step 5: Installing a Roleplay Schema
@@ -140,6 +141,7 @@ Extract the schema files locally, then upload the extracted folder to your serve
 ```plaintext
 garrysmod/gamemodes/<SchemaName>
 ```
+
 ---
 
 ### 4. Configure the Schema
@@ -153,6 +155,7 @@ Items:     garrysmod/gamemodes/<SchemaName>/schema/items/
 Modules:   garrysmod/gamemodes/<SchemaName>/modules/
 Preload:   garrysmod/gamemodes/<SchemaName>/preload/
 ```
+
 ---
 
 ## Step 6: Launching the Server with Your Schema
@@ -166,6 +169,7 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     +gamemode <SchemaName>
 
     ```
+
     Example usage:
 
     ```plaintext
@@ -173,6 +177,7 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     +gamemode scprp
 
     ```
+
 2. **Start the Server**
 
     Launch or restart your Garry's Mod server. Lilia will load as the framework beneath the schema.
@@ -186,5 +191,5 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     [Lilia] [Bootstrap] Loaded successfully after X seconds.
 
     ```
-    If no errors appear and the schema loads, you're ready to play.
 
+    If no errors appear and the schema loads, you're ready to play.

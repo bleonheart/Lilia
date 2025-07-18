@@ -36,6 +36,7 @@ Loads all Lua files within the supplied directory. Each file should define a `CL
 -- Load all classes for the schema
 lia.class.loadFromDir("schema/classes")
 ```
+
 ---
 
 ### lia.class.canBe
@@ -66,6 +67,7 @@ if not canJoin then
     print(reason)
 end
 ```
+
 ---
 
 ### lia.class.get
@@ -92,6 +94,7 @@ Retrieves the class table associated with the given numeric index.
 -- Retrieve the class table for the engineer class
 local classData = lia.class.get(CLASS_ENGINEER)
 ```
+
 ---
 
 ### lia.class.getPlayers
@@ -119,6 +122,7 @@ for _, ply in ipairs(lia.class.getPlayers(classID)) do
     print(ply:Nick())
 end
 ```
+
 ---
 
 ### lia.class.getPlayerCount
@@ -145,6 +149,7 @@ Counts the number of players currently in the specified class.
 local count = lia.class.getPlayerCount(classID)
 print("Players in class:", count)
 ```
+
 ---
 
 ### lia.class.retrieveClass
@@ -171,6 +176,7 @@ Finds a class whose `uniqueID` or `name` matches the given text (case-insensitiv
 local id = lia.class.retrieveClass("police")
 print("Class index:", id)
 ```
+
 ---
 
 ### lia.class.hasWhitelist
@@ -199,5 +205,5 @@ if lia.class.hasWhitelist(classID) then
     print("Whitelist required")
 end
 ```
----
 
+---

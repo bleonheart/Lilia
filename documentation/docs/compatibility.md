@@ -231,4 +231,3 @@ Forwards vehicle purchase and upgrade transactions to the roleplay money system,
 Intercepts exploitable VJBase network messages and disables resource-intensive hooks to maintain server security and performance.
 
 ---
-

@@ -250,6 +250,7 @@ if IsValid(liaItemMenuInstance) then liaItemMenuInstance:Remove() end
 liaItemMenuInstance = vgui.Create("liaItemMenu")
 liaItemMenuInstance:SetEntity(entity)
 ```
+
 ---
 
 ### `liaAttribBar`
@@ -567,6 +568,7 @@ local btn = vgui.Create("liaHugeButton")
 btn:SetText("Play")
 btn:SetSelected(true) -- keep underline visible
 ```
+
 ---
 
 ### `liaBigButton`
@@ -644,5 +646,5 @@ Quick settings menu that lists options flagged with `isQuick`.
 ```lua
 vgui.Create("liaQuick")
 ```
----
 
+---

@@ -44,6 +44,7 @@ lia.flag.add("p", "Access to the physgun", function(client, isGiven)
     end
 end)
 ```
+
 ---
 
 ### lia.flag.onSpawn
@@ -72,6 +73,7 @@ hook.Add("PlayerSpawn", "ApplyFlagCallbacks", function(ply)
     lia.flag.onSpawn(ply)
 end)
 ```
+
 ---
 
 ### Default flags
@@ -93,4 +95,3 @@ The base gamemode registers the following permission flags. Additional flags can
 | `P`  | Use PAC3 features              |
 
 ---
-

@@ -42,6 +42,7 @@ Returns a stored data value for this inventory.
 -- Read how many times the container was opened
 local opens = inv:getData("openCount", 0)
 ```
+
 ---
 
 ### extend
@@ -78,6 +79,7 @@ end
 
 WeaponInv:register("weapon_inv")
 ```
+
 ---
 
 ### configure
@@ -110,6 +112,7 @@ function WeaponInv:configure()
     end)
 end
 ```
+
 ---
 
 ### addDataProxy
@@ -141,6 +144,7 @@ inv:addDataProxy("locked", function(old, new)
     hook.Run("ChestLocked", inv, new)
 end)
 ```
+
 ---
 
 ### getItemsByUniqueID
@@ -171,6 +175,7 @@ for _, box in ipairs(inv:getItemsByUniqueID("ammo_box", true)) do
     box:use()
 end
 ```
+
 ---
 
 ### register
@@ -198,6 +203,7 @@ Registers this inventory type with the `lia.inventory` system.
 WeaponInv:register("weapon_inv")
 local chestInv = WeaponInv:new()
 ```
+
 ---
 
 ### new
@@ -228,6 +234,7 @@ chest:Spawn()
 
 chest.inv = WeaponInv:new()
 ```
+
 ---
 
 ### tostring
@@ -254,6 +261,7 @@ Returns a printable representation of this inventory.
 -- Print the identifier when debugging
 print("Inventory: " .. inv:tostring())
 ```
+
 ---
 
 ### getType
@@ -280,6 +288,7 @@ Retrieves the inventory type table from `lia.inventory`.
 -- Read slot data from the type definition
 local def = inv:getType()
 ```
+
 ---
 
 ### onDataChanged
@@ -311,6 +320,7 @@ function WeaponInv:onDataChanged(key, old, new)
     print(key .. " changed from", old, "to", new)
 end
 ```
+
 ---
 
 ### getItems
@@ -343,6 +353,7 @@ end
 
 print("Weight:", totalWeight)
 ```
+
 ---
 
 ### getItemsOfType
@@ -369,6 +380,7 @@ Collects all items that match the given unique ID.
 -- List all medkits currently in the inventory
 local kits = inv:getItemsOfType("medkit")
 ```
+
 ---
 
 ### getFirstItemOfType
@@ -395,6 +407,7 @@ Retrieves the first item matching the given unique ID.
 -- Grab the first pistol found in the inventory
 local pistol = inv:getFirstItemOfType("pistol")
 ```
+
 ---
 
 ### hasItem
@@ -423,6 +436,7 @@ if inv:hasItem("health_potion") then
     print("You have a potion ready!")
 end
 ```
+
 ---
 
 ### getItemCount
@@ -450,6 +464,7 @@ Counts the total quantity of a specific item type.
 local ammoTotal = inv:getItemCount("bullet")
 print("Ammo remaining:", ammoTotal)
 ```
+
 ---
 
 ### getID
@@ -476,6 +491,7 @@ Returns the unique database ID of this inventory.
 -- Store the inventory ID on its container entity
 entity:setNetVar("invID", inv:getID())
 ```
+
 ---
 
 ### eq
@@ -504,6 +520,7 @@ if inv:eq(other) then
     print("Duplicate inventory")
 end
 ```
+
 ---
 
 ### addItem
@@ -534,6 +551,7 @@ if not inv:hasItem(item.uniqueID) then
     inv:addItem(item, false)
 end
 ```
+
 ---
 
 ### add
@@ -559,6 +577,7 @@ Alias for `addItem` that inserts an item into the inventory.
 ```lua
 inv:add(item)
 ```
+
 ---
 
 ### syncItemAdded
@@ -584,6 +603,7 @@ Replicates a newly added item to all clients that can access the inventory.
 ```lua
 inv:syncItemAdded(item)
 ```
+
 ---
 
 ### initializeStorage
@@ -611,6 +631,7 @@ WeaponInv:initializeStorage({char = charID, locked = true}):next(function(id)
     print("Created inventory", id)
 end)
 ```
+
 ---
 
 ### restoreFromStorage
@@ -636,6 +657,7 @@ Stub called when loading an inventory from custom storage systems.
 ```lua
 inv:restoreFromStorage()
 ```
+
 ---
 
 ### removeItem
@@ -666,6 +688,7 @@ inv:removeItem(itemID, true):next(function()
     print("Item stored for later")
 end)
 ```
+
 ---
 
 ### remove
@@ -693,6 +716,7 @@ inv:remove(itemID):next(function()
     print("Removed from the container")
 end)
 ```
+
 ---
 
 ### setData
@@ -720,6 +744,7 @@ Sets a data field on the inventory and replicates the change to clients.
 ```lua
 inv:setData("locked", true)
 ```
+
 ---
 
 ### canAccess
@@ -749,6 +774,7 @@ Evaluates access rules to determine whether an action is permitted.
 ```lua
 local allowed = inv:canAccess("take", {client = ply})
 ```
+
 ---
 
 ### addAccessRule
@@ -778,6 +804,7 @@ inv:addAccessRule(function(inv, action, ctx)
     return ctx.client:IsAdmin()
 end)
 ```
+
 ---
 
 ### removeAccessRule
@@ -803,6 +830,7 @@ Unregisters a previously added access rule.
 ```lua
 inv:removeAccessRule(myRule)
 ```
+
 ---
 
 ### getRecipients
@@ -828,6 +856,7 @@ Returns a list of players that should receive network updates for this inventory
 ```lua
 local receivers = inv:getRecipients()
 ```
+
 ---
 
 ### onInstanced
@@ -855,6 +884,7 @@ function WeaponInv:onInstanced()
     print("Created inventory", self:getID())
 end
 ```
+
 ---
 
 ### onLoaded
@@ -882,6 +912,7 @@ function WeaponInv:onLoaded()
     print("Loaded inventory", self:getID())
 end
 ```
+
 ---
 
 ### loadItems
@@ -909,6 +940,7 @@ inv:loadItems():next(function(items)
     print("Loaded", table.Count(items), "items")
 end)
 ```
+
 ---
 
 ### onItemsLoaded
@@ -936,6 +968,7 @@ function WeaponInv:onItemsLoaded(items)
     print("Ready with", #items, "items")
 end
 ```
+
 ---
 
 ### instance
@@ -963,6 +996,7 @@ WeaponInv:instance({char = charID}):next(function(inv)
     -- use inventory
 end)
 ```
+
 ---
 
 ### syncData
@@ -991,6 +1025,7 @@ Sends a single data field to clients.
 -- Sync the locked state to nearby players
 inv:syncData("locked", recipients)
 ```
+
 ---
 
 ### sync
@@ -1017,6 +1052,7 @@ Sends the entire inventory and its items to players.
 -- Send all items to the owner after they join
 inv:sync({owner})
 ```
+
 ---
 
 ### delete
@@ -1044,6 +1080,7 @@ Removes this inventory record from the database.
 inv:delete()
 print("Inventory removed from database")
 ```
+
 ---
 
 ### destroy
@@ -1071,6 +1108,7 @@ Destroys all items and removes network references.
 inv:destroy()
 print("Inventory destroyed")
 ```
+
 ---
 
 ### show
@@ -1100,5 +1138,5 @@ inv:show()
 -- Or attach to an existing panel
 local ui = inv:show(parentPanel)
 ```
----
 
+---

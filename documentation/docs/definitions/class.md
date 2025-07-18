@@ -69,6 +69,7 @@ The displayed name of the class.
 ```lua
 CLASS.name = "Engineer"
 ```
+
 ---
 
 #### `desc`
@@ -86,6 +87,7 @@ The description or lore of the class.
 ```lua
 CLASS.desc = "Technicians who maintain equipment."
 ```
+
 ---
 
 #### `uniqueID`
@@ -103,6 +105,7 @@ Internal identifier used when referencing the class. If omitted, it defaults to 
 ```lua
 CLASS.uniqueID = "engineer"
 ```
+
 ---
 
 #### `index`
@@ -120,6 +123,7 @@ Unique numeric identifier (team index) for the class.
 ```lua
 CLASS.index = CLASS_ENGINEER
 ```
+
 ---
 
 ### Affiliation & Availability
@@ -139,6 +143,7 @@ Determines if the class is available to all players by default.
 ```lua
 CLASS.isDefault = true
 ```
+
 ---
 
 #### `isWhitelisted`
@@ -156,6 +161,7 @@ Indicates if the class requires a whitelist entry to be accessible.
 ```lua
 CLASS.isWhitelisted = false
 ```
+
 ---
 
 #### `faction`
@@ -173,6 +179,7 @@ Links this class to a specific faction index.
 ```lua
 CLASS.faction = FACTION_CITIZEN
 ```
+
 ---
 
 #### `color`
@@ -190,6 +197,7 @@ UI color representing the class. Defaults to `Color(255, 255, 255)` if not speci
 ```lua
 CLASS.color = Color(255, 0, 0)
 ```
+
 ---
 
 ### Equipment & Economy
@@ -209,6 +217,7 @@ Weapons granted to members of this class on spawn.
 ```lua
 CLASS.weapons = {"weapon_pistol", "weapon_crowbar"}
 ```
+
 #### `pay`
 
 **Type:**
@@ -224,6 +233,7 @@ Payment amount issued per pay interval.
 ```lua
 CLASS.pay = 50
 ```
+
 ---
 
 #### `payLimit`
@@ -241,6 +251,7 @@ Maximum accumulated pay a player can hold.
 ```lua
 CLASS.payLimit = 1000
 ```
+
 ---
 
 #### `payTimer`
@@ -262,6 +273,7 @@ the global `SalaryInterval` configuration value (default `3600`).
 ```lua
 CLASS.payTimer = 3600
 ```
+
 ---
 
 #### `limit`
@@ -279,6 +291,7 @@ Maximum number of players allowed in this class simultaneously.
 ```lua
 CLASS.limit = 10
 ```
+
 ---
 
 ### Movement & Stats
@@ -298,6 +311,7 @@ Default starting health for class members.
 ```lua
 CLASS.health = 150
 ```
+
 ---
 
 #### `armor`
@@ -315,6 +329,7 @@ Default starting armor.
 ```lua
 CLASS.armor = 50
 ```
+
 ---
 
 #### `scale`
@@ -332,6 +347,7 @@ Multiplier for player model size.
 ```lua
 CLASS.scale = 1.2
 ```
+
 ---
 
 #### `runSpeed`
@@ -356,6 +372,7 @@ OR
 CLASS.runSpeed = 1.25
 CLASS.runSpeedMultiplier = true
 ```
+
 ---
 
 #### `runSpeedMultiplier`
@@ -373,6 +390,7 @@ Multiply base run speed instead of replacing it.
 ```lua
 CLASS.runSpeedMultiplier = true
 ```
+
 ---
 
 #### `walkSpeed`
@@ -390,6 +408,7 @@ Default walking speed.
 ```lua
 CLASS.walkSpeed = 200
 ```
+
 ---
 
 #### `walkSpeedMultiplier`
@@ -407,6 +426,7 @@ Multiply base walk speed instead of replacing it.
 ```lua
 CLASS.walkSpeedMultiplier = false
 ```
+
 ---
 
 #### `jumpPower`
@@ -424,6 +444,7 @@ Default jump power.
 ```lua
 CLASS.jumpPower = 200
 ```
+
 ---
 
 #### `jumpPowerMultiplier`
@@ -441,6 +462,7 @@ Multiply base jump power instead of replacing it.
 ```lua
 CLASS.jumpPowerMultiplier = true
 ```
+
 ---
 
 #### `bloodcolor`
@@ -458,6 +480,7 @@ Blood color enumeration constant for this class.
 ```lua
 CLASS.bloodcolor = BLOOD_COLOR_RED
 ```
+
 ---
 
 ### Appearance & Identity
@@ -480,6 +503,7 @@ CLASS.bodyGroups = {
     {id = 3, value = 0}  -- index 3 uses its default option
 }
 ```
+
 ---
 
 #### `logo`
@@ -497,6 +521,7 @@ Path to the material used as this class's logo. Displayed in the scoreboard and 
 ```lua
 CLASS.logo = "materials/example/eng_logo.png"
 ```
+
 ---
 
 #### `scoreboardHidden`
@@ -514,6 +539,7 @@ If `true`, this class will not display a header or logo on the scoreboard.
 ```lua
 CLASS.scoreboardHidden = true
 ```
+
 ---
 
 #### `skin`
@@ -531,6 +557,7 @@ Model skin index to apply to members of this class.
 ```lua
 CLASS.skin = 2
 ```
+
 ---
 
 #### `subMaterials`
@@ -551,6 +578,7 @@ CLASS.subMaterials = {
     "models/example/custom_armor" -- sub-material 1
 }
 ```
+
 ---
 
 #### `model`
@@ -568,6 +596,7 @@ Model path (or list of paths) assigned to this class.
 ```lua
 CLASS.model = "models/player/alyx.mdl"
 ```
+
 ---
 
 #### `requirements`
@@ -585,6 +614,7 @@ Text displayed to the player describing what is needed to join this class. This 
 ```lua
 CLASS.requirements = "Flag V and Engineering 25+"
 ```
+
 ---
 
 #### `commands`
@@ -606,6 +636,7 @@ CLASS.commands = {
     plytransfer = true,
 }
 ```
+
 #### `canInviteToFaction`
 
 **Type:**
@@ -621,6 +652,7 @@ Whether members of this class can invite players to join their faction.
 ```lua
 CLASS.canInviteToFaction = true
 ```
+
 ---
 
 #### `canInviteToClass`
@@ -638,6 +670,7 @@ Whether members of this class can invite players to join this class.
 ```lua
 CLASS.canInviteToClass = true
 ```
+
 ---
 
 ## Complete Example
