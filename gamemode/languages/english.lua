@@ -907,6 +907,7 @@ LANGUAGE = {
     webImagesTitle = "Web Images",
     webImageTesterTitle = "WebImage Tester",
     loadImage = "Load Image",
+    webImagesCleared = "Web image cache cleared.",
     webSoundsTitle = "Web Sounds",
     dermaPreviewTitle = "Derma Controls Preview",
     dframe = "DFrame",
