@@ -42,7 +42,6 @@ if bar then
     bar.visible = true
 end
 ```
-
 ---
 
 ### lia.bar.add
@@ -82,7 +81,6 @@ end, Color(200, 50, 40), 1, "health")
 
 print("Health bar priority:", prio)
 ```
-
 ---
 
 ### lia.bar.remove
@@ -109,7 +107,6 @@ Removes a bar from the list based on its unique identifier.
 -- Remove the bar created in the previous example
 lia.bar.remove("health")
 ```
-
 ---
 
 ### lia.bar.drawBar
@@ -148,7 +145,6 @@ Draws a single horizontal bar at the specified screen coordinates, filling it pr
 -- Draw a bar showing 75/100 progress at the top left
 lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(255, 0, 0))
 ```
-
 ---
 
 ### lia.bar.drawAction
@@ -177,7 +173,6 @@ Displays a temporary action progress bar with accompanying text for the specifie
 -- Show a reload progress bar for two seconds
 lia.bar.drawAction("Reloading", 2)
 ```
-
 ---
 
 ### lia.bar.drawAll
@@ -204,5 +199,5 @@ Iterates through all registered bars, applies smoothing to their values, and dra
 -- Draw all registered bars each frame
 hook.Add("HUDPaintBackground", "liaBarDraw", lia.bar.drawAll)
 ```
-
 ---
+

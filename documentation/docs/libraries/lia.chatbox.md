@@ -26,7 +26,6 @@ Table containing all registered chat class definitions indexed by their identifi
 local icClass = lia.chat.classes.ic
 print(icClass.format)
 ```
-
 ---
 
 ### lia.chat.timestamp
@@ -52,7 +51,6 @@ Returns a formatted timestamp if chat timestamps are enabled; otherwise returns 
 ```lua
 chat.AddText(lia.chat.timestamp(false), Color(255, 255, 255), "Hello!")
 ```
-
 ---
 
 ### lia.chat.register
@@ -117,7 +115,6 @@ lia.chat.register("wave", {
     radius = lia.config.get("ChatRange", 280)
 })
 ```
-
 ---
 
 ### lia.chat.parse
@@ -156,7 +153,6 @@ hook.Add("PlayerSay", "ParseChat", function(ply, text)
     return ""
 end)
 ```
-
 ---
 
 ### lia.chat.send

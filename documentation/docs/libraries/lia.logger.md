@@ -37,7 +37,6 @@ hook.Add("DatabaseConnected", "LoadLogs", function()
     lia.log.loadTables()
 end)
 ```
-
 ---
 
 ### lia.log.addType
@@ -75,7 +74,6 @@ lia.log.addType(
 
 lia.log.add(client, "mytype", "a backflip")
 ```
-
 ---
 
 ### lia.log.getString
@@ -106,7 +104,6 @@ Returns the formatted log string (and its category) for a given type without wri
 local text, cat = lia.log.getString(client, "mytype", "test")
 print(cat .. ": " .. text)
 ```
-
 ---
 
 ### lia.log.add
@@ -138,7 +135,6 @@ hook.Add("PlayerDeath", "ExampleDeathLog", function(victim, attacker)
     lia.log.add(victim, "playerDeath", attacker)
 end)
 ```
-
 ---
 
 ### lia.log.convertToDatabase
@@ -166,5 +162,5 @@ if not lia.log.isConverting then
     lia.log.convertToDatabase(false)
 end
 ```
-
 ---
+

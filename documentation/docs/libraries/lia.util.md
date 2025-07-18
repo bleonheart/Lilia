@@ -39,7 +39,6 @@ for _, ply in ipairs(players) do
     ply:Kick("You entered a forbidden area!")
 end
 ```
-
 ---
 
 ### lia.util.FindPlayersInSphere
@@ -70,7 +69,6 @@ for _, ply in ipairs(players) do
     print(ply:Name())
 end
 ```
-
 ---
 
 ### lia.util.findPlayer
@@ -101,7 +99,6 @@ if target then
     admin:ChatPrint("Found: " .. target:Name())
 end
 ```
-
 ---
 
 ### lia.util.findPlayerItems
@@ -130,7 +127,6 @@ for _, item in ipairs(items) do
     print("Found item entity: " .. item:GetClass())
 end
 ```
-
 ---
 
 ### lia.util.findPlayerItemsByClass
@@ -161,7 +157,6 @@ for _, item in ipairs(items) do
     print(item:GetClass())
 end
 ```
-
 ---
 
 ### lia.util.findPlayerEntities
@@ -192,7 +187,6 @@ for _, ent in ipairs(ents) do
     print(ent:GetClass())
 end
 ```
-
 ---
 
 ### lia.util.stringMatches
@@ -222,7 +216,6 @@ if lia.util.stringMatches("Hello", "he") then
     print("Strings match!")
 end
 ```
-
 ---
 
 ### lia.util.getAdmins
@@ -250,7 +243,6 @@ for _, admin in ipairs(lia.util.getAdmins()) do
     admin:ChatPrint("Server restarting in 5 minutes!")
 end
 ```
-
 ---
 
 ### lia.util.findPlayerBySteamID64
@@ -279,7 +271,6 @@ if ply then
     print("Found player: " .. ply:Name())
 end
 ```
-
 ---
 
 ### lia.util.findPlayerBySteamID
@@ -305,7 +296,6 @@ Alias for `findPlayerBySteamID64`.
 ```lua
 local ply = lia.util.findPlayerBySteamID("76561198000000000")
 ```
-
 ---
 
 ### lia.util.canFit
@@ -337,7 +327,6 @@ Checks if a hull fits at a position without intersecting obstacles.
 ```lua
 local ok = lia.util.canFit(targetPos, Vector(-16, -16, 0), Vector(16, 16, 72))
 ```
-
 ---
 
 ### lia.util.playerInRadius
@@ -365,7 +354,6 @@ Returns players within a radius.
 ```lua
 local nearby = lia.util.playerInRadius(vector_origin, 250)
 ```
-
 ---
 
 ### lia.util.formatStringNamed
@@ -393,7 +381,6 @@ Formats a string with named (`{key}`) or ordered placeholders.
 ```lua
 local res = lia.util.formatStringNamed("Hello, {name}!", { name = "Bob" })
 ```
-
 ---
 
 ### lia.util.getMaterial
@@ -423,7 +410,6 @@ local mat = lia.util.getMaterial("path/to/material", "noclamp smooth")
 surface.SetMaterial(mat)
 surface.DrawTexturedRect(0, 0, 100, 100)
 ```
-
 ---
 
 ### lia.util.findFaction
@@ -451,7 +437,6 @@ Finds a faction by name or uniqueID; includes partial-match fallback.
 ```lua
 local faction = lia.util.findFaction(client, "citizen")
 ```
-
 ---
 
 ### lia.util.CreateTableUI
@@ -487,7 +472,6 @@ Sends a net message instructing the client to build a table UI.
 ```lua
 lia.util.CreateTableUI(ply, "Inventory", cols, rows, opts, charID)
 ```
-
 ---
 
 ### lia.util.findEmptySpace
@@ -523,7 +507,6 @@ Generates empty-space positions around an entity using a grid-based search.
 ```lua
 local spots = lia.util.findEmptySpace(ent, ent, 32, 3, 36, 5)
 ```
-
 ---
 
 ### lia.util.ShadowText
@@ -562,7 +545,6 @@ Draws text with a shadow offset.
 lia.util.ShadowText("Hello!", "DermaDefault", 100, 100,
     color_white, color_black, 2, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 ```
-
 ---
 
 ### lia.util.DrawTextOutlined
@@ -601,7 +583,6 @@ Draws outlined text.
 lia.util.DrawTextOutlined("Outlined", "DermaLarge", 100, 200,
     color_white, TEXT_ALIGN_CENTER, 2, color_black)
 ```
-
 ---
 
 ### lia.util.DrawTip
@@ -636,7 +617,6 @@ Draws a tooltip-style rectangle with centred text.
 lia.util.DrawTip(100, 100, 200, 60, "This is a tip!",
     "DermaDefault", color_white, color_black)
 ```
-
 ---
 
 ### lia.util.drawText
@@ -673,7 +653,6 @@ Draws text with a subtle shadow.
 lia.util.drawText("Hello World", 200, 300, color_white,
     TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, "liaGenericFont", 100)
 ```
-
 ---
 
 ### lia.util.drawTexture
@@ -703,7 +682,6 @@ Draws a textured rectangle.
 ```lua
 lia.util.drawTexture("path/to/material", color_white, 50, 50, 64, 64)
 ```
-
 ---
 
 ### lia.util.skinFunc
@@ -733,7 +711,6 @@ Invokes a skin function by name on a panel.
 ```lua
 lia.util.skinFunc("PaintButton", someButton, 10, 20)
 ```
-
 ---
 
 ### lia.util.wrapText
@@ -763,7 +740,6 @@ Wraps text to a maximum width.
 ```lua
 local lines, maxW = lia.util.wrapText("Some long string...", 200, "liaChatFont")
 ```
-
 ---
 
 ### lia.util.drawBlur
@@ -797,7 +773,6 @@ somePanel.Paint = function(self, w, h)
     lia.util.drawBlur(self)
 end
 ```
-
 ---
 
 ### lia.util.drawBlurAt
@@ -831,7 +806,6 @@ hook.Add("HUDPaint", "ExampleBlur", function()
     lia.util.drawBlurAt(100, 100, 200, 150)
 end)
 ```
-
 ---
 
 ### lia.util.requestArguments
@@ -865,7 +839,6 @@ lia.util.requestArguments("User Info",
         PrintTable(values)
     end)
 ```
-
 ---
 
 ### lia.util.CreateTableUI - client implementation
@@ -901,5 +874,5 @@ lia.util.CreateTableUI("My Table",
     { { name = "ID", field = "id" }, { name = "Name", field = "name" } },
     myData, myOptions, 1)
 ```
-
 ---
+

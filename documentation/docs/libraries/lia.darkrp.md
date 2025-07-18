@@ -38,7 +38,6 @@ if lia.darkrp.isEmpty(ply:GetPos(), { ply }) then
     print("Spawn point is clear")
 end
 ```
-
 ---
 
 ### lia.darkrp.findEmptyPos
@@ -72,7 +71,6 @@ Searches around a start position for a spot free of world geometry and blocking 
 ```lua
 local spawn = lia.darkrp.findEmptyPos(ply:GetPos(), { ply }, 128, 16, Vector(0, 0, 64))
 ```
-
 ---
 
 ### lia.darkrp.notify
@@ -104,7 +102,6 @@ Sends a notification to the specified client. The second and third parameters mi
 ```lua
 lia.darkrp.notify(ply, nil, nil, "Purchase complete")
 ```
-
 ---
 
 ### lia.darkrp.textWrap
@@ -135,7 +132,6 @@ Client-side helper that wraps a string so it fits within a given pixel width usi
 local wrapped = lia.darkrp.textWrap("Some very long text", "DermaDefault", 150)
 chat.AddText(wrapped)
 ```
-
 ---
 
 ### lia.darkrp.formatMoney
@@ -161,7 +157,6 @@ Formats the given amount using `lia.currency.get` so other DarkRP addons receive
 ```lua
 print(lia.darkrp.formatMoney(2500))
 ```
-
 ---
 
 ### lia.darkrp.createEntity
@@ -193,7 +188,6 @@ lia.darkrp.createEntity("Fuel", {
     price = 50
 })
 ```
-
 ---
 
 ### lia.darkrp.createCategory
@@ -219,5 +213,5 @@ Stub for DarkRP category creation. Included only for compatibility.
 ```lua
 lia.darkrp.createCategory()
 ```
-
 ---
+

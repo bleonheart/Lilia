@@ -32,7 +32,6 @@ A `MODULE` table defines a self-contained add-on for the Lilia framework. Each f
 | `ModuleLoaded` | `function` | `nil` | Callback run after module finishes loading. |
 | `Public` | `boolean` | `false` | Participates in public version checks. |
 | `Private` | `boolean` | `false` | Uses private version checking. |
-
 ---
 
 ## Field Details
@@ -54,7 +53,6 @@ Identifies the module in logs and UI elements.
 ```lua
 MODULE.name = "My Module"
 ```
-
 ---
 
 #### `author`
@@ -72,7 +70,6 @@ Name or SteamID64 of the module’s author.
 ```lua
 MODULE.author = "Samael"
 ```
-
 ---
 
 #### `discord`
@@ -90,7 +87,6 @@ Discord tag or support channel for the module.
 ```lua
 MODULE.discord = "@liliaplayer"
 ```
-
 ---
 
 #### `desc`
@@ -108,7 +104,6 @@ Short description of what the module provides.
 ```lua
 MODULE.desc = "Adds a Chatbox"
 ```
-
 ---
 
 ### Version & Compatibility
@@ -128,7 +123,6 @@ Version number used for compatibility checks.
 ```lua
 MODULE.version = 1.0
 ```
-
 ---
 
 #### `Public`
@@ -146,7 +140,6 @@ When true, the module participates in public version checks.
 ```lua
 MODULE.Public = true
 ```
-
 ---
 
 #### `Private`
@@ -164,7 +157,6 @@ When true, the module uses private version checking.
 ```lua
 MODULE.Private = true
 ```
-
 ---
 
 ### Dependencies & Content
@@ -186,7 +178,6 @@ MODULE.CAMIPrivileges = {
     { Name = "Staff Permissions - Admin Chat", MinAccess = "admin" }
 }
 ```
-
 ---
 
 #### `WorkshopContent`
@@ -207,7 +198,6 @@ MODULE.WorkshopContent = {
     "1234567890"  -- map data
 }
 ```
-
 ---
 
 #### `Dependencies`
@@ -234,7 +224,6 @@ MODULE.Dependencies = {
     { Folder = "libs", Realm = "shared" },
 }
 ```
-
 ---
 
 ### Loading & Lifecycle
@@ -275,7 +264,6 @@ MODULE.enabled = function()
     return false, "Disabled Temporarily"
 end
 ```
-
 ---
 
 #### `loading`
@@ -293,7 +281,6 @@ True while the module is in the process of loading.
 ```lua
 if MODULE.loading then return end
 ```
-
 ---
 
 #### `ModuleLoaded`
@@ -313,7 +300,6 @@ function MODULE:ModuleLoaded()
     print("Module fully initialized")
 end
 ```
-
 ---
 
 ### Access & Visibility
@@ -333,7 +319,6 @@ Relative directory of the module within the gamemode or add-on. Useful when incl
 ```lua
 print(MODULE.folder)
 ```
-
 ---
 
 #### `path`
@@ -351,7 +336,6 @@ Full filesystem path to the module's directory. Usually set automatically by the
 ```lua
 print(MODULE.path)
 ```
-
 ---
 
 #### `uniqueID`
@@ -369,7 +353,6 @@ Identifier used internally for the module list.
 ```lua
 print(MODULE.uniqueID)
 ```
-
 ---
 
 ### Default Folder Load Order
@@ -446,6 +429,5 @@ function MODULE:ModuleLoaded()
     print("My Feature loaded!")
 end
 ```
-
-
 ---
+

@@ -283,3 +283,4 @@ Determines whether a given ban has expired.
 * `boolean`: `true` if the ban is no longer active.
 
 ---
+

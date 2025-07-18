@@ -39,7 +39,6 @@ lia.notices.notify("Server restarting in 10 seconds.")
 -- Notify a single player about an error
 lia.notices.notify("Your quest failed.", player)
 ```
-
 ---
 
 ### lia.notices.notifyLocalized
@@ -73,7 +72,6 @@ lia.notices.notifyLocalized("welcome", player)
 -- Broadcast a formatted message
 lia.notices.notifyLocalized("questFoundItem", nil, "golden_key")
 ```
-
 ---
 
 ### lia.notices.notify
@@ -103,7 +101,6 @@ lia.notices.notify("Item picked up")
 -- Simple informational message
 lia.notices.notify("Welcome back!")
 ```
-
 ---
 
 ### lia.notices.notifyLocalized
@@ -135,5 +132,5 @@ lia.notices.notifyLocalized("item_picked_up")
 -- Include formatting parameters
 lia.notices.notifyLocalized("foundCoins", 10)
 ```
-
 ---
+

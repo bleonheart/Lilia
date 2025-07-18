@@ -61,7 +61,6 @@ lia.menu.add({
     print("menu closed")
 end)
 ```
-
 ---
 
 ### lia.menu.drawAll
@@ -87,7 +86,6 @@ Draws every active menu on the player’s HUD.
 ```lua
 hook.Add("HUDPaintBackground", "DrawMenus", lia.menu.drawAll)
 ```
-
 ---
 
 ### lia.menu.getActiveMenu
@@ -119,7 +117,6 @@ if id then
     print("Hovering option", id)
 end
 ```
-
 ---
 
 ### lia.menu.onButtonPressed
@@ -155,5 +152,5 @@ hook.Add("PlayerBindPress", "MenuClick", function(client, bind, pressed)
     end
 end)
 ```
-
 ---
+

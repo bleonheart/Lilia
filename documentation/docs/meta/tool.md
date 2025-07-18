@@ -41,7 +41,6 @@ tool.Mode = "lia_dooredit"
 tool.SWEP = weapon -- weapon variable from your SWEP
 tool.Owner = client -- client that spawned the tool
 ```
-
 ---
 
 ### CreateConVars
@@ -68,7 +67,6 @@ Creates client and server ConVars for this tool.
 -- Ensure console variables exist for configuration
 tool:CreateConVars()
 ```
-
 ---
 
 ### GetServerInfo
@@ -95,7 +93,6 @@ Returns the server ConVar for the given property.
 -- Check if the server allows using this tool
 local allow = tool:GetServerInfo("allow_use"):GetBool()
 ```
-
 ---
 
 ### BuildConVarList
@@ -122,7 +119,6 @@ Returns a table of client ConVars prefixed by the tool mode.
 -- Get a table of client ConVars for networking
 local cvars = tool:BuildConVarList()
 ```
-
 ---
 
 ### GetClientInfo
@@ -149,7 +145,6 @@ Retrieves a client ConVar value as a string.
 -- Get the client's chosen material from a ConVar
 local mat = tool:GetClientInfo("material")
 ```
-
 ---
 
 ### GetClientNumber
@@ -178,7 +173,6 @@ Retrieves a numeric client ConVar value.
 -- Read the numeric power setting with a fallback
 local power = tool:GetClientNumber("power", 10)
 ```
-
 ---
 
 ### Allowed
@@ -207,7 +201,6 @@ function TOOL:Allowed()
     return self.AllowedCVar:GetBool() and self:GetOwner():IsAdmin()
 end
 ```
-
 ---
 
 ### Init
@@ -236,7 +229,6 @@ function TOOL:Init()
     self:CreateConVars()
 end
 ```
-
 ---
 
 ### GetMode
@@ -263,7 +255,6 @@ Gets the current tool mode string.
 -- Retrieve the tool's active mode string
 local result = tool:GetMode()
 ```
-
 ---
 
 ### GetSWEP
@@ -290,7 +281,6 @@ Returns the SWEP associated with this tool.
 -- Obtain the weapon entity representing this tool
 local result = tool:GetSWEP()
 ```
-
 ---
 
 ### GetOwner
@@ -318,7 +308,6 @@ Returns the player who owns the associated weapon.
 local owner = tool:GetOwner()
 print(owner:Name())
 ```
-
 ---
 
 ### GetWeapon
@@ -345,7 +334,6 @@ Retrieves the weapon entity this tool is attached to.
 -- Access the underlying weapon object
 local result = tool:GetWeapon()
 ```
-
 ---
 
 ### LeftClick
@@ -375,7 +363,6 @@ function TOOL:LeftClick(trace)
     return true
 end
 ```
-
 ---
 
 ### RightClick
@@ -405,7 +392,6 @@ function TOOL:RightClick(trace)
     return true
 end
 ```
-
 ---
 
 ### Reload
@@ -434,7 +420,6 @@ function TOOL:Reload()
     self:ReleaseGhostEntity()
 end
 ```
-
 ---
 
 ### Deploy
@@ -463,7 +448,6 @@ function TOOL:Deploy()
     self:CreateConVars()
 end
 ```
-
 ---
 
 ### Holster
@@ -492,7 +476,6 @@ function TOOL:Holster()
     self:ClearObjects()
 end
 ```
-
 ---
 
 ### Think
@@ -521,7 +504,6 @@ function TOOL:Think()
     updateGhost(self:GetOwner(), self.GhostEntity)
 end
 ```
-
 ---
 
 ### CheckObjects
@@ -548,7 +530,6 @@ Validates stored objects and clears them if invalid.
 -- Validate all stored objects each tick
 local result = tool:CheckObjects()
 ```
-
 ---
 
 ### ClearObjects
@@ -575,7 +556,6 @@ Removes all stored objects from the tool.
 -- Remove any objects the tool is storing
 local result = tool:ClearObjects()
 ```
-
 ---
 
 ### ReleaseGhostEntity
@@ -602,5 +582,5 @@ Removes the ghost entity used for previewing placements.
 -- Remove the placement preview entity
 local result = tool:ReleaseGhostEntity()
 ```
-
 ---
+

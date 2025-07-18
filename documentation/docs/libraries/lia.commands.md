@@ -49,7 +49,6 @@ lia.command.add("warn", {
     end
 })
 ```
-
 ---
 
 ### lia.command.hasAccess
@@ -91,7 +90,6 @@ hook.Add("CanPlayerUseCommand", "BlockReserve", function(client, cmd)
     end
 end)
 ```
-
 ---
 
 ### lia.command.extractArgs
@@ -121,7 +119,6 @@ local args = lia.command.extractArgs('/mycommand "quoted arg" anotherArg')
 local args2 = lia.command.extractArgs("/mycommand 'other arg' another")
 -- args2 = { "other arg", "another" }
 ```
-
 ---
 
 ### lia.command.parseSyntaxFields
@@ -154,7 +151,6 @@ local fields, valid = lia.command.parseSyntaxFields("[string Name] [number Time]
 -- mark optional arguments with the word "optional"
 local fieldsOpt = lia.command.parseSyntaxFields("[string Name] [number Time optional]")
 ```
-
 ---
 
 ### lia.command.run
@@ -191,7 +187,6 @@ hook.Add("PlayerSay", "RunBoostCommand", function(client, text)
     end
 end)
 ```
-
 ---
 
 ### lia.command.parse
@@ -223,7 +218,6 @@ Attempts to parse the input text as a command, optionally using `realCommand` an
 ```lua
 lia.command.parse(player, "/mycommand arg1 arg2")
 ```
-
 ---
 
 ### lia.command.send
@@ -251,7 +245,6 @@ Sends a command (and optional arguments) from the client to the server via the n
 ```lua
 lia.command.send("mycommand", "arg1", "arg2")
 ```
-
 ---
 
 ### lia.command.openArgumentPrompt
@@ -281,7 +274,6 @@ Opens a window asking the player to fill in arguments for the given command. Mis
 ```lua
 lia.command.openArgumentPrompt("plywhitelist")
 ```
-
 ---
 
 ### lia.command.findPlayer
@@ -314,5 +306,5 @@ if target then
     admin:notify("Found " .. target:Name())
 end
 ```
-
 ---
+

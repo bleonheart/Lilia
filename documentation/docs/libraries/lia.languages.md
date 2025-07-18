@@ -34,7 +34,6 @@ Loads every Lua language file in a directory and merges their `LANGUAGE` tables 
 -- Load language files bundled with the current schema
 lia.lang.loadFromDir(SCHEMA.folder .. "/languages")
 ```
-
 ---
 
 ### lia.lang.AddTable
@@ -66,7 +65,6 @@ lia.lang.AddTable("english", {
     farewell = "Goodbye"
 })
 ```
-
 ---
 
 ### L
@@ -94,5 +92,5 @@ Returns the translated phrase for a key in the active language, using `string.fo
 ```lua
 print(L("vendorShowAll"))
 ```
-
 ---
+

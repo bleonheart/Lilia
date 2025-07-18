@@ -49,7 +49,6 @@ hook.Add("PlayerInitialSpawn", "welcomeLastSeen", function(ply)
     lia.data.set(key, os.time(), true)
 end)
 ```
-
 ---
 
 ### lia.time.toNumber
@@ -84,7 +83,6 @@ if delay > 0 then
     end)
 end
 ```
-
 ---
 
 ### lia.time.GetDate
@@ -120,7 +118,6 @@ timer.Create("ServerTimeAnnounce", 3600, 0, function()
     end
 end)
 ```
-
 ---
 
 ### lia.time.GetHour
@@ -155,5 +152,5 @@ timer.Create("CheckShopHours", 60, 0, function()
     npc:SetNWBool("ShopOpen", hNum >= 9 and hNum < 17)
 end)
 ```
-
 ---
+

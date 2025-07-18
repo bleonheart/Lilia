@@ -37,7 +37,6 @@ Registers a named color for later lookup by string name.
 lia.color.register("myPurple", { 128, 0, 180 })
 local c = lia.color.stored.myPurple
 ```
-
 ---
 
 ### lia.color.Adjust
@@ -72,7 +71,6 @@ Creates a new `Color` based on the input color with the given channel offsets.
 -- Darken the default red by 30 points
 local darkRed = lia.color.Adjust(lia.color.stored.red, -30, 0, 0)
 ```
-
 ---
 
 ### lia.color.ReturnMainAdjustedColors

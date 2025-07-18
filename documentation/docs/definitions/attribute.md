@@ -25,7 +25,6 @@ Each attribute is registered on the global `ATTRIBUTE` table. You can customize:
 | `startingMax`  | `number`  | `30`    | Maximum base value at character creation, before any startup bonus points are applied. |
 | `noStartBonus` | `boolean` | `false` | If `true`, players cannot allocate any of the creation startup bonus points to this attribute. |
 | `maxValue`     | `number`  | `30`    | Absolute upper limit an attribute can ever reach. |
-
 ---
 
 ## Field Details
@@ -41,7 +40,6 @@ string "Unknown" if no name is provided.
 ```lua
 ATTRIBUTE.name = "Strength"
 ```
-
 ---
 
 #### `desc`
@@ -53,7 +51,6 @@ translation "No Description" when omitted.
 ```lua
 ATTRIBUTE.desc = "Determines physical power and carrying capacity."
 ```
-
 ---
 
 #### `startingMax`
@@ -67,7 +64,6 @@ the fallback value when this field is not defined.
 ```lua
 ATTRIBUTE.startingMax = 15
 ```
-
 ---
 
 #### `noStartBonus`
@@ -81,7 +77,6 @@ through normal gameplay or boosts.
 ```lua
 ATTRIBUTE.noStartBonus = false
 ```
-
 ---
 
 #### `maxValue`
@@ -93,7 +88,6 @@ Absolute ceiling an attribute can ever reach. Defaults to the
 ```lua
 ATTRIBUTE.maxValue = 50
 ```
-
 ### Full Attribute Example
 
 ```lua
