@@ -47,6 +47,7 @@ The global `CLASS` table defines per-class settings such as display name, lore, 
 | `commands` | `table` | `{}` | Command names members may always use. |
 | `canInviteToFaction` | `boolean` | `false` | Allows members of this class to invite players to their faction. |
 | `canInviteToClass` | `boolean` | `false` | Allows members of this class to invite others to their class. |
+
 ---
 
 ## Field Details
