@@ -104,8 +104,11 @@ If you haven't already, set up your Garry's Mod server and ensure it is running 
     Upload the `lilia` folder you extracted earlier into the `gamemodes` directory.
 
     ```plaintext
+
     Server Directory Path:
+
     garrysmod/gamemodes/lilia
+
     ```
 
 ---
@@ -169,13 +172,17 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     Edit your server's startup parameters so the server boots directly into your chosen schema:
 
     ```plaintext
+
     +gamemode <SchemaName>
+
     ```
 
     Example usage:
 
     ```plaintext
+
     +gamemode scprp
+
     ```
 
 2. **Start the Server**
@@ -187,7 +194,9 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     Watch the console for a line such as:
 
     ```plaintext
+
     [Lilia] [Bootstrap] Loaded successfully after X seconds.
+
     ```
 
     If no errors appear and the schema loads, you're ready to play.
