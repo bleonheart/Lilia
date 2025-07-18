@@ -649,4 +649,3 @@ vgui.Create("liaQuick")
 ```
 
 ---
-

@@ -118,6 +118,7 @@ Exposes helper methods and network messages to synchronize PAC3 outfits, prevent
 **Compatibility Highlights:**
 
 * Blocks saving Lilia’s persistent entities or map-created props as permanent.
+
 * Warns about overlapping saves and logs who saved each PermaProp.
 
 
@@ -160,6 +161,7 @@ Mirrors SAM commands and enforces Lilia’s permission checks so admins can use 
 ## [ServerGuard](https://www.gmodstore.com/market/view/serverguard)
 
 **Compatibility Highlights:**
+
 * Translates Lilia admin commands to their ServerGuard equivalents.
 
 * Disables the built-in restrictions plugin so Lilia can manage permissions.
@@ -179,6 +181,7 @@ Turns off ServerGuard’s restriction module to ensure a single consistent permi
 
 
 * Blocks Sit Anywhere seating on Simfphys vehicles.
+
 * Adds configuration options for seat damage and entry delays.
 
 
@@ -210,6 +213,7 @@ Drivers only take damage when the vehicle is struck near their seat and a config
 Adjusts console settings and seat interactions to prevent trolling while maintaining roleplay utility.
 
 ---
+
 ## ULX
 
 > **Warning**
@@ -223,6 +227,7 @@ Use Lilia's built-in admin menu or another modern admin suite like SAM or Server
 **Compatibility Highlights:**
 
 * Redirects VCMod money hooks to a character’s funds.
+
 * Checks vehicle purchases against the character's wallet.
 
 **Detailed Explanation:**
@@ -236,6 +241,7 @@ Forwards vehicle purchase and upgrade transactions to the roleplay money system,
 **Compatibility Highlights:**
 
 * Removes unprotected VJBase spawners and flags NPCs notarget.
+
 * Blocks dangerous network messages.
 
 
