@@ -20,5 +20,6 @@ Each bar represents a progress value such as health, armor, or stamina. The bar 
 | `identifier` | `string` \| `nil` | Unique identifier, if provided. |
 | `visible` | `boolean` \| `nil` | Set to `true` to force the bar to remain visible. |
 | `lifeTime` | `number` | Internal timer used for fading; managed automatically. |
+
 ---
 

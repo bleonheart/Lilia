@@ -25,6 +25,7 @@ Each attribute is registered on the global `ATTRIBUTE` table. You can customize:
 | `startingMax`  | `number`  | `30`    | Maximum base value at character creation, before any startup bonus points are applied. |
 | `noStartBonus` | `boolean` | `false` | If `true`, players cannot allocate any of the creation startup bonus points to this attribute. |
 | `maxValue`     | `number`  | `30`    | Absolute upper limit an attribute can ever reach. |
+
 ---
 
 ## Field Details

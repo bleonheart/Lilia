@@ -32,6 +32,7 @@ A `MODULE` table defines a self-contained add-on for the Lilia framework. Each f
 | `ModuleLoaded` | `function` | `nil` | Callback run after module finishes loading. |
 | `Public` | `boolean` | `false` | Participates in public version checks. |
 | `Private` | `boolean` | `false` | Uses private version checking. |
+
 ---
 
 ## Field Details

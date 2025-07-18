@@ -91,5 +91,6 @@ The base gamemode registers the following permission flags. Additional flags can
 | `n`  | Spawn NPCs                     |
 | `Z`  | Invite players to your faction |
 | `P`  | Use PAC3 features              |
+
 ---
 
