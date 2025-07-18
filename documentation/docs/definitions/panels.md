@@ -61,6 +61,7 @@ Panels provide the building blocks for Lilia's user interface. Most derive from 
 | `liaMiniButton` | `DButton` | Very small button variant. |
 | `liaNoBGButton` | `DButton` | Text-only button with no background. |
 | `liaQuick` | `EditablePanel` | Quick settings panel showing options flagged with `isQuick`. |
+
 ---
 
 ## Panel Details
