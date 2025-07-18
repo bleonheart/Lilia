@@ -134,6 +134,19 @@ concommand.Add("lia_saved_images", function()
     end
 end)
 
+concommand.Add("lia_wipewebimages", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if files then
+        for _, fn in ipairs(files) do
+            file.Delete(baseDir .. fn)
+        end
+    end
+    cache = {}
+    urlMap = {}
+    lia.information(L("webImagesCleared"))
+    ensureDir(baseDir)
+end)
+
 concommand.Add("test_webimage_menu", function()
     local frame = vgui.Create("DFrame")
     frame:SetTitle(L("webImageTesterTitle"))
