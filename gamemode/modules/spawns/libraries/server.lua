@@ -10,10 +10,12 @@ local function encodeVector(vec)
 end
 
 function MODULE:LoadData()
-    local data = self:getData()
+    local data = self:getData() or {}
     self.spawns = {}
     print("[MODULE] LoadData: fetched data")
-    PrintTable(data, 1)
+    if istable(data) and next(data) then
+        PrintTable(data, 1)
+    end
     local factions = data.factions or data
     for fac, spawns in pairs(factions or {}) do
         self.spawns[fac] = {}
@@ -43,7 +45,9 @@ function MODULE:SaveData()
         print(string.format("[MODULE] SaveData: faction '%s' total encoded = %d", fac, #factions[fac]))
     end
 
-    PrintTable(factions)
+    if not table.IsEmpty(factions) then
+        PrintTable(factions)
+    end
     print("--------------------------")
     self:setData({
         factions = factions
