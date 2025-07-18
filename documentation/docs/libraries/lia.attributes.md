@@ -10,7 +10,6 @@ The attributes library loads attribute definitions from Lua files, keeps track o
 
 For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
 
-
 ### lia.attribs.loadFromDir
 
 **Purpose**
@@ -45,7 +44,6 @@ end
 -- Load all attribute files once at startup
 lia.attribs.loadFromDir("schema/attributes")
 ```
-
 ---
 
 ### lia.attribs.setup
@@ -75,5 +73,5 @@ local char = client:getChar()
 char:updateAttrib("strength", 5)
 lia.attribs.setup(client)
 ```
-
 ---
+

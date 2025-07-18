@@ -61,7 +61,6 @@ Panels provide the building blocks for Lilia's user interface. Most derive from 
 | `liaMiniButton` | `DButton` | Very small button variant. |
 | `liaNoBGButton` | `DButton` | Text-only button with no background. |
 | `liaQuick` | `EditablePanel` | Quick settings panel showing options flagged with `isQuick`. |
-
 ---
 
 ## Panel Details
@@ -174,7 +173,6 @@ Small label for quick notifications. It draws a blurred backdrop and fades away 
 
 Expanded version of `liaNotice` supporting more text and optional buttons. Often used for yes/no prompts.
 
-
 ### `liaChatBox`
 
 **Base Panel:**
@@ -251,7 +249,6 @@ if IsValid(liaItemMenuInstance) then liaItemMenuInstance:Remove() end
 liaItemMenuInstance = vgui.Create("liaItemMenu")
 liaItemMenuInstance:SetEntity(entity)
 ```
-
 ---
 
 ### `liaAttribBar`
@@ -569,7 +566,6 @@ local btn = vgui.Create("liaHugeButton")
 btn:SetText("Play")
 btn:SetSelected(true) -- keep underline visible
 ```
-
 ---
 
 ### `liaBigButton`
@@ -647,5 +643,5 @@ Quick settings menu that lists options flagged with `isQuick`.
 ```lua
 vgui.Create("liaQuick")
 ```
-
 ---
+

@@ -42,7 +42,6 @@ function PANEL:InventoryItemAdded(item)
     print("Added item:", item:getName())
 end
 ```
-
 ---
 
 ### liaDeleteInventoryHooks
@@ -74,7 +73,6 @@ function PANEL:StopListening(id)
     self:liaDeleteInventoryHooks(id)
 end
 ```
-
 ---
 
 ### SetScaledPos
@@ -102,7 +100,6 @@ Sets the panel position using `ScreenScale( x )` and `ScreenScaleH( y )`.
 ```lua
 panel:SetScaledPos(10, 20)
 ```
-
 ---
 
 ### SetScaledSize
@@ -130,5 +127,5 @@ Sets the panel size using `ScreenScale( w )` and `ScreenScaleH( h )`.
 ```lua
 panel:SetScaledSize(64, 32)
 ```
-
 ---
+

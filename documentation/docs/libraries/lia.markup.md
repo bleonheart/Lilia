@@ -36,7 +36,6 @@ Parses markup text and returns a markup object that handles wrapping and drawing
 local object = lia.markup.parse("<color=255,0,0>Hello world!</color>", 200)
 print(object:getWidth(), object:getHeight())
 ```
-
 ---
 
 ### MarkupObject\:create
@@ -62,7 +61,6 @@ Constructs an empty markup object (usually returned by `lia.markup.parse`).
 ```lua
 local obj = lia.markup.MarkupObject:create()
 ```
-
 ---
 
 ### MarkupObject fields
@@ -101,7 +99,6 @@ Returns the pixel width of the parsed markup text.
 local obj = lia.markup.parse("<font=liaBigFont>Hello</font>")
 print(obj:getWidth())
 ```
-
 ---
 
 ### MarkupObject\:getHeight
@@ -128,7 +125,6 @@ Returns the pixel height of the parsed markup text.
 local obj = lia.markup.parse("<font=liaBigFont>Hello</font>")
 print(obj:getHeight())
 ```
-
 ---
 
 ### MarkupObject\:size
@@ -155,7 +151,6 @@ Returns both width and height of the markup object.
 local obj = lia.markup.parse("<font=liaBigFont>Hello</font>")
 local w, h = obj:size()
 ```
-
 ---
 
 ### MarkupObject\:draw
@@ -199,7 +194,6 @@ hook.Add("HUDPaint", "DrawWelcome", function()
     )
 end)
 ```
-
 ---
 
 ### liaMarkupPanel\:setMarkup
@@ -235,5 +229,5 @@ panel:setMarkup(
     end
 )
 ```
-
 ---
+

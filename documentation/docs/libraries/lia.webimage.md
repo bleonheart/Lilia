@@ -53,7 +53,6 @@ end)
 -- Later, DImage:SetImage can use the cached name
 myIcon:SetImage("logo.png")
 ```
-
 ---
 
 ### lia.webimage.get
@@ -97,5 +96,5 @@ lia.webimage.register("logo_axis.png", "https://example.com/logo.png")
 local byName = Material("logo_axis.png")
 local byURL = Material("https://example.com/logo.png")
 ```
-
 ---
+

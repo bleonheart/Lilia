@@ -48,7 +48,6 @@ Each faction in the game is defined by a set of fields on the global `FACTION` t
 | `isGloballyRecognized` | `boolean` | `false` | Everyone automatically recognizes this faction.
 | `scoreboardHidden` | `boolean` | `false` | Hide members from the scoreboard. |
 | `commands` | `table` | `{}` | Command names members may always use. |
-
 ---
 
 ## Field Details
@@ -70,7 +69,6 @@ Display name shown for members of this faction.
 ```lua
 FACTION.name = "Minecrafters"
 ```
-
 ---
 
 #### `desc`
@@ -88,7 +86,6 @@ Lore or descriptive text about the faction.
 ```lua
 FACTION.desc = "Surviving and crafting in the blocky world."
 ```
-
 ---
 
 #### `isDefault`
@@ -106,7 +103,6 @@ Set to `true` if players may select this faction without a whitelist.
 ```lua
 FACTION.isDefault = false
 ```
-
 ---
 
 #### `uniqueID`
@@ -124,7 +120,6 @@ Internal string identifier for referencing the faction.
 ```lua
 FACTION.uniqueID = "staff"
 ```
-
 #### `prefix`
 
 **Type:**
@@ -150,7 +145,6 @@ FACTION.prefix = function(client)
     return client:isVIP() and "[VIP]" or ""
 end
 ```
-
 ---
 
 #### `index`
@@ -168,7 +162,6 @@ Numeric identifier assigned during faction registration.
 ```lua
 FACTION_STAFF = FACTION.index
 ```
-
 ---
 
 ### Appearance & Models
@@ -188,7 +181,6 @@ Color used in UI elements to represent the faction. Defaults to `Color(150, 150,
 ```lua
 FACTION.color = Color(255, 56, 252)
 ```
-
 ---
 
 #### `models`
@@ -209,7 +201,6 @@ FACTION.models = {
     "models/Humans/Group02/female_02.mdl"
 }
 ```
-
 ---
 
 #### `bodyGroups`
@@ -230,7 +221,6 @@ FACTION.bodyGroups = {
     torso = 3
 }
 ```
-
 ---
 
 ### Economy & Limits
@@ -250,7 +240,6 @@ Weapons automatically granted on spawn.
 ```lua
 FACTION.weapons = {"weapon_physgun", "gmod_tool"}
 ```
-
 ---
 
 #### `items`
@@ -268,7 +257,6 @@ Item uniqueIDs automatically granted on character creation.
 ```lua
 FACTION.items = {"radio", "handcuffs"}
 ```
-
 ---
 
 #### `pay`
@@ -286,7 +274,6 @@ Payment amount for members each interval.
 ```lua
 FACTION.pay = 50
 ```
-
 ---
 
 #### `payLimit`
@@ -304,7 +291,6 @@ Maximum pay a member can accumulate.
 ```lua
 FACTION.payLimit = 1000
 ```
-
 ---
 
 #### `payTimer`
@@ -322,7 +308,6 @@ Interval in seconds between salary payouts.
 ```lua
 FACTION.payTimer = 3600
 ```
-
 ---
 
 #### `limit`
@@ -340,7 +325,6 @@ Maximum number of players allowed in this faction.
 ```lua
 FACTION.limit = 20
 ```
-
 ---
 
 #### `oneCharOnly`
@@ -358,7 +342,6 @@ If `true`, players may only create one character in this faction.
 ```lua
 FACTION.oneCharOnly = true
 ```
-
 ---
 
 ### Movement & Stats
@@ -378,7 +361,6 @@ Starting health for faction members.
 ```lua
 FACTION.health = 150
 ```
-
 ---
 
 #### `armor`
@@ -396,7 +378,6 @@ Starting armor for faction members.
 ```lua
 FACTION.armor = 25
 ```
-
 ---
 
 #### `scale`
@@ -414,7 +395,6 @@ Player model scale multiplier.
 ```lua
 FACTION.scale = 1.1
 ```
-
 ---
 
 #### `runSpeed`
@@ -432,7 +412,6 @@ Base running speed.
 ```lua
 FACTION.runSpeed = 250
 ```
-
 ---
 
 #### `runSpeedMultiplier`
@@ -450,7 +429,6 @@ If `true`, multiplies the base speed rather than replacing it.
 ```lua
 FACTION.runSpeedMultiplier = false
 ```
-
 ---
 
 #### `walkSpeed`
@@ -468,7 +446,6 @@ Base walking speed.
 ```lua
 FACTION.walkSpeed = 200
 ```
-
 ---
 
 #### `walkSpeedMultiplier`
@@ -486,7 +463,6 @@ If `true`, multiplies the base walk speed rather than replacing it.
 ```lua
 FACTION.walkSpeedMultiplier = true
 ```
-
 ---
 
 #### `jumpPower`
@@ -504,7 +480,6 @@ Base jump power.
 ```lua
 FACTION.jumpPower = 200
 ```
-
 ---
 
 #### `jumpPowerMultiplier`
@@ -522,7 +497,6 @@ If `true`, multiplies the base jump power rather than replacing it.
 ```lua
 FACTION.jumpPowerMultiplier = true
 ```
-
 ---
 
 ### Recognition & Relations
@@ -542,7 +516,6 @@ Whether faction members automatically recognize each other on sight.
 ```lua
 FACTION.MemberToMemberAutoRecognition = true
 ```
-
 ---
 
 #### `RecognizesGlobally`
@@ -560,7 +533,6 @@ If `true`, members recognize all players globally, regardless of faction.
 ```lua
 FACTION.RecognizesGlobally = false
 ```
-
 #### `isGloballyRecognized`
 
 **Type:**
@@ -576,8 +548,6 @@ If set to `true`, all players will automatically recognize members of this facti
 ```lua
 FACTION.isGloballyRecognized = true
 ```
-
-
 ---
 
 #### `NPCRelations`
@@ -598,7 +568,6 @@ FACTION.NPCRelations = {
     ["npc_citizen"]     = D_LI
 }
 ```
-
 ---
 
 #### `bloodcolor`
@@ -616,7 +585,6 @@ Blood color enumeration constant for faction members.
 ```lua
 FACTION.bloodcolor = BLOOD_COLOR_RED
 ```
-
 ---
 
 #### `scoreboardHidden`
@@ -634,7 +602,6 @@ If `true`, members of this faction are hidden from the scoreboard.
 ```lua
 FACTION.scoreboardHidden = false
 ```
-
 ---
 
 #### `commands`
@@ -656,8 +623,6 @@ FACTION.commands = {
     plytransfer = true,
 }
 ```
-
-
 ## Example Faction Definition
 
 The snippet below shows a minimal faction script using many of the fields described above.
@@ -688,5 +653,5 @@ FACTION.NPCRelations = {
 
 FACTION_CITIZEN = FACTION.index
 ```
-
 ---
+

@@ -45,7 +45,6 @@ function FACTION:NameTemplate(client)
     return string.format("%s-%03d", self.name, id), true
 end
 ```
-
 ---
 
 ### GetDefaultName
@@ -74,7 +73,6 @@ function FACTION:GetDefaultName(client)
     return "Recruit-" .. client:AccountID()
 end
 ```
-
 ---
 
 ### GetDefaultDesc
@@ -105,7 +103,6 @@ function FACTION:GetDefaultDesc(client)
     return string.format("%s recently enlisted and is eager for duty.", callsign), true
 end
 ```
-
 ---
 
 ### OnSpawn
@@ -139,7 +136,6 @@ function FACTION:OnSpawn(client)
     end
 end
 ```
-
 ---
 
 ### OnTransferred
@@ -176,7 +172,6 @@ function FACTION:OnTransferred(client, oldFaction)
     client:notify(string.format("Joined %s from faction #%d", self.name, oldFaction))
 end
 ```
-
 ---
 
 ### OnCheckLimitReached
@@ -212,5 +207,5 @@ function FACTION:OnCheckLimitReached(character, client)
     return lia.faction.getPlayerCount(self.index) >= maxMembers
 end
 ```
-
 ---
+

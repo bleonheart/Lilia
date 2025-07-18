@@ -66,19 +66,15 @@ If you haven't already, set up your Garry's Mod server and ensure it is running 
 
 1. **Locate the Downloaded ZIP File:**
 
-
     Find the `Lilia.zip` file you downloaded.
 
 2. **Extract the Contents:**
-
 
     - Right-click the ZIP file and select "Extract All."
 
     - Choose a temporary folder for extraction.
 
-
 3. **Organize the Extracted Files:**
-
 
     - After extraction, you should see a folder named `lilia`.
 
@@ -90,16 +86,13 @@ If you haven't already, set up your Garry's Mod server and ensure it is running 
 
 1. **Connect to Your Server:**
 
-
     Use an FTP or SFTP client (e.g., [FileZilla](https://filezilla-project.org/) or [WinSCP](https://winscp.net/eng/index.php)) to connect to your Garry's Mod server.
 
 2. **Navigate to the Gamemodes Directory:**
 
-
     Go to `garrysmod/gamemodes` within your server's file structure.
 
 3. **Upload the Lilia Folder:**
-
 
     Upload the `lilia` folder you extracted earlier into the `gamemodes` directory.
 
@@ -110,7 +103,6 @@ If you haven't already, set up your Garry's Mod server and ensure it is running 
     garrysmod/gamemodes/lilia
 
     ```
-
 ---
 
 ## Step 5: Installing a Roleplay Schema
@@ -148,7 +140,6 @@ Extract the schema files locally, then upload the extracted folder to your serve
 ```plaintext
 garrysmod/gamemodes/<SchemaName>
 ```
-
 ---
 
 ### 4. Configure the Schema
@@ -162,7 +153,6 @@ Items:     garrysmod/gamemodes/<SchemaName>/schema/items/
 Modules:   garrysmod/gamemodes/<SchemaName>/modules/
 Preload:   garrysmod/gamemodes/<SchemaName>/preload/
 ```
-
 ---
 
 ## Step 6: Launching the Server with Your Schema
@@ -176,7 +166,6 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     +gamemode <SchemaName>
 
     ```
-
     Example usage:
 
     ```plaintext
@@ -184,7 +173,6 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     +gamemode scprp
 
     ```
-
 2. **Start the Server**
 
     Launch or restart your Garry's Mod server. Lilia will load as the framework beneath the schema.
@@ -198,5 +186,5 @@ Preload:   garrysmod/gamemodes/<SchemaName>/preload/
     [Lilia] [Bootstrap] Loaded successfully after X seconds.
 
     ```
-
     If no errors appear and the schema loads, you're ready to play.
+

@@ -44,7 +44,6 @@ hook.Add("PostLoadFonts", "ExampleFont", function()
     })
 end)
 ```
-
 ---
 
 ### lia.font.getAvailableFonts
@@ -73,7 +72,6 @@ for _, name in ipairs(fonts) do
     print("Font:", name)
 end
 ```
-
 ---
 
 ### lia.font.refresh
@@ -105,5 +103,5 @@ hook.Add("PostLoadFonts", "NotifyReload", function(cur, gen)
     print("Fonts loaded:", cur, gen)
 end)
 ```
-
 ---
+

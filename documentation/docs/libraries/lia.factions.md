@@ -39,7 +39,6 @@ Loads all Lua faction files from a directory, includes them **shared**, and regi
 ```lua
 lia.faction.loadFromDir("path/to/factions")
 ```
-
 ---
 
 ### lia.faction.get
@@ -65,7 +64,6 @@ Retrieves a faction table by its index or unique identifier.
 ```lua
 local faction = lia.faction.get("citizen")
 ```
-
 ---
 
 ### lia.faction.getIndex
@@ -91,7 +89,6 @@ Returns the numeric index of a faction given its unique identifier.
 ```lua
 local index = lia.faction.getIndex("citizen")
 ```
-
 ---
 
 ### lia.faction.getClasses
@@ -117,7 +114,6 @@ Returns a list of class tables that belong to the specified faction.
 ```lua
 local classes = lia.faction.getClasses(FACTION_CITIZEN)
 ```
-
 ---
 
 ### lia.faction.getPlayers
@@ -143,7 +139,6 @@ Retrieves all player entities whose characters are in the given faction.
 ```lua
 local players = lia.faction.getPlayers(FACTION_CITIZEN)
 ```
-
 ---
 
 ### lia.faction.getPlayerCount
@@ -169,7 +164,6 @@ Counts how many players belong to the specified faction.
 ```lua
 local count = lia.faction.getPlayerCount(FACTION_CITIZEN)
 ```
-
 ---
 
 ### lia.faction.isFactionCategory
@@ -197,7 +191,6 @@ Checks whether a faction belongs to a category defined by a list of faction IDs.
 ```lua
 local isMember = lia.faction.isFactionCategory("citizen", { "citizen", "veteran" })
 ```
-
 ---
 
 ### lia.faction.jobGenerate
@@ -237,7 +230,6 @@ local police = lia.faction.jobGenerate(
     { "models/player/police.mdl" }
 )
 ```
-
 ---
 
 ### lia.faction.formatModelData
@@ -263,7 +255,6 @@ Normalises model tables for every registered faction, ensuring grouped categorie
 ```lua
 lia.faction.formatModelData()
 ```
-
 ---
 
 ### lia.faction.getCategories
@@ -289,7 +280,6 @@ Returns a list of model category names for the given faction.
 ```lua
 local categories = lia.faction.getCategories("citizen")
 ```
-
 ---
 
 ### lia.faction.getModelsFromCategory
@@ -317,7 +307,6 @@ Returns the models that belong to a specific category for a faction.
 ```lua
 local models = lia.faction.getModelsFromCategory("citizen", "special")
 ```
-
 ---
 
 ### lia.faction.getDefaultClass
@@ -343,7 +332,6 @@ Finds the first class marked as default for the given faction.
 ```lua
 local defaultClass = lia.faction.getDefaultClass(FACTION_CITIZEN)
 ```
-
 ---
 
 ### lia.faction.hasWhitelist
@@ -369,5 +357,5 @@ Client-side check whether the local player is whitelisted for a faction.
 ```lua
 local whitelisted = lia.faction.hasWhitelist(FACTION_CITIZEN)
 ```
-
 ---
+

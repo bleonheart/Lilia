@@ -40,7 +40,6 @@ Creates a new character instance with default variables and metatable.
 -- Create a simple character for a player
 local char = lia.char.new({ name = "John" }, 1, client)
 ```
-
 ---
 
 ### lia.char.hookVar
@@ -73,7 +72,6 @@ lia.char.hookVar("name", "PrintName", function(char, old, new)
     print(char, old, new)
 end)
 ```
-
 ---
 
 ### lia.char.registerVar
@@ -106,7 +104,6 @@ lia.char.registerVar("age", {
     onValidate = isnumber
 })
 ```
-
 ---
 
 ### lia.char.getCharData
@@ -134,7 +131,6 @@ Retrieves a character’s JSON data from the database as a Lua table (or a singl
 ```lua
 local age = lia.char.getCharData(1, "age")
 ```
-
 ---
 
 ### lia.char.getCharDataRaw
@@ -162,7 +158,6 @@ Returns the raw database row for a character or a specific column value.
 ```lua
 local row = lia.char.getCharDataRaw(1)
 ```
-
 ---
 
 ### lia.char.getOwnerByID
@@ -188,7 +183,6 @@ Finds the player entity that owns the character with the given ID.
 ```lua
 local ply = lia.char.getOwnerByID(1)
 ```
-
 ---
 
 ### lia.char.getBySteamID
@@ -214,7 +208,6 @@ Retrieves a character object by SteamID or SteamID64.
 ```lua
 local char = lia.char.getBySteamID("STEAM_0:0:11101")
 ```
-
 ---
 
 ### lia.char.getAll
@@ -242,7 +235,6 @@ for ply, char in pairs(lia.char.getAll()) do
     print(ply, char:getName())
 end
 ```
-
 ---
 
 ### lia.char.GetTeamColor
@@ -268,7 +260,6 @@ Determines the team colour for a client based on their character class or defaul
 ```lua
 local color = lia.char.GetTeamColor(client)
 ```
-
 ---
 
 ### lia.char.create
@@ -302,7 +293,6 @@ lia.char.create({
     print("Created", id)
 end)
 ```
-
 ---
 
 ### lia.char.restore
@@ -334,7 +324,6 @@ lia.char.restore(client, function(ids)
     PrintTable(ids)
 end)
 ```
-
 ---
 
 ### lia.char.cleanUpForPlayer
@@ -360,7 +349,6 @@ Cleans up loaded characters and inventories for a player on disconnect.
 ```lua
 lia.char.cleanUpForPlayer(client)
 ```
-
 ---
 
 ### lia.char.delete
@@ -388,7 +376,6 @@ Deletes a character by ID, cleans up, and notifies players via hooks.
 ```lua
 lia.char.delete(1, client)
 ```
-
 ---
 
 ### lia.char.setCharData
@@ -418,7 +405,6 @@ Updates a character’s JSON data field in the database and the loaded object. T
 ```lua
 lia.char.setCharData(1, "age", 25)
 ```
-
 ---
 
 ### lia.char.setCharName
@@ -446,7 +432,6 @@ Changes a character’s name in the database and the loaded object, firing appro
 ```lua
 lia.char.setCharName(1, "NewName")
 ```
-
 ---
 
 ### lia.char.setCharModel
@@ -476,5 +461,5 @@ Updates the character’s model and bodygroups in the database and in-game, firi
 ```lua
 lia.char.setCharModel(1, "models/player.mdl", {})
 ```
-
 ---
+

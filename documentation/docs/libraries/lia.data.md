@@ -43,7 +43,6 @@ concommand.Add("save_spawn", function(ply)
     end
 end)
 ```
-
 ---
 
 ### lia.data.delete
@@ -73,7 +72,6 @@ Removes the stored value corresponding to the key from the `lia_data_<key>` tabl
 ```lua
 lia.data.delete("spawn_pos")
 ```
-
 ---
 
 ### lia.data.get
@@ -114,7 +112,6 @@ hook.Add("PlayerSpawn", "UseSavedSpawn", function(ply)
     end
 end)
 ```
-
 ---
 
 ### lia.data.loadTables
@@ -140,7 +137,6 @@ Loads all entries from every `lia_data_<key>` table into `lia.data.stored`. If n
 ```lua
 lia.data.loadTables()
 ```
-
 ---
 
 ### lia.data.convertToDatabase
@@ -166,5 +162,5 @@ Imports legacy `.txt` files from `data/lilia` into their respective `lia_data_<k
 ```lua
 lia.data.convertToDatabase(true)
 ```
-
 ---
+
