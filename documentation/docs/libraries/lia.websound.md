@@ -109,3 +109,14 @@ ply:EmitSound("https://example.com/alert.mp3")
 ```
 
 ---
+
+### Clearing the Cache
+
+To remove all downloaded web sounds on the client use the following console
+command:
+
+```
+lia_wipe_sounds
+```
+
+Any sounds played afterwards will be downloaded again as needed.

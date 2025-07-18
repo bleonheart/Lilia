@@ -908,6 +908,7 @@ LANGUAGE = {
     webImageTesterTitle = "WebImage Tester",
     loadImage = "Load Image",
     webSoundsTitle = "Web Sounds",
+    webSoundCacheCleared = "Web sound cache cleared.",
     dermaPreviewTitle = "Derma Controls Preview",
     dframe = "DFrame",
     dbutton = "DButton",
