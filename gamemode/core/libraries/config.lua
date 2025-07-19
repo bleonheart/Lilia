@@ -693,13 +693,13 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             description:DockMargin(0, 10, 0, 0)
             local button = panel:Add("DButton")
             button:Dock(TOP)
-            button:SetTall(100)
-            button:DockMargin(100, 10, 100, 0)
+            button:SetTall(120)
+            button:DockMargin(90, 10, 90, 0)
             button:SetText("")
             button.Paint = function(_, w, h)
                 local v = lia.config.get(key, config.value)
                 local ic = v and "checkbox.png" or "unchecked.png"
-                lia.util.drawTexture(ic, color_white, w / 2 - 32, h / 2 - 32, 64, 64)
+                lia.util.drawTexture(ic, color_white, w / 2 - 48, h / 2 - 48, 96, 96)
             end
 
             button.DoClick = function()
