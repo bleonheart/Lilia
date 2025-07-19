@@ -219,7 +219,6 @@ function PANEL:createStartButton()
         local function setLogo(img)
             if not IsValid(self) then return end
             img:SetZPos(9999)
-            img:SetImageColor(color_white)
             self:UpdateLogoPosition()
             timer.Simple(0, function() if IsValid(img) then img:MoveToFront() end end)
         end

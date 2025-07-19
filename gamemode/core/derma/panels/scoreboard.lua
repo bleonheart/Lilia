@@ -108,7 +108,6 @@ function PANEL:Init()
             img:DockMargin(5, 5, 5, 5)
             img:SetWide(30)
             img:SetMaterial(Material(facData.logo))
-            img:SetImageColor(color_white)
         end
 
         local lbl = facInner:Add("DLabel")
@@ -152,7 +151,6 @@ function PANEL:Init()
                     ico:DockMargin(5, 4, 5, 4)
                     ico:SetWide(20)
                     ico:SetMaterial(Material(clsData.logo))
-                    ico:SetImageColor(color_white)
                 end
 
                 local hlbl = cat.Header:Add("DLabel")
@@ -295,7 +293,6 @@ function PANEL:addPlayer(ply, parent)
     local logoSize, logoOffset = height * 0.65, 10
     slot.classLogo = vgui.Create("DImage", slot)
     slot.classLogo:SetSize(logoSize, logoSize)
-    slot.classLogo:SetImageColor(color_white)
     function slot:layout()
         self.ping:SizeToContents()
         local pingW, totalW = self.ping:GetWide(), self:GetWide()
