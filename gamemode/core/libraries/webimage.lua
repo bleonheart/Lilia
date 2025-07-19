@@ -190,8 +190,6 @@ lia.webimage.register("locked.png", "https://github.com/LiliaFramework/liaIcons/
 lia.webimage.register("unlocked.png", "https://github.com/LiliaFramework/liaIcons/blob/main/unlocked.png?raw=true")
 lia.webimage.register("checkbox.png", "https://github.com/LiliaFramework/liaIcons/blob/main/checkbox.png?raw=true")
 lia.webimage.register("unchecked.png", "https://github.com/LiliaFramework/liaIcons/blob/main/unchecked.png?raw=true")
-lia.webimage.register("checkboxfilled.png", "https://github.com/LiliaFramework/liaIcons/blob/main/checkboxfilled.png?raw=true")
-lia.webimage.register("checkboxfilled_crossed.png", "https://github.com/LiliaFramework/liaIcons/blob/main/checkboxfilled_crossed.png?raw=true")
 lia.webimage.register("normaltalk.png", "https://github.com/LiliaFramework/liaIcons/blob/main/normaltalk.png?raw=true")
 lia.webimage.register("yelltalk.png", "https://github.com/LiliaFramework/liaIcons/blob/main/yelltalk.png?raw=true")
 lia.webimage.register("whispertalk.png", "https://github.com/LiliaFramework/liaIcons/blob/main/whispertalk.png?raw=true")
