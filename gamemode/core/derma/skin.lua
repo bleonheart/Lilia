@@ -427,7 +427,7 @@ end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(color_white)
+    surface.SetDrawColor(255, 255, 255, 255)
     local t = 1
     local iconW = w * 0.4
     local x = (w - iconW) * 0.5
@@ -437,7 +437,7 @@ end
 
 function SKIN:PaintWindowMaximizeButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(color_white)
+    surface.SetDrawColor(255, 255, 255, 255)
     local iconW = w * 0.4
     local x = (w - iconW) * 0.5
     local y = (h - iconW) * 0.5
@@ -446,8 +446,14 @@ end
 
 function SKIN:PaintWindowCloseButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    local base = derma.GetDefaultSkin()
-    base.PaintWindowCloseButton(base, panel, w, h)
+    surface.SetDrawColor(255, 255, 255, 255)
+    local iconW = w * 0.4
+    local x1 = (w - iconW) * 0.5
+    local y1 = (h - iconW) * 0.5
+    local x2 = x1 + iconW
+    local y2 = y1 + iconW
+    surface.DrawLine(x1, y1, x2, y2)
+    surface.DrawLine(x2, y1, x1, y2)
 end
 
 function SKIN:PaintButton(panel)
