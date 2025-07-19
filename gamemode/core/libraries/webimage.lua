@@ -137,6 +137,7 @@ concommand.Add("lia_saved_images", function()
         local img = layout:Add("DImage")
         img:SetMaterial(buildMaterial(baseDir .. fn))
         img:SetSize(128, 128)
+        img:SetImageColor(color_white)
         img:SetTooltip(fn)
     end
 end)
