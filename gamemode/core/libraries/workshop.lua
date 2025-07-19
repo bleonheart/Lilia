@@ -151,7 +151,7 @@ else
 
             for _, id in ipairs(missing) do
                 steamworks.FileInfo(id, function(fi)
-                    if fi and fi.file_size then size = size + fi.file_size end
+                    if fi and fi.size then size = size + fi.size end
                     pending = pending - 1
                     if pending <= 0 then showPrompt(totalIds, have, size) end
                 end)
