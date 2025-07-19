@@ -287,49 +287,47 @@ if SERVER then
     end)
 end
 
-function lia.data.get(key, default, _, _, refresh)
-    if not refresh then
-        local stored = lia.data.stored[key]
-        PrintTable(stored, 1)
-        if stored ~= nil then
-            print("[lia.data.get] key:", key, "type(stored):", type(stored))
-            if isstring(stored) then
-                print("[lia.data.get] raw string stored:", stored)
-                local decoded = util.JSONToTable(stored)
-                if decoded then print("[lia.data.get] json decoded type:", type(decoded)) end
-                local depth = 0
-                while isstring(decoded) and depth < 5 do
-                    depth = depth + 1
-                    print("[lia.data.get] nested json string depth:", depth, "value:", decoded)
-                    decoded = util.JSONToTable(decoded)
-                    if decoded then print("[lia.data.get] nested decode type:", type(decoded)) end
-                end
-
-                if not decoded then
-                    local ok, ponDecoded = pcall(pon.decode, stored)
-                    if ok and ponDecoded then
-                        decoded = ponDecoded
-                        print("[lia.data.get] pon decoded type:", type(decoded))
-                    else
-                        print("[lia.data.get] pon decode failed")
-                    end
-                end
-
-                if istable(decoded) then
-                    stored = decoded[1] or decoded
-                    print("[lia.data.get] final table stored type:", type(stored))
-                elseif decoded ~= nil then
-                    stored = decoded
-                    print("[lia.data.get] final non-table stored type:", type(stored))
-                end
-
-                lia.data.stored[key] = stored
+function lia.data.get(key, default)
+    local stored = lia.data.stored[key]
+    PrintTable(stored, 1)
+    if stored ~= nil then
+        print("[lia.data.get] key:", key, "type(stored):", type(stored))
+        if isstring(stored) then
+            print("[lia.data.get] raw string stored:", stored)
+            local decoded = util.JSONToTable(stored)
+            if decoded then print("[lia.data.get] json decoded type:", type(decoded)) end
+            local depth = 0
+            while isstring(decoded) and depth < 5 do
+                depth = depth + 1
+                print("[lia.data.get] nested json string depth:", depth, "value:", decoded)
+                decoded = util.JSONToTable(decoded)
+                if decoded then print("[lia.data.get] nested decode type:", type(decoded)) end
             end
 
-            local final = lia.data.decode(stored)
-            print("[lia.data.get] returning type:", type(final))
-            return final
+            if not decoded then
+                local ok, ponDecoded = pcall(pon.decode, stored)
+                if ok and ponDecoded then
+                    decoded = ponDecoded
+                    print("[lia.data.get] pon decoded type:", type(decoded))
+                else
+                    print("[lia.data.get] pon decode failed")
+                end
+            end
+
+            if istable(decoded) then
+                stored = decoded[1] or decoded
+                print("[lia.data.get] final table stored type:", type(stored))
+            elseif decoded ~= nil then
+                stored = decoded
+                print("[lia.data.get] final non-table stored type:", type(stored))
+            end
+
+            lia.data.stored[key] = stored
         end
+
+        local final = lia.data.decode(stored)
+        print("[lia.data.get] returning type:", type(final))
+        return final
     end
 
     print("[lia.data.get] key:", key, "using default")
