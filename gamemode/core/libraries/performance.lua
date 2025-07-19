@@ -3,7 +3,6 @@ local clientCommands = {"gmod_mcore_test 1", "mem_max_heapsize_dedicated 131072"
 local serverHooks = {{"OnEntityCreated", "WidgetInit"}, {"Think", "DOFThink"}, {"Think", "CheckSchedules"}, {"PlayerTick", "TickWidgets"}, {"PlayerInitialSpawn", "PlayerAuthSpawn"}, {"LoadGModSave", "LoadGModSave"}, {"PlayerInitialSpawn", "HintSystem_PlayerInitialSpawn"}, {"PlayerSpawn", "HintSystem_PlayerSpawn"}}
 local clientHooks = {{"HUDPaint", "DamageEffect"}, {"StartChat", "StartChatIndicator"}, {"FinishChat", "EndChatIndicator"}, {"PostDrawEffects", "RenderWidgets"}, {"PostDrawEffects", "RenderHalos"}, {"OnEntityCreated", "WidgetInit"}, {"GUIMousePressed", "SuperDOFMouseDown"}, {"GUIMouseReleased", "SuperDOFMouseUp"}, {"PreventScreenClicks", "SuperDOFPreventClicks"}, {"Think", "DOFThink"}, {"Think", "CheckSchedules"}, {"NeedsDepthPass", "NeedsDepthPass_Bokeh"}, {"RenderScene", "RenderSuperDoF"}, {"RenderScene", "RenderStereoscopy"}, {"PreRender", "PreRenderFrameBlend"}, {"PostRender", "RenderFrameBlend"}, {"RenderScreenspaceEffects", "RenderBokeh"}}
 local spawn_delay = 8
-local update_distance = 5500
 local update_rate = 1
 local update_amount = 512
 local always_send = {
@@ -114,9 +113,9 @@ else
                 return
             end
 
-            current_range = math.min(update_distance, current_range + update_amount)
+            current_range = math.min(lia.config.get("MaxViewDistance", 5000), current_range + update_amount)
             update_transmit_states(pPlayer, current_range)
-            if current_range == update_distance then
+            if current_range == lia.config.get("MaxViewDistance", 5000) then
                 timer.Remove(timer_id)
                 data.expanded = true
                 data.expanding = false
@@ -133,7 +132,7 @@ else
             if data.expanded then
                 local ply = data.player
                 if IsValid(ply) then
-                    update_transmit_states(ply, update_distance)
+                    update_transmit_states(ply, lia.config.get("MaxViewDistance", 5000))
                 else
                     players_data[idx] = nil
                 end
