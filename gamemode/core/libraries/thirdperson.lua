@@ -99,10 +99,10 @@ hook.Add("PlayerButtonDown", "liaThirdPersonPlayerButtonDown", function(_, butto
     end
 end)
 
-local maxDist = lia.config.get("MaxViewDistance", 5000)
-local maxDistSqr = maxDist * maxDist
-local debounceTime = 0.15
 hook.Add("PrePlayerDraw", "liaThirdPersonPrePlayerDraw", function(ply)
+    local maxDist = lia.config.get("MaxViewDistance", 5000)
+    local maxDistSqr = maxDist * maxDist
+    local debounceTime = 0.15
     local client = LocalPlayer()
     if ply == client then return end
     if client:isStaffOnDuty() or not lia.config.get("WallPeek", false) or client:InVehicle() or client:hasValidVehicle() or client:isNoClipping() or not client:CanOverrideView() then
