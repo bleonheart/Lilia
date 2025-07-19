@@ -80,4 +80,9 @@ end
 function PANEL:PaintBehind()
 end
 
+function PANEL:PaintOver(w, h)
+    surface.SetDrawColor(0, 0, 0)
+    surface.DrawOutlinedRect(0, 0, w, h)
+end
+
 vgui.Register("liaGridInvItem", PANEL, "liaItemIcon")
