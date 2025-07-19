@@ -93,7 +93,7 @@ function SKIN:PaintButton(panel)
 end
 
 function SKIN:PaintWindowCloseButton(panel, w, h)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white)
     local mat = panel.Depressed and MAT_CLOSE or MAT_CLOSE_IDLE
     surface.SetMaterial(mat)
     surface.DrawTexturedRect(0, 0, w, h)
@@ -431,7 +431,7 @@ end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white)
     local t = 1
     local iconW = w * 0.4
     local x = (w - iconW) * 0.5
@@ -441,7 +441,7 @@ end
 
 function SKIN:PaintWindowMaximizeButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white)
     local iconW = w * 0.4
     local x = (w - iconW) * 0.5
     local y = (h - iconW) * 0.5
@@ -450,7 +450,7 @@ end
 
 function SKIN:PaintWindowCloseButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white)
     local mat = panel.Depressed and MAT_CLOSE or MAT_CLOSE_IDLE
     surface.SetMaterial(mat)
     surface.DrawTexturedRect(0, 0, w, h)
