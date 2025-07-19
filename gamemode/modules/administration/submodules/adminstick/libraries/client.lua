@@ -34,8 +34,8 @@ end
 
 local function RunAdminCommand(cmd, tgt, dur, reason, fallback)
     local cl = LocalPlayer()
-    local victim = IsValid(tgt) and tgt:IsPlayer() and tgt:IsBot() and tgt:Name() or tgt
-    hook.Run("RunAdminSystemCommand", action, client, victim)
+    local victim = IsValid(tgt) and tgt:IsPlayer() and (tgt:IsBot() and tgt:Name() or tgt:SteamID()) or tgt
+    hook.Run("RunAdminSystemCommand", cmd, cl, victim, dur, reason)
 end
 
 local function OpenPlayerModelUI(tgt)
