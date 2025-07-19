@@ -239,7 +239,7 @@ function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerNa
         lia.admin.removeBan(steamID64)
     end
 
-    local convertingMessage = lia.config.isConverting and L("serverConvertingConfig") or lia.data.isConverting and L("serverConvertingData") or lia.log.isConverting and L("serverConvertingLogs")
+    local convertingMessage = lia.data.isConverting and L("serverConvertingData")
     if convertingMessage then return false, convertingMessage end
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID64, playerName, serverPassword, clientPassword)
