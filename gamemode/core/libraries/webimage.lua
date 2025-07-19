@@ -194,6 +194,4 @@ lia.webimage.register("normaltalk.png", "https://github.com/LiliaFramework/liaIc
 lia.webimage.register("yelltalk.png", "https://github.com/LiliaFramework/liaIcons/blob/main/yelltalk.png?raw=true")
 lia.webimage.register("whispertalk.png", "https://github.com/LiliaFramework/liaIcons/blob/main/whispertalk.png?raw=true")
 lia.webimage.register("notalk.png", "https://github.com/LiliaFramework/liaIcons/blob/main/notalk.png?raw=true")
-lia.webimage.register("close_button.png", "https://github.com/LiliaFramework/liaIcons/blob/main/close_button.png?raw=true")
-lia.webimage.register("close_button_pressed.png", "https://github.com/LiliaFramework/liaIcons/blob/main/close_button_pressed.png?raw=true")
 ensureDir(baseDir)
