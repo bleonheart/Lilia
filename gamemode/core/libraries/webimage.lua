@@ -26,10 +26,7 @@ function lia.webimage.register(n, u, cb, flags)
     }
 
     lia.webimage._registered = registered
-    if cache[n] then
-        if cb then cb(cache[n], true) end
-        return
-    end
+    cache[n] = nil
 
     local savePath = baseDir .. n
     local function finalize(fromCache)
@@ -39,16 +36,17 @@ function lia.webimage.register(n, u, cb, flags)
         if not fromCache then hook.Run("WebImageDownloaded", n, "data/" .. savePath) end
     end
 
-    if file.Exists(savePath, "DATA") then
-        finalize(true)
-        return
-    end
-
     http.Fetch(u, function(b)
         ensureDir(baseDir)
         file.Write(savePath, b)
         finalize(false)
-    end, function(e) if cb then cb(nil, false, e) end end)
+    end, function(e)
+        if file.Exists(savePath, "DATA") then
+            finalize(true)
+        elseif cb then
+            cb(nil, false, e)
+        end
+    end)
 end
 
 function lia.webimage.get(n, flags)
