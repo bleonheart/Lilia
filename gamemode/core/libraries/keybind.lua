@@ -507,6 +507,7 @@ lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
                     local img = container:Add("DImage")
                     img:SetImage(data.logo)
                     img:SetScaledSize(128, 128)
+                    img:SetImageColor(color_white)
                     img.Think = function() img:SetPos(container:GetWide() - img:GetWide() - 10, 10) end
                 end
 
