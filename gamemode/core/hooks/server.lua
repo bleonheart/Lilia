@@ -547,6 +547,7 @@ function GM:SaveData()
                 local extra = hook.Run("GetEntitySaveData", ent)
                 if extra ~= nil then entData.data = extra end
                 data.entities[#data.entities + 1] = entData
+                print("[PERSIST] Saved entity:", entData.class, "Pos:", tostring(entData.pos), "Model:", tostring(entData.model))
                 hook.Run("OnEntityPersisted", ent, entData)
             end
         end
@@ -556,6 +557,8 @@ function GM:SaveData()
         if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, item:GetPos()} end
     end
 
+    print("[PERSIST] Total entities saved:", #data.entities)
+    print("[PERSIST] Total items saved:", #data.items)
     lia.data.set("persistance", data.entities)
     lia.data.set("itemsave", data.items)
 end
@@ -569,6 +572,7 @@ function GM:LoadData()
     end
 
     local entities = lia.data.get("persistance", {})
+    print("[PERSIST] Loading entities count:", #entities)
     for _, ent in ipairs(entities or {}) do
         if not IsEntityNearby(ent.pos, ent.class) then
             local createdEnt = ents.Create(ent.class)
@@ -578,14 +582,19 @@ function GM:LoadData()
                 if ent.model then createdEnt:SetModel(ent.model) end
                 createdEnt:Spawn()
                 createdEnt:Activate()
+                print("[PERSIST] Spawned entity:", ent.class, "Pos:", tostring(ent.pos), "Model:", tostring(ent.model))
                 hook.Run("OnEntityLoaded", createdEnt, ent.data)
+            else
+                print("[PERSIST] Failed to create entity:", ent.class)
             end
         else
+            print("[PERSIST] Skipped spawn (nearby exists):", ent.class, "Pos:", tostring(ent.pos))
             lia.error(L("entityCreationAborted", ent.class, ent.pos.x, ent.pos.y, ent.pos.z))
         end
     end
 
     local items = lia.data.get("itemsave", {})
+    print("[PERSIST] Loading items count:", #items)
     if items then
         local idRange = {}
         local positions = {}
@@ -598,6 +607,7 @@ function GM:LoadData()
             local range = "(" .. table.concat(idRange, ", ") .. ")"
             if hook.Run("ShouldDeleteSavedItems") == true then
                 lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
+                print("[PERSIST] Deleted saved items:", range)
                 lia.information(L("serverDeletedItems"))
             else
                 lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
@@ -616,13 +626,21 @@ function GM:LoadData()
                                 itemCreated:onRestored()
                                 itemCreated.invID = 0
                                 table.insert(loadedItems, itemCreated)
+                                print("[PERSIST] Restored item:", uniqueID, "ID:", itemID, "Pos:", tostring(position))
+                            else
+                                print("[PERSIST] Failed to restore item ID:", itemID, "UniqueID:", tostring(uniqueID))
                             end
                         end
 
+                        print("[PERSIST] Total items restored:", #loadedItems)
                         hook.Run("OnSavedItemLoaded", loadedItems)
+                    else
+                        print("[PERSIST] Item query returned no data")
                     end
                 end)
             end
+        else
+            print("[PERSIST] No item IDs to load")
         end
     end
 end
@@ -861,7 +879,7 @@ concommand.Add("list_entities", function(client)
     end
 end)
 
-local networkStrings = {"CharacterInfo", "msg", "doorPerm", "invAct", "liaDataSync", "ServerChatAddText", "charSet", "liaCharFetchNames", "charData", "charVar", "liaCharacterInvList", "charKick", "cMsg", "liaCmdArgPrompt", "cmd", "cfgSet", "cfgList", "gVar", "liaNotify", "liaNotifyL", "CreateTableUI", "WorkshopDownloader_Start", "WorkshopDownloader_Request", "WorkshopDownloader_Info", "liaPACSync", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "blindTarget", "blindFade", "CurTime-Sync", "NetStreamDS", "attrib", "charInfo", "nVar", "nDel", "doorMenu", "liaInventoryAdd", "liaInventoryRemove", "liaInventoryData", "liaInventoryInit", "liaInventoryDelete", "liaItemDelete", "liaItemInstance", "invData", "invQuantity", "seqSet", "liaData", "setWaypoint", "setWaypointWithLogo", "AnimationStatus", "actBar", "RequestDropdown", "OptionsRequest", "StringRequest", "ArgumentsRequest", "BinaryQuestionRequest", "nLcl", "item", "OpenInvMenu", "prePlayerLoadedChar", "playerLoadedChar", "postPlayerLoadedChar", "liaTransferItem", "AdminModeSwapCharacter", "managesitrooms", "liaCharChoose", "lia_managesitrooms_action", "SpawnMenuSpawnItem", "SpawnMenuGiveItem", "send_logs", "send_logs_request", "TicketSystemClaim", "TicketSystemClose", "TicketSystem", "ViewClaims", "RequestRemoveWarning", "ChangeAttribute", "liaTeleportToEntity", "removeF1", "ForceUpdateF1", "TransferMoneyFromP2P", "RunOption", "RunLocalOption", "rgnDone", "liaStorageOpen", "liaStorageUnlock", "liaStorageExit", "liaStorageTransfer", "trunkInitStorage", "VendorTrade", "VendorExit", "VendorEdit", "VendorMoney", "VendorStock", "VendorMaxStock", "VendorAllowFaction", "VendorAllowClass", "VendorMode", "VendorPrice", "VendorSync", "VendorOpen", "Vendor", "VendorFaction", "liaCharList", "liaCharCreate", "liaCharDelete", "CheckHack", "CheckSeed", "VerifyCheats", "request_respawn", "classUpdate"}
+local networkStrings = {"CharacterInfo", "RegenChat", "msg", "doorPerm", "invAct", "liaDataSync", "ServerChatAddText", "charSet", "liaCharFetchNames", "charData", "charVar", "liaCharacterInvList", "charKick", "cMsg", "liaCmdArgPrompt", "cmd", "cfgSet", "cfgList", "gVar", "liaNotify", "liaNotifyL", "CreateTableUI", "WorkshopDownloader_Start", "WorkshopDownloader_Request", "WorkshopDownloader_Info", "liaPACSync", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "blindTarget", "blindFade", "CurTime-Sync", "NetStreamDS", "attrib", "charInfo", "nVar", "nDel", "doorMenu", "liaInventoryAdd", "liaInventoryRemove", "liaInventoryData", "liaInventoryInit", "liaInventoryDelete", "liaItemDelete", "liaItemInstance", "invData", "invQuantity", "seqSet", "liaData", "setWaypoint", "setWaypointWithLogo", "AnimationStatus", "actBar", "RequestDropdown", "OptionsRequest", "StringRequest", "ArgumentsRequest", "BinaryQuestionRequest", "nLcl", "item", "OpenInvMenu", "prePlayerLoadedChar", "playerLoadedChar", "postPlayerLoadedChar", "liaTransferItem", "AdminModeSwapCharacter", "managesitrooms", "liaCharChoose", "lia_managesitrooms_action", "SpawnMenuSpawnItem", "SpawnMenuGiveItem", "send_logs", "send_logs_request", "TicketSystemClaim", "TicketSystemClose", "TicketSystem", "ViewClaims", "RequestRemoveWarning", "ChangeAttribute", "liaTeleportToEntity", "removeF1", "ForceUpdateF1", "TransferMoneyFromP2P", "RunOption", "RunLocalOption", "rgnDone", "liaStorageOpen", "liaStorageUnlock", "liaStorageExit", "liaStorageTransfer", "trunkInitStorage", "VendorTrade", "VendorExit", "VendorEdit", "VendorMoney", "VendorStock", "VendorMaxStock", "VendorAllowFaction", "VendorAllowClass", "VendorMode", "VendorPrice", "VendorSync", "VendorOpen", "Vendor", "VendorFaction", "liaCharList", "liaCharCreate", "liaCharDelete", "CheckHack", "CheckSeed", "VerifyCheats", "request_respawn", "classUpdate"}
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
