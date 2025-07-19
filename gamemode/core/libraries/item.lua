@@ -106,6 +106,35 @@ local DefaultFunctions = {
             local target = client:GetEyeTraceNoCursor().Entity
             return item.entity == nil and lia.config.get("ItemGiveEnabled") and not IsValid(item.entity) and not item.noDrop and target and IsValid(target) and target:IsPlayer() and target:Alive() and client:GetPos():DistToSqr(target:GetPos()) < 6500
         end
+    },
+    show = {
+        tip = "showTip",
+        icon = "icon16/magnifier.png",
+        onRun = function(item)
+            local client = item.player
+            local target = client:GetEyeTraceNoCursor().Entity
+            if not (IsValid(target) and target:IsPlayer() and target:Alive() and client:GetPos():DistToSqr(target:GetPos()) < 6500) then
+                client:notifyLocalized("lookToUseAt")
+                return false
+            end
+
+            target:binaryQuestion(L("inspectRequest", client:Name(), item:getName()), L("yes"), L("no"), false, function(choice)
+                if choice == 0 then
+                    item:sync(target)
+                    item:sync(client)
+                    net.Start("ItemShowInspect")
+                    net.WriteUInt(item:getID(), 32)
+                    net.Send({client, target})
+                end
+            end)
+
+            return false
+        end,
+        onCanRun = function(item)
+            local client = item.player
+            local target = client:GetEyeTraceNoCursor().Entity
+            return not IsValid(item.entity) and IsValid(target) and target:IsPlayer() and target:Alive() and client:GetPos():DistToSqr(target:GetPos()) < 6500
+        end
     }
 }
 

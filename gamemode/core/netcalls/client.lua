@@ -692,3 +692,11 @@ net.Receive("nDel", function()
     local index = net.ReadUInt(16)
     lia.net[index] = nil
 end)
+
+net.Receive("ItemShowInspect", function()
+    local itemID = net.ReadUInt(32)
+    local item = lia.item.instances[itemID]
+    if item then
+        lia.util.showItemInspect(item)
+    end
+end)
