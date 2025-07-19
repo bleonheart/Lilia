@@ -80,7 +80,14 @@ else
     end
 
     local function formatSize(bytes)
-        return string.format("%.2f", bytes / (1024 * 1024 * 1024))
+        if not bytes or bytes <= 0 then return "0 B" end
+        local units = {"B", "KB", "MB", "GB", "TB"}
+        local unit = 1
+        while bytes >= 1024 and unit < #units do
+            bytes = bytes / 1024
+            unit = unit + 1
+        end
+        return string.format("%.2f %s", bytes, units[unit])
     end
 
     local function showPrompt(total, have, size)
