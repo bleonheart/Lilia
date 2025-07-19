@@ -1,13 +1,7 @@
 local MODULE = MODULE
 MODULE.spawns = MODULE.spawns or {}
-local function decodeVector(tbl)
-    if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then return Vector(tbl[1], tbl[2], tbl[3]) end
-    return tbl
-end
-
-local function encodeVector(vec)
-    return {vec.x, vec.y, vec.z}
-end
+local decodeVector = lia.data.decodeVector
+local encodeVector = lia.data.encodeVector
 
 function MODULE:LoadData(attempt)
     attempt = attempt or 1

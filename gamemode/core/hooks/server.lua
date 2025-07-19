@@ -1,4 +1,8 @@
 ﻿local GM = GM or GAMEMODE
+local encodeVector = lia.data.encodeVector
+local encodeAngle = lia.data.encodeAngle
+local decodeVector = lia.data.decodeVector
+local decodeAngle = lia.data.decodeAngle
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     if not character:getInv() then return end
@@ -538,10 +542,10 @@ function GM:SaveData()
             if not seen[key] then
                 seen[key] = true
                 local entData = {
-                    pos = ent:GetPos(),
+                    pos = encodeVector(ent:GetPos()),
                     class = ent:GetClass(),
                     model = ent:GetModel(),
-                    angles = ent:GetAngles()
+                    angles = encodeAngle(ent:GetAngles())
                 }
 
                 local extra = hook.Run("GetEntitySaveData", ent)
@@ -554,7 +558,9 @@ function GM:SaveData()
     end
 
     for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, item:GetPos()} end
+        if item.liaItemID and not item.temp then
+            data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos())}
+        end
     end
 
     print("[PERSIST] Total entities saved:", #data.entities)
@@ -577,8 +583,8 @@ function GM:LoadData()
         if not IsEntityNearby(ent.pos, ent.class) then
             local createdEnt = ents.Create(ent.class)
             if IsValid(createdEnt) then
-                if ent.pos then createdEnt:SetPos(ent.pos) end
-                if ent.angles then createdEnt:SetAngles(ent.angles) end
+                if ent.pos then createdEnt:SetPos(decodeVector(ent.pos)) end
+                if ent.angles then createdEnt:SetAngles(decodeAngle(ent.angles)) end
                 if ent.model then createdEnt:SetModel(ent.model) end
                 createdEnt:Spawn()
                 createdEnt:Activate()
@@ -600,7 +606,7 @@ function GM:LoadData()
         local positions = {}
         for _, item in ipairs(items) do
             idRange[#idRange + 1] = item[1]
-            positions[item[1]] = item[2]
+            positions[item[1]] = decodeVector(item[2])
         end
 
         if #idRange > 0 then
@@ -618,7 +624,7 @@ function GM:LoadData()
                             local itemData = util.JSONToTable(item._data or "[]")
                             local uniqueID = item._uniqueID
                             local itemTable = lia.item.list[uniqueID]
-                            local position = positions[itemID]
+                            local position = decodeVector(positions[itemID])
                             if itemTable and itemID then
                                 local itemCreated = lia.item.new(uniqueID, itemID)
                                 itemCreated.data = itemData or {}
@@ -656,10 +662,10 @@ function GM:OnEntityCreated(ent)
     local key = makeKey(ent)
     if not seen[key] then
         saved[#saved + 1] = {
-            pos = ent:GetPos(),
+            pos = encodeVector(ent:GetPos()),
             class = ent:GetClass(),
             model = ent:GetModel(),
-            angles = ent:GetAngles(),
+            angles = encodeAngle(ent:GetAngles()),
         }
 
         lia.data.set("persistance", saved)
