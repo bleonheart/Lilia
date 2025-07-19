@@ -566,7 +566,7 @@ function GM:SaveData()
 
     print("[PERSIST] Total entities saved:", #data.entities)
     print("[PERSIST] Total items saved:", #data.items)
-    lia.data.set("persistance", data.entities)
+    lia.data.set("persistence", data.entities)
     lia.data.set("itemsave", data.items)
 end
 
@@ -578,7 +578,7 @@ function GM:LoadData()
         return false
     end
 
-    local entities = lia.data.get("persistance", {})
+    local entities = lia.data.get("persistence", {})
     if istable(entities) then PrintTable(entities, 1) end
     print("[PERSIST] Loading entities count:", #entities)
     for _, ent in ipairs(entities or {}) do
@@ -655,7 +655,7 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-    local saved = lia.data.get("persistance", {}) or {}
+    local saved = lia.data.get("persistence", {}) or {}
     local seen = {}
     for _, e in ipairs(saved) do
         seen[makeKey(e)] = true
@@ -670,7 +670,7 @@ function GM:OnEntityCreated(ent)
             angles = encodeAngle(ent:GetAngles()),
         }
 
-        lia.data.set("persistance", saved)
+        lia.data.set("persistence", saved)
     end
 end
 
