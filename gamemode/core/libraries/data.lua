@@ -262,7 +262,12 @@ if SERVER then
                     lia.db.select({"_folder", "_map", "_value"}, "data_" .. key, condition):next(function(res2)
                         local rows = res2.results or {}
                         for _, row in ipairs(rows) do
-                            local decoded = util.JSONToTable(row._value or "[]")
+                            local raw = row._value or "[]"
+                            local decoded = util.JSONToTable(raw)
+                            if not decoded then
+                                local ok, ponDecoded = pcall(pon.decode, raw)
+                                if ok and ponDecoded then decoded = ponDecoded end
+                            end
                             if istable(decoded) then
                                 lia.data.stored[key] = lia.data.decode(decoded[1] or decoded)
                             end
@@ -293,6 +298,10 @@ function lia.data.get(key, default, _, _, refresh)
                 while isstring(decoded) and depth < 5 do
                     depth = depth + 1
                     decoded = util.JSONToTable(decoded)
+                end
+                if not decoded then
+                    local ok, ponDecoded = pcall(pon.decode, stored)
+                    if ok and ponDecoded then decoded = ponDecoded end
                 end
                 if istable(decoded) then
                     stored = decoded[1] or decoded
