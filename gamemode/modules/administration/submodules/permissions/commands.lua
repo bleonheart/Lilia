@@ -36,7 +36,7 @@
 lia.command.add("charunbanoffline", {
     superAdminOnly = true,
     privilege = "Unban Offline",
-    desc = "Unban an offline character using their Char ID.",
+    desc = "charUnbanOfflineDesc",
     syntax = "[number Char ID]",
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
@@ -53,7 +53,7 @@ lia.command.add("charunbanoffline", {
 lia.command.add("charbanoffline", {
     superAdminOnly = true,
     privilege = "Ban Offline",
-    desc = "Ban an offline character using their Char ID.",
+    desc = "charBanOfflineDesc",
     syntax = "[number Char ID]",
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
@@ -82,7 +82,7 @@ lia.command.add("charbanoffline", {
 lia.command.add("charlist", {
     adminOnly = true,
     privilege = "List Characters",
-    desc = "List all characters for a player by name or Steam ID, or yourself if none is provided.",
+    desc = "charListDesc",
     syntax = "[string Player Or Steam ID]",
     AdminStick = {
         Name = "Open CharList",
