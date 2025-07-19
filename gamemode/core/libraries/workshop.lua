@@ -99,6 +99,8 @@ else
         frame:SetSize(500, 150)
         frame:Center()
         frame:MakePopup()
+        frame:SetZPos(10000)
+        frame:MoveToFront()
         local lbl = frame:Add("DLabel")
         lbl:Dock(TOP)
         lbl:SetWrap(true)
@@ -109,10 +111,12 @@ else
         btnPanel:Dock(BOTTOM)
         btnPanel:SetTall(40)
         btnPanel.Paint = nil
+        local btnWidth = (frame:GetWide() - 5) / 2
         local yes = btnPanel:Add("DButton")
         yes:Dock(LEFT)
         yes:SetText(L("yes"))
         yes:DockMargin(0, 0, 5, 0)
+        yes:SetWide(btnWidth)
         yes.DoClick = function()
             lia.option.set("autoDownloadWorkshop", true)
             net.Start("WorkshopDownloader_Request")
@@ -121,8 +125,9 @@ else
         end
 
         local no = btnPanel:Add("DButton")
-        no:Dock(FILL)
+        no:Dock(RIGHT)
         no:SetText(L("no"))
+        no:SetWide(btnWidth)
         no.DoClick = function()
             lia.option.set("autoDownloadWorkshop", false)
             frame:Close()
@@ -172,6 +177,8 @@ else
         panel = vgui.Create("DPanel")
         panel:SetSize(w, h)
         panel:SetPos((ScrW() - w) / 2, ScrH() * 0.1)
+        panel:SetZPos(10000)
+        panel:MoveToFront()
         derma.SkinHook("Paint", "Panel", panel, w, h)
         local lbl = vgui.Create("DLabel", panel)
         lbl:SetFont("DermaLarge")
