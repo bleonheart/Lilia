@@ -53,6 +53,7 @@ function PANEL:populateClassDetails(cl, canBe)
         local img = container:Add("DImage")
         img:SetImage(cl.logo)
         img:SetScaledSize(128, 128)
+        img:SetImageColor(color_white)
         img.Think = function() img:SetPos(container:GetWide() - img:GetWide() - 10, 10) end
     end
 
