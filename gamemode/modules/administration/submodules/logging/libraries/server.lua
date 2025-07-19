@@ -216,6 +216,9 @@ function MODULE:OnItemAdded(owner, item)
 end
 
 function MODULE:ItemFunctionCalled(item, action, client)
+    if not action then return end
+    local lowered = string.lower(action)
+    if lowered == "onloadout" or lowered == "onsave" then return end
     if IsValid(client) then lia.log.add(client, "itemFunction", action, item:getName()) end
 end
 
