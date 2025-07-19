@@ -1,4 +1,4 @@
-﻿local surface = surface
+local surface = surface
 local Color = Color
 local function drawAltBg(panel, w, h)
     lia.util.drawBlur(panel, 10)
@@ -427,7 +427,7 @@ end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white)
     local t = 1
     local iconW = w * 0.4
     local x = (w - iconW) * 0.5
@@ -437,7 +437,7 @@ end
 
 function SKIN:PaintWindowMaximizeButton(panel, w, h)
     paintButtonBase(panel, w, h)
-    surface.SetDrawColor(255, 255, 255, 255)
+    surface.SetDrawColor(color_white)
     local iconW = w * 0.4
     local x = (w - iconW) * 0.5
     local y = (h - iconW) * 0.5
