@@ -536,6 +536,7 @@ function GM:SaveData()
         items = {}
     }
 
+    PrintTable(data, 1)
     for _, ent in ents.Iterator() do
         if ent:isLiliaPersistent() then
             local key = makeKey(ent)
@@ -578,6 +579,7 @@ function GM:LoadData()
     end
 
     local entities = lia.data.get("persistance", {})
+    PrintTable(entities, 1)
     print("[PERSIST] Loading entities count:", #entities)
     for _, ent in ipairs(entities or {}) do
         if not IsEntityNearby(ent.pos, ent.class) then
