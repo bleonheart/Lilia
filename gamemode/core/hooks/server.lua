@@ -564,6 +564,7 @@ function GM:SaveData()
 
     print("[PERSIST] Total entities saved:", #data.entities)
     print("[PERSIST] Total items saved:", #data.items)
+    PrintTable(data.entities, 1)
     lia.data.set("persistance", data.entities)
     lia.data.set("itemsave", data.items)
 end
