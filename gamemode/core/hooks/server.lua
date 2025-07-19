@@ -559,12 +559,13 @@ function GM:SaveData()
     end
 
     for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos())} end
+        if item.liaItemID and not item.temp then
+            data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos())}
+        end
     end
 
     print("[PERSIST] Total entities saved:", #data.entities)
     print("[PERSIST] Total items saved:", #data.items)
-    PrintTable(data.entities, 1)
     lia.data.set("persistance", data.entities)
     lia.data.set("itemsave", data.items)
 end
@@ -577,8 +578,8 @@ function GM:LoadData()
         return false
     end
 
-    local entities = lia.data.get("persistance")
-    PrintTable(entities, 1)
+    local entities = lia.data.get("persistance", {})
+    if istable(entities) then PrintTable(entities, 1) end
     print("[PERSIST] Loading entities count:", #entities)
     for _, ent in ipairs(entities or {}) do
         if not IsEntityNearby(ent.pos, ent.class) then
@@ -601,6 +602,7 @@ function GM:LoadData()
     end
 
     local items = lia.data.get("itemsave", {})
+    print("[PERSIST] Loading items count:", #items)
     if items then
         local idRange = {}
         local positions = {}
@@ -613,6 +615,7 @@ function GM:LoadData()
             local range = "(" .. table.concat(idRange, ", ") .. ")"
             if hook.Run("ShouldDeleteSavedItems") == true then
                 lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
+                print("[PERSIST] Deleted saved items:", range)
                 lia.information(L("serverDeletedItems"))
             else
                 lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
@@ -631,13 +634,21 @@ function GM:LoadData()
                                 itemCreated:onRestored()
                                 itemCreated.invID = 0
                                 table.insert(loadedItems, itemCreated)
+                                print("[PERSIST] Restored item:", uniqueID, "ID:", itemID, "Pos:", tostring(position))
+                            else
+                                print("[PERSIST] Failed to restore item ID:", itemID, "UniqueID:", tostring(uniqueID))
                             end
                         end
 
+                        print("[PERSIST] Total items restored:", #loadedItems)
                         hook.Run("OnSavedItemLoaded", loadedItems)
+                    else
+                        print("[PERSIST] Item query returned no data")
                     end
                 end)
             end
+        else
+            print("[PERSIST] No item IDs to load")
         end
     end
 end

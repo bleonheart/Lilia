@@ -289,7 +289,7 @@ end
 
 function lia.data.get(key, default)
     local stored = lia.data.stored[key]
-    PrintTable(stored, 1)
+    if istable(stored) then PrintTable(stored, 1) end
     if stored ~= nil then
         print("[lia.data.get] key:", key, "type(stored):", type(stored))
         if isstring(stored) then
