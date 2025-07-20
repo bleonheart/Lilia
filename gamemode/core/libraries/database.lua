@@ -263,6 +263,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
+    DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_persistence`;
 ]])
             local done = 0
@@ -290,6 +291,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
+    DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_persistence;
 ]], realCallback)
     end
@@ -390,6 +392,22 @@ function lia.db.loadTables()
                 _charID INTEGER,
                 _steamID VARCHAR
             );
+
+            CREATE TABLE IF NOT EXISTS lia_doors (
+                _folder TEXT,
+                _map TEXT,
+                _id INTEGER,
+                _factions TEXT,
+                _classes TEXT,
+                _disabled INTEGER,
+                _hidden INTEGER,
+                _ownable INTEGER,
+                _name TEXT,
+                _price INTEGER,
+                _locked INTEGER,
+                _children TEXT,
+                PRIMARY KEY (_folder, _map, _id)
+            );
         ]], done)
     else
         local queries = string.Explode(";", [[
@@ -476,6 +494,22 @@ function lia.db.loadTables()
                 `_charID` INT(12) NULL,
                 `_steamID` VARCHAR(20) NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_doors` (
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `_id` INT NOT NULL,
+                `_factions` TEXT NULL,
+                `_classes` TEXT NULL,
+                `_disabled` TINYINT(1) NULL,
+                `_hidden` TINYINT(1) NULL,
+                `_ownable` TINYINT(1) NULL,
+                `_name` TEXT NULL,
+                `_price` INT NULL,
+                `_locked` TINYINT(1) NULL,
+                `_children` TEXT NULL,
+                PRIMARY KEY (`_folder`, `_map`, `_id`)
             );
         ]])
         local i = 1
