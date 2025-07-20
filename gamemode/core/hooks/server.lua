@@ -880,7 +880,15 @@ local function checkFrameworkVersion()
             return
         end
 
-        if versionCompare(localVersion, remote.version) < 0 then lia.updater(L("frameworkOutdated")) end
+        if versionCompare(localVersion, remote.version) < 0 then
+            local localNum, remoteNum = tonumber(localVersion), tonumber(remote.version)
+            if localNum and remoteNum then
+                local diff = remoteNum - localNum
+                diff = math.Round(diff, 3)
+                lia.updater(L("frameworkBehindCount", diff))
+            end
+            lia.updater(L("frameworkOutdated"))
+        end
     end, function(err) lia.updater(L("frameworkVersionError", err)) end)
 end
 
