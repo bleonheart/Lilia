@@ -6,6 +6,7 @@ end
 local function LogCheaterAction(client, action)
     lia.log.add(client, "cheaterAction", action)
 end
+
 function MODULE:CanPlayerSwitchChar(client, character)
     if not client:isStaffOnDuty() then
         local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
@@ -34,6 +35,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
         LogCheaterAction(attacker, "deal damage")
         return true
     end
+
     local notSameEntity = attacker ~= entity
     local isFallDamage = dmgInfo:IsFallDamage()
     local inflictorIsProp = IsValid(inflictor) and inflictor:isProp()
@@ -257,10 +259,7 @@ function MODULE:PlayerInitialSpawn(client)
             client:setLiliaData("cheater", true)
             client:saveLiliaData()
             hook.Run("OnCheaterCaught", client)
-            if override ~= true then
-                lia.applyPunishment(client, L("hackingInfraction"), true, true, 0,
-                    "kickedForInfractionPeriod", "bannedForInfractionPeriod")
-            end
+            if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
         end
     end)
 end
@@ -277,21 +276,19 @@ hook.Add("OnCheaterCaught", "liaProtectionCheaterLog", function(client)
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
         client:notifyLocalized("caughtCheating")
         for _, p in player.Iterator() do
-            if p:isStaffOnDuty() or p:IsSuperAdmin() then
-                p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64())
-            end
+            if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64()) end
         end
     end
 end)
 
-function MODULE:PlayerUse(client, entity)
+function MODULE:PlayerUse(client)
     if IsCheater(client) then
         LogCheaterAction(client, "use entity")
         return false
     end
 end
 
-function MODULE:CanPlayerInteractItem(client, action, item)
+function MODULE:CanPlayerInteractItem(client, action)
     if IsCheater(client) then
         LogCheaterAction(client, action .. " item")
         return false
