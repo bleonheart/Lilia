@@ -3,7 +3,6 @@
     ["name"] = true,
     ["price"] = true,
     ["noSell"] = true,
-    ["faction"] = true,
     ["factions"] = true,
     ["class"] = true,
     ["hidden"] = true,
@@ -82,7 +81,6 @@ function MODULE:SaveData()
 
         if door.liaChildren then doorData.children = door.liaChildren end
         if door.liaClassID then doorData.class = door.liaClassID end
-        if door.liaFactionID then doorData.faction = door.liaFactionID end
         if not table.IsEmpty(doorData) then data[id] = doorData end
     end
 
@@ -171,21 +169,24 @@ end
 
 function MODULE:ShowTeam(client)
     local entity = client:getTracedEntity()
-    if IsValid(entity) and entity:isDoor() and not entity:getNetVar("faction") and not entity:getNetVar("class") then
-        if entity:checkDoorAccess(client, DOOR_TENANT) then
-            local door = entity
-            if IsValid(door.liaParent) then door = door.liaParent end
-            net.Start("doorMenu")
-            net.WriteEntity(door)
-            net.WriteTable(door.liaAccess)
-            net.WriteEntity(entity)
-            net.Send(client)
-        elseif not IsValid(entity:GetDTEntity(0)) then
-            lia.command.run(client, "doorbuy")
-        else
-            client:notifyLocalized("notNow")
+    if IsValid(entity) and entity:isDoor() then
+        local factions = entity:getNetVar("factions")
+        if (not factions or factions == "[]") and not entity:getNetVar("class") then
+            if entity:checkDoorAccess(client, DOOR_TENANT) then
+                local door = entity
+                if IsValid(door.liaParent) then door = door.liaParent end
+                net.Start("doorMenu")
+                net.WriteEntity(door)
+                net.WriteTable(door.liaAccess)
+                net.WriteEntity(entity)
+                net.Send(client)
+            elseif not IsValid(entity:GetDTEntity(0)) then
+                lia.command.run(client, "doorbuy")
+            else
+                client:notifyLocalized("notNow")
+            end
+            return true
         end
-        return true
     end
 end
 
