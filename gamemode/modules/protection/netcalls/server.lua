@@ -530,6 +530,8 @@ function MODULE:InitializedModules()
             client.nextExploitNotify = client.nextExploitNotify or 0
             if client.nextExploitNotify > CurTime() then return end
             client.nextExploitNotify = CurTime() + 2
+            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(v))
+            client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
                 if p:isStaffOnDuty() then
                     p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(v))
