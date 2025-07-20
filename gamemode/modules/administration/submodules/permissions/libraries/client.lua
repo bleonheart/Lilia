@@ -17,11 +17,12 @@ function MODULE:HUDPaint()
     local maxDistanceSq = 4096
     for _, ent in ents.Iterator() do
         if not IsValid(ent) or ent == client then continue end
-        local entityType, label
-        if ent:IsPlayer() and lia.option.get("espPlayers") then
+        local entityType, label, nameLabel
+        if ent:IsPlayer() then
             entityType = "Players"
             if ent:getNetVar("cheater") then
                 label = "CHEATER"
+                nameLabel = ent:Name():gsub("#", "\226\128\139#")
             else
                 label = ent:Name():gsub("#", "\226\128\139#")
             end
@@ -52,7 +53,14 @@ function MODULE:HUDPaint()
         local x, y = math.Clamp(scrPos.x, marginx, ScrW() - marginx), math.Clamp(scrPos.y, marginy, ScrH() - marginy)
         surface.SetDrawColor(colorToUse.r, colorToUse.g, colorToUse.b, colorToUse.a)
         surface.DrawRect(x - size / 2, y - size / 2, size, size)
-        draw.SimpleTextOutlined(label, "liaMediumFont", x, y - size, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        surface.SetFont("liaMediumFont")
+        local _, lineH = surface.GetTextSize("W")
+        if nameLabel then
+            draw.SimpleTextOutlined(label, "liaMediumFont", x, y - size - lineH / 2, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+            draw.SimpleTextOutlined(nameLabel, "liaMediumFont", x, y - size + lineH / 2, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        else
+            draw.SimpleTextOutlined(label, "liaMediumFont", x, y - size, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        end
     end
 end
 
