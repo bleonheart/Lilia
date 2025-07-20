@@ -19,6 +19,7 @@ lia.command.add("banooc", {
         end
 
         MODULE.OOCBans[target:SteamID64()] = true
+        MODULE:SaveData()
         client:notifyLocalized("playerBannedFromOOC", target:Name())
         lia.log.add(client, "banOOC", target:Name(), target:SteamID64())
     end
@@ -43,6 +44,7 @@ lia.command.add("unbanooc", {
         end
 
         MODULE.OOCBans[target:SteamID64()] = nil
+        MODULE:SaveData()
         client:notifyLocalized("playerUnbannedFromOOC", target:Name())
         lia.log.add(client, "unbanOOC", target:Name(), target:SteamID64())
     end
