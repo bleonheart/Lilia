@@ -257,3 +257,10 @@ function MODULE:PlayerDisconnected(client)
         client.VerifyCheatsTimer = nil
     end
 end
+
+hook.Add("OnCheaterCaught", "liaProtectionCheaterLog", function(client)
+    if IsValid(client) then
+        lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
+        client:notifyLocalized("caughtCheating")
+    end
+end)
