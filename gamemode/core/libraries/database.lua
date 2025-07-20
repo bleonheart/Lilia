@@ -264,6 +264,10 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
+    DROP TABLE IF EXISTS `lia_spawns`;
+    DROP TABLE IF EXISTS `lia_chatbox`;
+    DROP TABLE IF EXISTS `lia_admingroups`;
+    DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
 ]])
             local done = 0
@@ -292,6 +296,10 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
+    DROP TABLE IF EXISTS lia_spawns;
+    DROP TABLE IF EXISTS lia_chatbox;
+    DROP TABLE IF EXISTS lia_admingroups;
+    DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
 ]], realCallback)
     end
@@ -408,6 +416,31 @@ function lia.db.loadTables()
                 _children TEXT,
                 PRIMARY KEY (_folder, _map, _id)
             );
+
+            CREATE TABLE IF NOT EXISTS lia_spawns (
+                _schema TEXT,
+                _map TEXT,
+                _data TEXT,
+                PRIMARY KEY (_schema, _map)
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_chatbox (
+                _schema TEXT,
+                _map TEXT,
+                _data TEXT,
+                PRIMARY KEY (_schema, _map)
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_saveditems (
+                _schema TEXT,
+                _map TEXT,
+                _data TEXT,
+                PRIMARY KEY (_schema, _map)
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_admingroups (
+                _data TEXT
+            );
         ]], done)
     else
         local queries = string.Explode(";", [[
@@ -510,6 +543,31 @@ function lia.db.loadTables()
                 `_locked` TINYINT(1) NULL,
                 `_children` TEXT NULL,
                 PRIMARY KEY (`_folder`, `_map`, `_id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_spawns` (
+                `_schema` TEXT NULL,
+                `_map` TEXT NULL,
+                `_data` TEXT NULL,
+                PRIMARY KEY (`_schema`, `_map`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_chatbox` (
+                `_schema` TEXT NULL,
+                `_map` TEXT NULL,
+                `_data` TEXT NULL,
+                PRIMARY KEY (`_schema`, `_map`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_saveditems` (
+                `_schema` TEXT NULL,
+                `_map` TEXT NULL,
+                `_data` TEXT NULL,
+                PRIMARY KEY (`_schema`, `_map`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_admingroups` (
+                `_data` TEXT NULL
             );
         ]])
         local i = 1
