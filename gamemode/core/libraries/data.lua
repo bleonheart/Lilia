@@ -231,10 +231,9 @@ if SERVER then
 
 
     function lia.data.loadTables()
-        lia.db.waitForTablesToLoad():next(function()
-            local query = lia.db.module == "sqlite" and "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_data_%'" or "SHOW TABLES LIKE 'lia_data_%'"
-            lia.db.query(query, function(res)
-                local tables = {}
+        local query = lia.db.module == "sqlite" and "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_data_%'" or "SHOW TABLES LIKE 'lia_data_%'"
+        lia.db.query(query, function(res)
+            local tables = {}
                 if res then
                     if lia.db.module == "sqlite" then
                         for _, row in ipairs(res) do
@@ -279,7 +278,6 @@ if SERVER then
 
                 loadNext()
             end)
-        end)
     end
 
     local function createPersistenceTable()
@@ -344,10 +342,8 @@ if SERVER then
     end
 
     function lia.data.loadPersistence()
-        lia.db.waitForTablesToLoad():next(function()
-            createPersistenceTable()
-            return ensurePersistenceColumns(baseCols)
-        end)
+        createPersistenceTable()
+        return ensurePersistenceColumns(baseCols)
     end
 
     function lia.data.savePersistence(entities)
@@ -366,14 +362,11 @@ if SERVER then
             end
         end
 
-        lia.db.waitForTablesToLoad():next(function()
-            createPersistenceTable()
-        end):next(function()
-            local cols = {}
-            for _, c in ipairs(baseCols) do cols[#cols + 1] = c end
-            for _, c in ipairs(dynamicList) do cols[#cols + 1] = c end
-            return ensurePersistenceColumns(cols)
-        end):next(function()
+        createPersistenceTable()
+        local cols = {}
+        for _, c in ipairs(baseCols) do cols[#cols + 1] = c end
+        for _, c in ipairs(dynamicList) do cols[#cols + 1] = c end
+        ensurePersistenceColumns(cols):next(function()
             return lia.db.delete("persistence", condition)
         end):next(function()
             local rows = {}
@@ -399,10 +392,8 @@ if SERVER then
         local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
         local condition = buildCondition(folder, map)
-        lia.db.waitForTablesToLoad():next(function()
-            createPersistenceTable()
-            return ensurePersistenceColumns(baseCols)
-        end):next(function()
+        createPersistenceTable()
+        ensurePersistenceColumns(baseCols):next(function()
             return lia.db.select("*", "persistence", condition)
         end):next(function(res)
             local rows = res.results or {}

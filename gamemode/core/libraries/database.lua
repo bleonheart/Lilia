@@ -935,11 +935,6 @@ end
 
 function GM:DatabaseConnected()
     lia.bootstrap("Database", L("databaseConnected", lia.db.module), Color(0, 255, 0))
-    if SERVER then
-        lia.log.loadTables()
-        lia.data.loadTables()
-        lia.data.loadPersistence()
-    end
 end
 
 function GM:OnMySQLOOConnected()

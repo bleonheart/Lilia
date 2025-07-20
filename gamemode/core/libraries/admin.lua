@@ -55,9 +55,7 @@ function lia.admin.load()
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.selectOne({"_data"}, "admingroups")
-    end):next(function(res)
+    lia.db.selectOne({"_data"}, "admingroups"):next(function(res)
         local data = res and util.JSONToTable(res._data or "") or {}
         continueLoad(data)
     end)
@@ -121,11 +119,9 @@ if SERVER then
 
     function lia.admin.save(network)
         if lia.admin.isDisabled() then return end
-        lia.db.waitForTablesToLoad():next(function()
-            return lia.db.upsert({
-                _data = util.TableToJSON(lia.admin.groups)
-            }, "admingroups")
-        end)
+        lia.db.upsert({
+            _data = util.TableToJSON(lia.admin.groups)
+        }, "admingroups")
         if network then
             net.Start("lilia_updateAdminGroups")
             net.WriteTable(lia.admin.groups)
@@ -176,11 +172,6 @@ if SERVER then
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
     end
-
-    hook.Add("InitPostEntity", "lia_LoadAdmin", function()
-        if lia.admin.isDisabled() then return end
-        lia.admin.load()
-    end)
 
     hook.Add("ShutDown", "lia_SaveAdmin", function()
         if lia.admin.isDisabled() then return end
