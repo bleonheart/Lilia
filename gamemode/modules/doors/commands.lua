@@ -622,11 +622,16 @@ lia.command.add("doorsetclass", {
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
             local class, classData
             if arguments[1] then
-                local name = table.concat(arguments, " ")
-                for k, v in pairs(lia.class.list) do
-                    if lia.util.stringMatches(v.name, name) then
-                        class, classData = k, v
-                        break
+                local input = table.concat(arguments, " ")
+                local id = tonumber(input) or lia.class.retrieveClass(input)
+                if id then
+                    class, classData = id, lia.class.list[id]
+                else
+                    for k, v in pairs(lia.class.list) do
+                        if lia.util.stringMatches(v.name, input) or lia.util.stringMatches(v.uniqueID, input) then
+                            class, classData = k, v
+                            break
+                        end
                     end
                 end
             end
