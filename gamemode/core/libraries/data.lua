@@ -41,13 +41,19 @@ end
 local function decodeAngle(data)
     if isangle(data) then return data end
     if istable(data) then
-        if data.p then return Angle(data.p, data.y, data.r) end
-        if data[1] and data[2] and data[3] then return Angle(data[1], data[2], data[3]) end
+        if data.p or data.y or data.r then
+            return Angle(data.p or 0, data.y or 0, data.r or 0)
+        end
+        if data[1] and data[2] and data[3] then
+            return Angle(data[1], data[2], data[3])
+        end
+    elseif isvector(data) then
+        return Angle(data.x, data.y, data.z)
     elseif isstring(data) then
         local p, y, r = data:match("%{([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%}")
         if p then return Angle(tonumber(p), tonumber(y), tonumber(r)) end
     end
-    return data
+    return Angle(0, 0, 0)
 end
 
 local function deepDecode(value)
