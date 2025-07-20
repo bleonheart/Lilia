@@ -34,20 +34,15 @@ function MODULE:PostLoadData()
     end
 end
 
-local DOOR_TABLE = "doors"
-
 local function buildCondition(folder, map)
     return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
-
 
 function MODULE:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.select("*", DOOR_TABLE, condition)
-    end):next(function(res)
+    lia.db.waitForTablesToLoad():next(function() return lia.db.select("*", "lia_doors", condition) end):next(function(res)
         for _, row in ipairs(res.results or {}) do
             local ent = ents.GetMapCreatedEntity(tonumber(row._id))
             if IsValid(ent) and ent:isDoor() then
@@ -73,10 +68,7 @@ function MODULE:LoadData()
                 end
 
                 local name = row._name
-                if name and name ~= "NULL" then
-                    ent:setNetVar("name", name)
-                end
-
+                if name and name ~= "NULL" then ent:setNetVar("name", name) end
                 local price = tonumber(row._price) or 0
                 ent:setNetVar("price", price)
                 if tonumber(row._locked) == 1 then ent:setNetVar("locked", true) end
@@ -92,10 +84,7 @@ function MODULE:SaveData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.delete(DOOR_TABLE, condition)
-    end):next(function()
+    lia.db.waitForTablesToLoad():next(function() return lia.db.delete("lia_doors", condition) end):next(function()
         local rows = {}
         for _, door in ipairs(ents.GetAll()) do
             if door:isDoor() then
@@ -118,9 +107,7 @@ function MODULE:SaveData()
 
         local count = #rows
         if count > 0 then
-            return lia.db.bulkInsert(DOOR_TABLE, rows):next(function()
-                lia.information(L("doorSaveData", count))
-            end)
+            return lia.db.bulkInsert("lia_doors", rows):next(function() lia.information(L("doorSaveData", count)) end)
         else
             lia.information(L("doorSaveData", 0))
         end
