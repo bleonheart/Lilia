@@ -9,16 +9,6 @@
     ["locked"] = true
 }
 
-local DarkRPVariables = {
-    ["DarkRPNonOwnable"] = function(entity) entity:setNetVar("noSell", true) end,
-    ["DarkRPTitle"] = function(entity, val) entity:setNetVar("name", val) end,
-    ["DarkRPCanLockpick"] = function(entity, val) entity.noPick = tobool(val) end
-}
-
-function MODULE:EntityKeyValue(entity, key, value)
-    if entity:isDoor() and DarkRPVariables[key] then DarkRPVariables[key](entity, value) end
-end
-
 function MODULE:copyParentDoor(child)
     local parent = child.liaParent
     if IsValid(parent) then
