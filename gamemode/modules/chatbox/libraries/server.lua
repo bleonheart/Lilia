@@ -9,7 +9,6 @@ function MODULE:LoadData()
     self.OOCBans = {}
 
     if istable(data) and istable(data.bans) then
-        -- convert old key/value format into a sequential list
         if data.bans[1] then
             self.OOCBans = data.bans
         else
