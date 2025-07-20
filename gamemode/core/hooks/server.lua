@@ -897,6 +897,10 @@ end
 
 function GM:LiliaTablesLoaded()
     lia.db.addDatabaseFields()
+    hook.Run("LoadData")
+    hook.Run("PostLoadData")
+    lia.faction.formatModelData()
+    timer.Simple(2, function() lia.entityDataLoaded = true end)
 end
 
 function ClientAddText(client, ...)
