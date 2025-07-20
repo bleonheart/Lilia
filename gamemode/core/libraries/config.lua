@@ -730,12 +730,13 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 end
 
                 apply.DoClick = function()
+                    local color = m:GetColor()
                     local t = "ConfigChange_" .. key .. "_" .. os.time()
                     timer.Create(t, 0.5, 1, function()
                         net.Start("cfgSet")
                         net.WriteString(key)
                         net.WriteString(name)
-                        net.WriteType(m:GetColor())
+                        net.WriteType(color)
                         net.SendToServer()
                     end)
 
