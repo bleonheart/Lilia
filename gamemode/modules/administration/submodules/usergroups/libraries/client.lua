@@ -1,28 +1,18 @@
 local ugPanel
-local ugFrame
 local ugPrivileges
 
-local function openGroupsFrame()
-    if IsValid(ugFrame) then
-        ugFrame:Remove()
+local function openGroupsPanel(parent)
+    ugPanel = parent
+    parent:Clear()
+    parent:DockPadding(10, 10, 10, 10)
+    parent.Paint = function(pnl, w, h)
+        lia.util.drawBlur(pnl)
+        surface.SetDrawColor(45, 45, 45, 200)
+        surface.DrawRect(0, 0, w, h)
     end
-
-    ugFrame = vgui.Create("BlurredDFrame")
-    ugFrame:SetSize(ScrW() * 0.5, ScrH() * 0.6)
-    ugFrame:Center()
-    ugFrame:SetTitle(L("userGroups"))
-    ugFrame:MakePopup()
-
-    ugPanel = ugFrame:Add("DPanel")
-    ugPanel:Dock(FILL)
-    ugPanel.Paint = function() end
 
     net.Start("liaGroupsRequest")
     net.SendToServer()
-
-    ugFrame.OnRemove = function()
-        ugPanel = nil
-    end
 end
 local function buildGroupsUI(panel, groups)
     panel:Clear()
@@ -102,8 +92,8 @@ end)
 
 function MODULE:CreateMenuButtons(tabs)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
-        tabs[L("userGroups")] = function()
-            openGroupsFrame()
+        tabs[L("userGroups")] = function(panel)
+            openGroupsPanel(panel)
         end
     end
 end
