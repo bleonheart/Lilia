@@ -971,7 +971,7 @@ end)
 
 concommand.Add("kickbots", function()
     for _, bot in player.Iterator() do
-        if bot:IsBot() then lia.command.execAdminCommand("kick", nil, bot, nil, L("allBotsKicked")) end
+        if bot:IsBot() then lia.command.execAdminCommand("kick", bot, nil, L("allBotsKicked")) end
     end
 end)
 
