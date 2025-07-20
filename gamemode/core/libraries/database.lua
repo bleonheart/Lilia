@@ -263,6 +263,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
+    DROP TABLE IF EXISTS `lia_persistence`;
 ]])
             local done = 0
             for i = 1, #queries do
@@ -289,6 +290,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
+    DROP TABLE IF EXISTS lia_persistence;
 ]], realCallback)
     end
 end
@@ -833,6 +835,7 @@ function GM:DatabaseConnected()
     if SERVER then
         lia.log.loadTables()
         lia.data.loadTables()
+        lia.data.loadPersistence()
     end
 end
 

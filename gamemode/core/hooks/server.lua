@@ -587,7 +587,7 @@ function GM:SaveData()
         if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos())} end
     end
 
-    lia.data.set("persistence", data.entities)
+    lia.data.savePersistence(data.entities)
     lia.data.set("itemsave", data.items)
 end
 
@@ -599,24 +599,25 @@ function GM:LoadData()
         return false
     end
 
-    local entities = lia.data.get("persistence", {}) or {}
-    for _, ent in ipairs(entities) do
-        local decodedPos = decodeVector(ent.pos)
-        local decodedAng = decodeAngle(ent.angles)
-        if not IsEntityNearby(decodedPos, ent.class) then
-            local createdEnt = ents.Create(ent.class)
-            if IsValid(createdEnt) then
-                createdEnt:SetPos(decodedPos)
-                if decodedAng then createdEnt:SetAngles(decodedAng) end
-                if ent.model then createdEnt:SetModel(ent.model) end
-                createdEnt:Spawn()
-                createdEnt:Activate()
-                hook.Run("OnEntityLoaded", createdEnt, ent.data)
+    lia.data.loadPersistenceData(function(entities)
+        for _, ent in ipairs(entities) do
+            local decodedPos = decodeVector(ent.pos)
+            local decodedAng = decodeAngle(ent.angles)
+            if not IsEntityNearby(decodedPos, ent.class) then
+                local createdEnt = ents.Create(ent.class)
+                if IsValid(createdEnt) then
+                    createdEnt:SetPos(decodedPos)
+                    if decodedAng then createdEnt:SetAngles(decodedAng) end
+                    if ent.model then createdEnt:SetModel(ent.model) end
+                    createdEnt:Spawn()
+                    createdEnt:Activate()
+                    hook.Run("OnEntityLoaded", createdEnt, ent.data)
+                end
+            else
+                lia.error(L("entityCreationAborted", ent.class, decodedPos.x, decodedPos.y, decodedPos.z))
             end
-        else
-            lia.error(L("entityCreationAborted", ent.class, decodedPos.x, decodedPos.y, decodedPos.z))
         end
-    end
+    end)
 
     local items = lia.data.get("itemsave", {}) or {}
     if #items > 0 then
@@ -662,7 +663,7 @@ end
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
 
-    local saved = lia.data.get("persistence", {}) or {}
+    local saved = lia.data.getPersistence()
     local seen = {}
     for _, data in ipairs(saved) do
         seen[makeKey(data)] = true
@@ -681,13 +682,13 @@ function GM:OnEntityCreated(ent)
     local extra = hook.Run("GetEntitySaveData", ent)
     if extra ~= nil then entData.data = extra end
     saved[#saved + 1] = entData
-    lia.data.set("persistence", saved)
+    lia.data.savePersistence(saved)
     hook.Run("OnEntityPersisted", ent, entData)
 end
 
 function GM:UpdateEntityPersistence(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-    local saved = lia.data.get("persistence", {}) or {}
+    local saved = lia.data.getPersistence()
     local key = makeKey(ent)
     for i, data in ipairs(saved) do
         if makeKey(data) == key then
@@ -702,7 +703,7 @@ function GM:UpdateEntityPersistence(ent)
                 data.data = nil
             end
 
-            lia.data.set("persistence", saved)
+            lia.data.savePersistence(saved)
             hook.Run("OnEntityPersistUpdated", ent, data)
             return
         end
