@@ -566,3 +566,10 @@ net.Receive("CheckHack", function(_, client)
     local override = hook.Run("PlayerCheatDetected", client)
     if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
 end)
+net.Receive("VerifyCheatsResponse", function(_, client)
+    client.VerifyCheatsPending = nil
+    if client.VerifyCheatsTimer then
+        timer.Remove(client.VerifyCheatsTimer)
+        client.VerifyCheatsTimer = nil
+    end
+end)
