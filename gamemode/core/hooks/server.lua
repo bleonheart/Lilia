@@ -543,7 +543,7 @@ local function makeKey(ent)
     else
         class = ent.class
         if ent.pos then
-            pos = decodeVector(ent.pos) -- handle encoded table
+            pos = decodeVector(ent.pos)
         elseif ent.GetPos then
             pos = ent:GetPos()
         end
