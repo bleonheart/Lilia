@@ -178,6 +178,13 @@ end
 hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
     if lia.admin.isDisabled() then return end
     local steam64 = util.SteamIDTo64(steamID)
+    -- If a CAMI based admin mod (e.g. SAM) has already assigned a usergroup,
+    -- store that value instead of overwriting it with Lilia's records.
+    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
+        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
+        return
+    end
+
     lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", steam64), function(data)
         local group = istable(data) and data[1] and data[1]._userGroup
         if not group or group == "" then
