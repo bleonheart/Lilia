@@ -661,23 +661,28 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+
     local saved = lia.data.get("persistence", {}) or {}
     local seen = {}
-    for _, e in ipairs(saved) do
-        seen[makeKey(e)] = true
+    for _, data in ipairs(saved) do
+        seen[makeKey(data)] = true
     end
 
     local key = makeKey(ent)
-    if not seen[key] then
-        saved[#saved + 1] = {
-            pos = encodeVector(ent:GetPos()),
-            class = ent:GetClass(),
-            model = ent:GetModel(),
-            angles = encodeAngle(ent:GetAngles())
-        }
+    if seen[key] then return end
 
-        lia.data.set("persistence", saved)
-    end
+    local entData = {
+        pos = encodeVector(ent:GetPos()),
+        class = ent:GetClass(),
+        model = ent:GetModel(),
+        angles = encodeAngle(ent:GetAngles())
+    }
+
+    local extra = hook.Run("GetEntitySaveData", ent)
+    if extra ~= nil then entData.data = extra end
+    saved[#saved + 1] = entData
+    lia.data.set("persistence", saved)
+    hook.Run("OnEntityPersisted", ent, entData)
 end
 
 local hasChttp = util.IsBinaryModuleInstalled("chttp")
