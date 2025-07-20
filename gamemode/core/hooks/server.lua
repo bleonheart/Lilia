@@ -685,6 +685,30 @@ function GM:OnEntityCreated(ent)
     hook.Run("OnEntityPersisted", ent, entData)
 end
 
+function GM:UpdateEntityPersistence(ent)
+    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+    local saved = lia.data.get("persistence", {}) or {}
+    local key = makeKey(ent)
+    for i, data in ipairs(saved) do
+        if makeKey(data) == key then
+            data.pos = encodeVector(ent:GetPos())
+            data.class = ent:GetClass()
+            data.model = ent:GetModel()
+            data.angles = encodeAngle(ent:GetAngles())
+            local extra = hook.Run("GetEntitySaveData", ent)
+            if extra ~= nil then
+                data.data = extra
+            else
+                data.data = nil
+            end
+
+            lia.data.set("persistence", saved)
+            hook.Run("OnEntityPersistUpdated", ent, data)
+            return
+        end
+    end
+end
+
 local hasChttp = util.IsBinaryModuleInstalled("chttp")
 if hasChttp then require("chttp") end
 local function fetchURL(url, onSuccess, onError)
