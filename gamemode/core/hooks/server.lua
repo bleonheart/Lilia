@@ -174,6 +174,10 @@ function GM:CanPlayerInteractItem(client, action, item)
             return false
         end
     end
+
+    if action == "rotate" then
+        return hook.Run("CanPlayerRotateItem", client, item) ~= false
+    end
 end
 
 function GM:CanPlayerEquipItem(client, item)
@@ -224,6 +228,15 @@ function GM:CanPlayerDropItem(client, item)
         client:notifyLocalized("forbiddenActionStorage")
         return false
     end
+end
+
+function GM:CanPlayerRotateItem(_, _)
+end
+
+function GM:CanPlayerInspectItem(_, _)
+end
+
+function GM:CanPlayerRequestInspectionOnItem(_, _, _)
 end
 
 local logTypeMap = {

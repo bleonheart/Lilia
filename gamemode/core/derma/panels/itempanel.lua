@@ -183,7 +183,9 @@ function PANEL:buildButtons()
     end
 
     self:addBtn(L("inspect"), function()
-        self:openInspect()
+        if hook.Run("CanPlayerInspectItem", LocalPlayer(), self.item) ~= false then
+            self:openInspect()
+        end
         self:Remove()
     end)
 
