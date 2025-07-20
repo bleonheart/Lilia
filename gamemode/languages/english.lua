@@ -297,6 +297,7 @@ LANGUAGE = {
     guest = "Guest",
     doorSell = "Sell",
     doorFactions = "Factions:",
+    doorClasses = "Classes:",
     doorAddFaction = "Add Faction to Door",
     doorRemoveFactionAdmin = "Remove Faction from Door",
     doorNoFactions = "No factions assigned to this door",
