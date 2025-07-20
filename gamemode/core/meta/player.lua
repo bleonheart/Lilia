@@ -101,6 +101,10 @@ function playerMeta:isFemale()
     return model:find("female") or model:find("alyx") or model:find("mossman")
 end
 
+function playerMeta:IsFamilySharedAccount()
+    return self:OwnerSteamID64() ~= self:SteamID64()
+end
+
 function playerMeta:getItemDropPos()
     local data = {}
     data.start = self:GetShootPos()

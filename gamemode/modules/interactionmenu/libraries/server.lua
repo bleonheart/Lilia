@@ -3,6 +3,10 @@ net.Receive("TransferMoneyFromP2P", function(_, sender)
     local amount = net.ReadUInt(32)
     local target = net.ReadEntity()
     if not IsValid(sender) or not sender:getChar() then return end
+    if sender:IsFamilySharedAccount() and not lia.config.get("AltsDisabled", false) then
+        sender:notifyLocalized("familySharedMoneyTransferDisabled")
+        return
+    end
     if not IsValid(target) or not target:IsPlayer() or not target:getChar() then return end
     if amount <= 0 or not sender:getChar():hasMoney(amount) then return end
     target:getChar():giveMoney(amount)
