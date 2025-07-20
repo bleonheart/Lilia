@@ -21,6 +21,17 @@ lia.command.add("togglecheater", {
         else
             client:notifyLocalized("cheaterMarked", target:Name())
             target:notifyLocalized("cheaterMarkedByAdmin")
+            local warning = {
+                timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                reason = L("cheaterWarningReason"),
+                admin = client:Nick() .. " (" .. client:SteamID() .. ")"
+            }
+            local warns = target:getLiliaData("warns") or {}
+            table.insert(warns, warning)
+            target:setLiliaData("warns", warns)
+            target:notifyLocalized("playerWarned", warning.admin, warning.reason)
+            client:notifyLocalized("warningIssued", target:Nick())
+            hook.Run("WarningIssued", client, target, warning.reason, #warns)
         end
 
         lia.log.add(client, "cheaterToggle", target:Name(), isCheater and "Unmarked" or "Marked")
