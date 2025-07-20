@@ -1,9 +1,12 @@
 ﻿function MODULE:SaveData()
-    self:setData(self.OOCBans)
+    self:setData({
+        bans = self.OOCBans
+    })
 end
 
 function MODULE:LoadData()
-    self.OOCBans = self:getData()
+    local data = self:getData()
+    self.OOCBans = istable(data) and data.bans or {}
 end
 
 function MODULE:InitializedModules()
