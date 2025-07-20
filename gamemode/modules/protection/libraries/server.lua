@@ -264,5 +264,10 @@ hook.Add("OnCheaterCaught", "liaProtectionCheaterLog", function(client)
     if IsValid(client) then
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
         client:notifyLocalized("caughtCheating")
+        for _, p in player.Iterator() do
+            if p:isStaffOnDuty() or p:IsSuperAdmin() then
+                p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64())
+            end
+        end
     end
 end)
