@@ -28,7 +28,6 @@ end
 
 local function decodeVector(data)
     if isvector(data) then return data end
-    if isangle(data) then return Vector(data.p, data.y, data.r) end
     if istable(data) then
         if data.x then return Vector(data.x, data.y, data.z) end
         if data.p and data.y and data.r then return Vector(data.p, data.y, data.r) end
@@ -55,8 +54,6 @@ local function decodeAngle(data)
         if data[1] and data[2] and data[3] then
             return Angle(data[1], data[2], data[3])
         end
-    elseif isvector(data) then
-        return Angle(data.x, data.y, data.z)
     elseif isstring(data) then
         local p, y, r = data:match("%{([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%}")
         if not p then p, y, r = data:match("%{([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%}") end
@@ -82,8 +79,8 @@ local function deepDecode(value)
         value = t
     end
 
-    value = decodeVector(value)
     value = decodeAngle(value)
+    value = decodeVector(value)
     return value
 end
 
