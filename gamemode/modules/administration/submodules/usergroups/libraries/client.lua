@@ -1,5 +1,29 @@
 local ugPanel
+local ugFrame
 local ugPrivileges
+
+local function openGroupsFrame()
+    if IsValid(ugFrame) then
+        ugFrame:Remove()
+    end
+
+    ugFrame = vgui.Create("BlurredDFrame")
+    ugFrame:SetSize(ScrW() * 0.5, ScrH() * 0.6)
+    ugFrame:Center()
+    ugFrame:SetTitle(L("userGroups"))
+    ugFrame:MakePopup()
+
+    ugPanel = ugFrame:Add("DPanel")
+    ugPanel:Dock(FILL)
+    ugPanel.Paint = function() end
+
+    net.Start("liaGroupsRequest")
+    net.SendToServer()
+
+    ugFrame.OnRemove = function()
+        ugPanel = nil
+    end
+end
 local function buildGroupsUI(panel, groups)
     panel:Clear()
     local sidebar = panel:Add("DScrollPanel")
@@ -78,10 +102,8 @@ end)
 
 function MODULE:CreateMenuButtons(tabs)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
-        tabs[L("userGroups")] = function(panel)
-            ugPanel = panel
-            net.Start("liaGroupsRequest")
-            net.SendToServer()
+        tabs[L("userGroups")] = function()
+            openGroupsFrame()
         end
     end
 end
