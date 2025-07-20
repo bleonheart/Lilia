@@ -24,7 +24,6 @@ local encodeVector = lia.data.encodeVector
 local encodeAngle = lia.data.encodeAngle
 local decodeVector = lia.data.decodeVector
 local decodeAngle = lia.data.decodeAngle
-
 function MODULE:PlayerSpawnedProp(client, model, entity)
     local data = self.StorageDefinitions[model:lower()]
     if not data then return end
@@ -61,16 +60,8 @@ function MODULE:CanSaveData()
     return self.SaveData
 end
 
-function MODULE:SaveData()
-    GAMEMODE.SaveData(GAMEMODE)
-end
-
 function MODULE:StorageItemRemoved()
     self:SaveData()
-end
-
-function MODULE:LoadData()
-    -- storage restored by persistence
 end
 
 local PROHIBITED_ACTIONS = {
@@ -127,6 +118,7 @@ function MODULE:OnEntityLoaded(ent, data)
         ent.password = data.password
         ent:setNetVar("locked", true)
     end
+
     local invID = data.id
     if invID then
         lia.inventory.loadByID(invID):next(function(inventory)
