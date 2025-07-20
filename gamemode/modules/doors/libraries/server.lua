@@ -73,9 +73,12 @@ function MODULE:LoadData()
                 end
 
                 local name = row._name
-                if name then ent:setNetVar("name", name) end
-                local price = tonumber(row._price)
-                if price then ent:setNetVar("price", price) end
+                if name and name ~= "NULL" then
+                    ent:setNetVar("name", name)
+                end
+
+                local price = tonumber(row._price) or 0
+                ent:setNetVar("price", price)
                 if tonumber(row._locked) == 1 then ent:setNetVar("locked", true) end
                 if tonumber(row._disabled) == 1 then ent:setNetVar("disabled", true) end
                 if tonumber(row._hidden) == 1 then ent:setNetVar("hidden", true) end
