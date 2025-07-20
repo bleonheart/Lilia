@@ -9,10 +9,9 @@ function MODULE:PrePlayerDraw(client)
 end
 
 function MODULE:HUDPaint()
-    if not lia.option.get("espActive") then return end
     local client = LocalPlayer()
     if not client:getChar() or not client:IsValid() or not client:IsPlayer() then return end
-    if not client:isNoClipping() and not client:hasValidVehicle() then return end
+    if not client:isNoClipping() then return end
     if not (client:hasPrivilege("Staff Permissions - No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
     local marginx, marginy = ScrW() * 0.1, ScrH() * 0.1
     local maxDistanceSq = 4096
