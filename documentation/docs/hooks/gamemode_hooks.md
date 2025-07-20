@@ -10794,3 +10794,32 @@ hook.Add("PlayerCheatDetected", "LogCheaters", function(ply)
     return true -- handled, skip default ban
 end)
 ```
+
+---
+
+### OnCheaterCaught
+
+**Purpose**
+
+Called after a player is flagged for cheating. This fires once the player has
+been marked with the `cheater` network variable.
+
+**Parameters**
+
+- `client` (`Player`): Player confirmed to be cheating.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("OnCheaterCaught", "AnnounceCheater", function(ply)
+    print(ply:Name() .. " has been caught cheating!")
+end)
+```
