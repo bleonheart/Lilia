@@ -13,7 +13,6 @@ net.Receive("VendorEdit", function(_, client)
     lia.log.add(client, "vendorEdit", vendor, key)
     EDITOR[key](vendor, client, key)
     hook.Run("UpdateEntityPersistence", vendor)
-    MODULE:SaveData()
 end)
 
 net.Receive("VendorTrade", function(_, client)
