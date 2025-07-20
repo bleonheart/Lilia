@@ -695,26 +695,31 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-    local saved = lia.data.getPersistence()
-    local seen = {}
-    for _, data in ipairs(saved) do
-        seen[makeKey(data)] = true
-    end
 
-    local key = makeKey(ent)
-    if seen[key] then return end
-    local entData = {
-        pos = encodeVector(ent:GetPos()),
-        class = ent:GetClass(),
-        model = ent:GetModel(),
-        angles = encodeAngle(ent:GetAngles())
-    }
+    -- Defer persistence until the entity has its final position
+    timer.Simple(0, function()
+        if not IsValid(ent) then return end
+        local saved = lia.data.getPersistence()
+        local seen = {}
+        for _, data in ipairs(saved) do
+            seen[makeKey(data)] = true
+        end
 
-    local extra = hook.Run("GetEntitySaveData", ent)
-    if extra ~= nil then entData.data = extra end
-    saved[#saved + 1] = entData
-    lia.data.savePersistence(saved)
-    hook.Run("OnEntityPersisted", ent, entData)
+        local key = makeKey(ent)
+        if seen[key] then return end
+        local entData = {
+            pos = encodeVector(ent:GetPos()),
+            class = ent:GetClass(),
+            model = ent:GetModel(),
+            angles = encodeAngle(ent:GetAngles())
+        }
+
+        local extra = hook.Run("GetEntitySaveData", ent)
+        if extra ~= nil then entData.data = extra end
+        saved[#saved + 1] = entData
+        lia.data.savePersistence(saved)
+        hook.Run("OnEntityPersisted", ent, entData)
+    end)
 end
 
 function GM:UpdateEntityPersistence(ent)
