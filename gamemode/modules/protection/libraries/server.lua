@@ -232,6 +232,26 @@ end
 
 function MODULE:PlayerInitialSpawn(client)
     if not client:getChar() then return end
+    client.VerifyCheatsPending = true
+    local timerName = "liaVerifyCheats:" .. client:SteamID64()
+    client.VerifyCheatsTimer = timerName
     net.Start("VerifyCheats")
     net.Send(client)
+    timer.Create(timerName, 10, 1, function()
+        if IsValid(client) and client.VerifyCheatsPending then
+            lia.log.add(client, "hackAttempt")
+            local override = hook.Run("PlayerCheatDetected", client)
+            if override ~= true then
+                lia.applyPunishment(client, L("hackingInfraction"), true, true, 0,
+                    "kickedForInfractionPeriod", "bannedForInfractionPeriod")
+            end
+        end
+    end)
+end
+
+function MODULE:PlayerDisconnected(client)
+    if client.VerifyCheatsTimer then
+        timer.Remove(client.VerifyCheatsTimer)
+        client.VerifyCheatsTimer = nil
+    end
 end
