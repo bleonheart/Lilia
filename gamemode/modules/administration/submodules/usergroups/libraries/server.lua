@@ -6,9 +6,6 @@ net.Receive("liaGroupsRequest", function(_, client)
     PrintTable(CAMI.GetUsergroups())
 end)
 
-util.AddNetworkString("liaGroupsAdd")
-util.AddNetworkString("liaGroupsRemove")
-util.AddNetworkString("liaGroupsRequest")
 local function broadcastGroups()
     net.Start("liaGroupsData")
     net.WriteTable(CAMI.GetUsergroups() or {})
@@ -32,3 +29,8 @@ net.Receive("liaGroupsRemove", function(_, client)
         broadcastGroups()
     end
 end)
+
+util.AddNetworkString("liaGroupsAdd")
+util.AddNetworkString("liaGroupsRemove")
+util.AddNetworkString("liaGroupsRequest")
+util.AddNetworkString("liaGroupsData")
