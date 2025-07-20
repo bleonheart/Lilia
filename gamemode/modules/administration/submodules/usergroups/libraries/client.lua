@@ -1,4 +1,3 @@
--- usergroup management
 local ugPanel
 local ugPrivileges
 local function buildGroupsUI(panel, groups)
