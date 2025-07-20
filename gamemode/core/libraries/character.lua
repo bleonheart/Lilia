@@ -403,7 +403,7 @@ lia.char.registerVar("RecognizedAs", {
 lia.char.registerVar("lastPos", {
     field = "lastpos",
     fieldType = "text",
-    default = nil,
+    default = {},
     isLocal = true,
     noDisplay = true
 })
