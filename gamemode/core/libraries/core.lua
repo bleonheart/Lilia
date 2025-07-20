@@ -240,12 +240,6 @@ local ConditionalFiles = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
-        global = "serverguard",
-        name = "ServerGuard",
-        realm = "server"
-    },
-    {
         path = "lilia/gamemode/core/libraries/compatibility/simfphys.lua",
         global = "simfphys",
         name = "Simfphys",

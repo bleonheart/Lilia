@@ -6,7 +6,7 @@ This page explains the built-in administration system.
 
 ## Overview
 
-The admin library manages user groups, privileges, and bans. It automatically disables itself when the SAM or ServerGuard admin mods are detected.
+The admin library manages user groups, privileges, and bans. It automatically disables itself when the SAM admin mod is detected.
 
 The base user groups `user`, `admin`, and `superadmin` are created automatically and cannot be removed.
 
