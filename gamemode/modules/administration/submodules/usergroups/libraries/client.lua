@@ -1,14 +1,12 @@
 -- usergroup management
 local ugPanel
 local ugPrivileges
-
 local function buildGroupsUI(panel, groups)
     panel:Clear()
     local sidebar = panel:Add("DScrollPanel")
     sidebar:Dock(LEFT)
     sidebar:SetWide(200)
     sidebar:DockMargin(0, 20, 20, 20)
-
     local addBtn = sidebar:Add("liaMediumButton")
     addBtn:Dock(TOP)
     addBtn:SetText(L("addGroup"))
@@ -27,15 +25,12 @@ local function buildGroupsUI(panel, groups)
     removeBtn:SetText(L("removeGroup"))
     removeBtn:SetTall(30)
     removeBtn:DockMargin(0, 0, 0, 10)
-
     local list = sidebar:Add("DListView")
     list:Dock(FILL)
     list:AddColumn(L("name"))
-
     local content = panel:Add("DScrollPanel")
     content:Dock(FILL)
     content:DockMargin(10, 10, 10, 10)
-
     local function populate(group)
         content:Clear()
         removeBtn:SetEnabled(group ~= "user" and group ~= "admin" and group ~= "superadmin")
@@ -64,10 +59,7 @@ local function buildGroupsUI(panel, groups)
         net.SendToServer()
     end
 
-    list.OnRowSelected = function(_, _, row)
-        populate(row:GetColumnText(1))
-    end
-
+    list.OnRowSelected = function(_, _, row) populate(row:GetColumnText(1)) end
     for name in pairs(groups) do
         list:AddLine(name)
     end
@@ -86,10 +78,11 @@ net.Receive("lilia_updateAdminGroups", function()
 end)
 
 function MODULE:CreateMenuButtons(tabs)
-    tabs[L("userGroups")] = function(panel)
-        if not LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then return end
-        ugPanel = panel
-        net.Start("liaGroupsRequest")
-        net.SendToServer()
+    if LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
+        tabs[L("userGroups")] = function(panel)
+            ugPanel = panel
+            net.Start("liaGroupsRequest")
+            net.SendToServer()
+        end
     end
 end
