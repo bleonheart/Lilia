@@ -891,6 +891,10 @@ local hl2Weapons = {
     "weapon_rpg"
 }
 
+local function SpawnBot()
+    player.CreateNextBot("Bot_" .. CurTime())
+end
+
 local function SpawnArmedBot()
     local bot = player.CreateNextBot("ArmedBot_" .. CurTime())
     if IsValid(bot) then
@@ -907,7 +911,7 @@ concommand.Add("bots", function(ply)
     local toSpawn = maxPlayers - currentCount
     if toSpawn <= 0 then return end
     timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnArmedBot() end)
+    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnBot() end)
 end)
 
 concommand.Add("armed_bot", function(ply)
