@@ -728,6 +728,19 @@ function GM:UpdateEntityPersistence(ent)
     end
 end
 
+function GM:EntityRemoved(ent)
+    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+    local saved = lia.data.getPersistence()
+    local key = makeKey(ent)
+    for i, data in ipairs(saved) do
+        if makeKey(data) == key then
+            table.remove(saved, i)
+            lia.data.savePersistence(saved)
+            break
+        end
+    end
+end
+
 local hasChttp = util.IsBinaryModuleInstalled("chttp")
 if hasChttp then require("chttp") end
 local function fetchURL(url, onSuccess, onError)
