@@ -84,6 +84,7 @@ end
 function PANEL:PaintOver(w, h)
     surface.SetDrawColor(0, 0, 0)
     surface.DrawOutlinedRect(0, 0, w, h)
+    if self.BaseClass and self.BaseClass.PaintOver then self.BaseClass.PaintOver(self, w, h) end
 end
 
 vgui.Register("liaGridInvItem", PANEL, "liaItemIcon")
