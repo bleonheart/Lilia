@@ -18,7 +18,7 @@ function MODULE:HUDPaint()
     for _, ent in ents.Iterator() do
         if not IsValid(ent) or ent == client then continue end
         local entityType, label
-        if ent:IsPlayer() and lia.option.get("espPlayers") then
+        if ent:IsPlayer() then
             entityType = "Players"
             if ent:getNetVar("cheater") then
                 label = "CHEATER"
