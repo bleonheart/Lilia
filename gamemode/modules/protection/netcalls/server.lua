@@ -29,7 +29,6 @@ local MaliciousNet = {
     ["_CAC_ReadMemory"] = true,
     ["Ulib_Message"] = true,
     ["Ulogs_Infos"] = true,
-    ["ITEM"] = true,
     ["nocheat"] = true,
     ["adsp_door_length"] = true,
     ["Î¾psilon"] = true,
@@ -533,9 +532,7 @@ function MODULE:InitializedModules()
             lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
             client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
-                if p:isStaffOnDuty() then
-                    p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
-                end
+                if p:isStaffOnDuty() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
             end
         end)
     end
@@ -570,11 +567,9 @@ net.Receive("CheckHack", function(_, client)
     client:setLiliaData("cheater", true)
     client:saveLiliaData()
     hook.Run("OnCheaterCaught", client)
-    if override ~= true then
-        lia.applyPunishment(client, L("hackingInfraction"), true, true, 0,
-            "kickedForInfractionPeriod", "bannedForInfractionPeriod")
-    end
+    if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
 end)
+
 net.Receive("VerifyCheatsResponse", function(_, client)
     client.VerifyCheatsPending = nil
     if client.VerifyCheatsTimer then
