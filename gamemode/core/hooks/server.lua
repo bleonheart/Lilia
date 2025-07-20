@@ -574,6 +574,18 @@ function GM:SaveData()
                     model = ent:GetModel(),
                     angles = encodeAngle(entAng)
                 }
+                local skin = ent:GetSkin()
+                if skin and skin > 0 then entData.skin = skin end
+                local bodygroups
+                local bgCount = ent:GetNumBodyGroups() or 0
+                for i = 0, bgCount - 1 do
+                    local value = ent:GetBodygroup(i)
+                    if value > 0 then
+                        bodygroups = bodygroups or {}
+                        bodygroups[i] = value
+                    end
+                end
+                if bodygroups then entData.bodygroups = bodygroups end
 
                 local extra = hook.Run("GetEntitySaveData", ent)
                 if extra ~= nil then entData.data = extra end
@@ -610,6 +622,12 @@ function GM:LoadData()
                     if decodedAng then createdEnt:SetAngles(decodedAng) end
                     if ent.model then createdEnt:SetModel(ent.model) end
                     createdEnt:Spawn()
+                    if ent.skin then createdEnt:SetSkin(ent.skin) end
+                    if ent.bodygroups then
+                        for index, value in pairs(ent.bodygroups) do
+                            createdEnt:SetBodygroup(tonumber(index), value)
+                        end
+                    end
                     createdEnt:Activate()
                     hook.Run("OnEntityLoaded", createdEnt, ent.data)
                 end
