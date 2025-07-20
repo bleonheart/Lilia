@@ -52,19 +52,19 @@ function MODULE:LoadData()
             local ent = ents.GetMapCreatedEntity(tonumber(row._id))
             if IsValid(ent) and ent:isDoor() then
                 local factions = lia.data.deserialize(row._factions) or {}
-                if next(factions) then
+                if istable(factions) and next(factions) then
                     ent.liaFactions = factions
                     ent:setNetVar("factions", util.TableToJSON(factions))
                 end
 
                 local classes = lia.data.deserialize(row._classes) or {}
-                if next(classes) then
+                if istable(classes) and next(classes) then
                     ent.liaClasses = classes
                     ent:setNetVar("classes", util.TableToJSON(classes))
                 end
 
                 local children = lia.data.deserialize(row._children) or {}
-                if next(children) then
+                if istable(children) and next(children) then
                     ent.liaChildren = children
                     for childID in pairs(children) do
                         local child = ents.GetMapCreatedEntity(childID)
