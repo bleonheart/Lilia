@@ -587,6 +587,10 @@
         func = function(client, targetName, state) return string.format("Admin '%s' toggled cheater status for %s: %s.", client:Name(), targetName, state) end,
         category = "Cheating"
     },
+    ["cheaterAction"] = {
+        func = function(client, action) return string.format("Cheater '%s' attempted to %s.", client:Name(), action) end,
+        category = "Cheaters Actions"
+    },
     ["altKicked"] = {
         func = function(_, name, steamID) return string.format("Alt account '%s' (%s) was kicked.", name, steamID) end,
         category = "Admin"

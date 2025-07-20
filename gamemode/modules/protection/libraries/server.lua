@@ -1,4 +1,11 @@
 ﻿local MODULE = MODULE
+local function IsCheater(client)
+    return lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false)
+end
+
+local function LogCheaterAction(client, action)
+    lia.log.add(client, "cheaterAction", action)
+end
 function MODULE:CanPlayerSwitchChar(client, character)
     if not client:isStaffOnDuty() then
         local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
@@ -22,6 +29,11 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     local attacker = dmgInfo:GetAttacker()
     local isValidClient = IsValid(entity) and entity:IsPlayer()
     local attackerIsHuman = IsValid(attacker) and attacker:IsPlayer()
+    if attackerIsHuman and IsCheater(attacker) then
+        dmgInfo:SetDamage(0)
+        LogCheaterAction(attacker, "deal damage")
+        return true
+    end
     local notSameEntity = attacker ~= entity
     local isFallDamage = dmgInfo:IsFallDamage()
     local inflictorIsProp = IsValid(inflictor) and inflictor:isProp()
@@ -271,3 +283,17 @@ hook.Add("OnCheaterCaught", "liaProtectionCheaterLog", function(client)
         end
     end
 end)
+
+function MODULE:PlayerUse(client, entity)
+    if IsCheater(client) then
+        LogCheaterAction(client, "use entity")
+        return false
+    end
+end
+
+function MODULE:CanPlayerInteractItem(client, action, item)
+    if IsCheater(client) then
+        LogCheaterAction(client, action .. " item")
+        return false
+    end
+end
