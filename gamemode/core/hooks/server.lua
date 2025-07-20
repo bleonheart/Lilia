@@ -507,7 +507,7 @@ function GM:SetupBotPlayer(client)
         name = client:Name(),
         faction = faction and faction.uniqueID or "unknown",
         desc = L("botDesc", botID),
-        model = "models/gman.mdl",
+        model = "models/player/phoenix.mdl",
     }, botID, client, client:SteamID64())
 
     local defaultClass = lia.faction.getDefaultClass(faction.index)
