@@ -177,6 +177,11 @@ function lia.keybind.load()
         lia.keybind.save()
     end
 
+    -- Clear existing numeric lookup entries before rebuilding
+    for k in pairs(lia.keybind.stored) do
+        if isnumber(k) then lia.keybind.stored[k] = nil end
+    end
+
     for action, data in pairs(lia.keybind.stored) do
         if istable(data) and data.value then lia.keybind.stored[data.value] = action end
     end
@@ -264,6 +269,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                         end
 
                         taken[currentKey] = nil
+                        if lia.keybind.stored[currentKey] == action then
+                            lia.keybind.stored[currentKey] = nil
+                        end
+
                         data.value = newKey
                         lia.keybind.stored[newKey] = action
                         taken[newKey] = action
@@ -278,6 +287,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                     unbindButton:SetText(L("unbind"):upper())
                     unbindButton.DoClick = function()
                         taken[currentKey] = nil
+                        if lia.keybind.stored[currentKey] == action then
+                            lia.keybind.stored[currentKey] = nil
+                        end
+
                         data.value = KEY_NONE
                         lia.keybind.stored[KEY_NONE] = action
                         lia.keybind.save()
@@ -301,6 +314,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
             resetAllBtn.DoClick = function()
                 for action, data in pairs(lia.keybind.stored) do
                     if istable(data) and data.default then
+                        if data.value and lia.keybind.stored[data.value] == action then
+                            lia.keybind.stored[data.value] = nil
+                        end
+
                         data.value = data.default
                         lia.keybind.stored[data.default] = action
                     end
