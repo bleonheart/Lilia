@@ -850,6 +850,27 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     return canHear, canHear
 end
 
+local hl2Weapons = {
+    "weapon_crowbar",
+    "weapon_stunstick",
+    "weapon_pistol",
+    "weapon_357",
+    "weapon_smg1",
+    "weapon_ar2",
+    "weapon_shotgun",
+    "weapon_crossbow",
+    "weapon_rpg"
+}
+
+local function SpawnArmedBot()
+    local bot = player.CreateNextBot("ArmedBot_" .. CurTime())
+    if IsValid(bot) then
+        local wep = hl2Weapons[math.random(#hl2Weapons)]
+        bot:Give(wep)
+        bot:SelectWeapon(wep)
+    end
+end
+
 concommand.Add("bots", function(ply)
     if IsValid(ply) then return end
     local maxPlayers = game.MaxPlayers()
@@ -857,7 +878,22 @@ concommand.Add("bots", function(ply)
     local toSpawn = maxPlayers - currentCount
     if toSpawn <= 0 then return end
     timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() game.ConsoleCommand("bot\n") end)
+    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnArmedBot() end)
+end)
+
+concommand.Add("armed_bot", function(ply)
+    if IsValid(ply) then return end
+    SpawnArmedBot()
+end)
+
+concommand.Add("armed_bots", function(ply)
+    if IsValid(ply) then return end
+    local maxPlayers = game.MaxPlayers()
+    local currentCount = player.GetCount()
+    local toSpawn = maxPlayers - currentCount
+    if toSpawn <= 0 then return end
+    timer.Remove("BotsSpawnTimer")
+    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnArmedBot() end)
 end)
 
 concommand.Add("kickbots", function()
