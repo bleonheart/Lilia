@@ -524,15 +524,28 @@ local KnownExploits = {
     ["gPrinters.openUpgrades"] = true
 }
 
-for _, v in pairs(KnownExploits) do
-    net.Receive(v, function(_, client)
-        client.nextExploitNotify = client.nextExploitNotify or 0
-        if client.nextExploitNotify > CurTime() then return end
-        client.nextExploitNotify = CurTime() + 2
-        for _, p in player.Iterator() do
-            if p:isStaffOnDuty() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(v)) end
+function MODULE:InitializedModules()
+    for _, v in pairs(KnownExploits) do
+        net.Receive(v, function(_, client)
+            client.nextExploitNotify = client.nextExploitNotify or 0
+            if client.nextExploitNotify > CurTime() then return end
+            client.nextExploitNotify = CurTime() + 2
+            for _, p in player.Iterator() do
+                if p:isStaffOnDuty() or p:isStaffOnDuty() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(v)) end
+            end
+        end)
+    end
+
+    if util.NetworkStringToID(malicious_net[i]) ~= 0 then
+        local backdoorNet = table.remove(malicious_net, i)
+        print(backdoorNet .. [[" has been detected ! Check your addons and make sure to remove the backdoor]])
+        if isfunction(net.Receivers[backdoorNet]) then
+            local backdoorInfos = debug.getinfo(net.Receivers[backdoorNet], "S")
+            print(backdoorNet .. [[" was declared in ]] .. backdoorInfos.short_src .. [[ line ]] .. backdoorInfos.linedefined)
         end
-    end)
+
+        net.Receive(backdoorNet, function(_, ply) end)
+    end
 end
 
 net.Receive("CheckSeed", function(_, client)
