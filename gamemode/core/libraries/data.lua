@@ -33,7 +33,13 @@ local function decodeVector(data)
         if data[1] and data[2] and data[3] then return Vector(data[1], data[2], data[3]) end
     elseif isstring(data) then
         local x, y, z = data:match("%[([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%]")
+        if not x then x, y, z = data:match("%[([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%]") end
+        if not x then x, y, z = data:match("Vector%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)") end
         if x then return Vector(tonumber(x), tonumber(y), tonumber(z)) end
+        local tbl = util.JSONToTable(data)
+        if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
+            return Vector(tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3]))
+        end
     end
     return data
 end
@@ -51,6 +57,14 @@ local function decodeAngle(data)
         return Angle(data.x, data.y, data.z)
     elseif isstring(data) then
         local p, y, r = data:match("%{([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%}")
+        if not p then p, y, r = data:match("%{([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%}") end
+        if not p then p, y, r = data:match("Angle%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)") end
+        if not p then
+            local tbl = util.JSONToTable(data)
+            if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
+                p, y, r = tbl[1], tbl[2], tbl[3]
+            end
+        end
         if p then return Angle(tonumber(p), tonumber(y), tonumber(r)) end
     end
     return Angle(0, 0, 0)
