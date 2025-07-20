@@ -86,6 +86,7 @@ function MODULE:SaveData()
         if not table.IsEmpty(doorData) then data[id] = doorData end
     end
 
+    PrintTable(data, 1)
     self:setData(data)
     lia.information(L("doorSaveData", table.Count(data)))
 end
