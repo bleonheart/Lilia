@@ -44,7 +44,8 @@ function MODULE:LoadData()
     local condition = buildCondition(folder, map)
     local query = "SELECT * FROM lia_doors WHERE " .. condition
     lia.db.query(query):next(function(res)
-        PrintTable(res.results, 1)
+        print("----------------")
+        PrintTable(res, 1)
         for _, row in ipairs(res.results or {}) do
             local ent = ents.GetMapCreatedEntity(tonumber(row._id))
             if IsValid(ent) and ent:isDoor() then
