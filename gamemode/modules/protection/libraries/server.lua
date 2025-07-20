@@ -253,7 +253,7 @@ function MODULE:PlayerInitialSpawn(client)
     net.Send(client)
     timer.Create(timerName, 10, 1, function()
         if IsValid(client) and client.VerifyCheatsPending then
-            lia.log.add(client, "hackAttempt")
+            lia.log.add(client, "hackAttempt", "VerifyCheatsTimeout")
             local override = hook.Run("PlayerCheatDetected", client)
             client:setNetVar("cheater", true)
             client:setLiliaData("cheater", true)
