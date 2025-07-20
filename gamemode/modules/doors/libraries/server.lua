@@ -4,7 +4,7 @@
     ["price"] = true,
     ["noSell"] = true,
     ["factions"] = true,
-    ["class"] = true,
+    ["classes"] = true,
     ["hidden"] = true,
     ["locked"] = true
 }
@@ -47,9 +47,9 @@ function MODULE:LoadData()
                         local child = ents.GetMapCreatedEntity(childID)
                         if IsValid(child) then child.liaParent = ent end
                     end
-                elseif k == "class" then
-                    ent.liaClassID = v
-                    ent:setNetVar("class", v)
+                elseif k == "classes" then
+                    ent.liaClasses = v
+                    ent:setNetVar("classes", util.TableToJSON(v))
                 else
                     ent:setNetVar(k, v)
                 end
@@ -76,7 +76,7 @@ function MODULE:SaveData()
         end
 
         if door.liaChildren then doorData.children = door.liaChildren end
-        if door.liaClassID then doorData.class = door.liaClassID end
+        if door.liaClasses then doorData.classes = door.liaClasses end
         if not table.IsEmpty(doorData) then data.doors[id] = doorData end
     end
 
@@ -145,17 +145,24 @@ function MODULE:CanPlayerAccessDoor(client, door)
         if facs ~= nil and facs ~= "[]" and facs[client:Team()] then return true end
     end
 
-    local class = door:getNetVar("class")
-    local classData = lia.class.list[class]
+    local classes = door:getNetVar("classes")
     local charClass = client:getChar():getClass()
-    local classData2 = lia.class.list[charClass]
-    if class and classData and classData2 then
-        if classData.team then
-            if classData.team ~= classData2.team then return false end
-        else
-            if charClass ~= class then return false end
+    local charClassData = lia.class.list[charClass]
+    if classes and classes ~= "[]" and charClassData then
+        local classTable = util.JSONToTable(classes)
+        if classTable then
+            for id, _ in pairs(classTable) do
+                local classData = lia.class.list[id]
+                if classData then
+                    if classData.team then
+                        if classData.team == charClassData.team then return true end
+                    elseif id == charClass then
+                        return true
+                    end
+                end
+            end
+            return false
         end
-        return true
     end
 end
 
@@ -167,7 +174,8 @@ function MODULE:ShowTeam(client)
     local entity = client:getTracedEntity()
     if IsValid(entity) and entity:isDoor() then
         local factions = entity:getNetVar("factions")
-        if (not factions or factions == "[]") and not entity:getNetVar("class") then
+        local classes = entity:getNetVar("classes")
+        if (not factions or factions == "[]") and (not classes or classes == "[]") then
             if entity:checkDoorAccess(client, DOOR_TENANT) then
                 local door = entity
                 if IsValid(door.liaParent) then door = door.liaParent end

@@ -110,7 +110,10 @@ lia.command.add("doorbuy", {
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
             local factions = door:getNetVar("factions")
-            if door:getNetVar("noSell") or (factions and factions ~= "[]") or door:getNetVar("class") then return client:notifyLocalized("doorNotAllowedToOwn") end
+            local classes = door:getNetVar("classes")
+            if door:getNetVar("noSell") or (factions and factions ~= "[]") or (classes and classes ~= "[]") then
+                return client:notifyLocalized("doorNotAllowedToOwn")
+            end
             if IsValid(door:GetDTEntity(0)) then
                 client:notifyLocalized("doorOwnedBy", door:GetDTEntity(0):Name())
                 return false
@@ -177,7 +180,7 @@ lia.command.add("doorresetdata", {
             door:setNetVar("disabled", nil)
             door:setNetVar("noSell", nil)
             door:setNetVar("hidden", nil)
-            door:setNetVar("class", nil)
+            door:setNetVar("classes", nil)
             door:setNetVar("factions", "[]")
             door:setNetVar("title", nil)
             door:setNetVar("price", 0)
@@ -186,7 +189,7 @@ lia.command.add("doorresetdata", {
                 child:setNetVar("disabled", nil)
                 child:setNetVar("noSell", nil)
                 child:setNetVar("hidden", nil)
-                child:setNetVar("class", nil)
+                child:setNetVar("classes", nil)
                 child:setNetVar("factions", "[]")
                 child:setNetVar("title", nil)
                 child:setNetVar("price", 0)
@@ -433,7 +436,14 @@ lia.command.add("doorinfo", {
             local price = door:getNetVar("price", 0)
             local noSell = door:getNetVar("noSell", false)
             local factions = door:getNetVar("factions", "[]")
-            local class = door:getNetVar("class", L("none"))
+            local classesDataRaw = door:getNetVar("classes", "[]")
+            local classesTable = util.JSONToTable(classesDataRaw) or {}
+            local classNames = {}
+            for id, _ in pairs(classesTable) do
+                local info = lia.class.list[id]
+                if info then table.insert(classNames, info.name) end
+            end
+            local classesString = next(classNames) and table.concat(classNames, ", ") or L("none")
             local hidden = door:getNetVar("hidden", false)
             local locked = door:getNetVar("locked", false)
             local doorData = {
@@ -458,8 +468,8 @@ lia.command.add("doorinfo", {
                     value = tostring(factions)
                 },
                 {
-                    property = L("class"),
-                    value = tostring(class)
+                    property = L("classes"),
+                    value = tostring(classesString)
                 },
                 {
                     property = L("doorInfoHidden"),
@@ -609,11 +619,15 @@ lia.command.add("doorsetclass", {
             end
 
             if class then
-                door.liaClassID = class
-                door:setNetVar("class", class)
+                local classes = util.JSONToTable(door:getNetVar("classes", "[]")) or {}
+                classes[class] = true
+                door.liaClasses = classes
+                door:setNetVar("classes", util.TableToJSON(classes))
                 MODULE:callOnDoorChildren(door, function(child)
-                    child.liaClassID = class
-                    child:setNetVar("class", class)
+                    local childClasses = util.JSONToTable(child:getNetVar("classes", "[]")) or {}
+                    childClasses[class] = true
+                    child.liaClasses = childClasses
+                    child:setNetVar("classes", util.TableToJSON(childClasses))
                 end)
 
                 lia.log.add(client, "doorSetClass", door, classData.name)
@@ -621,9 +635,11 @@ lia.command.add("doorsetclass", {
             elseif arguments[1] then
                 client:notifyLocalized("invalidClass")
             else
-                door:setNetVar("class", nil)
+                door.liaClasses = nil
+                door:setNetVar("classes", nil)
                 MODULE:callOnDoorChildren(door, function(child)
-                    child:setNetVar("class", nil)
+                    child.liaClasses = nil
+                    child:setNetVar("classes", nil)
                 end)
                 lia.log.add(client, "doorRemoveClass", door)
                 client:notifyLocalized("doorRemoveClass")
