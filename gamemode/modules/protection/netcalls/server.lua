@@ -1,4 +1,4 @@
-﻿local MaliciousNet = {
+local MaliciousNet = {
     ["Sbox_gm_attackofnullday_key"] = true,
     ["c"] = true,
     ["enablevac"] = true,
@@ -531,20 +531,23 @@ function MODULE:InitializedModules()
             if client.nextExploitNotify > CurTime() then return end
             client.nextExploitNotify = CurTime() + 2
             for _, p in player.Iterator() do
-                if p:isStaffOnDuty() or p:isStaffOnDuty() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(v)) end
+                if p:isStaffOnDuty() then
+                    p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(v))
+                end
             end
         end)
     end
 
-    if util.NetworkStringToID(malicious_net[i]) ~= 0 then
-        local backdoorNet = table.remove(malicious_net, i)
-        print(backdoorNet .. [[" has been detected ! Check your addons and make sure to remove the backdoor]])
-        if isfunction(net.Receivers[backdoorNet]) then
-            local backdoorInfos = debug.getinfo(net.Receivers[backdoorNet], "S")
-            print(backdoorNet .. [[" was declared in ]] .. backdoorInfos.short_src .. [[ line ]] .. backdoorInfos.linedefined)
-        end
+    for netName in pairs(MaliciousNet) do
+        if util.NetworkStringToID(netName) ~= 0 then
+            print(netName .. [[" has been detected ! Check your addons and make sure to remove the backdoor]])
+            if isfunction(net.Receivers[netName]) then
+                local backdoorInfos = debug.getinfo(net.Receivers[netName], "S")
+                print(netName .. [[" was declared in ]] .. backdoorInfos.short_src .. [[ line ]] .. backdoorInfos.linedefined)
+            end
 
-        net.Receive(backdoorNet, function(_, ply) end)
+            net.Receive(netName, function(_, ply) end)
+        end
     end
 end
 
