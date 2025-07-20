@@ -567,10 +567,10 @@ function GM:SaveData()
                 local entPos = ent:GetPos()
                 local entAng = ent:GetAngles()
                 local entData = {
-                    pos = encodeVector(entPos),
+                    pos = entPos,
                     class = ent:GetClass(),
                     model = ent:GetModel(),
-                    angles = encodeAngle(entAng)
+                    angles = entAng
                 }
 
                 local skin = ent:GetSkin()
@@ -619,9 +619,10 @@ function GM:LoadData()
     end
 
     lia.data.loadPersistenceData(function(entities)
+        PrintTable(entities, 1)
         for _, ent in ipairs(entities) do
-            local decodedPos = decodeVector(ent.pos)
-            local decodedAng = decodeAngle(ent.angles)
+            local decodedPos = ent.pos
+            local decodedAng = ent.angles
             if not IsEntityNearby(decodedPos, ent.class) then
                 local createdEnt = ents.Create(ent.class)
                 if IsValid(createdEnt) then
@@ -695,7 +696,6 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-
     -- Defer persistence until the entity has its final position
     timer.Simple(0, function()
         if not IsValid(ent) then return end
@@ -708,14 +708,15 @@ function GM:OnEntityCreated(ent)
         local key = makeKey(ent)
         if seen[key] then return end
         local entData = {
-            pos = encodeVector(ent:GetPos()),
+            pos = ent:GetPos(),
             class = ent:GetClass(),
             model = ent:GetModel(),
-            angles = encodeAngle(ent:GetAngles())
+            angles = ent:GetAngles()
         }
 
         local extra = hook.Run("GetEntitySaveData", ent)
         if extra ~= nil then entData.data = extra end
+        PrintTable(entData, 1)
         saved[#saved + 1] = entData
         lia.data.savePersistence(saved)
         hook.Run("OnEntityPersisted", ent, entData)
