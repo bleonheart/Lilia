@@ -1,13 +1,14 @@
 net.Receive("liaGroupsRequest", function(_, client)
     if not client:hasPrivilege("Staff Permissions - Manage UserGroups") then return end
     net.Start("liaGroupsData")
-    net.WriteTable(CAMI.GetUsergroups() or {})
+    net.WriteTable(CAMI.GetUsergroups())
     net.Send(client)
+    PrintTable(CAMI.GetUsergroups())
 end)
 
 util.AddNetworkString("liaGroupsAdd")
 util.AddNetworkString("liaGroupsRemove")
-
+util.AddNetworkString("liaGroupsRequest")
 local function broadcastGroups()
     net.Start("liaGroupsData")
     net.WriteTable(CAMI.GetUsergroups() or {})
