@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-function ENT:SpawnFunction(client, trace)
+﻿function ENT:SpawnFunction(client, trace)
     local angles = (trace.HitPos - client:GetPos()):Angle()
     angles.r = 0
     angles.p = 0
@@ -8,7 +7,6 @@ function ENT:SpawnFunction(client, trace)
     entity:SetPos(trace.HitPos)
     entity:SetAngles(angles)
     entity:Spawn()
-    MODULE:SaveData()
     return entity
 end
 
