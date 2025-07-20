@@ -525,16 +525,16 @@ local KnownExploits = {
 }
 
 function MODULE:InitializedModules()
-    for _, v in pairs(KnownExploits) do
-        net.Receive(v, function(_, client)
+    for name in pairs(KnownExploits) do
+        net.Receive(name, function(_, client)
             client.nextExploitNotify = client.nextExploitNotify or 0
             if client.nextExploitNotify > CurTime() then return end
             client.nextExploitNotify = CurTime() + 2
-            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(v))
+            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
             client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
                 if p:isStaffOnDuty() then
-                    p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(v))
+                    p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
                 end
             end
         end)
