@@ -1,16 +1,3 @@
-local encodeVector = lia.data.encodeVector
-local encodeAngle = lia.data.encodeAngle
-local decodeVector = lia.data.decodeVector
-local decodeAngle = lia.data.decodeAngle
-
-function MODULE:SaveData()
-    GAMEMODE.SaveData(GAMEMODE)
-end
-
-function MODULE:LoadData()
-    -- vendors restored by persistence
-end
-
 function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = vendor:getNetVar("name") or L("unknown")
     if not isSellingToVendor then
