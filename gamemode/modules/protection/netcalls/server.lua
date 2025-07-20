@@ -532,7 +532,7 @@ function MODULE:InitializedModules()
             lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
             client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
-                if p:isStaffOnDuty() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
+                if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
             end
         end)
     end
@@ -545,7 +545,11 @@ function MODULE:InitializedModules()
                 print(netName .. [[" was declared in ]] .. backdoorInfos.short_src .. [[ line ]] .. backdoorInfos.linedefined)
             end
 
-            net.Receive(netName, function(_, ply) end)
+            net.Receive(netName, function()
+                for _, p in player.Iterator() do
+                    if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
+                end
+            end)
         end
     end
 end
