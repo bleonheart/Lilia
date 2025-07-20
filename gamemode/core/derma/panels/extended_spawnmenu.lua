@@ -489,16 +489,6 @@ hook.Add("PopulateContent", "liaExtendedSpawnMenuPopulateContent", function(pnlC
     end
 end)
 
-concommand.Add("extsm_addoninfo", function()
-    local frame = vgui.Create("DFrame")
-    frame:SetSize(ScrW() - 100, ScrH() - 100)
-    frame:Center()
-    frame:MakePopup()
-    local scroll = frame:Add("DScrollPanel")
-    scroll:Dock(FILL)
-    scroll:Add("rb655_addonInfo")
-end)
-
 hook.Add("AddToolMenuCategories", "liaExtendedSpawnMenuAddToolMenuCategories", function() spawnmenu.AddToolCategory("Utilities", "Robotboy655", "#Robotboy655") end)
 local PANEL = {}
 function PANEL:Init()
