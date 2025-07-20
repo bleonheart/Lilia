@@ -1,26 +1,9 @@
-local ugPanel
-
-local function openGroupsPanel(parent)
-    ugPanel = parent
-    parent:Clear()
-    parent:DockPadding(10, 10, 10, 10)
-    parent.Paint = function(pnl, w, h)
-        lia.util.drawBlur(pnl)
-        surface.SetDrawColor(45, 45, 45, 200)
-        surface.DrawRect(0, 0, w, h)
-    end
-
-    net.Start("liaGroupsRequest")
-    net.SendToServer()
-end
 local function buildGroupsUI(panel, groups)
     panel:Clear()
-
     local top = panel:Add("Panel")
     top:Dock(TOP)
     top:SetTall(28)
     top:DockMargin(0, 0, 0, 5)
-
     local add = top:Add("liaSmallButton")
     add:Dock(LEFT)
     add:SetText(L("addGroup"))
@@ -39,7 +22,6 @@ local function buildGroupsUI(panel, groups)
     remove:DockMargin(5, 0, 0, 0)
     remove:SetText(L("removeGroup"))
     remove:SetWide(100)
-
     local list = panel:Add("DListView")
     list:Dock(FILL)
     list:AddColumn(L("name"))
@@ -59,18 +41,23 @@ end
 net.Receive("liaGroupsData", function()
     local groups = net.ReadTable()
     lia.admin.groups = groups
-    if IsValid(ugPanel) then buildGroupsUI(ugPanel, groups) end
+    if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, groups) end
 end)
 
 net.Receive("lilia_updateAdminGroups", function()
     lia.admin.groups = net.ReadTable()
-    if IsValid(ugPanel) then buildGroupsUI(ugPanel, lia.admin.groups) end
+    if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.admin.groups) end
 end)
 
 function MODULE:CreateMenuButtons(tabs)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
-        tabs[L("userGroups")] = function(panel)
-            openGroupsPanel(panel)
+        tabs[L("userGroups")] = function(parent)
+            lia.gui.usergroups = parent
+            parent:Clear()
+            parent:DockPadding(10, 10, 10, 10)
+            parent.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Frame", pnl, w, h) end
+            net.Start("liaGroupsRequest")
+            net.SendToServer()
         end
     end
 end
