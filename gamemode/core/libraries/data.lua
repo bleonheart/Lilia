@@ -218,6 +218,11 @@ if SERVER then
         model = true
     }
 
+    local baseCols = {}
+    for col in pairs(defaultCols) do
+        baseCols[#baseCols + 1] = col
+    end
+
     local function addPersistenceColumn(col)
         local query
         if lia.db.module == "sqlite" then
@@ -243,6 +248,7 @@ if SERVER then
     function lia.data.loadPersistence()
         lia.db.waitForTablesToLoad():next(function()
             createPersistenceTable()
+            return ensurePersistenceColumns(baseCols)
         end)
     end
 
@@ -265,7 +271,10 @@ if SERVER then
         lia.db.waitForTablesToLoad():next(function()
             createPersistenceTable()
         end):next(function()
-            return ensurePersistenceColumns(dynamicList)
+            local cols = {}
+            for _, c in ipairs(baseCols) do cols[#cols + 1] = c end
+            for _, c in ipairs(dynamicList) do cols[#cols + 1] = c end
+            return ensurePersistenceColumns(cols)
         end):next(function()
             return lia.db.delete("persistence", condition)
         end):next(function()
@@ -299,6 +308,8 @@ if SERVER then
         local condition = buildCondition(folder, map)
         lia.db.waitForTablesToLoad():next(function()
             createPersistenceTable()
+            return ensurePersistenceColumns(baseCols)
+        end):next(function()
             return lia.db.select("*", "persistence", condition)
         end):next(function(res)
             local rows = res.results or {}
