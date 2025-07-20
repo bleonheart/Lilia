@@ -103,6 +103,10 @@ lia.command.add("doorbuy", {
         TargetClass = "Door"
     },
     onRun = function(client)
+        if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+            lia.log.add(client, "cheaterAction", "buy door")
+            return
+        end
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
             if door:getNetVar("noSell") or door:getNetVar("faction") or door:getNetVar("class") then return client:notifyLocalized("doorNotAllowedToOwn") end
