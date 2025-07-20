@@ -36,19 +36,21 @@ end
 
 function MODULE:LoadData()
     local data = self:getData()
-    if not data then return end
-    for k, v in pairs(data) do
-        local entity = ents.GetMapCreatedEntity(k)
-        if IsValid(entity) and entity:isDoor() then
-            for k2, v2 in pairs(v) do
-                if k2 == "children" then
-                    entity.liaChildren = v2
-                    for index, _ in pairs(v2) do
-                        local door = ents.GetMapCreatedEntity(index)
-                        if IsValid(door) then door.liaParent = entity end
+    if not data or not data.doors then return end
+    for id, doorData in pairs(data.doors) do
+        local ent = ents.GetMapCreatedEntity(id)
+        if IsValid(ent) and ent:isDoor() then
+            for k, v in pairs(doorData) do
+                if k == "children" then
+                    ent.liaChildren = v
+                    for childID in pairs(v) do
+                        local child = ents.GetMapCreatedEntity(childID)
+                        if IsValid(child) then child.liaParent = ent end
                     end
+                elseif k == "class" then
+                    ent.liaClassID = v
                 else
-                    entity:setNetVar(k2, v2)
+                    ent:setNetVar(k, v)
                 end
             end
         end
@@ -56,7 +58,10 @@ function MODULE:LoadData()
 end
 
 function MODULE:SaveData()
-    local data = {}
+    local data = {
+        doors = {}
+    }
+
     local doors = {}
     for _, ent in ents.Iterator() do
         if ent:isDoor() then doors[ent:MapCreationID()] = ent end
@@ -66,17 +71,17 @@ function MODULE:SaveData()
         local doorData = {}
         for var in pairs(Variables) do
             local value = door:getNetVar(var)
-            if value then doorData[var] = value end
+            if value ~= nil then doorData[var] = value end
         end
 
         if door.liaChildren then doorData.children = door.liaChildren end
         if door.liaClassID then doorData.class = door.liaClassID end
-        if not table.IsEmpty(doorData) then data[id] = doorData end
+        if not table.IsEmpty(doorData) then data.doors[id] = doorData end
     end
 
     PrintTable(data, 1)
     self:setData(data)
-    lia.information(L("doorSaveData", table.Count(data)))
+    lia.information(L("doorSaveData", table.Count(data.doors)))
 end
 
 function MODULE:callOnDoorChildren(entity, callback)
@@ -173,6 +178,7 @@ function MODULE:ShowTeam(client)
                     net.WriteEntity(ply)
                     net.WriteUInt(perm or 0, 2)
                 end
+
                 net.WriteEntity(entity)
                 net.Send(client)
             elseif not IsValid(entity:GetDTEntity(0)) then
