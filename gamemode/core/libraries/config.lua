@@ -75,13 +75,19 @@ function lia.config.load()
                 for _, row in ipairs(rows) do
                     local decoded = util.JSONToTable(row._value)
                     lia.config.stored[row._key] = lia.config.stored[row._key] or {}
-                    lia.config.stored[row._key].value = decoded and decoded[1]
-                    existing[row._key] = true
+                    local value = decoded and decoded[1]
+                    if value == nil or value == "" then
+                        lia.config.stored[row._key].value = lia.config.stored[row._key].default
+                    else
+                        lia.config.stored[row._key].value = value
+                        existing[row._key] = true
+                    end
                 end
 
                 local inserts = {}
                 for k, v in pairs(lia.config.stored) do
                     if not existing[k] then
+                        lia.config.stored[k].value = v.default
                         inserts[#inserts + 1] = {
                             _schema = schema,
                             _key = k,
@@ -92,7 +98,11 @@ function lia.config.load()
 
                 local finalize = function() hook.Run("InitializedConfig") end
                 if #inserts > 0 then
-                    lia.db.bulkInsert("config", inserts):next(finalize)
+                    local ops = {}
+                    for _, row in ipairs(inserts) do
+                        ops[#ops + 1] = lia.db.upsert(row, "config")
+                    end
+                    deferred.all(ops):next(finalize, finalize)
                 else
                     finalize()
                 end
