@@ -672,7 +672,13 @@ function lia.db.count(dbTable, condition)
     local c = deferred.new()
     local tbl = "`lia_" .. dbTable .. "`"
     local q = "SELECT COUNT(*) AS cnt FROM " .. tbl .. (condition and " WHERE " .. condition or "")
-    lia.db.query(q, function(results) c:resolve(tonumber(results[1].cnt)) end)
+    lia.db.query(q, function(results)
+        if istable(results) then
+            c:resolve(tonumber(results[1].cnt))
+        else
+            c:resolve(0)
+        end
+    end)
     return c
 end
 
@@ -712,7 +718,13 @@ function lia.db.selectOne(fields, dbTable, condition)
     local q = "SELECT " .. f .. " FROM " .. tbl
     if condition then q = q .. " WHERE " .. condition end
     q = q .. " LIMIT 1"
-    lia.db.query(q, function(results) c:resolve(results[1]) end)
+    lia.db.query(q, function(results)
+        if istable(results) then
+            c:resolve(results[1])
+        else
+            c:resolve(nil)
+        end
+    end)
     return c
 end
 
