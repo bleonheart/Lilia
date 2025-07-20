@@ -252,7 +252,7 @@ lia.chat.register("ooc", {
             return false
         end
 
-        if MODULE.OOCBans[speaker:SteamID64()] then
+        if table.HasValue(MODULE.OOCBans, speaker:SteamID64()) then
             speaker:notifyLocalized("oocBanned")
             return false
         end
