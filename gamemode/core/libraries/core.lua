@@ -544,6 +544,8 @@ end
 
 function GM:InitPostEntity()
     if SERVER then
+        hook.Run("LoadData")
+        hook.Run("PostLoadData")
         lia.faction.formatModelData()
         timer.Simple(2, function() lia.entityDataLoaded = true end)
     else

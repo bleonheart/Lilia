@@ -175,9 +175,7 @@ function GM:CanPlayerInteractItem(client, action, item)
         end
     end
 
-    if action == "rotate" then
-        return hook.Run("CanPlayerRotateItem", client, item) ~= false
-    end
+    if action == "rotate" then return hook.Run("CanPlayerRotateItem", client, item) ~= false end
 end
 
 function GM:CanPlayerEquipItem(client, item)
@@ -574,6 +572,7 @@ function GM:SaveData()
                     model = ent:GetModel(),
                     angles = encodeAngle(entAng)
                 }
+
                 local skin = ent:GetSkin()
                 if skin and skin > 0 then entData.skin = skin end
                 local bodygroups
@@ -585,8 +584,8 @@ function GM:SaveData()
                         bodygroups[i] = value
                     end
                 end
-                if bodygroups then entData.bodygroups = bodygroups end
 
+                if bodygroups then entData.bodygroups = bodygroups end
                 local extra = hook.Run("GetEntitySaveData", ent)
                 if extra ~= nil then entData.data = extra end
                 data.entities[#data.entities + 1] = entData
@@ -596,13 +595,7 @@ function GM:SaveData()
     end
 
     for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then
-            data.items[#data.items + 1] = {
-                item.liaItemID,
-                encodeVector(item:GetPos()),
-                encodeAngle(item:GetAngles())
-            }
-        end
+        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos()), encodeAngle(item:GetAngles())} end
     end
 
     lia.data.savePersistence(data.entities)
@@ -642,6 +635,7 @@ function GM:LoadData()
                             createdEnt:SetBodygroup(tonumber(index), value)
                         end
                     end
+
                     createdEnt:Activate()
                     hook.Run("OnEntityLoaded", createdEnt, ent.data)
                 end
@@ -654,9 +648,7 @@ function GM:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.selectOne({"_data"}, "saveditems", condition)
-    end):next(function(res)
+    lia.db.waitForTablesToLoad():next(function() return lia.db.selectOne({"_data"}, "saveditems", condition) end):next(function(res)
         local items = res and lia.data.deserialize(res._data) or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
@@ -703,7 +695,6 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-
     local saved = lia.data.getPersistence()
     local seen = {}
     for _, data in ipairs(saved) do
@@ -712,7 +703,6 @@ function GM:OnEntityCreated(ent)
 
     local key = makeKey(ent)
     if seen[key] then return end
-
     local entData = {
         pos = encodeVector(ent:GetPos()),
         class = ent:GetClass(),
@@ -887,6 +877,7 @@ local function checkFrameworkVersion()
                 diff = math.Round(diff, 3)
                 lia.updater(L("frameworkBehindCount", diff))
             end
+
             lia.updater(L("frameworkOutdated"))
         end
     end, function(err) lia.updater(L("frameworkVersionError", err)) end)
@@ -905,8 +896,6 @@ function GM:InitializedModules()
 end
 
 function GM:LiliaTablesLoaded()
-    hook.Run("LoadData")
-    hook.Run("PostLoadData")
     lia.db.addDatabaseFields()
 end
 
@@ -942,18 +931,7 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     return canHear, canHear
 end
 
-local hl2Weapons = {
-    "weapon_crowbar",
-    "weapon_stunstick",
-    "weapon_pistol",
-    "weapon_357",
-    "weapon_smg1",
-    "weapon_ar2",
-    "weapon_shotgun",
-    "weapon_crossbow",
-    "weapon_rpg"
-}
-
+local hl2Weapons = {"weapon_crowbar", "weapon_stunstick", "weapon_pistol", "weapon_357", "weapon_smg1", "weapon_ar2", "weapon_shotgun", "weapon_crossbow", "weapon_rpg"}
 local function SpawnBot()
     player.CreateNextBot("Bot_" .. CurTime())
 end

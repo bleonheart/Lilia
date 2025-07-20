@@ -43,9 +43,11 @@ function MODULE:LoadData()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
     lia.db.waitForTablesToLoad():next(function() return lia.db.select("*", "doors", condition) end):next(function(res)
+        PrintTable(res.results, 1)
         for _, row in ipairs(res.results or {}) do
             local ent = ents.GetMapCreatedEntity(tonumber(row._id))
             if IsValid(ent) and ent:isDoor() then
+                PrintTable(row._factions, 1)
                 local factions = lia.data.deserialize(row._factions) or {}
                 if istable(factions) and next(factions) then
                     ent.liaFactions = factions
