@@ -242,6 +242,8 @@ function MODULE:PlayerInitialSpawn(client)
             lia.log.add(client, "hackAttempt")
             local override = hook.Run("PlayerCheatDetected", client)
             client:setNetVar("cheater", true)
+            client:setLiliaData("cheater", true)
+            client:saveLiliaData()
             hook.Run("OnCheaterCaught", client)
             if override ~= true then
                 lia.applyPunishment(client, L("hackingInfraction"), true, true, 0,
