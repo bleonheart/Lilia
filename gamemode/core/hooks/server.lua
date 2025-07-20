@@ -596,7 +596,13 @@ function GM:SaveData()
     end
 
     for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos())} end
+        if item.liaItemID and not item.temp then
+            data.items[#data.items + 1] = {
+                item.liaItemID,
+                encodeVector(item:GetPos()),
+                encodeAngle(item:GetAngles())
+            }
+        end
     end
 
     lia.data.savePersistence(data.entities)
@@ -639,11 +645,12 @@ function GM:LoadData()
 
     local items = lia.data.get("itemsave", {}) or {}
     if #items > 0 then
-        local idRange, positions = {}, {}
+        local idRange, positions, angles = {}, {}, {}
         for _, item in ipairs(items) do
             local id = item[1]
             idRange[#idRange + 1] = id
             positions[id] = decodeVector(item[2])
+            angles[id] = decodeAngle(item[3])
         end
 
         if #idRange > 0 then
@@ -661,10 +668,11 @@ function GM:LoadData()
                         local uniqueID = row._uniqueID
                         local itemTable = lia.item.list[uniqueID]
                         local position = positions[itemID]
+                        local ang = angles[itemID]
                         if itemTable and itemID and position then
                             local itemCreated = lia.item.new(uniqueID, itemID)
                             itemCreated.data = itemData or {}
-                            itemCreated:spawn(position).liaItemID = itemID
+                            itemCreated:spawn(position, ang).liaItemID = itemID
                             itemCreated:onRestored()
                             itemCreated.invID = 0
                             loadedItems[#loadedItems + 1] = itemCreated
