@@ -34,59 +34,94 @@ function MODULE:PostLoadData()
     end
 end
 
+local DOOR_TABLE = "doors"
+
+local function buildCondition(folder, map)
+    return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+end
+
+
 function MODULE:LoadData()
-    local data = self:getData()
-    if not data or not data.doors then return end
-    for id, doorData in pairs(data.doors) do
-        local ent = ents.GetMapCreatedEntity(id)
-        if IsValid(ent) and ent:isDoor() then
-            for k, v in pairs(doorData) do
-                if k == "children" then
-                    ent.liaChildren = v
-                    for childID in pairs(v) do
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = buildCondition(folder, map)
+    lia.db.waitForTablesToLoad():next(function()
+        return lia.db.select("*", DOOR_TABLE, condition)
+    end):next(function(res)
+        for _, row in ipairs(res.results or {}) do
+            local ent = ents.GetMapCreatedEntity(tonumber(row._id))
+            if IsValid(ent) and ent:isDoor() then
+                local factions = lia.data.deserialize(row._factions) or {}
+                if next(factions) then
+                    ent.liaFactions = factions
+                    ent:setNetVar("factions", util.TableToJSON(factions))
+                end
+
+                local classes = lia.data.deserialize(row._classes) or {}
+                if next(classes) then
+                    ent.liaClasses = classes
+                    ent:setNetVar("classes", util.TableToJSON(classes))
+                end
+
+                local children = lia.data.deserialize(row._children) or {}
+                if next(children) then
+                    ent.liaChildren = children
+                    for childID in pairs(children) do
                         local child = ents.GetMapCreatedEntity(childID)
                         if IsValid(child) then child.liaParent = ent end
                     end
-                elseif k == "classes" then
-                    ent.liaClasses = v
-                    ent:setNetVar("classes", util.TableToJSON(v))
-                elseif k == "factions" then
-                    ent.liaFactions = v
-                    ent:setNetVar("factions", util.TableToJSON(v))
-                else
-                    ent:setNetVar(k, v)
                 end
+
+                local name = row._name
+                if name then ent:setNetVar("name", name) end
+                local price = tonumber(row._price)
+                if price then ent:setNetVar("price", price) end
+                if tonumber(row._locked) == 1 then ent:setNetVar("locked", true) end
+                if tonumber(row._disabled) == 1 then ent:setNetVar("disabled", true) end
+                if tonumber(row._hidden) == 1 then ent:setNetVar("hidden", true) end
+                if tonumber(row._ownable) == 0 then ent:setNetVar("noSell", true) end
             end
         end
-    end
+    end)
 end
 
 function MODULE:SaveData()
-    local data = {
-        doors = {}
-    }
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = buildCondition(folder, map)
 
-    local doors = {}
-    for _, ent in ents.Iterator() do
-        if ent:isDoor() then doors[ent:MapCreationID()] = ent end
-    end
-
-    for id, door in pairs(doors) do
-        local doorData = {}
-        for var in pairs(Variables) do
-            local value = door:getNetVar(var)
-            if value ~= nil then doorData[var] = value end
+    lia.db.waitForTablesToLoad():next(function()
+        return lia.db.delete(DOOR_TABLE, condition)
+    end):next(function()
+        local rows = {}
+        for _, door in ipairs(ents.GetAll()) do
+            if door:isDoor() then
+                rows[#rows + 1] = {
+                    _folder = folder,
+                    _map = map,
+                    _id = door:MapCreationID(),
+                    _factions = lia.data.serialize(door.liaFactions or {}),
+                    _classes = lia.data.serialize(door.liaClasses or {}),
+                    _disabled = door:getNetVar("disabled") and 1 or 0,
+                    _hidden = door:getNetVar("hidden") and 1 or 0,
+                    _ownable = door:getNetVar("noSell") and 0 or 1,
+                    _name = door:getNetVar("name"),
+                    _price = door:getNetVar("price"),
+                    _locked = door:getNetVar("locked") and 1 or 0,
+                    _children = lia.data.serialize(door.liaChildren or {})
+                }
+            end
         end
 
-        if door.liaChildren then doorData.children = door.liaChildren end
-        if door.liaClasses then doorData.classes = door.liaClasses end
-        if door.liaFactions then doorData.factions = door.liaFactions end
-        if not table.IsEmpty(doorData) then data.doors[id] = doorData end
-    end
-
-    PrintTable(data, 1)
-    self:setData(data)
-    lia.information(L("doorSaveData", table.Count(data.doors)))
+        local count = #rows
+        if count > 0 then
+            return lia.db.bulkInsert(DOOR_TABLE, rows):next(function()
+                lia.information(L("doorSaveData", count))
+            end)
+        else
+            lia.information(L("doorSaveData", 0))
+        end
+    end)
 end
 
 function MODULE:callOnDoorChildren(entity, callback)
