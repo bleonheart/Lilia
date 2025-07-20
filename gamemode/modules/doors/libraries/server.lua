@@ -167,7 +167,12 @@ function MODULE:ShowTeam(client)
                 if IsValid(door.liaParent) then door = door.liaParent end
                 net.Start("doorMenu")
                 net.WriteEntity(door)
-                net.WriteTable(door.liaAccess)
+                local access = door.liaAccess or {}
+                net.WriteUInt(table.Count(access), 8)
+                for ply, perm in pairs(access) do
+                    net.WriteEntity(ply)
+                    net.WriteUInt(perm or 0, 2)
+                end
                 net.WriteEntity(entity)
                 net.Send(client)
             elseif not IsValid(entity:GetDTEntity(0)) then
