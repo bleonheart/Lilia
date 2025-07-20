@@ -42,7 +42,8 @@ function MODULE:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    lia.db.waitForTablesToLoad():next(function() return lia.db.select("*", "doors", condition) end):next(function(res)
+    local query = "SELECT * FROM lia_doors WHERE " .. condition
+    lia.db.query(query):next(function(res)
         PrintTable(res.results, 1)
         for _, row in ipairs(res.results or {}) do
             local ent = ents.GetMapCreatedEntity(tonumber(row._id))
@@ -86,7 +87,7 @@ function MODULE:SaveData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    lia.db.waitForTablesToLoad():next(function() return lia.db.delete("doors", condition) end):next(function()
+    lia.db.delete("doors", condition):next(function()
         local rows = {}
         for _, door in ipairs(ents.GetAll()) do
             if door:isDoor() then
