@@ -409,6 +409,8 @@ if SERVER then
                 self.firstJoin = data[1]._firstJoin or timeStamp
                 self.lastJoin = data[1]._lastJoin or timeStamp
                 self.liaData = util.JSONToTable(data[1]._data)
+                local isCheater = self:getLiliaData("cheater", false)
+                self:setNetVar("cheater", isCheater and true or nil)
                 self.totalOnlineTime = tonumber(data[1]._totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
                 local default = os.time(lia.time.toNumber(self.lastJoin))
                 self.lastOnline = tonumber(data[1]._lastOnline) or self:getLiliaData("lastOnline", default)
