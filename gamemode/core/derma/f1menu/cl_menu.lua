@@ -163,6 +163,21 @@ function PANEL:addTab(name, callback)
     tab:SetTextColor(colors.text)
     tab:SetExpensiveShadow(1, Color(0, 0, 0, 100))
     tab:SetContentAlignment(5)
+    tab.Paint = function(p, w, h)
+        derma.SkinHook("Paint", "Button", p, w, h)
+        draw.SimpleText(p:GetText(), p:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        if p:IsHovered() or p:IsSelected() then
+            p.startTime = p.startTime or CurTime()
+            local elapsed = CurTime() - p.startTime
+            local anim = math.min(w, elapsed / 0.3 * w) / 2
+            local r, g, b = lia.config.get("Color")
+            surface.SetDrawColor(r, g, b)
+            surface.DrawLine(w / 2 - anim, h - 1, w / 2 + anim, h - 1)
+        else
+            p.startTime = nil
+        end
+        return true
+    end
     tab.DoClick = function()
         if IsValid(lia.gui.info) then lia.gui.info:Remove() end
         for _, t in pairs(self.tabList) do
