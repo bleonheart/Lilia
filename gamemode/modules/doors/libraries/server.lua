@@ -49,6 +49,7 @@ function MODULE:LoadData()
                     end
                 elseif k == "class" then
                     ent.liaClassID = v
+                    ent:setNetVar("class", v)
                 else
                     ent:setNetVar(k, v)
                 end
