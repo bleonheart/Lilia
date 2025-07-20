@@ -78,7 +78,7 @@ net.Receive("lilia_updateAdminGroups", function()
 end)
 
 function MODULE:CreateMenuButtons(tabs)
-    if LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
+    if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
         tabs[L("userGroups")] = function(panel)
             ugPanel = panel
             net.Start("liaGroupsRequest")
