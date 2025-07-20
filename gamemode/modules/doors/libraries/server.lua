@@ -50,6 +50,9 @@ function MODULE:LoadData()
                 elseif k == "classes" then
                     ent.liaClasses = v
                     ent:setNetVar("classes", util.TableToJSON(v))
+                elseif k == "factions" then
+                    ent.liaFactions = v
+                    ent:setNetVar("factions", util.TableToJSON(v))
                 else
                     ent:setNetVar(k, v)
                 end
@@ -77,6 +80,7 @@ function MODULE:SaveData()
 
         if door.liaChildren then doorData.children = door.liaChildren end
         if door.liaClasses then doorData.classes = door.liaClasses end
+        if door.liaFactions then doorData.factions = door.liaFactions end
         if not table.IsEmpty(doorData) then data.doors[id] = doorData end
     end
 
@@ -140,9 +144,16 @@ end
 
 function MODULE:CanPlayerAccessDoor(client, door)
     local factions = door:getNetVar("factions")
-    if factions ~= nil then
+    if factions and factions ~= "[]" then
         local facs = util.JSONToTable(factions)
-        if facs ~= nil and facs ~= "[]" and facs[client:Team()] then return true end
+        if facs then
+            local playerFaction = client:getChar():getFaction()
+            local factionData = lia.faction.indices[playerFaction]
+            local unique = factionData and factionData.uniqueID
+            for _, id in ipairs(facs) do
+                if id == unique or lia.faction.getIndex(id) == playerFaction then return true end
+            end
+        end
     end
 
     local classes = door:getNetVar("classes")
@@ -151,14 +162,14 @@ function MODULE:CanPlayerAccessDoor(client, door)
     if classes and classes ~= "[]" and charClassData then
         local classTable = util.JSONToTable(classes)
         if classTable then
-            for id, _ in pairs(classTable) do
-                local classData = lia.class.list[id]
-                if classData then
-                    if classData.team then
-                        if classData.team == charClassData.team then return true end
-                    elseif id == charClass then
-                        return true
-                    end
+            local unique = charClassData.uniqueID
+            for _, id in ipairs(classTable) do
+                local classIndex = lia.class.retrieveClass(id)
+                local classData = lia.class.list[classIndex]
+                if id == unique or classIndex == charClass then
+                    return true
+                elseif classData and classData.team and classData.team == charClassData.team then
+                    return true
                 end
             end
             return false
