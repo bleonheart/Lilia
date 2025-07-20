@@ -184,7 +184,14 @@ if SERVER then
             hook.Run("OnDataSet", key, value, folder, map)
         end)
 
-        return "lilia/" .. (folder and folder .. "/" or "") .. (map and map .. "/" or "")
+        local path = "lilia/"
+        if folder and folder ~= NULL then
+            path = path .. folder .. "/"
+        end
+        if map and map ~= NULL then
+            path = path .. map .. "/"
+        end
+        return path
     end
 
     function lia.data.delete(key, global, ignoreMap)
