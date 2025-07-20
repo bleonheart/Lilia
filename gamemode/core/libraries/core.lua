@@ -544,10 +544,7 @@ end
 
 function GM:InitPostEntity()
     if SERVER then
-        hook.Run("LoadData")
-        hook.Run("PostLoadData")
-        lia.faction.formatModelData()
-        timer.Simple(2, function() lia.entityDataLoaded = true end)
+        -- Database hooks are now invoked in GM:LiliaTablesLoaded
     else
         lia.joinTime = RealTime() - 0.9716
         if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
