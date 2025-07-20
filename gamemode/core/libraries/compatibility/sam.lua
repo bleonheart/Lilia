@@ -20,7 +20,7 @@ hook.Add("InitializedModules", "liaSAM", function()
 end)
 
 hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
-    local id = isstring(victim) and victim or (IsValid(victim) and victim:SteamID())
+    local id = isstring(victim) and victim or IsValid(victim) and victim:SteamID()
     if not id then return end
     if cmd == "kick" then
         RunConsoleCommand("sam", "kick", id, reason or "")
@@ -248,5 +248,4 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     category = "Staff",
     type = "Boolean"
 })
-
-hook.Add("ShouldLiliaAdminLoad", "liaSam", function() return false end)
+--hook.Add("ShouldLiliaAdminLoad", "liaSam", function() return false end)
