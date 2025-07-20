@@ -184,6 +184,143 @@ if SERVER then
         end)
     end
 
+    local function createPersistenceTable()
+        if lia.db.module == "sqlite" then
+            lia.db.query([[CREATE TABLE IF NOT EXISTS lia_persistence (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                _folder TEXT,
+                _map TEXT,
+                class TEXT,
+                pos TEXT,
+                angles TEXT,
+                model TEXT
+            );]])
+        else
+            lia.db.query([[CREATE TABLE IF NOT EXISTS `lia_persistence` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `class` TEXT NULL,
+                `pos` TEXT NULL,
+                `angles` TEXT NULL,
+                `model` TEXT NULL,
+                PRIMARY KEY (`_id`)
+            );]])
+        end
+    end
+
+    local defaultCols = {
+        _folder = true,
+        _map = true,
+        class = true,
+        pos = true,
+        angles = true,
+        model = true
+    }
+
+    local function addPersistenceColumn(col)
+        local query
+        if lia.db.module == "sqlite" then
+            query = ([[ALTER TABLE lia_persistence ADD COLUMN %s TEXT]]):format(lia.db.escapeIdentifier(col))
+        else
+            query = ([[ALTER TABLE `lia_persistence` ADD COLUMN %s TEXT NULL]]):format(lia.db.escapeIdentifier(col))
+        end
+        return lia.db.query(query)
+    end
+
+    local function ensurePersistenceColumns(cols)
+        local d = lia.db.waitForTablesToLoad()
+        for _, col in ipairs(cols) do
+            d = d:next(function()
+                return lia.db.fieldExists("lia_persistence", col)
+            end):next(function(exists)
+                if not exists then return addPersistenceColumn(col) end
+            end)
+        end
+        return d
+    end
+
+    function lia.data.loadPersistence()
+        lia.db.waitForTablesToLoad():next(function()
+            createPersistenceTable()
+        end)
+    end
+
+    function lia.data.savePersistence(entities)
+        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local map = game.GetMap()
+        lia.data.persistCache = entities
+        local condition = buildCondition(folder, map)
+        local dynamic = {}
+        local dynamicList = {}
+        for _, ent in ipairs(entities) do
+            for k in pairs(ent) do
+                if not defaultCols[k] and not dynamic[k] then
+                    dynamic[k] = true
+                    dynamicList[#dynamicList + 1] = k
+                end
+            end
+        end
+
+        lia.db.waitForTablesToLoad():next(function()
+            createPersistenceTable()
+        end):next(function()
+            return ensurePersistenceColumns(dynamicList)
+        end):next(function()
+            return lia.db.delete("persistence", condition)
+        end):next(function()
+            local rows = {}
+            for _, ent in ipairs(entities) do
+                local row = {
+                    _folder = folder,
+                    _map = map,
+                    class = ent.class,
+                    pos = util.TableToJSON(ent.pos or {}),
+                    angles = util.TableToJSON(ent.angles or {}),
+                    model = ent.model
+                }
+                for _, col in ipairs(dynamicList) do
+                    local val = ent[col]
+                    if istable(val) then
+                        row[col] = util.TableToJSON(val)
+                    else
+                        row[col] = val
+                    end
+                end
+                rows[#rows + 1] = row
+            end
+            return lia.db.bulkInsert("persistence", rows)
+        end)
+    end
+
+    function lia.data.loadPersistenceData(callback)
+        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local map = game.GetMap()
+        local condition = buildCondition(folder, map)
+        lia.db.waitForTablesToLoad():next(function()
+            createPersistenceTable()
+            return lia.db.select("*", "persistence", condition)
+        end):next(function(res)
+            local rows = res.results or {}
+            local entities = {}
+            for _, row in ipairs(rows) do
+                local ent = {}
+                for k, v in pairs(row) do
+                    if not defaultCols[k] and k ~= "_id" and k ~= "_folder" and k ~= "_map" then
+                        ent[k] = lia.data.deserialize(v)
+                    end
+                end
+                ent.class = row.class
+                ent.pos = lia.data.deserialize(row.pos)
+                ent.angles = lia.data.deserialize(row.angles)
+                ent.model = row.model
+                entities[#entities + 1] = ent
+            end
+            lia.data.persistCache = entities
+            if callback then callback(entities) end
+        end)
+    end
+
     timer.Create("liaSaveData", lia.config.get("DataSaveInterval", 600), 0, function()
         hook.Run("SaveData")
         hook.Run("PersistenceSave")
@@ -200,4 +337,8 @@ function lia.data.get(key, default)
         return stored
     end
     return default
+end
+
+function lia.data.getPersistence()
+    return lia.data.persistCache or {}
 end
