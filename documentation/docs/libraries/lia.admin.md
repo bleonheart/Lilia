@@ -36,7 +36,9 @@ Checks for third-party admin mods and returns `true` when the built-in system sh
 
 **Purpose**
 
-Loads stored admin groups and privileges from disk.
+Loads stored admin groups and privileges from disk. If CAMI usergroups are
+available, they will be used instead and the current CAMI permissions will be
+imported.
 
 **Parameters**
 
