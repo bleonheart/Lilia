@@ -138,10 +138,13 @@ if SERVER then
 
     function lia.data.set(key, value, global, ignoreMap)
         local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local map = ignoreMap and nil or game.GetMap()
+        local map = ignoreMap and NULL or game.GetMap()
         if global then
-            folder = nil
-            map = nil
+            folder = NULL
+            map = NULL
+        else
+            if folder == nil then folder = NULL end
+            if map == nil then map = NULL end
         end
 
         lia.data.stored[key] = value
