@@ -1184,4 +1184,8 @@ Reload: Drop]],
     oilPumpNext = "Ready in %s",
     oilPumping = "Pumping oil...",
     weaponsDesc = "A Weapon.",
+    userGroups = "User Groups",
+    addGroup = "Add Group",
+    removeGroup = "Remove Group",
+    groupName = "Group Name",
 }
