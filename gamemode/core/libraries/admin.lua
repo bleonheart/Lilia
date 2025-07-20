@@ -179,7 +179,7 @@ local function quote(str)
     return string.format("'%s'", tostring(str))
 end
 
-function lia.util.execAdminCommand()
+function lia.admin.execCommand()
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
     if cmd == "kick" then
