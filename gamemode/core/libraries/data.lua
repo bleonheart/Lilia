@@ -361,17 +361,12 @@ if SERVER then
                     _folder = folder,
                     _map = map,
                     class = ent.class,
-                    pos = util.TableToJSON(ent.pos or {}),
-                    angles = util.TableToJSON(ent.angles or {}),
+                    pos = lia.data.serialize(ent.pos),
+                    angles = lia.data.serialize(ent.angles),
                     model = ent.model
                 }
                 for _, col in ipairs(dynamicList) do
-                    local val = ent[col]
-                    if istable(val) then
-                        row[col] = util.TableToJSON(val)
-                    else
-                        row[col] = val
-                    end
+                    row[col] = lia.data.serialize(ent[col])
                 end
                 rows[#rows + 1] = row
             end
