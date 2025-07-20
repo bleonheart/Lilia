@@ -628,6 +628,7 @@ LANGUAGE = {
     changeToWhisper = "Change voice mode to Whispering range.",
     changeToTalk = "Change voice mode to Talking range.",
     changeToYell = "Change voice mode to Yelling range.",
+    voiceModeSet = "Voice range set to %s.",
     toggleVoice = "Toggle Voice",
     moderationTools = "Moderation Tools",
     changePlayerModel = "Change Playermodel",
