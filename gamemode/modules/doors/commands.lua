@@ -512,12 +512,12 @@ lia.command.add("dooraddfaction", {
                 facs[faction.index] = true
                 local json = util.TableToJSON(facs)
                 door:setNetVar("factions", json)
-                MODULE:callOnDoorChildren(door, function()
-                    local childFacs = door:getNetVar("factions", "[]")
+                MODULE:callOnDoorChildren(door, function(child)
+                    local childFacs = child:getNetVar("factions", "[]")
                     childFacs = util.JSONToTable(childFacs)
                     childFacs[faction.index] = true
                     local childJson = util.TableToJSON(childFacs)
-                    door:setNetVar("factions", childJson)
+                    child:setNetVar("factions", childJson)
                 end)
 
                 lia.log.add(client, "doorSetFaction", door, faction.name)
@@ -526,7 +526,9 @@ lia.command.add("dooraddfaction", {
                 client:notifyLocalized("invalidFaction")
             else
                 door:setNetVar("factions", "[]")
-                MODULE:callOnDoorChildren(door, function() door:setNetVar("factions", "[]") end)
+                MODULE:callOnDoorChildren(door, function(child)
+                    child:setNetVar("factions", "[]")
+                end)
                 lia.log.add(client, "doorRemoveFaction", door, "all")
                 client:notifyLocalized("doorRemoveFaction")
             end
@@ -561,12 +563,12 @@ lia.command.add("doorremovefaction", {
                 facs[faction.index] = nil
                 local json = util.TableToJSON(facs)
                 door:setNetVar("factions", json)
-                MODULE:callOnDoorChildren(door, function()
-                    local childFacs = door:getNetVar("factions", "[]")
+                MODULE:callOnDoorChildren(door, function(child)
+                    local childFacs = child:getNetVar("factions", "[]")
                     childFacs = util.JSONToTable(childFacs)
                     childFacs[faction.index] = nil
                     local childJson = util.TableToJSON(childFacs)
-                    door:setNetVar("factions", childJson)
+                    child:setNetVar("factions", childJson)
                 end)
 
                 lia.log.add(client, "doorRemoveFaction", door, faction.name)
@@ -575,7 +577,9 @@ lia.command.add("doorremovefaction", {
                 client:notifyLocalized("invalidFaction")
             else
                 door:setNetVar("factions", "[]")
-                MODULE:callOnDoorChildren(door, function() door:setNetVar("factions", "[]") end)
+                MODULE:callOnDoorChildren(door, function(child)
+                    child:setNetVar("factions", "[]")
+                end)
                 lia.log.add(client, "doorRemoveFaction", door, "all")
                 client:notifyLocalized("doorRemoveFaction")
             end
@@ -607,9 +611,9 @@ lia.command.add("doorsetclass", {
             if class then
                 door.liaClassID = class
                 door:setNetVar("class", class)
-                MODULE:callOnDoorChildren(door, function()
-                    door.liaClassID = class
-                    door:setNetVar("class", class)
+                MODULE:callOnDoorChildren(door, function(child)
+                    child.liaClassID = class
+                    child:setNetVar("class", class)
                 end)
 
                 lia.log.add(client, "doorSetClass", door, classData.name)
@@ -618,7 +622,9 @@ lia.command.add("doorsetclass", {
                 client:notifyLocalized("invalidClass")
             else
                 door:setNetVar("class", nil)
-                MODULE:callOnDoorChildren(door, function() door:setNetVar("class", nil) end)
+                MODULE:callOnDoorChildren(door, function(child)
+                    child:setNetVar("class", nil)
+                end)
                 lia.log.add(client, "doorRemoveClass", door)
                 client:notifyLocalized("doorRemoveClass")
             end
