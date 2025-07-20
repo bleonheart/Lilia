@@ -114,6 +114,7 @@ local DefaultFunctions = {
             local client = item.player
             local target = client:GetEyeTraceNoCursor().Entity
             if not (IsValid(target) and target:IsPlayer() and target:Alive() and client:GetPos():DistToSqr(target:GetPos()) < 6500) then return false end
+            if hook.Run("CanPlayerRequestInspectionOnItem", client, target, item) == false then return false end
             target:binaryQuestion(client:Name() .. " wants to show you their " .. item.name .. ".", L("yes"), L("no"), false, function(choice)
                 if choice == 0 then
                     net.Start("liaItemInspect")
