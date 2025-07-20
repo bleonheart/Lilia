@@ -523,7 +523,6 @@ function GM:Initialize()
         hasInitializedModules = true
     end
 
-    lia.config.load()
     if CLIENT then
         lia.option.load()
         lia.keybind.load()

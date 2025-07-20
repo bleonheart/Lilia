@@ -7,22 +7,18 @@ end
 function MODULE:SaveData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.upsert({
-            _schema = folder,
-            _map = map,
-            _data = lia.data.serialize({bans = self.OOCBans})
-        }, TABLE)
-    end)
+    lia.db.upsert({
+        _schema = folder,
+        _map = map,
+        _data = lia.data.serialize({bans = self.OOCBans})
+    }, TABLE)
 end
 
 function MODULE:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.selectOne({"_data"}, TABLE, condition)
-    end):next(function(res)
+    lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
         local data = res and lia.data.deserialize(res._data) or {}
         self.OOCBans = {}
 

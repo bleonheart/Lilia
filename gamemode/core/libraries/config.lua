@@ -67,11 +67,10 @@ end
 
 function lia.config.load()
     if SERVER then
-        lia.db.waitForTablesToLoad():next(function()
-            local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-            lia.db.select({"_key", "_value"}, "config", "_schema = " .. lia.db.convertDataType(schema)):next(function(res)
-                local rows = res.results or {}
-                local existing = {}
+        local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select({"_key", "_value"}, "config", "_schema = " .. lia.db.convertDataType(schema)):next(function(res)
+            local rows = res.results or {}
+            local existing = {}
                 for _, row in ipairs(rows) do
                     local decoded = util.JSONToTable(row._value)
                     lia.config.stored[row._key] = lia.config.stored[row._key] or {}
@@ -107,7 +106,6 @@ function lia.config.load()
                     finalize()
                 end
             end)
-        end)
     else
         net.Start("cfgList")
         net.SendToServer()
@@ -143,15 +141,13 @@ if SERVER then
             }
         end
 
-        lia.db.waitForTablesToLoad():next(function()
-            local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-            local queries = {"DELETE FROM lia_config WHERE _schema = " .. lia.db.convertDataType(schema)}
+        local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local queries = {"DELETE FROM lia_config WHERE _schema = " .. lia.db.convertDataType(schema)}
             for _, row in ipairs(rows) do
                 queries[#queries + 1] = "INSERT INTO lia_config (_schema,_key,_value) VALUES (" .. lia.db.convertDataType(schema) .. ", " .. lia.db.convertDataType(row._key) .. ", " .. lia.db.convertDataType(row._value) .. ")"
             end
 
             lia.db.transaction(queries)
-        end)
     end
 end
 

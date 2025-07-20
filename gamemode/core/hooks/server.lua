@@ -601,13 +601,11 @@ function GM:SaveData()
     lia.data.savePersistence(data.entities)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    lia.db.waitForTablesToLoad():next(function()
-        return lia.db.upsert({
-            _schema = folder,
-            _map = map,
-            _data = lia.data.serialize(data.items)
-        }, "saveditems")
-    end)
+    lia.db.upsert({
+        _schema = folder,
+        _map = map,
+        _data = lia.data.serialize(data.items)
+    }, "saveditems")
 end
 
 function GM:LoadData()
@@ -648,7 +646,7 @@ function GM:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-    lia.db.waitForTablesToLoad():next(function() return lia.db.selectOne({"_data"}, "saveditems", condition) end):next(function(res)
+    lia.db.selectOne({"_data"}, "saveditems", condition):next(function(res)
         local items = res and lia.data.deserialize(res._data) or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
@@ -902,6 +900,11 @@ end
 
 function GM:LiliaTablesLoaded()
     lia.db.addDatabaseFields()
+    lia.log.loadTables()
+    lia.data.loadTables()
+    lia.data.loadPersistence()
+    lia.admin.load()
+    lia.config.load()
     hook.Run("LoadData")
     hook.Run("PostLoadData")
     lia.faction.formatModelData()
