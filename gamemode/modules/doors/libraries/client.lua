@@ -26,8 +26,9 @@
         local classData
         if classesTable then
             classData = {}
-            for id, _ in pairs(classesTable) do
-                local info = lia.class.list[id]
+            for _, uid in ipairs(classesTable) do
+                local index = lia.class.retrieveClass(uid)
+                local info = lia.class.list[index]
                 if info then table.insert(classData, info) end
             end
         end
@@ -41,8 +42,8 @@
             if facs then
                 lia.util.drawText(L("doorFactions"), x, y, ColorAlpha(color_white, alpha), 1, 1)
                 y = y + 20
-                for id, _ in pairs(facs) do
-                    local info = lia.faction.indices[id]
+                for _, id in ipairs(facs) do
+                    local info = lia.faction.get(id)
                     if info then
                         lia.util.drawText(info.name, x, y, info.color or color_white, 1, 1)
                         y = y + 20
@@ -72,7 +73,7 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
         local factionsAssigned = util.JSONToTable(factionsAssignedRaw) or {}
         local addFactionMenu = AdminMenu:AddSubMenu(L("doorAddFaction"))
         for _, faction in pairs(lia.faction.teams) do
-            if not factionsAssigned[faction.index] then
+            if not table.HasValue(factionsAssigned, faction.uniqueID) then
                 addFactionMenu:AddOption(faction.name, function()
                     LocalPlayer():ConCommand('say /dooraddfaction "' .. faction.uniqueID .. '"')
                     AdminStickIsOpen = false
@@ -80,16 +81,15 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
             end
         end
 
-        if table.Count(factionsAssigned) > 0 then
+        if #factionsAssigned > 0 then
             local removeFactionMenu = AdminMenu:AddSubMenu(L("doorRemoveFactionAdmin"))
-            for id, _ in pairs(factionsAssigned) do
-                for _, faction in pairs(lia.faction.teams) do
-                    if faction.index == id then
-                        removeFactionMenu:AddOption(faction.name, function()
-                            LocalPlayer():ConCommand('say /doorremovefaction "' .. faction.uniqueID .. '"')
-                            AdminStickIsOpen = false
-                        end)
-                    end
+            for _, id in ipairs(factionsAssigned) do
+                local faction = lia.faction.get(id)
+                if faction then
+                    removeFactionMenu:AddOption(faction.name, function()
+                        LocalPlayer():ConCommand('say /doorremovefaction "' .. faction.uniqueID .. '"')
+                        AdminStickIsOpen = false
+                    end)
                 end
             end
         else

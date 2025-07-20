@@ -435,12 +435,21 @@ lia.command.add("doorinfo", {
             local name = door:getNetVar("title", door:getNetVar("name", L("doorTitle")))
             local price = door:getNetVar("price", 0)
             local noSell = door:getNetVar("noSell", false)
-            local factions = door:getNetVar("factions", "[]")
+            local factionsRaw = door:getNetVar("factions", "[]")
+            local factionNames = {}
+            local factionTable = util.JSONToTable(factionsRaw) or {}
+            for _, id in ipairs(factionTable) do
+                local info = lia.faction.get(id)
+                if info then table.insert(factionNames, info.name) end
+            end
+            local factionsString = next(factionNames) and table.concat(factionNames, ", ") or L("none")
+
             local classesDataRaw = door:getNetVar("classes", "[]")
             local classesTable = util.JSONToTable(classesDataRaw) or {}
             local classNames = {}
-            for id, _ in pairs(classesTable) do
-                local info = lia.class.list[id]
+            for _, uid in ipairs(classesTable) do
+                local idx = lia.class.retrieveClass(uid)
+                local info = lia.class.list[idx]
                 if info then table.insert(classNames, info.name) end
             end
             local classesString = next(classNames) and table.concat(classNames, ", ") or L("none")
@@ -465,7 +474,7 @@ lia.command.add("doorinfo", {
                 },
                 {
                     property = L("doorInfoFactions"),
-                    value = tostring(factions)
+                    value = tostring(factionsString)
                 },
                 {
                     property = L("classes"),
@@ -517,17 +526,19 @@ lia.command.add("dooraddfaction", {
             end
 
             if faction then
-                local facs = door:getNetVar("factions", "[]")
-                facs = util.JSONToTable(facs)
-                facs[faction.index] = true
-                local json = util.TableToJSON(facs)
-                door:setNetVar("factions", json)
+                local facs = util.JSONToTable(door:getNetVar("factions", "[]")) or {}
+                if not table.HasValue(facs, faction.uniqueID) then
+                    facs[#facs + 1] = faction.uniqueID
+                end
+                door.liaFactions = facs
+                door:setNetVar("factions", util.TableToJSON(facs))
                 MODULE:callOnDoorChildren(door, function(child)
-                    local childFacs = child:getNetVar("factions", "[]")
-                    childFacs = util.JSONToTable(childFacs)
-                    childFacs[faction.index] = true
-                    local childJson = util.TableToJSON(childFacs)
-                    child:setNetVar("factions", childJson)
+                    local childFacs = util.JSONToTable(child:getNetVar("factions", "[]")) or {}
+                    if not table.HasValue(childFacs, faction.uniqueID) then
+                        childFacs[#childFacs + 1] = faction.uniqueID
+                    end
+                    child.liaFactions = childFacs
+                    child:setNetVar("factions", util.TableToJSON(childFacs))
                 end)
 
                 lia.log.add(client, "doorSetFaction", door, faction.name)
@@ -535,8 +546,10 @@ lia.command.add("dooraddfaction", {
             elseif arguments[1] then
                 client:notifyLocalized("invalidFaction")
             else
+                door.liaFactions = nil
                 door:setNetVar("factions", "[]")
                 MODULE:callOnDoorChildren(door, function(child)
+                    child.liaFactions = nil
                     child:setNetVar("factions", "[]")
                 end)
                 lia.log.add(client, "doorRemoveFaction", door, "all")
@@ -568,17 +581,15 @@ lia.command.add("doorremovefaction", {
             end
 
             if faction then
-                local facs = door:getNetVar("factions", "[]")
-                facs = util.JSONToTable(facs)
-                facs[faction.index] = nil
-                local json = util.TableToJSON(facs)
-                door:setNetVar("factions", json)
+                local facs = util.JSONToTable(door:getNetVar("factions", "[]")) or {}
+                table.RemoveByValue(facs, faction.uniqueID)
+                door.liaFactions = facs
+                door:setNetVar("factions", util.TableToJSON(facs))
                 MODULE:callOnDoorChildren(door, function(child)
-                    local childFacs = child:getNetVar("factions", "[]")
-                    childFacs = util.JSONToTable(childFacs)
-                    childFacs[faction.index] = nil
-                    local childJson = util.TableToJSON(childFacs)
-                    child:setNetVar("factions", childJson)
+                    local childFacs = util.JSONToTable(child:getNetVar("factions", "[]")) or {}
+                    table.RemoveByValue(childFacs, faction.uniqueID)
+                    child.liaFactions = childFacs
+                    child:setNetVar("factions", util.TableToJSON(childFacs))
                 end)
 
                 lia.log.add(client, "doorRemoveFaction", door, faction.name)
@@ -586,8 +597,10 @@ lia.command.add("doorremovefaction", {
             elseif arguments[1] then
                 client:notifyLocalized("invalidFaction")
             else
+                door.liaFactions = nil
                 door:setNetVar("factions", "[]")
                 MODULE:callOnDoorChildren(door, function(child)
+                    child.liaFactions = nil
                     child:setNetVar("factions", "[]")
                 end)
                 lia.log.add(client, "doorRemoveFaction", door, "all")
@@ -620,12 +633,16 @@ lia.command.add("doorsetclass", {
 
             if class then
                 local classes = util.JSONToTable(door:getNetVar("classes", "[]")) or {}
-                classes[class] = true
+                if not table.HasValue(classes, classData.uniqueID) then
+                    classes[#classes + 1] = classData.uniqueID
+                end
                 door.liaClasses = classes
                 door:setNetVar("classes", util.TableToJSON(classes))
                 MODULE:callOnDoorChildren(door, function(child)
                     local childClasses = util.JSONToTable(child:getNetVar("classes", "[]")) or {}
-                    childClasses[class] = true
+                    if not table.HasValue(childClasses, classData.uniqueID) then
+                        childClasses[#childClasses + 1] = classData.uniqueID
+                    end
                     child.liaClasses = childClasses
                     child:setNetVar("classes", util.TableToJSON(childClasses))
                 end)
