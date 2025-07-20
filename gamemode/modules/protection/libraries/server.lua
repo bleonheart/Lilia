@@ -235,7 +235,3 @@ function MODULE:PlayerInitialSpawn(client)
     net.Start("VerifyCheats")
     net.Send(client)
 end
-
-function MODULE:InitializedModules()
-    if concommand.GetTable()["sounds_request"] then concommand.Add("sounds_request", function() end) end
-end
