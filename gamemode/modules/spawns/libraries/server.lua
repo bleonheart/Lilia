@@ -2,26 +2,40 @@ local MODULE = MODULE
 MODULE.spawns = MODULE.spawns or {}
 local decodeVector = lia.data.decodeVector
 local encodeVector = lia.data.encodeVector
+local TABLE = "spawns"
+
+local function buildCondition(folder, map)
+    return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+end
 
 function MODULE:LoadData(attempt)
     attempt = attempt or 1
-    local data = self:getData()
-    local factions = data and (data.factions or data) or nil
-    if (not factions or next(factions) == nil) and attempt < 5 then
-        timer.Simple(1, function() if not self.loaded then self:LoadData(attempt + 1) end end)
-        return
-    end
-
-    self.spawns = {}
-    factions = factions or {}
-    for fac, spawns in pairs(factions) do
-        self.spawns[fac] = {}
-        for _, pos in ipairs(spawns) do
-            self.spawns[fac][#self.spawns[fac] + 1] = decodeVector(pos)
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = buildCondition(folder, map)
+    lia.db.waitForTablesToLoad():next(function()
+        return lia.db.selectOne({"_data"}, TABLE, condition)
+    end):next(function(res)
+        local data = res and lia.data.deserialize(res._data) or {}
+        local factions = data.factions or data
+        if (not factions or next(factions) == nil) and attempt < 5 then
+            timer.Simple(1, function()
+                if not self.loaded then self:LoadData(attempt + 1) end
+            end)
+            return
         end
-    end
 
-    self.loaded = true
+        self.spawns = {}
+        factions = factions or {}
+        for fac, spawns in pairs(factions) do
+            self.spawns[fac] = {}
+            for _, pos in ipairs(spawns) do
+                self.spawns[fac][#self.spawns[fac] + 1] = decodeVector(pos)
+            end
+        end
+
+        self.loaded = true
+    end)
 end
 
 function MODULE:SaveData()
@@ -32,10 +46,16 @@ function MODULE:SaveData()
             factions[fac][#factions[fac] + 1] = encodeVector(pos)
         end
     end
-
-    self:setData({
-        factions = factions
-    })
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = buildCondition(folder, map)
+    lia.db.waitForTablesToLoad():next(function()
+        return lia.db.upsert({
+            _schema = folder,
+            _map = map,
+            _data = lia.data.serialize({factions = factions})
+        }, TABLE)
+    end)
 end
 
 local function SpawnPlayer(client)

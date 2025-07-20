@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local encodeVector = lia.data.encodeVector
 local encodeAngle = lia.data.encodeAngle
 local decodeVector = lia.data.decodeVector
@@ -606,7 +606,15 @@ function GM:SaveData()
     end
 
     lia.data.savePersistence(data.entities)
-    lia.data.set("itemsave", data.items)
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    lia.db.waitForTablesToLoad():next(function()
+        return lia.db.upsert({
+            _schema = folder,
+            _map = map,
+            _data = lia.data.serialize(data.items)
+        }, "saveditems")
+    end)
 end
 
 function GM:LoadData()
@@ -643,47 +651,54 @@ function GM:LoadData()
         end
     end)
 
-    local items = lia.data.get("itemsave", {}) or {}
-    if #items > 0 then
-        local idRange, positions, angles = {}, {}, {}
-        for _, item in ipairs(items) do
-            local id = item[1]
-            idRange[#idRange + 1] = id
-            positions[id] = decodeVector(item[2])
-            angles[id] = decodeAngle(item[3])
-        end
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+    lia.db.waitForTablesToLoad():next(function()
+        return lia.db.selectOne({"_data"}, "saveditems", condition)
+    end):next(function(res)
+        local items = res and lia.data.deserialize(res._data) or {}
+        if #items > 0 then
+            local idRange, positions, angles = {}, {}, {}
+            for _, item in ipairs(items) do
+                local id = item[1]
+                idRange[#idRange + 1] = id
+                positions[id] = decodeVector(item[2])
+                angles[id] = decodeAngle(item[3])
+            end
 
-        if #idRange > 0 then
-            local range = "(" .. table.concat(idRange, ", ") .. ")"
-            if hook.Run("ShouldDeleteSavedItems") == true then
-                lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
-                lia.information(L("serverDeletedItems"))
-            else
-                lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
-                    if not data then return end
-                    local loadedItems = {}
-                    for _, row in ipairs(data) do
-                        local itemID = tonumber(row._itemID)
-                        local itemData = util.JSONToTable(row._data or "[]")
-                        local uniqueID = row._uniqueID
-                        local itemTable = lia.item.list[uniqueID]
-                        local position = positions[itemID]
-                        local ang = angles[itemID]
-                        if itemTable and itemID and position then
-                            local itemCreated = lia.item.new(uniqueID, itemID)
-                            itemCreated.data = itemData or {}
-                            itemCreated:spawn(position, ang).liaItemID = itemID
-                            itemCreated:onRestored()
-                            itemCreated.invID = 0
-                            loadedItems[#loadedItems + 1] = itemCreated
+            if #idRange > 0 then
+                local range = "(" .. table.concat(idRange, ", ") .. ")"
+                if hook.Run("ShouldDeleteSavedItems") == true then
+                    lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
+                    lia.information(L("serverDeletedItems"))
+                else
+                    lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
+                        if not data then return end
+                        local loadedItems = {}
+                        for _, row in ipairs(data) do
+                            local itemID = tonumber(row._itemID)
+                            local itemData = util.JSONToTable(row._data or "[]")
+                            local uniqueID = row._uniqueID
+                            local itemTable = lia.item.list[uniqueID]
+                            local position = positions[itemID]
+                            local ang = angles[itemID]
+                            if itemTable and itemID and position then
+                                local itemCreated = lia.item.new(uniqueID, itemID)
+                                itemCreated.data = itemData or {}
+                                itemCreated:spawn(position, ang).liaItemID = itemID
+                                itemCreated:onRestored()
+                                itemCreated.invID = 0
+                                loadedItems[#loadedItems + 1] = itemCreated
+                            end
                         end
-                    end
 
-                    hook.Run("OnSavedItemLoaded", loadedItems)
-                end)
+                        hook.Run("OnSavedItemLoaded", loadedItems)
+                    end)
+                end
             end
         end
-    end
+    end)
 end
 
 function GM:OnEntityCreated(ent)
