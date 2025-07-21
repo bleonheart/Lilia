@@ -60,10 +60,10 @@ local function SpawnPlayer(client)
     if not character then return end
     local posData = character:getLastPos()
     PrintTable(posData, 1)
-    if posData and posData[3] and posData[3]:lower() == game.GetMap():lower() then
+    if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
         print("spawned via posdata")
-        client:SetPos(posData[1].x and posData[1] or client:GetPos())
-        client:SetEyeAngles(posData[2].p and posData[2] or angle_zero)
+        client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
+        client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
         return
     end
@@ -92,7 +92,13 @@ end
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
     local InVehicle = client:hasValidVehicle()
-    if IsValid(client) and not InVehicle and client:Alive() then character:setLastPos({client:GetPos(), client:EyeAngles(), game.GetMap()}) end
+    if IsValid(client) and not InVehicle and client:Alive() then
+        character:setLastPos({
+            pos = client:GetPos(),
+            ang = client:EyeAngles(),
+            map = game.GetMap()
+        })
+    end
 end
 
 function MODULE:PlayerDeath(client, _, attacker)
