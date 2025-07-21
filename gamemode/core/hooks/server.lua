@@ -597,8 +597,8 @@ function GM:SaveData()
         if item.liaItemID and not item.temp then
             data.items[#data.items + 1] = {
                 item.liaItemID,
-                encodetable(item:GetPos()),
-                encodetable(item:GetAngles())
+                lia.data.serialize(item:GetPos()),
+                lia.data.serialize(item:GetAngles())
             }
         end
     end
