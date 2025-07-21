@@ -617,7 +617,6 @@ function GM:LoadData()
     end
 
     lia.data.loadPersistenceData(function(entities)
-        PrintTable(entities, 1)
         for _, ent in ipairs(entities) do
             local decodedPos = ent.pos
             local decodedAng = ent.angles
@@ -714,10 +713,7 @@ function GM:OnEntityCreated(ent)
 
         local extra = hook.Run("GetEntitySaveData", ent)
         if extra ~= nil then entData.data = extra end
-        PrintTable(entData, 1)
-        print(entData.angles)
         saved[#saved + 1] = entData
-        PrintTable(entData)
         lia.data.savePersistence(saved)
         hook.Run("OnEntityPersisted", ent, entData)
     end)
