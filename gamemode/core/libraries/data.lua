@@ -18,7 +18,8 @@ function lia.data.encodetable(value)
     return value
 end
 
-local function decodeVector(data)
+-- Internal helpers to convert raw tables or strings into Vectors and Angles
+local function _decodeVector(data)
     if isvector(data) then return data end
     if istable(data) then
         if data.x then return Vector(data.x, data.y, data.z) end
@@ -35,7 +36,7 @@ local function decodeVector(data)
     return data
 end
 
-local function decodeAngle(data)
+local function _decodeAngle(data)
     if isangle(data) then return data end
     if istable(data) then
         if data.p or data.y or data.r then return Angle(data.p or 0, data.y or 0, data.r or 0) end
@@ -64,9 +65,10 @@ local function deepDecode(value)
         value = t
     end
 
-    value = decodeVector(value)
-    value = decodeAngle(value)
-    PrintTable(value)
+    -- Decode angle before vector to avoid misinterpreting angle tables
+    value = _decodeAngle(value)
+    value = _decodeVector(value)
+    -- remove stray debug prints from earlier versions
     return value
 end
 
@@ -88,6 +90,30 @@ function lia.data.deserialize(raw)
 
     if decoded == nil then return nil end
     return lia.data.decode(decoded)
+end
+
+-- Convenience helpers that decode directly into Vector or Angle types. These
+-- bypass the generic decoder to avoid ambiguity between the two types.
+function lia.data.decodeVector(raw)
+    if not raw then return nil end
+    local decoded = util.JSONToTable(raw)
+    if not decoded then
+        local ok, ponDecoded = pcall(pon.decode, raw)
+        if ok then decoded = ponDecoded end
+    end
+    if decoded == nil then return nil end
+    return _decodeVector(decoded)
+end
+
+function lia.data.decodeAngle(raw)
+    if not raw then return nil end
+    local decoded = util.JSONToTable(raw)
+    if not decoded then
+        local ok, ponDecoded = pcall(pon.decode, raw)
+        if ok then decoded = ponDecoded end
+    end
+    if decoded == nil then return nil end
+    return _decodeAngle(decoded)
 end
 
 local function buildCondition(folder, map)
@@ -402,8 +428,8 @@ function lia.data.loadPersistenceData(callback)
             end
 
             ent.class = row.class
-            ent.pos = lia.data.deserialize(row.pos)
-            ent.angles = lia.data.deserialize(row.angles)
+            ent.pos = lia.data.decodeVector(row.pos)
+            ent.angles = lia.data.decodeAngle(row.angles)
             ent.model = row.model
             entities[#entities + 1] = ent
         end

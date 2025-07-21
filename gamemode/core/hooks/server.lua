@@ -649,8 +649,8 @@ function GM:LoadData()
             for _, row in ipairs(items) do
                 local id = tonumber(row._itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.deserialize(row._pos)
-                angles[id] = lia.data.deserialize(row._angles)
+                positions[id] = lia.data.decodeVector(row._pos)
+                angles[id] = lia.data.decodeAngle(row._angles)
             end
 
             if #idRange > 0 then
