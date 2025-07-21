@@ -1,23 +1,3 @@
-﻿local Variables = {
-    ["disabled"] = true,
-    ["name"] = true,
-    ["price"] = true,
-    ["noSell"] = true,
-    ["factions"] = true,
-    ["classes"] = true,
-    ["hidden"] = true,
-    ["locked"] = true
-}
-
-function MODULE:copyParentDoor(child)
-    local parent = child.liaParent
-    if IsValid(parent) then
-        for var in pairs(Variables) do
-            local parentValue = parent:getNetVar(var)
-            if child:getNetVar(var) ~= parentValue then child:setNetVar(var, parentValue) end
-        end
-    end
-end
 
 function MODULE:PostLoadData()
     if self.DoorsAlwaysDisabled then
@@ -25,7 +5,6 @@ function MODULE:PostLoadData()
         for _, door in ents.Iterator() do
             if IsValid(door) and door:isDoor() then
                 door:setNetVar("disabled", true)
-                self:callOnDoorChildren(door, function(child) child:setNetVar("disabled", true) end)
                 count = count + 1
             end
         end
@@ -88,23 +67,6 @@ function MODULE:LoadData()
                     PrintTable(classes, 1)
                 end
 
-                print("LoadData: raw _children =", row._children or "")
-                local children = lia.data.deserialize(row._children) or {}
-                print("LoadData: deserialized children =", children)
-                if istable(children) and not table.IsEmpty(children) then
-                    ent.liaChildren = children
-                    for childID in pairs(children) do
-                        print("LoadData: handling childID =", childID)
-                        local c = ents.GetMapCreatedEntity(childID)
-                        print("LoadData: fetched child entity =", c)
-                        if IsValid(c) then
-                            c.liaParent = ent
-                            print("LoadData: set child.liaParent")
-                        else
-                            print("LoadData: invalid child entity for ID", childID)
-                        end
-                    end
-                end
 
                 print("LoadData: raw _name =", row._name)
                 if row._name and row._name ~= "NULL" then
@@ -156,8 +118,7 @@ function MODULE:SaveData()
                 _ownable = door:getNetVar("noSell") and 0 or 1,
                 _name = door:getNetVar("name"),
                 _price = door:getNetVar("price"),
-                _locked = door:getNetVar("locked") and 1 or 0,
-                _children = lia.data.serialize(door.liaChildren or {})
+                _locked = door:getNetVar("locked") and 1 or 0
             }
         end
     end
@@ -170,22 +131,6 @@ function MODULE:SaveData()
     end
 end
 
-function MODULE:callOnDoorChildren(entity, callback)
-    local parent
-    if entity.liaChildren then
-        parent = entity
-    elseif entity.liaParent then
-        parent = entity.liaParent
-    end
-
-    if IsValid(parent) then
-        callback(parent)
-        for k, _ in pairs(parent.liaChildren) do
-            local child = ents.GetMapCreatedEntity(k)
-            if IsValid(child) then callback(child) end
-        end
-    end
-end
 
 function MODULE:InitPostEntity()
     local doors = ents.FindByClass("prop_door_rotating")
@@ -270,7 +215,6 @@ function MODULE:ShowTeam(client)
         if (not factions or factions == "[]") and (not classes or classes == "[]") then
             if entity:checkDoorAccess(client, DOOR_TENANT) then
                 local door = entity
-                if IsValid(door.liaParent) then door = door.liaParent end
                 net.Start("doorMenu")
                 net.WriteEntity(door)
                 local access = door.liaAccess or {}
