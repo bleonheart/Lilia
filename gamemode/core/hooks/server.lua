@@ -1,6 +1,5 @@
 local GM = GM or GAMEMODE
-local encodeVector = lia.data.encodeVector
-local encodeAngle = lia.data.encodeAngle
+local encodetable = lia.data.encodetable
 local decodeVector = lia.data.decodeVector
 local decodeAngle = lia.data.decodeAngle
 function GM:CharPreSave(character)
@@ -595,7 +594,13 @@ function GM:SaveData()
     end
 
     for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, encodeVector(item:GetPos()), encodeAngle(item:GetAngles())} end
+        if item.liaItemID and not item.temp then
+            data.items[#data.items + 1] = {
+                item.liaItemID,
+                encodetable(item:GetPos()),
+                encodetable(item:GetAngles())
+            }
+        end
     end
 
     lia.data.savePersistence(data.entities)

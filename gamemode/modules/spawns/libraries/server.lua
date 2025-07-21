@@ -1,7 +1,7 @@
 local MODULE = MODULE
 MODULE.spawns = MODULE.spawns or {}
 local decodeVector = lia.data.decodeVector
-local encodeVector = lia.data.encodeVector
+local encodetable = lia.data.encodetable
 local TABLE = "spawns"
 local function buildCondition(folder, map)
     return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
@@ -39,7 +39,7 @@ function MODULE:SaveData()
     for fac, spawns in pairs(self.spawns or {}) do
         factions[fac] = {}
         for _, pos in ipairs(spawns) do
-            factions[fac][#factions[fac] + 1] = encodeVector(pos)
+            factions[fac][#factions[fac] + 1] = encodetable(pos)
         end
     end
 

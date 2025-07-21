@@ -1,26 +1,24 @@
 ﻿file.CreateDir("lilia")
 lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}
-function lia.data.encodeVector(vec)
-    return {vec.x, vec.y, vec.z}
-end
-
-function lia.data.encodeAngle(ang)
-    return {ang.p, ang.y, ang.r}
-end
-
-local function deepEncode(value)
+--[[
+    Recursively convert tables so they can be safely serialized. Vectors and
+    Angles are translated into simple table formats. This replaces the old
+    encodeVector and encodeAngle helpers.
+--]]
+function lia.data.encodetable(value)
     if isvector(value) then
-        return lia.data.encodeVector(value)
+        return {value.x, value.y, value.z}
     elseif isangle(value) then
-        return lia.data.encodeAngle(value)
+        return {value.p, value.y, value.r}
     elseif istable(value) then
         local t = {}
         for k, v in pairs(value) do
-            t[k] = deepEncode(v)
+            t[k] = lia.data.encodetable(v)
         end
         return t
     end
+
     return value
 end
 
@@ -80,7 +78,7 @@ function lia.data.decode(value)
 end
 
 function lia.data.serialize(value)
-    return util.TableToJSON(deepEncode(value) or {})
+    return util.TableToJSON(lia.data.encodetable(value) or {})
 end
 
 function lia.data.deserialize(raw)
