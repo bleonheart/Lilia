@@ -592,13 +592,7 @@ function GM:SaveData()
     end
 
     for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then
-            data.items[#data.items + 1] = {
-                item.liaItemID,
-                lia.data.serialize(item:GetPos()),
-                lia.data.serialize(item:GetAngles())
-            }
-        end
+        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, lia.data.serialize(item:GetPos()), lia.data.serialize(item:GetAngles())} end
     end
 
     lia.data.savePersistence(data.entities)
@@ -615,9 +609,8 @@ function GM:SaveData()
             _angles = itm[3]
         }
     end
-    lia.db.delete("saveditems", condition):next(function()
-        return lia.db.bulkInsert("saveditems", rows)
-    end)
+
+    lia.db.delete("saveditems", condition):next(function() return lia.db.bulkInsert("saveditems", rows) end)
 end
 
 function GM:LoadData()
