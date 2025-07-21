@@ -67,8 +67,11 @@ function MODULE:LoadData()
                 print("LoadData: valid door entity, applying data")
                 print("LoadData: raw _factions =", row._factions or "")
                 local factions = lia.data.deserialize(row._factions) or {}
-                print("LoadData: deserialized factions =", factions)
-                if istable(factions) and table.IsEmpty(factions) then
+                print("LoadData: deserialized factions =")
+                PrintTable(factions, 1)
+                print("--------------------------------------------------------")
+                PrintTable(util.TableToJSON(factions), 1)
+                if istable(factions) and not table.IsEmpty(factions) then
                     ent.liaFactions = factions
                     ent:setNetVar("factions", util.TableToJSON(factions))
                     print("LoadData: set netvar 'factions'")
@@ -78,7 +81,7 @@ function MODULE:LoadData()
                 print("LoadData: raw _classes =", row._classes or "")
                 local classes = lia.data.deserialize(row._classes) or {}
                 print("LoadData: deserialized classes =", classes)
-                if istable(classes) and table.IsEmpty(classes) then
+                if istable(classes) and not table.IsEmpty(classes) then
                     ent.liaClasses = classes
                     ent:setNetVar("classes", util.TableToJSON(classes))
                     print("LoadData: set netvar 'classes'")
@@ -88,7 +91,7 @@ function MODULE:LoadData()
                 print("LoadData: raw _children =", row._children or "")
                 local children = lia.data.deserialize(row._children) or {}
                 print("LoadData: deserialized children =", children)
-                if istable(children) and table.IsEmpty(children) then
+                if istable(children) and not table.IsEmpty(children) then
                     ent.liaChildren = children
                     for childID in pairs(children) do
                         print("LoadData: handling childID =", childID)
