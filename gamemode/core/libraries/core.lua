@@ -541,15 +541,7 @@ function GM:OnReloaded()
     end
 end
 
-function GM:InitPostEntity()
-    if SERVER then
-        -- Database hooks are now invoked in GM:LiliaTablesLoaded
     else
-        lia.joinTime = RealTime() - 0.9716
-        if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
-    end
-end
-
 local loadedCompatibility = {}
 for _, file in ipairs(ConditionalFiles) do
     if _G[file.global] then

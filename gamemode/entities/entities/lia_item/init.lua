@@ -66,13 +66,10 @@ function ENT:setItem(itemID)
         physObj:Wake()
     end
 
-    -- add item to saveditems table when spawned
-    if SERVER and not itemTable.temp then
+    if not itemTable.temp then
         local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
-        local condition = "_schema = " .. lia.db.convertDataType(folder)
-            .. " AND _map = " .. lia.db.convertDataType(map)
-            .. " AND _itemID = " .. tonumber(itemID)
+        local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map) .. " AND _itemID = " .. tonumber(itemID)
         lia.db.delete("saveditems", condition):next(function()
             lia.db.insertTable({
                 _schema = folder,
@@ -109,9 +106,7 @@ function ENT:OnRemove()
     if SERVER and not lia.shuttingDown and self.liaItemID then
         local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
-        local condition = "_schema = " .. lia.db.convertDataType(folder)
-            .. " AND _map = " .. lia.db.convertDataType(map)
-            .. " AND _itemID = " .. tonumber(self.liaItemID)
+        local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map) .. " AND _itemID = " .. tonumber(self.liaItemID)
         lia.db.delete("saveditems", condition)
     end
 end

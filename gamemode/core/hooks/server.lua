@@ -551,7 +551,6 @@ end
 function GM:SaveData()
     local seen = {}
     local data = {}
-
     for _, ent in ents.Iterator() do
         if ent:isLiliaPersistent() then
             local key = makeKey(ent)
@@ -587,19 +586,18 @@ function GM:SaveData()
         end
     end
 
-    -- items are handled individually on spawn and removal
     lia.data.savePersistence(data)
     lia.information(L("dataSaved"))
 end
 
-function GM:LoadData()
-    local function IsEntityNearby(pos, class)
-        for _, ent in ipairs(ents.FindByClass(class)) do
-            if ent:GetPos():DistToSqr(pos) <= 2500 then return true end
-        end
-        return false
+local function IsEntityNearby(pos, class)
+    for _, ent in ipairs(ents.FindByClass(class)) do
+        if ent:GetPos():DistToSqr(pos) <= 2500 then return true end
     end
+    return false
+end
 
+function GM:LoadData()
     lia.data.loadPersistenceData(function(entities)
         for _, ent in ipairs(entities) do
             local decodedPos = lia.data.decode(ent.pos)
@@ -691,7 +689,6 @@ end
 
 function GM:OnEntityCreated(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
-    -- Defer persistence until the entity has its final position
     timer.Simple(0, function()
         if not IsValid(ent) then return end
         local saved = lia.data.getPersistence()
