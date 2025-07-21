@@ -59,9 +59,7 @@ local function SpawnPlayer(client)
     local character = client:getChar()
     if not character then return end
     local posData = character:getLastPos()
-    PrintTable(posData, 1)
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
-        print("spawned via posdata")
         client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
         client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
