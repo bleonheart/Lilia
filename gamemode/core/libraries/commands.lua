@@ -113,6 +113,7 @@ function lia.command.parseSyntaxFields(syntax)
     for token in syntax:gmatch("%b[]") do
         local inner = token:sub(2, -2)
         local typ, name = inner:match("^(%S+)%s+(.+)$")
+        local optional = inner:lower():find("optional", 1, true) ~= nil
         if name then
             typ = typ:lower()
             if typ == "string" then
@@ -137,11 +138,14 @@ function lia.command.parseSyntaxFields(syntax)
             typ = "text"
             valid = false
         end
+        if optional then
+            name = name:gsub("%s+[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll]%s*$", "")
+        end
 
         fields[#fields + 1] = {
             name = name,
             type = typ,
-            optional = inner:lower():find("optional", 1, true) ~= nil
+            optional = optional
         }
     end
 
@@ -285,6 +289,35 @@ else
                         optional = false
                     }
                 end
+            end
+            local parsed, valid = lia.command.parseSyntaxFields(command.syntax)
+            if valid then
+                local tokens = prefix or {}
+                local index = 1
+                local newFields = {}
+                for _, field in ipairs(parsed) do
+                    local arg = tokens[index]
+                    if arg then
+                        index = index + 1
+                    else
+                        local info = fields[field.name]
+                        if not info then
+                            newFields[field.name] = {
+                                type = field.type,
+                                optional = field.optional
+                            }
+                        else
+                            if not istable(info) then
+                                info = { type = info }
+                            end
+                            newFields[field.name] = {
+                                type = info.type,
+                                optional = field.optional
+                            }
+                        end
+                    end
+                end
+                fields = newFields
             end
         end
 
