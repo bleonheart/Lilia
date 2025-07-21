@@ -215,9 +215,7 @@
     },
     ["backdoorDetected"] = {
         func = function(_, netMessage, file, line)
-            if file then
-                return string.format("Detected backdoor net '%s' defined in %s:%s.", netMessage, file, tostring(line))
-            end
+            if file then return string.format("Detected backdoor net '%s' defined in %s:%s.", netMessage, file, tostring(line)) end
             return string.format("Detected backdoor net '%s' during initialization.", netMessage)
         end,
         category = "Exploits"
@@ -232,9 +230,7 @@
     },
     ["hackAttempt"] = {
         func = function(client, netName)
-            if netName then
-                return string.format("Client %s triggered hack detection via '%s'.", client:Name(), netName)
-            end
+            if netName then return string.format("Client %s triggered hack detection via '%s'.", client:Name(), netName) end
             return string.format("Client %s triggered hack detection.", client:Name())
         end,
         category = "Cheating"

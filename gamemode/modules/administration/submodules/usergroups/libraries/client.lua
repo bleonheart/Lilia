@@ -1,4 +1,4 @@
-local function buildGroupsUI(panel, groups)
+﻿local function buildGroupsUI(panel, groups)
     panel:Clear()
     local top = panel:Add("Panel")
     top:Dock(TOP)

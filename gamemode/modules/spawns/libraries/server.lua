@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 MODULE.spawns = MODULE.spawns or {}
 local encodetable = lia.data.encodetable
 local TABLE = "spawns"

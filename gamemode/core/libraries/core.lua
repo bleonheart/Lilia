@@ -541,7 +541,6 @@ function GM:OnReloaded()
     end
 end
 
-    else
 local loadedCompatibility = {}
 for _, file in ipairs(ConditionalFiles) do
     if _G[file.global] then

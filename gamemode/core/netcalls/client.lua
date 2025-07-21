@@ -698,9 +698,7 @@ net.Receive("liaItemInspect", function()
     local data = net.ReadTable()
     local item = lia.item.new(uniqueID, 0)
     item.data = data or {}
-
     if hook.Run("CanPlayerInspectItem", LocalPlayer(), item) == false then return end
-
     local overlay = vgui.Create("EditablePanel")
     overlay:SetSize(ScrW(), ScrH())
     overlay:MakePopup()

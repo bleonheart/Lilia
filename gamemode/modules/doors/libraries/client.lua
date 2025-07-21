@@ -32,6 +32,7 @@
                 if info then table.insert(classData, info) end
             end
         end
+
         if IsValid(owner) then
             lia.util.drawText(L("doorOwnedBy", owner:Name()), x, y, ColorAlpha(color_white, alpha), 1, 1)
             y = y + 20
@@ -61,9 +62,7 @@
             end
         end
 
-        if not IsValid(owner) and factions == "[]" and (not classes or classes == "[]") then
-            lia.util.drawText(ownable and L("doorIsOwnable") or L("doorIsNotOwnable"), x, y, ColorAlpha(color_white, alpha), 1, 1)
-        end
+        if not IsValid(owner) and factions == "[]" and (not classes or classes == "[]") then lia.util.drawText(ownable and L("doorIsOwnable") or L("doorIsNotOwnable"), x, y, ColorAlpha(color_white, alpha), 1, 1) end
     end
 end
 

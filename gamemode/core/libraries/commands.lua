@@ -138,10 +138,8 @@ function lia.command.parseSyntaxFields(syntax)
             typ = "text"
             valid = false
         end
-        if optional then
-            name = name:gsub("%s+[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll]%s*$", "")
-        end
 
+        if optional then name = name:gsub("%s+[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll]%s*$", "") end
         fields[#fields + 1] = {
             name = name,
             type = typ,
@@ -290,6 +288,7 @@ else
                     }
                 end
             end
+
             local parsed, valid = lia.command.parseSyntaxFields(command.syntax)
             if valid then
                 local tokens = prefix or {}
@@ -308,8 +307,11 @@ else
                             }
                         else
                             if not istable(info) then
-                                info = { type = info }
+                                info = {
+                                    type = info
+                                }
                             end
+
                             newFields[field.name] = {
                                 type = info.type,
                                 optional = field.optional
@@ -317,6 +319,7 @@ else
                         end
                     end
                 end
+
                 fields = newFields
             end
         end
@@ -587,20 +590,16 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                         local baseX = 20
                         local text = "/" .. cmdName
                         if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
-                    local privilegeText = privilege
-                    if privilegeText == "Global" then privilegeText = nil end
-                    if hasDesc then
-                        draw.SimpleText(text, "liaMediumFont", baseX, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                        draw.SimpleText(cmdData.desc, "liaSmallFont", baseX, 45, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                        if privilegeText then
-                            draw.SimpleText(privilegeText, "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+                        local privilegeText = privilege
+                        if privilegeText == "Global" then privilegeText = nil end
+                        if hasDesc then
+                            draw.SimpleText(text, "liaMediumFont", baseX, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                            draw.SimpleText(cmdData.desc, "liaSmallFont", baseX, 45, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                            if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
+                        else
+                            draw.SimpleText(text, "liaMediumFont", baseX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                            if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, h * 0.5, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
                         end
-                    else
-                        draw.SimpleText(text, "liaMediumFont", baseX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                        if privilegeText then
-                            draw.SimpleText(privilegeText, "liaSmallFont", w - 20, h * 0.5, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-                        end
-                    end
                     end
                 end
 

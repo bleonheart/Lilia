@@ -1,4 +1,4 @@
-MODULE.name = "Usergroups"
+﻿MODULE.name = "Usergroups"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Lists CAMI usergroups."

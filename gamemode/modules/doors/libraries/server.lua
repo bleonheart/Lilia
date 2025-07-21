@@ -1,4 +1,4 @@
-function MODULE:PostLoadData()
+﻿function MODULE:PostLoadData()
     if self.DoorsAlwaysDisabled then
         local count = 0
         for _, door in ents.Iterator() do

@@ -70,5 +70,4 @@ if SERVER then
             _steamID = steamID
         }, nil, "logs")
     end
-
 end

@@ -1552,6 +1552,7 @@ lia.command.add("getallinfos", {
                 print(column .. " = " .. tostring(value))
             end
         end
+
         client:ChatPrint(L("infoPrintedConsole"))
     end
 })

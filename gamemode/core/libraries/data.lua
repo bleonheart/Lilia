@@ -64,8 +64,9 @@ local function deepDecode(value)
         value = t
     end
 
-    value = decodeAngle(value)
     value = decodeVector(value)
+    value = decodeAngle(value)
+    PrintTable(value)
     return value
 end
 

@@ -105,13 +105,12 @@ lia.command.add("doorbuy", {
             lia.log.add(client, "cheaterAction", "buy door")
             return
         end
+
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
             local factions = door:getNetVar("factions")
             local classes = door:getNetVar("classes")
-            if door:getNetVar("noSell") or (factions and factions ~= "[]") or (classes and classes ~= "[]") then
-                return client:notifyLocalized("doorNotAllowedToOwn")
-            end
+            if door:getNetVar("noSell") or factions and factions ~= "[]" or classes and classes ~= "[]" then return client:notifyLocalized("doorNotAllowedToOwn") end
             if IsValid(door:GetDTEntity(0)) then
                 client:notifyLocalized("doorOwnedBy", door:GetDTEntity(0):Name())
                 return false
@@ -181,7 +180,6 @@ lia.command.add("doorresetdata", {
             door:setNetVar("title", nil)
             door:setNetVar("price", 0)
             door:setNetVar("locked", false)
-
             client:notifyLocalized("doorResetData")
             MODULE:SaveData()
         else
@@ -229,7 +227,6 @@ lia.command.add("doortogglehidden", {
             local newState = not currentState
             entity:setNetVar("hidden", newState)
             lia.log.add(client, "doorSetHidden", entity, newState)
-
             hook.Run("DoorHiddenToggled", client, entity, newState)
             client:notify(newState and L("doorSetHidden") or L("doorSetNotHidden"))
             MODULE:SaveData()
@@ -295,7 +292,6 @@ lia.command.add("doorsettitle", {
     end
 })
 
-
 lia.command.add("savedoors", {
     desc = "savedoorsDesc",
     adminOnly = true,
@@ -333,8 +329,8 @@ lia.command.add("doorinfo", {
                 local info = lia.faction.get(id)
                 if info then table.insert(factionNames, info.name) end
             end
-            local factionsString = not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none")
 
+            local factionsString = not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none")
             local classesDataRaw = door:getNetVar("classes", "[]")
             local classesTable = util.JSONToTable(classesDataRaw) or {}
             local classNames = {}
@@ -343,6 +339,7 @@ lia.command.add("doorinfo", {
                 local info = lia.class.list[idx]
                 if info then table.insert(classNames, info.name) end
             end
+
             local classesString = not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none")
             local hidden = door:getNetVar("hidden", false)
             local locked = door:getNetVar("locked", false)
@@ -418,12 +415,9 @@ lia.command.add("dooraddfaction", {
 
             if faction then
                 local facs = util.JSONToTable(door:getNetVar("factions", "[]")) or {}
-                if not table.HasValue(facs, faction.uniqueID) then
-                    facs[#facs + 1] = faction.uniqueID
-                end
+                if not table.HasValue(facs, faction.uniqueID) then facs[#facs + 1] = faction.uniqueID end
                 door.liaFactions = facs
                 door:setNetVar("factions", util.TableToJSON(facs))
-
                 lia.log.add(client, "doorSetFaction", door, faction.name)
                 client:notifyLocalized("doorSetFaction", faction.name)
             elseif arguments[1] then
@@ -464,7 +458,6 @@ lia.command.add("doorremovefaction", {
                 table.RemoveByValue(facs, faction.uniqueID)
                 door.liaFactions = facs
                 door:setNetVar("factions", util.TableToJSON(facs))
-
                 lia.log.add(client, "doorRemoveFaction", door, faction.name)
                 client:notifyLocalized("doorRemoveFaction", faction.name)
             elseif arguments[1] then
@@ -507,12 +500,9 @@ lia.command.add("doorsetclass", {
 
             if class then
                 local classes = util.JSONToTable(door:getNetVar("classes", "[]")) or {}
-                if not table.HasValue(classes, classData.uniqueID) then
-                    classes[#classes + 1] = classData.uniqueID
-                end
+                if not table.HasValue(classes, classData.uniqueID) then classes[#classes + 1] = classData.uniqueID end
                 door.liaClasses = classes
                 door:setNetVar("classes", util.TableToJSON(classes))
-
                 lia.log.add(client, "doorSetClass", door, classData.name)
                 client:notifyLocalized("doorSetClass", classData.name)
             elseif arguments[1] then
@@ -548,7 +538,6 @@ lia.command.add("togglealldoors", {
             if IsValid(door) and door:isDoor() and door:getNetVar("disabled", false) ~= toggleToDisable then
                 door:setNetVar("disabled", toggleToDisable and true or nil)
                 lia.log.add(client, toggleToDisable and "doorDisable" or "doorEnable", door)
-
                 count = count + 1
             end
         end

@@ -1,4 +1,4 @@
-lia.admin = lia.admin or {}
+﻿lia.admin = lia.admin or {}
 lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
@@ -122,6 +122,7 @@ if SERVER then
         lia.db.upsert({
             _data = util.TableToJSON(lia.admin.groups)
         }, "admingroups")
+
         if network then
             net.Start("lilia_updateAdminGroups")
             net.WriteTable(lia.admin.groups)

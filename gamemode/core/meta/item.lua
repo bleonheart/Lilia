@@ -15,12 +15,13 @@ function ITEM:isRotated()
 end
 
 function ITEM:getWidth()
-    return self:isRotated() and (self.height or 1) or (self.width or 1)
+    return self:isRotated() and (self.height or 1) or self.width or 1
 end
 
 function ITEM:getHeight()
-    return self:isRotated() and (self.width or 1) or (self.height or 1)
+    return self:isRotated() and (self.width or 1) or self.height or 1
 end
+
 function ITEM:getQuantity()
     if self.id == 0 then return self.maxQuantity end
     return self.quantity
@@ -205,11 +206,15 @@ if SERVER then
 
             if angles then
                 angles = lia.data.decode(angles)
-                if not isangle(angles) and istable(angles) then
-                    local p = tonumber(angles.p or angles[1])
-                    local yaw = tonumber(angles.y or angles[2])
-                    local r = tonumber(angles.r or angles[3])
-                    if p and yaw and r then angles = Angle(p, yaw, r) end
+                if not isangle(angles) then
+                    if isvector(angles) then
+                        angles = Angle(angles.x, angles.y, angles.z)
+                    elseif istable(angles) then
+                        local p = tonumber(angles.p or angles[1])
+                        local yaw = tonumber(angles.y or angles[2])
+                        local r = tonumber(angles.r or angles[3])
+                        if p and yaw and r then angles = Angle(p, yaw, r) end
+                    end
                 end
             end
 

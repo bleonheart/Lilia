@@ -776,6 +776,7 @@ function lia.db.bulkUpsert(dbTable, rows)
             local key = k:sub(2, -2)
             items[#items + 1] = lia.db.convertDataType(row[key])
         end
+
         vals[#vals + 1] = "(" .. table.concat(items, ",") .. ")"
     end
 
@@ -785,11 +786,10 @@ function lia.db.bulkUpsert(dbTable, rows)
         for _, k in ipairs(keys) do
             updates[#updates + 1] = k .. "=VALUES(" .. k .. ")"
         end
-        q = "INSERT INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " ..
-            table.concat(vals, ",") .. " ON DUPLICATE KEY UPDATE " .. table.concat(updates, ",")
+
+        q = "INSERT INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " .. table.concat(vals, ",") .. " ON DUPLICATE KEY UPDATE " .. table.concat(updates, ",")
     else
-        q = "INSERT OR REPLACE INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " ..
-            table.concat(vals, ",")
+        q = "INSERT OR REPLACE INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " .. table.concat(vals, ",")
     end
 
     lia.db.query(q, function() c:resolve() end, function(err) c:reject(err) end)

@@ -73,6 +73,7 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
             if isfunction(func) then hook.Remove(hookName, existing) end
         end
     end
+
     MODULE = {
         folder = path,
         module = existing or prev,

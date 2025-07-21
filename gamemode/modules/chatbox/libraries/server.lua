@@ -1,4 +1,4 @@
-local TABLE = "chatbox"
+﻿local TABLE = "chatbox"
 local function buildCondition(folder, map)
     return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
