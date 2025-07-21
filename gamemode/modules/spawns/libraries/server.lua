@@ -3,7 +3,6 @@ MODULE.spawns = MODULE.spawns or {}
 local decodeVector = lia.data.decodeVector
 local encodeVector = lia.data.encodeVector
 local TABLE = "spawns"
-
 local function buildCondition(folder, map)
     return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
@@ -16,10 +15,8 @@ function MODULE:LoadData(attempt)
     lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
         local data = res and lia.data.deserialize(res._data) or {}
         local factions = data.factions or data
-        if (not factions or next(factions) == nil) and attempt < 5 then
-            timer.Simple(1, function()
-                if not self.loaded then self:LoadData(attempt + 1) end
-            end)
+        if (not istable(factions) or table.IsEmpty(factions)) and attempt < 5 then
+            timer.Simple(1, function() if not self.loaded then self:LoadData(attempt + 1) end end)
             return
         end
 
@@ -44,13 +41,16 @@ function MODULE:SaveData()
             factions[fac][#factions[fac] + 1] = encodeVector(pos)
         end
     end
+
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
     lia.db.upsert({
         _schema = folder,
         _map = map,
-        _data = lia.data.serialize({factions = factions})
+        _data = lia.data.serialize({
+            factions = factions
+        })
     }, TABLE)
 end
 
