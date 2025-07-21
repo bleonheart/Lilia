@@ -1,6 +1,5 @@
 local MODULE = MODULE
 MODULE.spawns = MODULE.spawns or {}
-local decodeVector = lia.data.decodeVector
 local encodetable = lia.data.encodetable
 local TABLE = "spawns"
 local function buildCondition(folder, map)
@@ -26,7 +25,7 @@ function MODULE:LoadData(attempt)
         for fac, spawns in pairs(factions) do
             self.spawns[fac] = {}
             for _, pos in ipairs(spawns) do
-                self.spawns[fac][#self.spawns[fac] + 1] = decodeVector(pos)
+                self.spawns[fac][#self.spawns[fac] + 1] = lia.data.decode(pos)
             end
         end
 
