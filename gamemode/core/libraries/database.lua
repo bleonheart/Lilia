@@ -605,7 +605,9 @@ function lia.db.waitForTablesToLoad()
 end
 
 function lia.db.convertDataType(value, noEscape)
-    if isstring(value) then
+    if value == nil then
+        return "NULL"
+    elseif isstring(value) then
         if noEscape then
             return value
         else
