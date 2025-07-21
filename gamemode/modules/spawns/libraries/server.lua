@@ -57,14 +57,15 @@ end
 local function SpawnPlayer(client)
     if not IsValid(client) then return end
     local character = client:getChar()
-    if character then
-        local posData = character:getLastPos()
-        if posData and posData[3] and posData[3]:lower() == game.GetMap():lower() then
-            client:SetPos(posData[1].x and posData[1] or client:GetPos())
-            client:SetEyeAngles(posData[2].p and posData[2] or angle_zero)
-            character:setLastPos(nil)
-            return
-        end
+    if not character then return end
+    local posData = character:getLastPos()
+    PrintTable(posData, 1)
+    if posData and posData[3] and posData[3]:lower() == game.GetMap():lower() then
+        print("spawned via posdata")
+        client:SetPos(posData[1].x and posData[1] or client:GetPos())
+        client:SetEyeAngles(posData[2].p and posData[2] or angle_zero)
+        character:setLastPos(nil)
+        return
     end
 
     local factionID
