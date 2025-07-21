@@ -279,18 +279,6 @@
         func = function(client, door) return string.format("%s reset door data on door %s.", client:Name(), door:GetClass()) end,
         category = "World"
     },
-    ["doorSetParent"] = {
-        func = function(client, door) return string.format("%s set door parent for door %s.", client:Name(), door:GetClass()) end,
-        category = "World"
-    },
-    ["doorAddChild"] = {
-        func = function(client, parentDoor, childDoor) return string.format("%s added child door %s to parent door %s.", client:Name(), childDoor:GetClass(), parentDoor:GetClass()) end,
-        category = "World"
-    },
-    ["doorRemoveChild"] = {
-        func = function(client, parentDoor, childDoor) return string.format("%s removed child door %s from parent door %s.", client:Name(), childDoor:GetClass(), parentDoor:GetClass()) end,
-        category = "World"
-    },
     ["doorDisable"] = {
         func = function(client, door) return string.format("%s disabled door %s.", client:Name(), door:GetClass()) end,
         category = "World"
