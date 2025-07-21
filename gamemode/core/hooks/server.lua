@@ -1,5 +1,4 @@
 local GM = GM or GAMEMODE
-local encodetable = lia.data.encodetable
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     if not character:getInv() then return end
@@ -550,6 +549,17 @@ local function makeKey(ent)
 end
 
 function GM:SaveData()
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
+    print("SaveData Ran")
     local seen = {}
     local data = {
         entities = {},
@@ -591,11 +601,18 @@ function GM:SaveData()
         end
     end
 
-    for _, item in ipairs(ents.FindByClass("lia_item")) do
-        if item.liaItemID and not item.temp then data.items[#data.items + 1] = {item.liaItemID, lia.data.serialize(item:GetPos()), lia.data.serialize(item:GetAngles())} end
+    local itemsList = ents.FindByClass("lia_item")
+    print("SaveData: found", #itemsList, "lia_item entities")
+    for _, item in ipairs(itemsList) do
+        if item.liaItemID and not item.temp then
+            local itemID = item.liaItemID
+            local itemPos = item:GetPos()
+            local itemAng = item:GetAngles()
+            print("SaveData: saving item", itemID, "at pos", tostring(itemPos), "angles", tostring(itemAng))
+            data.items[#data.items + 1] = {itemID, lia.data.encodetable(itemPos), lia.data.encodetable(itemAng)}
+        end
     end
 
-    lia.data.savePersistence(data.entities)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
@@ -611,6 +628,7 @@ function GM:SaveData()
     end
 
     lia.db.delete("saveditems", condition):next(function() return lia.db.bulkInsert("saveditems", rows) end)
+    lia.data.savePersistence(data.entities)
 end
 
 function GM:LoadData()
