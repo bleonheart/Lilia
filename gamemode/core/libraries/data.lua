@@ -57,7 +57,7 @@ local function decodeAngle(data)
 
         if p then return Angle(tonumber(p), tonumber(y), tonumber(r)) end
     end
-    return Angle(0, 0, 0)
+    return data
 end
 
 local function deepDecode(value)
