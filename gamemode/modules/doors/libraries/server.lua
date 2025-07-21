@@ -87,35 +87,32 @@ end
 function MODULE:SaveData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = buildCondition(folder, map)
-    lia.db.delete("doors", condition):next(function()
-        local rows = {}
-        for _, door in ipairs(ents.GetAll()) do
-            if door:isDoor() then
-                rows[#rows + 1] = {
-                    _folder = folder,
-                    _map = map,
-                    _id = door:MapCreationID(),
-                    _factions = lia.data.serialize(door.liaFactions or {}),
-                    _classes = lia.data.serialize(door.liaClasses or {}),
-                    _disabled = door:getNetVar("disabled") and 1 or 0,
-                    _hidden = door:getNetVar("hidden") and 1 or 0,
-                    _ownable = door:getNetVar("noSell") and 0 or 1,
-                    _name = door:getNetVar("name"),
-                    _price = door:getNetVar("price"),
-                    _locked = door:getNetVar("locked") and 1 or 0,
-                    _children = lia.data.serialize(door.liaChildren or {})
-                }
-            end
+    local rows = {}
+    for _, door in ipairs(ents.GetAll()) do
+        if door:isDoor() then
+            rows[#rows + 1] = {
+                _folder = folder,
+                _map = map,
+                _id = door:MapCreationID(),
+                _factions = lia.data.serialize(door.liaFactions or {}),
+                _classes = lia.data.serialize(door.liaClasses or {}),
+                _disabled = door:getNetVar("disabled") and 1 or 0,
+                _hidden = door:getNetVar("hidden") and 1 or 0,
+                _ownable = door:getNetVar("noSell") and 0 or 1,
+                _name = door:getNetVar("name"),
+                _price = door:getNetVar("price"),
+                _locked = door:getNetVar("locked") and 1 or 0,
+                _children = lia.data.serialize(door.liaChildren or {})
+            }
         end
+    end
 
-        local count = #rows
-        if count > 0 then
-            return lia.db.bulkInsert("doors", rows):next(function() lia.information(L("doorSaveData", count)) end)
-        else
-            lia.information(L("doorSaveData", 0))
-        end
-    end)
+    local count = #rows
+    if count > 0 then
+        return lia.db.bulkUpsert("doors", rows):next(function() lia.information(L("doorSaveData", count)) end)
+    else
+        lia.information(L("doorSaveData", 0))
+    end
 end
 
 function MODULE:callOnDoorChildren(entity, callback)
