@@ -16,7 +16,6 @@ function MODULE:SaveData()
 end
 
 function MODULE:LoadData()
-    if true then return end
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
