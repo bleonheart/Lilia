@@ -1,16 +1,13 @@
 ﻿file.CreateDir("lilia")
 lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}
---[[
-    Recursively convert tables so they can be safely serialized. Vectors and
-    Angles are translated into simple table formats. This replaces the old
-    encodeVector and encodeAngle helpers.
---]]
 function lia.data.encodetable(value)
     if isvector(value) then
         return {value.x, value.y, value.z}
     elseif isangle(value) then
         return {value.p, value.y, value.r}
+    elseif istable(value) and value.r ~= nil and value.g ~= nil and value.b ~= nil then
+        return {value.r, value.g, value.b, value.a or 255}
     elseif istable(value) then
         local t = {}
         for k, v in pairs(value) do
@@ -18,7 +15,6 @@ function lia.data.encodetable(value)
         end
         return t
     end
-
     return value
 end
 
