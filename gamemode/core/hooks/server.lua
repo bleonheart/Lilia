@@ -621,8 +621,8 @@ function GM:LoadData()
 
     lia.data.loadPersistenceData(function(entities)
         for _, ent in ipairs(entities) do
-            local decodedPos = ent.pos
-            local decodedAng = ent.angles
+            local decodedPos = lia.data.decode(ent.pos)
+            local decodedAng = lia.data.decode(ent.angles)
             if not IsEntityNearby(decodedPos, ent.class) then
                 local createdEnt = ents.Create(ent.class)
                 if IsValid(createdEnt) then
