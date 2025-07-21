@@ -642,12 +642,26 @@ function GM:LoadData()
     lia.data.loadPersistenceData(function(entities)
         for _, ent in ipairs(entities) do
             local decodedPos = lia.data.decode(ent.pos)
+            if not isvector(decodedPos) and istable(decodedPos) then
+                local x = tonumber(decodedPos.x or decodedPos[1])
+                local y = tonumber(decodedPos.y or decodedPos[2])
+                local z = tonumber(decodedPos.z or decodedPos[3])
+                if x and y and z then decodedPos = Vector(x, y, z) end
+            end
+
             local decodedAng = lia.data.decode(ent.angles)
+            if not isangle(decodedAng) and istable(decodedAng) then
+                local p = tonumber(decodedAng.p or decodedAng[1])
+                local yaw = tonumber(decodedAng.y or decodedAng[2])
+                local r = tonumber(decodedAng.r or decodedAng[3])
+                if p and yaw and r then decodedAng = Angle(p, yaw, r) end
+            end
+
             if not IsEntityNearby(decodedPos, ent.class) then
                 local createdEnt = ents.Create(ent.class)
                 if IsValid(createdEnt) then
-                    createdEnt:SetPos(decodedPos)
-                    if decodedAng then createdEnt:SetAngles(decodedAng) end
+                    if isvector(decodedPos) then createdEnt:SetPos(decodedPos) end
+                    if decodedAng and isangle(decodedAng) then createdEnt:SetAngles(decodedAng) end
                     if ent.model then createdEnt:SetModel(ent.model) end
                     createdEnt:Spawn()
                     if ent.skin then createdEnt:SetSkin(ent.skin) end
