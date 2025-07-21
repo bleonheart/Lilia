@@ -143,6 +143,9 @@ if SERVER then
         if name ~= nil then
             nameList[id] = name
             self:setRecognizedAs(nameList)
+            PrintTable(nameList, 1)
+            print("---------------")
+            PrintTable(self:getRecognizedAs())
         else
             self:setRecognition(recognized .. "," .. id .. ",")
         end
