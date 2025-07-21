@@ -715,7 +715,9 @@ function GM:OnEntityCreated(ent)
         local extra = hook.Run("GetEntitySaveData", ent)
         if extra ~= nil then entData.data = extra end
         PrintTable(entData, 1)
+        print(entData.angles)
         saved[#saved + 1] = entData
+        PrintTable(entData)
         lia.data.savePersistence(saved)
         hook.Run("OnEntityPersisted", ent, entData)
     end)
@@ -727,10 +729,10 @@ function GM:UpdateEntityPersistence(ent)
     local key = makeKey(ent)
     for i, data in ipairs(saved) do
         if makeKey(data) == key then
-            data.pos = encodeVector(ent:GetPos())
+            data.pos = ent:GetPos()
             data.class = ent:GetClass()
             data.model = ent:GetModel()
-            data.angles = encodeAngle(ent:GetAngles())
+            data.angles = ent:GetAngles()
             local extra = hook.Run("GetEntitySaveData", ent)
             if extra ~= nil then
                 data.data = extra
