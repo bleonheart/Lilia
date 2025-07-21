@@ -753,6 +753,42 @@ function lia.db.bulkInsert(dbTable, rows)
     return c
 end
 
+function lia.db.bulkUpsert(dbTable, rows)
+    if #rows == 0 then return deferred.new():resolve() end
+    local c = deferred.new()
+    local tbl = "`lia_" .. dbTable .. "`"
+    local keys = {}
+    for k in pairs(rows[1]) do
+        keys[#keys + 1] = lia.db.escapeIdentifier(k)
+    end
+
+    local vals = {}
+    for _, row in ipairs(rows) do
+        local items = {}
+        for _, k in ipairs(keys) do
+            local key = k:sub(2, -2)
+            items[#items + 1] = lia.db.convertDataType(row[key])
+        end
+        vals[#vals + 1] = "(" .. table.concat(items, ",") .. ")"
+    end
+
+    local q
+    if lia.db.object then
+        local updates = {}
+        for _, k in ipairs(keys) do
+            updates[#updates + 1] = k .. "=VALUES(" .. k .. ")"
+        end
+        q = "INSERT INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " ..
+            table.concat(vals, ",") .. " ON DUPLICATE KEY UPDATE " .. table.concat(updates, ",")
+    else
+        q = "INSERT OR REPLACE INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " ..
+            table.concat(vals, ",")
+    end
+
+    lia.db.query(q, function() c:resolve() end, function(err) c:reject(err) end)
+    return c
+end
+
 function lia.db.insertOrIgnore(value, dbTable)
     local c = deferred.new()
     local tbl = "`lia_" .. (dbTable or "characters") .. "`"
