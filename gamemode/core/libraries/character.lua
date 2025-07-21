@@ -413,7 +413,7 @@ function lia.char.getCharData(charID, key)
     if not charIDsafe then return end
     local findData = sql.Query("SELECT * FROM lia_characters WHERE _id=" .. charIDsafe)
     if not findData or not findData[1] then return false end
-    local data = util.JSONToTable(findData[1]._data) or {}
+    local data = lia.data.deserialize(findData[1]._data) or {}
     if key then return data[key] end
     return data
 end
@@ -477,7 +477,7 @@ if SERVER then
             _money = data.money,
             recognition = data.recognition or "",
             recognized_as = "",
-            _data = data.data
+            _data = lia.data.serialize(data.data)
         }, function(_, charID)
             local client
             for _, v in player.Iterator() do
@@ -527,13 +527,17 @@ if SERVER then
                 local charData = {}
                 for k2, v2 in pairs(lia.char.vars) do
                     if v2.field and v[v2.field] then
-                        local value = tostring(v[v2.field])
+                        local raw = tostring(v[v2.field])
+                        local value
+
                         if isnumber(v2.default) then
-                            value = tonumber(value) or v2.default
+                            value = tonumber(raw) or v2.default
                         elseif isbool(v2.default) then
-                            value = tobool(value)
+                            value = tobool(raw)
                         elseif istable(v2.default) then
-                            value = util.JSONToTable(value)
+                            value = lia.data.deserialize(raw) or table.Copy(v2.default)
+                        else
+                            value = lia.data.deserialize(raw) or raw
                         end
 
                         charData[k2] = value
@@ -658,7 +662,7 @@ if SERVER then
         if not data then return false end
         data[key] = val
         local promise = lia.db.updateTable({
-            _data = data
+            _data = lia.data.serialize(data)
         }, nil, "characters", "_id = " .. charIDsafe)
 
         if deferred.isPromise(promise) then

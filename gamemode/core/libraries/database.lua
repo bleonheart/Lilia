@@ -605,22 +605,28 @@ function lia.db.waitForTablesToLoad()
 end
 
 function lia.db.convertDataType(value, noEscape)
-    if isstring(value) then
+    -- Normalize complex Lua types before saving them to the database.
+    -- We serialise tables, Vectors and Angles through lia.data so that
+    -- the format remains consistent across all storage operations.
+    if istable(value) or isvector(value) or isangle(value) then
+        local encoded = lia.data.serialize(value)
+        if noEscape then
+            return encoded
+        else
+            return "'" .. lia.db.escape(encoded) .. "'"
+        end
+    elseif isstring(value) then
         if noEscape then
             return value
         else
             return "'" .. lia.db.escape(value) .. "'"
         end
-    elseif istable(value) then
-        if noEscape then
-            return util.TableToJSON(value)
-        else
-            return "'" .. lia.db.escape(util.TableToJSON(value)) .. "'"
-        end
     elseif value == NULL then
         return "NULL"
     end
-    return value
+
+    -- Numbers and booleans fall back to their default string representation.
+    return tostring(value)
 end
 
 local function genInsertValues(value, dbTable)
