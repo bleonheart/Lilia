@@ -550,10 +550,7 @@ end
 
 function GM:SaveData()
     local seen = {}
-    local data = {
-        entities = {},
-        items = {}
-    }
+    local data = {}
 
     for _, ent in ents.Iterator() do
         if ent:isLiliaPersistent() then
@@ -584,40 +581,14 @@ function GM:SaveData()
                 if bodygroups then entData.bodygroups = bodygroups end
                 local extra = hook.Run("GetEntitySaveData", ent)
                 if extra ~= nil then entData.data = extra end
-                data.entities[#data.entities + 1] = entData
+                data[#data + 1] = entData
                 hook.Run("OnEntityPersisted", ent, entData)
             end
         end
     end
 
-    local itemsList = ents.FindByClass("lia_item")
-    print("SaveData: found", #itemsList, "lia_item entities")
-    for _, item in ipairs(itemsList) do
-        if item.liaItemID and not item.temp then
-            local itemID = item.liaItemID
-            local itemPos = item:GetPos()
-            local itemAng = item:GetAngles()
-            print("SaveData: saving item", itemID, "at pos", tostring(itemPos), "angles", tostring(itemAng))
-            data.items[#data.items + 1] = {itemID, lia.data.encodetable(itemPos), lia.data.encodetable(itemAng)}
-        end
-    end
-
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-    local rows = {}
-    for _, itm in ipairs(data.items) do
-        rows[#rows + 1] = {
-            _schema = folder,
-            _map = map,
-            _itemID = itm[1],
-            _pos = itm[2],
-            _angles = itm[3]
-        }
-    end
-
-    lia.db.delete("saveditems", condition):next(function() return lia.db.bulkInsert("saveditems", rows) end)
-    lia.data.savePersistence(data.entities)
+    -- items are handled individually on spawn and removal
+    lia.data.savePersistence(data)
     lia.information(L("dataSaved"))
 end
 
