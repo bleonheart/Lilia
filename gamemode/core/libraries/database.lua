@@ -432,10 +432,12 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS lia_saveditems (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _schema TEXT,
                 _map TEXT,
-                _data TEXT,
-                PRIMARY KEY (_schema, _map)
+                _itemID INTEGER,
+                _pos TEXT,
+                _angles TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_admingroups (
@@ -560,10 +562,13 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
                 `_schema` TEXT NULL,
                 `_map` TEXT NULL,
-                `_data` TEXT NULL,
-                PRIMARY KEY (`_schema`, `_map`)
+                `_itemID` INT(12) NOT NULL,
+                `_pos` TEXT NULL,
+                `_angles` TEXT NULL,
+                PRIMARY KEY (`_id`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_admingroups` (

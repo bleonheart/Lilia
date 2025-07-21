@@ -604,11 +604,20 @@ function GM:SaveData()
     lia.data.savePersistence(data.entities)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    lia.db.upsert({
-        _schema = folder,
-        _map = map,
-        _data = lia.data.serialize(data.items)
-    }, "saveditems")
+    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+    local rows = {}
+    for _, itm in ipairs(data.items) do
+        rows[#rows + 1] = {
+            _schema = folder,
+            _map = map,
+            _itemID = itm[1],
+            _pos = itm[2],
+            _angles = itm[3]
+        }
+    end
+    lia.db.delete("saveditems", condition):next(function()
+        return lia.db.bulkInsert("saveditems", rows)
+    end)
 end
 
 function GM:LoadData()
@@ -649,15 +658,15 @@ function GM:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-    lia.db.selectOne({"_data"}, "saveditems", condition):next(function(res)
-        local items = res and lia.data.deserialize(res._data) or {}
+    lia.db.select({"_itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
+        local items = res.results or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
-            for _, item in ipairs(items) do
-                local id = item[1]
+            for _, row in ipairs(items) do
+                local id = tonumber(row._itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.decode(item[2])
-                angles[id] = lia.data.decode(item[3])
+                positions[id] = lia.data.deserialize(row._pos)
+                angles[id] = lia.data.deserialize(row._angles)
             end
 
             if #idRange > 0 then
