@@ -315,13 +315,7 @@ if SERVER then
         if self.isBot then return end
         local data = {}
         for k, v in pairs(lia.char.vars) do
-            if v.field and self.vars[k] ~= nil then
-                local value = self.vars[k]
-                if istable(value) or isvector(value) or isangle(value) then
-                    value = lia.data.serialize(value)
-                end
-                data[v.field] = value
-            end
+            if v.field and self.vars[k] ~= nil then data[v.field] = self.vars[k] end
         end
 
         local shouldSave = hook.Run("CharPreSave", self)
