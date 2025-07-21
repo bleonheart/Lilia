@@ -51,19 +51,19 @@ function MODULE:LoadData()
             if IsValid(ent) and ent:isDoor() then
                 PrintTable(row._factions, 1)
                 local factions = lia.data.deserialize(row._factions) or {}
-                if istable(factions) and next(factions) then
+                if istable(factions) and not table.IsEmpty(factions) then
                     ent.liaFactions = factions
                     ent:setNetVar("factions", util.TableToJSON(factions))
                 end
 
                 local classes = lia.data.deserialize(row._classes) or {}
-                if istable(classes) and next(classes) then
+                if istable(classes) and not table.IsEmpty(classes) then
                     ent.liaClasses = classes
                     ent:setNetVar("classes", util.TableToJSON(classes))
                 end
 
                 local children = lia.data.deserialize(row._children) or {}
-                if istable(children) and next(children) then
+                if istable(children) and not table.IsEmpty(children) then
                     ent.liaChildren = children
                     for childID in pairs(children) do
                         local child = ents.GetMapCreatedEntity(childID)

@@ -442,7 +442,7 @@ lia.command.add("doorinfo", {
                 local info = lia.faction.get(id)
                 if info then table.insert(factionNames, info.name) end
             end
-            local factionsString = next(factionNames) and table.concat(factionNames, ", ") or L("none")
+            local factionsString = not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none")
 
             local classesDataRaw = door:getNetVar("classes", "[]")
             local classesTable = util.JSONToTable(classesDataRaw) or {}
@@ -452,7 +452,7 @@ lia.command.add("doorinfo", {
                 local info = lia.class.list[idx]
                 if info then table.insert(classNames, info.name) end
             end
-            local classesString = next(classNames) and table.concat(classNames, ", ") or L("none")
+            local classesString = not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none")
             local hidden = door:getNetVar("hidden", false)
             local locked = door:getNetVar("locked", false)
             local doorData = {

@@ -11,7 +11,7 @@ function lia.admin.load()
     if lia.admin.isDisabled() then return end
     local camiGroups = CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(data)
-        if camiGroups and next(camiGroups) then
+        if camiGroups and not table.IsEmpty(camiGroups) then
             lia.admin.groups = {}
             for name in pairs(camiGroups) do
                 lia.admin.groups[name] = {}
@@ -24,7 +24,7 @@ function lia.admin.load()
             lia.admin.privileges[name] = priv
         end
 
-        if camiGroups and next(camiGroups) then
+        if camiGroups and not table.IsEmpty(camiGroups) then
             for group in pairs(lia.admin.groups) do
                 for privName, priv in pairs(lia.admin.privileges) do
                     if CAMI.UsergroupInherits(group, priv.MinAccess or "user") then lia.admin.groups[group][privName] = true end
@@ -34,7 +34,7 @@ function lia.admin.load()
 
         local defaults = {"user", "admin", "superadmin"}
         local created = false
-        if not (camiGroups and next(camiGroups)) then
+        if not (camiGroups and not table.IsEmpty(camiGroups)) then
             if table.Count(lia.admin.groups) == 0 then
                 for _, grp in ipairs(defaults) do
                     lia.admin.createGroup(grp)
