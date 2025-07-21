@@ -38,10 +38,6 @@ local function buildCondition(folder, map)
     return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
 
-local function buildCondition(folder, map)
-    return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-end
-
 function MODULE:LoadData()
     print("LoadData: start")
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
