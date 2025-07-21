@@ -38,49 +38,105 @@ local function buildCondition(folder, map)
     return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
 
+local function buildCondition(folder, map)
+    return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+end
+
 function MODULE:LoadData()
+    print("LoadData: start")
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    local condition = buildCondition(folder, map)
+    print("LoadData: folder =", folder)
+    local mapName = game.GetMap()
+    print("LoadData: map =", mapName)
+    local condition = buildCondition(folder, mapName)
+    print("LoadData: condition =", condition)
     local query = "SELECT * FROM lia_doors WHERE " .. condition
+    print("LoadData: query =", query)
     lia.db.query(query):next(function(res)
-        print("----------------")
+        print("LoadData: query returned, raw result object:")
         PrintTable(res, 1)
-        for _, row in ipairs(res.results or {}) do
-            local ent = ents.GetMapCreatedEntity(tonumber(row._id))
-            if IsValid(ent) and ent:isDoor() then
-                PrintTable(row._factions, 1)
+        local rows = res.results or {}
+        print("LoadData: number of rows =", #rows)
+        for index, row in ipairs(rows) do
+            print("LoadData: processing row #" .. index)
+            print("LoadData: raw _id =", row._id)
+            local id = tonumber(row._id)
+            local ent = ents.GetMapCreatedEntity(id)
+            print("LoadData: fetched entity =", ent)
+            if not IsValid(ent) then
+                print("LoadData: invalid entity, skipping")
+            elseif not ent:isDoor() then
+                print("LoadData: entity is not a door, skipping")
+            else
+                print("LoadData: valid door entity, applying data")
+                print("LoadData: raw _factions =", row._factions or "")
                 local factions = lia.data.deserialize(row._factions) or {}
-                if istable(factions) and not table.IsEmpty(factions) then
+                print("LoadData: deserialized factions =", factions)
+                if istable(factions) and table.IsEmpty(factions) then
                     ent.liaFactions = factions
                     ent:setNetVar("factions", util.TableToJSON(factions))
+                    print("LoadData: set netvar 'factions'")
+                    PrintTable(factions, 1)
                 end
 
+                print("LoadData: raw _classes =", row._classes or "")
                 local classes = lia.data.deserialize(row._classes) or {}
-                if istable(classes) and not table.IsEmpty(classes) then
+                print("LoadData: deserialized classes =", classes)
+                if istable(classes) and table.IsEmpty(classes) then
                     ent.liaClasses = classes
                     ent:setNetVar("classes", util.TableToJSON(classes))
+                    print("LoadData: set netvar 'classes'")
+                    PrintTable(classes, 1)
                 end
 
+                print("LoadData: raw _children =", row._children or "")
                 local children = lia.data.deserialize(row._children) or {}
-                if istable(children) and not table.IsEmpty(children) then
+                print("LoadData: deserialized children =", children)
+                if istable(children) and table.IsEmpty(children) then
                     ent.liaChildren = children
                     for childID in pairs(children) do
-                        local child = ents.GetMapCreatedEntity(childID)
-                        if IsValid(child) then child.liaParent = ent end
+                        print("LoadData: handling childID =", childID)
+                        local c = ents.GetMapCreatedEntity(childID)
+                        print("LoadData: fetched child entity =", c)
+                        if IsValid(c) then
+                            c.liaParent = ent
+                            print("LoadData: set child.liaParent")
+                        else
+                            print("LoadData: invalid child entity for ID", childID)
+                        end
                     end
                 end
 
-                local name = row._name
-                if name and name ~= "NULL" then ent:setNetVar("name", name) end
+                print("LoadData: raw _name =", row._name)
+                if row._name and row._name ~= "NULL" then
+                    ent:setNetVar("name", row._name)
+                    print("LoadData: set netvar 'name' =", row._name)
+                end
+
+                print("LoadData: raw _price =", row._price)
                 local price = tonumber(row._price) or 0
                 ent:setNetVar("price", price)
-                if tonumber(row._locked) == 1 then ent:setNetVar("locked", true) end
-                if tonumber(row._disabled) == 1 then ent:setNetVar("disabled", true) end
-                if tonumber(row._hidden) == 1 then ent:setNetVar("hidden", true) end
-                if tonumber(row._ownable) == 0 then ent:setNetVar("noSell", true) end
+                print("LoadData: set netvar 'price' =", price)
+                print("LoadData: raw _locked =", row._locked)
+                local locked = tonumber(row._locked) == 1
+                ent:setNetVar("locked", locked)
+                print("LoadData: set netvar 'locked' =", locked)
+                print("LoadData: raw _disabled =", row._disabled)
+                local disabled = tonumber(row._disabled) == 1
+                ent:setNetVar("disabled", disabled)
+                print("LoadData: set netvar 'disabled' =", disabled)
+                print("LoadData: raw _hidden =", row._hidden)
+                local hidden = tonumber(row._hidden) == 1
+                ent:setNetVar("hidden", hidden)
+                print("LoadData: set netvar 'hidden' =", hidden)
+                print("LoadData: raw _ownable =", row._ownable)
+                local noSell = tonumber(row._ownable) == 0
+                ent:setNetVar("noSell", noSell)
+                print("LoadData: set netvar 'noSell' =", noSell)
             end
         end
+
+        print("LoadData: finished processing all rows")
     end)
 end
 

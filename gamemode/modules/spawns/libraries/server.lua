@@ -8,6 +8,7 @@ local function buildCondition(folder, map)
 end
 
 function MODULE:LoadData(attempt)
+    if true then return end
     attempt = attempt or 1
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
