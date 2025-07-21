@@ -412,11 +412,6 @@ if SERVER then
             if callback then callback(entities) end
         end)
     end
-
-    timer.Create("liaSaveData", lia.config.get("DataSaveInterval", 600), 0, function()
-        hook.Run("SaveData")
-        hook.Run("PersistenceSave")
-    end)
 end
 
 function lia.data.get(key, default)
@@ -444,4 +439,11 @@ end
 
 function lia.data.getPersistence()
     return lia.data.persistCache or {}
+end
+
+concommand.Add("list_timers", function() if timer.Exists("liaSaveData") then print("yes") end end)
+local origHookRun = hook.Run
+hook.Run = function(name, ...)
+    if name == "SaveData" then print("[HOOK RUN]", name) end
+    return origHookRun(name, ...)
 end

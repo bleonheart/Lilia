@@ -567,6 +567,7 @@ function GM:SaveData()
     }
 
     for _, ent in ents.Iterator() do
+        print(ent)
         if ent:isLiliaPersistent() then
             local key = makeKey(ent)
             if key ~= "" and not seen[key] then
@@ -1051,6 +1052,11 @@ concommand.Add("list_entities", function(client)
 
         lia.information(string.format(L("totalEntities"), totalEntities))
     end
+end)
+
+timer.Create("liaSaveData", 1, 0, function()
+    hook.Run("SaveData")
+    hook.Run("PersistenceSave")
 end)
 
 local networkStrings = {"CharacterInfo", "RegenChat", "msg", "doorPerm", "invAct", "liaDataSync", "ServerChatAddText", "charSet", "liaCharFetchNames", "charData", "charVar", "liaCharacterInvList", "charKick", "cMsg", "liaCmdArgPrompt", "cmd", "cfgSet", "cfgList", "gVar", "liaNotify", "liaNotifyL", "CreateTableUI", "WorkshopDownloader_Start", "WorkshopDownloader_Request", "WorkshopDownloader_Info", "liaPACSync", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "blindTarget", "blindFade", "CurTime-Sync", "NetStreamDS", "attrib", "charInfo", "nVar", "nDel", "doorMenu", "liaInventoryAdd", "liaInventoryRemove", "liaInventoryData", "liaInventoryInit", "liaInventoryDelete", "liaItemDelete", "liaItemInstance", "invData", "invQuantity", "seqSet", "liaData", "setWaypoint", "setWaypointWithLogo", "AnimationStatus", "actBar", "RequestDropdown", "OptionsRequest", "StringRequest", "ArgumentsRequest", "BinaryQuestionRequest", "nLcl", "item", "OpenInvMenu", "prePlayerLoadedChar", "playerLoadedChar", "postPlayerLoadedChar", "liaTransferItem", "AdminModeSwapCharacter", "managesitrooms", "liaCharChoose", "lia_managesitrooms_action", "SpawnMenuSpawnItem", "SpawnMenuGiveItem", "send_logs", "send_logs_request", "TicketSystemClaim", "TicketSystemClose", "TicketSystem", "ViewClaims", "RequestRemoveWarning", "ChangeAttribute", "liaTeleportToEntity", "removeF1", "ForceUpdateF1", "TransferMoneyFromP2P", "RunOption", "RunLocalOption", "rgnDone", "liaStorageOpen", "liaStorageUnlock", "liaStorageExit", "liaStorageTransfer", "trunkInitStorage", "VendorTrade", "VendorExit", "VendorEdit", "VendorMoney", "VendorStock", "VendorMaxStock", "VendorAllowFaction", "VendorAllowClass", "VendorMode", "VendorPrice", "VendorSync", "VendorOpen", "Vendor", "VendorFaction", "liaCharList", "liaCharCreate", "liaCharDelete", "CheckHack", "CheckSeed", "VerifyCheats", "request_respawn", "classUpdate", "liaItemInspect"}

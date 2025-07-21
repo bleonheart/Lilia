@@ -275,7 +275,6 @@ LANGUAGE = {
     doorDisableAll = "All doors have been disabled.",
     doorSetClass = "This door now belongs to the '%s' class.",
     doorRemoveClass = "This door no longer belongs to any class.",
-    doorSaveData = "Door data has been saved: %s",
     doorsSaved = "Saved Doors!",
     doorInfoTitle = "Door Information",
     doorInfoProperty = "Property",
