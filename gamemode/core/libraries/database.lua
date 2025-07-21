@@ -612,16 +612,10 @@ function lia.db.convertDataType(value, noEscape)
             return "'" .. lia.db.escape(value) .. "'"
         end
     elseif istable(value) then
-        local encoded
-        if lia and lia.data and lia.data.serialize then
-            encoded = lia.data.serialize(value)
-        else
-            encoded = util.TableToJSON(value)
-        end
         if noEscape then
-            return encoded
+            return util.TableToJSON(value)
         else
-            return "'" .. lia.db.escape(encoded) .. "'"
+            return "'" .. lia.db.escape(util.TableToJSON(value)) .. "'"
         end
     elseif value == NULL then
         return "NULL"

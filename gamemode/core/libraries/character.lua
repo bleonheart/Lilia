@@ -533,7 +533,7 @@ if SERVER then
                         elseif isbool(v2.default) then
                             value = tobool(value)
                         elseif istable(v2.default) then
-                            value = lia.data.deserialize(value)
+                            value = util.JSONToTable(value)
                         end
 
                         charData[k2] = value
