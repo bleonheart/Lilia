@@ -89,8 +89,6 @@ function lia.data.deserialize(raw)
     return lia.data.decode(decoded)
 end
 
-lia.data.decodeVector = decodeVector
-lia.data.decodeAngle = decodeAngle
 if SERVER then
     local function buildCondition(folder, map)
         local cond = folder and "_folder = " .. lia.db.convertDataType(folder) or "_folder IS NULL"

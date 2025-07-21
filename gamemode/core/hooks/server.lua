@@ -1,7 +1,5 @@
 local GM = GM or GAMEMODE
 local encodetable = lia.data.encodetable
-local decodeVector = lia.data.decodeVector
-local decodeAngle = lia.data.decodeAngle
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     if not character:getInv() then return end
@@ -540,7 +538,7 @@ local function makeKey(ent)
     else
         class = ent.class
         if ent.pos then
-            pos = decodeVector(ent.pos)
+            pos = lia.data.decode(ent.pos)
         elseif ent.GetPos then
             pos = ent:GetPos()
         end
@@ -658,8 +656,8 @@ function GM:LoadData()
             for _, item in ipairs(items) do
                 local id = item[1]
                 idRange[#idRange + 1] = id
-                positions[id] = decodeVector(item[2])
-                angles[id] = decodeAngle(item[3])
+                positions[id] = lia.data.decode(item[2])
+                angles[id] = lia.data.decode(item[3])
             end
 
             if #idRange > 0 then
