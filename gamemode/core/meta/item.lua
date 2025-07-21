@@ -195,6 +195,24 @@ if SERVER then
                 position = position:getItemDropPos()
             end
 
+            position = lia.data.decode(position)
+            if not isvector(position) and istable(position) then
+                local x = tonumber(position.x or position[1])
+                local y = tonumber(position.y or position[2])
+                local z = tonumber(position.z or position[3])
+                if x and y and z then position = Vector(x, y, z) end
+            end
+
+            if angles then
+                angles = lia.data.decode(angles)
+                if not isangle(angles) and istable(angles) then
+                    local p = tonumber(angles.p or angles[1])
+                    local yaw = tonumber(angles.y or angles[2])
+                    local r = tonumber(angles.r or angles[3])
+                    if p and yaw and r then angles = Angle(p, yaw, r) end
+                end
+            end
+
             local entity = ents.Create("lia_item")
             entity:Spawn()
             entity:SetPos(position)
