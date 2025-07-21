@@ -447,6 +447,7 @@ end
 
 local dev = true
 timer.Create("liaSaveData", dev and 5 or lia.config.get("DataSaveInterval", 600), 0, function()
+    if lia.shuttingDown then return end
     hook.Run("SaveData")
     hook.Run("PersistenceSave")
 end)
