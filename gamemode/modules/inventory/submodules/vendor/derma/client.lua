@@ -393,9 +393,7 @@ function PANEL:onVendorPropEdited(_, key)
         end
     elseif key == "preset" then
         local preset = liaVendorEnt:getNetVar("preset", "none")
-        if IsValid(self.preset) then
-            self.preset:SetValue(preset == "none" and L("none") or preset)
-        end
+        if IsValid(self.preset) then self.preset:SetValue(preset == "none" and L("none") or preset) end
     end
 
     self:applyCategoryFilter()
@@ -689,12 +687,15 @@ function PANEL:Init()
     for name in pairs(lia.vendor.presets or {}) do
         self.preset:AddChoice(name)
     end
+
     local currentPreset = entity:getNetVar("preset", "none")
     local presetLabel = currentPreset == "none" and L("none") or currentPreset
     self.preset:SetValue(presetLabel)
     self.preset:ChooseOption(presetLabel)
-
-    self.preset.OnSelect = function(_, _, value) lia.vendor.editor.preset(value) end
+    self.preset.OnSelect = function(_, _, value)
+        if value == L("none") then value = "none" end
+        lia.vendor.editor.preset(value)
+    end
 
     self.items = self:Add("DListView")
     self.items:Dock(FILL)
