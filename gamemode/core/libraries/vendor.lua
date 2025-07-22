@@ -69,6 +69,17 @@ if SERVER then
         vendor:setModel(model)
     end
 
+    lia.vendor.editor.skin = function(vendor)
+        local skin = net.ReadUInt(8)
+        vendor:setSkin(skin)
+    end
+
+    lia.vendor.editor.bodygroup = function(vendor)
+        local index = net.ReadUInt(8)
+        local value = net.ReadUInt(8)
+        vendor:setBodyGroup(index, value)
+    end
+
     lia.vendor.editor.useMoney = function(vendor)
         local useMoney = net.ReadBool()
         if useMoney then
@@ -151,6 +162,13 @@ else
 
     addEditor("flag", function(flag) net.WriteString(flag) end)
     addEditor("model", function(model) net.WriteString(model) end)
+    addEditor("skin", function(skin)
+        net.WriteUInt(math.Clamp(skin or 0, 0, 255), 8)
+    end)
+    addEditor("bodygroup", function(index, value)
+        net.WriteUInt(index, 8)
+        net.WriteUInt(value or 0, 8)
+    end)
     addEditor("useMoney", function(useMoney) net.WriteBool(useMoney) end)
     addEditor("scale", function(scale) net.WriteFloat(scale) end)
     addEditor("name", function(name) net.WriteString(name) end)
