@@ -191,6 +191,15 @@ function ENT:setSellScale(scale)
 end
 
 function ENT:applyPreset(name)
+    name = string.lower(name)
+    if name == "none" then
+        self.items = {}
+        for _, client in ipairs(self.receivers) do
+            self:sync(client)
+        end
+        return
+    end
+
     local preset = lia.vendor and lia.vendor.getPreset(name)
     if not preset then return end
     for itemType, data in pairs(preset) do

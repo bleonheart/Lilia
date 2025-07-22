@@ -676,18 +676,17 @@ function PANEL:Init()
     self.faction:SetTextColor(color_white)
     self.faction:DockMargin(0, 4, 0, 0)
     self.faction.DoClick = function() vgui.Create("VendorFactionEditor"):MoveLeftOf(self, 4) end
-    if table.Count(lia.vendor.presets or {}) > 0 then
-        self.preset = self:Add("DComboBox")
-        self.preset:Dock(TOP)
-        self.preset:SetSortItems(false)
-        self.preset:DockMargin(0, 4, 0, 0)
-        self.preset:SetValue(L("vendorSelectPreset"))
-        for name in pairs(lia.vendor.presets) do
-            self.preset:AddChoice(name)
-        end
-
-        self.preset.OnSelect = function(_, _, value) lia.vendor.editor.preset(value) end
+    self.preset = self:Add("DComboBox")
+    self.preset:Dock(TOP)
+    self.preset:SetSortItems(false)
+    self.preset:DockMargin(0, 4, 0, 0)
+    self.preset:SetValue(L("vendorSelectPreset"))
+    self.preset:AddChoice(L("none"))
+    for name in pairs(lia.vendor.presets or {}) do
+        self.preset:AddChoice(name)
     end
+
+    self.preset.OnSelect = function(_, _, value) lia.vendor.editor.preset(value) end
 
     self.items = self:Add("DListView")
     self.items:Dock(FILL)
