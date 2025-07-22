@@ -270,6 +270,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
+    DROP TABLE IF EXISTS `lia_vendors`;
     DROP TABLE IF EXISTS `lia_warnings`;
 ]])
             local done = 0
@@ -304,6 +305,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
+    DROP TABLE IF EXISTS lia_vendors;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)

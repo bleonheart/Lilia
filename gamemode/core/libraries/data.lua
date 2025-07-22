@@ -239,6 +239,33 @@ local function createPersistenceTable()
     end
 end
 
+local function createVendorTable()
+    if lia.db.module == "sqlite" then
+        lia.db.query([[CREATE TABLE IF NOT EXISTS lia_vendors (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                _folder TEXT,
+                _map TEXT,
+                class TEXT,
+                pos TEXT,
+                angles TEXT,
+                model TEXT,
+                data TEXT
+            );]])
+    else
+        lia.db.query([[CREATE TABLE IF NOT EXISTS `lia_vendors` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `class` TEXT NULL,
+                `pos` TEXT NULL,
+                `angles` TEXT NULL,
+                `model` TEXT NULL,
+                `data` TEXT NULL,
+                PRIMARY KEY (`_id`)
+            );]])
+    end
+end
+
 local defaultCols = {
     _folder = true,
     _map = true,
@@ -273,6 +300,7 @@ end
 
 function lia.data.loadPersistence()
     createPersistenceTable()
+    createVendorTable()
     return ensurePersistenceColumns(baseCols)
 end
 
@@ -283,7 +311,14 @@ function lia.data.savePersistence(entities)
     local condition = buildCondition(folder, map)
     local dynamic = {}
     local dynamicList = {}
+    local vendors = {}
+    local others = {}
     for _, ent in ipairs(entities) do
+        if ent.class == "lia_vendor" then
+            vendors[#vendors + 1] = ent
+        else
+            others[#others + 1] = ent
+        end
         for k in pairs(ent) do
             if not defaultCols[k] and not dynamic[k] then
                 dynamic[k] = true
@@ -293,6 +328,7 @@ function lia.data.savePersistence(entities)
     end
 
     createPersistenceTable()
+    createVendorTable()
     local cols = {}
     for _, c in ipairs(baseCols) do
         cols[#cols + 1] = c
@@ -302,9 +338,29 @@ function lia.data.savePersistence(entities)
         cols[#cols + 1] = c
     end
 
-    ensurePersistenceColumns(cols):next(function() return lia.db.delete("persistence", condition) end):next(function()
+    ensurePersistenceColumns(cols):next(function()
+        return lia.db.delete("vendors", condition)
+    end):next(function()
+        if #vendors > 0 then
+            local vrows = {}
+            for _, ent in ipairs(vendors) do
+                vrows[#vrows + 1] = {
+                    _folder = folder,
+                    _map = map,
+                    class = ent.class,
+                    pos = lia.data.serialize(ent.pos),
+                    angles = lia.data.serialize(ent.angles),
+                    model = ent.model,
+                    data = lia.data.serialize(ent.data)
+                }
+            end
+            return lia.db.bulkInsert("vendors", vrows)
+        end
+    end):next(function()
+        return lia.db.delete("persistence", condition)
+    end):next(function()
         local rows = {}
-        for _, ent in ipairs(entities) do
+        for _, ent in ipairs(others) do
             local row = {
                 _folder = folder,
                 _map = map,
@@ -320,7 +376,9 @@ function lia.data.savePersistence(entities)
 
             rows[#rows + 1] = row
         end
-        return lia.db.bulkInsert("persistence", rows)
+        if #rows > 0 then
+            return lia.db.bulkInsert("persistence", rows)
+        end
     end)
 end
 
@@ -329,24 +387,39 @@ function lia.data.loadPersistenceData(callback)
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
     createPersistenceTable()
-    ensurePersistenceColumns(baseCols):next(function() return lia.db.select("*", "persistence", condition) end):next(function(res)
-        local rows = res.results or {}
-        local entities = {}
-        for _, row in ipairs(rows) do
-            local ent = {}
-            for k, v in pairs(row) do
-                if not defaultCols[k] and k ~= "_id" and k ~= "_folder" and k ~= "_map" then ent[k] = lia.data.deserialize(v) end
+    createVendorTable()
+    ensurePersistenceColumns(baseCols):next(function()
+        return lia.db.select("*", "vendors", condition)
+    end):next(function(vres)
+        local vendors = vres.results or {}
+        return lia.db.select("*", "persistence", condition):next(function(res)
+            local rows = res.results or {}
+            local entities = {}
+            for _, row in ipairs(vendors) do
+                local ent = lia.data.deserialize(row.data) or {}
+                ent.class = row.class or "lia_vendor"
+                ent.pos = lia.data.decodeVector(row.pos)
+                ent.angles = lia.data.decodeAngle(row.angles)
+                ent.model = row.model
+                entities[#entities + 1] = ent
             end
 
-            ent.class = row.class
-            ent.pos = lia.data.decodeVector(row.pos)
-            ent.angles = lia.data.decodeAngle(row.angles)
-            ent.model = row.model
-            entities[#entities + 1] = ent
-        end
+            for _, row in ipairs(rows) do
+                local ent = {}
+                for k, v in pairs(row) do
+                    if not defaultCols[k] and k ~= "_id" and k ~= "_folder" and k ~= "_map" then ent[k] = lia.data.deserialize(v) end
+                end
 
-        lia.data.persistCache = entities
-        if callback then callback(entities) end
+                ent.class = row.class
+                ent.pos = lia.data.decodeVector(row.pos)
+                ent.angles = lia.data.decodeAngle(row.angles)
+                ent.model = row.model
+                entities[#entities + 1] = ent
+            end
+
+            lia.data.persistCache = entities
+            if callback then callback(entities) end
+        end)
     end)
 end
 
