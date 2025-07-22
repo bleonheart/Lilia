@@ -406,6 +406,12 @@ function lia.db.loadTables()
                 _steamID VARCHAR
             );
 
+            CREATE TABLE IF NOT EXISTS lia_ticketclaims (
+                _request TEXT,
+                _admin TEXT,
+                _timestamp INTEGER
+            );
+
             CREATE TABLE IF NOT EXISTS lia_doors (
                 _folder TEXT,
                 _map TEXT,
@@ -533,6 +539,12 @@ function lia.db.loadTables()
                 `_charID` INT(12) NULL,
                 `_steamID` VARCHAR(20) NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
+                `_request` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_admin` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_timestamp` INT(32) NOT NULL
             );
 
             CREATE TABLE IF NOT EXISTS `lia_doors` (
