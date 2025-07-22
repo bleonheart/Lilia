@@ -189,6 +189,7 @@ LANGUAGE = {
     useTip = "Usa l'oggetto.",
     equipTip = "Equipaggia l'oggetto.",
     rotateTip = "Ruota l'oggetto.",
+    inspectTip = "Ispeziona l'oggetto.",
     inspectOfferTip = "Offri il tuo oggetto per ispezione alla persona che stai guardando.",
     moneyLimit = "Hai raggiunto il limite di denaro di %s%s. %s%s è stato droppato.",
     playtimeYour = "Il tuo tempo di gioco è %s ore, %s minuti e %s secondi.",
