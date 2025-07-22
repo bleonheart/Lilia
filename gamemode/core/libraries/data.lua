@@ -18,7 +18,6 @@ function lia.data.encodetable(value)
     return value
 end
 
--- Internal helpers to convert raw tables or strings into Vectors and Angles
 local function _decodeVector(data)
     if isvector(data) then return data end
     if istable(data) then
@@ -65,10 +64,8 @@ local function deepDecode(value)
         value = t
     end
 
-    -- Decode angle before vector to avoid misinterpreting angle tables
     value = _decodeAngle(value)
     value = _decodeVector(value)
-    -- remove stray debug prints from earlier versions
     return value
 end
 
@@ -92,8 +89,6 @@ function lia.data.deserialize(raw)
     return lia.data.decode(decoded)
 end
 
--- Convenience helpers that decode directly into Vector or Angle types. These
--- bypass the generic decoder to avoid ambiguity between the two types.
 function lia.data.decodeVector(raw)
     if not raw then return nil end
     local decoded = util.JSONToTable(raw)
@@ -101,6 +96,7 @@ function lia.data.decodeVector(raw)
         local ok, ponDecoded = pcall(pon.decode, raw)
         if ok then decoded = ponDecoded end
     end
+
     if decoded == nil then return nil end
     return _decodeVector(decoded)
 end
@@ -112,6 +108,7 @@ function lia.data.decodeAngle(raw)
         local ok, ponDecoded = pcall(pon.decode, raw)
         if ok then decoded = ponDecoded end
     end
+
     if decoded == nil then return nil end
     return _decodeAngle(decoded)
 end

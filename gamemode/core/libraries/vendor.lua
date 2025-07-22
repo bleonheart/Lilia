@@ -2,26 +2,6 @@ lia.vendor = lia.vendor or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.rarities = lia.vendor.rarities or {}
-
---- Adds a rarity color to the vendor system.
--- @param name Name of the rarity.
--- @param color Color associated with the rarity.
-function lia.vendor.addRarities(name, color)
-    assert(isstring(name), "rarity name must be a string")
-    assert(IsColor(color), "color must be a Color")
-    lia.vendor.rarities[name] = color
-end
-
-function lia.vendor.addPreset(name, items)
-    assert(isstring(name), "preset name must be a string")
-    assert(istable(items), "preset items must be a table")
-    lia.vendor.presets[string.lower(name)] = items
-end
-
-function lia.vendor.getPreset(name)
-    return lia.vendor.presets[string.lower(name)]
-end
-
 if SERVER then
     lia.vendor.editor.name = function(vendor)
         local name = net.ReadString()
@@ -172,11 +152,19 @@ else
     addEditor("welcome", function(message) net.WriteString(message) end)
     addEditor("preset", function(name) net.WriteString(name) end)
 end
--- Default rarity colors
 
-lia.vendor.addRarities("Common", Color(255, 255, 255))
-lia.vendor.addRarities("Uncommon", Color(30, 255, 0))
-lia.vendor.addRarities("Rare", Color(0, 112, 221))
-lia.vendor.addRarities("Epic", Color(163, 53, 238))
-lia.vendor.addRarities("Legendary", Color(255, 128, 0))
+function lia.vendor.addRarities(name, color)
+    assert(isstring(name), "rarity name must be a string")
+    assert(IsColor(color), "color must be a Color")
+    lia.vendor.rarities[name] = color
+end
 
+function lia.vendor.addPreset(name, items)
+    assert(isstring(name), "preset name must be a string")
+    assert(istable(items), "preset items must be a table")
+    lia.vendor.presets[string.lower(name)] = items
+end
+
+function lia.vendor.getPreset(name)
+    return lia.vendor.presets[string.lower(name)]
+end
