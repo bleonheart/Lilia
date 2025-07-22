@@ -466,12 +466,6 @@ function lia.data.getPersistence()
     return lia.data.persistCache or {}
 end
 
-local origHookRun = hook.Run
-hook.Run = function(name, ...)
-    if name == "SaveData" then print("[HOOK RUN]", name) end
-    return origHookRun(name, ...)
-end
-
 local dev = true
 timer.Create("liaSaveData", dev and 5 or lia.config.get("DataSaveInterval", 600), 0, function()
     if lia.shuttingDown then return end
