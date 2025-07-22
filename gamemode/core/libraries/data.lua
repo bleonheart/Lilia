@@ -119,19 +119,6 @@ local function buildCondition(folder, map)
     return cond
 end
 
-local function ensureDataTable()
-    local tbl = "lia_data"
-    return lia.db.tableExists(tbl):next(function(exists)
-        if not exists then
-            return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
-                    _folder TEXT,
-                    _map TEXT,
-                    _data TEXT,
-                    PRIMARY KEY (_folder, _map)
-                );]])
-        end
-    end)
-end
 
 function lia.data.set(key, value, global, ignoreMap)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
@@ -146,7 +133,6 @@ function lia.data.set(key, value, global, ignoreMap)
 
     lia.data.stored[key] = value
     lia.db.waitForTablesToLoad()
-        :next(function() return ensureDataTable() end)
         :next(function()
             local row = {
                 _folder = folder,
@@ -174,7 +160,6 @@ function lia.data.delete(key, global, ignoreMap)
     lia.data.stored[key] = nil
     local condition = buildCondition(folder, map)
     lia.db.waitForTablesToLoad()
-        :next(function() return ensureDataTable() end)
         :next(function()
             if not next(lia.data.stored) then
                 return lia.db.delete("data", condition)
@@ -208,63 +193,11 @@ function lia.data.loadTables()
     end
 
     lia.db.waitForTablesToLoad()
-        :next(function() return ensureDataTable() end)
         :next(function() return loadData(nil, nil) end)
         :next(function() return loadData(folder, nil) end)
         :next(function() return loadData(folder, map) end)
 end
 
-local function createPersistenceTable()
-    if lia.db.module == "sqlite" then
-        lia.db.query([[CREATE TABLE IF NOT EXISTS lia_persistence (
-                _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                _folder TEXT,
-                _map TEXT,
-                class TEXT,
-                pos TEXT,
-                angles TEXT,
-                model TEXT
-            );]])
-    else
-        lia.db.query([[CREATE TABLE IF NOT EXISTS `lia_persistence` (
-                `_id` INT(12) NOT NULL AUTO_INCREMENT,
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
-                `class` TEXT NULL,
-                `pos` TEXT NULL,
-                `angles` TEXT NULL,
-                `model` TEXT NULL,
-                PRIMARY KEY (`_id`)
-            );]])
-    end
-end
-
-local function createVendorTable()
-    if lia.db.module == "sqlite" then
-        lia.db.query([[CREATE TABLE IF NOT EXISTS lia_vendors (
-                _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                _folder TEXT,
-                _map TEXT,
-                class TEXT,
-                pos TEXT,
-                angles TEXT,
-                model TEXT,
-                data TEXT
-            );]])
-    else
-        lia.db.query([[CREATE TABLE IF NOT EXISTS `lia_vendors` (
-                `_id` INT(12) NOT NULL AUTO_INCREMENT,
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
-                `class` TEXT NULL,
-                `pos` TEXT NULL,
-                `angles` TEXT NULL,
-                `model` TEXT NULL,
-                `data` TEXT NULL,
-                PRIMARY KEY (`_id`)
-            );]])
-    end
-end
 
 local defaultCols = {
     _folder = true,
@@ -299,8 +232,6 @@ local function ensurePersistenceColumns(cols)
 end
 
 function lia.data.loadPersistence()
-    createPersistenceTable()
-    createVendorTable()
     return ensurePersistenceColumns(baseCols)
 end
 
@@ -327,8 +258,7 @@ function lia.data.savePersistence(entities)
         end
     end
 
-    createPersistenceTable()
-    createVendorTable()
+    -- tables are created in lia.db.loadTables
     local cols = {}
     for _, c in ipairs(baseCols) do
         cols[#cols + 1] = c
@@ -386,8 +316,7 @@ function lia.data.loadPersistenceData(callback)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    createPersistenceTable()
-    createVendorTable()
+    -- tables are created in lia.db.loadTables
     ensurePersistenceColumns(baseCols):next(function()
         return lia.db.select("*", "vendors", condition)
     end):next(function(vres)

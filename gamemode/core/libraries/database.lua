@@ -464,6 +464,34 @@ function lia.db.loadTables()
                 PRIMARY KEY (_folder, _map, _name)
             );
 
+            CREATE TABLE IF NOT EXISTS lia_data (
+                _folder TEXT,
+                _map TEXT,
+                _data TEXT,
+                PRIMARY KEY (_folder, _map)
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_persistence (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                _folder TEXT,
+                _map TEXT,
+                class TEXT,
+                pos TEXT,
+                angles TEXT,
+                model TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_vendors (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                _folder TEXT,
+                _map TEXT,
+                class TEXT,
+                pos TEXT,
+                angles TEXT,
+                model TEXT,
+                data TEXT
+            );
+
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _schema TEXT,
@@ -614,6 +642,36 @@ function lia.db.loadTables()
                 `_name` TEXT NULL,
                 `_pos` TEXT NULL,
                 PRIMARY KEY (`_folder`, `_map`, `_name`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_data` (
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `_data` TEXT NULL,
+                PRIMARY KEY (`_folder`, `_map`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_persistence` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `class` TEXT NULL,
+                `pos` TEXT NULL,
+                `angles` TEXT NULL,
+                `model` TEXT NULL,
+                PRIMARY KEY (`_id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_vendors` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `class` TEXT NULL,
+                `pos` TEXT NULL,
+                `angles` TEXT NULL,
+                `model` TEXT NULL,
+                `data` TEXT NULL,
+                PRIMARY KEY (`_id`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
