@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a contextual interaction menu with shortcuts for dropping money, toggling voice, and recognizing other players."
-local prefix = "aaaaaaa"
+local prefix = "test"
 local samples = {
     {
         k = "sampleBool",
@@ -37,7 +37,7 @@ lia.command.add("setdatatype", {
         for _, s in ipairs(samples) do
             local fullKey = prefix .. "_" .. s.k
             lia.data.set(fullKey, s.v)
-            client:notify("[setdatatype]\t" .. prefix .. "\t" .. s.k .. "\t" .. tostring(s.v) .. "\t" .. type(s.v))
+            print("[setdatatype]\t" .. prefix .. "\t" .. s.k .. "\t" .. tostring(s.v) .. "\t" .. type(s.v))
         end
     end
 })
@@ -50,7 +50,7 @@ lia.command.add("getdatatype", {
         for _, s in ipairs(samples) do
             local fullKey = prefix .. "_" .. s.k
             local stored = lia.data.get(fullKey)
-            client:notify("[getdatatype]\t" .. prefix .. "\t" .. s.k .. "\t" .. tostring(stored) .. "\t" .. type(stored))
+            PrintTable(stored, 1)
         end
     end
 })
