@@ -22,11 +22,14 @@ permissions:
   security-events: write
   statuses: write
 
+env:
+  TARGET_REPO: LiliaFramework/Lilia
+
 jobs:
   linter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: leafo/gh-actions-lua@v8.0.0
         with:
           luaVersion: "5.2"
@@ -34,7 +37,7 @@ jobs:
       - run: |
           luarocks install luafilesystem
           luarocks install argparse
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: LiliaFramework/GluaCheck
           path: luacheck
@@ -53,12 +56,13 @@ jobs:
 
   compute-version:
     needs: linter
+    if: github.repository == env.TARGET_REPO
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.calc_version.outputs.version }}
       valid_count: ${{ steps.calc_version.outputs.valid_count }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - id: calc_version
@@ -79,12 +83,12 @@ jobs:
 
   update-shared-version:
     needs: compute-version
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == env.TARGET_REPO && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - run: |
@@ -118,7 +122,7 @@ jobs:
     needs:
       - compute-version
       - update-shared-version
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == env.TARGET_REPO && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
@@ -127,7 +131,7 @@ jobs:
       STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
       STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main
@@ -226,7 +230,7 @@ jobs:
           cat ~/Steam/logs/workshop_log.txt || true
           echo
           echo ~/Steam/workshopbuilds/depot_build_4000.log
-            cat ~/Steam/workshopbuilds/depot_build_4000.log || true
+          cat ~/Steam/workshopbuilds/depot_build_4000.log || true
           echo
           cat workshop.vdf || true
           exit 1
@@ -235,15 +239,15 @@ jobs:
     needs:
       - compute-version
       - release
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == env.TARGET_REPO && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: LiliaFramework/LiliaFramework.github.io
           path: site
