@@ -16,6 +16,12 @@
     caseclaims[admin:SteamID64()].lastclaim = os.time()
     caseclaims[admin:SteamID64()].claimedFor[requester:SteamID64()] = requester:Nick()
     lia.data.set("caseclaims", caseclaims, true)
+
+    lia.db.insertTable({
+        _request = requester:SteamID64(),
+        _admin = admin:SteamID64(),
+        _timestamp = os.time()
+    }, nil, "ticketclaims")
 end
 
 function MODULE:PlayerSay(client, text)
