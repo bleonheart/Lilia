@@ -181,15 +181,17 @@ function MODULE:OnPlayerObserve(client, state)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    local caseclaims = lia.data.get("caseclaims", {})
-    local info = caseclaims[admin:SteamID64()]
-    lia.log.add(admin, "ticketClaimed", requester:Name(), info and info.claims or 0)
+    lia.module.list.tickets:GetCaseClaims(function(data)
+        local info = data[admin:SteamID64()]
+        lia.log.add(admin, "ticketClaimed", requester:Name(), info and info.claims or 0)
+    end, admin:SteamID64())
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    local caseclaims = lia.data.get("caseclaims", {})
-    local info = caseclaims[admin:SteamID64()]
-    lia.log.add(admin, "ticketClosed", requester:Name(), info and info.claims or 0)
+    lia.module.list.tickets:GetCaseClaims(function(data)
+        local info = data[admin:SteamID64()]
+        lia.log.add(admin, "ticketClosed", requester:Name(), info and info.claims or 0)
+    end, admin:SteamID64())
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)

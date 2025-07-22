@@ -1,28 +1,43 @@
-﻿function MODULE:TicketSystemClaim(admin, requester)
-    local caseclaims = lia.data.get("caseclaims", {})
-    if caseclaims[admin:SteamID()] then
-        caseclaims[admin:SteamID64()] = caseclaims[admin:SteamID()]
-        caseclaims[admin:SteamID()] = nil
+function MODULE:GetCaseClaims(callback, steamID)
+    local condition
+    if steamID then
+        condition = "_admin = " .. lia.db.convertDataType(steamID)
     end
+    lia.db.select({"_request", "_admin", "_timestamp"}, "ticketclaims", condition):next(function(res)
+        local rows = res.results or {}
+        local claims = {}
+        for _, row in ipairs(rows) do
+            local adminID = row._admin
+            if steamID and adminID ~= steamID then continue end
+            local info = claims[adminID]
+            if not info then
+                local ply = player.GetBySteamID64(adminID)
+                info = {
+                    name = IsValid(ply) and ply:Nick() or adminID,
+                    claims = 0,
+                    lastclaim = 0,
+                    claimedFor = {}
+                }
+                claims[adminID] = info
+            end
+            info.claims = info.claims + 1
+            info.lastclaim = math.max(info.lastclaim, tonumber(row._timestamp) or 0)
+            local reqID = row._request
+            local reqPly = player.GetBySteamID64(reqID)
+            info.claimedFor[reqID] = IsValid(reqPly) and reqPly:Nick() or reqID
+        end
+        callback(claims)
+    end)
+end
 
-    caseclaims[admin:SteamID64()] = caseclaims[admin:SteamID64()] or {
-        name = admin:Nick(),
-        claims = 0,
-        lastclaim = os.time(),
-        claimedFor = {}
-    }
-
-    caseclaims[admin:SteamID64()].claims = caseclaims[admin:SteamID64()].claims + 1
-    caseclaims[admin:SteamID64()].lastclaim = os.time()
-    caseclaims[admin:SteamID64()].claimedFor[requester:SteamID64()] = requester:Nick()
-    lia.data.set("caseclaims", caseclaims, true)
-
+function MODULE:TicketSystemClaim(admin, requester)
     lia.db.insertTable({
         _request = requester:SteamID64(),
         _admin = admin:SteamID64(),
         _timestamp = os.time()
     }, nil, "ticketclaims")
 end
+
 
 function MODULE:PlayerSay(client, text)
     if string.sub(text, 1, 1) == "@" then
