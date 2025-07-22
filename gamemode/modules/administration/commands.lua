@@ -612,4 +612,23 @@ if not lia.admin.isDisabled() then
             end
         end
     })
+
+    lia.command.add("setdatatype", {
+        adminOnly = true,
+        desc = "Sets several example character data values.",
+        onRun = function(client)
+            local char = client:getChar()
+            if not char then
+                client:notifyLocalized("noCharacterLoaded")
+                return
+            end
+
+            char:setData("sampleNumber", 42)
+            char:setData("sampleString", "hello")
+            char:setData("sampleBool", true)
+            char:setData("sampleTable", {a = 1, b = 2})
+
+            client:notify("Example character data set.")
+        end
+    })
 end
