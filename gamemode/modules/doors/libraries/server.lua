@@ -76,8 +76,6 @@ function MODULE:SaveData()
             }
         end
     end
-
-    local count = #rows
 end
 
 function MODULE:InitPostEntity()

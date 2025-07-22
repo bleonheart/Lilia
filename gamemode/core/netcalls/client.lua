@@ -813,7 +813,7 @@ net.Receive("liaCharacterData", function()
     if not character then return end
     if not character.dataVars then character.dataVars = {} end
     local keyCount = net.ReadUInt(32)
-    for i = 1, keyCount do
+    for _ = 1, keyCount do
         local key = net.ReadString()
         local value = net.ReadType()
         character.dataVars[key] = value

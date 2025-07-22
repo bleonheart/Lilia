@@ -6,27 +6,27 @@ local function buildCondition(folder, map)
     return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
 
-function MODULE:LoadData(attempt)
-    if true then return end
-    attempt = attempt or 1
+function MODULE:LoadData(n)
+    n = n or 1
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
     lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
         local data = res and lia.data.deserialize(res._data) or {}
         local factions = data.factions or data
-        if (not istable(factions) or table.IsEmpty(factions)) and attempt < 5 then
-            timer.Simple(1, function() if not self.loaded then self:LoadData(attempt + 1) end end)
+        if (not istable(factions) or table.IsEmpty(factions)) and n < 5 then
+            timer.Simple(1, function() if not self.loaded then self:LoadData(n + 1) end end)
             return
         end
 
         self.spawns = {}
-        factions = factions or {}
-        for fac, spawns in pairs(factions) do
-            self.spawns[fac] = {}
-            for _, pos in ipairs(spawns) do
-                self.spawns[fac][#self.spawns[fac] + 1] = lia.data.decode(pos)
+        for fac, spawns in pairs(factions or {}) do
+            local t = {}
+            for i = 1, #spawns do
+                t[i] = lia.data.decode(spawns[i])
             end
+
+            self.spawns[fac] = t
         end
 
         self.loaded = true
@@ -44,7 +44,6 @@ function MODULE:SaveData()
 
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = buildCondition(folder, map)
     lia.db.upsert({
         _schema = folder,
         _map = map,

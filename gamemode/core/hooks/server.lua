@@ -745,7 +745,7 @@ function GM:UpdateEntityPersistence(ent)
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
     local saved = lia.data.getPersistence()
     local key = makeKey(ent)
-    for i, data in ipairs(saved) do
+    for _, data in ipairs(saved) do
         if makeKey(data) == key then
             data.pos = ent:GetPos()
             data.class = ent:GetClass()
