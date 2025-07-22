@@ -12,6 +12,7 @@ ENT.IsPersistent = true
 function ENT:setupVars()
     if SERVER then
         self:setNetVar("name", "Jane Doe")
+        self:setNetVar("preset", "none")
         self.receivers = {}
     end
 
@@ -19,7 +20,6 @@ function ENT:setupVars()
     self.factions = {}
     self.messages = {}
     self.classes = {}
-    self:setNetVar("preset", "none")
     self.hasSetupVars = true
 end
 
