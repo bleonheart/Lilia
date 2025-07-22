@@ -222,7 +222,12 @@ function lia.data.loadTables()
             local key = tbl:match("^lia_data_(.+)$")
             local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
             local map = game.GetMap()
-            local condition = buildCondition(folder, map)
+            local conditions = {
+                "(" .. buildCondition(folder, map) .. ")",
+                "(" .. buildCondition(folder, nil) .. ")",
+                "(" .. buildCondition(nil, nil) .. ")",
+            }
+            local condition = table.concat(conditions, " OR ")
             lia.db.select("*", "data_" .. key, condition):next(function(res2)
                 local rows = res2.results or {}
                 for _, row in ipairs(rows) do
