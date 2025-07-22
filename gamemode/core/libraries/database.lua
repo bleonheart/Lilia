@@ -334,7 +334,6 @@ function lia.db.loadTables()
                 _lastJoin datetime,
                 _userGroup varchar,
                 _data varchar,
-                _intro binary,
                 _lastIP varchar,
                 _lastOnline integer,
                 _totalOnlineTime float
@@ -485,7 +484,6 @@ function lia.db.loadTables()
                 `_lastJoin` DATETIME,
                 `_userGroup` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_intro` BINARY(1) NULL DEFAULT 0,
                 `_lastIP` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_lastOnline` INT(32) NULL DEFAULT 0,
                 `_totalOnlineTime` FLOAT NULL DEFAULT 0,
