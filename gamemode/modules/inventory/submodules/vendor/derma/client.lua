@@ -1,11 +1,8 @@
-local MODULE = MODULE
 local sw, sh = ScrW(), ScrH()
-include(MODULE.folder .. "/libs/cl_vendor.lua")
 local COLS_MODE = 2
 local COLS_PRICE = 3
 local COLS_STOCK = 4
 local RarityColors = lia.vendor.rarities
-
 local VendorClick = {"buttons/button15.wav", 30, 250}
 local PANEL = {}
 function PANEL:Init()
