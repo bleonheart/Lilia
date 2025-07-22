@@ -2,10 +2,8 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-    tags-ignore:
-      - release
+    branches: [main]
+    tags-ignore: [release]
 
 permissions:
   actions: write
@@ -56,7 +54,7 @@ jobs:
 
   compute-version:
     needs: linter
-    if: github.repository == env.TARGET_REPO
+    if: ${{ github.repository == 'LiliaFramework/Lilia' }}
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.calc_version.outputs.version }}
@@ -83,7 +81,7 @@ jobs:
 
   update-shared-version:
     needs: compute-version
-    if: github.repository == env.TARGET_REPO && github.ref == 'refs/heads/main'
+    if: ${{ github.repository == 'LiliaFramework/Lilia' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
@@ -119,10 +117,8 @@ jobs:
           git push origin HEAD:main
 
   release:
-    needs:
-      - compute-version
-      - update-shared-version
-    if: github.repository == env.TARGET_REPO && github.ref == 'refs/heads/main'
+    needs: [compute-version, update-shared-version]
+    if: ${{ github.repository == 'LiliaFramework/Lilia' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
@@ -205,8 +201,7 @@ jobs:
       - run: |
           cd addon
           lua5.3 ../gmacreator.lua ../3527535922.gma addon.json
-      - run: |
-          echo "Created workshop addon: 3527535922.gma"
+      - run: echo "Created workshop addon: 3527535922.gma"
       - run: |
           cat > changelog.txt <<EOF
           Lilia ${VERSION}
@@ -236,10 +231,8 @@ jobs:
           exit 1
 
   deploy-pages:
-    needs:
-      - compute-version
-      - release
-    if: github.repository == env.TARGET_REPO && github.ref == 'refs/heads/main'
+    needs: [compute-version, release]
+    if: ${{ github.repository == 'LiliaFramework/Lilia' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.compute-version.outputs.version }}
