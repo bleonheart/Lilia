@@ -612,36 +612,4 @@ if not lia.admin.isDisabled() then
             end
         end
     })
-
-    lia.command.add("setdatatype", {
-        adminOnly = true,
-        desc = "Sets several example character data values.",
-        onRun = function(client)
-            local char = client:getChar()
-            if not char then
-                client:notifyLocalized("noCharacterLoaded")
-                return
-            end
-
-            local data = {
-                sampleNumber = 42,
-                sampleString = "hello",
-                sampleBool = true,
-                sampleTable = {
-                    a = 1,
-                    b = 2
-                }
-            }
-
-            for k, v in pairs(data) do
-                char:setData(k, v)
-            end
-
-            client:notify("Example character data set.")
-            for k, v in pairs(data) do
-                local val = istable(v) and util.TableToJSON(v) or tostring(v)
-                print("[setdatatype]", client:Name(), k, val, type(val))
-            end
-        end
-    })
 end
