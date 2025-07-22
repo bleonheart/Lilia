@@ -391,10 +391,24 @@ end
 function lia.char.getCharDataRaw(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
-    local findData = sql.Query("SELECT * FROM lia_characters WHERE _id=" .. charIDsafe)
-    if not findData or not findData[1] then return false end
-    if key then return findData[1][key] end
-    return findData[1]
+
+    if key then
+        local row = sql.Query("SELECT _value FROM lia_chardata WHERE _charID = " .. charIDsafe .. " AND _key = '" .. lia.db.escape(key) .. "'")
+        if not row or not row[1] then return false end
+        local decoded = pon.decode(row[1]._value)
+        return decoded[1]
+    end
+
+    local results = sql.Query("SELECT _key, _value FROM lia_chardata WHERE _charID = " .. charIDsafe)
+    local data = {}
+    if istable(results) then
+        for _, r in ipairs(results) do
+            local decoded = pon.decode(r._value)
+            data[r._key] = decoded[1]
+        end
+    end
+
+    return data
 end
 
 function lia.char.getOwnerByID(ID)
