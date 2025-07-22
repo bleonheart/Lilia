@@ -35,7 +35,7 @@ lia.command.add("setdatatype", {
     syntax = "",
     onRun = function(client)
         for _, s in ipairs(samples) do
-            local fullKey = prefix .. "." .. s.k
+            local fullKey = prefix .. "_" .. s.k
             lia.data.set(fullKey, s.v)
             client:notify("[setdatatype]\t" .. prefix .. "\t" .. s.k .. "\t" .. tostring(s.v) .. "\t" .. type(s.v))
         end
@@ -48,7 +48,7 @@ lia.command.add("getdatatype", {
     syntax = "",
     onRun = function(client)
         for _, s in ipairs(samples) do
-            local fullKey = prefix .. "." .. s.k
+            local fullKey = prefix .. "_" .. s.k
             local stored = lia.data.get(fullKey)
             client:notify("[getdatatype]\t" .. prefix .. "\t" .. s.k .. "\t" .. tostring(stored) .. "\t" .. type(stored))
         end

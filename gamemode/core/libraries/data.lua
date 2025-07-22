@@ -121,47 +121,28 @@ end
 
 local function ensureTable(key)
     local tbl = "lia_data_" .. key
-    return lia.db.tableExists(tbl):next(function(exists)
-        if not exists then
-            return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
+    return lia.db.tableExists(tbl):next(function(exists) if not exists then return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
                     _folder TEXT,
                     _map TEXT,
                     _data TEXT,
                     PRIMARY KEY (_folder, _map)
-                );]])
-        end
-    end)
+                );]]) end end)
 end
 
 function lia.data.set(key, value, global, ignoreMap)
-    print("lia.data.set called with key:", key, "value:", value, "global:", global, "ignoreMap:", ignoreMap)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = ignoreMap and NULL or game.GetMap()
-    print("Initial folder:", folder, "map:", map)
     if global then
         folder = NULL
         map = NULL
-        print("Global true; overriding folder and map to NULL")
     else
-        if folder == nil then
-            folder = NULL
-            print("Folder was nil; set to NULL")
-        end
-
-        if map == nil then
-            map = NULL
-            print("Map was nil; set to NULL")
-        end
+        if folder == nil then folder = NULL end
+        if map == nil then map = NULL end
     end
 
-    print("Resolved folder:", folder, "map:", map)
     lia.data.stored[key] = value
     local tbl = "lia_data_" .. key
-    lia.db.waitForTablesToLoad():next(function()
-        print("ensureTable for key:", key)
-        return ensureTable(key)
-    end):next(function()
-        print("Building row for upsert")
+    lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function()
         local row = {
             _folder = folder,
             _map = map,
@@ -383,16 +364,9 @@ function lia.data.get(key, default)
             print("Stored value is a string for key:", key, "- deserializing")
             stored = lia.data.deserialize(stored)
             lia.data.stored[key] = stored
-            print("Deserialized value for key:", key, "->", stored)
-        else
-            print("Stored value is not a string for key:", key, "type:", type(stored))
         end
-
-        print("Returning stored value for key:", key, "->", stored)
         return stored
     end
-
-    print("No stored value for key:", key, "- returning default:", default)
     return default
 end
 
