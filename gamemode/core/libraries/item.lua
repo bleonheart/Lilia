@@ -128,6 +128,22 @@ local DefaultFunctions = {
             local target = client:getTracedEntity()
             return not IsValid(item.entity) and target and IsValid(target) and target:IsPlayer() and target:Alive() and client:GetPos():DistToSqr(target:GetPos()) < 6500
         end
+    },
+    inspect = {
+        tip = "inspectTip",
+        icon = "icon16/magnifier.png",
+        onRun = function(item)
+            local client = item.player
+            if SERVER then
+                net.Start("liaItemInspect")
+                net.WriteString(item.uniqueID)
+                net.WriteTable(item:getAllData())
+                net.Send(client)
+            end
+
+            return false
+        end,
+        onCanRun = function(item) return not IsValid(item.entity) end
     }
 }
 
