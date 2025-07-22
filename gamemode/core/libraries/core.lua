@@ -151,6 +151,10 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/vendor.lua",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/time.lua",
         realm = "shared"
     },
