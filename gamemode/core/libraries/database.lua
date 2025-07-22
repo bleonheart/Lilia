@@ -267,6 +267,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_spawns`;
     DROP TABLE IF EXISTS `lia_chatbox`;
     DROP TABLE IF EXISTS `lia_admingroups`;
+    DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
 ]])
@@ -299,6 +300,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_spawns;
     DROP TABLE IF EXISTS lia_chatbox;
     DROP TABLE IF EXISTS lia_admingroups;
+    DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_chardata;
@@ -442,6 +444,14 @@ function lia.db.loadTables()
                 PRIMARY KEY (_schema, _map)
             );
 
+            CREATE TABLE IF NOT EXISTS lia_sitrooms (
+                _folder TEXT,
+                _map TEXT,
+                _name TEXT,
+                _pos TEXT,
+                PRIMARY KEY (_folder, _map, _name)
+            );
+
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _schema TEXT,
@@ -575,6 +585,14 @@ function lia.db.loadTables()
                 `_map` TEXT NULL,
                 `_data` TEXT NULL,
                 PRIMARY KEY (`_schema`, `_map`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_sitrooms` (
+                `_folder` TEXT NULL,
+                `_map` TEXT NULL,
+                `_name` TEXT NULL,
+                `_pos` TEXT NULL,
+                PRIMARY KEY (`_folder`, `_map`, `_name`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
