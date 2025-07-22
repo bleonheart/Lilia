@@ -9,12 +9,14 @@ if SERVER then
     end
 
     lia.vendor.editor.mode = function(vendor)
+        if vendor:getNetVar("preset") ~= "none" then return end
         local itemType = net.ReadString()
         local mode = net.ReadInt(8)
         vendor:setTradeMode(itemType, mode)
     end
 
     lia.vendor.editor.price = function(vendor)
+        if vendor:getNetVar("preset") ~= "none" then return end
         local itemType = net.ReadString()
         local price = net.ReadInt(32)
         vendor:setItemPrice(itemType, price)
@@ -26,6 +28,7 @@ if SERVER then
     end
 
     lia.vendor.editor.stockDisable = function(vendor)
+        if vendor:getNetVar("preset") ~= "none" then return end
         local itemType = net.ReadString()
         vendor:setMaxStock(itemType, nil)
     end
@@ -36,12 +39,14 @@ if SERVER then
     end
 
     lia.vendor.editor.stockMax = function(vendor)
+        if vendor:getNetVar("preset") ~= "none" then return end
         local itemType = net.ReadString()
         local value = net.ReadUInt(32)
         vendor:setMaxStock(itemType, value)
     end
 
     lia.vendor.editor.stock = function(vendor)
+        if vendor:getNetVar("preset") ~= "none" then return end
         local itemType = net.ReadString()
         local value = net.ReadUInt(32)
         vendor:setStock(itemType, value)

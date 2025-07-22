@@ -391,6 +391,11 @@ function PANEL:onVendorPropEdited(_, key)
         for _, v in pairs(self.items.me) do
             if IsValid(v) then v:updateLabel() end
         end
+    elseif key == "preset" then
+        local preset = liaVendorEnt:getNetVar("preset", "none")
+        if IsValid(self.preset) then
+            self.preset:SetValue(preset == "none" and L("none") or preset)
+        end
     end
 
     self:applyCategoryFilter()
@@ -680,11 +685,14 @@ function PANEL:Init()
     self.preset:Dock(TOP)
     self.preset:SetSortItems(false)
     self.preset:DockMargin(0, 4, 0, 0)
-    self.preset:SetValue(L("vendorSelectPreset"))
     self.preset:AddChoice(L("none"))
     for name in pairs(lia.vendor.presets or {}) do
         self.preset:AddChoice(name)
     end
+    local currentPreset = entity:getNetVar("preset", "none")
+    local presetLabel = currentPreset == "none" and L("none") or currentPreset
+    self.preset:SetValue(presetLabel)
+    self.preset:ChooseOption(presetLabel)
 
     self.preset.OnSelect = function(_, _, value) lia.vendor.editor.preset(value) end
 
@@ -806,6 +814,7 @@ end
 
 function PANEL:OnRowRightClick(line)
     local entity = liaVendorEnt
+    if entity:getNetVar("preset") ~= "none" then return end
     if IsValid(menu) then menu:Remove() end
     local uniqueID = line.item
     local itemTable = lia.item.list[uniqueID]
