@@ -616,6 +616,7 @@ if SERVER then
 
         lia.char.loaded[id] = nil
         lia.db.query("DELETE FROM lia_characters WHERE _id = " .. id)
+        lia.db.delete("chardata", "_charID = " .. id)
         lia.db.query("SELECT _invID FROM lia_inventories WHERE _charID = " .. id, function(data)
             if data then
                 for _, inventory in ipairs(data) do
