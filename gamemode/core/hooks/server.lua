@@ -251,15 +251,6 @@ function GM:CanPlayerDropItem(client, item)
     end
 end
 
-function GM:CanPlayerRotateItem(_, _)
-end
-
-function GM:CanPlayerInspectItem(_, _)
-end
-
-function GM:CanPlayerRequestInspectionOnItem(_, _, _)
-end
-
 local logTypeMap = {
     ooc = "chatOOC",
     looc = "chatLOOC"
