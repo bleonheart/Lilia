@@ -155,7 +155,7 @@ Returns character data from `lia_chardata` as a table or a single value.
 
 **Returns**
 
-* *table | any*: Full data table or single value.
+* *table | any | false*: Full data table or single value. Returns `false` if the key does not exist.
 
 **Example Usage**
 
