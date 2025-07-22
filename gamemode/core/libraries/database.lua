@@ -1,4 +1,4 @@
-﻿lia.db = lia.db or {}
+lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}
 lia.db.prepared = lia.db.prepared or {}
 MYSQLOO_QUEUE = MYSQLOO_QUEUE or {}
@@ -335,12 +335,12 @@ function lia.db.loadTables()
                 _lastOnline integer,
                 _totalOnlineTime float
             );
-    CREATE TABLE IF NOT EXISTS lia_chardata (
-        _charID INTEGER NOT NULL,
-        _key VARCHAR(255) NOT NULL,
-        _value TEXT(1024),
-        PRIMARY KEY (_charID, _key)
-    );
+            CREATE TABLE IF NOT EXISTS lia_chardata (
+                _charID INTEGER NOT NULL,
+                _key VARCHAR(255) NOT NULL,
+                _value TEXT(1024),
+                PRIMARY KEY (_charID, _key)
+            );
             CREATE TABLE IF NOT EXISTS lia_characters (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _steamID VARCHAR,
