@@ -192,6 +192,7 @@ end
 
 function ENT:applyPreset(name)
     name = string.lower(name)
+    self:setNetVar("preset", name)
     if name == "none" then
         self.items = {}
         for _, client in ipairs(self.receivers) do
@@ -202,11 +203,15 @@ function ENT:applyPreset(name)
 
     local preset = lia.vendor and lia.vendor.getPreset(name)
     if not preset then return end
+    self.items = {}
     for itemType, data in pairs(preset) do
         if data.mode ~= nil then self:setTradeMode(itemType, data.mode) end
         if data.price ~= nil then self:setItemPrice(itemType, data.price) end
         if data.maxStock ~= nil then self:setMaxStock(itemType, data.maxStock) end
         if data.stock ~= nil then self:setStock(itemType, data.stock) end
+    end
+    for _, client in ipairs(self.receivers) do
+        self:sync(client)
     end
 end
 

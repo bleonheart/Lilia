@@ -19,6 +19,7 @@ function ENT:setupVars()
     self.factions = {}
     self.messages = {}
     self.classes = {}
+    self:setNetVar("preset", "none")
     self.hasSetupVars = true
 end
 
@@ -111,6 +112,10 @@ end
 
 function ENT:getName()
     return self:getNetVar("name", "")
+end
+
+function ENT:getPreset()
+    return self:getNetVar("preset", "none")
 end
 
 function ENT:setAnim()

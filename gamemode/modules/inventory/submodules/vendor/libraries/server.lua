@@ -179,6 +179,7 @@ function MODULE:GetEntitySaveData(ent)
         flag = ent:getNetVar("flag"),
         scale = ent:getNetVar("scale"),
         welcomeMessage = ent:getNetVar("welcomeMessage"),
+        preset = ent:getNetVar("preset"),
     }
 end
 
@@ -188,6 +189,7 @@ function MODULE:OnEntityLoaded(ent, data)
     ent:setNetVar("flag", data.flag)
     ent:setNetVar("scale", data.scale or 0.5)
     ent:setNetVar("welcomeMessage", data.welcomeMessage)
+    ent:setNetVar("preset", data.preset or "none")
     ent.items = data.items or {}
     ent.factions = data.factions or {}
     ent.classes = data.classes or {}
