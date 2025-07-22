@@ -162,7 +162,8 @@ lia.command.add("returnsitroom", {
     end
 })
 
-if not lia.admin.isDisabled() then
+local sysDisabled, cmdsDisabled = lia.admin.isDisabled()
+if not sysDisabled and not cmdsDisabled then
     lia.command.add("plykick", {
         adminOnly = true,
         privilege = "Kick Player",
