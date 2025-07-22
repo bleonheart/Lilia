@@ -639,7 +639,7 @@ function PANEL:Init()
         self.bodygroups:SetText(L("bodygroups"))
         self.bodygroups:SetTextColor(color_white)
         self.bodygroups.DoClick = function()
-            vgui.Create("VendorBodygroupEditor"):MoveLeftOf(self, 4)
+            vgui.Create("VendorBodygroupEditor", self):MoveLeftOf(self, 4)
         end
     end
 
@@ -708,7 +708,9 @@ function PANEL:Init()
     self.faction:Dock(TOP)
     self.faction:SetTextColor(color_white)
     self.faction:DockMargin(0, 4, 0, 0)
-    self.faction.DoClick = function() vgui.Create("VendorFactionEditor"):MoveLeftOf(self, 4) end
+    self.faction.DoClick = function()
+        vgui.Create("VendorFactionEditor", self):MoveLeftOf(self, 4)
+    end
     self.preset = self:Add("DComboBox")
     self.preset:Dock(TOP)
     self.preset:SetSortItems(false)
@@ -849,7 +851,7 @@ function PANEL:OnRowRightClick(line)
     if IsValid(menu) then menu:Remove() end
     local uniqueID = line.item
     local itemTable = lia.item.list[uniqueID]
-    menu = DermaMenu()
+    menu = DermaMenu(self)
     local mode, modePanel = menu:AddSubMenu(L("mode"))
     modePanel:SetImage("icon16/key.png")
     mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
@@ -860,7 +862,7 @@ function PANEL:OnRowRightClick(line)
         Derma_StringRequest(itemTable:getName(), L("vendorPriceReq"), entity:getPrice(uniqueID), function(text)
             text = tonumber(text)
             lia.vendor.editor.price(uniqueID, text)
-        end)
+        end):SetParent(self)
     end):SetImage("icon16/coins.png")
 
     local stock, stockPanel = menu:AddSubMenu(L("stock"))
@@ -871,14 +873,14 @@ function PANEL:OnRowRightClick(line)
         Derma_StringRequest(itemTable:getName(), L("vendorStockReq"), max or 1, function(text)
             text = math.max(math.Round(tonumber(text) or 1), 1)
             lia.vendor.editor.stockMax(uniqueID, text)
-        end)
+        end):SetParent(self)
     end):SetImage("icon16/table_edit.png")
 
     stock:AddOption(L("vendorEditCurStock"), function()
         Derma_StringRequest(itemTable:getName(), L("vendorStockCurReq"), entity:getStock(uniqueID) or 0, function(text)
             text = math.Round(tonumber(text) or 0)
             lia.vendor.editor.stock(uniqueID, text)
-        end)
+        end):SetParent(self)
     end):SetImage("icon16/table_edit.png")
 
     menu:Open()
