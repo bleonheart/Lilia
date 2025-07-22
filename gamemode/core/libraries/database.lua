@@ -270,6 +270,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
+    DROP TABLE IF EXISTS `lia_warnings`;
 ]])
             local done = 0
             for i = 1, #queries do
@@ -303,6 +304,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
+    DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)
     end
@@ -412,6 +414,15 @@ function lia.db.loadTables()
                 _request TEXT,
                 _admin TEXT,
                 _timestamp INTEGER
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_warnings (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                _charID INTEGER,
+                _steamID TEXT,
+                _timestamp DATETIME,
+                _reason TEXT,
+                _admin TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_doors (
@@ -555,6 +566,16 @@ function lia.db.loadTables()
                 `_request` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_admin` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_timestamp` INT(32) NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_warnings` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
+                `_charID` INT(12) NULL DEFAULT NULL,
+                `_steamID` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+                `_timestamp` DATETIME NOT NULL,
+                `_reason` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `_admin` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                PRIMARY KEY (`_id`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_doors` (
