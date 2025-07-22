@@ -394,6 +394,10 @@ function PANEL:onVendorPropEdited(_, key)
     elseif key == "preset" then
         local preset = liaVendorEnt:getNetVar("preset", "none")
         if IsValid(self.preset) then self.preset:SetValue(preset == "none" and L("none") or preset) end
+    elseif key == "skin" and IsValid(self.skin) then
+        self.skin:SetValue(liaVendorEnt:GetSkin())
+    elseif key == "bodygroup" and IsValid(lia.gui.vendorBodygroupEditor) then
+        lia.gui.vendorBodygroupEditor:onVendorEdited(nil, key)
     end
 
     self:applyCategoryFilter()
@@ -611,6 +615,32 @@ function PANEL:Init()
     self.model.OnEnter = function(this)
         local modelText = this:GetText():lower()
         if entity:GetModel():lower() ~= modelText then lia.vendor.editor.model(modelText) end
+    end
+
+    if entity:SkinCount() > 1 then
+        self.skin = self:Add("DNumSlider")
+        self.skin:Dock(TOP)
+        self.skin:DockMargin(0, 4, 0, 0)
+        self.skin:SetText(L("skin"))
+        self.skin.Label:SetTextColor(color_white)
+        self.skin:SetDecimals(0)
+        self.skin:SetMinMax(0, entity:SkinCount() - 1)
+        self.skin:SetValue(entity:GetSkin())
+        self.skin.OnValueChanged = function(_, value)
+            value = math.Round(value)
+            if entity:GetSkin() ~= value then lia.vendor.editor.skin(value) end
+        end
+    end
+
+    if entity:GetNumBodyGroups() > 0 then
+        self.bodygroups = self:Add("DButton")
+        self.bodygroups:Dock(TOP)
+        self.bodygroups:DockMargin(0, 4, 0, 0)
+        self.bodygroups:SetText(L("bodygroups"))
+        self.bodygroups:SetTextColor(color_white)
+        self.bodygroups.DoClick = function()
+            vgui.Create("VendorBodygroupEditor"):MoveLeftOf(self, 4)
+        end
     end
 
     self.flag = self:Add("DTextEntry")
@@ -938,3 +968,49 @@ function PANEL:updateChecked()
 end
 
 vgui.Register("VendorFactionEditor", PANEL, "DFrame")
+
+PANEL = {}
+function PANEL:Init()
+    if IsValid(lia.gui.vendorBodygroupEditor) then lia.gui.vendorBodygroupEditor:Remove() end
+    lia.gui.vendorBodygroupEditor = self
+    self:SetSize(256, 360)
+    self:Center()
+    self:MakePopup()
+    self:SetTitle(L("bodygroups"))
+    self.scroll = self:Add("DScrollPanel")
+    self.scroll:Dock(FILL)
+    self.scroll:DockPadding(0, 0, 0, 4)
+    self.sliders = {}
+    local entity = liaVendorEnt
+    for i = 0, entity:GetNumBodyGroups() - 1 do
+        if entity:GetBodygroupCount(i) <= 1 then continue end
+        local slider = self.scroll:Add("DNumSlider")
+        slider:Dock(TOP)
+        slider:DockMargin(0, 0, 0, 4)
+        slider:SetText(entity:GetBodygroupName(i))
+        slider.Label:SetTextColor(color_white)
+        slider:SetDecimals(0)
+        slider:SetMinMax(0, entity:GetBodygroupCount(i) - 1)
+        slider:SetValue(entity:GetBodygroup(i))
+        slider.OnValueChanged = function(_, val)
+            lia.vendor.editor.bodygroup(i, math.Round(val))
+        end
+        self.sliders[i] = slider
+    end
+
+    hook.Add("VendorEdited", self, self.onVendorEdited)
+end
+
+function PANEL:onVendorEdited(_, key)
+    if key ~= "bodygroup" and key ~= "skin" then return end
+    local entity = liaVendorEnt
+    for id, s in pairs(self.sliders) do
+        s:SetValue(entity:GetBodygroup(id))
+    end
+end
+
+function PANEL:OnRemove()
+    hook.Remove("VendorEdited", self)
+end
+
+vgui.Register("VendorBodygroupEditor", PANEL, "DFrame")
