@@ -419,7 +419,19 @@ if SERVER then
                 local default = os.time(lia.time.toNumber(self.lastJoin))
                 self.lastOnline = tonumber(data[1]._lastOnline) or self:getLiliaData("lastOnline", default)
                 self.lastIP = data[1]._lastIP or self:getLiliaData("lastIP")
-                if callback then callback(self.liaData) end
+                lia.db.select({"_id", "_timestamp", "_reason", "_admin"}, "warnings", "_steamID = " .. steamID64):next(function(res)
+                    local warns = {}
+                    for _, row in ipairs(res.results or {}) do
+                        warns[#warns + 1] = {
+                            id = tonumber(row._id),
+                            timestamp = row._timestamp,
+                            reason = row._reason,
+                            admin = row._admin
+                        }
+                    end
+                    self.liaData.warns = warns
+                    if callback then callback(self.liaData) end
+                end)
             else
                 lia.db.insertTable({
                     _steamID = steamID64,
@@ -448,10 +460,12 @@ if SERVER then
         local session = RealTime() - (self.liaJoinTime or RealTime())
         self:setLiliaData("totalOnlineTime", stored + session, true)
         self:setLiliaData("lastOnline", currentTime, true)
+        local dataCopy = table.Copy(self.liaData or {})
+        dataCopy.warns = nil
         lia.db.updateTable({
             _steamName = name,
             _lastJoin = timeStamp,
-            _data = self.liaData,
+            _data = dataCopy,
             _lastIP = self:getLiliaData("lastIP", ""),
             _lastOnline = currentTime,
             _totalOnlineTime = stored + session

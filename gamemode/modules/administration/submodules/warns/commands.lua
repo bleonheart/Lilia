@@ -25,12 +25,20 @@
             admin = client:Nick() .. " (" .. client:SteamID() .. ")"
         }
 
-        local warns = target:getLiliaData("warns") or {}
-        table.insert(warns, warning)
-        target:setLiliaData("warns", warns)
-        target:notifyLocalized("playerWarned", warning.admin, reason)
-        client:notifyLocalized("warningIssued", target:Nick())
-        hook.Run("WarningIssued", client, target, reason, #warns)
+        lia.db.insertTable({
+            _steamID = target:SteamID64(),
+            _timestamp = warning.timestamp,
+            _reason = warning.reason,
+            _admin = warning.admin
+        }, function(_, lastID)
+            warning.id = lastID
+            local warns = target:getLiliaData("warns") or {}
+            table.insert(warns, warning)
+            target:setLiliaData("warns", warns)
+            target:notifyLocalized("playerWarned", warning.admin, reason)
+            client:notifyLocalized("warningIssued", target:Nick())
+            hook.Run("WarningIssued", client, target, reason, #warns)
+        end, "warnings")
     end
 })
 
@@ -62,6 +70,7 @@ lia.command.add("viewwarns", {
         for index, warn in ipairs(warns) do
             table.insert(warningList, {
                 index = index,
+                ID = warn.id,
                 timestamp = warn.timestamp or L("na"),
                 reason = warn.reason or L("na"),
                 admin = warn.admin or L("na")

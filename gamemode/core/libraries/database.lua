@@ -263,6 +263,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
+    DROP TABLE IF EXISTS `lia_warnings`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_spawns`;
     DROP TABLE IF EXISTS `lia_chatbox`;
@@ -295,6 +296,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
+    DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_spawns;
     DROP TABLE IF EXISTS lia_chatbox;
@@ -404,6 +406,14 @@ function lia.db.loadTables()
                 _message TEXT,
                 _charID INTEGER,
                 _steamID VARCHAR
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_warnings (
+                _id INTEGER PRIMARY KEY AUTOINCREMENT,
+                _steamID VARCHAR,
+                _timestamp DATETIME,
+                _reason TEXT,
+                _admin TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_doors (
@@ -532,6 +542,15 @@ function lia.db.loadTables()
                 `_message` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_charID` INT(12) NULL,
                 `_steamID` VARCHAR(20) NULL COLLATE 'utf8mb4_general_ci',
+                PRIMARY KEY (`_id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_warnings` (
+                `_id` INT(12) NOT NULL AUTO_INCREMENT,
+                `_steamID` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_timestamp` DATETIME NOT NULL,
+                `_reason` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_admin` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_id`)
             );
 

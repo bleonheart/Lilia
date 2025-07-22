@@ -26,12 +26,20 @@
                 admin = client:Nick() .. " (" .. client:SteamID() .. ")"
             }
 
-            local warns = target:getLiliaData("warns") or {}
-            table.insert(warns, warning)
-            target:setLiliaData("warns", warns)
-            target:notifyLocalized("playerWarned", warning.admin, warning.reason)
-            client:notifyLocalized("warningIssued", target:Nick())
-            hook.Run("WarningIssued", client, target, warning.reason, #warns)
+            lia.db.insertTable({
+                _steamID = target:SteamID64(),
+                _timestamp = warning.timestamp,
+                _reason = warning.reason,
+                _admin = warning.admin
+            }, function(_, lastID)
+                warning.id = lastID
+                local warns = target:getLiliaData("warns") or {}
+                table.insert(warns, warning)
+                target:setLiliaData("warns", warns)
+                target:notifyLocalized("playerWarned", warning.admin, warning.reason)
+                client:notifyLocalized("warningIssued", target:Nick())
+                hook.Run("WarningIssued", client, target, warning.reason, #warns)
+            end, "warnings")
         end
 
         lia.log.add(client, "cheaterToggle", target:Name(), isCheater and "Unmarked" or "Marked")
