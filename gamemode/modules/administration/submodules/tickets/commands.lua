@@ -53,34 +53,35 @@ lia.command.add("plyviewclaims", {
             }
 
             lia.util.CreateTableUI(client, L("claimsForTitle", target:Nick()), {
-            {
-                name = L("steamID"),
-                field = "steamID"
-            },
-            {
-                name = L("adminName"),
-                field = "name"
-            },
-            {
-                name = L("totalClaims"),
-                field = "claims"
-            },
-            {
-                name = L("lastClaimDate"),
-                field = "lastclaim"
-            },
-            {
-                name = L("timeSinceLastClaim"),
-                field = "timeSinceLastClaim"
-            },
-            {
-                name = L("claimedFor"),
-                field = "claimedFor"
-            }
-        }, claimsData)
+                {
+                    name = L("steamID"),
+                    field = "steamID"
+                },
+                {
+                    name = L("adminName"),
+                    field = "name"
+                },
+                {
+                    name = L("totalClaims"),
+                    field = "claims"
+                },
+                {
+                    name = L("lastClaimDate"),
+                    field = "lastclaim"
+                },
+                {
+                    name = L("timeSinceLastClaim"),
+                    field = "timeSinceLastClaim"
+                },
+                {
+                    name = L("claimedFor"),
+                    field = "claimedFor"
+                }
+            }, claimsData)
 
             lia.log.add(client, "viewPlayerClaims", target:Name())
         end)
+    end
 })
 
 lia.command.add("viewallclaims", {
@@ -106,6 +107,7 @@ lia.command.add("viewallclaims", {
                         return t
                     end)(), ", ")
                 end
+
                 table.insert(claimsData, {
                     steamID = steamID,
                     name = claim.name,
@@ -121,22 +123,22 @@ lia.command.add("viewallclaims", {
                     name = L("steamID"),
                     field = "steamID"
                 },
-            {
-                name = L("adminName"),
-                field = "name"
-            },
-            {
-                name = L("totalClaims"),
-                field = "claims"
-            },
-            {
-                name = L("lastClaimDate"),
-                field = "lastclaim"
-            },
-            {
-                name = L("timeSinceLastClaim"),
-                field = "timeSinceLastClaim"
-            },
+                {
+                    name = L("adminName"),
+                    field = "name"
+                },
+                {
+                    name = L("totalClaims"),
+                    field = "claims"
+                },
+                {
+                    name = L("lastClaimDate"),
+                    field = "lastclaim"
+                },
+                {
+                    name = L("timeSinceLastClaim"),
+                    field = "timeSinceLastClaim"
+                },
                 {
                     name = L("claimedFor"),
                     field = "claimedFor"
@@ -172,6 +174,7 @@ lia.command.add("viewclaims", {
                         return t
                     end)(), "\n")
                 end
+
                 table.insert(claimsData, {
                     steamID = steamID,
                     name = claim.name,
@@ -187,22 +190,22 @@ lia.command.add("viewclaims", {
                     name = L("steamID"),
                     field = "steamID"
                 },
-            {
-                name = L("adminName"),
-                field = "name"
-            },
-            {
-                name = L("totalClaims"),
-                field = "claims"
-            },
-            {
-                name = L("lastClaimDate"),
-                field = "lastclaim"
-            },
-            {
-                name = L("timeSinceLastClaim"),
-                field = "timeSinceLastClaim"
-            },
+                {
+                    name = L("adminName"),
+                    field = "name"
+                },
+                {
+                    name = L("totalClaims"),
+                    field = "claims"
+                },
+                {
+                    name = L("lastClaimDate"),
+                    field = "lastclaim"
+                },
+                {
+                    name = L("timeSinceLastClaim"),
+                    field = "timeSinceLastClaim"
+                },
                 {
                     name = L("claimedFor"),
                     field = "claimedFor"
