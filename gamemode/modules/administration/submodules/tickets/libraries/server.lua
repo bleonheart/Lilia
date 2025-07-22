@@ -1,4 +1,4 @@
-local function buildClaimTable(rows)
+﻿local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
         local adminID = row._admin
@@ -20,14 +20,11 @@ local function buildClaimTable(rows)
         local ply = player.GetBySteamID64(adminID)
         if IsValid(ply) then info.name = ply:Nick() end
     end
-
     return caseclaims
 end
 
 function MODULE:GetAllCaseClaims()
-    return lia.db.select({"_request", "_admin", "_timestamp"}, "ticketclaims"):next(function(res)
-        return buildClaimTable(res.results)
-    end)
+    return lia.db.select({"_request", "_admin", "_timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)

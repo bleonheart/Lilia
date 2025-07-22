@@ -48,6 +48,7 @@ lia.command.add("managesitrooms", {
             for _, row in ipairs(res.results or {}) do
                 rooms[row._name] = lia.data.decodeVector(row._pos)
             end
+
             net.Start("managesitrooms")
             net.WriteTable(rooms)
             net.Send(client)
@@ -74,6 +75,7 @@ lia.command.add("addsitroom", {
                 _name = name,
                 _pos = lia.data.serialize(client:GetPos()),
             }, "sitrooms")
+
             client:notifyLocalized("sitroomSet")
             lia.log.add(client, "sitRoomSet", string.format("Map: %s | Name: %s | Position: %s", mapName, name, tostring(client:GetPos())), "Set the sitroom location")
         end)

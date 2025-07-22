@@ -68,6 +68,7 @@ function PANEL:restoreExternalEntities()
     for ent, wasHidden in pairs(self.hiddenEntities) do
         if IsValid(ent) then ent:SetNoDraw(wasHidden) end
     end
+
     self.hiddenEntities = nil
 end
 

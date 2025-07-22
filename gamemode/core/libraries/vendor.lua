@@ -1,4 +1,4 @@
-lia.vendor = lia.vendor or {}
+﻿lia.vendor = lia.vendor or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.rarities = lia.vendor.rarities or {}
@@ -162,13 +162,12 @@ else
 
     addEditor("flag", function(flag) net.WriteString(flag) end)
     addEditor("model", function(model) net.WriteString(model) end)
-    addEditor("skin", function(skin)
-        net.WriteUInt(math.Clamp(skin or 0, 0, 255), 8)
-    end)
+    addEditor("skin", function(skin) net.WriteUInt(math.Clamp(skin or 0, 0, 255), 8) end)
     addEditor("bodygroup", function(index, value)
         net.WriteUInt(index, 8)
         net.WriteUInt(value or 0, 8)
     end)
+
     addEditor("useMoney", function(useMoney) net.WriteBool(useMoney) end)
     addEditor("scale", function(scale) net.WriteFloat(scale) end)
     addEditor("name", function(name) net.WriteString(name) end)

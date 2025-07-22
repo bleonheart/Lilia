@@ -227,6 +227,7 @@ function ENT:applyPreset(name)
         if data.maxStock ~= nil then self:setMaxStock(itemType, data.maxStock) end
         if data.stock ~= nil then self:setStock(itemType, data.stock) end
     end
+
     for _, client in ipairs(self.receivers) do
         self:sync(client)
     end

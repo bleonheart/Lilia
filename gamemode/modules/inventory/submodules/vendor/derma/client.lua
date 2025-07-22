@@ -1,4 +1,4 @@
-local sw, sh = ScrW(), ScrH()
+﻿local sw, sh = ScrW(), ScrH()
 local COLS_MODE = 2
 local COLS_PRICE = 3
 local COLS_STOCK = 4
@@ -638,9 +638,7 @@ function PANEL:Init()
         self.bodygroups:DockMargin(0, 4, 0, 0)
         self.bodygroups:SetText(L("bodygroups"))
         self.bodygroups:SetTextColor(color_white)
-        self.bodygroups.DoClick = function()
-            vgui.Create("VendorBodygroupEditor", self):MoveLeftOf(self, 4)
-        end
+        self.bodygroups.DoClick = function() vgui.Create("VendorBodygroupEditor", self):MoveLeftOf(self, 4) end
     end
 
     self.flag = self:Add("DTextEntry")
@@ -708,9 +706,7 @@ function PANEL:Init()
     self.faction:Dock(TOP)
     self.faction:SetTextColor(color_white)
     self.faction:DockMargin(0, 4, 0, 0)
-    self.faction.DoClick = function()
-        vgui.Create("VendorFactionEditor", self):MoveLeftOf(self, 4)
-    end
+    self.faction.DoClick = function() vgui.Create("VendorFactionEditor", self):MoveLeftOf(self, 4) end
     self.preset = self:Add("DComboBox")
     self.preset:Dock(TOP)
     self.preset:SetSortItems(false)
@@ -970,7 +966,6 @@ function PANEL:updateChecked()
 end
 
 vgui.Register("VendorFactionEditor", PANEL, "DFrame")
-
 PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.vendorBodygroupEditor) then lia.gui.vendorBodygroupEditor:Remove() end
@@ -994,9 +989,7 @@ function PANEL:Init()
         slider:SetDecimals(0)
         slider:SetMinMax(0, entity:GetBodygroupCount(i) - 1)
         slider:SetValue(entity:GetBodygroup(i))
-        slider.OnValueChanged = function(_, val)
-            lia.vendor.editor.bodygroup(i, math.Round(val))
-        end
+        slider.OnValueChanged = function(_, val) lia.vendor.editor.bodygroup(i, math.Round(val)) end
         self.sliders[i] = slider
     end
 

@@ -205,6 +205,7 @@ net.Receive("charVar", function()
         hook.Run("OnCharLocalVarChanged", character, key, oldVar, value)
     end
 end)
+
 net.Receive("item", function()
     local uniqueID = net.ReadString()
     local id = net.ReadUInt(32)

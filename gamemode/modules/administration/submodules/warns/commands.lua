@@ -1,5 +1,4 @@
-local MODULE = MODULE
-
+﻿local MODULE = MODULE
 lia.command.add("warn", {
     adminOnly = true,
     privilege = "Issue Warnings",
@@ -67,22 +66,22 @@ lia.command.add("viewwarns", {
             end
 
             lia.util.CreateTableUI(client, target:Nick() .. "'s " .. L("warnings"), {
-            {
-                name = L("id"),
-                field = "index"
-            },
-            {
-                name = L("timestamp"),
-                field = "timestamp"
-            },
-            {
-                name = L("reason"),
-                field = "reason"
-            },
-            {
-                name = L("admin"),
-                field = "admin"
-            }
+                {
+                    name = L("id"),
+                    field = "index"
+                },
+                {
+                    name = L("timestamp"),
+                    field = "timestamp"
+                },
+                {
+                    name = L("reason"),
+                    field = "reason"
+                },
+                {
+                    name = L("admin"),
+                    field = "admin"
+                }
             }, warningList, {
                 {
                     name = L("removeWarning"),

@@ -442,8 +442,7 @@ lia.config.add("MaxThirdPersonHeight", "Maximum Third-Person Height Offset", 30,
 })
 
 lia.config.add("MaxViewDistance", "Maximum View Distance", 32768, nil, {
-    desc = "The maximum distance (in units) at which players are visible."
-        .. " This default covers an entire Source map (~32k units).",
+    desc = "The maximum distance (in units) at which players are visible." .. " This default covers an entire Source map (~32k units).",
     category = "Quality of Life",
     type = "Int",
     min = 1000,

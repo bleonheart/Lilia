@@ -103,6 +103,7 @@ local function SetWeaponHidden(ply, state)
     local wep = ply:GetActiveWeapon()
     if IsValid(wep) then wep:SetNoDraw(state) end
 end
+
 local function SetRagdollHidden(ply, state)
     local rag = ply:getRagdoll() or ply:GetRagdollEntity()
     if IsValid(rag) then
@@ -110,7 +111,6 @@ local function SetRagdollHidden(ply, state)
         rag:DrawShadow(not state)
     end
 end
-
 
 local function PlayerIsVisible(client, ply, filter)
     local tr = util.TraceHull({
@@ -170,14 +170,14 @@ hook.Add("PrePlayerDraw", "liaThirdPersonPrePlayerDraw", function(ply)
             ply.IsHidden = false
             if not ply:GetNoDraw() then ply:DrawShadow(true) end
         end
-        SetRagdollHidden(ply, false)
 
+        SetRagdollHidden(ply, false)
         SetWeaponHidden(ply, false)
     else
         if not ply.IsHidden then
             ply.IsHidden = true
             ply:DrawShadow(false)
-        SetRagdollHidden(ply, true)
+            SetRagdollHidden(ply, true)
         end
 
         SetWeaponHidden(ply, true)

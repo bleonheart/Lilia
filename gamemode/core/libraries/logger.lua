@@ -1,10 +1,6 @@
 ﻿lia.log = lia.log or {}
 lia.log.types = lia.log.types or {}
 if SERVER then
-    function lia.log.loadTables()
-        -- Table creation moved to lia.db.loadTables
-    end
-
     function lia.log.addType(logType, func, category)
         lia.log.types[logType] = {
             func = func,

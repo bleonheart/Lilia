@@ -1,9 +1,4 @@
 ﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
--- Disable Lilia's default admin commands when SAM is installed
-hook.Add("ShouldLiliaAdminCommandsLoad", "liaSAM", function()
-    return false
-end)
-
 hook.Add("InitializedModules", "liaSAM", function()
     for _, commandInfo in ipairs(sam.command.get_commands()) do
         local customSyntax = ""
@@ -253,3 +248,5 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     category = "Staff",
     type = "Boolean"
 })
+
+hook.Add("ShouldLiliaAdminCommandsLoad", "liaSAM", function() return false end)

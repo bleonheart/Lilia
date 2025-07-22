@@ -119,7 +119,6 @@ local function buildCondition(folder, map)
     return cond
 end
 
-
 function lia.data.set(key, value, global, ignoreMap)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = ignoreMap and NULL or game.GetMap()
@@ -132,16 +131,14 @@ function lia.data.set(key, value, global, ignoreMap)
     end
 
     lia.data.stored[key] = value
-    lia.db.waitForTablesToLoad()
-        :next(function()
-            local row = {
-                _folder = folder,
-                _map = map,
-                _data = lia.data.serialize(lia.data.stored)
-            }
-            return lia.db.upsert(row, "data")
-        end)
-        :next(function() hook.Run("OnDataSet", key, value, folder, map) end)
+    lia.db.waitForTablesToLoad():next(function()
+        local row = {
+            _folder = folder,
+            _map = map,
+            _data = lia.data.serialize(lia.data.stored)
+        }
+        return lia.db.upsert(row, "data")
+    end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
 
     local path = "lilia/"
     if folder and folder ~= NULL then path = path .. folder .. "/" end
@@ -159,26 +156,24 @@ function lia.data.delete(key, global, ignoreMap)
 
     lia.data.stored[key] = nil
     local condition = buildCondition(folder, map)
-    lia.db.waitForTablesToLoad()
-        :next(function()
-            if not next(lia.data.stored) then
-                return lia.db.delete("data", condition)
-            else
-                local row = {
-                    _folder = folder,
-                    _map = map,
-                    _data = lia.data.serialize(lia.data.stored)
-                }
-                return lia.db.upsert(row, "data")
-            end
-        end)
+    lia.db.waitForTablesToLoad():next(function()
+        if not next(lia.data.stored) then
+            return lia.db.delete("data", condition)
+        else
+            local row = {
+                _folder = folder,
+                _map = map,
+                _data = lia.data.serialize(lia.data.stored)
+            }
+            return lia.db.upsert(row, "data")
+        end
+    end)
     return true
 end
 
 function lia.data.loadTables()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-
     local function loadData(f, m)
         local cond = buildCondition(f, m)
         return lia.db.select("_data", "data", cond):next(function(res)
@@ -192,12 +187,8 @@ function lia.data.loadTables()
         end)
     end
 
-    lia.db.waitForTablesToLoad()
-        :next(function() return loadData(nil, nil) end)
-        :next(function() return loadData(folder, nil) end)
-        :next(function() return loadData(folder, map) end)
+    lia.db.waitForTablesToLoad():next(function() return loadData(nil, nil) end):next(function() return loadData(folder, nil) end):next(function() return loadData(folder, map) end)
 end
-
 
 local defaultCols = {
     _folder = true,
@@ -250,6 +241,7 @@ function lia.data.savePersistence(entities)
         else
             others[#others + 1] = ent
         end
+
         for k in pairs(ent) do
             if not defaultCols[k] and not dynamic[k] then
                 dynamic[k] = true
@@ -258,7 +250,6 @@ function lia.data.savePersistence(entities)
         end
     end
 
-    -- tables are created in lia.db.loadTables
     local cols = {}
     for _, c in ipairs(baseCols) do
         cols[#cols + 1] = c
@@ -268,9 +259,7 @@ function lia.data.savePersistence(entities)
         cols[#cols + 1] = c
     end
 
-    ensurePersistenceColumns(cols):next(function()
-        return lia.db.delete("vendors", condition)
-    end):next(function()
+    ensurePersistenceColumns(cols):next(function() return lia.db.delete("vendors", condition) end):next(function()
         if #vendors > 0 then
             local vrows = {}
             for _, ent in ipairs(vendors) do
@@ -286,9 +275,7 @@ function lia.data.savePersistence(entities)
             end
             return lia.db.bulkInsert("vendors", vrows)
         end
-    end):next(function()
-        return lia.db.delete("persistence", condition)
-    end):next(function()
+    end):next(function() return lia.db.delete("persistence", condition) end):next(function()
         local rows = {}
         for _, ent in ipairs(others) do
             local row = {
@@ -306,9 +293,8 @@ function lia.data.savePersistence(entities)
 
             rows[#rows + 1] = row
         end
-        if #rows > 0 then
-            return lia.db.bulkInsert("persistence", rows)
-        end
+
+        if #rows > 0 then return lia.db.bulkInsert("persistence", rows) end
     end)
 end
 
@@ -316,10 +302,7 @@ function lia.data.loadPersistenceData(callback)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    -- tables are created in lia.db.loadTables
-    ensurePersistenceColumns(baseCols):next(function()
-        return lia.db.select("*", "vendors", condition)
-    end):next(function(vres)
+    ensurePersistenceColumns(baseCols):next(function() return lia.db.select("*", "vendors", condition) end):next(function(vres)
         local vendors = vres.results or {}
         return lia.db.select("*", "persistence", condition):next(function(res)
             local rows = res.results or {}

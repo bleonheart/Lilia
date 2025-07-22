@@ -140,7 +140,6 @@ local DefaultFunctions = {
                 net.WriteTable(item:getAllData())
                 net.Send(client)
             end
-
             return false
         end,
         onCanRun = function(item) return not IsValid(item.entity) end

@@ -1,10 +1,7 @@
-local MODULE = MODULE
-
+﻿local MODULE = MODULE
 function MODULE:GetWarnings(charID)
     local condition = "_charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"_id", "_timestamp", "_reason", "_admin"}, "warnings", condition):next(function(res)
-        return res.results or {}
-    end)
+    return lia.db.select({"_id", "_timestamp", "_reason", "_admin"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
 function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
@@ -22,9 +19,7 @@ function MODULE:RemoveWarning(charID, index)
     self:GetWarnings(charID):next(function(rows)
         if index < 1 or index > #rows then return d:resolve(nil) end
         local row = rows[index]
-        lia.db.delete("warnings", "_id = " .. lia.db.convertDataType(row._id)):next(function()
-            d:resolve(row)
-        end)
+        lia.db.delete("warnings", "_id = " .. lia.db.convertDataType(row._id)):next(function() d:resolve(row) end)
     end)
     return d
 end
@@ -59,6 +54,9 @@ net.Receive("RequestRemoveWarning", function(_, client)
 
         targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
         client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
-        hook.Run("WarningRemoved", client, targetClient, {reason = warn._reason, admin = warn._admin}, warnIndex)
+        hook.Run("WarningRemoved", client, targetClient, {
+            reason = warn._reason,
+            admin = warn._admin
+        }, warnIndex)
     end)
 end)

@@ -181,27 +181,19 @@ function MODULE:OnPlayerObserve(client, state)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    lia.db.count("ticketclaims", "_admin = " .. lia.db.convertDataType(admin:SteamID64())):next(function(count)
-        lia.log.add(admin, "ticketClaimed", requester:Name(), count)
-    end)
+    lia.db.count("ticketclaims", "_admin = " .. lia.db.convertDataType(admin:SteamID64())):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    lia.db.count("ticketclaims", "_admin = " .. lia.db.convertDataType(admin:SteamID64())):next(function(count)
-        lia.log.add(admin, "ticketClosed", requester:Name(), count)
-    end)
+    lia.db.count("ticketclaims", "_admin = " .. lia.db.convertDataType(admin:SteamID64())):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)
-    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-        lia.log.add(admin, "warningIssued", target, reason, count, index)
-    end)
+    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
-    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-        lia.log.add(admin, "warningRemoved", target, warning, count, index)
-    end)
+    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
 end
 
 function MODULE:ItemTransfered(context)

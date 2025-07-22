@@ -721,7 +721,6 @@ lia.command.add("charunban", {
 
                 lia.char.setCharData(charID, "banned", nil)
                 lia.char.setCharData(charID, "charBanInfo", nil)
-
                 client:notifyLocalized("charUnBan", client:Name(), data[1]._name)
                 lia.log.add(client, "charUnban", data[1]._name, charID)
             end

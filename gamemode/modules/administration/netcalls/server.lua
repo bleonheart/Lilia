@@ -48,14 +48,20 @@ net.Receive("lia_managesitrooms_action", function(_, client)
             lia.db.exists("sitrooms", newCondition):next(function(exists)
                 if exists then return end
                 local condition = baseCondition .. " AND _name = " .. lia.db.convertDataType(name)
-                lia.db.updateTable({ _name = newName }, nil, "sitrooms", condition)
+                lia.db.updateTable({
+                    _name = newName
+                }, nil, "sitrooms", condition)
+
                 client:notifyLocalized("sitroomRenamed")
                 lia.log.add(client, "sitRoomRenamed", string.format("Map: %s | Old: %s | New: %s", mapName, name, newName), L("logRenamedSitroom"))
             end)
         end
     elseif action == 3 then
         local condition = baseCondition .. " AND _name = " .. lia.db.convertDataType(name)
-        lia.db.updateTable({ _pos = lia.data.serialize(client:GetPos()) }, nil, "sitrooms", condition)
+        lia.db.updateTable({
+            _pos = lia.data.serialize(client:GetPos())
+        }, nil, "sitrooms", condition)
+
         client:notifyLocalized("sitroomRepositioned")
         lia.log.add(client, "sitRoomRepositioned", string.format("Map: %s | Name: %s | New Position: %s", mapName, name, tostring(client:GetPos())), L("logRepositionedSitroom"))
     end

@@ -259,7 +259,6 @@ lia.char.registerVar("money", {
     noDisplay = true
 })
 
-
 lia.char.registerVar("var", {
     default = {},
     noDisplay = true,
@@ -384,6 +383,7 @@ function lia.char.getCharData(charID, key)
             data[row._key] = decoded[1]
         end
     end
+
     if key then return data[key] end
     return data
 end
@@ -391,7 +391,6 @@ end
 function lia.char.getCharDataRaw(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
-
     if key then
         local row = sql.Query("SELECT _value FROM lia_chardata WHERE _charID = " .. charIDsafe .. " AND _key = '" .. lia.db.escape(key) .. "'")
         if not row or not row[1] then return false end
@@ -407,7 +406,6 @@ function lia.char.getCharDataRaw(charID, key)
             data[r._key] = decoded[1]
         end
     end
-
     return data
 end
 
@@ -475,7 +473,6 @@ if SERVER then
             hook.Run("CreateDefaultInventory", character):next(function(inventory)
                 character.vars.inv[1] = inventory
                 lia.char.loaded[charID] = character
-
                 if istable(data.data) then
                     for k, v in pairs(data.data) do
                         lia.char.setCharData(charID, k, v)
@@ -645,7 +642,6 @@ if SERVER then
     function lia.char.setCharData(charID, key, val)
         local charIDsafe = tonumber(charID)
         if not charIDsafe or not key then return end
-
         if val == nil then
             lia.db.delete("chardata", "_charID = " .. charIDsafe .. " AND _key = '" .. lia.db.escape(key) .. "'")
         else
@@ -657,10 +653,7 @@ if SERVER then
             }, "chardata")
         end
 
-        if lia.char.loaded[charIDsafe] then
-            lia.char.loaded[charIDsafe]:setData(key, val)
-        end
-
+        if lia.char.loaded[charIDsafe] then lia.char.loaded[charIDsafe]:setData(key, val) end
         return true
     end
 
