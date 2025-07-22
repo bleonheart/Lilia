@@ -1,4 +1,4 @@
-﻿local EDITOR = {}
+local EDITOR = lia.vendor.editor
 local function addEditor(name, callback)
     EDITOR[name] = function(...)
         net.Start("VendorEdit")
@@ -61,4 +61,5 @@ addEditor("useMoney", function(useMoney) net.WriteBool(useMoney) end)
 addEditor("scale", function(scale) net.WriteFloat(scale) end)
 addEditor("name", function(name) net.WriteString(name) end)
 addEditor("welcome", function(message) net.WriteString(message) end)
+addEditor("preset", function(name) net.WriteString(name) end)
 return EDITOR
