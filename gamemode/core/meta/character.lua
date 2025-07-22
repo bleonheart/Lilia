@@ -129,41 +129,58 @@ function characterMeta:doesFakeRecognize(id)
     return hook.Run("isCharFakeRecognized", self, id) ~= false
 end
 
-function characterMeta:setData(key, value, noReplication, receiver)
+function characterMeta:setData(k, v, noReplication, receiver)
     if not self.dataVars then self.dataVars = {} end
-    local keysToNetwork = {}
-    if istable(key) then
-        self.dataVars = pon.encode(key)
-        keysToNetwork = table.GetKeys(self.dataVars)
+    local toNetwork = {}
+    if istable(k) then
+        for nk, nv in pairs(k) do
+            self.dataVars[nk] = nv
+            toNetwork[#toNetwork + 1] = nk
+        end
     else
-        self.dataVars[key] = value
-        table.insert(keysToNetwork, key)
+        self.dataVars[k] = v
+        toNetwork[1] = k
     end
 
     if SERVER then
-        if not noReplication then
+        if not noReplication and #toNetwork > 0 then
             net.Start("liaCharacterData")
             net.WriteUInt(self:getID(), 32)
-            net.WriteUInt(#keysToNetwork, 32)
-            for _, key in next, keysToNetwork do
-                local data = self.dataVars[key]
+            net.WriteUInt(#toNetwork, 32)
+            for _, nk in ipairs(toNetwork) do
+                local data = self.dataVars[nk]
                 if istable(data) then data = pon.encode(data) end
-                net.WriteString(key)
+                net.WriteString(nk)
                 net.WriteType(data)
             end
 
             net.Send(receiver or self:getPlayer())
         end
 
-        if value == nil then
-            lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(key) .. "'")
+        if istable(k) then
+            for nk, nv in pairs(k) do
+                if nv == nil then
+                    lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(nk) .. "'")
+                else
+                    local encoded = pon.encode({nv})
+                    lia.db.upsert({
+                        _charID = self:getID(),
+                        _key = nk,
+                        _value = encoded
+                    }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
+                end
+            end
         else
-            local encodedValue = pon.encode({value})
-            lia.db.upsert({
-                _charID = self:getID(),
-                _key = key,
-                _value = encodedValue
-            }, "chardata", function(success, error) if not success then print("Failed to insert character data: " .. error) end end)
+            if v == nil then
+                lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(k) .. "'")
+            else
+                local encoded = pon.encode({v})
+                lia.db.upsert({
+                    _charID = self:getID(),
+                    _key = k,
+                    _value = encoded
+                }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
+            end
         end
     end
 end
