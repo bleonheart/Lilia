@@ -190,6 +190,17 @@ function ENT:setSellScale(scale)
     net.Send(self.receivers)
 end
 
+function ENT:applyPreset(name)
+    local preset = lia.vendor and lia.vendor.getPreset(name)
+    if not preset then return end
+    for itemType, data in pairs(preset) do
+        if data.mode ~= nil then self:setTradeMode(itemType, data.mode) end
+        if data.price ~= nil then self:setItemPrice(itemType, data.price) end
+        if data.maxStock ~= nil then self:setMaxStock(itemType, data.maxStock) end
+        if data.stock ~= nil then self:setStock(itemType, data.stock) end
+    end
+end
+
 function ENT:sync(client)
     net.Start("VendorSync")
     net.WriteEntity(self)

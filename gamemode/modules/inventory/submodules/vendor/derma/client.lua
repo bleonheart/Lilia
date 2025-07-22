@@ -1,6 +1,7 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local sw, sh = ScrW(), ScrH()
-local EDITOR = include(MODULE.folder .. "/libs/cl_vendor.lua")
+include(MODULE.folder .. "/libs/cl_vendor.lua")
+local EDITOR = lia.vendor.editor
 local COLS_MODE = 2
 local COLS_PRICE = 3
 local COLS_STOCK = 4
@@ -685,6 +686,20 @@ function PANEL:Init()
     self.faction:SetTextColor(color_white)
     self.faction:DockMargin(0, 4, 0, 0)
     self.faction.DoClick = function() vgui.Create("VendorFactionEditor"):MoveLeftOf(self, 4) end
+
+    if table.Count(lia.vendor.presets or {}) > 0 then
+        self.preset = self:Add("DComboBox")
+        self.preset:Dock(TOP)
+        self.preset:SetSortItems(false)
+        self.preset:DockMargin(0, 4, 0, 0)
+        self.preset:SetValue(L("vendorSelectPreset"))
+        for name in pairs(lia.vendor.presets) do
+            self.preset:AddChoice(name)
+        end
+        self.preset.OnSelect = function(_, _, value)
+            EDITOR.preset(value)
+        end
+    end
     self.items = self:Add("DListView")
     self.items:Dock(FILL)
     self.items:DockMargin(0, 4, 0, 0)
