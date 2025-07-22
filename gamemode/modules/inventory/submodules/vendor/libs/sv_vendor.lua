@@ -1,4 +1,4 @@
-﻿local EDITOR = {}
+local EDITOR = lia.vendor.editor
 EDITOR.name = function(vendor)
     local name = net.ReadString()
     vendor:setName(name)
@@ -77,5 +77,10 @@ end
 EDITOR.scale = function(vendor)
     local scale = net.ReadFloat()
     vendor:setSellScale(scale)
+end
+
+EDITOR.preset = function(vendor)
+    local preset = net.ReadString()
+    vendor:applyPreset(preset)
 end
 return EDITOR
