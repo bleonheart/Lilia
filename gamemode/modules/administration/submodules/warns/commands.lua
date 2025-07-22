@@ -1,4 +1,6 @@
-﻿lia.command.add("warn", {
+local MODULE = MODULE
+
+lia.command.add("warn", {
     adminOnly = true,
     privilege = "Issue Warnings",
     desc = "warnDesc",
@@ -19,18 +21,14 @@
             return
         end
 
-        local warning = {
-            timestamp = os.date("%Y-%m-%d %H:%M:%S"),
-            reason = reason,
-            admin = client:Nick() .. " (" .. client:SteamID() .. ")"
-        }
-
-        local warns = target:getLiliaData("warns") or {}
-        table.insert(warns, warning)
-        target:setLiliaData("warns", warns)
-        target:notifyLocalized("playerWarned", warning.admin, reason)
-        client:notifyLocalized("warningIssued", target:Nick())
-        hook.Run("WarningIssued", client, target, reason, #warns)
+        local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+        local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
+        MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr)
+        lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+            target:notifyLocalized("playerWarned", adminStr, reason)
+            client:notifyLocalized("warningIssued", target:Nick())
+            hook.Run("WarningIssued", client, target, reason, count)
+        end)
     end
 })
 
@@ -52,23 +50,23 @@ lia.command.add("viewwarns", {
             return
         end
 
-        local warns = target:getLiliaData("warns") or {}
-        if table.Count(warns) == 0 then
-            client:notifyLocalized("noWarnings", target:Nick())
-            return
-        end
+        MODULE:GetWarnings(target:getChar():getID()):next(function(warns)
+            if #warns == 0 then
+                client:notifyLocalized("noWarnings", target:Nick())
+                return
+            end
 
-        local warningList = {}
-        for index, warn in ipairs(warns) do
-            table.insert(warningList, {
-                index = index,
-                timestamp = warn.timestamp or L("na"),
-                reason = warn.reason or L("na"),
-                admin = warn.admin or L("na")
-            })
-        end
+            local warningList = {}
+            for index, warn in ipairs(warns) do
+                table.insert(warningList, {
+                    index = index,
+                    timestamp = warn._timestamp or L("na"),
+                    reason = warn._reason or L("na"),
+                    admin = warn._admin or L("na")
+                })
+            end
 
-        lia.util.CreateTableUI(client, target:Nick() .. "'s " .. L("warnings"), {
+            lia.util.CreateTableUI(client, target:Nick() .. "'s " .. L("warnings"), {
             {
                 name = L("id"),
                 field = "index"
@@ -85,13 +83,14 @@ lia.command.add("viewwarns", {
                 name = L("admin"),
                 field = "admin"
             }
-        }, warningList, {
-            {
-                name = L("removeWarning"),
-                net = "RequestRemoveWarning"
-            }
-        }, target:getChar():getID())
+            }, warningList, {
+                {
+                    name = L("removeWarning"),
+                    net = "RequestRemoveWarning"
+                }
+            }, target:getChar():getID())
 
-        lia.log.add(client, "viewWarns", target)
+            lia.log.add(client, "viewWarns", target)
+        end)
     end
 })

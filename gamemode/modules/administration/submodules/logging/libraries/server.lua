@@ -193,13 +193,15 @@ function MODULE:TicketSystemClose(admin, requester)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)
-    local warns = target:getLiliaData("warns") or {}
-    lia.log.add(admin, "warningIssued", target, reason, #warns, index)
+    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+        lia.log.add(admin, "warningIssued", target, reason, count, index)
+    end)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
-    local warns = target:getLiliaData("warns") or {}
-    lia.log.add(admin, "warningRemoved", target, warning, #warns, index)
+    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+        lia.log.add(admin, "warningRemoved", target, warning, count, index)
+    end)
 end
 
 function MODULE:ItemTransfered(context)
