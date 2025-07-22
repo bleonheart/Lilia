@@ -149,19 +149,13 @@ function lia.data.set(key, value, global, ignoreMap)
             _data = lia.data.serialize(value)
         }
 
-        print("Row content:")
         PrintTable(row)
         return lia.db.upsert(row, "data_" .. key)
-    end):next(function()
-        print("Upsert complete for key:", key)
-        print("Running hook OnDataSet with", key, value, folder, map)
-        hook.Run("OnDataSet", key, value, folder, map)
-    end)
+    end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
 
     local path = "lilia/"
     if folder and folder ~= NULL then path = path .. folder .. "/" end
     if map and map ~= NULL then path = path .. map .. "/" end
-    print("Returning path:", path)
     return path
 end
 
@@ -355,13 +349,9 @@ function lia.data.loadPersistenceData(callback)
 end
 
 function lia.data.get(key, default)
-    print("lia.data.get called with key:", key, "default:", default)
     local stored = lia.data.stored[key]
-    print("Raw stored value for key:", key, "->", stored)
     if stored ~= nil then
-        print("Stored value is not nil for key:", key)
         if isstring(stored) then
-            print("Stored value is a string for key:", key, "- deserializing")
             stored = lia.data.deserialize(stored)
             lia.data.stored[key] = stored
         end
