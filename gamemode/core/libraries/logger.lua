@@ -1,33 +1,8 @@
 ﻿lia.log = lia.log or {}
 lia.log.types = lia.log.types or {}
 if SERVER then
-    local function createLogsTable()
-        if lia.db.module == "sqlite" then
-            lia.db.query([[CREATE TABLE IF NOT EXISTS lia_logs (
-                _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                _timestamp DATETIME,
-                _gamemode VARCHAR,
-                _category VARCHAR,
-                _message TEXT,
-                _charID INTEGER,
-                _steamID VARCHAR
-            );]])
-        else
-            lia.db.query([[CREATE TABLE IF NOT EXISTS `lia_logs` (
-                `_id` INT(12) NOT NULL AUTO_INCREMENT,
-                `_timestamp` DATETIME NOT NULL,
-                `_gamemode` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_category` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_message` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_charID` INT(12) NULL,
-                `_steamID` VARCHAR(20) NULL COLLATE 'utf8mb4_general_ci',
-                PRIMARY KEY (`_id`)
-            );]])
-        end
-    end
-
     function lia.log.loadTables()
-        createLogsTable()
+        -- Table creation moved to lia.db.loadTables
     end
 
     function lia.log.addType(logType, func, category)
