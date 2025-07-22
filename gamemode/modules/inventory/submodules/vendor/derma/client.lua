@@ -4,13 +4,7 @@ include(MODULE.folder .. "/libs/cl_vendor.lua")
 local COLS_MODE = 2
 local COLS_PRICE = 3
 local COLS_STOCK = 4
-local RarityColors = {
-    ["Common"] = Color(255, 255, 255),
-    ["Uncommon"] = Color(30, 255, 0),
-    ["Rare"] = Color(0, 112, 221),
-    ["Epic"] = Color(163, 53, 238),
-    ["Legendary"] = Color(255, 128, 0),
-}
+local RarityColors = lia.vendor.rarities
 
 local VendorClick = {"buttons/button15.wav", 30, 250}
 local PANEL = {}
