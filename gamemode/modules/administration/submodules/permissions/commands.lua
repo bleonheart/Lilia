@@ -41,7 +41,7 @@ lia.command.add("charunbanoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notify("Invalid character ID.") end
-        local charData = lia.char.getCharDataRaw(charID)
+        local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
         lia.char.setCharData(charID, "banned", nil)
         lia.char.setCharData(charID, "charBanInfo", nil)
@@ -58,7 +58,7 @@ lia.command.add("charbanoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notify("Invalid character ID.") end
-        local charData = lia.char.getCharDataRaw(charID)
+        local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
         lia.char.setCharData(charID, "banned", true)
         lia.char.setCharData(charID, "charBanInfo", {
@@ -1534,7 +1534,7 @@ lia.command.add("getallinfos", {
             return
         end
 
-        local data = lia.char.getCharDataRaw(char:getID())
+        local data = lia.char.getCharData(char:getID())
         if not data then
             client:notifyLocalized("noChar")
             return
