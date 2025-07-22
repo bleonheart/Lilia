@@ -121,34 +121,16 @@ end
 
 local function ensureTable(key)
     local tbl = "lia_data_" .. key
-    return lia.db.tableExists(tbl):next(function(exists) if not exists then return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
+    return lia.db.tableExists(tbl):next(function(exists)
+        if not exists then
+            return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
                     _folder TEXT,
                     _map TEXT,
+                    _data TEXT,
                     PRIMARY KEY (_folder, _map)
-                );]]) end end)
-end
-
-local defaultDataCols = {
-    _folder = true,
-    _map = true
-}
-
-local function addDataColumn(tbl, col)
-    local query
-    if lia.db.module == "sqlite" then
-        query = ([[ALTER TABLE %s ADD COLUMN %s TEXT]]):format(tbl, lia.db.escapeIdentifier(col))
-    else
-        query = ([[ALTER TABLE %s ADD COLUMN %s TEXT NULL]]):format(lia.db.escapeIdentifier(tbl), lia.db.escapeIdentifier(col))
-    end
-    return lia.db.query(query)
-end
-
-local function ensureDataColumns(tbl, cols)
-    local d = lia.db.waitForTablesToLoad()
-    for _, col in ipairs(cols) do
-        d = d:next(function() return lia.db.fieldExists(tbl, col) end):next(function(exists) if not exists then return addDataColumn(tbl, col) end end)
-    end
-    return d
+                );]])
+        end
+    end)
 end
 
 function lia.data.set(key, value, global, ignoreMap)
@@ -175,49 +157,16 @@ function lia.data.set(key, value, global, ignoreMap)
     print("Resolved folder:", folder, "map:", map)
     lia.data.stored[key] = value
     local tbl = "lia_data_" .. key
-    local dynamic = {}
-    local dynamicList = {}
-    if istable(value) then
-        for k in pairs(value) do
-            if isstring(k) and not defaultDataCols[k] and not dynamic[k] then
-                dynamic[k] = true
-                dynamicList[#dynamicList + 1] = k
-                print("Adding dynamic column:", k)
-            elseif isstring(k) then
-                print("Skipping column (default or duplicate):", k)
-            end
-        end
-    else
-        dynamicList[#dynamicList + 1] = "value"
-        print("Value is not a table; using column 'value'")
-    end
-
-    print("Final dynamicList for", key, ":", unpack(dynamicList))
-    print("Waiting for tables to load...")
     lia.db.waitForTablesToLoad():next(function()
         print("ensureTable for key:", key)
         return ensureTable(key)
     end):next(function()
-        print("ensureDataColumns for table:", tbl, "columns:", unpack(dynamicList))
-        return ensureDataColumns(tbl, dynamicList)
-    end):next(function()
         print("Building row for upsert")
         local row = {
             _folder = folder,
-            _map = map
+            _map = map,
+            _data = lia.data.serialize(value)
         }
-
-        if istable(value) then
-            for _, col in ipairs(dynamicList) do
-                local serialized = lia.data.serialize(value[col])
-                print("Serializing column:", col, "original:", value[col], "serialized:", serialized)
-                row[col] = serialized
-            end
-        else
-            local serialized = lia.data.serialize(value)
-            print("Serializing value:", value, "serialized:", serialized)
-            row.value = serialized
-        end
 
         print("Row content:")
         PrintTable(row)
@@ -277,19 +226,7 @@ function lia.data.loadTables()
             lia.db.select("*", "data_" .. key, condition):next(function(res2)
                 local rows = res2.results or {}
                 for _, row in ipairs(rows) do
-                    local data = {}
-                    for col, val in pairs(row) do
-                        if not defaultDataCols[col] then
-                            local k = col == "_value" and "value" or col
-                            data[k] = lia.data.deserialize(val)
-                        end
-                    end
-
-                    if data.value ~= nil and table.Count(data) == 1 then
-                        lia.data.stored[key] = data.value
-                    else
-                        lia.data.stored[key] = data
-                    end
+                    lia.data.stored[key] = lia.data.deserialize(row._data)
                 end
 
                 loadNext(i + 1)
