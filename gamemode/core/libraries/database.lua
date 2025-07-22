@@ -301,6 +301,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_admingroups;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
+    DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)
     end
 end
@@ -334,7 +335,12 @@ function lia.db.loadTables()
                 _lastOnline integer,
                 _totalOnlineTime float
             );
-
+    CREATE TABLE IF NOT EXISTS lia_chardata (
+        _charID INTEGER NOT NULL,
+        _key VARCHAR(255) NOT NULL,
+        _value TEXT(1024),
+        PRIMARY KEY (_charID, _key)
+    );
             CREATE TABLE IF NOT EXISTS lia_characters (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _steamID VARCHAR,

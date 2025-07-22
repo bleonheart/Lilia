@@ -806,3 +806,16 @@ net.Receive("liaItemInspect", function()
         end
     end
 end)
+
+net.Receive("liaCharacterData", function()
+    local charID = net.ReadUInt(32)
+    local character = lia.char.loaded[charID]
+    if not character then return end
+    if not character.dataVars then character.dataVars = {} end
+    local keyCount = net.ReadUInt(32)
+    for i = 1, keyCount do
+        local key = net.ReadString()
+        local value = net.ReadType()
+        character.dataVars[key] = value
+    end
+end)
