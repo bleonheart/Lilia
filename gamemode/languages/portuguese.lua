@@ -1,4 +1,4 @@
-﻿NAME = "English"
+NAME = "Portuguese"
 LANGUAGE = {
     mustProvideString = "Must Provide a String",
     use = "Use",
@@ -1167,7 +1167,7 @@ Reload: Drop]],
     booksName = "Book Base",
     booksDesc = "A book.",
     entitiesName = "Entities Base",
-    entitiesDesc = "A Base Entity",
+    entitiesDesc = "",
     grenadeName = "Grenade Base",
     grenadeDesc = "Base item for grenades.",
     outfitName = "Outfit",
