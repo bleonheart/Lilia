@@ -623,12 +623,25 @@ if not lia.admin.isDisabled() then
                 return
             end
 
-            char:setData("sampleNumber", 42)
-            char:setData("sampleString", "hello")
-            char:setData("sampleBool", true)
-            char:setData("sampleTable", {a = 1, b = 2})
+            local data = {
+                sampleNumber = 42,
+                sampleString = "hello",
+                sampleBool = true,
+                sampleTable = {
+                    a = 1,
+                    b = 2
+                }
+            }
+
+            for k, v in pairs(data) do
+                char:setData(k, v)
+            end
 
             client:notify("Example character data set.")
+            for k, v in pairs(data) do
+                local val = istable(v) and util.TableToJSON(v) or tostring(v)
+                print("[setdatatype]", client:Name(), k, val, type(val))
+            end
         end
     })
 end
