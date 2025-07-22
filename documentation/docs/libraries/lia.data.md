@@ -6,7 +6,7 @@ This page describes persistent data storage helpers.
 
 ## Overview
 
-The data library stores each key/value pair in its own `lia_data_<key>` database table. These tables are created on demand using `lia.db.tableExists` to avoid duplicates. Values are cached in memory inside `lia.data.stored` for quick access.
+The data library keeps persistent values inside a single `lia_data` database table. Each row is keyed by the current gamemode folder and map using the `_folder` and `_map` columns. All saved key/value pairs are stored together inside the `_data` column as JSON. Values are cached in memory inside `lia.data.stored` for quick access.
 
 ---
 
@@ -14,7 +14,7 @@ The data library stores each key/value pair in its own `lia_data_<key>` database
 
 **Purpose**
 
-Saves the provided value under the specified key in its dedicated `lia_data_<key>` table and caches it in `lia.data.stored`.
+Saves the provided value under the specified key in the single `lia_data` table and caches it in `lia.data.stored`.
 
 **Parameters**
 
@@ -50,7 +50,7 @@ end)
 
 **Purpose**
 
-Removes the stored value corresponding to the key from the `lia_data_<key>` table and clears the cached entry in `lia.data.stored`.
+Removes the stored value corresponding to the key from the `lia_data` table and clears the cached entry in `lia.data.stored`.
 
 **Parameters**
 
@@ -113,7 +113,7 @@ end)
 
 **Purpose**
 
-Loads all entries from every `lia_data_<key>` table into `lia.data.stored`.
+Loads the appropriate entry from the `lia_data` table into `lia.data.stored`.
 
 **Parameters**
 

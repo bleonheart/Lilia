@@ -119,14 +119,18 @@ local function buildCondition(folder, map)
     return cond
 end
 
-local function ensureTable(key)
-    local tbl = "lia_data_" .. key
-    return lia.db.tableExists(tbl):next(function(exists) if not exists then return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
+local function ensureDataTable()
+    local tbl = "lia_data"
+    return lia.db.tableExists(tbl):next(function(exists)
+        if not exists then
+            return lia.db.query("CREATE TABLE IF NOT EXISTS " .. lia.db.escapeIdentifier(tbl) .. [[ (
                     _folder TEXT,
                     _map TEXT,
                     _data TEXT,
                     PRIMARY KEY (_folder, _map)
-                );]]) end end)
+                );]])
+        end
+    end)
 end
 
 function lia.data.set(key, value, global, ignoreMap)
@@ -141,17 +145,17 @@ function lia.data.set(key, value, global, ignoreMap)
     end
 
     lia.data.stored[key] = value
-    local tbl = "lia_data_" .. key
-    lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function()
-        local row = {
-            _folder = folder,
-            _map = map,
-            _data = lia.data.serialize(value)
-        }
-
-        PrintTable(row)
-        return lia.db.upsert(row, "data_" .. key)
-    end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
+    lia.db.waitForTablesToLoad()
+        :next(function() return ensureDataTable() end)
+        :next(function()
+            local row = {
+                _folder = folder,
+                _map = map,
+                _data = lia.data.serialize(lia.data.stored)
+            }
+            return lia.db.upsert(row, "data")
+        end)
+        :next(function() hook.Run("OnDataSet", key, value, folder, map) end)
 
     local path = "lilia/"
     if folder and folder ~= NULL then path = path .. folder .. "/" end
@@ -169,52 +173,45 @@ function lia.data.delete(key, global, ignoreMap)
 
     lia.data.stored[key] = nil
     local condition = buildCondition(folder, map)
-    lia.db.waitForTablesToLoad():next(function() return ensureTable(key) end):next(function() lia.db.delete("data_" .. key, condition) end)
+    lia.db.waitForTablesToLoad()
+        :next(function() return ensureDataTable() end)
+        :next(function()
+            if not next(lia.data.stored) then
+                return lia.db.delete("data", condition)
+            else
+                local row = {
+                    _folder = folder,
+                    _map = map,
+                    _data = lia.data.serialize(lia.data.stored)
+                }
+                return lia.db.upsert(row, "data")
+            end
+        end)
     return true
 end
 
 function lia.data.loadTables()
-    local query = lia.db.module == "sqlite" and "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_data_%'" or "SHOW TABLES LIKE 'lia_data_%'"
-    lia.db.query(query, function(res)
-        local tables = {}
-        if res then
-            if lia.db.module == "sqlite" then
-                for _, row in ipairs(res) do
-                    tables[#tables + 1] = row.name
-                end
-            else
-                local k = next(res[1] or {})
-                for _, row in ipairs(res) do
-                    tables[#tables + 1] = row[k]
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+
+    local function loadData(f, m)
+        local cond = buildCondition(f, m)
+        return lia.db.select("_data", "data", cond):next(function(res)
+            local row = res.results and res.results[1]
+            if row then
+                local data = lia.data.deserialize(row._data) or {}
+                for k, v in pairs(data) do
+                    lia.data.stored[k] = v
                 end
             end
-        end
+        end)
+    end
 
-        local function loadNext(i)
-            i = i or 1
-            local tbl = tables[i]
-            if not tbl then return end
-            local key = tbl:match("^lia_data_(.+)$")
-            local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-            local map = game.GetMap()
-            local conditions = {
-                "(" .. buildCondition(folder, map) .. ")",
-                "(" .. buildCondition(folder, nil) .. ")",
-                "(" .. buildCondition(nil, nil) .. ")",
-            }
-            local condition = table.concat(conditions, " OR ")
-            lia.db.select("*", "data_" .. key, condition):next(function(res2)
-                local rows = res2.results or {}
-                for _, row in ipairs(rows) do
-                    lia.data.stored[key] = lia.data.deserialize(row._data)
-                end
-
-                loadNext(i + 1)
-            end)
-        end
-
-        loadNext()
-    end)
+    lia.db.waitForTablesToLoad()
+        :next(function() return ensureDataTable() end)
+        :next(function() return loadData(nil, nil) end)
+        :next(function() return loadData(folder, nil) end)
+        :next(function() return loadData(folder, map) end)
 end
 
 local function createPersistenceTable()
