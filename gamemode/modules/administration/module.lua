@@ -1,4 +1,4 @@
-﻿MODULE.name = "Administration Utilities"
+MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
@@ -115,7 +115,7 @@ if SERVER then
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() and p:hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Staff Permissions - Manage UserGroups")
     end
 
     local function getPrivList()
@@ -587,33 +587,51 @@ else
         if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
     end)
 
+    local function canAccess()
+        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")
+    end
+
+    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
+        if not canAccess() then return end
+        tabs["Usergroups"] = {
+            icon = "icon16/group.png",
+            build = function(sheet)
+                local pnl = vgui.Create("DPanel", sheet)
+                pnl:DockPadding(10, 10, 10, 10)
+                lia.gui.usergroups = pnl
+                net.Start("liaGroupsRequest")
+                net.SendToServer()
+                return pnl
+            end
+        }
+    end)
+
+    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(parent, tabs)
+        if not canAccess() then return end
+        tabs["Players"] = {
+            icon = "icon16/user.png",
+            build = function(sheet)
+                local pnl = vgui.Create("DPanel", sheet)
+                pnl:DockPadding(10, 10, 10, 10)
+                lia.gui.players = pnl
+                net.Start("liaPlayersRequest")
+                net.SendToServer()
+                return pnl
+            end
+        }
+    end)
+
     function MODULE:CreateMenuButtons(tabs)
-        if not (IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")) then return end
-        tabs[L("admin")] = function(parent)
+        if not (IsValid(LocalPlayer()) and not (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups"))) then return end
+        tabs[L("shortAdmin")] = function(parent)
             parent:Clear()
-            parent:DockPadding(10, 10, 10, 10)
             local sheet = vgui.Create("DPropertySheet", parent)
             sheet:Dock(FILL)
-            local registry = {
-                ["Usergroups"] = function(pnl)
-                    lia.gui.usergroups = pnl
-                    pnl:DockPadding(10, 10, 10, 10)
-                    net.Start("liaGroupsRequest")
-                    net.SendToServer()
-                end,
-                ["Players"] = function(pnl)
-                    lia.gui.players = pnl
-                    pnl:DockPadding(10, 10, 10, 10)
-                    net.Start("liaPlayersRequest")
-                    net.SendToServer()
-                end
-            }
-
-            hook.Run("liaAdminPopulateTabs", registry)
-            for title, cb in pairs(registry) do
-                local tab = vgui.Create("DPanel", sheet)
-                cb(tab)
-                sheet:AddSheet(title, tab, "icon16/user.png")
+            local tabs = {}
+            hook.Run("liaAdminRegisterTab", parent, tabs)
+            for name, data in pairs(tabs) do
+                local pnl = data.build(sheet)
+                sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
             end
         end
     end

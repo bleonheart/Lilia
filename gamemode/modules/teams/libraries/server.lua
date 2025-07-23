@@ -208,7 +208,7 @@ end
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
     if not char then return end
-    local isLeader = client:IsSuperAdmin() or char:getData("factionOwner") or char:getData("factionAdmin") or char:hasFlags("V")
+    local isLeader = client:IsSuperAdmin() or char:hasFlags("V")
     if not isLeader then return end
     local defaultFaction
     for _, fac in pairs(lia.faction.teams) do
