@@ -60,7 +60,7 @@ function GM:PlayerLoadedChar(client, character)
                 net.WriteType(value)
             end
 
-            net.Send(ply)
+            net.Send(client)
         else
             print("No data found for character ID:", charID)
         end
