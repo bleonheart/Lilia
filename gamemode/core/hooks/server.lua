@@ -597,8 +597,8 @@ function GM:LoadData()
                 continue
             end
 
-            local decodedPos = toVector(lia.data.decode(ent.pos))
-            local decodedAng = toAngle(lia.data.decode(ent.angles))
+            local decodedPos = lia.data.decode(ent.pos)
+            local decodedAng = lia.data.decode(ent.angles)
             if not decodedPos then
                 lia.error("Invalid position for " .. cls .. ".")
                 continue
