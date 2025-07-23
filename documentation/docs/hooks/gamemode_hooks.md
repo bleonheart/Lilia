@@ -1597,280 +1597,6 @@ end)
 
 ---
 
-### CAMI.OnUsergroupRegistered
-
-**Purpose**
-
-Called when CAMI registers a new usergroup. CAMI notification that a usergroup was registered.
-
-**Parameters**
-
-- `usergroup` (`table`): Registered usergroup data.
-
-- `source` (`string`): Source identifier.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Logs newly registered CAMI usergroups.
-hook.Add("CAMI.OnUsergroupRegistered", "LogGroup", function(group)
-    print("Registered group:", group.Name)
-end)
-```
-
----
-
-### CAMI.OnUsergroupUnregistered
-
-**Purpose**
-
-Called when a usergroup is removed from CAMI. CAMI notification that a usergroup was removed.
-
-**Parameters**
-
-- `usergroup` (`table`): Unregistered usergroup data.
-
-- `source` (`string`): Source identifier.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Logs whenever a usergroup is removed from CAMI.
-hook.Add("CAMI.OnUsergroupUnregistered", "LogRemoval", function(group)
-    print("Removed group:", group.Name)
-end)
-```
-
----
-
-### CAMI.OnPrivilegeRegistered
-
-**Purpose**
-
-Fired when a privilege is created in CAMI. CAMI notification that a privilege was registered.
-
-**Parameters**
-
-- `privilege` (`table`): Privilege data.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Reports when a new CAMI privilege is registered.
-hook.Add("CAMI.OnPrivilegeRegistered", "LogPrivilege", function(priv)
-    print("Registered privilege:", priv.Name)
-end)
-```
-
----
-
-### CAMI.OnPrivilegeUnregistered
-
-**Purpose**
-
-Fired when a privilege is removed from CAMI. CAMI notification that a privilege was unregistered.
-
-**Parameters**
-
-- `privilege` (`table`): Privilege data.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Reports when a CAMI privilege is removed.
-hook.Add("CAMI.OnPrivilegeUnregistered", "LogPrivRemoval", function(priv)
-    print("Removed privilege:", priv.Name)
-end)
-```
-
----
-
-### CAMI.PlayerHasAccess
-
-**Purpose**
-
-Allows an override of player privilege checks. Allows external libraries to override privilege checks.
-
-**Parameters**
-
-- `handler` (`function`): Default handler.
-
-- `actor` (`Player`): Player requesting access.
-
-- `privilegeName` (`string`): Privilege identifier.
-
-- `callback` (`function`): Callback to receive result.
-
-- `target` (`Player`): Optional target player.
-
-- `extra` (`table`): Extra information table.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Lets superadmins bypass privilege checks.
-hook.Add("CAMI.PlayerHasAccess", "AllowSuperadmins", function(_, actor, priv, cb)
-    if actor:IsSuperAdmin() then
-        cb(true)
-        return true
-    end
-end)
-```
-
----
-
-### CAMI.SteamIDHasAccess
-
-**Purpose**
-
-Allows an override of SteamID-based privilege checks. Similar to PlayerHasAccess but for SteamIDs.
-
-**Parameters**
-
-- `handler` (`function`): Default handler.
-
-- `steamID` (`string`): SteamID to check.
-
-- `privilegeName` (`string`): Privilege identifier.
-
-- `callback` (`function`): Callback to receive result.
-
-- `targetID` (`string`): Target SteamID.
-
-- `extra` (`table`): Extra information table.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Grants access for a specific SteamID.
-hook.Add("CAMI.SteamIDHasAccess", "AllowSteamID", function(_, steamID, priv, cb)
-    if steamID == "STEAM_0:1:1" then
-        cb(true)
-        return true
-    end
-end)
-```
-
----
-
-### CAMI.PlayerUsergroupChanged
-
-**Purpose**
-
-Notification that a player's group changed. Fired when a player's usergroup has changed.
-
-**Parameters**
-
-- `player` (`Player`): Affected player.
-
-- `oldGroup` (`string`): Previous group.
-
-- `newGroup` (`string`): New group.
-
-- `source` (`string`): Source identifier.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Announces when a player's usergroup changes.
-hook.Add("CAMI.PlayerUsergroupChanged", "AnnounceChange", function(ply, old, new)
-    print(ply:Nick() .. " moved from " .. old .. " to " .. new)
-end)
-```
-
----
-
-### CAMI.SteamIDUsergroupChanged
-
-**Purpose**
-
-Notification that a SteamID's group changed. Fired when a SteamID's usergroup has changed.
-
-**Parameters**
-
-- `steamID` (`string`): Affected SteamID.
-
-- `oldGroup` (`string`): Previous group.
-
-- `newGroup` (`string`): New group.
-
-- `source` (`string`): Source identifier.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
--- Logs usergroup changes by SteamID.
-hook.Add("CAMI.SteamIDUsergroupChanged", "LogSIDChange", function(sid, old, new)
-    print(sid .. " changed from " .. old .. " to " .. new)
-end)
-```
-
----
-
 ### TooltipLayout
 
 **Purpose**
@@ -10854,5 +10580,149 @@ been marked with the `cheater` network variable.
 ```lua
 hook.Add("OnCheaterCaught", "AnnounceCheater", function(ply)
     print(ply:Name() .. " has been caught cheating!")
+end)
+```
+---
+
+
+### CharDataLoaded
+
+**Purpose**
+
+Fires after character data variables are received from the server.
+
+**Parameters**
+
+- `character` (`table`): Character whose data finished loading.
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("CharDataLoaded", "RefreshCharMenu", function(char)
+    print("Data loaded for", char:getName())
+end)
+```
+
+---
+
+### OnEntityPersistUpdated
+
+**Purpose**
+
+Runs after a persistent entity has its saved data updated.
+
+**Parameters**
+
+- `entity` (`Entity`): The entity whose persistence entry was updated.
+- `data` (`table`): New persistence data for the entity.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("OnEntityPersistUpdated", "NotifyUpdate", function(ent, data)
+    print("Updated persistence for", ent)
+end)
+```
+
+---
+
+### SetupQuickMenu
+
+**Purpose**
+
+Called when the quick menu panel is created so modules can populate it.
+
+**Parameters**
+
+- `panel` (`Panel`): Quick menu panel being initialized.
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("SetupQuickMenu", "AddCustomOption", function(menu)
+    menu:addOption("My Button", function()
+        print("Button pressed")
+    end)
+end)
+```
+
+---
+
+### UpdateEntityPersistence
+
+**Purpose**
+
+Invoked to rewrite the saved persistence entry for an entity.
+
+**Parameters**
+
+- `entity` (`Entity`): Persistent entity whose data should be updated.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Run("UpdateEntityPersistence", someEntity)
+```
+
+---
+
+### liaAdminPopulateTabs
+
+**Purpose**
+
+Allows additions to the admin menu by inserting new tab callbacks.
+
+**Parameters**
+
+- `registry` (`table`): Table mapping tab names to panel creation functions.
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("liaAdminPopulateTabs", "AddServerTab", function(tabs)
+    tabs.MOTD = function(panel)
+        panel:DockPadding(10, 10, 10, 10)
+        panel:Add("DLabel"):SetText("Server MOTD")
+    end
 end)
 ```
