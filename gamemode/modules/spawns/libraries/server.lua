@@ -1,38 +1,61 @@
 ﻿local MODULE = MODULE
-MODULE.spawns = MODULE.spawns or {}
 local encodetable = lia.data.encodetable
 local TABLE = "spawns"
 local function buildCondition(folder, map)
     return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
 
-function MODULE:LoadData(n)
-    n = n or 1
+function MODULE:FetchSpawns()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
-        PrintTable(res)
+    return lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
         local data = res and lia.data.deserialize(res._data) or {}
         local factions = data.factions or data
-        if (not istable(factions) or table.IsEmpty(factions)) and n < 5 then
-            timer.Simple(1, function() if not self.loaded then self:LoadData(n + 1) end end)
-            return
-        end
-
-        self.spawns = {}
+        local result = {}
         for fac, spawns in pairs(factions or {}) do
             local t = {}
             for i = 1, #spawns do
                 local spawnData = lia.data.deserialize(spawns[i])
                 if isvector(spawnData) then
-                    -- Legacy data stored only as a vector
                     spawnData = {pos = spawnData, ang = angle_zero}
                 end
                 t[i] = spawnData
             end
+            result[fac] = t
+        end
+        return result
+    end)
+end
 
-            self.spawns[fac] = t
+function MODULE:StoreSpawns(spawns)
+    local factions = {}
+    for fac, list in pairs(spawns or {}) do
+        factions[fac] = {}
+        for _, data in ipairs(list) do
+            factions[fac][#factions[fac] + 1] = encodetable(data)
+        end
+    end
+
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    return lia.db.upsert({
+        _schema = folder,
+        _map = map,
+        _data = lia.data.serialize({
+            factions = factions
+        })
+    }, TABLE)
+end
+
+function MODULE:LoadData(n)
+    n = n or 1
+    self:FetchSpawns():next(function(spawns)
+        if (not spawns or table.IsEmpty(spawns)) and n < 5 then
+            timer.Simple(1, function()
+                if not self.loaded then self:LoadData(n + 1) end
+            end)
+            return
         end
 
         self.loaded = true
@@ -40,23 +63,7 @@ function MODULE:LoadData(n)
 end
 
 function MODULE:SaveData()
-    local factions = {}
-    for fac, spawns in pairs(self.spawns or {}) do
-        factions[fac] = {}
-        for _, data in ipairs(spawns) do
-            factions[fac][#factions[fac] + 1] = encodetable(data)
-        end
-    end
-
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    lia.db.upsert({
-        _schema = folder,
-        _map = map,
-        _data = lia.data.serialize({
-            factions = factions
-        })
-    }, TABLE)
+    -- Spawns are saved dynamically when modified
 end
 
 local function SpawnPlayer(client)
@@ -79,18 +86,18 @@ local function SpawnPlayer(client)
         end
     end
 
-    local spawnData
-    if factionID and MODULE.spawns then
-        local factionSpawns = MODULE.spawns[factionID]
-        if factionSpawns and #factionSpawns > 0 then spawnData = table.Random(factionSpawns) end
-    end
-
-    if spawnData then
-        local pos = (spawnData.pos or spawnData) + Vector(0, 0, 16)
-        local ang = spawnData.ang or angle_zero
-        client:SetPos(pos)
-        client:SetEyeAngles(ang)
-        hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+    if factionID then
+        MODULE:FetchSpawns():next(function(spawns)
+            local factionSpawns = spawns[factionID]
+            if factionSpawns and #factionSpawns > 0 then
+                local data = table.Random(factionSpawns)
+                local pos = (data.pos or data) + Vector(0, 0, 16)
+                local ang = data.ang or angle_zero
+                client:SetPos(pos)
+                client:SetEyeAngles(ang)
+                hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+            end
+        end)
     end
 end
 
