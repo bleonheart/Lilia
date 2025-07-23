@@ -682,3 +682,13 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function
 
     if SERVER then lia.admin.save(true) end
 end)
+
+hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
+    if lia.admin.isDisabled() or not IsValid(ply) then return end
+    lia.db.query(string.format(
+        "UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s",
+        lia.db.escape(new),
+        ply:SteamID64()
+    ))
+end)
+
