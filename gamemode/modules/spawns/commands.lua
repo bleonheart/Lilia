@@ -18,18 +18,16 @@ lia.command.add("spawnadd", {
         end
 
         if factionInfo then
-            MODULE:FetchSpawns():next(function(spawns)
-                spawns[factionInfo.uniqueID] = spawns[factionInfo.uniqueID] or {}
-                table.insert(spawns[factionInfo.uniqueID], {
-                    pos = client:GetPos(),
-                    ang = client:EyeAngles()
-                })
-                MODULE:StoreSpawns(spawns)
-                lia.log.add(client, "spawnAdd", factionInfo.name)
-                client:notifyLocalized("spawnAdded", L(factionInfo.name))
-            end)
+            MODULE.spawns[factionInfo.uniqueID] = MODULE.spawns[factionInfo.uniqueID] or {}
+            table.insert(MODULE.spawns[factionInfo.uniqueID], {
+                pos = client:GetPos(),
+                ang = client:EyeAngles()
+            })
+            MODULE:SaveData()
+            lia.log.add(client, "spawnAdd", factionInfo.name)
+            return L("spawnAdded", L(factionInfo.name))
         else
-            client:notifyLocalized("invalidFaction")
+            return L("invalidFaction")
         end
     end
 })
@@ -42,23 +40,20 @@ lia.command.add("spawnremoveinradius", {
     onRun = function(client, arguments)
         local position = client:GetPos()
         local radius = tonumber(arguments[1]) or 120
-        MODULE:FetchSpawns():next(function(spawns)
-            local removedCount = 0
-            for faction, list in pairs(spawns) do
-                for i = #list, 1, -1 do
-                    local spawn = list[i].pos or list[i]
-                    if spawn:Distance(position) <= radius then
-                        table.remove(list, i)
-                        removedCount = removedCount + 1
-                    end
+        local removedCount = 0
+        for faction, spawns in pairs(MODULE.spawns) do
+            for i = #spawns, 1, -1 do
+                local spawn = spawns[i].pos or spawns[i]
+                if spawn:Distance(position) <= radius then
+                    table.remove(MODULE.spawns[faction], i)
+                    removedCount = removedCount + 1
                 end
-                if #list == 0 then spawns[faction] = nil end
             end
+        end
 
-            if removedCount > 0 then MODULE:StoreSpawns(spawns) end
-            lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
-            client:notifyLocalized("spawnDeleted", removedCount)
-        end)
+        if removedCount > 0 then MODULE:SaveData() end
+        lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
+        return L("spawnDeleted", removedCount)
     end
 })
 
@@ -80,19 +75,17 @@ lia.command.add("spawnremovebyname", {
         end
 
         if factionInfo then
-            MODULE:FetchSpawns():next(function(spawns)
-                if spawns[factionInfo.uniqueID] then
-                    local removedCount = #spawns[factionInfo.uniqueID]
-                    spawns[factionInfo.uniqueID] = nil
-                    MODULE:StoreSpawns(spawns)
-                    lia.log.add(client, "spawnRemoveByName", factionInfo.name, removedCount)
-                    client:notifyLocalized("spawnDeletedByName", L(factionInfo.name), removedCount)
-                else
-                    client:notifyLocalized("noSpawnsForFaction")
-                end
-            end)
+            if MODULE.spawns[factionInfo.uniqueID] then
+                local removedCount = #MODULE.spawns[factionInfo.uniqueID]
+                MODULE.spawns[factionInfo.uniqueID] = nil
+                MODULE:SaveData()
+                lia.log.add(client, "spawnRemoveByName", factionInfo.name, removedCount)
+                return L("spawnDeletedByName", L(factionInfo.name), removedCount)
+            else
+                return L("noSpawnsForFaction")
+            end
         else
-            client:notifyLocalized("invalidFaction")
+            return L("invalidFaction")
         end
     end
 })
