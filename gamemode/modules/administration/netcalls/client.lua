@@ -23,9 +23,18 @@ local function deserializeFallback(raw)
     return decoded or raw
 end
 
+local function tableToString(tbl)
+    local out = {}
+    for _, value in pairs(tbl) do
+        out[#out + 1] = tostring(value)
+    end
+    return table.concat(out, ", ")
+end
+
 local function openRowInfo(row)
     local columns = {
-        {name = "Type", field = "field"},
+        {name = "Field", field = "field"},
+        {name = "Type", field = "type"},
         {name = "Coded", field = "coded"},
         {name = "Decoded", field = "decoded"}
     }
@@ -35,7 +44,9 @@ local function openRowInfo(row)
         if isstring(v) then
             decoded = deserializeFallback(v)
         end
-        rows[#rows + 1] = {field = k, coded = tostring(v), decoded = tostring(decoded)}
+        local codedStr = istable(v) and tableToString(v) or tostring(v)
+        local decodedStr = istable(decoded) and tableToString(decoded) or tostring(decoded)
+        rows[#rows + 1] = {field = k, type = type(v), coded = codedStr, decoded = decodedStr}
     end
     lia.util.CreateTableUI("Row Details", columns, rows)
 end
