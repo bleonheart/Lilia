@@ -809,6 +809,33 @@ local db = lia.db.getObject()
 
 ---
 
+### lia.db.getTables
+
+**Purpose**
+
+Retrieves a list of all tables that begin with `lia_` in the connected database.
+
+**Parameters**
+
+* *None*
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* *deferred*: Resolves to a table containing the table names.
+
+**Example Usage**
+
+```lua
+lia.db.getTables():next(function(tables)
+    PrintTable(tables)
+end)
+```
+
+---
 ### lia.db.tableExists
 
 **Purpose**
