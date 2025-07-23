@@ -563,6 +563,10 @@ if SERVER then
                 characters[#characters + 1] = charId
                 local character = lia.char.new(charData, charId, client)
                 if charData.recognition then lia.char.setCharData(charId, "rgn", nil) end
+                local dataVars = lia.char.getCharData(charId)
+                if not table.IsEmpty(dataVars) then
+                    character:setData(dataVars, nil, true)
+                end
                 hook.Run("CharRestored", character)
                 character.vars.inv = {}
                 lia.inventory.loadAllFromCharID(charId):next(function(inventories)
