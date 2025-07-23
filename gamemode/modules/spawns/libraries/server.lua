@@ -23,7 +23,7 @@ function MODULE:LoadData(n)
         for fac, spawns in pairs(factions or {}) do
             local t = {}
             for i = 1, #spawns do
-                t[i] = lia.data.decode(spawns[i])
+                t[i] = lia.data.decodeVector(spawns[i])
             end
 
             self.spawns[fac] = t
