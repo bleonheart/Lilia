@@ -21,7 +21,7 @@ A `MODULE` table defines a self-contained add-on for the Lilia framework. Each f
 | `discord` | `string` | `""` | Discord tag or support channel. |
 | `version` | `number` | `0` | Version number for compatibility checks. |
 | `desc` | `string` | `"No Description"` | Short description of module functionality. |
-| `CAMIPrivileges` | `table` | `nil` | CAMI privileges defined or required by the module. |
+| `Privileges` | `table` | `nil` | CAMI privileges defined or required by the module. |
 | `WorkshopContent` | `table` | `nil` | Steam Workshop add-on IDs required. |
 | `enabled` | `boolean` or `function` | `true` | Controls whether the module loads. |
 | `Dependencies` | `table` | `nil` | Files or directories included before the module loads. |
@@ -169,7 +169,7 @@ MODULE.Private = true
 
 ### Dependencies & Content
 
-#### `CAMIPrivileges`
+#### `Privileges`
 
 **Type:**
 
@@ -182,7 +182,7 @@ CAMI privileges required or provided by the module.
 **Example Usage:**
 
 ```lua
-MODULE.CAMIPrivileges = {
+MODULE.Privileges = {
     { Name = "Staff Permissions - Admin Chat", MinAccess = "admin" }
 }
 ```
@@ -433,7 +433,7 @@ MODULE.WorkshopContent = {
     "1234567890"
 }
 
-MODULE.CAMIPrivileges = {
+MODULE.Privileges = {
     { Name = "My Feature - Use", MinAccess = "admin" }
 }
 

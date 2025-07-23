@@ -124,7 +124,7 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
         return
     end
 
-    loadPermissions(MODULE.CAMIPrivileges)
+    loadPermissions(MODULE.Privileges)
     if not isSingleFile then
         loadDependencies(MODULE.Dependencies)
         loadExtras(path)

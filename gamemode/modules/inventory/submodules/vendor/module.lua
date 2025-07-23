@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides NPC vendors who can buy and sell items with stock management and dialogue-driven transactions."
-MODULE.CAMIPrivileges = {
+MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Edit Vendors",
         MinAccess = "admin"

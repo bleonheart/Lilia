@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Lists CAMI usergroups."
-MODULE.CAMIPrivileges = {
+MODULE.Privileges = {
     {
         Name = "Staff Permissions - Manage UserGroups",
         MinAccess = "superadmin"
