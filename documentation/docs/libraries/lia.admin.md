@@ -86,6 +86,10 @@ Registers a CAMI privilege for use with permission checks.
 
 * `privilege` (*table*): Table containing the privilege definition.
 
+When a privilege is registered it will automatically be assigned to all
+usergroups that inherit from the privilege's `MinAccess` level. Groups created
+via `lia.admin.createGroup` inherit from `user` by default.
+
 **Realm**
 
 `Shared`
