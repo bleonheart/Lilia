@@ -47,7 +47,10 @@ lia.command.add("spawnremoveinradius", {
             for faction, list in pairs(spawns) do
                 for i = #list, 1, -1 do
                     local spawn = list[i].pos or list[i]
-                    if spawn:Distance(position) <= radius then
+                    if not isvector(spawn) then
+                        spawn = lia.data.decodeVector(spawn)
+                    end
+                    if isvector(spawn) and spawn:Distance(position) <= radius then
                         table.remove(list, i)
                         removedCount = removedCount + 1
                     end

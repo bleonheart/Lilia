@@ -91,8 +91,21 @@ local function SpawnPlayer(client)
             print("[SpawnPlayer] spawn count", factionSpawns and #factionSpawns or 0)
             if factionSpawns and #factionSpawns > 0 then
                 local data = table.Random(factionSpawns)
-                local pos = (data.pos or data) + Vector(0, 0, 16)
-                local ang = data.ang or angle_zero
+                local basePos = data.pos or data
+                if not isvector(basePos) then
+                    basePos = lia.data.decodeVector(basePos)
+                end
+
+                if not isvector(basePos) then
+                    basePos = Vector(0, 0, 0)
+                end
+
+                local pos = basePos + Vector(0, 0, 16)
+
+                local ang = data.ang
+                if not isangle(ang) then
+                    ang = lia.data.decodeAngle(ang) or angle_zero
+                end
                 print("[SpawnPlayer] selected pos", pos, "ang", ang)
                 client:SetPos(pos)
                 client:SetEyeAngles(ang)
