@@ -12,6 +12,7 @@ function MODULE:LoadData(n)
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
     lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
+        PrintTable(res)
         local data = res and lia.data.deserialize(res._data) or {}
         local factions = data.factions or data
         if (not istable(factions) or table.IsEmpty(factions)) and n < 5 then
@@ -24,9 +25,11 @@ function MODULE:LoadData(n)
             local t = {}
             for i = 1, #spawns do
                 t[i] = lia.data.decodeVector(spawns[i])
+                PrintTable(t[i], 1)
             end
 
             self.spawns[fac] = t
+            PrintTable(self.spawns, 1)
         end
 
         self.loaded = true
