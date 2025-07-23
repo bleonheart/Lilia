@@ -1704,6 +1704,141 @@ player:setLiliaData("settings", {foo = true})
 
 ---
 
+### getFlags
+
+**Purpose**
+
+Retrieves the string of permission flags for this player. The string is stored
+in the player's persistent data under the key `"flags"`.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `string`: Concatenated flag characters.
+
+**Example Usage**
+
+```lua
+if player:hasFlags("A") then
+    print("Admin user")
+end
+```
+
+---
+
+### hasFlags
+
+**Purpose**
+
+Checks if the player possesses any of the specified flags.
+
+**Parameters**
+
+* `flags` (`string`): Flag characters to check.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `boolean`: `true` if at least one flag is present.
+
+**Example Usage**
+
+```lua
+if player:hasFlags("Z") then
+    print("Can invite others")
+end
+```
+
+---
+
+### setFlags
+
+**Purpose**
+
+Replaces the player's flag string with the provided value.
+
+**Parameters**
+
+* `flags` (`string`): New flag characters to assign.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* `nil`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+player:setFlags("AB")
+```
+
+---
+
+### giveFlags
+
+**Purpose**
+
+Adds the specified flag characters to the player.
+
+**Parameters**
+
+* `flags` (`string`): Flags to grant.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* `nil`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+player:giveFlags("A")
+```
+
+---
+
+### takeFlags
+
+**Purpose**
+
+Removes the given flag characters from the player.
+
+**Parameters**
+
+* `flags` (`string`): Flags to revoke.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* `nil`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+player:takeFlags("A")
+```
+
+---
+
 ### setWaypoint
 
 **Purpose**

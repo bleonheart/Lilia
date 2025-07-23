@@ -196,7 +196,9 @@ end
 
 **Purpose**
 
-Retrieves the string of permission flags for this character.
+Retrieves the string of permission flags for this character. Internally this
+delegates to the owning player's `getFlags` method, which stores the string in
+their persistent data table under the key `"flags"`.
 
 **Parameters**
 
@@ -915,7 +917,9 @@ char:removeBoost("powerGloves", "str")
 
 **Purpose**
 
-Replaces the character's flag string with the provided value.
+Replaces the character's flag string with the provided value. This delegates to
+the player's `setFlags` method, storing the value in their persistent data via
+`setLiliaData("flags", ...)`.
 
 **Parameters**
 
@@ -942,7 +946,9 @@ char:setFlags("")
 
 **Purpose**
 
-Adds the specified flag characters to the character.
+Adds the specified flag characters to the character. Internally this calls the
+owning player's `giveFlags` method which updates the `"flags"` entry in their
+persistent data table.
 
 **Parameters**
 
@@ -969,7 +975,8 @@ char:giveFlags("A")
 
 **Purpose**
 
-Removes the given flag characters from the character.
+Removes the given flag characters from the character. This uses the player's
+`takeFlags` method to update the persistent `"flags"` data entry.
 
 **Parameters**
 
