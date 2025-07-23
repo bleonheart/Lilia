@@ -34,6 +34,7 @@ local DEFAULT_GROUPS = {
 local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
+    if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
     for _, v in ipairs(CAMI.GetPrivileges() or {}) do
         if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
     end
@@ -41,6 +42,7 @@ local function buildDefaultTable(g)
 end
 
 local function ensureCAMIGroup(n, inh)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
     local g = CAMI.GetUsergroups() or {}
     if not g[n] then
         CAMI.RegisterUsergroup({
@@ -51,6 +53,7 @@ local function ensureCAMIGroup(n, inh)
 end
 
 local function dropCAMIGroup(n)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
     local g = CAMI.GetUsergroups() or {}
     if g[n] then CAMI.UnregisterUsergroup(n) end
 end
@@ -101,6 +104,7 @@ if SERVER then
     lia.admin.groups = lia.admin.groups or {}
     lia.admin.lastJoin = lia.admin.lastJoin or {}
     local function syncPrivileges()
+        if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
         for _, v in ipairs(CAMI.GetPrivileges() or {}) do
             lia.admin.privileges[v.Name] = {
                 Name = v.Name,
@@ -130,7 +134,7 @@ if SERVER then
 
     local function payloadGroups()
         return {
-            cami = CAMI.GetUsergroups() or {},
+            cami = (CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()) or {},
             perms = lia.admin.groups or {},
             privList = getPrivList()
         }
@@ -183,6 +187,7 @@ if SERVER then
     end
 
     local function applyToCAMI(g, t)
+        if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
     end
 
