@@ -433,7 +433,6 @@ if SERVER then
 
             client:SetTeam(self:getFaction())
             client:setNetVar("char", self:getID())
-            PrintTable(self:getData("groups", {}), 1)
             for k, v in pairs(self:getData("groups", {})) do
                 local index = tonumber(k)
                 local value = tonumber(v) or 0

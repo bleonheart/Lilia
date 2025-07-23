@@ -45,129 +45,109 @@ if SERVER then
             return
         end
 
-        local faction = lia.faction.indices[char:getFaction()]
-        if not faction then
+        local facTbl = lia.faction.indices[char:getFaction()]
+        if not facTbl then
             d("No faction", char:getID())
             return
         end
 
         local fields = "lia_characters._name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
-        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(faction.uniqueID)
+        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(facTbl.uniqueID)
         local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
         d("Running query:", query)
         lia.db.query(query, function(data)
-            if not data or #data == 0 then
-                d("Empty result")
-            else
-                d("Query rows:", #data)
-                PrintTable(data)
-            end
-
-            local characters = {}
-            if data then
-                for _, v in ipairs(data) do
-                    local id = tonumber(v._id)
-                    local online = lia.char.loaded[id] ~= nil
-                    local lastOnline
-                    if online then
-                        lastOnline = L("onlineNow")
-                    else
-                        local last = tonumber(v._lastOnline)
-                        if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
-                        local diff = os.time() - last
-                        local since = lia.time.TimeSince(last)
-                        local stripped = since:match("^(.-)%sago$") or since
-                        lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
-                    end
-
-                    characters[#characters + 1] = {
-                        id = id,
-                        name = v._name,
-                        faction = v._faction,
-                        class = v._class,
-                        steamID = v._steamID,
-                        lastOnline = lastOnline,
-                        hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
-                    }
+            d("Rows:", data and #data or 0)
+            local out = {}
+            for _, v in ipairs(data or {}) do
+                local id = tonumber(v._id)
+                local online = lia.char.loaded[id] ~= nil
+                local lastOnline
+                if online then
+                    lastOnline = L("onlineNow")
+                else
+                    local last = tonumber(v._lastOnline)
+                    if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
+                    local diff = os.time() - last
+                    local since = lia.time.TimeSince(last)
+                    local stripped = since:match("^(.-)%sago$") or since
+                    lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
                 end
+
+                local fID = tonumber(v._faction) or v._faction
+                local fName = lia.faction.indices[fID] and lia.faction.indices[fID].name or tostring(fID or "")
+                local cID = tonumber(v._class) or v._class
+                local cName = lia.class.list and lia.class.list[cID] and lia.class.list[cID].name or tostring(cID or "")
+                out[#out + 1] = {
+                    id = id,
+                    name = v._name,
+                    faction = fName,
+                    factionID = fID,
+                    class = cName,
+                    classID = cID,
+                    steamID = v._steamID,
+                    lastOnline = lastOnline,
+                    hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
+                }
             end
 
-            d("Built characters table size:", #characters)
-            PrintTable(characters)
+            d("Built:", #out)
             net.Start("RosterData")
-            net.WriteString(faction.uniqueID)
-            net.WriteTable(characters)
+            net.WriteString(facTbl.uniqueID)
+            net.WriteTable(out)
             net.Send(client)
-            d("Sent RosterData to", client, "for faction", faction.uniqueID)
         end)
     end)
 
     net.Receive("KickCharacter", function(_, client)
-        local senderChar = client:getChar()
-        if not senderChar then return end
-        if not (client:IsSuperAdmin() or senderChar:hasFlags("V")) then return end
-        local targetID = net.ReadInt(32)
-        if not isnumber(targetID) then return end
-        if senderChar:getID() == targetID then return end
-        local target = lia.char.loaded[targetID]
+        local c = client:getChar()
+        if not c then return end
+        if not (client:IsSuperAdmin() or c:hasFlags("V")) then return end
+        local id = net.ReadInt(32)
+        if c:getID() == id then return end
+        local target = lia.char.loaded[id]
         if not target then return end
         local ply = target:getPlayer()
         if IsValid(ply) then ply:Kick("Kicked by roster panel") end
     end)
 else
-    local rosterFaction, rosterRows = nil, {}
-    local listFaction, listClass
-    local function populate(list, filterKey)
-        if not IsValid(list) then return end
-        list:Clear()
-        for _, r in ipairs(rosterRows) do
-            if r[filterKey] then
-                local line = list:AddLine(r.id, r.name, r.lastOnline, r.hoursPlayed, r.faction, r.class or "N/A")
-                line.rowData = r
-            end
-        end
+    local rosterRows = {}
+    local lists = {}
+    local built = false
+    local function addRow(list, r)
+        local line = list:AddLine(r.id, r.name, r.lastOnline, r.hoursPlayed, r.faction, r.class)
+        line.rowData = r
     end
 
-    local function openMenu(row)
-        local myChar = LocalPlayer():getChar()
-        if not myChar then return end
-        local m = DermaMenu()
-        if row.id ~= myChar:getID() then
-            m:AddOption("Kick", function()
-                Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
-                    net.Start("KickCharacter")
-                    net.WriteInt(tonumber(row.id), 32)
-                    net.SendToServer()
-                end, "No")
-            end)
+    local function populate()
+        if not built then return end
+        if IsValid(lists.faction) then
+            lists.faction:Clear()
+            for _, r in ipairs(rosterRows) do
+                addRow(lists.faction, r)
+            end
         end
 
-        m:AddOption(L("copyRow"), function()
-            local s = ""
-            for k, v in pairs(row) do
-                v = tostring(v or L("na"))
-                s = s .. k:gsub("^%l", string.upper) .. ": " .. v .. " | "
+        if IsValid(lists.class) then
+            lists.class:Clear()
+            for _, r in ipairs(rosterRows) do
+                addRow(lists.class, r)
             end
-
-            SetClipboardText(s:sub(1, -4))
-        end)
-
-        m:Open()
+        end
     end
 
     net.Receive("RosterData", function()
-        rosterFaction = net.ReadString()
+        local srvFactionUnique = net.ReadString()
         local data = net.ReadTable()
         local char = LocalPlayer():getChar()
         if not char then return end
         if not (LocalPlayer():IsSuperAdmin() or char:hasFlags("V")) then return end
         rosterRows = {}
         for _, d in ipairs(data or {}) do
-            if d.faction == rosterFaction then rosterRows[#rosterRows + 1] = d end
+            rosterRows[#rosterRows + 1] = d
         end
 
-        populate(listFaction, "faction")
-        populate(listClass, "class")
+        print("[RosterClientDebug] Got", #rosterRows, "rows. First faction:", rosterRows[1] and rosterRows[1].faction or "nil")
+        populate()
     end)
 
     local function makeList(parent)
@@ -182,25 +162,47 @@ else
         list:AddColumn("Class")
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
-            openMenu(line.rowData)
+            local row = line.rowData
+            local me = LocalPlayer():getChar()
+            if not me then return end
+            local m = DermaMenu()
+            if row.id ~= me:getID() then
+                m:AddOption("Kick", function()
+                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                        net.Start("KickCharacter")
+                        net.WriteInt(tonumber(row.id), 32)
+                        net.SendToServer()
+                    end, "No")
+                end)
+            end
+
+            m:AddOption(L("copyRow"), function()
+                local s = ""
+                for k, v in pairs(row) do
+                    s = s .. k:gsub("^%l", string.upper) .. ": " .. tostring(v or L("na")) .. " | "
+                end
+
+                SetClipboardText(s:sub(1, -4))
+            end)
+
+            m:Open()
         end
         return list
     end
 
-    local function buildRoster(panel)
-        if not IsValid(panel) then return end
+    local function build(panel)
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
-        local pnlFaction = vgui.Create("DPanel", sheet)
-        pnlFaction:Dock(FILL)
-        listFaction = makeList(pnlFaction)
-        sheet:AddSheet("Faction", pnlFaction, "icon16/group.png")
-        local pnlClass = vgui.Create("DPanel", sheet)
-        pnlClass:Dock(FILL)
-        listClass = makeList(pnlClass)
-        sheet:AddSheet("Class", pnlClass, "icon16/user.png")
-        populate(listFaction, "faction")
-        populate(listClass, "class")
+        local pf = vgui.Create("DPanel", sheet)
+        pf:Dock(FILL)
+        lists.faction = makeList(pf)
+        sheet:AddSheet("Faction", pf, "icon16/group.png")
+        local pc = vgui.Create("DPanel", sheet)
+        pc:Dock(FILL)
+        lists.class = makeList(pc)
+        sheet:AddSheet("Class", pc, "icon16/user.png")
+        built = true
+        populate()
     end
 
     function MODULE:CreateMenuButtons(tabs)
@@ -210,11 +212,12 @@ else
         if not char then return end
         if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
         tabs[L("roster")] = function(panel)
-            listFaction, listClass = nil, nil
             rosterRows = {}
+            lists = {}
+            built = false
+            build(panel)
             net.Start("RosterRequest")
             net.SendToServer()
-            buildRoster(panel)
         end
     end
 end
