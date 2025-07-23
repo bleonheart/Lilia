@@ -157,7 +157,7 @@ if SERVER then
     net.Receive("liaGroupsApply", function(_, p)
         if not allowed(p) then return end
         local g, tbl = net.ReadString(), net.ReadTable()
-        if g == "" then return end
+        if g == "" or DEFAULT_GROUPS[g] then return end
         lia.admin.groups[g] = {}
         for priv, state in pairs(tbl) do
             if state then lia.admin.groups[g][priv] = true end
@@ -171,7 +171,7 @@ if SERVER then
     net.Receive("liaGroupsDefaults", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
-        if g == "" then return end
+        if g == "" or DEFAULT_GROUPS[g] then return end
         lia.admin.groups[g] = buildDefaultTable(g)
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
@@ -192,6 +192,7 @@ else
         btnBar:SetTall(36)
         btnBar:DockMargin(20, 20, 20, 12)
         btnBar.Paint = function() end
+        local editable = not DEFAULT_GROUPS[g]
         local tickAll = btnBar:Add("liaSmallButton")
         tickAll:Dock(LEFT)
         tickAll:SetWide(90)
@@ -210,6 +211,12 @@ else
         saveBtn:Dock(RIGHT)
         saveBtn:SetWide(90)
         saveBtn:SetText("Save")
+        if not editable then
+            tickAll:SetEnabled(false)
+            untickAll:SetEnabled(false)
+            defaultsBtn:SetEnabled(false)
+            saveBtn:SetEnabled(false)
+        end
         local delBtn
         if not DEFAULT_GROUPS[g] then
             delBtn = btnBar:Add("liaSmallButton")
@@ -286,6 +293,7 @@ else
                     current[priv] = nil
                 end
             end
+            if not editable then chk:SetEnabled(false) end
 
             checkboxes[#checkboxes + 1] = chk
         end
@@ -303,15 +311,17 @@ else
             end
         end
 
-        tickAll.DoClick = function() setAll(true) end
-        untickAll.DoClick = function() setAll(false) end
+        tickAll.DoClick = function() if editable then setAll(true) end end
+        untickAll.DoClick = function() if editable then setAll(false) end end
         defaultsBtn.DoClick = function()
+            if not editable then return end
             net.Start("liaGroupsDefaults")
             net.WriteString(g)
             net.SendToServer()
         end
 
         saveBtn.DoClick = function()
+            if not editable then return end
             net.Start("liaGroupsApply")
             net.WriteString(g)
             net.WriteTable(current)
