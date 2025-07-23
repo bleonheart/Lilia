@@ -88,7 +88,8 @@ if SERVER then
     local function sendBigTable(ply, tbl)
         local raw = util.TableToJSON(tbl)
         local comp = util.Compress(raw)
-        local len, id = #comp, util.CRC(tostring(SysTime()) .. #comp)
+        local len = #comp
+        local id = util.CRC(tostring(SysTime()) .. len)
         local parts = math.ceil(len / CHUNK)
         for i = 1, parts do
             local chunk = string.sub(comp, (i - 1) * CHUNK + 1, math.min(i * CHUNK, len))
@@ -156,7 +157,8 @@ if SERVER then
 
     net.Receive("liaGroupsApply", function(_, p)
         if not allowed(p) then return end
-        local g, tbl = net.ReadString(), net.ReadTable()
+        local g = net.ReadString()
+        local tbl = net.ReadTable()
         if g == "" or DEFAULT_GROUPS[g] then return end
         lia.admin.groups[g] = {}
         for priv, state in pairs(tbl) do
@@ -178,7 +180,8 @@ if SERVER then
         broadcastGroups()
     end)
 else
-    local chunks, PRIV_LIST = {}, {}
+    local chunks = {}
+    local PRIV_LIST = {}
     local function setFont(lbl, f)
         if IsValid(lbl) then lbl:SetFont(f) end
     end
@@ -217,6 +220,7 @@ else
             defaultsBtn:SetEnabled(false)
             saveBtn:SetEnabled(false)
         end
+
         local delBtn
         if not DEFAULT_GROUPS[g] then
             delBtn = btnBar:Add("liaSmallButton")
@@ -265,26 +269,27 @@ else
         listHolder.Paint = function() end
         local list = vgui.Create("DListLayout", listHolder)
         list:Dock(FILL)
-        local current, checkboxes = table.Copy(perms[g] or {}), {}
+        local current = table.Copy(perms[g] or {})
+        local checkboxes = {}
         surface.SetFont("liaMediumFont")
         local _, fontH = surface.GetTextSize("W")
-        local rowH = fontH + 10
+        local rowH = fontH + 24
         local lblOffset = math.floor((rowH - fontH) * 0.5)
         for _, priv in ipairs(PRIV_LIST) do
             local row = vgui.Create("DPanel", list)
             row:SetTall(rowH)
             row:Dock(TOP)
-            row:DockMargin(0, 0, 0, 6)
+            row:DockMargin(0, 0, 0, 10)
             row.Paint = function() end
             local lbl = row:Add("DLabel")
             lbl:Dock(LEFT)
             lbl:SetText(priv)
             setFont(lbl, "liaMediumFont")
             lbl:SizeToContents()
-            lbl:DockMargin(0, lblOffset, 8, 0)
+            lbl:DockMargin(0, lblOffset, 12, 0)
             local chk = row:Add("liaCheckBox")
             chk:Dock(LEFT)
-            chk:SetWide(22)
+            chk:SetWide(32)
             chk:SetChecked(current[priv] and true or false)
             chk.OnChange = function(_, v)
                 if v then
@@ -293,15 +298,15 @@ else
                     current[priv] = nil
                 end
             end
-            if not editable then chk:SetEnabled(false) end
 
+            if not editable then chk:SetEnabled(false) end
             checkboxes[#checkboxes + 1] = chk
         end
 
         list:InvalidateLayout(true)
         local totalH = 0
         for _, child in ipairs(list:GetChildren()) do
-            totalH = totalH + child:GetTall() + 6
+            totalH = totalH + child:GetTall() + 10
         end
 
         listHolder:SetTall(totalH)
@@ -398,7 +403,10 @@ else
     end
 
     net.Receive("liaGroupsDataChunk", function()
-        local id, idx, total, len = net.ReadString(), net.ReadUInt(16), net.ReadUInt(16), net.ReadUInt(16)
+        local id = net.ReadString()
+        local idx = net.ReadUInt(16)
+        local total = net.ReadUInt(16)
+        local len = net.ReadUInt(16)
         local dat = net.ReadData(len)
         chunks[id] = chunks[id] or {}
         chunks[id][idx] = dat
