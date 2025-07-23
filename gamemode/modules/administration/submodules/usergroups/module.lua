@@ -18,25 +18,25 @@ local DEFAULT_GROUPS = {
 local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
-    for _, priv in ipairs(CAMI.GetPrivileges() or {}) do
-        if CAMI.UsergroupInherits(g, priv.MinAccess or "user") then t[priv.Name] = true end
+    for _, v in ipairs(CAMI.GetPrivileges() or {}) do
+        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
     end
     return t
 end
 
-local function ensureCAMIGroup(name, inherits)
-    local groups = CAMI.GetUsergroups() or {}
-    if not groups[name] then
+local function ensureCAMIGroup(n, inh)
+    local g = CAMI.GetUsergroups() or {}
+    if not g[n] then
         CAMI.RegisterUsergroup({
-            Name = name,
-            Inherits = inherits or "user"
+            Name = n,
+            Inherits = inh or "user"
         })
     end
 end
 
-local function dropCAMIGroup(name)
-    local groups = CAMI.GetUsergroups() or {}
-    if groups[name] then CAMI.UnregisterUsergroup(name) end
+local function dropCAMIGroup(n)
+    local g = CAMI.GetUsergroups() or {}
+    if g[n] then CAMI.UnregisterUsergroup(n) end
 end
 
 if SERVER then
@@ -47,19 +47,20 @@ if SERVER then
     util.AddNetworkString("liaGroupsDefaults")
     util.AddNetworkString("liaGroupsDataChunk")
     util.AddNetworkString("liaGroupsDataDone")
+    util.AddNetworkString("liaGroupsNotice")
     lia.admin.privileges = lia.admin.privileges or {}
     lia.admin.groups = lia.admin.groups or {}
     local function syncPrivileges()
-        for _, priv in ipairs(CAMI.GetPrivileges() or {}) do
-            lia.admin.privileges[priv.Name] = {
-                Name = priv.Name,
-                MinAccess = priv.MinAccess or "user"
+        for _, v in ipairs(CAMI.GetPrivileges() or {}) do
+            lia.admin.privileges[v.Name] = {
+                Name = v.Name,
+                MinAccess = v.MinAccess or "user"
             }
         end
 
-        for name, data in pairs(CAMI.GetUsergroups() or {}) do
-            lia.admin.groups[name] = lia.admin.groups[name] or buildDefaultTable(name)
-            ensureCAMIGroup(name, data.Inherits or "user")
+        for n, d in pairs(CAMI.GetUsergroups() or {}) do
+            lia.admin.groups[n] = lia.admin.groups[n] or buildDefaultTable(n)
+            ensureCAMIGroup(n, d.Inherits or "user")
         end
     end
 
@@ -69,8 +70,8 @@ if SERVER then
 
     local function getPrivList()
         local t = {}
-        for name in pairs(lia.admin.privileges) do
-            t[#t + 1] = name
+        for n in pairs(lia.admin.privileges) do
+            t[#t + 1] = n
         end
 
         table.sort(t)
@@ -119,17 +120,27 @@ if SERVER then
         sendBigTable(nil, payload())
     end
 
-    local function applyToCAMI(groupName, tbl)
-        ensureCAMIGroup(groupName, CAMI.GetUsergroups()[groupName] and CAMI.GetUsergroups()[groupName].Inherits or "user")
-        hook.Run("CAMI.OnUsergroupPermissionsChanged", groupName, tbl)
+    local function applyToCAMI(g, t)
+        ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
+        hook.Run("CAMI.OnUsergroupPermissionsChanged", g, t)
+    end
+
+    local function notify(p, msg)
+        if IsValid(p) and p.notify then p:notify(msg) end
+        net.Start("liaGroupsNotice")
+        net.WriteString(msg)
+        if IsEntity(p) then
+            net.Send(p)
+        else
+            net.Broadcast()
+        end
     end
 
     syncPrivileges()
     net.Receive("liaGroupsRequest", function(_, p)
-        if allowed(p) then
-            syncPrivileges()
-            sendBigTable(p, payload())
-        end
+        if not allowed(p) then return end
+        syncPrivileges()
+        sendBigTable(p, payload())
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
@@ -142,6 +153,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(n, lia.admin.groups[n])
         broadcastGroups()
+        notify(p, "Group '" .. n .. "' created.")
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
@@ -153,21 +165,23 @@ if SERVER then
         dropCAMIGroup(n)
         lia.admin.save(true)
         broadcastGroups()
+        notify(p, "Group '" .. n .. "' removed.")
     end)
 
     net.Receive("liaGroupsApply", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
-        local tbl = net.ReadTable()
+        local t = net.ReadTable()
         if g == "" or DEFAULT_GROUPS[g] then return end
         lia.admin.groups[g] = {}
-        for priv, state in pairs(tbl) do
-            if state then lia.admin.groups[g][priv] = true end
+        for k, v in pairs(t) do
+            if v then lia.admin.groups[g][k] = true end
         end
 
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
         broadcastGroups()
+        notify(p, "Permissions saved for '" .. g .. "'.")
     end)
 
     net.Receive("liaGroupsDefaults", function(_, p)
@@ -178,16 +192,19 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
         broadcastGroups()
+        notify(p, "Defaults restored for '" .. g .. "'.")
     end)
 else
     local chunks = {}
     local PRIV_LIST = {}
-    local function setFont(lbl, f)
-        if IsValid(lbl) then lbl:SetFont(f) end
+    local LAST_GROUP
+    local function setFont(o, f)
+        if IsValid(o) then o:SetFont(f) end
     end
 
     local function renderGroupInfo(parent, g, cami, perms)
         parent:Clear()
+        LAST_GROUP = g
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
         local btnBar = scroll:Add("DPanel")
@@ -248,11 +265,11 @@ else
         inhLbl:SetText("Inherits from:")
         setFont(inhLbl, "liaBigFont")
         inhLbl:SizeToContents()
-        local inherits = cami[g] and cami[g].Inherits or "user"
+        local inh = cami[g] and cami[g].Inherits or "user"
         local inhVal = scroll:Add("DLabel")
         inhVal:Dock(TOP)
         inhVal:DockMargin(20, 2, 0, 20)
-        inhVal:SetText(inherits)
+        inhVal:SetText(inh)
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
         local privLbl = scroll:Add("DLabel")
@@ -272,9 +289,9 @@ else
         local current = table.Copy(perms[g] or {})
         local checkboxes = {}
         surface.SetFont("liaMediumFont")
-        local _, fontH = surface.GetTextSize("W")
-        local rowH = fontH + 24
-        local lblOffset = math.floor((rowH - fontH) * 0.5)
+        local _, fh = surface.GetTextSize("W")
+        local rowH = fh + 24
+        local off = math.floor((rowH - fh) * 0.5)
         for _, priv in ipairs(PRIV_LIST) do
             local row = vgui.Create("DPanel", list)
             row:SetTall(rowH)
@@ -286,7 +303,7 @@ else
             lbl:SetText(priv)
             setFont(lbl, "liaMediumFont")
             lbl:SizeToContents()
-            lbl:DockMargin(0, lblOffset, 12, 0)
+            lbl:DockMargin(0, off, 12, 0)
             local chk = row:Add("liaCheckBox")
             chk:Dock(LEFT)
             chk:SetWide(32)
@@ -300,16 +317,21 @@ else
             end
 
             if not editable then chk:SetEnabled(false) end
+            row.PerformLayout = function(_, w, h)
+                local m = math.floor((h - chk:GetTall()) * 0.5)
+                chk:DockMargin(0, m, 0, 0)
+            end
+
             checkboxes[#checkboxes + 1] = chk
         end
 
         list:InvalidateLayout(true)
-        local totalH = 0
-        for _, child in ipairs(list:GetChildren()) do
-            totalH = totalH + child:GetTall() + 10
+        local h = 0
+        for _, c in ipairs(list:GetChildren()) do
+            h = h + c:GetTall() + 10
         end
 
-        listHolder:SetTall(totalH)
+        listHolder:SetTall(h)
         local function setAll(state)
             for _, cb in ipairs(checkboxes) do
                 cb:SetChecked(state)
@@ -354,7 +376,13 @@ else
         content:Dock(FILL)
         content:DockMargin(10, 10, 10, 10)
         local selected
+        local keys = {}
         for g in pairs(cami) do
+            keys[#keys + 1] = g
+        end
+
+        table.sort(keys)
+        for _, g in ipairs(keys) do
             local b = sidebar:Add("liaMediumButton")
             b:Dock(TOP)
             b:DockMargin(0, 0, 0, 10)
@@ -376,18 +404,28 @@ else
         addBtn.DoClick = function()
             Derma_StringRequest("Create Group", "New group name:", "", function(txt)
                 if txt == "" then return end
+                LAST_GROUP = txt
                 net.Start("liaGroupsAdd")
                 net.WriteString(txt)
                 net.SendToServer()
             end)
         end
 
-        local first = next(cami)
-        if first then
+        if LAST_GROUP and cami[LAST_GROUP] then
             for _, b in ipairs(sidebar:GetChildren()) do
-                if b.GetText and b:GetText() == first then
+                if b.GetText and b:GetText() == LAST_GROUP then
                     b:DoClick()
                     break
+                end
+            end
+        else
+            local first = keys[1]
+            if first then
+                for _, b in ipairs(sidebar:GetChildren()) do
+                    if b.GetText and b:GetText() == first then
+                        b:DoClick()
+                        break
+                    end
                 end
             end
         end
@@ -416,6 +454,11 @@ else
     net.Receive("liaGroupsDataDone", function()
         local id = net.ReadString()
         if chunks[id] then handleDone(id) end
+    end)
+
+    net.Receive("liaGroupsNotice", function()
+        local msg = net.ReadString()
+        if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
     end)
 
     function MODULE:CreateMenuButtons(tabs)

@@ -32,12 +32,6 @@ function GridInv:getSize()
     return self:getWidth(), self:getHeight()
 end
 
-function GridInv:canItemFitInInventory(item, x, y)
-    local invW, invH = self:getSize()
-    local itemW, itemH = item:getWidth() - 1, item:getHeight() - 1
-    return x >= 1 and y >= 1 and x + itemW <= invW and y + itemH <= invH
-end
-
 function GridInv:canAdd(item)
     if isstring(item) then item = lia.item.list[item] end
     assert(istable(item), "item must be a table")
@@ -73,29 +67,58 @@ function GridInv:doesFitInventory(item)
     return false
 end
 
+function GridInv:canItemFitInInventory(item, x, y)
+    print(type(item), item, x, y)
+    local invW, invH = self:getSize()
+    local itemW, itemH = item:getWidth() - 1, item:getHeight() - 1
+    local ok = x >= 1 and y >= 1 and x + itemW <= invW and y + itemH <= invH
+    print("[canItemFitInInventory]", "item:", item, "pos:", x, y, "inv:", invW, invH, "itemSize:", itemW + 1, itemH + 1, "ok:", ok)
+    return ok
+end
+
 function GridInv:doesItemFitAtPos(testItem, x, y)
-    if not self:canItemFitInInventory(testItem, x, y) then return false end
-    for _, item in pairs(self.items) do
-        if self:doesItemOverlapWithOther(testItem, x, y, item) then return false, item end
+    print("[doesItemFitAtPos] item:", testItem, "pos:", x, y)
+    local can = self:canItemFitInInventory(testItem, x, y)
+    print("[doesItemFitAtPos] canFit:", can)
+    if not can then return false end
+    for _, v in pairs(self.items) do
+        local ov = self:doesItemOverlapWithOther(testItem, x, y, v)
+        if ov then
+            print("[doesItemFitAtPos] overlap with:", v)
+            return false, v
+        end
     end
 
     if self.occupied then
         for x2 = 0, testItem:getWidth() - 1 do
             for y2 = 0, testItem:getHeight() - 1 do
-                if self.occupied[x + x2 .. y + y2] then return false end
+                if self.occupied[x + x2 .. y + y2] then
+                    print("[doesItemFitAtPos] occupied cell:", x + x2, y + y2)
+                    return false
+                end
             end
         end
     end
+
+    print("[doesItemFitAtPos] OK")
     return true
 end
 
 function GridInv:findFreePosition(item)
-    local width, height = self:getSize()
-    for x = 1, width do
-        for y = 1, height do
-            if self:doesItemFitAtPos(item, x, y) then return x, y end
+    local w, h = self:getSize()
+    print("[findFreePosition] item:", item, "grid:", w, "x", h)
+    for x = 1, w do
+        for y = 1, h do
+            local ok = self:doesItemFitAtPos(item, x, y)
+            print("[findFreePosition] checking", x, y, ok and "OK" or "NO")
+            if ok then
+                print("[findFreePosition] picked", x, y)
+                return x, y
+            end
         end
     end
+
+    print("[findFreePosition] no space")
 end
 
 function GridInv:configure()
