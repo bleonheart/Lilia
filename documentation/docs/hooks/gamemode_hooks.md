@@ -3472,9 +3472,9 @@ Similar to OnCharVarChanged but for local-only variables. Called after the table
 
 ```lua
 -- Prints a message when OnCharLocalVarChanged is triggered
-hook.Add("OnCharLocalVarChanged", "WatchFlags", function(char, k, old, new)
-    if k == "flags" then
-        print("Flags changed")
+hook.Add("OnCharLocalVarChanged", "WatchCustomVar", function(char, k, old, new)
+    if k == "someVar" then
+        print("Value updated")
     end
 end)
 ```
