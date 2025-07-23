@@ -450,6 +450,7 @@ LANGUAGE = {
     death = "Morte",
     start = "Inizio",
     logs = "Log",
+    roster = "Roster",
     failedRetrieveLogs = "Impossibile recuperare i log.",
     searchLogs = "Cerca log...",
     logMessage = "Messaggio",

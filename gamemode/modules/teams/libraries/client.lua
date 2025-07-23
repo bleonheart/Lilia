@@ -18,3 +18,17 @@ function MODULE:DrawCharInfo(client, _, info)
         info[#info + 1] = {className, classColor}
     end
 end
+
+function MODULE:CreateMenuButtons(tabs)
+    local client = LocalPlayer()
+    if not IsValid(client) then return end
+    local character = client:getChar()
+    if not character then return end
+    local isLeader = client:IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin") or character:hasFlags("V")
+    if not isLeader then return end
+
+    tabs[L("roster")] = function(panel)
+        lia.gui.roster = panel
+        lia.command.send("roster")
+    end
+end
