@@ -1019,3 +1019,4 @@ local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
+util.AddNetworkString("RosterRequest")
