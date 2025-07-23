@@ -434,7 +434,11 @@ if SERVER then
             client:SetTeam(self:getFaction())
             client:setNetVar("char", self:getID())
             for k, v in pairs(self:getData("groups", {})) do
-                client:SetBodygroup(k, v)
+                local index = tonumber(k)
+                local value = tonumber(v) or 0
+                if index then
+                    client:SetBodygroup(index, value)
+                end
             end
 
             client:SetSkin(self:getData("skin", 0))
