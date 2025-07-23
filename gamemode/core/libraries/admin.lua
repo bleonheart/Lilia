@@ -83,6 +83,23 @@ function lia.admin.createGroup(groupName, info)
     end
 
     lia.admin.groups[groupName] = info or {}
+    -- assign default privileges based on inheritance
+    for privName, priv in pairs(lia.admin.privileges) do
+        local minAccess = priv.MinAccess or "user"
+        local allowed = false
+        if CAMI and CAMI.UsergroupInherits then
+            allowed = CAMI.UsergroupInherits(groupName, minAccess)
+        else
+            if groupName == "superadmin" then
+                allowed = true
+            elseif groupName == "admin" then
+                allowed = minAccess ~= "superadmin"
+            else -- custom groups inherit user
+                allowed = minAccess == "user"
+            end
+        end
+        if allowed then lia.admin.groups[groupName][privName] = true end
+    end
     if SERVER then
         if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
             if not CAMI.GetUsergroup(groupName) then
@@ -101,6 +118,23 @@ function lia.admin.registerPrivilege(privilege)
     if lia.admin.isDisabled() then return end
     if not privilege or not privilege.Name then return end
     lia.admin.privileges[privilege.Name] = privilege
+    -- apply to existing groups based on inheritance
+    for groupName in pairs(lia.admin.groups) do
+        local minAccess = privilege.MinAccess or "user"
+        local allowed = false
+        if CAMI and CAMI.UsergroupInherits then
+            allowed = CAMI.UsergroupInherits(groupName, minAccess)
+        else
+            if groupName == "superadmin" then
+                allowed = true
+            elseif groupName == "admin" then
+                allowed = minAccess ~= "superadmin"
+            else
+                allowed = minAccess == "user"
+            end
+        end
+        if allowed then lia.admin.groups[groupName][privilege.Name] = true end
+    end
 end
 
 function lia.admin.removeGroup(groupName)
