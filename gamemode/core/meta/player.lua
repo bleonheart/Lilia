@@ -20,8 +20,7 @@ end
 function playerMeta:hasPrivilege(privilegeName)
     local group = self:GetUserGroup()
     local perms = lia.admin.groups[group]
-    PrintTable(lia.admin.groups, 1)
-   // PrintTable(perms)
+    PrintTable(perms)
     if not perms then return false end
     return perms[privilegeName] == true
 end
