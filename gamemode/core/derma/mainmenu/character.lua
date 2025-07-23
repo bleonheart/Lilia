@@ -719,3 +719,12 @@ function PANEL:Think()
 end
 
 vgui.Register("liaCharacter", PANEL, "EditablePanel")
+
+hook.Add("CharDataLoaded", "liaUpdateCharacterMenuModel", function(character)
+    if not (IsValid(lia.gui.character) and lia.gui.character.isLoadMode) then return end
+    if not lia.characters then return end
+    local index = lia.gui.character.currentIndex or 1
+    if lia.characters[index] == character:getID() then
+        lia.gui.character:updateModelEntity(character)
+    end
+end)

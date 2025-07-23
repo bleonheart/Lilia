@@ -789,4 +789,5 @@ net.Receive("liaCharacterData", function()
         local value = net.ReadType()
         character.dataVars[key] = value
     end
+    hook.Run("CharDataLoaded", character)
 end)
