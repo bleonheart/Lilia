@@ -38,33 +38,6 @@ function GM:PlayerLoadedChar(client, character)
 
         character:setData("ammo", nil)
     end)
-
-    local charID = character:getID()
-    lia.db.query("SELECT _key, _value FROM lia_chardata WHERE _charID = " .. charID, function(data)
-        if data then
-            if not character.dataVars then character.dataVars = {} end
-            for _, row in ipairs(data) do
-                local decodedValue = pon.decode(row._value)
-                character.dataVars[row._key] = decodedValue[1]
-                character:setData(row._key, decodedValue[1])
-            end
-
-            local characterData = character:getData()
-            local keysToNetwork = table.GetKeys(characterData)
-            net.Start("liaCharacterData")
-            net.WriteUInt(charID, 32)
-            net.WriteUInt(#keysToNetwork, 32)
-            for _, key in ipairs(keysToNetwork) do
-                local value = characterData[key]
-                net.WriteString(key)
-                net.WriteType(value)
-            end
-
-            net.Send(client)
-        else
-            print("No data found for character ID:", charID)
-        end
-    end)
 end
 
 function GM:PlayerDeath(client, inflictor, attacker)
@@ -890,9 +863,7 @@ local function checkFrameworkVersion()
             if localNum and remoteNum then
                 local diff = remoteNum - localNum
                 diff = math.Round(diff, 3)
-                if diff > 0 then
-                    lia.updater(L("frameworkBehindCount", diff))
-                end
+                if diff > 0 then lia.updater(L("frameworkBehindCount", diff)) end
             end
 
             lia.updater(L("frameworkOutdated"))
