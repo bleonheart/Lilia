@@ -157,6 +157,7 @@ local function CharRecognize(ply, lvl, nm)
     end
 
     if count == 0 then return end
+    ply:notifyLocalized("recognitionGiven", count)
     for _, v in ipairs(tgt) do
         lia.log.add(ply, "charRecognize", v:getChar():getID(), nm)
     end
@@ -209,6 +210,7 @@ AddInteraction(L("recognizeOption"), {
         if CLIENT then return end
         promptName(ply, function(nm)
             if tgt:getChar():recognize(ply:getChar(), nm) then
+                ply:notifyLocalized("recognitionGiven", 1)
                 lia.log.add(ply, "charRecognize", tgt:getChar():getID(), nm)
                 net.Start("rgnDone")
                 net.Send(ply)

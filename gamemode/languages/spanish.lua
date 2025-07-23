@@ -307,6 +307,7 @@ LANGUAGE = {
     recognizeOption = "Reconocer",
     recogFakeNamePrompt = "Introduce nombre falso",
     noRecog = "No reconoces a esta persona.",
+    recognitionGiven = "Se otorgó reconocimiento a %s personas.",
     someone = "Alguien",
     options = "Opciones",
     optionsTitle = "Opciones de %s",
