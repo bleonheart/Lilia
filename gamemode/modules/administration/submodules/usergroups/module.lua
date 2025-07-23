@@ -463,11 +463,10 @@ else
 
     function MODULE:CreateMenuButtons(tabs)
         if IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
-            tabs[L("userGroups")] = function(parent)
+            tabs[L("admin")] = function(parent)
                 lia.gui.usergroups = parent
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
-                parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end
