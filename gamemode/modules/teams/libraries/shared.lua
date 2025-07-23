@@ -29,34 +29,35 @@ if SERVER then
     util.AddNetworkString("RosterRequest")
     util.AddNetworkString("RosterData")
     util.AddNetworkString("KickCharacter")
-    local function d(...)
-        print("[RosterDebug]", ...)
+    local function toSteamID(id)
+        if not id then return "" end
+        id = tostring(id)
+        if id:sub(1, 6) == "STEAM_" then return id end
+        return util.SteamIDFrom64(id)
     end
 
     net.Receive("RosterRequest", function(_, client)
+        local facUniqueID = net.ReadString()
         local char = client:getChar()
-        if not char then
-            d("No char", client)
-            return
+        if not char then return end
+        if not (client:IsSuperAdmin() or char:hasFlags("V")) then return end
+        local facTbl
+        if facUniqueID ~= "" then
+            for _, v in pairs(lia.faction.indices) do
+                if tostring(v.uniqueID) == facUniqueID then
+                    facTbl = v
+                    break
+                end
+            end
+        else
+            facTbl = lia.faction.indices[char:getFaction()]
         end
 
-        if not (client:IsSuperAdmin() or char:hasFlags("V")) then
-            d("No perm", client)
-            return
-        end
-
-        local facTbl = lia.faction.indices[char:getFaction()]
-        if not facTbl then
-            d("No faction", char:getID())
-            return
-        end
-
-        local fields = "lia_characters._name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
+        if not facTbl then return end
+        local fields = [[lia_characters._name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline]]
         local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(facTbl.uniqueID)
         local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
-        d("Running query:", query)
         lia.db.query(query, function(data)
-            d("Rows:", data and #data or 0)
             local out = {}
             for _, v in ipairs(data or {}) do
                 local id = tonumber(v._id)
@@ -73,112 +74,75 @@ if SERVER then
                     lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
                 end
 
-                local fID = tonumber(v._faction) or v._faction
-                local fData = lia.faction.get(fID)
-                local fName = fData and fData.name or tostring(fID or "")
-                fID = fData and fData.index or fID
-
-                local cID = tonumber(v._class) or v._class
-                local cData = lia.class.get and lia.class.get(cID) or (lia.class.list and lia.class.list[cID])
-                local cName = cData and cData.name or tostring(cID or "")
+                local classID = tonumber(v._class) or v._class
+                local className = classID == 0 and "None" or lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
                 out[#out + 1] = {
                     id = id,
                     name = v._name,
-                    faction = fName,
-                    factionID = fID,
-                    class = cName,
-                    classID = cID,
-                    steamID = v._steamID,
+                    class = className,
+                    classID = classID,
+                    steamID = toSteamID(v._steamID),
                     lastOnline = lastOnline,
                     hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
                 }
             end
 
-            d("Built:", #out)
             net.Start("RosterData")
             net.WriteString(facTbl.uniqueID)
             net.WriteTable(out)
             net.Send(client)
         end)
     end)
-
-    net.Receive("KickCharacter", function(_, client)
-        local c = client:getChar()
-        if not c then return end
-        if not (client:IsSuperAdmin() or c:hasFlags("V")) then return end
-        local id = net.ReadInt(32)
-        if c:getID() == id then return end
-        local target = lia.char.loaded[id]
-        if not target then return end
-        local ply = target:getPlayer()
-        if IsValid(ply) then ply:Kick("Kicked by roster panel") end
-    end)
 else
     local rosterRows = {}
     local lists = {}
     local built = false
-    local function addRow(list, r)
-        local line = list:AddLine(r.id, r.name, r.lastOnline, r.hoursPlayed, r.faction, r.class)
+    local function toSteamID(id)
+        if not id then return "" end
+        id = tostring(id)
+        if id:sub(1, 6) == "STEAM_" then return id end
+        return util.SteamIDFrom64(id)
+    end
+
+    local function addRow(lst, r)
+        local line = lst:AddLine(r.name, r.steamID, r.class, r.hoursPlayed, r.lastOnline)
         line.rowData = r
     end
 
-    local function makeClassList(parent)
-        local list = parent:Add("DListView")
-        list:Dock(FILL)
-        list:SetMultiSelect(false)
-        list:AddColumn("Class")
-        list:AddColumn("Members")
-        return list
-    end
-
-    local function populate()
+    local function populate(uid)
         if not built then return end
-        if IsValid(lists.faction) then
-            lists.faction:Clear()
-            for _, r in ipairs(rosterRows) do
-                addRow(lists.faction, r)
-            end
-        end
-
-        if IsValid(lists.class) then
-            lists.class:Clear()
-            local counts = {}
-            for _, r in ipairs(rosterRows) do
-                local c = r.class or L("na")
-                counts[c] = (counts[c] or 0) + 1
-            end
-            for className, count in pairs(counts) do
-                lists.class:AddLine(className, count)
-            end
+        local lst = lists[uid]
+        if not IsValid(lst) then return end
+        lst:Clear()
+        for _, r in ipairs(rosterRows[uid] or {}) do
+            addRow(lst, r)
         end
     end
 
     net.Receive("RosterData", function()
-        local srvFactionUnique = net.ReadString()
+        local uid = net.ReadString()
         local data = net.ReadTable()
         local char = LocalPlayer():getChar()
         if not char then return end
         if not (LocalPlayer():IsSuperAdmin() or char:hasFlags("V")) then return end
-        rosterRows = {}
-        for _, d in ipairs(data or {}) do
-            rosterRows[#rosterRows + 1] = d
+        for _, row in ipairs(data or {}) do
+            row.steamID = toSteamID(row.steamID)
         end
 
-        print("[RosterClientDebug] Got", #rosterRows, "rows. First faction:", rosterRows[1] and rosterRows[1].faction or "nil")
-        populate()
+        rosterRows[uid] = data or {}
+        populate(uid)
     end)
 
     local function makeList(parent)
-        local list = parent:Add("DListView")
-        list:Dock(FILL)
-        list:SetMultiSelect(false)
-        list:AddColumn("ID")
-        list:AddColumn("Name")
-        list:AddColumn("Last Online")
-        list:AddColumn("Hours Played")
-        list:AddColumn("Faction")
-        list:AddColumn("Class")
-        list.OnRowRightClick = function(_, _, line)
+        local lst = parent:Add("DListView")
+        lst:Dock(FILL)
+        lst:SetMultiSelect(false)
+        lst:AddColumn("Name")
+        lst:AddColumn("SteamID")
+        lst:AddColumn("Class")
+        lst:AddColumn("Hours Played")
+        lst:AddColumn("Last Online")
+        lst.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
             local row = line.rowData
             local me = LocalPlayer():getChar()
@@ -194,6 +158,7 @@ else
                 end)
             end
 
+            m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. row.steamID) end)
             m:AddOption(L("copyRow"), function()
                 local s = ""
                 for k, v in pairs(row) do
@@ -205,12 +170,9 @@ else
 
             m:Open()
         end
-        return list
+        return lst
     end
 
-    local function build(panel)
-        local sheet = panel:Add("DPropertySheet")
-        sheet:Dock(FILL)
         local pf = vgui.Create("DPanel", sheet)
         pf:Dock(FILL)
         lists.faction = makeList(pf)
@@ -237,6 +199,13 @@ else
             build(panel)
             net.Start("RosterRequest")
             net.SendToServer()
+        end
+
+        tabs["Factions"] = function(panel)
+            rosterRows = {}
+            lists = {}
+            built = false
+            buildFactions(panel)
         end
     end
 end
