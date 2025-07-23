@@ -48,19 +48,17 @@ function lia.admin.load()
 
         local defaults = {"user", "admin", "superadmin"}
         local created = false
-        if not (camiGroups and not table.IsEmpty(camiGroups)) then
-            if table.Count(lia.admin.groups) == 0 then
-                for _, grp in ipairs(defaults) do
-                    lia.admin.createGroup(grp)
-                end
+        if table.Count(lia.admin.groups) == 0 then
+            for _, grp in ipairs(defaults) do
+                lia.admin.createGroup(grp)
+            end
 
-                created = true
-            else
-                for _, grp in ipairs(defaults) do
-                    if not lia.admin.groups[grp] then
-                        lia.admin.createGroup(grp)
-                        created = true
-                    end
+            created = true
+        else
+            for _, grp in ipairs(defaults) do
+                if not lia.admin.groups[grp] then
+                    lia.admin.createGroup(grp)
+                    created = true
                 end
             end
         end
