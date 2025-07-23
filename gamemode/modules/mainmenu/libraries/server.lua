@@ -32,7 +32,7 @@ function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
     return true
 end
 
-function MODULE:PlayerLoadedChar(client)
+function MODULE:PlayerLoadedChar(client, character)
     local charID = character:getID()
     lia.db.query("SELECT _key, _value FROM lia_chardata WHERE _charID = " .. charID, function(data)
         if data then
