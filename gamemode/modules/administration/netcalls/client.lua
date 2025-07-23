@@ -23,12 +23,16 @@ local function deserializeFallback(raw)
     return decoded or raw
 end
 
-local function tableToString(tbl)
+local function tableToString(tbl, braces)
     local out = {}
     for _, value in pairs(tbl) do
         out[#out + 1] = tostring(value)
     end
-    return table.concat(out, ", ")
+    local str = table.concat(out, ", ")
+    if braces then
+        str = "{" .. str .. "}"
+    end
+    return str
 end
 
 local function openRowInfo(row)
@@ -45,8 +49,8 @@ local function openRowInfo(row)
             decoded = deserializeFallback(v)
         end
         local codedStr = istable(v) and tableToString(v) or tostring(v)
-        local decodedStr = istable(decoded) and tableToString(decoded) or tostring(decoded)
-        rows[#rows + 1] = {field = k, type = type(v), coded = codedStr, decoded = decodedStr}
+        local decodedStr = istable(decoded) and tableToString(decoded, true) or tostring(decoded)
+        rows[#rows + 1] = {field = k, type = type(decoded), coded = codedStr, decoded = decodedStr}
     end
     lia.util.CreateTableUI("Row Details", columns, rows)
 end
