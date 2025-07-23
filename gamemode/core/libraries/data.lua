@@ -17,6 +17,26 @@ function lia.data.encodetable(value)
     return value
 end
 
+local function toVector(v)
+    if isvector(v) then return v end
+    if istable(v) then
+        local x = tonumber(v.x or v[1])
+        local y = tonumber(v.y or v[2])
+        local z = tonumber(v.z or v[3])
+        if x and y and z then return Vector(x, y, z) end
+    end
+end
+
+local function toAngle(a)
+    if isangle(a) then return a end
+    if istable(a) then
+        local p = tonumber(a.p or a[1])
+        local y = tonumber(a.y or a[2])
+        local r = tonumber(a.r or a[3])
+        if p and y and r then return Angle(p, y, r) end
+    end
+end
+
 local function _decodeVector(data)
     if isvector(data) then return data end
     if istable(data) then
