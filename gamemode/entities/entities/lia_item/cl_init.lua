@@ -1,9 +1,10 @@
 ﻿local vectorMeta = FindMetaTable("Vector")
 local toScreen = vectorMeta.ToScreen
-function ENT:computeDescMarkup(description)
-    if self.desc ~= description then
+function ENT:computeDescMarkup(description, width)
+    if self.desc ~= description or self.markupWidth ~= width then
         self.desc = description
-        self.markup = lia.markup.parse("<font=liaItemDescFont>" .. description .. "</font>", ScrW() * 0.5)
+        self.markupWidth = width
+        self.markup = lia.markup.parse("<font=liaItemDescFont>" .. description .. "</font>", width or ScrW() * 0.5)
     end
     return self.markup
 end
@@ -24,7 +25,7 @@ function ENT:onDrawEntityInfo(alpha)
     y = y + th + 80
     local desc = item:getDesc()
     self:computeDescMarkup("<font=liaMediumFont>" .. desc .. "</font>", tw)
-    if self.markup then self.markup:draw(x - tw / 2, y, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, alpha) end
+    if self.markup then self.markup:draw(x, y, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, alpha) end
     hook.Run("DrawItemDescription", self, x, y, ColorAlpha(color_white, alpha), alpha)
     item.data, item.entity = oldD, oldE
 end
