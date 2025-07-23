@@ -23,7 +23,7 @@ end
 
 function lia.admin.load()
     if lia.admin.isDisabled() then return end
-    local camiGroups = CAMI.GetUsergroups and CAMI.GetUsergroups()
+    local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(data)
         if camiGroups and not table.IsEmpty(camiGroups) then
             lia.admin.groups = {}
@@ -34,14 +34,14 @@ function lia.admin.load()
             lia.admin.groups = data or {}
         end
 
-        for name, priv in pairs(CAMI.GetPrivileges() or {}) do
+        for name, priv in pairs((CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges()) or {}) do
             lia.admin.privileges[name] = priv
         end
 
-        if camiGroups and not table.IsEmpty(camiGroups) then
+        if camiGroups and not table.IsEmpty(camiGroups) and CAMI then
             for group in pairs(lia.admin.groups) do
                 for privName, priv in pairs(lia.admin.privileges) do
-                    if CAMI.UsergroupInherits(group, priv.MinAccess or "user") then lia.admin.groups[group][privName] = true end
+                    if CAMI.UsergroupInherits and CAMI.UsergroupInherits(group, priv.MinAccess or "user") then lia.admin.groups[group][privName] = true end
                 end
             end
         end
@@ -84,11 +84,13 @@ function lia.admin.createGroup(groupName, info)
 
     lia.admin.groups[groupName] = info or {}
     if SERVER then
-        if not CAMI.GetUsergroup(groupName) then
-            CAMI.RegisterUsergroup({
-                Name = groupName,
-                Inherits = "user",
-            })
+        if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
+            if not CAMI.GetUsergroup(groupName) then
+                CAMI.RegisterUsergroup({
+                    Name = groupName,
+                    Inherits = "user",
+                })
+            end
         end
 
         lia.admin.save(true)
@@ -115,7 +117,9 @@ function lia.admin.removeGroup(groupName)
 
     lia.admin.groups[groupName] = nil
     if SERVER then
-        CAMI.UnregisterUsergroup(groupName)
+        if CAMI and CAMI.UnregisterUsergroup then
+            CAMI.UnregisterUsergroup(groupName)
+        end
         lia.admin.save(true)
     end
 end
@@ -162,7 +166,9 @@ if SERVER then
         if lia.admin.isDisabled() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
-        CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia")
+        if CAMI and CAMI.SignalUserGroupChanged then
+            CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia")
+        end
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
