@@ -19,4 +19,8 @@ MODULE.Privileges = {
         Name = "Staff Permissions - Access Edit Configuration Menu",
         MinAccess = "superadmin"
     },
+    {
+        Name = "Staff Permissions - Manage UserGroups",
+        MinAccess = "superadmin"
+    }
 }
