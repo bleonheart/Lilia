@@ -433,13 +433,13 @@ if SERVER then
 
             client:SetTeam(self:getFaction())
             client:setNetVar("char", self:getID())
-            for k, v in pairs(self:getData("groups", {})) do
+            for k, v in pairs(self:getBodygroups()) do
                 local index = tonumber(k)
                 local value = tonumber(v) or 0
                 if index then client:SetBodygroup(index, value) end
             end
 
-            client:SetSkin(self:getData("skin", 0))
+            client:SetSkin(self:getSkin())
             hook.Run("SetupPlayerModel", client, self)
             if not noNetworking then
                 for _, v in ipairs(self:getInv(true)) do
