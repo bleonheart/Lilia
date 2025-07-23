@@ -32,6 +32,11 @@ function PANEL:Init()
     self.content:DockMargin(64, 0, 64, 64)
     self.content:SetPaintBackground(false)
     self.music = self:Add("liaCharBGMusic")
+    self.modelRotation = 0
+    self.dragging = false
+    self.lastMouseX = 0
+    self.modelBaseAngles = Angle(0, 0, 0)
+    self.cameraOffset = nil
     self:createTitle()
     self:loadBackground()
     if clientChar and lia.characters and #lia.characters > 0 then
@@ -82,7 +87,8 @@ function PANEL:loadBackground()
             local ent = self.modelEntity
             if not IsValid(ent) then return end
             local center = ent:GetPos() + Vector(0, 0, 60)
-            local desired = center + ent:GetForward() * 70
+            local offset = self.cameraOffset or ent:GetForward() * 70
+            local desired = center + offset
             self.currentCamPos = self.currentCamPos and LerpVector(FrameTime() * 5, self.currentCamPos, desired) or desired
             return {
                 origin = self.currentCamPos,
@@ -543,6 +549,9 @@ function PANEL:updateModelEntity(character)
 
     ang.pitch, ang.roll = 0, 0
     self.modelEntity:SetPos(pos)
+    self.modelBaseAngles = ang
+    self.cameraOffset = ang:Forward() * 70
+    self.modelRotation = 0
     self.modelEntity:SetAngles(ang)
     for _, seq in ipairs(self.modelEntity:GetSequenceList()) do
         if seq:lower():find("idle") and seq ~= "idlenoise" then
@@ -708,6 +717,7 @@ function PANEL:OnRemove()
     end
 
     if IsValid(self.modelEntity) then self.modelEntity:Remove() end
+    self:MouseCapture(false)
 end
 
 function PANEL:Think()
@@ -715,6 +725,31 @@ function PANEL:Think()
         self.logo:SetZPos(9999)
         self.logo:MoveToFront()
         self:UpdateLogoPosition()
+    end
+end
+
+function PANEL:OnMousePressed(code)
+    if code == MOUSE_LEFT and self.isLoadMode then
+        self.dragging = true
+        self.lastMouseX = gui.MouseX()
+        self:MouseCapture(true)
+    end
+end
+
+function PANEL:OnMouseReleased(code)
+    if code == MOUSE_LEFT and self.dragging then
+        self.dragging = false
+        self:MouseCapture(false)
+    end
+end
+
+function PANEL:OnCursorMoved(x, y)
+    if self.dragging and IsValid(self.modelEntity) then
+        local delta = x - self.lastMouseX
+        self.lastMouseX = x
+        self.modelRotation = (self.modelRotation or 0) + delta
+        local ang = (self.modelBaseAngles or Angle()) + Angle(0, self.modelRotation, 0)
+        self.modelEntity:SetAngles(ang)
     end
 end
 
