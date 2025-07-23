@@ -7,6 +7,22 @@
     hook.Run("InitializedConfig")
 end)
 
+local function deserializeFallback(raw)
+    if lia.data and lia.data.deserialize then
+        return lia.data.deserialize(raw)
+    end
+
+    if istable(raw) then return raw end
+
+    local decoded = util.JSONToTable(raw)
+    if decoded == nil then
+        local ok, result = pcall(pon.decode, raw)
+        if ok then decoded = result end
+    end
+
+    return decoded or raw
+end
+
 local function openRowInfo(row)
     local columns = {
         {name = "Type", field = "field"},
@@ -17,7 +33,7 @@ local function openRowInfo(row)
     for k, v in pairs(row or {}) do
         local decoded = v
         if isstring(v) then
-            decoded = lia.data.deserialize(v) or v
+            decoded = deserializeFallback(v)
         end
         rows[#rows + 1] = {field = k, coded = tostring(v), decoded = tostring(decoded)}
     end
