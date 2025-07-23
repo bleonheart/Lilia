@@ -202,7 +202,7 @@ local name = player:GetName()
 
 **Purpose**
 
-Wrapper for CAMI privilege checks.
+Checks the player's permissions using the built-in admin system.
 
 **Parameters**
 
@@ -214,7 +214,7 @@ Wrapper for CAMI privilege checks.
 
 **Returns**
 
-* `boolean`: Result from `CAMI.PlayerHasAccess`.
+* `boolean`: Whether the player possesses the privilege.
 
 **Example Usage**
 
