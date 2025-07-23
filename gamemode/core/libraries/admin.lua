@@ -9,6 +9,12 @@ local DEFAULT_GROUPS = {
     superadmin = true,
 }
 
+function lia.admin.print(section, msg)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
+    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
+    MsgC(Color(255, 255, 255), tostring(msg), "\n")
+end
+
 function lia.admin.isDisabled()
     local sysDisabled = hook.Run("ShouldLiliaAdminLoad") == false
     local cmdDisabled = hook.Run("ShouldLiliaAdminCommandsLoad") == false
@@ -60,7 +66,7 @@ function lia.admin.load()
         end
 
         if created then lia.admin.save(true) end
-        lia.bootstrap("Administration", L("adminSystemLoaded"))
+        lia.admin.print("Bootstrap", L("adminSystemLoaded"))
     end
 
     lia.db.selectOne({"_data"}, "admingroups"):next(function(res)
@@ -188,7 +194,9 @@ if SERVER then
         if lia.admin.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
         lia.admin.banList[steamid] = nil
-        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() MsgC(Color(0, 200, 0), "[Lilia Administration] Ban removed.\n") end)
+        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function()
+            lia.admin.print("Ban", "Ban removed.")
+        end)
     end
 
     function lia.admin.isBanned(steamid)
@@ -340,10 +348,10 @@ concommand.Add("plysetgroup", function(ply, _, args)
             if lia.admin.groups[args[2]] then
                 lia.admin.setPlayerGroup(target, args[2])
             else
-                MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
+                lia.admin.print("Error", "Usergroup not found.")
             end
         else
-            MsgC(Color(200, 20, 20), "[Lilia Administration] Error: specified player not found.\n")
+            lia.admin.print("Error", "Specified player not found.")
         end
     end
 end)

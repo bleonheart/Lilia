@@ -315,10 +315,10 @@ local function handleDatabaseWipe(commandName)
 
         if resetCalled < RealTime() then
             resetCalled = RealTime() + 3
-            MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeConfirm", commandName) .. "\n")
+            lia.admin.print("Warning", L("databaseWipeConfirm", commandName))
         else
             resetCalled = 0
-            MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeProgress") .. "\n")
+            lia.admin.print("Warning", L("databaseWipeProgress"))
             hook.Run("OnWipeTables")
             lia.db.wipeTables(lia.db.loadTables)
             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")

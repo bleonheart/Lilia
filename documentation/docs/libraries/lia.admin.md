@@ -311,3 +311,31 @@ Executes a basic admin action by sending the appropriate chat command.
 * *boolean | nil*: `true` if a matching command executed, otherwise `nil`.
 
 ---
+
+### lia.admin.print
+
+**Purpose**
+
+Logs an admin related message with a coloured section tag.
+
+**Parameters**
+
+* `section` (*string*): Context tag for the message.
+
+* `msg` (*string*): Text to print.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.admin.print("Ban", "Player banned successfully")
+```
+
+---
