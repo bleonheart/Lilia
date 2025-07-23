@@ -55,6 +55,7 @@ function GridInv:doesItemOverlapWithOther(testItem, x, y, item)
 end
 
 function GridInv:doesFitInventory(item)
+    if isstring(item) then item = lia.item.list[item] end
     local x, y = self:findFreePosition(item)
     if x and y then return true end
     for _, bagItem in pairs(self:getItems(true)) do
