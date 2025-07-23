@@ -157,3 +157,31 @@ end)
 ```
 
 ---
+
+### lia.time.SecondsToDHM
+
+**Purpose**
+
+Formats a number of seconds as `"Dd Hh Mm"`.
+
+**Parameters**
+
+* `seconds` (*number*): Total seconds to convert.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *string*: Days, hours and minutes formatted as `"0d 0h 0m"`.
+
+**Example Usage**
+
+```lua
+-- Convert 12,345 seconds to a readable string
+local text = lia.time.SecondsToDHM(12345)
+print(text) -- "0d 3h 25m"
+```
+
+---
