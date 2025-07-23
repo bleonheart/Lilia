@@ -362,6 +362,7 @@ function GM:DoPlayerDeath(client, attacker)
         end
     end
 
+    client:stopAction()
     client:SetDSP(31, false)
 end
 
