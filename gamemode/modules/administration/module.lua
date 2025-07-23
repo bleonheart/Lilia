@@ -134,7 +134,7 @@ if SERVER then
 
     local function payloadGroups()
         return {
-            cami = (CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()) or {},
+            cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
             perms = lia.admin.groups or {},
             privList = getPrivList()
         }
@@ -640,3 +640,45 @@ else
         end
     end
 end
+
+hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
+    if lia.admin.isDisabled() then return end
+    lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
+    if SERVER then
+        ensureCAMIGroup(g.Name, g.Inherits or "user")
+        lia.admin.save(true)
+    end
+end)
+
+hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
+    if lia.admin.isDisabled() then return end
+    lia.admin.groups[g.Name] = nil
+    if SERVER then
+        dropCAMIGroup(g.Name)
+        lia.admin.save(true)
+    end
+end)
+
+hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
+    if lia.admin.isDisabled() or not pv or not pv.Name then return end
+    lia.admin.privileges[pv.Name] = {
+        Name = pv.Name,
+        MinAccess = pv.MinAccess or "user"
+    }
+
+    for g in pairs(lia.admin.groups) do
+        if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
+    end
+
+    if SERVER then lia.admin.save(true) end
+end)
+
+hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
+    if lia.admin.isDisabled() or not pv or not pv.Name then return end
+    lia.admin.privileges[pv.Name] = nil
+    for _, p in pairs(lia.admin.groups) do
+        p[pv.Name] = nil
+    end
+
+    if SERVER then lia.admin.save(true) end
+end)

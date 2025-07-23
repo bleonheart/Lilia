@@ -18,16 +18,3 @@ function MODULE:DrawCharInfo(client, _, info)
         info[#info + 1] = {className, classColor}
     end
 end
-
-function MODULE:CreateMenuButtons(tabs)
-    local client = LocalPlayer()
-    if not IsValid(client) then return end
-    local character = client:getChar()
-    if not character then return end
-    local isLeader = client:IsSuperAdmin()  or character:hasFlags("V")
-    if not isLeader then return end
-    tabs[L("roster")] = function(panel)
-        net.Start("RosterRequest")
-        net.SendToServer()
-    end
-end
