@@ -118,6 +118,15 @@ else
         line.rowData = r
     end
 
+    local function makeClassList(parent)
+        local list = parent:Add("DListView")
+        list:Dock(FILL)
+        list:SetMultiSelect(false)
+        list:AddColumn("Class")
+        list:AddColumn("Members")
+        return list
+    end
+
     local function populate()
         if not built then return end
         if IsValid(lists.faction) then
@@ -129,8 +138,13 @@ else
 
         if IsValid(lists.class) then
             lists.class:Clear()
+            local counts = {}
             for _, r in ipairs(rosterRows) do
-                addRow(lists.class, r)
+                local c = r.class or L("na")
+                counts[c] = (counts[c] or 0) + 1
+            end
+            for className, count in pairs(counts) do
+                lists.class:AddLine(className, count)
             end
         end
     end
@@ -197,9 +211,10 @@ else
         pf:Dock(FILL)
         lists.faction = makeList(pf)
         sheet:AddSheet("Faction", pf, "icon16/group.png")
+
         local pc = vgui.Create("DPanel", sheet)
         pc:Dock(FILL)
-        lists.class = makeList(pc)
+        lists.class = makeClassList(pc)
         sheet:AddSheet("Class", pc, "icon16/user.png")
         built = true
         populate()

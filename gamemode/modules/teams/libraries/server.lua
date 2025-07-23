@@ -180,10 +180,22 @@ end
 
 function MODULE:ClassOnLoadout(client)
     local character = client:getChar()
-    local class = lia.class.list[character:getClass()]
+    if not character then return end
+
+    local classIndex = character:getClass()
+    local class = lia.class.list[classIndex]
+
+    if not class or class.faction ~= client:Team() then
+        character:kickClass()
+        class = lia.class.list[character:getClass()]
+    end
+
     if not class then return end
+
     applyAttributes(client, class)
-    if class.model then client:SetModel(class.model) end
+    if class.model then
+        client:SetModel(class.model)
+    end
 end
 
 function MODULE:ClassPostLoadout(client)
