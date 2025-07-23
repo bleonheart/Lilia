@@ -36,15 +36,7 @@
     end
 })
 
-local function formatDHM(seconds)
-    seconds = math.max(seconds or 0, 0)
-    local days = math.floor(seconds / 86400)
-    seconds = seconds % 86400
-    local hours = math.floor(seconds / 3600)
-    seconds = seconds % 3600
-    local minutes = math.floor(seconds / 60)
-    return string.format("%dd %dh %dm", days, hours, minutes)
-end
+
 
 lia.command.add("roster", {
     desc = "rosterDesc",
@@ -92,7 +84,7 @@ lia.command.add("roster", {
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = string.format("%s (%s) ago", timeStripped, lia.time.SecondsToDHM(lastDiff))
                     end
 
                     table.insert(characters, {
@@ -101,7 +93,7 @@ lia.command.add("roster", {
                         faction = v._faction,
                         steamID = v._steamID,
                         lastOnline = lastOnlineText,
-                        hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
+                        hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
                     })
                 end
             else
@@ -165,7 +157,7 @@ lia.command.add("factionmanagement", {
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = string.format("%s (%s) ago", timeStripped, lia.time.SecondsToDHM(lastDiff))
                     end
 
                     table.insert(characters, {
@@ -174,7 +166,7 @@ lia.command.add("factionmanagement", {
                         faction = v._faction,
                         steamID = v._steamID,
                         lastOnline = lastOnlineText,
-                        hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
+                        hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
                     })
                 end
             else
