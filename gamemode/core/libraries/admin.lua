@@ -124,10 +124,7 @@ if SERVER then
 
         if DEFAULT_GROUPS[groupName] then return end
         lia.admin.groups[groupName][permission] = true
-        if SERVER then
-            lia.admin.save(true)
-            hook.Run("CAMI.OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
-        end
+        if SERVER then lia.admin.save(true) end
     end
 
     function lia.admin.removePermission(groupName, permission)
@@ -139,10 +136,7 @@ if SERVER then
 
         if DEFAULT_GROUPS[groupName] then return end
         lia.admin.groups[groupName][permission] = nil
-        if SERVER then
-            lia.admin.save(true)
-            hook.Run("CAMI.OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
-        end
+        if SERVER then lia.admin.save(true) end
     end
 
     function lia.admin.save(network)
