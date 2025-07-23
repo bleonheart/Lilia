@@ -24,6 +24,21 @@ local function buildDefaultTable(g)
     return t
 end
 
+local function ensureCAMIGroup(name, inherits)
+    local groups = CAMI.GetUsergroups() or {}
+    if not groups[name] then
+        CAMI.RegisterUsergroup({
+            Name = name,
+            Inherits = inherits or "user"
+        })
+    end
+end
+
+local function dropCAMIGroup(name)
+    local groups = CAMI.GetUsergroups() or {}
+    if groups[name] then CAMI.UnregisterUsergroup(name) end
+end
+
 if SERVER then
     util.AddNetworkString("liaGroupsAdd")
     util.AddNetworkString("liaGroupsRemove")
@@ -42,12 +57,12 @@ if SERVER then
             }
         end
 
-        for name in pairs(CAMI.GetUsergroups() or {}) do
+        for name, data in pairs(CAMI.GetUsergroups() or {}) do
             lia.admin.groups[name] = lia.admin.groups[name] or buildDefaultTable(name)
+            ensureCAMIGroup(name, data.Inherits or "user")
         end
     end
 
-    syncPrivileges()
     local function allowed(p)
         return IsValid(p) and p:IsSuperAdmin() and p:hasPrivilege("Staff Permissions - Manage UserGroups")
     end
@@ -103,6 +118,12 @@ if SERVER then
         sendBigTable(nil, payload())
     end
 
+    local function applyToCAMI(groupName, tbl)
+        ensureCAMIGroup(groupName, CAMI.GetUsergroups()[groupName] and CAMI.GetUsergroups()[groupName].Inherits or "user")
+        hook.Run("CAMI.OnUsergroupPermissionsChanged", groupName, tbl)
+    end
+
+    syncPrivileges()
     net.Receive("liaGroupsRequest", function(_, p)
         if allowed(p) then
             syncPrivileges()
@@ -116,7 +137,9 @@ if SERVER then
         if n == "" then return end
         lia.admin.createGroup(n)
         lia.admin.groups[n] = buildDefaultTable(n)
+        ensureCAMIGroup(n, "user")
         lia.admin.save(true)
+        applyToCAMI(n, lia.admin.groups[n])
         broadcastGroups()
     end)
 
@@ -126,6 +149,7 @@ if SERVER then
         if n == "" or DEFAULT_GROUPS[n] then return end
         lia.admin.removeGroup(n)
         lia.admin.groups[n] = nil
+        dropCAMIGroup(n)
         lia.admin.save(true)
         broadcastGroups()
     end)
@@ -140,6 +164,7 @@ if SERVER then
         end
 
         lia.admin.save(true)
+        applyToCAMI(g, lia.admin.groups[g])
         broadcastGroups()
     end)
 
@@ -149,6 +174,7 @@ if SERVER then
         if g == "" then return end
         lia.admin.groups[g] = buildDefaultTable(g)
         lia.admin.save(true)
+        applyToCAMI(g, lia.admin.groups[g])
         broadcastGroups()
     end)
 else
@@ -391,13 +417,19 @@ end
 hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
     if lia.admin.isDisabled() then return end
     lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
-    if SERVER then lia.admin.save(true) end
+    if SERVER then
+        ensureCAMIGroup(g.Name, g.Inherits or "user")
+        lia.admin.save(true)
+    end
 end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
     if lia.admin.isDisabled() then return end
     lia.admin.groups[g.Name] = nil
-    if SERVER then lia.admin.save(true) end
+    if SERVER then
+        dropCAMIGroup(g.Name)
+        lia.admin.save(true)
+    end
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
