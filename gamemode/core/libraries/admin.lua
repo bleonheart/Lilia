@@ -126,7 +126,7 @@ if SERVER then
         }, "admingroups")
 
         if network then
-            net.Start("lilia_updateAdminGroups")
+            net.Start("updateAdminGroups")
             net.WriteTable(lia.admin.groups)
             net.Broadcast()
         end
