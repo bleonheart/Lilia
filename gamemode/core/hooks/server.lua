@@ -591,42 +591,43 @@ end
 function GM:LoadData()
     lia.data.loadPersistenceData(function(entities)
         for _, ent in ipairs(entities) do
-            local decodedPos = lia.data.decode(ent.pos)
-            if not isvector(decodedPos) and istable(decodedPos) then
-                local x = tonumber(decodedPos.x or decodedPos[1])
-                local y = tonumber(decodedPos.y or decodedPos[2])
-                local z = tonumber(decodedPos.z or decodedPos[3])
-                if x and y and z then decodedPos = Vector(x, y, z) end
+            local cls = ent.class
+            if not isstring(cls) or cls == "" then
+                lia.error("Invalid entity class.")
+                continue
             end
 
-            local decodedAng = lia.data.decode(ent.angles)
-            if not isangle(decodedAng) and istable(decodedAng) then
-                local p = tonumber(decodedAng.p or decodedAng[1])
-                local yaw = tonumber(decodedAng.y or decodedAng[2])
-                local r = tonumber(decodedAng.r or decodedAng[3])
-                if p and yaw and r then decodedAng = Angle(p, yaw, r) end
+            local decodedPos = toVector(lia.data.decode(ent.pos))
+            local decodedAng = toAngle(lia.data.decode(ent.angles))
+            if not decodedPos then
+                lia.error("Invalid position for " .. cls .. ".")
+                continue
             end
 
-            if not IsEntityNearby(decodedPos, ent.class) then
-                local createdEnt = ents.Create(ent.class)
-                if IsValid(createdEnt) then
-                    if isvector(decodedPos) then createdEnt:SetPos(decodedPos) end
-                    if decodedAng and isangle(decodedAng) then createdEnt:SetAngles(decodedAng) end
-                    if ent.model then createdEnt:SetModel(ent.model) end
-                    createdEnt:Spawn()
-                    if ent.skin then createdEnt:SetSkin(ent.skin) end
-                    if ent.bodygroups then
-                        for index, value in pairs(ent.bodygroups) do
-                            createdEnt:SetBodygroup(tonumber(index), value)
-                        end
-                    end
+            if IsEntityNearby(decodedPos, cls) then
+                lia.error(L("entityCreationAborted", cls, decodedPos.x, decodedPos.y, decodedPos.z))
+                continue
+            end
 
-                    createdEnt:Activate()
-                    hook.Run("OnEntityLoaded", createdEnt, ent.data)
+            local createdEnt = ents.Create(cls)
+            if not IsValid(createdEnt) then
+                lia.error("Failed to create entity " .. cls .. ".")
+                continue
+            end
+
+            createdEnt:SetPos(decodedPos)
+            if decodedAng then createdEnt:SetAngles(decodedAng) end
+            if ent.model then createdEnt:SetModel(ent.model) end
+            createdEnt:Spawn()
+            if ent.skin then createdEnt:SetSkin(tonumber(ent.skin) or 0) end
+            if istable(ent.bodygroups) then
+                for idx, val in pairs(ent.bodygroups) do
+                    createdEnt:SetBodygroup(tonumber(idx) or 0, tonumber(val) or 0)
                 end
-            else
-                lia.error(L("entityCreationAborted", ent.class, decodedPos.x, decodedPos.y, decodedPos.z))
             end
+
+            createdEnt:Activate()
+            hook.Run("OnEntityLoaded", createdEnt, ent.data)
         end
     end)
 
