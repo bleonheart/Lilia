@@ -7,7 +7,7 @@ local function loadPermissions(Privileges)
     for _, privilegeData in ipairs(Privileges) do
         local privilegeName = privilegeData.Name
         if not CAMI.GetPrivilege(privilegeName) then
-            CAMI.RegisterPrivilege({
+            lia.admin.registerPrivilege({
                 Name = privilegeName,
                 MinAccess = privilegeData.MinAccess or "admin"
             })
