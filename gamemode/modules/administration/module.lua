@@ -184,7 +184,6 @@ if SERVER then
 
     local function applyToCAMI(g, t)
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
-        hook.Run("CAMI.OnUsergroupPermissionsChanged", g, t)
     end
 
     local function notify(p, msg)
