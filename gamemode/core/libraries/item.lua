@@ -73,11 +73,10 @@ local DefaultFunctions = {
                 local h = newRot and (item.width or 1) or item.height or 1
                 local invW, invH = inv:getSize()
                 if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then
-                    if item.player and item.player.notifyLocalized then
-                        item.player:notifyLocalized("itemNoFit", w, h)
-                    end
+                    if item.player and item.player.notifyLocalized then item.player:notifyLocalized("itemNoFit", w, h) end
                     return false
                 end
+
                 for _, v in pairs(inv:getItems(true)) do
                     if v ~= item then
                         local ix, iy = v:getData("x"), v:getData("y")
@@ -87,9 +86,7 @@ local DefaultFunctions = {
                             local x2 = x + w - 1
                             local y2 = y + h - 1
                             if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then
-                                if item.player and item.player.notifyLocalized then
-                                    item.player:notifyLocalized("itemNoFit", w, h)
-                                end
+                                if item.player and item.player.notifyLocalized then item.player:notifyLocalized("itemNoFit", w, h) end
                                 return false
                             end
                         end
@@ -100,7 +97,7 @@ local DefaultFunctions = {
             item:setData("rotated", newRot)
             return false
         end,
-        onCanRun = function(item) return not IsValid(item.entity) and item.width ~= item.height end
+        onCanRun = function(item) return not IsValid(item.entity) and item.width ~= item.height and not item:getData("equip", false) end
     },
     giveForward = {
         tip = "giveForwardTip",
