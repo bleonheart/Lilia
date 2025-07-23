@@ -248,3 +248,51 @@ net.Receive("KickCharacter", function(_, client)
         lia.char.setCharData(characterID, "factionKickWarn", true)
     end
 end)
+
+net.Receive("RosterRequest", function(_, client)
+    local character = client:getChar()
+    if not character then return end
+    local isLeader = client:IsSuperAdmin() or character:hasFlags("V")
+    if not isLeader then return end
+
+    local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
+    local factionIndex = character:getFaction()
+    local faction = lia.faction.indices[factionIndex]
+    if not faction then return end
+    local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(faction.uniqueID)
+    local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+    lia.db.query(query, function(data)
+        local characters = {}
+        if data then
+            for _, v in ipairs(data) do
+                local charID = tonumber(v._id)
+                local isOnline = lia.char.loaded[charID] ~= nil
+                local lastOnlineText
+                if isOnline then
+                    lastOnlineText = L("onlineNow")
+                else
+                    local last = tonumber(v._lastOnline)
+                    if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
+                    local lastDiff = os.time() - last
+                    local timeSince = lia.time.TimeSince(last)
+                    local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
+                    lastOnlineText = string.format("%s (%s) ago", timeStripped, lia.time.SecondsToDHM(lastDiff))
+                end
+
+                table.insert(characters, {
+                    id = charID,
+                    name = v._name,
+                    faction = v._faction,
+                    steamID = v._steamID,
+                    lastOnline = lastOnlineText,
+                    hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
+                })
+            end
+        end
+
+        net.Start("CharacterInfo")
+        net.WriteString(faction.uniqueID)
+        net.WriteTable(characters)
+        net.Send(client)
+    end)
+end)

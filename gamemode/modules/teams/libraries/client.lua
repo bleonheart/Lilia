@@ -26,5 +26,8 @@ function MODULE:CreateMenuButtons(tabs)
     if not character then return end
     local isLeader = client:IsSuperAdmin()  or character:hasFlags("V")
     if not isLeader then return end
-    tabs[L("roster")] = function(panel) end
+    tabs[L("roster")] = function(panel)
+        net.Start("RosterRequest")
+        net.SendToServer()
+    end
 end
