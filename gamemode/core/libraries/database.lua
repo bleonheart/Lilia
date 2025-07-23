@@ -359,6 +359,7 @@ function lia.db.loadTables()
                 _lastJoinTime DATETIME,
                 _money VARCHAR,
                 _faction VARCHAR,
+                _class INTEGER,
                 recognition TEXT NOT NULL DEFAULT '',
                 recognized_as TEXT NOT NULL DEFAULT ''
             );
@@ -534,6 +535,7 @@ function lia.db.loadTables()
                 `_lastJoinTime` DATETIME NOT NULL,
                 `_money` INT(10) UNSIGNED NULL DEFAULT '0',
                 `_faction` VARCHAR(255) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+                `_class` INT(12) NULL DEFAULT NULL,
                 `recognition` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 `recognized_as` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_id`)

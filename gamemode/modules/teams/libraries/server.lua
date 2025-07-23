@@ -47,24 +47,21 @@ function MODULE:PlayerLoadedChar(client, character)
         character:setData("factionKickWarn", nil)
     end
 
-    local data = character:getData("pclass")
-    local class = data and lia.class.list[data]
+    local classIndex = character:getClass()
+    local class = lia.class.list[classIndex]
     if character then
-        if class and data then
-            local oldClass = character:getClass()
-            if client:Team() == class.faction then
-                timer.Simple(.3, function()
-                    character:setClass(class.index)
-                    hook.Run("OnPlayerJoinClass", client, class.index, oldClass)
-                    return
-                end)
-            end
-        end
-
-        for _, v in pairs(lia.class.list) do
-            if v.faction == client:Team() and v.isDefault then
-                character:setClass(v.index)
-                break
+        if class and client:Team() == class.faction then
+            local oldClass = classIndex
+            timer.Simple(.3, function()
+                character:setClass(classIndex)
+                hook.Run("OnPlayerJoinClass", client, classIndex, oldClass)
+            end)
+        else
+            for _, v in pairs(lia.class.list) do
+                if v.faction == client:Team() and v.isDefault then
+                    character:setClass(v.index)
+                    break
+                end
             end
         end
     end

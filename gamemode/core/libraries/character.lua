@@ -223,6 +223,9 @@ lia.char.registerVar("model", {
 })
 
 lia.char.registerVar("class", {
+    field = "_class",
+    fieldType = "integer",
+    default = 0,
     noDisplay = true,
 })
 
