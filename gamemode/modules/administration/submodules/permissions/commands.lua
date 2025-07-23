@@ -609,22 +609,18 @@ lia.command.add("charvoicetoggle", {
             return false
         end
 
-        local char = target:getChar()
-        if char then
-            local isBanned = char:getData("VoiceBan", false)
-            char:setData("VoiceBan", not isBanned)
-            if isBanned then
-                client:notifyLocalized("voiceUnmuted", target:Name())
-                target:notifyLocalized("voiceUnmutedByAdmin")
-            else
-                client:notifyLocalized("voiceMuted", target:Name())
-                target:notifyLocalized("voiceMutedByAdmin")
-            end
-
-            lia.log.add(client, "voiceToggle", target:Name(), isBanned and "Unmuted" or "Muted")
+        local isBanned = target:getLiliaData("VoiceBan", false)
+        target:setLiliaData("VoiceBan", not isBanned)
+        target:saveLiliaData()
+        if isBanned then
+            client:notifyLocalized("voiceUnmuted", target:Name())
+            target:notifyLocalized("voiceUnmutedByAdmin")
         else
-            client:notifyLocalized("noValidCharacter")
+            client:notifyLocalized("voiceMuted", target:Name())
+            target:notifyLocalized("voiceMutedByAdmin")
         end
+
+        lia.log.add(client, "voiceToggle", target:Name(), isBanned and "Unmuted" or "Muted")
     end
 })
 
