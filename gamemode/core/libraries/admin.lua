@@ -197,7 +197,7 @@ if SERVER then
     end
 
     function lia.admin.setPlayerGroup(ply, usergroup)
-        if lia.admin.isDisabled() then return end
+        if lia.admin.isDisabled() or ply:IsBot() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then
@@ -338,7 +338,7 @@ function lia.admin.execCommand(cmd, victim, dur, reason)
 end
 
 hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
-    if lia.admin.isDisabled() then return end
+    if lia.admin.isDisabled() or ply:IsBot() then return end
     local steam64 = util.SteamIDTo64(steamID)
     if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))

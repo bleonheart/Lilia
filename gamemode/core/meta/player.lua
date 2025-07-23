@@ -18,6 +18,7 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
+    if self:IsBot() then return false end
     local group = self:GetUserGroup()
     local perms = lia.admin.groups[group]
     if not perms then return false end
@@ -566,6 +567,7 @@ if SERVER then
     end
 
     function playerMeta:banPlayer(reason, duration)
+        if self:IsBot() then return end
         lia.admin.addBan(self:SteamID64(), reason, duration)
         self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
     end
