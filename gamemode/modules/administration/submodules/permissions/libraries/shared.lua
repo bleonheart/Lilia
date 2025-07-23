@@ -8,7 +8,7 @@ function MODULE:InitializedModules()
             if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
                 local privilege = "Staff Permissions - Access Property " .. name:gsub("^%l", string.upper)
                 if not CAMI.GetPrivilege(privilege) then
-                    CAMI.RegisterPrivilege({
+                    lia.admin.registerPrivilege({
                         Name = privilege,
                         MinAccess = "admin"
                     })
@@ -22,7 +22,7 @@ function MODULE:InitializedModules()
             for tool in pairs(wep.Tool) do
                 local privilege = "Staff Permissions - Access Tool " .. tool:gsub("^%l", string.upper)
                 if not CAMI.GetPrivilege(privilege) then
-                    CAMI.RegisterPrivilege({
+                    lia.admin.registerPrivilege({
                         Name = privilege,
                         MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin"
                     })
