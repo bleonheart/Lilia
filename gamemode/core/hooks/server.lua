@@ -335,6 +335,12 @@ function GM:PostPlayerLoadout(client)
     if not character then return end
     client:Give("lia_hands")
     client:SetupHands()
+    for k, v in pairs(character:getData("groups", {})) do
+        local index = tonumber(k)
+        local value = tonumber(v) or 0
+        if index then client:SetBodygroup(index, value) end
+    end
+    client:SetSkin(character:getData("skin", 0))
     client:setNetVar("VoiceType", "Talking")
 end
 
