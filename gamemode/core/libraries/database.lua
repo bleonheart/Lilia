@@ -413,8 +413,9 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS lia_ticketclaims (
-                _request TEXT,
+                _requester TEXT,
                 _admin TEXT,
+                _message TEXT,
                 _timestamp INTEGER
             );
 
@@ -592,8 +593,9 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
-                `_request` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_admin` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_requester` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_admin` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `_message` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_timestamp` INT(32) NOT NULL
             );
 

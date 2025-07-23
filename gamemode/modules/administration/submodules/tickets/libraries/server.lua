@@ -2,6 +2,9 @@
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
         local adminID = row._admin
+        if adminID ~= "Unassigned" then
+            adminID = tostring(adminID):match("(%d+)$") or adminID
+        end
         caseclaims[adminID] = caseclaims[adminID] or {
             name = adminID,
             claims = 0,
@@ -12,8 +15,8 @@
         local info = caseclaims[adminID]
         info.claims = info.claims + 1
         if row._timestamp > info.lastclaim then info.lastclaim = row._timestamp end
-        local reqPly = player.GetBySteamID64(row._request)
-        info.claimedFor[row._request] = IsValid(reqPly) and reqPly:Nick() or row._request
+        local reqPly = player.GetBySteamID64(row._requester)
+        info.claimedFor[row._requester] = IsValid(reqPly) and reqPly:Nick() or row._requester
     end
 
     for adminID, info in pairs(caseclaims) do
@@ -24,15 +27,13 @@
 end
 
 function MODULE:GetAllCaseClaims()
-    return lia.db.select({"_request", "_admin", "_timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
+    return lia.db.select({"_requester", "_admin", "_timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    lia.db.insertTable({
-        _request = requester:SteamID64(),
-        _admin = admin:SteamID64(),
-        _timestamp = os.time()
-    }, nil, "ticketclaims")
+    lia.db.updateTable({
+        _admin = admin:Name() .. " " .. admin:SteamID64()
+    }, nil, "ticketclaims", "_requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND _admin = 'Unassigned'")
 end
 
 function MODULE:PlayerSay(client, text)
@@ -40,6 +41,12 @@ function MODULE:PlayerSay(client, text)
         text = string.sub(text, 2)
         ClientAddText(client, Color(70, 0, 130), L("ticketMessageYou"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. " ", Color(0, 255, 0), text)
         self:SendPopup(client, text)
+        lia.db.insertTable({
+            _requester = client:SteamID64(),
+            _admin = "Unassigned",
+            _message = text,
+            _timestamp = os.time()
+        }, nil, "ticketclaims")
         return ""
     end
 end
