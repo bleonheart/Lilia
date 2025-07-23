@@ -173,17 +173,33 @@ else
         return lst
     end
 
-        local pf = vgui.Create("DPanel", sheet)
-        pf:Dock(FILL)
-        lists.faction = makeList(pf)
-        sheet:AddSheet("Faction", pf, "icon16/group.png")
-
-        local pc = vgui.Create("DPanel", sheet)
-        pc:Dock(FILL)
-        lists.class = makeClassList(pc)
-        sheet:AddSheet("Class", pc, "icon16/user.png")
+    local function buildRoster(panel)
+        local char = LocalPlayer():getChar()
+        if not char then return end
+        local fac = lia.faction.indices[char:getFaction()]
+        if not fac then return end
+        local uid = fac.uniqueID
+        lists[uid] = makeList(panel)
         built = true
-        populate()
+        net.Start("RosterRequest")
+        net.WriteString(uid)
+        net.SendToServer()
+    end
+
+    local function buildFactions(panel)
+        local ps = panel:Add("DPropertySheet")
+        ps:Dock(FILL)
+        for _, fac in pairs(lia.faction.indices) do
+            local pnl = ps:Add("Panel")
+            pnl:Dock(FILL)
+            lists[fac.uniqueID] = makeList(pnl)
+            ps:AddSheet(fac.name or fac.uniqueID, pnl)
+            net.Start("RosterRequest")
+            net.WriteString(fac.uniqueID)
+            net.SendToServer()
+        end
+
+        built = true
     end
 
     function MODULE:CreateMenuButtons(tabs)
@@ -196,9 +212,7 @@ else
             rosterRows = {}
             lists = {}
             built = false
-            build(panel)
-            net.Start("RosterRequest")
-            net.SendToServer()
+            buildRoster(panel)
         end
 
         tabs["Factions"] = function(panel)
