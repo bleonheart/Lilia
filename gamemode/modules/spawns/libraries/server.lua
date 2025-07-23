@@ -18,10 +18,15 @@ function MODULE:FetchSpawns()
             for i = 1, #spawns do
                 local spawnData = lia.data.deserialize(spawns[i])
                 if isvector(spawnData) then
-                    spawnData = {pos = spawnData, ang = angle_zero}
+                    spawnData = {
+                        pos = spawnData,
+                        ang = angle_zero
+                    }
                 end
+
                 t[i] = spawnData
             end
+
             result[fac] = t
         end
         return result
@@ -48,30 +53,22 @@ function MODULE:StoreSpawns(spawns)
     }, TABLE)
 end
 
-function MODULE:LoadData(n)
-    n = n or 1
-    self:FetchSpawns():next(function(spawns)
-        if (not spawns or table.IsEmpty(spawns)) and n < 5 then
-            timer.Simple(1, function()
-                if not self.loaded then self:LoadData(n + 1) end
-            end)
-            return
-        end
-
-        self.loaded = true
-    end)
-end
-
-function MODULE:SaveData()
-    -- Spawns are saved dynamically when modified
-end
-
 local function SpawnPlayer(client)
-    if not IsValid(client) then return end
+    print("[SpawnPlayer] called for", IsValid(client) and client:Name() or tostring(client))
+    if not IsValid(client) then
+        print("[SpawnPlayer] invalid client")
+        return
+    end
+
     local character = client:getChar()
-    if not character then return end
+    if not character then
+        print("[SpawnPlayer] no character")
+        return
+    end
+
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
+        print("[SpawnPlayer] using last position")
         client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
         client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
@@ -86,18 +83,26 @@ local function SpawnPlayer(client)
         end
     end
 
+    print("[SpawnPlayer] factionID", factionID or "nil")
     if factionID then
         MODULE:FetchSpawns():next(function(spawns)
-            local factionSpawns = spawns[factionID]
+            print("[SpawnPlayer] spawns fetched:", spawns and "ok" or "nil")
+            local factionSpawns = spawns and spawns[factionID]
+            print("[SpawnPlayer] spawn count", factionSpawns and #factionSpawns or 0)
             if factionSpawns and #factionSpawns > 0 then
                 local data = table.Random(factionSpawns)
                 local pos = (data.pos or data) + Vector(0, 0, 16)
                 local ang = data.ang or angle_zero
+                print("[SpawnPlayer] selected pos", pos, "ang", ang)
                 client:SetPos(pos)
                 client:SetEyeAngles(ang)
                 hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+            else
+                print("[SpawnPlayer] no valid spawns for faction")
             end
-        end)
+        end, function(err) print("[SpawnPlayer] FetchSpawns error:", err) end)
+    else
+        print("[SpawnPlayer] missing factionID")
     end
 end
 
@@ -113,30 +118,7 @@ function MODULE:CharPreSave(character)
     end
 end
 
-function MODULE:PlayerDeath(client, _, attacker)
-    local char = client:getChar()
-    if not char then return end
-    if attacker:IsPlayer() then
-        if lia.config.get("LoseItemsonDeathHuman", false) then self:RemovedDropOnDeathItems(client) end
-        if lia.config.get("DeathPopupEnabled", true) then
-            local dateStr = lia.time.GetDate()
-            local attackerChar = attacker:getChar()
-            local charId = attackerChar and tostring(attackerChar:getID()) or L("na")
-            local steamId = tostring(attacker:SteamID64())
-            ClientAddText(client, Color(255, 0, 0), "[" .. string.upper(L("death")) .. "]: ", Color(255, 255, 255), dateStr, " - ", L("killedBy"), " ", Color(255, 215, 0), L("characterID"), ": ", Color(255, 255, 255), charId, " (", Color(0, 255, 0), steamId, Color(255, 255, 255), ")")
-        end
-    end
-
-    client:setNetVar("IsDeadRestricted", true)
-    client:setNetVar("lastDeathTime", os.time())
-    timer.Simple(lia.config.get("SpawnTime"), function() if IsValid(client) then client:setNetVar("IsDeadRestricted", false) end end)
-    client:SetDSP(30, false)
-    char:setLastPos(nil)
-    if not attacker:IsPlayer() and lia.config.get("LoseItemsonDeathNPC", false) or attacker:IsWorld() and lia.config.get("LoseItemsonDeathWorld", false) then self:RemovedDropOnDeathItems(client) end
-    char:setData("deathPos", client:GetPos())
-end
-
-function MODULE:RemovedDropOnDeathItems(client)
+local function RemovedDropOnDeathItems(client)
     local character = client:getChar()
     if not character then return end
     local inventory = character:getInv()
@@ -157,6 +139,29 @@ function MODULE:RemovedDropOnDeathItems(client)
 
     local lostCount = #client.LostItems
     if lostCount > 0 then client:notifyLocalized("itemsLostOnDeath", lostCount) end
+end
+
+function MODULE:PlayerDeath(client, _, attacker)
+    local char = client:getChar()
+    if not char then return end
+    if attacker:IsPlayer() then
+        if lia.config.get("LoseItemsonDeathHuman", false) then RemovedDropOnDeathItems(client) end
+        if lia.config.get("DeathPopupEnabled", true) then
+            local dateStr = lia.time.GetDate()
+            local attackerChar = attacker:getChar()
+            local charId = attackerChar and tostring(attackerChar:getID()) or L("na")
+            local steamId = tostring(attacker:SteamID64())
+            ClientAddText(client, Color(255, 0, 0), "[" .. string.upper(L("death")) .. "]: ", Color(255, 255, 255), dateStr, " - ", L("killedBy"), " ", Color(255, 215, 0), L("characterID"), ": ", Color(255, 255, 255), charId, " (", Color(0, 255, 0), steamId, Color(255, 255, 255), ")")
+        end
+    end
+
+    client:setNetVar("IsDeadRestricted", true)
+    client:setNetVar("lastDeathTime", os.time())
+    timer.Simple(lia.config.get("SpawnTime"), function() if IsValid(client) then client:setNetVar("IsDeadRestricted", false) end end)
+    client:SetDSP(30, false)
+    char:setLastPos(nil)
+    if not attacker:IsPlayer() and lia.config.get("LoseItemsonDeathNPC", false) or attacker:IsWorld() and lia.config.get("LoseItemsonDeathWorld", false) then RemovedDropOnDeathItems(client) end
+    char:setData("deathPos", client:GetPos())
 end
 
 function MODULE:PlayerSpawn(client)
