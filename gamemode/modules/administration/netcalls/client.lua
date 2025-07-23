@@ -7,6 +7,59 @@
     hook.Run("InitializedConfig")
 end)
 
+local function openRowInfo(row)
+    local columns = {
+        {name = "Type", field = "field"},
+        {name = "Coded", field = "coded"},
+        {name = "Decoded", field = "decoded"}
+    }
+    local rows = {}
+    for k, v in pairs(row or {}) do
+        local decoded = v
+        if isstring(v) then
+            decoded = lia.data.deserialize(v) or v
+        end
+        rows[#rows + 1] = {field = k, coded = tostring(v), decoded = tostring(decoded)}
+    end
+    lia.util.CreateTableUI("Row Details", columns, rows)
+end
+
+net.Receive("liaDBTables", function()
+    local tables = net.ReadTable()
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle("Lilia Tables")
+    frame:SetSize(300, 400)
+    frame:Center()
+    frame:MakePopup()
+    local list = vgui.Create("DListView", frame)
+    list:Dock(FILL)
+    list:AddColumn("Table")
+    for _, tbl in ipairs(tables or {}) do
+        list:AddLine(tbl)
+    end
+    function list:OnRowSelected(_, line)
+        net.Start("liaRequestTableData")
+        net.WriteString(line:GetColumnText(1))
+        net.SendToServer()
+    end
+end)
+
+net.Receive("liaDBTableData", function()
+    local tbl = net.ReadString()
+    local data = net.ReadTable()
+    if not data or #data == 0 then return end
+    local columns = {}
+    for k in pairs(data[1]) do
+        columns[#columns + 1] = {name = k, field = k}
+    end
+    local _, list = lia.util.CreateTableUI(tbl, columns, data)
+    if IsValid(list) then
+        function list:OnRowSelected(_, line)
+            openRowInfo(line.rowData)
+        end
+    end
+end)
+
 net.Receive("cfgSet", function()
     local key = net.ReadString()
     local value = net.ReadType()
