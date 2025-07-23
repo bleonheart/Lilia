@@ -69,3 +69,13 @@ function lia.time.GetHour()
     end
     return ct.hour
 end
+
+function lia.time.SecondsToDHM(seconds)
+    seconds = math.max(seconds or 0, 0)
+    local days = math.floor(seconds / 86400)
+    seconds = seconds % 86400
+    local hours = math.floor(seconds / 3600)
+    seconds = seconds % 3600
+    local minutes = math.floor(seconds / 60)
+    return string.format("%dd %dh %dm", days, hours, minutes)
+end
