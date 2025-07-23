@@ -51,6 +51,26 @@ local function openRowInfo(row)
     lia.util.CreateTableUI("Row Details", columns, rows)
 end
 
+local dbChunks = {}
+local function handleTableData(id)
+    local data = table.concat(dbChunks[id])
+    dbChunks[id] = nil
+    local payload = util.JSONToTable(util.Decompress(data) or "") or {}
+    local tbl = payload.tbl
+    local rows = payload.data or {}
+    if not tbl or #rows == 0 then return end
+    local columns = {}
+    for k in pairs(rows[1]) do
+        columns[#columns + 1] = {name = k, field = k}
+    end
+    local _, list = lia.util.CreateTableUI(tbl, columns, rows)
+    if IsValid(list) then
+        function list:OnRowSelected(_, line)
+            openRowInfo(line.rowData)
+        end
+    end
+end
+
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
     local frame = vgui.Create("DFrame")
@@ -71,20 +91,20 @@ net.Receive("liaDBTables", function()
     end
 end)
 
-net.Receive("liaDBTableData", function()
-    local tbl = net.ReadString()
-    local data = net.ReadTable()
-    if not data or #data == 0 then return end
-    local columns = {}
-    for k in pairs(data[1]) do
-        columns[#columns + 1] = {name = k, field = k}
-    end
-    local _, list = lia.util.CreateTableUI(tbl, columns, data)
-    if IsValid(list) then
-        function list:OnRowSelected(_, line)
-            openRowInfo(line.rowData)
-        end
-    end
+net.Receive("liaDBTableDataChunk", function()
+    local id = net.ReadString()
+    local idx = net.ReadUInt(16)
+    local total = net.ReadUInt(16)
+    local len = net.ReadUInt(16)
+    local dat = net.ReadData(len)
+    dbChunks[id] = dbChunks[id] or {}
+    dbChunks[id][idx] = dat
+    if idx == total then handleTableData(id) end
+end)
+
+net.Receive("liaDBTableDataDone", function()
+    local id = net.ReadString()
+    if dbChunks[id] then handleTableData(id) end
 end)
 
 net.Receive("cfgSet", function()

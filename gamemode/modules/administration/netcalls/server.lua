@@ -23,15 +23,36 @@
     end
 end)
 
+local DB_CHUNK = 60000
+local function sendTableData(client, name, data)
+    local payload = {tbl = name, data = data or {}}
+    local json = util.TableToJSON(payload)
+    local comp = util.Compress(json)
+    local len = #comp
+    local id = util.CRC(tostring(SysTime()) .. len)
+    local parts = math.ceil(len / DB_CHUNK)
+    for i = 1, parts do
+        local chunk = string.sub(comp, (i - 1) * DB_CHUNK + 1, math.min(i * DB_CHUNK, len))
+        net.Start("liaDBTableDataChunk")
+        net.WriteString(id)
+        net.WriteUInt(i, 16)
+        net.WriteUInt(parts, 16)
+        net.WriteUInt(#chunk, 16)
+        net.WriteData(chunk, #chunk)
+        net.Send(client)
+    end
+
+    net.Start("liaDBTableDataDone")
+    net.WriteString(id)
+    net.Send(client)
+end
+
 net.Receive("liaRequestTableData", function(_, client)
     if not client:hasPrivilege("View DB Tables") then return end
     local tbl = net.ReadString()
     if not tbl or tbl == "" then return end
     lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res)
-        net.Start("liaDBTableData")
-        net.WriteString(tbl)
-        net.WriteTable(res or {})
-        net.Send(client)
+        sendTableData(client, tbl, res or {})
     end)
 end)
 
