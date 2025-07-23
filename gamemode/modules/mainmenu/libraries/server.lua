@@ -3,7 +3,22 @@
         if not IsValid(client) then return end
         MsgN(L("loadedCharacters", table.concat(charList, ", "), client:Name()))
         for _, v in ipairs(charList) do
-            if lia.char.loaded[v] then lia.char.loaded[v]:sync(client) end
+            local char = lia.char.loaded[v]
+            if char then
+                char:sync(client)
+                local data = char:getData()
+                if not table.IsEmpty(data) then
+                    local keys = table.GetKeys(data)
+                    net.Start("liaCharacterData")
+                    net.WriteUInt(char:getID(), 32)
+                    net.WriteUInt(#keys, 32)
+                    for _, key in ipairs(keys) do
+                        net.WriteString(key)
+                        net.WriteType(data[key])
+                    end
+                    net.Send(client)
+                end
+            end
         end
 
         for _, v in player.Iterator() do
