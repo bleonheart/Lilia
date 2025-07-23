@@ -8,6 +8,7 @@ local DEFAULT_GROUPS = {
     admin = true,
     superadmin = true,
 }
+
 function lia.admin.isDisabled()
     local sysDisabled = hook.Run("ShouldLiliaAdminLoad") == false
     local cmdDisabled = hook.Run("ShouldLiliaAdminCommandsLoad") == false
@@ -83,6 +84,7 @@ function lia.admin.createGroup(groupName, info)
                 Inherits = "user",
             })
         end
+
         lia.admin.save(true)
     end
 end
@@ -121,7 +123,6 @@ if SERVER then
         end
 
         if DEFAULT_GROUPS[groupName] then return end
-
         lia.admin.groups[groupName][permission] = true
         if SERVER then
             lia.admin.save(true)
@@ -137,7 +138,6 @@ if SERVER then
         end
 
         if DEFAULT_GROUPS[groupName] then return end
-
         lia.admin.groups[groupName][permission] = nil
         if SERVER then
             lia.admin.save(true)
@@ -335,7 +335,7 @@ end)
 concommand.Add("plysetgroup", function(ply, _, args)
     if lia.admin.isDisabled() then return end
     if not IsValid(ply) then
-        local target = lia.util.findPlayer(args[1])
+        local target = lia.command.findPlayer(client, args[1])
         if IsValid(target) then
             if lia.admin.groups[args[2]] then
                 lia.admin.setPlayerGroup(target, args[2])
@@ -345,16 +345,5 @@ concommand.Add("plysetgroup", function(ply, _, args)
         else
             MsgC(Color(200, 20, 20), "[Lilia Administration] Error: specified player not found.\n")
         end
-    end
-end)
-
-hook.Add("CAMI.PlayerHasAccess", "liaAdminPermissions", function(_, ply, priv, cb)
-    if lia.admin.isDisabled() then return end
-    if not IsValid(ply) then return end
-    local group = ply:GetUserGroup()
-    local perms = lia.admin.groups[group]
-    if perms and perms[priv] then
-        cb(true)
-        return true
     end
 end)
