@@ -249,10 +249,10 @@ else
             setFont(lbl, "liaMediumFont")
             lbl:SizeToContents()
             lbl:DockMargin(0, lblOffset, 8, 0)
-            local chk = row:Add("DCheckBox")
+            local chk = row:Add("liaCheckBox")
             chk:Dock(LEFT)
             chk:SetWide(22)
-            chk:SetValue(current[priv] and 1 or 0)
+            chk:SetChecked(current[priv] and true or false)
             chk.OnChange = function(_, v)
                 if v then
                     current[priv] = true
@@ -273,7 +273,7 @@ else
         listHolder:SetTall(totalH)
         local function setAll(state)
             for _, cb in ipairs(checkboxes) do
-                cb:SetValue(state)
+                cb:SetChecked(state)
             end
         end
 
