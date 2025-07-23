@@ -495,7 +495,11 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     end
 
     self.selectBtn.DoClick = function()
-        lia.module.list["mainmenu"]:chooseCharacter(character:getID())
+        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err)
+            if err and err ~= "" then
+                LocalPlayer():notifyLocalized(err)
+            end
+        end)
         self:Remove()
     end
 
