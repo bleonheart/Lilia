@@ -24,12 +24,15 @@ function MODULE:LoadData(n)
         for fac, spawns in pairs(factions or {}) do
             local t = {}
             for i = 1, #spawns do
-                t[i] = lia.data.decodeVector(spawns[i])
-                PrintTable(t[i], 1)
+                local spawnData = lia.data.deserialize(spawns[i])
+                if isvector(spawnData) then
+                    -- Legacy data stored only as a vector
+                    spawnData = {pos = spawnData, ang = angle_zero}
+                end
+                t[i] = spawnData
             end
 
             self.spawns[fac] = t
-            PrintTable(self.spawns, 1)
         end
 
         self.loaded = true
@@ -40,8 +43,8 @@ function MODULE:SaveData()
     local factions = {}
     for fac, spawns in pairs(self.spawns or {}) do
         factions[fac] = {}
-        for _, pos in ipairs(spawns) do
-            factions[fac][#factions[fac] + 1] = encodetable(pos)
+        for _, data in ipairs(spawns) do
+            factions[fac][#factions[fac] + 1] = encodetable(data)
         end
     end
 
@@ -76,16 +79,18 @@ local function SpawnPlayer(client)
         end
     end
 
-    local spawnPos
+    local spawnData
     if factionID and MODULE.spawns then
         local factionSpawns = MODULE.spawns[factionID]
-        if factionSpawns and #factionSpawns > 0 then spawnPos = table.Random(factionSpawns) end
+        if factionSpawns and #factionSpawns > 0 then spawnData = table.Random(factionSpawns) end
     end
 
-    if spawnPos then
-        spawnPos = spawnPos + Vector(0, 0, 16)
-        client:SetPos(spawnPos)
-        hook.Run("PlayerSpawnPointSelected", client, spawnPos)
+    if spawnData then
+        local pos = (spawnData.pos or spawnData) + Vector(0, 0, 16)
+        local ang = spawnData.ang or angle_zero
+        client:SetPos(pos)
+        client:SetEyeAngles(ang)
+        hook.Run("PlayerSpawnPointSelected", client, pos, ang)
     end
 end
 

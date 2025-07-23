@@ -19,7 +19,10 @@ lia.command.add("spawnadd", {
 
         if factionInfo then
             MODULE.spawns[factionInfo.uniqueID] = MODULE.spawns[factionInfo.uniqueID] or {}
-            table.insert(MODULE.spawns[factionInfo.uniqueID], client:GetPos())
+            table.insert(MODULE.spawns[factionInfo.uniqueID], {
+                pos = client:GetPos(),
+                ang = client:EyeAngles()
+            })
             MODULE:SaveData()
             lia.log.add(client, "spawnAdd", factionInfo.name)
             return L("spawnAdded", L(factionInfo.name))
@@ -40,7 +43,8 @@ lia.command.add("spawnremoveinradius", {
         local removedCount = 0
         for faction, spawns in pairs(MODULE.spawns) do
             for i = #spawns, 1, -1 do
-                if spawns[i]:Distance(position) <= radius then
+                local spawn = spawns[i].pos or spawns[i]
+                if spawn:Distance(position) <= radius then
                     table.remove(MODULE.spawns[faction], i)
                     removedCount = removedCount + 1
                 end
