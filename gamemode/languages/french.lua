@@ -1002,6 +1002,7 @@ LANGUAGE = {
     healthLabel = "Santé : %s",
     armorLabel = "Armure : %s",
     usergroupLabel = "Groupe : %s",
+    usergroupPrivilegesLabel = "Privilèges : %s",
     characterFactionLabel = "Faction : %s",
     noLoadedCharacter = "Aucun personnage chargé",
     originLabel = "origin = (%s, %s, %s)",

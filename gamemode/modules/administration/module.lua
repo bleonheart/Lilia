@@ -159,6 +159,7 @@ if SERVER then
         local bans = getBanList()
         local plys = {}
         for _, v in ipairs(player.GetAll()) do
+            if v:IsBot() then continue end
             plys[#plys + 1] = {
                 name = v:Nick(),
                 id = v:SteamID(),
@@ -203,7 +204,10 @@ if SERVER then
     end
 
     syncPrivileges()
-    hook.Add("PlayerInitialSpawn", "liaAdminTrackJoin", function(p) lia.admin.lastJoin[p:SteamID()] = os.time() end)
+    hook.Add("PlayerInitialSpawn", "liaAdminTrackJoin", function(p)
+        if p:IsBot() then return end
+        lia.admin.lastJoin[p:SteamID()] = os.time()
+    end)
     net.Receive("liaGroupsRequest", function(_, p)
         if not allowed(p) then return end
         syncPrivileges()

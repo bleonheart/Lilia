@@ -40,7 +40,24 @@ function SWEP:DrawHUD()
         end
 
         if target:IsPlayer() then
-            information = {L("nicknameLabel", target:Nick()), L("steamNameLabel", target.SteamName and target:SteamName() or target:Name()), L("steamIDLabel", target:SteamID()), L("steamID64Label", target:SteamID64()), L("healthLabel", target:Health()), L("armorLabel", target:Armor()), L("usergroupLabel", target:GetUserGroup())}
+            local group = target:GetUserGroup()
+            local privTbl = lia.admin and lia.admin.groups and lia.admin.groups[group] or {}
+            local privNames = {}
+            for priv in pairs(privTbl) do
+                privNames[#privNames + 1] = priv
+            end
+            table.sort(privNames)
+            local privStr = table.concat(privNames, ", ")
+            information = {
+                L("nicknameLabel", target:Nick()),
+                L("steamNameLabel", target.SteamName and target:SteamName() or target:Name()),
+                L("steamIDLabel", target:SteamID()),
+                L("steamID64Label", target:SteamID64()),
+                L("healthLabel", target:Health()),
+                L("armorLabel", target:Armor()),
+                L("usergroupLabel", group),
+                L("usergroupPrivilegesLabel", privStr)
+            }
             if target:getChar() then
                 local char = target:getChar()
                 local faction = lia.faction.indices[target:Team()]
