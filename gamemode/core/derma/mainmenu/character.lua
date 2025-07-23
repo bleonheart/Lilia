@@ -487,7 +487,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local selectText = L("selectCharacter")
     if clientChar and character:getID() == clientChar:getID() then
         selectText = L("alreadyUsingCharacter")
-    elseif character:getData("banned") then
+    elseif character:getBanned() then
         selectText = L("bannedCharacter")
     end
 
@@ -495,7 +495,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
     self.selectBtn:SetText(selectText)
-    if clientChar and character:getID() == clientChar:getID() or character:getData("banned") then
+    if clientChar and character:getID() == clientChar:getID() or character:getBanned() then
         self.selectBtn:SetEnabled(false)
         self.selectBtn:SetTextColor(Color(255, 255, 255))
     end
