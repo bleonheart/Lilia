@@ -6,54 +6,66 @@ local function buildCondition(folder, map)
     return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
 end
 
-function MODULE:LoadData(n)
-    n = n or 1
+function MODULE:FetchSpawns()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
-        PrintTable(res)
+    return lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
         local data = res and lia.data.deserialize(res._data) or {}
         local factions = data.factions or data
-        if (not istable(factions) or table.IsEmpty(factions)) and n < 5 then
-            timer.Simple(1, function() if not self.loaded then self:LoadData(n + 1) end end)
-            return
-        end
-
-        self.spawns = {}
+        local result = {}
         for fac, spawns in pairs(factions or {}) do
             local t = {}
             for i = 1, #spawns do
-                t[i] = lia.data.decodeVector(spawns[i])
-                PrintTable(t[i], 1)
+                local spawnData = lia.data.deserialize(spawns[i])
+                if isvector(spawnData) then
+                    spawnData = {pos = spawnData, ang = angle_zero}
+                end
+                t[i] = spawnData
             end
-
-            self.spawns[fac] = t
-            PrintTable(self.spawns, 1)
+            result[fac] = t
         end
-
-        self.loaded = true
+        return result
     end)
 end
 
-function MODULE:SaveData()
+function MODULE:StoreSpawns(spawns)
     local factions = {}
-    for fac, spawns in pairs(self.spawns or {}) do
+    for fac, list in pairs(spawns or {}) do
         factions[fac] = {}
-        for _, pos in ipairs(spawns) do
-            factions[fac][#factions[fac] + 1] = encodetable(pos)
+        for _, data in ipairs(list) do
+            factions[fac][#factions[fac] + 1] = encodetable(data)
         end
     end
 
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    lia.db.upsert({
+    return lia.db.upsert({
         _schema = folder,
         _map = map,
         _data = lia.data.serialize({
             factions = factions
         })
     }, TABLE)
+end
+
+function MODULE:LoadData(n)
+    n = n or 1
+    self:FetchSpawns():next(function(spawns)
+        if (not spawns or table.IsEmpty(spawns)) and n < 5 then
+            timer.Simple(1, function()
+                if not self.loaded then self:LoadData(n + 1) end
+            end)
+            return
+        end
+
+        self.spawns = spawns or {}
+        self.loaded = true
+    end)
+end
+
+function MODULE:SaveData()
+    self:StoreSpawns(self.spawns or {})
 end
 
 local function SpawnPlayer(client)
@@ -76,16 +88,18 @@ local function SpawnPlayer(client)
         end
     end
 
-    local spawnPos
-    if factionID and MODULE.spawns then
-        local factionSpawns = MODULE.spawns[factionID]
-        if factionSpawns and #factionSpawns > 0 then spawnPos = table.Random(factionSpawns) end
-    end
-
-    if spawnPos then
-        spawnPos = spawnPos + Vector(0, 0, 16)
-        client:SetPos(spawnPos)
-        hook.Run("PlayerSpawnPointSelected", client, spawnPos)
+    if factionID then
+        MODULE:FetchSpawns():next(function(spawns)
+            local factionSpawns = spawns[factionID]
+            if factionSpawns and #factionSpawns > 0 then
+                local data = table.Random(factionSpawns)
+                local pos = (data.pos or data) + Vector(0, 0, 16)
+                local ang = data.ang or angle_zero
+                client:SetPos(pos)
+                client:SetEyeAngles(ang)
+                hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+            end
+        end)
     end
 end
 
