@@ -74,9 +74,13 @@ if SERVER then
                 end
 
                 local fID = tonumber(v._faction) or v._faction
-                local fName = lia.faction.indices[fID] and lia.faction.indices[fID].name or tostring(fID or "")
+                local fData = lia.faction.get(fID)
+                local fName = fData and fData.name or tostring(fID or "")
+                fID = fData and fData.index or fID
+
                 local cID = tonumber(v._class) or v._class
-                local cName = lia.class.list and lia.class.list[cID] and lia.class.list[cID].name or tostring(cID or "")
+                local cData = lia.class.get and lia.class.get(cID) or (lia.class.list and lia.class.list[cID])
+                local cName = cData and cData.name or tostring(cID or "")
                 out[#out + 1] = {
                     id = id,
                     name = v._name,
