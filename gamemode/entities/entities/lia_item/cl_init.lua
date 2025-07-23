@@ -1,9 +1,10 @@
 ﻿local vectorMeta = FindMetaTable("Vector")
 local toScreen = vectorMeta.ToScreen
-function ENT:computeDescMarkup(description)
-    if self.desc ~= description then
-        self.desc = description
-        self.markup = lia.markup.parse("<font=liaItemDescFont>" .. description .. "</font>", ScrW() * 0.5)
+function ENT:computeDescMarkup(text, maxWidth)
+    if self._rawDesc ~= text or self._maxWidth ~= maxWidth then
+        self._rawDesc = text
+        self._maxWidth = maxWidth
+        self.markup = lia.markup.parse("<font=liaItemDescFont>" .. text .. "</font>", maxWidth)
     end
     return self.markup
 end
@@ -23,8 +24,12 @@ function ENT:onDrawEntityInfo(alpha)
     draw.SimpleText(name, "liaHugeText", x, y, ColorAlpha(lia.config.get("Color"), alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     y = y + th + 80
     local desc = item:getDesc()
-    self:computeDescMarkup("<font=liaMediumFont>" .. desc .. "</font>", tw)
-    if self.markup then self.markup:draw(x - tw / 2, y, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, alpha) end
+    local mk = self:computeDescMarkup("<font=liaMediumFont>" .. desc .. "</font>", ScrW() * 0.5)
+    if mk then
+        local mw = mk:getWidth()
+        mk:draw(x - mw / 2, y, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, alpha)
+    end
+
     hook.Run("DrawItemDescription", self, x, y, ColorAlpha(color_white, alpha), alpha)
     item.data, item.entity = oldD, oldE
 end
