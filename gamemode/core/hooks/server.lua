@@ -890,7 +890,9 @@ local function checkFrameworkVersion()
             if localNum and remoteNum then
                 local diff = remoteNum - localNum
                 diff = math.Round(diff, 3)
-                lia.updater(L("frameworkBehindCount", diff))
+                if diff > 0 then
+                    lia.updater(L("frameworkBehindCount", diff))
+                end
             end
 
             lia.updater(L("frameworkOutdated"))
