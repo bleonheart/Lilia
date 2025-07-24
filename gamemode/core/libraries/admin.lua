@@ -384,11 +384,11 @@ concommand.Add("plysetgroup", function(ply, _, args)
 end)
 
 if SERVER then
-    hook.Add("OnReloaded", "liaAdminSendGroups", function(client)
+    hook.Add("OnReloaded", "liaAdminSendGroups", function()
         if lia.admin.isDisabled() then return end
         net.Start("updateAdminGroups")
         net.WriteTable(lia.admin.groups)
-        net.Send(client)
+        net.Broadcast()
     end)
 else
     net.Receive("updateAdminGroups", function()
