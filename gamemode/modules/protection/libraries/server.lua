@@ -293,6 +293,7 @@ function MODULE:CanPlayerInteractItem(client, action)
         return false
     end
 end
+
 function MODULE:CanPlayerLock(client)
     if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
         LogCheaterAction(client, "lock door")

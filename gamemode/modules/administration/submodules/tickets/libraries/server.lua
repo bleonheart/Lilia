@@ -1,5 +1,4 @@
 ﻿local MODULE = MODULE
-
 local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do

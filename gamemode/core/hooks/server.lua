@@ -366,6 +366,7 @@ function GM:DoPlayerDeath(client, attacker)
             hook.Run("OnCreatePKRagdoll", client, rag)
         end
     end
+
     if IsValid(attacker) and attacker:IsPlayer() then
         if client == attacker then
             attacker:AddFrags(-1)
@@ -440,7 +441,6 @@ function GM:PlayerInitialSpawn(client)
     lia.config.send(client)
     client.liaJoinTime = RealTime()
     client:loadLiliaData(function(data)
-        
         net.Start("updateAdminGroups")
         net.WriteTable(lia.admin.groups)
         net.Send(client)

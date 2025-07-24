@@ -232,10 +232,7 @@ local function quote(str)
 end
 
 function lia.admin.execCommand(cmd, victim, dur, reason)
-    if hook.Run("RunAdminSystemCommand") == true then
-        return
-    end
-
+    if hook.Run("RunAdminSystemCommand") == true then return end
     print("xd")
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
     if cmd == "kick" then

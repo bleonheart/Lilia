@@ -252,75 +252,77 @@ net.Receive("KickCharacter", function(_, client)
         lia.char.setCharData(characterID, "factionKickWarn", true)
     end
 end)
-    util.AddNetworkString("RosterRequest")
-    util.AddNetworkString("RosterData")
-    util.AddNetworkString("KickCharacter")
-    local function toSteamID(id)
-        if not id then return "" end
-        id = tostring(id)
-        if id:sub(1, 6) == "STEAM_" then return id end
-        return util.SteamIDFrom64(id)
+
+util.AddNetworkString("RosterRequest")
+util.AddNetworkString("RosterData")
+util.AddNetworkString("KickCharacter")
+local function toSteamID(id)
+    if not id then return "" end
+    id = tostring(id)
+    if id:sub(1, 6) == "STEAM_" then return id end
+    return util.SteamIDFrom64(id)
+end
+
+net.Receive("RosterRequest", function(_, client)
+    local facUniqueID = net.ReadString()
+    local char = client:getChar()
+    if not char then return end
+    if not (client:IsSuperAdmin() or char:hasFlags("V")) then return end
+    local facTbl
+    if facUniqueID ~= "" then
+        for _, v in pairs(lia.faction.indices) do
+            if tostring(v.uniqueID) == facUniqueID then
+                facTbl = v
+                break
+            end
+        end
+    else
+        facTbl = lia.faction.indices[char:getFaction()]
     end
 
-    net.Receive("RosterRequest", function(_, client)
-        local facUniqueID = net.ReadString()
-        local char = client:getChar()
-        if not char then return end
-        if not (client:IsSuperAdmin() or char:hasFlags("V")) then return end
-        local facTbl
-        if facUniqueID ~= "" then
-            for _, v in pairs(lia.faction.indices) do
-                if tostring(v.uniqueID) == facUniqueID then
-                    facTbl = v
-                    break
-                end
+    if not facTbl then return end
+    local fields = [[lia_characters._name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline]]
+    local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(facTbl.uniqueID)
+    local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+    lia.db.query(query, function(data)
+        local out = {}
+        for _, v in ipairs(data or {}) do
+            local id = tonumber(v._id)
+            local online = lia.char.loaded[id] ~= nil
+            local lastOnline
+            if online then
+                lastOnline = L("onlineNow")
+            else
+                local last = tonumber(v._lastOnline)
+                if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
+                local diff = os.time() - last
+                local since = lia.time.TimeSince(last)
+                local stripped = since:match("^(.-)%sago$") or since
+                lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
             end
-        else
-            facTbl = lia.faction.indices[char:getFaction()]
+
+            local classID = tonumber(v._class) or v._class
+            local className
+            if classID == nil or classID == 0 then
+                className = "None"
+            else
+                className = lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
+            end
+
+            out[#out + 1] = {
+                id = id,
+                name = v._name,
+                class = className,
+                classID = classID,
+                steamID = toSteamID(v._steamID),
+                lastOnline = lastOnline,
+                hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
+            }
         end
 
-        if not facTbl then return end
-        local fields = [[lia_characters._name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline]]
-        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(facTbl.uniqueID)
-        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
-        lia.db.query(query, function(data)
-            local out = {}
-            for _, v in ipairs(data or {}) do
-                local id = tonumber(v._id)
-                local online = lia.char.loaded[id] ~= nil
-                local lastOnline
-                if online then
-                    lastOnline = L("onlineNow")
-                else
-                    local last = tonumber(v._lastOnline)
-                    if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
-                    local diff = os.time() - last
-                    local since = lia.time.TimeSince(last)
-                    local stripped = since:match("^(.-)%sago$") or since
-                    lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
-                end
-
-                local classID = tonumber(v._class) or v._class
-                local className
-                if classID == nil or classID == 0 then
-                    className = "None"
-                else
-                    className = lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
-                end
-                out[#out + 1] = {
-                    id = id,
-                    name = v._name,
-                    class = className,
-                    classID = classID,
-                    steamID = toSteamID(v._steamID),
-                    lastOnline = lastOnline,
-                    hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
-                }
-            end
-
-            net.Start("RosterData")
-            net.WriteString(facTbl.uniqueID)
-            net.WriteTable(out)
-            net.Send(client)
-        end)
+        net.Start("RosterData")
+        net.WriteString(facTbl.uniqueID)
+        net.WriteTable(out)
+        net.Send(client)
     end)
+end)

@@ -646,10 +646,7 @@ net.Receive("charKick", function()
 end)
 
 local pkMessage = false
-net.Receive("PKMessage", function()
-    pkMessage = true
-end)
-
+net.Receive("PKMessage", function() pkMessage = true end)
 hook.Add("HUDPaint", "liaPKMessage", function()
     if not pkMessage then return end
     local txt = L("pkMessage")

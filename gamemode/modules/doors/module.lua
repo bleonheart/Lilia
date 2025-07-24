@@ -12,6 +12,7 @@ MODULE.Privileges = {
         MinAccess = "admin"
     }
 }
+
 ACCESS_LABELS = {
     [DOOR_NONE] = "none",
     [DOOR_GUEST] = "guest",

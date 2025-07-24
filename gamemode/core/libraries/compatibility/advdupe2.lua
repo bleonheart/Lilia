@@ -23,7 +23,6 @@ hook.Add("PlayerSpawnProp", "liaAdvDupe2", function(client, model)
                 client:notifyLocalized("blacklistedProp")
                 return false
             end
-
             return true
         end
     end

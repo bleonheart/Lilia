@@ -1,4 +1,4 @@
-function MODULE:CheckFactionLimitReached(faction, character, client)
+﻿function MODULE:CheckFactionLimitReached(faction, character, client)
     if faction.OnCheckLimitReached then return faction:OnCheckLimitReached(character, client) end
     if not isnumber(faction.limit) then return false end
     local maxPlayers = faction.limit
@@ -24,5 +24,3 @@ function MODULE:GetDefaultCharDesc(client, faction)
     local info = lia.faction.indices[faction]
     if info and info.GetDefaultDesc then info:GetDefaultDesc(client) end
 end
-
-
