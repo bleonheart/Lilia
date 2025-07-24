@@ -32,13 +32,13 @@
 end
 
 function MODULE:CanPlayerUseChar(_, character)
-    local banned = character:getData("banned")
+    local banned = character:getBanned()
     if banned and isnumber(banned) and banned > os.time() then return false, L("bannedCharacter") end
     return true
 end
 
 function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
-    local banned = character:getData("banned")
+    local banned = character:getBanned()
     if character:getID() == newCharacter:getID() then return false, L("alreadyUsingCharacter") end
     if banned and isnumber(banned) and banned > os.time() then return false, L("bannedCharacter") end
     if not client:Alive() then return false, L("youAreDead") end

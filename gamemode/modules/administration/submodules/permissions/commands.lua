@@ -37,7 +37,7 @@ lia.command.add("charunbanoffline", {
         if not charID then return client:notify("Invalid character ID.") end
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
-        lia.char.setCharData(charID, "banned", nil)
+        lia.db.updateTable({_banned = nil}, nil, nil, "_id = " .. charID)
         lia.char.setCharData(charID, "charBanInfo", nil)
         client:notify("Offline character ID " .. charID .. " has been unbanned.")
         lia.log.add(client, "charUnbanOffline", charID)
@@ -54,7 +54,7 @@ lia.command.add("charbanoffline", {
         if not charID then return client:notify("Invalid character ID.") end
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
-        lia.char.setCharData(charID, "banned", true)
+        lia.db.updateTable({_banned = true}, nil, nil, "_id = " .. charID)
         lia.char.setCharData(charID, "charBanInfo", {
             name = client:Nick(),
             steamID = client:SteamID(),
@@ -104,6 +104,7 @@ lia.command.add("charlist", {
             for _, row in ipairs(data) do
                 local stored = lia.char.loaded[row._id]
                 local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
+                local isBanned = stored and stored:getBanned() or row._banned
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do
                     local value
@@ -154,7 +155,7 @@ lia.command.add("charlist", {
                     Name = row._name,
                     Desc = row._desc,
                     Faction = row._faction,
-                    Banned = info.banned and "Yes" or "No",
+                    Banned = isBanned and "Yes" or "No",
                     BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                     BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                     BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
@@ -694,8 +695,8 @@ lia.command.add("charunban", {
         end
 
         if charFound then
-            if charFound:getData("banned") then
-                charFound:setData("banned", nil)
+            if charFound:getBanned() then
+                charFound:setBanned(nil)
                 charFound:setData("permakilled", nil)
                 charFound:setData("charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), charFound:getName())
@@ -707,17 +708,17 @@ lia.command.add("charunban", {
 
         client.liaNextSearch = CurTime() + 15
         local sqlCondition = id and "_id = " .. id or "_name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT _id, _name FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
+        lia.db.query("SELECT _id, _name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
                 local charID = tonumber(data[1]._id)
-                local charData = lia.char.getCharData(charID)
+                local isBanned = data[1]._banned
                 client.liaNextSearch = 0
-                if not (charData and charData.banned) then
+                if not isBanned then
                     client:notifyLocalized("charNotBanned")
                     return
                 end
 
-                lia.char.setCharData(charID, "banned", nil)
+                lia.db.updateTable({_banned = nil}, nil, nil, "_id = " .. charID)
                 lia.char.setCharData(charID, "charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), data[1]._name)
                 lia.log.add(client, "charUnban", data[1]._name, charID)
@@ -842,7 +843,7 @@ lia.command.add("charban", {
 
         local character = target:getChar()
         if character then
-            character:setData("banned", true)
+            character:setBanned(true)
             character:setData("charBanInfo", {
                 name = client.steamName and client:steamName() or client:Name(),
                 steamID = client:SteamID(),

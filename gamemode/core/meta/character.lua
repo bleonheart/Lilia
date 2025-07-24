@@ -471,7 +471,7 @@ if SERVER then
     function characterMeta:ban(time)
         time = tonumber(time)
         if time then time = os.time() + math.max(math.ceil(time), 60) end
-        self:setData("banned", time or true)
+        self:setBanned(time or true)
         self:save()
         self:kick()
         hook.Run("OnCharPermakilled", self, time or nil)

@@ -432,6 +432,13 @@ lia.char.registerVar("lastPos", {
     noDisplay = true
 })
 
+lia.char.registerVar("banned", {
+    field = "_banned",
+    fieldType = "text",
+    isLocal = true,
+    noDisplay = true
+})
+
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
