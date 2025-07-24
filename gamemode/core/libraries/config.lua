@@ -814,23 +814,6 @@ end, {
     max = 10
 })
 
-local function getMenuTabNames()
-    local defs = {}
-    hook.Run("CreateMenuButtons", defs)
-    local tabs = {}
-    for k in pairs(defs) do
-        tabs[#tabs + 1] = k
-    end
-    return tabs
-end
-
-lia.config.add("DefaultMenuTab", "Default Menu Tab", L("status"), nil, {
-    desc = "Specifies which tab is opened by default when the menu is shown.",
-    category = "Menu",
-    type = "Table",
-    options = CLIENT and getMenuTabNames() or {L("status")}
-})
-
 lia.config.add("DoorLockTime", "Door Lock Time", 0.5, nil, {
     desc = "Time it takes to lock a door",
     category = "Doors",
