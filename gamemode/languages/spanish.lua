@@ -20,7 +20,6 @@ LANGUAGE = {
     renameSitroomTitle = "Renombrar Sala",
     teleport = "Teletransportar",
     reposition = "Reubicar",
-    rename = "Renombrar",
     noAccess = "Sin acceso",
     mecloseDesc = "Muestra una acción de rol cercana.",
     actionsDesc = "Muestra una acción general.",
