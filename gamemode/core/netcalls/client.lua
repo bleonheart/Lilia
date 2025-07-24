@@ -645,6 +645,22 @@ net.Receive("charKick", function()
     hook.Run("KickedFromChar", id, isCurrentChar)
 end)
 
+local pkMessage = false
+net.Receive("PKMessage", function()
+    pkMessage = true
+end)
+
+hook.Add("HUDPaint", "liaPKMessage", function()
+    if not pkMessage then return end
+    local txt = L("pkMessage")
+    surface.SetFont("liaBigFont")
+    local w, h = surface.GetTextSize(txt)
+    local x, y = (ScrW() - w) / 2, ScrH() * 0.4
+    lia.util.drawText(txt, x + 2, y + 2, Color(0, 0, 0, 255), 0, 0, "liaBigFont")
+    lia.util.drawText(txt, x, y, color_white, 0, 0, "liaBigFont")
+    if input.IsKeyDown(KEY_SPACE) then pkMessage = false end
+end)
+
 net.Receive("prePlayerLoadedChar", function()
     local charID = net.ReadUInt(32)
     local currentID = net.ReadType()
