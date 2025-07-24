@@ -39,77 +39,77 @@ function MODULE:ShowPlayerOptions(target, options)
             {
                 name = "Blind",
                 image = "icon16/eye.png",
-                func = function() RunConsoleCommand("say", "!blind " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("blind", target) end
             },
             {
                 name = "Freeze",
                 image = "icon16/lock.png",
-                func = function() RunConsoleCommand("say", "!freeze " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("freeze", target) end
             },
             {
                 name = "Gag",
                 image = "icon16/sound_mute.png",
-                func = function() RunConsoleCommand("say", "!gag " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("gag", target) end
             },
             {
                 name = "Ignite",
                 image = "icon16/fire.png",
-                func = function() RunConsoleCommand("say", "!ignite " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("ignite", target) end
             },
             {
                 name = "Jail",
                 image = "icon16/lock.png",
-                func = function() RunConsoleCommand("say", "!jail " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("jail", target) end
             },
             {
                 name = "Mute",
                 image = "icon16/sound_delete.png",
-                func = function() RunConsoleCommand("say", "!mute " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("mute", target) end
             },
             {
                 name = "Slay",
                 image = "icon16/bomb.png",
-                func = function() RunConsoleCommand("say", "!slay " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("slay", target) end
             },
             {
                 name = "Unblind",
                 image = "icon16/eye.png",
-                func = function() RunConsoleCommand("say", "!unblind " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("unblind", target) end
             },
             {
                 name = "Ungag",
                 image = "icon16/sound_low.png",
-                func = function() RunConsoleCommand("say", "!ungag " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("ungag", target) end
             },
             {
                 name = "Unfreeze",
                 image = "icon16/accept.png",
-                func = function() RunConsoleCommand("say", "!unfreeze " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("unfreeze", target) end
             },
             {
                 name = "Unmute",
                 image = "icon16/sound_add.png",
-                func = function() RunConsoleCommand("say", "!unmute " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("unmute", target) end
             },
             {
                 name = "Bring",
                 image = "icon16/arrow_down.png",
-                func = function() RunConsoleCommand("say", "!bring " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("bring", target) end
             },
             {
                 name = "Goto",
                 image = "icon16/arrow_right.png",
-                func = function() RunConsoleCommand("say", "!goto " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("goto", target) end
             },
             {
                 name = "Respawn",
                 image = "icon16/arrow_refresh.png",
-                func = function() RunConsoleCommand("say", "!respawn " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("respawn", target) end
             },
             {
                 name = "Return",
                 image = "icon16/arrow_redo.png",
-                func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
+                func = function() lia.admin.execCommand("return", target) end
             },
             {
                 name = "Character List",
