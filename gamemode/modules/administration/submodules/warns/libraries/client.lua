@@ -1,4 +1,4 @@
-hook.Add("liaAdminRegisterTab", "AdminTabWarningsDB", function(_, tabs)
+hook.Add("liaAdminRegisterTab", "AdminTabWarningsDB", function(tabs)
     local function canView()
         local ply = LocalPlayer()
         return IsValid(ply) and ply:hasPrivilege("Access Warnings Tab") and ply:hasPrivilege("View DB Tables")

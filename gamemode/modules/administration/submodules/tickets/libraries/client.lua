@@ -140,7 +140,7 @@ function MODULE:TicketFrame(requester, message, claimed)
     timer.Create("ticketsystem-" .. requester:SteamID64(), 60, 1, function() if IsValid(frm) then frm:Remove() end end)
 end
 
-hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(_, tabs)
+hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(tabs)
     local function canView()
         local ply = LocalPlayer()
         return IsValid(ply) and ply:hasPrivilege("Access Tickets Tab") and ply:hasPrivilege("View DB Tables")

@@ -134,7 +134,7 @@ function MODULE:CreateInformationButtons(pages)
     end
 end
 
-hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(_, tabs)
+hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(tabs)
     local function canView()
         return LocalPlayer():hasPrivilege("Staff Permission — Access Entity List")
     end

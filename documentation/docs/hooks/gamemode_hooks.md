@@ -10737,7 +10737,6 @@ Triggered when building the admin menu. Allows modules to add custom tabs.
 
 **Parameters**
 
-- `parent` (`Panel`): Parent panel for the property sheet.
 - `registry` (`table`): Table to fill with tab definitions.
 
 Each tab entry should use the tab name as the key and contain a table with optional `icon` and `onShouldShow` fields plus a `build` function that returns the panel to display.
@@ -10753,7 +10752,7 @@ Each tab entry should use the tab name as the key and contain a table with optio
 **Example Usage**
 
 ```lua
-hook.Add("liaAdminRegisterTab", "AddWarningsTab", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "AddWarningsTab", function(tabs)
     tabs["Warnings"] = {
         icon = "icon16/error.png",
         build = function(sheet)

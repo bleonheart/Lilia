@@ -819,7 +819,7 @@ else
         return canAccess() and LocalPlayer():hasPrivilege("Access Players Tab")
     end
 
-    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(_, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(tabs)
         tabs["Usergroups"] = {
             icon = "icon16/group.png",
             onShouldShow = canAccessUsergroups,
@@ -834,7 +834,7 @@ else
         }
     end)
 
-    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(_, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(tabs)
         tabs["Players"] = {
             icon = "icon16/user.png",
             onShouldShow = canAccessPlayers,
@@ -859,7 +859,7 @@ else
             sheet:Dock(FILL)
             sheet.Paint = function() end
             local reg = {}
-            hook.Run("liaAdminRegisterTab", parent, reg)
+            hook.Run("liaAdminRegisterTab", reg)
             for name, data in pairs(reg) do
                 local should = true
                 if isfunction(data.onShouldShow) then should = data.onShouldShow() ~= false end
