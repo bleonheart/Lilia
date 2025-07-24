@@ -1,24 +1,4 @@
 ﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
-hook.Add("InitializedModules", "liaSAM", function()
-    for _, commandInfo in ipairs(sam.command.get_commands()) do
-        local customSyntax = ""
-        for _, argInfo in ipairs(commandInfo.args) do
-            customSyntax = customSyntax == "" and "[" or customSyntax .. " ["
-            customSyntax = customSyntax .. (argInfo.default and tostring(type(argInfo.default)) or "string") .. " "
-            customSyntax = customSyntax .. argInfo.name .. "]"
-        end
-
-        if lia.command.list[commandInfo.name] then continue end
-        lia.command.add(commandInfo.name, {
-            desc = commandInfo.help,
-            adminOnly = commandInfo.default_rank == "admin",
-            superAdminOnly = commandInfo.default_rank == "superadmin",
-            syntax = customSyntax,
-            onRun = function(_, arguments) RunConsoleCommand("sam", commandInfo.name, unpack(arguments)) end
-        })
-    end
-end)
-
 hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
     local id = isstring(victim) and victim or IsValid(victim) and victim:SteamID()
     if not id then return end
@@ -248,5 +228,3 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     category = "Staff",
     type = "Boolean"
 })
-
-hook.Add("ShouldLiliaAdminCommandsLoad", "liaSAM", function() return false end)
