@@ -20,7 +20,6 @@ LANGUAGE = {
     renameSitroomTitle = "Переименовать атмосферу",
     teleport = "Телепорт",
     reposition = "Переместить",
-    rename = "Переименовать",
     noAccess = "Нет доступа",
     mecloseDesc = "Показывает действие‑эмоут в ближнем радиусе.",
     actionsDesc = "Показывает общее действие.",

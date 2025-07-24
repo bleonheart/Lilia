@@ -150,7 +150,7 @@ end
         end
     end
 
-    hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(tabs)
         local function canAccess()
             local ply = LocalPlayer()
             if not IsValid(ply) then return false end

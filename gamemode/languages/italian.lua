@@ -20,7 +20,6 @@ LANGUAGE = {
     renameSitroomTitle = "Rinomina Sitroom",
     teleport = "Teletrasporta",
     reposition = "Riposiziona",
-    rename = "Rinomina",
     noAccess = "Nessun Accesso",
     mecloseDesc = "Mostra un'azione/emote a corto raggio.",
     actionsDesc = "Mostra un'azione generale.",
