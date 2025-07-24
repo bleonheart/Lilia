@@ -171,3 +171,30 @@ net.Receive("DisplayCharList", function()
         end
     end
 end)
+
+hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
+    local ply = LocalPlayer()
+    if not (IsValid(ply) and ply:hasPrivilege("List Characters")) then return end
+    tabs["Character List"] = {
+        icon = "icon16/user_gray.png",
+        build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:DockPadding(10, 10, 10, 10)
+            local entry = pnl:Add("DTextEntry")
+            entry:Dock(TOP)
+            entry:SetTall(25)
+            entry:SetPlaceholderText("SteamID/Name")
+            local btn = pnl:Add("DButton")
+            btn:Dock(TOP)
+            btn:DockMargin(0, 5, 0, 0)
+            btn:SetText("Open List")
+            btn.DoClick = function()
+                local value = entry:GetValue() or ""
+                net.Start("liaRequestCharList")
+                net.WriteString(value)
+                net.SendToServer()
+            end
+            return pnl
+        end
+    }
+end)
