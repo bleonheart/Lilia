@@ -394,6 +394,7 @@ function PANEL:onVendorPropEdited(_, key)
     elseif key == "preset" then
         local preset = liaVendorEnt:getNetVar("preset", "none")
         if IsValid(self.preset) then self.preset:SetValue(preset == "none" and L("none") or preset) end
+        self:setupItemsPanel(preset == "none")
     elseif key == "skin" and IsValid(self.skin) then
         self.skin:SetValue(liaVendorEnt:GetSkin())
     elseif key == "bodygroup" and IsValid(lia.gui.vendorBodygroupEditor) then
@@ -733,27 +734,44 @@ function PANEL:Init()
         lia.vendor.editor.preset(value)
     end
 
-    self.items = self:Add("DListView")
-    self.items:Dock(FILL)
-    self.items:DockMargin(0, 4, 0, 0)
-    self.items:AddColumn(L("name")).Header:SetTextColor(color_white)
-    self.items:AddColumn(L("mode")).Header:SetTextColor(color_white)
-    self.items:AddColumn(L("price")).Header:SetTextColor(color_white)
-    self.items:AddColumn(L("stock")).Header:SetTextColor(color_white)
-    self.items:AddColumn(L("category")).Header:SetTextColor(color_white)
-    self.items:SetMultiSelect(false)
-    self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
-    self.searchBar = self:Add("DTextEntry")
-    self.searchBar:Dock(TOP)
-    self.searchBar:DockMargin(0, 4, 0, 0)
-    self.searchBar:SetUpdateOnType(true)
-    self.searchBar:SetPlaceholderText(L("search"))
-    self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
-    self.lines = {}
-    self:ReloadItemList()
+    self:setupItemsPanel(currentPreset == "none")
     self:listenForUpdates()
     self:updateMoney()
     self:updateSellScale()
+end
+
+function PANEL:setupItemsPanel(showList)
+    if IsValid(self.items) then self.items:Remove() end
+    if IsValid(self.searchBar) then self.searchBar:Remove() end
+    if IsValid(self.presetNotice) then self.presetNotice:Remove() end
+    if showList then
+        self.items = self:Add("DListView")
+        self.items:Dock(FILL)
+        self.items:DockMargin(0, 4, 0, 0)
+        self.items:AddColumn(L("name")).Header:SetTextColor(color_white)
+        self.items:AddColumn(L("mode")).Header:SetTextColor(color_white)
+        self.items:AddColumn(L("price")).Header:SetTextColor(color_white)
+        self.items:AddColumn(L("stock")).Header:SetTextColor(color_white)
+        self.items:AddColumn(L("category")).Header:SetTextColor(color_white)
+        self.items:SetMultiSelect(false)
+        self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
+        self.searchBar = self:Add("DTextEntry")
+        self.searchBar:Dock(TOP)
+        self.searchBar:DockMargin(0, 4, 0, 0)
+        self.searchBar:SetUpdateOnType(true)
+        self.searchBar:SetPlaceholderText(L("search"))
+        self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
+        self.lines = {}
+        self:ReloadItemList()
+    else
+        self.presetNotice = self:Add("DLabel")
+        self.presetNotice:Dock(FILL)
+        self.presetNotice:DockMargin(0, 4, 0, 0)
+        self.presetNotice:SetText(L("vendorPresetNotice"))
+        self.presetNotice:SetContentAlignment(5)
+        self.presetNotice:SetTextColor(color_white)
+        self.presetNotice:SetWrap(true)
+    end
 end
 
 function PANEL:getModeText(mode)

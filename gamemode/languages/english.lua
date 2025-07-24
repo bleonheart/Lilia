@@ -88,6 +88,7 @@ LANGUAGE = {
     vendorEditorWelcomeMessage = "Welcome Message",
     vendorUseMoney = "Use Money",
     vendorSelectPreset = "Select Preset",
+    vendorPresetNotice = "This vendor uses a preset. Manual item editing is disabled.",
     vendorFaction = "Faction Access",
     mode = "Trade Mode",
     moneyTaken = "You picked up %s.",
