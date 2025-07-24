@@ -1,7 +1,7 @@
 ﻿ITEM.name = "entitiesName"
 ITEM.model = ""
 ITEM.desc = "entitiesDesc"
-ITEM.category = "Entities"
+ITEM.category = "categoryEntities"
 ITEM.entityid = ""
 ITEM.functions.Place = {
     name = "placeDownEntity",
