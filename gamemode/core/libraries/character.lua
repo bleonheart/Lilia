@@ -578,8 +578,9 @@ if SERVER then
 
                 local charData = {}
                 for k2, v2 in pairs(lia.char.vars) do
-                    if v2.field and v[v2.field] then
-                        local value = tostring(v[v2.field])
+                    local fieldValue = v[v2.field]
+                    if v2.field and fieldValue ~= nil and tostring(fieldValue) ~= "NULL" then
+                        local value = tostring(fieldValue)
                         if isnumber(v2.default) then
                             value = tonumber(value) or v2.default
                         elseif isbool(v2.default) then
