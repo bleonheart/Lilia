@@ -11,7 +11,7 @@
         }
 
         local info = caseclaims[adminID]
-        info.claims = info.claims + 1
+        info.claims = tonumber(info.claims) + 1
         if row._timestamp > info.lastclaim then info.lastclaim = row._timestamp end
         local reqPly = player.GetBySteamID64(row._requester)
         info.claimedFor[row._requester] = IsValid(reqPly) and reqPly:Nick() or row._requester
