@@ -1,4 +1,4 @@
-﻿function MODULE:ShowPlayerOptions(target, options)
+function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if (client:hasPrivilege("Staff Permissions - Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Staff Permissions - Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
         local orderedOptions = {
@@ -117,6 +117,18 @@
                 func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
             }
         }
+
+        if client:IsSuperAdmin() or client:hasPrivilege("Staff Permissions - Manage UserGroups") then
+            table.insert(orderedOptions, {
+                name = "Set Usergroup",
+                image = "icon16/group_edit.png",
+                func = function()
+                    net.Start("liaRequestPlayerGroup")
+                    net.WriteEntity(target)
+                    net.SendToServer()
+                end
+            })
+        end
 
         for _, option in ipairs(orderedOptions) do
             table.insert(options, option)
