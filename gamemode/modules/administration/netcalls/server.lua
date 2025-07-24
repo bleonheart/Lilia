@@ -99,7 +99,7 @@ net.Receive("liaRequestCharList", function(_, client)
                     elseif varName == "var" then
                         value = stored:getVar()
                     else
-                        local getter = stored["get" .. varName:sub(1,1):upper() .. varName:sub(2)]
+                        local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
                         if isfunction(getter) then
                             value = getter(stored)
                         else

@@ -78,13 +78,7 @@ function MODULE:SaveData()
     end
 
     local count = #rows
-    if count > 0 then
-        return lia.db.bulkUpsert("doors", rows):next(function()
-            lia.information(L("doorSaveData", count))
-        end)
-    else
-        lia.information(L("doorSaveData", 0))
-    end
+    if count > 0 then lia.db.bulkUpsert("doors", rows) end
 end
 
 function MODULE:InitPostEntity()

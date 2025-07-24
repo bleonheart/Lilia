@@ -292,21 +292,6 @@ lia.command.add("doorsettitle", {
     end
 })
 
-lia.command.add("savedoors", {
-    desc = "savedoorsDesc",
-    adminOnly = true,
-    privilege = "Manage Doors",
-    AdminStick = {
-        Name = "adminStickSaveDoorsName",
-        TargetClass = "Door"
-    },
-    onRun = function(client)
-        MODULE:SaveData()
-        lia.log.add(client, "doorSaveData")
-        client:notifyLocalized("doorsSaved")
-    end
-})
-
 lia.command.add("doorinfo", {
     desc = "doorinfoDesc",
     adminOnly = true,
