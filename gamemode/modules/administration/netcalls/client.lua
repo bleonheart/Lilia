@@ -7,7 +7,7 @@
     hook.Run("InitializedConfig")
 end)
 
-hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(_, tabs)
+hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(tabs)
     local function canView()
         local ply = LocalPlayer()
         return IsValid(ply) and ply:hasPrivilege("Access DB Browser Tab") and ply:hasPrivilege("View DB Tables")

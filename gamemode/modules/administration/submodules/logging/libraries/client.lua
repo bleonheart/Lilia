@@ -97,7 +97,7 @@ net.Receive("send_logs", function()
     if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
 end)
 
-hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(tabs)
     local function canView()
         local ply = LocalPlayer()
         return IsValid(ply) and ply:hasPrivilege("Access Logs Tab") and ply:hasPrivilege("Can See Logs")

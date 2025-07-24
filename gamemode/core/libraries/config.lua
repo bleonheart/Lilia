@@ -473,7 +473,7 @@ lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) 
 })
 
 
-hook.Add("liaAdminRegisterTab", "liaConfigTab", function(_, tabs)
+hook.Add("liaAdminRegisterTab", "liaConfigTab", function(tabs)
     local ConfigFormatting = {
         Int = function(key, name, config, parent)
             local container = vgui.Create("DPanel", parent)
