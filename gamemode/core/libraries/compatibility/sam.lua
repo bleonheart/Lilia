@@ -213,6 +213,11 @@ lia.admin.registerPrivilege({
 })
 
 lia.admin.registerPrivilege({
+    Name = "Can See SAM Notifications",
+    MinAccess = "admin"
+})
+
+lia.admin.registerPrivilege({
     Name = "Can Bypass Staff Faction SAM Command whitelist",
     MinAccess = "superadmin"
 })
