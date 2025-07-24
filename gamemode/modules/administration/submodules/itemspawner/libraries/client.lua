@@ -84,7 +84,7 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
 
     for category, itemList in SortedPairs(categorized) do
         if category ~= "Unsorted" or #itemList > 0 then
-            local node = tree:AddNode(category == "Unsorted" and L("unsorted") or category, "icon16/picture.png")
+            local node = tree:AddNode(category == "Unsorted" and L("unsorted") or L(category), "icon16/picture.png")
             node.DoPopulate = function(btn)
                 if btn.PropPanel then return end
                 btn.PropPanel = vgui.Create("ContentContainer", pnlContent)

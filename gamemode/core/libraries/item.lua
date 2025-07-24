@@ -255,7 +255,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "Miscellaneous"
+        ITEM.category = ITEM.category or "misc"
         ITEM.functions = table.Copy(baseTable.functions or DefaultFunctions)
     else
         ITEM = targetTable[uniqueID] or setmetatable({
@@ -274,7 +274,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "Miscellaneous"
+        ITEM.category = ITEM.category or "misc"
         ITEM.functions = ITEM.functions or table.Copy(baseTable.functions or DefaultFunctions)
     end
 
@@ -488,8 +488,8 @@ function lia.item.generateWeapons()
         local baseType = isGrenade and "base_grenade" or "base_weapons"
         local ITEM = lia.item.register(className, baseType, nil, nil, true)
         ITEM.name = override.name or wep.PrintName or className
-        ITEM.desc = override.desc or "A Weapon"
-        ITEM.category = override.category or "Weapons"
+        ITEM.desc = override.desc or "weaponsDesc"
+        ITEM.category = override.category or "categoryWeapons"
         ITEM.model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl"
         ITEM.class = override.class or className
         local size = lia.item.holdTypeSizeMapping[holdType] or {
@@ -500,7 +500,7 @@ function lia.item.generateWeapons()
         ITEM.width = override.width or size.width
         ITEM.height = override.height or size.height
         ITEM.weaponCategory = override.weaponCategory or lia.item.holdTypeToWeaponCategory[holdType] or "primary"
-        ITEM.category = isGrenade and "grenade" or "weapons"
+        ITEM.category = isGrenade and "categoryGrenades" or "categoryWeapons"
     end
 end
 
