@@ -15,7 +15,7 @@ properties.Add("TogglePropBlacklist", {
     Receive = function(_, _, ply)
         if not ply:hasPrivilege("Staff Permissions - Manage Prop Blacklist") then return end
         local model = net.ReadString()
-        local list = lia.data.get("prop_blacklist", {})
+        local list = lia.data.get("prop_blacklist")
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("prop_blacklist", list, true, true)
