@@ -123,4 +123,84 @@ MODULE.Privileges = {
         Name = "Staff Permissions - Can Remove World Entities",
         MinAccess = "superadmin",
     },
+    {
+        Name = "Toggle Permakill",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unban Offline",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Ban Offline",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Play Sounds",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Return Players",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Force Fallover",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Force GetUp",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Toggle Character Lock",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Flags",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Items",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Toggle Voice Ban Character",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Clean Entities",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Characters",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Kick Characters",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Get Character Info",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Character Stats",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Character Information",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Bodygroups",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Bot Say",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Force Say",
+        MinAccess = "admin"
+    }
 }

@@ -6,5 +6,17 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Access Factions Tab",
         MinAccess = "superadmin",
+    },
+    {
+        Name = "Manage Transfers",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Whitelists",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Manage Classes",
+        MinAccess = "admin"
     }
 }
