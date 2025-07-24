@@ -962,6 +962,7 @@ LANGUAGE = {
     pressInstructions = "A/D girar | W/S cámara | SPACE salir",
     entities = "Entidades",
     totalPlayerEntities = "Entidades del jugador: %s",
+    noEntitiesFound = "No hay entidades para mostrar.",
     modulesCount = "Módulos: %s",
     ["Bring"] = "Traer",
     ["Goto"] = "Ir a",
