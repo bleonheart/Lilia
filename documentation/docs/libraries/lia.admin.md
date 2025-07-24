@@ -84,7 +84,10 @@ Registers a CAMI privilege for use with permission checks.
 
 **Parameters**
 
-* `privilege` (*table*): Table containing the privilege definition.
+* `privilege` (*table*): Table containing the privilege definition. Supported fields:
+  * `Name` (*string*): Identifier of the privilege.
+  * `MinAccess` (*string*): Minimum group that automatically receives the privilege.
+  * `Category` (*string*): Display category for the privilege.
 
 When a privilege is registered it will automatically be assigned to all
 usergroups that inherit from the privilege's `MinAccess` level. Groups created

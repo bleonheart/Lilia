@@ -35,6 +35,7 @@ function lia.admin.load()
         end
 
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
+            priv.Category = priv.Category or "Misc"
             lia.admin.privileges[name] = priv
         end
 
@@ -116,6 +117,7 @@ end
 function lia.admin.registerPrivilege(privilege)
     if lia.admin.isDisabled() then return end
     if not privilege or not privilege.Name then return end
+    privilege.Category = privilege.Category or "Misc"
     lia.admin.privileges[privilege.Name] = privilege
     for groupName in pairs(lia.admin.groups) do
         local minAccess = privilege.MinAccess or "user"

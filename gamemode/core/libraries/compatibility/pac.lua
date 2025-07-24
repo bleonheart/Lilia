@@ -240,7 +240,8 @@ lia.config.add("BlockPackURLoad", "Block Pack URL Load", true, nil, {
 
 lia.admin.registerPrivilege({
     Name = "Can Use PAC3",
-    MinAccess = "admin"
+    MinAccess = "admin",
+    Category = "PAC3"
 })
 
 lia.flag.add("P", "Access to PAC3.")
