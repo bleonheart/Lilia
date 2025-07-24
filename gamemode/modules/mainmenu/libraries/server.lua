@@ -27,6 +27,8 @@
         end
 
         client.liaCharList = charList
+        lia.char.lastUsed = lia.char.lastUsed or {}
+        lia.char.lastUsed[client:SteamID64()] = client:getLiliaData("lastChar", "")
         self:syncCharList(client)
         client.liaLoaded = true
     end)

@@ -1,4 +1,4 @@
-﻿function MODULE:ShowPlayerOptions(target, options)
+function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if (client:hasPrivilege("Staff Permissions - Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Staff Permissions - Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
         local orderedOptions = {
@@ -111,6 +111,11 @@
                 image = "icon16/arrow_redo.png",
                 func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
             },
+            {
+                name = "Character List",
+                image = "icon16/user.png",
+                func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
+            }
         }
 
         if client:IsSuperAdmin() or client:hasPrivilege("Staff Permissions - Manage UserGroups") then
