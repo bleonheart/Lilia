@@ -102,6 +102,8 @@ if SERVER then
     util.AddNetworkString("liaPlayersDataChunk")
     util.AddNetworkString("liaPlayersDataDone")
     util.AddNetworkString("liaRequestPlayerGroup")
+    util.AddNetworkString("liaRequestDBTables")
+    util.AddNetworkString("liaRequestCharList")
     lia.admin.privileges = lia.admin.privileges or {}
     lia.admin.groups = lia.admin.groups or {}
     lia.admin.lastJoin = lia.admin.lastJoin or {}

@@ -58,6 +58,103 @@ net.Receive("liaRequestTableData", function(_, client)
     lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res) sendTableData(client, tbl, res or {}) end)
 end)
 
+net.Receive("liaRequestDBTables", function(_, client)
+    if not client:hasPrivilege("View DB Tables") then return end
+    lia.db.getTables():next(function(tables)
+        net.Start("liaDBTables")
+        net.WriteTable(tables or {})
+        net.Send(client)
+    end)
+end)
+
+net.Receive("liaRequestCharList", function(_, client)
+    if not client:hasPrivilege("List Characters") then return end
+    local identifier = net.ReadString()
+    local target
+    if identifier and identifier ~= "" then
+        target = lia.util.findPlayer(client, identifier)
+        if not IsValid(target) then return end
+    else
+        target = client
+    end
+
+    local steam64 = target:SteamID64()
+    lia.db.query("SELECT * FROM lia_characters WHERE _steamID = " .. lia.db.convertDataType(steam64), function(data)
+        if not data or #data == 0 then
+            client:notify("No characters found for this player.")
+            return
+        end
+
+        local sendData = {}
+        for _, row in ipairs(data) do
+            local stored = lia.char.loaded[row._id]
+            local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
+            local isBanned = stored and stored:getBanned() or row._banned
+            local allVars = {}
+            for varName, varInfo in pairs(lia.char.vars) do
+                local value
+                if stored then
+                    if varName == "data" then
+                        value = stored:getData()
+                    elseif varName == "var" then
+                        value = stored:getVar()
+                    else
+                        local getter = stored["get" .. varName:sub(1,1):upper() .. varName:sub(2)]
+                        if isfunction(getter) then
+                            value = getter(stored)
+                        else
+                            value = stored.vars and stored.vars[varName]
+                        end
+                    end
+                else
+                    if varName == "data" then
+                        value = info
+                    elseif varInfo.field and row[varInfo.field] ~= nil then
+                        local raw = row[varInfo.field]
+                        if isnumber(varInfo.default) then
+                            value = tonumber(raw) or varInfo.default
+                        elseif isbool(varInfo.default) then
+                            value = tobool(raw)
+                        elseif istable(varInfo.default) then
+                            value = util.JSONToTable(raw or "{}")
+                        else
+                            value = raw
+                        end
+                    else
+                        value = varInfo.default
+                    end
+                end
+
+                allVars[varName] = value
+            end
+
+            local lastUsedText = stored and L("onlineNow") or row._lastJoinTime
+            local entry = {
+                ID = row._id,
+                Name = row._name,
+                Desc = row._desc,
+                Faction = row._faction,
+                Banned = isBanned and "Yes" or "No",
+                BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
+                BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
+                BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
+                Money = row._money,
+                LastUsed = lastUsedText,
+                allVars = allVars
+            }
+
+            entry.extraDetails = {}
+            hook.Run("CharListExtraDetails", client, entry, stored)
+            table.insert(sendData, entry)
+        end
+
+        net.Start("DisplayCharList")
+        net.WriteTable(sendData)
+        net.WriteString(steam64)
+        net.Send(client)
+    end)
+end)
+
 net.Receive("lia_managesitrooms_action", function(_, client)
     if not client:hasPrivilege("Manage SitRooms") then return end
     local action = net.ReadUInt(2)

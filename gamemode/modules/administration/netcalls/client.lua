@@ -7,6 +7,21 @@
     hook.Run("InitializedConfig")
 end)
 
+hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
+    local ply = LocalPlayer()
+    if not (IsValid(ply) and ply:hasPrivilege("View DB Tables")) then return end
+    tabs["DB Browser"] = {
+        icon = "icon16/database.png",
+        build = function(sheet)
+            net.Start("liaRequestDBTables")
+            net.SendToServer()
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl.Paint = function() end
+            return pnl
+        end
+    }
+end)
+
 local function deserializeFallback(raw)
     if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
     if istable(raw) then return raw end
