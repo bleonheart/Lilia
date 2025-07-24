@@ -140,10 +140,14 @@ function MODULE:TicketFrame(requester, message, claimed)
 end
 
 hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(parent, tabs)
-    local ply = LocalPlayer()
-    if not (IsValid(ply) and ply:hasPrivilege("View DB Tables")) then return end
+    local function canView()
+        local ply = LocalPlayer()
+        return IsValid(ply) and ply:hasPrivilege("View DB Tables")
+    end
+
     tabs["Tickets"] = {
         icon = "icon16/page_white_text.png",
+        onShouldShow = canView,
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)

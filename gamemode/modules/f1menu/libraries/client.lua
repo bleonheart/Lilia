@@ -168,9 +168,13 @@ function MODULE:CreateInformationButtons(pages)
 end
 
 hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(parent, tabs)
-    if not LocalPlayer():hasPrivilege("Staff Permission — Access Entity List") then return end
+    local function canView()
+        return LocalPlayer():hasPrivilege("Staff Permission — Access Entity List")
+    end
+
     tabs[L("entities")] = {
         icon = "icon16/bricks.png",
+        onShouldShow = canView,
         build = function(sheet)
             local panel = vgui.Create("DPanel", sheet)
             panel:DockPadding(10, 10, 10, 10)

@@ -232,13 +232,17 @@ else
     end
 
     hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(parent, tabs)
-        local ply = LocalPlayer()
-        if not IsValid(ply) then return end
-        local char = ply:getChar()
-        if not char then return end
-        if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
+        local function canAccess()
+            local ply = LocalPlayer()
+            if not IsValid(ply) then return false end
+            local char = ply:getChar()
+            if not char then return false end
+            return ply:IsSuperAdmin() or char:hasFlags("V")
+        end
+
         tabs["Factions"] = {
             icon = "icon16/group.png",
+            onShouldShow = canAccess,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
