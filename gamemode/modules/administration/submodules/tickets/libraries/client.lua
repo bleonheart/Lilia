@@ -138,3 +138,20 @@ function MODULE:TicketFrame(requester, message, claimed)
     table.insert(TicketFrames, frm)
     timer.Create("ticketsystem-" .. requester:SteamID64(), 60, 1, function() if IsValid(frm) then frm:Remove() end end)
 end
+
+hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(parent, tabs)
+    local ply = LocalPlayer()
+    if not (IsValid(ply) and ply:hasPrivilege("View DB Tables")) then return end
+    tabs["Tickets"] = {
+        icon = "icon16/page_white_text.png",
+        build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:DockPadding(10, 10, 10, 10)
+            net.Start("liaRequestTableData")
+            net.WriteString("lia_ticketclaims")
+            net.SendToServer()
+            return pnl
+        end
+    }
+end)
+
