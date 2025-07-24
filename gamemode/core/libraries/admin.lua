@@ -223,7 +223,7 @@ if SERVER then
         if lia.admin.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
         lia.admin.banList[steamid] = nil
-        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() lia.admin.print("Ban", "Ban removed.") end)
+        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() lia.admin.print("Ban", L("banRemoved")) end)
     end
 
     function lia.admin.isBanned(steamid)
@@ -251,10 +251,8 @@ end
 
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then
-        print("gay")
         return
     end
-        print("xd")
 
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
     if cmd == "kick" then
@@ -379,12 +377,12 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.admin.groups[args[2]] then
                 lia.admin.setPlayerGroup(target, args[2])
-                lia.admin.print("Information", "Set Player To " .. args[2])
+                lia.admin.print("Information", L("setPlayerGroupTo", args[2]))
             else
-                lia.admin.print("Error", "Usergroup not found.")
+                lia.admin.print("Error", L("usergroupNotFound"))
             end
         else
-            lia.admin.print("Error", "Specified player not found.")
+            lia.admin.print("Error", L("specifiedPlayerNotFound"))
         end
     end
 end)
