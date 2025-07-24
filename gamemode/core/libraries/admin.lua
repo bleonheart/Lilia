@@ -28,6 +28,7 @@ function lia.admin.load()
         end
 
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
+            priv.Category = priv.Category or "Misc"
             lia.admin.privileges[name] = priv
         end
 
@@ -107,6 +108,7 @@ end
 
 function lia.admin.registerPrivilege(privilege)
     if not privilege or not privilege.Name then return end
+    privilege.Category = privilege.Category or "Misc"
     lia.admin.privileges[privilege.Name] = privilege
     for groupName in pairs(lia.admin.groups) do
         local minAccess = privilege.MinAccess or "user"
@@ -208,7 +210,7 @@ if SERVER then
     function lia.admin.removeBan(steamid)
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
         lia.admin.banList[steamid] = nil
-        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() lia.admin.print("Ban", "Ban removed.") end)
+        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() lia.admin.print("Ban", L("banRemoved")) end)
     end
 
     function lia.admin.isBanned(steamid)
@@ -231,7 +233,6 @@ end
 
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then
-        print("gay")
         return
     end
 
@@ -357,12 +358,12 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.admin.groups[args[2]] then
                 lia.admin.setPlayerGroup(target, args[2])
-                lia.admin.print("Information", "Set Player To " .. args[2])
+                lia.admin.print("Information", L("setPlayerGroupTo", args[2]))
             else
-                lia.admin.print("Error", "Usergroup not found.")
+                lia.admin.print("Error", L("usergroupNotFound"))
             end
         else
-            lia.admin.print("Error", "Specified player not found.")
+            lia.admin.print("Error", L("specifiedPlayerNotFound"))
         end
     end
 end)
