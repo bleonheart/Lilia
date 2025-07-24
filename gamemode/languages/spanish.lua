@@ -722,6 +722,7 @@ LANGUAGE = {
     plyIgniteDesc = "Prender fuego.",
     plyExtinguishDesc = "Apagar fuego.",
     plyStripDesc = "Quitar armas.",
+    roster = "Roster",
     rosterDesc = "Ver roster.",
     factionManagementDesc = "Abrir gestión de facción.",
     adminMenuTitle = "Menú admin",

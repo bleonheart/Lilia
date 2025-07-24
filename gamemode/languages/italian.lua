@@ -722,6 +722,7 @@ LANGUAGE = {
     plyIgniteDesc = "Dai fuoco a un giocatore.",
     plyExtinguishDesc = "Spegni il giocatore specificato.",
     plyStripDesc = "Rimuovi tutte le armi da un giocatore.",
+    roster = "Roster",
     rosterDesc = "Vedi il roster dei membri della tua fazione.",
     factionManagementDesc = "Apri il menu gestione fazione.",
     adminMenuTitle = "Menu Admin",

@@ -722,6 +722,7 @@ LANGUAGE = {
     plyIgniteDesc = "Поджечь игрока.",
     plyExtinguishDesc = "Потушить игрока.",
     plyStripDesc = "Снять оружие.",
+    roster = "Roster",
     rosterDesc = "Просмотр состава фракции.",
     factionManagementDesc = "Меню управления фракцией.",
     adminMenuTitle = "Админ‑меню",
