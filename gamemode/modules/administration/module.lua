@@ -872,49 +872,80 @@ else
     end
 end
 
-hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
-    lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
-    if SERVER then
-        ensureCAMIGroup(g.Name, g.Inherits or "user")
-        lia.admin.save(true)
-    end
-end)
+if CAMI.ULX_TOKEN and CAMI.ULX_TOKEN == "ULX" then
+    hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g, originToken)
+        lia.admin.groups[g.Name] = nil
+        if SERVER then
+            dropCAMIGroup(g.Name)
+            lia.admin.save(true)
+        end
+    end)
 
-hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-    lia.admin.groups[g.Name] = nil
-    if SERVER then
-        dropCAMIGroup(g.Name)
-        lia.admin.save(true)
-    end
-end)
+    hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
+        if not pv or not pv.Name then return end
+        lia.admin.privileges[pv.Name] = {
+            Name = pv.Name,
+            MinAccess = pv.MinAccess or "user",
+            Category = pv.Category or "Misc"
+        }
 
-hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = {
-        Name = pv.Name,
-        MinAccess = pv.MinAccess or "user",
-        Category = pv.Category or "Misc"
-    }
+        for g in pairs(lia.admin.groups) do
+            if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
+        end
 
-    for g in pairs(lia.admin.groups) do
-        if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
-    end
+        if SERVER then lia.admin.save(true) end
+    end)
 
-    if SERVER then lia.admin.save(true) end
-end)
+    hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
+        if not pv or not pv.Name then return end
+        lia.admin.privileges[pv.Name] = nil
+        for _, p in pairs(lia.admin.groups) do
+            p[pv.Name] = nil
+        end
 
-hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = nil
-    for _, p in pairs(lia.admin.groups) do
-        p[pv.Name] = nil
-    end
+        if SERVER then lia.admin.save(true) end
+    end)
 
-    if SERVER then lia.admin.save(true) end
-end)
+    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, oldGroup, newGroup, originToken)
+        if not IsValid(ply) or not SERVER then return end
+        lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
+    end)
+else
+    hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
+        lia.admin.groups[g.Name] = nil
+        if SERVER then
+            dropCAMIGroup(g.Name)
+            lia.admin.save(true)
+        end
+    end)
 
-hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
-    if not IsValid(ply) then return end
-    if not SERVER then return end
-    lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(new), ply:SteamID64()))
-end)
+    hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
+        if not pv or not pv.Name then return end
+        lia.admin.privileges[pv.Name] = {
+            Name = pv.Name,
+            MinAccess = pv.MinAccess or "user",
+            Category = pv.Category or "Misc"
+        }
+
+        for g in pairs(lia.admin.groups) do
+            if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
+        end
+
+        if SERVER then lia.admin.save(true) end
+    end)
+
+    hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
+        if not pv or not pv.Name then return end
+        lia.admin.privileges[pv.Name] = nil
+        for _, p in pairs(lia.admin.groups) do
+            p[pv.Name] = nil
+        end
+
+        if SERVER then lia.admin.save(true) end
+    end)
+
+    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, oldGroup, newGroup)
+        if not IsValid(ply) or not SERVER then return end
+        lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
+    end)
+end

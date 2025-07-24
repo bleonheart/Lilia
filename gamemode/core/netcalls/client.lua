@@ -654,7 +654,7 @@ hook.Add("HUDPaint", "liaPKMessage", function()
     if not pkMessage then return end
     local txt = L("pkMessage")
     surface.SetFont("liaBigFont")
-    local w, h = surface.GetTextSize(txt)
+    local w, _ = surface.GetTextSize(txt)
     local x, y = (ScrW() - w) / 2, ScrH() * 0.4
     lia.util.drawText(txt, x + 2, y + 2, Color(0, 0, 0, 255), 0, 0, "liaBigFont")
     lia.util.drawText(txt, x, y, color_white, 0, 0, "liaBigFont")

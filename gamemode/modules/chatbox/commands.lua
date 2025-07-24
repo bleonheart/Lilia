@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-lia.command.add("banooc", {
+﻿lia.command.add("banooc", {
     adminOnly = true,
     privilege = "Ban OOC",
     desc = "banOOCCommandDesc",

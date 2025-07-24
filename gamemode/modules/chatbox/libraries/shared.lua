@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-lia.chat.register("meclose", {
+﻿lia.chat.register("meclose", {
     syntax = "[string Action]",
     desc = "mecloseDesc",
     format = "emoteFormat",
