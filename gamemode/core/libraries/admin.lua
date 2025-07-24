@@ -374,6 +374,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.admin.groups[args[2]] then
                 lia.admin.setPlayerGroup(target, args[2])
+                lia.admin.print("Information", "Set Player To " .. args[2])
             else
                 lia.admin.print("Error", "Usergroup not found.")
             end
