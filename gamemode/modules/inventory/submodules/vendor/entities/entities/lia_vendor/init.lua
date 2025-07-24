@@ -215,6 +215,7 @@ function ENT:applyPreset(name)
         for _, client in ipairs(self.receivers) do
             self:sync(client)
         end
+
         net.Start("VendorEdit")
         net.WriteString("preset")
         net.Send(self.receivers)
@@ -234,6 +235,7 @@ function ENT:applyPreset(name)
     for _, client in ipairs(self.receivers) do
         self:sync(client)
     end
+
     net.Start("VendorEdit")
     net.WriteString("preset")
     net.Send(self.receivers)

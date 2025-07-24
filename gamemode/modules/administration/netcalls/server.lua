@@ -25,7 +25,11 @@ end)
 
 local DB_CHUNK = 60000
 local function sendTableData(client, name, data)
-    local payload = {tbl = name, data = data or {}}
+    local payload = {
+        tbl = name,
+        data = data or {}
+    }
+
     local json = util.TableToJSON(payload)
     local comp = util.Compress(json)
     local len = #comp
@@ -51,9 +55,7 @@ net.Receive("liaRequestTableData", function(_, client)
     if not client:hasPrivilege("View DB Tables") then return end
     local tbl = net.ReadString()
     if not tbl or tbl == "" then return end
-    lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res)
-        sendTableData(client, tbl, res or {})
-    end)
+    lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res) sendTableData(client, tbl, res or {}) end)
 end)
 
 net.Receive("lia_managesitrooms_action", function(_, client)

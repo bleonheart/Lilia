@@ -37,7 +37,10 @@ lia.command.add("charunbanoffline", {
         if not charID then return client:notify("Invalid character ID.") end
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
-        lia.db.updateTable({_banned = nil}, nil, nil, "_id = " .. charID)
+        lia.db.updateTable({
+            _banned = nil
+        }, nil, nil, "_id = " .. charID)
+
         lia.char.setCharData(charID, "charBanInfo", nil)
         client:notify("Offline character ID " .. charID .. " has been unbanned.")
         lia.log.add(client, "charUnbanOffline", charID)
@@ -54,7 +57,10 @@ lia.command.add("charbanoffline", {
         if not charID then return client:notify("Invalid character ID.") end
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
-        lia.db.updateTable({_banned = true}, nil, nil, "_id = " .. charID)
+        lia.db.updateTable({
+            _banned = true
+        }, nil, nil, "_id = " .. charID)
+
         lia.char.setCharData(charID, "charBanInfo", {
             name = client:Nick(),
             steamID = client:SteamID(),
@@ -606,7 +612,6 @@ lia.command.add("charvoicetoggle", {
 
         local isBanned = target:getLiliaData("VoiceBan", false)
         target:setLiliaData("VoiceBan", not isBanned)
-        target:saveLiliaData()
         if isBanned then
             client:notifyLocalized("voiceUnmuted", target:Name())
             target:notifyLocalized("voiceUnmutedByAdmin")
@@ -718,7 +723,10 @@ lia.command.add("charunban", {
                     return
                 end
 
-                lia.db.updateTable({_banned = nil}, nil, nil, "_id = " .. charID)
+                lia.db.updateTable({
+                    _banned = nil
+                }, nil, nil, "_id = " .. charID)
+
                 lia.char.setCharData(charID, "charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), data[1]._name)
                 lia.log.add(client, "charUnban", data[1]._name, charID)

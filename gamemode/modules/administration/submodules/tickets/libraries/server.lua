@@ -2,9 +2,7 @@
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
         local adminID = row._admin
-        if adminID ~= "Unassigned" then
-            adminID = tostring(adminID):match("(%d+)$") or adminID
-        end
+        if adminID ~= "Unassigned" then adminID = tostring(adminID):match("(%d+)$") or adminID end
         caseclaims[adminID] = caseclaims[adminID] or {
             name = adminID,
             claims = 0,

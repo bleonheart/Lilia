@@ -119,7 +119,6 @@ function PANEL:openInspect()
         local cr = self.ent:GetCreator()
         if IsValid(cr) then drawLine(scroll, L("spawner"), cr:Name() .. " - " .. cr:SteamID()) end
     end
-
 end
 
 function PANEL:buildButtons()

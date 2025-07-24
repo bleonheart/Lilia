@@ -503,11 +503,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     end
 
     self.selectBtn.DoClick = function()
-        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err)
-            if err and err ~= "" then
-                LocalPlayer():notifyLocalized(err)
-            end
-        end)
+        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
         self:Remove()
     end
 
@@ -536,9 +532,7 @@ function PANEL:updateModelEntity(character)
     for i = 0, self.modelEntity:GetNumBodyGroups() - 1 do
         local value = groups[i]
         if value == nil then value = groups[tostring(i)] end
-        if value ~= nil then
-            self.modelEntity:SetBodygroup(i, tonumber(value) or 0)
-        end
+        if value ~= nil then self.modelEntity:SetBodygroup(i, tonumber(value) or 0) end
     end
 
     hook.Run("SetupPlayerModel", self.modelEntity, character)
@@ -756,12 +750,9 @@ function PANEL:OnCursorMoved(x, y)
 end
 
 vgui.Register("liaCharacter", PANEL, "EditablePanel")
-
 hook.Add("CharDataLoaded", "liaUpdateCharacterMenuModel", function(character)
     if not (IsValid(lia.gui.character) and lia.gui.character.isLoadMode) then return end
     if not lia.characters then return end
     local index = lia.gui.character.currentIndex or 1
-    if lia.characters[index] == character:getID() then
-        lia.gui.character:updateModelEntity(character)
-    end
+    if lia.characters[index] == character:getID() then lia.gui.character:updateModelEntity(character) end
 end)

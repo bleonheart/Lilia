@@ -265,7 +265,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_spawns`;
-    DROP TABLE IF EXISTS `lia_chatbox`;
     DROP TABLE IF EXISTS `lia_admingroups`;
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
@@ -300,7 +299,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_spawns;
-    DROP TABLE IF EXISTS lia_chatbox;
     DROP TABLE IF EXISTS lia_admingroups;
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
@@ -452,12 +450,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (_schema, _map)
             );
 
-            CREATE TABLE IF NOT EXISTS lia_chatbox (
-                _schema TEXT,
-                _map TEXT,
-                _data TEXT,
-                PRIMARY KEY (_schema, _map)
-            );
 
             CREATE TABLE IF NOT EXISTS lia_sitrooms (
                 _folder TEXT,
@@ -634,12 +626,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (`_schema`, `_map`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_chatbox` (
-                `_schema` TEXT NULL,
-                `_map` TEXT NULL,
-                `_data` TEXT NULL,
-                PRIMARY KEY (`_schema`, `_map`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_sitrooms` (
                 `_folder` TEXT NULL,
@@ -973,10 +959,9 @@ function lia.db.getTables()
         lia.db.query("SELECT name FROM sqlite_master WHERE type='table'", function(res)
             local tables = {}
             for _, row in ipairs(res or {}) do
-                if row.name and row.name:StartWith("lia_") then
-                    tables[#tables + 1] = row.name
-                end
+                if row.name and row.name:StartWith("lia_") then tables[#tables + 1] = row.name end
             end
+
             d:resolve(tables)
         end, function(err) d:reject(err) end)
     else
@@ -985,10 +970,9 @@ function lia.db.getTables()
             local tables = {}
             for _, row in ipairs(res or {}) do
                 local name = row[key]
-                if name and string.sub(name, 1, 4) == "lia_" then
-                    tables[#tables + 1] = name
-                end
+                if name and string.sub(name, 1, 4) == "lia_" then tables[#tables + 1] = name end
             end
+
             d:resolve(tables)
         end, function(err) d:reject(err) end)
     end

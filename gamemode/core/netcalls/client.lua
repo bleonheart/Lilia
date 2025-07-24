@@ -734,7 +734,6 @@ net.Receive("liaItemInspect", function()
     model.OnMouseWheeled = function() end
     model.OnMousePressed = function() end
     model.OnMouseReleased = function() end
-
     model.Think = function(p)
         if input.IsKeyDown(KEY_A) or input.IsKeyDown(KEY_D) then
             local ang = p.Entity:GetAngles()
@@ -789,5 +788,6 @@ net.Receive("liaCharacterData", function()
         local value = net.ReadType()
         character.dataVars[key] = value
     end
+
     hook.Run("CharDataLoaded", character)
 end)

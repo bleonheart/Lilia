@@ -8,18 +8,13 @@
 end)
 
 local function deserializeFallback(raw)
-    if lia.data and lia.data.deserialize then
-        return lia.data.deserialize(raw)
-    end
-
+    if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
     if istable(raw) then return raw end
-
     local decoded = util.JSONToTable(raw)
     if decoded == nil then
         local ok, result = pcall(pon.decode, raw)
         if ok then decoded = result end
     end
-
     return decoded or raw
 end
 
@@ -28,30 +23,46 @@ local function tableToString(tbl, braces)
     for _, value in pairs(tbl) do
         out[#out + 1] = tostring(value)
     end
+
     local str = table.concat(out, ", ")
-    if braces then
-        str = "{" .. str .. "}"
-    end
+    if braces then str = "{" .. str .. "}" end
     return str
 end
 
 local function openRowInfo(row)
     local columns = {
-        {name = "Field", field = "field"},
-        {name = "Type", field = "type"},
-        {name = "Coded", field = "coded"},
-        {name = "Decoded", field = "decoded"}
+        {
+            name = "Field",
+            field = "field"
+        },
+        {
+            name = "Type",
+            field = "type"
+        },
+        {
+            name = "Coded",
+            field = "coded"
+        },
+        {
+            name = "Decoded",
+            field = "decoded"
+        }
     }
+
     local rows = {}
     for k, v in pairs(row or {}) do
         local decoded = v
-        if isstring(v) then
-            decoded = deserializeFallback(v)
-        end
+        if isstring(v) then decoded = deserializeFallback(v) end
         local codedStr = istable(v) and tableToString(v) or tostring(v)
         local decodedStr = istable(decoded) and tableToString(decoded, true) or tostring(decoded)
-        rows[#rows + 1] = {field = k, type = type(decoded), coded = codedStr, decoded = decodedStr}
+        rows[#rows + 1] = {
+            field = k,
+            type = type(decoded),
+            coded = codedStr,
+            decoded = decodedStr
+        }
     end
+
     lia.util.CreateTableUI("Row Details", columns, rows)
 end
 
@@ -65,8 +76,12 @@ local function handleTableData(id)
     if not tbl or #rows == 0 then return end
     local columns = {}
     for k in pairs(rows[1]) do
-        columns[#columns + 1] = {name = k, field = k}
+        columns[#columns + 1] = {
+            name = k,
+            field = k
+        }
     end
+
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
         function list:OnRowSelected(_, line)
@@ -88,6 +103,7 @@ net.Receive("liaDBTables", function()
     for _, tbl in ipairs(tables or {}) do
         list:AddLine(tbl)
     end
+
     function list:OnRowSelected(_, line)
         net.Start("liaRequestTableData")
         net.WriteString(line:GetColumnText(1))
@@ -182,12 +198,7 @@ net.Receive("AdminModeSwapCharacter", function()
         end
     end)
 
-    d:catch(function(err)
-        if err and err ~= "" then
-            LocalPlayer():notifyLocalized(err)
-        end
-    end)
-
+    d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
     net.Start("liaCharChoose")
     net.WriteUInt(id, 32)
     net.SendToServer()

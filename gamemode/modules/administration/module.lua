@@ -1,4 +1,4 @@
-MODULE.name = "Administration Utilities"
+﻿MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
@@ -94,6 +94,7 @@ if SERVER then
     util.AddNetworkString("liaGroupsRequest")
     util.AddNetworkString("liaGroupsApply")
     util.AddNetworkString("liaGroupsDefaults")
+    util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsDataChunk")
     util.AddNetworkString("liaGroupsDataDone")
     util.AddNetworkString("liaGroupsNotice")
@@ -251,6 +252,26 @@ if SERVER then
         notify(p, "Group '" .. n .. "' removed.")
     end)
 
+    net.Receive("liaGroupsRename", function(_, p)
+        if not allowed(p) then return end
+        local old = net.ReadString()
+        local new = net.ReadString()
+        if old == "" or new == "" or DEFAULT_GROUPS[old] or DEFAULT_GROUPS[new] then return end
+        if lia.admin.groups[new] or not lia.admin.groups[old] then return end
+        lia.admin.groups[new] = lia.admin.groups[old]
+        lia.admin.groups[old] = nil
+        dropCAMIGroup(old)
+        ensureCAMIGroup(new, "user")
+        lia.admin.save(true)
+        applyToCAMI(new, lia.admin.groups[new])
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == old then lia.admin.setPlayerGroup(ply, new) end
+        end
+
+        sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+        notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
+    end)
+
     net.Receive("liaGroupsApply", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
@@ -337,19 +358,19 @@ else
         defaultsBtn:DockMargin(6, 0, 0, 0)
         defaultsBtn:SetWide(90)
         defaultsBtn:SetText("Defaults")
-        local saveBtn = btnBar:Add("liaSmallButton")
-        saveBtn:Dock(RIGHT)
-        saveBtn:SetWide(90)
-        saveBtn:SetText("Save")
         if not editable then
             tickAll:SetEnabled(false)
             untickAll:SetEnabled(false)
             defaultsBtn:SetEnabled(false)
-            saveBtn:SetEnabled(false)
         end
 
-        local delBtn
+        local delBtn, renameBtn
         if not DEFAULT_GROUPS[g] then
+            renameBtn = btnBar:Add("liaSmallButton")
+            renameBtn:Dock(RIGHT)
+            renameBtn:DockMargin(0, 0, 6, 0)
+            renameBtn:SetWide(90)
+            renameBtn:SetText("Rename")
             delBtn = btnBar:Add("liaSmallButton")
             delBtn:Dock(RIGHT)
             delBtn:DockMargin(0, 0, 6, 0)
@@ -479,12 +500,16 @@ else
             net.SendToServer()
         end
 
-        saveBtn.DoClick = function()
-            if not editable then return end
-            net.Start("liaGroupsApply")
-            net.WriteString(g)
-            net.WriteTable(current)
-            net.SendToServer()
+        if renameBtn then
+            renameBtn.DoClick = function()
+                Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
+                    if txt == "" or txt == g then return end
+                    net.Start("liaGroupsRename")
+                    net.WriteString(g)
+                    net.WriteString(txt)
+                    net.SendToServer()
+                end)
+            end
         end
 
         if delBtn then

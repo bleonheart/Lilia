@@ -13,7 +13,6 @@
         local isCheater = target:getLiliaData("cheater", false)
         target:setLiliaData("cheater", not isCheater)
         target:setNetVar("cheater", not isCheater and true or nil)
-        target:saveLiliaData()
         if isCheater then
             client:notifyLocalized("cheaterUnmarked", target:Name())
             target:notifyLocalized("cheaterUnmarkedByAdmin")
