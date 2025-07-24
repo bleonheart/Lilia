@@ -98,10 +98,14 @@ net.Receive("send_logs", function()
 end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(parent, tabs)
-    local ply = LocalPlayer()
-    if not (IsValid(ply) and ply:hasPrivilege("Staff Permissions - Can See Logs")) then return end
+    local function canView()
+        local ply = LocalPlayer()
+        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Can See Logs")
+    end
+
     tabs[L("logs")] = {
         icon = "icon16/application_view_detail.png",
+        onShouldShow = canView,
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)

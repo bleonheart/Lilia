@@ -173,10 +173,14 @@ net.Receive("DisplayCharList", function()
 end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
-    local ply = LocalPlayer()
-    if not (IsValid(ply) and ply:hasPrivilege("List Characters")) then return end
+    local function canShow()
+        local ply = LocalPlayer()
+        return IsValid(ply) and ply:hasPrivilege("List Characters")
+    end
+
     tabs["Character List"] = {
         icon = "icon16/user_gray.png",
+        onShouldShow = canShow,
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)

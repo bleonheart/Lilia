@@ -668,9 +668,9 @@ else
     end
 
     hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
-        if not canAccess() then return end
         tabs["Usergroups"] = {
             icon = "icon16/group.png",
+            onShouldShow = canAccess,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
@@ -683,9 +683,9 @@ else
     end)
 
     hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(parent, tabs)
-        if not canAccess() then return end
         tabs["Players"] = {
             icon = "icon16/user.png",
+            onShouldShow = canAccess,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
@@ -709,8 +709,14 @@ else
             local reg = {}
             hook.Run("liaAdminRegisterTab", parent, reg)
             for name, data in pairs(reg) do
-                local pnl = data.build(sheet)
-                sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
+                local should = true
+                if isfunction(data.onShouldShow) then
+                    should = data.onShouldShow() ~= false
+                end
+                if should then
+                    local pnl = data.build(sheet)
+                    sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
+                end
             end
         end
     end
