@@ -172,7 +172,7 @@ net.Receive("DisplayCharList", function()
     end
 end)
 
-hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(_, tabs)
     local function canShow()
         local ply = LocalPlayer()
         return IsValid(ply) and ply:hasPrivilege("Access Character List Tab") and ply:hasPrivilege("List Characters")

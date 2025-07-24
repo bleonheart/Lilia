@@ -72,39 +72,6 @@ end
 
 function MODULE:CreateInformationButtons(pages)
     local client = LocalPlayer()
-    local function startSpectateView(ent, originalThirdPerson)
-        local yaw = client:EyeAngles().yaw
-        local camZOffset = 50
-        hook.Add("CalcView", "EntityViewCalcView", function()
-            return {
-                origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
-                angles = Angle(0, yaw, 0),
-                fov = 60
-            }
-        end)
-
-        hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "liaMediumFont", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
-        hook.Add("Think", "EntityViewRotate", function()
-            if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
-            if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
-            if input.IsKeyDown(KEY_W) then camZOffset = camZOffset + FrameTime() * 100 end
-            if input.IsKeyDown(KEY_S) then camZOffset = camZOffset - FrameTime() * 100 end
-            if input.IsKeyDown(KEY_SPACE) then
-                hook.Remove("CalcView", "EntityViewCalcView")
-                hook.Remove("HUDPaint", "EntityViewHUD")
-                hook.Remove("Think", "EntityViewRotate")
-                hook.Remove("CreateMove", "EntitySpectateCreateMove")
-                lia.option.set("thirdPersonEnabled", originalThirdPerson)
-            end
-        end)
-
-        hook.Add("CreateMove", "EntitySpectateCreateMove", function(cmd)
-            cmd:SetForwardMove(0)
-            cmd:SetSideMove(0)
-            cmd:SetUpMove(0)
-        end)
-    end
-
     if client:hasPrivilege("Staff Permission — Access Module List") then
         table.insert(pages, {
             name = L("modules"),
@@ -167,7 +134,7 @@ function MODULE:CreateInformationButtons(pages)
     end
 end
 
-hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(_, tabs)
     local function canView()
         return LocalPlayer():hasPrivilege("Staff Permission — Access Entity List")
     end
@@ -200,6 +167,7 @@ hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(parent, tabs)
                 label:SetTextColor(color_white)
                 return emptyPanel
             end
+
             local function startSpectateView(ent, originalThirdPerson)
                 local yaw = client:EyeAngles().yaw
                 local camZOffset = 50
@@ -405,7 +373,6 @@ function MODULE:CreateMenuButtons(tabs)
         local pages = {}
         hook.Run("CreateInformationButtons", pages)
         if not pages then return end
-
         for _, page in ipairs(pages) do
             local panel = sheet:Add("DPanel")
             panel:Dock(FILL)
@@ -422,7 +389,6 @@ function MODULE:CreateMenuButtons(tabs)
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
-
         for _, page in ipairs(pages) do
             local panel = sheet:Add("DPanel")
             panel:Dock(FILL)

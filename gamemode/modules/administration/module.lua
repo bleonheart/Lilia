@@ -819,7 +819,7 @@ else
         return canAccess() and LocalPlayer():hasPrivilege("Access Players Tab")
     end
 
-    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(_, tabs)
         tabs["Usergroups"] = {
             icon = "icon16/group.png",
             onShouldShow = canAccessUsergroups,
@@ -834,7 +834,7 @@ else
         }
     end)
 
-    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(_, tabs)
         tabs["Players"] = {
             icon = "icon16/user.png",
             onShouldShow = canAccessPlayers,
@@ -862,9 +862,7 @@ else
             hook.Run("liaAdminRegisterTab", parent, reg)
             for name, data in pairs(reg) do
                 local should = true
-                if isfunction(data.onShouldShow) then
-                    should = data.onShouldShow() ~= false
-                end
+                if isfunction(data.onShouldShow) then should = data.onShouldShow() ~= false end
                 if should then
                     local pnl = data.build(sheet)
                     sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
@@ -875,7 +873,6 @@ else
 end
 
 hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
-    
     lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
     if SERVER then
         ensureCAMIGroup(g.Name, g.Inherits or "user")
@@ -884,7 +881,6 @@ hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
 end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-    
     lia.admin.groups[g.Name] = nil
     if SERVER then
         dropCAMIGroup(g.Name)
@@ -893,7 +889,7 @@ hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if  not pv or not pv.Name then return end
+    if not pv or not pv.Name then return end
     lia.admin.privileges[pv.Name] = {
         Name = pv.Name,
         MinAccess = pv.MinAccess or "user",
@@ -908,7 +904,7 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
 end)
 
 hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if  not pv or not pv.Name then return end
+    if not pv or not pv.Name then return end
     lia.admin.privileges[pv.Name] = nil
     for _, p in pairs(lia.admin.groups) do
         p[pv.Name] = nil
@@ -918,7 +914,7 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function
 end)
 
 hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
-    if  not IsValid(ply) then return end
+    if not IsValid(ply) then return end
     if not SERVER then return end
     lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(new), ply:SteamID64()))
 end)
