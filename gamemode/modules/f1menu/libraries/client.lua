@@ -395,62 +395,37 @@ function MODULE:CreateMenuButtons(tabs)
     end
 
     tabs[L("information")] = function(infoTabPanel)
-        infoTabPanel.sidebar = infoTabPanel:Add("DScrollPanel")
-        infoTabPanel.sidebar:Dock(LEFT)
-        infoTabPanel.sidebar:SetWide(200)
-        infoTabPanel.sidebar:DockMargin(20, 20, 0, 20)
-        infoTabPanel.mainContent = infoTabPanel:Add("DPanel")
-        infoTabPanel.mainContent:Dock(FILL)
-        infoTabPanel.mainContent:DockMargin(10, 10, 10, 10)
-        infoTabPanel.mainContent.Paint = function() end
+        local sheet = infoTabPanel:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        sheet:DockMargin(10, 10, 10, 10)
         local pages = {}
         hook.Run("CreateInformationButtons", pages)
         if not pages then return end
-        local currentBtn
+
         for _, page in ipairs(pages) do
-            local btn = infoTabPanel.sidebar:Add("liaMediumButton")
-            btn:SetText(page.name)
-            btn:Dock(TOP)
-            btn:DockMargin(0, 0, 0, 10)
-            btn:SetTall(40)
-            btn.DoClick = function()
-                if IsValid(currentBtn) then currentBtn:SetSelected(false) end
-                btn:SetSelected(true)
-                currentBtn = btn
-                infoTabPanel.mainContent:Clear()
-                page.drawFunc(infoTabPanel.mainContent)
-            end
+            local panel = sheet:Add("DPanel")
+            panel:Dock(FILL)
+            panel.Paint = function() end
+            page.drawFunc(panel)
+            sheet:AddSheet(page.name, panel)
         end
     end
 
     tabs[L("settings")] = function(settingsPanel)
-        settingsPanel.sidebar = settingsPanel:Add("DScrollPanel")
-        settingsPanel.sidebar:Dock(RIGHT)
-        settingsPanel.sidebar:SetWide(200)
-        settingsPanel.sidebar:DockMargin(0, 20, 20, 20)
-        settingsPanel.mainContent = settingsPanel:Add("DPanel")
-        settingsPanel.mainContent:Dock(FILL)
-        settingsPanel.mainContent:DockMargin(10, 10, 10, 10)
+        local sheet = settingsPanel:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        sheet:DockMargin(10, 10, 10, 10)
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
-        local currentBtn
-        for _, page in ipairs(pages) do
-            local btn = settingsPanel.sidebar:Add("liaMediumButton")
-            btn:SetText(page.name)
-            btn:Dock(TOP)
-            btn:DockMargin(0, 0, 0, 10)
-            btn:SetTall(40)
-            btn.DoClick = function()
-                if IsValid(currentBtn) then currentBtn:SetSelected(false) end
-                btn:SetSelected(true)
-                currentBtn = btn
-                settingsPanel.mainContent:Clear()
-                page.drawFunc(settingsPanel.mainContent)
-            end
-        end
 
-        if #pages > 0 then pages[1].drawFunc(settingsPanel.mainContent) end
+        for _, page in ipairs(pages) do
+            local panel = sheet:Add("DPanel")
+            panel:Dock(FILL)
+            panel.Paint = function() end
+            page.drawFunc(panel)
+            sheet:AddSheet(page.name, panel)
+        end
     end
 end
 
