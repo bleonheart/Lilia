@@ -20,8 +20,152 @@ MODULE.Privileges = {
         MinAccess = "superadmin"
     },
     {
+        Name = "Admin Tab - Config",
+        MinAccess = "superadmin",
+    },
+    {
         Name = "Staff Permissions - Manage UserGroups",
         MinAccess = "superadmin"
+    },
+    {
+        Name = "Staff Permissions - Access Usergroups Tab",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Staff Permissions - Access Players Tab",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Staff Permissions - Access DB Browser Tab",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "View DB Tables",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Manage SitRooms",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "List Characters",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Kick Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ban Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Kill Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Set Player Group",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unban Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Freeze Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unfreeze Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Slay Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Respawn Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Blind Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unblind Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Blind Fade Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Blind Fade All",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Gag Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ungag Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Mute Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unmute Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Bring Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Goto Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Return Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Jail Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unjail Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Cloak Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Uncloak Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "God Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ungod Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ignite Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Extinguish Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Strip Player",
+        MinAccess = "admin"
     }
 }
 
@@ -230,7 +374,7 @@ if SERVER then
         end
 
         table.sort(groups)
-        p:requestDropdown("Set Usergroup", "Choose a group", groups, function(sel)
+        p:requestDropdown(L("setUsergroup"), L("chooseGroup"), groups, function(sel)
             if not IsValid(p) or not IsValid(target) then return end
             if lia.admin.groups[sel] then
                 lia.admin.setPlayerGroup(target, sel)
@@ -252,7 +396,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(n, lia.admin.groups[n])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Group '" .. n .. "' created.")
+        notify(p, L("groupCreatedNamed", n))
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
@@ -264,7 +408,7 @@ if SERVER then
         dropCAMIGroup(n)
         lia.admin.save(true)
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Group '" .. n .. "' removed.")
+        notify(p, L("groupRemovedNamed", n))
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
@@ -284,7 +428,7 @@ if SERVER then
         end
 
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
+        notify(p, L("groupRenamedNamed", old, new))
     end)
 
     net.Receive("liaGroupsApply", function(_, p)
@@ -300,7 +444,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Permissions saved for '" .. g .. "'.")
+        notify(p, L("permissionsSavedNamed", g))
     end)
 
     net.Receive("liaGroupsDefaults", function(_, p)
@@ -311,7 +455,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Defaults restored for '" .. g .. "'.")
+        notify(p, L("groupDefaultsRestored", g))
     end)
 else
     local groupChunks, playerChunks = {}, {}
@@ -324,11 +468,11 @@ else
         parent:Clear()
         local list = parent:Add("DListView")
         list:Dock(FILL)
-        list:AddColumn("Name")
-        list:AddColumn("SteamID")
-        list:AddColumn("Group")
-        list:AddColumn("Last Join")
-        list:AddColumn("Banned")
+        list:AddColumn(L("name"))
+        list:AddColumn(L("steamID"))
+        list:AddColumn(L("group"))
+        list:AddColumn(L("lastJoin"))
+        list:AddColumn(L("banned"))
         for _, v in ipairs(PLAYER_LIST) do
             local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
             local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", bannedText)
@@ -340,11 +484,11 @@ else
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.steamID then return end
             local m = DermaMenu()
-            local opt = m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
+            local opt = m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
             local ply = player.GetBySteamID(line.steamID) or player.GetBySteamID64(line.steamID64)
             if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")) then
-                local grp = m:AddOption("Set Usergroup", function()
+                local grp = m:AddOption(L("setUsergroup"), function()
                     net.Start("liaRequestPlayerGroup")
                     net.WriteEntity(ply)
                     net.SendToServer()
@@ -371,17 +515,17 @@ else
         local tickAll = btnBar:Add("liaSmallButton")
         tickAll:Dock(LEFT)
         tickAll:SetWide(90)
-        tickAll:SetText("Tick All")
+        tickAll:SetText(L("tickAll"))
         local untickAll = btnBar:Add("liaSmallButton")
         untickAll:Dock(LEFT)
         untickAll:DockMargin(6, 0, 0, 0)
         untickAll:SetWide(90)
-        untickAll:SetText("Untick All")
+        untickAll:SetText(L("untickAll"))
         local defaultsBtn = btnBar:Add("liaSmallButton")
         defaultsBtn:Dock(LEFT)
         defaultsBtn:DockMargin(6, 0, 0, 0)
         defaultsBtn:SetWide(90)
-        defaultsBtn:SetText("Defaults")
+        defaultsBtn:SetText(L("defaults"))
         if not editable then
             tickAll:SetEnabled(false)
             untickAll:SetEnabled(false)
@@ -394,18 +538,18 @@ else
             renameBtn:Dock(RIGHT)
             renameBtn:DockMargin(0, 0, 6, 0)
             renameBtn:SetWide(90)
-            renameBtn:SetText("Rename")
+            renameBtn:SetText(L("rename"))
             delBtn = btnBar:Add("liaSmallButton")
             delBtn:Dock(RIGHT)
             delBtn:DockMargin(0, 0, 6, 0)
             delBtn:SetWide(90)
-            delBtn:SetText("Delete")
+            delBtn:SetText(L("delete"))
         end
 
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
         nameLbl:DockMargin(20, 0, 0, 0)
-        nameLbl:SetText("Name:")
+        nameLbl:SetText(L("nameLabel"))
         setFont(nameLbl, "liaBigFont")
         nameLbl:SizeToContents()
         local nameVal = scroll:Add("DLabel")
@@ -417,7 +561,7 @@ else
         local inhLbl = scroll:Add("DLabel")
         inhLbl:Dock(TOP)
         inhLbl:DockMargin(20, 10, 0, 0)
-        inhLbl:SetText("Inherits from:")
+        inhLbl:SetText(L("inheritsFrom"))
         setFont(inhLbl, "liaBigFont")
         inhLbl:SizeToContents()
         local inhVal = scroll:Add("DLabel")
@@ -434,7 +578,7 @@ else
         local memLbl = scroll:Add("DLabel")
         memLbl:Dock(TOP)
         memLbl:DockMargin(20, 0, 0, 6)
-        memLbl:SetText("Members (" .. #memberNames .. ")")
+        memLbl:SetText(string.format(L("members"), #memberNames))
         setFont(memLbl, "liaBigFont")
         memLbl:SizeToContents()
         local memHolder = scroll:Add("DPanel")
@@ -458,7 +602,7 @@ else
         local privLbl = scroll:Add("DLabel")
         privLbl:Dock(TOP)
         privLbl:DockMargin(20, 0, 0, 6)
-        privLbl:SetText("Privileges")
+        privLbl:SetText(L("privileges"))
         setFont(privLbl, "liaBigFont")
         privLbl:SizeToContents()
         local listHolder = scroll:Add("DPanel")
@@ -526,7 +670,7 @@ else
 
         if renameBtn then
             renameBtn.DoClick = function()
-                Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
+                Derma_StringRequest(L("renameGroupTitle"), L("newGroupName"), g, function(txt)
                     if txt == "" or txt == g then return end
                     net.Start("liaGroupsRename")
                     net.WriteString(g)
@@ -538,11 +682,11 @@ else
 
         if delBtn then
             delBtn.DoClick = function()
-                Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
+                Derma_Query(string.format(L("deleteGroupQuery"), g), L("confirm"), L("yes"), function()
                     net.Start("liaGroupsRemove")
                     net.WriteString(g)
                     net.SendToServer()
-                end, "No")
+                end, L("no"))
             end
         end
     end
@@ -581,9 +725,9 @@ else
         addBtn:Dock(TOP)
         addBtn:DockMargin(0, 20, 0, 0)
         addBtn:SetTall(36)
-        addBtn:SetText("Create Group")
+        addBtn:SetText(L("createGroup"))
         addBtn.DoClick = function()
-            Derma_StringRequest("Create Group", "New group name:", "", function(txt)
+            Derma_StringRequest(L("createGroup"), L("newGroupName"), "", function(txt)
                 if txt == "" then return end
                 LAST_GROUP = txt
                 net.Start("liaGroupsAdd")
@@ -667,10 +811,18 @@ else
         return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")
     end
 
+    local function canAccessUsergroups()
+        return canAccess() and LocalPlayer():hasPrivilege("Staff Permissions - Access Usergroups Tab")
+    end
+
+    local function canAccessPlayers()
+        return canAccess() and LocalPlayer():hasPrivilege("Staff Permissions - Access Players Tab")
+    end
+
     hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
-        if not canAccess() then return end
         tabs["Usergroups"] = {
             icon = "icon16/group.png",
+            onShouldShow = canAccessUsergroups,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
@@ -683,9 +835,9 @@ else
     end)
 
     hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(parent, tabs)
-        if not canAccess() then return end
         tabs["Players"] = {
             icon = "icon16/user.png",
+            onShouldShow = canAccessPlayers,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
@@ -709,8 +861,14 @@ else
             local reg = {}
             hook.Run("liaAdminRegisterTab", parent, reg)
             for name, data in pairs(reg) do
-                local pnl = data.build(sheet)
-                sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
+                local should = true
+                if isfunction(data.onShouldShow) then
+                    should = data.onShouldShow() ~= false
+                end
+                if should then
+                    local pnl = data.build(sheet)
+                    sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
+                end
             end
         end
     end

@@ -10726,3 +10726,43 @@ hook.Add("liaAdminPopulateTabs", "AddServerTab", function(tabs)
     end
 end)
 ```
+
+---
+
+### liaAdminRegisterTab
+
+**Purpose**
+
+Triggered when building the admin menu. Allows modules to add custom tabs.
+
+**Parameters**
+
+- `parent` (`Panel`): Parent panel for the property sheet.
+- `registry` (`table`): Table to fill with tab definitions.
+
+Each tab entry should use the tab name as the key and contain a table with optional `icon` and `onShouldShow` fields plus a `build` function that returns the panel to display.
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("liaAdminRegisterTab", "AddWarningsTab", function(parent, tabs)
+    tabs["Warnings"] = {
+        icon = "icon16/error.png",
+        build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:DockPadding(10, 10, 10, 10)
+            -- create contents here
+            return pnl
+        end
+    }
+end)
+```
+

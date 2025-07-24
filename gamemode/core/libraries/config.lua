@@ -472,6 +472,7 @@ lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) 
     options = CLIENT and getDermaSkins() or {"Lilia Skin"}
 })
 
+
 hook.Add("liaAdminRegisterTab", "liaConfigTab", function(parent, tabs)
     local ConfigFormatting = {
         Int = function(key, name, config, parent)
@@ -890,7 +891,7 @@ hook.Add("liaAdminRegisterTab", "liaConfigTab", function(parent, tabs)
         populate("")
     end
 
-    if hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false then
+    if hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false and LocalPlayer():hasPrivilege("Admin Tab - Config") then
         tabs["Config"] = {
             icon = "icon16/wrench.png",
             build = function(sheet)

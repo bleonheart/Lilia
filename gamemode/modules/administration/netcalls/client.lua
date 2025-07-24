@@ -8,10 +8,14 @@
 end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
-    local ply = LocalPlayer()
-    if not (IsValid(ply) and ply:hasPrivilege("View DB Tables")) then return end
+    local function canView()
+        local ply = LocalPlayer()
+        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Access DB Browser Tab") and ply:hasPrivilege("View DB Tables")
+    end
+
     tabs["DB Browser"] = {
         icon = "icon16/database.png",
+        onShouldShow = canView,
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)

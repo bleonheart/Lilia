@@ -7,6 +7,10 @@ MODULE.Privileges = {
         Name = "Staff Permissions - Can Edit Vendors",
         MinAccess = "admin"
     },
+    {
+        Name = "Manage Vendors",
+        MinAccess = "superadmin"
+    }
 }
 
 lia.config.add("vendorDefaultMoney", "Default Vendor Money", 500, nil, {

@@ -142,11 +142,11 @@ else
         local lst = parent:Add("DListView")
         lst:Dock(FILL)
         lst:SetMultiSelect(false)
-        lst:AddColumn("Name")
-        lst:AddColumn("SteamID")
-        lst:AddColumn("Class")
-        lst:AddColumn("Hours Played")
-        lst:AddColumn("Last Online")
+        lst:AddColumn(L("name"))
+        lst:AddColumn(L("steamID"))
+        lst:AddColumn(L("class"))
+        lst:AddColumn(L("hoursPlayed"))
+        lst:AddColumn(L("lastOnline"))
         lst.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
             local row = line.rowData
@@ -154,16 +154,16 @@ else
             if not me then return end
             local m = DermaMenu()
             if row.id ~= me:getID() then
-                m:AddOption("Kick", function()
-                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                m:AddOption(L("kick"), function()
+                    Derma_Query(L("kickPlayerConfirm"), L("confirm"), L("yes"), function()
                         net.Start("KickCharacter")
                         net.WriteInt(tonumber(row.id), 32)
                         net.SendToServer()
-                    end, "No")
+                    end, L("no"))
                 end)
             end
 
-            m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. row.steamID) end)
+            m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. row.steamID) end)
             m:AddOption(L("copyRow"), function()
                 local s = ""
                 for k, v in pairs(row) do
@@ -232,13 +232,17 @@ else
     end
 
     hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(parent, tabs)
-        local ply = LocalPlayer()
-        if not IsValid(ply) then return end
-        local char = ply:getChar()
-        if not char then return end
-        if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
+        local function canAccess()
+            local ply = LocalPlayer()
+            if not IsValid(ply) then return false end
+            local char = ply:getChar()
+            if not char then return false end
+            return (ply:IsSuperAdmin() or char:hasFlags("V")) and ply:hasPrivilege("Staff Permissions - Access Factions Tab")
+        end
+
         tabs["Factions"] = {
             icon = "icon16/group.png",
+            onShouldShow = canAccess,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
