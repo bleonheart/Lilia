@@ -390,6 +390,13 @@ if SERVER then
         net.WriteTable(lia.admin.groups)
         net.Send(client)
     end)
+
+    hook.Add("OnReloaded", "liaAdminSendGroups", function(client)
+        if lia.admin.isDisabled() then return end
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.admin.groups)
+        net.Send(client)
+    end)
 else
     net.Receive("updateAdminGroups", function()
         local data = net.ReadTable() or {}
