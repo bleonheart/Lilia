@@ -7,14 +7,18 @@ local restrictedProperties = {
 }
 
 function GM:PlayerSpawnProp(client, model)
-    local list = lia.data.get("prop_blacklist")
-    print(client, model)
-    PrintTable(list)
-    print(table.HasValue(list, model) and "no" or "yes")
-    if table.HasValue(list, model) and not client:hasPrivilege("Spawn Permissions - Can Spawn Blacklisted Props") then
-        lia.log.add(client, "spawnDenied", "prop", model)
-        client:notifyLocalized("blacklistedProp")
-        return false
+    local list = lia.data.get("prop_blacklist") or {}
+    local lowerModel = string.lower(model)
+    for _, black in ipairs(list) do
+        if string.lower(black) == lowerModel then
+            if not client:hasPrivilege("Spawn Permissions - Can Spawn Blacklisted Props") then
+                lia.log.add(client, "spawnDenied", "prop", model)
+                client:notifyLocalized("blacklistedProp")
+                return false
+            end
+
+            break
+        end
     end
 
     local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Spawn Permissions - Can Spawn Props") or client:getChar():hasFlags("e")
