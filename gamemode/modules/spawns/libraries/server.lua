@@ -54,33 +54,14 @@ function MODULE:StoreSpawns(spawns)
 end
 
 local function SpawnPlayer(client)
-    local tag = "[SpawnPlayer]"
-    print(tag, "called for", IsValid(client) and client:Name() or tostring(client))
-    if not IsValid(client) then
-        print(tag, "invalid client")
-        return
-    end
-
+    if not IsValid(client) then return end
     local character = client:getChar()
-    print(tag, "character", character or "nil")
-    if not character then
-        print(tag, "no character")
-        return
-    end
-
+    if not character then return end
     local posData = character:getLastPos()
-    if posData then
-        print(tag, "lastPos map", posData.map or "nil")
-        print(tag, "lastPos pos", posData.pos or "nil")
-        print(tag, "lastPos ang", posData.ang or "nil")
-    end
-
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
-        print(tag, "using last position")
         client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
         client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
-        print(tag, "spawned at last position")
         return
     end
 
@@ -92,43 +73,29 @@ local function SpawnPlayer(client)
         end
     end
 
-    print(tag, "client Team()", client:Team())
-    print(tag, "resolved factionID", factionID or "nil")
     if factionID then
-        print(tag, "fetching spawns...")
         MODULE:FetchSpawns():next(function(spawns)
-            print(tag, "spawns fetched", spawns and "ok" or "nil")
             local factionSpawns = spawns and spawns[factionID]
-            print(tag, "spawn count", factionSpawns and #factionSpawns or 0)
             if factionSpawns and #factionSpawns > 0 then
                 local data = table.Random(factionSpawns)
-                print(tag, "raw selected data", data)
-                PrintTable(data, 1)
                 local basePos = data.pos or data
                 if not isvector(basePos) then basePos = lia.data.decodeVector(basePos) end
                 if not isvector(basePos) then basePos = Vector(0, 0, 0) end
                 local pos = basePos + Vector(0, 0, 16)
                 local ang = data.ang
                 if not isangle(ang) then ang = lia.data.decodeAngle(ang) or angle_zero end
-                print(tag, "final pos", pos)
-                print(tag, "final ang", ang)
                 client:SetPos(pos)
                 client:SetEyeAngles(ang)
-                print(tag, "player positioned")
                 hook.Run("PlayerSpawnPointSelected", client, pos, ang)
-            else
-                print(tag, "no valid spawns for faction")
             end
-        end, function(err) print(tag, "FetchSpawns error", err) end)
-    else
-        print(tag, "missing factionID")
+        end)
     end
 end
 
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
-    local InVehicle = client:hasValidVehicle()
-    if IsValid(client) and not InVehicle and client:Alive() then
+    local inVehicle = client:hasValidVehicle()
+    if IsValid(client) and not inVehicle and client:Alive() then
         character:setLastPos({
             pos = client:GetPos(),
             ang = client:EyeAngles(),
@@ -194,8 +161,7 @@ net.Receive("request_respawn", function(_, client)
     local spawnTimeOverride = hook.Run("OverrideSpawnTime", client, respawnTime)
     if spawnTimeOverride then respawnTime = spawnTimeOverride end
     local lastDeathTime = client:getNetVar("lastDeathTime", os.time())
-    local timePassed = os.time() - lastDeathTime
-    if timePassed < respawnTime then return end
+    if os.time() - lastDeathTime < respawnTime then return end
     if not client:Alive() and not client:getNetVar("IsDeadRestricted", false) then client:Spawn() end
 end)
 
