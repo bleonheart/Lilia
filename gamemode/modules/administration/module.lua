@@ -101,6 +101,7 @@ if SERVER then
     util.AddNetworkString("liaPlayersRequest")
     util.AddNetworkString("liaPlayersDataChunk")
     util.AddNetworkString("liaPlayersDataDone")
+    util.AddNetworkString("liaRequestPlayerGroup")
     lia.admin.privileges = lia.admin.privileges or {}
     lia.admin.groups = lia.admin.groups or {}
     lia.admin.lastJoin = lia.admin.lastJoin or {}
@@ -225,6 +226,29 @@ if SERVER then
     net.Receive("liaPlayersRequest", function(_, p)
         if not allowed(p) then return end
         sendBigTable(p, payloadPlayers(), "liaPlayersDataChunk", "liaPlayersDataDone")
+    end)
+
+    net.Receive("liaRequestPlayerGroup", function(_, p)
+        if not allowed(p) then return end
+        local target = net.ReadEntity()
+        if not IsValid(target) or not target:IsPlayer() then return end
+
+        local groups = {}
+        for name in pairs(lia.admin.groups or {}) do
+            groups[#groups + 1] = name
+        end
+        table.sort(groups)
+
+        p:requestDropdown("Set Usergroup", "Choose a group", groups, function(sel)
+            if not IsValid(p) or not IsValid(target) then return end
+            if lia.admin.groups[sel] then
+                lia.admin.setPlayerGroup(target, sel)
+                p:notifyLocalized("plyGroupSet")
+                lia.log.add(p, "plySetGroup", target:Name(), sel)
+            else
+                p:notifyLocalized("groupNotExists")
+            end
+        end)
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
