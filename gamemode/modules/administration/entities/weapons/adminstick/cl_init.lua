@@ -1,4 +1,5 @@
 ﻿local MODULE = MODULE
+
 function SWEP:PrimaryAttack()
     local target = self:GetTarget()
     local client = LocalPlayer()

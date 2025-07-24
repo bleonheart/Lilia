@@ -1,6 +1,7 @@
 ﻿local MODULE = MODULE
 local xpos = xpos or 20
 local ypos = ypos or 20
+local TicketFrames = {}
 function MODULE:TicketFrame(requester, message, claimed)
     local mat_lightning = Material("icon16/lightning_go.png")
     local mat_arrow = Material("icon16/arrow_left.png")
