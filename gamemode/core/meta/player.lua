@@ -26,7 +26,6 @@ function playerMeta:hasPrivilege(privilegeName)
     local group = self:GetUserGroup()
     local groups = lia.admin.groups or {}
     local perms = groups[group]
-    PrintTable(lia.admin.groups, 1)
     if not perms then
         self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
         return false
