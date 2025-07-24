@@ -25,11 +25,6 @@ function GM:PlayerLoadedChar(client, character)
         _lastJoinTime = timeStamp
     }, nil, "characters", "_id = " .. character:getID())
 
-    lia.char.lastUsed = lia.char.lastUsed or {}
-    lia.char.lastUsed[client:SteamID64()] = character:getName()
-    client:setLiliaData("lastChar", character:getName(), true)
-    client:saveLiliaData()
-
     client:removeRagdoll()
     character:setData("loginTime", os.time())
     hook.Run("PlayerLoadout", client)
