@@ -6,6 +6,7 @@ hook.Add("liaAdminRegisterTab", "AdminTabWarningsDB", function(parent, tabs)
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)
+            lia.gui.warnings = pnl
             net.Start("liaRequestTableData")
             net.WriteString("lia_warnings")
             net.SendToServer()

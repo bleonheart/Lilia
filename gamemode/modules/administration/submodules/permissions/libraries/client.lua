@@ -180,6 +180,7 @@ hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)
+            lia.gui.charList = pnl
             local entry = pnl:Add("DTextEntry")
             entry:Dock(TOP)
             entry:SetTall(25)

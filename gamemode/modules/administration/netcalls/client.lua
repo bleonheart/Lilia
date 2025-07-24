@@ -13,10 +13,12 @@ hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
     tabs["DB Browser"] = {
         icon = "icon16/database.png",
         build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:DockPadding(10, 10, 10, 10)
+            pnl.Paint = function() end
+            lia.gui.dbBrowser = pnl
             net.Start("liaRequestDBTables")
             net.SendToServer()
-            local pnl = vgui.Create("DPanel", sheet)
-            pnl.Paint = function() end
             return pnl
         end
     }
