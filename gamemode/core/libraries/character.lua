@@ -214,6 +214,7 @@ lia.char.registerVar("model", {
                         groups[tonumber(groupIndex)] = tonumber(groupValue)
                     end
                 end
+
                 newData.bodygroups = groups
             end
         end
@@ -275,9 +276,7 @@ lia.char.registerVar("skin", {
         local oldVar = character:getSkin()
         character.vars.skin = tonumber(value) or 0
         local client = character:getPlayer()
-        if IsValid(client) and client:getChar() == character then
-            client:SetSkin(character.vars.skin)
-        end
+        if IsValid(client) and client:getChar() == character then client:SetSkin(character.vars.skin) end
         net.Start("charSet")
         net.WriteString("skin")
         net.WriteType(character.vars.skin)
@@ -285,9 +284,7 @@ lia.char.registerVar("skin", {
         net.Broadcast()
         hook.Run("OnCharVarChanged", character, "skin", oldVar, character.vars.skin)
     end,
-    onGet = function(character, default)
-        return character.vars.skin or default or 0
-    end
+    onGet = function(character, default) return character.vars.skin or default or 0 end
 })
 
 lia.char.registerVar("bodygroups", {
@@ -307,6 +304,7 @@ lia.char.registerVar("bodygroups", {
                 if index then client:SetBodygroup(index, value) end
             end
         end
+
         net.Start("charSet")
         net.WriteString("bodygroups")
         net.WriteType(character.vars.bodygroups)
@@ -314,9 +312,7 @@ lia.char.registerVar("bodygroups", {
         net.Broadcast()
         hook.Run("OnCharVarChanged", character, "bodygroups", oldVar, character.vars.bodygroups)
     end,
-    onGet = function(character, default)
-        return character.vars.bodygroups or default or {}
-    end
+    onGet = function(character, default) return character.vars.bodygroups or default or {} end
 })
 
 lia.char.registerVar("var", {
@@ -627,9 +623,7 @@ if SERVER then
                 local character = lia.char.new(charData, charId, client)
                 if charData.recognition then lia.char.setCharData(charId, "rgn", nil) end
                 local dataVars = lia.char.getCharData(charId)
-                if not table.IsEmpty(dataVars) then
-                    character:setData(dataVars, nil, true)
-                end
+                if not table.IsEmpty(dataVars) then character:setData(dataVars, nil, true) end
                 hook.Run("CharRestored", character)
                 character.vars.inv = {}
                 lia.inventory.loadAllFromCharID(charId):next(function(inventories)

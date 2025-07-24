@@ -1,4 +1,4 @@
-MODULE.name = "Administration Utilities"
+﻿MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
@@ -252,7 +252,6 @@ if SERVER then
         local new = net.ReadString()
         if old == "" or new == "" or DEFAULT_GROUPS[old] or DEFAULT_GROUPS[new] then return end
         if lia.admin.groups[new] or not lia.admin.groups[old] then return end
-
         lia.admin.groups[new] = lia.admin.groups[old]
         lia.admin.groups[old] = nil
         dropCAMIGroup(old)
@@ -262,6 +261,7 @@ if SERVER then
         for _, ply in ipairs(player.GetAll()) do
             if ply:GetUserGroup() == old then lia.admin.setPlayerGroup(ply, new) end
         end
+
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
         notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
     end)
@@ -353,7 +353,6 @@ else
             renameBtn:DockMargin(0, 0, 6, 0)
             renameBtn:SetWide(90)
             renameBtn:SetText("Rename")
-
             delBtn = btnBar:Add("liaSmallButton")
             delBtn:Dock(RIGHT)
             delBtn:DockMargin(0, 0, 6, 0)

@@ -445,7 +445,6 @@ if not sysDisabled and not cmdsDisabled then
             local target = lia.command.findPlayer(client, arguments[1])
             if IsValid(target) then
                 target:setLiliaData("VoiceBan", true)
-                target:saveLiliaData()
                 lia.log.add(client, "plyMute", target:Name())
                 hook.Run("PlayerMuted", target, client)
             end
@@ -461,7 +460,6 @@ if not sysDisabled and not cmdsDisabled then
             local target = lia.command.findPlayer(client, arguments[1])
             if IsValid(target) then
                 target:setLiliaData("VoiceBan", false)
-                target:saveLiliaData()
                 lia.log.add(client, "plyUnmute", target:Name())
                 hook.Run("PlayerUnmuted", target, client)
             end

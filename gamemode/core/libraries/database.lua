@@ -959,10 +959,9 @@ function lia.db.getTables()
         lia.db.query("SELECT name FROM sqlite_master WHERE type='table'", function(res)
             local tables = {}
             for _, row in ipairs(res or {}) do
-                if row.name and row.name:StartWith("lia_") then
-                    tables[#tables + 1] = row.name
-                end
+                if row.name and row.name:StartWith("lia_") then tables[#tables + 1] = row.name end
             end
+
             d:resolve(tables)
         end, function(err) d:reject(err) end)
     else
@@ -971,10 +970,9 @@ function lia.db.getTables()
             local tables = {}
             for _, row in ipairs(res or {}) do
                 local name = row[key]
-                if name and string.sub(name, 1, 4) == "lia_" then
-                    tables[#tables + 1] = name
-                end
+                if name and string.sub(name, 1, 4) == "lia_" then tables[#tables + 1] = name end
             end
+
             d:resolve(tables)
         end, function(err) d:reject(err) end)
     end

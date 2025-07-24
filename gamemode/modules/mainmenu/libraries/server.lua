@@ -16,6 +16,7 @@
                         net.WriteString(key)
                         net.WriteType(data[key])
                     end
+
                     net.Send(client)
                 end
             end

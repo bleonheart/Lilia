@@ -54,17 +54,13 @@ end
 
 function characterMeta:getFlags()
     local ply = self:getPlayer()
-    if IsValid(ply) then
-        return ply:getFlags()
-    end
+    if IsValid(ply) then return ply:getFlags() end
     return ""
 end
 
 function characterMeta:hasFlags(flags)
     local ply = self:getPlayer()
-    if IsValid(ply) then
-        return ply:hasFlags(flags)
-    end
+    if IsValid(ply) then return ply:hasFlags(flags) end
     return false
 end
 
@@ -346,23 +342,17 @@ if SERVER then
 
     function characterMeta:setFlags(flags)
         local ply = self:getPlayer()
-        if IsValid(ply) then
-            ply:setFlags(flags)
-        end
+        if IsValid(ply) then ply:setFlags(flags) end
     end
 
     function characterMeta:giveFlags(flags)
         local ply = self:getPlayer()
-        if IsValid(ply) then
-            ply:giveFlags(flags)
-        end
+        if IsValid(ply) then ply:giveFlags(flags) end
     end
 
     function characterMeta:takeFlags(flags)
         local ply = self:getPlayer()
-        if IsValid(ply) then
-            ply:takeFlags(flags)
-        end
+        if IsValid(ply) then ply:takeFlags(flags) end
     end
 
     function characterMeta:save(callback)
