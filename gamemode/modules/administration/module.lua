@@ -330,10 +330,10 @@ else
         list:AddColumn("SteamID")
         list:AddColumn("Group")
         list:AddColumn("Last Join")
-        list:AddColumn("Last Character")
         list:AddColumn("Banned")
         for _, v in ipairs(PLAYER_LIST) do
-            local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", v.banned and "Yes" or "No")
+            local bannedText = v.banned == nil and "no" or (v.banned and "Yes" or "No")
+            local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", bannedText)
             row.steamID = v.id
             row.steamID64 = v.id64
             if v.banned then row:SetBGColor(Color(255, 120, 120)) end
