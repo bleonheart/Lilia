@@ -50,6 +50,122 @@ MODULE.Privileges = {
     {
         Name = "List Characters",
         MinAccess = "admin"
+    },
+    {
+        Name = "Kick Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ban Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Kill Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Set Player Group",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unban Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Freeze Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unfreeze Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Slay Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Respawn Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Blind Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unblind Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Blind Fade Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Blind Fade All",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Gag Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ungag Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Mute Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unmute Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Bring Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Goto Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Return Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Jail Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unjail Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Cloak Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Uncloak Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "God Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ungod Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Ignite Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Extinguish Player",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Strip Player",
+        MinAccess = "admin"
     }
 }
 

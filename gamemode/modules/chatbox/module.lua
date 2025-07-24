@@ -23,4 +23,20 @@ MODULE.Privileges = {
         Name = "Staff Permissions - Always Have Access to Help Chat",
         MinAccess = "superadmin"
     },
+    {
+        Name = "Ban OOC",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Unban OOC",
+        MinAccess = "admin"
+    },
+    {
+        Name = "Block OOC",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Clear Chat",
+        MinAccess = "admin"
+    }
 }

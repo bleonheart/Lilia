@@ -6,5 +6,13 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Access Warnings Tab",
         MinAccess = "superadmin",
+    },
+    {
+        Name = "Issue Warnings",
+        MinAccess = "admin"
+    },
+    {
+        Name = "View Player Warnings",
+        MinAccess = "admin"
     }
 }
