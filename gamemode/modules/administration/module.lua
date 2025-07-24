@@ -342,6 +342,15 @@ else
             local m = DermaMenu()
             local opt = m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
+            local ply = player.GetBySteamID(line.steamID) or player.GetBySteamID64(line.steamID64)
+            if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")) then
+                local grp = m:AddOption("Set Usergroup", function()
+                    net.Start("liaRequestPlayerGroup")
+                    net.WriteEntity(ply)
+                    net.SendToServer()
+                end)
+                grp:SetIcon("icon16/group_edit.png")
+            end
             m:Open()
         end
     end
