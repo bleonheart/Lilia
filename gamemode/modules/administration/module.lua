@@ -179,7 +179,6 @@ if SERVER then
                 id64 = util.SteamIDTo64(id),
                 group = "",
                 lastJoin = 0,
-
                 banned = true
             }
         end
@@ -225,13 +224,12 @@ if SERVER then
         if not allowed(p) then return end
         local target = net.ReadEntity()
         if not IsValid(target) or not target:IsPlayer() then return end
-
         local groups = {}
         for name in pairs(lia.admin.groups or {}) do
             groups[#groups + 1] = name
         end
-        table.sort(groups)
 
+        table.sort(groups)
         p:requestDropdown("Set Usergroup", "Choose a group", groups, function(sel)
             if not IsValid(p) or not IsValid(target) then return end
             if lia.admin.groups[sel] then
@@ -332,7 +330,7 @@ else
         list:AddColumn("Last Join")
         list:AddColumn("Banned")
         for _, v in ipairs(PLAYER_LIST) do
-            local bannedText = v.banned == nil and "no" or (v.banned and "Yes" or "No")
+            local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
             local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", bannedText)
             row.steamID = v.id
             row.steamID64 = v.id64
@@ -351,8 +349,10 @@ else
                     net.WriteEntity(ply)
                     net.SendToServer()
                 end)
+
                 grp:SetIcon("icon16/group_edit.png")
             end
+
             m:Open()
         end
     end
@@ -705,6 +705,9 @@ else
             parent:Clear()
             local sheet = vgui.Create("DPropertySheet", parent)
             sheet:Dock(FILL)
+            sheet.Paint = function() end
+            sheet.TabScroller.Paint = function() end
+            sheet.TabScroller.TabBar.Paint = function() end
             local reg = {}
             hook.Run("liaAdminRegisterTab", parent, reg)
             for name, data in pairs(reg) do
