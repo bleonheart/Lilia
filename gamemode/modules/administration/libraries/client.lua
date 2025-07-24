@@ -110,8 +110,20 @@
                 name = "Return",
                 image = "icon16/arrow_redo.png",
                 func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
-            }
+            },
         }
+
+        if client:IsSuperAdmin() or client:hasPrivilege("Staff Permissions - Manage UserGroups") then
+            table.insert(orderedOptions, {
+                name = "Set Usergroup",
+                image = "icon16/group_edit.png",
+                func = function()
+                    net.Start("liaRequestPlayerGroup")
+                    net.WriteEntity(target)
+                    net.SendToServer()
+                end
+            })
+        end
 
         for _, option in ipairs(orderedOptions) do
             table.insert(options, option)
