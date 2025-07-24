@@ -136,7 +136,7 @@ if SERVER then
     local function payloadPlayers()
         local bans = getBanList()
         local plys = {}
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsBot() then continue end
             plys[#plys + 1] = {
                 name = v:Nick(),
@@ -257,7 +257,7 @@ if SERVER then
         ensureCAMIGroup(new, "user")
         lia.admin.save(true)
         applyToCAMI(new, lia.admin.groups[new])
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetUserGroup() == old then lia.admin.setPlayerGroup(ply, new) end
         end
 
