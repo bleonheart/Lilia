@@ -439,7 +439,6 @@ function lia.db.loadTables()
                 _name TEXT,
                 _price INTEGER,
                 _locked INTEGER,
-                _children TEXT,
                 PRIMARY KEY (_folder, _map, _id)
             );
 
