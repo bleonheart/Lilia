@@ -10,7 +10,8 @@ function MODULE:InitializedModules()
                 if not lia.admin.privileges[privilege] then
                     lia.admin.registerPrivilege({
                         Name = privilege,
-                        MinAccess = "admin"
+                        MinAccess = "admin",
+                        Category = "Properties"
                     })
                 end
             end
@@ -24,7 +25,8 @@ function MODULE:InitializedModules()
                 if not lia.admin.privileges[privilege] then
                     lia.admin.registerPrivilege({
                         Name = privilege,
-                        MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin"
+                        MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
+                        Category = "Tools"
                     })
                 end
             end

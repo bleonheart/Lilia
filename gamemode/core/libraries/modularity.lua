@@ -9,7 +9,8 @@ local function loadPermissions(Privileges)
         if not lia.admin.privileges[privilegeName] then
             lia.admin.registerPrivilege({
                 Name = privilegeName,
-                MinAccess = privilegeData.MinAccess or "admin"
+                MinAccess = privilegeData.MinAccess or "admin",
+                Category = privilegeData.Category or MODULE.name
             })
         end
     end
