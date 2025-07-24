@@ -320,7 +320,7 @@ function PANEL:GetItemCategoryList()
     for id in pairs(data) do
         local itm = lia.item.list[id]
         if itm then
-            local cat = itm.category or L("misc")
+            local cat = L(itm.category or "misc")
             out[cat:sub(1, 1):upper() .. cat:sub(2)] = true
         end
     end
@@ -342,7 +342,7 @@ function PANEL:applyCategoryFilter()
     if not istable(data) then data = liaVendorEnt:getNetVar("items", {}) end
     for id in SortedPairs(data) do
         local itm = lia.item.list[id]
-        local cat = itm and itm.category or L("misc")
+        local cat = L(itm and itm.category or "misc")
         cat = cat:sub(1, 1):upper() .. cat:sub(2)
         if not self.currentCategory or self.currentCategory == L("vendorShowAll") or cat == self.currentCategory then
             local mode = liaVendorEnt:getTradeMode(id)
@@ -917,7 +917,7 @@ function PANEL:ReloadItemList(filter)
         if filter and not itemName:lower():find(filter:lower(), 1, true) then continue end
         local mode = entity.items[k] and entity.items[k][VENDOR_MODE]
         local current, max = entity:getStock(k)
-        local category = v.category or L("none")
+        local category = L(v.category or "none")
         local panel = self.items:AddLine(itemName, self:getModeText(mode), entity:getPrice(k), max and current .. "/" .. max or "-", category)
         panel.item = k
         self.lines[k] = panel

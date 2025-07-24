@@ -1237,5 +1237,12 @@ LANGUAGE = {
     userGroups = "Groupes utilisateurs",
     addGroup = "Ajouter groupe",
     removeGroup = "Supprimer groupe",
-    groupName = "Nom du groupe"
+    groupName = "Nom du groupe",
+    categoryAmmunition = "Munitions",
+    categoryLiterature = "Littérature",
+    categoryEntities = "Entités",
+    categoryGrenades = "Grenades",
+    categoryOutfit = "Tenue",
+    categoryWeapons = "Armes",
+    categoryStorage = "Stockage",
 }
