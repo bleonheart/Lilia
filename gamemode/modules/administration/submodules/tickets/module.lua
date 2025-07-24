@@ -5,11 +5,11 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Introduces a ticket system where players can submit help requests that staff can view, respond to, and resolve in an organized manner."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Access Tickets Tab",
+        Name = "Access Tickets Tab",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Always See Tickets",
+        Name = "Always See Tickets",
         MinAccess = "superadmin"
     },
     {

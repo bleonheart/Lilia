@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Handles the creation of factions and character classes, controlling default permissions and spawn settings for each."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Access Factions Tab",
+        Name = "Access Factions Tab",
         MinAccess = "superadmin",
     },
     {

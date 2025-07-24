@@ -79,7 +79,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
             return false
         end
 
-        if client:hasPrivilege("Staff Permissions - Can Bypass Staff Faction SAM Command whitelist") or client:isStaffOnDuty() then
+        if client:hasPrivilege("Can Bypass Staff Faction SAM Command whitelist") or client:isStaffOnDuty() then
             return true
         else
             client:notifyLocalized("staffRestrictedCommand")
@@ -126,7 +126,7 @@ end
 
 local function CanReadNotifications(client)
     if not lia.config.get("AdminOnlyNotification", true) then return true end
-    return client:hasPrivilege("Staff Permissions - Can See SAM Notifications") or client:isStaffOnDuty()
+    return client:hasPrivilege("Can See SAM Notifications") or client:isStaffOnDuty()
 end
 
 function sam.player.send_message(client, msg, tbl)
@@ -208,12 +208,12 @@ lia.command.add("plygetplaytime", {
 })
 
 lia.admin.registerPrivilege({
-    Name = "Staff Permissions - Can See SAM Notifications Outside Staff Character",
+    Name = "Can See SAM Notifications Outside Staff Character",
     MinAccess = "superadmin"
 })
 
 lia.admin.registerPrivilege({
-    Name = "Staff Permissions - Can Bypass Staff Faction SAM Command whitelist",
+    Name = "Can Bypass Staff Faction SAM Command whitelist",
     MinAccess = "superadmin"
 })
 

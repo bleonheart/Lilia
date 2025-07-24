@@ -1,6 +1,6 @@
 function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
-    if (client:hasPrivilege("Staff Permissions - Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Staff Permissions - Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
+    if (client:hasPrivilege("Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
         local orderedOptions = {
             {
                 name = L("nameCopyFormat", target:Name()),
@@ -118,7 +118,7 @@ function MODULE:ShowPlayerOptions(target, options)
             }
         }
 
-        if client:IsSuperAdmin() or client:hasPrivilege("Staff Permissions - Manage UserGroups") then
+        if client:IsSuperAdmin() or client:hasPrivilege("Manage UserGroups") then
             table.insert(orderedOptions, {
                 name = L("setUsergroup"),
                 image = "icon16/group_edit.png",

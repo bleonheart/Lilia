@@ -4,19 +4,19 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Can Remove Warns",
+        Name = "Can Remove Warns",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Manage Prop Blacklist",
+        Name = "Manage Prop Blacklist",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access Configuration Menu",
+        Name = "Access Configuration Menu",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access Edit Configuration Menu",
+        Name = "Access Edit Configuration Menu",
         MinAccess = "superadmin"
     },
     {
@@ -24,19 +24,19 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Manage UserGroups",
+        Name = "Manage UserGroups",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access Usergroups Tab",
+        Name = "Access Usergroups Tab",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access Players Tab",
+        Name = "Access Players Tab",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access DB Browser Tab",
+        Name = "Access DB Browser Tab",
         MinAccess = "superadmin"
     },
     {
@@ -267,7 +267,7 @@ if SERVER then
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups")
     end
 
     local function getPrivList()
@@ -487,7 +487,7 @@ else
             local opt = m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
             local ply = player.GetBySteamID(line.steamID) or player.GetBySteamID64(line.steamID64)
-            if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")) then
+            if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Manage UserGroups")) then
                 local grp = m:AddOption(L("setUsergroup"), function()
                     net.Start("liaRequestPlayerGroup")
                     net.WriteEntity(ply)
@@ -808,15 +808,15 @@ else
     end)
 
     local function canAccess()
-        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups")
     end
 
     local function canAccessUsergroups()
-        return canAccess() and LocalPlayer():hasPrivilege("Staff Permissions - Access Usergroups Tab")
+        return canAccess() and LocalPlayer():hasPrivilege("Access Usergroups Tab")
     end
 
     local function canAccessPlayers()
-        return canAccess() and LocalPlayer():hasPrivilege("Staff Permissions - Access Players Tab")
+        return canAccess() and LocalPlayer():hasPrivilege("Access Players Tab")
     end
 
     hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
@@ -852,7 +852,7 @@ else
     function MODULE:CreateMenuButtons(tabs)
         local lp = LocalPlayer()
         if not IsValid(lp) then return end
-        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Staff Permissions - Manage UserGroups")) then return end
+        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Manage UserGroups")) then return end
         tabs[L("shortAdmin")] = function(parent)
             parent:Clear()
             local sheet = vgui.Create("DPropertySheet", parent)

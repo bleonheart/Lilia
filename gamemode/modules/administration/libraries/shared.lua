@@ -1,19 +1,19 @@
 ﻿function MODULE:CanPlayerModifyConfig(client)
-    return client:hasPrivilege("Staff Permissions - Access Edit Configuration Menu")
+    return client:hasPrivilege("Access Edit Configuration Menu")
 end
 
 properties.Add("TogglePropBlacklist", {
     MenuLabel = L("TogglePropBlacklist"),
     Order = 900,
     MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply) return IsValid(ent) and ent:GetClass() == "prop_physics" and ply:hasPrivilege("Staff Permissions - Manage Prop Blacklist") end,
+    Filter = function(_, ent, ply) return IsValid(ent) and ent:GetClass() == "prop_physics" and ply:hasPrivilege("Manage Prop Blacklist") end,
     Action = function(self, ent)
         self:MsgStart()
         net.WriteString(ent:GetModel())
         self:MsgEnd()
     end,
     Receive = function(_, _, ply)
-        if not ply:hasPrivilege("Staff Permissions - Manage Prop Blacklist") then return end
+        if not ply:hasPrivilege("Manage Prop Blacklist") then return end
         local model = net.ReadString()
         local list = lia.data.get("prop_blacklist")
         if table.HasValue(list, model) then

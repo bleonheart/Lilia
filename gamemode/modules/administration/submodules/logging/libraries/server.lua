@@ -66,7 +66,7 @@ net.Receive("send_logs_request", function(_, client)
 end)
 
 function MODULE:CanPlayerSeeLog(client)
-    return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Staff Permissions - Can See Logs")
+    return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Can See Logs")
 end
 
 function MODULE:OnCharDelete(client, id)

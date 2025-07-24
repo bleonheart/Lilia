@@ -4,59 +4,59 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Integrates with the CAMI system to provide fine-grained permission management for commands and modules across the framework."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Access Character List Tab",
+        Name = "Access Character List Tab",
         MinAccess = "admin",
     },
     {
-        Name = "Staff Permissions - Can Bypass Character Lock",
+        Name = "Can Bypass Character Lock",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Can Grab World Props",
+        Name = "Can Grab World Props",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Can Grab Players",
+        Name = "Can Grab Players",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Physgun Pickup",
+        Name = "Physgun Pickup",
         MinAccess = "admin",
     },
     {
-        Name = "Staff Permissions - Can Access Item Informations",
+        Name = "Can Access Item Informations",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Physgun Pickup on Restricted Entities",
+        Name = "Physgun Pickup on Restricted Entities",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Physgun Pickup on Vehicles",
+        Name = "Physgun Pickup on Vehicles",
         MinAccess = "admin",
     },
     {
-        Name = "Staff Permissions - Can't be Grabbed with PhysGun",
+        Name = "Can't be Grabbed with PhysGun",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Can Physgun Reload",
+        Name = "Can Physgun Reload",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - No Clip Outside Staff Character",
+        Name = "No Clip Outside Staff Character",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - No Clip ESP Outside Staff Character",
+        Name = "No Clip ESP Outside Staff Character",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Can Property World Entities",
+        Name = "Can Property World Entities",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Manage Car Blacklist",
+        Name = "Manage Car Blacklist",
         MinAccess = "superadmin",
     },
     {
@@ -112,15 +112,15 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - List Entities",
+        Name = "List Entities",
         MinAccess = "superadmin",
     },
     {
-        Name = "Staff Permissions - Can Remove Blocked Entities",
+        Name = "Can Remove Blocked Entities",
         MinAccess = "admin",
     },
     {
-        Name = "Staff Permissions - Can Remove World Entities",
+        Name = "Can Remove World Entities",
         MinAccess = "superadmin",
     },
     {

@@ -37,14 +37,14 @@ function GM:CanProperty(client, property, entity)
     end
 
     if entity:IsWorld() and IsValid(entity) then
-        if client:hasPrivilege("Staff Permissions - Can Property World Entities") then return true end
+        if client:hasPrivilege("Can Property World Entities") then return true end
         lia.log.add(client, "permissionDenied", "modify world property " .. property)
         client:notifyLocalized("noModifyWorldEntities")
         return false
     end
 
     if entity:GetCreator() == client and (property == "remover" or property == "collision") then return true end
-    if client:IsSuperAdmin() or client:hasPrivilege("Staff Permissions - Access Property " .. property:gsub("^%l", string.upper)) and client:isStaffOnDuty() then return true end
+    if client:IsSuperAdmin() or client:hasPrivilege("Access Property " .. property:gsub("^%l", string.upper)) and client:isStaffOnDuty() then return true end
     lia.log.add(client, "permissionDenied", "modify property " .. property)
     client:notifyLocalized("noModifyProperty")
     return false
@@ -55,8 +55,8 @@ function GM:DrawPhysgunBeam(client)
 end
 
 function GM:PhysgunPickup(client, entity)
-    if (client:hasPrivilege("Staff Permissions - Physgun Pickup") or client:isStaffOnDuty()) and entity.NoPhysgun then
-        if not client:hasPrivilege("Staff Permissions - Physgun Pickup on Restricted Entities") then
+    if (client:hasPrivilege("Physgun Pickup") or client:isStaffOnDuty()) and entity.NoPhysgun then
+        if not client:hasPrivilege("Physgun Pickup on Restricted Entities") then
             lia.log.add(client, "permissionDenied", "physgun restricted entity")
             client:notifyLocalized("noPickupRestricted")
             return false
@@ -66,23 +66,23 @@ function GM:PhysgunPickup(client, entity)
 
     if client:IsSuperAdmin() then return true end
     if entity:GetCreator() == client and (entity:isProp() or entity:isItem()) then return true end
-    if client:hasPrivilege("Staff Permissions - Physgun Pickup") then
+    if client:hasPrivilege("Physgun Pickup") then
         if entity:IsVehicle() then
-            if not client:hasPrivilege("Staff Permissions - Physgun Pickup on Vehicles") then
+            if not client:hasPrivilege("Physgun Pickup on Vehicles") then
                 lia.log.add(client, "permissionDenied", "physgun vehicle")
                 client:notifyLocalized("noPickupVehicles")
                 return false
             end
             return true
         elseif entity:IsPlayer() then
-            if entity:hasPrivilege("Staff Permissions - Can't be Grabbed with PhysGun") or not client:hasPrivilege("Staff Permissions - Can Grab Players") then
+            if entity:hasPrivilege("Can't be Grabbed with PhysGun") or not client:hasPrivilege("Can Grab Players") then
                 lia.log.add(client, "permissionDenied", "physgun player")
                 client:notifyLocalized("noPickupPlayer")
                 return false
             end
             return true
         elseif entity:IsWorld() or entity:CreatedByMap() then
-            if not client:hasPrivilege("Staff Permissions - Can Grab World Props") then
+            if not client:hasPrivilege("Can Grab World Props") then
                 lia.log.add(client, "permissionDenied", "physgun world prop")
                 client:notifyLocalized("noPickupWorld")
                 return false
@@ -115,7 +115,7 @@ function GM:PlayerSpawnVehicle(client, model)
 end
 
 function GM:PlayerNoClip(ply, enabled)
-    if not (ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")) then
+    if not (ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")) then
         lia.log.add(ply, "permissionDenied", "noclip")
         ply:notifyLocalized("noNoclip")
         return false
@@ -183,7 +183,7 @@ function GM:PlayerGiveSWEP(client)
 end
 
 function GM:OnPhysgunReload(_, client)
-    local canReload = client:hasPrivilege("Staff Permissions - Can Physgun Reload")
+    local canReload = client:hasPrivilege("Can Physgun Reload")
     if not canReload then
         lia.log.add(client, "permissionDenied", "physgun reload")
         client:notifyLocalized("noPhysgunReload")
@@ -222,7 +222,7 @@ function GM:CanTool(client, _, tool)
         return false
     end
 
-    local privilege = "Staff Permissions - Access Tool " .. tool:gsub("^%l", string.upper)
+    local privilege = "Access Tool " .. tool:gsub("^%l", string.upper)
     local isSuperAdmin = client:IsSuperAdmin()
     local isStaffOrFlagged = client:isStaffOnDuty() or client:getChar():hasFlags("t")
     local hasPriv = client:hasPrivilege(privilege)
@@ -241,14 +241,14 @@ function GM:CanTool(client, _, tool)
         local entClass = entity:GetClass()
         if tool == "remover" then
             if entity.NoRemover then
-                if not client:hasPrivilege("Staff Permissions - Can Remove Blocked Entities") then
+                if not client:hasPrivilege("Can Remove Blocked Entities") then
                     lia.log.add(client, "permissionDenied", "remove blocked entity")
                     client:notifyLocalized("noRemoveBlockedEntities")
                     return false
                 end
                 return true
             elseif entity:IsWorld() then
-                if not client:hasPrivilege("Staff Permissions - Can Remove World Entities") then
+                if not client:hasPrivilege("Can Remove World Entities") then
                     lia.log.add(client, "permissionDenied", "remove world entity")
                     client:notifyLocalized("noRemoveWorldEntities")
                     return false
@@ -310,7 +310,7 @@ function GM:PlayerSpawnedVehicle(client, entity)
 end
 
 function GM:CanPlayerUseChar(client)
-    if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Staff Permissions - Can Bypass Character Lock") then return false, L("serverEventCharLock") end
+    if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Can Bypass Character Lock") then return false, L("serverEventCharLock") end
 end
 
 local function handleDatabaseWipe(commandName)
