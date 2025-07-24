@@ -11,16 +11,21 @@ function lia.time.TimeSince(strTime)
     if isnumber(strTime) then
         timestamp = strTime
     elseif isstring(strTime) then
-        local year, month, day = lia.time.ParseTime(strTime)
-        if not (year and month and day) then return L("invalidDate") end
-        timestamp = os.time{
-            year = year,
-            month = month,
-            day = day,
-            hour = 0,
-            min = 0,
-            sec = 0
-        }
+        local num = tonumber(strTime)
+        if num then
+            timestamp = num
+        else
+            local year, month, day = lia.time.ParseTime(strTime)
+            if not (year and month and day) then return L("invalidDate") end
+            timestamp = os.time{
+                year = year,
+                month = month,
+                day = day,
+                hour = 0,
+                min = 0,
+                sec = 0
+            }
+        end
     else
         return L("invalidInput")
     end
