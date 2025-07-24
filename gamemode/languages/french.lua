@@ -962,6 +962,7 @@ LANGUAGE = {
     pressInstructions = "A/D pour tourner | W/S vertical | ESPACE quitter",
     entities = "Entités",
     totalPlayerEntities = "Entités du joueur : %s",
+    noEntitiesFound = "Aucune entité à afficher.",
     modulesCount = "Modules : %s",
     ["Bring"] = "Bring",
     ["Goto"] = "Goto",

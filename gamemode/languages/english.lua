@@ -963,6 +963,7 @@ LANGUAGE = {
     pressInstructions = "Press A/D to rotate | W/S to move camera vertically | Press SPACE to exit",
     entities = "Entities",
     totalPlayerEntities = "Total Player Entities: %s",
+    noEntitiesFound = "No entities to display.",
     modulesCount = "Modules Count: %s",
     ["Bring"] = "Bring",
     ["Goto"] = "Goto",

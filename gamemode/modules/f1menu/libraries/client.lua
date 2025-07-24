@@ -184,7 +184,18 @@ hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(parent, tabs)
                 end
             end
 
-            if table.IsEmpty(entitiesByCreator) then return end
+            if table.IsEmpty(entitiesByCreator) then
+                local emptyPanel = vgui.Create("DPanel", sheet)
+                emptyPanel:Dock(FILL)
+                emptyPanel.Paint = function() end
+                local label = emptyPanel:Add("DLabel")
+                label:Dock(FILL)
+                label:SetContentAlignment(5)
+                label:SetText(L("noEntitiesFound") or "No entities to display.")
+                label:SetFont("liaMediumFont")
+                label:SetTextColor(color_white)
+                return emptyPanel
+            end
             local function startSpectateView(ent, originalThirdPerson)
                 local yaw = client:EyeAngles().yaw
                 local camZOffset = 50

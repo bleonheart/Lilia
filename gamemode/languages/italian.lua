@@ -962,6 +962,7 @@ LANGUAGE = {
     pressInstructions = "Premi A/D per ruotare | W/S per muovere la camera verticalmente | Premi SPACE per uscire",
     entities = "Entità",
     totalPlayerEntities = "Entità Totali Giocatore: %s",
+    noEntitiesFound = "Nessuna entità da mostrare.",
     modulesCount = "Conteggio Moduli: %s",
     ["Bring"] = "Bring",
     ["Goto"] = "Goto",

@@ -962,6 +962,7 @@ LANGUAGE = {
     pressInstructions = "A/D вращение | W/S камера | SPACE выход",
     entities = "Сущности",
     totalPlayerEntities = "Объектов игрока: %s",
+    noEntitiesFound = "Нет сущностей для отображения.",
     modulesCount = "Модулей: %s",
     ["Bring"] = "Притянуть",
     ["Goto"] = "Перейти",
