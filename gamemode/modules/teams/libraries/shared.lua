@@ -75,7 +75,12 @@ if SERVER then
                 end
 
                 local classID = tonumber(v._class) or v._class
-                local className = classID == 0 and "None" or lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
+                local className
+                if classID == nil or classID == 0 then
+                    className = "None"
+                else
+                    className = lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
+                end
                 out[#out + 1] = {
                     id = id,
                     name = v._name,
