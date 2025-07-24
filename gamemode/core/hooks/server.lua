@@ -58,8 +58,7 @@ function GM:PlayerDeath(client, inflictor, attacker)
 end
 
 function GM:PlayerShouldPermaKill(client)
-    local character = client:getChar()
-    return character:getData("markedForDeath", false)
+    return client:getNetVar("markedForDeath", false)
 end
 
 function GM:CharLoaded(id)

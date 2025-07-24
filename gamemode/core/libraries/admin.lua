@@ -34,7 +34,7 @@ function lia.admin.load()
             lia.admin.groups = data or {}
         end
 
-        for name, priv in pairs((CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges()) or {}) do
+        for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
             lia.admin.privileges[name] = priv
         end
 
@@ -81,7 +81,6 @@ function lia.admin.createGroup(groupName, info)
     end
 
     lia.admin.groups[groupName] = info or {}
-    -- assign default privileges based on inheritance
     for privName, priv in pairs(lia.admin.privileges) do
         local minAccess = priv.MinAccess or "user"
         local allowed = false
@@ -92,12 +91,14 @@ function lia.admin.createGroup(groupName, info)
                 allowed = true
             elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
-            else -- custom groups inherit user
+            else
                 allowed = minAccess == "user"
             end
         end
+
         if allowed then lia.admin.groups[groupName][privName] = true end
     end
+
     if SERVER then
         if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
             if not CAMI.GetUsergroup(groupName) then
@@ -116,7 +117,6 @@ function lia.admin.registerPrivilege(privilege)
     if lia.admin.isDisabled() then return end
     if not privilege or not privilege.Name then return end
     lia.admin.privileges[privilege.Name] = privilege
-    -- apply to existing groups based on inheritance
     for groupName in pairs(lia.admin.groups) do
         local minAccess = privilege.MinAccess or "user"
         local allowed = false
@@ -131,6 +131,7 @@ function lia.admin.registerPrivilege(privilege)
                 allowed = minAccess == "user"
             end
         end
+
         if allowed then lia.admin.groups[groupName][privilege.Name] = true end
     end
 end
@@ -149,9 +150,7 @@ function lia.admin.removeGroup(groupName)
 
     lia.admin.groups[groupName] = nil
     if SERVER then
-        if CAMI and CAMI.UnregisterUsergroup then
-            CAMI.UnregisterUsergroup(groupName)
-        end
+        if CAMI and CAMI.UnregisterUsergroup then CAMI.UnregisterUsergroup(groupName) end
         lia.admin.save(true)
     end
 end
@@ -198,9 +197,7 @@ if SERVER then
         if lia.admin.isDisabled() or ply:IsBot() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
-        if CAMI and CAMI.SignalUserGroupChanged then
-            CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia")
-        end
+        if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
@@ -226,9 +223,7 @@ if SERVER then
         if lia.admin.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
         lia.admin.banList[steamid] = nil
-        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function()
-            lia.admin.print("Ban", "Ban removed.")
-        end)
+        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() lia.admin.print("Ban", "Ban removed.") end)
     end
 
     function lia.admin.isBanned(steamid)

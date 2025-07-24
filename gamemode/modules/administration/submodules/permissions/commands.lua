@@ -16,15 +16,9 @@
             return
         end
 
-        local character = target:getChar()
-        if not character then
-            client:notifyLocalized("invalid", "Character")
-            return
-        end
-
-        local currentState = character:getData("markedForDeath", false)
+        local currentState = target:setNetVar("markedForDeath", false)
         local newState = not currentState
-        character:setData("markedForDeath", newState)
+        target:setNetVar("markedForDeath", newState)
         if newState then
             client:notifyLocalized("pktoggle_true")
         else

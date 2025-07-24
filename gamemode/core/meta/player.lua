@@ -18,11 +18,22 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    if self:IsBot() then return false end
+    if self:IsBot() then
+        self:ChatPrint("Access denied: bots have no privileges.")
+        return false
+    end
     local group = self:GetUserGroup()
-    local perms = lia.admin.groups[group]
-    if not perms then return false end
-    return perms[privilegeName] == true
+    local groups =  lia.admin.groups or {}
+    local perms = groups[group]
+    PrintTable(lia.admin.groups, 1)
+    if not perms then
+        self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
+        return false
+    end
+
+    if perms[privilegeName] == true then return true end
+    self:ChatPrint("Access denied: group '" .. group .. "' lacks '" .. tostring(privilegeName) .. "' privilege.")
+    return false
 end
 
 function playerMeta:getCurrentVehicle()
@@ -319,10 +330,7 @@ function playerMeta:hasFlags(flags)
     end
 
     local char = self:getChar()
-    if char then
-        return hook.Run("CharHasFlags", char, flags) or false
-    end
-
+    if char then return hook.Run("CharHasFlags", char, flags) or false end
     return false
 end
 
@@ -505,9 +513,7 @@ if SERVER then
             end
         end
 
-        if addedFlags ~= "" then
-            self:setFlags(self:getFlags() .. addedFlags)
-        end
+        if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
     end
 
     function playerMeta:takeFlags(flags)
