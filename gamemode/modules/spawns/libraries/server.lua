@@ -103,6 +103,7 @@ local function SpawnPlayer(client)
             if factionSpawns and #factionSpawns > 0 then
                 local data = table.Random(factionSpawns)
                 print(tag, "raw selected data", data)
+                PrintTable(data, 1)
                 local basePos = data.pos or data
                 if not isvector(basePos) then basePos = lia.data.decodeVector(basePos) end
                 if not isvector(basePos) then basePos = Vector(0, 0, 0) end
