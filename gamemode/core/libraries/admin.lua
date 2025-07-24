@@ -76,7 +76,7 @@ function lia.admin.createGroup(groupName, info)
     lia.admin.groups[groupName] = info or {}
     for privName, priv in pairs(lia.admin.privileges) do
         local minAccess = priv.MinAccess or "user"
-        local allowed = false
+        local allowed
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
@@ -112,7 +112,7 @@ function lia.admin.registerPrivilege(privilege)
     lia.admin.privileges[privilege.Name] = privilege
     for groupName in pairs(lia.admin.groups) do
         local minAccess = privilege.MinAccess or "user"
-        local allowed = false
+        local allowed
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else

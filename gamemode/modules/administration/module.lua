@@ -331,7 +331,7 @@ if SERVER then
         }
     end
 
-    local function applyToCAMI(g, t)
+    local function applyToCAMI(g)
         if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
     end
@@ -642,7 +642,7 @@ else
             end
 
             if not editable then chk:SetEnabled(false) end
-            row.PerformLayout = function(_, w, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
+            row.PerformLayout = function(_, _, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
             checkboxes[#checkboxes + 1] = chk
         end
 
@@ -873,7 +873,7 @@ else
 end
 
 if CAMI.ULX_TOKEN and CAMI.ULX_TOKEN == "ULX" then
-    hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g, originToken)
+    hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
         lia.admin.groups[g.Name] = nil
         if SERVER then
             dropCAMIGroup(g.Name)
@@ -906,7 +906,7 @@ if CAMI.ULX_TOKEN and CAMI.ULX_TOKEN == "ULX" then
         if SERVER then lia.admin.save(true) end
     end)
 
-    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, oldGroup, newGroup, originToken)
+    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
         if not IsValid(ply) or not SERVER then return end
         lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
     end)
@@ -944,7 +944,7 @@ else
         if SERVER then lia.admin.save(true) end
     end)
 
-    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, oldGroup, newGroup)
+    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
         if not IsValid(ply) or not SERVER then return end
         lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
     end)
