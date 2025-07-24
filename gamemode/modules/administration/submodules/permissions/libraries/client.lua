@@ -175,7 +175,7 @@ end)
 hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
     local function canShow()
         local ply = LocalPlayer()
-        return IsValid(ply) and ply:hasPrivilege("List Characters")
+        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Access Character List Tab") and ply:hasPrivilege("List Characters")
     end
 
     tabs["Character List"] = {

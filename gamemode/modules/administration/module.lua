@@ -20,7 +20,23 @@ MODULE.Privileges = {
         MinAccess = "superadmin"
     },
     {
+        Name = "Admin Tab - Config",
+        MinAccess = "superadmin",
+    },
+    {
         Name = "Staff Permissions - Manage UserGroups",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Staff Permissions - Access Usergroups Tab",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Staff Permissions - Access Players Tab",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Staff Permissions - Access DB Browser Tab",
         MinAccess = "superadmin"
     }
 }
@@ -667,10 +683,18 @@ else
         return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")
     end
 
+    local function canAccessUsergroups()
+        return canAccess() and LocalPlayer():hasPrivilege("Staff Permissions - Access Usergroups Tab")
+    end
+
+    local function canAccessPlayers()
+        return canAccess() and LocalPlayer():hasPrivilege("Staff Permissions - Access Players Tab")
+    end
+
     hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
         tabs["Usergroups"] = {
             icon = "icon16/group.png",
-            onShouldShow = canAccess,
+            onShouldShow = canAccessUsergroups,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
@@ -685,7 +709,7 @@ else
     hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(parent, tabs)
         tabs["Players"] = {
             icon = "icon16/user.png",
-            onShouldShow = canAccess,
+            onShouldShow = canAccessPlayers,
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
