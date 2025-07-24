@@ -723,6 +723,7 @@ LANGUAGE = {
     plyIgniteDesc = "Set a player on fire.",
     plyExtinguishDesc = "Extinguish the specified player.",
     plyStripDesc = "Strip all weapons from a player.",
+    roster = "Roster",
     rosterDesc = "View a roster of your faction members.",
     factionManagementDesc = "Open the faction management menu.",
     adminMenuTitle = "Admin Menu",
