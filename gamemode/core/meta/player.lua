@@ -22,8 +22,9 @@ function playerMeta:hasPrivilege(privilegeName)
         self:ChatPrint("Access denied: bots have no privileges.")
         return false
     end
+
     local group = self:GetUserGroup()
-    local groups =  lia.admin.groups or {}
+    local groups = lia.admin.groups or {}
     local perms = groups[group]
     PrintTable(lia.admin.groups, 1)
     if not perms then
