@@ -237,7 +237,7 @@ else
             if not IsValid(ply) then return false end
             local char = ply:getChar()
             if not char then return false end
-            return ply:IsSuperAdmin() or char:hasFlags("V")
+            return (ply:IsSuperAdmin() or char:hasFlags("V")) and ply:hasPrivilege("Staff Permissions - Access Factions Tab")
         end
 
         tabs["Factions"] = {

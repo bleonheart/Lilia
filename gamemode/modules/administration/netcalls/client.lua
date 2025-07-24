@@ -10,7 +10,7 @@ end)
 hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
     local function canView()
         local ply = LocalPlayer()
-        return IsValid(ply) and ply:hasPrivilege("View DB Tables")
+        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Access DB Browser Tab") and ply:hasPrivilege("View DB Tables")
     end
 
     tabs["DB Browser"] = {

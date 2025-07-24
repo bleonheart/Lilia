@@ -142,7 +142,7 @@ end
 hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(parent, tabs)
     local function canView()
         local ply = LocalPlayer()
-        return IsValid(ply) and ply:hasPrivilege("View DB Tables")
+        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Access Tickets Tab") and ply:hasPrivilege("View DB Tables")
     end
 
     tabs["Tickets"] = {

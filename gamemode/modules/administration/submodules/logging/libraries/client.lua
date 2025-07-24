@@ -100,7 +100,7 @@ end)
 hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(parent, tabs)
     local function canView()
         local ply = LocalPlayer()
-        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Can See Logs")
+        return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Access Logs Tab") and ply:hasPrivilege("Staff Permissions - Can See Logs")
     end
 
     tabs[L("logs")] = {
