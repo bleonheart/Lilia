@@ -258,7 +258,7 @@ if SERVER then
         end
 
         table.sort(groups)
-        p:requestDropdown("Set Usergroup", "Choose a group", groups, function(sel)
+        p:requestDropdown(L("setUsergroup"), L("chooseGroup"), groups, function(sel)
             if not IsValid(p) or not IsValid(target) then return end
             if lia.admin.groups[sel] then
                 lia.admin.setPlayerGroup(target, sel)
@@ -280,7 +280,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(n, lia.admin.groups[n])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Group '" .. n .. "' created.")
+        notify(p, L("groupCreatedNamed", n))
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
@@ -292,7 +292,7 @@ if SERVER then
         dropCAMIGroup(n)
         lia.admin.save(true)
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Group '" .. n .. "' removed.")
+        notify(p, L("groupRemovedNamed", n))
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
@@ -312,7 +312,7 @@ if SERVER then
         end
 
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
+        notify(p, L("groupRenamedNamed", old, new))
     end)
 
     net.Receive("liaGroupsApply", function(_, p)
@@ -328,7 +328,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Permissions saved for '" .. g .. "'.")
+        notify(p, L("permissionsSavedNamed", g))
     end)
 
     net.Receive("liaGroupsDefaults", function(_, p)
@@ -339,7 +339,7 @@ if SERVER then
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, "Defaults restored for '" .. g .. "'.")
+        notify(p, L("groupDefaultsRestored", g))
     end)
 else
     local groupChunks, playerChunks = {}, {}
@@ -352,11 +352,11 @@ else
         parent:Clear()
         local list = parent:Add("DListView")
         list:Dock(FILL)
-        list:AddColumn("Name")
-        list:AddColumn("SteamID")
-        list:AddColumn("Group")
-        list:AddColumn("Last Join")
-        list:AddColumn("Banned")
+        list:AddColumn(L("name"))
+        list:AddColumn(L("steamID"))
+        list:AddColumn(L("group"))
+        list:AddColumn(L("lastJoin"))
+        list:AddColumn(L("banned"))
         for _, v in ipairs(PLAYER_LIST) do
             local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
             local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", bannedText)
@@ -368,11 +368,11 @@ else
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.steamID then return end
             local m = DermaMenu()
-            local opt = m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
+            local opt = m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
             local ply = player.GetBySteamID(line.steamID) or player.GetBySteamID64(line.steamID64)
             if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")) then
-                local grp = m:AddOption("Set Usergroup", function()
+                local grp = m:AddOption(L("setUsergroup"), function()
                     net.Start("liaRequestPlayerGroup")
                     net.WriteEntity(ply)
                     net.SendToServer()
@@ -399,17 +399,17 @@ else
         local tickAll = btnBar:Add("liaSmallButton")
         tickAll:Dock(LEFT)
         tickAll:SetWide(90)
-        tickAll:SetText("Tick All")
+        tickAll:SetText(L("tickAll"))
         local untickAll = btnBar:Add("liaSmallButton")
         untickAll:Dock(LEFT)
         untickAll:DockMargin(6, 0, 0, 0)
         untickAll:SetWide(90)
-        untickAll:SetText("Untick All")
+        untickAll:SetText(L("untickAll"))
         local defaultsBtn = btnBar:Add("liaSmallButton")
         defaultsBtn:Dock(LEFT)
         defaultsBtn:DockMargin(6, 0, 0, 0)
         defaultsBtn:SetWide(90)
-        defaultsBtn:SetText("Defaults")
+        defaultsBtn:SetText(L("defaults"))
         if not editable then
             tickAll:SetEnabled(false)
             untickAll:SetEnabled(false)
@@ -422,18 +422,18 @@ else
             renameBtn:Dock(RIGHT)
             renameBtn:DockMargin(0, 0, 6, 0)
             renameBtn:SetWide(90)
-            renameBtn:SetText("Rename")
+            renameBtn:SetText(L("rename"))
             delBtn = btnBar:Add("liaSmallButton")
             delBtn:Dock(RIGHT)
             delBtn:DockMargin(0, 0, 6, 0)
             delBtn:SetWide(90)
-            delBtn:SetText("Delete")
+            delBtn:SetText(L("delete"))
         end
 
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
         nameLbl:DockMargin(20, 0, 0, 0)
-        nameLbl:SetText("Name:")
+        nameLbl:SetText(L("nameLabel"))
         setFont(nameLbl, "liaBigFont")
         nameLbl:SizeToContents()
         local nameVal = scroll:Add("DLabel")
@@ -445,7 +445,7 @@ else
         local inhLbl = scroll:Add("DLabel")
         inhLbl:Dock(TOP)
         inhLbl:DockMargin(20, 10, 0, 0)
-        inhLbl:SetText("Inherits from:")
+        inhLbl:SetText(L("inheritsFrom"))
         setFont(inhLbl, "liaBigFont")
         inhLbl:SizeToContents()
         local inhVal = scroll:Add("DLabel")
@@ -462,7 +462,7 @@ else
         local memLbl = scroll:Add("DLabel")
         memLbl:Dock(TOP)
         memLbl:DockMargin(20, 0, 0, 6)
-        memLbl:SetText("Members (" .. #memberNames .. ")")
+        memLbl:SetText(string.format(L("members"), #memberNames))
         setFont(memLbl, "liaBigFont")
         memLbl:SizeToContents()
         local memHolder = scroll:Add("DPanel")
@@ -486,7 +486,7 @@ else
         local privLbl = scroll:Add("DLabel")
         privLbl:Dock(TOP)
         privLbl:DockMargin(20, 0, 0, 6)
-        privLbl:SetText("Privileges")
+        privLbl:SetText(L("privileges"))
         setFont(privLbl, "liaBigFont")
         privLbl:SizeToContents()
         local listHolder = scroll:Add("DPanel")
@@ -554,7 +554,7 @@ else
 
         if renameBtn then
             renameBtn.DoClick = function()
-                Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
+                Derma_StringRequest(L("renameGroupTitle"), L("newGroupName"), g, function(txt)
                     if txt == "" or txt == g then return end
                     net.Start("liaGroupsRename")
                     net.WriteString(g)
@@ -566,11 +566,11 @@ else
 
         if delBtn then
             delBtn.DoClick = function()
-                Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
+                Derma_Query(string.format(L("deleteGroupQuery"), g), L("confirm"), L("yes"), function()
                     net.Start("liaGroupsRemove")
                     net.WriteString(g)
                     net.SendToServer()
-                end, "No")
+                end, L("no"))
             end
         end
     end
@@ -609,9 +609,9 @@ else
         addBtn:Dock(TOP)
         addBtn:DockMargin(0, 20, 0, 0)
         addBtn:SetTall(36)
-        addBtn:SetText("Create Group")
+        addBtn:SetText(L("createGroup"))
         addBtn.DoClick = function()
-            Derma_StringRequest("Create Group", "New group name:", "", function(txt)
+            Derma_StringRequest(L("createGroup"), L("newGroupName"), "", function(txt)
                 if txt == "" then return end
                 LAST_GROUP = txt
                 net.Start("liaGroupsAdd")

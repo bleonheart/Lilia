@@ -157,12 +157,12 @@ net.Receive("DisplayCharList", function()
             if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
                 local dMenu = DermaMenu()
                 if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                    local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt1:SetIcon("icon16/cancel.png")
                 end
 
                 if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                    local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt2:SetIcon("icon16/accept.png")
                 end
 
@@ -178,7 +178,7 @@ hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
         return IsValid(ply) and ply:hasPrivilege("Staff Permissions - Access Character List Tab") and ply:hasPrivilege("List Characters")
     end
 
-    tabs["Character List"] = {
+    tabs[L("characterList")] = {
         icon = "icon16/user_gray.png",
         onShouldShow = canShow,
         build = function(sheet)
@@ -188,11 +188,11 @@ hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(parent, tabs)
             local entry = pnl:Add("DTextEntry")
             entry:Dock(TOP)
             entry:SetTall(25)
-            entry:SetPlaceholderText("SteamID/Name")
+            entry:SetPlaceholderText(L("steamIDName"))
             local btn = pnl:Add("DButton")
             btn:Dock(TOP)
             btn:DockMargin(0, 5, 0, 0)
-            btn:SetText("Open List")
+            btn:SetText(L("openList"))
             btn.DoClick = function()
                 local value = entry:GetValue() or ""
                 net.Start("liaRequestCharList")

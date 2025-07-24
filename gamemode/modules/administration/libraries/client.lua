@@ -107,12 +107,12 @@ function MODULE:ShowPlayerOptions(target, options)
                 func = function() lia.admin.execCommand("respawn", target) end
             },
             {
-                name = "Return",
+                name = L("return"),
                 image = "icon16/arrow_redo.png",
                 func = function() lia.admin.execCommand("return", target) end
             },
             {
-                name = "Character List",
+                name = L("characterList"),
                 image = "icon16/user.png",
                 func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
             }
@@ -120,7 +120,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
         if client:IsSuperAdmin() or client:hasPrivilege("Staff Permissions - Manage UserGroups") then
             table.insert(orderedOptions, {
-                name = "Set Usergroup",
+                name = L("setUsergroup"),
                 image = "icon16/group_edit.png",
                 func = function()
                     net.Start("liaRequestPlayerGroup")
