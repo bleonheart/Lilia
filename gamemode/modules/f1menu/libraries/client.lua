@@ -105,7 +105,6 @@ function MODULE:CreateInformationButtons(pages)
         end)
     end
 
-
     if client:hasPrivilege("Staff Permission — Access Module List") then
         table.insert(pages, {
             name = L("modules"),
@@ -168,215 +167,209 @@ function MODULE:CreateInformationButtons(pages)
     end
 end
 
-function MODULE:BuildEntitiesPanel(panel)
-    local client = LocalPlayer()
-    local entitiesByCreator = {}
-    for _, ent in ents.Iterator() do
-        if IsValid(ent) and ent.GetCreator and IsValid(ent:GetCreator()) then
-            local owner = ent:GetCreator():Nick()
-            entitiesByCreator[owner] = entitiesByCreator[owner] or {}
-            table.insert(entitiesByCreator[owner], ent)
-        end
-    end
-    if table.IsEmpty(entitiesByCreator) then return end
-
-    local function startSpectateView(ent, originalThirdPerson)
-        local yaw = client:EyeAngles().yaw
-        local camZOffset = 50
-        hook.Add("CalcView", "EntityViewCalcView", function()
-            return {
-                origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
-                angles = Angle(0, yaw, 0),
-                fov = 60
-            }
-        end)
-
-        hook.Add("HUDPaint", "EntityViewHUD", function()
-            draw.SimpleText(L("pressInstructions"), "liaMediumFont", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER)
-        end)
-        hook.Add("Think", "EntityViewRotate", function()
-            if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
-            if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
-            if input.IsKeyDown(KEY_W) then camZOffset = camZOffset + FrameTime() * 100 end
-            if input.IsKeyDown(KEY_S) then camZOffset = camZOffset - FrameTime() * 100 end
-            if input.IsKeyDown(KEY_SPACE) then
-                hook.Remove("CalcView", "EntityViewCalcView")
-                hook.Remove("HUDPaint", "EntityViewHUD")
-                hook.Remove("Think", "EntityViewRotate")
-                hook.Remove("CreateMove", "EntitySpectateCreateMove")
-                lia.option.set("thirdPersonEnabled", originalThirdPerson)
-            end
-        end)
-
-        hook.Add("CreateMove", "EntitySpectateCreateMove", function(cmd)
-            cmd:SetForwardMove(0)
-            cmd:SetSideMove(0)
-            cmd:SetUpMove(0)
-        end)
-    end
-
-    local count = 0
-    for _, list in pairs(entitiesByCreator) do
-        count = count + #list
-    end
-
-    local searchEntry = vgui.Create("DTextEntry", panel)
-    searchEntry:Dock(TOP)
-    searchEntry:DockMargin(0, 0, 0, 5)
-    searchEntry:SetTall(30)
-    searchEntry:SetPlaceholderText(L("searchEntities"))
-    local statsPanel = vgui.Create("DPanel", panel)
-    statsPanel:Dock(TOP)
-    statsPanel:DockMargin(10, 0, 10, 5)
-    statsPanel:SetTall(30)
-    statsPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-    local statsLabel = vgui.Create("DLabel", statsPanel)
-    statsLabel:Dock(FILL)
-    statsLabel:SetFont("liaSmallFont")
-    statsLabel:SetTextColor(color_white)
-    statsLabel:SetContentAlignment(5)
-    statsLabel:SetText(L("totalPlayerEntities", count))
-    local scroll = vgui.Create("DScrollPanel", panel)
-    scroll:Dock(FILL)
-    scroll:DockPadding(0, 0, 0, 10)
-    local canvas = scroll:GetCanvas()
-    local entries = {}
-    for owner, list in SortedPairs(entitiesByCreator) do
-        local header = vgui.Create("DCollapsibleCategory", canvas)
-        header:Dock(TOP)
-        header:SetLabel(owner .. " - " .. #list .. " " .. L("entities"))
-        header:SetExpanded(true)
-        header.Header:SetFont("liaMediumFont")
-        header.Header:SetTextColor(Color(255, 255, 255))
-        header.Header:SetContentAlignment(5)
-        header.Header:SetTall(30)
-        header.Paint = function() end
-        header.Header.Paint = function(_, w, h)
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawOutlinedRect(0, 0, w, h, 2)
-            surface.SetDrawColor(0, 0, 0, 150)
-            surface.DrawRect(1, 1, w - 2, h - 2)
-        end
-
-        local listPanel = vgui.Create("DPanel", header)
-        listPanel.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200)) end
-        header:SetContents(listPanel)
-        entries[header] = {}
-        for _, ent in ipairs(list) do
-            local className = ent:GetClass()
-            local itemPanel = vgui.Create("DPanel", listPanel)
-            itemPanel:Dock(TOP)
-            itemPanel:DockMargin(10, 15, 10, 10)
-            itemPanel:SetTall(100)
-            itemPanel.infoText = className:lower()
-            itemPanel.Paint = function(pnl, w, h)
-                derma.SkinHook("Paint", "Panel", pnl, w, h)
-                draw.SimpleText(className, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            end
-
-            local icon = vgui.Create("liaSpawnIcon", itemPanel)
-            icon:Dock(LEFT)
-            icon:SetWide(64)
-            icon:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
-            icon.DoClick = function()
-                if IsValid(lastModelFrame) then lastModelFrame:Close() end
-                lastModelFrame = vgui.Create("DFrame")
-                lastModelFrame:SetTitle(className)
-                lastModelFrame:SetSize(800, 800)
-                lastModelFrame:Center()
-                lastModelFrame:MakePopup()
-                local infoLabel = vgui.Create("DLabel", lastModelFrame)
-                infoLabel:SetText(L("pressInstructions"))
-                infoLabel:SetFont("liaMediumFont")
-                infoLabel:SizeToContents()
-                infoLabel:Dock(TOP)
-                infoLabel:DockMargin(0, 10, 0, 0)
-                infoLabel:SetContentAlignment(5)
-                local modelPanel = vgui.Create("DModelPanel", lastModelFrame)
-                modelPanel:Dock(FILL)
-                modelPanel:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
-                modelPanel:SetFOV(45)
-                local mn, mx = modelPanel.Entity:GetRenderBounds()
-                local size = math.max(math.abs(mn.x) + math.abs(mx.x), math.abs(mn.y) + math.abs(mx.y), math.abs(mn.z) + math.abs(mx.z))
-                modelPanel:SetCamPos(Vector(size, size, size))
-                modelPanel:SetLookAt((mn + mx) * 0.5)
-                local orig = lia.option.get("thirdPersonEnabled", false)
-                lia.option.set("thirdPersonEnabled", false)
-                startSpectateView(ent, orig)
-            end
-
-            local btnContainer = vgui.Create("DPanel", itemPanel)
-            btnContainer:Dock(RIGHT)
-            btnContainer:SetWide(380)
-            btnContainer.Paint = function() end
-            local btnW, btnH = 120, 40
-            if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
-                local btnView = vgui.Create("liaSmallButton", btnContainer)
-                btnView:Dock(LEFT)
-                btnView:DockMargin(5, 0, 5, 0)
-                btnView:SetWide(btnW)
-                btnView:SetTall(btnH)
-                btnView:SetText(L("view"))
-                btnView.DoClick = function()
-                    if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
-                    local orig = lia.option.get("thirdPersonEnabled", false)
-                    lia.option.set("thirdPersonEnabled", false)
-                    startSpectateView(ent, orig)
-                end
-            end
-
-            if client:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then
-                local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
-                btnTeleport:Dock(LEFT)
-                btnTeleport:DockMargin(5, 0, 5, 0)
-                btnTeleport:SetWide(btnW)
-                btnTeleport:SetTall(btnH)
-                btnTeleport:SetText(L("teleport"))
-                btnTeleport.DoClick = function()
-                    net.Start("liaTeleportToEntity")
-                    net.WriteEntity(ent)
-                    net.SendToServer()
-                end
-            end
-
-            local btnWaypoint = vgui.Create("liaSmallButton", btnContainer)
-            btnWaypoint:Dock(RIGHT)
-            btnWaypoint:DockMargin(5, 0, 5, 0)
-            btnWaypoint:SetWide(btnW)
-            btnWaypoint:SetTall(btnH)
-            btnWaypoint:SetText(L("waypointButton"))
-            btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
-            entries[header][#entries[header] + 1] = itemPanel
-        end
-    end
-
-    searchEntry.OnTextChanged = function(entry)
-        local q = entry:GetValue():lower()
-        for header, panels in pairs(entries) do
-            local anyVisible = false
-            for _, pnl in ipairs(panels) do
-                local ok = q == "" or pnl.infoText:find(q, 1, true)
-                pnl:SetVisible(ok)
-                if ok then anyVisible = true end
-            end
-
-            header:SetVisible(anyVisible)
-        end
-
-        canvas:InvalidateLayout()
-        canvas:SizeToChildren(false, true)
-    end
-end
-
 hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(parent, tabs)
     if not LocalPlayer():hasPrivilege("Staff Permission — Access Entity List") then return end
     tabs[L("entities")] = {
         icon = "icon16/bricks.png",
         build = function(sheet)
-            local pnl = vgui.Create("DPanel", sheet)
-            pnl:DockPadding(10, 10, 10, 10)
-            MODULE:BuildEntitiesPanel(pnl)
-            return pnl
+            local panel = vgui.Create("DPanel", sheet)
+            panel:DockPadding(10, 10, 10, 10)
+            local client = LocalPlayer()
+            local entitiesByCreator = {}
+            for _, ent in ents.Iterator() do
+                if IsValid(ent) and ent.GetCreator and IsValid(ent:GetCreator()) then
+                    local owner = ent:GetCreator():Nick()
+                    entitiesByCreator[owner] = entitiesByCreator[owner] or {}
+                    table.insert(entitiesByCreator[owner], ent)
+                end
+            end
+
+            if table.IsEmpty(entitiesByCreator) then return end
+            local function startSpectateView(ent, originalThirdPerson)
+                local yaw = client:EyeAngles().yaw
+                local camZOffset = 50
+                hook.Add("CalcView", "EntityViewCalcView", function()
+                    return {
+                        origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
+                        angles = Angle(0, yaw, 0),
+                        fov = 60
+                    }
+                end)
+
+                hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "liaMediumFont", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
+                hook.Add("Think", "EntityViewRotate", function()
+                    if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
+                    if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
+                    if input.IsKeyDown(KEY_W) then camZOffset = camZOffset + FrameTime() * 100 end
+                    if input.IsKeyDown(KEY_S) then camZOffset = camZOffset - FrameTime() * 100 end
+                    if input.IsKeyDown(KEY_SPACE) then
+                        hook.Remove("CalcView", "EntityViewCalcView")
+                        hook.Remove("HUDPaint", "EntityViewHUD")
+                        hook.Remove("Think", "EntityViewRotate")
+                        hook.Remove("CreateMove", "EntitySpectateCreateMove")
+                        lia.option.set("thirdPersonEnabled", originalThirdPerson)
+                    end
+                end)
+
+                hook.Add("CreateMove", "EntitySpectateCreateMove", function(cmd)
+                    cmd:SetForwardMove(0)
+                    cmd:SetSideMove(0)
+                    cmd:SetUpMove(0)
+                end)
+            end
+
+            local count = 0
+            for _, list in pairs(entitiesByCreator) do
+                count = count + #list
+            end
+
+            local searchEntry = vgui.Create("DTextEntry", panel)
+            searchEntry:Dock(TOP)
+            searchEntry:DockMargin(0, 0, 0, 5)
+            searchEntry:SetTall(30)
+            searchEntry:SetPlaceholderText(L("searchEntities"))
+            local statsPanel = vgui.Create("DPanel", panel)
+            statsPanel:Dock(TOP)
+            statsPanel:DockMargin(10, 0, 10, 5)
+            statsPanel:SetTall(30)
+            statsPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
+            local statsLabel = vgui.Create("DLabel", statsPanel)
+            statsLabel:Dock(FILL)
+            statsLabel:SetFont("liaSmallFont")
+            statsLabel:SetTextColor(color_white)
+            statsLabel:SetContentAlignment(5)
+            statsLabel:SetText(L("totalPlayerEntities", count))
+            local scroll = vgui.Create("DScrollPanel", panel)
+            scroll:Dock(FILL)
+            scroll:DockPadding(0, 0, 0, 10)
+            local canvas = scroll:GetCanvas()
+            local entries = {}
+            for owner, list in SortedPairs(entitiesByCreator) do
+                local header = vgui.Create("DCollapsibleCategory", canvas)
+                header:Dock(TOP)
+                header:SetLabel(owner .. " - " .. #list .. " " .. L("entities"))
+                header:SetExpanded(true)
+                header.Header:SetFont("liaMediumFont")
+                header.Header:SetTextColor(Color(255, 255, 255))
+                header.Header:SetContentAlignment(5)
+                header.Header:SetTall(30)
+                header.Paint = function() end
+                header.Header.Paint = function(_, w, h)
+                    surface.SetDrawColor(0, 0, 0, 255)
+                    surface.DrawOutlinedRect(0, 0, w, h, 2)
+                    surface.SetDrawColor(0, 0, 0, 150)
+                    surface.DrawRect(1, 1, w - 2, h - 2)
+                end
+
+                local listPanel = vgui.Create("DPanel", header)
+                listPanel.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200)) end
+                header:SetContents(listPanel)
+                entries[header] = {}
+                for _, ent in ipairs(list) do
+                    local className = ent:GetClass()
+                    local itemPanel = vgui.Create("DPanel", listPanel)
+                    itemPanel:Dock(TOP)
+                    itemPanel:DockMargin(10, 15, 10, 10)
+                    itemPanel:SetTall(100)
+                    itemPanel.infoText = className:lower()
+                    itemPanel.Paint = function(pnl, w, h)
+                        derma.SkinHook("Paint", "Panel", pnl, w, h)
+                        draw.SimpleText(className, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end
+
+                    local icon = vgui.Create("liaSpawnIcon", itemPanel)
+                    icon:Dock(LEFT)
+                    icon:SetWide(64)
+                    icon:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
+                    icon.DoClick = function()
+                        if IsValid(lastModelFrame) then lastModelFrame:Close() end
+                        lastModelFrame = vgui.Create("DFrame")
+                        lastModelFrame:SetTitle(className)
+                        lastModelFrame:SetSize(800, 800)
+                        lastModelFrame:Center()
+                        lastModelFrame:MakePopup()
+                        local infoLabel = vgui.Create("DLabel", lastModelFrame)
+                        infoLabel:SetText(L("pressInstructions"))
+                        infoLabel:SetFont("liaMediumFont")
+                        infoLabel:SizeToContents()
+                        infoLabel:Dock(TOP)
+                        infoLabel:DockMargin(0, 10, 0, 0)
+                        infoLabel:SetContentAlignment(5)
+                        local modelPanel = vgui.Create("DModelPanel", lastModelFrame)
+                        modelPanel:Dock(FILL)
+                        modelPanel:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
+                        modelPanel:SetFOV(45)
+                        local mn, mx = modelPanel.Entity:GetRenderBounds()
+                        local size = math.max(math.abs(mn.x) + math.abs(mx.x), math.abs(mn.y) + math.abs(mx.y), math.abs(mn.z) + math.abs(mx.z))
+                        modelPanel:SetCamPos(Vector(size, size, size))
+                        modelPanel:SetLookAt((mn + mx) * 0.5)
+                        local orig = lia.option.get("thirdPersonEnabled", false)
+                        lia.option.set("thirdPersonEnabled", false)
+                        startSpectateView(ent, orig)
+                    end
+
+                    local btnContainer = vgui.Create("DPanel", itemPanel)
+                    btnContainer:Dock(RIGHT)
+                    btnContainer:SetWide(380)
+                    btnContainer.Paint = function() end
+                    local btnW, btnH = 120, 40
+                    if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
+                        local btnView = vgui.Create("liaSmallButton", btnContainer)
+                        btnView:Dock(LEFT)
+                        btnView:DockMargin(5, 0, 5, 0)
+                        btnView:SetWide(btnW)
+                        btnView:SetTall(btnH)
+                        btnView:SetText(L("view"))
+                        btnView.DoClick = function()
+                            if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
+                            local orig = lia.option.get("thirdPersonEnabled", false)
+                            lia.option.set("thirdPersonEnabled", false)
+                            startSpectateView(ent, orig)
+                        end
+                    end
+
+                    if client:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then
+                        local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
+                        btnTeleport:Dock(LEFT)
+                        btnTeleport:DockMargin(5, 0, 5, 0)
+                        btnTeleport:SetWide(btnW)
+                        btnTeleport:SetTall(btnH)
+                        btnTeleport:SetText(L("teleport"))
+                        btnTeleport.DoClick = function()
+                            net.Start("liaTeleportToEntity")
+                            net.WriteEntity(ent)
+                            net.SendToServer()
+                        end
+                    end
+
+                    local btnWaypoint = vgui.Create("liaSmallButton", btnContainer)
+                    btnWaypoint:Dock(RIGHT)
+                    btnWaypoint:DockMargin(5, 0, 5, 0)
+                    btnWaypoint:SetWide(btnW)
+                    btnWaypoint:SetTall(btnH)
+                    btnWaypoint:SetText(L("waypointButton"))
+                    btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
+                    entries[header][#entries[header] + 1] = itemPanel
+                end
+            end
+
+            searchEntry.OnTextChanged = function(entry)
+                local q = entry:GetValue():lower()
+                for header, panels in pairs(entries) do
+                    local anyVisible = false
+                    for _, pnl in ipairs(panels) do
+                        local ok = q == "" or pnl.infoText:find(q, 1, true)
+                        pnl:SetVisible(ok)
+                        if ok then anyVisible = true end
+                    end
+
+                    header:SetVisible(anyVisible)
+                end
+
+                canvas:InvalidateLayout()
+                canvas:SizeToChildren(false, true)
+            end
+            return panel
         end
     }
 end)
