@@ -222,6 +222,21 @@ lia.admin.registerPrivilege({
     MinAccess = "superadmin"
 })
 
+lia.admin.registerPrivilege({
+    Name = "Clear Decals",
+    MinAccess = "admin"
+})
+
+lia.admin.registerPrivilege({
+    Name = "View Own Playtime",
+    MinAccess = "admin"
+})
+
+lia.admin.registerPrivilege({
+    Name = "View Playtime",
+    MinAccess = "admin"
+})
+
 lia.config.add("AdminOnlyNotification", "Admin Only Notifications", true, nil, {
     desc = "Restricts certain notifications to admins with specific permissions or those on duty.",
     category = "Staff",
