@@ -739,7 +739,7 @@ function PANEL:OnMouseReleased(code)
     end
 end
 
-function PANEL:OnCursorMoved(x, y)
+function PANEL:OnCursorMoved(x)
     if self.dragging and IsValid(self.modelEntity) then
         local delta = x - self.lastMouseX
         self.lastMouseX = x
