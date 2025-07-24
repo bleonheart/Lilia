@@ -3,6 +3,8 @@
     for _, row in ipairs(rows or {}) do
         local adminID = row._admin
         if adminID ~= "Unassigned" then adminID = tostring(adminID):match("(%d+)$") or adminID end
+        local timestamp = tonumber(row._timestamp) or 0
+
         caseclaims[adminID] = caseclaims[adminID] or {
             name = adminID,
             claims = 0,
@@ -12,7 +14,7 @@
 
         local info = caseclaims[adminID]
         info.claims = tonumber(info.claims) + 1
-        if tonumber(row._timestamp) > tonumber(info.lastclaim) then info.lastclaim = row._timestamp end
+        if timestamp > tonumber(info.lastclaim) then info.lastclaim = timestamp end
         local reqPly = player.GetBySteamID64(row._requester)
         info.claimedFor[row._requester] = IsValid(reqPly) and reqPly:Nick() or row._requester
     end
