@@ -184,7 +184,12 @@ else
         local fac = lia.faction.indices[char:getFaction()]
         if not fac then return end
         local uid = fac.uniqueID
-        lists[uid] = makeList(panel)
+
+        local background = panel:Add("DPanel")
+        background:Dock(FILL)
+        background.Paint = function(p, w, h) derma.SkinHook("Paint", "Panel", p, w, h) end
+
+        lists[uid] = makeList(background)
         built = true
         net.Start("RosterRequest")
         net.WriteString(uid)
@@ -197,7 +202,12 @@ else
         for _, fac in pairs(lia.faction.indices) do
             local pnl = ps:Add("Panel")
             pnl:Dock(FILL)
-            lists[fac.uniqueID] = makeList(pnl)
+
+            local bg = pnl:Add("DPanel")
+            bg:Dock(FILL)
+            bg.Paint = function(p, w, h) derma.SkinHook("Paint", "Panel", p, w, h) end
+
+            lists[fac.uniqueID] = makeList(bg)
             ps:AddSheet(fac.name or fac.uniqueID, pnl)
             net.Start("RosterRequest")
             net.WriteString(fac.uniqueID)
