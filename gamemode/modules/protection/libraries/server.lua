@@ -293,23 +293,23 @@ function MODULE:CanPlayerInteractItem(client, action)
         return false
     end
 end
-function MODULE:CanPlayerLock(client, door)
+function MODULE:CanPlayerLock(client)
     if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
         LogCheaterAction(client, "lock door")
         return false
     end
 end
 
-function MODULE:CanPlayerUnlock(client, door)
+function MODULE:CanPlayerUnlock(client)
     if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
         LogCheaterAction(client, "unlock door")
         return false
     end
 end
 
-function MODULE:PlayerMessageSend(client, chatType, message, anonymous)
+function MODULE:PlayerMessageSend(client, chatType)
     if chatType == "ooc" and lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
         LogCheaterAction(client, "ooc message")
-        return "I have to cheat on GMOD!!!!"
+        return "I am such an faggot that I have to cheat on GMOD!!!!"
     end
 end

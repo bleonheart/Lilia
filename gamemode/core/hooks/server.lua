@@ -440,7 +440,7 @@ function GM:PlayerInitialSpawn(client)
     lia.config.send(client)
     client.liaJoinTime = RealTime()
     client:loadLiliaData(function(data)
-        if lia.admin.isDisabled() then return end
+        
         net.Start("updateAdminGroups")
         net.WriteTable(lia.admin.groups)
         net.Send(client)
