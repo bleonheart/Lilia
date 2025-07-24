@@ -455,271 +455,124 @@ lia.config.add("AutoDownloadWorkshop", "Auto Download Workshop Content", true, n
     type = "Boolean"
 })
 
-﻿lia.config.add("StaminaBlur", "Stamina Blur Enabled", true, nil, {
-    desc = "Is Stamina Blur Enabled?",
-    category = "Attributes",
+local function getDermaSkins()
+    local skins = {}
+    for name in pairs(derma.GetSkinTable()) do
+        table.insert(skins, name)
+    end
+
+    table.sort(skins)
+    return skins
+end
+
+lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) hook.Run("DermaSkinChanged", newSkin) end, {
+    desc = "Select the Derma UI skin to use",
+    category = "Visuals",
+    type = "Table",
+    options = CLIENT and getDermaSkins() or {"Lilia Skin"}
+})
+
+-- lia.config definitions
+lia.config.add("PermaClass", "Permanent Classes", true, nil, {
+    desc = "Whether or not classes are saved in characters",
+    category = "Character",
     type = "Boolean"
 })
 
-lia.config.add("StaminaSlowdown", "Stamina Slowdown Enabled", true, nil, {
-    desc = "Is Stamina Slowdown Enabled?",
-    category = "Attributes",
+lia.config.add("ClassDisplay", "Display Classes on Characters", true, nil, {
+    desc = "Whether or not classes are displayed on characters",
+    category = "Character",
     type = "Boolean"
 })
 
-lia.config.add("DefaultStamina", "Default Stamina Value", 100, nil, {
-    desc = "Sets Default Stamina Value",
-    category = "Attributes",
-    type = "Int",
-    min = 0,
-    max = 1000
-})
-
-lia.config.add("MaxAttributePoints", "Max Attribute Points", 30, nil, {
-    desc = "Maximum number of points that can be allocated across an attribute.",
-    category = "Attributes",
-    isGlobal = true,
-    type = "Int",
-    min = 1,
-    max = 100
-})
-
-lia.config.add("JumpStaminaCost", "Jump Stamina Cost", 10, nil, {
-    desc = "Stamina cost deducted when the player jumps",
-    category = "Attributes",
-    type = "Int",
-    min = 0,
-    max = 1000
-})
-
-lia.config.add("MaxStartingAttributes", "Max Starting Attributes", 30, nil, {
-    desc = "Maximum value of each attribute at character creation.",
-    category = "Attributes",
-    isGlobal = true,
-    type = "Int",
-    min = 1,
-    max = 100
-})
-
-lia.config.add("StartingAttributePoints", "Starting Attribute Points", 30, nil, {
-    desc = "Total number of points available for starting attribute allocation.",
-    category = "Attributes",
-    isGlobal = true,
-    type = "Int",
-    min = 1,
-    max = 100
-})
-
-lia.config.add("PunchStamina", "Punch Stamina", 10, nil, {
-    desc = "Stamina usage for punches.",
-    category = "Attributes",
-    isGlobal = true,
-    type = "Int",
-    min = 0,
-    max = 100
-})
-
-lia.config.add("MaxHoldWeight", "Maximum Hold Weight", 100, nil, {
-    desc = "The maximum weight that a player can carry in their hands.",
-    category = "General",
-    type = "Int",
-    min = 1,
-    max = 500
-})
-
-lia.config.add("ThrowForce", "Throw Force", 100, nil, {
-    desc = "How hard a player can throw the item that they're holding.",
-    category = "General",
-    type = "Int",
-    min = 1,
-    max = 500
-})
-
-lia.config.add("AllowPush", "Allow Push", true, nil, {
-    desc = "Whether or not pushing with hands is allowed",
-    category = "General",
-    type = "Boolean"
-})
-﻿lia.config.add("CustomChatSound", "Custom Chat Sound", "", nil, {
-    desc = "Change Chat Sound on Message Send",
-    category = "Chat",
-    type = "Generic"
-})
-
-lia.config.add("ChatColor", "Chat Color", {
-    r = 255,
-    g = 239,
-    b = 150,
-    a = 255
-}, nil, {
-    desc = "Chat Color",
-    category = "Chat",
-    type = "Color"
-})
-
-lia.config.add("ChatRange", "Chat Range", 280, nil, {
-    desc = "Range of Chat can be heard",
-    category = "Chat",
-    type = "Int",
-    min = 0,
-    max = 10000
-})
-
-lia.config.add("OOCLimit", "OOC Character Limit", 150, nil, {
-    desc = "Limit of characters on OOC",
-    category = "Chat",
-    type = "Int",
-    min = 10,
-    max = 1000
-})
-
-lia.config.add("ChatListenColor", "Chat Listen Color", {
-    r = 168,
-    g = 240,
-    b = 170,
-    a = 255
-}, nil, {
-    desc = "Color of chat when directly working at someone",
-    category = "Chat",
-    type = "Color"
-})
-
-lia.config.add("OOCDelay", "OOC Delay", 10, nil, {
-    desc = "Set OOC Text Delay",
-    category = "Chat",
-    type = "Float",
-    min = 0,
-    max = 60
-})
-
-lia.config.add("LOOCDelay", "LOOC Delay", 6, nil, {
-    desc = "Set LOOC Text Delay",
-    category = "Chat",
-    type = "Float",
-    min = 0,
-    max = 60
-})
-
-lia.config.add("LOOCDelayAdmin", "LOOC Delay for Admins", false, nil, {
-    desc = "Should Admins have LOOC Delay",
-    category = "Chat",
+lia.config.add("LoseItemsonDeathNPC", "Lose Items on NPC Death", false, nil, {
+    desc = "Determine if items marked for loss are lost on death by NPCs",
+    category = "Death",
     type = "Boolean"
 })
 
-lia.config.add("ChatSizeDiff", "Enable Different Chat Size", false, nil, {
-    desc = "Enable Different Chat Size Diff",
-    category = "Chat",
+lia.config.add("LoseItemsonDeathHuman", "Lose Items on Human Death", false, nil, {
+    desc = "Determine if items marked for loss are lost on death by Humans",
+    category = "Death",
     type = "Boolean"
 })
-﻿lia.config.add("DoorLockTime", "Door Lock Time", 0.5, nil, {
-    desc = "Time it takes to lock a door",
-    category = "Doors",
+
+lia.config.add("LoseItemsonDeathWorld", "Lose Items on World Death", false, nil, {
+    desc = "Determine if items marked for loss are lost on death by World",
+    category = "Death",
+    type = "Boolean"
+})
+
+lia.config.add("DeathPopupEnabled", "Enable Death Popup", true, nil, {
+    desc = "Enable or disable the death information popup",
+    category = "Death",
+    type = "Boolean"
+})
+
+lia.config.add("StaffHasGodMode", "Staff God Mode", true, nil, {
+    desc = "Whether or not Staff On Duty has God Mode",
+    category = "Staff",
+    type = "Boolean"
+})
+
+lia.config.add("sbWidth", "Scoreboard Width", 0.35, nil, {
+    desc = "Scoreboard Width",
+    category = "Scoreboard",
     type = "Float",
     min = 0.1,
-    max = 10.0
-})
-
-lia.config.add("DoorSellRatio", "Door Sell Ratio", 0.5, nil, {
-    desc = "Percentage you can sell a door for",
-    category = "Doors",
-    type = "Float",
-    min = 0.0,
-    max = 1.0
-})
-﻿lia.config.add("invW", "Inventory Width", 6, function(_, newW)
-    if not SERVER then return end
-    for _, client in player.Iterator() do
-        if not IsValid(client) then continue end
-        local inv = client:getChar():getInv()
-        local dw, dh = hook.Run("GetDefaultInventorySize", client)
-        dw = dw or newW
-        dh = dh or lia.config.get("invH")
-        local w, h = inv:getSize()
-        if w ~= dw or h ~= dh then
-            inv:setSize(dw, dh)
-            inv:sync(client)
-        end
-    end
-
-    local json = util.TableToJSON({newW})
-    lia.db.query("UPDATE lia_invdata SET _value = '" .. lia.db.escape(json) .. "' " .. "WHERE _key = 'w' AND _invID IN (SELECT _invID FROM lia_inventories WHERE _charID IS NOT NULL)")
-end, {
-    desc = "Defines the width of the default inventory.",
-    category = "Character",
-    type = "Int",
-    min = 1,
-    max = 10
-})
-
-lia.config.add("invH", "Inventory Height", 4, function(_, newH)
-    if not SERVER then return end
-    for _, client in player.Iterator() do
-        if not IsValid(client) then continue end
-        local inv = client:getChar():getInv()
-        local dw, dh = hook.Run("GetDefaultInventorySize", client)
-        dw = dw or lia.config.get("invW")
-        dh = dh or newH
-        local w, h = inv:getSize()
-        if w ~= dw or h ~= dh then
-            inv:setSize(dw, dh)
-            inv:sync(client)
-        end
-    end
-
-    local json = util.TableToJSON({newH})
-    lia.db.query("UPDATE lia_invdata SET _value = '" .. lia.db.escape(json) .. "' " .. "WHERE _key = 'h' AND _invID IN (SELECT _invID FROM lia_inventories WHERE _charID IS NOT NULL)")
-end, {
-    desc = "Defines the height of the default inventory.",
-    category = "Character",
-    type = "Int",
-    min = 1,
-    max = 10
-})
-lia.config.add("vendorDefaultMoney", "Default Vendor Money", 500, nil, {
-    desc = "Sets the default amount of money a vendor starts with",
-    category = "Vendors",
-    type = "Int",
-    min = 0,
-    max = 100000
-})
-﻿lia.config.add("MusicVolume", "Music Volume", 0.25, nil, {
-    desc = "The volume level for the main menu music",
-    category = "Main Menu",
-    type = "Float",
-    min = 0.0,
     max = 1.0
 })
 
-lia.config.add("Music", "Main Menu Music", "", nil, {
-    desc = "The file path or URL for the main menu background music",
-    category = "Main Menu",
-    type = "Generic"
+lia.config.add("sbHeight", "Scoreboard Height", 0.65, nil, {
+    desc = "Scoreboard Height",
+    category = "Scoreboard",
+    type = "Float",
+    min = 0.1,
+    max = 1.0
 })
 
-lia.config.add("BackgroundURL", "Main Menu Background URL", "", nil, {
-    desc = "The URL or file path for the main menu background image",
-    category = "Main Menu",
-    type = "Generic"
+lia.config.add("ClassHeaders", "Class Headers", true, nil, {
+    desc = "Should class headers exist?",
+    category = "Scoreboard",
+    type = "Boolean"
 })
 
-lia.config.add("CenterLogo", "Center Logo", "", nil, {
-    desc = "The file path or URL for the logo displayed at the center of the screen",
-    category = "Main Menu",
-    type = "Generic"
+lia.config.add("UseSolidBackground", "Use Solid Background in Scoreboard", false, nil, {
+    desc = "Use a solid background for the scoreboard",
+    category = "Scoreboard",
+    type = "Boolean"
 })
 
-lia.config.add("DiscordURL", "The Discord of the Server", "https://discord.gg/esCRH5ckbQ", nil, {
-    desc = "The URL for the Discord server",
-    category = "Main Menu",
-    type = "Generic"
+lia.config.add("ClassLogo", "Should Class Logo Appear in the Player Bar", false, nil, {
+    desc = "Toggle display of class logo next to player entries",
+    category = "Scoreboard",
+    type = "Boolean"
 })
 
-lia.config.add("Workshop", "The Steam Workshop of the Server", "https://steamcommunity.com/sharedfiles/filedetails/?id=3527535922", nil, {
-    desc = "The URL for the Steam Workshop page",
-    category = "Main Menu",
-    type = "Generic"
+lia.config.add("ScoreboardBackgroundColor", "Scoreboard Background Color", {
+    r = 255,
+    g = 100,
+    b = 100,
+    a = 255
+}, nil, {
+    desc = "Sets the background color of the scoreboard. This only applies if 'UseSolidBackground' is enabled.",
+    category = "Scoreboard",
+    type = "Color"
 })
-﻿lia.config.add("SwitchCooldownOnAllEntities", "Apply cooldown on all entities", false, nil, {
+
+lia.config.add("RecognitionEnabled", "Character Recognition Enabled", true, nil, {
+    desc = "Whether or not character recognition is enabled?",
+    category = "Recognition",
+    type = "Boolean"
+})
+
+lia.config.add("FakeNamesEnabled", "Fake Names Enabled", false, nil, {
+    desc = "Are fake names enabled?",
+    category = "Recognition",
+    type = "Boolean"
+})
+
+lia.config.add("SwitchCooldownOnAllEntities", "Apply cooldown on all entities", false, nil, {
     desc = "If true, character switch cooldowns gets applied by all types of damage.",
     category = "Character",
     type = "Boolean"
@@ -858,114 +711,312 @@ lia.config.add("DisableCheaterActions", "Disable Cheater Actions", true, nil, {
     category = "Protection",
     type = "Boolean"
 })
-﻿lia.config.add("RecognitionEnabled", "Character Recognition Enabled", true, nil, {
-    desc = "Whether or not character recognition is enabled?",
-    category = "Recognition",
-    type = "Boolean"
-})
 
-lia.config.add("FakeNamesEnabled", "Fake Names Enabled", false, nil, {
-    desc = "Are fake names enabled?",
-    category = "Recognition",
-    type = "Boolean"
-})
-﻿lia.config.add("sbWidth", "Scoreboard Width", 0.35, nil, {
-    desc = "Scoreboard Width",
-    category = "Scoreboard",
+lia.config.add("MusicVolume", "Music Volume", 0.25, nil, {
+    desc = "The volume level for the main menu music",
+    category = "Main Menu",
     type = "Float",
-    min = 0.1,
+    min = 0.0,
     max = 1.0
 })
 
-lia.config.add("sbHeight", "Scoreboard Height", 0.65, nil, {
-    desc = "Scoreboard Height",
-    category = "Scoreboard",
+lia.config.add("Music", "Main Menu Music", "", nil, {
+    desc = "The file path or URL for the main menu background music",
+    category = "Main Menu",
+    type = "Generic"
+})
+
+lia.config.add("BackgroundURL", "Main Menu Background URL", "", nil, {
+    desc = "The URL or file path for the main menu background image",
+    category = "Main Menu",
+    type = "Generic"
+})
+
+lia.config.add("CenterLogo", "Center Logo", "", nil, {
+    desc = "The file path or URL for the logo displayed at the center of the screen",
+    category = "Main Menu",
+    type = "Generic"
+})
+
+lia.config.add("DiscordURL", "The Discord of the Server", "https://discord.gg/esCRH5ckbQ", nil, {
+    desc = "The URL for the Discord server",
+    category = "Main Menu",
+    type = "Generic"
+})
+
+lia.config.add("Workshop", "The Steam Workshop of the Server", "https://steamcommunity.com/sharedfiles/filedetails/?id=3527535922", nil, {
+    desc = "The URL for the Steam Workshop page",
+    category = "Main Menu",
+    type = "Generic"
+})
+
+lia.config.add("CharMenuBGInputDisabled", "Character Menu BG Input Disabled", true, nil, {
+    desc = "Whether background input is disabled during character menu use",
+    category = "Main Menu",
+    type = "Boolean"
+})
+
+lia.config.add("vendorDefaultMoney", "Default Vendor Money", 500, nil, {
+    desc = "Sets the default amount of money a vendor starts with",
+    category = "Vendors",
+    type = "Int",
+    min = 0,
+    max = 100000
+})
+
+lia.config.add("invW", "Inventory Width", 6, function(_, newW)
+    if not SERVER then return end
+    for _, client in pairs(player.GetAll()) do
+        if not IsValid(client) then continue end
+        local inv = client:getChar():getInv()
+        local dw, dh = hook.Run("GetDefaultInventorySize", client)
+        dw = dw or newW
+        dh = dh or lia.config.get("invH")
+        local w, h = inv:getSize()
+        if w ~= dw or h ~= dh then
+            inv:setSize(dw, dh)
+            inv:sync(client)
+        end
+    end
+
+    local json = util.TableToJSON({newW})
+    lia.db.query("UPDATE lia_invdata SET _value = '" .. lia.db.escape(json) .. "' WHERE _key = 'w' AND _invID IN (SELECT _invID FROM lia_inventories WHERE _charID IS NOT NULL)")
+end, {
+    desc = "Defines the width of the default inventory.",
+    category = "Character",
+    type = "Int",
+    min = 1,
+    max = 10
+})
+
+lia.config.add("invH", "Inventory Height", 4, function(_, newH)
+    if not SERVER then return end
+    for _, client in pairs(player.GetAll()) do
+        if not IsValid(client) then continue end
+        local inv = client:getChar():getInv()
+        local dw, dh = hook.Run("GetDefaultInventorySize", client)
+        dw = dw or lia.config.get("invW")
+        dh = dh or newH
+        local w, h = inv:getSize()
+        if w ~= dw or h ~= dh then
+            inv:setSize(dw, dh)
+            inv:sync(client)
+        end
+    end
+
+    local json = util.TableToJSON({newH})
+    lia.db.query("UPDATE lia_invdata SET _value = '" .. lia.db.escape(json) .. "' WHERE _key = 'h' AND _invID IN (SELECT _invID FROM lia_inventories WHERE _charID IS NOT NULL)")
+end, {
+    desc = "Defines the height of the default inventory.",
+    category = "Character",
+    type = "Int",
+    min = 1,
+    max = 10
+})
+
+local function getMenuTabNames()
+    local defs = {}
+    hook.Run("CreateMenuButtons", defs)
+    local tabs = {}
+    for k in pairs(defs) do
+        tabs[#tabs + 1] = k
+    end
+    return tabs
+end
+
+lia.config.add("DefaultMenuTab", "Default Menu Tab", L("status"), nil, {
+    desc = "Specifies which tab is opened by default when the menu is shown.",
+    category = "Menu",
+    type = "Table",
+    options = CLIENT and getMenuTabNames() or {L("status")}
+})
+
+lia.config.add("DoorLockTime", "Door Lock Time", 0.5, nil, {
+    desc = "Time it takes to lock a door",
+    category = "Doors",
     type = "Float",
     min = 0.1,
+    max = 10.0
+})
+
+lia.config.add("DoorSellRatio", "Door Sell Ratio", 0.5, nil, {
+    desc = "Percentage you can sell a door for",
+    category = "Doors",
+    type = "Float",
+    min = 0.0,
     max = 1.0
 })
 
-lia.config.add("ClassHeaders", "Class Headers", true, nil, {
-    desc = "Should class headers exist?",
-    category = "Scoreboard",
-    type = "Boolean"
+lia.config.add("CustomChatSound", "Custom Chat Sound", "", nil, {
+    desc = "Change Chat Sound on Message Send",
+    category = "Chat",
+    type = "Generic"
 })
 
-lia.config.add("UseSolidBackground", "Use Solid Background in Scoreboard", false, nil, {
-    desc = "Use a solid background for the scoreboard",
-    category = "Scoreboard",
-    type = "Boolean"
-})
-
-lia.config.add("ClassLogo", "Should Class Logo Appear in the Player Bar", false, nil, {
-    desc = "Toggle display of class logo next to player entries",
-    category = "Scoreboard",
-    type = "Boolean"
-})
-
-lia.config.add("ScoreboardBackgroundColor", "Scoreboard Background Color", {
+lia.config.add("ChatColor", "Chat Color", {
     r = 255,
-    g = 100,
-    b = 100,
+    g = 239,
+    b = 150,
     a = 255
 }, nil, {
-    desc = "Sets the background color of the scoreboard. This only applies if 'UseSolidBackground' is enabled.",
-    category = "Scoreboard",
+    desc = "Chat Color",
+    category = "Chat",
     type = "Color"
 })
-﻿lia.config.add("LoseItemsonDeathNPC", "Lose Items on NPC Death", false, nil, {
-    desc = "Determine if items marked for loss are lost on death by NPCs",
-    category = "Death",
+
+lia.config.add("ChatRange", "Chat Range", 280, nil, {
+    desc = "Range of Chat can be heard",
+    category = "Chat",
+    type = "Int",
+    min = 0,
+    max = 10000
+})
+
+lia.config.add("OOCLimit", "OOC Character Limit", 150, nil, {
+    desc = "Limit of characters on OOC",
+    category = "Chat",
+    type = "Int",
+    min = 10,
+    max = 1000
+})
+
+lia.config.add("ChatListenColor", "Chat Listen Color", {
+    r = 168,
+    g = 240,
+    b = 170,
+    a = 255
+}, nil, {
+    desc = "Color of chat when directly working at someone",
+    category = "Chat",
+    type = "Color"
+})
+
+lia.config.add("OOCDelay", "OOC Delay", 10, nil, {
+    desc = "Set OOC Text Delay",
+    category = "Chat",
+    type = "Float",
+    min = 0,
+    max = 60
+})
+
+lia.config.add("LOOCDelay", "LOOC Delay", 6, nil, {
+    desc = "Set LOOC Text Delay",
+    category = "Chat",
+    type = "Float",
+    min = 0,
+    max = 60
+})
+
+lia.config.add("LOOCDelayAdmin", "LOOC Delay for Admins", false, nil, {
+    desc = "Should Admins have LOOC Delay",
+    category = "Chat",
     type = "Boolean"
 })
 
-lia.config.add("LoseItemsonDeathHuman", "Lose Items on Human Death", false, nil, {
-    desc = "Determine if items marked for loss are lost on death by Humans",
-    category = "Death",
+lia.config.add("ChatSizeDiff", "Enable Different Chat Size", false, nil, {
+    desc = "Enable Different Chat Size Diff",
+    category = "Chat",
     type = "Boolean"
 })
 
-lia.config.add("LoseItemsonDeathWorld", "Lose Items on World Death", false, nil, {
-    desc = "Determine if items marked for loss are lost on death by World",
-    category = "Death",
+lia.config.add("StaminaBlur", "Stamina Blur Enabled", true, nil, {
+    desc = "Is Stamina Blur Enabled?",
+    category = "Attributes",
     type = "Boolean"
 })
 
-lia.config.add("DeathPopupEnabled", "Enable Death Popup", true, nil, {
-    desc = "Enable or disable the death information popup",
-    category = "Death",
+lia.config.add("StaminaSlowdown", "Stamina Slowdown Enabled", true, nil, {
+    desc = "Is Stamina Slowdown Enabled?",
+    category = "Attributes",
     type = "Boolean"
 })
 
-lia.config.add("StaffHasGodMode", "Staff God Mode", true, nil, {
-    desc = "Whether or not Staff On Duty has God Mode",
-    category = "Staff",
-    type = "Boolean"
+lia.config.add("DefaultStamina", "Default Stamina Value", 100, nil, {
+    desc = "Sets Default Stamina Value",
+    category = "Attributes",
+    type = "Int",
+    min = 0,
+    max = 1000
 })
-﻿lia.config.add("PermaClass", "Permanent Classes", true, nil, {
-    desc = "Whether or not classes are saved in characters",
-    category = "Character",
+
+lia.config.add("MaxAttributePoints", "Max Attribute Points", 30, nil, {
+    desc = "Maximum number of points that can be allocated across an attribute.",
+    category = "Attributes",
+    isGlobal = true,
+    type = "Int",
+    min = 1,
+    max = 100
+})
+
+lia.config.add("JumpStaminaCost", "Jump Stamina Cost", 10, nil, {
+    desc = "Stamina cost deducted when the player jumps",
+    category = "Attributes",
+    type = "Int",
+    min = 0,
+    max = 1000
+})
+
+lia.config.add("MaxStartingAttributes", "Max Starting Attributes", 30, nil, {
+    desc = "Maximum value of each attribute at character creation.",
+    category = "Attributes",
+    isGlobal = true,
+    type = "Int",
+    min = 1,
+    max = 100
+})
+
+lia.config.add("StartingAttributePoints", "Starting Attribute Points", 30, nil, {
+    desc = "Total number of points available for starting attribute allocation.",
+    category = "Attributes",
+    isGlobal = true,
+    type = "Int",
+    min = 1,
+    max = 100
+})
+
+lia.config.add("PunchStamina", "Punch Stamina", 10, nil, {
+    desc = "Stamina usage for punches.",
+    category = "Attributes",
+    isGlobal = true,
+    type = "Int",
+    min = 0,
+    max = 100
+})
+
+lia.config.add("MaxHoldWeight", "Maximum Hold Weight", 100, nil, {
+    desc = "The maximum weight that a player can carry in their hands.",
+    category = "General",
+    type = "Int",
+    min = 1,
+    max = 500
+})
+
+lia.config.add("ThrowForce", "Throw Force", 100, nil, {
+    desc = "How hard a player can throw the item that they're holding.",
+    category = "General",
+    type = "Int",
+    min = 1,
+    max = 500
+})
+
+lia.config.add("AllowPush", "Allow Push", true, nil, {
+    desc = "Whether or not pushing with hands is allowed",
+    category = "General",
     type = "Boolean"
 })
 
-lia.config.add("ClassDisplay", "Display Classes on Characters", true, nil, {
-    desc = "Whether or not classes are displayed on characters",
-    category = "Character",
-    type = "Boolean"
-})
-﻿lia.config.add("SpawnMenuLimit", "Limit Spawn Menu Access", false, nil, {
+lia.config.add("SpawnMenuLimit", "Limit Spawn Menu Access", false, nil, {
     desc = "Determines if the spawn menu is limited to PET flag holders or staff",
     category = "Staff",
     type = "Boolean"
 })
 
-lia.option.add("espPlayers", "ESP Players", "Enable ESP for players", false, nil, {
-﻿lia.config.add("LogRetentionDays", "Log Retention Period", 7, nil, {
+lia.config.add("LogRetentionDays", "Log Retention Period", 7, nil, {
     desc = "Determines how many days of logs should be read",
     category = "Logging",
     type = "Int",
     min = 3,
-    max = 30,
+    max = 30
 })
 
 lia.config.add("MaxLogLines", "Maximum Log Lines", 1000, nil, {
@@ -973,41 +1024,7 @@ lia.config.add("MaxLogLines", "Maximum Log Lines", 1000, nil, {
     category = "Logging",
     type = "Int",
     min = 500,
-    max = 1000000,
-})
-hook.Add("InitializedModules", "F1MenuDefaultTabConfig", function()
-    local function getMenuTabNames()
-        local defs = {}
-        hook.Run("CreateMenuButtons", defs)
-        local tabs = {}
-        for k in pairs(defs) do
-            tabs[#tabs + 1] = k
-        end
-        return tabs
-    end
-
-    lia.config.add("DefaultMenuTab", "Default Menu Tab", L("status"), nil, {
-        desc = "Specifies which tab is opened by default when the menu is shown.",
-        category = "Menu",
-        type = "Table",
-        options = CLIENT and getMenuTabNames() or {L("status")}
-    })
-end)
-local function getDermaSkins()
-    local skins = {}
-    for name in pairs(derma.GetSkinTable()) do
-        table.insert(skins, name)
-    end
-
-    table.sort(skins)
-    return skins
-end
-
-lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) hook.Run("DermaSkinChanged", newSkin) end, {
-    desc = "Select the Derma UI skin to use",
-    category = "Visuals",
-    type = "Table",
-    options = CLIENT and getDermaSkins() or {"Lilia Skin"}
+    max = 1000000
 })
 
 hook.Add("liaAdminRegisterTab", "liaConfigTab", function(tabs)

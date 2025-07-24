@@ -774,8 +774,14 @@ function PANEL:setupItemsPanel(showList)
     end
 end
 
+local VendorText = {
+    [VENDOR_SELLANDBUY] = "buyOnlynSell",
+    [VENDOR_BUYONLY] = "buyOnly",
+    [VENDOR_SELLONLY] = "sellOnly",
+}
+
 function PANEL:getModeText(mode)
-    return mode and L(VENDOR_TEXT[mode]) or L("none")
+    return mode and L(VendorText[mode]) or L("none")
 end
 
 function PANEL:OnRemove()
