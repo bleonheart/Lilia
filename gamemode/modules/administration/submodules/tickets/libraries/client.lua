@@ -147,6 +147,7 @@ hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(parent, tabs)
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)
+            lia.gui.tickets = pnl
             net.Start("liaRequestTableData")
             net.WriteString("lia_ticketclaims")
             net.SendToServer()
