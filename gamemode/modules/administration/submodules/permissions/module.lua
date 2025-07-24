@@ -160,6 +160,10 @@ MODULE.Privileges = {
         MinAccess = "admin"
     },
     {
+        Name = "Check Inventories",
+        MinAccess = "admin"
+    },
+    {
         Name = "Manage Items",
         MinAccess = "superadmin"
     },
