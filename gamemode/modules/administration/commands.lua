@@ -250,7 +250,7 @@ if not sysDisabled and not cmdsDisabled then
             local steamid = arguments[1]
             if steamid and steamid ~= "" then
                 lia.admin.removeBan(steamid)
-                client:notify("Player unbanned")
+                client:notifyLocalized("playerUnbanned")
                 lia.log.add(client, "plyUnban", steamid)
             end
         end
