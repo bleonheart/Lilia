@@ -110,6 +110,11 @@
                 name = "Return",
                 image = "icon16/arrow_redo.png",
                 func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
+            },
+            {
+                name = "Character List",
+                image = "icon16/user.png",
+                func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
             }
         }
 

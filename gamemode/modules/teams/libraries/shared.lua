@@ -214,12 +214,25 @@ else
             built = false
             buildRoster(panel)
         end
-
-        tabs["Factions"] = function(panel)
-            rosterRows = {}
-            lists = {}
-            built = false
-            buildFactions(panel)
-        end
     end
+
+    hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(parent, tabs)
+        local ply = LocalPlayer()
+        if not IsValid(ply) then return end
+        local char = ply:getChar()
+        if not char then return end
+        if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
+        tabs["Factions"] = {
+            icon = "icon16/group.png",
+            build = function(sheet)
+                local pnl = vgui.Create("DPanel", sheet)
+                pnl:DockPadding(10, 10, 10, 10)
+                rosterRows = {}
+                lists = {}
+                built = false
+                buildFactions(pnl)
+                return pnl
+            end
+        }
+    end)
 end

@@ -152,6 +152,10 @@ if SERVER then
     end
 
     local function getLastChar(id64)
+        local ply = player.GetBySteamID64(id64)
+        if IsValid(ply) then
+            return ply:getLiliaData("lastChar", lia.char and lia.char.lastUsed and lia.char.lastUsed[id64] or "")
+        end
         return lia.char and lia.char.lastUsed and lia.char.lastUsed[id64] or ""
     end
 
@@ -163,6 +167,7 @@ if SERVER then
             plys[#plys + 1] = {
                 name = v:Nick(),
                 id = v:SteamID(),
+                id64 = v:SteamID64(),
                 group = v:GetUserGroup(),
                 lastJoin = lia.admin.lastJoin[v:SteamID()] or os.time(),
                 lastChar = getLastChar(v:SteamID64()),
@@ -176,6 +181,7 @@ if SERVER then
             plys[#plys + 1] = {
                 name = "",
                 id = id,
+                id64 = util.SteamIDTo64(id),
                 group = "",
                 lastJoin = 0,
                 lastChar = "",
@@ -290,7 +296,19 @@ else
         list:AddColumn("Banned")
         for _, v in ipairs(PLAYER_LIST) do
             local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", v.lastChar, v.banned and "Yes" or "No")
+            row.steamID = v.id
+            row.steamID64 = v.id64
             if v.banned then row:SetBGColor(Color(255, 120, 120)) end
+        end
+
+        list.OnRowRightClick = function(_, _, line)
+            if not IsValid(line) or not line.steamID then return end
+            local m = DermaMenu()
+            local opt = m:AddOption("View Character List", function()
+                LocalPlayer():ConCommand("say /charlist " .. line.steamID)
+            end)
+            opt:SetIcon("icon16/user.png")
+            m:Open()
         end
     end
 
