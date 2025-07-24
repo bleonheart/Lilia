@@ -208,6 +208,7 @@ if SERVER then
         if p:IsBot() then return end
         lia.admin.lastJoin[p:SteamID()] = os.time()
     end)
+
     net.Receive("liaGroupsRequest", function(_, p)
         if not allowed(p) then return end
         syncPrivileges()
@@ -630,14 +631,16 @@ else
     end)
 
     function MODULE:CreateMenuButtons(tabs)
-        if not (IsValid(LocalPlayer()) and not (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups"))) then return end
+        local lp = LocalPlayer()
+        if not IsValid(lp) then return end
+        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Staff Permissions - Manage UserGroups")) then return end
         tabs[L("shortAdmin")] = function(parent)
             parent:Clear()
             local sheet = vgui.Create("DPropertySheet", parent)
             sheet:Dock(FILL)
-            local tabs = {}
-            hook.Run("liaAdminRegisterTab", parent, tabs)
-            for name, data in pairs(tabs) do
+            local reg = {}
+            hook.Run("liaAdminRegisterTab", parent, reg)
+            for name, data in pairs(reg) do
                 local pnl = data.build(sheet)
                 sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
             end
