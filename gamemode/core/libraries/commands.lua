@@ -555,23 +555,11 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
             searchEntry:SetPlaceholderText(L("searchCommands"))
             local scroll = vgui.Create("DScrollPanel", panel)
             scroll:Dock(FILL)
-            local iconLayout = vgui.Create("DIconLayout", scroll)
-            iconLayout:Dock(FILL)
-            iconLayout:SetSpaceY(5)
-            iconLayout:SetSpaceX(5)
-            iconLayout.PerformLayout = function(self)
-                local y = 0
-                local w = self:GetWide()
-                for _, child in ipairs(self:GetChildren()) do
-                    child:SetPos((w - child:GetWide()) * 0.5, y)
-                    y = y + child:GetTall() + self:GetSpaceY()
-                end
-
-                self:SetTall(y)
-            end
+            scroll:DockPadding(0, 0, 0, 10)
+            local canvas = scroll:GetCanvas()
 
             local function refresh()
-                iconLayout:Clear()
+                canvas:Clear()
                 local filter = searchEntry:GetValue():lower()
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
                     if isnumber(cmdName) then continue end
@@ -583,8 +571,10 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                     if not hasAccess then continue end
                     local hasDesc = cmdData.desc and cmdData.desc ~= ""
                     local height = hasDesc and 80 or 40
-                    local commandPanel = vgui.Create("DPanel", iconLayout)
-                    commandPanel:SetSize(panel:GetWide(), height)
+                    local commandPanel = vgui.Create("DPanel", canvas)
+                    commandPanel:Dock(TOP)
+                    commandPanel:DockMargin(10, 5, 10, 0)
+                    commandPanel:SetTall(height)
                     commandPanel.Paint = function(self, w, h)
                         derma.SkinHook("Paint", "Panel", self, w, h)
                         local baseX = 20
@@ -603,7 +593,8 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                     end
                 end
 
-                iconLayout:InvalidateLayout(true)
+                canvas:InvalidateLayout()
+                canvas:SizeToChildren(false, true)
             end
 
             searchEntry.OnTextChanged = refresh
