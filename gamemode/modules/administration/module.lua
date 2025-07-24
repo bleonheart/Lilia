@@ -706,8 +706,6 @@ else
             local sheet = vgui.Create("DPropertySheet", parent)
             sheet:Dock(FILL)
             sheet.Paint = function() end
-            sheet.TabScroller.Paint = function() end
-            sheet.TabScroller.TabBar.Paint = function() end
             local reg = {}
             hook.Run("liaAdminRegisterTab", parent, reg)
             for name, data in pairs(reg) do
