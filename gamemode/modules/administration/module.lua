@@ -38,6 +38,18 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Access DB Browser Tab",
         MinAccess = "superadmin"
+    },
+    {
+        Name = "View DB Tables",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "Manage SitRooms",
+        MinAccess = "superadmin"
+    },
+    {
+        Name = "List Characters",
+        MinAccess = "admin"
     }
 }
 
