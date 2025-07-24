@@ -92,7 +92,7 @@ Stops collisions or weapons fired from your own LVS vehicle from injuring you. D
 
 * Honors the `BlockPackURLoad` configuration to restrict loading outfits from URLs.
 
-* Registers the "Staff Permissions - Can Use PAC3" privilege and the `P` flag for access control.
+* Registers the "Can Use PAC3" privilege and the `P` flag for access control.
 
 **Detailed Explanation:**
 

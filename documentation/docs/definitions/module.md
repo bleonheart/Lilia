@@ -183,7 +183,7 @@ CAMI privileges required or provided by the module.
 
 ```lua
 MODULE.Privileges = {
-    { Name = "Staff Permissions - Admin Chat", MinAccess = "admin" }
+    { Name = "Admin Chat", MinAccess = "admin" }
 }
 ```
 
