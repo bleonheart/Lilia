@@ -142,11 +142,11 @@ else
         local lst = parent:Add("DListView")
         lst:Dock(FILL)
         lst:SetMultiSelect(false)
-        lst:AddColumn("Name")
-        lst:AddColumn("SteamID")
-        lst:AddColumn("Class")
-        lst:AddColumn("Hours Played")
-        lst:AddColumn("Last Online")
+        lst:AddColumn(L("name"))
+        lst:AddColumn(L("steamID"))
+        lst:AddColumn(L("class"))
+        lst:AddColumn(L("hoursPlayed"))
+        lst:AddColumn(L("lastOnline"))
         lst.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
             local row = line.rowData
@@ -154,16 +154,16 @@ else
             if not me then return end
             local m = DermaMenu()
             if row.id ~= me:getID() then
-                m:AddOption("Kick", function()
-                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                m:AddOption(L("kick"), function()
+                    Derma_Query(L("kickPlayerConfirm"), L("confirm"), L("yes"), function()
                         net.Start("KickCharacter")
                         net.WriteInt(tonumber(row.id), 32)
                         net.SendToServer()
-                    end, "No")
+                    end, L("no"))
                 end)
             end
 
-            m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. row.steamID) end)
+            m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. row.steamID) end)
             m:AddOption(L("copyRow"), function()
                 local s = ""
                 for k, v in pairs(row) do
