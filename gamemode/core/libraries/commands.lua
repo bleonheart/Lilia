@@ -11,7 +11,7 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = "Commands - " .. (isstring(data.privilege) and data.privilege or command)
+        local privilegeName = data.privilege and isstring(data.privilege) or "Access to " .. command .. " command"
         if not lia.admin.privileges[privilegeName] then
             lia.admin.registerPrivilege({
                 Name = privilegeName,
@@ -62,7 +62,7 @@ function lia.command.hasAccess(client, command, data)
     if not privilege then privilege = accessLevels == "user" and "Global" or command end
     local hasAccess = true
     if accessLevels ~= "user" then
-        local privilegeName = "Commands - " .. privilege
+        local privilegeName = data.privilege and isstring(data.privilege) or "Access to " .. command .. " command"
         hasAccess = client:hasPrivilege(privilegeName)
     end
 
@@ -558,7 +558,6 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
             scroll:Dock(FILL)
             scroll:DockPadding(0, 0, 0, 10)
             local canvas = scroll:GetCanvas()
-
             local function refresh()
                 canvas:Clear()
                 local filter = searchEntry:GetValue():lower()
