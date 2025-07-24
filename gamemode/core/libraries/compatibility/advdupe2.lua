@@ -12,11 +12,20 @@
     return true
 end
 
-hook.Add("PlayerSpawnProp", "liaAdvDupe2", function(client)
+hook.Add("PlayerSpawnProp", "liaAdvDupe2", function(client, model)
     local weapon = client:GetActiveWeapon()
     if IsValid(weapon) and weapon:GetClass() == "gmod_tool" then
         local toolobj = weapon:GetToolObject()
-        if toolobj and (client.AdvDupe2 and client.AdvDupe2.Entities or client.CurrentDupe and client.CurrentDupe.Entities or toolobj.Entities) then return true end
+        if toolobj and (client.AdvDupe2 and client.AdvDupe2.Entities or client.CurrentDupe and client.CurrentDupe.Entities or toolobj.Entities) then
+            local list = lia.data.get("prop_blacklist", {})
+            if table.HasValue(list, model) and not client:hasPrivilege("Spawn Permissions - Can Spawn Blacklisted Props") then
+                lia.log.add(client, "spawnDenied", "prop", model)
+                client:notifyLocalized("blacklistedProp")
+                return false
+            end
+
+            return true
+        end
     end
 end)
 
