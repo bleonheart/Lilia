@@ -433,6 +433,7 @@ LANGUAGE = {
     respawnKey = "Premi %s per respawnare",
     respawnIn = "Puoi respawnare in %s",
     youHaveDied = "Sei morto",
+    pkMessage = "Il tuo personaggio è stato ucciso permanentemente, premi spazio per tornare al menu principale",
     factionStaffName = "Staff in Servizio",
     factionStaffDesc = "Lo Staff",
     cleaningFinished = "Hai pulito %s: %s entità rimosse.",
