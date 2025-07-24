@@ -1,5 +1,4 @@
 ﻿local MODULE = MODULE
-MODULE.OOCBans = MODULE.OOCBans or {}
 lia.command.add("banooc", {
     adminOnly = true,
     privilege = "Ban OOC",
@@ -18,9 +17,8 @@ lia.command.add("banooc", {
             return
         end
 
-        local id = target:SteamID64()
-        if not table.HasValue(MODULE.OOCBans, id) then table.insert(MODULE.OOCBans, id) end
-        MODULE:SaveData()
+        target:setLiliaData("oocBan", true)
+        target:saveLiliaData()
         client:notifyLocalized("playerBannedFromOOC", target:Name())
         lia.log.add(client, "banOOC", target:Name(), target:SteamID64())
     end
@@ -44,9 +42,8 @@ lia.command.add("unbanooc", {
             return
         end
 
-        local id = target:SteamID64()
-        table.RemoveByValue(MODULE.OOCBans, id)
-        MODULE:SaveData()
+        target:setLiliaData("oocBan", false)
+        target:saveLiliaData()
         client:notifyLocalized("playerUnbannedFromOOC", target:Name())
         lia.log.add(client, "unbanOOC", target:Name(), target:SteamID64())
     end
