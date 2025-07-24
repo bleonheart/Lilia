@@ -20,7 +20,7 @@ end
 function playerMeta:hasPrivilege(privilegeName)
     -- if true then return true end
     if self:IsBot() then
-        self:ChatPrint("Access denied: bots have no privileges.")
+        self:ChatPrint(L("accessDeniedBots"))
         return false
     end
 
@@ -28,12 +28,12 @@ function playerMeta:hasPrivilege(privilegeName)
     local groups = lia.admin.groups or {}
     local perms = groups[group]
     if not perms then
-        self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
+        self:ChatPrint(L("accessDeniedGroupNotRegistered", tostring(group)))
         return false
     end
 
     if perms[privilegeName] == true then return true end
-    self:ChatPrint("Access denied: group '" .. group .. "' lacks '" .. tostring(privilegeName) .. "' privilege.")
+    self:ChatPrint(L("accessDeniedLacksPrivilege", group, tostring(privilegeName)))
     return false
 end
 

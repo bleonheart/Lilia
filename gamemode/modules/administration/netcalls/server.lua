@@ -81,7 +81,7 @@ net.Receive("liaRequestCharList", function(_, client)
     local steam64 = target:SteamID64()
     lia.db.query("SELECT * FROM lia_characters WHERE _steamID = " .. lia.db.convertDataType(steam64), function(data)
         if not data or #data == 0 then
-            client:notify("No characters found for this player.")
+            client:notifyLocalized("noCharactersFound")
             return
         end
 
