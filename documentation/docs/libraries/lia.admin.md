@@ -76,6 +76,25 @@ Creates a new user group with an optional table of permissions and inheritance.
 
 * *nil*: This function does not return a value.
 
+### lia.admin.registerRank
+
+**Purpose**
+
+Creates a new rank with optional inheritance. If the specified inheritance does not exist, an error is printed and the rank inherits from `user`.
+
+**Parameters**
+
+* `name` (*string*): Name of the rank.
+* `inherit` (*string*): Group to inherit from. Optional.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* *nil*: This function does not return a value.
+
 ---
 
 ### lia.admin.registerPrivilege
@@ -200,6 +219,25 @@ Changes the user group of a player and records it in the database.
 * `ply` (*Player*): Player to modify.
 
 * `usergroup` (*string*): Group identifier.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* *nil*: This function does not return a value.
+
+### lia.admin.registerAdminSteamID
+
+**Purpose**
+
+Associates a SteamID with a user group that will be applied automatically when the player joins the server.
+
+**Parameters**
+
+* `steamid` (*string*): SteamID32 or SteamID64 of the player.
+* `group` (*string*): Group identifier. Optional, defaults to `superadmin`.
 
 **Realm**
 

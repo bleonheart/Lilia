@@ -4,6 +4,7 @@ lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
 lia.admin.lastJoin = lia.admin.lastJoin or {}
 lia.admin.privileges = lia.admin.privileges or {}
+lia.admin.steamAdmins = lia.admin.steamAdmins or {}
 local DefaultGroups = {
     user = true,
     admin = true,
@@ -829,6 +830,16 @@ function lia.admin.createGroup(groupName, info, inherit)
     if SERVER then lia.admin.save(true) end
 end
 
+function lia.admin.registerRank(name, inherit)
+    if not isstring(name) then return end
+    local inheritGroup = inherit or "user"
+    if inherit and not lia.admin.groups[inherit] then
+        lia.error("Invalid inheritance '" .. tostring(inherit) .. "' for rank '" .. name .. "'. Defaulting to 'user'.")
+        inheritGroup = "user"
+    end
+    lia.admin.createGroup(name, nil, inheritGroup)
+end
+
 function lia.admin.registerPrivilege(privilege)
     if not privilege or not privilege.Name then return end
     privilege.Category = privilege.Category or "Unassigned"
@@ -923,6 +934,16 @@ if SERVER then
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+    end
+
+    function lia.admin.registerAdminSteamID(steamid, group)
+        local steam64 = util.SteamIDTo64(steamid) ~= "0" and util.SteamIDTo64(steamid) or tostring(steamid)
+        local usergroup = group or "superadmin"
+        if not lia.admin.groups[usergroup] then
+            lia.error("Invalid admin group '" .. tostring(group) .. "' for SteamID " .. tostring(steamid) .. ". Defaulting to 'superadmin'.")
+            usergroup = "superadmin"
+        end
+        lia.admin.steamAdmins[steam64] = usergroup
     end
 
     function lia.admin.addBan(steamid, reason, duration)
@@ -1051,6 +1072,11 @@ end
 hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
     if ply:IsBot() then return end
     local steam64 = util.SteamIDTo64(steamID)
+    local forcedGroup = lia.admin.steamAdmins[steam64]
+    if forcedGroup and lia.admin.groups[forcedGroup] then
+        lia.admin.setPlayerGroup(ply, forcedGroup)
+        return
+    end
     if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
         return
