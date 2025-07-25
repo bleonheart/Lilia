@@ -162,14 +162,7 @@ local function buildPlayersUI(parent)
     parent:Clear()
     local list = parent:Add("DListView")
     list:Dock(FILL)
-    local columns = {
-        L("name"),
-        L("steamID"),
-        L("group"),
-        L("joinedOn"),
-        L("lastJoin"),
-        L("banned")
-    }
+    local columns = {L("name"), L("steamID"), L("group"), L("joinedOn"), L("lastJoin"), L("banned")}
     for _, colName in ipairs(columns) do
         local col = list:AddColumn(colName)
         surface.SetFont(col.Header:GetFont() or "DermaDefault")
@@ -177,10 +170,12 @@ local function buildPlayersUI(parent)
         col:SetWide(textWidth)
         col:SetMinWidth(textWidth)
     end
+
     for _, v in ipairs(PlayerList) do
         local firstJoin = toUnixTime(v.firstJoin)
         local lastJoin = toUnixTime(v.lastJoin)
-        local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
+        local bannedText = v.banned and "yes" or "No"
+        LocalPlayer():ChatPrint(v.name .. " is " .. tostring(v.banned))
         local row = list:AddLine(v.name, v.id, v.group, firstJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", firstJoin) or "", lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", lastJoin) or "", bannedText)
         row.steamID = v.id
         row.steamID64 = v.id64
@@ -423,7 +418,6 @@ local function buildGroupsUI(panel, cami, perms)
     local sheet = panel:Add("DPropertySheet")
     sheet:Dock(FILL)
     sheet:DockMargin(10, 10, 10, 10)
-
     local addBtn = panel:Add("liaMediumButton")
     addBtn:Dock(BOTTOM)
     addBtn:DockMargin(10, 0, 10, 10)
@@ -455,10 +449,7 @@ local function buildGroupsUI(panel, cami, perms)
         if g == LastGroup then firstTab = item.Tab end
     end
 
-    if not firstTab and sheet.Items[1] then
-        firstTab = sheet.Items[1].Tab
-    end
-
+    if not firstTab and sheet.Items[1] then firstTab = sheet.Items[1].Tab end
     if firstTab then sheet:SetActiveTab(firstTab) end
 end
 
@@ -557,7 +548,6 @@ function MODULE:CreateMenuButtons(tabs)
         sheet.Paint = function() end
         local reg = {}
         hook.Run("liaAdminRegisterTab", reg)
-
         -- Allow other modules to supply admin sheets through the
         -- generic CreateSheetedTabs hook for consistency with the
         -- main F1 menu implementation.
@@ -574,9 +564,7 @@ function MODULE:CreateMenuButtons(tabs)
                             local pnl = adminSheet:Add("DPanel")
                             pnl:Dock(FILL)
                             pnl.Paint = function() end
-                            if page.drawFunc then
-                                page.drawFunc(pnl)
-                            end
+                            if page.drawFunc then page.drawFunc(pnl) end
                             adminSheet:AddSheet(page.name, pnl)
                         end
                         return adminSheet
