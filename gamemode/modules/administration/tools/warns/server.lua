@@ -1,16 +1,26 @@
 ﻿local MODULE = MODULE
 function MODULE:GetWarnings(charID)
     local condition = "charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"id", "timestamp", "reason", "admin"}, "warnings", condition):next(function(res) return res.results or {} end)
+    return lia.db.select({
+        "id",
+        "timestamp",
+        "playerName",
+        "playerSteam",
+        "reason",
+        "adminName",
+        "adminSteam"
+    }, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
-function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
+function MODULE:AddWarning(charID, timestamp, playerName, playerSteam, reason, adminName, adminSteam)
     lia.db.insertTable({
         charID = charID,
-        steamID = steamID,
         timestamp = timestamp,
+        playerName = playerName,
+        playerSteam = playerSteam,
         reason = reason,
-        admin = admin
+        adminName = adminName,
+        adminSteam = adminSteam
     }, nil, "warnings")
 end
 
