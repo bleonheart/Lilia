@@ -7771,99 +7771,6 @@ end)
 
 ---
 
-### DoorParentSet
-
-**Purpose**
-
-Called when a door is set as the parent for upcoming child assignments.
-
-**Parameters**
-
-- `client` (`Player`): Player selecting the parent.
-
-- `door` (`Entity`): Door chosen as parent.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
-hook.Add("DoorParentSet", "Notify", function(ply, door)
-    print("Parent door selected:", door)
-end)
-```
-
----
-
-### DoorChildAdded
-
-**Purpose**
-
-Runs when a child door is linked to a parent door.
-
-**Parameters**
-
-- `client` (`Player`): Player performing the link.
-
-- `child` (`Entity`): Door being linked.
-
-- `parent` (`Entity`): Parent door.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
-hook.Add("DoorChildAdded", "AnnounceChild", function(ply, child, parent)
-    print(child, "assigned to", parent)
-end)
-```
-
----
-
-### DoorChildRemoved
-
-**Purpose**
-
-Triggered when a door is unlinked from its parent.
-
-**Parameters**
-
-- `client` (`Player`): Player removing the child.
-
-- `child` (`Entity`): Door unlinked.
-
-- `parent` (`Entity`): Former parent door.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-- None
-
-**Example Usage**
-
-```lua
-hook.Add("DoorChildRemoved", "LogRemoval", function(ply, child, parent)
-    print(child, "removed from", parent)
-end)
-```
-
----
 
 ### LiliaTablesLoaded
 
@@ -8049,8 +7956,6 @@ Called when a player purchases or sells a door.
 
 - `buying` (`boolean`): True if buying, false if selling.
 
-- `CallOnDoorChild` (`function`): Optional callback for door children.
-
 **Realm**
 
 `Server`
@@ -8063,7 +7968,7 @@ Called when a player purchases or sells a door.
 
 ```lua
 -- Prints a message when OnPlayerPurchaseDoor is triggered
-hook.Add("OnPlayerPurchaseDoor", "HandleDoorPurchase", function(client, entity, buying, CallOnDoorChild)
+hook.Add("OnPlayerPurchaseDoor", "HandleDoorPurchase", function(client, entity, buying)
     if buying then
         client:deductMoney(entity:getPrice())
         lia.log.add(client, "DoorPurchase", client:Name() .. " purchased door ID: " .. entity:EntIndex())
@@ -8073,7 +7978,6 @@ hook.Add("OnPlayerPurchaseDoor", "HandleDoorPurchase", function(client, entity, 
         lia.log.add(client, "DoorSale", client:Name() .. " sold door ID: " .. entity:EntIndex())
         print(client:Name() .. " sold a door.")
     end
-    CallOnDoorChild(entity)
 end)
 ```
 

@@ -614,7 +614,6 @@ function lia.db.loadTables()
                 `name` TEXT NULL,
                 `price` INT NULL,
                 `locked` TINYINT(1) NULL,
-                `children` TEXT NULL,
                 PRIMARY KEY (`gamemode`, `map`, `id`)
             );
 
