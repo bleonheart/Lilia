@@ -2290,17 +2290,16 @@ lia.command.add("playtime", {
     privilege = "View Own Playtime",
     desc = "playtimeDesc",
     onRun = function(client)
-        local steamID = client:SteamID64()
-        local result = sql.QueryRow("SELECT play_time FROM sam_players WHERE steamid = " .. SQLStr(steamID) .. ";")
-        if result then
-            local secs = tonumber(result.play_time) or 0
-            local h = math.floor(secs / 3600)
-            local m = math.floor((secs % 3600) / 60)
-            local s = secs % 60
-            client:ChatPrint(L("playtimeYour", h, m, s))
-        else
+        local secs = client:getPlayTime()
+        if not secs then
             client:ChatPrint(L("playtimeError"))
+            return
         end
+
+        local h = math.floor(secs / 3600)
+        local m = math.floor((secs % 3600) / 60)
+        local s = secs % 60
+        client:ChatPrint(L("playtimeYour", h, m, s))
     end
 })
 
@@ -2327,7 +2326,12 @@ lia.command.add("plygetplaytime", {
             return
         end
 
-        local secs = target:sam_get_play_time()
+        local secs = target:getPlayTime()
+        if not secs then
+            client:ChatPrint(L("playtimeError"))
+            return
+        end
+
         local h = math.floor(secs / 3600)
         local m = math.floor((secs % 3600) / 60)
         local s = secs % 60
