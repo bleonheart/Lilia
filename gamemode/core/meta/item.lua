@@ -64,9 +64,7 @@ function ITEM:call(method, client, entity, ...)
         hook.Run("ItemFunctionCalled", self, method, client, entity, results)
         if client then
             local lowered = string.lower(method)
-            if lowered ~= "onloadout" and lowered ~= "onsave" then
-                lia.log.add(client, "itemFunction", method, self:getName())
-            end
+            if lowered ~= "onloadout" and lowered ~= "onsave" then lia.log.add(client, "itemFunction", method, self:getName()) end
         end
         return unpack(results)
     end
@@ -301,7 +299,7 @@ if SERVER then
                 lia.db.preparedCall("item" .. key, nil, value, self:getID())
             else
                 lia.db.updateTable({
-                    ["_" .. key] = value
+                    [key] = value
                 }, nil, "items", "itemID = " .. self:getID())
             end
             return
@@ -407,6 +405,7 @@ if SERVER then
                 lia.log.add(client, "itemInteraction", action, self)
             end
         end
+
         if result ~= false and not deferred.isPromise(result) then
             if IsValid(entity) then
                 SafeRemoveEntity(entity)
