@@ -931,7 +931,20 @@ local function populateTable(panel, columns, rows)
         line.rowData = row
     end
 
-    function list:OnRowRightClick(_, line)
+    function list:OnRowRightClick(_, _, line)
+        if not IsValid(line) or not line.rowData then return end
+        local rowData = line.rowData
+        local menu = DermaMenu()
+        menu:AddOption(L("copyRow"), function()
+            local rowString = ""
+            for key, value in pairs(rowData) do
+                rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
+            end
+
+            rowString = rowString:sub(1, -4)
+            SetClipboardText(rowString)
+        end):SetIcon("icon16/page_copy.png")
+
         if LocalPlayer():hasPrivilege("See Decoded Tables") then
             local menu = DermaMenu()
             menu:AddOption("View Decoded Table", function() openRowInfo(line.rowData) end)
@@ -940,13 +953,38 @@ local function populateTable(panel, columns, rows)
     end
 end
 
+local function displayNoData(panel, text)
+    if not IsValid(panel) then return end
+    panel:Clear()
+    local emptyPanel = vgui.Create("DPanel", panel)
+    emptyPanel:Dock(FILL)
+    emptyPanel.Paint = function() end
+    local label = emptyPanel:Add("DLabel")
+    label:Dock(FILL)
+    label:SetContentAlignment(5)
+    label:SetText(text)
+    label:SetFont("liaMediumFont")
+    label:SetTextColor(color_white)
+end
+
 local function handleTableData(id)
     local data = table.concat(dbChunks[id])
     dbChunks[id] = nil
     local payload = util.JSONToTable(util.Decompress(data) or "") or {}
     local tbl = payload.tbl
     local rows = payload.data or {}
-    if not tbl or #rows == 0 then return end
+    if not tbl then return end
+    if #rows == 0 then
+        if tbl == "lia_warnings" and lia.gui.warnings and IsValid(lia.gui.warnings) then
+            displayNoData(lia.gui.warnings, L("noWarningsFound") or "No warnings to display.")
+            return
+        elseif tbl == "lia_ticketclaims" and lia.gui.tickets and IsValid(lia.gui.tickets) then
+            displayNoData(lia.gui.tickets, L("noTicketsFound") or "No tickets to display.")
+            return
+        end
+        return
+    end
+
     local columns = {}
     for k in pairs(rows[1]) do
         columns[#columns + 1] = {
@@ -970,7 +1008,20 @@ local function handleTableData(id)
 
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
-        function list:OnRowRightClick(_, line)
+        function list:OnRowRightClick(_, _, line)
+            if not IsValid(line) or not line.rowData then return end
+            local rowData = line.rowData
+            local menu = DermaMenu()
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for key, value in pairs(rowData) do
+                    rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
+                end
+
+                rowString = rowString:sub(1, -4)
+                SetClipboardText(rowString)
+            end):SetIcon("icon16/page_copy.png")
+
             if LocalPlayer():hasPrivilege("See Decoded Tables") then
                 local menu = DermaMenu()
                 menu:AddOption("View Decoded Table", function() openRowInfo(line.rowData) end)

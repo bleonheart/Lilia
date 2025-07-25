@@ -1036,15 +1036,21 @@ lia.command.add("charlist", {
     },
     onRun = function(client, arguments)
         local identifier = arguments[1]
-        local target
+        local steam64
         if identifier then
-            target = lia.util.findPlayer(client, identifier)
-            if not IsValid(target) then return end
+            if identifier:match("^%d+$") and #identifier >= 17 then
+                steam64 = identifier
+            elseif identifier:match("^STEAM_%d+:%d+:%d+$") then
+                steam64 = util.SteamIDTo64(identifier)
+            else
+                local target = lia.util.findPlayer(client, identifier)
+                if not IsValid(target) then return end
+                steam64 = target:SteamID64()
+            end
         else
-            target = client
+            steam64 = client:SteamID64()
         end
 
-        local steam64 = target:SteamID64()
         lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steam64), function(data)
             if not data or #data == 0 then
                 client:notifyLocalized("noCharactersFound")
@@ -1056,6 +1062,12 @@ lia.command.add("charlist", {
                 local stored = lia.char.loaded[row.id]
                 local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
                 local isBanned = stored and stored:getBanned() or row.banned
+                if isstring(isBanned) then
+                    local lower = isBanned:lower()
+                    if lower == "false" or lower == "nil" or isBanned == "NULL" then
+                        isBanned = false
+                    end
+                end
                 isBanned = tobool(isBanned)
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do

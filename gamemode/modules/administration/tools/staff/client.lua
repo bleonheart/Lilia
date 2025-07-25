@@ -207,11 +207,7 @@ local function renderGroupInfo(parent, g, cami, perms)
     LastGroup = g
     local scroll = parent:Add("DScrollPanel")
     scroll:Dock(FILL)
-    local btnBar = scroll:Add("DPanel")
-    btnBar:Dock(TOP)
-    btnBar:SetTall(36)
-    btnBar:DockMargin(20, 20, 20, 12)
-    btnBar.Paint = function() end
+    local btnBar
     local editable = not DefaultGroups[g]
     if not editable then
         -- nothing editable, placeholder for alignment when permissions cannot be changed
@@ -219,14 +215,21 @@ local function renderGroupInfo(parent, g, cami, perms)
 
     local delBtn, renameBtn
     if not DefaultGroups[g] then
+        btnBar = scroll:Add("DPanel")
+        btnBar:Dock(BOTTOM)
+        btnBar:SetTall(36)
+        btnBar:DockMargin(100, 12, 100, 20)
+        btnBar.Paint = function() end
+
         renameBtn = btnBar:Add("liaSmallButton")
-        renameBtn:Dock(RIGHT)
+        renameBtn:Dock(LEFT)
         renameBtn:DockMargin(0, 0, 6, 0)
         renameBtn:SetWide(90)
         renameBtn:SetText(L("rename"))
+
         delBtn = btnBar:Add("liaSmallButton")
-        delBtn:Dock(RIGHT)
-        delBtn:DockMargin(0, 0, 6, 0)
+        delBtn:Dock(LEFT)
+        delBtn:DockMargin(6, 0, 0, 0)
         delBtn:SetWide(90)
         delBtn:SetText(L("delete"))
     end
@@ -255,34 +258,6 @@ local function renderGroupInfo(parent, g, cami, perms)
     inhVal:SetText(cami[g] and cami[g].Inherits or "user")
     setFont(inhVal, "liaMediumFont")
     inhVal:SizeToContents()
-    local memberNames = {}
-    for _, m in ipairs(PlayerList) do
-        if m.group == g then memberNames[#memberNames + 1] = m.name ~= "" and m.name or m.id end
-    end
-
-    local memLbl = scroll:Add("DLabel")
-    memLbl:Dock(TOP)
-    memLbl:DockMargin(20, 0, 0, 6)
-    memLbl:SetText(L("members", #memberNames))
-    setFont(memLbl, "liaBigFont")
-    memLbl:SizeToContents()
-    local memHolder = scroll:Add("DPanel")
-    memHolder:Dock(TOP)
-    memHolder:DockMargin(20, 0, 20, 20)
-    memHolder.Paint = function() end
-    local memLayout = vgui.Create("DListLayout", memHolder)
-    memLayout:Dock(FILL)
-    surface.SetFont("liaMediumFont")
-    local _, fh = surface.GetTextSize("W")
-    for _, n in ipairs(memberNames) do
-        local lbl = memLayout:Add("DLabel")
-        lbl:SetText(n)
-        setFont(lbl, "liaMediumFont")
-        lbl:SizeToContents()
-        lbl:Dock(TOP)
-        lbl:DockMargin(0, 0, 0, 4)
-        memHolder:SetTall(memHolder:GetTall() + fh + 4)
-    end
 
     local privLbl = scroll:Add("DLabel")
     privLbl:Dock(TOP)
@@ -364,6 +339,7 @@ local function renderGroupInfo(parent, g, cami, perms)
         renameBtn.DoClick = function()
             Derma_StringRequest(L("renameGroupTitle"), L("newGroupName"), g, function(txt)
                 if txt == "" or txt == g then return end
+                LastGroup = txt
                 net.Start("liaGroupsRename")
                 net.WriteString(g)
                 net.WriteString(txt)
@@ -375,6 +351,7 @@ local function renderGroupInfo(parent, g, cami, perms)
     if delBtn then
         delBtn.DoClick = function()
             Derma_Query(L("deleteGroupQuery", g), L("confirm"), L("yes"), function()
+                LastGroup = nil
                 net.Start("liaGroupsRemove")
                 net.WriteString(g)
                 net.SendToServer()
@@ -413,7 +390,9 @@ local function buildGroupsUI(panel, cami, perms)
     for _, g in ipairs(keys) do
         local pnl = vgui.Create("DPanel", sheet)
         pnl:Dock(FILL)
-        pnl.Paint = function() end
+        pnl.Paint = function(p, w, h)
+            derma.SkinHook("Paint", "Panel", p, w, h)
+        end
         renderGroupInfo(pnl, g, cami, perms)
         local item = sheet:AddSheet(g, pnl)
         if g == LastGroup then firstTab = item.Tab end
@@ -515,7 +494,9 @@ function MODULE:CreateMenuButtons(tabs)
         parent:Clear()
         local sheet = vgui.Create("DPropertySheet", parent)
         sheet:Dock(FILL)
-        sheet.Paint = function() end
+        sheet.Paint = function(p, w, h)
+            derma.SkinHook("Paint", "PropertySheet", p, w, h)
+        end
         local reg = {}
         hook.Run("liaAdminRegisterTab", reg)
         -- Allow other modules to supply admin sheets through the
@@ -533,7 +514,9 @@ function MODULE:CreateMenuButtons(tabs)
                         for _, page in ipairs(pages) do
                             local pnl = adminSheet:Add("DPanel")
                             pnl:Dock(FILL)
-                            pnl.Paint = function() end
+                            pnl.Paint = function(p, w, h)
+                                derma.SkinHook("Paint", "Panel", p, w, h)
+                            end
                             if page.drawFunc then page.drawFunc(pnl) end
                             adminSheet:AddSheet(page.name, pnl)
                         end

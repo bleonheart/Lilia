@@ -767,7 +767,7 @@ end
 
 function lia.db.updateTable(value, callback, dbTable, condition)
     local query = "UPDATE " .. "lia_" .. (dbTable or "characters") .. " SET " .. genUpdateList(value) .. (condition and " WHERE " .. condition or "")
-    lia.db.query(query, callback)
+    return lia.db.query(query, callback)
 end
 
 function lia.db.select(fields, dbTable, condition, limit)
