@@ -18,11 +18,7 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    if self:IsBot() then
-        self:ChatPrint(L("accessDeniedBots"))
-        return false
-    end
-
+    if self:IsBot() then return true end
     local group = self:GetUserGroup()
     local groups = lia.admin.groups or {}
     local perms = groups[group]
