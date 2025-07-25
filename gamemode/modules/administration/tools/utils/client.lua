@@ -218,24 +218,8 @@ local function renderGroupInfo(parent, g, cami, perms)
     btnBar:DockMargin(20, 20, 20, 12)
     btnBar.Paint = function() end
     local editable = not DefaultGroups[g]
-    local tickAll = btnBar:Add("liaSmallButton")
-    tickAll:Dock(LEFT)
-    tickAll:SetWide(90)
-    tickAll:SetText(L("tickAll"))
-    local untickAll = btnBar:Add("liaSmallButton")
-    untickAll:Dock(LEFT)
-    untickAll:DockMargin(6, 0, 0, 0)
-    untickAll:SetWide(90)
-    untickAll:SetText(L("untickAll"))
-    local defaultsBtn = btnBar:Add("liaSmallButton")
-    defaultsBtn:Dock(LEFT)
-    defaultsBtn:DockMargin(6, 0, 0, 0)
-    defaultsBtn:SetWide(90)
-    defaultsBtn:SetText(L("defaults"))
     if not editable then
-        tickAll:SetEnabled(false)
-        untickAll:SetEnabled(false)
-        defaultsBtn:SetEnabled(false)
+        -- nothing editable, placeholder for alignment when permissions cannot be changed
     end
 
     local delBtn, renameBtn
@@ -380,20 +364,6 @@ local function renderGroupInfo(parent, g, cami, perms)
     list:InvalidateLayout(true)
     list:SizeToChildren(false, true)
     listHolder:SetTall(list:GetTall())
-    local function setAll(state)
-        for _, cb in ipairs(checkboxes) do
-            cb:SetChecked(state)
-        end
-    end
-
-    tickAll.DoClick = function() if editable then setAll(true) end end
-    untickAll.DoClick = function() if editable then setAll(false) end end
-    defaultsBtn.DoClick = function()
-        if not editable then return end
-        net.Start("liaGroupsDefaults")
-        net.WriteString(g)
-        net.SendToServer()
-    end
 
     if renameBtn then
         renameBtn.DoClick = function()
