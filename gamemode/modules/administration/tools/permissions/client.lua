@@ -125,6 +125,10 @@ net.Receive("DisplayCharList", function()
             field = "ID"
         },
         {
+            name = "SteamID",
+            field = "SteamID"
+        },
+        {
             name = "Name",
             field = "Name"
         },
@@ -159,6 +163,10 @@ net.Receive("DisplayCharList", function()
         {
             name = "LastUsed",
             field = "LastUsed"
+        },
+        {
+            name = "LastOnline",
+            field = "LastOnline"
         }
     }
 
@@ -186,7 +194,7 @@ net.Receive("DisplayCharList", function()
 
                 line.CharID = rowData and rowData.ID
                 if rowData and rowData.extraDetails then
-                    local colIndex = 11
+                    local colIndex = 13
                     for _, name in ipairs(extraOrder) do
                         line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
                         colIndex = colIndex + 1
@@ -207,14 +215,28 @@ net.Receive("DisplayCharList", function()
                         SetClipboardText(rowString)
                     end):SetIcon("icon16/page_copy.png")
                 end
-                if ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-                    if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                        local opt1 = menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
-                        opt1:SetIcon("icon16/cancel.png")
-                    end
-                    if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                        local opt2 = menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
-                        opt2:SetIcon("icon16/accept.png")
+                if ln.CharID then
+                    local online = ln.rowData and (ln.rowData.LastUsed == L("onlineNow") or ln.rowData.LastOnline == L("onlineNow"))
+                    if online then
+                        if LocalPlayer():hasPrivilege("Manage Characters") then
+                            menu:AddOption(L("banCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charban ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/cancel.png")
+                            menu:AddOption(L("unbanCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charunban ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/accept.png")
+                        end
+                    else
+                        if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                            menu:AddOption(L("banCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/cancel.png")
+                        end
+                        if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                            menu:AddOption(L("unbanCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/accept.png")
+                        end
                     end
                 end
                 menu:Open()
@@ -237,7 +259,7 @@ net.Receive("DisplayCharList", function()
 
                 line.CharID = rowData and rowData.ID
                 if rowData and rowData.extraDetails then
-                    local colIndex = 11
+                    local colIndex = 13
                     for _, name in ipairs(extraOrder) do
                         line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
                         colIndex = colIndex + 1
@@ -258,14 +280,28 @@ net.Receive("DisplayCharList", function()
                         SetClipboardText(rowString)
                     end):SetIcon("icon16/page_copy.png")
                 end
-                if ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-                    if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                        local opt1 = menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
-                        opt1:SetIcon("icon16/cancel.png")
-                    end
-                    if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                        local opt2 = menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
-                        opt2:SetIcon("icon16/accept.png")
+                if ln.CharID then
+                    local online = ln.rowData and (ln.rowData.LastUsed == L("onlineNow") or ln.rowData.LastOnline == L("onlineNow"))
+                    if online then
+                        if LocalPlayer():hasPrivilege("Manage Characters") then
+                            menu:AddOption(L("banCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charban ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/cancel.png")
+                            menu:AddOption(L("unbanCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charunban ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/accept.png")
+                        end
+                    else
+                        if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                            menu:AddOption(L("banCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/cancel.png")
+                        end
+                        if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                            menu:AddOption(L("unbanCharacter"), function()
+                                LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
+                            end):SetIcon("icon16/accept.png")
+                        end
                     end
                 end
                 menu:Open()
