@@ -55,7 +55,12 @@ function lia.faction.register(name, data)
     assert(isstring(name), "name must be a string")
     data = data or {}
     local sanitized = string.Trim(string.lower(name):gsub("[^%w]+", "_"), "_")
-    local uniqueID = lia.faction.generateUniqueID(sanitized)
+    local uniqueID = sanitized
+    local suffix = 1
+    while lia.faction.teams[uniqueID] do
+        suffix = suffix + 1
+        uniqueID = sanitized .. suffix
+    end
     if lia.faction.teams[uniqueID] then return lia.faction.teams[uniqueID] end
     local index = table.Count(lia.faction.teams) + 1
     local FACTION = table.Copy(data)
