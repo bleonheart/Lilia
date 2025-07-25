@@ -526,7 +526,13 @@ function MODULE:CreateMenuButtons(tabs)
             end
         end
 
-        for name, data in pairs(reg) do
+        local ordered = {}
+        for name in pairs(reg) do
+            ordered[#ordered + 1] = name
+        end
+        table.sort(ordered, function(a, b) return a < b end)
+        for _, name in ipairs(ordered) do
+            local data = reg[name]
             local should = true
             if isfunction(data.onShouldShow) then should = data.onShouldShow() ~= false end
             if should then
