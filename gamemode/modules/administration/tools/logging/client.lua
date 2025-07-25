@@ -14,9 +14,23 @@ local function createLogPage(parent, logs)
     local list = contentPanel:Add("DListView")
     list:Dock(FILL)
     list:SetMultiSelect(false)
-    list:AddColumn(L("timestamp")):SetFixedWidth(150)
+    do
+        local col = list:AddColumn(L("timestamp"))
+        surface.SetFont(col.Header:GetFont() or "DermaDefault")
+        local textWidth = select(1, surface.GetTextSize(L("timestamp"))) + 20
+        local width = math.max(150, textWidth)
+        col:SetWide(width)
+        col:SetMinWidth(textWidth)
+    end
     list:AddColumn(L("logMessage"))
-    list:AddColumn(L("steamID")):SetFixedWidth(110)
+    do
+        local col = list:AddColumn(L("steamID"))
+        surface.SetFont(col.Header:GetFont() or "DermaDefault")
+        local textWidth = select(1, surface.GetTextSize(L("steamID"))) + 20
+        local width = math.max(110, textWidth)
+        col:SetWide(width)
+        col:SetMinWidth(textWidth)
+    end
 
     local copyButton = contentPanel:Add("liaMediumButton")
     copyButton:Dock(BOTTOM)

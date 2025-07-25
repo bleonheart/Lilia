@@ -62,11 +62,14 @@ local function makeList(parent)
     local lst = parent:Add("DListView")
     lst:Dock(FILL)
     lst:SetMultiSelect(false)
-    lst:AddColumn(L("name"))
-    lst:AddColumn(L("steamID"))
-    lst:AddColumn(L("class"))
-    lst:AddColumn(L("hoursPlayed"))
-    lst:AddColumn(L("lastOnline"))
+    local cols = {L("name"), L("steamID"), L("class"), L("hoursPlayed"), L("lastOnline")}
+    for _, c in ipairs(cols) do
+        local col = lst:AddColumn(c)
+        surface.SetFont(col.Header:GetFont() or "DermaDefault")
+        local w = select(1, surface.GetTextSize(c)) + 20
+        col:SetWide(w)
+        col:SetMinWidth(w)
+    end
     lst.OnRowRightClick = function(_, _, line)
         if not IsValid(line) or not line.rowData then return end
         local row = line.rowData

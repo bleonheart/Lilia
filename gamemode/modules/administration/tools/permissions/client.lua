@@ -82,8 +82,13 @@ local function populateCharTable(panel, columns, rows)
     local dynamicWidth = dynamicColumns > 0 and math.max(availableWidth / dynamicColumns, 50) or 0
     for _, colInfo in ipairs(columns) do
         local columnName = colInfo.name or L("na")
+        local column = listView:AddColumn(columnName)
         local columnWidth = colInfo.width or dynamicWidth
-        listView:AddColumn(columnName):SetFixedWidth(columnWidth)
+        surface.SetFont(column.Header:GetFont() or "DermaDefault")
+        local textWidth = select(1, surface.GetTextSize(columnName)) + 20
+        local finalWidth = math.max(columnWidth, textWidth)
+        column:SetWide(finalWidth)
+        column:SetMinWidth(textWidth)
     end
 
     for _, row in ipairs(rows) do
