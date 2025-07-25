@@ -37,6 +37,35 @@ Loads all Lua files within the supplied directory. Each file should define a `CL
 lia.class.loadFromDir("schema/classes")
 ```
 
+### lia.class.register
+
+**Purpose**
+
+Registers a class table directly using the provided data instead of loading from a file.
+
+**Parameters**
+
+* `uniqueID` (*string*): Class unique ID.
+* `data` (*table*): Table of class fields.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *table*: The registered class table.
+
+**Example Usage**
+
+```lua
+local CLASS = lia.class.register("engineer", {
+    faction = FACTION_CITIZEN,
+    name = "Engineer",
+    desc = "Fixes machinery"
+})
+```
+
 ---
 
 ### lia.class.canBe

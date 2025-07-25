@@ -37,6 +37,43 @@ function lia.class.loadFromDir(directory)
     end
 end
 
+--- Registers a class table directly.
+-- @param uniqueID string Unique identifier for the class.
+-- @param data table Table of class fields.
+-- @realm shared
+-- @return table Registered class table.
+function lia.class.register(uniqueID, data)
+    assert(isstring(uniqueID), "uniqueID must be a string")
+    data = data or {}
+    for _, class in ipairs(lia.class.list) do
+        if class.uniqueID == uniqueID then
+            return class
+        end
+    end
+
+    local index = #lia.class.list + 1
+    local CLASS = table.Copy(data)
+    CLASS.index = CLASS.index or index
+    CLASS.uniqueID = uniqueID
+    CLASS.name = CLASS.name or L("unknown")
+    CLASS.desc = CLASS.desc or L("noDesc")
+    CLASS.limit = CLASS.limit or 0
+
+    if not CLASS.faction or not team.Valid(CLASS.faction) then
+        lia.error("Class '" .. uniqueID .. "' does not have a valid faction!\n")
+        return
+    end
+
+    if not CLASS.OnCanBe then
+        CLASS.OnCanBe = function()
+            return true
+        end
+    end
+
+    lia.class.list[CLASS.index] = CLASS
+    return CLASS
+end
+
 function lia.class.canBe(client, class)
     local info = lia.class.list[class]
     if not info then return false, L("classNoInfo") end
