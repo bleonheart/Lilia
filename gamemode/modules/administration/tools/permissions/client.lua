@@ -195,20 +195,29 @@ net.Receive("DisplayCharList", function()
             end
 
             listView.OnRowRightClick = function(_, _, ln)
-                if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-                    local dMenu = DermaMenu()
+                if not IsValid(ln) then return end
+                local menu = DermaMenu()
+                if ln.rowData then
+                    menu:AddOption(L("copyRow"), function()
+                        local rowString = ""
+                        for key, value in pairs(ln.rowData) do
+                            rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
+                        end
+                        rowString = rowString:sub(1, -4)
+                        SetClipboardText(rowString)
+                    end):SetIcon("icon16/page_copy.png")
+                end
+                if ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
                     if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                        local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                        local opt1 = menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
                         opt1:SetIcon("icon16/cancel.png")
                     end
-
                     if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                        local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                        local opt2 = menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
                         opt2:SetIcon("icon16/accept.png")
                     end
-
-                    dMenu:Open()
                 end
+                menu:Open()
             end
         end
     else
@@ -237,20 +246,29 @@ net.Receive("DisplayCharList", function()
             end
 
             listView.OnRowRightClick = function(_, _, ln)
-                if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-                    local dMenu = DermaMenu()
+                if not IsValid(ln) then return end
+                local menu = DermaMenu()
+                if ln.rowData then
+                    menu:AddOption(L("copyRow"), function()
+                        local rowString = ""
+                        for key, value in pairs(ln.rowData) do
+                            rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
+                        end
+                        rowString = rowString:sub(1, -4)
+                        SetClipboardText(rowString)
+                    end):SetIcon("icon16/page_copy.png")
+                end
+                if ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
                     if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                        local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                        local opt1 = menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
                         opt1:SetIcon("icon16/cancel.png")
                     end
-
                     if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                        local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                        local opt2 = menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
                         opt2:SetIcon("icon16/accept.png")
                     end
-
-                    dMenu:Open()
                 end
+                menu:Open()
             end
         end
     end

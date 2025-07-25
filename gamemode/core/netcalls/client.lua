@@ -932,9 +932,21 @@ local function populateTable(panel, columns, rows)
     end
 
     function list:OnRowRightClick(_, _, line)
+        if not IsValid(line) or not line.rowData then return end
+        local rowData = line.rowData
+        local menu = DermaMenu()
+        menu:AddOption(L("copyRow"), function()
+            local rowString = ""
+            for key, value in pairs(rowData) do
+                rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
+            end
+            rowString = rowString:sub(1, -4)
+            SetClipboardText(rowString)
+        end):SetIcon("icon16/page_copy.png")
         if LocalPlayer():hasPrivilege("See Decoded Tables") then
-            openRowInfo(line.rowData)
+            menu:AddOption(L("open"), function() openRowInfo(rowData) end):SetIcon("icon16/application_view_list.png")
         end
+        menu:Open()
     end
 end
 
@@ -990,9 +1002,21 @@ local function handleTableData(id)
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
         function list:OnRowRightClick(_, _, line)
+            if not IsValid(line) or not line.rowData then return end
+            local rowData = line.rowData
+            local menu = DermaMenu()
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for key, value in pairs(rowData) do
+                    rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
+                end
+                rowString = rowString:sub(1, -4)
+                SetClipboardText(rowString)
+            end):SetIcon("icon16/page_copy.png")
             if LocalPlayer():hasPrivilege("See Decoded Tables") then
-                openRowInfo(line.rowData)
+                menu:AddOption(L("open"), function() openRowInfo(rowData) end):SetIcon("icon16/application_view_list.png")
             end
+            menu:Open()
         end
     end
 end
