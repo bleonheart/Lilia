@@ -894,6 +894,43 @@ local function openRowInfo(row)
 end
 
 local dbChunks = {}
+
+local function populateTable(panel, columns, rows)
+    if not IsValid(panel) then return end
+    panel:Clear()
+    local list = vgui.Create("DListView", panel)
+    list:Dock(FILL)
+    local totalFixedWidth, dynamicColumns = 0, 0
+    for _, col in ipairs(columns) do
+        if col.width then
+            totalFixedWidth = totalFixedWidth + col.width
+        else
+            dynamicColumns = dynamicColumns + 1
+        end
+    end
+
+    local availableWidth = panel:GetWide() - totalFixedWidth
+    local dynamicWidth = dynamicColumns > 0 and math.max(availableWidth / dynamicColumns, 50) or 0
+    for _, col in ipairs(columns) do
+        local name = col.name or L("na")
+        local width = col.width or dynamicWidth
+        list:AddColumn(name):SetFixedWidth(width)
+    end
+
+    for _, row in ipairs(rows) do
+        local lineData = {}
+        for _, col in ipairs(columns) do
+            table.insert(lineData, row[col.field or col.name] or L("na"))
+        end
+        local line = list:AddLine(unpack(lineData))
+        line.rowData = row
+    end
+
+    function list:OnRowSelected(_, line)
+        openRowInfo(line.rowData)
+    end
+end
+
 local function handleTableData(id)
     local data = table.concat(dbChunks[id])
     dbChunks[id] = nil
@@ -903,10 +940,12 @@ local function handleTableData(id)
     if not tbl or #rows == 0 then return end
     local columns = {}
     for k in pairs(rows[1]) do
-        columns[#columns + 1] = {
-            name = k,
-            field = k
-        }
+        columns[#columns + 1] = { name = k, field = k }
+    end
+
+    if lia.gui.dbBrowser and lia.gui.dbBrowser.panels and IsValid(lia.gui.dbBrowser.panels[tbl]) then
+        populateTable(lia.gui.dbBrowser.panels[tbl], columns, rows)
+        return
     end
 
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
@@ -919,6 +958,26 @@ end
 
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
+    if IsValid(lia.gui.dbBrowser) then
+        local parent = lia.gui.dbBrowser
+        parent:Clear()
+        local sheet = vgui.Create("DPropertySheet", parent)
+        sheet:Dock(FILL)
+        lia.gui.dbBrowser.sheet = sheet
+        lia.gui.dbBrowser.panels = {}
+        for _, tbl in ipairs(tables or {}) do
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:Dock(FILL)
+            pnl.Paint = function() end
+            sheet:AddSheet(tbl, pnl, "icon16/table.png")
+            lia.gui.dbBrowser.panels[tbl] = pnl
+            net.Start("liaRequestTableData")
+            net.WriteString(tbl)
+            net.SendToServer()
+        end
+        return
+    end
+
     local frame = vgui.Create("DFrame")
     frame:SetTitle("Lilia Tables")
     frame:SetSize(300, 400)
