@@ -164,13 +164,13 @@ end
 
 Checks if a player has the given door access level.
 
-Defaults to `DOOR_GUEST` when no access level is provided.
+Defaults to `DoorGuest` when no access level is provided.
 
 **Parameters**
 
 * `client` (`Player`): The player to check.
 
-* `access` (`number`, optional): Door permission level. Defaults to `DOOR_GUEST`.
+* `access` (`number`, optional): Door permission level. Defaults to `DoorGuest`.
 
 **Realm**
 
@@ -184,7 +184,7 @@ Defaults to `DOOR_GUEST` when no access level is provided.
 
 ```lua
 -- Block a player from opening the door without access
-if not door:checkDoorAccess(client, DOOR_GUEST) then
+if not door:checkDoorAccess(client, DoorGuest) then
     client:notifyLocalized("doorLocked")
 end
 ```

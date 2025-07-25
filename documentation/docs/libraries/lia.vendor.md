@@ -142,7 +142,7 @@ Changes how the vendor handles a specific item.
 **Example Usage**
 
 ```lua
-lia.vendor.editor.mode("medkit", VENDOR_SELLONLY)
+lia.vendor.editor.mode("medkit", VendorSellOnly)
 ```
 
 ---
