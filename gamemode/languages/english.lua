@@ -751,6 +751,7 @@ LANGUAGE = {
     renameGroupTitle = "Rename Group",
     delete = "Delete",
     group = "Group",
+    joinedOn = "Joined On",
     lastJoin = "Last Join",
     banned = "Banned",
     hoursPlayed = "Hours Played",
