@@ -85,3 +85,31 @@ properties.Add("ToggleCarBlacklist", {
         end
     end
 })
+
+properties.Add("ToggleEntityBlacklist", {
+    MenuLabel = L("ToggleEntityBlacklist"),
+    Order = 902,
+    MenuIcon = "icon16/link.png",
+    Filter = function(_, ent, ply)
+        return IsValid(ent) and not ent:IsVehicle() and ent:GetClass() ~= "prop_physics" and ply:hasPrivilege("Manage Entity Blacklist")
+    end,
+    Action = function(self, ent)
+        self:MsgStart()
+        net.WriteString(ent:GetClass())
+        self:MsgEnd()
+    end,
+    Receive = function(_, _, ply)
+        if not ply:hasPrivilege("Manage Entity Blacklist") then return end
+        local class = net.ReadString()
+        local list = lia.data.get("entityBlacklist", {})
+        if table.HasValue(list, class) then
+            table.RemoveByValue(list, class)
+            lia.data.set("entityBlacklist", list, true, true)
+            ply:notifyLocalized("removedFromBlacklist", class)
+        else
+            table.insert(list, class)
+            lia.data.set("entityBlacklist", list, true, true)
+            ply:notifyLocalized("addedToBlacklist", class)
+        end
+    end
+})
