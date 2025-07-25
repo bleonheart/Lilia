@@ -2,6 +2,7 @@
 lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
+lia.admin.lastJoin = lia.admin.lastJoin or {}
 lia.admin.privileges = lia.admin.privileges or {}
 local DefaultGroups = {
     user = true,
@@ -1048,6 +1049,12 @@ concommand.Add("plysetgroup", function(ply, _, args)
         end
     end
 end)
+
+local function dropCAMIGroup(n)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
+    local g = CAMI.GetUsergroups() or {}
+    if g[n] then CAMI.UnregisterUsergroup(n) end
+end
 
 if CAMI.ULX_TOKEN and CAMI.ULX_TOKEN == "ULX" then
     hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
