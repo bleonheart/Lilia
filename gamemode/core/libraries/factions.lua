@@ -95,6 +95,7 @@ function lia.faction.register(uniqueID, data)
     team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))
     lia.faction.indices[FACTION.index] = FACTION
     lia.faction.teams[uniqueID] = FACTION
+    data.index = FACTION.index
 
     return FACTION
 end
