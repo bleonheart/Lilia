@@ -59,6 +59,7 @@ function GM:PlayerDeath(client, inflictor, attacker)
         net.Send(client)
         character:ban()
     end
+
     lia.log.add(client, "playerDeath", attacker:IsPlayer() and attacker:Name() or attacker:GetClass())
 end
 
@@ -428,6 +429,7 @@ function GM:PlayerDisconnected(client)
     for _, entity in ents.Iterator() do
         if entity:GetCreator() == client and not string.StartsWith(entity:GetClass(), "lia_") then SafeRemoveEntity(entity) end
     end
+
     lia.log.add(client, "playerDisconnected")
 end
 
@@ -1031,10 +1033,10 @@ concommand.Add("list_entities", function(client)
         end
 
         for className, count in pairs(entityCount) do
-            lia.information(string.format(L("entityClassCount"), className, count))
+            lia.information(L("entityClassCount", className, count))
         end
 
-        lia.information(string.format(L("totalEntities"), totalEntities))
+        lia.information(L("totalEntities", totalEntities))
     end
 end)
 
