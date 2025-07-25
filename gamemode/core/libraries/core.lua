@@ -361,6 +361,12 @@ function lia.information(msg)
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
+function lia.administration(section, msg)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Administration] ")
+    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
+    MsgC(Color(255, 255, 255), tostring(msg), "\n")
+end
+
 function lia.bootstrap(section, msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Bootstrap] ")
     MsgC(Color(0, 255, 0), "[" .. section .. "] ")

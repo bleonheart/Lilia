@@ -700,12 +700,6 @@ local function registerDefaultPrivileges()
     end
 end
 
-function lia.administration(section, msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Administration] ")
-    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
-    MsgC(Color(255, 255, 255), tostring(msg), "\n")
-end
-
 function lia.admin.load()
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(groups, privs)
@@ -719,7 +713,6 @@ function lia.admin.load()
         end
 
         lia.admin.privileges = privs or {}
-
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
             priv.Category = priv.Category or "Unassigned"
             lia.admin.privileges[name] = priv
@@ -729,9 +722,7 @@ function lia.admin.load()
         if camiGroups and not table.IsEmpty(camiGroups) and CAMI then
             for group in pairs(lia.admin.groups) do
                 for privName, priv in pairs(lia.admin.privileges) do
-                    if CAMI.UsergroupInherits and CAMI.UsergroupInherits(group, priv.MinAccess or "user") then
-                        lia.admin.groups[group][privName] = true
-                    end
+                    if CAMI.UsergroupInherits and CAMI.UsergroupInherits(group, priv.MinAccess or "user") then lia.admin.groups[group][privName] = true end
                 end
             end
         end
@@ -743,9 +734,7 @@ function lia.admin.load()
             end
         else
             for _, grp in ipairs(defaults) do
-                if not lia.admin.groups[grp] then
-                    lia.admin.createGroup(grp)
-                end
+                if not lia.admin.groups[grp] then lia.admin.createGroup(grp) end
             end
         end
 
@@ -761,14 +750,20 @@ function lia.admin.load()
                 for _, row in ipairs(res or {}) do
                     groups[row.name] = util.JSONToTable(row.data or "") or {}
                 end
+
                 lia.db.tableExists("privileges"):next(function(prExists)
                     if prExists then
                         lia.db.select({"name", "minAccess", "category"}, "privileges"):next(function(resP)
                             local privs = {}
                             resP = resP.results or resP
                             for _, row in ipairs(resP or {}) do
-                                privs[row.name] = {Name = row.name, MinAccess = row.minAccess, Category = row.category}
+                                privs[row.name] = {
+                                    Name = row.name,
+                                    MinAccess = row.minAccess,
+                                    Category = row.category
+                                }
                             end
+
                             continueLoad(groups, privs)
                         end)
                     else
@@ -781,11 +776,13 @@ function lia.admin.load()
                 local groups = res and util.JSONToTable(res.data or "") or {}
                 local rows = {}
                 for name, dat in pairs(groups) do
-                    rows[#rows + 1] = {name = name, data = util.TableToJSON(dat)}
+                    rows[#rows + 1] = {
+                        name = name,
+                        data = util.TableToJSON(dat)
+                    }
                 end
-                if #rows > 0 then
-                    lia.db.bulkUpsert("usergroups", rows)
-                end
+
+                if #rows > 0 then lia.db.bulkUpsert("usergroups", rows) end
                 continueLoad(groups)
             end)
         end
@@ -837,6 +834,7 @@ function lia.admin.registerRank(name, inherit)
         lia.error("Invalid inheritance '" .. tostring(inherit) .. "' for rank '" .. name .. "'. Defaulting to 'user'.")
         inheritGroup = "user"
     end
+
     lia.admin.createGroup(name, nil, inheritGroup)
 end
 
@@ -907,10 +905,13 @@ if SERVER then
     function lia.admin.save(network)
         local groupRows = {}
         for name, data in pairs(lia.admin.groups) do
-            groupRows[#groupRows + 1] = {name = name, data = util.TableToJSON(data)}
+            groupRows[#groupRows + 1] = {
+                name = name,
+                data = util.TableToJSON(data)
+            }
         end
-        lia.db.bulkUpsert("usergroups", groupRows)
 
+        lia.db.bulkUpsert("usergroups", groupRows)
         local privRows = {}
         for name, priv in pairs(lia.admin.privileges) do
             privRows[#privRows + 1] = {
@@ -919,8 +920,8 @@ if SERVER then
                 category = priv.Category or "Unassigned"
             }
         end
-        lia.db.bulkUpsert("privileges", privRows)
 
+        lia.db.bulkUpsert("privileges", privRows)
         if network then
             net.Start("updateAdminGroups")
             net.WriteTable(lia.admin.groups)
@@ -943,6 +944,7 @@ if SERVER then
             lia.error("Invalid admin group '" .. tostring(group) .. "' for SteamID " .. tostring(steamid) .. ". Defaulting to 'superadmin'.")
             usergroup = "superadmin"
         end
+
         lia.admin.steamAdmins[steam64] = usergroup
     end
 
@@ -1077,6 +1079,7 @@ hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
         lia.admin.setPlayerGroup(ply, forcedGroup)
         return
     end
+
     if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
         return
