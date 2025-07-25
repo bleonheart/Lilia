@@ -265,7 +265,8 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_spawns`;
-    DROP TABLE IF EXISTS `lia_admingroups`;
+    DROP TABLE IF EXISTS `lia_usergroups`;
+    DROP TABLE IF EXISTS `lia_privileges`;
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
@@ -299,7 +300,8 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_spawns;
-    DROP TABLE IF EXISTS lia_admingroups;
+    DROP TABLE IF EXISTS lia_usergroups;
+    DROP TABLE IF EXISTS lia_privileges;
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
@@ -486,8 +488,14 @@ function lia.db.loadTables()
                 angles TEXT
             );
 
-            CREATE TABLE IF NOT EXISTS lia_admingroups (
+            CREATE TABLE IF NOT EXISTS lia_usergroups (
+                name TEXT PRIMARY KEY,
                 data TEXT
+            );
+            CREATE TABLE IF NOT EXISTS lia_privileges (
+                name TEXT PRIMARY KEY,
+                minAccess TEXT,
+                category TEXT
             );
         ]], done)
     else
@@ -664,8 +672,16 @@ function lia.db.loadTables()
                 PRIMARY KEY (`id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_admingroups` (
-                `data` TEXT NULL
+            CREATE TABLE IF NOT EXISTS `lia_usergroups` (
+                `name` VARCHAR(32) NOT NULL,
+                `data` TEXT NULL,
+                PRIMARY KEY (`name`)
+            );
+            CREATE TABLE IF NOT EXISTS `lia_privileges` (
+                `name` VARCHAR(128) NOT NULL,
+                `minAccess` VARCHAR(32) NOT NULL,
+                `category` VARCHAR(64) NOT NULL,
+                PRIMARY KEY (`name`)
             );
         ]])
         local i = 1
