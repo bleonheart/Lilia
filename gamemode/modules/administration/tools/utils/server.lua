@@ -9,13 +9,15 @@ function MODULE:PlayerSpawn(client)
     lia.log.add(client, "playerSpawn")
 end
 
+-- The following code was migrated from modules/administration/module.lua
 local DefaultGroups = {
     user = true,
     admin = true,
-    superadmin = true
+    superadmin = true,
 }
 
 local ChunkSize = 60000
+
 local function buildDefaultTable(g)
     local t = {}
     if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
@@ -31,7 +33,7 @@ local function ensureCAMIGroup(n, inh)
     if not g[n] then
         CAMI.RegisterUsergroup({
             Name = n,
-            Inherits = inh or "user"
+            Inherits = inh or "user",
         })
     end
 end
@@ -72,12 +74,16 @@ local function sendBigTable(ply, tbl, strChunk, strDone)
     end
 end
 
+lia.admin.privileges = lia.admin.privileges or {}
+lia.admin.groups = lia.admin.groups or {}
+lia.admin.lastJoin = lia.admin.lastJoin or {}
+
 local function syncPrivileges()
     if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
     for _, v in ipairs(CAMI.GetPrivileges() or {}) do
         lia.admin.privileges[v.Name] = {
             Name = v.Name,
-            MinAccess = v.MinAccess or "user"
+            MinAccess = v.MinAccess or "user",
         }
     end
 
@@ -109,7 +115,7 @@ local function payloadGroups()
     return {
         cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
         perms = lia.admin.groups or {},
-        privCategories = getPrivCategories()
+        privCategories = getPrivCategories(),
     }
 end
 
@@ -136,7 +142,7 @@ local function payloadPlayers()
             group = v:GetUserGroup(),
             firstJoin = v.firstJoin or os.time(),
             lastJoin = v.lastJoin or os.time(),
-            banned = bans[v:SteamID()] or false
+            banned = bans[v:SteamID()] or false,
         }
 
         bans[v:SteamID()] = nil
@@ -150,11 +156,11 @@ local function payloadPlayers()
             group = "",
             firstJoin = 0,
             lastJoin = 0,
-            banned = true
+            banned = true,
         }
     end
     return {
-        players = plys
+        players = plys,
     }
 end
 
