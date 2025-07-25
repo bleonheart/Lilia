@@ -1113,20 +1113,26 @@ hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
 end)
 
 concommand.Add("plysetgroup", function(ply, _, args)
-    if not IsValid(ply) then
-        local target = lia.command.findPlayer(client, args[1])
-        if IsValid(target) then
-            if lia.admin.groups[args[2]] then
-                lia.admin.setPlayerGroup(target, args[2])
-                if IsValid(ply) and ply:IsPlayer() then ClientAddText(ply, Color(83, 143, 239), "[Lilia] [Administration] ", Color(0, 255, 0), "[Group] ", Color(255, 255, 255), "Your usergroup has been set to ", Color(0, 255, 0), usergroup) end
-                lia.administration("Information", L("setPlayerGroupTo", args[2]))
-            else
-                lia.administration("Error", L("usergroupNotFound"))
-            end
-        else
-            lia.administration("Error", L("specifiedPlayerNotFound"))
-        end
+    if IsValid(ply) then
+        ply:notifyLocalized("commandConsoleOnly")
+        return
     end
+
+    local target = lia.command.findPlayer(nil, args[1])
+    if not IsValid(target) then
+        lia.administration("Error", L("specifiedPlayerNotFound"))
+        return
+    end
+
+    local group = args[2]
+    if not group or not lia.admin.groups[group] then
+        lia.administration("Error", L("usergroupNotFound"))
+        return
+    end
+
+    lia.admin.setPlayerGroup(target, group)
+    target:notifyLocalized("plyGroupSet")
+    lia.administration("Information", L("setPlayerGroupTo", group))
 end)
 
 local function dropCAMIGroup(n)
