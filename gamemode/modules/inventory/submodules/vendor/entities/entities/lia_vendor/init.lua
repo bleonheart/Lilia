@@ -12,7 +12,7 @@ end
 
 function ENT:Use(activator)
     if not hook.Run("CanPlayerAccessVendor", activator, self) then
-        if self.messages[VENDOR_NOTRADE] then activator:notify(self:getNetVar("name") .. ": " .. L(self.messages[VENDOR_NOTRADE], activator)) end
+        if self.messages[VendorNoTrade] then activator:notify(self:getNetVar("name") .. ": " .. L(self.messages[VendorNoTrade], activator)) end
         return
     end
 
@@ -45,8 +45,8 @@ end
 
 function ENT:setStock(itemType, value)
     self.items[itemType] = self.items[itemType] or {}
-    if not self.items[itemType][VENDOR_MAXSTOCK] then self:setMaxStock(itemType, value) end
-    self.items[itemType][VENDOR_STOCK] = math.Clamp(value, 0, self.items[itemType][VENDOR_MAXSTOCK])
+    if not self.items[itemType][VendorMaxStock] then self:setMaxStock(itemType, value) end
+    self.items[itemType][VendorStock] = math.Clamp(value, 0, self.items[itemType][VendorMaxStock])
     net.Start("VendorStock")
     net.WriteString(itemType)
     net.WriteUInt(value, 32)
@@ -60,14 +60,14 @@ function ENT:addStock(itemType, value)
 end
 
 function ENT:takeStock(itemType, value)
-    if not self.items[itemType] or not self.items[itemType][VENDOR_MAXSTOCK] then return end
+    if not self.items[itemType] or not self.items[itemType][VendorMaxStock] then return end
     self:addStock(itemType, -(value or 1))
 end
 
 function ENT:setMaxStock(itemType, value)
     if value == 0 or not isnumber(value) then value = 0 end
     self.items[itemType] = self.items[itemType] or {}
-    self.items[itemType][VENDOR_MAXSTOCK] = value
+    self.items[itemType][VendorMaxStock] = value
     net.Start("VendorMaxStock")
     net.WriteString(itemType)
     net.WriteUInt(value, 32)
@@ -112,10 +112,10 @@ function ENT:removeReceiver(client, requestedByPlayer)
     lia.log.add(client, "vendorExit", self:getNetVar("name"))
 end
 
-local ALLOWED_MODES = {
-    [VENDOR_SELLANDBUY] = true,
-    [VENDOR_SELLONLY] = true,
-    [VENDOR_BUYONLY] = true
+local AllowedModes = {
+    [VendorSellAndBuy] = true,
+    [VendorSellOnly] = true,
+    [VendorBuyOnly] = true
 }
 
 function ENT:setName(name)
@@ -126,9 +126,9 @@ function ENT:setName(name)
 end
 
 function ENT:setTradeMode(itemType, mode)
-    if not ALLOWED_MODES[mode] then mode = nil end
+    if not AllowedModes[mode] then mode = nil end
     self.items[itemType] = self.items[itemType] or {}
-    self.items[itemType][VENDOR_MODE] = mode
+    self.items[itemType][VendorMode] = mode
     net.Start("VendorMode")
     net.WriteString(itemType)
     net.WriteInt(mode or -1, 8)
@@ -138,7 +138,7 @@ end
 function ENT:setItemPrice(itemType, value)
     if not isnumber(value) or value < 0 then value = nil end
     self.items[itemType] = self.items[itemType] or {}
-    self.items[itemType][VENDOR_PRICE] = value
+    self.items[itemType][VendorPrice] = value
     net.Start("VendorPrice")
     net.WriteString(itemType)
     net.WriteInt(value or -1, 32)
@@ -148,7 +148,7 @@ end
 function ENT:setItemStock(itemType, value)
     if not isnumber(value) or value < 0 then value = nil end
     self.items[itemType] = self.items[itemType] or {}
-    self.items[itemType][VENDOR_STOCK] = value
+    self.items[itemType][VendorStock] = value
     net.Start("VendorStock")
     net.WriteString(itemType)
     net.WriteInt(value, 32)
@@ -158,7 +158,7 @@ end
 function ENT:setItemMaxStock(itemType, value)
     if not isnumber(value) or value < 0 then value = nil end
     self.items[itemType] = self.items[itemType] or {}
-    self.items[itemType][VENDOR_MAXSTOCK] = value
+    self.items[itemType][VendorMaxStock] = value
     net.Start("VendorMaxStock")
     net.WriteString(itemType)
     net.WriteInt(value, 32)
@@ -248,10 +248,10 @@ function ENT:sync(client)
     net.WriteUInt(table.Count(self.items), 16)
     for itemType, item in pairs(self.items) do
         net.WriteString(itemType)
-        net.WriteInt(item[VENDOR_PRICE] or -1, 32)
-        net.WriteInt(item[VENDOR_STOCK] or -1, 32)
-        net.WriteInt(item[VENDOR_MAXSTOCK] or -1, 32)
-        net.WriteInt(item[VENDOR_MODE] or -1, 8)
+        net.WriteInt(item[VendorPrice] or -1, 32)
+        net.WriteInt(item[VendorStock] or -1, 32)
+        net.WriteInt(item[VendorMaxStock] or -1, 32)
+        net.WriteInt(item[VendorMode] or -1, 8)
     end
 
     net.Send(client)

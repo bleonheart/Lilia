@@ -120,7 +120,7 @@ lia.command.add("doorbuy", {
             if client:getChar():hasMoney(price) then
                 door:SetDTEntity(0, client)
                 door.liaAccess = {
-                    [client] = DOOR_OWNER
+                    [client] = DoorOwner
                 }
 
                 client:getChar():takeMoney(price)
@@ -275,7 +275,7 @@ lia.command.add("doorsettitle", {
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
             local name = table.concat(arguments, " ")
             if not name:find("%S") then return client:notifyLocalized("invalidClass") end
-            if door:checkDoorAccess(client, DOOR_TENANT) then
+            if door:checkDoorAccess(client, DoorTenant) then
                 door:setNetVar("title", name)
                 hook.Run("DoorTitleSet", client, door, name)
                 lia.log.add(client, "doorSetTitle", door, name)

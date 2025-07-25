@@ -3,13 +3,13 @@ lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
-local DEFAULT_GROUPS = {
+local DefaultGroups = {
     user = true,
     admin = true,
     superadmin = true,
 }
 
-local DEFAULT_PRIVILEGES = {
+local DefaultPrivileges = {
     {
         Name = "Access Logs Tab",
         MinAccess = "superadmin",
@@ -678,7 +678,7 @@ local DEFAULT_PRIVILEGES = {
 }
 
 local function registerDefaultPrivileges()
-    for _, priv in ipairs(DEFAULT_PRIVILEGES) do
+    for _, priv in ipairs(DefaultPrivileges) do
         lia.admin.registerPrivilege(priv)
     end
 end
@@ -828,7 +828,7 @@ if SERVER then
             return
         end
 
-        if DEFAULT_GROUPS[groupName] then return end
+        if DefaultGroups[groupName] then return end
         lia.admin.groups[groupName][permission] = true
         if SERVER then lia.admin.save(true) end
     end
@@ -839,7 +839,7 @@ if SERVER then
             return
         end
 
-        if DEFAULT_GROUPS[groupName] then return end
+        if DefaultGroups[groupName] then return end
         lia.admin.groups[groupName][permission] = nil
         if SERVER then lia.admin.save(true) end
     end

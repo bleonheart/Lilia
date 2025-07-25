@@ -162,7 +162,7 @@ function MODULE:ShowTeam(client)
         local factions = entity:getNetVar("factions")
         local classes = entity:getNetVar("classes")
         if (not factions or factions == "[]") and (not classes or classes == "[]") then
-            if entity:checkDoorAccess(client, DOOR_TENANT) then
+            if entity:checkDoorAccess(client, DoorTenant) then
                 local door = entity
                 net.Start("doorMenu")
                 net.WriteEntity(door)
