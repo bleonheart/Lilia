@@ -411,37 +411,13 @@ end
 
 local function buildGroupsUI(panel, cami, perms)
     panel:Clear()
-    local sidebar = panel:Add("DScrollPanel")
-    sidebar:Dock(RIGHT)
-    sidebar:SetWide(200)
-    sidebar:DockMargin(0, 20, 20, 20)
-    local content = panel:Add("DPanel")
-    content:Dock(FILL)
-    content:DockMargin(10, 10, 10, 10)
-    local selected
-    local keys = {}
-    for g in pairs(cami) do
-        keys[#keys + 1] = g
-    end
+    local sheet = panel:Add("DPropertySheet")
+    sheet:Dock(FILL)
+    sheet:DockMargin(10, 10, 10, 10)
 
-    table.sort(keys)
-    for _, g in ipairs(keys) do
-        local b = sidebar:Add("liaMediumButton")
-        b:Dock(TOP)
-        b:DockMargin(0, 0, 0, 10)
-        b:SetTall(40)
-        b:SetText(g)
-        b.DoClick = function()
-            if IsValid(selected) then selected:SetSelected(false) end
-            b:SetSelected(true)
-            selected = b
-            renderGroupInfo(content, g, cami, perms)
-        end
-    end
-
-    local addBtn = sidebar:Add("liaMediumButton")
-    addBtn:Dock(TOP)
-    addBtn:DockMargin(0, 20, 0, 0)
+    local addBtn = panel:Add("liaMediumButton")
+    addBtn:Dock(BOTTOM)
+    addBtn:DockMargin(10, 0, 10, 10)
     addBtn:SetTall(36)
     addBtn:SetText(L("createGroup"))
     addBtn.DoClick = function()
@@ -454,21 +430,27 @@ local function buildGroupsUI(panel, cami, perms)
         end)
     end
 
-    if LastGroup and cami[LastGroup] then
-        for _, b in ipairs(sidebar:GetChildren()) do
-            if b.GetText and b:GetText() == LastGroup then
-                b:DoClick()
-                break
-            end
-        end
-    elseif keys[1] then
-        for _, b in ipairs(sidebar:GetChildren()) do
-            if b.GetText and b:GetText() == keys[1] then
-                b:DoClick()
-                break
-            end
-        end
+    local keys = {}
+    for g in pairs(cami) do
+        keys[#keys + 1] = g
     end
+
+    table.sort(keys)
+    local firstTab
+    for _, g in ipairs(keys) do
+        local pnl = vgui.Create("DPanel", sheet)
+        pnl:Dock(FILL)
+        pnl.Paint = function() end
+        renderGroupInfo(pnl, g, cami, perms)
+        local item = sheet:AddSheet(g, pnl)
+        if g == LastGroup then firstTab = item.Tab end
+    end
+
+    if not firstTab and sheet.Items[1] then
+        firstTab = sheet.Items[1].Tab
+    end
+
+    if firstTab then sheet:SetActiveTab(firstTab) end
 end
 
 local function handleGroupDone(id)
