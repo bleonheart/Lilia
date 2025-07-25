@@ -10,6 +10,8 @@
     lia.notices.notifyLocalized(message, unpack(args))
 end)
 
+
+
 net.Receive("setWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
@@ -585,9 +587,8 @@ net.Receive("BinaryQuestionRequest", function()
             if not self.respondToKeys then return end
             if self.opt1 and IsValid(self.opt1) then self.opt1:keyThink() end
             if self.opt2 and IsValid(self.opt2) then self.opt2:keyThink() end
-        end
-    end)
-end)
+    end
+
 
 net.Receive("ButtonRequest", function()
     local id = net.ReadUInt(32)
@@ -826,9 +827,19 @@ hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(tabs)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)
             pnl.Paint = function() end
+
+            -- create property sheet for displaying tables
+            local tblSheet = vgui.Create("DPropertySheet", pnl)
+            tblSheet:Dock(FILL)
+            pnl.sheet = tblSheet
+            pnl.sheets = {}
+
             lia.gui.dbBrowser = pnl
+
+            -- request table list from server
             net.Start("liaRequestDBTables")
             net.SendToServer()
+
             return pnl
         end
     }
@@ -909,32 +920,51 @@ local function handleTableData(id)
         }
     end
 
-    local _, list = lia.util.CreateTableUI(tbl, columns, rows)
+    if not (IsValid(lia.gui.dbBrowser) and IsValid(lia.gui.dbBrowser.sheet)) then return end
+
+    local parent = lia.gui.dbBrowser
+    local panel = parent.sheets[tbl]
+    if not IsValid(panel) then
+        panel = vgui.Create("DPanel", parent.sheet)
+        panel.Paint = function() end
+        parent.sheets[tbl] = panel
+        parent.sheet:AddSheet(tbl, panel)
+    else
+        panel:Clear()
+    end
+
+    local frame, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
+        list:SetParent(panel)
+        list:Dock(FILL)
+        if IsValid(frame) then frame:Remove() end
         function list:OnRowSelected(_, line)
             openRowInfo(line.rowData)
         end
+    elseif IsValid(frame) then
+        frame:Remove()
     end
 end
 
 net.Receive("liaDBTables", function()
+    if not (IsValid(lia.gui.dbBrowser) and IsValid(lia.gui.dbBrowser.sheet)) then return end
+
     local tables = net.ReadTable()
-    local frame = vgui.Create("DFrame")
-    frame:SetTitle("Lilia Tables")
-    frame:SetSize(300, 400)
-    frame:Center()
-    frame:MakePopup()
-    local list = vgui.Create("DListView", frame)
-    list:Dock(FILL)
-    list:AddColumn("Table")
     for _, tbl in ipairs(tables or {}) do
-        list:AddLine(tbl)
+        if not lia.gui.dbBrowser.sheets[tbl] then
+            local panel = vgui.Create("DPanel", lia.gui.dbBrowser.sheet)
+            panel.Paint = function() end
+            lia.gui.dbBrowser.sheets[tbl] = panel
+            lia.gui.dbBrowser.sheet:AddSheet(tbl, panel)
+        end
+
+        net.Start("liaRequestTableData")
+        net.WriteString(tbl)
+        net.SendToServer()
     end
 
-    function list:OnRowSelected(_, line)
-        net.Start("liaRequestTableData")
-        net.WriteString(line:GetColumnText(1))
-        net.SendToServer()
+    if lia.gui.dbBrowser.sheet.Items[1] then
+        lia.gui.dbBrowser.sheet:SetActiveTab(lia.gui.dbBrowser.sheet.Items[1].Tab)
     end
 end)
 
@@ -1090,4 +1120,8 @@ net.Receive("managesitrooms", function()
         makeButton("reposition", 3)
         makeButton("rename", 2)
     end
+end)
+
+hook.Add("F1MenuClosed", "liaDBBrowserReset", function()
+    lia.gui.dbBrowser = nil
 end)
