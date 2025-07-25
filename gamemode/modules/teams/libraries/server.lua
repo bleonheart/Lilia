@@ -298,12 +298,12 @@ net.Receive("RosterRequest", function(_, client)
                 lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
             end
 
-            local classID = tonumber(v.class) or v.class
+            local classID = tonumber(v.class)
             local className
-            if classID == nil or classID == 0 then
+            if not classID or classID == 0 or v.class == "NULL" then
                 className = "None"
             else
-                className = lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
+                className = lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID)
             end
 
             out[#out + 1] = {
