@@ -325,7 +325,7 @@ Executes a basic admin action by sending the appropriate chat command.
 
 **Purpose**
 
-Logs an admin related message with a coloured section tag.
+Logs an administration related message with a coloured section tag.
 
 **Parameters**
 
@@ -345,6 +345,8 @@ Logs an admin related message with a coloured section tag.
 
 ```lua
 lia.administration("Ban", "Player banned successfully")
+-- console output:
+-- [Lilia] [Administration] [Ban] Player banned successfully
 ```
 
 ---
