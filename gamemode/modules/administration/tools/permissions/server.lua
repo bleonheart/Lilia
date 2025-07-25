@@ -155,7 +155,14 @@ function GM:PlayerSpawnRagdoll(client)
     return canSpawn
 end
 
-function GM:PlayerSpawnSENT(client)
+function GM:PlayerSpawnSENT(client, class)
+    local list = lia.data.get("entityBlacklist", {})
+    if class and table.HasValue(list, class) and not client:hasPrivilege("Spawn Permissions - Can Spawn Blacklisted Entities") then
+        lia.log.add(client, "spawnDenied", "sent", class)
+        client:notifyLocalized("blacklistedEntity")
+        return false
+    end
+
     local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Spawn Permissions - Can Spawn SENTs") or client:getChar():hasFlags("E")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "sent")
