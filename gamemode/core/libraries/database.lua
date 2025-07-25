@@ -312,15 +312,6 @@ end
 
 function lia.db.loadTables()
     local function done()
-        local ignore = function() end
-        lia.db.fieldExists("lia_players", "firstJoin"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN firstJoin DATETIME"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "lastJoin"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN lastJoin DATETIME"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "userGroup"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN userGroup VARCHAR(32)"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "lastIP"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN lastIP VARCHAR(64)"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "lastOnline"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN lastOnline INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "totalOnlineTime"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN totalOnlineTime FLOAT"):catch(ignore) end end)
-        lia.db.fieldExists("lia_items", "quantity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_items ADD COLUMN quantity INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_data", "data"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_data ADD COLUMN data TEXT"):catch(ignore) end end)
         lia.db.addDatabaseFields()
         lia.db.tablesLoaded = true
         hook.Run("LiliaTablesLoaded")
