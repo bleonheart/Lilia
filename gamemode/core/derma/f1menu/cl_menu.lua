@@ -98,7 +98,8 @@ function PANEL:Init()
     self.tabs = tabsContainer
     local panel = self:Add("EditablePanel")
     panel:Dock(FILL)
-    local mX, mY = ScrW() * 0.05, ScrH() * 0.05
+    local mX = ScrW() * 0.05
+    local mY = ScrH() * 0.02
     panel:DockMargin(mX, mY, mX, mY)
     panel:SetAlpha(0)
     panel.Paint = function() end
