@@ -40,6 +40,35 @@ Loads all Lua faction files from a directory, includes them **shared**, and regi
 lia.faction.loadFromDir("path/to/factions")
 ```
 
+### lia.faction.register
+
+**Purpose**
+
+Registers a faction directly from a data table, setting up the team and precaching its models.
+
+**Parameters**
+
+* `uniqueID` (*string*): Faction unique ID.
+* `data` (*table*): Table containing faction fields.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *table*: The registered faction table.
+
+**Example Usage**
+
+```lua
+local police = lia.faction.register("police", {
+    name = "Police",
+    color = Color(0, 0, 255),
+    models = {"models/player/police.mdl"}
+})
+```
+
 ---
 
 ### lia.faction.get
