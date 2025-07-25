@@ -142,8 +142,8 @@ local DefaultGroups = {
     superadmin = true
 }
 
-local groupChunks, playerChunks = {}, {}
-local PrivilegeCategories, PlayerList, LastGroup = {}, {}, nil
+local groupChunks, playerChunks, staffChunks = {}, {}, {}
+local PrivilegeCategories, PlayerList, StaffList, LastGroup = {}, {}, {}, nil
 local function setFont(o, f)
     if IsValid(o) then o:SetFont(f) end
 end
@@ -199,6 +199,25 @@ local function buildPlayersUI(parent)
         end
 
         m:Open()
+    end
+end
+
+local function buildStaffUI(parent)
+    parent:Clear()
+    local list = parent:Add("DListView")
+    list:Dock(FILL)
+    local columns = {"Name", "Group", "Hours", "Tickets", "Warnings"}
+    for _, colName in ipairs(columns) do
+        local col = list:AddColumn(colName)
+        surface.SetFont(col.Header:GetFont() or "DermaDefault")
+        local textWidth = select(1, surface.GetTextSize(colName)) + 20
+        col:SetWide(textWidth)
+        col:SetMinWidth(textWidth)
+    end
+
+    for _, v in ipairs(StaffList) do
+        local hours = math.floor((tonumber(v.playtime) or 0) / 3600)
+        list:AddLine(v.name, v.group, hours, v.tickets or 0, v.warns or 0)
     end
 end
 
@@ -419,6 +438,14 @@ local function handlePlayerDone(id)
     if IsValid(lia.gui.players) then buildPlayersUI(lia.gui.players) end
 end
 
+local function handleStaffDone(id)
+    local data = table.concat(staffChunks[id])
+    staffChunks[id] = nil
+    local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
+    StaffList = tbl.staff or {}
+    if IsValid(lia.gui.staff) then buildStaffUI(lia.gui.staff) end
+end
+
 net.Receive("liaGroupsDataChunk", function()
     local id = net.ReadString()
     local idx = net.ReadUInt(16)
@@ -451,6 +478,22 @@ net.Receive("liaPlayersDataDone", function()
     if playerChunks[id] then handlePlayerDone(id) end
 end)
 
+net.Receive("liaStaffDataChunk", function()
+    local id = net.ReadString()
+    local idx = net.ReadUInt(16)
+    local total = net.ReadUInt(16)
+    local len = net.ReadUInt(16)
+    local dat = net.ReadData(len)
+    staffChunks[id] = staffChunks[id] or {}
+    staffChunks[id][idx] = dat
+    if idx == total then handleStaffDone(id) end
+end)
+
+net.Receive("liaStaffDataDone", function()
+    local id = net.ReadString()
+    if staffChunks[id] then handleStaffDone(id) end
+end)
+
 net.Receive("liaGroupsNotice", function()
     local msg = net.ReadString()
     if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
@@ -480,6 +523,21 @@ hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(tabs)
             pnl:DockPadding(10, 10, 10, 10)
             lia.gui.players = pnl
             net.Start("liaPlayersRequest")
+            net.SendToServer()
+            return pnl
+        end
+    }
+end)
+
+hook.Add("liaAdminRegisterTab", "AdminTabStaff", function(tabs)
+    tabs["Staff"] = {
+        icon = "icon16/user_gray.png",
+        onShouldShow = LocalPlayer():IsSuperAdmin(),
+        build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:DockPadding(10, 10, 10, 10)
+            lia.gui.staff = pnl
+            net.Start("liaStaffRequest")
             net.SendToServer()
             return pnl
         end
