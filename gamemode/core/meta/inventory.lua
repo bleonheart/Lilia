@@ -128,7 +128,11 @@ if SERVER then
         }, nil, "items", "_itemID = " .. item:getID())
 
         self:syncItemAdded(item)
-        if not noReplicate then hook.Run("OnItemAdded", item:getOwner(), item) end
+        if not noReplicate then
+            hook.Run("OnItemAdded", item:getOwner(), item)
+            local owner = item:getOwner()
+            if IsValid(owner) then lia.log.add(owner, "itemAdded", item:getName()) end
+        end
         return self
     end
 

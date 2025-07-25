@@ -62,6 +62,12 @@ function ITEM:call(method, client, entity, ...)
         self.player = oldPlayer
         self.entity = oldEntity
         hook.Run("ItemFunctionCalled", self, method, client, entity, results)
+        if client then
+            local lowered = string.lower(method)
+            if lowered ~= "onloadout" and lowered ~= "onsave" then
+                lia.log.add(client, "itemFunction", method, self:getName())
+            end
+        end
         return unpack(results)
     end
 
@@ -382,6 +388,25 @@ if SERVER then
         if result == nil and isfunction(callback.onRun) then result = callback.onRun(self, data) end
         if self.postHooks[action] then self.postHooks[action](self, result, data) end
         hook.Run("OnPlayerInteractItem", client, action, self, result, data)
+        local name = self.name
+        if result == false then
+            lia.log.add(client, "itemInteractionFailed", action, name)
+        else
+            local lowered = string.lower(action)
+            if lowered == "use" then
+                lia.log.add(client, "use", name)
+            elseif lowered == "drop" then
+                lia.log.add(client, "itemDrop", name)
+            elseif lowered == "take" then
+                lia.log.add(client, "itemTake", name)
+            elseif lowered == "unequip" then
+                lia.log.add(client, "itemUnequip", name)
+            elseif lowered == "equip" then
+                lia.log.add(client, "itemEquip", name)
+            else
+                lia.log.add(client, "itemInteraction", action, self)
+            end
+        end
         if result ~= false and not deferred.isPromise(result) then
             if IsValid(entity) then
                 SafeRemoveEntity(entity)

@@ -125,6 +125,7 @@ function GM:PlayerNoClip(ply, enabled)
     ply:SetNoTarget(enabled)
     ply:AddFlags(FL_NOTARGET)
     hook.Run("OnPlayerObserve", ply, enabled)
+    lia.log.add(ply, "observeToggle", enabled and "enabled" or "disabled")
     return true
 end
 
@@ -171,21 +172,23 @@ function GM:PlayerSpawnSENT(client, class)
     return canSpawn
 end
 
-function GM:PlayerSpawnSWEP(client)
+function GM:PlayerSpawnSWEP(client, swep)
     local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Spawn Permissions - Can Spawn SWEPs") or client:getChar():hasFlags("z")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "swep", tostring(swep))
         client:notifyLocalized("noSpawnSweps")
     end
+    if canSpawn then lia.log.add(client, "swep_spawning", swep) end
     return canSpawn
 end
 
-function GM:PlayerGiveSWEP(client)
+function GM:PlayerGiveSWEP(client, swep)
     local canGive = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Spawn Permissions - Can Spawn SWEPs") or client:getChar():hasFlags("W")
     if not canGive then
         lia.log.add(client, "permissionDenied", "give swep")
         client:notifyLocalized("noGiveSweps")
     end
+    if canGive then lia.log.add(client, "swep_spawning", swep) end
     return canGive
 end
 
@@ -285,35 +288,43 @@ function GM:CanTool(client, _, tool)
     end
 
     if tool == "duplicator" and client.CurrentDupe and not CheckDuplicationScale(client, client.CurrentDupe.Entities) then return false end
+    lia.log.add(client, "toolgunUse", tool)
     return true
 end
 
 function GM:PlayerSpawnedNPC(client, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "spawned_npc", entity:GetClass(), entity:GetModel())
 end
 
 function GM:PlayerSpawnedEffect(client, _, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "spawned_effect", entity:GetModel())
 end
 
 function GM:PlayerSpawnedProp(client, _, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "spawned_prop", entity:GetModel())
 end
 
 function GM:PlayerSpawnedRagdoll(client, _, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "spawned_ragdoll", entity:GetModel())
 end
 
 function GM:PlayerSpawnedSENT(client, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "spawned_sent", entity:GetClass(), entity:GetModel())
 end
 
 function GM:PlayerSpawnedSWEP(client, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "swep_spawning", entity:GetClass())
 end
 
 function GM:PlayerSpawnedVehicle(client, entity)
     entity:SetCreator(client)
+    lia.log.add(client, "spawned_vehicle", entity:GetClass(), entity:GetModel())
 end
 
 function GM:CanPlayerUseChar(client)

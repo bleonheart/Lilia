@@ -703,7 +703,7 @@ if SERVER then
                 end
             end
         end)
-
+        lia.log.add(client, "charDelete", id)
         hook.Run("OnCharDelete", client, id)
     end
 
