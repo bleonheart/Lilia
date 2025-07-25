@@ -328,23 +328,7 @@ function SKIN:PaintActiveTab(_, w, h)
     basePaint(w, h)
 end
 
-function SKIN:PaintButtonLeft(_, w, h)
-    basePaint(w, h)
-end
-
-function SKIN:PaintButtonRight(_, w, h)
-    basePaint(w, h)
-end
-
 function SKIN:PaintListBox(_, w, h)
-    basePaint(w, h)
-end
-
-function SKIN:PaintNumberUp(_, w, h)
-    basePaint(w, h)
-end
-
-function SKIN:PaintNumberDown(_, w, h)
     basePaint(w, h)
 end
 
@@ -356,22 +340,7 @@ function SKIN:PaintMenuBar(_, w, h)
     basePaint(w, h)
 end
 
-function SKIN:LayoutPropertySheet(panel)
-    local items = panel.Items
-    local count = #items
-    if count == 0 then return end
-    local total = panel:GetWide() - 4
-    local maxW = math.floor(total / count)
-    for _, sheet in pairs(items) do
-        local btn = sheet.Button or sheet.Tab
-        btn:SizeToContents()
-        btn:SetWide(math.min(btn:GetWide() + 16, maxW))
-    end
-
-    panel.tabScroller:InvalidateLayout()
-end
-
-derma.DefineSkin("Lilia Skin", "The skin for the Lilia framework.", SKIN)
+derma.DefineSkin("Lilia Skin", "The alt skin for the Lilia framework.", SKIN)
 SKIN = {}
 SKIN.fontFrame = "BudgetLabel"
 SKIN.fontTab = "liaSmallFont"
@@ -640,23 +609,7 @@ function SKIN:PaintActiveTab(panel, w, h)
     drawAltBg(panel, w, h)
 end
 
-function SKIN:PaintButtonLeft(panel, w, h)
-    drawAltBg(panel, w, h)
-end
-
-function SKIN:PaintButtonRight(panel, w, h)
-    drawAltBg(panel, w, h)
-end
-
 function SKIN:PaintListBox(panel, w, h)
-    drawAltBg(panel, w, h)
-end
-
-function SKIN:PaintNumberUp(panel, w, h)
-    drawAltBg(panel, w, h)
-end
-
-function SKIN:PaintNumberDown(panel, w, h)
     drawAltBg(panel, w, h)
 end
 
