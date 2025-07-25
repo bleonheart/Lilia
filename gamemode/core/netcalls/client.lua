@@ -911,10 +911,15 @@ local function populateTable(panel, columns, rows)
 
     local availableWidth = panel:GetWide() - totalFixedWidth
     local dynamicWidth = dynamicColumns > 0 and math.max(availableWidth / dynamicColumns, 50) or 0
-    for _, col in ipairs(columns) do
-        local name = col.name or L("na")
-        local width = col.width or dynamicWidth
-        list:AddColumn(name):SetFixedWidth(width)
+    for _, colInfo in ipairs(columns) do
+        local name = colInfo.name or L("na")
+        local column = list:AddColumn(name)
+        local width = colInfo.width or dynamicWidth
+        surface.SetFont(column.Header:GetFont() or "DermaDefault")
+        local textWidth = select(1, surface.GetTextSize(name)) + 20
+        local finalWidth = math.max(width, textWidth)
+        column:SetWide(finalWidth)
+        column:SetMinWidth(textWidth)
     end
 
     for _, row in ipairs(rows) do

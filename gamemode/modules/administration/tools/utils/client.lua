@@ -162,12 +162,21 @@ local function buildPlayersUI(parent)
     parent:Clear()
     local list = parent:Add("DListView")
     list:Dock(FILL)
-    list:AddColumn(L("name"))
-    list:AddColumn(L("steamID"))
-    list:AddColumn(L("group"))
-    list:AddColumn(L("joinedOn"))
-    list:AddColumn(L("lastJoin"))
-    list:AddColumn(L("banned"))
+    local columns = {
+        L("name"),
+        L("steamID"),
+        L("group"),
+        L("joinedOn"),
+        L("lastJoin"),
+        L("banned")
+    }
+    for _, colName in ipairs(columns) do
+        local col = list:AddColumn(colName)
+        surface.SetFont(col.Header:GetFont() or "DermaDefault")
+        local textWidth = select(1, surface.GetTextSize(colName)) + 20
+        col:SetWide(textWidth)
+        col:SetMinWidth(textWidth)
+    end
     for _, v in ipairs(PlayerList) do
         local firstJoin = toUnixTime(v.firstJoin)
         local lastJoin = toUnixTime(v.lastJoin)
