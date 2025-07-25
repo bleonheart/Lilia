@@ -331,32 +331,34 @@ local function renderGroupInfo(parent, g, cami, perms)
         local catList = vgui.Create("DListLayout")
         collapse:SetContents(catList)
         for _, priv in ipairs(PrivilegeCategories[cat] or {}) do
-            local row = vgui.Create("DPanel", catList)
-            row:SetTall(rowH)
-            row:Dock(TOP)
-            row:DockMargin(0, 0, 0, 5)
-            row.Paint = function() end
-            local lbl = row:Add("DLabel")
-            lbl:Dock(LEFT)
-            lbl:SetText(priv)
-            setFont(lbl, "liaMediumFont")
-            lbl:SizeToContents()
-            lbl:DockMargin(0, off, 12, 0)
-            local chk = row:Add("liaCheckBox")
-            chk:Dock(LEFT)
-            chk:SetWide(32)
-            chk:SetChecked(current[priv] and true or false)
-            chk.OnChange = function(_, v)
-                if v then
-                    current[priv] = true
-                else
-                    current[priv] = nil
+            if isstring(priv) then
+                local row = vgui.Create("DPanel", catList)
+                row:SetTall(rowH)
+                row:Dock(TOP)
+                row:DockMargin(0, 0, 0, 5)
+                row.Paint = function() end
+                local lbl = row:Add("DLabel")
+                lbl:Dock(LEFT)
+                lbl:SetText(priv)
+                setFont(lbl, "liaMediumFont")
+                lbl:SizeToContents()
+                lbl:DockMargin(0, off, 12, 0)
+                local chk = row:Add("liaCheckBox")
+                chk:Dock(LEFT)
+                chk:SetWide(32)
+                chk:SetChecked(current[priv] and true or false)
+                chk.OnChange = function(_, v)
+                    if v then
+                        current[priv] = true
+                    else
+                        current[priv] = nil
+                    end
                 end
-            end
 
-            if not editable then chk:SetEnabled(false) end
-            row.PerformLayout = function(_, _, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
-            checkboxes[#checkboxes + 1] = chk
+                if not editable then chk:SetEnabled(false) end
+                row.PerformLayout = function(_, _, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
+                checkboxes[#checkboxes + 1] = chk
+            end
         end
     end
 

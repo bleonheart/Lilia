@@ -948,6 +948,14 @@ local function handleTableData(id)
         return
     end
 
+    if tbl == "lia_warnings" and lia.gui.warnings and IsValid(lia.gui.warnings) then
+        populateTable(lia.gui.warnings, columns, rows)
+        return
+    elseif tbl == "lia_ticketclaims" and lia.gui.tickets and IsValid(lia.gui.tickets) then
+        populateTable(lia.gui.tickets, columns, rows)
+        return
+    end
+
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
         function list:OnRowSelected(_, line)
