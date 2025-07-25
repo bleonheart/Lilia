@@ -22,7 +22,6 @@ function lia.command.add(command, data)
     end
 
     local onRun = data.onRun
-    data._onRun = data.onRun
     data.onRun = function(client, arguments)
         local hasAccess, _ = lia.command.hasAccess(client, command, data)
         if hasAccess then
