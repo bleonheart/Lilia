@@ -209,22 +209,33 @@ function lia.admin.load()
     end)
 end
 
-function lia.admin.createGroup(groupName, info)
+function lia.admin.createGroup(groupName, info, inherit)
     if lia.admin.groups[groupName] then
         Error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
 
     lia.admin.groups[groupName] = info or {}
+
+    if SERVER and CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
+        if not CAMI.GetUsergroup(groupName) then
+            CAMI.RegisterUsergroup({
+                Name = groupName,
+                Inherits = inherit or "user",
+            })
+        end
+    end
+
     for privName, priv in pairs(lia.admin.privileges) do
         local minAccess = priv.MinAccess or "user"
         local allowed
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            if groupName == "superadmin" then
+            local check = inherit or groupName
+            if check == "superadmin" then
                 allowed = true
-            elseif groupName == "admin" then
+            elseif check == "admin" then
                 allowed = minAccess ~= "superadmin"
             else
                 allowed = minAccess == "user"
@@ -234,18 +245,7 @@ function lia.admin.createGroup(groupName, info)
         if allowed then lia.admin.groups[groupName][privName] = true end
     end
 
-    if SERVER then
-        if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
-            if not CAMI.GetUsergroup(groupName) then
-                CAMI.RegisterUsergroup({
-                    Name = groupName,
-                    Inherits = "user",
-                })
-            end
-        end
-
-        lia.admin.save(true)
-    end
+    if SERVER then lia.admin.save(true) end
 end
 
 function lia.admin.registerPrivilege(privilege)
