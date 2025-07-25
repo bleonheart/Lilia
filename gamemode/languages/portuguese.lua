@@ -695,6 +695,7 @@ LANGUAGE = {
     groupRenamedNamed = "Grupo '%s' renomeado para '%s'.",
     permissionsSavedNamed = "Permissões salvas para '%s'.",
     groupDefaultsRestored = "Padrões restaurados para '%s'.",
+    cantSetDefaultGroup = "Use plysetgroup to give default ranks.",
     plyNotFound = "Jogador não encontrado.",
     plyKicked = "Jogador expulso.",
     plyBanned = "Jogador banido.",

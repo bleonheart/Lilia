@@ -12,7 +12,8 @@ end
 local DefaultGroups = {
     user = true,
     admin = true,
-    superadmin = true
+    superadmin = true,
+    developer = true
 }
 
 local ChunkSize = 60000
@@ -238,6 +239,10 @@ net.Receive("liaRequestPlayerGroup", function(_, p)
     table.sort(groups)
     p:requestDropdown(L("setUsergroup"), L("chooseGroup"), groups, function(sel)
         if not IsValid(p) or not IsValid(target) then return end
+        if DefaultGroups[sel] and sel ~= "user" then
+            p:notifyLocalized("cantSetDefaultGroup")
+            return
+        end
         if lia.admin.groups[sel] then
             lia.admin.setPlayerGroup(target, sel)
             p:notifyLocalized("plyGroupSet")
