@@ -282,14 +282,3 @@ net.Receive("liaGroupsApply", function(_, p)
     sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
     notify(p, L("permissionsSavedNamed", g))
 end)
-
-net.Receive("liaGroupsDefaults", function(_, p)
-    if not allowed(p) then return end
-    local g = net.ReadString()
-    if g == "" or DefaultGroups[g] then return end
-    lia.admin.groups[g] = buildDefaultTable(g)
-    lia.admin.save(true)
-    applyToCAMI(g, lia.admin.groups[g])
-    sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-    notify(p, L("groupDefaultsRestored", g))
-end)
