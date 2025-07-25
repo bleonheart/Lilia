@@ -1119,6 +1119,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.admin.groups[args[2]] then
                 lia.admin.setPlayerGroup(target, args[2])
+                if IsValid(ply) and ply:IsPlayer() then ClientAddText(ply, Color(83, 143, 239), "[Lilia] [Administration] ", Color(0, 255, 0), "[Group] ", Color(255, 255, 255), "Your usergroup has been set to ", Color(0, 255, 0), usergroup) end
                 lia.administration("Information", L("setPlayerGroupTo", args[2]))
             else
                 lia.administration("Error", L("usergroupNotFound"))
