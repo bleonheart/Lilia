@@ -66,21 +66,6 @@ local function sendBigTable(ply, tbl, strChunk, strDone)
 end
 
 if SERVER then
-    util.AddNetworkString("liaGroupsAdd")
-    util.AddNetworkString("liaGroupsRemove")
-    util.AddNetworkString("liaGroupsRequest")
-    util.AddNetworkString("liaGroupsApply")
-    util.AddNetworkString("liaGroupsDefaults")
-    util.AddNetworkString("liaGroupsRename")
-    util.AddNetworkString("liaGroupsDataChunk")
-    util.AddNetworkString("liaGroupsDataDone")
-    util.AddNetworkString("liaGroupsNotice")
-    util.AddNetworkString("liaPlayersRequest")
-    util.AddNetworkString("liaPlayersDataChunk")
-    util.AddNetworkString("liaPlayersDataDone")
-    util.AddNetworkString("liaRequestPlayerGroup")
-    util.AddNetworkString("liaRequestDBTables")
-    util.AddNetworkString("liaRequestCharList")
     lia.admin.privileges = lia.admin.privileges or {}
     lia.admin.groups = lia.admin.groups or {}
     lia.admin.lastJoin = lia.admin.lastJoin or {}
@@ -114,7 +99,6 @@ if SERVER then
         for _, list in pairs(categories) do
             table.sort(list)
         end
-
         return categories
     end
 
@@ -464,11 +448,11 @@ else
         local _, fh2 = surface.GetTextSize("W")
         local rowH = fh2 + 24
         local off = math.floor((rowH - fh2) * 0.5)
-
         local catOrder = {}
         for cat in pairs(PRIV_CATEGORIES) do
             catOrder[#catOrder + 1] = cat
         end
+
         table.sort(catOrder)
         for i, c in ipairs(catOrder) do
             if c == "Unassigned" then
@@ -486,7 +470,6 @@ else
             collapse:DockMargin(0, 0, 0, 10)
             local catList = vgui.Create("DListLayout")
             collapse:SetContents(catList)
-
             for _, priv in ipairs(PRIV_CATEGORIES[cat] or {}) do
                 local row = vgui.Create("DPanel", catList)
                 row:SetTall(rowH)
@@ -512,9 +495,7 @@ else
                 end
 
                 if not editable then chk:SetEnabled(false) end
-                row.PerformLayout = function(_, _, h)
-                    chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0)
-                end
+                row.PerformLayout = function(_, _, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
                 checkboxes[#checkboxes + 1] = chk
             end
         end

@@ -253,9 +253,6 @@ net.Receive("KickCharacter", function(_, client)
     end
 end)
 
-util.AddNetworkString("RosterRequest")
-util.AddNetworkString("RosterData")
-util.AddNetworkString("KickCharacter")
 local function toSteamID(id)
     if not id then return "" end
     id = tostring(id)
