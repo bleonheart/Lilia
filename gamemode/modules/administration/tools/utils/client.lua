@@ -564,6 +564,34 @@ function MODULE:CreateMenuButtons(tabs)
         sheet.Paint = function() end
         local reg = {}
         hook.Run("liaAdminRegisterTab", reg)
+
+        -- Allow other modules to supply admin sheets through the
+        -- generic CreateSheetedTabs hook for consistency with the
+        -- main F1 menu implementation.
+        do
+            local sheetTabs = {}
+            hook.Run("CreateSheetedTabs", sheetTabs)
+            for name, pages in pairs(sheetTabs) do
+                reg[name] = {
+                    build = function(ps)
+                        local adminSheet = vgui.Create("DPropertySheet", ps)
+                        adminSheet:Dock(FILL)
+                        adminSheet:DockMargin(10, 10, 10, 10)
+                        for _, page in ipairs(pages) do
+                            local pnl = adminSheet:Add("DPanel")
+                            pnl:Dock(FILL)
+                            pnl.Paint = function() end
+                            if page.drawFunc then
+                                page.drawFunc(pnl)
+                            end
+                            adminSheet:AddSheet(page.name, pnl)
+                        end
+                        return adminSheet
+                    end
+                }
+            end
+        end
+
         for name, data in pairs(reg) do
             local should = true
             if isfunction(data.onShouldShow) then should = data.onShouldShow() ~= false end
