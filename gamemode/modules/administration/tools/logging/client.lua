@@ -46,6 +46,16 @@ local function createLogPage(parent, logs)
 
     populate(logs)
 
+    list.OnRowRightClick = function(_, _, line)
+        if not IsValid(line) then return end
+        local text = "[" .. line:GetColumnText(1) .. "] " .. line:GetColumnText(2)
+        local id = line:GetColumnText(3)
+        if id and id ~= "" then
+            text = text .. " [" .. id .. "]"
+        end
+        SetClipboardText(text)
+    end
+
     search.OnChange = function()
         local query = string.lower(search:GetValue())
         local filtered = {}
