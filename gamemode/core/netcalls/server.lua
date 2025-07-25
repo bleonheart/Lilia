@@ -194,7 +194,10 @@ net.Receive("liaRequestCharList", function(_, client)
     end
 
     local steam64 = target:SteamID64()
-    lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steam64), function(data)
+    local query = [[SELECT lia_characters.*, lia_players.lastOnline FROM lia_characters
+        LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID
+        WHERE lia_characters.steamID = ]] .. lia.db.convertDataType(steam64)
+    lia.db.query(query, function(data)
         if not data or #data == 0 then
             client:notifyLocalized("noCharactersFound")
             return
@@ -251,8 +254,22 @@ net.Receive("liaRequestCharList", function(_, client)
             end
 
             local lastUsedText = stored and L("onlineNow") or row.lastJoinTime
+            local lastOnline
+            if stored then
+                lastOnline = L("onlineNow")
+            else
+                local last = tonumber(row.lastOnline)
+                if not isnumber(last) then last = os.time(lia.time.toNumber(row.lastJoinTime)) end
+                local diff = os.time() - last
+                local since = lia.time.TimeSince(last)
+                local stripped = since:match("^(.-)%sago$") or since
+                lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
+            end
+            local money = row.money
+            if money == nil or money == "NULL" then money = 0 end
             local entry = {
                 ID = row.id,
+                SteamID = util.SteamIDFrom64(row.steamID),
                 Name = row.name,
                 Desc = row.desc,
                 Faction = row.faction,
@@ -260,8 +277,9 @@ net.Receive("liaRequestCharList", function(_, client)
                 BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                 BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                 BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                Money = row.money,
+                Money = money,
                 LastUsed = lastUsedText,
+                LastOnline = lastOnline,
                 allVars = allVars
             }
 
@@ -279,7 +297,9 @@ end)
 
 net.Receive("liaRequestAllCharList", function(_, client)
     if not client:hasPrivilege("List Characters") then return end
-    lia.db.query("SELECT * FROM lia_characters", function(data)
+    local query = [[SELECT lia_characters.*, lia_players.lastOnline FROM lia_characters
+        LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID]]
+    lia.db.query(query, function(data)
         if not data or #data == 0 then
             client:notifyLocalized("noCharactersFound")
             return
@@ -336,8 +356,22 @@ net.Receive("liaRequestAllCharList", function(_, client)
             end
 
             local lastUsedText = stored and L("onlineNow") or row.lastJoinTime
+            local lastOnline
+            if stored then
+                lastOnline = L("onlineNow")
+            else
+                local last = tonumber(row.lastOnline)
+                if not isnumber(last) then last = os.time(lia.time.toNumber(row.lastJoinTime)) end
+                local diff = os.time() - last
+                local since = lia.time.TimeSince(last)
+                local stripped = since:match("^(.-)%sago$") or since
+                lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
+            end
+            local money = row.money
+            if money == nil or money == "NULL" then money = 0 end
             local entry = {
                 ID = row.id,
+                SteamID = util.SteamIDFrom64(row.steamID),
                 Name = row.name,
                 Desc = row.desc,
                 Faction = row.faction,
@@ -345,8 +379,9 @@ net.Receive("liaRequestAllCharList", function(_, client)
                 BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                 BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                 BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                Money = row.money,
+                Money = money,
                 LastUsed = lastUsedText,
+                LastOnline = lastOnline,
                 allVars = allVars
             }
 
