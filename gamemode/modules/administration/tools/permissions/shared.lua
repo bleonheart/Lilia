@@ -90,9 +90,7 @@ properties.Add("ToggleEntityBlacklist", {
     MenuLabel = L("ToggleEntityBlacklist"),
     Order = 902,
     MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply)
-        return IsValid(ent) and not ent:IsVehicle() and ent:GetClass() ~= "prop_physics" and ply:hasPrivilege("Manage Entity Blacklist")
-    end,
+    Filter = function(_, ent, ply) return IsValid(ent) and not ent:IsVehicle() and ent:GetClass() ~= "prop_physics" and ply:hasPrivilege("Manage Entity Blacklist") end,
     Action = function(self, ent)
         self:MsgStart()
         net.WriteString(ent:GetClass())
