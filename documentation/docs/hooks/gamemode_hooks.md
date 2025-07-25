@@ -8658,8 +8658,8 @@ end)
 
 **Purpose**
 
-Adds new F1 tabs that contain property sheet pages. Comparable to how the
-information and settings tabs are built.
+Adds or modifies F1 tabs that contain property sheet pages. The built-in
+**Information** and **Settings** tabs are populated through this hook.
 
 **Parameters**
 
