@@ -695,6 +695,7 @@ LANGUAGE = {
     groupRenamedNamed = "Группа '%s' переименована в '%s'.",
     permissionsSavedNamed = "Права сохранены для '%s'.",
     groupDefaultsRestored = "Настройки по умолчанию восстановлены для '%s'.",
+    cantSetDefaultGroup = "Use plysetgroup to give default ranks.",
     plyNotFound = "Игрок не найден.",
     plyKicked = "Игрок кикнут.",
     plyBanned = "Игрок забанен.",
