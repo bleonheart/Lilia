@@ -111,11 +111,6 @@
                 image = "icon16/arrow_redo.png",
                 func = function() lia.admin.execCommand("return", target) end
             },
-            {
-                name = L("characterList"),
-                image = "icon16/user.png",
-                func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
-            }
         }
 
         if client:IsSuperAdmin() or client:hasPrivilege("Manage UserGroups") then
@@ -181,7 +176,6 @@ local function buildPlayersUI(parent)
     list.OnRowRightClick = function(_, _, line)
         if not IsValid(line) or not line.steamID then return end
         local m = DermaMenu()
-        local opt = m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
         opt:SetIcon("icon16/user.png")
         local ply = player.GetBySteamID(line.steamID) or player.GetBySteamID64(line.steamID64)
         if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Manage UserGroups")) then
@@ -564,7 +558,6 @@ function MODULE:CreateMenuButtons(tabs)
         sheet.Paint = function() end
         local reg = {}
         hook.Run("liaAdminRegisterTab", reg)
-
         -- Allow other modules to supply admin sheets through the
         -- generic CreateSheetedTabs hook for consistency with the
         -- main F1 menu implementation.
@@ -581,9 +574,7 @@ function MODULE:CreateMenuButtons(tabs)
                             local pnl = adminSheet:Add("DPanel")
                             pnl:Dock(FILL)
                             pnl.Paint = function() end
-                            if page.drawFunc then
-                                page.drawFunc(pnl)
-                            end
+                            if page.drawFunc then page.drawFunc(pnl) end
                             adminSheet:AddSheet(page.name, pnl)
                         end
                         return adminSheet
