@@ -526,7 +526,7 @@ function MODULE:CreateMenuButtons(tabs)
             end
         end
 
-        for name, data in pairs(reg) do
+        for name, data in SortedPairs(reg) do
             local should = true
             if isfunction(data.onShouldShow) then should = data.onShouldShow() ~= false end
             if should then
