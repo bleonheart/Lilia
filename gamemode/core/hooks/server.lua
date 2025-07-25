@@ -59,6 +59,7 @@ function GM:PlayerDeath(client, inflictor, attacker)
         net.Send(client)
         character:ban()
     end
+    lia.log.add(client, "playerDeath", attacker:IsPlayer() and attacker:Name() or attacker:GetClass())
 end
 
 function GM:PlayerShouldPermaKill(client)
@@ -427,6 +428,7 @@ function GM:PlayerDisconnected(client)
     for _, entity in ents.Iterator() do
         if entity:GetCreator() == client and not string.StartsWith(entity:GetClass(), "lia_") then SafeRemoveEntity(entity) end
     end
+    lia.log.add(client, "playerDisconnected")
 end
 
 function GM:InitializedConfig()
@@ -465,6 +467,7 @@ function GM:PlayerInitialSpawn(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)
+    lia.log.add(client, "playerInitialSpawn")
 end
 
 function GM:PlayerLoadout(client)
@@ -537,6 +540,10 @@ end
 
 function GM:CanDrive()
     return false
+end
+
+function GM:PlayerHurt(client, attacker, health, damage)
+    lia.log.add(client, "playerHurt", attacker:IsPlayer() and attacker:Name() or attacker:GetClass(), damage, health)
 end
 
 function GM:PlayerDeathThink()

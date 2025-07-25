@@ -888,6 +888,7 @@ lia.command.add("warn", {
             target:notifyLocalized("playerWarned", adminStr, reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
+            lia.log.add(client, "warningIssued", target, reason, count)
         end)
     end
 })

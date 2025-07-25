@@ -58,5 +58,8 @@ net.Receive("RequestRemoveWarning", function(_, client)
             reason = warn._reason,
             admin = warn._admin
         }, warnIndex)
+        lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(targetClient:getChar():getID())):next(function(count)
+            lia.log.add(client, "warningRemoved", targetClient, {reason = warn._reason, admin = warn._admin}, count, warnIndex)
+        end)
     end)
 end)
