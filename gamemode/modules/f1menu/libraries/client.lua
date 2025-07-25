@@ -397,6 +397,25 @@ function MODULE:CreateMenuButtons(tabs)
             sheet:AddSheet(page.name, panel)
         end
     end
+
+    local sheetTabs = {}
+    hook.Run("CreateSheetedTabs", sheetTabs)
+    for name, pages in pairs(sheetTabs) do
+        tabs[name] = function(panel)
+            local sheet = panel:Add("DPropertySheet")
+            sheet:Dock(FILL)
+            sheet:DockMargin(10, 10, 10, 10)
+            for _, page in ipairs(pages) do
+                local pnl = sheet:Add("DPanel")
+                pnl:Dock(FILL)
+                pnl.Paint = function() end
+                if page.drawFunc then
+                    page.drawFunc(pnl)
+                end
+                sheet:AddSheet(page.name, pnl)
+            end
+        end
+    end
 end
 
 function MODULE:CanDisplayCharInfo(name)

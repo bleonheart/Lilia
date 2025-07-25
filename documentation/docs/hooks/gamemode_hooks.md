@@ -8654,6 +8654,41 @@ end)
 
 ---
 
+### CreateSheetedTabs
+
+**Purpose**
+
+Adds new F1 tabs that contain property sheet pages. Comparable to how the
+information and settings tabs are built.
+
+**Parameters**
+
+- `tabs` (`table`): Table to populate with sheet definitions. Keys are tab
+  names and values are arrays of page tables containing `name` and `drawFunc`
+  fields.
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+-- Creates a Tutorials tab with two separate sheets
+hook.Add("CreateSheetedTabs", "AddTutorialsTab", function(tabs)
+    tabs["Tutorials"] = {
+        { name = "Basics", drawFunc = function(pnl) end },
+        { name = "Advanced", drawFunc = function(pnl) end }
+    }
+end)
+```
+
+---
+
 ### InitializedKeybinds
 
 **Purpose**
