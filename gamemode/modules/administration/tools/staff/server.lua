@@ -166,7 +166,7 @@ local function payloadStaff()
             local d = deferred.new()
             table.insert(promises, d)
             lia.db.count("ticketclaims", "admin LIKE '%" .. ply:SteamID64() .. "%'"):next(function(tickets)
-                return lia.db.count("warnings", "admin LIKE '%" .. ply:SteamID() .. "%'"):next(function(warns)
+                return lia.db.count("warnings", "adminSteam = " .. lia.db.convertDataType(ply:SteamID())):next(function(warns)
                     staff[#staff + 1] = {
                         name = ply:Nick(),
                         id = ply:SteamID(),
