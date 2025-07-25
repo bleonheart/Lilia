@@ -131,7 +131,8 @@ if SERVER then
                 id = v:SteamID(),
                 id64 = v:SteamID64(),
                 group = v:GetUserGroup(),
-                lastJoin = lia.admin.lastJoin[v:SteamID()] or os.time(),
+                firstJoin = v.firstJoin or os.time(),
+                lastJoin = v.lastJoin or os.time(),
                 banned = bans[v:SteamID()] or false
             }
 
@@ -144,6 +145,7 @@ if SERVER then
                 id = id,
                 id64 = util.SteamIDTo64(id),
                 group = "",
+                firstJoin = 0,
                 lastJoin = 0,
                 banned = true
             }
@@ -302,11 +304,19 @@ else
         list:AddColumn(L("name"))
         list:AddColumn(L("steamID"))
         list:AddColumn(L("group"))
+        list:AddColumn(L("joinedOn"))
         list:AddColumn(L("lastJoin"))
         list:AddColumn(L("banned"))
         for _, v in ipairs(PlayerList) do
             local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
-            local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", bannedText)
+            local row = list:AddLine(
+                v.name,
+                v.id,
+                v.group,
+                v.firstJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.firstJoin) or "",
+                v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "",
+                bannedText
+            )
             row.steamID = v.id
             row.steamID64 = v.id64
             if v.banned then row:SetBGColor(Color(255, 120, 120)) end

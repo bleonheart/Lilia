@@ -751,6 +751,7 @@ LANGUAGE = {
     renameGroupTitle = "Rinomina Gruppo",
     delete = "Elimina",
     group = "Gruppo",
+    joinedOn = "Prima Connessione",
     lastJoin = "Ultimo Accesso",
     banned = "Bannato",
     hoursPlayed = "Ore Giocate",
