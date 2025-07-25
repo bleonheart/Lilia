@@ -139,9 +139,19 @@ hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(tabs)
         return LocalPlayer():hasPrivilege("Staff Permission — Access Entity List")
     end
 
+    local function hasEntities()
+        for _, ent in ents.Iterator() do
+            if IsValid(ent) and ent.GetCreator and IsValid(ent:GetCreator()) then return true end
+        end
+
+        return false
+    end
+
     tabs[L("entities")] = {
         icon = "icon16/bricks.png",
-        onShouldShow = canView,
+        onShouldShow = function()
+            return canView() and hasEntities()
+        end,
         build = function(sheet)
             local panel = vgui.Create("DPanel", sheet)
             panel:DockPadding(10, 10, 10, 10)
