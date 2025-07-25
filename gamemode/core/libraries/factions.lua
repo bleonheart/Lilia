@@ -51,51 +51,39 @@ function lia.faction.loadFromDir(directory)
     end
 end
 
-function lia.faction.register(uniqueID, data)
-    assert(isstring(uniqueID), "uniqueID must be a string")
+function lia.faction.register(name, data)
+    assert(isstring(name), "name must be a string")
     data = data or {}
-
-    if lia.faction.teams[uniqueID] then
-        return lia.faction.teams[uniqueID]
-    end
-
+    local sanitized = string.Trim(string.lower(name):gsub("[^%w]+", "_"), "_")
+    local uniqueID = lia.faction.generateUniqueID(sanitized)
+    if lia.faction.teams[uniqueID] then return lia.faction.teams[uniqueID] end
     local index = table.Count(lia.faction.teams) + 1
     local FACTION = table.Copy(data)
-    FACTION.index = FACTION.index or index
+    FACTION.index = data.index or index
     FACTION.uniqueID = uniqueID
-    FACTION.isDefault = FACTION.isDefault ~= false
-
-    if not FACTION.name then
-        FACTION.name = "unknown"
-        lia.error("Faction '" .. uniqueID .. "' is missing a name. You need to add a FACTION.name = \"Name\"\n")
-    end
-
+    FACTION.isDefault = data.isDefault ~= false
+    FACTION.name = L(name)
     if not FACTION.desc then
-        FACTION.desc = "noDesc"
-        lia.error("Faction '" .. uniqueID .. "' is missing a description. You need to add a FACTION.desc = \"Description\"\n")
+        FACTION.desc = L("noDesc")
+        lia.error("Faction '" .. uniqueID .. "' is missing a description. You need to add FACTION.desc = \"Description\"\n")
+    else
+        FACTION.desc = L(FACTION.desc)
     end
-
-    FACTION.name = L(FACTION.name)
-    FACTION.desc = L(FACTION.desc)
 
     if not FACTION.color then
         FACTION.color = Color(150, 150, 150)
         lia.error("Faction '" .. uniqueID .. "' is missing a color. You need to add FACTION.color = Color(1, 2, 3)\n")
     end
 
-    FACTION.models = FACTION.models or DefaultModels
+    FACTION.models = data.models or DefaultModels
     for _, modelData in pairs(FACTION.models) do
-        if isstring(modelData) then
-            util.PrecacheModel(modelData)
-        elseif istable(modelData) then
-            util.PrecacheModel(modelData[1])
-        end
+        util.PrecacheModel(isstring(modelData) and modelData or modelData[1])
     end
 
-    team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))
+    team.SetUp(FACTION.index, FACTION.name, FACTION.color)
     lia.faction.indices[FACTION.index] = FACTION
     lia.faction.teams[uniqueID] = FACTION
-
+    data.index = FACTION.index
     return FACTION
 end
 
@@ -264,18 +252,10 @@ if CLIENT then
     end
 end
 
--- Register the staff faction when the library loads so it is always available.
-FACTION_STAFF = lia.faction.register("staff", {
-    name = "factionStaffName",
+FACTION_STAFF = lia.faction.register("factionStaffName", {
     desc = "factionStaffDesc",
     color = Color(255, 56, 252),
     isDefault = false,
-    models = {
-        "models/Humans/Group02/male_07.mdl",
-        "models/Humans/Group02/male_07.mdl",
-        "models/Humans/Group02/male_07.mdl",
-        "models/Humans/Group02/male_07.mdl",
-        "models/Humans/Group02/male_07.mdl"
-    },
-    weapons = {"weapon_physgun", "gmod_tool"}
+    models = {…},
+    weapons = {"weapon_physgun", "gmod_tool"},
 }).index
