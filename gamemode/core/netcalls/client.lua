@@ -894,7 +894,6 @@ local function openRowInfo(row)
 end
 
 local dbChunks = {}
-
 local function populateTable(panel, columns, rows)
     if not IsValid(panel) then return end
     panel:Clear()
@@ -927,13 +926,16 @@ local function populateTable(panel, columns, rows)
         for _, col in ipairs(columns) do
             table.insert(lineData, row[col.field or col.name] or L("na"))
         end
+
         local line = list:AddLine(unpack(lineData))
         line.rowData = row
     end
 
-    function list:OnRowRightClick(_, _, line)
+    function list:OnRowRightClick(_, line)
         if LocalPlayer():hasPrivilege("See Decoded Tables") then
-            openRowInfo(line.rowData)
+            local menu = DermaMenu()
+            menu:AddOption("View Decoded Table", function() openRowInfo(line.rowData) end)
+            menu:Open()
         end
     end
 end
@@ -947,7 +949,10 @@ local function handleTableData(id)
     if not tbl or #rows == 0 then return end
     local columns = {}
     for k in pairs(rows[1]) do
-        columns[#columns + 1] = { name = k, field = k }
+        columns[#columns + 1] = {
+            name = k,
+            field = k
+        }
     end
 
     if lia.gui.dbBrowser and lia.gui.dbBrowser.panels and IsValid(lia.gui.dbBrowser.panels[tbl]) then
@@ -965,9 +970,11 @@ local function handleTableData(id)
 
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
-        function list:OnRowRightClick(_, _, line)
+        function list:OnRowRightClick(_, line)
             if LocalPlayer():hasPrivilege("See Decoded Tables") then
-                openRowInfo(line.rowData)
+                local menu = DermaMenu()
+                menu:AddOption("View Decoded Table", function() openRowInfo(line.rowData) end)
+                menu:Open()
             end
         end
     end
