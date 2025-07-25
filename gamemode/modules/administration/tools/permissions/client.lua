@@ -64,6 +64,41 @@ function MODULE:HUDPaint()
     end
 end
 
+local function populateCharTable(panel, columns, rows)
+    if not IsValid(panel) then return nil end
+    panel:Clear()
+    local listView = vgui.Create("DListView", panel)
+    listView:Dock(FILL)
+    local totalFixedWidth, dynamicColumns = 0, 0
+    for _, colInfo in ipairs(columns) do
+        if colInfo.width then
+            totalFixedWidth = totalFixedWidth + colInfo.width
+        else
+            dynamicColumns = dynamicColumns + 1
+        end
+    end
+
+    local availableWidth = panel:GetWide() - totalFixedWidth
+    local dynamicWidth = dynamicColumns > 0 and math.max(availableWidth / dynamicColumns, 50) or 0
+    for _, colInfo in ipairs(columns) do
+        local columnName = colInfo.name or L("na")
+        local columnWidth = colInfo.width or dynamicWidth
+        listView:AddColumn(columnName):SetFixedWidth(columnWidth)
+    end
+
+    for _, row in ipairs(rows) do
+        local lineData = {}
+        for _, colInfo in ipairs(columns) do
+            local fieldName = colInfo.field or colInfo.name
+            table.insert(lineData, row[fieldName] or L("na"))
+        end
+        local line = listView:AddLine(unpack(lineData))
+        line.rowData = row
+    end
+
+    return listView
+end
+
 net.Receive("DisplayCharList", function()
     local sendData = net.ReadTable()
     local targetSteamIDsafe = net.ReadString()
@@ -129,44 +164,88 @@ net.Receive("DisplayCharList", function()
         })
     end
 
-    local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
-    if IsValid(listView) then
-        for _, line in ipairs(listView:GetLines()) do
-            local dataIndex = line:GetID()
-            local rowData = sendData[dataIndex]
-            if rowData and rowData.Banned == "Yes" then
-                line.DoPaint = line.Paint
-                line.Paint = function(pnl, w, h)
-                    surface.SetDrawColor(200, 100, 100)
-                    surface.DrawRect(0, 0, w, h)
-                    pnl:DoPaint(w, h)
+    if lia.gui.charList and lia.gui.charList.panels and IsValid(lia.gui.charList.panels[targetSteamIDsafe]) then
+        local listView = populateCharTable(lia.gui.charList.panels[targetSteamIDsafe], columns, sendData)
+        if IsValid(listView) then
+            for _, line in ipairs(listView:GetLines()) do
+                local dataIndex = line:GetID()
+                local rowData = sendData[dataIndex]
+                if rowData and rowData.Banned == "Yes" then
+                    line.DoPaint = line.Paint
+                    line.Paint = function(pnl, w, h)
+                        surface.SetDrawColor(200, 100, 100)
+                        surface.DrawRect(0, 0, w, h)
+                        pnl:DoPaint(w, h)
+                    end
+                end
+
+                line.CharID = rowData and rowData.ID
+                if rowData and rowData.extraDetails then
+                    local colIndex = 11
+                    for _, name in ipairs(extraOrder) do
+                        line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
+                        colIndex = colIndex + 1
+                    end
                 end
             end
 
-            line.CharID = rowData and rowData.ID
-            if rowData and rowData.extraDetails then
-                local colIndex = 11
-                for _, name in ipairs(extraOrder) do
-                    line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
-                    colIndex = colIndex + 1
+            listView.OnRowRightClick = function(_, _, ln)
+                if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+                    local dMenu = DermaMenu()
+                    if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                        local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                        opt1:SetIcon("icon16/cancel.png")
+                    end
+
+                    if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                        local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                        opt2:SetIcon("icon16/accept.png")
+                    end
+
+                    dMenu:Open()
                 end
             end
         end
-
-        listView.OnRowRightClick = function(_, _, ln)
-            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-                local dMenu = DermaMenu()
-                if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                    local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
-                    opt1:SetIcon("icon16/cancel.png")
+    else
+        local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
+        if IsValid(listView) then
+            for _, line in ipairs(listView:GetLines()) do
+                local dataIndex = line:GetID()
+                local rowData = sendData[dataIndex]
+                if rowData and rowData.Banned == "Yes" then
+                    line.DoPaint = line.Paint
+                    line.Paint = function(pnl, w, h)
+                        surface.SetDrawColor(200, 100, 100)
+                        surface.DrawRect(0, 0, w, h)
+                        pnl:DoPaint(w, h)
+                    end
                 end
 
-                if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                    local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
-                    opt2:SetIcon("icon16/accept.png")
+                line.CharID = rowData and rowData.ID
+                if rowData and rowData.extraDetails then
+                    local colIndex = 11
+                    for _, name in ipairs(extraOrder) do
+                        line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
+                        colIndex = colIndex + 1
+                    end
                 end
+            end
 
-                dMenu:Open()
+            listView.OnRowRightClick = function(_, _, ln)
+                if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+                    local dMenu = DermaMenu()
+                    if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                        local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                        opt1:SetIcon("icon16/cancel.png")
+                    end
+
+                    if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                        local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                        opt2:SetIcon("icon16/accept.png")
+                    end
+
+                    dMenu:Open()
+                end
             end
         end
     end
@@ -185,20 +264,30 @@ hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(tabs)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)
             lia.gui.charList = pnl
-            local entry = pnl:Add("DTextEntry")
-            entry:Dock(TOP)
-            entry:SetTall(25)
-            entry:SetPlaceholderText(L("steamIDName"))
-            local btn = pnl:Add("DButton")
-            btn:Dock(TOP)
-            btn:DockMargin(0, 5, 0, 0)
-            btn:SetText(L("openList"))
-            btn.DoClick = function()
-                local value = entry:GetValue() or ""
+            local psheet = vgui.Create("DPropertySheet", pnl)
+            psheet:Dock(FILL)
+            lia.gui.charList.sheet = psheet
+            lia.gui.charList.panels = {}
+
+            for _, ply in ipairs(player.GetAll()) do
+                local sub = vgui.Create("DPanel", psheet)
+                sub:Dock(FILL)
+                sub.Paint = function() end
+                psheet:AddSheet(ply:SteamName(), sub, "icon16/user.png")
+                lia.gui.charList.panels[ply:SteamID64()] = sub
                 net.Start("liaRequestCharList")
-                net.WriteString(value)
+                net.WriteString(ply:SteamID64())
                 net.SendToServer()
             end
+
+            local allPanel = vgui.Create("DPanel", psheet)
+            allPanel:Dock(FILL)
+            allPanel.Paint = function() end
+            psheet:AddSheet("Database", allPanel, "icon16/database.png")
+            lia.gui.charList.panels["all"] = allPanel
+            net.Start("liaRequestAllCharList")
+            net.SendToServer()
+
             return pnl
         end
     }
