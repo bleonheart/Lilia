@@ -366,39 +366,24 @@ function MODULE:CreateMenuButtons(tabs)
         statusPanel.info:AlphaTo(255, 0.5)
     end
 
-    tabs[L("information")] = function(infoTabPanel)
-        local sheet = infoTabPanel:Add("DPropertySheet")
-        sheet:Dock(FILL)
-        sheet:DockMargin(10, 10, 10, 10)
-        local pages = {}
-        hook.Run("CreateInformationButtons", pages)
-        if not pages then return end
-        for _, page in ipairs(pages) do
-            local panel = sheet:Add("DPanel")
-            panel:Dock(FILL)
-            panel.Paint = function() end
-            page.drawFunc(panel)
-            sheet:AddSheet(page.name, panel)
-        end
-    end
-
-    tabs[L("settings")] = function(settingsPanel)
-        local sheet = settingsPanel:Add("DPropertySheet")
-        sheet:Dock(FILL)
-        sheet:DockMargin(10, 10, 10, 10)
-        local pages = {}
-        hook.Run("PopulateConfigurationButtons", pages)
-        if not pages then return end
-        for _, page in ipairs(pages) do
-            local panel = sheet:Add("DPanel")
-            panel:Dock(FILL)
-            panel.Paint = function() end
-            page.drawFunc(panel)
-            sheet:AddSheet(page.name, panel)
-        end
-    end
-
     local sheetTabs = {}
+
+    do
+        local infoPages = {}
+        hook.Run("CreateInformationButtons", infoPages)
+        if infoPages then
+            sheetTabs[L("information")] = infoPages
+        end
+    end
+
+    do
+        local settingsPages = {}
+        hook.Run("PopulateConfigurationButtons", settingsPages)
+        if settingsPages then
+            sheetTabs[L("settings")] = settingsPages
+        end
+    end
+
     hook.Run("CreateSheetedTabs", sheetTabs)
     for name, pages in pairs(sheetTabs) do
         tabs[name] = function(panel)
