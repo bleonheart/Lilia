@@ -391,10 +391,6 @@ function PANEL:onVendorPropEdited(_, key)
         for _, v in pairs(self.items.me) do
             if IsValid(v) then v:updateLabel() end
         end
-    elseif key == "preset" then
-        local preset = liaVendorEnt:getNetVar("preset", "none")
-        if IsValid(self.preset) then self.preset:SetValue(preset == "none" and L("none") or preset) end
-        self:setupItemsPanel(preset == "none")
     elseif key == "skin" and IsValid(self.skin) then
         self.skin:SetValue(liaVendorEnt:GetSkin())
     elseif key == "bodygroup" and IsValid(lia.gui.vendorBodygroupEditor) then

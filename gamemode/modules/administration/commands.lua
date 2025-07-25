@@ -1064,10 +1064,9 @@ lia.command.add("charlist", {
                 local isBanned = stored and stored:getBanned() or row.banned
                 if isstring(isBanned) then
                     local lower = isBanned:lower()
-                    if lower == "false" or lower == "nil" or isBanned == "NULL" then
-                        isBanned = false
-                    end
+                    if lower == "false" or lower == "nil" or isBanned == "NULL" then isBanned = false end
                 end
+
                 isBanned = tobool(isBanned)
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do
