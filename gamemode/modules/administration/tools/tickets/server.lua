@@ -31,9 +31,16 @@ function MODULE:GetAllCaseClaims()
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
+    local sid64 = admin:SteamID64()
+    local adminTag = admin:Name() .. " " .. sid64
     lia.db.updateTable({
-        _admin = admin:Name() .. " " .. admin:SteamID64()
-    }, nil, "ticketclaims", "_requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND _admin = 'Unassigned'")
+        _admin = adminTag
+    }, nil, "ticketclaims", "_requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND _admin = 'Unassigned'"):next(function() lia.db.count("ticketclaims", "_admin LIKE '%" .. sid64 .. "%'"):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end) end)
+end
+
+function MODULE:TicketSystemClose(admin, requester)
+    local pattern = "_admin LIKE '%" .. admin:SteamID64() .. "'"
+    lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:PlayerSay(client, text)

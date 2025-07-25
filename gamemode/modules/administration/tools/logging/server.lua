@@ -172,22 +172,8 @@ function MODULE:CanTool(client, _, tool)
     lia.log.add(client, "toolgunUse", tool)
 end
 
-function MODULE:PlayerSpawn(client)
-    lia.log.add(client, "playerSpawn")
-end
-
 function MODULE:OnPlayerObserve(client, state)
     lia.log.add(client, "observeToggle", state and "enabled" or "disabled")
-end
-
-function MODULE:TicketSystemClaim(admin, requester)
-    local pattern = "_admin LIKE '%" .. admin:SteamID64() .. "'"
-    lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
-end
-
-function MODULE:TicketSystemClose(admin, requester)
-    local pattern = "_admin LIKE '%" .. admin:SteamID64() .. "'"
-    lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)

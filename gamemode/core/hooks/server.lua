@@ -250,6 +250,7 @@ end
 function GM:PlayerSay(client, message)
     local chatType, parsedMessage, anonymous = lia.chat.parse(client, message, true)
     message = parsedMessage
+    if client:getNetVar("liaGagged") then return "" end
     if chatType == "ic" and lia.command.parse(client, message) then return "" end
     if utf8.len(message) > lia.config.get("MaxChatLength") then
         client:notifyLocalized("tooLongMessage")
