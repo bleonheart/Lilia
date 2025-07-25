@@ -514,7 +514,7 @@ if SERVER then
             name = data.name or "",
             desc = data.desc or "",
             model = data.model or "models/error.mdl",
-            _skin = data.skin or 0,
+            skin = data.skin or 0,
             bodygroups = data.bodygroups or {},
             schema = SCHEMA and SCHEMA.folder or "lilia",
             createTime = timeStamp,
