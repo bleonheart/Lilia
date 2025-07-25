@@ -707,15 +707,17 @@ end
 
 function lia.admin.load()
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
-    local function continueLoad(data)
+    local function continueLoad(groups, privs)
         if camiGroups and not table.IsEmpty(camiGroups) then
             lia.admin.groups = {}
             for name in pairs(camiGroups) do
                 lia.admin.groups[name] = {}
             end
         else
-            lia.admin.groups = data or {}
+            lia.admin.groups = groups or {}
         end
+
+        lia.admin.privileges = privs or {}
 
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
             priv.Category = priv.Category or "Unassigned"
@@ -726,35 +728,66 @@ function lia.admin.load()
         if camiGroups and not table.IsEmpty(camiGroups) and CAMI then
             for group in pairs(lia.admin.groups) do
                 for privName, priv in pairs(lia.admin.privileges) do
-                    if CAMI.UsergroupInherits and CAMI.UsergroupInherits(group, priv.MinAccess or "user") then lia.admin.groups[group][privName] = true end
+                    if CAMI.UsergroupInherits and CAMI.UsergroupInherits(group, priv.MinAccess or "user") then
+                        lia.admin.groups[group][privName] = true
+                    end
                 end
             end
         end
 
         local defaults = {"user", "admin", "superadmin"}
-        local created = false
         if table.Count(lia.admin.groups) == 0 then
             for _, grp in ipairs(defaults) do
                 lia.admin.createGroup(grp)
             end
-
-            created = true
         else
             for _, grp in ipairs(defaults) do
                 if not lia.admin.groups[grp] then
                     lia.admin.createGroup(grp)
-                    created = true
                 end
             end
         end
 
-        if created then lia.admin.save(true) end
+        lia.admin.save(true)
         lia.administration("Bootstrap", L("adminSystemLoaded"))
     end
 
-    lia.db.selectOne({"data"}, "admingroups"):next(function(res)
-        local data = res and util.JSONToTable(res.data or "") or {}
-        continueLoad(data)
+    lia.db.tableExists("usergroups"):next(function(exists)
+        if exists then
+            lia.db.select({"name", "data"}, "usergroups"):next(function(res)
+                local groups = {}
+                res = res.results or res
+                for _, row in ipairs(res or {}) do
+                    groups[row.name] = util.JSONToTable(row.data or "") or {}
+                end
+                lia.db.tableExists("privileges"):next(function(prExists)
+                    if prExists then
+                        lia.db.select({"name", "minAccess", "category"}, "privileges"):next(function(resP)
+                            local privs = {}
+                            resP = resP.results or resP
+                            for _, row in ipairs(resP or {}) do
+                                privs[row.name] = {Name = row.name, MinAccess = row.minAccess, Category = row.category}
+                            end
+                            continueLoad(groups, privs)
+                        end)
+                    else
+                        continueLoad(groups)
+                    end
+                end)
+            end)
+        else
+            lia.db.selectOne({"data"}, "admingroups"):next(function(res)
+                local groups = res and util.JSONToTable(res.data or "") or {}
+                local rows = {}
+                for name, dat in pairs(groups) do
+                    rows[#rows + 1] = {name = name, data = util.TableToJSON(dat)}
+                end
+                if #rows > 0 then
+                    lia.db.bulkUpsert("usergroups", rows)
+                end
+                continueLoad(groups)
+            end)
+        end
     end)
 end
 
@@ -861,9 +894,21 @@ if SERVER then
     end
 
     function lia.admin.save(network)
-        lia.db.upsert({
-            data = util.TableToJSON(lia.admin.groups)
-        }, "admingroups")
+        local groupRows = {}
+        for name, data in pairs(lia.admin.groups) do
+            groupRows[#groupRows + 1] = {name = name, data = util.TableToJSON(data)}
+        end
+        lia.db.bulkUpsert("usergroups", groupRows)
+
+        local privRows = {}
+        for name, priv in pairs(lia.admin.privileges) do
+            privRows[#privRows + 1] = {
+                name = name,
+                minAccess = priv.MinAccess or "user",
+                category = priv.Category or "Unassigned"
+            }
+        end
+        lia.db.bulkUpsert("privileges", privRows)
 
         if network then
             net.Start("updateAdminGroups")
