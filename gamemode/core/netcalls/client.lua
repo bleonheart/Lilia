@@ -931,8 +931,10 @@ local function populateTable(panel, columns, rows)
         line.rowData = row
     end
 
-    function list:OnRowSelected(_, line)
-        openRowInfo(line.rowData)
+    function list:OnRowRightClick(_, _, line)
+        if LocalPlayer():hasPrivilege("See Decoded Tables") then
+            openRowInfo(line.rowData)
+        end
     end
 end
 
@@ -963,8 +965,10 @@ local function handleTableData(id)
 
     local _, list = lia.util.CreateTableUI(tbl, columns, rows)
     if IsValid(list) then
-        function list:OnRowSelected(_, line)
-            openRowInfo(line.rowData)
+        function list:OnRowRightClick(_, _, line)
+            if LocalPlayer():hasPrivilege("See Decoded Tables") then
+                openRowInfo(line.rowData)
+            end
         end
     end
 end

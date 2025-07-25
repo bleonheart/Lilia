@@ -377,6 +377,11 @@ local DefaultPrivileges = {
         Category = "Administration Utilities"
     },
     {
+        Name = "See Decoded Tables",
+        MinAccess = "superadmin",
+        Category = "Administration Utilities"
+    },
+    {
         Name = "Manage SitRooms",
         MinAccess = "superadmin",
         Category = "Administration Utilities"
