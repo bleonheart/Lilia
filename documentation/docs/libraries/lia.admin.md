@@ -58,13 +58,15 @@ imported.
 
 **Purpose**
 
-Creates a new user group with an optional table of permissions.
+Creates a new user group with an optional table of permissions and inheritance.
 
 **Parameters**
 
 * `groupName` (*string*): Name of the group.
 
 * `info` (*table*): Table of permissions. Optional.
+
+* `inherit` (*string*): Usergroup to inherit from. Optional, defaults to `user`.
 
 **Realm**
 
@@ -91,7 +93,7 @@ Registers a CAMI privilege for use with permission checks.
 
 When a privilege is registered it will automatically be assigned to all
 usergroups that inherit from the privilege's `MinAccess` level. Groups created
-via `lia.admin.createGroup` inherit from `user` by default.
+via `lia.admin.createGroup` inherit from `user` if no inheritance is provided.
 
 **Realm**
 

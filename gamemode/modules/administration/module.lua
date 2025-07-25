@@ -224,13 +224,22 @@ if SERVER then
         if not allowed(p) then return end
         local n = net.ReadString()
         if n == "" then return end
-        lia.admin.createGroup(n)
-        lia.admin.groups[n] = buildDefaultTable(n)
-        ensureCAMIGroup(n, "user")
-        lia.admin.save(true)
-        applyToCAMI(n, lia.admin.groups[n])
-        sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-        notify(p, L("groupCreatedNamed", n))
+        local groups = {}
+        for name in pairs(lia.admin.groups or {}) do
+            groups[#groups + 1] = name
+        end
+
+        table.sort(groups)
+        p:requestDropdown(L("inheritGroupTitle"), L("selectInheritancePrompt"), groups, function(sel)
+            if n == "" or not IsValid(p) then return end
+            local inherit = lia.admin.groups[sel] and sel or "user"
+            lia.admin.createGroup(n, nil, inherit)
+            lia.admin.groups[n] = buildDefaultTable(n)
+            applyToCAMI(n, lia.admin.groups[n])
+            lia.admin.save(true)
+            sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+            notify(p, L("groupCreatedNamed", n))
+        end)
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
