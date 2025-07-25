@@ -993,6 +993,43 @@ local function handleTableData(id)
         }
     end
 
+    if tbl == "lia_ticketclaims" then
+        local parsedRows = {}
+        for _, row in ipairs(rows) do
+            local adminName = row.admin or ""
+            local adminSteamID = ""
+            if adminName ~= "Unassigned" then
+                adminSteamID = adminName:match("(%d+)$") or ""
+                adminName = string.Trim(adminName:gsub(adminSteamID, ""))
+            end
+
+            parsedRows[#parsedRows + 1] = {
+                timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(row.timestamp) or 0),
+                requester = row.requester,
+                requesterSteamID = row.requester,
+                message = row.message,
+                adminName = adminName,
+                adminSteamID = adminSteamID
+            }
+        end
+
+        columns = {
+            {name = L("timestamp"), field = "timestamp"},
+            {name = L("requester"), field = "requester"},
+            {name = L("requesterSteamID"), field = "requesterSteamID"},
+            {name = L("logMessage"), field = "message"},
+            {name = L("adminName"), field = "adminName"},
+            {name = L("adminSteamID"), field = "adminSteamID"}
+        }
+
+        if lia.gui.tickets and IsValid(lia.gui.tickets) then
+            populateTable(lia.gui.tickets, columns, parsedRows)
+            return
+        end
+
+        rows = parsedRows
+    end
+
     if lia.gui.dbBrowser and lia.gui.dbBrowser.panels and IsValid(lia.gui.dbBrowser.panels[tbl]) then
         populateTable(lia.gui.dbBrowser.panels[tbl], columns, rows)
         return

@@ -414,10 +414,12 @@ function lia.db.loadTables()
             CREATE TABLE IF NOT EXISTS lia_warnings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 charID INTEGER,
-                steamID TEXT,
                 timestamp DATETIME,
+                playerName TEXT,
+                playerSteam TEXT,
                 reason TEXT,
-                admin TEXT
+                adminName TEXT,
+                adminSteam TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_doors (
@@ -594,10 +596,12 @@ function lia.db.loadTables()
             CREATE TABLE IF NOT EXISTS `lia_warnings` (
                 `id` INT(12) NOT NULL AUTO_INCREMENT,
                 `charID` INT(12) NULL DEFAULT NULL,
-                `steamID` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `timestamp` DATETIME NOT NULL,
+                `playerName` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `playerSteam` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `reason` TEXT NULL COLLATE 'utf8mb4_general_ci',
-                `admin` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `adminName` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `adminSteam` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`id`)
             );
 

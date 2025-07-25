@@ -870,7 +870,15 @@ lia.command.add("warn", {
 
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
-        MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr)
+        MODULE:AddWarning(
+            target:getChar():getID(),
+            timestamp,
+            target:Nick(),
+            target:SteamID64(),
+            reason,
+            client:Nick(),
+            client:SteamID()
+        )
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
             target:notifyLocalized("playerWarned", adminStr, reason)
             client:notifyLocalized("warningIssued", target:Nick())
@@ -909,8 +917,11 @@ lia.command.add("viewwarns", {
                 table.insert(warningList, {
                     index = index,
                     timestamp = warn.timestamp or L("na"),
+                    playerName = warn.playerName or target:Nick(),
+                    playerSteam = warn.playerSteam or target:SteamID64(),
                     reason = warn.reason or L("na"),
-                    admin = warn.admin or L("na")
+                    adminName = warn.adminName or L("na"),
+                    adminSteam = warn.adminSteam or L("na")
                 })
             end
 
@@ -924,12 +935,24 @@ lia.command.add("viewwarns", {
                     field = "timestamp"
                 },
                 {
+                    name = L("name"),
+                    field = "playerName"
+                },
+                {
+                    name = L("steamID"),
+                    field = "playerSteam"
+                },
+                {
                     name = L("reason"),
                     field = "reason"
                 },
                 {
-                    name = L("admin"),
-                    field = "admin"
+                    name = L("administrator"),
+                    field = "adminName"
+                },
+                {
+                    name = L("steamID"),
+                    field = "adminSteam"
                 }
             }, warningList, {
                 {

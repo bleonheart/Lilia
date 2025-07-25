@@ -12,7 +12,8 @@ end
 local DefaultGroups = {
     user = true,
     admin = true,
-    superadmin = true
+    superadmin = true,
+    developer = true
 }
 
 local ChunkSize = 60000
@@ -166,7 +167,7 @@ local function payloadStaff()
             local d = deferred.new()
             table.insert(promises, d)
             lia.db.count("ticketclaims", "admin LIKE '%" .. ply:SteamID64() .. "%'"):next(function(tickets)
-                return lia.db.count("warnings", "admin LIKE '%" .. ply:SteamID() .. "%'"):next(function(warns)
+                return lia.db.count("warnings", "adminSteam = " .. lia.db.convertDataType(ply:SteamID())):next(function(warns)
                     staff[#staff + 1] = {
                         name = ply:Nick(),
                         id = ply:SteamID(),
@@ -238,6 +239,10 @@ net.Receive("liaRequestPlayerGroup", function(_, p)
     table.sort(groups)
     p:requestDropdown(L("setUsergroup"), L("chooseGroup"), groups, function(sel)
         if not IsValid(p) or not IsValid(target) then return end
+        if DefaultGroups[sel] and sel ~= "user" then
+            p:notifyLocalized("cantSetDefaultGroup")
+            return
+        end
         if lia.admin.groups[sel] then
             lia.admin.setPlayerGroup(target, sel)
             p:notifyLocalized("plyGroupSet")

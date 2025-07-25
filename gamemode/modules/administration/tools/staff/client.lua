@@ -139,7 +139,8 @@ end
 local DefaultGroups = {
     user = true,
     admin = true,
-    superadmin = true
+    superadmin = true,
+    developer = true
 }
 
 local groupChunks, playerChunks, staffChunks = {}, {}, {}
@@ -493,6 +494,10 @@ end)
 net.Receive("liaGroupsNotice", function()
     local msg = net.ReadString()
     if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
+    if IsValid(lia.gui.usergroups) then
+        net.Start("liaGroupsRequest")
+        net.SendToServer()
+    end
 end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(tabs)
