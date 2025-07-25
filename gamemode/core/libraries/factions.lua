@@ -56,12 +56,12 @@ function lia.faction.register(name, data)
     data = data or {}
     local sanitized = string.Trim(string.lower(name):gsub("[^%w]+", "_"), "_")
     local uniqueID = sanitized
+    if lia.faction.teams[uniqueID] then return lia.faction.teams[uniqueID] end
     local suffix = 1
     while lia.faction.teams[uniqueID] do
         suffix = suffix + 1
         uniqueID = sanitized .. suffix
     end
-    if lia.faction.teams[uniqueID] then return lia.faction.teams[uniqueID] end
     local index = table.Count(lia.faction.teams) + 1
     local FACTION = table.Copy(data)
     FACTION.index = data.index or index
@@ -264,3 +264,4 @@ FACTION_STAFF = lia.faction.register("factionStaffName", {
     models = {…},
     weapons = {"weapon_physgun", "gmod_tool"},
 }).index
+
