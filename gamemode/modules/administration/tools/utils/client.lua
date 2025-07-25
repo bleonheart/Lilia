@@ -413,7 +413,9 @@ local function buildGroupsUI(panel, cami, perms)
     for _, g in ipairs(keys) do
         local pnl = vgui.Create("DPanel", sheet)
         pnl:Dock(FILL)
-        pnl.Paint = function() end
+        pnl.Paint = function(p, w, h)
+            derma.SkinHook("Paint", "Panel", p, w, h)
+        end
         renderGroupInfo(pnl, g, cami, perms)
         local item = sheet:AddSheet(g, pnl)
         if g == LastGroup then firstTab = item.Tab end
@@ -515,7 +517,9 @@ function MODULE:CreateMenuButtons(tabs)
         parent:Clear()
         local sheet = vgui.Create("DPropertySheet", parent)
         sheet:Dock(FILL)
-        sheet.Paint = function() end
+        sheet.Paint = function(p, w, h)
+            derma.SkinHook("Paint", "PropertySheet", p, w, h)
+        end
         local reg = {}
         hook.Run("liaAdminRegisterTab", reg)
         -- Allow other modules to supply admin sheets through the
@@ -533,7 +537,9 @@ function MODULE:CreateMenuButtons(tabs)
                         for _, page in ipairs(pages) do
                             local pnl = adminSheet:Add("DPanel")
                             pnl:Dock(FILL)
-                            pnl.Paint = function() end
+                            pnl.Paint = function(p, w, h)
+                                derma.SkinHook("Paint", "Panel", p, w, h)
+                            end
                             if page.drawFunc then page.drawFunc(pnl) end
                             adminSheet:AddSheet(page.name, pnl)
                         end

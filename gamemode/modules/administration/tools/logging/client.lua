@@ -79,7 +79,9 @@ local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     local ps = panel:Add("DPropertySheet")
     ps:Dock(FILL)
-    ps.Paint = function() end
+    ps.Paint = function(p, w, h)
+        derma.SkinHook("Paint", "PropertySheet", p, w, h)
+    end
 
     for category, logs in pairs(categorizedLogs) do
         local page = createLogPage(ps, logs)
