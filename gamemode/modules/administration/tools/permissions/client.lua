@@ -227,12 +227,12 @@ net.Receive("DisplayCharList", function()
                             end):SetIcon("icon16/accept.png")
                         end
                     else
-                        if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                        if LocalPlayer():hasPrivilege("Unban Offline") then
                             menu:AddOption(L("banCharacter"), function()
                                 LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
                             end):SetIcon("icon16/cancel.png")
                         end
-                        if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                        if LocalPlayer():hasPrivilege("Ban Offline") then
                             menu:AddOption(L("unbanCharacter"), function()
                                 LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
                             end):SetIcon("icon16/accept.png")
@@ -292,12 +292,12 @@ net.Receive("DisplayCharList", function()
                             end):SetIcon("icon16/accept.png")
                         end
                     else
-                        if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                        if LocalPlayer():hasPrivilege("Unban Offline") then
                             menu:AddOption(L("banCharacter"), function()
                                 LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
                             end):SetIcon("icon16/cancel.png")
                         end
-                        if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                        if LocalPlayer():hasPrivilege("Ban Offline") then
                             menu:AddOption(L("unbanCharacter"), function()
                                 LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
                             end):SetIcon("icon16/accept.png")

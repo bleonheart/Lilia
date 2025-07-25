@@ -269,8 +269,8 @@ end
 
 local function IncludeCharacterManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    local canFaction = cl:hasPrivilege("Commands - Manage Transfers")
-    local canClass = cl:hasPrivilege("Commands - Manage Classes")
+    local canFaction = cl:hasPrivilege("Manage Transfers")
+    local canClass = cl:hasPrivilege("Manage Classes")
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local char = tgt:getChar()
     if char and canFaction then
@@ -325,7 +325,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
         end
     end
 
-    if cl:hasPrivilege("Commands - Manage Character Information") then
+    if cl:hasPrivilege("Manage Character Information") then
         charMenu:AddOption(L("changePlayerModel"), function()
             OpenPlayerModelUI(tgt)
             AdminStickIsOpen = false
@@ -335,7 +335,7 @@ end
 
 local function IncludeFlagManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not cl:hasPrivilege("Commands - Manage Flags") then return end
+    if not cl:hasPrivilege("Manage Flags") then return end
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local fm = GetOrCreateSubMenu(charMenu, "flagsManagement", stores)
     local give = GetOrCreateSubMenu(fm, "giveFlagsMenu", stores)
