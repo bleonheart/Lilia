@@ -268,7 +268,7 @@ lia.char.registerVar("money", {
 })
 
 lia.char.registerVar("skin", {
-    field = "_skin",
+    field = "skin",
     fieldType = "integer",
     default = 0,
     noDisplay = true,
@@ -288,7 +288,7 @@ lia.char.registerVar("skin", {
 })
 
 lia.char.registerVar("bodygroups", {
-    field = "_bodygroups",
+    field = "bodygroups",
     fieldType = "text",
     default = {},
     noDisplay = true,
@@ -429,7 +429,7 @@ lia.char.registerVar("lastPos", {
 })
 
 lia.char.registerVar("banned", {
-    field = "_banned",
+    field = "banned",
     fieldType = "text",
     isLocal = true,
     noDisplay = true
