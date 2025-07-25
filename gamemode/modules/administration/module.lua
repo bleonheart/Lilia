@@ -2,13 +2,13 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
-local DEFAULT_GROUPS = {
+local DefaultGroups = {
     user = true,
     admin = true,
     superadmin = true
 }
 
-local CHUNK = 60000
+local ChunkSize = 60000
 local function buildDefaultTable(g)
     local t = {}
     if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
@@ -40,9 +40,9 @@ local function sendBigTable(ply, tbl, strChunk, strDone)
     local comp = util.Compress(raw)
     local len = #comp
     local id = util.CRC(tostring(SysTime()) .. len)
-    local parts = math.ceil(len / CHUNK)
+    local parts = math.ceil(len / ChunkSize)
     for i = 1, parts do
-        local chunk = string.sub(comp, (i - 1) * CHUNK + 1, math.min(i * CHUNK, len))
+        local chunk = string.sub(comp, (i - 1) * ChunkSize + 1, math.min(i * ChunkSize, len))
         net.Start(strChunk)
         net.WriteString(id)
         net.WriteUInt(i, 16)
@@ -233,7 +233,7 @@ if SERVER then
     net.Receive("liaGroupsRemove", function(_, p)
         if not allowed(p) then return end
         local n = net.ReadString()
-        if n == "" or DEFAULT_GROUPS[n] then return end
+        if n == "" or DefaultGroups[n] then return end
         lia.admin.removeGroup(n)
         lia.admin.groups[n] = nil
         dropCAMIGroup(n)
@@ -246,7 +246,7 @@ if SERVER then
         if not allowed(p) then return end
         local old = net.ReadString()
         local new = net.ReadString()
-        if old == "" or new == "" or DEFAULT_GROUPS[old] or DEFAULT_GROUPS[new] then return end
+        if old == "" or new == "" or DefaultGroups[old] or DefaultGroups[new] then return end
         if lia.admin.groups[new] or not lia.admin.groups[old] then return end
         lia.admin.groups[new] = lia.admin.groups[old]
         lia.admin.groups[old] = nil
@@ -266,7 +266,7 @@ if SERVER then
         if not allowed(p) then return end
         local g = net.ReadString()
         local t = net.ReadTable()
-        if g == "" or DEFAULT_GROUPS[g] then return end
+        if g == "" or DefaultGroups[g] then return end
         lia.admin.groups[g] = {}
         for k, v in pairs(t) do
             if v then lia.admin.groups[g][k] = true end
@@ -281,7 +281,7 @@ if SERVER then
     net.Receive("liaGroupsDefaults", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
-        if g == "" or DEFAULT_GROUPS[g] then return end
+        if g == "" or DefaultGroups[g] then return end
         lia.admin.groups[g] = buildDefaultTable(g)
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
@@ -290,7 +290,7 @@ if SERVER then
     end)
 else
     local groupChunks, playerChunks = {}, {}
-    local PRIV_CATEGORIES, PLAYER_LIST, LAST_GROUP = {}, {}, nil
+    local PrivilegeCategories, PlayerList, LastGroup = {}, {}, nil
     local function setFont(o, f)
         if IsValid(o) then o:SetFont(f) end
     end
@@ -304,7 +304,7 @@ else
         list:AddColumn(L("group"))
         list:AddColumn(L("lastJoin"))
         list:AddColumn(L("banned"))
-        for _, v in ipairs(PLAYER_LIST) do
+        for _, v in ipairs(PlayerList) do
             local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
             local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", bannedText)
             row.steamID = v.id
@@ -334,7 +334,7 @@ else
 
     local function renderGroupInfo(parent, g, cami, perms)
         parent:Clear()
-        LAST_GROUP = g
+        LastGroup = g
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
         local btnBar = scroll:Add("DPanel")
@@ -342,7 +342,7 @@ else
         btnBar:SetTall(36)
         btnBar:DockMargin(20, 20, 20, 12)
         btnBar.Paint = function() end
-        local editable = not DEFAULT_GROUPS[g]
+        local editable = not DefaultGroups[g]
         local tickAll = btnBar:Add("liaSmallButton")
         tickAll:Dock(LEFT)
         tickAll:SetWide(90)
@@ -364,7 +364,7 @@ else
         end
 
         local delBtn, renameBtn
-        if not DEFAULT_GROUPS[g] then
+        if not DefaultGroups[g] then
             renameBtn = btnBar:Add("liaSmallButton")
             renameBtn:Dock(RIGHT)
             renameBtn:DockMargin(0, 0, 6, 0)
@@ -402,7 +402,7 @@ else
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
         local memberNames = {}
-        for _, m in ipairs(PLAYER_LIST) do
+        for _, m in ipairs(PlayerList) do
             if m.group == g then memberNames[#memberNames + 1] = m.name ~= "" and m.name or m.id end
         end
 
@@ -449,7 +449,7 @@ else
         local rowH = fh2 + 24
         local off = math.floor((rowH - fh2) * 0.5)
         local catOrder = {}
-        for cat in pairs(PRIV_CATEGORIES) do
+        for cat in pairs(PrivilegeCategories) do
             catOrder[#catOrder + 1] = cat
         end
 
@@ -470,7 +470,7 @@ else
             collapse:DockMargin(0, 0, 0, 10)
             local catList = vgui.Create("DListLayout")
             collapse:SetContents(catList)
-            for _, priv in ipairs(PRIV_CATEGORIES[cat] or {}) do
+            for _, priv in ipairs(PrivilegeCategories[cat] or {}) do
                 local row = vgui.Create("DPanel", catList)
                 row:SetTall(rowH)
                 row:Dock(TOP)
@@ -579,16 +579,16 @@ else
         addBtn.DoClick = function()
             Derma_StringRequest(L("createGroup"), L("newGroupName"), "", function(txt)
                 if txt == "" then return end
-                LAST_GROUP = txt
+                LastGroup = txt
                 net.Start("liaGroupsAdd")
                 net.WriteString(txt)
                 net.SendToServer()
             end)
         end
 
-        if LAST_GROUP and cami[LAST_GROUP] then
+        if LastGroup and cami[LastGroup] then
             for _, b in ipairs(sidebar:GetChildren()) do
-                if b.GetText and b:GetText() == LAST_GROUP then
+                if b.GetText and b:GetText() == LastGroup then
                     b:DoClick()
                     break
                 end
@@ -607,7 +607,7 @@ else
         local data = table.concat(groupChunks[id])
         groupChunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
-        PRIV_CATEGORIES = tbl.privCategories or {}
+        PrivilegeCategories = tbl.privCategories or {}
         lia.admin.groups = tbl.perms or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.admin.groups) end
     end
@@ -616,7 +616,7 @@ else
         local data = table.concat(playerChunks[id])
         playerChunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
-        PLAYER_LIST = tbl.players or {}
+        PlayerList = tbl.players or {}
         if IsValid(lia.gui.players) then buildPlayersUI(lia.gui.players) end
     end
 

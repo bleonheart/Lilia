@@ -7992,12 +7992,12 @@ hook.Add("OnMySQLOOConnected", "PrepareDatabaseStatements", function()
     lia.db.prepare(
         "insertPlayer",
         "INSERT INTO lia_players (_steamID, _steamName) VALUES (?, ?)",
-        { MYSQLOO_STRING, MYSQLOO_STRING }
+        { MysqlooString, MysqlooString }
     )
     lia.db.prepare(
         "updatePlayerStats",
         "UPDATE lia_players SET kills = ?, deaths = ? WHERE _steamID = ?",
-        { MYSQLOO_NUMBER, MYSQLOO_NUMBER, MYSQLOO_STRING }
+        { MysqlooNumber, MysqlooNumber, MysqlooString }
     )
     print("Prepared MySQLOO statements.")
 end)

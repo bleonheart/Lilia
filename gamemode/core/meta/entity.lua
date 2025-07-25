@@ -30,7 +30,7 @@ end
 
 function entityMeta:checkDoorAccess(client, access)
     if not self:isDoor() then return false end
-    access = access or DOOR_GUEST
+    access = access or DoorGuest
     if hook.Run("CanPlayerAccessDoor", client, self, access) then return true end
     if self.liaAccess and (self.liaAccess[client] or 0) >= access then return true end
     return false

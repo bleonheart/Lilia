@@ -113,7 +113,7 @@ net.Receive("liaCharFetchNames", function(_, client)
     net.Send(client)
 end)
 
-local DB_CHUNK = 60000
+local DbChunk = 60000
 local function sendTableData(client, name, data)
     local payload = {
         tbl = name,
@@ -124,9 +124,9 @@ local function sendTableData(client, name, data)
     local comp = util.Compress(json)
     local len = #comp
     local id = util.CRC(tostring(SysTime()) .. len)
-    local parts = math.ceil(len / DB_CHUNK)
+    local parts = math.ceil(len / DbChunk)
     for i = 1, parts do
-        local chunk = string.sub(comp, (i - 1) * DB_CHUNK + 1, math.min(i * DB_CHUNK, len))
+        local chunk = string.sub(comp, (i - 1) * DbChunk + 1, math.min(i * DbChunk, len))
         net.Start("liaDBTableDataChunk")
         net.WriteString(id)
         net.WriteUInt(i, 16)

@@ -639,7 +639,7 @@ Registers a prepared statement (MySQLOO only).
 lia.db.prepare(
     "updateName",
     "UPDATE lia_characters SET _name = ? WHERE _id = ?",
-    { MYSQLOO_STRING, MYSQLOO_INTEGER }
+    { MysqlooString, MysqlooInteger }
 )
 ```
 

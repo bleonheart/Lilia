@@ -1,5 +1,5 @@
 ﻿VoicePanels = {}
-local ICON_MAP = {
+local IconMap = {
     Whispering = "whispertalk.png",
     Yelling = "yelltalk.png",
     Talking = "normaltalk.png"
@@ -31,7 +31,7 @@ end
 
 function PANEL:UpdateIcon()
     local vt = self.client:getNetVar("VoiceType", "Talking")
-    local img = ICON_MAP[vt] or "normaltalk.png"
+    local img = IconMap[vt] or "normaltalk.png"
     self.Icon:SetImage(img)
 end
 
