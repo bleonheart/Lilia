@@ -139,7 +139,8 @@ end
 local DefaultGroups = {
     user = true,
     admin = true,
-    superadmin = true
+    superadmin = true,
+    developer = true
 }
 
 local groupChunks, playerChunks, staffChunks = {}, {}, {}

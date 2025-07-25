@@ -9,6 +9,7 @@ local DefaultGroups = {
     user = true,
     admin = true,
     superadmin = true,
+    developer = true,
 }
 
 local DefaultPrivileges = {
@@ -700,6 +701,30 @@ local function registerDefaultPrivileges()
     end
 end
 
+local function buildDefaultPermissions(group, inherit)
+    local perms = {}
+    for name, priv in pairs(lia.admin.privileges) do
+        local minAccess = priv.MinAccess or "user"
+        local allowed
+        if CAMI and CAMI.UsergroupInherits then
+            allowed = CAMI.UsergroupInherits(inherit or group, minAccess)
+        else
+            local check = inherit or group
+            if check == "superadmin" then
+                allowed = true
+            elseif check == "admin" then
+                allowed = minAccess ~= "superadmin"
+            else
+                allowed = minAccess == "user"
+            end
+        end
+
+        if allowed then perms[name] = true end
+    end
+
+    return perms
+end
+
 function lia.admin.load()
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(groups, privs)
@@ -727,14 +752,18 @@ function lia.admin.load()
             end
         end
 
-        local defaults = {"user", "admin", "superadmin"}
-        if table.Count(lia.admin.groups) == 0 then
-            for _, grp in ipairs(defaults) do
-                lia.admin.createGroup(grp)
-            end
-        else
-            for _, grp in ipairs(defaults) do
-                if not lia.admin.groups[grp] then lia.admin.createGroup(grp) end
+        local defaults = {
+            user = "user",
+            admin = "admin",
+            superadmin = "superadmin",
+            developer = "superadmin"
+        }
+
+        for name, inherit in pairs(defaults) do
+            lia.admin.groups[name] = buildDefaultPermissions(name, inherit)
+            if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup and CAMI.UnregisterUsergroup then
+                if CAMI.GetUsergroup(name) then CAMI.UnregisterUsergroup(name) end
+                CAMI.RegisterUsergroup({Name = name, Inherits = inherit})
             end
         end
 
@@ -862,7 +891,7 @@ function lia.admin.registerPrivilege(privilege)
 end
 
 function lia.admin.removeGroup(groupName)
-    if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
+    if groupName == "user" or groupName == "admin" or groupName == "superadmin" or groupName == "developer" then
         Error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
