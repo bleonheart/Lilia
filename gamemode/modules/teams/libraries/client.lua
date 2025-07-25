@@ -83,6 +83,7 @@ local function makeList(parent)
             end)
         end
 
+        m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. row.steamID) end)
         m:AddOption(L("copyRow"), function()
             local s = ""
             for k, v in pairs(row) do
