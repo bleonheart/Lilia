@@ -256,12 +256,6 @@ local ConditionalFiles = {
         realm = "server"
     },
     {
-        path = "lilia/gamemode/core/libraries/compatibility/ulx.lua",
-        global = "ulx",
-        name = "ULX",
-        realm = "server"
-    },
-    {
         path = "lilia/gamemode/core/libraries/compatibility/permaprops.lua",
         global = "PermaProps",
         name = "PermaProps",
