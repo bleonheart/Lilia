@@ -146,6 +146,11 @@ local DefaultPrivileges = {
         Category = "Permissions"
     },
     {
+        Name = "Spawn Permissions - Can Spawn Blacklisted Entities",
+        MinAccess = "superadmin",
+        Category = "Permissions"
+    },
+    {
         Name = "UserGroups - Staff Group",
         MinAccess = "admin",
         Category = "Permissions"
@@ -322,6 +327,11 @@ local DefaultPrivileges = {
     },
     {
         Name = "Manage Prop Blacklist",
+        MinAccess = "superadmin",
+        Category = "Administration Utilities"
+    },
+    {
+        Name = "Manage Entity Blacklist",
         MinAccess = "superadmin",
         Category = "Administration Utilities"
     },
