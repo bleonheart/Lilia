@@ -454,7 +454,7 @@ Fetches the first row that matches a condition.
 ```lua
 lia.db.selectOne("*", "characters", "id = 1"):next(function(row)
     if row then
-        print("Found character:", row._name)
+        print("Found character:", row.name)
     end
 end)
 ```
