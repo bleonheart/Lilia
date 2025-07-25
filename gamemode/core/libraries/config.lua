@@ -68,18 +68,18 @@ end
 function lia.config.load()
     if SERVER then
         local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        lia.db.select({"_key", "_value"}, "config", "_schema = " .. lia.db.convertDataType(schema)):next(function(res)
+        lia.db.select({"key", "value"}, "config", "schema = " .. lia.db.convertDataType(schema)):next(function(res)
             local rows = res.results or {}
             local existing = {}
             for _, row in ipairs(rows) do
-                local decoded = util.JSONToTable(row._value)
-                lia.config.stored[row._key] = lia.config.stored[row._key] or {}
+                local decoded = util.JSONToTable(row.value)
+                lia.config.stored[row.key] = lia.config.stored[row.key] or {}
                 local value = decoded and decoded[1]
                 if value == nil or value == "" then
-                    lia.config.stored[row._key].value = lia.config.stored[row._key].default
+                    lia.config.stored[row.key].value = lia.config.stored[row.key].default
                 else
-                    lia.config.stored[row._key].value = value
-                    existing[row._key] = true
+                    lia.config.stored[row.key].value = value
+                    existing[row.key] = true
                 end
             end
 
@@ -88,9 +88,9 @@ function lia.config.load()
                 if not existing[k] then
                     lia.config.stored[k].value = v.default
                     inserts[#inserts + 1] = {
-                        _schema = schema,
-                        _key = k,
-                        _value = {v.default}
+                        schema = schema,
+                        key = k,
+                        value = {v.default}
                     }
                 end
             end
@@ -137,15 +137,15 @@ if SERVER then
         local rows = {}
         for k, v in pairs(changed) do
             rows[#rows + 1] = {
-                _key = k,
-                _value = {v}
+                key = k,
+                value = {v}
             }
         end
 
         local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local queries = {"DELETE FROM lia_config WHERE _schema = " .. lia.db.convertDataType(schema)}
+        local queries = {"DELETE FROM lia_config WHERE schema = " .. lia.db.convertDataType(schema)}
         for _, row in ipairs(rows) do
-            queries[#queries + 1] = "INSERT INTO lia_config (_schema,_key,_value) VALUES (" .. lia.db.convertDataType(schema) .. ", " .. lia.db.convertDataType(row._key) .. ", " .. lia.db.convertDataType(row._value) .. ")"
+            queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(schema) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
         end
 
         lia.db.transaction(queries)
@@ -779,7 +779,7 @@ lia.config.add("invW", "Inventory Width", 6, function(_, newW)
     end
 
     local json = util.TableToJSON({newW})
-    lia.db.query("UPDATE lia_invdata SET _value = '" .. lia.db.escape(json) .. "' WHERE _key = 'w' AND _invID IN (SELECT _invID FROM lia_inventories WHERE _charID IS NOT NULL)")
+    lia.db.query("UPDATE lia_invdata SET value = '" .. lia.db.escape(json) .. "' WHERE key = 'w' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
 end, {
     desc = "Defines the width of the default inventory.",
     category = "Character",
@@ -804,7 +804,7 @@ lia.config.add("invH", "Inventory Height", 4, function(_, newH)
     end
 
     local json = util.TableToJSON({newH})
-    lia.db.query("UPDATE lia_invdata SET _value = '" .. lia.db.escape(json) .. "' WHERE _key = 'h' AND _invID IN (SELECT _invID FROM lia_inventories WHERE _charID IS NOT NULL)")
+    lia.db.query("UPDATE lia_invdata SET value = '" .. lia.db.escape(json) .. "' WHERE key = 'h' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
 end, {
     desc = "Defines the height of the default inventory.",
     category = "Character",

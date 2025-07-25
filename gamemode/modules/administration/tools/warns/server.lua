@@ -1,16 +1,16 @@
 ﻿local MODULE = MODULE
 function MODULE:GetWarnings(charID)
-    local condition = "_charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"_id", "_timestamp", "_reason", "_admin"}, "warnings", condition):next(function(res) return res.results or {} end)
+    local condition = "charID = " .. lia.db.convertDataType(charID)
+    return lia.db.select({"id", "timestamp", "reason", "admin"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
 function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
     lia.db.insertTable({
-        _charID = charID,
-        _steamID = steamID,
-        _timestamp = timestamp,
-        _reason = reason,
-        _admin = admin
+        charID = charID,
+        steamID = steamID,
+        timestamp = timestamp,
+        reason = reason,
+        admin = admin
     }, nil, "warnings")
 end
 
@@ -19,7 +19,7 @@ function MODULE:RemoveWarning(charID, index)
     self:GetWarnings(charID):next(function(rows)
         if index < 1 or index > #rows then return d:resolve(nil) end
         local row = rows[index]
-        lia.db.delete("warnings", "_id = " .. lia.db.convertDataType(row._id)):next(function() d:resolve(row) end)
+        lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id)):next(function() d:resolve(row) end)
     end)
     return d
 end
@@ -55,11 +55,11 @@ net.Receive("RequestRemoveWarning", function(_, client)
         targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
         client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
         hook.Run("WarningRemoved", client, targetClient, {
-            reason = warn._reason,
-            admin = warn._admin
+            reason = warn.reason,
+            admin = warn.admin
         }, warnIndex)
-        lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(targetClient:getChar():getID())):next(function(count)
-            lia.log.add(client, "warningRemoved", targetClient, {reason = warn._reason, admin = warn._admin}, count, warnIndex)
+        lia.db.count("warnings", "charID = " .. lia.db.convertDataType(targetClient:getChar():getID())):next(function(count)
+            lia.log.add(client, "warningRemoved", targetClient, {reason = warn.reason, admin = warn.admin}, count, warnIndex)
         end)
     end)
 end)

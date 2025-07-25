@@ -2,9 +2,9 @@
 local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
-        local adminID = row._admin
+        local adminID = row.admin
         if adminID ~= "Unassigned" then adminID = tostring(adminID):match("(%d+)$") or adminID end
-        local timestamp = tonumber(row._timestamp) or 0
+        local timestamp = tonumber(row.timestamp) or 0
         caseclaims[adminID] = caseclaims[adminID] or {
             name = adminID,
             claims = 0,
@@ -15,8 +15,8 @@ local function buildClaimTable(rows)
         local info = caseclaims[adminID]
         info.claims = tonumber(info.claims) + 1
         if timestamp > tonumber(info.lastclaim) then info.lastclaim = timestamp end
-        local reqPly = player.GetBySteamID64(row._requester)
-        info.claimedFor[row._requester] = IsValid(reqPly) and reqPly:Nick() or row._requester
+        local reqPly = player.GetBySteamID64(row.requester)
+        info.claimedFor[row.requester] = IsValid(reqPly) and reqPly:Nick() or row.requester
     end
 
     for adminID, info in pairs(caseclaims) do
@@ -27,19 +27,19 @@ local function buildClaimTable(rows)
 end
 
 function MODULE:GetAllCaseClaims()
-    return lia.db.select({"_requester", "_admin", "_timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
+    return lia.db.select({"requester", "admin", "timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
     local sid64 = admin:SteamID64()
     local adminTag = admin:Name() .. " " .. sid64
     lia.db.updateTable({
-        _admin = adminTag
-    }, nil, "ticketclaims", "_requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND _admin = 'Unassigned'"):next(function() lia.db.count("ticketclaims", "_admin LIKE '%" .. sid64 .. "%'"):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end) end)
+        admin = adminTag
+    }, nil, "ticketclaims", "requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND admin = 'Unassigned'"):next(function() lia.db.count("ticketclaims", "admin LIKE '%" .. sid64 .. "%'"):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end) end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    local pattern = "_admin LIKE '%" .. admin:SteamID64() .. "'"
+    local pattern = "admin LIKE '%" .. admin:SteamID64() .. "'"
     lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
@@ -49,10 +49,10 @@ function MODULE:PlayerSay(client, text)
         ClientAddText(client, Color(70, 0, 130), L("ticketMessageYou"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. " ", Color(0, 255, 0), text)
         self:SendPopup(client, text)
         lia.db.insertTable({
-            _requester = client:SteamID64(),
-            _admin = "Unassigned",
-            _message = text,
-            _timestamp = os.time()
+            requester = client:SteamID64(),
+            admin = "Unassigned",
+            message = text,
+            timestamp = os.time()
         }, nil, "ticketclaims")
         return ""
     end

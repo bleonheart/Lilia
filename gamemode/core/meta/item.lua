@@ -157,7 +157,7 @@ if SERVER then
 
     function ITEM:delete()
         self:destroy()
-        return lia.db.delete("items", "_itemID = " .. self:getID()):next(function() self:onRemoved() end)
+        return lia.db.delete("items", "itemID = " .. self:getID()):next(function() self:onRemoved() end)
     end
 
     function ITEM:remove()
@@ -302,7 +302,7 @@ if SERVER then
             else
                 lia.db.updateTable({
                     ["_" .. key] = value
-                }, nil, "items", "_itemID = " .. self:getID())
+                }, nil, "items", "itemID = " .. self:getID())
             end
             return
         end
@@ -313,8 +313,8 @@ if SERVER then
             lia.db.preparedCall("itemData", nil, self.data, self:getID())
         else
             lia.db.updateTable({
-                _data = self.data
-            }, nil, "items", "_itemID = " .. self:getID())
+                data = self.data
+            }, nil, "items", "itemID = " .. self:getID())
         end
 
         self.data.x, self.data.y = x, y
@@ -347,8 +347,8 @@ if SERVER then
             lia.db.preparedCall("itemq", nil, self.quantity, self:getID())
         else
             lia.db.updateTable({
-                _quantity = self.quantity
-            }, nil, "items", "_itemID = " .. self:getID())
+                quantity = self.quantity
+            }, nil, "items", "itemID = " .. self:getID())
         end
     end
 

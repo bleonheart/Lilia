@@ -2,15 +2,15 @@
 local encodetable = lia.data.encodetable
 local SpawnsTable = "spawns"
 local function buildCondition(folder, map)
-    return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+    return "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
 end
 
 function MODULE:FetchSpawns()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    return lia.db.selectOne({"_data"}, SpawnsTable, condition):next(function(res)
-        local data = res and lia.data.deserialize(res._data) or {}
+    return lia.db.selectOne({"data"}, SpawnsTable, condition):next(function(res)
+        local data = res and lia.data.deserialize(res.data) or {}
         local factions = data.factions or data
         local result = {}
         for fac, spawns in pairs(factions or {}) do
@@ -45,9 +45,9 @@ function MODULE:StoreSpawns(spawns)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     return lia.db.upsert({
-        _schema = folder,
-        _map = map,
-        _data = lia.data.serialize({
+        schema = folder,
+        map = map,
+        data = lia.data.serialize({
             factions = factions
         })
     }, SpawnsTable)

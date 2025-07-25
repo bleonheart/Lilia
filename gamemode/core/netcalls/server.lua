@@ -194,7 +194,7 @@ net.Receive("liaRequestCharList", function(_, client)
     end
 
     local steam64 = target:SteamID64()
-    lia.db.query("SELECT * FROM lia_characters WHERE _steamID = " .. lia.db.convertDataType(steam64), function(data)
+    lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steam64), function(data)
         if not data or #data == 0 then
             client:notifyLocalized("noCharactersFound")
             return
@@ -202,8 +202,8 @@ net.Receive("liaRequestCharList", function(_, client)
 
         local sendData = {}
         for _, row in ipairs(data) do
-            local stored = lia.char.loaded[row._id]
-            local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
+            local stored = lia.char.loaded[row.id]
+            local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
             local isBanned = stored and stored:getBanned() or row._banned
             isBanned = tobool(isBanned)
             local allVars = {}
@@ -244,17 +244,17 @@ net.Receive("liaRequestCharList", function(_, client)
                 allVars[varName] = value
             end
 
-            local lastUsedText = stored and L("onlineNow") or row._lastJoinTime
+            local lastUsedText = stored and L("onlineNow") or row.lastJoinTime
             local entry = {
-                ID = row._id,
-                Name = row._name,
-                Desc = row._desc,
-                Faction = row._faction,
+                ID = row.id,
+                Name = row.name,
+                Desc = row.desc,
+                Faction = row.faction,
                 Banned = isBanned and "Yes" or "No",
                 BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                 BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                 BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                Money = row._money,
+                Money = row.money,
                 LastUsed = lastUsedText,
                 allVars = allVars
             }
@@ -281,8 +281,8 @@ net.Receive("liaRequestAllCharList", function(_, client)
 
         local sendData = {}
         for _, row in ipairs(data) do
-            local stored = lia.char.loaded[row._id]
-            local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
+            local stored = lia.char.loaded[row.id]
+            local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
             local isBanned = stored and stored:getBanned() or row._banned
             isBanned = tobool(isBanned)
             local allVars = {}
@@ -323,17 +323,17 @@ net.Receive("liaRequestAllCharList", function(_, client)
                 allVars[varName] = value
             end
 
-            local lastUsedText = stored and L("onlineNow") or row._lastJoinTime
+            local lastUsedText = stored and L("onlineNow") or row.lastJoinTime
             local entry = {
-                ID = row._id,
-                Name = row._name,
-                Desc = row._desc,
-                Faction = row._faction,
+                ID = row.id,
+                Name = row.name,
+                Desc = row.desc,
+                Faction = row.faction,
                 Banned = isBanned and "Yes" or "No",
                 BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                 BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                 BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                Money = row._money,
+                Money = row.money,
                 LastUsed = lastUsedText,
                 allVars = allVars
             }
@@ -356,11 +356,11 @@ net.Receive("lia_managesitrooms_action", function(_, client)
     local name = net.ReadString()
     local mapName = game.GetMap()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local baseCondition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
+    local baseCondition = "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(mapName)
     if action == 1 then
-        local condition = baseCondition .. " AND _name = " .. lia.db.convertDataType(name)
-        lia.db.selectOne({"_pos"}, "sitrooms", condition):next(function(row)
-            local targetPos = row and lia.data.decodeVector(row._pos)
+        local condition = baseCondition .. " AND name = " .. lia.db.convertDataType(name)
+        lia.db.selectOne({"pos"}, "sitrooms", condition):next(function(row)
+            local targetPos = row and lia.data.decodeVector(row.pos)
             if targetPos then
                 client:SetNW2Vector("previousSitroomPos", client:GetPos())
                 client:SetPos(targetPos)
@@ -371,12 +371,12 @@ net.Receive("lia_managesitrooms_action", function(_, client)
     elseif action == 2 then
         local newName = net.ReadString()
         if newName ~= "" then
-            local newCondition = baseCondition .. " AND _name = " .. lia.db.convertDataType(newName)
+            local newCondition = baseCondition .. " AND name = " .. lia.db.convertDataType(newName)
             lia.db.exists("sitrooms", newCondition):next(function(exists)
                 if exists then return end
-                local condition = baseCondition .. " AND _name = " .. lia.db.convertDataType(name)
+                local condition = baseCondition .. " AND name = " .. lia.db.convertDataType(name)
                 lia.db.updateTable({
-                    _name = newName
+                    name = newName
                 }, nil, "sitrooms", condition)
 
                 client:notifyLocalized("sitroomRenamed")
@@ -384,9 +384,9 @@ net.Receive("lia_managesitrooms_action", function(_, client)
             end)
         end
     elseif action == 3 then
-        local condition = baseCondition .. " AND _name = " .. lia.db.convertDataType(name)
+        local condition = baseCondition .. " AND name = " .. lia.db.convertDataType(name)
         lia.db.updateTable({
-            _pos = lia.data.serialize(client:GetPos())
+            pos = lia.data.serialize(client:GetPos())
         }, nil, "sitrooms", condition)
 
         client:notifyLocalized("sitroomRepositioned")

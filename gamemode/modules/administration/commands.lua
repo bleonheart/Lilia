@@ -16,10 +16,10 @@ lia.command.add("adminmode", {
                 client:ChatPrint(L("noPrevChar"))
             end
         else
-            lia.db.query(string.format("SELECT * FROM lia_characters WHERE _steamID = \"%s\"", lia.db.escape(steamID)), function(data)
+            lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
                 for _, row in ipairs(data) do
-                    local id = tonumber(row._id)
-                    if row._faction == "staff" then
+                    local id = tonumber(row.id)
+                    if row.faction == "staff" then
                         client:setNetVar("OldCharID", client:getChar():getID())
                         net.Start("AdminModeSwapCharacter")
                         net.WriteInt(id, 32)
@@ -261,11 +261,11 @@ lia.command.add("managesitrooms", {
         if not client:hasPrivilege("Manage SitRooms") then return end
         local mapName = game.GetMap()
         local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
-        lia.db.select({"_name", "_pos"}, "sitrooms", condition):next(function(res)
+        local condition = "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(mapName)
+        lia.db.select({"name", "pos"}, "sitrooms", condition):next(function(res)
             local rooms = {}
             for _, row in ipairs(res.results or {}) do
-                rooms[row._name] = lia.data.decodeVector(row._pos)
+                rooms[row.name] = lia.data.decodeVector(row.pos)
             end
 
             net.Start("managesitrooms")
@@ -289,10 +289,10 @@ lia.command.add("addsitroom", {
             local mapName = game.GetMap()
             local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
             lia.db.upsert({
-                _folder = folder,
-                _map = mapName,
-                _name = name,
-                _pos = lia.data.serialize(client:GetPos()),
+                gamemode = folder,
+                map = mapName,
+                name = name,
+                pos = lia.data.serialize(client:GetPos()),
             }, "sitrooms")
 
             client:notifyLocalized("sitroomSet")
@@ -321,14 +321,14 @@ lia.command.add("sendtositroom", {
 
         local mapName = game.GetMap()
         local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
-        lia.db.select({"_name", "_pos"}, "sitrooms", condition):next(function(res)
+        local condition = "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(mapName)
+        lia.db.select({"name", "pos"}, "sitrooms", condition):next(function(res)
             local rooms = {}
             local names = {}
             for _, row in ipairs(res.results or {}) do
-                local pos = lia.data.decodeVector(row._pos)
-                rooms[row._name] = pos
-                names[#names + 1] = row._name
+                local pos = lia.data.decodeVector(row.pos)
+                rooms[row.name] = pos
+                names[#names + 1] = row.name
             end
 
             if #names == 0 then
@@ -871,7 +871,7 @@ lia.command.add("warn", {
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
         MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr)
-        lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+        lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
             target:notifyLocalized("playerWarned", adminStr, reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
@@ -908,9 +908,9 @@ lia.command.add("viewwarns", {
             for index, warn in ipairs(warns) do
                 table.insert(warningList, {
                     index = index,
-                    timestamp = warn._timestamp or L("na"),
-                    reason = warn._reason or L("na"),
-                    admin = warn._admin or L("na")
+                    timestamp = warn.timestamp or L("na"),
+                    reason = warn.reason or L("na"),
+                    admin = warn.admin or L("na")
                 })
             end
 
@@ -984,7 +984,7 @@ lia.command.add("charunbanoffline", {
         if not charData then return client:notifyLocalized("characterNotFound") end
         lia.db.updateTable({
             _banned = nil
-        }, nil, nil, "_id = " .. charID)
+        }, nil, nil, "id = " .. charID)
 
         lia.char.setCharData(charID, "charBanInfo", nil)
         client:notifyLocalized("offlineCharUnbanned", charID)
@@ -1004,7 +1004,7 @@ lia.command.add("charbanoffline", {
         if not charData then return client:notifyLocalized("characterNotFound") end
         lia.db.updateTable({
             _banned = true
-        }, nil, nil, "_id = " .. charID)
+        }, nil, nil, "id = " .. charID)
 
         lia.char.setCharData(charID, "charBanInfo", {
             name = client:Nick(),
@@ -1045,7 +1045,7 @@ lia.command.add("charlist", {
         end
 
         local steam64 = target:SteamID64()
-        lia.db.query("SELECT * FROM lia_characters WHERE _steamID = " .. lia.db.convertDataType(steam64), function(data)
+        lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steam64), function(data)
             if not data or #data == 0 then
                 client:notifyLocalized("noCharactersFound")
                 return
@@ -1053,8 +1053,8 @@ lia.command.add("charlist", {
 
             local sendData = {}
             for _, row in ipairs(data) do
-                local stored = lia.char.loaded[row._id]
-                local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
+                local stored = lia.char.loaded[row.id]
+                local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
                 local isBanned = stored and stored:getBanned() or row._banned
                 isBanned = tobool(isBanned)
                 local allVars = {}
@@ -1099,19 +1099,19 @@ lia.command.add("charlist", {
                 if stored then
                     lastUsedText = L("onlineNow")
                 else
-                    lastUsedText = row._lastJoinTime
+                    lastUsedText = row.lastJoinTime
                 end
 
                 local entry = {
-                    ID = row._id,
-                    Name = row._name,
-                    Desc = row._desc,
-                    Faction = row._faction,
+                    ID = row.id,
+                    Name = row.name,
+                    Desc = row.desc,
+                    Faction = row.faction,
                     Banned = isBanned and "Yes" or "No",
                     BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                     BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                     BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                    Money = row._money,
+                    Money = row.money,
                     LastUsed = lastUsedText,
                     allVars = allVars
                 }
@@ -1658,10 +1658,10 @@ lia.command.add("charunban", {
         end
 
         client.liaNextSearch = CurTime() + 15
-        local sqlCondition = id and "_id = " .. id or "_name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT _id, _name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
+        local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
+        lia.db.query("SELECT id, name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
-                local charID = tonumber(data[1]._id)
+                local charID = tonumber(data[1].id)
                 local isBanned = data[1]._banned
                 isBanned = tobool(isBanned)
                 client.liaNextSearch = 0
@@ -1672,11 +1672,11 @@ lia.command.add("charunban", {
 
                 lia.db.updateTable({
                     _banned = nil
-                }, nil, nil, "_id = " .. charID)
+                }, nil, nil, "id = " .. charID)
 
                 lia.char.setCharData(charID, "charBanInfo", nil)
-                client:notifyLocalized("charUnBan", client:Name(), data[1]._name)
-                lia.log.add(client, "charUnban", data[1]._name, charID)
+                client:notifyLocalized("charUnBan", client:Name(), data[1].name)
+                lia.log.add(client, "charUnban", data[1].name, charID)
             end
         end)
     end

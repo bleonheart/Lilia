@@ -161,25 +161,25 @@ function characterMeta:setData(k, v, noReplication, receiver)
         if istable(k) then
             for nk, nv in pairs(k) do
                 if nv == nil then
-                    lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(nk) .. "'")
+                    lia.db.delete("chardata", "charID = " .. self:getID() .. " AND key = '" .. lia.db.escape(nk) .. "'")
                 else
                     local encoded = pon.encode({nv})
                     lia.db.upsert({
-                        _charID = self:getID(),
-                        _key = nk,
-                        _value = encoded
+                        charID = self:getID(),
+                        key = nk,
+                        value = encoded
                     }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
                 end
             end
         else
             if v == nil then
-                lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(k) .. "'")
+                lia.db.delete("chardata", "charID = " .. self:getID() .. " AND key = '" .. lia.db.escape(k) .. "'")
             else
                 local encoded = pon.encode({v})
                 lia.db.upsert({
-                    _charID = self:getID(),
-                    _key = k,
-                    _value = encoded
+                    charID = self:getID(),
+                    key = k,
+                    value = encoded
                 }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
             end
         end
@@ -369,7 +369,7 @@ if SERVER then
             lia.db.updateTable(data, function()
                 if callback then callback() end
                 hook.Run("CharPostSave", self)
-            end, nil, "_id = " .. self:getID())
+            end, nil, "id = " .. self:getID())
         end
     end
 

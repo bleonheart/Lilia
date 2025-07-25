@@ -22,8 +22,8 @@ end
 function GM:PlayerLoadedChar(client, character)
     local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
     lia.db.updateTable({
-        _lastJoinTime = timeStamp
-    }, nil, "characters", "_id = " .. character:getID())
+        lastJoinTime = timeStamp
+    }, nil, "characters", "id = " .. character:getID())
 
     client:removeRagdoll()
     character:setData("loginTime", os.time())
@@ -453,8 +453,8 @@ function GM:PlayerInitialSpawn(client)
         local address = client:IPAddress()
         client:setLiliaData("lastIP", address)
         lia.db.updateTable({
-            _lastIP = address
-        }, nil, "players", "_steamID = " .. client:SteamID64())
+            lastIP = address
+        }, nil, "players", "steamID = " .. client:SteamID64())
 
         net.Start("liaDataSync")
         net.WriteTable(data)
@@ -666,31 +666,31 @@ function GM:LoadData()
 
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-    lia.db.select({"_itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
+    local condition = "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
+    lia.db.select({"itemID", "pos", "angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
             for _, row in ipairs(items) do
-                local id = tonumber(row._itemID)
+                local id = tonumber(row.itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.decodeVector(row._pos)
-                angles[id] = lia.data.decodeAngle(row._angles)
+                positions[id] = lia.data.decodeVector(row.pos)
+                angles[id] = lia.data.decodeAngle(row.angles)
             end
 
             if #idRange > 0 then
                 local range = "(" .. table.concat(idRange, ", ") .. ")"
                 if hook.Run("ShouldDeleteSavedItems") == true then
-                    lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
+                    lia.db.query("DELETE FROM lia_items WHERE itemID IN " .. range)
                     lia.information(L("serverDeletedItems"))
                 else
-                    lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
+                    lia.db.query("SELECT itemID, uniqueID, data FROM lia_items WHERE itemID IN " .. range, function(data)
                         if not data then return end
                         local loadedItems = {}
                         for _, row in ipairs(data) do
-                            local itemID = tonumber(row._itemID)
-                            local itemData = util.JSONToTable(row._data or "[]")
-                            local uniqueID = row._uniqueID
+                            local itemID = tonumber(row.itemID)
+                            local itemData = util.JSONToTable(row.data or "[]")
+                            local uniqueID = row.uniqueID
                             local itemTable = lia.item.list[uniqueID]
                             local position = positions[itemID]
                             local ang = angles[itemID]

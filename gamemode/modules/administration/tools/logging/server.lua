@@ -23,15 +23,15 @@ function MODULE:ReadLogEntries(category)
     local maxLines = lia.config.get("MaxLogLines", 1000)
     local cutoff = os.time() - maxDays * 86400
     local cutoffStr = os.date("%Y-%m-%d %H:%M:%S", cutoff)
-    local condition = table.concat({"_gamemode = " .. lia.db.convertDataType(engine.ActiveGamemode()), "_category = " .. lia.db.convertDataType(category), "_timestamp >= " .. lia.db.convertDataType(cutoffStr)}, " AND ") .. " ORDER BY _id DESC LIMIT " .. maxLines
-    lia.db.select({"_timestamp", "_message", "_steamID"}, "logs", condition):next(function(res)
+    local condition = table.concat({"gamemode = " .. lia.db.convertDataType(engine.ActiveGamemode()), "category = " .. lia.db.convertDataType(category), "timestamp >= " .. lia.db.convertDataType(cutoffStr)}, " AND ") .. " ORDER BY id DESC LIMIT " .. maxLines
+    lia.db.select({"timestamp", "message", "steamID"}, "logs", condition):next(function(res)
         local rows = res.results or {}
         local logs = {}
         for _, row in ipairs(rows) do
             logs[#logs + 1] = {
-                timestamp = row._timestamp,
-                message = row._message,
-                steamID = row._steamID
+                timestamp = row.timestamp,
+                message = row.message,
+                steamID = row.steamID
             }
         end
 
