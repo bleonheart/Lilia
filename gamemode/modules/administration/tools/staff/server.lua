@@ -158,6 +158,34 @@ local function payloadPlayers()
     }
 end
 
+local function payloadStaff()
+    local promises = {}
+    local staff = {}
+    for _, ply in player.Iterator() do
+        if ply:isStaff() then
+            local d = deferred.new()
+            table.insert(promises, d)
+            lia.db.count("ticketclaims", "admin LIKE '%" .. ply:SteamID64() .. "%'"):next(function(tickets)
+                return lia.db.count("warnings", "admin LIKE '%" .. ply:SteamID() .. "%'"):next(function(warns)
+                    staff[#staff + 1] = {
+                        name = ply:Nick(),
+                        id = ply:SteamID(),
+                        group = ply:GetUserGroup(),
+                        playtime = math.floor(ply:getTotalOnlineTime()),
+                        tickets = tonumber(tickets) or 0,
+                        warns = tonumber(warns) or 0
+                    }
+                    d:resolve()
+                end)
+            end)
+        end
+    end
+
+    return deferred.all(promises):next(function()
+        return {staff = staff}
+    end)
+end
+
 local function applyToCAMI(g)
     if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
     ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
@@ -189,6 +217,13 @@ end)
 net.Receive("liaPlayersRequest", function(_, p)
     if not allowed(p) then return end
     sendBigTable(p, payloadPlayers(), "liaPlayersDataChunk", "liaPlayersDataDone")
+end)
+
+net.Receive("liaStaffRequest", function(_, p)
+    if not allowed(p) then return end
+    payloadStaff():next(function(data)
+        sendBigTable(p, data, "liaStaffDataChunk", "liaStaffDataDone")
+    end)
 end)
 
 net.Receive("liaRequestPlayerGroup", function(_, p)
