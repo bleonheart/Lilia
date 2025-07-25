@@ -1132,7 +1132,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
 
     lia.admin.setPlayerGroup(target, group)
     target:notifyLocalized("plyGroupSet")
-    lia.administration("Information", L("setPlayerGroupTo", group))
+    lia.administration("Information", L("setPlayerGroupTo", target:Nick(), group))
 end)
 
 local function dropCAMIGroup(n)
