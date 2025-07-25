@@ -1045,3 +1045,4 @@ for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
 util.AddNetworkString("liaRequestAllCharList")
+util.AddNetworkString("liaAdminAction")

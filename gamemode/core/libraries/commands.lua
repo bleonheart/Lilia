@@ -189,6 +189,24 @@ if SERVER then
         if commandTbl then
             local results = {commandTbl.onRun(client, arguments or {})}
             hook.Run("liaCommandRan", client, command, arguments or {}, results)
+            if SERVER then
+                local action = lia.admin.actionCommandMap and lia.admin.actionCommandMap[command:lower()]
+                if action then
+                    local targetID, targetName
+                    local arg = (arguments or {})[1]
+                    if isstring(arg) then
+                        local ply = lia.util.findPlayer(client, arg)
+                        if IsValid(ply) then
+                            targetID = ply:SteamID64()
+                            targetName = ply:Name()
+                        else
+                            targetID = arg
+                            targetName = arg
+                        end
+                    end
+                    lia.admin.logAction(client, action, targetID, targetName)
+                end
+            end
             local result = results[1]
             if isstring(result) then
                 if IsValid(client) then

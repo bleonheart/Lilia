@@ -167,15 +167,21 @@ local function payloadStaff()
             table.insert(promises, d)
             lia.db.count("ticketclaims", "admin LIKE '%" .. ply:SteamID64() .. "%'"):next(function(tickets)
                 return lia.db.count("warnings", "admin LIKE '%" .. ply:SteamID() .. "%'"):next(function(warns)
-                    staff[#staff + 1] = {
-                        name = ply:Nick(),
-                        id = ply:SteamID(),
-                        group = ply:GetUserGroup(),
-                        playtime = math.floor(ply:getTotalOnlineTime()),
-                        tickets = tonumber(tickets) or 0,
-                        warns = tonumber(warns) or 0
-                    }
-                    d:resolve()
+                    return lia.admin.countActions(ply:SteamID64()):next(function(actions)
+                        staff[#staff + 1] = {
+                            name = ply:Nick(),
+                            id = ply:SteamID(),
+                            group = ply:GetUserGroup(),
+                            playtime = math.floor(ply:getTotalOnlineTime()),
+                            tickets = tonumber(tickets) or 0,
+                            warns = tonumber(warns) or 0,
+                            bans = actions.bans or 0,
+                            kicks = actions.kicks or 0,
+                            gags = actions.gags or 0,
+                            mutes = actions.mutes or 0
+                        }
+                        d:resolve()
+                    end)
                 end)
             end)
         end

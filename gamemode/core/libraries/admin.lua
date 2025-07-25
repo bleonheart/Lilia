@@ -5,6 +5,53 @@ lia.admin.banList = lia.admin.banList or {}
 lia.admin.lastJoin = lia.admin.lastJoin or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.steamAdmins = lia.admin.steamAdmins or {}
+if SERVER then
+    lia.admin.actionCommandMap = {
+        ban = "ban",
+        plyban = "ban",
+        kick = "kick",
+        plykick = "kick",
+        gag = "gag",
+        plygag = "gag",
+        mute = "mute",
+        plymute = "mute"
+    }
+
+    function lia.admin.logAction(admin, action, targetID, targetName)
+        if not IsValid(admin) or not action then return end
+        lia.db.insertTable({
+            admin = admin:SteamID64(),
+            adminName = admin:Name(),
+            adminGroup = admin:GetUserGroup(),
+            target = targetName or "",
+            targetID = targetID or "",
+            action = action,
+            timestamp = os.time()
+        }, nil, "adminactions")
+    end
+
+    function lia.admin.countActions(id)
+        local query = "SELECT action, COUNT(*) AS c FROM lia_adminactions WHERE admin = " .. lia.db.convertDataType(id) .. " GROUP BY action"
+        return lia.db.query(query):next(function(res)
+            local counts = {bans = 0, kicks = 0, gags = 0, mutes = 0}
+            local rows = res.results or res
+            if istable(rows) then
+                for _, row in ipairs(rows) do
+                    if row.action == "ban" then
+                        counts.bans = tonumber(row.c) or 0
+                    elseif row.action == "kick" then
+                        counts.kicks = tonumber(row.c) or 0
+                    elseif row.action == "gag" then
+                        counts.gags = tonumber(row.c) or 0
+                    elseif row.action == "mute" then
+                        counts.mutes = tonumber(row.c) or 0
+                    end
+                end
+            end
+            return counts
+        end)
+    end
+end
 local DefaultGroups = {
     user = true,
     admin = true,
@@ -992,6 +1039,21 @@ end
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
+    if CLIENT then
+        local action = lia.admin.actionCommandMap and lia.admin.actionCommandMap[cmd]
+        if action then
+            net.Start("liaAdminAction")
+            net.WriteString(action)
+            if IsValid(victim) then
+                net.WriteString(victim:SteamID64())
+                net.WriteString(victim:Name())
+            else
+                net.WriteString(tostring(victim or ""))
+                net.WriteString(tostring(victim or ""))
+            end
+            net.SendToServer()
+        end
+    end
     if cmd == "kick" then
         RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
         return true
@@ -1224,6 +1286,13 @@ if SERVER then
         net.Start("updateAdminGroups")
         net.WriteTable(lia.admin.groups)
         net.Broadcast()
+    end)
+
+    net.Receive("liaAdminAction", function(_, client)
+        local action = net.ReadString()
+        local targetID = net.ReadString()
+        local targetName = net.ReadString()
+        lia.admin.logAction(client, action, targetID, targetName)
     end)
 else
     net.Receive("updateAdminGroups", function()

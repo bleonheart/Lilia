@@ -263,6 +263,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
+    DROP TABLE IF EXISTS `lia_adminactions`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_spawns`;
     DROP TABLE IF EXISTS `lia_usergroups`;
@@ -298,6 +299,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
+    DROP TABLE IF EXISTS lia_adminactions;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_spawns;
     DROP TABLE IF EXISTS lia_usergroups;
@@ -408,6 +410,17 @@ function lia.db.loadTables()
                 requester TEXT,
                 admin TEXT,
                 message TEXT,
+                timestamp INTEGER
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_adminactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                admin TEXT,
+                adminName TEXT,
+                adminGroup TEXT,
+                target TEXT,
+                targetID TEXT,
+                action TEXT,
                 timestamp INTEGER
             );
 
@@ -589,6 +602,18 @@ function lia.db.loadTables()
                 `admin` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `message` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 `timestamp` INT(32) NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_adminactions` (
+                `id` INT(12) NOT NULL AUTO_INCREMENT,
+                `admin` VARCHAR(64) NOT NULL,
+                `adminName` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `adminGroup` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `target` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `targetID` VARCHAR(64) NOT NULL,
+                `action` VARCHAR(16) NOT NULL,
+                `timestamp` INT(32) NOT NULL,
+                PRIMARY KEY (`id`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_warnings` (
