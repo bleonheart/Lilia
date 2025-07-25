@@ -706,6 +706,8 @@ function lia.administration(section, msg)
     MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
 
+
+
 function lia.admin.load()
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(groups, privs)
@@ -932,7 +934,19 @@ if SERVER then
         if ply:IsBot() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
-        if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
+        if CAMI and CAMI.SignalUserGroupChanged then
+            CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia")
+        else
+            if IsValid(ply) and ply:IsPlayer() then
+                ClientAddText(
+                    ply,
+                    Color(83, 143, 239), "[Lilia] [Administration] ",
+                    Color(0, 255, 0), "[Group] ",
+                    Color(255, 255, 255), "Your usergroup has been set to ",
+                    Color(0, 255, 0), usergroup
+                )
+            end
+        end
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
@@ -1166,10 +1180,19 @@ if CAMI.ULX_TOKEN and CAMI.ULX_TOKEN == "ULX" then
         if SERVER then lia.admin.save(true) end
     end)
 
-    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
-        if not IsValid(ply) or not SERVER then return end
-        lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
-    end)
+hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
+    if not IsValid(ply) or not SERVER then return end
+    lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
+    if IsValid(ply) and ply:IsPlayer() then
+        ClientAddText(
+            ply,
+            Color(83, 143, 239), "[Lilia] [Administration] ",
+            Color(0, 255, 0), "[Group] ",
+            Color(255, 255, 255), "Your usergroup has been set to ",
+            Color(0, 255, 0), newGroup
+        )
+    end
+end)
 else
     hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
         lia.admin.groups[g.Name] = nil
@@ -1204,10 +1227,19 @@ else
         if SERVER then lia.admin.save(true) end
     end)
 
-    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
-        if not IsValid(ply) or not SERVER then return end
-        lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
-    end)
+hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
+    if not IsValid(ply) or not SERVER then return end
+    lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
+    if IsValid(ply) and ply:IsPlayer() then
+        ClientAddText(
+            ply,
+            Color(83, 143, 239), "[Lilia] [Administration] ",
+            Color(0, 255, 0), "[Group] ",
+            Color(255, 255, 255), "Your usergroup has been set to ",
+            Color(0, 255, 0), newGroup
+        )
+    end
+end)
 end
 
 if SERVER then
