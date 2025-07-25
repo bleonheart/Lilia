@@ -205,6 +205,7 @@ net.Receive("liaRequestCharList", function(_, client)
             local stored = lia.char.loaded[row._id]
             local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
             local isBanned = stored and stored:getBanned() or row._banned
+            isBanned = tobool(isBanned)
             local allVars = {}
             for varName, varInfo in pairs(lia.char.vars) do
                 local value
@@ -283,6 +284,7 @@ net.Receive("liaRequestAllCharList", function(_, client)
             local stored = lia.char.loaded[row._id]
             local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
             local isBanned = stored and stored:getBanned() or row._banned
+            isBanned = tobool(isBanned)
             local allVars = {}
             for varName, varInfo in pairs(lia.char.vars) do
                 local value

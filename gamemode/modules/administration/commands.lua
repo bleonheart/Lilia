@@ -1069,6 +1069,7 @@ lia.command.add("charlist", {
                 local stored = lia.char.loaded[row._id]
                 local info = stored and stored:getData() or lia.char.getCharData(row._id) or {}
                 local isBanned = stored and stored:getBanned() or row._banned
+                isBanned = tobool(isBanned)
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do
                     local value
@@ -1675,6 +1676,7 @@ lia.command.add("charunban", {
             if data and data[1] then
                 local charID = tonumber(data[1]._id)
                 local isBanned = data[1]._banned
+                isBanned = tobool(isBanned)
                 client.liaNextSearch = 0
                 if not isBanned then
                     client:notifyLocalized("charNotBanned")
