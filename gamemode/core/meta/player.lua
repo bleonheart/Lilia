@@ -18,7 +18,6 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    -- if true then return true end
     if self:IsBot() then
         self:ChatPrint(L("accessDeniedBots"))
         return false

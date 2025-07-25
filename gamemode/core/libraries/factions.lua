@@ -51,11 +51,6 @@ function lia.faction.loadFromDir(directory)
     end
 end
 
---- Registers a faction from a table.
--- @param uniqueID string Unique identifier for the faction.
--- @param data table Table containing faction data.
--- @realm shared
--- @return table Registered faction table.
 function lia.faction.register(uniqueID, data)
     assert(isstring(uniqueID), "uniqueID must be a string")
     data = data or {}

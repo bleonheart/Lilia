@@ -37,11 +37,6 @@ function lia.class.loadFromDir(directory)
     end
 end
 
---- Registers a class table directly.
--- @param uniqueID string Unique identifier for the class.
--- @param data table Table of class fields.
--- @realm shared
--- @return table Registered class table.
 function lia.class.register(uniqueID, data)
     assert(isstring(uniqueID), "uniqueID must be a string")
     data = data or {}

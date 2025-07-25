@@ -472,7 +472,6 @@ lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) 
     options = CLIENT and getDermaSkins() or {"Lilia Skin"}
 })
 
--- lia.config definitions
 lia.config.add("PermaClass", "Permanent Classes", true, nil, {
     desc = "Whether or not classes are saved in characters",
     category = "Character",
