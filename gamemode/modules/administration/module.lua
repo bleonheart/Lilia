@@ -297,6 +297,16 @@ else
         if IsValid(o) then o:SetFont(f) end
     end
 
+    local function toUnixTime(val)
+        if isnumber(val) then return val end
+        if isstring(val) then
+            local num = tonumber(val)
+            if num then return num end
+            return os.time(lia.time.toNumber(val))
+        end
+        return 0
+    end
+
     local function buildPlayersUI(parent)
         parent:Clear()
         local list = parent:Add("DListView")
@@ -308,13 +318,15 @@ else
         list:AddColumn(L("lastJoin"))
         list:AddColumn(L("banned"))
         for _, v in ipairs(PlayerList) do
+            local firstJoin = toUnixTime(v.firstJoin)
+            local lastJoin = toUnixTime(v.lastJoin)
             local bannedText = v.banned == nil and "no" or v.banned and "Yes" or "No"
             local row = list:AddLine(
                 v.name,
                 v.id,
                 v.group,
-                v.firstJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.firstJoin) or "",
-                v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "",
+                firstJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", firstJoin) or "",
+                lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", lastJoin) or "",
                 bannedText
             )
             row.steamID = v.id
