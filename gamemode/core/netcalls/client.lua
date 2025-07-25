@@ -1005,30 +1005,6 @@ local function handleTableData(id)
         populateTable(lia.gui.tickets, columns, rows)
         return
     end
-
-    local _, list = lia.util.CreateTableUI(tbl, columns, rows)
-    if IsValid(list) then
-        function list:OnRowRightClick(_, _, line)
-            if not IsValid(line) or not line.rowData then return end
-            local rowData = line.rowData
-            local menu = DermaMenu()
-            menu:AddOption(L("copyRow"), function()
-                local rowString = ""
-                for key, value in pairs(rowData) do
-                    rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
-                end
-
-                rowString = rowString:sub(1, -4)
-                SetClipboardText(rowString)
-            end):SetIcon("icon16/page_copy.png")
-
-            if LocalPlayer():hasPrivilege("See Decoded Tables") then
-                local menu = DermaMenu()
-                menu:AddOption("View Decoded Table", function() openRowInfo(line.rowData) end)
-                menu:Open()
-            end
-        end
-    end
 end
 
 net.Receive("liaDBTables", function()
