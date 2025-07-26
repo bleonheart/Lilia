@@ -1,4 +1,4 @@
-﻿lia.config.add("DoorLockTime", "Door Lock Time", 0.5, nil, {
+lia.config.add("DoorLockTime", "Door Lock Time", 0.5, nil, {
     desc = "Time it takes to lock a door",
     category = "Doors",
     type = "Float",
@@ -12,4 +12,10 @@ lia.config.add("DoorSellRatio", "Door Sell Ratio", 0.5, nil, {
     type = "Float",
     min = 0.0,
     max = 1.0
+})
+
+lia.config.add("DoorsAlwaysDisabled", "Doors Always Disabled", false, nil, {
+    desc = "Should all doors start disabled when the map loads?",
+    category = "Doors",
+    type = "Boolean"
 })
