@@ -1,36 +1,30 @@
 ﻿local MODULE = MODULE
 local encodetable = lia.data.encodetable
-local SpawnsTable = "spawns"
-local function buildCondition(folder, map)
-    return "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
-end
+
 
 function MODULE:FetchSpawns()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    local condition = buildCondition(folder, map)
-    return lia.db.selectOne({"data"}, SpawnsTable, condition):next(function(res)
-        local data = res and lia.data.deserialize(res.data) or {}
-        local factions = data.factions or data
-        local result = {}
-        for fac, spawns in pairs(factions or {}) do
-            local t = {}
-            for i = 1, #spawns do
-                local spawnData = lia.data.deserialize(spawns[i])
-                if isvector(spawnData) then
-                    spawnData = {
-                        pos = spawnData,
-                        ang = angle_zero
-                    }
-                end
-
-                t[i] = spawnData
+    local d = deferred.new()
+    local data = lia.data.get("spawns", {})
+    local factions = data.factions or data
+    local result = {}
+    for fac, spawns in pairs(factions or {}) do
+        local t = {}
+        for i = 1, #spawns do
+            local spawnData = lia.data.deserialize(spawns[i])
+            if isvector(spawnData) then
+                spawnData = {
+                    pos = spawnData,
+                    ang = angle_zero
+                }
             end
 
-            result[fac] = t
+            t[i] = spawnData
         end
-        return result
-    end)
+
+        result[fac] = t
+    end
+    d:resolve(result)
+    return d
 end
 
 function MODULE:StoreSpawns(spawns)
@@ -42,15 +36,7 @@ function MODULE:StoreSpawns(spawns)
         end
     end
 
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    return lia.db.upsert({
-        schema = folder,
-        map = map,
-        data = lia.data.serialize({
-            factions = factions
-        })
-    }, SpawnsTable)
+    lia.data.set("spawns", {factions = factions})
 end
 
 local function SpawnPlayer(client)

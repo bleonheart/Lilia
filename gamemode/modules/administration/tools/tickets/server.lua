@@ -27,20 +27,30 @@ local function buildClaimTable(rows)
 end
 
 function MODULE:GetAllCaseClaims()
-    return lia.db.select({"requester", "admin", "timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
+    return lia.db.select({"targetSteam", "adminSteam", "timestamp"}, "staffactions", "action = 'ticketClaim'"):next(function(res)
+        local rows = {}
+        for _, v in ipairs(res.results or {}) do
+            rows[#rows + 1] = {
+                requester = v.targetSteam,
+                admin = v.adminSteam,
+                timestamp = v.timestamp
+            }
+        end
+        return buildClaimTable(rows)
+    end)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    local sid64 = admin:SteamID64()
-    local adminTag = admin:Name() .. " " .. sid64
-    lia.db.updateTable({
-        admin = adminTag
-    }, nil, "ticketclaims", "requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND admin = 'Unassigned'"):next(function() lia.db.count("ticketclaims", "admin LIKE '%" .. sid64 .. "%'"):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end) end)
+    lia.admin.addStaffAction(admin, "ticketClaim", requester)
+    lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
+        lia.log.add(admin, "ticketClaimed", requester:Name(), count)
+    end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    local pattern = "admin LIKE '%" .. admin:SteamID64() .. "'"
-    lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
+    lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
+        lia.log.add(admin, "ticketClosed", requester:Name(), count)
+    end)
 end
 
 function MODULE:PlayerSay(client, text)
@@ -48,12 +58,7 @@ function MODULE:PlayerSay(client, text)
         text = string.sub(text, 2)
         ClientAddText(client, Color(70, 0, 130), L("ticketMessageYou"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. " ", Color(0, 255, 0), text)
         self:SendPopup(client, text)
-        lia.db.insertTable({
-            requester = client:SteamID64(),
-            admin = "Unassigned",
-            message = text,
-            timestamp = os.time()
-        }, nil, "ticketclaims")
+        lia.admin.addStaffAction(client, "ticketOpen", client, text)
         return ""
     end
 end

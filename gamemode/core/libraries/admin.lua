@@ -7,7 +7,7 @@ lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.steamAdmins = lia.admin.steamAdmins or {}
 if SERVER then
     util.AddNetworkString("liaStaffActionLog")
-    function lia.admin.addStaffAction(admin, action, victim)
+    function lia.admin.addStaffAction(admin, action, victim, message, charID)
         local targetName
         local targetSteam
         if IsValid(victim) and victim:IsPlayer() then
@@ -33,7 +33,9 @@ if SERVER then
             adminSteam = IsValid(admin) and admin:SteamID() or "Console",
             adminName = IsValid(admin) and admin:Name() or "Console",
             adminGroup = IsValid(admin) and admin:GetUserGroup() or "Console",
-            action = action
+            action = action,
+            message = message,
+            charID = charID
         }, nil, "staffactions")
     end
 

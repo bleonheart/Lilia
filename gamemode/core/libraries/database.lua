@@ -264,13 +264,10 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
-    DROP TABLE IF EXISTS `lia_spawns`;
     DROP TABLE IF EXISTS `lia_usergroups`;
     DROP TABLE IF EXISTS `lia_privileges`;
-    DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
-    DROP TABLE IF EXISTS `lia_warnings`;
 ]])
             local done = 0
             for i = 1, #queries do
@@ -298,13 +295,10 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
-    DROP TABLE IF EXISTS lia_spawns;
     DROP TABLE IF EXISTS lia_usergroups;
     DROP TABLE IF EXISTS lia_privileges;
-    DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
-    DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)
     end
@@ -402,32 +396,18 @@ function lia.db.loadTables()
                 steamID VARCHAR
             );
 
-            CREATE TABLE IF NOT EXISTS lia_ticketclaims (
-                requester TEXT,
-                admin TEXT,
-                message TEXT,
-                timestamp INTEGER
-            );
-
-            CREATE TABLE IF NOT EXISTS lia_warnings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                charID INTEGER,
-                timestamp DATETIME,
-                playerName TEXT,
-                playerSteam TEXT,
-                reason TEXT,
-                adminName TEXT,
-                adminSteam TEXT
-            );
 
             CREATE TABLE IF NOT EXISTS lia_staffactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 timestamp DATETIME,
                 targetName TEXT,
                 targetSteam TEXT,
                 adminSteam TEXT,
                 adminName TEXT,
                 adminGroup TEXT,
-                action TEXT
+                action TEXT,
+                message TEXT,
+                charID INTEGER
             );
 
             CREATE TABLE IF NOT EXISTS lia_doors (
@@ -445,20 +425,7 @@ function lia.db.loadTables()
                 PRIMARY KEY (gamemode, map, id)
             );
 
-            CREATE TABLE IF NOT EXISTS lia_spawns (
-                schema TEXT,
-                map TEXT,
-                data TEXT,
-                PRIMARY KEY (schema, map)
-            );
 
-            CREATE TABLE IF NOT EXISTS lia_sitrooms (
-                gamemode TEXT,
-                map TEXT,
-                name TEXT,
-                pos TEXT,
-                PRIMARY KEY (gamemode, map, name)
-            );
 
             CREATE TABLE IF NOT EXISTS lia_data (
                 gamemode TEXT,
@@ -585,33 +552,18 @@ function lia.db.loadTables()
                 PRIMARY KEY (`id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
-                `requester` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `admin` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `message` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
-                `timestamp` INT(32) NOT NULL
-            );
-
-            CREATE TABLE IF NOT EXISTS `lia_warnings` (
-                `id` INT(12) NOT NULL AUTO_INCREMENT,
-                `charID` INT(12) NULL DEFAULT NULL,
-                `timestamp` DATETIME NOT NULL,
-                `playerName` TEXT NULL COLLATE 'utf8mb4_general_ci',
-                `playerSteam` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-                `reason` TEXT NULL COLLATE 'utf8mb4_general_ci',
-                `adminName` TEXT NULL COLLATE 'utf8mb4_general_ci',
-                `adminSteam` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-                PRIMARY KEY (`id`)
-            );
-
             CREATE TABLE IF NOT EXISTS `lia_staffactions` (
+                `id` INT(12) NOT NULL AUTO_INCREMENT,
                 `timestamp` DATETIME NOT NULL,
                 `targetName` TEXT NULL COLLATE 'utf8mb4_general_ci',
                 `targetSteam` VARCHAR(64) NULL COLLATE 'utf8mb4_general_ci',
                 `adminSteam` VARCHAR(64) NULL COLLATE 'utf8mb4_general_ci',
                 `adminName` TEXT NULL COLLATE 'utf8mb4_general_ci',
                 `adminGroup` VARCHAR(32) NULL COLLATE 'utf8mb4_general_ci',
-                `action` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci'
+                `action` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `message` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `charID` INT(12) NULL DEFAULT NULL,
+                PRIMARY KEY (`id`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_doors` (
@@ -629,21 +581,7 @@ function lia.db.loadTables()
                 PRIMARY KEY (`gamemode`, `map`, `id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_spawns` (
-                `schema` TEXT NULL,
-                `map` TEXT NULL,
-                `data` TEXT NULL,
-                PRIMARY KEY (`schema`, `map`)
-            );
 
-
-            CREATE TABLE IF NOT EXISTS `lia_sitrooms` (
-                `gamemode` TEXT NULL,
-                `map` TEXT NULL,
-                `name` TEXT NULL,
-                `pos` TEXT NULL,
-                PRIMARY KEY (`gamemode`, `map`, `name`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_data` (
                 `gamemode` TEXT NULL,
