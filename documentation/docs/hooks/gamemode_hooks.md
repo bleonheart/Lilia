@@ -9329,7 +9329,7 @@ Checks if `client` can invite `target` to the same faction. Return false to deny
 ```lua
 -- Prevent regular members from inviting players
 hook.Add("CanInviteToFaction", "OfficerOnlyInvites", function(ply, target)
-    return ply:hasFlags("Z")
+    return ply:hasFlags("V")
 end)
 ```
 
@@ -9360,7 +9360,7 @@ Checks if `client` can invite `target` to their current class. Return false to d
 ```lua
 -- Only allow instructors to invite others to their class
 hook.Add("CanInviteToClass", "InstructorOnlyInvites", function(ply, target)
-    return ply:hasFlags("Z")
+    return ply:hasFlags("V")
 end)
 ```
 
