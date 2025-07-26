@@ -155,7 +155,7 @@ hook.Add("liaAdminRegisterTab", "AdminTabTicketsDB", function(tabs)
             pnl:DockPadding(10, 10, 10, 10)
             lia.gui.tickets = pnl
             net.Start("liaRequestTableData")
-            net.WriteString("lia_ticketclaims")
+            net.WriteString("lia_staffactions")
             net.SendToServer()
             return pnl
         end

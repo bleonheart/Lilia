@@ -31,7 +31,7 @@
                     client:Nick(),
                     client:SteamID()
                 )
-                lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+                lia.db.count("staffactions", "action = 'warning' AND charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
                     local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
                     target:notifyLocalized("playerWarned", adminStr, L("cheaterWarningReason"))
                     client:notifyLocalized("warningIssued", target:Nick())

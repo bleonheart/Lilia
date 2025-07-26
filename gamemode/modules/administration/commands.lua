@@ -260,13 +260,10 @@ lia.command.add("managesitrooms", {
     onRun = function(client)
         if not client:hasPrivilege("Manage SitRooms") then return end
         local mapName = game.GetMap()
-        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(mapName)
-        lia.db.select({"name", "pos"}, "sitrooms", condition):next(function(res)
-            local rooms = {}
-            for _, row in ipairs(res.results or {}) do
-                rooms[row.name] = lia.data.decodeVector(row.pos)
-            end
+        local rooms = lia.data.get("sitrooms", {})
+        for name, pos in pairs(rooms) do
+            rooms[name] = lia.data.decodeVector(pos)
+        end
 
             net.Start("managesitrooms")
             net.WriteTable(rooms)
@@ -288,12 +285,9 @@ lia.command.add("addsitroom", {
 
             local mapName = game.GetMap()
             local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-            lia.db.upsert({
-                gamemode = folder,
-                map = mapName,
-                name = name,
-                pos = lia.data.serialize(client:GetPos()),
-            }, "sitrooms")
+            local rooms = lia.data.get("sitrooms", {})
+            rooms[name] = lia.data.encodetable(client:GetPos())
+            lia.data.set("sitrooms", rooms)
 
             client:notifyLocalized("sitroomSet")
             lia.log.add(client, "sitRoomSet", string.format("Map: %s | Name: %s | Position: %s", mapName, name, tostring(client:GetPos())), "Set the sitroom location")
@@ -319,17 +313,12 @@ lia.command.add("sendtositroom", {
             return
         end
 
-        local mapName = game.GetMap()
-        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(mapName)
-        lia.db.select({"name", "pos"}, "sitrooms", condition):next(function(res)
-            local rooms = {}
-            local names = {}
-            for _, row in ipairs(res.results or {}) do
-                local pos = lia.data.decodeVector(row.pos)
-                rooms[row.name] = pos
-                names[#names + 1] = row.name
-            end
+        local rooms = lia.data.get("sitrooms", {})
+        local names = {}
+        for n, pos in pairs(rooms) do
+            rooms[n] = lia.data.decodeVector(pos)
+            names[#names + 1] = n
+        end
 
             if #names == 0 then
                 client:notifyLocalized("sitroomNotSet")
@@ -879,7 +868,7 @@ lia.command.add("warn", {
             client:Nick(),
             client:SteamID()
         )
-        lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+        lia.db.count("staffactions", "action = 'warning' AND charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
             target:notifyLocalized("playerWarned", adminStr, reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
