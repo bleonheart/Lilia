@@ -210,10 +210,9 @@ net.Receive("liaRequestCharList", function(_, client)
             local isBanned = stored and stored:getBanned() or row.banned
             if isstring(isBanned) then
                 local lower = isBanned:lower()
-                if lower == "false" or lower == "nil" or isBanned == "NULL" then
-                    isBanned = false
-                end
+                if lower == "false" or lower == "nil" or isBanned == "NULL" then isBanned = false end
             end
+
             isBanned = tobool(isBanned)
             local allVars = {}
             for varName, varInfo in pairs(lia.char.vars) do
@@ -265,6 +264,7 @@ net.Receive("liaRequestCharList", function(_, client)
                 local stripped = since:match("^(.-)%sago$") or since
                 lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
             end
+
             local money = row.money
             if money == nil or money == "NULL" then money = 0 end
             local entry = {
@@ -312,10 +312,9 @@ net.Receive("liaRequestAllCharList", function(_, client)
             local isBanned = stored and stored:getBanned() or row.banned
             if isstring(isBanned) then
                 local lower = isBanned:lower()
-                if lower == "false" or lower == "nil" or isBanned == "NULL" then
-                    isBanned = false
-                end
+                if lower == "false" or lower == "nil" or isBanned == "NULL" then isBanned = false end
             end
+
             isBanned = tobool(isBanned)
             local allVars = {}
             for varName, varInfo in pairs(lia.char.vars) do
@@ -326,7 +325,7 @@ net.Receive("liaRequestAllCharList", function(_, client)
                     elseif varName == "var" then
                         value = stored:getVar()
                     else
-                        local getter = stored["get" .. varName:sub(1,1):upper() .. varName:sub(2)]
+                        local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
                         if isfunction(getter) then
                             value = getter(stored)
                         else
@@ -367,6 +366,7 @@ net.Receive("liaRequestAllCharList", function(_, client)
                 local stripped = since:match("^(.-)%sago$") or since
                 lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
             end
+
             local money = row.money
             if money == nil or money == "NULL" then money = 0 end
             local entry = {
@@ -427,5 +427,85 @@ net.Receive("lia_managesitrooms_action", function(_, client)
             client:notifyLocalized("sitroomRepositioned")
             lia.log.add(client, "sitRoomRepositioned", string.format("Map: %s | Name: %s | New Position: %s", mapName, name, tostring(client:GetPos())), L("logRepositionedSitroom"))
         end
+    end
+end)
+
+net.Receive("CheckSeed", function(_, client)
+    local sentSteamID = net.ReadString()
+    local realSteamID = client:SteamID64()
+    if not sentSteamID or sentSteamID == "" or not sentSteamID:match("^%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?$") then
+        lia.notifyAdmin(L("steamIDMissing", client:Name(), realSteamID))
+        lia.log.add(client, "steamIDMissing", client:Name(), realSteamID)
+        return
+    end
+
+    if sentSteamID ~= realSteamID and sentSteamID ~= client:OwnerSteamID64() then
+        lia.notifyAdmin(L("steamIDMismatch", client:Name(), realSteamID, sentSteamID))
+        lia.log.add(client, "steamIDMismatch", client:Name(), realSteamID, sentSteamID)
+    end
+end)
+
+net.Receive("TransferMoneyFromP2P", function(_, sender)
+    local amount = net.ReadUInt(32)
+    local target = net.ReadEntity()
+    if lia.config.get("DisableCheaterActions", true) and sender:getNetVar("cheater", false) then
+        lia.log.add(sender, "cheaterAction", "transfer money")
+        return
+    end
+
+    if not IsValid(sender) or not sender:getChar() then return end
+    if sender:IsFamilySharedAccount() and not lia.config.get("AltsDisabled", false) then
+        sender:notifyLocalized("familySharedMoneyTransferDisabled")
+        return
+    end
+
+    if not IsValid(target) or not target:IsPlayer() or not target:getChar() then return end
+    if amount <= 0 or not sender:getChar():hasMoney(amount) then return end
+    target:getChar():giveMoney(amount)
+    sender:getChar():takeMoney(amount)
+    local senderName = sender:getChar():getDisplayedName(target)
+    local targetName = sender:getChar():getDisplayedName(sender)
+    sender:notifyLocalized("moneyTransferSent", lia.currency.get(amount), targetName)
+    target:notifyLocalized("moneyTransferReceived", lia.currency.get(amount), senderName)
+end)
+
+net.Receive("RunOption", function(_, ply)
+    if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
+        lia.log.add(ply, "cheaterAction", "use interaction option")
+        return
+    end
+
+    local name = net.ReadString()
+    local opt = MODULE.Interactions[name]
+    local tracedEntity = ply:getTracedEntity()
+    if opt and opt.runServer and IsValid(tracedEntity) then opt.onRun(ply, tracedEntity) end
+end)
+
+net.Receive("RunLocalOption", function(_, ply)
+    if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
+        lia.log.add(ply, "cheaterAction", "use local option")
+        return
+    end
+
+    local name = net.ReadString()
+    local opt = MODULE.Actions[name]
+    if opt and opt.runServer then opt.onRun(ply) end
+end)
+
+net.Receive("CheckHack", function(_, client)
+    lia.log.add(client, "hackAttempt", "CheckHack")
+    local override = hook.Run("PlayerCheatDetected", client)
+    client:setNetVar("cheater", true)
+    client:setLiliaData("cheater", true)
+    hook.Run("OnCheaterCaught", client)
+    if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
+end)
+
+net.Receive("VerifyCheatsResponse", function(_, client)
+    lia.log.add(client, "verifyCheatsOK")
+    client.VerifyCheatsPending = nil
+    if client.VerifyCheatsTimer then
+        timer.Remove(client.VerifyCheatsTimer)
+        client.VerifyCheatsTimer = nil
     end
 end)
