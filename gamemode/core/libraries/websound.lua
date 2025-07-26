@@ -101,6 +101,39 @@ function sound.PlayURL(url, mode, cb)
     return origPlayURL(url, mode, cb)
 end
 
+concommand.Add("lia_saved_sounds", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if not files or #files == 0 then return end
+    local f = vgui.Create("DFrame")
+    f:SetTitle(L("webSoundsTitle"))
+    f:SetSize(ScrW() * 0.6, ScrH() * 0.6)
+    f:Center()
+    f:MakePopup()
+    local scroll = vgui.Create("DScrollPanel", f)
+    scroll:Dock(FILL)
+    local layout = vgui.Create("DIconLayout", scroll)
+    layout:Dock(FILL)
+    layout:SetSpaceX(4)
+    layout:SetSpaceY(4)
+    for _, fn in ipairs(files) do
+        local btn = layout:Add("DButton")
+        btn:SetText(fn)
+        btn:SetSize(200, 20)
+        btn.DoClick = function() sound.PlayFile(buildPath(baseDir .. fn), "", function(chan) if chan then chan:Play() end end) end
+    end
+end)
+
+concommand.Add("lia_wipe_sounds", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    for _, fn in ipairs(files) do
+        file.Delete(baseDir .. fn)
+    end
+
+    cache = {}
+    urlMap = {}
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[WebSound]", Color(255, 255, 255), " " .. L("webSoundCacheCleared") .. "\n")
+end)
+
 ensureDir(baseDir)
 hook.Add("EntityEmitSound", "liaWebSound", function(data)
     local soundName = data.OriginalSoundName or data.SoundName

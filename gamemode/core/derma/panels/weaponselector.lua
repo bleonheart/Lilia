@@ -15,7 +15,7 @@ local LocalPlayer = LocalPlayer
 local math = math
 local color_white = color_white
 local surface = surface
-local InAttack = IN_ATTACK
+local IN_ATTACK = IN_ATTACK
 local function getWeaponFromIndex(i, weapons)
     return weapons[i] or NULL
 end
@@ -110,7 +110,7 @@ local function PlayerBindPress(client, bind, pressed)
     if not pressed then return end
     if client:InVehicle() then return end
     local weapon = client:GetActiveWeapon()
-    if IsValid(weapon) and weapon:GetClass() == "weapon_physgun" and client:KeyDown(InAttack) then return end
+    if IsValid(weapon) and weapon:GetClass() == "weapon_physgun" and client:KeyDown(IN_ATTACK) then return end
     if hook.Run("CanPlayerChooseWeapon", weapon) == false then return end
     bind = bind:lower()
     local weapons = client:GetWeapons()

@@ -1,7 +1,7 @@
 ﻿local sw, sh = ScrW(), ScrH()
-local ColsMode = 2
-local ColsPrice = 3
-local ColsStock = 4
+local COLS_MODE = 2
+local COLS_PRICE = 3
+local COLS_STOCK = 4
 local RarityColors = lia.vendor.rarities
 local VendorClick = {"buttons/button15.wav", 30, 250}
 local PANEL = {}
@@ -263,8 +263,8 @@ function PANEL:populateItems()
         local item = lia.item.list[id]
         local mode = liaVendorEnt:getTradeMode(id)
         if item and mode then
-            if mode ~= VendorBuyOnly then self:updateItem(id, "vendor") end
-            if mode ~= VendorSellOnly then
+            if mode ~= VENDOR_BUYONLY then self:updateItem(id, "vendor") end
+            if mode ~= VENDOR_SELLONLY then
                 local pnl = self:updateItem(id, "me")
                 if pnl then pnl:setIsSelling(true) end
             end
@@ -276,8 +276,8 @@ function PANEL:shouldShow(id, which)
     if not IsValid(liaVendorEnt) then return false end
     local mode = liaVendorEnt:getTradeMode(id)
     if not mode then return false end
-    if which == "me" and mode == VendorSellOnly then return false end
-    if which == "vendor" and mode == VendorBuyOnly then return false end
+    if which == "me" and mode == VENDOR_SELLONLY then return false end
+    if which == "vendor" and mode == VENDOR_BUYONLY then return false end
     return true
 end
 
@@ -320,7 +320,7 @@ function PANEL:GetItemCategoryList()
     for id in pairs(data) do
         local itm = lia.item.list[id]
         if itm then
-            local cat = L(itm.category or "misc")
+            local cat = itm.category or L("misc")
             out[cat:sub(1, 1):upper() .. cat:sub(2)] = true
         end
     end
@@ -342,12 +342,12 @@ function PANEL:applyCategoryFilter()
     if not istable(data) then data = liaVendorEnt:getNetVar("items", {}) end
     for id in SortedPairs(data) do
         local itm = lia.item.list[id]
-        local cat = L(itm and itm.category or "misc")
+        local cat = itm and itm.category or L("misc")
         cat = cat:sub(1, 1):upper() .. cat:sub(2)
         if not self.currentCategory or self.currentCategory == L("vendorShowAll") or cat == self.currentCategory then
             local mode = liaVendorEnt:getTradeMode(id)
-            if mode ~= VendorBuyOnly then self:updateItem(id, "vendor") end
-            if mode ~= VendorSellOnly then
+            if mode ~= VENDOR_BUYONLY then self:updateItem(id, "vendor") end
+            if mode ~= VENDOR_SELLONLY then
                 local pnl = self:updateItem(id, "me")
                 if pnl then pnl:setIsSelling(true) end
             end
@@ -391,6 +391,9 @@ function PANEL:onVendorPropEdited(_, key)
         for _, v in pairs(self.items.me) do
             if IsValid(v) then v:updateLabel() end
         end
+    elseif key == "preset" then
+        local preset = liaVendorEnt:getNetVar("preset", "none")
+        if IsValid(self.preset) then self.preset:SetValue(preset == "none" and L("none") or preset) end
     elseif key == "skin" and IsValid(self.skin) then
         self.skin:SetValue(liaVendorEnt:GetSkin())
     elseif key == "bodygroup" and IsValid(lia.gui.vendorBodygroupEditor) then
@@ -730,54 +733,31 @@ function PANEL:Init()
         lia.vendor.editor.preset(value)
     end
 
-    self:setupItemsPanel(currentPreset == "none")
+    self.items = self:Add("DListView")
+    self.items:Dock(FILL)
+    self.items:DockMargin(0, 4, 0, 0)
+    self.items:AddColumn(L("name")).Header:SetTextColor(color_white)
+    self.items:AddColumn(L("mode")).Header:SetTextColor(color_white)
+    self.items:AddColumn(L("price")).Header:SetTextColor(color_white)
+    self.items:AddColumn(L("stock")).Header:SetTextColor(color_white)
+    self.items:AddColumn(L("category")).Header:SetTextColor(color_white)
+    self.items:SetMultiSelect(false)
+    self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
+    self.searchBar = self:Add("DTextEntry")
+    self.searchBar:Dock(TOP)
+    self.searchBar:DockMargin(0, 4, 0, 0)
+    self.searchBar:SetUpdateOnType(true)
+    self.searchBar:SetPlaceholderText(L("search"))
+    self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
+    self.lines = {}
+    self:ReloadItemList()
     self:listenForUpdates()
     self:updateMoney()
     self:updateSellScale()
 end
 
-function PANEL:setupItemsPanel(showList)
-    if IsValid(self.items) then self.items:Remove() end
-    if IsValid(self.searchBar) then self.searchBar:Remove() end
-    if IsValid(self.presetNotice) then self.presetNotice:Remove() end
-    if showList then
-        self.items = self:Add("DListView")
-        self.items:Dock(FILL)
-        self.items:DockMargin(0, 4, 0, 0)
-        self.items:AddColumn(L("name")).Header:SetTextColor(color_white)
-        self.items:AddColumn(L("mode")).Header:SetTextColor(color_white)
-        self.items:AddColumn(L("price")).Header:SetTextColor(color_white)
-        self.items:AddColumn(L("stock")).Header:SetTextColor(color_white)
-        self.items:AddColumn(L("category")).Header:SetTextColor(color_white)
-        self.items:SetMultiSelect(false)
-        self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
-        self.searchBar = self:Add("DTextEntry")
-        self.searchBar:Dock(TOP)
-        self.searchBar:DockMargin(0, 4, 0, 0)
-        self.searchBar:SetUpdateOnType(true)
-        self.searchBar:SetPlaceholderText(L("search"))
-        self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
-        self.lines = {}
-        self:ReloadItemList()
-    else
-        self.presetNotice = self:Add("DLabel")
-        self.presetNotice:Dock(FILL)
-        self.presetNotice:DockMargin(0, 4, 0, 0)
-        self.presetNotice:SetText(L("vendorPresetNotice"))
-        self.presetNotice:SetContentAlignment(5)
-        self.presetNotice:SetTextColor(color_white)
-        self.presetNotice:SetWrap(true)
-    end
-end
-
-local VendorText = {
-    [VendorSellAndBuy] = "buyOnlynSell",
-    [VendorBuyOnly] = "buyOnly",
-    [VendorSellOnly] = "sellOnly",
-}
-
 function PANEL:getModeText(mode)
-    return mode and L(VendorText[mode]) or L("none")
+    return mode and L(VENDOR_TEXT[mode]) or L("none")
 end
 
 function PANEL:OnRemove()
@@ -844,20 +824,20 @@ end
 function PANEL:onItemModeUpdated(_, itemType, value)
     local line = self.lines[itemType]
     if not IsValid(line) then return end
-    line:SetColumnText(ColsMode, self:getModeText(value))
+    line:SetColumnText(COLS_MODE, self:getModeText(value))
 end
 
 function PANEL:onItemPriceUpdated(vendor, itemType)
     local line = self.lines[itemType]
     if not IsValid(line) then return end
-    line:SetColumnText(ColsPrice, vendor:getPrice(itemType))
+    line:SetColumnText(COLS_PRICE, vendor:getPrice(itemType))
 end
 
 function PANEL:onItemStockUpdated(vendor, itemType)
     local line = self.lines[itemType]
     if not IsValid(line) then return end
     local current, max = vendor:getStock(itemType)
-    line:SetColumnText(ColsStock, max and current .. "/" .. max or "-")
+    line:SetColumnText(COLS_STOCK, max and current .. "/" .. max or "-")
 end
 
 function PANEL:listenForUpdates()
@@ -879,9 +859,9 @@ function PANEL:OnRowRightClick(line)
     local mode, modePanel = menu:AddSubMenu(L("mode"))
     modePanel:SetImage("icon16/key.png")
     mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
-    mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VendorSellAndBuy) end):SetImage("icon16/cog.png")
-    mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VendorBuyOnly) end):SetImage("icon16/cog_delete.png")
-    mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VendorSellOnly) end):SetImage("icon16/cog_add.png")
+    mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLANDBUY) end):SetImage("icon16/cog.png")
+    mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VENDOR_BUYONLY) end):SetImage("icon16/cog_delete.png")
+    mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLONLY) end):SetImage("icon16/cog_add.png")
     menu:AddOption(L("price"), function()
         Derma_StringRequest(itemTable:getName(), L("vendorPriceReq"), entity:getPrice(uniqueID), function(text)
             text = tonumber(text)
@@ -917,9 +897,9 @@ function PANEL:ReloadItemList(filter)
     for k, v in SortedPairsByMemberValue(lia.item.list, "name") do
         local itemName = v.getName and v:getName() or L(v.name)
         if filter and not itemName:lower():find(filter:lower(), 1, true) then continue end
-        local mode = entity.items[k] and entity.items[k][VendorMode]
+        local mode = entity.items[k] and entity.items[k][VENDOR_MODE]
         local current, max = entity:getStock(k)
-        local category = L(v.category or "none")
+        local category = v.category or L("none")
         local panel = self.items:AddLine(itemName, self:getModeText(mode), entity:getPrice(k), max and current .. "/" .. max or "-", category)
         panel.item = k
         self.lines[k] = panel

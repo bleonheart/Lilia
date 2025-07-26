@@ -1,4 +1,4 @@
-﻿local TextOffset = Vector(0, 0, 20)
+﻿local TEXT_OFFSET = Vector(0, 0, 20)
 local toScreen = FindMetaTable("Vector").ToScreen
 local drawText = lia.util.drawText
 local configGet = lia.config.get
@@ -19,7 +19,7 @@ function ENT:Think()
 end
 
 function ENT:onDrawEntityInfo(alpha)
-    local pos = self:LocalToWorld(self:OBBCenter()) + TextOffset
+    local pos = self:LocalToWorld(self:OBBCenter()) + TEXT_OFFSET
     local screenPos = toScreen(pos)
     drawText(self:getNetVar("name", "Jane Doe"), screenPos.x, screenPos.y, ColorAlpha(configGet("Color"), alpha), 1, 1, nil, alpha * 0.65)
 end

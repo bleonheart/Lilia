@@ -256,6 +256,13 @@ else
     end)
 
     hook.Add("InitializedOptions", "liaWorkshopPromptCheck", function() timer.Simple(0, lia.workshop.checkPrompt) end)
+    concommand.Add("workshop_force_redownload", function()
+        table.Empty(queue)
+        buildQueue(true)
+        start()
+        lia.bootstrap("Workshop Downloader", L("workshopForcedRedownload"))
+    end)
+
     hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
         if not lia.config.get("AutoDownloadWorkshop", true) then return end
         table.insert(pages, {

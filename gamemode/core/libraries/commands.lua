@@ -11,17 +11,17 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = data.privilege and isstring(data.privilege) or "Access to " .. command .. " command"
+        local privilegeName = "Commands - " .. (isstring(data.privilege) and data.privilege or command)
         if not lia.admin.privileges[privilegeName] then
             lia.admin.registerPrivilege({
                 Name = privilegeName,
-                MinAccess = superAdminOnly and "superadmin" or "admin",
-                Category = "Commands"
+                MinAccess = superAdminOnly and "superadmin" or "admin"
             })
         end
     end
 
     local onRun = data.onRun
+    data._onRun = data.onRun
     data.onRun = function(client, arguments)
         local hasAccess, _ = lia.command.hasAccess(client, command, data)
         if hasAccess then
@@ -53,26 +53,28 @@ function lia.command.add(command, data)
 end
 
 function lia.command.hasAccess(client, command, data)
-    local cmd = data or lia.command.list[command]
-    if not cmd then return false end
-    local priv = cmd.privilege
-    local superAdminOnly = cmd.superAdminOnly
-    local adminOnly = cmd.adminOnly
-    local level = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
-    if level == "user" and not priv then return true, "Global" end
-    local name = isstring(priv) and priv or "Access to " .. command .. " command"
+    if not data then data = lia.command.list[command] end
+    local privilege = data.privilege
+    local superAdminOnly = data.superAdminOnly
+    local adminOnly = data.adminOnly
+    local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
+    if not privilege then privilege = accessLevels == "user" and "Global" or command end
     local hasAccess = true
-    if level ~= "user" or priv then hasAccess = client:hasPrivilege(name) end
-    local hookRes = hook.Run("CanPlayerUseCommand", client, command)
-    if hookRes ~= nil then return hookRes, name end
+    if accessLevels ~= "user" then
+        local privilegeName = "Commands - " .. privilege
+        hasAccess = client:hasPrivilege(privilegeName)
+    end
+
+    local hookResult = hook.Run("CanPlayerUseCommand", client, command)
+    if hookResult ~= nil then return hookResult, privilege end
     local char = IsValid(client) and client.getChar and client:getChar()
     if char then
         local faction = lia.faction.indices[char:getFaction()]
-        if faction and faction.commands and faction.commands[command] then return true, name end
+        if faction and faction.commands and faction.commands[command] then return true, privilege end
         local classData = lia.class.list[char:getClass()]
-        if classData and classData.commands and classData.commands[command] then return true, name end
+        if classData and classData.commands and classData.commands[command] then return true, privilege end
     end
-    return hasAccess, name
+    return hasAccess, privilege
 end
 
 function lia.command.extractArgs(text)
@@ -553,10 +555,23 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
             searchEntry:SetPlaceholderText(L("searchCommands"))
             local scroll = vgui.Create("DScrollPanel", panel)
             scroll:Dock(FILL)
-            scroll:DockPadding(0, 0, 0, 10)
-            local canvas = scroll:GetCanvas()
+            local iconLayout = vgui.Create("DIconLayout", scroll)
+            iconLayout:Dock(FILL)
+            iconLayout:SetSpaceY(5)
+            iconLayout:SetSpaceX(5)
+            iconLayout.PerformLayout = function(self)
+                local y = 0
+                local w = self:GetWide()
+                for _, child in ipairs(self:GetChildren()) do
+                    child:SetPos((w - child:GetWide()) * 0.5, y)
+                    y = y + child:GetTall() + self:GetSpaceY()
+                end
+
+                self:SetTall(y)
+            end
+
             local function refresh()
-                canvas:Clear()
+                iconLayout:Clear()
                 local filter = searchEntry:GetValue():lower()
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
                     if isnumber(cmdName) then continue end
@@ -568,10 +583,8 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                     if not hasAccess then continue end
                     local hasDesc = cmdData.desc and cmdData.desc ~= ""
                     local height = hasDesc and 80 or 40
-                    local commandPanel = vgui.Create("DPanel", canvas)
-                    commandPanel:Dock(TOP)
-                    commandPanel:DockMargin(10, 5, 10, 0)
-                    commandPanel:SetTall(height)
+                    local commandPanel = vgui.Create("DPanel", iconLayout)
+                    commandPanel:SetSize(panel:GetWide(), height)
                     commandPanel.Paint = function(self, w, h)
                         derma.SkinHook("Paint", "Panel", self, w, h)
                         local baseX = 20
@@ -590,8 +603,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                     end
                 end
 
-                canvas:InvalidateLayout()
-                canvas:SizeToChildren(false, true)
+                iconLayout:InvalidateLayout(true)
             end
 
             searchEntry.OnTextChanged = refresh

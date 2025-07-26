@@ -1,30 +1,19 @@
 ﻿lia.time = lia.time or {}
-function lia.time.ParseTime(str)
-    local _, _, _, d, mo, y = str:match("(%d+):(%d+):(%d+)%s*-%s*(%d+)/(%d+)/(%d+)")
-    if not y then return end
-    return tonumber(y), tonumber(mo), tonumber(d)
-end
-
 function lia.time.TimeSince(strTime)
     local timestamp
     if isnumber(strTime) then
         timestamp = strTime
     elseif isstring(strTime) then
-        local num = tonumber(strTime)
-        if num then
-            timestamp = num
-        else
-            local year, month, day = lia.time.ParseTime(strTime)
-            if not (year and month and day) then return L("invalidDate") end
-            timestamp = os.time{
-                year = year,
-                month = month,
-                day = day,
-                hour = 0,
-                min = 0,
-                sec = 0
-            }
-        end
+        local year, month, day = lia.time.ParseTime(strTime)
+        if not (year and month and day) then return L("invalidDate") end
+        timestamp = os.time{
+            year = year,
+            month = month,
+            day = day,
+            hour = 0,
+            min = 0,
+            sec = 0
+        }
     else
         return L("invalidInput")
     end

@@ -95,10 +95,6 @@ lia.log.types = {
         func = function(client, text) return string.format("Player '%s' ran command: %s.", client:Name(), text) end,
         category = "Chat"
     },
-    ["ipAttempt"] = {
-        func = function(client, ip) return string.format("Player '%s' attempted to say IP '%s' in chat.", client:Name(), ip) end,
-        category = "Chat"
-    },
     ["money"] = {
         func = function(client, amount) return string.format("Player '%s' changed money by: %s.", client:Name(), amount) end,
         category = "Money"
@@ -784,11 +780,11 @@ function lia.log.add(client, logType, ...)
     end
 
     lia.db.insertTable({
-        timestamp = timestamp,
-        gamemode = engine.ActiveGamemode(),
-        category = category,
-        message = logString,
-        charID = charID,
-        steamID = steamID
+        _timestamp = timestamp,
+        _gamemode = engine.ActiveGamemode(),
+        _category = category,
+        _message = logString,
+        _charID = charID,
+        _steamID = steamID
     }, nil, "logs")
 end

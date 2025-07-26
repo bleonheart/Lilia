@@ -60,7 +60,7 @@ end
 
 function PANEL:hideExternalEntities()
     self.hiddenEntities = {}
-    for _, ent in ents.Iterator() do
+    for _, ent in ipairs(ents.GetAll()) do
         if ent ~= self.modelEntity and not ent:IsWorld() and not ent:CreatedByMap() then
             self.hiddenEntities[ent] = ent:GetNoDraw()
             ent:SetNoDraw(true)
@@ -739,7 +739,7 @@ function PANEL:OnMouseReleased(code)
     end
 end
 
-function PANEL:OnCursorMoved(x)
+function PANEL:OnCursorMoved(x, y)
     if self.dragging and IsValid(self.modelEntity) then
         local delta = x - self.lastMouseX
         self.lastMouseX = x

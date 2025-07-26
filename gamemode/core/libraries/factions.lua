@@ -51,48 +51,6 @@ function lia.faction.loadFromDir(directory)
     end
 end
 
-function lia.faction.register(name, data)
-    assert(isstring(name), "name must be a string")
-    data = data or {}
-    local sanitized = string.Trim(string.lower(name):gsub("[^%w]+", "_"), "_")
-    local uniqueID = sanitized
-    if lia.faction.teams[uniqueID] then return lia.faction.teams[uniqueID] end
-    local suffix = 1
-    while lia.faction.teams[uniqueID] do
-        suffix = suffix + 1
-        uniqueID = sanitized .. suffix
-    end
-
-    local index = table.Count(lia.faction.teams) + 1
-    local FACTION = table.Copy(data)
-    FACTION.index = data.index or index
-    FACTION.uniqueID = uniqueID
-    FACTION.isDefault = data.isDefault ~= false
-    FACTION.name = L(name)
-    if not FACTION.desc then
-        FACTION.desc = L("noDesc")
-        lia.error("Faction '" .. uniqueID .. "' is missing a description. You need to add FACTION.desc = \"Description\"\n")
-    else
-        FACTION.desc = L(FACTION.desc)
-    end
-
-    if not FACTION.color then
-        FACTION.color = Color(150, 150, 150)
-        lia.error("Faction '" .. uniqueID .. "' is missing a color. You need to add FACTION.color = Color(1, 2, 3)\n")
-    end
-
-    FACTION.models = data.models or DefaultModels
-    for _, modelData in pairs(FACTION.models) do
-        util.PrecacheModel(isstring(modelData) and modelData or modelData[1])
-    end
-
-    team.SetUp(FACTION.index, FACTION.name, FACTION.color)
-    lia.faction.indices[FACTION.index] = FACTION
-    lia.faction.teams[uniqueID] = FACTION
-    data.index = FACTION.index
-    return FACTION
-end
-
 function lia.faction.get(identifier)
     return lia.faction.indices[identifier] or lia.faction.teams[identifier]
 end
@@ -257,11 +215,3 @@ if CLIENT then
         return false
     end
 end
-
-FACTION_STAFF = lia.faction.register("factionStaffName", {
-    desc = "factionStaffDesc",
-    color = Color(255, 56, 252),
-    isDefault = false,
-    models = {…},
-    weapons = {"weapon_physgun", "gmod_tool"},
-}).index

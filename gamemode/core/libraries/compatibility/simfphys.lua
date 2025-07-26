@@ -1,6 +1,5 @@
 ﻿if SERVER then
     hook.Add("EntityTakeDamage", "liaSimfphys", function(seat, dmgInfo)
-        if not lia.config.get("DamageInCars", true) then return end
         if seat:IsVehicle() and seat:GetClass() == "gmod_sent_vehicle_fphysics_base" then
             local player = seat:GetDriver()
             if IsValid(player) then
@@ -26,23 +25,18 @@
         end
 
         local delay = lia.config.get("TimeToEnterVehicle", 5)
-        local delayEnabled = lia.config.get("CarEntryDelayEnabled", true)
-        if entity:isSimfphysCar() then
-            if delayEnabled and delay > 0 then
-                entity.IsBeingEntered = true
-                client:setAction(L("enteringVehicle"), delay)
-                client:doStaredAction(entity, function()
-                    if IsValid(entity) then
-                        entity.IsBeingEntered = false
-                        entity:SetPassenger(client)
-                    end
-                end, delay, function()
-                    if IsValid(entity) then entity.IsBeingEntered = false end
-                    if IsValid(client) then client:stopAction() end
-                end)
-            else
-                entity:SetPassenger(client)
-            end
+        if entity:isSimfphysCar() and delay > 0 then
+            entity.IsBeingEntered = true
+            client:setAction(L("enteringVehicle"), delay)
+            client:doStaredAction(entity, function()
+                if IsValid(entity) then
+                    entity.IsBeingEntered = false
+                    entity:SetPassenger(client)
+                end
+            end, delay, function()
+                if IsValid(entity) then entity.IsBeingEntered = false end
+                if IsValid(client) then client:stopAction() end
+            end)
         end
         return true
     end)
@@ -76,11 +70,10 @@ lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
 })
 
 lia.admin.registerPrivilege({
-    Name = "Can Edit Simfphys Cars",
-    MinAccess = "superadmin",
-    Category = "Simfphys"
+    Name = "Staff Permissions - Can Edit Simfphys Cars",
+    MinAccess = "superadmin"
 })
 
 hook.Add("simfphysPhysicsCollide", "SIMFPHYS_simfphysPhysicsCollide", function() return true end)
 hook.Add("IsSuitableForTrunk", "SIMFPHYS_IsSuitableForTrunk", function(vehicle) if IsValid(vehicle) and vehicle:isSimfphysCar() then return true end end)
-hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent) if property == "editentity" and ent:isSimfphysCar() then return client:hasPrivilege("Can Edit Simfphys Cars") end end)
+hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent) if property == "editentity" and ent:isSimfphysCar() then return client:hasPrivilege("Staff Permissions - Can Edit Simfphys Cars") end end)

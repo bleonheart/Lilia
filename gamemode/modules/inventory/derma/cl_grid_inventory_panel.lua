@@ -1,18 +1,5 @@
-﻿local PANEL = {}
-local function paintSlot(x, y, w, h, skin)
-    skin = skin or derma.GetSkinTable()
-    if skin and skin.DrawGenericBackground then
-        skin:DrawGenericBackground(x, y, w, h)
-    else
-        surface.SetDrawColor(45, 45, 45, 240)
-        surface.DrawRect(x, y, w, h)
-        surface.SetDrawColor(0, 0, 0, 180)
-        surface.DrawOutlinedRect(x, y, w, h)
-        surface.SetDrawColor(100, 100, 100, 25)
-        surface.DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2)
-    end
-end
-
+﻿local InvSlotMat = Material("invslotfree.png", "smooth noclamp")
+local PANEL = {}
 function PANEL:Init()
     self:SetPaintBackground(false)
     self.icons = {}
@@ -142,7 +129,9 @@ function PANEL:drawHeldItemRectangle()
     local x = math.Round((mx - w * 0.5) / size)
     local y = math.Round((my - h * 0.5) / size)
     if x < 0 or y < 0 or x + item:getWidth() > self.gridW or y + item:getHeight() > self.gridH then return end
-    paintSlot(x * size, y * size, w, h, self:GetSkin())
+    surface.SetDrawColor(255, 255, 255)
+    surface.SetMaterial(InvSlotMat)
+    surface.DrawTexturedRect(x * size, y * size, w, h)
 end
 
 function PANEL:computeHeldPanel()
@@ -154,10 +143,11 @@ end
 
 function PANEL:Paint()
     local size = self.size
-    local skin = self:GetSkin()
     for y = 0, self.gridH - 1 do
         for x = 0, self.gridW - 1 do
-            paintSlot(x * (size + 2), y * (size + 2), size, size, skin)
+            surface.SetDrawColor(255, 255, 255)
+            surface.SetMaterial(InvSlotMat)
+            surface.DrawTexturedRect(x * (size + 2), y * (size + 2), size, size)
         end
     end
 

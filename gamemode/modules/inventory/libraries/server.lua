@@ -45,7 +45,6 @@ function MODULE:ItemCombine(client, item, target)
 end
 
 function MODULE:ItemDraggedOutOfInventory(client, item)
-    lia.log.add(client, "itemDraggedOut", item:getName())
     item:interact("drop", client)
 end
 
@@ -131,13 +130,6 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID)
             fail()
         else
             hook.Run("ItemTransfered", context)
-            local client = context.client
-            local item = context.item
-            if IsValid(client) and item then
-                local fromID = context.from and context.from:getID() or 0
-                local toID = context.to and context.to:getID() or 0
-                lia.log.add(client, "itemTransfer", item:getName(), fromID, toID)
-            end
         end
         return originalAddResult
     end):catch(fail)

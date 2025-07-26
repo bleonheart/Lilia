@@ -1,4 +1,24 @@
 ﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
+hook.Add("InitializedModules", "liaSAM", function()
+    for _, commandInfo in ipairs(sam.command.get_commands()) do
+        local customSyntax = ""
+        for _, argInfo in ipairs(commandInfo.args) do
+            customSyntax = customSyntax == "" and "[" or customSyntax .. " ["
+            customSyntax = customSyntax .. (argInfo.default and tostring(type(argInfo.default)) or "string") .. " "
+            customSyntax = customSyntax .. argInfo.name .. "]"
+        end
+
+        if lia.command.list[commandInfo.name] then continue end
+        lia.command.add(commandInfo.name, {
+            desc = commandInfo.help,
+            adminOnly = commandInfo.default_rank == "admin",
+            superAdminOnly = commandInfo.default_rank == "superadmin",
+            syntax = customSyntax,
+            onRun = function(_, arguments) RunConsoleCommand("sam", commandInfo.name, unpack(arguments)) end
+        })
+    end
+end)
+
 hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
     local id = isstring(victim) and victim or IsValid(victim) and victim:SteamID()
     if not id then return end
@@ -79,7 +99,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
             return false
         end
 
-        if client:hasPrivilege("Can Bypass Staff Faction SAM Command whitelist") or client:isStaffOnDuty() then
+        if client:hasPrivilege("Staff Permissions - Can Bypass Staff Faction SAM Command whitelist") or client:isStaffOnDuty() then
             return true
         else
             client:notifyLocalized("staffRestrictedCommand")
@@ -126,7 +146,7 @@ end
 
 local function CanReadNotifications(client)
     if not lia.config.get("AdminOnlyNotification", true) then return true end
-    return client:hasPrivilege("Can See SAM Notifications") or client:isStaffOnDuty()
+    return client:hasPrivilege("Staff Permissions - Can See SAM Notifications") or client:isStaffOnDuty()
 end
 
 function sam.player.send_message(client, msg, tbl)
@@ -157,40 +177,64 @@ lia.command.add("cleardecals", {
     end
 })
 
-lia.admin.registerPrivilege({
-    Name = "Can See SAM Notifications Outside Staff Character",
-    MinAccess = "superadmin",
-    Category = "SAM"
+lia.command.add("playtime", {
+    adminOnly = false,
+    privilege = "View Own Playtime",
+    desc = "playtimeDesc",
+    onRun = function(client)
+        local steamID = client:SteamID64()
+        local result = sql.QueryRow("SELECT play_time FROM sam_players WHERE steamid = " .. SQLStr(steamID) .. ";")
+        if result then
+            local secs = tonumber(result.play_time) or 0
+            local h = math.floor(secs / 3600)
+            local m = math.floor((secs % 3600) / 60)
+            local s = secs % 60
+            client:ChatPrint(L("playtimeYour", h, m, s))
+        else
+            client:ChatPrint(L("playtimeError"))
+        end
+    end
+})
+
+lia.command.add("plygetplaytime", {
+    adminOnly = true,
+    privilege = "View Playtime",
+    syntax = "[player Name]",
+    AdminStick = {
+        Name = "adminStickGetPlayTimeName",
+        Category = "moderationTools",
+        SubCategory = "misc",
+        Icon = "icon16/time.png"
+    },
+    desc = "plygetplaytimeDesc",
+    onRun = function(client, args)
+        if not args[1] then
+            client:notifyLocalized("specifyPlayer")
+            return
+        end
+
+        local target = lia.util.findPlayer(client, args[1])
+        if not IsValid(target) then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        local secs = target:sam_get_play_time()
+        local h = math.floor(secs / 3600)
+        local m = math.floor((secs % 3600) / 60)
+        local s = secs % 60
+        client:ChatPrint(L("playtimeFor", target:Nick(), h, m, s))
+    end
 })
 
 lia.admin.registerPrivilege({
-    Name = "Can See SAM Notifications",
-    MinAccess = "admin",
-    Category = "SAM"
+    Name = "Staff Permissions - Can See SAM Notifications Outside Staff Character",
+    MinAccess = "superadmin"
 })
 
 lia.admin.registerPrivilege({
-    Name = "Can Bypass Staff Faction SAM Command whitelist",
-    MinAccess = "superadmin",
-    Category = "SAM"
-})
-
-lia.admin.registerPrivilege({
-    Name = "Clear Decals",
-    MinAccess = "admin",
-    Category = "SAM"
-})
-
-lia.admin.registerPrivilege({
-    Name = "View Own Playtime",
-    MinAccess = "admin",
-    Category = "SAM"
-})
-
-lia.admin.registerPrivilege({
-    Name = "View Playtime",
-    MinAccess = "admin",
-    Category = "SAM"
+    Name = "Staff Permissions - Can Bypass Staff Faction SAM Command whitelist",
+    MinAccess = "superadmin"
 })
 
 lia.config.add("AdminOnlyNotification", "Admin Only Notifications", true, nil, {
@@ -204,3 +248,5 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     category = "Staff",
     type = "Boolean"
 })
+
+hook.Add("ShouldLiliaAdminCommandsLoad", "liaSAM", function() return false end)

@@ -255,7 +255,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "misc"
+        ITEM.category = ITEM.category or "Miscellaneous"
         ITEM.functions = table.Copy(baseTable.functions or DefaultFunctions)
     else
         ITEM = targetTable[uniqueID] or setmetatable({
@@ -274,7 +274,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "misc"
+        ITEM.category = ITEM.category or "Miscellaneous"
         ITEM.functions = ITEM.functions or table.Copy(baseTable.functions or DefaultFunctions)
     end
 
@@ -488,8 +488,8 @@ function lia.item.generateWeapons()
         local baseType = isGrenade and "base_grenade" or "base_weapons"
         local ITEM = lia.item.register(className, baseType, nil, nil, true)
         ITEM.name = override.name or wep.PrintName or className
-        ITEM.desc = override.desc or "weaponsDesc"
-        ITEM.category = override.category or "categoryWeapons"
+        ITEM.desc = override.desc or "A Weapon"
+        ITEM.category = override.category or "Weapons"
         ITEM.model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl"
         ITEM.class = override.class or className
         local size = lia.item.holdTypeSizeMapping[holdType] or {
@@ -500,7 +500,7 @@ function lia.item.generateWeapons()
         ITEM.width = override.width or size.width
         ITEM.height = override.height or size.height
         ITEM.weaponCategory = override.weaponCategory or lia.item.holdTypeToWeaponCategory[holdType] or "primary"
-        ITEM.category = isGrenade and "categoryGrenades" or "categoryWeapons"
+        ITEM.category = isGrenade and "grenade" or "weapons"
     end
 end
 
@@ -553,16 +553,16 @@ if SERVER then
         end
 
         if not isnumber(index) then index = NULL end
-        if MysqlooPrepared and isnumber(index) then
+        if MYSQLOO_PREPARED and isnumber(index) then
             lia.db.preparedCall("itemInstance", onItemCreated, index, uniqueID, itemData, x, y, itemTable.maxQuantity or 1)
         else
             lia.db.insertTable({
-                invID = index,
-                uniqueID = uniqueID,
-                data = itemData,
-                x = x,
-                y = y,
-                quantity = itemTable.maxQuantity or 1
+                _invID = index,
+                _uniqueID = uniqueID,
+                _data = itemData,
+                _x = x,
+                _y = y,
+                _quantity = itemTable.maxQuantity or 1
             }, onItemCreated, "items")
         end
         return d
@@ -572,7 +572,7 @@ if SERVER then
         if lia.item.instances[id] then
             lia.item.instances[id]:delete()
         else
-            lia.db.delete("items", "itemID = " .. id)
+            lia.db.delete("items", "_itemID = " .. id)
         end
     end
 
@@ -586,19 +586,19 @@ if SERVER then
             return
         end
 
-        lia.db.query("SELECT itemID, uniqueID, data, x, y, quantity FROM lia_items WHERE itemID IN " .. range, function(results)
+        lia.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM lia_items WHERE _itemID IN " .. range, function(results)
             if not results then return end
             for _, row in ipairs(results) do
-                local id = tonumber(row.itemID)
-                local itemDef = lia.item.list[row.uniqueID]
+                local id = tonumber(row._itemID)
+                local itemDef = lia.item.list[row._uniqueID]
                 if id and itemDef then
-                    local item = lia.item.new(row.uniqueID, id)
-                    local itemData = util.JSONToTable(row.data or "[]") or {}
+                    local item = lia.item.new(row._uniqueID, id)
+                    local itemData = util.JSONToTable(row._data or "[]") or {}
                     item.invID = 0
                     item.data = itemData
-                    item.data.x = tonumber(row.x)
-                    item.data.y = tonumber(row.y)
-                    item.quantity = tonumber(row.quantity)
+                    item.data.x = tonumber(row._x)
+                    item.data.y = tonumber(row._y)
+                    item.quantity = tonumber(row._quantity)
                     item:onRestored()
                 end
             end

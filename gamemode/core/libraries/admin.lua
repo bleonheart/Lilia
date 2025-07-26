@@ -1,435 +1,43 @@
 ﻿lia.admin = lia.admin or {}
+lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
+lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
-local DefaultGroups = {
+local DEFAULT_GROUPS = {
     user = true,
     admin = true,
     superadmin = true,
-    developer = true,
 }
 
-local DefaultPrivileges = {
-    {
-        Name = "Access Logs Tab",
-        MinAccess = "superadmin",
-        Category = "Logger"
-    },
-    {
-        Name = "Can See Logs",
-        MinAccess = "superadmin",
-        Category = "Logger"
-    },
-    {
-        Name = "Access Character List Tab",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Bypass Character Lock",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Grab World Props",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Grab Players",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Physgun Pickup",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Access Item Informations",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Physgun Pickup on Restricted Entities",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Physgun Pickup on Vehicles",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can't be Grabbed with PhysGun",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Physgun Reload",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "No Clip Outside Staff Character",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "No Clip ESP Outside Staff Character",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Property World Entities",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Car Blacklist",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Ragdolls",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn SWEPs",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Effects",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Props",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Blacklisted Props",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn NPCs",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "No Car Spawn Delay",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "No Spawn Delay",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Cars",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Blacklisted Cars",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn SENTs",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Spawn Blacklisted Entities",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "UserGroups - Staff Group",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "UserGroups - VIP Group",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "List Entities",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Remove Blocked Entities",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Can Remove World Entities",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Access Warnings Tab",
-        MinAccess = "superadmin",
-        Category = "Configuration Menu"
-    },
-    {
-        Name = "Use Admin Stick",
-        MinAccess = "superadmin",
-        Category = "Admin Stick"
-    },
-    {
-        Name = "Access Tickets Tab",
-        MinAccess = "superadmin",
-        Category = "Tickets"
-    },
-    {
-        Name = "Always See Tickets",
-        MinAccess = "superadmin",
-        Category = "Tickets"
-    },
-    {
-        Name = "View Claims",
-        MinAccess = "admin",
-        Category = "Tickets"
-    },
-    {
-        Name = "Can Use Item Spawner",
-        MinAccess = "admin",
-        Category = "Item Spawner"
-    },
-    {
-        Name = "Can Remove Warns",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Manage Prop Blacklist",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Manage Entity Blacklist",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access Configuration Menu",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access Edit Configuration Menu",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Admin Tab - Config",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Manage UserGroups",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access Usergroups Tab",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access Players Tab",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access DB Browser Tab",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "View DB Tables",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access Staff Actions Tab",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "See Decoded Tables",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Access Factions Tab",
-        MinAccess = "superadmin",
-        Category = "Teams"
-    },
-    {
-        Name = "Can See Alting Notifications",
-        MinAccess = "admin",
-        Category = "Protection"
-    },
-    {
-        Name = "Can Access Scoreboard Admin Options",
-        MinAccess = "admin",
-        Category = "Scoreboard"
-    },
-    {
-        Name = "Can Access Scoreboard Info Out Of Staff",
-        MinAccess = "admin",
-        Category = "Scoreboard"
-    },
-    {
-        Name = "No OOC Cooldown",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Admin Chat",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Local Event Chat",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Event Chat",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Always Have Access to Help Chat",
-        MinAccess = "superadmin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "View IP Chat Attempts",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Can Edit Vendors",
-        MinAccess = "admin",
-        Category = "Vendors"
-    },
-    {
-        Name = "Can Spawn Storage",
-        MinAccess = "superadmin",
-        Category = "Storage"
-    },
-    {
-        Name = "Staff Permission — Access Entity List",
-        MinAccess = "admin",
-        Category = "F1 Menu"
-    },
-    {
-        Name = "Staff Permission — Teleport to Entity",
-        MinAccess = "admin",
-        Category = "F1 Menu"
-    },
-    {
-        Name = "Staff Permission — Teleport to Entity (Entity Tab)",
-        MinAccess = "admin",
-        Category = "F1 Menu"
-    },
-    {
-        Name = "Staff Permission — View Entity (Entity Tab)",
-        MinAccess = "admin",
-        Category = "F1 Menu"
-    },
-    {
-        Name = "Staff Permission — Access Module List",
-        MinAccess = "user",
-        Category = "F1 Menu"
-    },
-}
-
-local function registerDefaultPrivileges()
-    for _, priv in ipairs(DefaultPrivileges) do
-        lia.admin.registerPrivilege(priv)
-    end
+function lia.admin.print(section, msg)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
+    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
+    MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
 
-local function buildDefaultPermissions(group, inherit)
-    local perms = {
-        _inherit = inherit or group
-    }
-
-    for name, priv in pairs(lia.admin.privileges) do
-        local minAccess = priv.MinAccess or "user"
-        local allowed
-        if CAMI and CAMI.UsergroupInherits then
-            allowed = CAMI.UsergroupInherits(inherit or group, minAccess)
-        else
-            local check = inherit or group
-            if check == "superadmin" then
-                allowed = true
-            elseif check == "admin" then
-                allowed = minAccess ~= "superadmin"
-            else
-                allowed = minAccess == "user"
-            end
-        end
-
-        if allowed then perms[name] = true end
-    end
-    return perms
-end
-
-local function applyInheritancePermissions()
-    for groupName, info in pairs(lia.admin.groups) do
-        local inherit = info._inherit or groupName
-        local defaults = buildDefaultPermissions(groupName, inherit)
-        for priv, allow in pairs(defaults) do
-            if allow and info[priv] == nil then info[priv] = true end
-        end
-
-        if SERVER and CAMI and CAMI.RegisterUsergroup then
-            if CAMI.GetUsergroup and CAMI.GetUsergroup(groupName) then CAMI.UnregisterUsergroup(groupName) end
-            CAMI.RegisterUsergroup({
-                Name = groupName,
-                Inherits = inherit
-            })
-        end
-    end
+function lia.admin.isDisabled()
+    local sysDisabled = hook.Run("ShouldLiliaAdminLoad") == false
+    local cmdDisabled = hook.Run("ShouldLiliaAdminCommandsLoad") == false
+    return sysDisabled, cmdDisabled
 end
 
 function lia.admin.load()
+    if lia.admin.isDisabled() then return end
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
-    local function continueLoad(groups, privs)
+    local function continueLoad(data)
         if camiGroups and not table.IsEmpty(camiGroups) then
             lia.admin.groups = {}
-            for name, data in pairs(camiGroups) do
-                lia.admin.groups[name] = {
-                    _inherit = data.Inherits or "user"
-                }
+            for name in pairs(camiGroups) do
+                lia.admin.groups[name] = {}
             end
         else
-            lia.admin.groups = groups or {}
-            for gName, info in pairs(lia.admin.groups) do
-                info._inherit = info._inherit or gName
-            end
+            lia.admin.groups = data or {}
         end
 
-        lia.admin.privileges = privs or {}
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
-            priv.Category = priv.Category or "Unassigned"
             lia.admin.privileges[name] = priv
         end
 
-        registerDefaultPrivileges()
         if camiGroups and not table.IsEmpty(camiGroups) and CAMI then
             for group in pairs(lia.admin.groups) do
                 for privName, priv in pairs(lia.admin.privileges) do
@@ -438,116 +46,50 @@ function lia.admin.load()
             end
         end
 
-        local defaults = {
-            user = "user",
-            admin = "admin",
-            superadmin = "superadmin",
-            developer = "superadmin"
-        }
+        local defaults = {"user", "admin", "superadmin"}
+        local created = false
+        if table.Count(lia.admin.groups) == 0 then
+            for _, grp in ipairs(defaults) do
+                lia.admin.createGroup(grp)
+            end
 
-        for name, inherit in pairs(defaults) do
-            lia.admin.groups[name] = buildDefaultPermissions(name, inherit)
-            lia.admin.groups[name]._inherit = inherit
-            if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup and CAMI.UnregisterUsergroup then
-                if CAMI.GetUsergroup(name) then CAMI.UnregisterUsergroup(name) end
-                CAMI.RegisterUsergroup({
-                    Name = name,
-                    Inherits = inherit
-                })
+            created = true
+        else
+            for _, grp in ipairs(defaults) do
+                if not lia.admin.groups[grp] then
+                    lia.admin.createGroup(grp)
+                    created = true
+                end
             end
         end
 
-        applyInheritancePermissions()
-        lia.admin.save(true)
-        lia.administration("Bootstrap", L("adminSystemLoaded"))
+        if created then lia.admin.save(true) end
+        lia.admin.print("Bootstrap", L("adminSystemLoaded"))
     end
 
-    lia.db.tableExists("usergroups"):next(function(exists)
-        if exists then
-            lia.db.select({"name", "data"}, "usergroups"):next(function(res)
-                local groups = {}
-                res = res.results or res
-                for _, row in ipairs(res or {}) do
-                    groups[row.name] = util.JSONToTable(row.data or "") or {}
-                end
-
-                lia.db.tableExists("privileges"):next(function(prExists)
-                    if prExists then
-                        lia.db.select({"name", "minAccess", "category"}, "privileges"):next(function(resP)
-                            local privs = {}
-                            resP = resP.results or resP
-                            for _, row in ipairs(resP or {}) do
-                                privs[row.name] = {
-                                    Name = row.name,
-                                    MinAccess = row.minAccess,
-                                    Category = row.category
-                                }
-                            end
-
-                            continueLoad(groups, privs)
-                        end)
-                    else
-                        continueLoad(groups)
-                    end
-                end)
-            end)
-        else
-            lia.db.tableExists("admingroups"):next(function(admExists)
-                if admExists then
-                    lia.db.selectOne({"data"}, "admingroups"):next(function(res)
-                        local groups = res and util.JSONToTable(res.data or "") or {}
-                        local rows = {}
-                        for name, dat in pairs(groups) do
-                            rows[#rows + 1] = {
-                                name = name,
-                                data = util.TableToJSON(dat)
-                            }
-                        end
-
-                        if #rows > 0 then lia.db.bulkUpsert("usergroups", rows) end
-                        continueLoad(groups)
-                    end)
-                else
-                    continueLoad({})
-                end
-            end)
-        end
+    lia.db.selectOne({"_data"}, "admingroups"):next(function(res)
+        local data = res and util.JSONToTable(res._data or "") or {}
+        continueLoad(data)
     end)
 end
 
-function lia.admin.updateAdminGroups()
-    net.Start("updateAdminGroups")
-    net.WriteTable(lia.admin.groups)
-    net.Broadcast()
-end
-
-function lia.admin.createGroup(groupName, info, inherit)
+function lia.admin.createGroup(groupName, info)
+    if lia.admin.isDisabled() then return end
     if lia.admin.groups[groupName] then
         Error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
 
     lia.admin.groups[groupName] = info or {}
-    lia.admin.groups[groupName]._inherit = inherit or "user"
-    if SERVER and CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
-        if not CAMI.GetUsergroup(groupName) then
-            CAMI.RegisterUsergroup({
-                Name = groupName,
-                Inherits = inherit or "user",
-            })
-        end
-    end
-
     for privName, priv in pairs(lia.admin.privileges) do
         local minAccess = priv.MinAccess or "user"
-        local allowed
+        local allowed = false
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            local check = lia.admin.groups[groupName]._inherit or inherit or groupName
-            if check == "superadmin" then
+            if groupName == "superadmin" then
                 allowed = true
-            elseif check == "admin" then
+            elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
             else
                 allowed = minAccess == "user"
@@ -557,34 +99,33 @@ function lia.admin.createGroup(groupName, info, inherit)
         if allowed then lia.admin.groups[groupName][privName] = true end
     end
 
-    if SERVER then lia.admin.save(true) end
-end
+    if SERVER then
+        if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
+            if not CAMI.GetUsergroup(groupName) then
+                CAMI.RegisterUsergroup({
+                    Name = groupName,
+                    Inherits = "user",
+                })
+            end
+        end
 
-function lia.admin.registerRank(name, inherit)
-    if not isstring(name) then return end
-    local inheritGroup = inherit or "user"
-    if inherit and not lia.admin.groups[inherit] then
-        lia.error("Invalid inheritance '" .. tostring(inherit) .. "' for rank '" .. name .. "'. Defaulting to 'user'.")
-        inheritGroup = "user"
+        lia.admin.save(true)
     end
-
-    lia.admin.createGroup(name, nil, inheritGroup)
 end
 
 function lia.admin.registerPrivilege(privilege)
+    if lia.admin.isDisabled() then return end
     if not privilege or not privilege.Name then return end
-    privilege.Category = privilege.Category or "Unassigned"
     lia.admin.privileges[privilege.Name] = privilege
-    for groupName, info in pairs(lia.admin.groups) do
+    for groupName in pairs(lia.admin.groups) do
         local minAccess = privilege.MinAccess or "user"
-        local allowed
+        local allowed = false
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            local check = info._inherit or groupName
-            if check == "superadmin" then
+            if groupName == "superadmin" then
                 allowed = true
-            elseif check == "admin" then
+            elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
             else
                 allowed = minAccess == "user"
@@ -593,12 +134,11 @@ function lia.admin.registerPrivilege(privilege)
 
         if allowed then lia.admin.groups[groupName][privilege.Name] = true end
     end
-
-    if SERVER then lia.admin.save(true) end
 end
 
 function lia.admin.removeGroup(groupName)
-    if groupName == "user" or groupName == "admin" or groupName == "superadmin" or groupName == "developer" then
+    if lia.admin.isDisabled() then return end
+    if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
         Error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
@@ -617,47 +157,35 @@ end
 
 if SERVER then
     function lia.admin.addPermission(groupName, permission)
+        if lia.admin.isDisabled() then return end
         if not lia.admin.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
-        if DefaultGroups[groupName] then return end
+        if DEFAULT_GROUPS[groupName] then return end
         lia.admin.groups[groupName][permission] = true
         if SERVER then lia.admin.save(true) end
     end
 
     function lia.admin.removePermission(groupName, permission)
+        if lia.admin.isDisabled() then return end
         if not lia.admin.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
-        if DefaultGroups[groupName] then return end
+        if DEFAULT_GROUPS[groupName] then return end
         lia.admin.groups[groupName][permission] = nil
         if SERVER then lia.admin.save(true) end
     end
 
     function lia.admin.save(network)
-        local groupRows = {}
-        for name, data in pairs(lia.admin.groups) do
-            groupRows[#groupRows + 1] = {
-                name = name,
-                data = util.TableToJSON(data)
-            }
-        end
+        if lia.admin.isDisabled() then return end
+        lia.db.upsert({
+            _data = util.TableToJSON(lia.admin.groups)
+        }, "admingroups")
 
-        lia.db.bulkUpsert("usergroups", groupRows)
-        local privRows = {}
-        for name, priv in pairs(lia.admin.privileges) do
-            privRows[#privRows + 1] = {
-                name = name,
-                minAccess = priv.MinAccess or "user",
-                category = priv.Category or "Unassigned"
-            }
-        end
-
-        lia.db.bulkUpsert("privileges", privRows)
         if network then
             net.Start("updateAdminGroups")
             net.WriteTable(lia.admin.groups)
@@ -666,175 +194,212 @@ if SERVER then
     end
 
     function lia.admin.setPlayerGroup(ply, usergroup)
-        if ply:IsBot() then return end
+        if lia.admin.isDisabled() or ply:IsBot() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
-        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
     function lia.admin.addBan(steamid, reason, duration)
+        if lia.admin.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.admin.addBan: no steam id specified!") end
         local banStart = os.time()
-        -- persist the ban details in the lia_players table
-        lia.db.updateTable({
-            banStart = banStart,
-            banDuration = (duration or 0) * 60,
-            banReason = reason or L("genericReason")
-        }, nil, "players", "steamID = " .. steamid)
+        lia.admin.banList[steamid] = {
+            reason = reason or L("genericReason"),
+            start = banStart,
+            duration = (duration or 0) * 60
+        }
+
+        lia.db.insertTable({
+            _steamID = "\"" .. steamid .. "\"",
+            _banStart = banStart,
+            _banDuration = (duration or 0) * 60,
+            _reason = reason or L("genericReason")
+        }, nil, "bans")
     end
 
     function lia.admin.removeBan(steamid)
+        if lia.admin.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
-        -- clear ban information from the lia_players table
-        lia.db.updateTable({
-            banStart = nil,
-            banDuration = 0,
-            banReason = nil
-        }, function() lia.administration("Ban", L("banRemoved")) end, "players", "steamID = " .. steamid)
+        lia.admin.banList[steamid] = nil
+        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() lia.admin.print("Ban", "Ban removed.") end)
     end
 
     function lia.admin.isBanned(steamid)
-        if not steamid then return false end
-        local result = sql.Query("SELECT banReason, banStart, banDuration FROM lia_players WHERE steamID = " .. steamid .. " AND banStart IS NOT NULL LIMIT 1")
-        if istable(result) and result[1] then
-            local row = result[1]
-            return {
-                reason = row.banReason,
-                start = tonumber(row.banStart),
-                duration = tonumber(row.banDuration)
-            }
-        end
-        return false
+        if lia.admin.isDisabled() then return false end
+        return lia.admin.banList[steamid] or false
     end
 
     function lia.admin.hasBanExpired(steamid)
-        local ban = lia.admin.isBanned(steamid)
+        if lia.admin.isDisabled() then return true end
+        local ban = lia.admin.banList[steamid]
         if not ban then return true end
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
     end
 
-    hook.Add("ShutDown", "lia_SaveAdmin", function() lia.admin.save() end)
+    hook.Add("ShutDown", "lia_SaveAdmin", function()
+        if lia.admin.isDisabled() then return end
+        lia.admin.save()
+    end)
+end
+
+local function quote(str)
+    return string.format("'%s'", tostring(str))
 end
 
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
     if cmd == "kick" then
-        RunConsoleCommand("say", "/plykick " .. string.format("'%s'", tostring(id)) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+        RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
         return true
     elseif cmd == "ban" then
-        RunConsoleCommand("say", "/plyban " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+        RunConsoleCommand("say", "/plyban " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
         return true
     elseif cmd == "unban" then
-        RunConsoleCommand("say", "/plyunban " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyunban " .. quote(id))
         return true
     elseif cmd == "mute" then
-        RunConsoleCommand("say", "/plymute " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+        RunConsoleCommand("say", "/plymute " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
         return true
     elseif cmd == "unmute" then
-        RunConsoleCommand("say", "/plyunmute " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyunmute " .. quote(id))
         return true
     elseif cmd == "gag" then
-        RunConsoleCommand("say", "/plygag " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+        RunConsoleCommand("say", "/plygag " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
         return true
     elseif cmd == "ungag" then
-        RunConsoleCommand("say", "/plyungag " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyungag " .. quote(id))
         return true
     elseif cmd == "freeze" then
-        RunConsoleCommand("say", "/plyfreeze " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
+        RunConsoleCommand("say", "/plyfreeze " .. quote(id) .. " " .. tostring(dur or 0))
         return true
     elseif cmd == "unfreeze" then
-        RunConsoleCommand("say", "/plyunfreeze " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyunfreeze " .. quote(id))
         return true
     elseif cmd == "slay" then
-        RunConsoleCommand("say", "/plyslay " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyslay " .. quote(id))
         return true
     elseif cmd == "bring" then
-        RunConsoleCommand("say", "/plybring " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plybring " .. quote(id))
         return true
     elseif cmd == "goto" then
-        RunConsoleCommand("say", "/plygoto " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plygoto " .. quote(id))
         return true
     elseif cmd == "return" then
-        RunConsoleCommand("say", "/plyreturn " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyreturn " .. quote(id))
         return true
     elseif cmd == "jail" then
-        RunConsoleCommand("say", "/plyjail " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
+        RunConsoleCommand("say", "/plyjail " .. quote(id) .. " " .. tostring(dur or 0))
         return true
     elseif cmd == "unjail" then
-        RunConsoleCommand("say", "/plyunjail " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyunjail " .. quote(id))
         return true
     elseif cmd == "cloak" then
-        RunConsoleCommand("say", "/plycloak " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plycloak " .. quote(id))
         return true
     elseif cmd == "uncloak" then
-        RunConsoleCommand("say", "/plyuncloak " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyuncloak " .. quote(id))
         return true
     elseif cmd == "god" then
-        RunConsoleCommand("say", "/plygod " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plygod " .. quote(id))
         return true
     elseif cmd == "ungod" then
-        RunConsoleCommand("say", "/plyungod " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyungod " .. quote(id))
         return true
     elseif cmd == "ignite" then
-        RunConsoleCommand("say", "/plyignite " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
+        RunConsoleCommand("say", "/plyignite " .. quote(id) .. " " .. tostring(dur or 0))
         return true
     elseif cmd == "extinguish" or cmd == "unignite" then
-        RunConsoleCommand("say", "/plyextinguish " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyextinguish " .. quote(id))
         return true
     elseif cmd == "strip" then
-        RunConsoleCommand("say", "/plystrip " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plystrip " .. quote(id))
         return true
     elseif cmd == "respawn" then
-        RunConsoleCommand("say", "/plyrespawn " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyrespawn " .. quote(id))
         return true
     elseif cmd == "blind" then
-        RunConsoleCommand("say", "/plyblind " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyblind " .. quote(id))
         return true
     elseif cmd == "unblind" then
-        RunConsoleCommand("say", "/plyunblind " .. string.format("'%s'", tostring(id)))
+        RunConsoleCommand("say", "/plyunblind " .. quote(id))
         return true
     end
 end
 
-hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-    lia.admin.groups[g.Name] = nil
-    if SERVER then
-        if CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup then
-            local usergroups = CAMI.GetUsergroups() or {}
-            if usergroups[g.Name] then CAMI.UnregisterUsergroup(g.Name) end
+hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
+    if lia.admin.isDisabled() or ply:IsBot() then return end
+    local steam64 = util.SteamIDTo64(steamID)
+    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
+        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
+        return
+    end
+
+    lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", steam64), function(data)
+        local group = istable(data) and data[1] and data[1]._userGroup
+        if not group or group == "" then
+            group = "user"
+            lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(group), steam64))
         end
 
-        lia.admin.save(true)
+        ply:SetUserGroup(group)
+    end)
+end)
+
+hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
+    if lia.admin.isDisabled() then return end
+    lia.db.query("SELECT * FROM lia_bans", function(data)
+        if istable(data) then
+            local bans = {}
+            for _, ban in pairs(data) do
+                bans[ban._steamID] = {
+                    reason = ban._reason,
+                    start = ban._banStart,
+                    duration = ban._banDuration
+                }
+            end
+
+            lia.admin.banList = bans
+        end
+    end)
+end)
+
+concommand.Add("plysetgroup", function(ply, _, args)
+    if lia.admin.isDisabled() then return end
+    if not IsValid(ply) then
+        local target = lia.command.findPlayer(client, args[1])
+        if IsValid(target) then
+            if lia.admin.groups[args[2]] then
+                lia.admin.setPlayerGroup(target, args[2])
+            else
+                lia.admin.print("Error", "Usergroup not found.")
+            end
+        else
+            lia.admin.print("Error", "Specified player not found.")
+        end
     end
 end)
 
-hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if not pv or not pv.Name then return end
-    local name, minAccess, category = pv.Name, pv.MinAccess or "user", pv.Category or "Misc"
-    lia.admin.privileges[name] = {
-        Name = name,
-        MinAccess = minAccess,
-        Category = category
-    }
+if SERVER then
+    hook.Add("PlayerInitialSpawn", "liaAdminSendGroups", function(client)
+        if lia.admin.isDisabled() then return end
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.admin.groups)
+        net.Send(client)
+    end)
 
-    for groupName, groupData in pairs(lia.admin.groups) do
-        if CAMI.UsergroupInherits(groupName, minAccess) then groupData[name] = true end
-    end
-
-    if SERVER then lia.admin.save(true) end
-end)
-
-hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = nil
-    for _, groupData in pairs(lia.admin.groups) do
-        groupData[pv.Name] = nil
-    end
-
-    if SERVER then lia.admin.save(true) end
-end)
-
-hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup) if SERVER and IsValid(ply) then lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64())) end end)
+    hook.Add("OnReloaded", "liaAdminSendGroups", function(client)
+        if lia.admin.isDisabled() then return end
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.admin.groups)
+        net.Send(client)
+    end)
+else
+    net.Receive("updateAdminGroups", function()
+        local data = net.ReadTable() or {}
+        lia.admin.groups = data
+    end)
+end

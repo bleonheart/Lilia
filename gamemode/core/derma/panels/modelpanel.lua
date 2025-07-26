@@ -76,8 +76,8 @@ end
 
 vgui.Register("liaModelPanel", PANEL, "DModelPanel")
 PANEL = {}
-local HeadBone = "ValveBiped.Bip01_Head1"
-local DefaultAngle = Angle(0, 45, 0)
+local HEAD_BONE = "ValveBiped.Bip01_Head1"
+local DEFAULT_ANGLE = Angle(0, 45, 0)
 function PANEL:Init()
     self:SetFOV(15)
 end
@@ -88,9 +88,9 @@ end
 
 function PANEL:LayoutEntity(ent)
     if not IsValid(ent) then return end
-    self.BoneIndex = self.BoneIndex or ent:LookupBone(HeadBone)
+    self.BoneIndex = self.BoneIndex or ent:LookupBone(HEAD_BONE)
     if self.BoneIndex > 0 then self:SetLookAt(ent:GetBonePosition(self.BoneIndex)) end
-    ent:SetAngles(DefaultAngle)
+    ent:SetAngles(DEFAULT_ANGLE)
 end
 
 vgui.Register("FacingModelPanel", PANEL, "DModelPanel")

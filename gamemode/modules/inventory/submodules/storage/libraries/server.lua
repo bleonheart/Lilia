@@ -1,4 +1,4 @@
-﻿local Rules = {
+﻿local RULES = {
     AccessIfStorageReceiver = function(inventory, _, context)
         local client = context.client
         if not IsValid(client) then return end
@@ -48,7 +48,7 @@ end
 
 function MODULE:CanPlayerSpawnStorage(client, _, info)
     if not client then return true end
-    if not client:hasPrivilege("Can Spawn Storage") then return false end
+    if not client:hasPrivilege("Staff Permissions - Can Spawn Storage") then return false end
     if not info.invType or not lia.inventory.types[info.invType] then return false end
 end
 
@@ -60,14 +60,14 @@ function MODULE:StorageItemRemoved()
     self:SaveData()
 end
 
-local ProhibitedActions = {
+local PROHIBITED_ACTIONS = {
     ["Equip"] = true,
     ["EquipUn"] = true,
 }
 
 function MODULE:CanPlayerInteractItem(_, action, itemObject)
     local inventory = lia.inventory.instances[itemObject.invID]
-    if inventory and inventory.isStorage and ProhibitedActions[action] then return false, "forbiddenActionStorage" end
+    if inventory and inventory.isStorage and PROHIBITED_ACTIONS[action] then return false, "forbiddenActionStorage" end
 end
 
 function MODULE:EntityRemoved(entity)
@@ -97,7 +97,7 @@ function MODULE:PlayerInitialSpawn(client)
 end
 
 function MODULE:StorageInventorySet(_, inventory, isCar)
-    inventory:addAccessRule(isCar and Rules.AccessIfCarStorageReceiver or Rules.AccessIfStorageReceiver)
+    inventory:addAccessRule(isCar and RULES.AccessIfCarStorageReceiver or RULES.AccessIfStorageReceiver)
 end
 
 function MODULE:GetEntitySaveData(ent)
@@ -128,4 +128,4 @@ function MODULE:OnEntityLoaded(ent, data)
         end)
     end
 end
-return Rules
+return RULES

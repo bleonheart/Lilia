@@ -66,13 +66,6 @@ net.Receive("liaStorageTransfer", function(_, client)
     fromInv:removeItem(itemID, true):next(function() return toInv:add(item) end):next(function(res)
         client.storageTransaction = nil
         hook.Run("ItemTransfered", context)
-        local client = context.client
-        local item = context.item
-        if IsValid(client) and item then
-            local fromID = context.from and context.from:getID() or 0
-            local toID = context.to and context.to:getID() or 0
-            lia.log.add(client, "itemTransfer", item:getName(), fromID, toID)
-        end
         return res
     end):catch(function(err)
         client.storageTransaction = nil

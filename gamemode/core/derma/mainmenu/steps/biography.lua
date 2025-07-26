@@ -1,5 +1,5 @@
 ﻿local PANEL = {}
-local Highlight = Color(255, 255, 255, 50)
+local HIGHLIGHT = Color(255, 255, 255, 50)
 function PANEL:Init()
     self:SetSize(400, 600)
     local function makeLabel(key)
@@ -81,7 +81,7 @@ function PANEL:makeTextEntry(key)
     entry.Paint = function(_, w, h)
         surface.SetDrawColor(0, 0, 0, 100)
         surface.DrawRect(0, 0, w, h)
-        entry:DrawTextEntryText(color_white, Highlight, Highlight)
+        entry:DrawTextEntryText(color_white, HIGHLIGHT, HIGHLIGHT)
     end
 
     entry.OnValueChange = function(_, val) self:setContext(key, string.Trim(val)) end

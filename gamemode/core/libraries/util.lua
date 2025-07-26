@@ -307,9 +307,9 @@ else
     function lia.util.DrawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
         local steps = (outlinewidth * 2) / 3
         if steps < 1 then steps = 1 end
-        for x = -outlinewidth, outlinewidth, steps do
-            for y = -outlinewidth, outlinewidth, steps do
-                draw.DrawText(text, font, x + x, y + y, outlinecolour, xalign)
+        for _x = -outlinewidth, outlinewidth, steps do
+            for _y = -outlinewidth, outlinewidth, steps do
+                draw.DrawText(text, font, x + _x, y + _y, outlinecolour, xalign)
             end
         end
         return draw.DrawText(text, font, x, y, colour, xalign)
@@ -608,13 +608,8 @@ else
         local dynamicWidth = dynamicColumns > 0 and math.max(availableWidth / dynamicColumns, 50) or 0
         for _, colInfo in ipairs(columns) do
             local columnName = colInfo.name or L("na")
-            local col = listView:AddColumn(columnName)
             local columnWidth = colInfo.width or dynamicWidth
-            surface.SetFont(col.Header:GetFont() or "DermaDefault")
-            local textWidth = select(1, surface.GetTextSize(columnName)) + 20
-            local finalWidth = math.max(columnWidth, textWidth)
-            col:SetWide(finalWidth)
-            col:SetMinWidth(textWidth)
+            listView:AddColumn(columnName):SetFixedWidth(columnWidth)
         end
 
         for _, row in ipairs(data) do
