@@ -139,8 +139,7 @@ end
 
 function MODULE:CreateMenuButtons(tabs)
     local ply = LocalPlayer()
-    local classes = lia.faction.getClasses(ply:Team())
-    local canJoin = false
+    local joinable = lia.class.retrieveJoinable(ply)
     local char = ply:getChar()
     if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
     tabs[L("roster")] = function(panel)
@@ -150,14 +149,7 @@ function MODULE:CreateMenuButtons(tabs)
         buildRoster(panel)
     end
 
-    for _, class in ipairs(classes) do
-        if lia.class.canJoin(ply, class.index) then
-            canJoin = true
-            break
-        end
-    end
-
-    if canJoin then
+    if #joinable > 0 then
         tabs[L("classes")] = function(panel)
             local pnl = panel:Add("liaClasses")
             pnl:Dock(FILL)

@@ -16,16 +16,11 @@ end
 
 function PANEL:loadClasses()
     local client = LocalPlayer()
-    local list = {}
-    for _, cl in pairs(lia.class.list) do
-        if cl.faction == client:Team() then list[#list + 1] = cl end
-    end
-
-    table.sort(list, function(a, b) return a.name < b.name end)
+    local list = lia.class.retrieveJoinable(client)
     self.sidebar:Clear()
     self.tabList = {}
     for _, cl in ipairs(list) do
-        local canBe = lia.class.canJoin(LocalPlayer(), cl.index)
+        local canBe = true
         local btn = self.sidebar:Add("liaMediumButton")
         btn:SetText(cl.name or L("unnamed"))
         btn:SetTall(50)

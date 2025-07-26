@@ -91,3 +91,18 @@ function lia.class.canJoin(client, class)
     if not lia.class.hasWhitelist(class) then return true end
     return client:hasClassWhitelist(class)
 end
+
+--- Returns a list of classes the client can currently join.
+-- @param client Player to check joinable classes for.
+-- @return table List of class tables the player may join.
+function lia.class.retrieveJoinable(client)
+    local joinable = {}
+    if not IsValid(client) or not client:getChar() then return joinable end
+    for _, class in ipairs(lia.class.list) do
+        if class.faction == client:Team() and lia.class.canJoin(client, class.index) then
+            joinable[#joinable + 1] = class
+        end
+    end
+    table.sort(joinable, function(a, b) return a.name < b.name end)
+    return joinable
+end

@@ -96,9 +96,20 @@ lia.command.add("beclass", {
             return
         end
 
-        local classID = tonumber(className) or lia.class.retrieveClass(className)
+        local classID = tonumber(className)
+        if not classID then
+            for _, cl in ipairs(lia.class.retrieveJoinable(client)) do
+                if lia.util.stringMatches(cl.uniqueID, className) or lia.util.stringMatches(cl.name, className) then
+                    classID = cl.index
+                    break
+                end
+            end
+        elseif not lia.class.canJoin(client, classID) then
+            classID = nil
+        end
+
         local classData = lia.class.get(classID)
-        if classData and lia.class.canJoin(client, classID) then
+        if classData and classID then
             if character:joinClass(classID) then
                 client:notifyLocalized("becomeClass", L(classData.name))
                 lia.log.add(client, "beClass", classData.name)
