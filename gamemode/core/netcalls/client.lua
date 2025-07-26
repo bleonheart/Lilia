@@ -980,6 +980,7 @@ local function handleTableData(id)
                 displayNoData(lia.gui.warnings, L("noWarningsFound") or "No warnings to display.")
                 return
             end
+
             if lia.gui.staffActions and lia.gui.staffActions.sheet and IsValid(lia.gui.staffActions.sheet) then
                 displayNoData(lia.gui.staffActions.sheet, L("noStaffActionsFound") or "No staff actions to display.")
                 return
@@ -1030,7 +1031,6 @@ local function handleTableData(id)
 
             populateTable(panel, columns, data)
         end
-
         return
     end
 end
@@ -1227,6 +1227,20 @@ net.Receive("managesitrooms", function()
         makeButton("teleport", 1)
         makeButton("reposition", 3)
         makeButton("rename", 2)
+    end
+end)
+
+net.Receive("classUpdate", function()
+    local joinedClient = net.ReadEntity()
+    if lia.gui.classes and lia.gui.classes:IsVisible() then
+        if joinedClient == LocalPlayer() then
+            lia.gui.classes:loadClasses()
+        else
+            for _, v in ipairs(lia.gui.classes.classPanels) do
+                local data = v.data
+                v:setNumber(#lia.class.getPlayers(data.index))
+            end
+        end
     end
 end)
 

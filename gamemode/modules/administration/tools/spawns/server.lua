@@ -1,6 +1,4 @@
-﻿local MODULE = MODULE
-local encodetable = lia.data.encodetable
-function MODULE:FetchSpawns()
+﻿function MODULE:FetchSpawns()
     local d = deferred.new()
     local data = lia.data.get("spawns", {})
     local factions = data.factions or data
@@ -31,7 +29,7 @@ function MODULE:StoreSpawns(spawns)
     for fac, list in pairs(spawns or {}) do
         factions[fac] = {}
         for _, data in ipairs(list) do
-            factions[fac][#factions[fac] + 1] = encodetable(data)
+            factions[fac][#factions[fac] + 1] = lia.data.encodetable(data)
         end
     end
 
