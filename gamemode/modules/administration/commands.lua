@@ -3721,6 +3721,144 @@ lia.command.add("clearchat", {
     end
 })
 
+local rangeMap = {
+    whisper = "w",
+    normal = "ic",
+    talk = "ic",
+    yell = "y"
+}
+
+lia.command.add("recogwhisper", {
+    privilege = "Manage Recognition",
+    adminOnly = true,
+    syntax = "[player Name]",
+    desc = "recogWhisperDesc",
+    AdminStick = {
+        Name = "recogWhisperStickName",
+        Category = "moderationTools",
+        SubCategory = "misc",
+        Icon = "icon16/eye.png"
+    },
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1]) or client
+        if not IsValid(target) or not target:getChar() then return end
+        local char = target:getChar()
+        if char and target:Alive() then
+            local key = rangeMap["whisper"] or "ic"
+            local cls = lia.chat.classes[key]
+            if cls then
+                for _, v in player.Iterator() do
+                    if v ~= target and v:getChar() and cls.onCanHear(target, v) and v:getChar():recognize(char) then lia.log.add(target, "charRecognize", v:getChar():getID(), "FORCED") end
+                end
+            end
+        end
+
+        net.Start("rgnDone")
+        net.Send(target)
+        hook.Run("OnCharRecognized", target)
+        hook.Run("CharacterForceRecognized", target, "whisper")
+    end
+})
+
+lia.command.add("recognormal", {
+    privilege = "Manage Recognition",
+    adminOnly = true,
+    syntax = "[player Name]",
+    desc = "recogNormalDesc",
+    AdminStick = {
+        Name = "recogNormalStickName",
+        Category = "moderationTools",
+        SubCategory = "misc",
+        Icon = "icon16/eye.png"
+    },
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1]) or client
+        if not IsValid(target) or not target:getChar() then return end
+        local char = target:getChar()
+        if char and target:Alive() then
+            local key = rangeMap["normal"] or "ic"
+            local cls = lia.chat.classes[key]
+            if cls then
+                for _, v in player.Iterator() do
+                    if v ~= target and v:getChar() and cls.onCanHear(target, v) and v:getChar():recognize(char) then lia.log.add(target, "charRecognize", v:getChar():getID(), "FORCED") end
+                end
+            end
+        end
+
+        net.Start("rgnDone")
+        net.Send(target)
+        hook.Run("OnCharRecognized", target)
+        hook.Run("CharacterForceRecognized", target, "normal")
+    end
+})
+
+lia.command.add("recogyell", {
+    privilege = "Manage Recognition",
+    adminOnly = true,
+    syntax = "[player Name]",
+    desc = "recogYellDesc",
+    AdminStick = {
+        Name = "recogYellStickName",
+        Category = "moderationTools",
+        SubCategory = "misc",
+        Icon = "icon16/eye.png"
+    },
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1]) or client
+        if not IsValid(target) or not target:getChar() then return end
+        local char = target:getChar()
+        if char and target:Alive() then
+            local key = rangeMap["yell"] or "ic"
+            local cls = lia.chat.classes[key]
+            if cls then
+                for _, v in player.Iterator() do
+                    if v ~= target and v:getChar() and cls.onCanHear(target, v) and v:getChar():recognize(char) then lia.log.add(target, "charRecognize", v:getChar():getID(), "FORCED") end
+                end
+            end
+        end
+
+        net.Start("rgnDone")
+        net.Send(target)
+        hook.Run("OnCharRecognized", target)
+        hook.Run("CharacterForceRecognized", target, "yell")
+    end
+})
+
+lia.command.add("recogbots", {
+    privilege = "Manage Recognition",
+    superAdminOnly = true,
+    syntax = "[string Range optional] [string Name optional]",
+    desc = "recogBotsDesc",
+    AdminStick = {
+        Name = "recogBotsStickName",
+        Category = "moderationTools",
+        SubCategory = "misc",
+        Icon = "icon16/eye.png"
+    },
+    onRun = function(_, arguments)
+        local range = arguments[1] or "normal"
+        local fakeName = arguments[2]
+        local key = rangeMap[range] or "ic"
+        local cls = lia.chat.classes[key]
+        if not cls then return end
+        for _, bot in player.Iterator() do
+            if bot:IsBot() and bot:getChar() then
+                local char = bot:getChar()
+                if char and bot:Alive() then
+                    for _, v in player.Iterator() do
+                        if v ~= bot and v:getChar() and cls.onCanHear(bot, v) and v:getChar():recognize(char, fakeName) then lia.log.add(bot, "charRecognize", v:getChar():getID(), "FORCED") end
+                    end
+
+                    net.Start("rgnDone")
+                    net.Send(bot)
+                    hook.Run("OnCharRecognized", bot)
+                    hook.Run("CharacterForceRecognized", bot, range)
+                end
+            end
+        end
+    end
+})
+
 if SERVER then
     concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(ply) then

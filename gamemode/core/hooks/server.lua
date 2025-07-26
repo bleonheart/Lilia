@@ -98,6 +98,10 @@ function GM:PlayerLoadedChar(client, character)
     end)
 end
 
+function GM:ShowHelp()
+    return false
+end
+
 function GM:PlayerDeath(client, inflictor, attacker)
     local character = client:getChar()
     if not character then return end
@@ -118,6 +122,8 @@ function GM:PlayerDeath(client, inflictor, attacker)
         character:ban()
     end
 
+    net.Start("removeF1")
+    net.Send(client)
     lia.log.add(client, "playerDeath", attacker:IsPlayer() and attacker:Name() or attacker:GetClass())
 end
 

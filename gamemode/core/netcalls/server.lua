@@ -544,6 +544,16 @@ net.Receive("liaCharChoose", function(_, client)
     net.Send(client)
 end)
 
+net.Receive("liaTeleportToEntity", function(_, ply)
+    local ent = net.ReadEntity()
+    if not IsValid(ent) then return end
+    if not ply:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then return end
+    local pos = ent:GetPos() + Vector(0, 0, 50)
+    ply:SetPos(pos)
+    ply:notifyLocalized("teleportedToEntity", ent:GetClass())
+    lia.log.add(ply, "teleportToEntity", ent:GetClass())
+end)
+
 net.Receive("liaCharCreate", function(_, client)
     if hook.Run("CanPlayerCreateChar", client) == false then return end
     local function response(id, message, ...)
