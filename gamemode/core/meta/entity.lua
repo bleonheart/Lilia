@@ -134,6 +134,12 @@ if SERVER then
         self:setNetVar("locked", state)
     end
 
+    function entityMeta:setKeysNonOwnable(state)
+        local flag = state and true or nil
+        self:setNetVar("noSell", flag)
+        self:setNetVar("noKeying", flag)
+    end
+
     function entityMeta:isDoor()
         if not IsValid(self) then return end
         local class = self:GetClass():lower()
