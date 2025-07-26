@@ -328,11 +328,11 @@ local function renderGroupInfo(parent, g, cami, perms)
     privLbl:SetText(L("privileges"))
     setFont(privLbl, "liaBigFont")
     privLbl:SizeToContents()
-    local listHolder = scroll:Add("DPanel")
+    local listHolder = scroll:Add("DScrollPanel")
     listHolder:Dock(TOP)
     listHolder:DockMargin(20, 0, 20, 20)
     listHolder.Paint = function() end
-    local list = vgui.Create("DListLayout", listHolder)
+    local list = listHolder:Add("DListLayout")
     list:Dock(FILL)
     local current = table.Copy(perms[g] or {})
     local checkboxes = {}
@@ -396,7 +396,7 @@ local function renderGroupInfo(parent, g, cami, perms)
 
     list:InvalidateLayout(true)
     list:SizeToChildren(false, true)
-    listHolder:SetTall(list:GetTall())
+    listHolder:SetTall(math.min(list:GetTall(), ScrH() * 0.5))
 end
 
 local function buildGroupsUI(panel, cami, perms)
