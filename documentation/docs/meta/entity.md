@@ -272,6 +272,33 @@ car:keysUnLock()
 
 ---
 
+### setKeysNonOwnable
+
+**Purpose**
+
+Marks a door as non-ownable so players cannot purchase it.
+
+**Parameters**
+
+* `state` (`boolean`): Whether the door should be unownable.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* `nil`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+-- Prevent players from buying this door permanently
+door:setKeysNonOwnable(true)
+```
+
+---
+
 ### getDoorOwner
 
 **Purpose**
