@@ -1007,6 +1007,7 @@ LANGUAGE = {
     noEntitiesFound = "Nessuna entità da mostrare.",
     noWarningsFound = "Nessun warning da mostrare.",
     noTicketsFound = "Nessun ticket da mostrare.",
+    noStaffActionsFound = "Nessuna azione staff da mostrare.",
     modulesCount = "Conteggio Moduli: %s",
     ["Bring"] = "Bring",
     ["Goto"] = "Goto",

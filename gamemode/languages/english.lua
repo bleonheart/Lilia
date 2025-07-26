@@ -1009,6 +1009,7 @@ LANGUAGE = {
     noEntitiesFound = "No entities to display.",
     noWarningsFound = "No warnings to display.",
     noTicketsFound = "No tickets to display.",
+    noStaffActionsFound = "No staff actions to display.",
     modulesCount = "Modules Count: %s",
     ["Bring"] = "Bring",
     ["Goto"] = "Goto",

@@ -1007,6 +1007,7 @@ LANGUAGE = {
     noEntitiesFound = "Нет сущностей для отображения.",
     noWarningsFound = "Нет предупреждений для отображения.",
     noTicketsFound = "Нет тикетов для отображения.",
+    noStaffActionsFound = "Нет действий персонала для отображения.",
     modulesCount = "Модулей: %s",
     ["Bring"] = "Притянуть",
     ["Goto"] = "Перейти",
