@@ -1622,7 +1622,6 @@ local function VerifyCheats()
     end
 end
 
-
 net.Receive("VerifyCheats", function()
     VerifyCheats()
     net.Start("VerifyCheatsResponse")

@@ -99,10 +99,9 @@ function lia.class.retrieveJoinable(client)
     local joinable = {}
     if not IsValid(client) or not client:getChar() then return joinable end
     for _, class in ipairs(lia.class.list) do
-        if class.faction == client:Team() and lia.class.canJoin(client, class.index) then
-            joinable[#joinable + 1] = class
-        end
+        if class.faction == client:Team() and lia.class.canJoin(client, class.index) then joinable[#joinable + 1] = class end
     end
+
     table.sort(joinable, function(a, b) return a.name < b.name end)
     return joinable
 end

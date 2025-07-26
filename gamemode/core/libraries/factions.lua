@@ -62,6 +62,7 @@ function lia.faction.register(name, data)
         suffix = suffix + 1
         uniqueID = sanitized .. suffix
     end
+
     local index = table.Count(lia.faction.teams) + 1
     local FACTION = table.Copy(data)
     FACTION.index = data.index or index
@@ -264,4 +265,3 @@ FACTION_STAFF = lia.faction.register("factionStaffName", {
     models = {…},
     weapons = {"weapon_physgun", "gmod_tool"},
 }).index
-

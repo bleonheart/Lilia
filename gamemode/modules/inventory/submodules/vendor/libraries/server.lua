@@ -1,5 +1,4 @@
-local VendorInventoryMeasure
-
+﻿local VendorInventoryMeasure
 function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = vendor:getNetVar("name") or L("unknown")
     if not isSellingToVendor then

@@ -1,15 +1,7 @@
 ﻿local MODULE = MODULE
 function MODULE:GetWarnings(charID)
     local condition = "action = 'warning' AND charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({
-        "id",
-        "timestamp",
-        "targetName AS playerName",
-        "targetSteam AS playerSteam",
-        "message AS reason",
-        "adminName",
-        "adminSteam"
-    }, "staffactions", condition):next(function(res) return res.results or {} end)
+    return lia.db.select({"id", "timestamp", "targetName AS playerName", "targetSteam AS playerSteam", "message AS reason", "adminName", "adminSteam"}, "staffactions", condition):next(function(res) return res.results or {} end)
 end
 
 function MODULE:AddWarning(charID, timestamp, playerName, playerSteam, reason, adminName, adminSteam)
@@ -70,8 +62,12 @@ net.Receive("RequestRemoveWarning", function(_, client)
             reason = warn.reason,
             admin = warn.admin
         }, warnIndex)
+
         lia.db.count("staffactions", "action = 'warning' AND charID = " .. lia.db.convertDataType(targetClient:getChar():getID())):next(function(count)
-            lia.log.add(client, "warningRemoved", targetClient, {reason = warn.reason, admin = warn.admin}, count, warnIndex)
+            lia.log.add(client, "warningRemoved", targetClient, {
+                reason = warn.reason,
+                admin = warn.admin
+            }, count, warnIndex)
         end)
     end)
 end)

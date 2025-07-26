@@ -1,11 +1,9 @@
-﻿local MODULE = MODULE
-
-function SWEP:PrimaryAttack()
+﻿function SWEP:PrimaryAttack()
     local target = self:GetTarget()
     local client = LocalPlayer()
     if IsValid(target) then
         client.AdminStickTarget = target
-        MODULE:OpenAdminStickUI(target)
+        hook.Run("OpenAdminStickUI", target)
     end
 end
 
@@ -77,6 +75,6 @@ function SWEP:Reload()
     local client = LocalPlayer()
     if client:KeyDown(IN_SPEED) then
         client.AdminStickTarget = client
-        MODULE:OpenAdminStickUI(client)
+        hook.Run("OpenAdminStickUI", client)
     end
 end

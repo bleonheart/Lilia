@@ -1,4 +1,4 @@
-hook.Add("liaAdminRegisterTab", "AdminTabStaffActions", function(tabs)
+﻿hook.Add("liaAdminRegisterTab", "AdminTabStaffActions", function(tabs)
     local function canView()
         local ply = LocalPlayer()
         return IsValid(ply) and ply:hasPrivilege("Access Staff Actions Tab") and ply:hasPrivilege("View DB Tables")
@@ -10,10 +10,8 @@ hook.Add("liaAdminRegisterTab", "AdminTabStaffActions", function(tabs)
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:DockPadding(10, 10, 10, 10)
-
             local ps = vgui.Create("DPropertySheet", pnl)
             ps:Dock(FILL)
-
             lia.gui.staffActions = {
                 sheet = ps,
                 panels = {}
@@ -22,7 +20,6 @@ hook.Add("liaAdminRegisterTab", "AdminTabStaffActions", function(tabs)
             net.Start("liaRequestTableData")
             net.WriteString("lia_staffactions")
             net.SendToServer()
-
             return pnl
         end
     }

@@ -57,23 +57,22 @@ local function CharRecognize(ply, lvl, nm)
         local clsKey = lvl == 3 and "ic" or lvl == 4 and "y" or "w"
         local cls = lia.chat.classes[clsKey]
         for _, v in player.Iterator() do
-            if ply ~= v and v:getChar() and cls.onCanHear(ply, v) then
-                tgt[#tgt + 1] = v
-            end
+            if ply ~= v and v:getChar() and cls.onCanHear(ply, v) then tgt[#tgt + 1] = v end
         end
     end
+
     if #tgt == 0 then return end
     local count = 0
     for _, v in ipairs(tgt) do
-        if v:getChar():recognize(ply:getChar(), nm) then
-            count = count + 1
-        end
+        if v:getChar():recognize(ply:getChar(), nm) then count = count + 1 end
     end
+
     if count == 0 then return end
     ply:notifyLocalized("recognitionGiven", count)
     for _, v in ipairs(tgt) do
         lia.log.add(ply, "charRecognize", v:getChar():getID(), nm)
     end
+
     net.Start("rgnDone")
     net.Send(ply)
     hook.Run("OnCharRecognized", ply)
@@ -84,9 +83,7 @@ local function doRange(ply, lvl)
 end
 
 AddAction(L("recognizeInWhisperRange"), {
-    shouldShow = function(ply)
-        return canRecog(ply)
-    end,
+    shouldShow = function(ply) return canRecog(ply) end,
     onRun = function(ply)
         if CLIENT then return end
         doRange(ply, 1)
@@ -95,9 +92,7 @@ AddAction(L("recognizeInWhisperRange"), {
 })
 
 AddAction(L("recognizeInTalkRange"), {
-    shouldShow = function(ply)
-        return canRecog(ply)
-    end,
+    shouldShow = function(ply) return canRecog(ply) end,
     onRun = function(ply)
         if CLIENT then return end
         doRange(ply, 3)
@@ -106,9 +101,7 @@ AddAction(L("recognizeInTalkRange"), {
 })
 
 AddAction(L("recognizeInYellRange"), {
-    shouldShow = function(ply)
-        return canRecog(ply)
-    end,
+    shouldShow = function(ply) return canRecog(ply) end,
     onRun = function(ply)
         if CLIENT then return end
         doRange(ply, 4)

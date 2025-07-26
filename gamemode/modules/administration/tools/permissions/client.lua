@@ -97,10 +97,10 @@ local function populateCharTable(panel, columns, rows)
             local fieldName = colInfo.field or colInfo.name
             table.insert(lineData, row[fieldName] or L("na"))
         end
+
         local line = listView:AddLine(unpack(lineData))
         line.rowData = row
     end
-
     return listView
 end
 
@@ -211,34 +211,25 @@ net.Receive("DisplayCharList", function()
                         for key, value in pairs(ln.rowData) do
                             rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
                         end
+
                         rowString = rowString:sub(1, -4)
                         SetClipboardText(rowString)
                     end):SetIcon("icon16/page_copy.png")
                 end
+
                 if ln.CharID then
                     local online = ln.rowData and (ln.rowData.LastUsed == L("onlineNow") or ln.rowData.LastOnline == L("onlineNow"))
                     if online then
                         if LocalPlayer():hasPrivilege("Manage Characters") then
-                            menu:AddOption(L("banCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charban ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/cancel.png")
-                            menu:AddOption(L("unbanCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charunban ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/accept.png")
+                            menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
+                            menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/accept.png")
                         end
                     else
-                        if LocalPlayer():hasPrivilege("Unban Offline") then
-                            menu:AddOption(L("banCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/cancel.png")
-                        end
-                        if LocalPlayer():hasPrivilege("Ban Offline") then
-                            menu:AddOption(L("unbanCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/accept.png")
-                        end
+                        if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/cancel.png") end
+                        if LocalPlayer():hasPrivilege("Ban Offline") then menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/accept.png") end
                     end
                 end
+
                 menu:Open()
             end
         end
@@ -276,34 +267,25 @@ net.Receive("DisplayCharList", function()
                         for key, value in pairs(ln.rowData) do
                             rowString = rowString .. tostring(key) .. ": " .. tostring(value) .. " | "
                         end
+
                         rowString = rowString:sub(1, -4)
                         SetClipboardText(rowString)
                     end):SetIcon("icon16/page_copy.png")
                 end
+
                 if ln.CharID then
                     local online = ln.rowData and (ln.rowData.LastUsed == L("onlineNow") or ln.rowData.LastOnline == L("onlineNow"))
                     if online then
                         if LocalPlayer():hasPrivilege("Manage Characters") then
-                            menu:AddOption(L("banCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charban ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/cancel.png")
-                            menu:AddOption(L("unbanCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charunban ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/accept.png")
+                            menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
+                            menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/accept.png")
                         end
                     else
-                        if LocalPlayer():hasPrivilege("Unban Offline") then
-                            menu:AddOption(L("banCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/cancel.png")
-                        end
-                        if LocalPlayer():hasPrivilege("Ban Offline") then
-                            menu:AddOption(L("unbanCharacter"), function()
-                                LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]])
-                            end):SetIcon("icon16/accept.png")
-                        end
+                        if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/cancel.png") end
+                        if LocalPlayer():hasPrivilege("Ban Offline") then menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end):SetIcon("icon16/accept.png") end
                     end
                 end
+
                 menu:Open()
             end
         end
@@ -327,7 +309,6 @@ hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(tabs)
             psheet:Dock(FILL)
             lia.gui.charList.sheet = psheet
             lia.gui.charList.panels = {}
-
             for _, ply in ipairs(player.GetAll()) do
                 local sub = vgui.Create("DPanel", psheet)
                 sub:Dock(FILL)
@@ -346,7 +327,6 @@ hook.Add("liaAdminRegisterTab", "AdminTabCharList", function(tabs)
             lia.gui.charList.panels["all"] = allPanel
             net.Start("liaRequestAllCharList")
             net.SendToServer()
-
             return pnl
         end
     }

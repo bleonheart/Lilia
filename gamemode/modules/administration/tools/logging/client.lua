@@ -1,16 +1,13 @@
-local receivedChunks = {}
+﻿local receivedChunks = {}
 local receivedPanel
-
 local function createLogPage(parent, logs)
     local contentPanel = parent:Add("DPanel")
     contentPanel:Dock(FILL)
     contentPanel:DockPadding(10, 10, 10, 10)
-
     local search = contentPanel:Add("DTextEntry")
     search:Dock(TOP)
     search:SetPlaceholderText(L("searchLogs"))
     search:SetTextColor(Color(255, 255, 255))
-
     local list = contentPanel:Add("DListView")
     list:Dock(FILL)
     list:SetMultiSelect(false)
@@ -22,6 +19,7 @@ local function createLogPage(parent, logs)
         col:SetWide(width)
         col:SetMinWidth(textWidth)
     end
+
     list:AddColumn(L("logMessage"))
     do
         local col = list:AddColumn(L("steamID"))
@@ -36,7 +34,6 @@ local function createLogPage(parent, logs)
     copyButton:Dock(BOTTOM)
     copyButton:SetText(L("copySelectedRow"))
     copyButton:SetTall(40)
-
     local function populate(data)
         list:Clear()
         for _, log in ipairs(data) do
@@ -45,14 +42,11 @@ local function createLogPage(parent, logs)
     end
 
     populate(logs)
-
     list.OnRowRightClick = function(_, _, line)
         if not IsValid(line) then return end
         local text = "[" .. line:GetColumnText(1) .. "] " .. line:GetColumnText(2)
         local id = line:GetColumnText(3)
-        if id and id ~= "" then
-            text = text .. " [" .. id .. "]"
-        end
+        if id and id ~= "" then text = text .. " [" .. id .. "]" end
         SetClipboardText(text)
     end
 
@@ -62,10 +56,9 @@ local function createLogPage(parent, logs)
         for _, log in ipairs(logs) do
             local msgMatch = string.find(string.lower(log.message), query, 1, true)
             local idMatch = log.steamID and string.find(string.lower(log.steamID), query, 1, true)
-            if query == "" or msgMatch or idMatch then
-                filtered[#filtered + 1] = log
-            end
+            if query == "" or msgMatch or idMatch then filtered[#filtered + 1] = log end
         end
+
         populate(filtered)
     end
 
@@ -75,13 +68,10 @@ local function createLogPage(parent, logs)
             local line = list:GetLine(sel)
             local text = "[" .. line:GetColumnText(1) .. "] " .. line:GetColumnText(2)
             local id = line:GetColumnText(3)
-            if id and id ~= "" then
-                text = text .. " [" .. id .. "]"
-            end
+            if id and id ~= "" then text = text .. " [" .. id .. "]" end
             SetClipboardText(text)
         end
     end
-
     return contentPanel
 end
 
@@ -89,10 +79,7 @@ local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     local ps = panel:Add("DPropertySheet")
     ps:Dock(FILL)
-    ps.Paint = function(p, w, h)
-        derma.SkinHook("Paint", "PropertySheet", p, w, h)
-    end
-
+    ps.Paint = function(p, w, h) derma.SkinHook("Paint", "PropertySheet", p, w, h) end
     for category, logs in pairs(categorizedLogs) do
         local page = createLogPage(ps, logs)
         ps:AddSheet(category, page)

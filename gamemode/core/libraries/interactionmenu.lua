@@ -1,4 +1,4 @@
-lia.interactionmenu = lia.interactionmenu or {}
+﻿lia.interactionmenu = lia.interactionmenu or {}
 lia.interactionmenu.Actions = lia.interactionmenu.Actions or {}
 lia.interactionmenu.Interactions = lia.interactionmenu.Interactions or {}
 function AddInteraction(name, data)

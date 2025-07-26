@@ -1,5 +1,4 @@
 ﻿MODULE.CharacterInformation = {}
-
 function MODULE:LoadCharInformation()
     hook.Run("AddSection", L("generalInfo"), Color(0, 0, 0), 1, 1)
     hook.Run("AddTextField", L("generalInfo"), "name", L("name"), function() return LocalPlayer():getChar():getName() end)
@@ -144,15 +143,12 @@ hook.Add("liaAdminRegisterTab", "AdminEntitiesTab", function(tabs)
         for _, ent in ents.Iterator() do
             if IsValid(ent) and ent.GetCreator and IsValid(ent:GetCreator()) then return true end
         end
-
         return false
     end
 
     tabs[L("entities")] = {
         icon = "icon16/bricks.png",
-        onShouldShow = function()
-            return canView() and hasEntities()
-        end,
+        onShouldShow = function() return canView() and hasEntities() end,
         build = function(sheet)
             local panel = vgui.Create("DPanel", sheet)
             panel:DockPadding(10, 10, 10, 10)
@@ -378,21 +374,16 @@ function MODULE:CreateMenuButtons(tabs)
     end
 
     local sheetTabs = {}
-
     do
         local infoPages = {}
         hook.Run("CreateInformationButtons", infoPages)
-        if infoPages then
-            sheetTabs[L("information")] = infoPages
-        end
+        if infoPages then sheetTabs[L("information")] = infoPages end
     end
 
     do
         local settingsPages = {}
         hook.Run("PopulateConfigurationButtons", settingsPages)
-        if settingsPages then
-            sheetTabs[L("settings")] = settingsPages
-        end
+        if settingsPages then sheetTabs[L("settings")] = settingsPages end
     end
 
     hook.Run("CreateSheetedTabs", sheetTabs)
@@ -405,9 +396,7 @@ function MODULE:CreateMenuButtons(tabs)
                 local pnl = sheet:Add("DPanel")
                 pnl:Dock(FILL)
                 pnl.Paint = function() end
-                if page.drawFunc then
-                    page.drawFunc(pnl)
-                end
+                if page.drawFunc then page.drawFunc(pnl) end
                 sheet:AddSheet(page.name, pnl)
             end
         end

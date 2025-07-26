@@ -1,7 +1,6 @@
-if SERVER then
+﻿if SERVER then
     hook.Add("EntityTakeDamage", "liaSimfphys", function(seat, dmgInfo)
         if not lia.config.get("DamageInCars", true) then return end
-
         if seat:IsVehicle() and seat:GetClass() == "gmod_sent_vehicle_fphysics_base" then
             local player = seat:GetDriver()
             if IsValid(player) then
@@ -28,7 +27,6 @@ if SERVER then
 
         local delay = lia.config.get("TimeToEnterVehicle", 5)
         local delayEnabled = lia.config.get("CarEntryDelayEnabled", true)
-
         if entity:isSimfphysCar() then
             if delayEnabled and delay > 0 then
                 entity.IsBeingEntered = true
@@ -46,7 +44,6 @@ if SERVER then
                 entity:SetPassenger(client)
             end
         end
-
         return true
     end)
 else

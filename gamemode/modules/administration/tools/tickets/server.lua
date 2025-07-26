@@ -1,5 +1,4 @@
 ﻿local MODULE = MODULE
-
 local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
@@ -59,6 +58,7 @@ function MODULE:TicketSystemClaim(admin, requester)
         targetName = tostring(requester)
         targetSteam = tostring(requester)
     end
+
     lia.db.insertTable({
         timestamp = os.date("%Y-%m-%d %H:%M:%S"),
         targetName = targetName,
@@ -70,15 +70,12 @@ function MODULE:TicketSystemClaim(admin, requester)
         message = nil,
         charID = nil
     }, nil, "staffactions")
-    lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
-        lia.log.add(admin, "ticketClaimed", requester:Name(), count)
-    end)
+
+    lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
-        lia.log.add(admin, "ticketClosed", requester:Name(), count)
-    end)
+    lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:PlayerSay(client, text)
@@ -103,6 +100,7 @@ function MODULE:PlayerSay(client, text)
             targetName = tostring(client)
             targetSteam = tostring(client)
         end
+
         lia.db.insertTable({
             timestamp = os.date("%Y-%m-%d %H:%M:%S"),
             targetName = targetName,

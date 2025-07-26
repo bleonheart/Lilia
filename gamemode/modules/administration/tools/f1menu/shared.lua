@@ -1,4 +1,4 @@
-local function getMenuTabNames()
+﻿local function getMenuTabNames()
     local defs = {}
     hook.Run("CreateMenuButtons", defs)
     local tabs = {}

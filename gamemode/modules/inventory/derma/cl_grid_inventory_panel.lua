@@ -1,5 +1,4 @@
-local PANEL = {}
-
+﻿local PANEL = {}
 local function paintSlot(x, y, w, h, skin)
     skin = skin or derma.GetSkinTable()
     if skin and skin.DrawGenericBackground then
@@ -13,6 +12,7 @@ local function paintSlot(x, y, w, h, skin)
         surface.DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2)
     end
 end
+
 function PANEL:Init()
     self:SetPaintBackground(false)
     self.icons = {}

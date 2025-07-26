@@ -268,9 +268,7 @@ function lia.data.savePersistence(entities)
     ensurePersistenceColumns(cols):next(function()
         -- Clean up legacy vendor table if present
         return lia.db.delete("vendors", condition)
-    end):next(function()
-        return lia.db.delete("persistence", condition)
-    end):next(function()
+    end):next(function() return lia.db.delete("persistence", condition) end):next(function()
         local rows = {}
         for _, ent in ipairs(entities) do
             local row = {
@@ -297,9 +295,7 @@ function lia.data.loadPersistenceData(callback)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    ensurePersistenceColumns(baseCols):next(function()
-        return lia.db.select("*", "persistence", condition)
-    end):next(function(res)
+    ensurePersistenceColumns(baseCols):next(function() return lia.db.select("*", "persistence", condition) end):next(function(res)
         local rows = res.results or {}
         local entities = {}
         for _, row in ipairs(rows) do
