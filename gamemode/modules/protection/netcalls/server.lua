@@ -557,15 +557,16 @@ end
 
 net.Receive("CheckSeed", function(_, client)
     local sentSteamID = net.ReadString()
-    if not sentSteamID or sentSteamID == "" then
-        lia.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID64()))
-        lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID64())
+    local realSteamID = client:SteamID64()
+    if not sentSteamID or sentSteamID == "" or not sentSteamID:match("^%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?$") then
+        lia.notifyAdmin(L("steamIDMissing", client:Name(), realSteamID))
+        lia.log.add(client, "steamIDMissing", client:Name(), realSteamID)
         return
     end
 
-    if client:SteamID64() ~= sentSteamID then
-        lia.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID64(), sentSteamID))
-        lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID64(), sentSteamID)
+    if sentSteamID ~= realSteamID and sentSteamID ~= client:OwnerSteamID64() then
+        lia.notifyAdmin(L("steamIDMismatch", client:Name(), realSteamID, sentSteamID))
+        lia.log.add(client, "steamIDMismatch", client:Name(), realSteamID, sentSteamID)
     end
 end)
 
