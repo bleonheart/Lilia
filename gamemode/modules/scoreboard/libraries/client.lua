@@ -11,7 +11,7 @@ end
 
 function MODULE:ScoreboardShow()
     if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
-    local pim = lia.module.list and lia.module.list.interactionmenu
+    local pim = lia.interactionmenu
     if not pim or not pim:checkInteractionPossibilities() and not pim.Menu then
         if IsValid(lia.gui.score) then
             if not lia.gui.score:IsVisible() then
