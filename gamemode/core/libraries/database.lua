@@ -270,7 +270,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
-    DROP TABLE IF EXISTS `lia_vendors`;
     DROP TABLE IF EXISTS `lia_warnings`;
 ]])
             local done = 0
@@ -305,7 +304,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
-    DROP TABLE IF EXISTS lia_vendors;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)
@@ -480,16 +478,6 @@ function lia.db.loadTables()
                 model TEXT
             );
 
-            CREATE TABLE IF NOT EXISTS lia_vendors (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                gamemode TEXT,
-                map TEXT,
-                class TEXT,
-                pos TEXT,
-                angles TEXT,
-                model TEXT,
-                data TEXT
-            );
 
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -675,17 +663,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (`id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_vendors` (
-                `id` INT(12) NOT NULL AUTO_INCREMENT,
-                `gamemode` TEXT NULL,
-                `map` TEXT NULL,
-                `class` TEXT NULL,
-                `pos` TEXT NULL,
-                `angles` TEXT NULL,
-                `model` TEXT NULL,
-                `data` TEXT NULL,
-                PRIMARY KEY (`id`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
                 `id` INT(12) NOT NULL AUTO_INCREMENT,
