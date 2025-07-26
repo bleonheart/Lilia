@@ -7932,7 +7932,7 @@ Triggered once all required database tables have been created and initial data h
 
 ```lua
 hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
-    lia.db.query("SELECT * FROM lia_bans", function(data)
+    lia.db.query("SELECT steamID, banReason, banStart, banDuration FROM lia_players WHERE banStart IS NOT NULL", function(data)
         if istable(data) then
             print("Loaded", #data, "bans from the database")
         end

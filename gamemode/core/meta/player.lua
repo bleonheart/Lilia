@@ -416,7 +416,7 @@ if SERVER then
         local name = self:steamName()
         local steamID64 = self:SteamID64()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. steamID64, function(data)
+        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime, banStart, banDuration, banReason FROM lia_players WHERE steamID = " .. steamID64, function(data)
             if IsValid(self) and data and data[1] and data[1].data then
                 lia.db.updateTable({
                     lastJoin = timeStamp,
@@ -442,7 +442,10 @@ if SERVER then
                     data = {},
                     lastIP = "",
                     lastOnline = os.time(lia.time.toNumber(timeStamp)),
-                    totalOnlineTime = 0
+                    totalOnlineTime = 0,
+                    banStart = nil,
+                    banDuration = 0,
+                    banReason = nil
                 }, nil, "players")
 
                 if callback then callback({}) end
