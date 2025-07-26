@@ -413,7 +413,7 @@ lia.char.registerVar("recognition", {
     noDisplay = true
 })
 
-lia.char.registerVar("RecognizedAs", {
+lia.char.registerVar("FakeName", {
     field = "recognized_as",
     fieldType = "text",
     default = {},
@@ -523,7 +523,7 @@ if SERVER then
             faction = data.faction or L("unknown"),
             money = data.money,
             recognition = data.recognition or "",
-            recognized_as = ""
+            recognized_as = {}
         }, function(_, charID)
             local client
             for _, v in player.Iterator() do
