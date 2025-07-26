@@ -242,8 +242,12 @@ net.Receive("liaRequestPlayerGroup", function(_, p)
     if not IsValid(target) or not target:IsPlayer() then return end
     local groups = {}
     for name in pairs(lia.admin.groups or {}) do
-        groups[#groups + 1] = name
+        if not DefaultGroups[name] then
+            groups[#groups + 1] = name
+        end
     end
+
+    if #groups == 0 then return end
 
     table.sort(groups)
     p:requestDropdown(L("setUsergroup"), L("chooseGroup"), groups, function(sel)
