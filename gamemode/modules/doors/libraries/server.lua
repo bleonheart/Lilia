@@ -1,4 +1,8 @@
-﻿function MODULE:PostLoadData()
+﻿local function buildCondition(folder, map)
+    return "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
+end
+
+function MODULE:PostLoadData()
     if self.DoorsAlwaysDisabled then
         local count = 0
         for _, door in ents.Iterator() do
@@ -10,10 +14,6 @@
 
         lia.information(L("doorDisableAll"))
     end
-end
-
-local function buildCondition(folder, map)
-    return "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
 end
 
 function MODULE:LoadData()
