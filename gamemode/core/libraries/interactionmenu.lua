@@ -1,21 +1,162 @@
 lia.interactionmenu = lia.interactionmenu or {}
-local interaction = lia.interactionmenu
-interaction.Actions = interaction.Actions or {}
-interaction.Interactions = interaction.Interactions or {}
-
+lia.interactionmenu.Actions = lia.interactionmenu.Actions or {}
+lia.interactionmenu.Interactions = lia.interactionmenu.Interactions or {}
 function AddInteraction(name, data)
-    interaction.Interactions[name] = data
+    lia.interactionmenu.Interactions[name] = data
 end
 
 function AddAction(name, data)
-    interaction.Actions[name] = data
+    lia.interactionmenu.Actions[name] = data
 end
 
--- Default actions
+if SERVER then
+    net.Receive("RunOption", function(_, ply)
+        if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
+            lia.log.add(ply, "cheaterAction", "use interaction option")
+            return
+        end
+
+        local name = net.ReadString()
+        local opt = lia.interactionmenu.Interactions[name]
+        local tracedEntity = ply:getTracedEntity()
+        if opt and opt.runServer and IsValid(tracedEntity) then opt.onRun(ply, tracedEntity) end
+    end)
+
+    net.Receive("RunLocalOption", function(_, ply)
+        if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
+            lia.log.add(ply, "cheaterAction", "use local option")
+            return
+        end
+
+        local name = net.ReadString()
+        local opt = lia.interactionmenu.Actions[name]
+        if opt and opt.runServer then opt.onRun(ply) end
+    end)
+else
+    local function isWithinRange(client, entity)
+        if not IsValid(client) or not IsValid(entity) then return false end
+        return entity:GetPos():DistToSqr(client:GetPos()) < 250 * 250
+    end
+
+    function lia.interactionmenu:checkInteractionPossibilities()
+        local client = LocalPlayer()
+        local ent = client:getTracedEntity()
+        if not IsValid(ent) or not ent:IsPlayer() then return false end
+        for _, opt in pairs(self.Interactions) do
+            if opt.shouldShow(client, ent) then return true end
+        end
+        return false
+    end
+
+    function lia.interactionmenu.openMenu(options, isInteraction, titleText, closeKey, netMsg)
+        local client, ent = LocalPlayer(), LocalPlayer():getTracedEntity()
+        local visible = {}
+        for name, opt in pairs(options) do
+            if isInteraction then
+                if IsValid(ent) and ent:IsPlayer() and opt.shouldShow(client, ent) and isWithinRange(client, ent) then
+                    visible[#visible + 1] = {
+                        name = name,
+                        opt = opt
+                    }
+                end
+            else
+                if opt.shouldShow(client) then
+                    visible[#visible + 1] = {
+                        name = name,
+                        opt = opt
+                    }
+                end
+            end
+        end
+
+        if #visible == 0 then return end
+        local fadeSpeed, frameW, entryH, gap = 0.05, 400, 30, 24
+        local baseH = entryH * #visible + 140
+        local frameH = isInteraction and baseH or math.min(baseH, ScrH() * 0.6)
+        local titleH, titleY = isInteraction and 36 or 16, 12
+        local padding, xPos, yPos = ScrW() * 0.15, ScrW() - frameW - ScrW() * 0.15, (ScrH() - frameH) / 2
+        local frame = vgui.Create("DFrame")
+        frame:SetSize(frameW, frameH)
+        frame:SetPos(xPos, yPos)
+        frame:MakePopup()
+        frame:SetTitle("")
+        frame:ShowCloseButton(false)
+        hook.Run("InteractionMenuOpened", frame)
+        local oldOnRemove = frame.OnRemove
+        function frame:OnRemove()
+            if oldOnRemove then oldOnRemove(self) end
+            lia.interactionmenu.Menu = nil
+            hook.Run("InteractionMenuClosed")
+        end
+
+        frame:SetAlpha(0)
+        frame:AlphaTo(255, fadeSpeed)
+        function frame:Paint(w, h)
+            lia.util.drawBlur(self, 4)
+            draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
+        end
+
+        function frame:Think()
+            if not input.IsKeyDown(closeKey) then self:Close() end
+        end
+
+        timer.Remove("InteractionMenu_Frame_Timer")
+        timer.Create("InteractionMenu_Frame_Timer", 30, 1, function() if IsValid(frame) then frame:Close() end end)
+        local title = frame:Add("DLabel")
+        title:SetPos(0, titleY)
+        title:SetSize(frameW, titleH)
+        title:SetText(titleText)
+        title:SetFont("liaSmallFont")
+        title:SetColor(color_white)
+        title:SetContentAlignment(5)
+        function title:PaintOver()
+            surface.SetDrawColor(Color(60, 60, 60))
+        end
+
+        local scroll = frame:Add("DScrollPanel")
+        scroll:SetPos(0, titleH + titleY + gap)
+        scroll:SetSize(frameW, frameH - titleH - titleY - gap)
+        local layout = scroll:Add("DIconLayout")
+        layout:Dock(FILL)
+        layout:SetSpaceY(14)
+        for i, entry in ipairs(visible) do
+            local btn = layout:Add("DButton")
+            btn:Dock(TOP)
+            btn:SetTall(entryH)
+            btn:DockMargin(15, 0, 15, i == #visible and 25 or 14)
+            btn:SetText(entry.name)
+            btn:SetFont("liaSmallFont")
+            btn:SetTextColor(color_white)
+            function btn:Paint(w, h)
+                if self:IsHovered() then
+                    draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 160))
+                else
+                    draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 100))
+                end
+            end
+
+            btn.DoClick = function()
+                frame:AlphaTo(0, fadeSpeed, 0, function() if IsValid(frame) then frame:Close() end end)
+                if isInteraction then
+                    entry.opt.onRun(client, ent)
+                else
+                    entry.opt.onRun(client)
+                end
+
+                if entry.opt.runServer then
+                    net.Start(netMsg)
+                    net.WriteString(entry.name)
+                    net.SendToServer()
+                end
+            end
+        end
+
+        lia.interactionmenu.Menu = frame
+    end
+end
+
 AddAction(L("changeToWhisper"), {
-    shouldShow = function(client)
-        return client:getChar() and client:Alive()
-    end,
+    shouldShow = function(client) return client:getChar() and client:Alive() end,
     onRun = function(client)
         if CLIENT then return end
         client:setNetVar("VoiceType", "Whispering")
@@ -25,9 +166,7 @@ AddAction(L("changeToWhisper"), {
 })
 
 AddAction(L("changeToTalk"), {
-    shouldShow = function(client)
-        return client:getChar() and client:Alive()
-    end,
+    shouldShow = function(client) return client:getChar() and client:Alive() end,
     onRun = function(client)
         if CLIENT then return end
         client:setNetVar("VoiceType", "Talking")
@@ -37,9 +176,7 @@ AddAction(L("changeToTalk"), {
 })
 
 AddAction(L("changeToYell"), {
-    shouldShow = function(client)
-        return client:getChar() and client:Alive()
-    end,
+    shouldShow = function(client) return client:getChar() and client:Alive() end,
     onRun = function(client)
         if CLIENT then return end
         client:setNetVar("VoiceType", "Yelling")
@@ -50,9 +187,7 @@ AddAction(L("changeToYell"), {
 
 AddInteraction(L("giveMoney"), {
     serverRun = false,
-    shouldShow = function(client, target)
-        return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0
-    end,
+    shouldShow = function(client, target) return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0 end,
     onRun = function(client, target)
         local frame = vgui.Create("DFrame")
         frame:SetSize(600, 250)
@@ -95,182 +230,3 @@ AddInteraction(L("giveMoney"), {
         frame.ok.DoClick = frame.te.OnEnter
     end
 })
-
-if SERVER then
-    net.Receive("RunOption", function(_, ply)
-        if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
-            lia.log.add(ply, "cheaterAction", "use interaction option")
-            return
-        end
-
-        local name = net.ReadString()
-        local opt = interaction.Interactions[name]
-        local tracedEntity = ply:getTracedEntity()
-        if opt and opt.runServer and IsValid(tracedEntity) then
-            opt.onRun(ply, tracedEntity)
-        end
-    end)
-
-    net.Receive("RunLocalOption", function(_, ply)
-        if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
-            lia.log.add(ply, "cheaterAction", "use local option")
-            return
-        end
-
-        local name = net.ReadString()
-        local opt = interaction.Actions[name]
-        if opt and opt.runServer then
-            opt.onRun(ply)
-        end
-    end)
-end
-
-if CLIENT then
-    local function isWithinRange(client, entity)
-        if not IsValid(client) or not IsValid(entity) then return false end
-        return entity:GetPos():DistToSqr(client:GetPos()) < 250 * 250
-    end
-
-    function interaction:checkInteractionPossibilities()
-        local client = LocalPlayer()
-        local ent = client:getTracedEntity()
-        if not IsValid(ent) or not ent:IsPlayer() then return false end
-        for _, opt in pairs(self.Interactions) do
-            if opt.shouldShow(client, ent) then return true end
-        end
-        return false
-    end
-
-    local function openMenu(options, isInteraction, titleText, closeKey, netMsg)
-        local client, ent = LocalPlayer(), LocalPlayer():getTracedEntity()
-        local visible = {}
-        for name, opt in pairs(options) do
-            if isInteraction then
-                if IsValid(ent) and ent:IsPlayer() and opt.shouldShow(client, ent) and isWithinRange(client, ent) then
-                    visible[#visible + 1] = { name = name, opt = opt }
-                end
-            else
-                if opt.shouldShow(client) then
-                    visible[#visible + 1] = { name = name, opt = opt }
-                end
-            end
-        end
-
-        if #visible == 0 then return end
-        local fadeSpeed = 0.05
-        local frameW = 400
-        local entryH = 30
-        local baseH = entryH * #visible + 140
-        local frameH = isInteraction and baseH or math.min(baseH, ScrH() * 0.6)
-        local titleH = isInteraction and 36 or 16
-        local titleY = 12
-        local gap = 24
-        local padding = ScrW() * 0.15
-        local xPos = ScrW() - frameW - padding
-        local yPos = (ScrH() - frameH) / 2
-        local frame = vgui.Create("DFrame")
-        frame:SetSize(frameW, frameH)
-        frame:SetPos(xPos, yPos)
-        frame:MakePopup()
-        frame:SetTitle("")
-        frame:ShowCloseButton(false)
-        hook.Run("InteractionMenuOpened", frame)
-        local oldOnRemove = frame.OnRemove
-        function frame:OnRemove()
-            if oldOnRemove then oldOnRemove(self) end
-            interaction.Menu = nil
-            hook.Run("InteractionMenuClosed")
-        end
-
-        frame:SetAlpha(0)
-        frame:AlphaTo(255, fadeSpeed)
-        function frame:Paint(w, h)
-            lia.util.drawBlur(self, 4)
-            draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
-        end
-
-        function frame:Think()
-            if not input.IsKeyDown(closeKey) then self:Close() end
-        end
-
-        timer.Remove("InteractionMenu_Frame_Timer")
-        timer.Create("InteractionMenu_Frame_Timer", 30, 1, function()
-            if IsValid(frame) then frame:Close() end
-        end)
-
-        local title = frame:Add("DLabel")
-        title:SetPos(0, titleY)
-        title:SetSize(frameW, titleH)
-        title:SetText(titleText)
-        title:SetFont("liaSmallFont")
-        title:SetColor(color_white)
-        title:SetContentAlignment(5)
-        function title:PaintOver()
-            surface.SetDrawColor(Color(60, 60, 60))
-        end
-
-        local scroll = frame:Add("DScrollPanel")
-        scroll:SetPos(0, titleH + titleY + gap)
-        scroll:SetSize(frameW, frameH - titleH - titleY - gap)
-        local layout = scroll:Add("DIconLayout")
-        layout:Dock(FILL)
-        layout:SetSpaceY(14)
-        for i, entry in ipairs(visible) do
-            local btn = layout:Add("DButton")
-            btn:Dock(TOP)
-            btn:SetTall(entryH)
-            btn:DockMargin(15, 0, 15, i == #visible and 25 or 14)
-            btn:SetText(entry.name)
-            btn:SetFont("liaSmallFont")
-            btn:SetTextColor(color_white)
-            function btn:Paint(w, h)
-                if self:IsHovered() then
-                    draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 160))
-                else
-                    draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 100))
-                end
-            end
-
-            btn.DoClick = function()
-                frame:AlphaTo(0, fadeSpeed, 0, function()
-                    if IsValid(frame) then frame:Close() end
-                end)
-
-                if isInteraction then
-                    entry.opt.onRun(client, ent)
-                else
-                    entry.opt.onRun(client)
-                end
-
-                if entry.opt.runServer then
-                    net.Start(netMsg)
-                    net.WriteString(entry.name)
-                    net.SendToServer()
-                end
-            end
-        end
-
-        interaction.Menu = frame
-    end
-
-    lia.keybind.add(KEY_TAB, "Interaction Menu", function()
-        local client = LocalPlayer()
-        if not client:getChar() or not interaction:checkInteractionPossibilities() then return end
-        if IsValid(interaction.Menu) then
-            interaction.Menu:Close()
-            interaction.Menu = nil
-        end
-
-        openMenu(interaction.Interactions, true, L("playerInteractions"), lia.keybind.get("Interaction Menu", KEY_TAB), "RunOption")
-    end)
-
-    lia.keybind.add(KEY_G, "Personal Actions", function()
-        if IsValid(interaction.Menu) then
-            interaction.Menu:Close()
-            interaction.Menu = nil
-        end
-
-        openMenu(interaction.Actions, false, L("actionsMenu"), lia.keybind.get("Personal Actions", KEY_G), "RunLocalOption")
-    end)
-end
-

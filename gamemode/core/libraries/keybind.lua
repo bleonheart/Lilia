@@ -339,4 +339,24 @@ lia.keybind.add(KEY_NONE, "Open Inventory", function()
     f1Menu:setActiveTab(L("inv"))
 end)
 
+lia.keybind.add(KEY_TAB, "Interaction Menu", function()
+    local client = LocalPlayer()
+    if not client:getChar() or not lia.interactionmenu:checkInteractionPossibilities() then return end
+    if IsValid(lia.interactionmenu.Menu) then
+        lia.interactionmenu.Menu:Close()
+        lia.interactionmenu.Menu = nil
+    end
+
+    openMenu(lia.interactionmenu.Interactions, true, L("playerInteractions"), lia.keybind.get("Interaction Menu", KEY_TAB), "RunOption")
+end)
+
+lia.keybind.add(KEY_G, "Personal Actions", function()
+    if IsValid(lia.interactionmenu.Menu) then
+        lia.interactionmenu.Menu:Close()
+        lia.interactionmenu.Menu = nil
+    end
+
+    openMenu(lia.interactionmenu.Actions, false, L("actionsMenu"), lia.keybind.get("Personal Actions", KEY_G), "RunLocalOption")
+end)
+
 lia.keybind.add(KEY_NONE, "Admin Mode", function() lia.command.send("adminmode") end)
