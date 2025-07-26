@@ -2,20 +2,6 @@
     return "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
 end
 
-function MODULE:PostLoadData()
-    if self.DoorsAlwaysDisabled then
-        local count = 0
-        for _, door in ents.Iterator() do
-            if IsValid(door) and door:isDoor() then
-                door:setNetVar("disabled", true)
-                count = count + 1
-            end
-        end
-
-        lia.information(L("doorDisableAll"))
-    end
-end
-
 function MODULE:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local mapName = game.GetMap()
@@ -115,6 +101,20 @@ end
 
 function MODULE:CanPlayerUseDoor(_, door)
     if door:getNetVar("disabled", false) then return false end
+end
+
+function MODULE:PostLoadData()
+    if self.DoorsAlwaysDisabled then
+        local count = 0
+        for _, door in ents.Iterator() do
+            if IsValid(door) and door:isDoor() then
+                door:setNetVar("disabled", true)
+                count = count + 1
+            end
+        end
+
+        lia.information(L("doorDisableAll"))
+    end
 end
 
 function MODULE:CanPlayerAccessDoor(client, door)
