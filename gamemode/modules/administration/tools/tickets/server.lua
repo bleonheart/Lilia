@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 
 local function buildClaimTable(rows)
     local caseclaims = {}
@@ -41,7 +41,7 @@ function MODULE:GetAllCaseClaims()
     end)
 end
 
-function MODULE:TicketSystemClaim(admin, requester)
+hook.Add("TicketSystemClaim", "liaTickets", function(admin, requester)
     local targetName
     local targetSteam
     if IsValid(requester) and requester:IsPlayer() then
@@ -73,15 +73,15 @@ function MODULE:TicketSystemClaim(admin, requester)
     lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
         lia.log.add(admin, "ticketClaimed", requester:Name(), count)
     end)
-end
+end)
 
-function MODULE:TicketSystemClose(admin, requester)
+hook.Add("TicketSystemClose", "liaTickets", function(admin, requester)
     lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
         lia.log.add(admin, "ticketClosed", requester:Name(), count)
     end)
-end
+end)
 
-function MODULE:PlayerSay(client, text)
+hook.Add("PlayerSay", "liaTickets", function(client, text)
     if string.sub(text, 1, 1) == "@" then
         text = string.sub(text, 2)
         ClientAddText(client, Color(70, 0, 130), L("ticketMessageYou"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. " ", Color(0, 255, 0), text)
@@ -116,9 +116,9 @@ function MODULE:PlayerSay(client, text)
         }, nil, "staffactions")
         return ""
     end
-end
+end)
 
-function MODULE:PlayerDisconnected(client)
+hook.Add("PlayerDisconnected", "liaTickets", function(client)
     for _, v in player.Iterator() do
         if v:hasPrivilege("Always See Tickets") or v:isStaffOnDuty() then
             net.Start("TicketSystemClose")
@@ -126,7 +126,7 @@ function MODULE:PlayerDisconnected(client)
             net.Send(v)
         end
     end
-end
+end)
 
 function MODULE:SendPopup(noob, message)
     for _, v in player.Iterator() do

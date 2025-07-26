@@ -1,4 +1,4 @@
-﻿function MODULE:LoadCharInformation()
+hook.Add("LoadCharInformation", "liaTeams", function()
     local client = LocalPlayer()
     if not IsValid(client) then return end
     local character = client:getChar()
@@ -7,9 +7,9 @@
     local classID = character:getClass()
     local classData = lia.class.list[classID]
     if classID and classData and classData.name then hook.Run("AddTextField", L("generalInfo"), "class", L("class"), function() return classData.name end) end
-end
+end)
 
-function MODULE:DrawCharInfo(client, _, info)
+hook.Add("DrawCharInfo", "liaTeams", function(client, _, info)
     if not lia.config.get("ClassDisplay", true) then return end
     local charClass = client:getClassData()
     if charClass then
@@ -17,7 +17,7 @@ function MODULE:DrawCharInfo(client, _, info)
         local className = L(charClass.name) or L("undefinedClass")
         info[#info + 1] = {className, classColor}
     end
-end
+end)
 
 local rosterRows = {}
 local lists = {}
@@ -137,7 +137,7 @@ local function buildFactions(panel)
     built = true
 end
 
-function MODULE:CreateMenuButtons(tabs)
+hook.Add("CreateMenuButtons", "liaTeams", function(tabs)
     local ply = LocalPlayer()
     local joinable = lia.class.retrieveJoinable(ply)
     local char = ply:getChar()
@@ -155,7 +155,7 @@ function MODULE:CreateMenuButtons(tabs)
             pnl:Dock(FILL)
         end
     end
-end
+end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(tabs)
     local function canAccess()

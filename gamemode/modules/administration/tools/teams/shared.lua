@@ -1,4 +1,4 @@
-﻿function MODULE:GetDefaultCharName(client, faction, data)
+hook.Add("GetDefaultCharName", "liaTeams", function(client, faction, data)
     local info = lia.faction.indices[faction]
     local nameFunc = info and info.NameTemplate
     if isfunction(nameFunc) then
@@ -10,12 +10,12 @@
     if info and info.GetDefaultName then baseName = info:GetDefaultName(client) or baseName end
     baseName = baseName or client:SteamName()
     return baseName, false
-end
+end)
 
-function MODULE:GetDefaultCharDesc(client, faction)
+hook.Add("GetDefaultCharDesc", "liaTeams", function(client, faction)
     local info = lia.faction.indices[faction]
     if info and info.GetDefaultDesc then info:GetDefaultDesc(client) end
-end
+end)
 
 AddInteraction(L("inviteToClass"), {
     runServer = true,

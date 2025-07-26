@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local xpos = xpos or 20
 local ypos = ypos or 20
 local TicketFrames = {}

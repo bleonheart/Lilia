@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 function MODULE:GetWarnings(charID)
     local condition = "action = 'warning' AND charID = " .. lia.db.convertDataType(charID)
     return lia.db.select({

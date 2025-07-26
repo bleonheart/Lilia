@@ -1,4 +1,4 @@
-﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
+hook.Add("OnPlayerJoinClass", "liaTeams", function(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -12,9 +12,9 @@
     net.Start("classUpdate")
     net.WriteEntity(client)
     net.Broadcast()
-end
+end)
 
-function MODULE:OnTransferred(client)
+hook.Add("OnTransferred", "liaTeams", function(client)
     local char = client:getChar()
     if char then
         local currentClass = char:getClass()
@@ -23,22 +23,22 @@ function MODULE:OnTransferred(client)
             if not classData or classData.faction ~= client:Team() then char:kickClass() end
         end
     end
-end
+end)
 
-function MODULE:CanPlayerJoinClass(client, class)
+hook.Add("CanPlayerJoinClass", "liaTeams", function(client, class)
     if lia.class.hasWhitelist(class) and not client:hasClassWhitelist(class) then return false end
     return true
-end
+end)
 
-function MODULE:OnCharCreated(_, character)
+hook.Add("OnCharCreated", "liaTeams", function(_, character)
     local faction = lia.faction.get(character:getFaction())
     local items = faction.items or {}
     for _, item in pairs(items) do
         character:getInv():add(item, 1)
     end
-end
+end)
 
-function MODULE:PlayerLoadedChar(client, character)
+hook.Add("PlayerLoadedChar", "liaTeams", function(client, character)
     if character:getData("factionKickWarn") then
         client:notifyLocalized("kickedFromFaction")
         hook.Run("OnTransferred", client)
@@ -65,7 +65,7 @@ function MODULE:PlayerLoadedChar(client, character)
             end
         end
     end
-end
+end)
 
 local function applyAttributes(client, attr)
     if not attr then return end
@@ -132,26 +132,26 @@ local function applyBodyGroups(client, bodyGroups)
     end
 end
 
-function MODULE:FactionOnLoadout(client)
+hook.Add("FactionOnLoadout", "liaTeams", function(client)
     local faction = lia.faction.indices[client:Team()]
     if not faction then return end
     applyAttributes(client, faction)
-end
+end)
 
-function MODULE:FactionPostLoadout(client)
+hook.Add("FactionPostLoadout", "liaTeams", function(client)
     local faction = lia.faction.indices[client:Team()]
     if faction and faction.bodyGroups then applyBodyGroups(client, faction.bodyGroups) end
-end
+end)
 
-function MODULE:CanCharBeTransfered(character, faction)
+hook.Add("CanCharBeTransfered", "liaTeams", function(character, faction)
     if faction.oneCharOnly then
         for _, otherCharacter in next, lia.char.loaded do
             if otherCharacter.steamID == character.steamID and faction.index == otherCharacter:getFaction() then return false, L("charAlreadyInFaction") end
         end
     end
-end
+end)
 
-function MODULE:OnEntityCreated(entity)
+hook.Add("OnEntityCreated", "liaTeams", function(entity)
     if entity:IsNPC() then
         for _, client in player.Iterator() do
             local character = client:getChar()
@@ -160,9 +160,9 @@ function MODULE:OnEntityCreated(entity)
             if faction and faction.NPCRelations then entity:AddEntityRelationship(client, faction.NPCRelations[entity:GetClass()] or D_HT, 0) end
         end
     end
-end
+end)
 
-function MODULE:PlayerSpawn(client)
+hook.Add("PlayerSpawn", "liaTeams", function(client)
     local character = client:getChar()
     if not character then return end
     local faction = lia.faction.indices[character:getFaction()]
@@ -176,9 +176,9 @@ function MODULE:PlayerSpawn(client)
             if entity:IsNPC() then entity:AddEntityRelationship(client, D_HT, 0) end
         end
     end
-end
+end)
 
-function MODULE:ClassOnLoadout(client)
+hook.Add("ClassOnLoadout", "liaTeams", function(client)
     local character = client:getChar()
     if not character then return end
     local classIndex = character:getClass()
@@ -191,13 +191,13 @@ function MODULE:ClassOnLoadout(client)
     if not class then return end
     applyAttributes(client, class)
     if class.model then client:SetModel(class.model) end
-end
+end)
 
-function MODULE:ClassPostLoadout(client)
+hook.Add("ClassPostLoadout", "liaTeams", function(client)
     local character = client:getChar()
     local class = lia.class.list[character:getClass()]
     if class and class.bodyGroups then applyBodyGroups(client, class.bodyGroups) end
-end
+end)
 
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
