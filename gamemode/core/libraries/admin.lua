@@ -672,6 +672,11 @@ local DefaultPrivileges = {
         Category = "Chatbox"
     },
     {
+        Name = "View IP Chat Attempts",
+        MinAccess = "admin",
+        Category = "Chatbox"
+    },
+    {
         Name = "Can Edit Vendors",
         MinAccess = "admin",
         Category = "Vendors"

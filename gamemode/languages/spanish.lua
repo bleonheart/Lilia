@@ -892,6 +892,7 @@ LANGUAGE = {
     caughtCheating = "Trampas detectadas. Staff notificado.",
     cheaterWarningReason = "Trampas o exploits",
     cheaterDetectedStaff = "%s (%s) marcado por trampas.",
+    ipAttemptStaff = "%s intentó publicar la IP %s en el chat.",
     spawnDeletedByName = "Puntos de spawn eliminados: %s para facción: %s.",
     noSpawnsForFaction = "Sin spawns para esa facción.",
     spawner = "Generador",

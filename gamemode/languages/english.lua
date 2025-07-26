@@ -894,6 +894,7 @@ LANGUAGE = {
     caughtCheating = "Cheating detected. Staff have been notified.",
     cheaterWarningReason = "Cheating or exploiting",
     cheaterDetectedStaff = "%s (%s) was flagged for cheating.",
+    ipAttemptStaff = "%s attempted to post the IP %s in chat.",
     spawnDeletedByName = "Deleted %s spawn point(s) for faction: %s.",
     noSpawnsForFaction = "No spawn points exist for this faction.",
     spawner = "Spawner",

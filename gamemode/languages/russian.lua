@@ -892,6 +892,7 @@ LANGUAGE = {
     caughtCheating = "Обнаружен чит. Админы уведомлены.",
     cheaterWarningReason = "Читерство/эксплойт",
     cheaterDetectedStaff = "%s (%s) отмечен как читер.",
+    ipAttemptStaff = "%s попытался отправить IP %s в чат.",
     spawnDeletedByName = "Удалено точек спавна: %s для %s.",
     noSpawnsForFaction = "Нет точек спавна для фракции.",
     spawner = "Спавнер",
