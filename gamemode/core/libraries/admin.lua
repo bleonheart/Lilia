@@ -1,6 +1,5 @@
 ﻿lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
-lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.steamAdmins = lia.admin.steamAdmins or {}
 if SERVER then
@@ -712,12 +711,7 @@ if SERVER then
     function lia.admin.addBan(steamid, reason, duration)
         if not steamid then Error("[Lilia Administration] lia.admin.addBan: no steam id specified!") end
         local banStart = os.time()
-        lia.admin.banList[steamid] = {
-            reason = reason or L("genericReason"),
-            start = banStart,
-            duration = (duration or 0) * 60
-        }
-
+        -- persist the ban details in the lia_players table
         lia.db.updateTable({
             banStart = banStart,
             banDuration = (duration or 0) * 60,
@@ -727,7 +721,7 @@ if SERVER then
 
     function lia.admin.removeBan(steamid)
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
-        lia.admin.banList[steamid] = nil
+        -- clear ban information from the lia_players table
         lia.db.updateTable({
             banStart = nil,
             banDuration = 0,
