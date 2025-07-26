@@ -24,9 +24,9 @@ function playerMeta:hasPrivilege(privilegeName)
     end
 
     local group = self:GetUserGroup()
-    local groups = lia.admin.groups or {}
+    local groups = lia.administration.groups or {}
     local perms = groups[group]
-    PrintTable(lia.admin.groups, 1)
+    PrintTable(lia.administration.groups, 1)
     if not perms then
         self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
         return false
@@ -575,7 +575,7 @@ if SERVER then
 
     function playerMeta:banPlayer(reason, duration)
         if self:IsBot() then return end
-        lia.admin.addBan(self:SteamID64(), reason, duration)
+        lia.administration.addBan(self:SteamID64(), reason, duration)
         self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
     end
 

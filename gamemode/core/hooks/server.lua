@@ -229,11 +229,11 @@ local logTypeMap = {
 }
 
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
-    local banRecord = lia.admin.isBanned(steamID64)
-    local banExpired = lia.admin.hasBanExpired(steamID64)
+    local banRecord = lia.administration.isBanned(steamID64)
+    local banExpired = lia.administration.hasBanExpired(steamID64)
     if banRecord then
         if not banExpired then return false, L("banMessage", banRecord.duration / 60, banRecord.reason) end
-        lia.admin.removeBan(steamID64)
+        lia.administration.removeBan(steamID64)
     end
 
     if serverPassword ~= "" and serverPassword ~= clientPassword then
@@ -895,7 +895,7 @@ function GM:LiliaTablesLoaded()
     lia.db.addDatabaseFields()
     lia.data.loadTables()
     lia.data.loadPersistence()
-    lia.admin.load()
+    lia.administration.load()
     lia.config.load()
     hook.Run("LoadData")
     hook.Run("PostLoadData")
@@ -981,7 +981,7 @@ end)
 
 concommand.Add("kickbots", function()
     for _, bot in player.Iterator() do
-        if bot:IsBot() then lia.admin.execCommand("kick", bot, nil, L("allBotsKicked")) end
+        if bot:IsBot() then lia.administration.execCommand("kick", bot, nil, L("allBotsKicked")) end
     end
 end)
 

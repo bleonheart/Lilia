@@ -101,20 +101,20 @@ if SERVER then
     util.AddNetworkString("liaPlayersRequest")
     util.AddNetworkString("liaPlayersDataChunk")
     util.AddNetworkString("liaPlayersDataDone")
-    lia.admin.privileges = lia.admin.privileges or {}
-    lia.admin.groups = lia.admin.groups or {}
-    lia.admin.lastJoin = lia.admin.lastJoin or {}
+    lia.administration.privileges = lia.administration.privileges or {}
+    lia.administration.groups = lia.administration.groups or {}
+    lia.administration.lastJoin = lia.administration.lastJoin or {}
     local function syncPrivileges()
         if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
         for _, v in ipairs(CAMI.GetPrivileges() or {}) do
-            lia.admin.privileges[v.Name] = {
+            lia.administration.privileges[v.Name] = {
                 Name = v.Name,
                 MinAccess = v.MinAccess or "user"
             }
         end
 
         for n, d in pairs(CAMI.GetUsergroups() or {}) do
-            lia.admin.groups[n] = lia.admin.groups[n] or buildDefaultTable(n)
+            lia.administration.groups[n] = lia.administration.groups[n] or buildDefaultTable(n)
             ensureCAMIGroup(n, d.Inherits or "user")
         end
     end
@@ -125,7 +125,7 @@ if SERVER then
 
     local function getPrivList()
         local t = {}
-        for n in pairs(lia.admin.privileges) do
+        for n in pairs(lia.administration.privileges) do
             t[#t + 1] = n
         end
 
@@ -136,7 +136,7 @@ if SERVER then
     local function payloadGroups()
         return {
             cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
-            perms = lia.admin.groups or {},
+            perms = lia.administration.groups or {},
             privList = getPrivList()
         }
     end
@@ -162,7 +162,7 @@ if SERVER then
                 id = v:SteamID(),
                 id64 = v:SteamID64(),
                 group = v:GetUserGroup(),
-                lastJoin = lia.admin.lastJoin[v:SteamID()] or os.time(),
+                lastJoin = lia.administration.lastJoin[v:SteamID()] or os.time(),
                 banned = bans[v:SteamID()] or false
             }
 
@@ -204,7 +204,7 @@ if SERVER then
     syncPrivileges()
     hook.Add("PlayerInitialSpawn", "liaAdminTrackJoin", function(p)
         if p:IsBot() then return end
-        lia.admin.lastJoin[p:SteamID()] = os.time()
+        lia.administration.lastJoin[p:SteamID()] = os.time()
     end)
 
     net.Receive("liaGroupsRequest", function(_, p)
@@ -222,11 +222,11 @@ if SERVER then
         if not allowed(p) then return end
         local n = net.ReadString()
         if n == "" then return end
-        lia.admin.createGroup(n)
-        lia.admin.groups[n] = buildDefaultTable(n)
+        lia.administration.createGroup(n)
+        lia.administration.groups[n] = buildDefaultTable(n)
         ensureCAMIGroup(n, "user")
-        lia.admin.save(true)
-        applyToCAMI(n, lia.admin.groups[n])
+        lia.administration.save(true)
+        applyToCAMI(n, lia.administration.groups[n])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
         notify(p, "Group '" .. n .. "' created.")
     end)
@@ -235,10 +235,10 @@ if SERVER then
         if not allowed(p) then return end
         local n = net.ReadString()
         if n == "" or DEFAULT_GROUPS[n] then return end
-        lia.admin.removeGroup(n)
-        lia.admin.groups[n] = nil
+        lia.administration.removeGroup(n)
+        lia.administration.groups[n] = nil
         dropCAMIGroup(n)
-        lia.admin.save(true)
+        lia.administration.save(true)
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
         notify(p, "Group '" .. n .. "' removed.")
     end)
@@ -248,15 +248,15 @@ if SERVER then
         local old = net.ReadString()
         local new = net.ReadString()
         if old == "" or new == "" or DEFAULT_GROUPS[old] or DEFAULT_GROUPS[new] then return end
-        if lia.admin.groups[new] or not lia.admin.groups[old] then return end
-        lia.admin.groups[new] = lia.admin.groups[old]
-        lia.admin.groups[old] = nil
+        if lia.administration.groups[new] or not lia.administration.groups[old] then return end
+        lia.administration.groups[new] = lia.administration.groups[old]
+        lia.administration.groups[old] = nil
         dropCAMIGroup(old)
         ensureCAMIGroup(new, "user")
-        lia.admin.save(true)
-        applyToCAMI(new, lia.admin.groups[new])
+        lia.administration.save(true)
+        applyToCAMI(new, lia.administration.groups[new])
         for _, ply in ipairs(player.GetAll()) do
-            if ply:GetUserGroup() == old then lia.admin.setPlayerGroup(ply, new) end
+            if ply:GetUserGroup() == old then lia.administration.setPlayerGroup(ply, new) end
         end
 
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
@@ -268,13 +268,13 @@ if SERVER then
         local g = net.ReadString()
         local t = net.ReadTable()
         if g == "" or DEFAULT_GROUPS[g] then return end
-        lia.admin.groups[g] = {}
+        lia.administration.groups[g] = {}
         for k, v in pairs(t) do
-            if v then lia.admin.groups[g][k] = true end
+            if v then lia.administration.groups[g][k] = true end
         end
 
-        lia.admin.save(true)
-        applyToCAMI(g, lia.admin.groups[g])
+        lia.administration.save(true)
+        applyToCAMI(g, lia.administration.groups[g])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
         notify(p, "Permissions saved for '" .. g .. "'.")
     end)
@@ -283,9 +283,9 @@ if SERVER then
         if not allowed(p) then return end
         local g = net.ReadString()
         if g == "" or DEFAULT_GROUPS[g] then return end
-        lia.admin.groups[g] = buildDefaultTable(g)
-        lia.admin.save(true)
-        applyToCAMI(g, lia.admin.groups[g])
+        lia.administration.groups[g] = buildDefaultTable(g)
+        lia.administration.save(true)
+        applyToCAMI(g, lia.administration.groups[g])
         sendBigTable(nil, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
         notify(p, "Defaults restored for '" .. g .. "'.")
     end)
@@ -579,8 +579,8 @@ else
         groupChunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
         PRIV_LIST = tbl.privList or {}
-        lia.admin.groups = tbl.perms or {}
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.admin.groups) end
+        lia.administration.groups = tbl.perms or {}
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.administration.groups) end
     end
 
     local function handlePlayerDone(id)
@@ -681,49 +681,49 @@ else
 end
 
 hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
-    if lia.admin.isDisabled() then return end
-    lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
+    if lia.administration.isDisabled() then return end
+    lia.administration.groups[g.Name] = buildDefaultTable(g.Name)
     if SERVER then
         ensureCAMIGroup(g.Name, g.Inherits or "user")
-        lia.admin.save(true)
+        lia.administration.save(true)
     end
 end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-    if lia.admin.isDisabled() then return end
-    lia.admin.groups[g.Name] = nil
+    if lia.administration.isDisabled() then return end
+    lia.administration.groups[g.Name] = nil
     if SERVER then
         dropCAMIGroup(g.Name)
-        lia.admin.save(true)
+        lia.administration.save(true)
     end
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if lia.admin.isDisabled() or not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = {
+    if lia.administration.isDisabled() or not pv or not pv.Name then return end
+    lia.administration.privileges[pv.Name] = {
         Name = pv.Name,
         MinAccess = pv.MinAccess or "user"
     }
 
-    for g in pairs(lia.admin.groups) do
-        if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
+    for g in pairs(lia.administration.groups) do
+        if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.administration.groups[g][pv.Name] = true end
     end
 
-    if SERVER then lia.admin.save(true) end
+    if SERVER then lia.administration.save(true) end
 end)
 
 hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if lia.admin.isDisabled() or not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = nil
-    for _, p in pairs(lia.admin.groups) do
+    if lia.administration.isDisabled() or not pv or not pv.Name then return end
+    lia.administration.privileges[pv.Name] = nil
+    for _, p in pairs(lia.administration.groups) do
         p[pv.Name] = nil
     end
 
-    if SERVER then lia.admin.save(true) end
+    if SERVER then lia.administration.save(true) end
 end)
 
 hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
-    if lia.admin.isDisabled() or not IsValid(ply) then return end
+    if lia.administration.isDisabled() or not IsValid(ply) then return end
     if not SERVER then return end
     lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(new), ply:SteamID64()))
 end)

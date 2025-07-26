@@ -177,7 +177,7 @@ lia.command.add("dbbrowser", {
     end
 })
 
-local sysDisabled, cmdsDisabled = lia.admin.isDisabled()
+local sysDisabled, cmdsDisabled = lia.administration.isDisabled()
 if not sysDisabled and not cmdsDisabled then
     lia.command.add("plykick", {
         adminOnly = true,
@@ -231,11 +231,11 @@ if not sysDisabled and not cmdsDisabled then
         syntax = "[player Name] [string Group]",
         onRun = function(client, arguments)
             local target = lia.command.findPlayer(client, arguments[1])
-            if IsValid(target) and lia.admin.groups[arguments[2]] then
-                lia.admin.setPlayerGroup(target, arguments[2])
+            if IsValid(target) and lia.administration.groups[arguments[2]] then
+                lia.administration.setPlayerGroup(target, arguments[2])
                 client:notifyLocalized("plyGroupSet")
                 lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
-            elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
+            elseif IsValid(target) and not lia.administration.groups[arguments[2]] then
                 client:notifyLocalized("groupNotExists")
             end
         end
@@ -249,7 +249,7 @@ if not sysDisabled and not cmdsDisabled then
         onRun = function(client, arguments)
             local steamid = arguments[1]
             if steamid and steamid ~= "" then
-                lia.admin.removeBan(steamid)
+                lia.administration.removeBan(steamid)
                 client:notify("Player unbanned")
                 lia.log.add(client, "plyUnban", steamid)
             end

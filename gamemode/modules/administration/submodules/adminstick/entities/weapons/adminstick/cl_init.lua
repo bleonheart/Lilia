@@ -41,7 +41,7 @@ function SWEP:DrawHUD()
 
         if target:IsPlayer() then
             local group = target:GetUserGroup()
-            local privTbl = lia.admin and lia.admin.groups and lia.admin.groups[group] or {}
+            local privTbl = lia.administration and lia.administration.groups and lia.administration.groups[group] or {}
             local privNames = {}
             for priv in pairs(privTbl) do
                 privNames[#privNames + 1] = priv

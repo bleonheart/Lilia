@@ -367,6 +367,12 @@ function lia.information(msg)
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
+function lia.admin(section, msg)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
+    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
+    MsgC(Color(255, 255, 255), tostring(msg), "\n")
+end
+
 function lia.bootstrap(section, msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Bootstrap] ")
     MsgC(Color(0, 255, 0), "[" .. section .. "] ")
@@ -389,8 +395,8 @@ function lia.applyPunishment(client, infraction, kick, ban, time, kickKey, banKe
     local bantime = time or 0
     kickKey = kickKey or "kickedForInfraction"
     banKey = banKey or "bannedForInfraction"
-    if kick then lia.admin.execCommand("kick", client, nil, L(kickKey, infraction)) end
-    if ban then lia.admin.execCommand("ban", client, bantime, L(banKey, infraction)) end
+    if kick then lia.administration.execCommand("kick", client, nil, L(kickKey, infraction)) end
+    if ban then lia.administration.execCommand("ban", client, bantime, L(banKey, infraction)) end
 end
 
 for _, files in ipairs(FilesToLoad) do
