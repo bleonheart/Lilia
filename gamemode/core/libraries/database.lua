@@ -267,6 +267,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_privileges`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
+    DROP TABLE IF EXISTS `lia_admins`;
 ]])
             local done = 0
             for i = 1, #queries do
@@ -298,6 +299,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_chardata;
+    DROP TABLE IF EXISTS lia_admins;
 ]], realCallback)
     end
 end
@@ -460,6 +462,11 @@ function lia.db.loadTables()
                 category TEXT
             );
 
+            CREATE TABLE IF NOT EXISTS lia_admins (
+                steamID TEXT PRIMARY KEY,
+                userGroup TEXT
+            );
+
         ]], done)
     else
         local queries = string.Explode(";", [[
@@ -613,6 +620,12 @@ function lia.db.loadTables()
                 `minAccess` VARCHAR(32) NOT NULL,
                 `category` VARCHAR(64) NOT NULL,
                 PRIMARY KEY (`name`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_admins` (
+                `steamID` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `userGroup` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+                PRIMARY KEY (`steamID`)
             );
         ]])
         local i = 1
