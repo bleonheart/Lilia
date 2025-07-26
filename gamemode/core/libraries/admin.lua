@@ -855,18 +855,24 @@ function lia.admin.load()
                 end)
             end)
         else
-            lia.db.selectOne({"data"}, "admingroups"):next(function(res)
-                local groups = res and util.JSONToTable(res.data or "") or {}
-                local rows = {}
-                for name, dat in pairs(groups) do
-                    rows[#rows + 1] = {
-                        name = name,
-                        data = util.TableToJSON(dat)
-                    }
-                end
+            lia.db.tableExists("admingroups"):next(function(admExists)
+                if admExists then
+                    lia.db.selectOne({"data"}, "admingroups"):next(function(res)
+                        local groups = res and util.JSONToTable(res.data or "") or {}
+                        local rows = {}
+                        for name, dat in pairs(groups) do
+                            rows[#rows + 1] = {
+                                name = name,
+                                data = util.TableToJSON(dat)
+                            }
+                        end
 
-                if #rows > 0 then lia.db.bulkUpsert("usergroups", rows) end
-                continueLoad(groups)
+                        if #rows > 0 then lia.db.bulkUpsert("usergroups", rows) end
+                        continueLoad(groups)
+                    end)
+                else
+                    continueLoad({})
+                end
             end)
         end
     end)
