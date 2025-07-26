@@ -352,7 +352,7 @@ function lia.db.loadTables()
                 faction VARCHAR,
                 class INTEGER,
                 recognition TEXT NOT NULL DEFAULT '',
-                recognized_as TEXT NOT NULL DEFAULT ''
+                fakename TEXT NOT NULL DEFAULT ''
             );
 
             CREATE TABLE IF NOT EXISTS lia_inventories (
@@ -539,7 +539,7 @@ function lia.db.loadTables()
                 `faction` VARCHAR(255) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `class` INT(12) NULL DEFAULT NULL,
                 `recognition` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
-                `recognized_as` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
+                `fakename` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`id`)
             );
 
