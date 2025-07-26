@@ -214,23 +214,6 @@ if SERVER then
         return true
     end
 
-    function characterMeta:WhitelistAllClasses()
-        for class, _ in pairs(lia.class.list) do
-            if not lia.class.hasWhitelist(class) then self:classWhitelist(class) end
-        end
-    end
-
-    function characterMeta:WhitelistAllFactions()
-        for faction, _ in pairs(lia.faction.indices) do
-            self:setWhitelisted(faction, true)
-        end
-    end
-
-    function characterMeta:WhitelistEverything()
-        self:WhitelistAllFactions()
-        self:WhitelistAllClasses()
-    end
-
     function characterMeta:classWhitelist(class)
         local wl = self:getData("whitelist", {})
         wl[class] = true
