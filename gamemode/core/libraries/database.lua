@@ -262,7 +262,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_invdata`;
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
-    DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_usergroups`;
     DROP TABLE IF EXISTS `lia_privileges`;
@@ -293,7 +292,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_invdata;
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
-    DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_usergroups;
     DROP TABLE IF EXISTS lia_privileges;
@@ -322,7 +320,10 @@ function lia.db.loadTables()
                 data varchar,
                 lastIP varchar,
                 lastOnline integer,
-                totalOnlineTime float
+                totalOnlineTime float,
+                banStart INTEGER,
+                banDuration INTEGER DEFAULT 0,
+                banReason TEXT
             );
             CREATE TABLE IF NOT EXISTS lia_chardata (
                 charID INTEGER NOT NULL,
@@ -379,12 +380,6 @@ function lia.db.loadTables()
             );
 
 
-            CREATE TABLE IF NOT EXISTS lia_bans (
-                steamID TEXT,
-                banStart INTEGER,
-                banDuration INTEGER,
-                reason TEXT
-            );
 
             CREATE TABLE IF NOT EXISTS lia_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -478,6 +473,9 @@ function lia.db.loadTables()
                 `lastIP` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `lastOnline` INT(32) NULL DEFAULT 0,
                 `totalOnlineTime` FLOAT NULL DEFAULT 0,
+                `banStart` INT(32) NULL DEFAULT NULL,
+                `banDuration` INT(32) NOT NULL DEFAULT 0,
+                `banReason` VARCHAR(512) DEFAULT '' COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`steamID`)
             );
 
@@ -533,13 +531,6 @@ function lia.db.loadTables()
             );
 
 
-            CREATE TABLE IF NOT EXISTS `lia_bans` (
-                `steamID` varchar(64) NOT NULL,
-                `banStart` int(32) NOT NULL,
-                `banDuration` int(32) NOT NULL,
-                `reason` varchar(512) DEFAULT '',
-                PRIMARY KEY (`steamID`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_logs` (
                 `id` INT(12) NOT NULL AUTO_INCREMENT,

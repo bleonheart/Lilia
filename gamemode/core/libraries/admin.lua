@@ -1036,18 +1036,23 @@ if SERVER then
             duration = (duration or 0) * 60
         }
 
-        lia.db.insertTable({
-            steamID = "\"" .. steamid .. "\"",
+        lia.db.updateTable({
             banStart = banStart,
             banDuration = (duration or 0) * 60,
-            reason = reason or L("genericReason")
-        }, nil, "bans")
+            banReason = reason or L("genericReason")
+        }, nil, "players", "steamID = " .. steamid)
     end
 
     function lia.admin.removeBan(steamid)
         if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
         lia.admin.banList[steamid] = nil
-        lia.db.query(Format("DELETE FROM lia_bans WHERE steamID = '%s'", lia.db.escape(steamid)), function() lia.administration("Ban", L("banRemoved")) end)
+        lia.db.updateTable({
+            banStart = nil,
+            banDuration = 0,
+            banReason = nil
+        }, function()
+            lia.administration("Ban", L("banRemoved"))
+        end, "players", "steamID = " .. steamid)
     end
 
     function lia.admin.isBanned(steamid)
@@ -1185,14 +1190,14 @@ hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
 end)
 
 hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
-    lia.db.query("SELECT * FROM lia_bans", function(data)
+    lia.db.query("SELECT steamID, banReason, banStart, banDuration FROM lia_players WHERE banStart IS NOT NULL", function(data)
         if istable(data) then
             local bans = {}
             for _, ban in pairs(data) do
                 bans[ban.steamID] = {
-                    reason = ban.reason,
-                    start = ban.banStart,
-                    duration = ban.banDuration
+                    reason = ban.banReason,
+                    start = tonumber(ban.banStart),
+                    duration = tonumber(ban.banDuration)
                 }
             end
 
