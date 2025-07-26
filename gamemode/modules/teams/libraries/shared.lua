@@ -54,7 +54,7 @@ if SERVER then
         end
 
         if not facTbl then return end
-        local fields = [[lia_characters._name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline]]
+        local fields = [[lia_characters.name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline]]
         local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(facTbl.uniqueID)
         local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
         lia.db.query(query, function(data)
@@ -78,7 +78,7 @@ if SERVER then
                 local className = classID == 0 and "None" or lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
                 out[#out + 1] = {
                     id = id,
-                    name = v._name,
+                    name = v.name,
                     class = className,
                     classID = classID,
                     steamID = toSteamID(v._steamID),

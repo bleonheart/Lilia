@@ -8,10 +8,10 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 if SERVER and #lia.char.names < 1 then
-    lia.db.query("SELECT _id, _name FROM lia_characters", function(data)
+    lia.db.query("SELECT _id, name FROM lia_characters", function(data)
         if data and #data > 0 then
             for _, v in pairs(data) do
-                lia.char.names[v._id] = v._name
+                lia.char.names[v._id] = v.name
             end
         end
     end)
@@ -101,7 +101,7 @@ function lia.char.registerVar(key, data)
 end
 
 lia.char.registerVar("name", {
-    field = "_name",
+    field = "name",
     fieldType = "string",
     default = "John Doe",
     index = 1,
@@ -511,7 +511,7 @@ if SERVER then
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
         data.money = data.money or lia.config.get("DefaultMoney")
         lia.db.insertTable({
-            _name = data.name or "",
+            name = data.name or "",
             _desc = data.desc or "",
             _model = data.model or "models/error.mdl",
             _skin = data.skin or 0,
@@ -572,7 +572,7 @@ if SERVER then
             for _, v in ipairs(results) do
                 local charId = tonumber(v._id)
                 if not charId then
-                    lia.error("[Lilia] Attempt to load character '" .. (data._name or "nil") .. "' with invalid ID!")
+                    lia.error("[Lilia] Attempt to load character '" .. (data.name or "nil") .. "' with invalid ID!")
                     continue
                 end
 
@@ -728,11 +728,11 @@ if SERVER then
         local charIDsafe = tonumber(charID)
         if not name or not charID then return end
         local promise = lia.db.updateTable({
-            _name = name
+            name = name
         }, nil, "characters", "_id = " .. charIDsafe)
 
         if deferred.isPromise(promise) then
-            promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET _name", err)) end)
+            promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET name", err)) end)
         elseif promise == false then
             return false
         end

@@ -640,7 +640,7 @@ function GM:LoadData()
 
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
     lia.db.select({"_itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
@@ -658,12 +658,12 @@ function GM:LoadData()
                     lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
                     lia.information(L("serverDeletedItems"))
                 else
-                    lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
+                    lia.db.query("SELECT _itemID, _uniqueID, data FROM lia_items WHERE _itemID IN " .. range, function(data)
                         if not data then return end
                         local loadedItems = {}
                         for _, row in ipairs(data) do
                             local itemID = tonumber(row._itemID)
-                            local itemData = util.JSONToTable(row._data or "[]")
+                            local itemData = util.JSONToTable(row.data or "[]")
                             local uniqueID = row._uniqueID
                             local itemTable = lia.item.list[uniqueID]
                             local position = positions[itemID]

@@ -128,8 +128,8 @@ function lia.data.decodeAngle(raw)
 end
 
 local function buildCondition(folder, map)
-    local cond = folder and "_folder = " .. lia.db.convertDataType(folder) or "_folder IS NULL"
-    cond = cond .. " AND " .. (map and "_map = " .. lia.db.convertDataType(map) or "_map IS NULL")
+    local cond = folder and "gamemode = " .. lia.db.convertDataType(folder) or "gamemode IS NULL"
+    cond = cond .. " AND " .. (map and "map = " .. lia.db.convertDataType(map) or "map IS NULL")
     return cond
 end
 
@@ -147,9 +147,9 @@ function lia.data.set(key, value, global, ignoreMap)
     lia.data.stored[key] = value
     lia.db.waitForTablesToLoad():next(function()
         local row = {
-            _folder = folder,
-            _map = map,
-            _data = lia.data.serialize(lia.data.stored)
+            gamemode = folder,
+            map = map,
+            data = lia.data.serialize(lia.data.stored)
         }
         return lia.db.upsert(row, "data")
     end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
@@ -175,9 +175,9 @@ function lia.data.delete(key, global, ignoreMap)
             return lia.db.delete("data", condition)
         else
             local row = {
-                _folder = folder,
-                _map = map,
-                _data = lia.data.serialize(lia.data.stored)
+                gamemode = folder,
+                map = map,
+                data = lia.data.serialize(lia.data.stored)
             }
             return lia.db.upsert(row, "data")
         end
@@ -190,10 +190,10 @@ function lia.data.loadTables()
     local map = game.GetMap()
     local function loadData(f, m)
         local cond = buildCondition(f, m)
-        return lia.db.select("_data", "data", cond):next(function(res)
+        return lia.db.select("data", "data", cond):next(function(res)
             local row = res.results and res.results[1]
             if row then
-                local data = lia.data.deserialize(row._data) or {}
+                local data = lia.data.deserialize(row.data) or {}
                 for k, v in pairs(data) do
                     lia.data.stored[k] = v
                 end
@@ -205,8 +205,8 @@ function lia.data.loadTables()
 end
 
 local defaultCols = {
-    _folder = true,
-    _map = true,
+    gamemode = true,
+    map = true,
     class = true,
     pos = true,
     angles = true,
@@ -271,8 +271,8 @@ function lia.data.savePersistence(entities)
             local rows = {}
             for _, ent in ipairs(entities) do
                 local row = {
-                    _folder = folder,
-                    _map = map,
+                    gamemode = folder,
+                    map = map,
                     class = ent.class,
                     pos = lia.data.serialize(ent.pos),
                     angles = lia.data.serialize(ent.angles),
@@ -301,7 +301,7 @@ function lia.data.loadPersistenceData(callback)
         for _, row in ipairs(rows) do
             local ent = {}
             for k, v in pairs(row) do
-                if not defaultCols[k] and k ~= "_id" and k ~= "_folder" and k ~= "_map" then ent[k] = lia.data.deserialize(v) end
+                if not defaultCols[k] and k ~= "_id" and k ~= "gamemode" and k ~= "map" then ent[k] = lia.data.deserialize(v) end
             end
 
             ent.class = row.class

@@ -272,7 +272,7 @@ if SERVER then
     end
 
     local ITEM_TABLE = "items"
-    local ITEM_FIELDS = {"_itemID", "_uniqueID", "_data", "_x", "_y", "_quantity"}
+    local ITEM_FIELDS = {"_itemID", "_uniqueID", "data", "_x", "_y", "_quantity"}
     function Inventory:loadItems()
         return lia.db.select(ITEM_FIELDS, ITEM_TABLE, "_invID = " .. self.id):next(function(res)
             local items = {}
@@ -287,7 +287,7 @@ if SERVER then
 
                 local item = lia.item.new(uniqueID, itemID)
                 item.invID = self.id
-                if result._data then item.data = table.Merge(item.data, util.JSONToTable(result._data) or {}) end
+                if result.data then item.data = table.Merge(item.data, util.JSONToTable(result.data) or {}) end
                 item.data.x = tonumber(result._x)
                 item.data.y = tonumber(result._y)
                 item.quantity = tonumber(result._quantity)

@@ -60,8 +60,8 @@ function lia.administration.load()
         lia.admin("Bootstrap", L("adminSystemLoaded"))
     end
 
-    lia.db.selectOne({"_data"}, "admingroups"):next(function(res)
-        local data = res and util.JSONToTable(res._data or "") or {}
+    lia.db.selectOne({"data"}, "admingroups"):next(function(res)
+        local data = res and util.JSONToTable(res.data or "") or {}
         continueLoad(data)
     end)
 end
@@ -176,7 +176,7 @@ if SERVER then
     function lia.administration.save(network)
         if lia.administration.isDisabled() then return end
         lia.db.upsert({
-            _data = util.TableToJSON(lia.administration.groups)
+            data = util.TableToJSON(lia.administration.groups)
         }, "admingroups")
 
         if network then

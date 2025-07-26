@@ -307,7 +307,7 @@ if SERVER then
             lia.db.preparedCall("itemData", nil, self.data, self:getID())
         else
             lia.db.updateTable({
-                _data = self.data
+                data = self.data
             }, nil, "items", "_itemID = " .. self:getID())
         end
 

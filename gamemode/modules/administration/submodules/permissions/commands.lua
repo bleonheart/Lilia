@@ -158,7 +158,7 @@ lia.command.add("charlist", {
 
                 local entry = {
                     ID = row._id,
-                    Name = row._name,
+                    Name = row.name,
                     Desc = row._desc,
                     Faction = row._faction,
                     Banned = isBanned and "Yes" or "No",
@@ -712,8 +712,8 @@ lia.command.add("charunban", {
         end
 
         client.liaNextSearch = CurTime() + 15
-        local sqlCondition = id and "_id = " .. id or "_name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT _id, _name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
+        local sqlCondition = id and "_id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
+        lia.db.query("SELECT _id, name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
                 local charID = tonumber(data[1]._id)
                 local isBanned = data[1]._banned
@@ -728,8 +728,8 @@ lia.command.add("charunban", {
                 }, nil, nil, "_id = " .. charID)
 
                 lia.char.setCharData(charID, "charBanInfo", nil)
-                client:notifyLocalized("charUnBan", client:Name(), data[1]._name)
-                lia.log.add(client, "charUnban", data[1]._name, charID)
+                client:notifyLocalized("charUnBan", client:Name(), data[1].name)
+                lia.log.add(client, "charUnban", data[1].name, charID)
             end
         end)
     end

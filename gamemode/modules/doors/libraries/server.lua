@@ -13,7 +13,7 @@ function MODULE:PostLoadData()
 end
 
 local function buildCondition(folder, map)
-    return "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+    return "gamemode = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
 end
 
 function MODULE:LoadData()
@@ -39,10 +39,10 @@ function MODULE:LoadData()
                     ent:setNetVar("classes", util.TableToJSON(classes))
                 end
 
-                if row._name and row._name ~= "NULL" then ent:setNetVar("name", row._name) end
-                local price = tonumber(row._price) or 0
+                if row.name and row.name ~= "NULL" then ent:setNetVar("name", row.name) end
+                local price = tonumber(row.price) or 0
                 ent:setNetVar("price", price)
-                local locked = tonumber(row._locked) == 1
+                local locked = tonumber(row.locked) == 1
                 ent:setNetVar("locked", locked)
                 local disabled = tonumber(row._disabled) == 1
                 ent:setNetVar("disabled", disabled)
@@ -62,17 +62,17 @@ function MODULE:SaveData()
     for _, door in ents.Iterator() do
         if door:isDoor() then
             rows[#rows + 1] = {
-                _folder = folder,
-                _map = map,
+                gamemode = folder,
+                map = map,
                 _id = door:MapCreationID(),
                 _factions = lia.data.serialize(door.liaFactions or {}),
                 _classes = lia.data.serialize(door.liaClasses or {}),
                 _disabled = door:getNetVar("disabled") and 1 or 0,
                 _hidden = door:getNetVar("hidden") and 1 or 0,
                 _ownable = door:getNetVar("noSell") and 0 or 1,
-                _name = door:getNetVar("name"),
-                _price = door:getNetVar("price"),
-                _locked = door:getNetVar("locked") and 1 or 0
+                name = door:getNetVar("name"),
+                price = door:getNetVar("price"),
+                locked = door:getNetVar("locked") and 1 or 0
             }
         end
     end

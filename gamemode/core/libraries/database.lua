@@ -317,7 +317,7 @@ function lia.db.loadTables()
         lia.db.fieldExists("lia_players", "_banDuration"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banDuration INTEGER"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_reason"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _reason TEXT"):catch(ignore) end end)
         lia.db.fieldExists("lia_items", "_quantity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_items ADD COLUMN _quantity INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_data", "_data"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_data ADD COLUMN _data TEXT"):catch(ignore) end end)
+        lia.db.fieldExists("lia_data", "data"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_data ADD COLUMN data TEXT"):catch(ignore) end end)
         lia.db.addDatabaseFields()
         lia.db.tablesLoaded = true
         hook.Run("LiliaTablesLoaded")
@@ -331,7 +331,7 @@ function lia.db.loadTables()
                 _firstJoin datetime,
                 _lastJoin datetime,
                 _userGroup varchar,
-                _data varchar,
+                data varchar,
                 _lastIP varchar,
                 _lastOnline integer,
                 _totalOnlineTime float,
@@ -348,7 +348,7 @@ function lia.db.loadTables()
             CREATE TABLE IF NOT EXISTS lia_characters (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _steamID VARCHAR,
-                _name VARCHAR,
+                name VARCHAR,
                 _desc VARCHAR,
                 _model VARCHAR,
                 _attribs VARCHAR,
@@ -372,7 +372,7 @@ function lia.db.loadTables()
                 _itemID integer PRIMARY KEY AUTOINCREMENT,
                 _invID integer,
                 _uniqueID varchar,
-                _data varchar,
+                data varchar,
                 _quantity integer,
                 _x integer,
                 _y integer
@@ -428,32 +428,31 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS lia_doors (
-                _folder TEXT,
-                _map TEXT,
+                gamemode TEXT,
+                map TEXT,
                 _id INTEGER,
                 _factions TEXT,
                 _classes TEXT,
                 _disabled INTEGER,
                 _hidden INTEGER,
                 _ownable INTEGER,
-                _name TEXT,
-                _price INTEGER,
-                _locked INTEGER,
-                _children TEXT,
-                PRIMARY KEY (_folder, _map, _id)
+                name TEXT,
+                price INTEGER,
+                locked INTEGER,
+                PRIMARY KEY (gamemode, map, _id)
             );
 
             CREATE TABLE IF NOT EXISTS lia_data (
-                _folder TEXT,
-                _map TEXT,
-                _data TEXT,
-                PRIMARY KEY (_folder, _map)
+                gamemode TEXT,
+                map TEXT,
+                data TEXT,
+                PRIMARY KEY (gamemode, map)
             );
 
             CREATE TABLE IF NOT EXISTS lia_persistence (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                _folder TEXT,
-                _map TEXT,
+                gamemode TEXT,
+                map TEXT,
                 class TEXT,
                 pos TEXT,
                 angles TEXT,
@@ -464,14 +463,14 @@ function lia.db.loadTables()
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _schema TEXT,
-                _map TEXT,
+                map TEXT,
                 _itemID INTEGER,
                 _pos TEXT,
                 _angles TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_admingroups (
-                _data TEXT
+                data TEXT
             );
         ]], done)
     else
@@ -482,7 +481,7 @@ function lia.db.loadTables()
                 `_firstJoin` DATETIME,
                 `_lastJoin` DATETIME,
                 `_userGroup` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-                `_data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_lastIP` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_lastOnline` INT(32) NULL DEFAULT 0,
                 `_totalOnlineTime` FLOAT NULL DEFAULT 0,
@@ -495,7 +494,7 @@ function lia.db.loadTables()
             CREATE TABLE IF NOT EXISTS `lia_characters` (
                 `_id` INT(12) NOT NULL AUTO_INCREMENT,
                 `_steamID` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_name` VARCHAR(70) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `name` VARCHAR(70) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_desc` VARCHAR(512) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_model` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_attribs` VARCHAR(512) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
@@ -521,7 +520,7 @@ function lia.db.loadTables()
                 `_itemID` INT(12) NOT NULL AUTO_INCREMENT,
                 `_invID` INT(12) NULL DEFAULT NULL,
                 `_uniqueID` VARCHAR(60) NOT NULL COLLATE 'utf8mb4_general_ci',
-                `_data` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+                `data` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_quantity` INT(16),
                 `_x` INT(4),
                 `_y` INT(4),
@@ -581,33 +580,33 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS `lia_doors` (
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
+                `gamemode` TEXT NULL,
+                `map` TEXT NULL,
                 `_id` INT NOT NULL,
                 `_factions` TEXT NULL,
                 `_classes` TEXT NULL,
                 `_disabled` TINYINT(1) NULL,
                 `_hidden` TINYINT(1) NULL,
                 `_ownable` TINYINT(1) NULL,
-                `_name` TEXT NULL,
-                `_price` INT NULL,
-                `_locked` TINYINT(1) NULL,
-                PRIMARY KEY (`_folder`, `_map`, `_id`)
+                `name` TEXT NULL,
+                `price` INT NULL,
+                `locked` TINYINT(1) NULL,
+                PRIMARY KEY (`gamemode`, `map`, `_id`)
             );
 
 
 
             CREATE TABLE IF NOT EXISTS `lia_data` (
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
-                `_data` TEXT NULL,
-                PRIMARY KEY (`_folder`, `_map`)
+                `gamemode` TEXT NULL,
+                `map` TEXT NULL,
+                `data` TEXT NULL,
+                PRIMARY KEY (`gamemode`, `map`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_persistence` (
                 `_id` INT(12) NOT NULL AUTO_INCREMENT,
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
+                `gamemode` TEXT NULL,
+                `map` TEXT NULL,
                 `class` TEXT NULL,
                 `pos` TEXT NULL,
                 `angles` TEXT NULL,
@@ -619,7 +618,7 @@ function lia.db.loadTables()
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
                 `_id` INT(12) NOT NULL AUTO_INCREMENT,
                 `_schema` TEXT NULL,
-                `_map` TEXT NULL,
+                `map` TEXT NULL,
                 `_itemID` INT(12) NOT NULL,
                 `_pos` TEXT NULL,
                 `_angles` TEXT NULL,
@@ -627,7 +626,7 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS `lia_admingroups` (
-                `_data` TEXT NULL
+                `data` TEXT NULL
             );
         ]])
         local i = 1
@@ -1023,11 +1022,11 @@ end)
 
 function GM:RegisterPreparedStatements()
     lia.bootstrap("Database", L("preparedStatementsAdded"))
-    lia.db.prepare("itemData", "UPDATE lia_items SET _data = ? WHERE _itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
+    lia.db.prepare("itemData", "UPDATE lia_items SET data = ? WHERE _itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
     lia.db.prepare("itemx", "UPDATE lia_items SET _x = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
     lia.db.prepare("itemy", "UPDATE lia_items SET _y = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
     lia.db.prepare("itemq", "UPDATE lia_items SET _quantity = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-    lia.db.prepare("itemInstance", "INSERT INTO lia_items (_invID, _uniqueID, _data, _x, _y, _quantity) VALUES (?, ?, ?, ?, ?, ?)", {MYSQLOO_INTEGER, MYSQLOO_STRING, MYSQLOO_STRING, MYSQLOO_INTEGER, MYSQLOO_INTEGER, MYSQLOO_INTEGER,})
+    lia.db.prepare("itemInstance", "INSERT INTO lia_items (_invID, _uniqueID, data, _x, _y, _quantity) VALUES (?, ?, ?, ?, ?, ?)", {MYSQLOO_INTEGER, MYSQLOO_STRING, MYSQLOO_STRING, MYSQLOO_INTEGER, MYSQLOO_INTEGER, MYSQLOO_INTEGER,})
 end
 
 function GM:SetupDatabase()

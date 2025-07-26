@@ -559,7 +559,7 @@ if SERVER then
             lia.db.insertTable({
                 _invID = index,
                 _uniqueID = uniqueID,
-                _data = itemData,
+                data = itemData,
                 _x = x,
                 _y = y,
                 _quantity = itemTable.maxQuantity or 1
@@ -586,14 +586,14 @@ if SERVER then
             return
         end
 
-        lia.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM lia_items WHERE _itemID IN " .. range, function(results)
+        lia.db.query("SELECT _itemID, _uniqueID, data, _x, _y, _quantity FROM lia_items WHERE _itemID IN " .. range, function(results)
             if not results then return end
             for _, row in ipairs(results) do
                 local id = tonumber(row._itemID)
                 local itemDef = lia.item.list[row._uniqueID]
                 if id and itemDef then
                     local item = lia.item.new(row._uniqueID, id)
-                    local itemData = util.JSONToTable(row._data or "[]") or {}
+                    local itemData = util.JSONToTable(row.data or "[]") or {}
                     item.invID = 0
                     item.data = itemData
                     item.data.x = tonumber(row._x)
