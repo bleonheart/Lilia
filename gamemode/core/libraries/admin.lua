@@ -1063,11 +1063,21 @@ if SERVER then
     end
 
     function lia.admin.isBanned(steamid)
-        return lia.admin.banList[steamid] or false
+        if not steamid then return false end
+        local result = sql.Query("SELECT banReason, banStart, banDuration FROM lia_players WHERE steamID = " .. steamid .. " AND banStart IS NOT NULL LIMIT 1")
+        if istable(result) and result[1] then
+            local row = result[1]
+            return {
+                reason = row.banReason,
+                start = tonumber(row.banStart),
+                duration = tonumber(row.banDuration)
+            }
+        end
+        return false
     end
 
     function lia.admin.hasBanExpired(steamid)
-        local ban = lia.admin.banList[steamid]
+        local ban = lia.admin.isBanned(steamid)
         if not ban then return true end
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
