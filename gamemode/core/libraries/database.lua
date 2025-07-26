@@ -454,7 +454,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (schema, map)
             );
 
-
             CREATE TABLE IF NOT EXISTS lia_sitrooms (
                 gamemode TEXT,
                 map TEXT,
@@ -510,6 +509,7 @@ function lia.db.loadTables()
                 minAccess TEXT,
                 category TEXT
             );
+
         ]], done)
     else
         local queries = string.Explode(";", [[
