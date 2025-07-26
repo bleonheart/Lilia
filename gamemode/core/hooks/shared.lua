@@ -7,48 +7,15 @@ function GM:OnCharVarChanged(character, varName, oldVar, newVar)
     end
 end
 
-if SERVER then
-    function GM:PlayerShouldTakeDamage(client)
-        return client:getChar() ~= nil
-    end
-
-    function GM:CanDrive()
-        return false
-    end
-
-    function GM:PlayerDeathThink()
-        return false
-    end
-
-    function GM:PlayerSpray()
+function GM:CanPlayerCreateChar(client)
+    if SERVER then
+        local count = #client.liaCharList or 0
+        local maxChars = hook.Run("GetMaxPlayerChar", client) or lia.config.get("MaxCharacters")
+        if (count or 0) >= maxChars then return false end
         return true
-    end
-
-    function GM:PlayerDeathSound()
-        return true
-    end
-
-    function GM:CanPlayerSuicide()
-        return false
-    end
-
-    function GM:AllowPlayerPickup()
-        return false
-    end
-else
-    function GM:HUDDrawTargetID()
-        return false
-    end
-
-    function GM:HUDDrawPickupHistory()
-        return false
-    end
-
-    function GM:HUDAmmoPickedUp()
-        return false
-    end
-
-    function GM:DrawDeathNotice()
-        return false
+    else
+        local count = #lia.characters or 0
+        local maxChars = hook.Run("GetMaxPlayerChar", client) or lia.config.get("MaxCharacters")
+        if (count or 0) >= maxChars then return false end
     end
 end

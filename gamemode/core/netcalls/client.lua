@@ -1248,6 +1248,13 @@ net.Receive("liaCharList", function()
     hook.Run("ResetCharacterPanel")
 end)
 
+net.Receive("ForceUpdateF1", function()
+    if IsValid(lia.gui.menu) then
+        lia.gui.menu:Remove()
+        vgui.Create("liaMenu")
+    end
+end)
+
 net.Receive("cMsg", function()
     local client = net.ReadEntity()
     local chatType = net.ReadString()
@@ -1284,7 +1291,52 @@ net.Receive("classUpdate", function()
     end
 end)
 
+net.Receive("rgnDone", function()
+    local client = LocalPlayer()
+    hook.Run("OnCharRecognized", client, client:getChar():getID())
+end)
+
+net.Receive("doorMenu", function()
+    if net.BytesLeft() > 0 then
+        local entity = net.ReadEntity()
+        local count = net.ReadUInt(8)
+        local access = {}
+        for _ = 1, count do
+            local ply = net.ReadEntity()
+            local perm = net.ReadUInt(2)
+            access[ply] = perm
+        end
+
+        local door2 = net.ReadEntity()
+        if IsValid(lia.gui.door) then return lia.gui.door:Remove() end
+        if IsValid(entity) then
+            lia.gui.door = vgui.Create("liaDoorMenu")
+            lia.gui.door:setDoor(entity, access, door2)
+        end
+    elseif IsValid(lia.gui.door) then
+        lia.gui.door:Remove()
+    end
+end)
+
+net.Receive("doorPerm", function()
+    local door = net.ReadEntity()
+    local client = net.ReadEntity()
+    local access = net.ReadUInt(2)
+    local panel = door.liaPanel
+    if IsValid(panel) and IsValid(client) then
+        panel.access[client] = access
+        for _, v in ipairs(panel.access:GetLines()) do
+            if v.player == client then
+                v:SetColumnText(2, L(AccessLabels[access or 0]))
+                return
+            end
+        end
+    end
+end)
+
 net.Receive("liaAdminUpdateGroups", function()
     lia.admin.groups = net.ReadTable() or {}
     hook.Run("OnAdminGroupsUpdated", lia.admin.groups)
 end)
+
+net.Receive("removeF1", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)

@@ -477,6 +477,22 @@ function GM:InitPostEntity()
     if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
 end
 
+function GM:HUDDrawTargetID()
+    return false
+end
+
+function GM:HUDDrawPickupHistory()
+    return false
+end
+
+function GM:HUDAmmoPickedUp()
+    return false
+end
+
+function GM:DrawDeathNotice()
+    return false
+end
+
 local VoiceRanges = {
     Whispering = 120,
     Talking = 300,

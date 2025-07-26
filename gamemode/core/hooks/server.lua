@@ -1037,6 +1037,34 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     return canHear, canHear
 end
 
+function GM:PlayerShouldTakeDamage(client)
+    return client:getChar() ~= nil
+end
+
+function GM:CanDrive()
+    return false
+end
+
+function GM:PlayerDeathThink()
+    return false
+end
+
+function GM:PlayerSpray()
+    return true
+end
+
+function GM:PlayerDeathSound()
+    return true
+end
+
+function GM:CanPlayerSuicide()
+    return false
+end
+
+function GM:AllowPlayerPickup()
+    return false
+end
+
 local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaDBTableDataChunk", "liaDBTableDataDone", "liaDBTables", "liaGroupsAdd", "liaGroupsDefaults", "liaGroupsNotice", "liaGroupsRemove", "liaGroupsRename", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaPlayersRequest", "liaRequestCharList", "liaRequestDBTables", "liaRequestPlayerGroup", "liaRequestTableData", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "PKMessage", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "RosterData", "RosterRequest", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaStaffRequest", "liaStaffDataChunk", "liaStaffDataDone"}
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
