@@ -59,7 +59,7 @@ function MODULE:SaveData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local rows = {}
-    for _, door in ipairs(ents.GetAll()) do
+    for _, door in ents.Iterator() do
         if door:isDoor() then
             rows[#rows + 1] = {
                 _folder = folder,
