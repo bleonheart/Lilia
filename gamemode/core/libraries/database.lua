@@ -422,6 +422,16 @@ function lia.db.loadTables()
                 adminSteam TEXT
             );
 
+            CREATE TABLE IF NOT EXISTS lia_staffactions (
+                timestamp DATETIME,
+                targetName TEXT,
+                targetSteam TEXT,
+                adminSteam TEXT,
+                adminName TEXT,
+                adminGroup TEXT,
+                action TEXT
+            );
+
             CREATE TABLE IF NOT EXISTS lia_doors (
                 gamemode TEXT,
                 map TEXT,
@@ -603,6 +613,16 @@ function lia.db.loadTables()
                 `adminName` TEXT NULL COLLATE 'utf8mb4_general_ci',
                 `adminSteam` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_staffactions` (
+                `timestamp` DATETIME NOT NULL,
+                `targetName` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `targetSteam` VARCHAR(64) NULL COLLATE 'utf8mb4_general_ci',
+                `adminSteam` VARCHAR(64) NULL COLLATE 'utf8mb4_general_ci',
+                `adminName` TEXT NULL COLLATE 'utf8mb4_general_ci',
+                `adminGroup` VARCHAR(32) NULL COLLATE 'utf8mb4_general_ci',
+                `action` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci'
             );
 
             CREATE TABLE IF NOT EXISTS `lia_doors` (
