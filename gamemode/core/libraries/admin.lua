@@ -424,6 +424,27 @@ local function buildDefaultPermissions(group, inherit)
     return perms
 end
 
+local function applyInheritancePermissions()
+    for groupName, info in pairs(lia.admin.groups) do
+        local inherit = info._inherit or groupName
+        local defaults = buildDefaultPermissions(groupName, inherit)
+        for priv, allow in pairs(defaults) do
+            if allow and info[priv] == nil then
+                info[priv] = true
+            end
+        end
+        if SERVER and CAMI and CAMI.RegisterUsergroup then
+            if CAMI.GetUsergroup and CAMI.GetUsergroup(groupName) then
+                CAMI.UnregisterUsergroup(groupName)
+            end
+            CAMI.RegisterUsergroup({
+                Name = groupName,
+                Inherits = inherit
+            })
+        end
+    end
+end
+
 function lia.admin.load()
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(groups, privs)
@@ -474,6 +495,8 @@ function lia.admin.load()
                 })
             end
         end
+
+        applyInheritancePermissions()
 
         lia.admin.save(true)
         lia.administration("Bootstrap", L("adminSystemLoaded"))
