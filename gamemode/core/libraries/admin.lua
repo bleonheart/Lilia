@@ -5,6 +5,46 @@ lia.admin.banList = lia.admin.banList or {}
 lia.admin.lastJoin = lia.admin.lastJoin or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.steamAdmins = lia.admin.steamAdmins or {}
+
+if SERVER then
+    util.AddNetworkString("liaStaffActionLog")
+
+    function lia.admin.addStaffAction(admin, action, victim)
+        local targetName
+        local targetSteam
+        if IsValid(victim) and victim:IsPlayer() then
+            targetName = victim:Name()
+            targetSteam = victim:SteamID()
+        elseif isstring(victim) then
+            targetSteam = victim
+            local ply = player.GetBySteamID(victim) or player.GetBySteamID64(victim)
+            if IsValid(ply) then
+                targetName = ply:Name()
+            else
+                targetName = victim
+            end
+        else
+            targetName = tostring(victim)
+            targetSteam = tostring(victim)
+        end
+
+        lia.db.insertTable({
+            timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+            targetName = targetName,
+            targetSteam = targetSteam,
+            adminSteam = IsValid(admin) and admin:SteamID() or "Console",
+            adminName = IsValid(admin) and admin:Name() or "Console",
+            adminGroup = IsValid(admin) and admin:GetUserGroup() or "Console",
+            action = action
+        }, nil, "staffactions")
+    end
+
+    net.Receive("liaStaffActionLog", function(_, ply)
+        local action = net.ReadString()
+        local victim = net.ReadString()
+        lia.admin.addStaffAction(ply, action, victim)
+    end)
+end
 local DefaultGroups = {
     user = true,
     admin = true,
@@ -1021,6 +1061,15 @@ end
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
+    if CLIENT then
+        net.Start("liaStaffActionLog")
+        net.WriteString(cmd)
+        net.WriteString(id)
+        net.SendToServer()
+    else
+        if not lia.admin.addStaffAction then return end
+        lia.admin.addStaffAction(nil, cmd, victim)
+    end
     if cmd == "kick" then
         RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
         return true

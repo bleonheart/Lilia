@@ -207,7 +207,7 @@ local function buildStaffUI(parent)
     parent:Clear()
     local list = parent:Add("DListView")
     list:Dock(FILL)
-    local columns = {"Name", "Group", "Hours", "Tickets", "Warnings"}
+    local columns = {"Name", "Group", "Hours", "Tickets", "Warnings", "Bans", "Kicks", "Gags"}
     for _, colName in ipairs(columns) do
         local col = list:AddColumn(colName)
         surface.SetFont(col.Header:GetFont() or "DermaDefault")
@@ -218,7 +218,7 @@ local function buildStaffUI(parent)
 
     for _, v in ipairs(StaffList) do
         local hours = math.floor((tonumber(v.playtime) or 0) / 3600)
-        list:AddLine(v.name, v.group, hours, v.tickets or 0, v.warns or 0)
+        list:AddLine(v.name, v.group, hours, v.tickets or 0, v.warns or 0, v.bans or 0, v.kicks or 0, v.gags or 0)
     end
 end
 
