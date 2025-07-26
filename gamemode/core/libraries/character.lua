@@ -413,7 +413,7 @@ lia.char.registerVar("recognition", {
     noDisplay = true
 })
 
-lia.char.registerVar("fakename", {
+lia.char.registerVar("fakeName", {
     field = "fakename",
     fieldType = "text",
     default = {},
