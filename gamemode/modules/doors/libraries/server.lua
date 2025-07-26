@@ -1,5 +1,5 @@
-﻿function MODULE:PostLoadData()
-    if self.DoorsAlwaysDisabled then
+function MODULE:PostLoadData()
+    if lia.config.get("DoorsAlwaysDisabled") then
         local count = 0
         for _, door in ents.Iterator() do
             if IsValid(door) and door:isDoor() then
@@ -59,7 +59,7 @@ function MODULE:SaveData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local rows = {}
-    for _, door in ipairs(ents.GetAll()) do
+    for _, door in ents.Iterator() do
         if door:isDoor() then
             rows[#rows + 1] = {
                 _folder = folder,

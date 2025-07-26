@@ -269,7 +269,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
-    DROP TABLE IF EXISTS `lia_vendors`;
     DROP TABLE IF EXISTS `lia_warnings`;
 ]])
             local done = 0
@@ -303,7 +302,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
-    DROP TABLE IF EXISTS lia_vendors;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)
@@ -319,6 +317,9 @@ function lia.db.loadTables()
         lia.db.fieldExists("lia_players", "_lastIP"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastIP VARCHAR(64)"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_lastOnline"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastOnline INTEGER"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_totalOnlineTime"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _totalOnlineTime FLOAT"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_banStart"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banStart INTEGER"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_banDuration"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banDuration INTEGER"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_reason"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _reason TEXT"):catch(ignore) end end)
         lia.db.fieldExists("lia_items", "_quantity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_items ADD COLUMN _quantity INTEGER"):catch(ignore) end end)
         lia.db.fieldExists("lia_data", "_data"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_data ADD COLUMN _data TEXT"):catch(ignore) end end)
         lia.db.addDatabaseFields()
@@ -337,7 +338,10 @@ function lia.db.loadTables()
                 _data varchar,
                 _lastIP varchar,
                 _lastOnline integer,
-                _totalOnlineTime float
+                _totalOnlineTime float,
+                _banStart integer,
+                _banDuration integer,
+                _reason text
             );
             CREATE TABLE IF NOT EXISTS lia_chardata (
                 _charID INTEGER NOT NULL,
@@ -476,16 +480,6 @@ function lia.db.loadTables()
                 model TEXT
             );
 
-            CREATE TABLE IF NOT EXISTS lia_vendors (
-                _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                _folder TEXT,
-                _map TEXT,
-                class TEXT,
-                pos TEXT,
-                angles TEXT,
-                model TEXT,
-                data TEXT
-            );
 
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -512,6 +506,9 @@ function lia.db.loadTables()
                 `_lastIP` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_lastOnline` INT(32) NULL DEFAULT 0,
                 `_totalOnlineTime` FLOAT NULL DEFAULT 0,
+                `_banStart` INT(32) NULL DEFAULT 0,
+                `_banDuration` INT(32) NULL DEFAULT 0,
+                `_reason` VARCHAR(512) NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_steamID`)
             );
 
@@ -652,17 +649,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (`_id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_vendors` (
-                `_id` INT(12) NOT NULL AUTO_INCREMENT,
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
-                `class` TEXT NULL,
-                `pos` TEXT NULL,
-                `angles` TEXT NULL,
-                `model` TEXT NULL,
-                `data` TEXT NULL,
-                PRIMARY KEY (`_id`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
                 `_id` INT(12) NOT NULL AUTO_INCREMENT,

@@ -460,7 +460,10 @@ if SERVER then
                     _data = {},
                     _lastIP = "",
                     _lastOnline = os.time(lia.time.toNumber(timeStamp)),
-                    _totalOnlineTime = 0
+                    _totalOnlineTime = 0,
+                    _banStart = 0,
+                    _banDuration = 0,
+                    _reason = ""
                 }, nil, "players")
 
                 if callback then callback({}) end
