@@ -50,7 +50,7 @@ lia.command.add("managesitrooms", {
             net.Start("managesitrooms")
             net.WriteTable(rooms)
             net.Send(client)
-        end)
+        end
     end
 })
 
@@ -119,7 +119,7 @@ lia.command.add("sendtositroom", {
                 target:notifyLocalized("sitroomArrive")
                 lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
             end)
-        end)
+        end
     end
 })
 
@@ -141,7 +141,7 @@ lia.command.add("returnsitroom", {
             return
         end
 
-        local prev = target:GetNWVector("previousSitroomPos")
+        local prev = target:GetNW2Vector("previousSitroomPos")
         if not prev then
             client:notifyLocalized("noPreviousSitroomPos")
             return
