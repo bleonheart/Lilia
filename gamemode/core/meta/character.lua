@@ -88,7 +88,7 @@ function characterMeta:getStamina()
 end
 
 function characterMeta:hasClassWhitelist(class)
-    local wl = self:getData("whitelist", {})
+    local wl = self:getClassWhitelist()
     return wl[class] ~= nil
 end
 
@@ -215,15 +215,15 @@ if SERVER then
     end
 
     function characterMeta:classWhitelist(class)
-        local wl = self:getData("whitelist", {})
+        local wl = self:getClassWhitelist()
         wl[class] = true
-        self:setData("whitelist", wl)
+        self:setClassWhitelist(wl)
     end
 
     function characterMeta:classUnWhitelist(class)
-        local wl = self:getData("whitelist", {})
-        wl[class] = false
-        self:setData("whitelist", wl)
+        local wl = self:getClassWhitelist()
+        wl[class] = nil
+        self:setClassWhitelist(wl)
     end
 
     function characterMeta:joinClass(class, isForced)
@@ -241,7 +241,7 @@ if SERVER then
 
         local oldClass = self:getClass()
         local hadOldClass = oldClass and oldClass ~= -1
-        if isForced or lia.class.canBe(client, class) then
+        if isForced or lia.class.canJoin(client, class) then
             self:setClass(class)
             if lia.config.get("PermaClass", true) then self:setData("pclass", class) end
             if hadOldClass then

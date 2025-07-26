@@ -494,7 +494,7 @@ lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
 
         table.sort(list, function(a, b) return a.name < b.name end)
         for _, data in ipairs(list) do
-            local canBe = lia.class.canBe(client, data.index)
+            local canBe = lia.class.canJoin(client, data.index)
             local btn = sidebar:Add("liaMediumButton")
             btn:SetText(data.name or L("unnamed"))
             btn:SetTall(50)

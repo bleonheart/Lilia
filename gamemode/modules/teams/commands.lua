@@ -98,7 +98,7 @@ lia.command.add("beclass", {
 
         local classID = tonumber(className) or lia.class.retrieveClass(className)
         local classData = lia.class.get(classID)
-        if classData and lia.class.canBe(client, classID) then
+        if classData and lia.class.canJoin(client, classID) then
             if character:joinClass(classID) then
                 client:notifyLocalized("becomeClass", L(classData.name))
                 lia.log.add(client, "beClass", classData.name)
