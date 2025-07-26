@@ -201,6 +201,7 @@ lia.command.add("plykick", {
             target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
             client:notifyLocalized("plyKicked")
             lia.log.add(client, "plyKick", target:Name())
+            lia.admin.addStaffAction(client, "kick", target)
         end
     end
 })
@@ -216,6 +217,7 @@ lia.command.add("plyban", {
             target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
             client:notifyLocalized("plyBanned")
             lia.log.add(client, "plyBan", target:Name())
+            lia.admin.addStaffAction(client, "ban", target)
         end
     end
 })
@@ -231,6 +233,7 @@ lia.command.add("plykill", {
             target:Kill()
             client:notifyLocalized("plyKilled")
             lia.log.add(client, "plyKill", target:Name())
+            lia.admin.addStaffAction(client, "kill", target)
         end
     end
 })
@@ -279,6 +282,7 @@ lia.command.add("plyfreeze", {
             local dur = tonumber(arguments[2]) or 0
             if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
             lia.log.add(client, "plyFreeze", target:Name(), dur)
+            lia.admin.addStaffAction(client, "freeze", target)
         end
     end
 })
@@ -293,6 +297,7 @@ lia.command.add("plyunfreeze", {
         if IsValid(target) then
             target:Freeze(false)
             lia.log.add(client, "plyUnfreeze", target:Name())
+            lia.admin.addStaffAction(client, "unfreeze", target)
         end
     end
 })
@@ -307,6 +312,7 @@ lia.command.add("plyslay", {
         if IsValid(target) then
             target:Kill()
             lia.log.add(client, "plySlay", target:Name())
+            lia.admin.addStaffAction(client, "slay", target)
         end
     end
 })
@@ -321,6 +327,7 @@ lia.command.add("plyrespawn", {
         if IsValid(target) then
             target:Spawn()
             lia.log.add(client, "plyRespawn", target:Name())
+            lia.admin.addStaffAction(client, "respawn", target)
         end
     end
 })
@@ -348,6 +355,7 @@ lia.command.add("plyblind", {
             end
 
             lia.log.add(client, "plyBlind", target:Name(), dur or 0)
+            lia.admin.addStaffAction(client, "blind", target)
         end
     end
 })
@@ -364,6 +372,7 @@ lia.command.add("plyunblind", {
             net.WriteBool(false)
             net.Send(target)
             lia.log.add(client, "plyUnblind", target:Name())
+            lia.admin.addStaffAction(client, "unblind", target)
         end
     end
 })
@@ -427,6 +436,7 @@ lia.command.add("plygag", {
         if IsValid(target) then
             target:setNetVar("liaGagged", true)
             lia.log.add(client, "plyGag", target:Name())
+            lia.admin.addStaffAction(client, "gag", target)
             hook.Run("PlayerGagged", target, client)
         end
     end
@@ -442,6 +452,7 @@ lia.command.add("plyungag", {
         if IsValid(target) then
             target:setNetVar("liaGagged", false)
             lia.log.add(client, "plyUngag", target:Name())
+            lia.admin.addStaffAction(client, "ungag", target)
             hook.Run("PlayerUngagged", target, client)
         end
     end
@@ -457,6 +468,7 @@ lia.command.add("plymute", {
         if IsValid(target) then
             target:setLiliaData("VoiceBan", true)
             lia.log.add(client, "plyMute", target:Name())
+            lia.admin.addStaffAction(client, "mute", target)
             hook.Run("PlayerMuted", target, client)
         end
     end
@@ -472,6 +484,7 @@ lia.command.add("plyunmute", {
         if IsValid(target) then
             target:setLiliaData("VoiceBan", false)
             lia.log.add(client, "plyUnmute", target:Name())
+            lia.admin.addStaffAction(client, "unmute", target)
             hook.Run("PlayerUnmuted", target, client)
         end
     end
@@ -489,6 +502,7 @@ lia.command.add("plybring", {
             returnPositions[target] = target:GetPos()
             target:SetPos(client:GetPos() + client:GetForward() * 50)
             lia.log.add(client, "plyBring", target:Name())
+            lia.admin.addStaffAction(client, "bring", target)
         end
     end
 })
@@ -504,6 +518,7 @@ lia.command.add("plygoto", {
             returnPositions[client] = client:GetPos()
             client:SetPos(target:GetPos() + target:GetForward() * 50)
             lia.log.add(client, "plyGoto", target:Name())
+            lia.admin.addStaffAction(client, "goto", target)
         end
     end
 })
@@ -521,6 +536,7 @@ lia.command.add("plyreturn", {
             target:SetPos(pos)
             returnPositions[target] = nil
             lia.log.add(client, "plyReturn", target:Name())
+            lia.admin.addStaffAction(client, "return", target)
         end
     end
 })
@@ -536,6 +552,7 @@ lia.command.add("plyjail", {
             target:Lock()
             target:Freeze(true)
             lia.log.add(client, "plyJail", target:Name())
+            lia.admin.addStaffAction(client, "jail", target)
         end
     end
 })
@@ -551,6 +568,7 @@ lia.command.add("plyunjail", {
             target:UnLock()
             target:Freeze(false)
             lia.log.add(client, "plyUnjail", target:Name())
+            lia.admin.addStaffAction(client, "unjail", target)
         end
     end
 })
@@ -565,6 +583,7 @@ lia.command.add("plycloak", {
         if IsValid(target) then
             target:SetNoDraw(true)
             lia.log.add(client, "plyCloak", target:Name())
+            lia.admin.addStaffAction(client, "cloak", target)
         end
     end
 })
@@ -579,6 +598,7 @@ lia.command.add("plyuncloak", {
         if IsValid(target) then
             target:SetNoDraw(false)
             lia.log.add(client, "plyUncloak", target:Name())
+            lia.admin.addStaffAction(client, "uncloak", target)
         end
     end
 })
@@ -593,6 +613,7 @@ lia.command.add("plygod", {
         if IsValid(target) then
             target:GodEnable()
             lia.log.add(client, "plyGod", target:Name())
+            lia.admin.addStaffAction(client, "god", target)
         end
     end
 })
@@ -607,6 +628,7 @@ lia.command.add("plyungod", {
         if IsValid(target) then
             target:GodDisable()
             lia.log.add(client, "plyUngod", target:Name())
+            lia.admin.addStaffAction(client, "ungod", target)
         end
     end
 })
@@ -622,6 +644,7 @@ lia.command.add("plyignite", {
             local dur = tonumber(arguments[2]) or 5
             target:Ignite(dur)
             lia.log.add(client, "plyIgnite", target:Name(), dur)
+            lia.admin.addStaffAction(client, "ignite", target)
         end
     end
 })
@@ -636,6 +659,7 @@ lia.command.add("plyextinguish", {
         if IsValid(target) then
             target:Extinguish()
             lia.log.add(client, "plyExtinguish", target:Name())
+            lia.admin.addStaffAction(client, "extinguish", target)
         end
     end
 })
@@ -650,6 +674,7 @@ lia.command.add("plystrip", {
         if IsValid(target) then
             target:StripWeapons()
             lia.log.add(client, "plyStrip", target:Name())
+            lia.admin.addStaffAction(client, "strip", target)
         end
     end
 })
@@ -691,6 +716,7 @@ lia.command.add("warn", {
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
             lia.log.add(client, "warningIssued", target, reason, count)
+            lia.admin.addStaffAction(client, "warn", target, reason)
         end)
     end
 })
