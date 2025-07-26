@@ -231,7 +231,7 @@ if SERVER then
             if q:error() then return nil end
             return q:getData() and q:getData()[1] or nil
         else
-            local data = sql.Query(query)
+            local data = lia.db.querySync(query)
             return istable(data) and data[1] or nil
         end
     end

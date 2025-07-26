@@ -163,7 +163,8 @@ lia.command.add("playtime", {
     desc = "playtimeDesc",
     onRun = function(client)
         local steamID = client:SteamID64()
-        local result = sql.QueryRow("SELECT play_time FROM sam_players WHERE steamid = " .. SQLStr(steamID) .. ";")
+        local rows = lia.db.querySync("SELECT play_time FROM sam_players WHERE steamid = " .. lia.db.convertDataType(steamID) .. ";")
+        local result = rows and rows[1]
         if result then
             local secs = tonumber(result.play_time) or 0
             local h = math.floor(secs / 3600)

@@ -438,7 +438,7 @@ lia.char.registerVar("banned", {
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
+    local results = lia.db.querySync("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, row in ipairs(results) do
@@ -455,13 +455,13 @@ function lia.char.getCharDataRaw(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
     if key then
-        local row = sql.Query("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
+        local row = lia.db.querySync("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
         if not row or not row[1] then return false end
         local decoded = pon.decode(row[1].value)
         return decoded[1]
     end
 
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
+    local results = lia.db.querySync("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, r in ipairs(results) do

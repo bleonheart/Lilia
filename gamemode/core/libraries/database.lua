@@ -953,6 +953,29 @@ function lia.db.escapeIdentifier(id)
     return "`" .. tostring(id):gsub("`", "``") .. "`"
 end
 
+--[[
+    Executes a database query synchronously and returns the raw results.
+    This replaces direct usage of the `sql` library outside of this module so
+    other code can rely solely on lia.db for data access.
+
+    Returns a table with the query results on success or nil on failure.
+]]
+function lia.db.querySync(query)
+    if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
+        local db = lia.db.getObject()
+        if not db then return nil end
+        local q = db:query(query)
+        q:start()
+        q:wait()
+        if q:error() then return nil end
+        return q:getData()
+    else
+        local data = sql.Query(query)
+        if data == false then return nil end
+        return data
+    end
+end
+
 function lia.db.upsert(value, dbTable)
     local query
     if lia.db.object then

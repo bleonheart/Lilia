@@ -156,7 +156,7 @@ if SERVER then
                 end
             end
         else
-            local data = sql.Query(query)
+            local data = lia.db.querySync(query)
             if istable(data) then
                 for _, row in ipairs(data) do
                     t[row.steamID] = true
