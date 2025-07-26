@@ -7,14 +7,7 @@ local DEFAULT_GROUPS = {
     superadmin = true,
 }
 
-function lia.administration.isDisabled()
-    local sysDisabled = hook.Run("ShouldLiliaAdminLoad") == false
-    local cmdDisabled = hook.Run("ShouldLiliaAdminCommandsLoad") == false
-    return sysDisabled, cmdDisabled
-end
-
 function lia.administration.load()
-    if lia.administration.isDisabled() then return end
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(data)
         if camiGroups and not table.IsEmpty(camiGroups) then
@@ -66,7 +59,6 @@ function lia.administration.load()
 end
 
 function lia.administration.createGroup(groupName, info)
-    if lia.administration.isDisabled() then return end
     if lia.administration.groups[groupName] then
         Error("[Lilia Administration] This usergroup already exists!\n")
         return
@@ -106,7 +98,6 @@ function lia.administration.createGroup(groupName, info)
 end
 
 function lia.administration.registerPrivilege(privilege)
-    if lia.administration.isDisabled() then return end
     if not privilege or not privilege.Name then return end
     lia.administration.privileges[privilege.Name] = privilege
     for groupName in pairs(lia.administration.groups) do
@@ -129,7 +120,6 @@ function lia.administration.registerPrivilege(privilege)
 end
 
 function lia.administration.removeGroup(groupName)
-    if lia.administration.isDisabled() then return end
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
         Error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
@@ -149,7 +139,6 @@ end
 
 if SERVER then
     function lia.administration.addPermission(groupName, permission)
-        if lia.administration.isDisabled() then return end
         if not lia.administration.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
@@ -161,7 +150,6 @@ if SERVER then
     end
 
     function lia.administration.removePermission(groupName, permission)
-        if lia.administration.isDisabled() then return end
         if not lia.administration.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
@@ -173,7 +161,6 @@ if SERVER then
     end
 
     function lia.administration.save(network)
-        if lia.administration.isDisabled() then return end
         lia.db.upsert({
             data = util.TableToJSON(lia.administration.groups)
         }, "admingroups")
@@ -186,7 +173,7 @@ if SERVER then
     end
 
     function lia.administration.setPlayerGroup(ply, usergroup)
-        if lia.administration.isDisabled() or ply:IsBot() then return end
+        if ply:IsBot() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
@@ -194,7 +181,6 @@ if SERVER then
     end
 
     function lia.administration.addBan(steamid, reason, duration)
-        if lia.administration.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.administration.addBan: no steam id specified!") end
         local banStart = os.time()
 
@@ -209,7 +195,6 @@ if SERVER then
     end
 
     function lia.administration.removeBan(steamid)
-        if lia.administration.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.administration.removeBan: no steam id specified!") end
         lia.db.query(Format(
             "UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s",
@@ -237,7 +222,6 @@ if SERVER then
     end
 
     function lia.administration.isBanned(steamid)
-        if lia.administration.isDisabled() then return false end
         local row = fetchBanRow(steamid)
         if not row or tonumber(row.banStart or 0) <= 0 then return false end
         return {
@@ -248,7 +232,6 @@ if SERVER then
     end
 
     function lia.administration.hasBanExpired(steamid)
-        if lia.administration.isDisabled() then return true end
         local ban = lia.administration.isBanned(steamid)
         if not ban then return true end
         if ban.duration == 0 then return false end
@@ -256,7 +239,6 @@ if SERVER then
     end
 
     hook.Add("ShutDown", "lia_SaveAdmin", function()
-        if lia.administration.isDisabled() then return end
         lia.administration.save()
     end)
 end
@@ -347,7 +329,7 @@ function lia.administration.execCommand(cmd, victim, dur, reason)
 end
 
 hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
-    if lia.administration.isDisabled() or ply:IsBot() then return end
+    if ply:IsBot() then return end
     local steam64 = util.SteamIDTo64(steamID)
     if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
@@ -367,7 +349,6 @@ end)
 
 
 concommand.Add("plysetgroup", function(ply, _, args)
-    if lia.administration.isDisabled() then return end
     if not IsValid(ply) then
         local target = lia.command.findPlayer(client, args[1])
         if IsValid(target) then
@@ -384,14 +365,12 @@ end)
 
 if SERVER then
     hook.Add("PlayerInitialSpawn", "liaAdminSendGroups", function(client)
-        if lia.administration.isDisabled() then return end
         net.Start("updateAdminGroups")
         net.WriteTable(lia.administration.groups)
         net.Send(client)
     end)
 
     hook.Add("OnReloaded", "liaAdminSendGroups", function(client)
-        if lia.administration.isDisabled() then return end
         net.Start("updateAdminGroups")
         net.WriteTable(lia.administration.groups)
         net.Send(client)
