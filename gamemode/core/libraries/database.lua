@@ -269,7 +269,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_sitrooms`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
-    DROP TABLE IF EXISTS `lia_vendors`;
     DROP TABLE IF EXISTS `lia_warnings`;
 ]])
             local done = 0
@@ -303,7 +302,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_sitrooms;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
-    DROP TABLE IF EXISTS lia_vendors;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
 ]], realCallback)
@@ -482,16 +480,6 @@ function lia.db.loadTables()
                 model TEXT
             );
 
-            CREATE TABLE IF NOT EXISTS lia_vendors (
-                _id INTEGER PRIMARY KEY AUTOINCREMENT,
-                _folder TEXT,
-                _map TEXT,
-                class TEXT,
-                pos TEXT,
-                angles TEXT,
-                model TEXT,
-                data TEXT
-            );
 
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -662,17 +650,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (`_id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_vendors` (
-                `_id` INT(12) NOT NULL AUTO_INCREMENT,
-                `_folder` TEXT NULL,
-                `_map` TEXT NULL,
-                `class` TEXT NULL,
-                `pos` TEXT NULL,
-                `angles` TEXT NULL,
-                `model` TEXT NULL,
-                `data` TEXT NULL,
-                PRIMARY KEY (`_id`)
-            );
 
             CREATE TABLE IF NOT EXISTS `lia_saveditems` (
                 `_id` INT(12) NOT NULL AUTO_INCREMENT,
