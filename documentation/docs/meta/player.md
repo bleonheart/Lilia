@@ -1754,8 +1754,8 @@ Checks if the player possesses any of the specified flags.
 **Example Usage**
 
 ```lua
-if player:hasFlags("Z") then
-    print("Can invite others")
+if player:hasFlags("V") then
+    print("Can manage the faction roster")
 end
 ```
 
