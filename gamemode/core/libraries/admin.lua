@@ -429,14 +429,11 @@ local function applyInheritancePermissions()
         local inherit = info._inherit or groupName
         local defaults = buildDefaultPermissions(groupName, inherit)
         for priv, allow in pairs(defaults) do
-            if allow and info[priv] == nil then
-                info[priv] = true
-            end
+            if allow and info[priv] == nil then info[priv] = true end
         end
+
         if SERVER and CAMI and CAMI.RegisterUsergroup then
-            if CAMI.GetUsergroup and CAMI.GetUsergroup(groupName) then
-                CAMI.UnregisterUsergroup(groupName)
-            end
+            if CAMI.GetUsergroup and CAMI.GetUsergroup(groupName) then CAMI.UnregisterUsergroup(groupName) end
             CAMI.RegisterUsergroup({
                 Name = groupName,
                 Inherits = inherit
@@ -497,7 +494,6 @@ function lia.admin.load()
         end
 
         applyInheritancePermissions()
-
         lia.admin.save(true)
         lia.administration("Bootstrap", L("adminSystemLoaded"))
     end
@@ -713,24 +709,6 @@ if SERVER then
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
-    function lia.admin.registerAdminSteamID(steamid, group)
-        local steam64 = util.SteamIDTo64(steamid) ~= "0" and util.SteamIDTo64(steamid) or tostring(steamid)
-        local usergroup = group or "superadmin"
-        if not lia.admin.groups[usergroup] then
-            lia.error("Invalid admin group '" .. tostring(group) .. "' for SteamID " .. tostring(steamid) .. ". Defaulting to 'superadmin'.")
-            usergroup = "superadmin"
-        end
-
-        lia.db.insertOrIgnore({
-            steamID = steam64,
-            userGroup = usergroup
-        }, "admins"):next(function()
-            lia.db.updateTable({
-                userGroup = usergroup
-            }, nil, "admins", "steamID = " .. lia.db.convertDataType(steam64))
-        end)
-    end
-
     function lia.admin.addBan(steamid, reason, duration)
         if not steamid then Error("[Lilia Administration] lia.admin.addBan: no steam id specified!") end
         local banStart = os.time()
@@ -781,102 +759,95 @@ if SERVER then
     hook.Add("ShutDown", "lia_SaveAdmin", function() lia.admin.save() end)
 end
 
-local function quote(str)
-    return string.format("'%s'", tostring(str))
-end
-
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
-    -- Command logging is now handled within each command's callback
     if cmd == "kick" then
-        RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
+        RunConsoleCommand("say", "/plykick " .. string.format("'%s'", tostring(id)) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
         return true
     elseif cmd == "ban" then
-        RunConsoleCommand("say", "/plyban " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
+        RunConsoleCommand("say", "/plyban " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
         return true
     elseif cmd == "unban" then
-        RunConsoleCommand("say", "/plyunban " .. quote(id))
+        RunConsoleCommand("say", "/plyunban " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "mute" then
-        RunConsoleCommand("say", "/plymute " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
+        RunConsoleCommand("say", "/plymute " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
         return true
     elseif cmd == "unmute" then
-        RunConsoleCommand("say", "/plyunmute " .. quote(id))
+        RunConsoleCommand("say", "/plyunmute " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "gag" then
-        RunConsoleCommand("say", "/plygag " .. quote(id) .. " " .. tostring(dur or 0) .. (reason and " " .. quote(reason) or ""))
+        RunConsoleCommand("say", "/plygag " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
         return true
     elseif cmd == "ungag" then
-        RunConsoleCommand("say", "/plyungag " .. quote(id))
+        RunConsoleCommand("say", "/plyungag " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "freeze" then
-        RunConsoleCommand("say", "/plyfreeze " .. quote(id) .. " " .. tostring(dur or 0))
+        RunConsoleCommand("say", "/plyfreeze " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
         return true
     elseif cmd == "unfreeze" then
-        RunConsoleCommand("say", "/plyunfreeze " .. quote(id))
+        RunConsoleCommand("say", "/plyunfreeze " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "slay" then
-        RunConsoleCommand("say", "/plyslay " .. quote(id))
+        RunConsoleCommand("say", "/plyslay " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "bring" then
-        RunConsoleCommand("say", "/plybring " .. quote(id))
+        RunConsoleCommand("say", "/plybring " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "goto" then
-        RunConsoleCommand("say", "/plygoto " .. quote(id))
+        RunConsoleCommand("say", "/plygoto " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "return" then
-        RunConsoleCommand("say", "/plyreturn " .. quote(id))
+        RunConsoleCommand("say", "/plyreturn " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "jail" then
-        RunConsoleCommand("say", "/plyjail " .. quote(id) .. " " .. tostring(dur or 0))
+        RunConsoleCommand("say", "/plyjail " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
         return true
     elseif cmd == "unjail" then
-        RunConsoleCommand("say", "/plyunjail " .. quote(id))
+        RunConsoleCommand("say", "/plyunjail " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "cloak" then
-        RunConsoleCommand("say", "/plycloak " .. quote(id))
+        RunConsoleCommand("say", "/plycloak " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "uncloak" then
-        RunConsoleCommand("say", "/plyuncloak " .. quote(id))
+        RunConsoleCommand("say", "/plyuncloak " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "god" then
-        RunConsoleCommand("say", "/plygod " .. quote(id))
+        RunConsoleCommand("say", "/plygod " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "ungod" then
-        RunConsoleCommand("say", "/plyungod " .. quote(id))
+        RunConsoleCommand("say", "/plyungod " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "ignite" then
-        RunConsoleCommand("say", "/plyignite " .. quote(id) .. " " .. tostring(dur or 0))
+        RunConsoleCommand("say", "/plyignite " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
         return true
     elseif cmd == "extinguish" or cmd == "unignite" then
-        RunConsoleCommand("say", "/plyextinguish " .. quote(id))
+        RunConsoleCommand("say", "/plyextinguish " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "strip" then
-        RunConsoleCommand("say", "/plystrip " .. quote(id))
+        RunConsoleCommand("say", "/plystrip " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "respawn" then
-        RunConsoleCommand("say", "/plyrespawn " .. quote(id))
+        RunConsoleCommand("say", "/plyrespawn " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "blind" then
-        RunConsoleCommand("say", "/plyblind " .. quote(id))
+        RunConsoleCommand("say", "/plyblind " .. string.format("'%s'", tostring(id)))
         return true
     elseif cmd == "unblind" then
-        RunConsoleCommand("say", "/plyunblind " .. quote(id))
+        RunConsoleCommand("say", "/plyunblind " .. string.format("'%s'", tostring(id)))
         return true
     end
-end
-
-local function dropCAMIGroup(n)
-    if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
-    local g = CAMI.GetUsergroups() or {}
-    if g[n] then CAMI.UnregisterUsergroup(n) end
 end
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
     lia.admin.groups[g.Name] = nil
     if SERVER then
-        dropCAMIGroup(g.Name)
+        if CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup then
+            local usergroups = CAMI.GetUsergroups() or {}
+            if usergroups[g.Name] then CAMI.UnregisterUsergroup(g.Name) end
+        end
+
         lia.admin.save(true)
     end
 end)
