@@ -397,8 +397,5 @@ if SERVER then
         net.Send(client)
     end)
 else
-    net.Receive("updateAdminGroups", function()
-        local data = net.ReadTable() or {}
-        lia.administration.groups = data
-    end)
+    -- moved to netcalls
 end
