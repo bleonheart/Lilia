@@ -615,7 +615,6 @@ function lia.db.loadTables()
                 `_name` TEXT NULL,
                 `_price` INT NULL,
                 `_locked` TINYINT(1) NULL,
-                `_children` TEXT NULL,
                 PRIMARY KEY (`_folder`, `_map`, `_id`)
             );
 
