@@ -1,41 +1,6 @@
 ﻿lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.privileges = lia.admin.privileges or {}
-lia.admin.steamAdmins = lia.admin.steamAdmins or {}
-if SERVER then
-    function lia.admin.addStaffAction(admin, action, victim, message, charID)
-        local targetName
-        local targetSteam
-        if IsValid(victim) and victim:IsPlayer() then
-            targetName = victim:Name()
-            targetSteam = victim:SteamID()
-        elseif isstring(victim) then
-            targetSteam = victim
-            local ply = player.GetBySteamID(victim) or player.GetBySteamID64(victim)
-            if IsValid(ply) then
-                targetName = ply:Name()
-            else
-                targetName = victim
-            end
-        else
-            targetName = tostring(victim)
-            targetSteam = tostring(victim)
-        end
-
-        lia.db.insertTable({
-            timestamp = os.date("%Y-%m-%d %H:%M:%S"),
-            targetName = targetName,
-            targetSteam = targetSteam,
-            adminSteam = IsValid(admin) and admin:SteamID() or "Console",
-            adminName = IsValid(admin) and admin:Name() or "Console",
-            adminGroup = IsValid(admin) and admin:GetUserGroup() or "Console",
-            action = action,
-            message = message,
-            charID = charID
-        }, nil, "staffactions")
-    end
-end
-
 local DefaultGroups = {
     user = true,
     admin = true,

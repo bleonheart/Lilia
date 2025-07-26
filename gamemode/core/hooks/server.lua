@@ -13,7 +13,6 @@ local logTypeMap = {
     looc = "chatLOOC"
 }
 
-
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     if not character:getInv() then return end
@@ -196,13 +195,10 @@ end
 
 function GM:PlayerAuthed(client, steamid)
     if client:IsBot() then return end
-
     local steamID64 = util.SteamIDTo64(steamid)
     local ownerSteamID64 = client:OwnerSteamID64()
     local steamName = client:SteamName()
     local playerSteam64 = client:SteamID64()
-
-
     local steam64 = steamID64
     lia.db.query(Format("SELECT userGroup FROM lia_admins WHERE steamID = %s", steam64), function(adminData)
         local forcedGroup = istable(adminData) and adminData[1] and adminData[1].userGroup
@@ -303,10 +299,9 @@ function GM:PlayerSay(client, message)
     message = parsedMessage
     if hasIPAddress then
         for _, ply in player.Iterator() do
-            if ply:isStaffOnDuty() or ply:hasPrivilege("View IP Chat Attempts") then
-                ply:ChatPrint(L("ipAttemptStaff", client:Name(), hasIPAddress))
-            end
+            if ply:isStaffOnDuty() or ply:hasPrivilege("View IP Chat Attempts") then ply:ChatPrint(L("ipAttemptStaff", client:Name(), hasIPAddress)) end
         end
+
         lia.log.add(client, "ipAttempt", hasIPAddress)
         return ""
     end
@@ -996,11 +991,6 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     local distanceSqr = listener:GetPos():DistToSqr(speaker:GetPos())
     local canHear = distanceSqr <= range * range
     return canHear, canHear
-end
-
-function GM:OnDatabaseLoaded()
-    -- Bans are now read directly from the lia_players table when needed,
-    -- so there is no need to populate lia.admin.banList on startup.
 end
 
 local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaDBTableDataChunk", "liaDBTableDataDone", "liaDBTables", "liaGroupsAdd", "liaGroupsDefaults", "liaGroupsNotice", "liaGroupsRemove", "liaGroupsRename", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaPlayersRequest", "liaRequestCharList", "liaRequestDBTables", "liaRequestPlayerGroup", "liaRequestTableData", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "PKMessage", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "RosterData", "RosterRequest", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaStaffRequest", "liaStaffDataChunk", "liaStaffDataDone"}

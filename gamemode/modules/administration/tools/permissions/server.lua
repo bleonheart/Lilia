@@ -328,7 +328,3 @@ function GM:PlayerSpawnedVehicle(client, entity)
     entity:SetCreator(client)
     lia.log.add(client, "spawned_vehicle", entity:GetClass(), entity:GetModel())
 end
-
-function GM:CanPlayerUseChar(client)
-    if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Can Bypass Character Lock") then return false, L("serverEventCharLock") end
-end

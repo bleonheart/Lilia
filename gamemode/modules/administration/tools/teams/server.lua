@@ -199,16 +199,6 @@ function MODULE:ClassPostLoadout(client)
     if class and class.bodyGroups then applyBodyGroups(client, class.bodyGroups) end
 end
 
-function MODULE:CanPlayerUseChar(client, character)
-    local faction = lia.faction.indices[character:getFaction()]
-    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
-end
-
-function MODULE:CanPlayerSwitchChar(client, _, newCharacter)
-    local faction = lia.faction.indices[newCharacter:getFaction()]
-    if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
-end
-
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
     if not char then return end

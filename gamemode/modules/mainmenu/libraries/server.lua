@@ -32,22 +32,6 @@
     end)
 end
 
-function MODULE:CanPlayerUseChar(_, character)
-    local banned = character:getBanned()
-    if banned and isnumber(banned) and banned > os.time() then return false, L("bannedCharacter") end
-    return true
-end
-
-function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
-    local banned = character:getBanned()
-    if character:getID() == newCharacter:getID() then return false, L("alreadyUsingCharacter") end
-    if banned and isnumber(banned) and banned > os.time() then return false, L("bannedCharacter") end
-    if not client:Alive() then return false, L("youAreDead") end
-    if client:hasRagdoll() then return false, L("youAreRagdolled") end
-    if client:hasValidVehicle() then return false, L("cannotSwitchInVehicle") end
-    return true
-end
-
 function MODULE:PlayerLoadedChar(client, character)
     local charID = character:getID()
     lia.db.query("SELECT key, value FROM lia_chardata WHERE charID = " .. charID, function(data)
