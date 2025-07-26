@@ -417,6 +417,11 @@ local DefaultPrivileges = {
         Category = "Administration Utilities"
     },
     {
+        Name = "Access Staff Actions Tab",
+        MinAccess = "superadmin",
+        Category = "Administration Utilities"
+    },
+    {
         Name = "See Decoded Tables",
         MinAccess = "superadmin",
         Category = "Administration Utilities"

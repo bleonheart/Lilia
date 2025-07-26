@@ -975,9 +975,15 @@ local function handleTableData(id)
     local rows = payload.data or {}
     if not tbl then return end
     if #rows == 0 then
-        if tbl == "lia_staffactions" and lia.gui.warnings and IsValid(lia.gui.warnings) then
-            displayNoData(lia.gui.warnings, L("noWarningsFound") or "No warnings to display.")
-            return
+        if tbl == "lia_staffactions" then
+            if lia.gui.warnings and IsValid(lia.gui.warnings) then
+                displayNoData(lia.gui.warnings, L("noWarningsFound") or "No warnings to display.")
+                return
+            end
+            if lia.gui.staffActions and lia.gui.staffActions.sheet and IsValid(lia.gui.staffActions.sheet) then
+                displayNoData(lia.gui.staffActions.sheet, L("noStaffActionsFound") or "No staff actions to display.")
+                return
+            end
         end
         return
     end
@@ -1002,6 +1008,29 @@ local function handleTableData(id)
         end
 
         populateTable(lia.gui.warnings, columns, warns)
+        return
+    end
+
+    if tbl == "lia_staffactions" and lia.gui.staffActions and lia.gui.staffActions.sheet and IsValid(lia.gui.staffActions.sheet) then
+        local grouped = {}
+        for _, row in ipairs(rows) do
+            grouped[row.action] = grouped[row.action] or {}
+            table.insert(grouped[row.action], row)
+        end
+
+        for action, data in pairs(grouped) do
+            local panel = lia.gui.staffActions.panels[action]
+            if not IsValid(panel) then
+                panel = vgui.Create("DPanel", lia.gui.staffActions.sheet)
+                panel:Dock(FILL)
+                panel.Paint = function() end
+                lia.gui.staffActions.sheet:AddSheet(action, panel)
+                lia.gui.staffActions.panels[action] = panel
+            end
+
+            populateTable(panel, columns, data)
+        end
+
         return
     end
 end
