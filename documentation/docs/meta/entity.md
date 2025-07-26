@@ -276,11 +276,13 @@ car:keysUnLock()
 
 **Purpose**
 
-Marks a door as non-ownable so players cannot purchase it.
+Marks a door as non-ownable and prevents players from using keys on it.
 
 **Parameters**
 
 * `state` (`boolean`): Whether the door should be unownable.
+
+When enabled this sets the `noSell` and `noKeying` network variables on the door.
 
 **Realm**
 
