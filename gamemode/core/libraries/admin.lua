@@ -5,10 +5,8 @@ lia.admin.banList = lia.admin.banList or {}
 lia.admin.lastJoin = lia.admin.lastJoin or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.steamAdmins = lia.admin.steamAdmins or {}
-
 if SERVER then
     util.AddNetworkString("liaStaffActionLog")
-
     function lia.admin.addStaffAction(admin, action, victim)
         local targetName
         local targetSteam
@@ -45,6 +43,7 @@ if SERVER then
         lia.admin.addStaffAction(ply, action, victim)
     end)
 end
+
 local DefaultGroups = {
     user = true,
     admin = true,
@@ -761,7 +760,6 @@ local function buildDefaultPermissions(group, inherit)
 
         if allowed then perms[name] = true end
     end
-
     return perms
 end
 
@@ -803,7 +801,10 @@ function lia.admin.load()
             lia.admin.groups[name] = buildDefaultPermissions(name, inherit)
             if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup and CAMI.UnregisterUsergroup then
                 if CAMI.GetUsergroup(name) then CAMI.UnregisterUsergroup(name) end
-                CAMI.RegisterUsergroup({Name = name, Inherits = inherit})
+                CAMI.RegisterUsergroup({
+                    Name = name,
+                    Inherits = inherit
+                })
             end
         end
 
@@ -1070,6 +1071,7 @@ function lia.admin.execCommand(cmd, victim, dur, reason)
         if not lia.admin.addStaffAction then return end
         lia.admin.addStaffAction(nil, cmd, victim)
     end
+
     if cmd == "kick" then
         RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
         return true
