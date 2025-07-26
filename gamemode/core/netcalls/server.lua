@@ -430,20 +430,6 @@ net.Receive("lia_managesitrooms_action", function(_, client)
     end
 end)
 
-net.Receive("CheckSeed", function(_, client)
-    local sentSteamID = net.ReadString()
-    local realSteamID = client:SteamID64()
-    if not sentSteamID or sentSteamID == "" or not sentSteamID:match("^%d%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?%d?$") then
-        lia.notifyAdmin(L("steamIDMissing", client:Name(), realSteamID))
-        lia.log.add(client, "steamIDMissing", client:Name(), realSteamID)
-        return
-    end
-
-    if sentSteamID ~= realSteamID and sentSteamID ~= client:OwnerSteamID64() then
-        lia.notifyAdmin(L("steamIDMismatch", client:Name(), realSteamID, sentSteamID))
-        lia.log.add(client, "steamIDMismatch", client:Name(), realSteamID, sentSteamID)
-    end
-end)
 
 net.Receive("TransferMoneyFromP2P", function(_, sender)
     local amount = net.ReadUInt(32)
@@ -469,20 +455,3 @@ net.Receive("TransferMoneyFromP2P", function(_, sender)
     target:notifyLocalized("moneyTransferReceived", lia.currency.get(amount), senderName)
 end)
 
-net.Receive("CheckHack", function(_, client)
-    lia.log.add(client, "hackAttempt", "CheckHack")
-    local override = hook.Run("PlayerCheatDetected", client)
-    client:setNetVar("cheater", true)
-    client:setLiliaData("cheater", true)
-    hook.Run("OnCheaterCaught", client)
-    if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
-end)
-
-net.Receive("VerifyCheatsResponse", function(_, client)
-    lia.log.add(client, "verifyCheatsOK")
-    client.VerifyCheatsPending = nil
-    if client.VerifyCheatsTimer then
-        timer.Remove(client.VerifyCheatsTimer)
-        client.VerifyCheatsTimer = nil
-    end
-end)
