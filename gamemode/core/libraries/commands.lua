@@ -53,28 +53,26 @@ function lia.command.add(command, data)
 end
 
 function lia.command.hasAccess(client, command, data)
-    if not data then data = lia.command.list[command] end
-    local privilege = data.privilege
-    local superAdminOnly = data.superAdminOnly
-    local adminOnly = data.adminOnly
-    local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
-    if not privilege then privilege = accessLevels == "user" and "Global" or command end
+    local cmd = data or lia.command.list[command]
+    if not cmd then return false end
+    local priv = cmd.privilege
+    local superAdminOnly = cmd.superAdminOnly
+    local adminOnly = cmd.adminOnly
+    local level = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
+    if level == "user" and not priv then return true, "Global" end
+    local name = isstring(priv) and priv or "Access to " .. command .. " command"
     local hasAccess = true
-    if accessLevels ~= "user" then
-        local privilegeName = data.privilege and isstring(data.privilege) or "Access to " .. command .. " command"
-        hasAccess = client:hasPrivilege(privilegeName)
-    end
-
-    local hookResult = hook.Run("CanPlayerUseCommand", client, command)
-    if hookResult ~= nil then return hookResult, privilege end
+    if level ~= "user" or priv then hasAccess = client:hasPrivilege(name) end
+    local hookRes = hook.Run("CanPlayerUseCommand", client, command)
+    if hookRes ~= nil then return hookRes, name end
     local char = IsValid(client) and client.getChar and client:getChar()
     if char then
         local faction = lia.faction.indices[char:getFaction()]
-        if faction and faction.commands and faction.commands[command] then return true, privilege end
+        if faction and faction.commands and faction.commands[command] then return true, name end
         local classData = lia.class.list[char:getClass()]
-        if classData and classData.commands and classData.commands[command] then return true, privilege end
+        if classData and classData.commands and classData.commands[command] then return true, name end
     end
-    return hasAccess, privilege
+    return hasAccess, name
 end
 
 function lia.command.extractArgs(text)

@@ -538,10 +538,6 @@ function GM:OnReloaded()
         lia.option.load()
         lia.keybind.load()
     end
-
-    net.Start("updateAdminGroups")
-    net.WriteTable(lia.admin.groups)
-    net.Broadcast()
 end
 
 local loadedCompatibility = {}

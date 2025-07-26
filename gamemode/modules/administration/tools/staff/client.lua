@@ -183,7 +183,6 @@ local function buildPlayersUI(parent)
         local firstJoin = toUnixTime(v.firstJoin)
         local lastJoin = toUnixTime(v.lastJoin)
         local bannedText = v.banned and "yes" or "No"
-        LocalPlayer():ChatPrint(v.name .. " is " .. tostring(v.banned))
         local row = list:AddLine(v.name, v.id, v.group, firstJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", firstJoin) or "", lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", lastJoin) or "", bannedText)
         row.steamID = v.id
         row.steamID64 = v.id64

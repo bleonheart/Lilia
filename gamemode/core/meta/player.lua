@@ -18,6 +18,7 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
+    if true then return end
     if self:IsBot() then return true end
     local group = self:GetUserGroup()
     local groups = lia.admin.groups or {}
