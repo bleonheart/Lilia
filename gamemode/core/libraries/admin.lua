@@ -35,7 +35,6 @@ if SERVER then
             charID = charID
         }, nil, "staffactions")
     end
-
 end
 
 local DefaultGroups = {
@@ -127,62 +126,62 @@ local DefaultPrivileges = {
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Ragdolls",
+        Name = "Can Spawn Ragdolls",
         MinAccess = "admin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn SWEPs",
+        Name = "Can Spawn SWEPs",
         MinAccess = "superadmin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Effects",
+        Name = "Can Spawn Effects",
         MinAccess = "admin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Props",
+        Name = "Can Spawn Props",
         MinAccess = "admin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Blacklisted Props",
+        Name = "Can Spawn Blacklisted Props",
         MinAccess = "superadmin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn NPCs",
+        Name = "Can Spawn NPCs",
         MinAccess = "superadmin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - No Car Spawn Delay",
+        Name = "No Car Spawn Delay",
         MinAccess = "superadmin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - No Spawn Delay",
+        Name = "No Spawn Delay",
         MinAccess = "admin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Cars",
+        Name = "Can Spawn Cars",
         MinAccess = "admin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Blacklisted Cars",
+        Name = "Can Spawn Blacklisted Cars",
         MinAccess = "superadmin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn SENTs",
+        Name = "Can Spawn SENTs",
         MinAccess = "admin",
         Category = "Permissions"
     },
     {
-        Name = "Spawn Permissions - Can Spawn Blacklisted Entities",
+        Name = "Can Spawn Blacklisted Entities",
         MinAccess = "superadmin",
         Category = "Permissions"
     },
@@ -212,123 +211,8 @@ local DefaultPrivileges = {
         Category = "Permissions"
     },
     {
-        Name = "Toggle Permakill",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Unban Offline",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Ban Offline",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Play Sounds",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Return Players",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Force Fallover",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Force GetUp",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Toggle Character Lock",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Flags",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Check Inventories",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Items",
-        MinAccess = "superadmin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Toggle Voice Ban Character",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Clean Entities",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Characters",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Kick Characters",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Get Character Info",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Character Stats",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Character Information",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Manage Bodygroups",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Bot Say",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
-        Name = "Force Say",
-        MinAccess = "admin",
-        Category = "Permissions"
-    },
-    {
         Name = "Access Warnings Tab",
         MinAccess = "superadmin",
-        Category = "Configuration Menu"
-    },
-    {
-        Name = "Issue Warnings",
-        MinAccess = "admin",
-        Category = "Configuration Menu"
-    },
-    {
-        Name = "View Player Warnings",
-        MinAccess = "admin",
         Category = "Configuration Menu"
     },
     {
@@ -422,192 +306,12 @@ local DefaultPrivileges = {
         Category = "Administration Utilities"
     },
     {
-        Name = "Manage SitRooms",
-        MinAccess = "superadmin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "List Characters",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Kick Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Ban Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Kill Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Set Player Group",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Unban Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Freeze Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Unfreeze Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Slay Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Respawn Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Blind Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Unblind Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Blind Fade Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Blind Fade All",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Gag Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Ungag Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Mute Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Unmute Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Bring Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Goto Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Return Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Jail Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Unjail Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Cloak Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Uncloak Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "God Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Ungod Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Ignite Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Extinguish Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Strip Player",
-        MinAccess = "admin",
-        Category = "Administration Utilities"
-    },
-    {
-        Name = "Manage Attributes",
-        MinAccess = "admin",
-        Category = "Attributes"
-    },
-    {
         Name = "Access Factions Tab",
         MinAccess = "superadmin",
         Category = "Teams"
     },
     {
-        Name = "Manage Transfers",
-        MinAccess = "admin",
-        Category = "Teams"
-    },
-    {
-        Name = "Manage Whitelists",
-        MinAccess = "admin",
-        Category = "Teams"
-    },
-    {
-        Name = "Manage Classes",
-        MinAccess = "admin",
-        Category = "Teams"
-    },
-    {
         Name = "Can See Alting Notifications",
-        MinAccess = "admin",
-        Category = "Protection"
-    },
-    {
-        Name = "Toggle Cheater Status",
         MinAccess = "admin",
         Category = "Protection"
     },
@@ -647,26 +351,6 @@ local DefaultPrivileges = {
         Category = "Chatbox"
     },
     {
-        Name = "Ban OOC",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Unban OOC",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Block OOC",
-        MinAccess = "superadmin",
-        Category = "Chatbox"
-    },
-    {
-        Name = "Clear Chat",
-        MinAccess = "admin",
-        Category = "Chatbox"
-    },
-    {
         Name = "View IP Chat Attempts",
         MinAccess = "admin",
         Category = "Chatbox"
@@ -677,24 +361,9 @@ local DefaultPrivileges = {
         Category = "Vendors"
     },
     {
-        Name = "Manage Vendors",
-        MinAccess = "superadmin",
-        Category = "Vendors"
-    },
-    {
         Name = "Can Spawn Storage",
         MinAccess = "superadmin",
         Category = "Storage"
-    },
-    {
-        Name = "Lock Storage",
-        MinAccess = "admin",
-        Category = "Storage"
-    },
-    {
-        Name = "Manage Recognition",
-        MinAccess = "admin",
-        Category = "Recognition"
     },
     {
         Name = "Staff Permission — Access Entity List",
@@ -720,21 +389,6 @@ local DefaultPrivileges = {
         Name = "Staff Permission — Access Module List",
         MinAccess = "user",
         Category = "F1 Menu"
-    },
-    {
-        Name = "Manage Doors",
-        MinAccess = "admin",
-        Category = "Doors"
-    },
-    {
-        Name = "Manage Spawns",
-        MinAccess = "admin",
-        Category = "Spawns"
-    },
-    {
-        Name = "Return Items",
-        MinAccess = "superadmin",
-        Category = "Spawns"
     },
 }
 
@@ -1048,7 +702,9 @@ if SERVER then
             steamID = steam64,
             userGroup = usergroup
         }, "admins"):next(function()
-            lia.db.updateTable({userGroup = usergroup}, nil, "admins", "steamID = " .. lia.db.convertDataType(steam64))
+            lia.db.updateTable({
+                userGroup = usergroup
+            }, nil, "admins", "steamID = " .. lia.db.convertDataType(steam64))
         end)
     end
 
@@ -1110,7 +766,6 @@ function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
     -- Command logging is now handled within each command's callback
-
     if cmd == "kick" then
         RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
         return true

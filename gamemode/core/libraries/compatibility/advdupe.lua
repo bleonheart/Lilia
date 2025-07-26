@@ -18,7 +18,7 @@ hook.Add("PlayerSpawnProp", "liaAdvDupe", function(client, model)
         local t = w:GetToolObject()
         if t and t.Entities then
             local list = lia.data.get("prop_blacklist")
-            if table.HasValue(list, model) and not client:hasPrivilege("Spawn Permissions - Can Spawn Blacklisted Props") then
+            if table.HasValue(list, model) and not client:hasPrivilege("Can Spawn Blacklisted Props") then
                 lia.log.add(client, "spawnDenied", "prop", model)
                 client:notifyLocalized("blacklistedProp")
                 return false
