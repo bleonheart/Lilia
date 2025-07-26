@@ -2,6 +2,18 @@
     function MODULE:InitializedModules()
         SetGlobalBool("oocblocked", false)
     end
+
+    function ClientAddText(client, ...)
+        if not client or not IsValid(client) then
+            lia.error(L("invalidClientChatAddText"))
+            return
+        end
+
+        local args = {...}
+        net.Start("ServerChatAddText")
+        net.WriteTable(args)
+        net.Send(client)
+    end
 else
     local MODULE = MODULE
     chat.liaAddText = chat.liaAddText or chat.AddText

@@ -12,7 +12,6 @@
 }
 
 if SERVER then
-    util.AddNetworkString("CheckSeed")
     function MODULE:PlayerAuthed(client, steamid)
         if client:IsBot() then return end
         local steamID64 = util.SteamIDTo64(steamid)
@@ -52,21 +51,6 @@ if SERVER then
             end
         end
     end
-
-    net.Receive("CheckSeed", function(_, client)
-        local sentSteamID = net.ReadString()
-        local realSteamID = client:SteamID64()
-        if not sentSteamID or sentSteamID == "" or not sentSteamID:match("^%d+$") then
-            lia.notifyAdmin(L("steamIDMissing", client:Name(), realSteamID))
-            lia.log.add(client, "steamIDMissing", client:Name(), realSteamID)
-            return
-        end
-
-        if sentSteamID ~= realSteamID and sentSteamID ~= client:OwnerSteamID64() then
-            lia.notifyAdmin(L("steamIDMismatch", client:Name(), realSteamID, sentSteamID))
-            lia.log.add(client, "steamIDMismatch", client:Name(), realSteamID, sentSteamID)
-        end
-    end)
 else
     function MODULE:InitPostEntity()
         local client = LocalPlayer()

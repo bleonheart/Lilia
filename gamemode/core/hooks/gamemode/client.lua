@@ -477,31 +477,6 @@ function GM:InitPostEntity()
     if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
 end
 
-local VoiceRanges = {
-    Whispering = 120,
-    Talking = 300,
-    Yelling = 600,
-}
-
-function GM:PostDrawOpaqueRenderables()
-    if not lia.option.get("voiceRange", false) then return end
-    local client = LocalPlayer()
-    if not (IsValid(client) and client:IsSpeaking() and client:getChar()) then return end
-    local vt = client:getNetVar("VoiceType", "Talking")
-    local radius = VoiceRanges[vt] or VoiceRanges.Talking
-    local segments = 36
-    local pos = client:GetPos() + Vector(0, 0, 2)
-    local color = Color(0, 150, 255)
-    render.SetColorMaterial()
-    for i = 0, segments - 1 do
-        local startAng = math.rad(i / segments * 360)
-        local endAng = math.rad((i + 1) / segments * 360)
-        local startPos = pos + Vector(math.cos(startAng), math.sin(startAng), 0) * radius
-        local endPos = pos + Vector(math.cos(endAng), math.sin(endAng), 0) * radius
-        render.DrawLine(startPos, endPos, color, false)
-    end
-end
-
 function GM:HUDDrawTargetID()
     return false
 end
