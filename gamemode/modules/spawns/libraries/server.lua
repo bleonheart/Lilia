@@ -1,56 +1,30 @@
-﻿local MODULE = MODULE
-local encodetable = lia.data.encodetable
-local TABLE = "spawns"
-local function buildCondition(folder, map)
-    return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
-end
+local MODULE = MODULE
 
 function MODULE:FetchSpawns()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    local condition = buildCondition(folder, map)
-    return lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
-        local data = res and lia.data.deserialize(res._data) or {}
-        local factions = data.factions or data
-        local result = {}
-        for fac, spawns in pairs(factions or {}) do
-            local t = {}
-            for i = 1, #spawns do
-                local spawnData = lia.data.deserialize(spawns[i])
-                if isvector(spawnData) then
-                    spawnData = {
-                        pos = spawnData,
-                        ang = angle_zero
-                    }
-                end
-
-                t[i] = spawnData
+    local d = deferred.new()
+    local spawnsData = lia.data.get("spawns", {})
+    local factions = spawnsData.factions or spawnsData
+    local result = {}
+    for fac, spawns in pairs(factions) do
+        local t = {}
+        for i = 1, #spawns do
+            local spawnData = spawns[i]
+            if isvector(spawnData) then
+                spawnData = {pos = spawnData, ang = angle_zero}
+            elseif istable(spawnData) then
+                if spawnData.pos then spawnData.pos = lia.data.decodeVector(spawnData.pos) end
+                if spawnData.ang then spawnData.ang = lia.data.decodeAngle(spawnData.ang) end
             end
-
-            result[fac] = t
+            t[i] = spawnData
         end
-        return result
-    end)
+        result[fac] = t
+    end
+    d:resolve(result)
+    return d
 end
 
 function MODULE:StoreSpawns(spawns)
-    local factions = {}
-    for fac, list in pairs(spawns or {}) do
-        factions[fac] = {}
-        for _, data in ipairs(list) do
-            factions[fac][#factions[fac] + 1] = encodetable(data)
-        end
-    end
-
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local map = game.GetMap()
-    return lia.db.upsert({
-        _schema = folder,
-        _map = map,
-        _data = lia.data.serialize({
-            factions = factions
-        })
-    }, TABLE)
+    lia.data.set("spawns", {map = game.GetMap(), factions = spawns})
 end
 
 local function SpawnPlayer(client)

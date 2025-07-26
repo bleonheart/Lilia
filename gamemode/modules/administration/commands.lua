@@ -40,19 +40,11 @@ lia.command.add("managesitrooms", {
     desc = "manageSitroomsDesc",
     onRun = function(client)
         if not client:hasPrivilege("Manage SitRooms") then return end
-        local mapName = game.GetMap()
-        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
-        lia.db.select({"_name", "_pos"}, "sitrooms", condition):next(function(res)
-            local rooms = {}
-            for _, row in ipairs(res.results or {}) do
-                rooms[row._name] = lia.data.decodeVector(row._pos)
-            end
-
-            net.Start("managesitrooms")
-            net.WriteTable(rooms)
-            net.Send(client)
-        end)
+        local data = lia.data.get("sitrooms", {})
+        local rooms = data.rooms or data
+        net.Start("managesitrooms")
+        net.WriteTable(rooms)
+        net.Send(client)
     end
 })
 
@@ -67,17 +59,14 @@ lia.command.add("addsitroom", {
                 return
             end
 
-            local mapName = game.GetMap()
-            local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-            lia.db.upsert({
-                _folder = folder,
-                _map = mapName,
-                _name = name,
-                _pos = lia.data.serialize(client:GetPos()),
-            }, "sitrooms")
+
+            local data = lia.data.get("sitrooms", {map = game.GetMap(), rooms = {}})
+            local rooms = data.rooms or data
+            rooms[name] = client:GetPos()
+            lia.data.set("sitrooms", {map = game.GetMap(), rooms = rooms})
 
             client:notifyLocalized("sitroomSet")
-            lia.log.add(client, "sitRoomSet", string.format("Map: %s | Name: %s | Position: %s", mapName, name, tostring(client:GetPos())), "Set the sitroom location")
+            lia.log.add(client, "sitRoomSet", string.format("Map: %s | Name: %s | Position: %s", game.GetMap(), name, tostring(client:GetPos())), "Set the sitroom location")
         end)
     end
 })
@@ -100,35 +89,29 @@ lia.command.add("sendtositroom", {
             return
         end
 
-        local mapName = game.GetMap()
-        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
-        lia.db.select({"_name", "_pos"}, "sitrooms", condition):next(function(res)
-            local rooms = {}
-            local names = {}
-            for _, row in ipairs(res.results or {}) do
-                local pos = lia.data.decodeVector(row._pos)
-                rooms[row._name] = pos
-                names[#names + 1] = row._name
-            end
+        local data = lia.data.get("sitrooms", {})
+        local rooms = data.rooms or data
+        local names = {}
+        for name in pairs(rooms) do
+            names[#names + 1] = name
+        end
 
-            if #names == 0 then
+        if #names == 0 then
+            client:notifyLocalized("sitroomNotSet")
+            return
+        end
+
+        client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt"), names, function(selection)
+            local pos = rooms[selection]
+            if not pos then
                 client:notifyLocalized("sitroomNotSet")
                 return
             end
 
-            client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt"), names, function(selection)
-                local pos = rooms[selection]
-                if not pos then
-                    client:notifyLocalized("sitroomNotSet")
-                    return
-                end
-
-                target:SetPos(pos)
-                client:notifyLocalized("sitroomTeleport", target:Nick())
-                target:notifyLocalized("sitroomArrive")
-                lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
-            end)
+            target:SetPos(pos)
+            client:notifyLocalized("sitroomTeleport", target:Nick())
+            target:notifyLocalized("sitroomArrive")
+            lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
         end)
     end
 })
