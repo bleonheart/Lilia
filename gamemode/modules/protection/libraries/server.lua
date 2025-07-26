@@ -72,10 +72,6 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     end
 end
 
-function MODULE:PlayerShouldAct()
-    return lia.config.get("ActsActive", false)
-end
-
 local KnownCheaters = {
     ["76561198095382821"] = true,
     ["76561198211231421"] = true,
@@ -125,17 +121,6 @@ function MODULE:PlayerAuthed(client, steamid)
             lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
             lia.log.add(nil, "altBanned", steamName, steamID)
         end
-    end
-end
-
-function MODULE:PlayerSay(client, message)
-    local hasIPAddress = string.match(message, "%d+%.%d+%.%d+%.%d+(:%d*)?")
-    local hasBadWords = string.find(string.upper(message), string.upper("clone")) and string.find(string.upper(message), string.upper("nutscript"))
-    if hasIPAddress then
-        lia.applyPunishment(client, L("ipInChat"), true, false)
-        return ""
-    elseif hasBadWords then
-        return ""
     end
 end
 

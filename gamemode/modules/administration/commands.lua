@@ -35,223 +35,6 @@ lia.command.add("adminmode", {
     end
 })
 
-local MODULE = MODULE
-lia.command.add("plyviewclaims", {
-    adminOnly = true,
-    privilege = "View Claims",
-    desc = "plyViewClaimsDesc",
-    syntax = "[player Name]",
-    AdminStick = {
-        Name = "viewTicketClaims",
-        Category = "moderationTools",
-        SubCategory = "misc",
-        Icon = "icon16/page_white_text.png"
-    },
-    onRun = function(client, arguments)
-        local targetName = arguments[1]
-        if not targetName then
-            client:ChatPrint(L("mustSpecifyPlayer"))
-            return
-        end
-
-        local target = lia.util.findPlayer(client, targetName)
-        if not target or not IsValid(target) then
-            client:notifyLocalized("targetNotFound")
-            return
-        end
-
-        local steamID = target:SteamID64()
-        MODULE:GetAllCaseClaims():next(function(caseclaims)
-            local claim = caseclaims[steamID]
-            if not claim then
-                client:ChatPrint(L("noClaimsFound"))
-                return
-            end
-
-            local claimedFor = L("none")
-            if not table.IsEmpty(claim.claimedFor) then
-                claimedFor = table.concat((function()
-                    local t = {}
-                    for sid, name in pairs(claim.claimedFor) do
-                        table.insert(t, string.format("%s (%s)", name, sid))
-                    end
-                    return t
-                end)(), "\n")
-            end
-
-            local claimsData = {
-                {
-                    steamID = steamID,
-                    name = claim.name,
-                    claims = claim.claims,
-                    lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
-                    timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
-                    claimedFor = claimedFor
-                }
-            }
-
-            lia.util.CreateTableUI(client, L("claimsForTitle", target:Nick()), {
-                {
-                    name = L("steamID"),
-                    field = "steamID"
-                },
-                {
-                    name = L("adminName"),
-                    field = "name"
-                },
-                {
-                    name = L("totalClaims"),
-                    field = "claims"
-                },
-                {
-                    name = L("lastClaimDate"),
-                    field = "lastclaim"
-                },
-                {
-                    name = L("timeSinceLastClaim"),
-                    field = "timeSinceLastClaim"
-                },
-                {
-                    name = L("claimedFor"),
-                    field = "claimedFor"
-                }
-            }, claimsData)
-
-            lia.log.add(client, "viewPlayerClaims", target:Name())
-        end)
-    end
-})
-
-lia.command.add("viewallclaims", {
-    adminOnly = true,
-    privilege = "View Claims",
-    desc = "viewAllClaimsDesc",
-    onRun = function(client)
-        MODULE:GetAllCaseClaims():next(function(caseclaims)
-            if table.IsEmpty(caseclaims) then
-                client:ChatPrint(L("noClaimsRecorded"))
-                return
-            end
-
-            local claimsData = {}
-            for steamID, claim in pairs(caseclaims) do
-                local claimedFor = L("none")
-                if not table.IsEmpty(claim.claimedFor) then
-                    claimedFor = table.concat((function()
-                        local t = {}
-                        for sid, name in pairs(claim.claimedFor) do
-                            table.insert(t, string.format("%s (%s)", name, sid))
-                        end
-                        return t
-                    end)(), ", ")
-                end
-
-                table.insert(claimsData, {
-                    steamID = steamID,
-                    name = claim.name,
-                    claims = claim.claims,
-                    lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
-                    timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
-                    claimedFor = claimedFor
-                })
-            end
-
-            lia.util.CreateTableUI(client, L("adminClaimsTitle"), {
-                {
-                    name = L("steamID"),
-                    field = "steamID"
-                },
-                {
-                    name = L("adminName"),
-                    field = "name"
-                },
-                {
-                    name = L("totalClaims"),
-                    field = "claims"
-                },
-                {
-                    name = L("lastClaimDate"),
-                    field = "lastclaim"
-                },
-                {
-                    name = L("timeSinceLastClaim"),
-                    field = "timeSinceLastClaim"
-                },
-                {
-                    name = L("claimedFor"),
-                    field = "claimedFor"
-                }
-            }, claimsData)
-
-            lia.log.add(client, "viewAllClaims")
-        end)
-    end
-})
-
-lia.command.add("viewclaims", {
-    adminOnly = true,
-    privilege = "View Claims",
-    desc = "viewClaimsDesc",
-    onRun = function(client)
-        MODULE:GetAllCaseClaims():next(function(caseclaims)
-            if table.IsEmpty(caseclaims) then
-                client:ChatPrint(L("noClaimsData"))
-                return
-            end
-
-            lia.log.add(client, "viewAllClaims")
-            local claimsData = {}
-            for steamID, claim in pairs(caseclaims) do
-                local claimedFor = L("none")
-                if not table.IsEmpty(claim.claimedFor) then
-                    claimedFor = table.concat((function()
-                        local t = {}
-                        for sid, name in pairs(claim.claimedFor) do
-                            table.insert(t, string.format("%s (%s)", name, sid))
-                        end
-                        return t
-                    end)(), "\n")
-                end
-
-                table.insert(claimsData, {
-                    steamID = steamID,
-                    name = claim.name,
-                    claims = claim.claims,
-                    lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
-                    timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
-                    claimedFor = claimedFor
-                })
-            end
-
-            lia.util.CreateTableUI(client, L("adminClaimsTitle"), {
-                {
-                    name = L("steamID"),
-                    field = "steamID"
-                },
-                {
-                    name = L("adminName"),
-                    field = "name"
-                },
-                {
-                    name = L("totalClaims"),
-                    field = "claims"
-                },
-                {
-                    name = L("lastClaimDate"),
-                    field = "lastclaim"
-                },
-                {
-                    name = L("timeSinceLastClaim"),
-                    field = "timeSinceLastClaim"
-                },
-                {
-                    name = L("claimedFor"),
-                    field = "claimedFor"
-                }
-            }, claimsData)
-        end)
-    end
-})
 
 lia.command.add("managesitrooms", {
     superAdminOnly = true,
@@ -264,7 +47,6 @@ lia.command.add("managesitrooms", {
         for name, pos in pairs(rooms) do
             rooms[name] = lia.data.decodeVector(pos)
         end
-
             net.Start("managesitrooms")
             net.WriteTable(rooms)
             net.Send(client)
@@ -2583,3 +2365,415 @@ lia.command.add("getallinfos", {
         client:ChatPrint(L("infoPrintedConsole"))
     end
 })
+
+if SERVER then 
+concommand.Add("plysetgroup", function(ply, _, args)
+    if IsValid(ply) then
+        ply:notifyLocalized("commandConsoleOnly")
+        return
+    end
+
+    local target = lia.command.findPlayer(nil, args[1])
+    if not IsValid(target) then
+        lia.administration("Error", L("specifiedPlayerNotFound"))
+        return
+    end
+
+    local group = args[2]
+    if not group or not lia.admin.groups[group] then
+        lia.administration("Error", L("usergroupNotFound"))
+        return
+    end
+
+    lia.admin.setPlayerGroup(target, group)
+    target:notifyLocalized("plyGroupSet")
+    lia.administration("Information", L("setPlayerGroupTo", target:Nick(), group))
+end)
+
+concommand.Add("kickbots", function()
+    for _, bot in player.Iterator() do
+        if bot:IsBot() then lia.admin.execCommand("kick", bot, nil, L("allBotsKicked")) end
+    end
+end)
+
+concommand.Add("stopsoundall", function(client)
+    if client:IsSuperAdmin() then
+        for _, v in player.Iterator() do
+            v:ConCommand("stopsound")
+        end
+    else
+        client:notifyLocalized("mustSuperAdminStopSound")
+    end
+end)
+
+concommand.Add("list_entities", function(client)
+    local entityCount = {}
+    local totalEntities = 0
+    if not IsValid(client) then
+        lia.information(L("entitiesOnServer"))
+        for _, entity in ents.Iterator() do
+            local className = entity:GetClass() or L("unknown")
+            entityCount[className] = (entityCount[className] or 0) + 1
+            totalEntities = totalEntities + 1
+        end
+
+        for className, count in pairs(entityCount) do
+            lia.information(L("entityClassCount", className, count))
+        end
+
+        lia.information(L("totalEntities", totalEntities))
+    end
+end)
+
+else
+    
+concommand.Add("dev_GetCameraOrigin", function(client)
+    if client:isStaff() then
+        lia.information(L("originLabel", math.ceil(client:GetPos().x), math.ceil(client:GetPos().y), math.ceil(client:GetPos().z)))
+        lia.information(L("anglesLabel", math.ceil(client:GetAngles().x), math.ceil(client:GetAngles().y), math.ceil(client:GetAngles().z)))
+    end
+end)
+
+concommand.Add("vgui_cleanup", function()
+    for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
+        if not (v.Init and debug.getinfo(v.Init, "Sln").short_src:find("chatbox")) then v:Remove() end
+    end
+end, nil, "Removes every panel that you have left over (like that errored DFrame filling up your screen)")
+
+local dermaPreviewFrame
+concommand.Add("open_derma_preview", function()
+    if IsValid(dermaPreviewFrame) then dermaPreviewFrame:Remove() end
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle(L("dermaPreviewTitle"))
+    frame:SetSize(ScrW() * 0.8, ScrH() * 0.8)
+    frame:Center()
+    frame:MakePopup()
+    dermaPreviewFrame = frame
+    local scroll = vgui.Create("DScrollPanel", frame)
+    scroll:Dock(FILL)
+    local function addPreview(name, creator)
+        local label = scroll:Add("DLabel")
+        label:Dock(TOP)
+        label:DockMargin(10, 10, 10, 2)
+        label:SetText(name)
+        label:SizeToContents()
+        local panel = creator()
+        if IsValid(panel) then
+            panel:Dock(TOP)
+            panel:DockMargin(10, 2, 10, 0)
+        end
+    end
+
+    addPreview("DFrame", function()
+        local container = scroll:Add("DPanel")
+        container:SetTall(70)
+        container:SetPaintBackground(false)
+        local miniFrame = vgui.Create("DFrame", container)
+        miniFrame:SetTitle(L("dframe"))
+        miniFrame:SetSize(150, 60)
+        miniFrame:SetDraggable(false)
+        miniFrame:ShowCloseButton(true)
+        miniFrame:SetPos(0, 5)
+        return container
+    end)
+
+    addPreview("DPanel", function()
+        local panel = scroll:Add("DPanel")
+        panel:SetTall(50)
+        return panel
+    end)
+
+    addPreview("DButton", function()
+        local btn = scroll:Add("DButton")
+        btn:SetText(L("dbutton"))
+        return btn
+    end)
+
+    addPreview("DLabel", function()
+        local lbl = scroll:Add("DLabel")
+        lbl:SetText(L("dlabel"))
+        lbl:SizeToContents()
+        return lbl
+    end)
+
+    addPreview("DTextEntry", function()
+        local txt = scroll:Add("DTextEntry")
+        txt:SetText(L("dtextentry"))
+        return txt
+    end)
+
+    addPreview("DCheckBox", function()
+        local cb = scroll:Add("DCheckBox")
+        cb:SetValue(true)
+        return cb
+    end)
+
+    addPreview("DComboBox", function()
+        local combo = scroll:Add("DComboBox")
+        combo:AddChoice(L("option1"))
+        combo:AddChoice(L("option2"))
+        combo:ChooseOption(L("option1"), 1)
+        return combo
+    end)
+
+    addPreview("DListView", function()
+        local listView = scroll:Add("DListView")
+        listView:SetTall(120)
+        listView:AddColumn(L("column1"))
+        listView:AddColumn(L("column2"))
+        listView:AddLine(L("row1col1"), L("row1col2"))
+        listView:AddLine(L("row2col1"), L("row2col2"))
+        return listView
+    end)
+
+    addPreview("DImage", function()
+        local container = scroll:Add("DPanel")
+        container:SetTall(40)
+        container:SetPaintBackground(false)
+        local img = vgui.Create("DImage", container)
+        img:SetImage("icon16/star.png")
+        img:SetSize(32, 32)
+        img:SetPos(0, 4)
+        return container
+    end)
+
+    addPreview("DPanelList", function()
+        local list = scroll:Add("DPanelList")
+        list:SetTall(80)
+        list:EnableVerticalScrollbar()
+        list:SetPadding(5)
+        for i = 1, 10 do
+            local item = vgui.Create("DLabel")
+            item:SetText(L("itemLabel", i))
+            item:SizeToContents()
+            list:AddItem(item)
+        end
+        return list
+    end)
+
+    addPreview("DProgressBar", function()
+        local progress = scroll:Add("DProgress")
+        progress:SetTall(20)
+        progress:SetFraction(0.5)
+        return progress
+    end)
+
+    addPreview("DNumSlider", function()
+        local slider = scroll:Add("DNumSlider")
+        slider:SetText(L("dnumSlider"))
+        slider:SetMin(0)
+        slider:SetMax(100)
+        slider:SetValue(50)
+        slider:SetDecimals(0)
+        slider:SetTall(35)
+        return slider
+    end)
+
+    addPreview("DScrollPanel", function()
+        local subScroll = scroll:Add("DScrollPanel")
+        subScroll:SetTall(100)
+        for i = 1, 20 do
+            local line = subScroll:Add("DLabel")
+            line:SetText(L("lineLabel", i))
+            line:Dock(TOP)
+            line:DockMargin(0, 0, 0, 5)
+        end
+        return subScroll
+    end)
+
+    addPreview("DTree", function()
+        local tree = scroll:Add("DTree")
+        tree:SetTall(100)
+        local node1 = tree:AddNode(L("node1"))
+        node1:AddNode(L("child1"))
+        node1:AddNode(L("child2"))
+        tree:AddNode(L("node2"))
+        return tree
+    end)
+
+    addPreview("DColorMixer", function()
+        local mixer = scroll:Add("DColorMixer")
+        mixer:SetTall(150)
+        mixer:SetPalette(true)
+        mixer:SetAlphaBar(true)
+        mixer:SetWangs(true)
+        return mixer
+    end)
+
+    addPreview("DPropertySheet", function()
+        local sheet = scroll:Add("DPropertySheet")
+        sheet:SetTall(120)
+        local tab1 = vgui.Create("DPanel")
+        tab1:Dock(FILL)
+        local lbl1 = vgui.Create("DLabel", tab1)
+        lbl1:Dock(TOP)
+        lbl1:DockMargin(0, 0, 0, 4)
+        lbl1:SetText(L("settings"))
+        lbl1:SizeToContents()
+        local btn1 = vgui.Create("DButton", tab1)
+        btn1:Dock(TOP)
+        btn1:SetText(L("apply"))
+        local tab2 = vgui.Create("DPanel")
+        tab2:Dock(FILL)
+        local entry = vgui.Create("DTextEntry", tab2)
+        entry:Dock(TOP)
+        entry:SetPlaceholderText(L("enterValue"))
+        local chkLabel = vgui.Create("DCheckBoxLabel", tab2)
+        chkLabel:Dock(TOP)
+        chkLabel:DockMargin(0, 4, 0, 0)
+        chkLabel:SetText(L("enableFeature"))
+        sheet:AddSheet(L("tab1"), tab1, "icon16/wrench.png")
+        sheet:AddSheet(L("tab2"), tab2, "icon16/cog.png")
+        return sheet
+    end)
+
+    addPreview("DCategoryList", function()
+        local catList = scroll:Add("DCategoryList")
+        catList:SetTall(100)
+        local category = catList:Add(L("category1"))
+        category:Add(L("item1"))
+        category:Add(L("item2"))
+        category:SetExpanded(true)
+        return catList
+    end)
+
+    addPreview("DCollapsibleCategory", function()
+        local collCat = scroll:Add("DCollapsibleCategory")
+        collCat:SetLabel(L("dcollapsibleCategory"))
+        local content = vgui.Create("DPanel")
+        content:SetTall(40)
+        collCat:SetContents(content)
+        collCat:SetExpanded(true)
+        if collCat.GetHeaderHeight then
+            collCat:SetTall(collCat:GetHeaderHeight() + content:GetTall())
+        else
+            collCat:SetTall(60)
+        end
+        return collCat
+    end)
+
+    addPreview("DModelPanel", function()
+        local container = scroll:Add("DPanel")
+        container:SetTall(300)
+        container:SetPaintBackground(false)
+        local modelPanel = vgui.Create("DModelPanel", container)
+        modelPanel:SetModel("models/props_c17/oildrum001.mdl")
+        modelPanel:SetSize(300, 300)
+        modelPanel:SetPos(0, 0)
+        return container
+    end)
+end)
+
+concommand.Add("lia_saved_images", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if not files or #files == 0 then return end
+    local f = vgui.Create("DFrame")
+    f:SetTitle(L("webImagesTitle"))
+    f:SetSize(ScrW() * 0.6, ScrH() * 0.6)
+    f:Center()
+    f:MakePopup()
+    local scroll = vgui.Create("DScrollPanel", f)
+    scroll:Dock(FILL)
+    local layout = vgui.Create("DIconLayout", scroll)
+    layout:Dock(FILL)
+    layout:SetSpaceX(4)
+    layout:SetSpaceY(4)
+    for _, fn in ipairs(files) do
+        local img = layout:Add("DImage")
+        img:SetMaterial(buildMaterial(baseDir .. fn))
+        img:SetSize(128, 128)
+        img:SetTooltip(fn)
+    end
+end)
+
+concommand.Add("lia_wipewebimages", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if files then
+        for _, fn in ipairs(files) do
+            file.Delete(baseDir .. fn)
+        end
+    end
+
+    cache = {}
+    urlMap = {}
+    lia.information(L("webImagesCleared"))
+    ensureDir(baseDir)
+end)
+
+concommand.Add("test_webimage_menu", function()
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle(L("webImageTesterTitle"))
+    frame:SetSize(500, 400)
+    frame:Center()
+    frame:MakePopup()
+    local urlEntry = vgui.Create("DTextEntry", frame)
+    urlEntry:SetPos(10, 30)
+    urlEntry:SetSize(frame:GetWide() - 20, 25)
+    urlEntry:SetText("https://i.imgur.com/WNdLdwQ.jpeg")
+    local loadBtn = vgui.Create("DButton", frame)
+    loadBtn:SetPos(10, 65)
+    loadBtn:SetSize(frame:GetWide() - 20, 30)
+    loadBtn:SetText(L("loadImage"))
+    local imgPanel = vgui.Create("DPanel", frame)
+    imgPanel:SetPos(10, 105)
+    imgPanel:SetSize(frame:GetWide() - 20, frame:GetTall() - 115)
+    loadBtn.DoClick = function()
+        for _, child in ipairs(imgPanel:GetChildren()) do
+            child:Remove()
+        end
+
+        local src = urlEntry:GetValue()
+        local img = vgui.Create("DImage", imgPanel)
+        img:SetPos(0, 0)
+        img:SetSize(imgPanel:GetWide(), imgPanel:GetTall())
+        img:SetImage(src)
+    end
+end)
+
+concommand.Add("lia_saved_sounds", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if not files or #files == 0 then return end
+    local f = vgui.Create("DFrame")
+    f:SetTitle(L("webSoundsTitle"))
+    f:SetSize(ScrW() * 0.6, ScrH() * 0.6)
+    f:Center()
+    f:MakePopup()
+    local scroll = vgui.Create("DScrollPanel", f)
+    scroll:Dock(FILL)
+    local layout = vgui.Create("DIconLayout", scroll)
+    layout:Dock(FILL)
+    layout:SetSpaceX(4)
+    layout:SetSpaceY(4)
+    for _, fn in ipairs(files) do
+        local btn = layout:Add("DButton")
+        btn:SetText(fn)
+        btn:SetSize(200, 20)
+        btn.DoClick = function() sound.PlayFile(buildPath(baseDir .. fn), "", function(chan) if chan then chan:Play() end end) end
+    end
+end)
+
+concommand.Add("lia_wipe_sounds", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    for _, fn in ipairs(files) do
+        file.Delete(baseDir .. fn)
+    end
+
+    cache = {}
+    urlMap = {}
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[WebSound]", Color(255, 255, 255), " " .. L("webSoundCacheCleared") .. "\n")
+end)
+
+concommand.Add("workshop_force_redownload", function()
+    table.Empty(queue)
+    buildQueue(true)
+    start()
+    lia.bootstrap("Workshop Downloader", L("workshopForcedRedownload"))
+end)
+
+concommand.Add("weighpoint_stop", function() hook.Add("HUDPaint", "WeighPoint", function() end) end)
+concommand.Add("dev_GetEntPos", function(client) if client:isStaff() then lia.information(client:getTracedEntity():GetPos().x, client:getTracedEntity():GetPos().y, client:getTracedEntity():GetPos().z) end end)
+concommand.Add("dev_GetEntAngles", function(client) if client:isStaff() then lia.information(math.ceil(client:getTracedEntity():GetAngles().x) .. ", " .. math.ceil(client:getTracedEntity():GetAngles().y) .. ", " .. math.ceil(client:getTracedEntity():GetAngles().z)) end end)
+concommand.Add("dev_GetRoundEntPos", function(client) if client:isStaff() then lia.information(math.ceil(client:getTracedEntity():GetPos().x) .. ", " .. math.ceil(client:getTracedEntity():GetPos().y) .. ", " .. math.ceil(client:getTracedEntity():GetPos().z)) end end)
+concommand.Add("dev_GetPos", function(client) if client:isStaff() then lia.information(math.ceil(client:GetPos().x) .. ", " .. math.ceil(client:GetPos().y) .. ", " .. math.ceil(client:GetPos().z)) end end)
+
+end

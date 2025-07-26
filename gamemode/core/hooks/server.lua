@@ -1,4 +1,18 @@
 ﻿local GM = GM or GAMEMODE
+local publicURL = "https://raw.githubusercontent.com/LiliaFramework/Modules/refs/heads/gh-pages/modules.json"
+local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/modules.json"
+local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/version.json"
+local TalkRanges = {
+    ["Whispering"] = 120,
+    ["Talking"] = 300,
+    ["Yelling"] = 600,
+}
+
+local logTypeMap = {
+    ooc = "chatOOC",
+    looc = "chatLOOC"
+}
+
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     if not character:getInv() then return end
@@ -254,11 +268,6 @@ function GM:CanPlayerDropItem(client, item)
     end
 end
 
-local logTypeMap = {
-    ooc = "chatOOC",
-    looc = "chatLOOC"
-}
-
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
     local banRecord = lia.admin.isBanned(steamID64)
     local banExpired = lia.admin.hasBanExpired(steamID64)
@@ -274,9 +283,19 @@ function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerNa
     end
 end
 
+function GM:CanDeleteChar(_, character)
+    if IsValid(character) and character:getMoney() < lia.config.get("DefaultMoney") then return false end
+end
+
 function GM:PlayerSay(client, message)
     local chatType, parsedMessage, anonymous = lia.chat.parse(client, message, true)
+    local hasIPAddress = string.match(message, "%d+%.%d+%.%d+%.%d+(:%d*)?")
     message = parsedMessage
+    if hasIPAddress then
+        lia.applyPunishment(client, L("ipInChat"), true, false)
+        return ""
+    end
+
     if client:getNetVar("liaGagged") then return "" end
     if chatType == "ic" and lia.command.parse(client, message) then return "" end
     if utf8.len(message) > lia.config.get("MaxChatLength") then
@@ -561,20 +580,8 @@ function GM:SetupBotPlayer(client)
     client:Spawn()
 end
 
-function GM:PlayerShouldTakeDamage(client)
-    return client:getChar() ~= nil
-end
-
-function GM:CanDrive()
-    return false
-end
-
 function GM:PlayerHurt(client, attacker, health, damage)
     lia.log.add(client, "playerHurt", attacker:IsPlayer() and attacker:Name() or attacker:GetClass(), damage, health)
-end
-
-function GM:PlayerDeathThink()
-    return false
 end
 
 local function makeKey(ent)
@@ -838,9 +845,6 @@ local function versionCompare(localVersion, remoteVersion)
     return 0
 end
 
-local publicURL = "https://raw.githubusercontent.com/LiliaFramework/Modules/refs/heads/gh-pages/modules.json"
-local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/modules.json"
-local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/version.json"
 local function checkPublicModules()
     fetchURL(publicURL, function(body, code)
         if code ~= 200 then
@@ -966,12 +970,6 @@ function ClientAddText(client, ...)
     net.Send(client)
 end
 
-local TalkRanges = {
-    ["Whispering"] = 120,
-    ["Talking"] = 300,
-    ["Yelling"] = 600,
-}
-
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) and IsValid(speaker) or listener == speaker then return false, false end
     if speaker:getNetVar("IsDeadRestricted", false) then return false, false end
@@ -1001,84 +999,6 @@ function GM:OnDatabaseLoaded()
         end
     end)
 end
-
-concommand.Add("plysetgroup", function(ply, _, args)
-    if IsValid(ply) then
-        ply:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    local target = lia.command.findPlayer(nil, args[1])
-    if not IsValid(target) then
-        lia.administration("Error", L("specifiedPlayerNotFound"))
-        return
-    end
-
-    local group = args[2]
-    if not group or not lia.admin.groups[group] then
-        lia.administration("Error", L("usergroupNotFound"))
-        return
-    end
-
-    lia.admin.setPlayerGroup(target, group)
-    target:notifyLocalized("plyGroupSet")
-    lia.administration("Information", L("setPlayerGroupTo", target:Nick(), group))
-end)
-
-local function handleDatabaseWipe(commandName)
-    concommand.Add(commandName, function(client)
-        if IsValid(client) then
-            client:notifyLocalized("commandConsoleOnly")
-            return
-        end
-
-        if resetCalled < RealTime() then
-            resetCalled = RealTime() + 3
-            lia.administration("Warning", L("databaseWipeConfirm", commandName))
-        else
-            resetCalled = 0
-            lia.administration("Warning", L("databaseWipeProgress"))
-            hook.Run("OnWipeTables")
-            lia.db.wipeTables(lia.db.loadTables)
-            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-        end
-    end)
-end
-
-concommand.Add("kickbots", function()
-    for _, bot in player.Iterator() do
-        if bot:IsBot() then lia.admin.execCommand("kick", bot, nil, L("allBotsKicked")) end
-    end
-end)
-
-concommand.Add("stopsoundall", function(client)
-    if client:IsSuperAdmin() then
-        for _, v in player.Iterator() do
-            v:ConCommand("stopsound")
-        end
-    else
-        client:notifyLocalized("mustSuperAdminStopSound")
-    end
-end)
-
-concommand.Add("list_entities", function(client)
-    local entityCount = {}
-    local totalEntities = 0
-    if not IsValid(client) then
-        lia.information(L("entitiesOnServer"))
-        for _, entity in ents.Iterator() do
-            local className = entity:GetClass() or L("unknown")
-            entityCount[className] = (entityCount[className] or 0) + 1
-            totalEntities = totalEntities + 1
-        end
-
-        for className, count in pairs(entityCount) do
-            lia.information(L("entityClassCount", className, count))
-        end
-
-        lia.information(L("totalEntities", totalEntities))
-    end
-end)
 
 local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaDBTableDataChunk", "liaDBTableDataDone", "liaDBTables", "liaGroupsAdd", "liaGroupsDefaults", "liaGroupsNotice", "liaGroupsRemove", "liaGroupsRename", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaPlayersRequest", "liaRequestCharList", "liaRequestDBTables", "liaRequestPlayerGroup", "liaRequestTableData", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "PKMessage", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "RosterData", "RosterRequest", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaStaffRequest", "liaStaffDataChunk", "liaStaffDataDone"}
 for _, netString in ipairs(networkStrings) do

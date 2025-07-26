@@ -7,125 +7,48 @@ function GM:OnCharVarChanged(character, varName, oldVar, newVar)
     end
 end
 
-local GamemodeFunctions = {
-    server = {
-        {
-            name = "PlayerSpray",
-            returnValue = true
-        },
-        {
-            name = "PlayerDeathSound",
-            returnValue = true
-        },
-        {
-            name = "CanPlayerSuicide",
-            returnValue = false
-        },
-        {
-            name = "AllowPlayerPickup",
-            returnValue = false
-        },
-        {
-            name = "CharacterLoaded",
-            args = {"id"},
-            replacement = "CharLoaded"
-        },
-        {
-            name = "PreCharacterDelete",
-            args = {"id"},
-            replacement = "PreCharDelete"
-        },
-        {
-            name = "OnCharacterDelete",
-            args = {"client", "id"},
-            replacement = "OnCharDelete"
-        },
-        {
-            name = "onCharCreated",
-            args = {"client", "character", "data"},
-            replacement = "OnCharCreated"
-        },
-        {
-            name = "onTransferred",
-            args = {"client"},
-            replacement = "OnTransferred"
-        },
-        {
-            name = "CharacterPreSave",
-            args = {"character"},
-            replacement = "CharPreSave"
-        }
-    },
-    client = {
-        {
-            name = "HUDDrawTargetID",
-            returnValue = false
-        },
-        {
-            name = "HUDDrawPickupHistory",
-            returnValue = false
-        },
-        {
-            name = "HUDAmmoPickedUp",
-            returnValue = false
-        },
-        {
-            name = "DrawDeathNotice",
-            returnValue = false
-        },
-        {
-            name = "KickedFromCharacter",
-            args = {"id", "isCurrentChar"},
-            replacement = "KickedFromChar"
-        },
-        {
-            name = "CharacterListLoaded",
-            args = {"newCharList"},
-            replacement = "CharListLoaded"
-        },
-        {
-            name = "CharacterListUpdated",
-            args = {"oldCharList", "newCharList"},
-            replacement = "CharListUpdated"
-        }
-    },
-    shared = {
-        {
-            name = "CharacterMaxStamina",
-            args = {"character"},
-            replacement = "getCharMaxStamina"
-        },
-        {
-            name = "GetMaxPlayerCharacter",
-            args = {"client"},
-            replacement = "GetMaxPlayerChar"
-        },
-        {
-            name = "LoadFonts",
-            args = {"..."},
-            replacement = "PostLoadFonts"
-        },
-        {
-            name = "CanPlayerCreateCharacter",
-            args = {"client"},
-            replacement = "CanPlayerCreateChar"
-        }
-    }
-}
+if SERVER then
+    function GM:PlayerShouldTakeDamage(client)
+        return client:getChar() ~= nil
+    end
 
-local function registerFunctions(scope)
-    for _, f in ipairs(GamemodeFunctions[scope]) do
-        if f.returnValue ~= nil then
-            GM[f.name] = function() return f.returnValue end
-        elseif f.replacement then
-            GM[f.name] = function(...)
-                local args = {...}
-                lia.deprecated(f.name, function() hook.Run(f.replacement, unpack(args)) end)
-            end
-        end
+    function GM:CanDrive()
+        return false
+    end
+
+    function GM:PlayerDeathThink()
+        return false
+    end
+
+    function GM:PlayerSpray()
+        return true
+    end
+
+    function GM:PlayerDeathSound()
+        return true
+    end
+
+    function GM:CanPlayerSuicide()
+        return false
+    end
+
+    function GM:AllowPlayerPickup()
+        return false
+    end
+else
+    function GM:HUDDrawTargetID()
+        return false
+    end
+
+    function GM:HUDDrawPickupHistory()
+        return false
+    end
+
+    function GM:HUDAmmoPickedUp()
+        return false
+    end
+
+    function GM:DrawDeathNotice()
+        return false
     end
 end
-
-if SERVER then registerFunctions("server") end
-if CLIENT then registerFunctions("client") end
-registerFunctions("shared")
