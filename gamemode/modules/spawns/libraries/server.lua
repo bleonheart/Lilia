@@ -1,7 +1,5 @@
 ﻿local MODULE = MODULE
 local encodetable = lia.data.encodetable
-
-
 function MODULE:FetchSpawns()
     local d = deferred.new()
     local data = lia.data.get("spawns", {})
@@ -23,6 +21,7 @@ function MODULE:FetchSpawns()
 
         result[fac] = t
     end
+
     d:resolve(result)
     return d
 end
@@ -36,7 +35,9 @@ function MODULE:StoreSpawns(spawns)
         end
     end
 
-    lia.data.set("spawns", {factions = factions})
+    lia.data.set("spawns", {
+        factions = factions
+    })
 end
 
 local function SpawnPlayer(client)
