@@ -1,12 +1,4 @@
-﻿function MODULE:CheckFactionLimitReached(faction, character, client)
-    if faction.OnCheckLimitReached then return faction:OnCheckLimitReached(character, client) end
-    if not isnumber(faction.limit) then return false end
-    local maxPlayers = faction.limit
-    if faction.limit < 1 then maxPlayers = math.Round(player.GetCount() * faction.limit) end
-    return team.NumPlayers(faction.index) >= maxPlayers
-end
-
-function MODULE:GetDefaultCharName(client, faction, data)
+﻿function MODULE:GetDefaultCharName(client, faction, data)
     local info = lia.faction.indices[faction]
     local nameFunc = info and info.NameTemplate
     if isfunction(nameFunc) then
@@ -47,19 +39,19 @@ AddInteraction(L("inviteToClass"), {
             client:notifyLocalized("invalidClass")
             return
         end
+
         target:binaryQuestion(L("joinClassPrompt"), L("yes"), L("no"), false, function(choice)
             if choice ~= 0 then
                 client:notifyLocalized("inviteDeclined")
                 return
             end
+
             if hook.Run("CanCharBeTransfered", tChar, class, tChar:getClass()) == false then return end
             local oldClass = tChar:getClass()
             tChar:setClass(class.index)
             hook.Run("OnPlayerJoinClass", target, class.index, oldClass)
             client:notifyLocalized("transferSuccess", target:Name(), class.name)
-            if client ~= target then
-                target:notifyLocalized("transferNotification", class.name, client:Name())
-            end
+            if client ~= target then target:notifyLocalized("transferNotification", class.name, client:Name()) end
         end)
     end
 })
@@ -82,19 +74,20 @@ AddInteraction(L("inviteToFaction"), {
         if not iChar or not tChar then return end
         local faction
         for _, fac in pairs(lia.faction.teams) do
-            if fac.index == client:Team() then
-                faction = fac
-            end
+            if fac.index == client:Team() then faction = fac end
         end
+
         if not faction then
             client:notifyLocalized("invalidFaction")
             return
         end
+
         target:binaryQuestion(L("joinFactionPrompt"), L("yes"), L("no"), false, function(choice)
             if choice ~= 0 then
                 client:notifyLocalized("inviteDeclined")
                 return
             end
+
             if hook.Run("CanCharBeTransfered", tChar, faction, tChar:getFaction()) == false then return end
             local oldFaction = tChar:getFaction()
             tChar.vars.faction = faction.uniqueID
@@ -106,9 +99,7 @@ AddInteraction(L("inviteToFaction"), {
             if faction.OnTransferred then faction:OnTransferred(target, oldFaction) end
             hook.Run("PlayerLoadout", target)
             client:notifyLocalized("transferSuccess", target:Name(), faction.name)
-            if client ~= target then
-                target:notifyLocalized("transferNotification", faction.name, client:Name())
-            end
+            if client ~= target then target:notifyLocalized("transferNotification", faction.name, client:Name()) end
             tChar:takeFlags("Z")
         end)
     end
