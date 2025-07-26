@@ -70,6 +70,7 @@ local function makeList(parent)
         col:SetWide(w)
         col:SetMinWidth(w)
     end
+
     lst.OnRowRightClick = function(_, _, line)
         if not IsValid(line) or not line.rowData then return end
         local row = line.rowData
@@ -138,15 +139,29 @@ end
 
 function MODULE:CreateMenuButtons(tabs)
     local ply = LocalPlayer()
-    if not IsValid(ply) then return end
+    local classes = lia.faction.getClasses(ply:Team())
+    local canJoin = false
     local char = ply:getChar()
-    if not char then return end
     if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
     tabs[L("roster")] = function(panel)
         rosterRows = {}
         lists = {}
         built = false
         buildRoster(panel)
+    end
+
+    for _, class in ipairs(classes) do
+        if lia.class.canJoin(ply, class.index) then
+            canJoin = true
+            break
+        end
+    end
+
+    if canJoin then
+        tabs[L("classes")] = function(panel)
+            local pnl = panel:Add("liaClasses")
+            pnl:Dock(FILL)
+        end
     end
 end
 
