@@ -153,7 +153,7 @@ lia.command.add("doortoggleownable", {
             lia.log.add(client, "doorToggleOwnable", door, newState)
             hook.Run("DoorOwnableToggled", client, door, newState)
             client:notify(newState and L("doorMadeUnownable") or L("doorMadeOwnable"))
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         else
             client:notifyLocalized("doorNotValid")
         end
@@ -181,7 +181,7 @@ lia.command.add("doorresetdata", {
             door:setNetVar("price", 0)
             door:setNetVar("locked", false)
             client:notifyLocalized("doorResetData")
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         else
             client:notifyLocalized("doorNotValid")
         end
@@ -205,7 +205,7 @@ lia.command.add("doortoggleenabled", {
             lia.log.add(client, newState and "doorDisable" or "doorEnable", door)
             hook.Run("DoorEnabledToggled", client, door, newState)
             client:notify(newState and L("doorSetDisabled") or L("doorSetNotDisabled"))
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         else
             client:notifyLocalized("doorNotValid")
         end
@@ -229,7 +229,7 @@ lia.command.add("doortogglehidden", {
             lia.log.add(client, "doorSetHidden", entity, newState)
             hook.Run("DoorHiddenToggled", client, entity, newState)
             client:notify(newState and L("doorSetHidden") or L("doorSetNotHidden"))
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         else
             client:notifyLocalized("doorNotValid")
         end
@@ -254,7 +254,7 @@ lia.command.add("doorsetprice", {
             lia.log.add(client, "doorSetPrice", door, price)
             hook.Run("DoorPriceSet", client, door, price)
             client:notifyLocalized("priceLabel", lia.currency.get(price))
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         else
             client:notifyLocalized("doorNotValid")
         end
@@ -414,7 +414,7 @@ lia.command.add("dooraddfaction", {
                 client:notifyLocalized("doorRemoveFaction")
             end
 
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         end
     end
 })
@@ -454,7 +454,7 @@ lia.command.add("doorremovefaction", {
                 client:notifyLocalized("doorRemoveFaction")
             end
 
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         end
     end
 })
@@ -499,7 +499,7 @@ lia.command.add("doorsetclass", {
                 client:notifyLocalized("doorRemoveClass")
             end
 
-            MODULE:SaveData()
+            hook.Run("SaveDoorData")
         end
     end,
     alias = {"jobdoor"}
@@ -529,6 +529,6 @@ lia.command.add("togglealldoors", {
 
         client:notifyLocalized(toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
         lia.log.add(client, toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
-        MODULE:SaveData()
+        hook.Run("SaveDoorData")
     end
 })

@@ -55,7 +55,7 @@ function MODULE:LoadData()
     end)
 end
 
-function MODULE:SaveData()
+function MODULE:SaveDoorData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local rows = {}
