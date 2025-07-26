@@ -1,6 +1,5 @@
 ﻿lia.administration = lia.administration or {}
 lia.administration.groups = lia.administration.groups or {}
-lia.administration.banList = lia.administration.banList or {}
 lia.administration.privileges = lia.administration.privileges or {}
 local DEFAULT_GROUPS = {
     user = true,
@@ -198,11 +197,7 @@ if SERVER then
         if lia.administration.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.administration.addBan: no steam id specified!") end
         local banStart = os.time()
-        lia.administration.banList[steamid] = {
-            reason = reason or L("genericReason"),
-            start = banStart,
-            duration = (duration or 0) * 60
-        }
+
 
         lia.db.query(Format(
             "UPDATE lia_players SET banStart = %d, banDuration = %d, reason = '%s' WHERE steamID = %s",
@@ -216,21 +211,45 @@ if SERVER then
     function lia.administration.removeBan(steamid)
         if lia.administration.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.administration.removeBan: no steam id specified!") end
-        lia.administration.banList[steamid] = nil
         lia.db.query(Format(
             "UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s",
             steamid
         ), function() lia.admin("Ban", "Ban removed.") end)
     end
 
+    local function fetchBanRow(steamid)
+        local query = string.format(
+            "SELECT banStart, banDuration, reason FROM lia_players WHERE steamID = %s",
+            steamid
+        )
+        if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
+            local db = lia.db.getObject()
+            if not db then return nil end
+            local q = db:query(query)
+            q:start()
+            q:wait()
+            if q:error() then return nil end
+            return q:getData() and q:getData()[1] or nil
+        else
+            local data = sql.Query(query)
+            return istable(data) and data[1] or nil
+        end
+    end
+
     function lia.administration.isBanned(steamid)
         if lia.administration.isDisabled() then return false end
-        return lia.administration.banList[steamid] or false
+        local row = fetchBanRow(steamid)
+        if not row or tonumber(row.banStart or 0) <= 0 then return false end
+        return {
+            reason = row.reason,
+            start = tonumber(row.banStart) or 0,
+            duration = tonumber(row.banDuration) or 0,
+        }
     end
 
     function lia.administration.hasBanExpired(steamid)
         if lia.administration.isDisabled() then return true end
-        local ban = lia.administration.banList[steamid]
+        local ban = lia.administration.isBanned(steamid)
         if not ban then return true end
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
@@ -346,23 +365,6 @@ hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
     end)
 end)
 
-hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
-    if lia.administration.isDisabled() then return end
-    lia.db.query("SELECT steamID, banStart, banDuration, reason FROM lia_players WHERE banStart > 0", function(data)
-        if istable(data) then
-            local bans = {}
-            for _, ban in pairs(data) do
-                bans[ban.steamID] = {
-                    reason = ban.reason,
-                    start = ban.banStart,
-                    duration = ban.banDuration
-                }
-            end
-
-            lia.administration.banList = bans
-        end
-    end)
-end)
 
 concommand.Add("plysetgroup", function(ply, _, args)
     if lia.administration.isDisabled() then return end
