@@ -84,3 +84,28 @@ AddInteraction(L("giveMoney"), {
         frame.ok.DoClick = frame.te.OnEnter
     end
 })
+
+if SERVER then
+    net.Receive("RunOption", function(_, ply)
+        if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
+            lia.log.add(ply, "cheaterAction", "use interaction option")
+            return
+        end
+
+        local name = net.ReadString()
+        local opt = MODULE.Interactions[name]
+        local tracedEntity = ply:getTracedEntity()
+        if opt and opt.runServer and IsValid(tracedEntity) then opt.onRun(ply, tracedEntity) end
+    end)
+
+    net.Receive("RunLocalOption", function(_, ply)
+        if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
+            lia.log.add(ply, "cheaterAction", "use local option")
+            return
+        end
+
+        local name = net.ReadString()
+        local opt = MODULE.Actions[name]
+        if opt and opt.runServer then opt.onRun(ply) end
+    end)
+end
