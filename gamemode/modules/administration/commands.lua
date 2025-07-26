@@ -15,10 +15,10 @@
                 client:ChatPrint(L("noPrevChar"))
             end
         else
-            lia.db.query(string.format("SELECT * FROM lia_characters WHERE _steamID = \"%s\"", lia.db.escape(steamID)), function(data)
+            lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
                 for _, row in ipairs(data) do
-                    local id = tonumber(row._id)
-                    if row._faction == "staff" then
+                    local id = tonumber(row.id)
+                    if row.faction == "staff" then
                         client:setNetVar("OldCharID", client:getChar():getID())
                         net.Start("AdminModeSwapCharacter")
                         net.WriteInt(id, 32)

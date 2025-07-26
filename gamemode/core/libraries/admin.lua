@@ -191,7 +191,7 @@ if SERVER then
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
-        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
     function lia.administration.addBan(steamid, reason, duration)
@@ -205,7 +205,7 @@ if SERVER then
         }
 
         lia.db.query(Format(
-            "UPDATE lia_players SET _banStart = %d, _banDuration = %d, _reason = '%s' WHERE _steamID = %s",
+            "UPDATE lia_players SET banStart = %d, banDuration = %d, reason = '%s' WHERE steamID = %s",
             banStart,
             (duration or 0) * 60,
             lia.db.escape(reason or L("genericReason")),
@@ -218,7 +218,7 @@ if SERVER then
         if not steamid then Error("[Lilia Administration] lia.administration.removeBan: no steam id specified!") end
         lia.administration.banList[steamid] = nil
         lia.db.query(Format(
-            "UPDATE lia_players SET _banStart = 0, _banDuration = 0, _reason = '' WHERE _steamID = %s",
+            "UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s",
             steamid
         ), function() lia.admin("Ban", "Ban removed.") end)
     end
@@ -331,15 +331,15 @@ hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
     if lia.administration.isDisabled() or ply:IsBot() then return end
     local steam64 = util.SteamIDTo64(steamID)
     if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
-        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
         return
     end
 
-    lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", steam64), function(data)
-        local group = istable(data) and data[1] and data[1]._userGroup
+    lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
+        local group = istable(data) and data[1] and data[1].userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(group), steam64))
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
         end
 
         ply:SetUserGroup(group)
@@ -348,14 +348,14 @@ end)
 
 hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
     if lia.administration.isDisabled() then return end
-    lia.db.query("SELECT _steamID, _banStart, _banDuration, _reason FROM lia_players WHERE _banStart > 0", function(data)
+    lia.db.query("SELECT steamID, banStart, banDuration, reason FROM lia_players WHERE banStart > 0", function(data)
         if istable(data) then
             local bans = {}
             for _, ban in pairs(data) do
-                bans[ban._steamID] = {
-                    reason = ban._reason,
-                    start = ban._banStart,
-                    duration = ban._banDuration
+                bans[ban.steamID] = {
+                    reason = ban.reason,
+                    start = ban.banStart,
+                    duration = ban.banDuration
                 }
             end
 

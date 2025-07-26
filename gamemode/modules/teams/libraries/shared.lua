@@ -54,36 +54,36 @@ if SERVER then
         end
 
         if not facTbl then return end
-        local fields = [[lia_characters.name, lia_characters._faction, lia_characters._class, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline]]
-        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(facTbl.uniqueID)
-        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+        local fields = [[lia_characters.name, lia_characters.faction, lia_characters.class, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline]]
+        local condition = "lia_characters.schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(facTbl.uniqueID)
+        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
         lia.db.query(query, function(data)
             local out = {}
             for _, v in ipairs(data or {}) do
-                local id = tonumber(v._id)
+                local id = tonumber(v.id)
                 local online = lia.char.loaded[id] ~= nil
                 local lastOnline
                 if online then
                     lastOnline = L("onlineNow")
                 else
-                    local last = tonumber(v._lastOnline)
-                    if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
+                    local last = tonumber(v.lastOnline)
+                    if not isnumber(last) then last = os.time(lia.time.toNumber(v.lastJoinTime)) end
                     local diff = os.time() - last
                     local since = lia.time.TimeSince(last)
                     local stripped = since:match("^(.-)%sago$") or since
                     lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
                 end
 
-                local classID = tonumber(v._class) or v._class
+                local classID = tonumber(v.class) or v.class
                 local className = classID == 0 and "None" or lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
                 out[#out + 1] = {
                     id = id,
                     name = v.name,
                     class = className,
                     classID = classID,
-                    steamID = toSteamID(v._steamID),
+                    steamID = toSteamID(v.steamID),
                     lastOnline = lastOnline,
-                    hoursPlayed = lia.time.SecondsToDHM(tonumber(v._totalOnlineTime) or 0)
+                    hoursPlayed = lia.time.SecondsToDHM(tonumber(v.totalOnlineTime) or 0)
                 }
             end
 

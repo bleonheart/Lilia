@@ -301,7 +301,7 @@ function lia.data.loadPersistenceData(callback)
         for _, row in ipairs(rows) do
             local ent = {}
             for k, v in pairs(row) do
-                if not defaultCols[k] and k ~= "_id" and k ~= "gamemode" and k ~= "map" then ent[k] = lia.data.deserialize(v) end
+                if not defaultCols[k] and k ~= "id" and k ~= "gamemode" and k ~= "map" then ent[k] = lia.data.deserialize(v) end
             end
 
             ent.class = row.class

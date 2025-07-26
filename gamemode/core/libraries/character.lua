@@ -8,10 +8,10 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 if SERVER and #lia.char.names < 1 then
-    lia.db.query("SELECT _id, name FROM lia_characters", function(data)
+    lia.db.query("SELECT id, name FROM lia_characters", function(data)
         if data and #data > 0 then
             for _, v in pairs(data) do
-                lia.char.names[v._id] = v.name
+                lia.char.names[v.id] = v.name
             end
         end
     end)
@@ -145,7 +145,7 @@ lia.char.registerVar("name", {
 })
 
 lia.char.registerVar("desc", {
-    field = "_desc",
+    field = "desc",
     fieldType = "text",
     default = L("descMinLen", lia.config.get("MinDescLen", 16)),
     index = 2,
@@ -167,7 +167,7 @@ lia.char.registerVar("desc", {
 })
 
 lia.char.registerVar("model", {
-    field = "_model",
+    field = "model",
     fieldType = "string",
     default = "models/error.mdl",
     onSet = function(character, value)
@@ -222,14 +222,14 @@ lia.char.registerVar("model", {
 })
 
 lia.char.registerVar("class", {
-    field = "_class",
+    field = "class",
     fieldType = "integer",
     default = 0,
     noDisplay = true,
 })
 
 lia.char.registerVar("faction", {
-    field = "_faction",
+    field = "faction",
     fieldType = "string",
     default = "Citizen",
     onSet = function(character, value)
@@ -260,7 +260,7 @@ lia.char.registerVar("faction", {
 })
 
 lia.char.registerVar("money", {
-    field = "_money",
+    field = "money",
     fieldType = "integer",
     default = 0,
     isLocal = true,
@@ -380,7 +380,7 @@ lia.char.registerVar("inv", {
 })
 
 lia.char.registerVar("attribs", {
-    field = "_attribs",
+    field = "attribs",
     fieldType = "text",
     default = {},
     isLocal = true,
@@ -438,12 +438,12 @@ lia.char.registerVar("banned", {
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
-    local results = sql.Query("SELECT _key, _value FROM lia_chardata WHERE _charID = " .. charIDsafe)
+    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, row in ipairs(results) do
-            local decoded = pon.decode(row._value)
-            data[row._key] = decoded[1]
+            local decoded = pon.decode(row.value)
+            data[row.key] = decoded[1]
         end
     end
 
@@ -455,18 +455,18 @@ function lia.char.getCharDataRaw(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
     if key then
-        local row = sql.Query("SELECT _value FROM lia_chardata WHERE _charID = " .. charIDsafe .. " AND _key = '" .. lia.db.escape(key) .. "'")
+        local row = sql.Query("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
         if not row or not row[1] then return false end
-        local decoded = pon.decode(row[1]._value)
+        local decoded = pon.decode(row[1].value)
         return decoded[1]
     end
 
-    local results = sql.Query("SELECT _key, _value FROM lia_chardata WHERE _charID = " .. charIDsafe)
+    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, r in ipairs(results) do
-            local decoded = pon.decode(r._value)
-            data[r._key] = decoded[1]
+            local decoded = pon.decode(r.value)
+            data[r.key] = decoded[1]
         end
     end
     return data
@@ -512,16 +512,16 @@ if SERVER then
         data.money = data.money or lia.config.get("DefaultMoney")
         lia.db.insertTable({
             name = data.name or "",
-            _desc = data.desc or "",
-            _model = data.model or "models/error.mdl",
+            desc = data.desc or "",
+            model = data.model or "models/error.mdl",
             _skin = data.skin or 0,
             _bodygroups = data.bodygroups or {},
-            _schema = SCHEMA and SCHEMA.folder or "lilia",
-            _createTime = timeStamp,
-            _lastJoinTime = timeStamp,
-            _steamID = data.steamID,
-            _faction = data.faction or L("unknown"),
-            _money = data.money,
+            schema = SCHEMA and SCHEMA.folder or "lilia",
+            createTime = timeStamp,
+            lastJoinTime = timeStamp,
+            steamID = data.steamID,
+            faction = data.faction or L("unknown"),
+            money = data.money,
             recognition = data.recognition or "",
             recognized_as = ""
         }, function(_, charID)
@@ -551,14 +551,14 @@ if SERVER then
 
     function lia.char.restore(client, callback, id)
         local steamID64 = client:SteamID64()
-        local fields = {"_id"}
+        local fields = {"id"}
         for _, var in pairs(lia.char.vars) do
             if var.field then fields[#fields + 1] = var.field end
         end
 
         fields = table.concat(fields, ", ")
-        local condition = "_schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND _steamID = " .. steamID64
-        if id then condition = condition .. " AND _id = " .. id end
+        local condition = "schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND steamID = " .. steamID64
+        if id then condition = condition .. " AND id = " .. id end
         local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
         lia.db.query(query, function(data)
             local characters = {}
@@ -570,7 +570,7 @@ if SERVER then
             end
 
             for _, v in ipairs(results) do
-                local charId = tonumber(v._id)
+                local charId = tonumber(v.id)
                 if not charId then
                     lia.error("[Lilia] Attempt to load character '" .. (data.name or "nil") .. "' with invalid ID!")
                     continue
@@ -614,8 +614,8 @@ if SERVER then
                     if defaultFaction then
                         charData.faction = defaultFaction.uniqueID
                         lia.db.updateTable({
-                            _faction = defaultFaction.uniqueID
-                        }, nil, "characters", "_id = " .. charId)
+                            faction = defaultFaction.uniqueID
+                        }, nil, "characters", "id = " .. charId)
                     end
                 end
 
@@ -693,12 +693,12 @@ if SERVER then
         end
 
         lia.char.loaded[id] = nil
-        lia.db.query("DELETE FROM lia_characters WHERE _id = " .. id)
-        lia.db.delete("chardata", "_charID = " .. id)
-        lia.db.query("SELECT _invID FROM lia_inventories WHERE _charID = " .. id, function(data)
+        lia.db.query("DELETE FROM lia_characters WHERE id = " .. id)
+        lia.db.delete("chardata", "charID = " .. id)
+        lia.db.query("SELECT invID FROM lia_inventories WHERE charID = " .. id, function(data)
             if data then
                 for _, inventory in ipairs(data) do
-                    lia.inventory.deleteByID(tonumber(inventory._invID))
+                    lia.inventory.deleteByID(tonumber(inventory.invID))
                 end
             end
         end)
@@ -710,13 +710,13 @@ if SERVER then
         local charIDsafe = tonumber(charID)
         if not charIDsafe or not key then return end
         if val == nil then
-            lia.db.delete("chardata", "_charID = " .. charIDsafe .. " AND _key = '" .. lia.db.escape(key) .. "'")
+            lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
         else
             local encoded = pon.encode({val})
             lia.db.upsert({
-                _charID = charIDsafe,
-                _key = key,
-                _value = encoded
+                charID = charIDsafe,
+                key = key,
+                value = encoded
             }, "chardata")
         end
 
@@ -729,7 +729,7 @@ if SERVER then
         if not name or not charID then return end
         local promise = lia.db.updateTable({
             name = name
-        }, nil, "characters", "_id = " .. charIDsafe)
+        }, nil, "characters", "id = " .. charIDsafe)
 
         if deferred.isPromise(promise) then
             promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET name", err)) end)
@@ -745,11 +745,11 @@ if SERVER then
         local charIDsafe = tonumber(charID)
         if not model or not charID then return end
         local promise = lia.db.updateTable({
-            _model = model
-        }, nil, "characters", "_id = " .. charIDsafe)
+            model = model
+        }, nil, "characters", "id = " .. charIDsafe)
 
         if deferred.isPromise(promise) then
-            promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET _model", err)) end)
+            promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET model", err)) end)
         elseif promise == false then
             return false
         end

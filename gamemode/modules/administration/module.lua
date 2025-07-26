@@ -725,5 +725,5 @@ end)
 hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
     if lia.administration.isDisabled() or not IsValid(ply) then return end
     if not SERVER then return end
-    lia.db.query(string.format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(new), ply:SteamID64()))
+    lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(new), ply:SteamID64()))
 end)
