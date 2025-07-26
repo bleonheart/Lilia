@@ -118,7 +118,7 @@
             }
         }
 
-        if client:IsSuperAdmin() or client:hasPrivilege("Manage UserGroups") then
+        if (client:IsSuperAdmin() or client:hasPrivilege("Manage UserGroups")) and hasCustomGroups() then
             table.insert(orderedOptions, {
                 name = L("setUsergroup"),
                 image = "icon16/group_edit.png",
@@ -142,6 +142,13 @@ local DefaultGroups = {
     superadmin = true,
     developer = true
 }
+
+local function hasCustomGroups()
+    for name in pairs(lia.admin.groups or {}) do
+        if not DefaultGroups[name] then return true end
+    end
+    return false
+end
 
 local groupChunks, playerChunks, staffChunks = {}, {}, {}
 local PrivilegeCategories, PlayerList, StaffList, LastGroup = {}, {}, {}, nil
@@ -189,7 +196,7 @@ local function buildPlayersUI(parent)
         local opt = m:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
         opt:SetIcon("icon16/user.png")
         local ply = player.GetBySteamID(line.steamID) or player.GetBySteamID64(line.steamID64)
-        if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Manage UserGroups")) then
+        if IsValid(ply) and (LocalPlayer():IsSuperAdmin() or LocalPlayer():hasPrivilege("Manage UserGroups")) and hasCustomGroups() then
             local grp = m:AddOption(L("setUsergroup"), function()
                 net.Start("liaRequestPlayerGroup")
                 net.WriteEntity(ply)
