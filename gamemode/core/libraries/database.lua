@@ -504,6 +504,7 @@ function lia.db.loadTables()
                 name TEXT PRIMARY KEY,
                 data TEXT
             );
+
             CREATE TABLE IF NOT EXISTS lia_privileges (
                 name TEXT PRIMARY KEY,
                 minAccess TEXT,
