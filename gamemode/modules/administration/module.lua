@@ -142,13 +142,28 @@ if SERVER then
     end
 
     local function getBanList()
-        local data = file.Read("cfg/banned_user.cfg", "GAME")
         local t = {}
-        if data then
-            for sid in string.gmatch(data, "banid%s+%d+%s+(STEAM_%d:%d:%d+)") do
-                t[sid] = true
+        local query = "SELECT steamID FROM lia_players WHERE banStart > 0"
+        if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
+            local db = lia.db.getObject()
+            if not db then return t end
+            local q = db:query(query)
+            q:start()
+            q:wait()
+            if not q:error() then
+                for _, row in ipairs(q:getData() or {}) do
+                    t[row.steamID] = true
+                end
+            end
+        else
+            local data = sql.Query(query)
+            if istable(data) then
+                for _, row in ipairs(data) do
+                    t[row.steamID] = true
+                end
             end
         end
+
         return t
     end
 
