@@ -104,7 +104,7 @@ function MODULE:CanPlayerUseDoor(_, door)
 end
 
 function MODULE:PostLoadData()
-    if self.DoorsAlwaysDisabled then
+    if lia.config.get("DoorsAlwaysDisabled", false) then
         local count = 0
         for _, door in ents.Iterator() do
             if IsValid(door) and door:isDoor() then

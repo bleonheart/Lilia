@@ -829,6 +829,12 @@ lia.config.add("DoorSellRatio", "Door Sell Ratio", 0.5, nil, {
     max = 1.0
 })
 
+lia.config.add("DoorsAlwaysDisabled", "Doors Always Disabled", false, nil, {
+    desc = "Whether all doors should start disabled",
+    category = "Doors",
+    type = "Boolean"
+})
+
 lia.config.add("CustomChatSound", "Custom Chat Sound", "", nil, {
     desc = "Change Chat Sound on Message Send",
     category = "Chat",
