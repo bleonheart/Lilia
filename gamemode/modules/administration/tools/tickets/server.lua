@@ -1,37 +1,5 @@
 ﻿local MODULE = MODULE
 
--- local helper to record staff actions directly
-local function logStaffAction(admin, action, victim, message, charID)
-    local targetName
-    local targetSteam
-    if IsValid(victim) and victim:IsPlayer() then
-        targetName = victim:Name()
-        targetSteam = victim:SteamID()
-    elseif isstring(victim) then
-        targetSteam = victim
-        local ply = player.GetBySteamID(victim) or player.GetBySteamID64(victim)
-        if IsValid(ply) then
-            targetName = ply:Name()
-        else
-            targetName = victim
-        end
-    else
-        targetName = tostring(victim)
-        targetSteam = tostring(victim)
-    end
-
-    lia.db.insertTable({
-        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
-        targetName = targetName,
-        targetSteam = targetSteam,
-        adminSteam = IsValid(admin) and admin:SteamID() or "Console",
-        adminName = IsValid(admin) and admin:Name() or "Console",
-        adminGroup = IsValid(admin) and admin:GetUserGroup() or "Console",
-        action = action,
-        message = message,
-        charID = charID
-    }, nil, "staffactions")
-end
 local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
@@ -74,7 +42,34 @@ function MODULE:GetAllCaseClaims()
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    logStaffAction(admin, "ticketClaim", requester)
+    local targetName
+    local targetSteam
+    if IsValid(requester) and requester:IsPlayer() then
+        targetName = requester:Name()
+        targetSteam = requester:SteamID()
+    elseif isstring(requester) then
+        targetSteam = requester
+        local ply = player.GetBySteamID(requester) or player.GetBySteamID64(requester)
+        if IsValid(ply) then
+            targetName = ply:Name()
+        else
+            targetName = requester
+        end
+    else
+        targetName = tostring(requester)
+        targetSteam = tostring(requester)
+    end
+    lia.db.insertTable({
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        targetName = targetName,
+        targetSteam = targetSteam,
+        adminSteam = IsValid(admin) and admin:SteamID() or "Console",
+        adminName = IsValid(admin) and admin:Name() or "Console",
+        adminGroup = IsValid(admin) and admin:GetUserGroup() or "Console",
+        action = "ticketClaim",
+        message = nil,
+        charID = nil
+    }, nil, "staffactions")
     lia.db.count("staffactions", "adminSteam = " .. lia.db.convertDataType(admin:SteamID()) .. " AND action = 'ticketClaim'"):next(function(count)
         lia.log.add(admin, "ticketClaimed", requester:Name(), count)
     end)
@@ -91,7 +86,34 @@ function MODULE:PlayerSay(client, text)
         text = string.sub(text, 2)
         ClientAddText(client, Color(70, 0, 130), L("ticketMessageYou"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. " ", Color(0, 255, 0), text)
         self:SendPopup(client, text)
-        logStaffAction(client, "ticketOpen", client, text)
+        local targetName
+        local targetSteam
+        if IsValid(client) and client:IsPlayer() then
+            targetName = client:Name()
+            targetSteam = client:SteamID()
+        elseif isstring(client) then
+            targetSteam = client
+            local ply = player.GetBySteamID(client) or player.GetBySteamID64(client)
+            if IsValid(ply) then
+                targetName = ply:Name()
+            else
+                targetName = client
+            end
+        else
+            targetName = tostring(client)
+            targetSteam = tostring(client)
+        end
+        lia.db.insertTable({
+            timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+            targetName = targetName,
+            targetSteam = targetSteam,
+            adminSteam = IsValid(client) and client:SteamID() or "Console",
+            adminName = IsValid(client) and client:Name() or "Console",
+            adminGroup = IsValid(client) and client:GetUserGroup() or "Console",
+            action = "ticketOpen",
+            message = text,
+            charID = nil
+        }, nil, "staffactions")
         return ""
     end
 end
