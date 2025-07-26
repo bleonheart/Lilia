@@ -36,11 +36,6 @@ if SERVER then
         }, nil, "staffactions")
     end
 
-    net.Receive("liaStaffActionLog", function(_, ply)
-        local action = net.ReadString()
-        local victim = net.ReadString()
-        lia.admin.addStaffAction(ply, action, victim)
-    end)
 end
 
 local DefaultGroups = {
@@ -1108,15 +1103,7 @@ end
 function lia.admin.execCommand(cmd, victim, dur, reason)
     if hook.Run("RunAdminSystemCommand") == true then return end
     local id = IsValid(victim) and victim:SteamID() or tostring(victim)
-    if CLIENT then
-        net.Start("liaStaffActionLog")
-        net.WriteString(cmd)
-        net.WriteString(id)
-        net.SendToServer()
-    else
-        if not lia.admin.addStaffAction then return end
-        lia.admin.addStaffAction(nil, cmd, victim)
-    end
+    -- Command logging is now handled within each command's callback
 
     if cmd == "kick" then
         RunConsoleCommand("say", "/plykick " .. quote(id) .. (reason and " " .. quote(reason) or ""))
