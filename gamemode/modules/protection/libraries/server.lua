@@ -118,10 +118,13 @@ function MODULE:PlayerAuthed(client, steamid)
     if lia.config.get("AltsDisabled", false) and client:IsFamilySharedAccount() then
         lia.applyPunishment(client, L("familySharingDisabled"), true, false)
         lia.notifyAdmin(L("kickedAltNotify", steamName, steamID))
-    elseif lia.module.list["whitelist"] and lia.module.list["whitelist"].BlacklistedSteamID64[ownerSteamID64] then
-        lia.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, 0)
-        lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
-        lia.log.add(nil, "altBanned", steamName, steamID)
+    else
+        local blacklisted = hook.Run("GetBlackListedSteamIDs") or {}
+        if blacklisted[ownerSteamID64] then
+            lia.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, 0)
+            lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
+            lia.log.add(nil, "altBanned", steamName, steamID)
+        end
     end
 end
 
