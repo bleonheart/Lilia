@@ -741,7 +741,7 @@ local function registerDefaultPrivileges()
 end
 
 local function buildDefaultPermissions(group, inherit)
-    local perms = {}
+    local perms = { _inherit = inherit or group }
     for name, priv in pairs(lia.admin.privileges) do
         local minAccess = priv.MinAccess or "user"
         local allowed
@@ -768,11 +768,14 @@ function lia.admin.load()
     local function continueLoad(groups, privs)
         if camiGroups and not table.IsEmpty(camiGroups) then
             lia.admin.groups = {}
-            for name in pairs(camiGroups) do
-                lia.admin.groups[name] = {}
+            for name, data in pairs(camiGroups) do
+                lia.admin.groups[name] = { _inherit = data.Inherits or "user" }
             end
         else
             lia.admin.groups = groups or {}
+            for gName, info in pairs(lia.admin.groups) do
+                info._inherit = info._inherit or gName
+            end
         end
 
         lia.admin.privileges = privs or {}
@@ -799,6 +802,7 @@ function lia.admin.load()
 
         for name, inherit in pairs(defaults) do
             lia.admin.groups[name] = buildDefaultPermissions(name, inherit)
+            lia.admin.groups[name]._inherit = inherit
             if CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup and CAMI.UnregisterUsergroup then
                 if CAMI.GetUsergroup(name) then CAMI.UnregisterUsergroup(name) end
                 CAMI.RegisterUsergroup({
@@ -866,6 +870,7 @@ function lia.admin.createGroup(groupName, info, inherit)
     end
 
     lia.admin.groups[groupName] = info or {}
+    lia.admin.groups[groupName]._inherit = inherit or "user"
     if SERVER and CAMI and CAMI.GetUsergroup and CAMI.RegisterUsergroup then
         if not CAMI.GetUsergroup(groupName) then
             CAMI.RegisterUsergroup({
@@ -881,7 +886,7 @@ function lia.admin.createGroup(groupName, info, inherit)
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            local check = inherit or groupName
+            local check = lia.admin.groups[groupName]._inherit or inherit or groupName
             if check == "superadmin" then
                 allowed = true
             elseif check == "admin" then
@@ -912,15 +917,16 @@ function lia.admin.registerPrivilege(privilege)
     if not privilege or not privilege.Name then return end
     privilege.Category = privilege.Category or "Unassigned"
     lia.admin.privileges[privilege.Name] = privilege
-    for groupName in pairs(lia.admin.groups) do
+    for groupName, info in pairs(lia.admin.groups) do
         local minAccess = privilege.MinAccess or "user"
         local allowed
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            if groupName == "superadmin" then
+            local check = info._inherit or groupName
+            if check == "superadmin" then
                 allowed = true
-            elseif groupName == "admin" then
+            elseif check == "admin" then
                 allowed = minAccess ~= "superadmin"
             else
                 allowed = minAccess == "user"
@@ -929,6 +935,7 @@ function lia.admin.registerPrivilege(privilege)
 
         if allowed then lia.admin.groups[groupName][privilege.Name] = true end
     end
+    if SERVER then lia.admin.save(true) end
 end
 
 function lia.admin.removeGroup(groupName)
