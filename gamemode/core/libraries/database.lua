@@ -339,12 +339,14 @@ function lia.db.loadTables()
                 banDuration integer,
                 reason text
             );
+
             CREATE TABLE IF NOT EXISTS lia_chardata (
                 charID INTEGER NOT NULL,
                 key VARCHAR(255) NOT NULL,
                 value TEXT(1024),
                 PRIMARY KEY (charID, key)
             );
+
             CREATE TABLE IF NOT EXISTS lia_characters (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 steamID VARCHAR,
@@ -393,7 +395,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (schema, key)
             );
 
-
             CREATE TABLE IF NOT EXISTS lia_bans (
                 steamID TEXT,
                 banStart INTEGER,
@@ -431,8 +432,8 @@ function lia.db.loadTables()
                 gamemode TEXT,
                 map TEXT,
                 id INTEGER,
-                _factions TEXT,
-                _classes TEXT,
+                factions TEXT,
+                classes TEXT,
                 disabled INTEGER,
                 hidden INTEGER,
                 ownable INTEGER,
@@ -459,14 +460,13 @@ function lia.db.loadTables()
                 model TEXT
             );
 
-
             CREATE TABLE IF NOT EXISTS lia_saveditems (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 schema TEXT,
                 map TEXT,
                 itemID INTEGER,
-                _pos TEXT,
-                _angles TEXT
+                pos TEXT,
+                angles TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_admingroups (
@@ -583,8 +583,8 @@ function lia.db.loadTables()
                 `gamemode` TEXT NULL,
                 `map` TEXT NULL,
                 `id` INT NOT NULL,
-                `_factions` TEXT NULL,
-                `_classes` TEXT NULL,
+                `factions` TEXT NULL,
+                `classes` TEXT NULL,
                 `disabled` TINYINT(1) NULL,
                 `hidden` TINYINT(1) NULL,
                 `ownable` TINYINT(1) NULL,
@@ -620,8 +620,8 @@ function lia.db.loadTables()
                 `schema` TEXT NULL,
                 `map` TEXT NULL,
                 `itemID` INT(12) NOT NULL,
-                `_pos` TEXT NULL,
-                `_angles` TEXT NULL,
+                `pos` TEXT NULL,
+                `angles` TEXT NULL,
                 PRIMARY KEY (`id`)
             );
 

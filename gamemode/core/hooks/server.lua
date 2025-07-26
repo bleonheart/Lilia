@@ -641,15 +641,15 @@ function GM:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
-    lia.db.select({"itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
+    lia.db.select({"itemID", "pos", "angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
             for _, row in ipairs(items) do
                 local id = tonumber(row.itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.decodeVector(row._pos)
-                angles[id] = lia.data.decodeAngle(row._angles)
+                positions[id] = lia.data.decodeVector(row.pos)
+                angles[id] = lia.data.decodeAngle(row.angles)
             end
 
             if #idRange > 0 then
