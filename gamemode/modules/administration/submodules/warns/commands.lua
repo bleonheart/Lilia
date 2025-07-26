@@ -22,12 +22,11 @@ lia.command.add("warn", {
 
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
-        MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr)
-        lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-            target:notifyLocalized("playerWarned", adminStr, reason)
-            client:notifyLocalized("warningIssued", target:Nick())
-            hook.Run("WarningIssued", client, target, reason, count)
-        end)
+        MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr, target:Name())
+        local count = 0
+        target:notifyLocalized("playerWarned", adminStr, reason)
+        client:notifyLocalized("warningIssued", target:Nick())
+        hook.Run("WarningIssued", client, target, reason, count)
     end
 })
 

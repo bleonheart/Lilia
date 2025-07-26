@@ -1,26 +1,24 @@
 ﻿local MODULE = MODULE
 function MODULE:GetWarnings(charID)
-    local condition = "_charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"_id", "_timestamp", "_reason", "_admin"}, "warnings", condition):next(function(res) return res.results or {} end)
+    local d = deferred.new()
+    d:resolve({})
+    return d
 end
 
-function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
+function MODULE:AddWarning(charID, steamID, timestamp, reason, admin, targetName)
     lia.db.insertTable({
-        _charID = charID,
-        _steamID = steamID,
         _timestamp = timestamp,
-        _reason = reason,
-        _admin = admin
-    }, nil, "warnings")
+        _target = targetName or steamID,
+        _targetID = steamID,
+        _action = "warn",
+        _admin = tostring(admin),
+        _adminID = tostring(admin):match("%((%d+)%)") or tostring(admin)
+    }, nil, "staffactions")
 end
 
 function MODULE:RemoveWarning(charID, index)
     local d = deferred.new()
-    self:GetWarnings(charID):next(function(rows)
-        if index < 1 or index > #rows then return d:resolve(nil) end
-        local row = rows[index]
-        lia.db.delete("warnings", "_id = " .. lia.db.convertDataType(row._id)):next(function() d:resolve(row) end)
-    end)
+    d:resolve(nil)
     return d
 end
 

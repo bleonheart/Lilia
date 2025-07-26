@@ -173,6 +173,14 @@ if not sysDisabled and not cmdsDisabled then
                 target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
                 client:notifyLocalized("plyKicked")
                 lia.log.add(client, "plyKick", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plykick",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -188,6 +196,14 @@ if not sysDisabled and not cmdsDisabled then
                 target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
                 client:notifyLocalized("plyBanned")
                 lia.log.add(client, "plyBan", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyban",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -203,6 +219,14 @@ if not sysDisabled and not cmdsDisabled then
                 target:Kill()
                 client:notifyLocalized("plyKilled")
                 lia.log.add(client, "plyKill", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plykill",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -218,6 +242,14 @@ if not sysDisabled and not cmdsDisabled then
                 lia.administration.setPlayerGroup(target, arguments[2])
                 client:notifyLocalized("plyGroupSet")
                 lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plysetgroup",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             elseif IsValid(target) and not lia.administration.groups[arguments[2]] then
                 client:notifyLocalized("groupNotExists")
             end
@@ -235,6 +267,14 @@ if not sysDisabled and not cmdsDisabled then
                 lia.administration.removeBan(steamid)
                 client:notify("Player unbanned")
                 lia.log.add(client, "plyUnban", steamid)
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = steamid,
+                    _targetID = steamid,
+                    _action = "plyunban",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -251,6 +291,14 @@ if not sysDisabled and not cmdsDisabled then
                 local dur = tonumber(arguments[2]) or 0
                 if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
                 lia.log.add(client, "plyFreeze", target:Name(), dur)
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyfreeze",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -265,6 +313,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:Freeze(false)
                 lia.log.add(client, "plyUnfreeze", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyunfreeze",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -279,6 +335,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:Kill()
                 lia.log.add(client, "plySlay", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyslay",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -293,6 +357,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:Spawn()
                 lia.log.add(client, "plyRespawn", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyrespawn",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -320,6 +392,14 @@ if not sysDisabled and not cmdsDisabled then
                 end
 
                 lia.log.add(client, "plyBlind", target:Name(), dur or 0)
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyblind",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -336,6 +416,14 @@ if not sysDisabled and not cmdsDisabled then
                 net.WriteBool(false)
                 net.Send(target)
                 lia.log.add(client, "plyUnblind", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyunblind",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -361,6 +449,14 @@ if not sysDisabled and not cmdsDisabled then
                 net.WriteFloat(fadeOut)
                 net.Send(target)
                 lia.log.add(client, "plyBlindFade", target:Name(), duration, colorName)
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyblindfade",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -370,7 +466,7 @@ if not sysDisabled and not cmdsDisabled then
         privilege = "Blind Fade All",
         desc = "blindFadeAllDesc",
         syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-        onRun = function(_, arguments)
+        onRun = function(client, arguments)
             local duration = tonumber(arguments[1]) or 0
             local colorName = (arguments[2] or "black"):lower()
             local fadeIn = tonumber(arguments[3]) or duration * 0.05
@@ -386,6 +482,14 @@ if not sysDisabled and not cmdsDisabled then
                     net.Send(ply)
                 end
             end
+            lia.db.insertTable({
+                _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                _target = "all",
+                _targetID = "0",
+                _action = "blindfadeall",
+                _admin = IsValid(client) and client:Name() or tostring(client),
+                _adminID = IsValid(client) and client:SteamID64() or tostring(client)
+            }, nil, "staffactions")
         end
     })
 
@@ -399,6 +503,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:setNetVar("liaGagged", true)
                 lia.log.add(client, "plyGag", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plygag",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
                 hook.Run("PlayerGagged", target, client)
             end
         end
@@ -414,6 +526,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:setNetVar("liaGagged", false)
                 lia.log.add(client, "plyUngag", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyungag",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
                 hook.Run("PlayerUngagged", target, client)
             end
         end
@@ -429,6 +549,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:setLiliaData("VoiceBan", true)
                 lia.log.add(client, "plyMute", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plymute",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
                 hook.Run("PlayerMuted", target, client)
             end
         end
@@ -444,6 +572,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:setLiliaData("VoiceBan", false)
                 lia.log.add(client, "plyUnmute", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyunmute",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
                 hook.Run("PlayerUnmuted", target, client)
             end
         end
@@ -461,6 +597,14 @@ if not sysDisabled and not cmdsDisabled then
                 returnPositions[target] = target:GetPos()
                 target:SetPos(client:GetPos() + client:GetForward() * 50)
                 lia.log.add(client, "plyBring", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plybring",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -476,6 +620,14 @@ if not sysDisabled and not cmdsDisabled then
                 returnPositions[client] = client:GetPos()
                 client:SetPos(target:GetPos() + target:GetForward() * 50)
                 lia.log.add(client, "plyGoto", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plygoto",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -493,6 +645,14 @@ if not sysDisabled and not cmdsDisabled then
                 target:SetPos(pos)
                 returnPositions[target] = nil
                 lia.log.add(client, "plyReturn", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyreturn",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -508,6 +668,14 @@ if not sysDisabled and not cmdsDisabled then
                 target:Lock()
                 target:Freeze(true)
                 lia.log.add(client, "plyJail", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyjail",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -523,6 +691,14 @@ if not sysDisabled and not cmdsDisabled then
                 target:UnLock()
                 target:Freeze(false)
                 lia.log.add(client, "plyUnjail", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyunjail",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -537,6 +713,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:SetNoDraw(true)
                 lia.log.add(client, "plyCloak", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plycloak",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -551,6 +735,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:SetNoDraw(false)
                 lia.log.add(client, "plyUncloak", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyuncloak",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -565,6 +757,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:GodEnable()
                 lia.log.add(client, "plyGod", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plygod",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -579,6 +779,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:GodDisable()
                 lia.log.add(client, "plyUngod", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyungod",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -594,6 +802,14 @@ if not sysDisabled and not cmdsDisabled then
                 local dur = tonumber(arguments[2]) or 5
                 target:Ignite(dur)
                 lia.log.add(client, "plyIgnite", target:Name(), dur)
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyignite",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -608,6 +824,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:Extinguish()
                 lia.log.add(client, "plyExtinguish", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plyextinguish",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })
@@ -622,6 +846,14 @@ if not sysDisabled and not cmdsDisabled then
             if IsValid(target) then
                 target:StripWeapons()
                 lia.log.add(client, "plyStrip", target:Name())
+                lia.db.insertTable({
+                    _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+                    _target = target:Name(),
+                    _targetID = target:SteamID64(),
+                    _action = "plystrip",
+                    _admin = client:Name(),
+                    _adminID = client:SteamID64()
+                }, nil, "staffactions")
             end
         end
     })

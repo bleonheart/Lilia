@@ -25,13 +25,20 @@
 end
 
 function MODULE:GetAllCaseClaims()
-    return lia.db.select({"_requester", "_admin", "_timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
+    local d = deferred.new()
+    d:resolve({})
+    return d
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    lia.db.updateTable({
-        _admin = admin:Name() .. " " .. admin:SteamID64()
-    }, nil, "ticketclaims", "_requester = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND _admin = 'Unassigned'")
+    lia.db.insertTable({
+        _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        _target = requester:Name(),
+        _targetID = requester:SteamID64(),
+        _action = "ticketClaim",
+        _admin = IsValid(admin) and admin:Name() or tostring(admin),
+        _adminID = IsValid(admin) and admin:SteamID64() or tostring(admin)
+    }, nil, "staffactions")
 end
 
 function MODULE:PlayerSay(client, text)
@@ -40,11 +47,13 @@ function MODULE:PlayerSay(client, text)
         ClientAddText(client, Color(70, 0, 130), L("ticketMessageYou"), Color(151, 211, 255), " " .. L("ticketMessageToAdmins") .. " ", Color(0, 255, 0), text)
         self:SendPopup(client, text)
         lia.db.insertTable({
-            _requester = client:SteamID64(),
-            _admin = "Unassigned",
-            _message = text,
-            _timestamp = os.time()
-        }, nil, "ticketclaims")
+            _timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+            _target = client:Name(),
+            _targetID = client:SteamID64(),
+            _action = "ticketCreate",
+            _admin = client:Name(),
+            _adminID = client:SteamID64()
+        }, nil, "staffactions")
         return ""
     end
 end

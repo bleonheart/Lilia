@@ -181,21 +181,19 @@ function MODULE:OnPlayerObserve(client, state)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    local pattern = "_admin LIKE '%" .. admin:SteamID64() .. "'"
-    lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
+    lia.log.add(admin, "ticketClaimed", requester:Name(), 0)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    local pattern = "_admin LIKE '%" .. admin:SteamID64() .. "'"
-    lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
+    lia.log.add(admin, "ticketClosed", requester:Name(), 0)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)
-    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
+    lia.log.add(admin, "warningIssued", target, reason, 0, index)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
-    lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
+    lia.log.add(admin, "warningRemoved", target, warning, 0, index)
 end
 
 function MODULE:ItemTransfered(context)
