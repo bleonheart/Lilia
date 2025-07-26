@@ -910,3 +910,21 @@ net.Receive("liaStorageOpen", function()
     hook.Run("StorageOpen", isCar and carInv or entity, isCar)
 end)
 
+-- from libraries/admin.lua
+net.Receive("updateAdminGroups", function()
+    local data = net.ReadTable() or {}
+    lia.administration.groups = data
+end)
+
+-- from libraries/workshop.lua
+net.Receive("WorkshopDownloader_Start", function()
+    lia.workshop.refresh(net.ReadTable())
+    lia.workshop.buildQueue(true)
+    lia.workshop.start()
+end)
+
+net.Receive("WorkshopDownloader_Info", function()
+    lia.workshop.refresh(net.ReadTable())
+    lia.workshop.checkPrompt()
+end)
+

@@ -61,10 +61,7 @@ if SERVER then
         end)
     end)
 
-    net.Receive("WorkshopDownloader_Request", function(_, client)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
-        lia.workshop.send(client)
-    end)
+    -- netcall moved to netcalls
 
     lia.workshop.AddWorkshop("3527535922")
     resource.AddWorkshop = lia.workshop.AddWorkshop
@@ -193,6 +190,7 @@ else
             end)
         end
     end
+    lia.workshop.start = start
 
     local function buildQueue(all)
         table.Empty(queue)
@@ -200,10 +198,12 @@ else
             if id == FORCE_ID or all then queue[id] = true end
         end
     end
+    lia.workshop.buildQueue = buildQueue
 
     local function refresh(tbl)
         if tbl then lia.workshop.serverIds = tbl end
     end
+    lia.workshop.refresh = refresh
 
     function lia.workshop.checkPrompt()
         local opt = lia.option.get("autoDownloadWorkshop")
@@ -244,16 +244,7 @@ else
         end
     end
 
-    net.Receive("WorkshopDownloader_Start", function()
-        refresh(net.ReadTable())
-        buildQueue(true)
-        start()
-    end)
-
-    net.Receive("WorkshopDownloader_Info", function()
-        refresh(net.ReadTable())
-        lia.workshop.checkPrompt()
-    end)
+    -- netcalls moved to netcalls
 
     hook.Add("InitializedOptions", "liaWorkshopPromptCheck", function() timer.Simple(0, lia.workshop.checkPrompt) end)
     concommand.Add("workshop_force_redownload", function()
