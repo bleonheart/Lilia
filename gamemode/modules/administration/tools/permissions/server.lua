@@ -178,6 +178,7 @@ function GM:PlayerSpawnSWEP(client, swep)
         lia.log.add(client, "spawnDenied", "swep", tostring(swep))
         client:notifyLocalized("noSpawnSweps")
     end
+
     if canSpawn then lia.log.add(client, "swep_spawning", swep) end
     return canSpawn
 end
@@ -188,6 +189,7 @@ function GM:PlayerGiveSWEP(client, swep)
         lia.log.add(client, "permissionDenied", "give swep")
         client:notifyLocalized("noGiveSweps")
     end
+
     if canGive then lia.log.add(client, "swep_spawning", swep) end
     return canGive
 end
@@ -330,26 +332,3 @@ end
 function GM:CanPlayerUseChar(client)
     if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Can Bypass Character Lock") then return false, L("serverEventCharLock") end
 end
-
-local function handleDatabaseWipe(commandName)
-    concommand.Add(commandName, function(client)
-        if IsValid(client) then
-            client:notifyLocalized("commandConsoleOnly")
-            return
-        end
-
-        if resetCalled < RealTime() then
-            resetCalled = RealTime() + 3
-            lia.administration("Warning", L("databaseWipeConfirm", commandName))
-        else
-            resetCalled = 0
-            lia.administration("Warning", L("databaseWipeProgress"))
-            hook.Run("OnWipeTables")
-            lia.db.wipeTables(lia.db.loadTables)
-            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-        end
-    end)
-end
-
-handleDatabaseWipe("lia_recreatedb")
-handleDatabaseWipe("lia_wipedb")

@@ -1,12 +1,9 @@
 ﻿lia.admin = lia.admin or {}
-lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
-lia.admin.lastJoin = lia.admin.lastJoin or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.steamAdmins = lia.admin.steamAdmins or {}
 if SERVER then
-    util.AddNetworkString("liaStaffActionLog")
     function lia.admin.addStaffAction(admin, action, victim, message, charID)
         local targetName
         local targetSteam
@@ -743,7 +740,10 @@ local function registerDefaultPrivileges()
 end
 
 local function buildDefaultPermissions(group, inherit)
-    local perms = { _inherit = inherit or group }
+    local perms = {
+        _inherit = inherit or group
+    }
+
     for name, priv in pairs(lia.admin.privileges) do
         local minAccess = priv.MinAccess or "user"
         local allowed
@@ -771,7 +771,9 @@ function lia.admin.load()
         if camiGroups and not table.IsEmpty(camiGroups) then
             lia.admin.groups = {}
             for name, data in pairs(camiGroups) do
-                lia.admin.groups[name] = { _inherit = data.Inherits or "user" }
+                lia.admin.groups[name] = {
+                    _inherit = data.Inherits or "user"
+                }
             end
         else
             lia.admin.groups = groups or {}
@@ -865,6 +867,12 @@ function lia.admin.load()
     end)
 end
 
+function lia.admin.updateAdminGroups()
+    net.Start("updateAdminGroups")
+    net.WriteTable(lia.admin.groups)
+    net.Broadcast()
+end
+
 function lia.admin.createGroup(groupName, info, inherit)
     if lia.admin.groups[groupName] then
         Error("[Lilia Administration] This usergroup already exists!\n")
@@ -937,6 +945,7 @@ function lia.admin.registerPrivilege(privilege)
 
         if allowed then lia.admin.groups[groupName][privilege.Name] = true end
     end
+
     if SERVER then lia.admin.save(true) end
 end
 
@@ -1050,9 +1059,7 @@ if SERVER then
             banStart = nil,
             banDuration = 0,
             banReason = nil
-        }, function()
-            lia.administration("Ban", L("banRemoved"))
-        end, "players", "steamID = " .. steamid)
+        }, function() lia.administration("Ban", L("banRemoved")) end, "players", "steamID = " .. steamid)
     end
 
     function lia.admin.isBanned(steamid)
@@ -1162,166 +1169,4 @@ function lia.admin.execCommand(cmd, victim, dur, reason)
         RunConsoleCommand("say", "/plyunblind " .. quote(id))
         return true
     end
-end
-
-hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
-    if ply:IsBot() then return end
-    local steam64 = util.SteamIDTo64(steamID)
-    local forcedGroup = lia.admin.steamAdmins[steam64]
-    if forcedGroup and lia.admin.groups[forcedGroup] then
-        lia.admin.setPlayerGroup(ply, forcedGroup)
-        return
-    end
-
-    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
-        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
-        return
-    end
-
-    lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
-        local group = istable(data) and data[1] and data[1].userGroup
-        if not group or group == "" then
-            group = "user"
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
-        end
-
-        ply:SetUserGroup(group)
-    end)
-end)
-
-hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
-    lia.db.query("SELECT steamID, banReason, banStart, banDuration FROM lia_players WHERE banStart IS NOT NULL", function(data)
-        if istable(data) then
-            local bans = {}
-            for _, ban in pairs(data) do
-                bans[ban.steamID] = {
-                    reason = ban.banReason,
-                    start = tonumber(ban.banStart),
-                    duration = tonumber(ban.banDuration)
-                }
-            end
-
-            lia.admin.banList = bans
-        end
-    end)
-end)
-
-concommand.Add("plysetgroup", function(ply, _, args)
-    if IsValid(ply) then
-        ply:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    local target = lia.command.findPlayer(nil, args[1])
-    if not IsValid(target) then
-        lia.administration("Error", L("specifiedPlayerNotFound"))
-        return
-    end
-
-    local group = args[2]
-    if not group or not lia.admin.groups[group] then
-        lia.administration("Error", L("usergroupNotFound"))
-        return
-    end
-
-    lia.admin.setPlayerGroup(target, group)
-    target:notifyLocalized("plyGroupSet")
-    lia.administration("Information", L("setPlayerGroupTo", target:Nick(), group))
-end)
-
-local function dropCAMIGroup(n)
-    if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
-    local g = CAMI.GetUsergroups() or {}
-    if g[n] then CAMI.UnregisterUsergroup(n) end
-end
-
-if CAMI.ULX_TOKEN and CAMI.ULX_TOKEN == "ULX" then
-    hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-        lia.admin.groups[g.Name] = nil
-        if SERVER then
-            dropCAMIGroup(g.Name)
-            lia.admin.save(true)
-        end
-    end)
-
-    hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-        if not pv or not pv.Name then return end
-        lia.admin.privileges[pv.Name] = {
-            Name = pv.Name,
-            MinAccess = pv.MinAccess or "user",
-            Category = pv.Category or "Misc"
-        }
-
-        for g in pairs(lia.admin.groups) do
-            if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
-        end
-
-        if SERVER then lia.admin.save(true) end
-    end)
-
-    hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-        if not pv or not pv.Name then return end
-        lia.admin.privileges[pv.Name] = nil
-        for _, p in pairs(lia.admin.groups) do
-            p[pv.Name] = nil
-        end
-
-        if SERVER then lia.admin.save(true) end
-    end)
-
-    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
-        if not IsValid(ply) or not SERVER then return end
-        lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
-    end)
-else
-    hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-        lia.admin.groups[g.Name] = nil
-        if SERVER then
-            dropCAMIGroup(g.Name)
-            lia.admin.save(true)
-        end
-    end)
-
-    hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-        if not pv or not pv.Name then return end
-        lia.admin.privileges[pv.Name] = {
-            Name = pv.Name,
-            MinAccess = pv.MinAccess or "user",
-            Category = pv.Category or "Misc"
-        }
-
-        for g in pairs(lia.admin.groups) do
-            if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
-        end
-
-        if SERVER then lia.admin.save(true) end
-    end)
-
-    hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-        if not pv or not pv.Name then return end
-        lia.admin.privileges[pv.Name] = nil
-        for _, p in pairs(lia.admin.groups) do
-            p[pv.Name] = nil
-        end
-
-        if SERVER then lia.admin.save(true) end
-    end)
-
-    hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, _, newGroup)
-        if not IsValid(ply) or not SERVER then return end
-        lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
-    end)
-end
-
-if SERVER then
-    hook.Add("OnReloaded", "liaAdminSendGroups", function()
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.admin.groups)
-        net.Broadcast()
-    end)
-else
-    net.Receive("updateAdminGroups", function()
-        local data = net.ReadTable() or {}
-        lia.admin.groups = data
-    end)
 end

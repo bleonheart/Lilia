@@ -990,7 +990,6 @@ local function handleTableData(id)
         }
     end
 
-
     if lia.gui.dbBrowser and lia.gui.dbBrowser.panels and IsValid(lia.gui.dbBrowser.panels[tbl]) then
         populateTable(lia.gui.dbBrowser.panels[tbl], columns, rows)
         return
@@ -1001,6 +1000,7 @@ local function handleTableData(id)
         for _, row in ipairs(rows) do
             if row.action == "warning" then warns[#warns + 1] = row end
         end
+
         populateTable(lia.gui.warnings, columns, warns)
         return
     end
@@ -1199,4 +1199,9 @@ net.Receive("managesitrooms", function()
         makeButton("reposition", 3)
         makeButton("rename", 2)
     end
+end)
+
+net.Receive("liaAdminUpdateGroups", function()
+    lia.admin.groups = net.ReadTable() or {}
+    hook.Run("OnAdminGroupsUpdated", lia.admin.groups)
 end)

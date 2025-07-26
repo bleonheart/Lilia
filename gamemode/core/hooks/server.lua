@@ -179,6 +179,31 @@ function GM:CanPlayerInteractItem(client, action, item)
     if action == "rotate" then return hook.Run("CanPlayerRotateItem", client, item) ~= false end
 end
 
+function GM:PlayerAuthed()
+    if ply:IsBot() then return end
+    local steam64 = util.SteamIDTo64(steamID)
+    local forcedGroup = lia.admin.steamAdmins[steam64]
+    if forcedGroup and lia.admin.groups[forcedGroup] then
+        lia.admin.setPlayerGroup(ply, forcedGroup)
+        return
+    end
+
+    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
+        return
+    end
+
+    lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
+        local group = istable(data) and data[1] and data[1].userGroup
+        if not group or group == "" then
+            group = "user"
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
+        end
+
+        ply:SetUserGroup(group)
+    end)
+end
+
 function GM:CanPlayerEquipItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.equipDelay ~= nil then
@@ -960,50 +985,65 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     return canHear, canHear
 end
 
-local hl2Weapons = {"weapon_crowbar", "weapon_stunstick", "weapon_pistol", "weapon_357", "weapon_smg1", "weapon_ar2", "weapon_shotgun", "weapon_crossbow", "weapon_rpg"}
-lia.botCounter = lia.botCounter or 0
-local function NextBotName()
-    lia.botCounter = lia.botCounter + 1
-    return string.format("Bot%02d", lia.botCounter)
+function GM:OnDatabaseLoaded()
+    lia.db.query("SELECT steamID, banReason, banStart, banDuration FROM lia_players WHERE banStart IS NOT NULL", function(data)
+        if istable(data) then
+            local bans = {}
+            for _, ban in pairs(data) do
+                bans[ban.steamID] = {
+                    reason = ban.banReason,
+                    start = tonumber(ban.banStart),
+                    duration = tonumber(ban.banDuration)
+                }
+            end
+
+            lia.admin.banList = bans
+        end
+    end)
 end
 
-local function SpawnBot()
-    player.CreateNextBot(NextBotName())
-end
-
-local function SpawnArmedBot()
-    local bot = player.CreateNextBot(NextBotName())
-    if IsValid(bot) then
-        local wep = hl2Weapons[math.random(#hl2Weapons)]
-        bot:Give(wep)
-        bot:SelectWeapon(wep)
+concommand.Add("plysetgroup", function(ply, _, args)
+    if IsValid(ply) then
+        ply:notifyLocalized("commandConsoleOnly")
+        return
     end
+
+    local target = lia.command.findPlayer(nil, args[1])
+    if not IsValid(target) then
+        lia.administration("Error", L("specifiedPlayerNotFound"))
+        return
+    end
+
+    local group = args[2]
+    if not group or not lia.admin.groups[group] then
+        lia.administration("Error", L("usergroupNotFound"))
+        return
+    end
+
+    lia.admin.setPlayerGroup(target, group)
+    target:notifyLocalized("plyGroupSet")
+    lia.administration("Information", L("setPlayerGroupTo", target:Nick(), group))
+end)
+
+local function handleDatabaseWipe(commandName)
+    concommand.Add(commandName, function(client)
+        if IsValid(client) then
+            client:notifyLocalized("commandConsoleOnly")
+            return
+        end
+
+        if resetCalled < RealTime() then
+            resetCalled = RealTime() + 3
+            lia.administration("Warning", L("databaseWipeConfirm", commandName))
+        else
+            resetCalled = 0
+            lia.administration("Warning", L("databaseWipeProgress"))
+            hook.Run("OnWipeTables")
+            lia.db.wipeTables(lia.db.loadTables)
+            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
+        end
+    end)
 end
-
-concommand.Add("bots", function(ply)
-    if IsValid(ply) then return end
-    local maxPlayers = game.MaxPlayers()
-    local currentCount = player.GetCount()
-    local toSpawn = maxPlayers - currentCount
-    if toSpawn <= 0 then return end
-    timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnBot() end)
-end)
-
-concommand.Add("armed_bot", function(ply)
-    if IsValid(ply) then return end
-    SpawnArmedBot()
-end)
-
-concommand.Add("armed_bots", function(ply)
-    if IsValid(ply) then return end
-    local maxPlayers = game.MaxPlayers()
-    local currentCount = player.GetCount()
-    local toSpawn = maxPlayers - currentCount
-    if toSpawn <= 0 then return end
-    timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnArmedBot() end)
-end)
 
 concommand.Add("kickbots", function()
     for _, bot in player.Iterator() do
@@ -1044,4 +1084,3 @@ local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
-util.AddNetworkString("liaRequestAllCharList")

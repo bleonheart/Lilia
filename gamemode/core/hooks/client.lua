@@ -477,6 +477,31 @@ function GM:InitPostEntity()
     if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
 end
 
+local VoiceRanges = {
+    Whispering = 120,
+    Talking = 300,
+    Yelling = 600,
+}
+
+function GMN:PostDrawOpaqueRenderables()
+    if not lia.option.get("voiceRange", false) then return end
+    local client = LocalPlayer()
+    if not (IsValid(client) and client:IsSpeaking() and client:getChar()) then return end
+    local vt = client:getNetVar("VoiceType", "Talking")
+    local radius = VoiceRanges[vt] or VoiceRanges.Talking
+    local segments = 36
+    local pos = client:GetPos() + Vector(0, 0, 2)
+    local color = Color(0, 150, 255)
+    render.SetColorMaterial()
+    for i = 0, segments - 1 do
+        local startAng = math.rad(i / segments * 360)
+        local endAng = math.rad((i + 1) / segments * 360)
+        local startPos = pos + Vector(math.cos(startAng), math.sin(startAng), 0) * radius
+        local endPos = pos + Vector(math.cos(endAng), math.sin(endAng), 0) * radius
+        render.DrawLine(startPos, endPos, color, false)
+    end
+end
+
 concommand.Add("dev_GetCameraOrigin", function(client)
     if client:isStaff() then
         lia.information(L("originLabel", math.ceil(client:GetPos().x), math.ceil(client:GetPos().y), math.ceil(client:GetPos().z)))
@@ -714,29 +739,110 @@ concommand.Add("open_derma_preview", function()
     end)
 end)
 
-local VoiceRanges = {
-    Whispering = 120,
-    Talking = 300,
-    Yelling = 600,
-}
-
-hook.Add("PostDrawOpaqueRenderables", "liaVoiceRange", function()
-    if not lia.option.get("voiceRange", false) then return end
-    local client = LocalPlayer()
-    if not (IsValid(client) and client:IsSpeaking() and client:getChar()) then return end
-    local vt = client:getNetVar("VoiceType", "Talking")
-    local radius = VoiceRanges[vt] or VoiceRanges.Talking
-    local segments = 36
-    local pos = client:GetPos() + Vector(0, 0, 2)
-    local color = Color(0, 150, 255)
-    render.SetColorMaterial()
-    for i = 0, segments - 1 do
-        local startAng = math.rad(i / segments * 360)
-        local endAng = math.rad((i + 1) / segments * 360)
-        local startPos = pos + Vector(math.cos(startAng), math.sin(startAng), 0) * radius
-        local endPos = pos + Vector(math.cos(endAng), math.sin(endAng), 0) * radius
-        render.DrawLine(startPos, endPos, color, false)
+concommand.Add("lia_saved_images", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if not files or #files == 0 then return end
+    local f = vgui.Create("DFrame")
+    f:SetTitle(L("webImagesTitle"))
+    f:SetSize(ScrW() * 0.6, ScrH() * 0.6)
+    f:Center()
+    f:MakePopup()
+    local scroll = vgui.Create("DScrollPanel", f)
+    scroll:Dock(FILL)
+    local layout = vgui.Create("DIconLayout", scroll)
+    layout:Dock(FILL)
+    layout:SetSpaceX(4)
+    layout:SetSpaceY(4)
+    for _, fn in ipairs(files) do
+        local img = layout:Add("DImage")
+        img:SetMaterial(buildMaterial(baseDir .. fn))
+        img:SetSize(128, 128)
+        img:SetTooltip(fn)
     end
+end)
+
+concommand.Add("lia_wipewebimages", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if files then
+        for _, fn in ipairs(files) do
+            file.Delete(baseDir .. fn)
+        end
+    end
+
+    cache = {}
+    urlMap = {}
+    lia.information(L("webImagesCleared"))
+    ensureDir(baseDir)
+end)
+
+concommand.Add("test_webimage_menu", function()
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle(L("webImageTesterTitle"))
+    frame:SetSize(500, 400)
+    frame:Center()
+    frame:MakePopup()
+    local urlEntry = vgui.Create("DTextEntry", frame)
+    urlEntry:SetPos(10, 30)
+    urlEntry:SetSize(frame:GetWide() - 20, 25)
+    urlEntry:SetText("https://i.imgur.com/WNdLdwQ.jpeg")
+    local loadBtn = vgui.Create("DButton", frame)
+    loadBtn:SetPos(10, 65)
+    loadBtn:SetSize(frame:GetWide() - 20, 30)
+    loadBtn:SetText(L("loadImage"))
+    local imgPanel = vgui.Create("DPanel", frame)
+    imgPanel:SetPos(10, 105)
+    imgPanel:SetSize(frame:GetWide() - 20, frame:GetTall() - 115)
+    loadBtn.DoClick = function()
+        for _, child in ipairs(imgPanel:GetChildren()) do
+            child:Remove()
+        end
+
+        local src = urlEntry:GetValue()
+        local img = vgui.Create("DImage", imgPanel)
+        img:SetPos(0, 0)
+        img:SetSize(imgPanel:GetWide(), imgPanel:GetTall())
+        img:SetImage(src)
+    end
+end)
+
+concommand.Add("lia_saved_sounds", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    if not files or #files == 0 then return end
+    local f = vgui.Create("DFrame")
+    f:SetTitle(L("webSoundsTitle"))
+    f:SetSize(ScrW() * 0.6, ScrH() * 0.6)
+    f:Center()
+    f:MakePopup()
+    local scroll = vgui.Create("DScrollPanel", f)
+    scroll:Dock(FILL)
+    local layout = vgui.Create("DIconLayout", scroll)
+    layout:Dock(FILL)
+    layout:SetSpaceX(4)
+    layout:SetSpaceY(4)
+    for _, fn in ipairs(files) do
+        local btn = layout:Add("DButton")
+        btn:SetText(fn)
+        btn:SetSize(200, 20)
+        btn.DoClick = function() sound.PlayFile(buildPath(baseDir .. fn), "", function(chan) if chan then chan:Play() end end) end
+    end
+end)
+
+concommand.Add("lia_wipe_sounds", function()
+    local files = file.Find(baseDir .. "*", "DATA")
+    for _, fn in ipairs(files) do
+        file.Delete(baseDir .. fn)
+    end
+
+    cache = {}
+    urlMap = {}
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[WebSound]", Color(255, 255, 255), " " .. L("webSoundCacheCleared") .. "\n")
+end)
+
+concommand.Add("workshop_force_redownload", function()
+    table.Empty(queue)
+    buildQueue(true)
+    start()
+    lia.bootstrap("Workshop Downloader", L("workshopForcedRedownload"))
 end)
 
 concommand.Add("weighpoint_stop", function() hook.Add("HUDPaint", "WeighPoint", function() end) end)

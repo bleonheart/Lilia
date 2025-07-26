@@ -182,6 +182,7 @@ local function payloadStaff()
                                     kicks = tonumber(kicks) or 0,
                                     gags = tonumber(gags) or 0
                                 }
+
                                 d:resolve()
                             end)
                         end)
@@ -190,9 +191,10 @@ local function payloadStaff()
             end)
         end
     end
-
     return deferred.all(promises):next(function()
-        return {staff = staff}
+        return {
+            staff = staff
+        }
     end)
 end
 
@@ -213,11 +215,6 @@ local function notify(p, msg)
 end
 
 syncPrivileges()
-hook.Add("PlayerInitialSpawn", "liaAdminTrackJoin", function(p)
-    if p:IsBot() then return end
-    lia.admin.lastJoin[p:SteamID()] = os.time()
-end)
-
 net.Receive("liaGroupsRequest", function(_, p)
     if not allowed(p) then return end
     syncPrivileges()
@@ -231,9 +228,7 @@ end)
 
 net.Receive("liaStaffRequest", function(_, p)
     if not allowed(p) then return end
-    payloadStaff():next(function(data)
-        sendBigTable(p, data, "liaStaffDataChunk", "liaStaffDataDone")
-    end)
+    payloadStaff():next(function(data) sendBigTable(p, data, "liaStaffDataChunk", "liaStaffDataDone") end)
 end)
 
 net.Receive("liaRequestPlayerGroup", function(_, p)
@@ -242,13 +237,10 @@ net.Receive("liaRequestPlayerGroup", function(_, p)
     if not IsValid(target) or not target:IsPlayer() then return end
     local groups = {}
     for name in pairs(lia.admin.groups or {}) do
-        if not DefaultGroups[name] then
-            groups[#groups + 1] = name
-        end
+        if not DefaultGroups[name] then groups[#groups + 1] = name end
     end
 
     if #groups == 0 then return end
-
     table.sort(groups)
     p:requestDropdown(L("setUsergroup"), L("chooseGroup"), groups, function(sel)
         if not IsValid(p) or not IsValid(target) then return end
@@ -256,6 +248,7 @@ net.Receive("liaRequestPlayerGroup", function(_, p)
             p:notifyLocalized("cantSetDefaultGroup")
             return
         end
+
         if lia.admin.groups[sel] then
             lia.admin.setPlayerGroup(target, sel)
             p:notifyLocalized("plyGroupSet")

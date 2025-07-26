@@ -997,17 +997,6 @@ function lia.db.GetCharacterTable(callback)
     end)
 end
 
-concommand.Add("database_list", function(ply)
-    if IsValid(ply) then return end
-    lia.db.GetCharacterTable(function(columns)
-        if #columns == 0 then
-            print(L("dbColumnsNone"))
-        else
-            print(L("dbColumnsList", table.concat(columns, ", ")))
-        end
-    end)
-end)
-
 function GM:RegisterPreparedStatements()
     lia.bootstrap("Database", L("preparedStatementsAdded"))
     lia.db.prepare("itemData", "UPDATE lia_items SET data = ? WHERE itemID = ?", {MysqlooString, MysqlooInteger})

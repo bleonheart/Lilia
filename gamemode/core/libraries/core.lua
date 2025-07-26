@@ -539,10 +539,15 @@ function GM:OnReloaded()
     lia.faction.formatModelData()
     if SERVER then
         lia.config.send()
+        lia.admin.updateAdminGroups()
     else
         lia.option.load()
         lia.keybind.load()
     end
+
+    net.Start("updateAdminGroups")
+    net.WriteTable(lia.admin.groups)
+    net.Broadcast()
 end
 
 local loadedCompatibility = {}
