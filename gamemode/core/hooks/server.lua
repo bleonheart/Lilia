@@ -346,7 +346,12 @@ function GM:PlayerSay(client, message)
     local hasIPAddress = string.match(message, "%d+%.%d+%.%d+%.%d+(:%d*)?")
     message = parsedMessage
     if hasIPAddress then
-        lia.applyPunishment(client, L("ipInChat"), true, false)
+        for _, ply in player.Iterator() do
+            if ply:isStaffOnDuty() or ply:hasPrivilege("View IP Chat Attempts") then
+                ply:ChatPrint(L("ipAttemptStaff", client:Name(), hasIPAddress))
+            end
+        end
+        lia.log.add(client, "ipAttempt", hasIPAddress)
         return ""
     end
 
