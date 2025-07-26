@@ -7,6 +7,15 @@ local function LogCheaterAction(client, action)
     lia.log.add(client, "cheaterAction", action)
 end
 
+local function StripWeaponsExceptKeys(client)
+    if not IsValid(client) or not client:IsPlayer() then return end
+    for _, weapon in ipairs(client:GetWeapons()) do
+        if IsValid(weapon) and weapon:GetClass() ~= "lia_keys" then
+            client:StripWeapon(weapon:GetClass())
+        end
+    end
+end
+
 function MODULE:CanPlayerSwitchChar(client, character)
     if not client:isStaffOnDuty() then
         local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
@@ -32,7 +41,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     local attackerIsHuman = IsValid(attacker) and attacker:IsPlayer()
     if attackerIsHuman and IsCheater(attacker) then
         dmgInfo:SetDamage(0)
-        LogCheaterAction(attacker, "deal damage")
+        StripWeaponsExceptKeys(attacker)
         return true
     end
 
@@ -262,6 +271,7 @@ function MODULE:OnCheaterCaught(client)
     if IsValid(client) then
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
         client:notifyLocalized("caughtCheating")
+        StripWeaponsExceptKeys(client)
         for _, p in player.Iterator() do
             if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64()) end
         end
