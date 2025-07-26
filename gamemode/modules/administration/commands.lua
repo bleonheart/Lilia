@@ -84,10 +84,10 @@ lia.command.add("managesitrooms", {
         for name, pos in pairs(rooms) do
             rooms[name] = lia.data.decodeVector(pos)
         end
-            net.Start("managesitrooms")
-            net.WriteTable(rooms)
-            net.Send(client)
-        end
+
+        net.Start("managesitrooms")
+        net.WriteTable(rooms)
+        net.Send(client)
     end
 })
 
@@ -156,7 +156,6 @@ lia.command.add("sendtositroom", {
                 target:notifyLocalized("sitroomArrive")
                 lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
             end)
-        end
     end
 })
 

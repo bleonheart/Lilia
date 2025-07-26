@@ -672,6 +672,11 @@ local DefaultPrivileges = {
         Category = "Chatbox"
     },
     {
+        Name = "View IP Chat Attempts",
+        MinAccess = "admin",
+        Category = "Chatbox"
+    },
+    {
         Name = "Can Edit Vendors",
         MinAccess = "admin",
         Category = "Vendors"
@@ -1038,7 +1043,12 @@ if SERVER then
             usergroup = "superadmin"
         end
 
-        lia.admin.steamAdmins[steam64] = usergroup
+        lia.db.insertOrIgnore({
+            steamID = steam64,
+            userGroup = usergroup
+        }, "admins"):next(function()
+            lia.db.updateTable({userGroup = usergroup}, nil, "admins", "steamID = " .. lia.db.convertDataType(steam64))
+        end)
     end
 
     function lia.admin.addBan(steamid, reason, duration)

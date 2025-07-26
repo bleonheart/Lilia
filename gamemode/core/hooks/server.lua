@@ -250,25 +250,27 @@ function GM:PlayerAuthed(client, steamid)
     end
 
     local steam64 = steamID64
-    local forcedGroup = lia.admin.steamAdmins[steam64]
-    if forcedGroup and lia.admin.groups[forcedGroup] then
-        lia.admin.setPlayerGroup(client, forcedGroup)
-        return
-    end
-
-    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(client:GetUserGroup()) and client:GetUserGroup() ~= "user" then
-        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(client:GetUserGroup()), steam64))
-        return
-    end
-
-    lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
-        local group = istable(data) and data[1] and data[1].userGroup
-        if not group or group == "" then
-            group = "user"
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
+    lia.db.query(Format("SELECT userGroup FROM lia_admins WHERE steamID = %s", steam64), function(adminData)
+        local forcedGroup = istable(adminData) and adminData[1] and adminData[1].userGroup
+        if forcedGroup and lia.admin.groups[forcedGroup] then
+            lia.admin.setPlayerGroup(client, forcedGroup)
+            return
         end
 
-        client:SetUserGroup(group)
+        if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(client:GetUserGroup()) and client:GetUserGroup() ~= "user" then
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(client:GetUserGroup()), steam64))
+            return
+        end
+
+        lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
+            local group = istable(data) and data[1] and data[1].userGroup
+            if not group or group == "" then
+                group = "user"
+                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
+            end
+
+            client:SetUserGroup(group)
+        end)
     end)
 end
 
@@ -346,7 +348,12 @@ function GM:PlayerSay(client, message)
     local hasIPAddress = string.match(message, "%d+%.%d+%.%d+%.%d+(:%d*)?")
     message = parsedMessage
     if hasIPAddress then
-        lia.applyPunishment(client, L("ipInChat"), true, false)
+        for _, ply in player.Iterator() do
+            if ply:isStaffOnDuty() or ply:hasPrivilege("View IP Chat Attempts") then
+                ply:ChatPrint(L("ipAttemptStaff", client:Name(), hasIPAddress))
+            end
+        end
+        lia.log.add(client, "ipAttempt", hasIPAddress)
         return ""
     end
 
