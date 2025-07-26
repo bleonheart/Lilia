@@ -83,3 +83,11 @@ function lia.class.hasWhitelist(class)
     if info.isDefault then return false end
     return info.isWhitelisted
 end
+
+function lia.class.canJoin(client, class)
+    local canBe, reason = lia.class.canBe(client, class)
+    if canBe == false then return false, reason end
+    if canBe then return true end
+    if not lia.class.hasWhitelist(class) then return true end
+    return client:hasClassWhitelist(class)
+end

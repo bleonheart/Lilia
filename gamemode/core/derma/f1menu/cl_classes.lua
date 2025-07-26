@@ -25,7 +25,7 @@ function PANEL:loadClasses()
     self.sidebar:Clear()
     self.tabList = {}
     for _, cl in ipairs(list) do
-        local canBe = lia.class.canBe(LocalPlayer(), cl.index)
+        local canBe = lia.class.canJoin(LocalPlayer(), cl.index)
         local btn = self.sidebar:Add("liaMediumButton")
         btn:SetText(cl.name or L("unnamed"))
         btn:SetTall(50)

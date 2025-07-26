@@ -207,3 +207,33 @@ end
 ```
 
 ---
+
+### lia.class.canJoin
+
+**Purpose**
+
+Determines if a player is eligible to join a class, taking whitelists into account.
+
+**Parameters**
+
+* `client` (*Player*): Player attempting to join.
+
+* `class` (*number*): Class index to join.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *boolean*: `true` if the player may join.
+
+**Example Usage**
+
+```lua
+if lia.class.canJoin(client, classID) then
+    print("Can join")
+end
+```
+
+---
