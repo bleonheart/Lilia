@@ -141,8 +141,15 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
         return lia.data.get(idKey, d) or {}
     end
 
-    for k, f in pairs(MODULE) do
-        if isfunction(f) then hook.Add(k, MODULE, f) end
+    do
+        local currentHooks = hook.GetTable()
+        for name, fn in pairs(MODULE) do
+            if isfunction(fn) then
+                local eventHooks = currentHooks[name]
+                if eventHooks and eventHooks[MODULE] then lia.error(("Duplicate hook '%s' in module '%s'"):format(name, uniqueID)) end
+                hook.Add(name, MODULE, fn)
+            end
+        end
     end
 
     if uniqueID == "schema" then
@@ -158,7 +165,7 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
             table.insert(lia.module.versionChecks, {
                 uniqueID = MODULE.uniqueID,
                 name = MODULE.name,
-                localVersion = MODULE.version,
+                localVersion = MODULE.version
             })
         end
 
@@ -167,7 +174,7 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
             table.insert(lia.module.privateVersionChecks, {
                 uniqueID = MODULE.uniqueID,
                 name = MODULE.name,
-                localVersion = MODULE.version,
+                localVersion = MODULE.version
             })
         end
 
