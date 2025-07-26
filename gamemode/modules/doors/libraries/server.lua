@@ -1,5 +1,5 @@
-﻿function MODULE:PostLoadData()
-    if self.DoorsAlwaysDisabled then
+function MODULE:PostLoadData()
+    if lia.config.get("DoorsAlwaysDisabled") then
         local count = 0
         for _, door in ents.Iterator() do
             if IsValid(door) and door:isDoor() then
