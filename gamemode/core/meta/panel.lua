@@ -3,8 +3,8 @@ function panelMeta:liaListenForInventoryChanges(inventory)
     assert(inventory, "No inventory has been set!")
     local id = inventory:getID()
     self:liaDeleteInventoryHooks(id)
-    _LIA_INV_PANEL_ID = (_LIA_INV_PANEL_ID or 0) + 1
-    local hookID = "liaInventoryListener" .. _LIA_INV_PANEL_ID
+    _LiaInvPanelId = (_LiaInvPanelId or 0) + 1
+    local hookID = "liaInventoryListener" .. _LiaInvPanelId
     self.liaHookID = self.liaHookID or {}
     self.liaHookID[id] = hookID
     self.liaToRemoveHooks = self.liaToRemoveHooks or {}

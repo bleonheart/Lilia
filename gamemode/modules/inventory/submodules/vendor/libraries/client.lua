@@ -26,10 +26,10 @@ net.Receive("VendorSync", function()
         if maxStock <= 0 then maxStock = nil end
         if mode < 0 then mode = nil end
         vendor.items[itemType] = {
-            [VENDOR_PRICE] = price,
-            [VENDOR_STOCK] = stock,
-            [VENDOR_MAXSTOCK] = maxStock,
-            [VENDOR_MODE] = mode
+            [VendorPrice] = price,
+            [VendorStock] = stock,
+            [VendorMaxStock] = maxStock,
+            [VendorMode] = mode
         }
     end
 
@@ -79,7 +79,7 @@ net.Receive("VendorPrice", function()
     local value = net.ReadInt(32)
     if value < 0 then value = nil end
     vendor.items[itemType] = vendor.items[itemType] or {}
-    vendor.items[itemType][VENDOR_PRICE] = value
+    vendor.items[itemType][VendorPrice] = value
     hook.Run("VendorItemPriceUpdated", vendor, itemType, value)
 end)
 
@@ -90,7 +90,7 @@ net.Receive("VendorMode", function()
     local value = net.ReadInt(8)
     if value < 0 then value = nil end
     vendor.items[itemType] = vendor.items[itemType] or {}
-    vendor.items[itemType][VENDOR_MODE] = value
+    vendor.items[itemType][VendorMode] = value
     hook.Run("VendorItemModeUpdated", vendor, itemType, value)
 end)
 
@@ -100,7 +100,7 @@ net.Receive("VendorStock", function()
     local itemType = net.ReadString()
     local value = net.ReadUInt(32)
     vendor.items[itemType] = vendor.items[itemType] or {}
-    vendor.items[itemType][VENDOR_STOCK] = value
+    vendor.items[itemType][VendorStock] = value
     hook.Run("VendorItemStockUpdated", vendor, itemType, value)
 end)
 
@@ -111,7 +111,7 @@ net.Receive("VendorMaxStock", function()
     local value = net.ReadUInt(32)
     if value == 0 then value = nil end
     vendor.items[itemType] = vendor.items[itemType] or {}
-    vendor.items[itemType][VENDOR_MAXSTOCK] = value
+    vendor.items[itemType][VendorMaxStock] = value
     hook.Run("VendorItemMaxStockUpdated", vendor, itemType, value)
 end)
 
