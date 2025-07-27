@@ -19,22 +19,22 @@ function MODULE:DrawCharInfo(client, _, info)
     end
 end
 
-local rosterRows = {}
-local lists = {}
-local built = false
-local function toSteamID(id)
+rosterRows = rosterRows or {}
+lists = lists or {}
+built = built or false
+function toSteamID(id)
     if not id then return "" end
     id = tostring(id)
     if id:sub(1, 6) == "STEAM_" then return id end
     return util.SteamIDFrom64(id)
 end
 
-local function addRow(lst, r)
+function addRow(lst, r)
     local line = lst:AddLine(r.name, r.steamID, r.class, r.hoursPlayed, r.lastOnline)
     line.rowData = r
 end
 
-local function populate(uid)
+function populate(uid)
     if not built then return end
     local lst = lists[uid]
     if not IsValid(lst) then return end
@@ -44,7 +44,7 @@ local function populate(uid)
     end
 end
 
-local function makeList(parent)
+function makeList(parent)
     local lst = parent:Add("DListView")
     lst:Dock(FILL)
     lst:SetMultiSelect(false)
@@ -84,7 +84,7 @@ local function makeList(parent)
     return lst
 end
 
-local function buildRoster(panel)
+function buildRoster(panel)
     panel.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
     local char = LocalPlayer():getChar()
     if not char then return end
@@ -102,7 +102,7 @@ local function buildRoster(panel)
     net.SendToServer()
 end
 
-local function buildFactions(panel)
+function buildFactions(panel)
     local ps = panel:Add("DPropertySheet")
     ps:Dock(FILL)
     for _, fac in pairs(lia.faction.indices) do
