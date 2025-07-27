@@ -453,6 +453,7 @@ LANGUAGE = {
     staffManagement = "Staff Management",
     staffAction = "Action",
     staffActionCount = "Action Count",
+    userGroup = "Usergroup",
     ticketsTab = "Tickets",
     failedRetrieveLogs = "Failed to retrieve logs.",
     searchLogs = "Search logs...",
