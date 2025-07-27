@@ -430,7 +430,8 @@ lia.char.registerVar("lastPos", {
 
 lia.char.registerVar("banned", {
     field = "_banned",
-    fieldType = "text",
+    fieldType = "integer",
+    default = 0,
     isLocal = true,
     noDisplay = true
 })
