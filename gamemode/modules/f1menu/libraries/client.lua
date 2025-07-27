@@ -204,7 +204,7 @@ function MODULE:CreateInformationButtons(pages)
 
                         local btnContainer = vgui.Create("DPanel", itemPanel)
                         btnContainer:Dock(RIGHT)
-                        btnContainer:SetWide(380)
+                        btnContainer:SetWide(390)
                         btnContainer.Paint = function() end
                         local btnW, btnH = 120, 40
                         if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
@@ -237,7 +237,7 @@ function MODULE:CreateInformationButtons(pages)
                         end
 
                         local btnWaypoint = vgui.Create("liaSmallButton", btnContainer)
-                        btnWaypoint:Dock(RIGHT)
+                        btnWaypoint:Dock(LEFT)
                         btnWaypoint:DockMargin(5, 0, 5, 0)
                         btnWaypoint:SetWide(btnW)
                         btnWaypoint:SetTall(btnH)
