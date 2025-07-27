@@ -425,42 +425,30 @@ else
     end)
 end
 
-local function NetworkStringToID(str)
-    local id = NetworkStringToIDCache[str]
-    if id then return id end
-    id = util.NetworkStringToID(str)
-    if SERVER and id == 0 then id = util.AddNetworkString(str) end
-    if id ~= 0 then
-        NetworkStringToIDCache[str] = id
-        return id
+function net.WriteBigTable(tbl)
+    local data = util.Compress(pon.encode(tbl))
+    local len = #data
+    net.WriteUInt(len, 32)
+    local i = 1
+    while i <= len do
+        local size = math.min(32768, len - i + 1)
+        net.WriteUInt(size, 16)
+        net.WriteData(data:sub(i, i + size - 1), size)
+        i = i + size
     end
 end
 
-local NetReceiverByID = {}
-function net.Receive(name, func)
-    local id = NetworkStringToID(name)
-    if id then NetReceiverByID[id] = func end
-    net.Receivers[name:lower()] = func
-end
-
-function net.Incoming(len, client)
-    local i = net.ReadHeader()
-    local func = NetReceiverByID[i]
-    if not func then
-        local str = util.NetworkIDToString(i)
-        if not str then return end
-        func = net.Receivers[str:lower()]
-        if not func then return end
-        NetReceiverByID[i] = func
+function net.ReadBigTable()
+    local len = net.ReadUInt(32)
+    local read = 0
+    local parts = {}
+    while read < len do
+        local size = net.ReadUInt(16)
+        parts[#parts + 1] = net.ReadData(size)
+        read = read + size
     end
 
-    func(len - 16, client)
-end
-
-if SERVER then
-    local BaseNetStart = net.Start
-    function net.Start(messageName, unreliable)
-        NetworkStringToID(messageName)
-        return BaseNetStart(messageName, unreliable)
-    end
+    local data = table.concat(parts)
+    local raw = util.Decompress(data)
+    return pon.decode(raw)
 end
