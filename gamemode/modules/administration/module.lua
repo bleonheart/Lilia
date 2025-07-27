@@ -25,6 +25,113 @@ MODULE.Privileges = {
     }
 }
 
+hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
+    local ply = LocalPlayer()
+    if not ply:hasPrivilege("View Staff Actions") then return end
+    tabs[L("staffManagement")] = {
+        icon = "icon16/chart_bar.png",
+        build = function(sheet)
+            local panel = vgui.Create("DPanel", sheet)
+            panel:Dock(FILL)
+            panel:DockPadding(10, 10, 10, 10)
+            local list = vgui.Create("DListView", panel)
+            list:Dock(FILL)
+            list:AddColumn(L("adminName"))
+            list:AddColumn(L("steamID"))
+            list:AddColumn(L("staffAction"))
+            list:AddColumn(L("count"))
+            MODULE.actionList = list
+            list.OnRowRightClick = function(_, _, line)
+                if not IsValid(line) then return end
+                local m = DermaMenu()
+                m:AddOption(L("copyRow"), function()
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i) .. " | "
+                    end
+
+                    SetClipboardText(s:sub(1, -4))
+                end):SetIcon("icon16/page_copy.png")
+
+                m:Open()
+            end
+
+            net.Start("RequestStaffActions")
+            net.SendToServer()
+            return panel
+        end
+    }
+
+    tabs[L("warnings")] = {
+        icon = "icon16/error.png",
+        build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:Dock(FILL)
+            pnl:DockPadding(10, 10, 10, 10)
+            local list = vgui.Create("DListView", pnl)
+            list:Dock(FILL)
+            list:AddColumn(L("player"))
+            list:AddColumn(L("admin"))
+            list:AddColumn(L("reason"))
+            list:AddColumn(L("timestamp"))
+            MODULE.warnList = list
+            list.OnRowRightClick = function(_, _, line)
+                if not IsValid(line) then return end
+                local m = DermaMenu()
+                m:AddOption(L("copyRow"), function()
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i) .. " | "
+                    end
+
+                    SetClipboardText(s:sub(1, -4))
+                end):SetIcon("icon16/page_copy.png")
+
+                m:Open()
+            end
+
+            net.Start("RequestPlayerWarnings")
+            net.WriteString(LocalPlayer():SteamID64())
+            net.SendToServer()
+            return pnl
+        end
+    }
+
+    tabs[L("ticketsTab")] = {
+        icon = "icon16/briefcase.png",
+        build = function(sheet)
+            local pnl = vgui.Create("DPanel", sheet)
+            pnl:Dock(FILL)
+            pnl:DockPadding(10, 10, 10, 10)
+            local list = vgui.Create("DListView", pnl)
+            list:Dock(FILL)
+            list:AddColumn(L("timestamp"))
+            list:AddColumn(L("requester"))
+            list:AddColumn(L("admin"))
+            list:AddColumn(L("message"))
+            MODULE.ticketList = list
+            list.OnRowRightClick = function(_, _, line)
+                if not IsValid(line) then return end
+                local m = DermaMenu()
+                m:AddOption(L("copyRow"), function()
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i) .. " | "
+                    end
+
+                    SetClipboardText(s:sub(1, -4))
+                end):SetIcon("icon16/page_copy.png")
+
+                m:Open()
+            end
+
+            net.Start("RequestTicketClaims")
+            net.SendToServer()
+            return pnl
+        end
+    }
+end)
+
 hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(parent, tabs)
     local client = LocalPlayer()
     if not client:hasPrivilege("Staff Permission — Access Entity List") then return end
@@ -223,9 +330,7 @@ local function buildDefaultTable(g)
     local t = {}
     if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
     for _, v in pairs(CAMI.GetPrivileges() or {}) do
-        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then
-            t[v.Name] = true
-        end
+        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
     end
     return t
 end
@@ -236,7 +341,7 @@ local function ensureCAMIGroup(n, inh)
     if not g[n] then
         CAMI.RegisterUsergroup({
             Name = n,
-            Inherits = n == "developer" and "superadmin" or (inh or "user")
+            Inherits = n == "developer" and "superadmin" or inh or "user"
         })
     end
 end
@@ -328,7 +433,6 @@ if SERVER then
         for _, list in pairs(cats) do
             table.sort(list)
         end
-
         return cats
     end
 
@@ -508,6 +612,7 @@ if SERVER then
             for _, row in ipairs(data or {}) do
                 sendData[#sendData + 1] = buildCharEntry(client, row)
             end
+
             callback(sendData)
         end)
     end
@@ -550,11 +655,17 @@ if SERVER then
         local mode = net.ReadString()
         if mode == "all" then
             queryAllCharacters(p, function(data)
-                sendBigTable(p, {mode = "all", list = data}, "liaCharBrowserChunk", "liaCharBrowserDone")
+                sendBigTable(p, {
+                    mode = "all",
+                    list = data
+                }, "liaCharBrowserChunk", "liaCharBrowserDone")
             end)
         else
             collectOnlineCharacters(p, function(data)
-                sendBigTable(p, {mode = "online", list = data}, "liaCharBrowserChunk", "liaCharBrowserDone")
+                sendBigTable(p, {
+                    mode = "online",
+                    list = data
+                }, "liaCharBrowserChunk", "liaCharBrowserDone")
             end)
         end
     end)
@@ -642,7 +753,11 @@ if SERVER then
 else
     local groupChunks, playerChunks, charChunks = {}, {}, {}
     local PRIV_LIST, PLAYER_LIST, LAST_GROUP = {}, {}, nil
-    local CHAR_LISTS = {online = {}, all = {}}
+    local CHAR_LISTS = {
+        online = {},
+        all = {}
+    }
+
     local function setFont(o, f)
         if IsValid(o) then o:SetFont(f) end
     end
@@ -677,6 +792,7 @@ else
 
                 SetClipboardText(s:sub(1, -4))
             end):SetIcon("icon16/page_copy.png")
+
             m:Open()
         end
     end
@@ -694,9 +810,7 @@ else
         list:AddColumn("Last Used")
         for _, v in ipairs(CHAR_LISTS[mode] or {}) do
             local sid = v.SteamID or v.steamID or ""
-            if not filterID or tostring(sid) == tostring(filterID) then
-                list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
-            end
+            if not filterID or tostring(sid) == tostring(filterID) then list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed) end
         end
 
         list.OnRowRightClick = function(_, _, line)
@@ -710,6 +824,7 @@ else
 
                 SetClipboardText(s:sub(1, -4))
             end):SetIcon("icon16/page_copy.png")
+
             m:Open()
         end
     end
@@ -720,8 +835,8 @@ else
         for _, info in pairs(ps.playerTabs) do
             if IsValid(info.tab) then ps:CloseTab(info.tab, true) end
         end
-        ps.playerTabs = {}
 
+        ps.playerTabs = {}
         local byPlayer = {}
         for _, entry in ipairs(CHAR_LISTS.online or {}) do
             local sid = tostring(entry.SteamID or entry.steamID or "")
@@ -736,7 +851,11 @@ else
             local ply = player.GetBySteamID64(sid)
             local name = IsValid(ply) and ply:Nick() or util.SteamIDFrom64(sid)
             local sheetInfo = ps:AddSheet(name, page, "icon16/user.png")
-            ps.playerTabs[sid] = {tab = sheetInfo.Tab, panel = page}
+            ps.playerTabs[sid] = {
+                tab = sheetInfo.Tab,
+                panel = page
+            }
+
             buildCharListUI(page, "online", sid)
         end
     end
@@ -746,7 +865,6 @@ else
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
         local editable = not DEFAULT_GROUPS[g]
-
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
         nameLbl:DockMargin(20, 0, 0, 0)
@@ -793,6 +911,7 @@ else
         for cat in pairs(PRIV_LIST) do
             catNames[#catNames + 1] = cat
         end
+
         table.sort(catNames)
         for _, catName in ipairs(catNames) do
             local displayName = catName
@@ -827,6 +946,7 @@ else
                         current[priv] = nil
                     end
                 end
+
                 if not editable then chk:SetEnabled(false) end
                 row.PerformLayout = function(_, w, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
                 checkboxes[#checkboxes + 1] = chk
@@ -835,7 +955,6 @@ else
 
         list:InvalidateLayout(true)
         listHolder:SetTall(list:GetTall())
-
     end
 
     local function buildGroupsUI(panel, cami, perms)
@@ -843,7 +962,6 @@ else
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
         sheet:DockMargin(0, 0, 0, 40)
-
         local keys, tabs = {}, {}
         for g in pairs(cami) do
             keys[#keys + 1] = g
@@ -863,7 +981,6 @@ else
         bottomBar:Dock(BOTTOM)
         bottomBar:SetTall(36)
         bottomBar.Paint = function() end
-
         local addBtn = bottomBar:Add("liaMediumButton")
         addBtn:Dock(LEFT)
         addBtn:DockMargin(0, 0, 6, 0)
@@ -883,12 +1000,10 @@ else
         renameBtn:Dock(FILL)
         renameBtn:DockMargin(0, 0, 6, 0)
         renameBtn:SetText("Rename")
-
         local delBtn = bottomBar:Add("liaMediumButton")
         delBtn:Dock(RIGHT)
         delBtn:SetWide(90)
         delBtn:SetText("Delete")
-
         local function updateButtons(g)
             local editable = not DEFAULT_GROUPS[g]
             renameBtn:SetVisible(editable)
@@ -1099,6 +1214,7 @@ else
                     net.WriteString(line:GetColumnText(1))
                     net.SendToServer()
                 end
+
                 net.Start("liaDBTablesRequest")
                 net.SendToServer()
                 return pnl
