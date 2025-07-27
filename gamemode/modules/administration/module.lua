@@ -991,18 +991,18 @@ else
                 local ps = pnl:Add("DPropertySheet")
                 ps:Dock(FILL)
                 lia.gui.charBrowserPS = ps
-                local online = vgui.Create("DPanel", ps)
-                online:Dock(FILL)
-                online.Paint = function() end
-                lia.gui.charBrowserOnline = online
-                buildCharListUI(online, "online")
-                buildPlayerTabs(ps)
                 local all = vgui.Create("DPanel", ps)
                 all:Dock(FILL)
                 all.Paint = function() end
                 lia.gui.charBrowserAll = all
                 ps:AddSheet("All Characters", all, "icon16/database.png")
                 buildCharListUI(all, "all")
+                local online = vgui.Create("DPanel", ps)
+                online:Dock(FILL)
+                online.Paint = function() end
+                lia.gui.charBrowserOnline = online
+                buildCharListUI(online, "online")
+                buildPlayerTabs(ps)
                 net.Start("liaCharBrowserRequest")
                 net.WriteString("online")
                 net.SendToServer()
