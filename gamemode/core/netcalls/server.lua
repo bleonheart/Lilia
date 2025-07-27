@@ -441,10 +441,34 @@ net.Receive("RequestStaffActions", function(_, client)
     if not client:hasPrivilege("View Staff Actions") then return end
     local function queryStaffActions(callback)
         lia.db.query([[
-            SELECT sa.admin, sa.adminSteamID, lp.userGroup, COUNT(*) AS count
-            FROM lia_staffactions AS sa
-            LEFT JOIN lia_players AS lp ON lp.steamID = sa.adminSteamID
-            GROUP BY sa.adminSteamID, sa.admin
+            SELECT a.admin, a.adminSteamID, lp.userGroup,
+                   COALESCE(tc.ticketCount, 0) AS ticketCount,
+                   COALESCE(w.warningCount, 0) AS warningCount,
+                   COALESCE(b.banCount, 0) AS banCount
+            FROM (
+                SELECT DISTINCT adminSteamID, admin FROM lia_staffactions
+                UNION
+                SELECT DISTINCT adminSteamID, admin FROM lia_ticketclaims
+                UNION
+                SELECT DISTINCT adminSteamID, admin FROM lia_warnings
+            ) AS a
+            LEFT JOIN lia_players AS lp ON lp.steamID = a.adminSteamID
+            LEFT JOIN (
+                SELECT adminSteamID, COUNT(*) AS ticketCount
+                FROM lia_ticketclaims
+                GROUP BY adminSteamID
+            ) AS tc ON tc.adminSteamID = a.adminSteamID
+            LEFT JOIN (
+                SELECT adminSteamID, COUNT(*) AS warningCount
+                FROM lia_warnings
+                GROUP BY adminSteamID
+            ) AS w ON w.adminSteamID = a.adminSteamID
+            LEFT JOIN (
+                SELECT adminSteamID, COUNT(*) AS banCount
+                FROM lia_staffactions
+                WHERE action = 'plyban'
+                GROUP BY adminSteamID
+            ) AS b ON b.adminSteamID = a.adminSteamID
         ]], callback)
     end
 
