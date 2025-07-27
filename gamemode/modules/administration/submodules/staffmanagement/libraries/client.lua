@@ -14,7 +14,7 @@ net.Receive("PlayerWarnings", function()
     if IsValid(MODULE.warnList) then
         MODULE.warnList:Clear()
         for _, w in ipairs(warnings) do
-            MODULE.warnList:AddLine(w.warned or "", w.admin or "", w.warning or "", w.timestamp or "")
+            MODULE.warnList:AddLine(w.warned or "", w.warnedSteamID or "", w.admin or "", w.adminSteamID or "", w.warning or "", w.timestamp or "")
         end
     end
 end)
@@ -24,7 +24,7 @@ net.Receive("TicketClaims", function()
     if IsValid(MODULE.ticketList) then
         MODULE.ticketList:Clear()
         for _, c in ipairs(claims) do
-            MODULE.ticketList:AddLine(os.date("%Y-%m-%d %H:%M:%S", c.timestamp or 0), c.requester or "", c.admin or "", c.message or "")
+            MODULE.ticketList:AddLine(os.date("%Y-%m-%d %H:%M:%S", c.timestamp or 0), c.requester or "", c.requesterSteamID or "", c.admin or "", c.adminSteamID or "", c.message or "")
         end
     end
 end)
