@@ -928,3 +928,297 @@ net.Receive("WorkshopDownloader_Info", function()
     lia.workshop.checkPrompt()
 end)
 
+-- from modules/chatbox/libraries/client.lua
+net.Receive("RegenChat", RegenChat)
+
+-- from modules/administration/submodules/staffmanagement/libraries/client.lua
+net.Receive("StaffActions", function()
+    local MODULE = lia.module.get("staffmanagement")
+    local data = net.ReadTable()
+    if IsValid(MODULE.actionList) then
+        MODULE.actionList:Clear()
+        for _, row in ipairs(data) do
+            MODULE.actionList:AddLine(row.admin or "N/A", row.adminSteamID or "", row.userGroup or "", row.count or 0)
+        end
+    end
+end)
+
+net.Receive("PlayerWarnings", function()
+    local MODULE = lia.module.get("staffmanagement")
+    local warnings = net.ReadTable()
+    if IsValid(MODULE.warnList) then
+        MODULE.warnList:Clear()
+        for _, w in ipairs(warnings) do
+            MODULE.warnList:AddLine(w.warned or "", w.warnedSteamID or "", w.admin or "", w.adminSteamID or "", w.warning or "", w.timestamp or "")
+        end
+    end
+end)
+
+net.Receive("TicketClaims", function()
+    local MODULE = lia.module.get("staffmanagement")
+    local claims = net.ReadTable()
+    if IsValid(MODULE.ticketList) then
+        MODULE.ticketList:Clear()
+        for _, c in ipairs(claims) do
+            MODULE.ticketList:AddLine(os.date("%Y-%m-%d %H:%M:%S", c.timestamp or 0), c.requester or "", c.requesterSteamID or "", c.admin or "", c.adminSteamID or "", c.message or "")
+        end
+    end
+end)
+
+-- from modules/administration/submodules/permissions/libraries/client.lua
+net.Receive("DisplayCharList", function()
+    local sendData = net.ReadTable()
+    local targetSteamIDsafe = net.ReadString()
+    local extraColumns, extraOrder = {}, {}
+    for _, v in pairs(sendData or {}) do
+        if istable(v.extraDetails) then
+            for k in pairs(v.extraDetails) do
+                if not extraColumns[k] then
+                    extraColumns[k] = true
+                    table.insert(extraOrder, k)
+                end
+            end
+        end
+    end
+
+    local columns = {
+        {name = "ID", field = "ID"},
+        {name = "Name", field = "Name"},
+        {name = "Desc", field = "Desc"},
+        {name = "Faction", field = "Faction"},
+        {name = "Banned", field = "Banned"},
+        {name = "BanningAdminName", field = "BanningAdminName"},
+        {name = "BanningAdminSteamID", field = "BanningAdminSteamID"},
+        {name = "BanningAdminRank", field = "BanningAdminRank"},
+        {name = "CharMoney", field = "Money"},
+        {name = "LastUsed", field = "LastUsed"}
+    }
+
+    for _, name in ipairs(extraOrder) do
+        table.insert(columns, {name = name, field = name})
+    end
+
+    local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
+    if IsValid(listView) then
+        for _, line in ipairs(listView:GetLines()) do
+            local dataIndex = line:GetID()
+            local rowData = sendData[dataIndex]
+            if rowData and rowData.Banned == "Yes" then
+                line.DoPaint = line.Paint
+                line.Paint = function(pnl, w, h)
+                    surface.SetDrawColor(200, 100, 100)
+                    surface.DrawRect(0, 0, w, h)
+                    pnl:DoPaint(w, h)
+                end
+            end
+
+            line.CharID = rowData and rowData.ID
+            if rowData and rowData.extraDetails then
+                local colIndex = 11
+                for _, name in ipairs(extraOrder) do
+                    line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
+                    colIndex = colIndex + 1
+                end
+            end
+        end
+
+        listView.OnRowRightClick = function(_, _, ln)
+            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+                local dMenu = DermaMenu()
+                if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                    opt1:SetIcon("icon16/cancel.png")
+                end
+
+                if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                    opt2:SetIcon("icon16/accept.png")
+                end
+
+                dMenu:Open()
+            end
+        end
+    end
+end)
+
+-- from modules/administration/submodules/logging/libraries/client.lua
+net.Receive("send_logs", function()
+    local receivedChunks = receivedChunks or {}
+    local chunkIndex = net.ReadUInt(16)
+    local numChunks = net.ReadUInt(16)
+    local chunkLen = net.ReadUInt(16)
+    local chunkData = net.ReadData(chunkLen)
+    receivedChunks[chunkIndex] = chunkData
+    for i = 1, numChunks do
+        if not receivedChunks[i] then return end
+    end
+
+    local fullData = table.concat(receivedChunks)
+    receivedChunks = {}
+    local jsonData = util.Decompress(fullData)
+    local categorizedLogs = util.JSONToTable(jsonData)
+    if not categorizedLogs then
+        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
+        return
+    end
+
+    if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
+end)
+
+-- from modules/recognition/libraries/client.lua
+net.Receive("rgnDone", function()
+    local client = LocalPlayer()
+    hook.Run("OnCharRecognized", client, client:getChar():getID())
+end)
+
+-- from modules/teams/libraries/client.lua
+net.Receive("RosterData", function()
+    local uid = net.ReadString()
+    local data = net.ReadTable()
+    local char = LocalPlayer():getChar()
+    if not char then return end
+    if not (LocalPlayer():IsSuperAdmin() or char:hasFlags("V")) then return end
+    for _, row in ipairs(data or {}) do
+        row.steamID = toSteamID(row.steamID)
+    end
+
+    rosterRows[uid] = data or {}
+    populate(uid)
+end)
+
+-- from modules/inventory/submodules/vendor/libraries/client.lua
+net.Receive("VendorSync", function()
+    local vendor = net.ReadEntity()
+    if not IsValid(vendor) then return end
+    vendor.money = net.ReadInt(32)
+    if vendor.money < 0 then vendor.money = nil end
+    local count = net.ReadUInt(16)
+    vendor.items = {}
+    for _ = 1, count do
+        local itemType = net.ReadString()
+        local price = net.ReadInt(32)
+        local stock = net.ReadInt(32)
+        local maxStock = net.ReadInt(32)
+        local mode = net.ReadInt(8)
+        if price < 0 then price = nil end
+        if stock < 0 then stock = nil end
+        if maxStock <= 0 then maxStock = nil end
+        if mode < 0 then mode = nil end
+        vendor.items[itemType] = {
+            [VendorPrice] = price,
+            [VendorStock] = stock,
+            [VendorMaxStock] = maxStock,
+            [VendorMode] = mode
+        }
+    end
+
+    hook.Run("VendorSynchronized", vendor)
+end)
+
+net.Receive("VendorOpen", function()
+    local vendor = net.ReadEntity()
+    if IsValid(vendor) then
+        liaVendorEnt = vendor
+        hook.Run("VendorOpened", vendor)
+    end
+end)
+
+net.Receive("VendorExit", function()
+    liaVendorEnt = nil
+    hook.Run("VendorExited")
+end)
+
+net.Receive("VendorEdit", function()
+    local key = net.ReadString()
+    timer.Simple(0.25, function()
+        if not IsValid(liaVendorEnt) then return end
+        hook.Run("VendorEdited", liaVendorEnt, key)
+    end)
+end)
+
+net.Receive("VendorFaction", function()
+    local factionID = net.ReadUInt(8)
+    if IsValid(liaVendorEnt) then liaVendorEnt.factions[factionID] = true end
+end)
+
+net.Receive("VendorMoney", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local money = net.ReadInt(32)
+    if money < 0 then money = nil end
+    local old = vendor.money
+    vendor.money = money
+    hook.Run("VendorMoneyUpdated", vendor, money, old)
+end)
+
+net.Receive("VendorPrice", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local itemType = net.ReadString()
+    local value = net.ReadInt(32)
+    if value < 0 then value = nil end
+    vendor.items[itemType] = vendor.items[itemType] or {}
+    vendor.items[itemType][VendorPrice] = value
+    hook.Run("VendorItemPriceUpdated", vendor, itemType, value)
+end)
+
+net.Receive("VendorMode", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local itemType = net.ReadString()
+    local value = net.ReadInt(8)
+    if value < 0 then value = nil end
+    vendor.items[itemType] = vendor.items[itemType] or {}
+    vendor.items[itemType][VendorMode] = value
+    hook.Run("VendorItemModeUpdated", vendor, itemType, value)
+end)
+
+net.Receive("VendorStock", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local itemType = net.ReadString()
+    local value = net.ReadUInt(32)
+    vendor.items[itemType] = vendor.items[itemType] or {}
+    vendor.items[itemType][VendorStock] = value
+    hook.Run("VendorItemStockUpdated", vendor, itemType, value)
+end)
+
+net.Receive("VendorMaxStock", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local itemType = net.ReadString()
+    local value = net.ReadUInt(32)
+    if value == 0 then value = nil end
+    vendor.items[itemType] = vendor.items[itemType] or {}
+    vendor.items[itemType][VendorMaxStock] = value
+    hook.Run("VendorItemMaxStockUpdated", vendor, itemType, value)
+end)
+
+net.Receive("VendorAllowFaction", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local id = net.ReadUInt(8)
+    local allowed = net.ReadBool()
+    if allowed then
+        vendor.factions[id] = true
+    else
+        vendor.factions[id] = nil
+    end
+
+    hook.Run("VendorFactionUpdated", vendor, id, allowed)
+end)
+
+net.Receive("VendorAllowClass", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local id = net.ReadUInt(8)
+    local allowed = net.ReadBool()
+    if allowed then
+        vendor.classes[id] = true
+    else
+        vendor.classes[id] = nil
+    end
+
+    hook.Run("VendorClassUpdated", vendor, id, allowed)
+end)
+

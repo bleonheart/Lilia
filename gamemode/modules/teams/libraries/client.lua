@@ -44,19 +44,6 @@ local function populate(uid)
     end
 end
 
-net.Receive("RosterData", function()
-    local uid = net.ReadString()
-    local data = net.ReadTable()
-    local char = LocalPlayer():getChar()
-    if not char then return end
-    if not (LocalPlayer():IsSuperAdmin() or char:hasFlags("V")) then return end
-    for _, row in ipairs(data or {}) do
-        row.steamID = toSteamID(row.steamID)
-    end
-
-    rosterRows[uid] = data or {}
-    populate(uid)
-end)
 
 local function makeList(parent)
     local lst = parent:Add("DListView")
