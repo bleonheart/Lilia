@@ -1,4 +1,5 @@
-﻿MODULE.CharacterInformation = {}
+﻿local MODULE = MODULE
+MODULE.CharacterInformation = {}
 function MODULE:LoadCharInformation()
     hook.Run("AddSection", L("generalInfo"), Color(0, 0, 0), 1, 1)
     hook.Run("AddTextField", L("generalInfo"), "name", L("name"), function() return LocalPlayer():getChar():getName() end)

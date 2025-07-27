@@ -1,4 +1,5 @@
-﻿local HackCommands = {
+﻿local MODULE = MODULE
+local HackCommands = {
     ["aimkey"] = true,
     ["+hera_aim"] = true,
     ["boom"] = true,

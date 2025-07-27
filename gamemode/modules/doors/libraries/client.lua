@@ -1,4 +1,5 @@
-﻿function MODULE:DrawEntityInfo(entity, alpha)
+﻿local MODULE = MODULE
+function MODULE:DrawEntityInfo(entity, alpha)
     if entity:isDoor() and not entity:getNetVar("hidden", false) then
         if entity:getNetVar("disabled", false) then
             local pos = entity:LocalToWorld(entity:OBBCenter()):ToScreen()

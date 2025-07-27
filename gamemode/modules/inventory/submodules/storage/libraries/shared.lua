@@ -1,4 +1,5 @@
-﻿function MODULE:isSuitableForTrunk(entity)
+﻿local MODULE = MODULE
+function MODULE:isSuitableForTrunk(entity)
     return IsValid(entity) and entity:IsVehicle()
 end
 

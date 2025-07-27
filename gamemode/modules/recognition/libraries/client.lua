@@ -1,4 +1,5 @@
-﻿local ChatIsRecognized = {
+﻿local MODULE = MODULE
+local ChatIsRecognized = {
     ic = true,
     y = true,
     w = true,
