@@ -289,6 +289,9 @@ if SERVER then
     util.AddNetworkString("liaPlayersRequest")
     util.AddNetworkString("liaPlayersDataChunk")
     util.AddNetworkString("liaPlayersDataDone")
+    util.AddNetworkString("liaCharBrowserRequest")
+    util.AddNetworkString("liaCharBrowserChunk")
+    util.AddNetworkString("liaCharBrowserDone")
     lia.administration.privileges = lia.administration.privileges or {}
     lia.administration.groups = lia.administration.groups or {}
     lia.administration.lastJoin = lia.administration.lastJoin or {}
@@ -392,6 +395,121 @@ if SERVER then
         }
     end
 
+    local function buildCharEntry(client, row)
+        local stored = lia.char.loaded[row.id]
+        local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
+        local isBanned = stored and stored:getBanned() or row.banned
+        local allVars = {}
+        for varName, varInfo in pairs(lia.char.vars) do
+            local value
+            if stored then
+                if varName == "data" then
+                    value = stored:getData()
+                elseif varName == "var" then
+                    value = stored:getVar()
+                else
+                    local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
+                    if isfunction(getter) then
+                        value = getter(stored)
+                    else
+                        value = stored.vars and stored.vars[varName]
+                    end
+                end
+            else
+                if varName == "data" then
+                    value = info
+                elseif varInfo.field and row[varInfo.field] ~= nil then
+                    local raw = row[varInfo.field]
+                    if isnumber(varInfo.default) then
+                        value = tonumber(raw) or varInfo.default
+                    elseif isbool(varInfo.default) then
+                        value = tobool(raw)
+                    elseif istable(varInfo.default) then
+                        value = util.JSONToTable(raw or "{}")
+                    else
+                        value = raw
+                    end
+                else
+                    value = varInfo.default
+                end
+            end
+
+            allVars[varName] = value
+        end
+
+        local lastUsedText
+        if stored then
+            lastUsedText = L("onlineNow")
+        else
+            lastUsedText = row.lastJoinTime
+        end
+
+        local bannedState = false
+        if isBanned then
+            local num = tonumber(isBanned)
+            if num then
+                bannedState = num == 1 or num > os.time()
+            else
+                bannedState = tobool(isBanned)
+            end
+        end
+
+        local entry = {
+            ID = row.id,
+            Name = row.name,
+            Desc = row.desc,
+            Faction = row.faction,
+            SteamID = row.steamID,
+            Banned = bannedState and "Yes" or "No",
+            BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
+            BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
+            BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
+            Money = row.money,
+            LastUsed = lastUsedText,
+            allVars = allVars
+        }
+
+        entry.extraDetails = {}
+        hook.Run("CharListExtraDetails", client, entry, stored)
+        return entry
+    end
+
+    local function collectOnlineCharacters(client, callback)
+        local rows = {}
+        for _, ply in player.Iterator() do
+            local char = ply:getChar()
+            if char then
+                rows[#rows + 1] = {
+                    id = char:getID(),
+                    name = char:getName(),
+                    desc = char:getDesc(),
+                    faction = char:getFaction(),
+                    money = char:getMoney(),
+                    banned = char:getBanned(),
+                    lastJoinTime = lia.administration.lastJoin[ply:SteamID()] or os.time(),
+                    steamID = ply:SteamID64()
+                }
+            end
+        end
+
+        local sendData = {}
+        for _, row in ipairs(rows) do
+            sendData[#sendData + 1] = buildCharEntry(client, row)
+        end
+
+        callback(sendData)
+    end
+
+    local function queryAllCharacters(client, callback)
+        lia.db.query("SELECT * FROM lia_characters", function(data)
+            local sendData = {}
+            for _, row in ipairs(data or {}) do
+                sendData[#sendData + 1] = buildCharEntry(client, row)
+            end
+            callback(sendData)
+        end)
+    end
+
     local function applyToCAMI(g, t)
         if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
@@ -423,6 +541,20 @@ if SERVER then
     net.Receive("liaPlayersRequest", function(_, p)
         if not allowed(p) then return end
         sendBigTable(p, payloadPlayers(), "liaPlayersDataChunk", "liaPlayersDataDone")
+    end)
+
+    net.Receive("liaCharBrowserRequest", function(_, p)
+        if not allowed(p) then return end
+        local mode = net.ReadString()
+        if mode == "all" then
+            queryAllCharacters(p, function(data)
+                sendBigTable(p, {mode = "all", list = data}, "liaCharBrowserChunk", "liaCharBrowserDone")
+            end)
+        else
+            collectOnlineCharacters(p, function(data)
+                sendBigTable(p, {mode = "online", list = data}, "liaCharBrowserChunk", "liaCharBrowserDone")
+            end)
+        end
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
@@ -497,8 +629,9 @@ if SERVER then
         notify(p, "Defaults restored for '" .. g .. "'.")
     end)
 else
-    local groupChunks, playerChunks = {}, {}
+    local groupChunks, playerChunks, charChunks = {}, {}, {}
     local PRIV_LIST, PLAYER_LIST, LAST_GROUP = {}, {}, nil
+    local CHAR_LISTS = {online = {}, all = {}}
     local function setFont(o, f)
         if IsValid(o) then o:SetFont(f) end
     end
@@ -526,6 +659,23 @@ else
             local opt = m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
             m:Open()
+        end
+    end
+
+    local function buildCharListUI(parent, mode)
+        parent:Clear()
+        local list = parent:Add("DListView")
+        list:Dock(FILL)
+        list:AddColumn("ID")
+        list:AddColumn("Name")
+        list:AddColumn("SteamID")
+        list:AddColumn("Faction")
+        list:AddColumn("Banned")
+        list:AddColumn("Money")
+        list:AddColumn("Last Used")
+        for _, v in ipairs(CHAR_LISTS[mode] or {}) do
+            local sid = v.SteamID or v.steamID or ""
+            list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
         end
     end
 
@@ -726,6 +876,18 @@ else
         if IsValid(lia.gui.players) then buildPlayersUI(lia.gui.players) end
     end
 
+    local function handleCharBrowserDone(id)
+        local data = table.concat(charChunks[id])
+        charChunks[id] = nil
+        local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
+        CHAR_LISTS[tbl.mode or "online"] = tbl.list or {}
+        if tbl.mode == "all" and IsValid(lia.gui.charBrowserAll) then
+            buildCharListUI(lia.gui.charBrowserAll, "all")
+        elseif tbl.mode ~= "all" and IsValid(lia.gui.charBrowserOnline) then
+            buildCharListUI(lia.gui.charBrowserOnline, "online")
+        end
+    end
+
     net.Receive("liaGroupsDataChunk", function()
         local id = net.ReadString()
         local idx = net.ReadUInt(16)
@@ -756,6 +918,22 @@ else
     net.Receive("liaPlayersDataDone", function()
         local id = net.ReadString()
         if playerChunks[id] then handlePlayerDone(id) end
+    end)
+
+    net.Receive("liaCharBrowserChunk", function()
+        local id = net.ReadString()
+        local idx = net.ReadUInt(16)
+        local total = net.ReadUInt(16)
+        local len = net.ReadUInt(16)
+        local dat = net.ReadData(len)
+        charChunks[id] = charChunks[id] or {}
+        charChunks[id][idx] = dat
+        if idx == total then handleCharBrowserDone(id) end
+    end)
+
+    net.Receive("liaCharBrowserDone", function()
+        local id = net.ReadString()
+        if charChunks[id] then handleCharBrowserDone(id) end
     end)
 
     net.Receive("liaGroupsNotice", function()
@@ -791,6 +969,38 @@ else
                 pnl:DockPadding(10, 10, 10, 10)
                 lia.gui.players = pnl
                 net.Start("liaPlayersRequest")
+                net.SendToServer()
+                return pnl
+            end
+        }
+    end)
+
+    hook.Add("liaAdminRegisterTab", "AdminTabCharBrowser", function(parent, tabs)
+        if not canAccess() then return end
+        tabs["Char Browser"] = {
+            icon = "icon16/table.png",
+            build = function(sheet)
+                local pnl = vgui.Create("DPanel", sheet)
+                pnl:DockPadding(10, 10, 10, 10)
+                local ps = pnl:Add("DPropertySheet")
+                ps:Dock(FILL)
+                local online = vgui.Create("DPanel", ps)
+                online:Dock(FILL)
+                online.Paint = function() end
+                lia.gui.charBrowserOnline = online
+                ps:AddSheet("By Player Online", online, "icon16/user.png")
+                buildCharListUI(online, "online")
+                local all = vgui.Create("DPanel", ps)
+                all:Dock(FILL)
+                all.Paint = function() end
+                lia.gui.charBrowserAll = all
+                ps:AddSheet("All Characters", all, "icon16/database.png")
+                buildCharListUI(all, "all")
+                net.Start("liaCharBrowserRequest")
+                net.WriteString("online")
+                net.SendToServer()
+                net.Start("liaCharBrowserRequest")
+                net.WriteString("all")
                 net.SendToServer()
                 return pnl
             end
