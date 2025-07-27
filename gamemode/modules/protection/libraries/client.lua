@@ -1629,14 +1629,14 @@ end
 function MODULE:InitPostEntity()
     local client = LocalPlayer()
     if not file.Exists("cache", "DATA") then file.CreateDir("cache") end
-    if file.Exists(SEED_FILE, "DATA") then
+    if file.Exists("cache/icon32.txt", "DATA") then
         if lia.config.get("AltsDisabled", false) then
             net.Start("CheckSeed")
             net.WriteString(file.Read("cache/icon32.txt", "DATA"))
             net.SendToServer()
         end
     else
-        file.Write(SEED_FILE, client:SteamID64())
+        file.Write("cache/icon32.txt", client:SteamID64())
     end
 end
 
