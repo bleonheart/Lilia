@@ -71,7 +71,9 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("player"))
+            list:AddColumn(L("steamID"))
             list:AddColumn(L("admin"))
+            list:AddColumn(L("steamID"))
             list:AddColumn(L("reason"))
             list:AddColumn(L("timestamp"))
             MODULE.warnList = list
@@ -107,7 +109,9 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
             list:Dock(FILL)
             list:AddColumn(L("timestamp"))
             list:AddColumn(L("requester"))
+            list:AddColumn(L("steamID"))
             list:AddColumn(L("admin"))
+            list:AddColumn(L("steamID"))
             list:AddColumn(L("message"))
             MODULE.ticketList = list
             list.OnRowRightClick = function(_, _, line)
@@ -1149,7 +1153,7 @@ else
 
     hook.Add("liaAdminRegisterTab", "AdminTabCharBrowser", function(parent, tabs)
         if not canAccess() then return end
-        tabs["Char Browser"] = {
+        tabs["Character List"] = {
             icon = "icon16/table.png",
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
@@ -1161,7 +1165,6 @@ else
                 online:Dock(FILL)
                 online.Paint = function() end
                 lia.gui.charBrowserOnline = online
-                ps:AddSheet("By Player Online", online, "icon16/user.png")
                 buildCharListUI(online, "online")
                 buildPlayerTabs(ps)
                 local all = vgui.Create("DPanel", ps)
