@@ -35,7 +35,7 @@ function SWEP:DrawHUD()
     local information = {}
     if IsValid(target) then
         if not target:IsPlayer() then
-            if target.GetCreator and IsValid(target:GetCreator()) then
+            if target:GetClass() ~= "lia_item" and target.GetCreator and IsValid(target:GetCreator()) then
                 local creator = target:GetCreator()
                 local creatorInfo = creator:Name()
                 if creator.SteamID then
