@@ -115,6 +115,39 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
     }
 end)
 
+local function startSpectateView(ent, originalThirdPerson)
+    local yaw = client:EyeAngles().yaw
+    local camZOffset = 50
+    hook.Add("CalcView", "EntityViewCalcView", function()
+        return {
+            origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
+            angles = Angle(0, yaw, 0),
+            fov = 60
+        }
+    end)
+
+    hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "liaMediumFont", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
+    hook.Add("Think", "EntityViewRotate", function()
+        if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
+        if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
+        if input.IsKeyDown(KEY_W) then camZOffset = camZOffset + FrameTime() * 100 end
+        if input.IsKeyDown(KEY_S) then camZOffset = camZOffset - FrameTime() * 100 end
+        if input.IsKeyDown(KEY_SPACE) then
+            hook.Remove("CalcView", "EntityViewCalcView")
+            hook.Remove("HUDPaint", "EntityViewHUD")
+            hook.Remove("Think", "EntityViewRotate")
+            hook.Remove("CreateMove", "EntitySpectateCreateMove")
+            lia.option.set("thirdPersonEnabled", originalThirdPerson)
+        end
+    end)
+
+    hook.Add("CreateMove", "EntitySpectateCreateMove", function(cmd)
+        cmd:SetForwardMove(0)
+        cmd:SetSideMove(0)
+        cmd:SetUpMove(0)
+    end)
+end
+
 hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
     local client = LocalPlayer()
     if not client:hasPrivilege("Access Entity List") then return end

@@ -619,14 +619,11 @@ net.Receive("send_logs_request", function(_, client)
     fetch(1)
 end)
 
-
 local function buildDefaultTable(g)
     local t = {}
     if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
     for _, v in pairs(CAMI.GetPrivileges() or {}) do
-        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then
-            t[v.Name] = true
-        end
+        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
     end
     return t
 end
@@ -645,9 +642,7 @@ end
 local function dropCAMIGroup(n)
     if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
     local g = CAMI.GetUsergroups() or {}
-    if g[n] then
-        CAMI.UnregisterUsergroup(n)
-    end
+    if g[n] then CAMI.UnregisterUsergroup(n) end
 end
 
 local function getPrivList()
@@ -661,7 +656,6 @@ local function getPrivList()
     for _, list in pairs(cats) do
         table.sort(list)
     end
-
     return cats
 end
 
@@ -695,7 +689,6 @@ local function getBanList()
             end
         end
     end
-
     return t
 end
 
@@ -726,7 +719,6 @@ local function payloadPlayers()
             banned = true
         }
     end
-
     return {
         players = plys
     }
@@ -737,7 +729,6 @@ local function buildCharEntry(client, row)
     local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
     local isBanned = stored and stored:getBanned() or row.banned
     local allVars = {}
-
     for varName, varInfo in pairs(lia.char.vars) do
         local value
         if stored then
@@ -844,6 +835,7 @@ local function queryAllCharacters(client, callback)
         for _, row in ipairs(data or {}) do
             sendData[#sendData + 1] = buildCharEntry(client, row)
         end
+
         callback(sendData)
     end)
 end
@@ -852,6 +844,7 @@ local function applyToCAMI(g, _)
     if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
     ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
 end
+
 net.Receive("liaGroupsRequest", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
@@ -899,6 +892,7 @@ net.Receive("liaCharBrowserRequest", function(_, p)
                 mode = "all",
                 list = data
             })
+
             net.Start("liaCharBrowserDone")
             net.WriteString(id)
             net.Send(p)
@@ -909,6 +903,7 @@ net.Receive("liaCharBrowserRequest", function(_, p)
                 mode = "online",
                 list = data
             })
+
             net.Start("liaCharBrowserDone")
             net.WriteString(id)
             net.Send(p)
@@ -1159,7 +1154,5 @@ end)
 net.Receive("liaBigTableDone", function(_, client)
     local id = net.ReadString()
     local tbl = lia.net.ReadBigTable(id)
-    if tbl then
-        hook.Run("LiaBigTableReceived", client, id, tbl)
-    end
+    if tbl then hook.Run("LiaBigTableReceived", client, id, tbl) end
 end)

@@ -365,12 +365,19 @@ function GM:HUDPaintBackground()
 end
 
 function GM:OnContextMenuOpen()
-    self.BaseClass:OnContextMenuOpen()
     if not IsValid(lia.gui.quick) then vgui.Create("liaQuick") end
+    gui.EnableScreenClicker(true)
+    if IsValid(lia.gui.quick) then
+        lia.gui.quick:SetVisible(true)
+        lia.gui.quick:MakePopup()
+        lia.gui.quick:SetKeyboardInputEnabled(false)
+        lia.gui.quick:SetMouseInputEnabled(true)
+    end
 end
 
 function GM:OnContextMenuClose()
-    self.BaseClass:OnContextMenuClose()
+    gui.EnableScreenClicker(false)
+    if IsValid(lia.gui.quick) then lia.gui.quick:SetVisible(false) end
 end
 
 function GM:CharListLoaded()

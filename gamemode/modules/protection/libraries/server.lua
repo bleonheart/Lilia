@@ -156,7 +156,7 @@ function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
     if client:hasRagdoll() then return false, L("youAreRagdolled") end
     if client:hasValidVehicle() then return false, L("cannotSwitchInVehicle") end
     local faction = lia.faction.indices[newCharacter:getFaction()]
-    if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
+    if lia.module.list["teams"]:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
     if not client:isStaffOnDuty() then
         local damageCd = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
         if damageCd > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCd then
