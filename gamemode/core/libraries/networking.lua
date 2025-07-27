@@ -1,5 +1,6 @@
 ﻿lia.net = lia.net or {}
 lia.net.globals = lia.net.globals or {}
+lia.net.bigTables = lia.net.bigTables or {}
 local playerMeta = FindMetaTable("Player")
 local entityMeta = FindMetaTable("Entity")
 if SERVER then
@@ -49,18 +50,14 @@ else
     playerMeta.getLocalVar = entityMeta.getNetVar
 end
 
-lia.net.bigTables = lia.net.bigTables or {}
-local BIGTABLE_CHUNK = 60000
-
 function lia.net.WriteBigTable(receiver, tbl)
     local raw = pon.encode(tbl)
     local data = util.Compress(raw)
     local len = #data
     local id = util.CRC(tostring(SysTime()) .. len)
-    local parts = math.ceil(len / BIGTABLE_CHUNK)
-
+    local parts = math.ceil(len / 60000)
     for i = 1, parts do
-        local chunk = string.sub(data, (i - 1) * BIGTABLE_CHUNK + 1, math.min(i * BIGTABLE_CHUNK, len))
+        local chunk = string.sub(data, (i - 1) * 60000 + 1, math.min(i * 60000, len))
         net.Start("liaBigTableChunk")
         net.WriteString(id)
         net.WriteUInt(i, 16)
@@ -89,7 +86,6 @@ function lia.net.WriteBigTable(receiver, tbl)
     else
         net.SendToServer()
     end
-
     return id
 end
 
