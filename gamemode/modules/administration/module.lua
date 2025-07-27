@@ -743,29 +743,9 @@ else
 
     local function renderGroupInfo(parent, g, cami, perms)
         parent:Clear()
-        LAST_GROUP = g
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
-        local btnBar = scroll:Add("DPanel")
-        btnBar:Dock(TOP)
-        btnBar:SetTall(36)
-        btnBar:DockMargin(20, 20, 20, 12)
-        btnBar.Paint = function() end
         local editable = not DEFAULT_GROUPS[g]
-
-        local delBtn, renameBtn
-        if not DEFAULT_GROUPS[g] then
-            renameBtn = btnBar:Add("liaSmallButton")
-            renameBtn:Dock(RIGHT)
-            renameBtn:DockMargin(0, 0, 6, 0)
-            renameBtn:SetWide(90)
-            renameBtn:SetText("Rename")
-            delBtn = btnBar:Add("liaSmallButton")
-            delBtn:Dock(RIGHT)
-            delBtn:DockMargin(0, 0, 6, 0)
-            delBtn:SetWide(90)
-            delBtn:SetText("Delete")
-        end
 
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
@@ -856,27 +836,6 @@ else
         list:InvalidateLayout(true)
         listHolder:SetTall(list:GetTall())
 
-        if renameBtn then
-            renameBtn.DoClick = function()
-                Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
-                    if txt == "" or txt == g then return end
-                    net.Start("liaGroupsRename")
-                    net.WriteString(g)
-                    net.WriteString(txt)
-                    net.SendToServer()
-                end)
-            end
-        end
-
-        if delBtn then
-            delBtn.DoClick = function()
-                Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
-                    net.Start("liaGroupsRemove")
-                    net.WriteString(g)
-                    net.SendToServer()
-                end, "No")
-            end
-        end
     end
 
     local function buildGroupsUI(panel, cami, perms)
@@ -900,9 +859,15 @@ else
             tabs[g] = info.Tab
         end
 
-        local addBtn = panel:Add("liaMediumButton")
-        addBtn:Dock(BOTTOM)
-        addBtn:SetTall(36)
+        local bottomBar = panel:Add("DPanel")
+        bottomBar:Dock(BOTTOM)
+        bottomBar:SetTall(36)
+        bottomBar.Paint = function() end
+
+        local addBtn = bottomBar:Add("liaMediumButton")
+        addBtn:Dock(LEFT)
+        addBtn:DockMargin(0, 0, 6, 0)
+        addBtn:SetWide(120)
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
             Derma_StringRequest("Create Group", "New group name:", "", function(txt)
@@ -912,6 +877,52 @@ else
                 net.WriteString(txt)
                 net.SendToServer()
             end)
+        end
+
+        local renameBtn = bottomBar:Add("liaMediumButton")
+        renameBtn:Dock(FILL)
+        renameBtn:DockMargin(0, 0, 6, 0)
+        renameBtn:SetText("Rename")
+
+        local delBtn = bottomBar:Add("liaMediumButton")
+        delBtn:Dock(RIGHT)
+        delBtn:SetWide(90)
+        delBtn:SetText("Delete")
+
+        local function updateButtons(g)
+            local editable = not DEFAULT_GROUPS[g]
+            renameBtn:SetVisible(editable)
+            delBtn:SetVisible(editable)
+        end
+
+        renameBtn.DoClick = function()
+            local tab = sheet:GetActiveTab()
+            if not IsValid(tab) then return end
+            local g = tab:GetText()
+            Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
+                if txt == "" or txt == g then return end
+                net.Start("liaGroupsRename")
+                net.WriteString(g)
+                net.WriteString(txt)
+                net.SendToServer()
+            end)
+        end
+
+        delBtn.DoClick = function()
+            local tab = sheet:GetActiveTab()
+            if not IsValid(tab) then return end
+            local g = tab:GetText()
+            Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
+                net.Start("liaGroupsRemove")
+                net.WriteString(g)
+                net.SendToServer()
+            end, "No")
+        end
+
+        function sheet:OnActiveTabChanged(old, new)
+            if not IsValid(new) then return end
+            LAST_GROUP = new:GetText()
+            updateButtons(LAST_GROUP)
         end
 
         if LAST_GROUP and tabs[LAST_GROUP] then
