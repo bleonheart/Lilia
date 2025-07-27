@@ -221,8 +221,10 @@ local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
     if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
-    for _, v in ipairs(CAMI.GetPrivileges() or {}) do
-        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
+    for _, v in pairs(CAMI.GetPrivileges() or {}) do
+        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then
+            t[v.Name] = true
+        end
     end
     return t
 end
@@ -292,7 +294,7 @@ if SERVER then
     lia.administration.lastJoin = lia.administration.lastJoin or {}
     local function syncPrivileges()
         if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
-        for _, v in ipairs(CAMI.GetPrivileges() or {}) do
+        for _, v in pairs(CAMI.GetPrivileges() or {}) do
             lia.administration.privileges[v.Name] = {
                 Name = v.Name,
                 MinAccess = v.MinAccess or "user",
