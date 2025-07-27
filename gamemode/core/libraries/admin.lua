@@ -218,6 +218,9 @@ if SERVER then
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+        if old ~= usergroup then
+            ply:notifyLocalized("yourGroupSet", usergroup)
+        end
     end
 
     function lia.administration.addBan(steamid, reason, duration)
@@ -383,6 +386,8 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.administration.groups[args[2]] then
                 lia.administration.setPlayerGroup(target, args[2])
+                lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s'", target:Name(), args[2]))
+                target:notifyLocalized("yourGroupSet", args[2])
             else
                 lia.admin("Error", "Usergroup not found.")
             end
