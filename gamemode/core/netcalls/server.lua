@@ -901,3 +901,21 @@ net.Receive("VendorTrade", function(_, client)
     if not hook.Run("CanPlayerAccessVendor", client, entity) then return end
     hook.Run("VendorTradeEvent", client, entity, uniqueID, isSellingToVendor)
 end)
+
+net.Receive("liaBigTableChunk", function(_, client)
+    local id = net.ReadString()
+    local idx = net.ReadUInt(16)
+    local total = net.ReadUInt(16)
+    local len = net.ReadUInt(16)
+    local data = net.ReadData(len)
+    lia.net.bigTables[id] = lia.net.bigTables[id] or {}
+    lia.net.bigTables[id][idx] = data
+end)
+
+net.Receive("liaBigTableDone", function(_, client)
+    local id = net.ReadString()
+    local tbl = lia.net.ReadBigTable(id)
+    if tbl then
+        hook.Run("LiaBigTableReceived", client, id, tbl)
+    end
+end)
