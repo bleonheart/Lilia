@@ -1,6 +1,5 @@
-﻿local surface = surface
+local surface = surface
 local Color = Color
-
 local SKIN = {}
 SKIN.fontFrame = "BudgetLabel"
 SKIN.fontTab = "liaSmallFont"
@@ -351,4 +350,4 @@ function SKIN:PaintMenuBar(_, w, h)
     basePaint(w, h)
 end
 
-derma.DefineSkin("Lilia Skin", "The alt skin for the Lilia framework.", SKIN)
+derma.DefineSkin("Lilia Alt Skin", "The alt skin for the Lilia framework.", SKIN)
