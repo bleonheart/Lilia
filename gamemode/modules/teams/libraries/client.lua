@@ -143,7 +143,7 @@ function MODULE:CreateInformationButtons(pages)
     })
 end
 
-hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(tabs)
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
     local char = ply:getChar()
