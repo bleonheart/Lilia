@@ -29,7 +29,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local q = search:GetValue():lower()
                 for _, line in ipairs(list:GetLines()) do
                     local s = ""
-                    for i = 1, line:Columns() do
+                    for i = 1, line:ColumnCount() do
                         s = s .. line:GetColumnText(i):lower() .. " "
                     end
 
@@ -52,7 +52,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local m = DermaMenu()
                 m:AddOption(L("copyRow"), function()
                     local s = ""
-                    for i = 1, line:Columns() do
+                    for i = 1, line:ColumnCount() do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
 
@@ -92,7 +92,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local q = search:GetValue():lower()
                 for _, line in ipairs(list:GetLines()) do
                     local s = ""
-                    for i = 1, line:Columns() do
+                    for i = 1, line:ColumnCount() do
                         s = s .. line:GetColumnText(i):lower() .. " "
                     end
 
@@ -115,7 +115,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local m = DermaMenu()
                 m:AddOption(L("copyRow"), function()
                     local s = ""
-                    for i = 1, line:Columns() do
+                    for i = 1, line:ColumnCount() do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
 
@@ -156,7 +156,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local q = search:GetValue():lower()
                 for _, line in ipairs(list:GetLines()) do
                     local s = ""
-                    for i = 1, line:Columns() do
+                    for i = 1, line:ColumnCount() do
                         s = s .. line:GetColumnText(i):lower() .. " "
                     end
 
@@ -179,7 +179,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local m = DermaMenu()
                 m:AddOption(L("copyRow"), function()
                     local s = ""
-                    for i = 1, line:Columns() do
+                    for i = 1, line:ColumnCount() do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
 
@@ -689,7 +689,7 @@ else
             opt:SetIcon("icon16/user.png")
             m:AddOption(L("copyRow"), function()
                 local s = ""
-                for i = 1, line:Columns() do
+                for i = 1, line:ColumnCount() do
                     s = s .. line:GetColumnText(i) .. " | "
                 end
 
@@ -736,7 +736,7 @@ else
             local m = DermaMenu()
             m:AddOption(L("copyRow"), function()
                 local s = ""
-                for i = 1, line:Columns() do
+                for i = 1, line:ColumnCount() do
                     s = s .. line:GetColumnText(i) .. " | "
                 end
 

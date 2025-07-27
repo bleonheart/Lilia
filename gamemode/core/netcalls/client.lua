@@ -920,8 +920,6 @@ net.Receive("WorkshopDownloader_Info", function()
 end)
 
 net.Receive("RegenChat", RegenChat)
-
-
 net.Receive("DisplayCharList", function()
     local sendData = net.ReadTable()
     local targetSteamIDsafe = net.ReadString()
@@ -938,20 +936,53 @@ net.Receive("DisplayCharList", function()
     end
 
     local columns = {
-        {name = "ID", field = "ID"},
-        {name = "Name", field = "Name"},
-        {name = "Desc", field = "Desc"},
-        {name = "Faction", field = "Faction"},
-        {name = "Banned", field = "Banned"},
-        {name = "BanningAdminName", field = "BanningAdminName"},
-        {name = "BanningAdminSteamID", field = "BanningAdminSteamID"},
-        {name = "BanningAdminRank", field = "BanningAdminRank"},
-        {name = "CharMoney", field = "Money"},
-        {name = "LastUsed", field = "LastUsed"}
+        {
+            name = "ID",
+            field = "ID"
+        },
+        {
+            name = "Name",
+            field = "Name"
+        },
+        {
+            name = "Desc",
+            field = "Desc"
+        },
+        {
+            name = "Faction",
+            field = "Faction"
+        },
+        {
+            name = "Banned",
+            field = "Banned"
+        },
+        {
+            name = "BanningAdminName",
+            field = "BanningAdminName"
+        },
+        {
+            name = "BanningAdminSteamID",
+            field = "BanningAdminSteamID"
+        },
+        {
+            name = "BanningAdminRank",
+            field = "BanningAdminRank"
+        },
+        {
+            name = "CharMoney",
+            field = "Money"
+        },
+        {
+            name = "LastUsed",
+            field = "LastUsed"
+        }
     }
 
     for _, name in ipairs(extraOrder) do
-        table.insert(columns, {name = name, field = name})
+        table.insert(columns, {
+            name = name,
+            field = name
+        })
     end
 
     local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
@@ -1038,8 +1069,5 @@ end)
 net.Receive("liaBigTableDone", function()
     local id = net.ReadString()
     local tbl = lia.net.ReadBigTable(id)
-    if tbl then
-        hook.Run("LiaBigTableReceived", id, tbl)
-    end
+    if tbl then hook.Run("LiaBigTableReceived", id, tbl) end
 end)
-

@@ -118,7 +118,7 @@ local function handleTableData(id)
         local q = search:GetValue():lower()
         for _, line in ipairs(list:GetLines()) do
             local s = ""
-            for i = 1, line:Columns() do
+            for i = 1, line:ColumnCount() do
                 s = s .. line:GetColumnText(i):lower() .. " "
             end
             line:SetVisible(q == "" or s:find(q, 1, true))

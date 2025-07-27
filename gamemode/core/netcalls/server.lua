@@ -271,7 +271,6 @@ net.Receive("WorkshopDownloader_Request", function(_, client)
     lia.workshop.send(client)
 end)
 
-
 net.Receive("liaTeleportToEntity", function(_, ply)
     local ent = net.ReadEntity()
     if not IsValid(ent) then return end
@@ -346,7 +345,6 @@ net.Receive("SpawnMenuGiveItem", function(_, client)
     targetChar:getInv():add(id)
     lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
 end)
-
 
 net.Receive("liaBigTableChunk", function(_, client)
     local id = net.ReadString()
