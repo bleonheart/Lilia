@@ -207,7 +207,7 @@ function MODULE:CreateInformationButtons(pages)
                         btnContainer:SetWide(390)
                         btnContainer.Paint = function() end
                         local btnW, btnH = 120, 40
-                        if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
+                        if client:hasPrivilege("View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
                             btnView:DockMargin(5, 0, 5, 0)
@@ -222,7 +222,7 @@ function MODULE:CreateInformationButtons(pages)
                             end
                         end
 
-                        if client:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then
+                        if client:hasPrivilege("Teleport to Entity (Entity Tab)") then
                             local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
                             btnTeleport:Dock(LEFT)
                             btnTeleport:DockMargin(5, 0, 5, 0)
@@ -262,7 +262,7 @@ function MODULE:CreateInformationButtons(pages)
         })
     end
 
-    if client:hasPrivilege("Staff Permission — Access Module List") then
+    if client:hasPrivilege("Access Module List") then
         table.insert(pages, {
             name = L("modules"),
             drawFunc = function(modulesPanel)

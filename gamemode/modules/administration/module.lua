@@ -134,7 +134,7 @@ end)
 
 hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(parent, tabs)
     local client = LocalPlayer()
-    if not client:hasPrivilege("Staff Permission — Access Entity List") then return end
+    if not client:hasPrivilege("Access Entity List") then return end
     tabs[L("entities")] = {
         icon = "icon16/bricks.png",
         build = function(sheet)
@@ -261,7 +261,7 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(parent, tabs)
                         btnContainer:SetWide(380)
                         btnContainer.Paint = function() end
                         local btnW, btnH = 120, 40
-                        if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
+                        if client:hasPrivilege("View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
                             btnView:DockMargin(5, 0, 5, 0)
@@ -276,7 +276,7 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(parent, tabs)
                             end
                         end
 
-                        if client:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then
+                        if client:hasPrivilege("Teleport to Entity (Entity Tab)") then
                             local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
                             btnTeleport:Dock(LEFT)
                             btnTeleport:DockMargin(5, 0, 5, 0)
