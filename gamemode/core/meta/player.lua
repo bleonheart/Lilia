@@ -233,7 +233,7 @@ end
 function playerMeta:hasClassWhitelist(class)
     local char = self:getChar()
     if not char then return false end
-    local wl = char:getData("whitelist", {})
+    local wl = char:getWhitelists()
     return wl[class] ~= nil
 end
 
@@ -405,15 +405,15 @@ if SERVER then
     end
 
     function playerMeta:classWhitelist(class)
-        local wl = self:getChar():getData("whitelist", {})
+        local wl = self:getChar():getWhitelists()
         wl[class] = true
-        self:getChar():setData("whitelist", wl)
+        self:getChar():setWhitelists(wl)
     end
 
     function playerMeta:classUnWhitelist(class)
-        local wl = self:getChar():getData("whitelist", {})
+        local wl = self:getChar():getWhitelists()
         wl[class] = false
-        self:getChar():setData("whitelist", wl)
+        self:getChar():setWhitelists(wl)
     end
 
     function playerMeta:setWhitelisted(faction, whitelisted)

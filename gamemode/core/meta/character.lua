@@ -88,7 +88,7 @@ function characterMeta:getStamina()
 end
 
 function characterMeta:hasClassWhitelist(class)
-    local wl = self:getData("whitelist", {})
+    local wl = self:getWhitelists()
     return wl[class] ~= nil
 end
 
@@ -230,15 +230,15 @@ if SERVER then
     end
 
     function characterMeta:classWhitelist(class)
-        local wl = self:getData("whitelist", {})
+        local wl = self:getWhitelists()
         wl[class] = true
-        self:setData("whitelist", wl)
+        self:setWhitelists(wl)
     end
 
     function characterMeta:classUnWhitelist(class)
-        local wl = self:getData("whitelist", {})
+        local wl = self:getWhitelists()
         wl[class] = false
-        self:setData("whitelist", wl)
+        self:setWhitelists(wl)
     end
 
     function characterMeta:joinClass(class, isForced)
