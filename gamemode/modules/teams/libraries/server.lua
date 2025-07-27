@@ -1,4 +1,4 @@
-﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
+function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -192,16 +192,49 @@ function MODULE:ClassPostLoadout(client)
     if class and class.bodyGroups then applyBodyGroups(client, class.bodyGroups) end
 end
 
-function MODULE:CanPlayerUseChar(client, character)
-    local faction = lia.faction.indices[character:getFaction()]
-    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
-end
+net.Receive("KickCharacter", function(_, client)
+    local char = client:getChar()
+    if not char then return end
+    local isLeader = client:IsSuperAdmin() or char:hasFlags("V")
+    if not isLeader then return end
+    local defaultFaction
+    for _, fac in pairs(lia.faction.teams) do
+        if fac.isDefault then
+            defaultFaction = fac
+            break
+        end
+    end
 
-function MODULE:CanPlayerSwitchChar(client, _, newCharacter)
-    local faction = lia.faction.indices[newCharacter:getFaction()]
-    if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
-end
+    if not defaultFaction then
+        local _, fac = next(lia.faction.teams)
+        defaultFaction = fac
+    end
 
+    local characterID = net.ReadUInt(32)
+    local IsOnline = false
+    for _, target in player.Iterator() do
+        local targetChar = target:getChar()
+        if targetChar and targetChar:getID() == characterID and targetChar:getFaction() == char:getFaction() then
+            IsOnline = true
+            local oldFaction = targetChar:getFaction()
+            target:notify("You were kicked from your faction!")
+            targetChar.vars.faction = defaultFaction.uniqueID
+            targetChar:setFaction(defaultFaction.index)
+            hook.Run("OnTransferred", target)
+            if defaultFaction.OnTransferred then defaultFaction:OnTransferred(target, oldFaction) end
+            hook.Run("PlayerLoadout", target)
+            targetChar:save()
+        end
+    end
+
+    if not IsOnline then
+        lia.db.updateTable({
+            faction = defaultFaction.uniqueID
+        }, nil, "characters", "id = " .. characterID)
+
+        lia.char.setCharData(characterID, "factionKickWarn", true)
+    end
+end)
 
 local function toSteamID(id)
     if not id then return "" end
@@ -209,4 +242,3 @@ local function toSteamID(id)
     if id:sub(1, 6) == "STEAM_" then return id end
     return util.SteamIDFrom64(id)
 end
-
