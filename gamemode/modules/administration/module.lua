@@ -2,7 +2,6 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
--- Privileges moved to admin.lua
 hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
     local ply = LocalPlayer()
     if not ply:hasPrivilege("View Staff Actions") then return end
