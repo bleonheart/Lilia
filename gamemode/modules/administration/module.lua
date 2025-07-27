@@ -196,7 +196,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
 end)
 
 local function startSpectateView(ent, originalThirdPerson)
-    local yaw = client:EyeAngles().yaw
+    local yaw = LocalPlayer():EyeAngles().yaw
     local camZOffset = 50
     hook.Add("CalcView", "EntityViewCalcView", function()
         return {
