@@ -131,11 +131,10 @@ end
 
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
-    local list = lia.gui.dbBrowserList
-    if not IsValid(list) then return end
-    list:Clear()
     for _, tbl in ipairs(tables or {}) do
-        list:AddLine(tbl)
+        net.Start("liaRequestTableData")
+        net.WriteString(tbl)
+        net.SendToServer()
     end
 end)
 
