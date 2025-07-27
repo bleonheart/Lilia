@@ -355,6 +355,9 @@ function MODULE:CreateMenuButtons(tabs)
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
+        table.sort(pages, function(a, b)
+            return tostring(a.name) < tostring(b.name)
+        end)
         for _, page in ipairs(pages) do
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
