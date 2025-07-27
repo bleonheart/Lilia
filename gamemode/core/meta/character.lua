@@ -268,7 +268,7 @@ if SERVER then
             self:joinClass(validDefaultClass)
             hook.Run("OnPlayerJoinClass", client, validDefaultClass)
         else
-            self:setClass(nil)
+            self:setClass(0)
         end
     end
 
