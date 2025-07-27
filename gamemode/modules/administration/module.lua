@@ -11,6 +11,11 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             local panel = vgui.Create("DPanel", sheet)
             panel:Dock(FILL)
             panel:DockPadding(10, 10, 10, 10)
+            local search = panel:Add("DTextEntry")
+            search:Dock(TOP)
+            search:DockMargin(0, 0, 0, 5)
+            search:SetPlaceholderText(L("search"))
+
             local list = vgui.Create("DListView", panel)
             list:Dock(FILL)
             list:AddColumn(L("adminName"))
@@ -20,6 +25,28 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             list:AddColumn(L("staffWarningsCount"))
             list:AddColumn(L("staffBansCount"))
             MODULE.actionList = list
+            local function filter()
+                local q = search:GetValue():lower()
+                for _, line in ipairs(list:GetLines()) do
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i):lower() .. " "
+                    end
+
+                    line:SetVisible(q == "" or s:find(q, 1, true))
+                end
+
+                list:InvalidateLayout()
+            end
+
+            search.OnChange = filter
+            local oldAdd = list.AddLine
+            function list:AddLine(...)
+                local line = oldAdd(self, ...)
+                filter()
+                return line
+            end
+
             list.OnRowRightClick = function(_, _, line)
                 if not IsValid(line) then return end
                 local m = DermaMenu()
@@ -47,6 +74,11 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
             pnl:DockPadding(10, 10, 10, 10)
+            local search = pnl:Add("DTextEntry")
+            search:Dock(TOP)
+            search:DockMargin(0, 0, 0, 5)
+            search:SetPlaceholderText(L("search"))
+
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("player"))
@@ -56,6 +88,28 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             list:AddColumn(L("reason"))
             list:AddColumn(L("timestamp"))
             MODULE.warnList = list
+            local function filter()
+                local q = search:GetValue():lower()
+                for _, line in ipairs(list:GetLines()) do
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i):lower() .. " "
+                    end
+
+                    line:SetVisible(q == "" or s:find(q, 1, true))
+                end
+
+                list:InvalidateLayout()
+            end
+
+            search.OnChange = filter
+            local oldAdd = list.AddLine
+            function list:AddLine(...)
+                local line = oldAdd(self, ...)
+                filter()
+                return line
+            end
+
             list.OnRowRightClick = function(_, _, line)
                 if not IsValid(line) then return end
                 local m = DermaMenu()
@@ -84,6 +138,11 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
             pnl:DockPadding(10, 10, 10, 10)
+            local search = pnl:Add("DTextEntry")
+            search:Dock(TOP)
+            search:DockMargin(0, 0, 0, 5)
+            search:SetPlaceholderText(L("search"))
+
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("timestamp"))
@@ -93,6 +152,28 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             list:AddColumn(L("steamID"))
             list:AddColumn(L("message"))
             MODULE.ticketList = list
+            local function filter()
+                local q = search:GetValue():lower()
+                for _, line in ipairs(list:GetLines()) do
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i):lower() .. " "
+                    end
+
+                    line:SetVisible(q == "" or s:find(q, 1, true))
+                end
+
+                list:InvalidateLayout()
+            end
+
+            search.OnChange = filter
+            local oldAdd = list.AddLine
+            function list:AddLine(...)
+                local line = oldAdd(self, ...)
+                filter()
+                return line
+            end
+
             list.OnRowRightClick = function(_, _, line)
                 if not IsValid(line) then return end
                 local m = DermaMenu()
@@ -570,6 +651,11 @@ else
 
     local function buildPlayersUI(parent)
         parent:Clear()
+        local search = parent:Add("DTextEntry")
+        search:Dock(TOP)
+        search:DockMargin(0, 0, 0, 5)
+        search:SetPlaceholderText(L("search"))
+
         local list = parent:Add("DListView")
         list:Dock(FILL)
         list:AddColumn("Name")
@@ -578,12 +664,23 @@ else
         list:AddColumn("Last Join")
         list:AddColumn("Last Character")
         list:AddColumn("Banned")
-        for _, v in ipairs(PLAYER_LIST) do
-            local row = list:AddLine(v.name, v.id, v.group, v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or "", v.banned and "Yes" or "No")
-            row.steamID = v.id
-            row.steamID64 = v.id64
-            if v.banned then row:SetBGColor(Color(255, 120, 120)) end
+        local function populate(q)
+            list:Clear()
+            q = q and q:lower() or ""
+            for _, v in ipairs(PLAYER_LIST) do
+                local join = v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or ""
+                local text = (v.name .. " " .. v.id .. " " .. v.group .. " " .. join .. " " .. (v.banned and "yes" or "no")):lower()
+                if q == "" or text:find(q, 1, true) then
+                    local row = list:AddLine(v.name, v.id, v.group, join, v.banned and "Yes" or "No")
+                    row.steamID = v.id
+                    row.steamID64 = v.id64
+                    if v.banned then row:SetBGColor(Color(255, 120, 120)) end
+                end
+            end
         end
+
+        populate()
+        search.OnChange = function() populate(search:GetValue()) end
 
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.steamID then return end
@@ -605,6 +702,11 @@ else
 
     local function buildCharListUI(parent, mode, filterID)
         parent:Clear()
+        local search = parent:Add("DTextEntry")
+        search:Dock(TOP)
+        search:DockMargin(0, 0, 0, 5)
+        search:SetPlaceholderText(L("search"))
+
         local list = parent:Add("DListView")
         list:Dock(FILL)
         list:AddColumn("ID")
@@ -614,10 +716,20 @@ else
         list:AddColumn("Banned")
         list:AddColumn("Money")
         list:AddColumn("Last Used")
-        for _, v in ipairs(CHAR_LISTS[mode] or {}) do
-            local sid = v.SteamID or v.steamID or ""
-            if not filterID or tostring(sid) == tostring(filterID) then list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed) end
+        local function populate(q)
+            list:Clear()
+            q = q and q:lower() or ""
+            for _, v in ipairs(CHAR_LISTS[mode] or {}) do
+                local sid = v.SteamID or v.steamID or ""
+                local text = (tostring(v.ID) .. " " .. v.Name .. " " .. sid .. " " .. v.Faction .. " " .. tostring(v.Banned) .. " " .. tostring(v.Money) .. " " .. tostring(v.LastUsed)):lower()
+                if (not filterID or tostring(sid) == tostring(filterID)) and (q == "" or text:find(q, 1, true)) then
+                    list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
+                end
+            end
         end
+
+        populate()
+        search.OnChange = function() populate(search:GetValue()) end
 
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) then return end

@@ -571,6 +571,7 @@ net.Receive("SpawnMenuSpawnItem", function(_, client)
     lia.item.spawn(id, tr.HitPos, function(item)
         local ent = item:getEntity()
         if not IsValid(ent) then return end
+        ent:SetCreator(client)
         tryFixPropPosition(client, ent)
         undo.Create("item")
         undo.SetPlayer(client)
