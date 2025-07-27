@@ -486,7 +486,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local clientChar = LocalPlayer().getChar and LocalPlayer():getChar()
     local selectText = L("selectCharacter")
     local banned = character:getBanned()
-    local isBanned = banned and banned ~= 0 and banned ~= "0"
+    local isBanned = banned and ((isnumber(banned) and banned > os.time()) or banned == 1)
     if clientChar and character:getID() == clientChar:getID() then
         selectText = L("alreadyUsingCharacter")
     elseif isBanned then
