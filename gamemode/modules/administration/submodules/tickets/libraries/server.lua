@@ -13,12 +13,12 @@
         local info = caseclaims[adminID]
         info.claims = info.claims + 1
         if row.timestamp > info.lastclaim then info.lastclaim = row.timestamp end
-        local reqPly = player.GetBySteamID64(row.requesterSteamID)
+        local reqPly = player.GetBySteamID(row.requesterSteamID)
         info.claimedFor[row.requesterSteamID] = IsValid(reqPly) and reqPly:Nick() or row.requester
     end
 
     for adminID, info in pairs(caseclaims) do
-        local ply = player.GetBySteamID64(adminID)
+        local ply = player.GetBySteamID(adminID)
         if IsValid(ply) then info.name = ply:Nick() end
     end
     return caseclaims
@@ -32,8 +32,8 @@ end
 function MODULE:TicketSystemClaim(admin, requester)
     lia.db.updateTable({
         admin = admin:Name(),
-        adminSteamID = admin:SteamID64()
-    }, nil, "ticketclaims", "requesterSteamID = " .. lia.db.convertDataType(requester:SteamID64()) .. " AND admin = 'Unassigned'")
+        adminSteamID = admin:SteamID()
+    }, nil, "ticketclaims", "requesterSteamID = " .. lia.db.convertDataType(requester:SteamID()) .. " AND admin = 'Unassigned'")
 end
 
 function MODULE:PlayerSay(client, text)
@@ -43,7 +43,7 @@ function MODULE:PlayerSay(client, text)
         self:SendPopup(client, text)
         lia.db.insertTable({
             requester = client:Name(),
-            requesterSteamID = client:SteamID64(),
+            requesterSteamID = client:SteamID(),
             admin = "Unassigned",
             adminSteamID = "",
             message = text,

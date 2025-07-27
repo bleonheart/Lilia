@@ -432,34 +432,21 @@ net.Receive("RequestStaffActions", function(_, client)
     if not client:hasPrivilege("View Staff Actions") then return end
     local function queryStaffActions(callback)
         lia.db.query([[
-            SELECT a.admin, a.adminSteamID, lp.userGroup,
-                   COALESCE(tc.ticketCount, 0) AS ticketCount,
-                   COALESCE(w.warningCount, 0) AS warningCount,
-                   COALESCE(b.banCount, 0) AS banCount
-            FROM (
-                SELECT DISTINCT adminSteamID, admin FROM lia_staffactions
-                UNION
-                SELECT DISTINCT adminSteamID, admin FROM lia_ticketclaims
-                UNION
-                SELECT DISTINCT adminSteamID, admin FROM lia_warnings
-            ) AS a
-            LEFT JOIN lia_players AS lp ON lp.steamID = a.adminSteamID
-            LEFT JOIN (
-                SELECT adminSteamID, COUNT(*) AS ticketCount
-                FROM lia_ticketclaims
-                GROUP BY adminSteamID
-            ) AS tc ON tc.adminSteamID = a.adminSteamID
-            LEFT JOIN (
-                SELECT adminSteamID, COUNT(*) AS warningCount
-                FROM lia_warnings
-                GROUP BY adminSteamID
-            ) AS w ON w.adminSteamID = a.adminSteamID
-            LEFT JOIN (
-                SELECT adminSteamID, COUNT(*) AS banCount
-                FROM lia_staffactions
-                WHERE action = 'plyban'
-                GROUP BY adminSteamID
-            ) AS b ON b.adminSteamID = a.adminSteamID
+            SELECT tc.admin, tc.adminSteamID, lp.userGroup, 'Tickets Claimed' AS action, COUNT(*) AS actionCount
+            FROM lia_ticketclaims AS tc
+            LEFT JOIN lia_players AS lp ON lp.steamID = tc.adminSteamID
+            GROUP BY tc.adminSteamID
+            UNION ALL
+            SELECT w.admin, w.adminSteamID, lp.userGroup, 'Warnings Issued' AS action, COUNT(*) AS actionCount
+            FROM lia_warnings AS w
+            LEFT JOIN lia_players AS lp ON lp.steamID = w.adminSteamID
+            GROUP BY w.adminSteamID
+            UNION ALL
+            SELECT sa.admin, sa.adminSteamID, lp.userGroup, 'Bans Given' AS action, COUNT(*) AS actionCount
+            FROM lia_staffactions AS sa
+            LEFT JOIN lia_players AS lp ON lp.steamID = sa.adminSteamID
+            WHERE sa.action = 'plyban'
+            GROUP BY sa.adminSteamID
         ]], callback)
     end
 
@@ -514,7 +501,7 @@ net.Receive("RequestRemoveWarning", function(_, client)
         return
     end
 
-    MODULE:RemoveWarning(targetClient:SteamID64(), warnIndex):next(function(warn)
+    MODULE:RemoveWarning(targetClient:SteamID(), warnIndex):next(function(warn)
         if not warn then
             client:notifyLocalized("invalidWarningIndex")
             return

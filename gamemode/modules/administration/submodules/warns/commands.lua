@@ -22,7 +22,7 @@ lia.command.add("warn", {
 
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         MODULE:AddWarning(target, timestamp, reason, client)
-        lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count)
+        lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID())):next(function(count)
             target:notifyLocalized("playerWarned", client:Nick(), reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
@@ -48,7 +48,7 @@ lia.command.add("viewwarns", {
             return
         end
 
-        MODULE:GetWarnings(target:SteamID64()):next(function(warns)
+        MODULE:GetWarnings(target:SteamID()):next(function(warns)
             if #warns == 0 then
                 client:notifyLocalized("noWarnings", target:Nick())
                 return

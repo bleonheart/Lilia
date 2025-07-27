@@ -931,9 +931,8 @@ net.Receive("StaffActions", function()
                 row.admin or "N/A",
                 row.adminSteamID or "",
                 row.userGroup or "",
-                row.ticketCount or 0,
-                row.warningCount or 0,
-                row.banCount or 0
+                row.action or "",
+                row.actionCount or 0
             )
         end
     end
