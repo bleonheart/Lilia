@@ -517,7 +517,6 @@ if SERVER then
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
     end
 
-    -- expose only what is necessary; helper functions are kept local
     function lia.administration.syncAdminGroups(payload)
         lia.administration.groups = payload or lia.administration.groups
         lia.administration.updateAdminGroups()
@@ -1005,4 +1004,3 @@ hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply,
     if not SERVER then return end
     lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(new), ply:SteamID64()))
 end)
--- Privileges moved to admin.lua

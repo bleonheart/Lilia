@@ -122,10 +122,6 @@ function buildFactions(panel)
     built = true
 end
 
-function MODULE:CreateMenuButtons(tabs)
-    -- Roster moved under the Information tab
-end
-
 function MODULE:CreateInformationButtons(pages)
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
