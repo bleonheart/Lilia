@@ -74,7 +74,7 @@ local function OpenLogsUI(panel, categorizedLogs)
     end
 end
 
-hook.Add("liaAdminRegisterTab", "liaLogsTab", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "liaLogsTab", function(tabs)
     if not (IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can See Logs")) then return end
     tabs[L("logs")] = {
         icon = "icon16/page_white_text.png",

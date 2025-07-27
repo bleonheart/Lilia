@@ -3,7 +3,7 @@ MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 -- Privileges moved to admin.lua
-hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
     local ply = LocalPlayer()
     if not ply:hasPrivilege("View Staff Actions") then return end
     tabs[L("staffManagement")] = {
@@ -114,7 +114,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
     }
 end)
 
-hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(parent, tabs)
+hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
     local client = LocalPlayer()
     if not client:hasPrivilege("Access Entity List") then return end
     tabs[L("entities")] = {
@@ -936,7 +936,7 @@ else
         return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups")
     end
 
-    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(tabs)
         if not canAccess() then return end
         tabs["Usergroups"] = {
             icon = "icon16/group.png",
@@ -951,7 +951,7 @@ else
         }
     end)
 
-    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabPlayers", function(tabs)
         if not canAccess() then return end
         tabs["Players"] = {
             icon = "icon16/user.png",
@@ -966,7 +966,7 @@ else
         }
     end)
 
-    hook.Add("liaAdminRegisterTab", "AdminTabCharBrowser", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabCharBrowser", function(tabs)
         if not canAccess() then return end
         tabs["Character List"] = {
             icon = "icon16/table.png",
@@ -999,7 +999,7 @@ else
         }
     end)
 
-    hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
+    hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(tabs)
         if not canAccess() or not LocalPlayer():hasPrivilege("View DB Tables") then return end
         tabs["Database View"] = {
             icon = "icon16/database.png",
@@ -1039,7 +1039,7 @@ else
             local sheet = vgui.Create("DPropertySheet", parent)
             sheet:Dock(FILL)
             local reg = {}
-            hook.Run("liaAdminRegisterTab", parent, reg)
+            hook.Run("liaAdminRegisterTab", reg)
             for name, data in SortedPairs(reg) do
                 local pnl = data.build(sheet)
                 sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
