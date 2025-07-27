@@ -687,7 +687,7 @@ net.Receive("liaGroupsAdd", function(_, p)
     lia.administration.save(true)
     lia.administration.applyToCAMI(n, lia.administration.groups[n])
     lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-    lia.administration.notify(p, "Group '" .. n .. "' created.")
+    p:notify("Group '" .. n .. "' created.")
 end)
 
 net.Receive("liaGroupsRemove", function(_, p)
@@ -697,13 +697,13 @@ net.Receive("liaGroupsRemove", function(_, p)
 
     if not allowed(p) then return end
     local n = net.ReadString()
-    if n == "" or lia.administration.DEFAULT_GROUPS[n] then return end
+    if n == "" or lia.administration.lia.administration.DefaultGroups[n] then return end
     lia.administration.removeGroup(n)
     lia.administration.groups[n] = nil
     lia.administration.dropCAMIGroup(n)
     lia.administration.save(true)
     lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-    lia.administration.notify(p, "Group '" .. n .. "' removed.")
+    p:notify("Group '" .. n .. "' removed.")
 end)
 
 net.Receive("liaGroupsRename", function(_, p)
@@ -714,7 +714,7 @@ net.Receive("liaGroupsRename", function(_, p)
     if not allowed(p) then return end
     local old = net.ReadString()
     local new = net.ReadString()
-    if old == "" or new == "" or lia.administration.DEFAULT_GROUPS[old] or lia.administration.DEFAULT_GROUPS[new] then return end
+    if old == "" or new == "" or lia.administration.lia.administration.DefaultGroups[old] or lia.administration.lia.administration.DefaultGroups[new] then return end
     if lia.administration.groups[new] or not lia.administration.groups[old] then return end
     lia.administration.groups[new] = lia.administration.groups[old]
     lia.administration.groups[old] = nil
@@ -727,7 +727,7 @@ net.Receive("liaGroupsRename", function(_, p)
     end
 
     lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-    lia.administration.notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
+    p:notify("Group '" .. old .. "' renamed to '" .. new .. "'.")
 end)
 
 net.Receive("liaGroupsApply", function(_, p)
@@ -738,7 +738,7 @@ net.Receive("liaGroupsApply", function(_, p)
     if not allowed(p) then return end
     local g = net.ReadString()
     local t = net.ReadTable()
-    if g == "" or lia.administration.DEFAULT_GROUPS[g] then return end
+    if g == "" or lia.administration.lia.administration.DefaultGroups[g] then return end
     lia.administration.groups[g] = {}
     for k, v in pairs(t) do
         if v then lia.administration.groups[g][k] = true end
@@ -747,7 +747,7 @@ net.Receive("liaGroupsApply", function(_, p)
     lia.administration.save(true)
     lia.administration.applyToCAMI(g, lia.administration.groups[g])
     lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-    lia.administration.notify(p, "Permissions saved for '" .. g .. "'.")
+    p:notify("Permissions saved for '" .. g .. "'.")
 end)
 
 net.Receive("liaGroupsDefaults", function(_, p)
@@ -757,12 +757,12 @@ net.Receive("liaGroupsDefaults", function(_, p)
 
     if not allowed(p) then return end
     local g = net.ReadString()
-    if g == "" or lia.administration.DEFAULT_GROUPS[g] then return end
+    if g == "" or lia.administration.lia.administration.DefaultGroups[g] then return end
     lia.administration.groups[g] = lia.administration.buildDefaultTable(g)
     lia.administration.save(true)
     lia.administration.applyToCAMI(g, lia.administration.groups[g])
     lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
-    lia.administration.notify(p, "Defaults restored for '" .. g .. "'.")
+    p:notify("Defaults restored for '" .. g .. "'.")
 end)
 
 -- from modules/spawns/libraries/server.lua

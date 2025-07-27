@@ -176,28 +176,17 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
 
             if hasEntities then
                 local sheetPanel = vgui.Create("DPropertySheet", panel)
-                    sheetPanel:Dock(FILL)
-                    sheetPanel:DockMargin(0, 0, 0, 10)
+                sheetPanel:Dock(FILL)
+                sheetPanel:DockMargin(0, 0, 0, 10)
                 for owner, list in SortedPairs(entitiesByCreator) do
                     local page = vgui.Create("DPanel", sheetPanel)
                     page:Dock(FILL)
                     page.Paint = function() end
                     local searchEntry = vgui.Create("DTextEntry", page)
                     searchEntry:Dock(TOP)
-                    searchEntry:DockMargin(0, 0, 0, 5)
+                    searchEntry:DockMargin(10, 0, 10, 5)
                     searchEntry:SetTall(30)
                     searchEntry:SetPlaceholderText(L("searchEntities"))
-                    local infoPanel = vgui.Create("DPanel", page)
-                    infoPanel:Dock(TOP)
-                    infoPanel:DockMargin(10, 0, 10, 5)
-                    infoPanel:SetTall(30)
-                    infoPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-                    local infoLabel = vgui.Create("DLabel", infoPanel)
-                    infoLabel:Dock(FILL)
-                    infoLabel:SetFont("liaSmallFont")
-                    infoLabel:SetTextColor(color_white)
-                    infoLabel:SetContentAlignment(5)
-                    infoLabel:SetText(L("totalPlayerEntities", #list))
                     local scroll = vgui.Create("DScrollPanel", page)
                     scroll:Dock(FILL)
                     scroll:DockPadding(0, 0, 0, 10)
@@ -219,40 +208,10 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                         icon:Dock(LEFT)
                         icon:SetWide(64)
                         icon:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
-                        icon.DoClick = function()
-                            if IsValid(lastModelFrame) then lastModelFrame:Close() end
-                            lastModelFrame = vgui.Create("DFrame")
-                            lastModelFrame:SetTitle(className)
-                            lastModelFrame:SetSize(800, 800)
-                            lastModelFrame:Center()
-                            lastModelFrame:MakePopup()
-                            local infoLabel2 = vgui.Create("DLabel", lastModelFrame)
-                            infoLabel2:SetText(L("pressInstructions"))
-                            infoLabel2:SetFont("liaMediumFont")
-                            infoLabel2:SizeToContents()
-                            infoLabel2:Dock(TOP)
-                            infoLabel2:DockMargin(0, 10, 0, 0)
-                            infoLabel2:SetContentAlignment(5)
-                            local modelPanel = vgui.Create("DModelPanel", lastModelFrame)
-                            modelPanel:Dock(FILL)
-                            modelPanel:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
-                            modelPanel:SetFOV(45)
-                            local mn, mx = modelPanel.Entity:GetRenderBounds()
-                            local size = math.max(math.abs(mn.x) + math.abs(mx.x), math.abs(mn.y) + math.abs(mx.y), math.abs(mn.z) + math.abs(mx.z))
-                            modelPanel:SetCamPos(Vector(size, size, size))
-                            modelPanel:SetLookAt((mn + mx) * 0.5)
-                            local orig = lia.option.get("thirdPersonEnabled", false)
-                            lia.option.set("thirdPersonEnabled", false)
-                            startSpectateView(ent, orig)
-                        end
-
                         local btnContainer = vgui.Create("DPanel", itemPanel)
                         btnContainer:Dock(RIGHT)
                         btnContainer.Paint = function() end
-                        local btnW, btnH = 90, 30
-                        local margin = 4
-                        local btnCount = 0
-
+                        local btnW, btnH, margin, btnCount = 90, 30, 4, 0
                         if client:hasPrivilege("View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
@@ -266,6 +225,7 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                                 lia.option.set("thirdPersonEnabled", false)
                                 startSpectateView(ent, orig)
                             end
+
                             btnCount = btnCount + 1
                         end
 
@@ -281,6 +241,7 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                                 net.WriteEntity(ent)
                                 net.SendToServer()
                             end
+
                             btnCount = btnCount + 1
                         end
 
@@ -292,7 +253,6 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                         btnWaypoint:SetText(L("waypointButton"))
                         btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
                         btnCount = btnCount + 1
-
                         btnContainer:SetWide(btnCount * (btnW + margin * 2))
                         entries[#entries + 1] = itemPanel
                     end
@@ -314,13 +274,6 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
         end
     }
 end)
-
-local DEFAULT_GROUPS = {
-    user = true,
-    admin = true,
-    superadmin = true,
-    developer = true
-}
 
 local CHUNK = 60000
 local function buildDefaultTable(g)
@@ -602,19 +555,6 @@ if SERVER then
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
     end
 
-    local function notify(p, msg)
-        if IsValid(p) and p.notify then p:notify(msg) end
-        net.Start("liaGroupsNotice")
-        net.WriteString(msg)
-        if IsEntity(p) then
-            net.Send(p)
-        else
-            net.Broadcast()
-        end
-    end
-
-    -- expose helper functions to other modules
-    lia.administration.DEFAULT_GROUPS = DEFAULT_GROUPS
     lia.administration.buildDefaultTable = buildDefaultTable
     lia.administration.ensureCAMIGroup = ensureCAMIGroup
     lia.administration.dropCAMIGroup = dropCAMIGroup
@@ -624,8 +564,6 @@ if SERVER then
     lia.administration.collectOnlineCharacters = collectOnlineCharacters
     lia.administration.queryAllCharacters = queryAllCharacters
     lia.administration.applyToCAMI = applyToCAMI
-    lia.administration.notify = notify
-
     function lia.administration.syncAdminGroups(payload)
         lia.administration.groups = payload or lia.administration.groups
         lia.administration.updateAdminGroups()
@@ -746,7 +684,7 @@ else
         parent:Clear()
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
-        local editable = not DEFAULT_GROUPS[g]
+        local editable = not lia.administration.DefaultGroups[g]
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
         nameLbl:DockMargin(20, 0, 0, 0)
@@ -893,7 +831,7 @@ else
         renameBtn:SetText("Rename")
         delBtn:SetText("Delete")
         local function updateButtons(g)
-            local editable = not DEFAULT_GROUPS[g]
+            local editable = not lia.administration.DefaultGroups[g]
             renameBtn:SetVisible(editable)
             delBtn:SetVisible(editable)
         end

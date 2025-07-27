@@ -71,9 +71,9 @@ local function handleTableData(id)
     local data = table.concat(dbChunks[id])
     dbChunks[id] = nil
     local payload = util.JSONToTable(util.Decompress(data) or "") or {}
-    local tbl = payload.tbl
+    local tblName = payload.tbl
     local rows = payload.data or {}
-    if not tbl or #rows == 0 then return end
+    if not tblName or #rows == 0 then return end
     local columns = {}
     for k in pairs(rows[1]) do
         columns[#columns + 1] = {
@@ -84,48 +84,45 @@ local function handleTableData(id)
 
     local ps = lia.gui.dbBrowserPS
     if not IsValid(ps) then
-        lia.util.CreateTableUI(tbl, columns, rows)
+        lia.util.CreateTableUI(tblName, columns, rows)
         return
     end
 
     ps.tableTabs = ps.tableTabs or {}
-    if ps.tableTabs[tbl] and IsValid(ps.tableTabs[tbl].tab) then
-        ps:CloseTab(ps.tableTabs[tbl].tab, true)
-    end
-
+    if ps.tableTabs[tblName] and IsValid(ps.tableTabs[tblName].tab) then ps:CloseTab(ps.tableTabs[tblName].tab, true) end
     local panel = vgui.Create("DPanel", ps)
     panel:Dock(FILL)
     panel.Paint = function() end
-
     local list = vgui.Create("DListView", panel)
     list:Dock(FILL)
     for _, col in ipairs(columns) do
-        list:AddColumn(col.name or col.field or L("na"))
+        list:AddColumn(col.name)
     end
+
     for _, row in ipairs(rows) do
-        local lineData = {}
+        local cells = {}
         for _, col in ipairs(columns) do
-            local field = col.field or col.name
-            table.insert(lineData, row[field] or L("na"))
+            cells[#cells + 1] = row[col.field] or ""
         end
-        local line = list:AddLine(unpack(lineData))
+
+        local line = list:AddLine(unpack(cells))
         line.rowData = row
     end
 
-    function list:OnRowSelected(_, line)
-        openRowInfo(line.rowData)
+    list.OnRowRightClick = function(self, _, line)
+        if not (IsValid(line) and line.rowData) then return end
+        local menu = DermaMenu()
+        menu:AddOption("See decoded entry", function() openRowInfo(line.rowData) end)
+        menu:AddOption("Copy row", function() SetClipboardText(util.TableToJSON(line.rowData)) end)
+        menu:Open()
     end
 
-    function list:OnRowRightClick(_, line)
-        if not IsValid(line) or not line.rowData then return end
-        openRowInfo(line.rowData)
-    end
-
-    local info = ps:AddSheet(tbl, panel, "icon16/table.png")
-    ps.tableTabs[tbl] = {
+    local info = ps:AddSheet(tblName, panel, "icon16/table.png")
+    ps.tableTabs[tblName] = {
         tab = info.Tab,
         panel = panel
     }
+
     ps:SetActiveTab(info.Tab)
 end
 

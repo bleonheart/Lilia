@@ -793,6 +793,24 @@ function GM:LiliaTablesLoaded()
     timer.Simple(2, function() lia.entityDataLoaded = true end)
 end
 
+function GM:PlayerAuthed(ply, steamID)
+    local steam64 = util.SteamIDTo64(steamID)
+    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
+        return
+    end
+
+    lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
+        local group = istable(data) and data[1] and data[1].userGroup
+        if not group or group == "" then
+            group = "user"
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
+        end
+
+        ply:SetUserGroup(group)
+    end)
+end
+
 function GM:PlayerSpray()
     return true
 end
