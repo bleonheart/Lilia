@@ -1,4 +1,4 @@
-﻿lia.command.add("adminmode", {
+lia.command.add("adminmode", {
     desc = "adminModeDesc",
     onRun = function(client)
         if not IsValid(client) then return end
@@ -171,6 +171,15 @@ lia.command.add("plykick", {
             target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
             client:notifyLocalized("plyKicked")
             lia.log.add(client, "plyKick", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plykick",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -186,6 +195,15 @@ lia.command.add("plyban", {
             target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
             client:notifyLocalized("plyBanned")
             lia.log.add(client, "plyBan", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyban",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -201,6 +219,15 @@ lia.command.add("plykill", {
             target:Kill()
             client:notifyLocalized("plyKilled")
             lia.log.add(client, "plyKill", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plykill",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -218,6 +245,15 @@ lia.command.add("plysetgroup", {
             client:notifyLocalized("plyGroupSet")
             lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s' by %s", target:Name(), arguments[2], client:Name()))
             lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plysetgroup",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         elseif IsValid(target) and not lia.administration.groups[arguments[2]] then
             client:notifyLocalized("groupNotExists")
         end
@@ -235,6 +271,15 @@ lia.command.add("plyunban", {
             lia.administration.removeBan(steamid)
             client:notify("Player unbanned")
             lia.log.add(client, "plyUnban", steamid)
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyunban",
+                target = steamid,
+                targetSteamID = steamid,
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -251,6 +296,15 @@ lia.command.add("plyfreeze", {
             local dur = tonumber(arguments[2]) or 0
             if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
             lia.log.add(client, "plyFreeze", target:Name(), dur)
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyfreeze",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -265,6 +319,15 @@ lia.command.add("plyunfreeze", {
         if IsValid(target) then
             target:Freeze(false)
             lia.log.add(client, "plyUnfreeze", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyunfreeze",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -279,6 +342,15 @@ lia.command.add("plyslay", {
         if IsValid(target) then
             target:Kill()
             lia.log.add(client, "plySlay", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyslay",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -293,6 +365,15 @@ lia.command.add("plyrespawn", {
         if IsValid(target) then
             target:Spawn()
             lia.log.add(client, "plyRespawn", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyrespawn",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -320,6 +401,15 @@ lia.command.add("plyblind", {
             end
 
             lia.log.add(client, "plyBlind", target:Name(), dur or 0)
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyblind",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -336,6 +426,15 @@ lia.command.add("plyunblind", {
             net.WriteBool(false)
             net.Send(target)
             lia.log.add(client, "plyUnblind", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyunblind",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -361,6 +460,15 @@ lia.command.add("plyblindfade", {
             net.WriteFloat(fadeOut)
             net.Send(target)
             lia.log.add(client, "plyBlindFade", target:Name(), duration, colorName)
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyblindfade",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -370,7 +478,7 @@ lia.command.add("blindfadeall", {
     privilege = "Blind Fade All",
     desc = "blindFadeAllDesc",
     syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-    onRun = function(_, arguments)
+    onRun = function(client, arguments)
         local duration = tonumber(arguments[1]) or 0
         local colorName = (arguments[2] or "black"):lower()
         local fadeIn = tonumber(arguments[3]) or duration * 0.05
@@ -386,6 +494,15 @@ lia.command.add("blindfadeall", {
                 net.Send(ply)
             end
         end
+        local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+        lia.db.insertTable({
+            timestamp = timestamp,
+            action = "blindfadeall",
+            target = "ALL",
+            targetSteamID = "0",
+            admin = IsValid(client) and client:Name() or tostring(client or ""),
+            adminSteamID = IsValid(client) and client:SteamID() or ""
+        }, nil, "staffactions")
     end
 })
 
@@ -399,6 +516,15 @@ lia.command.add("plygag", {
         if IsValid(target) then
             target:setNetVar("liaGagged", true)
             lia.log.add(client, "plyGag", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plygag",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
             hook.Run("PlayerGagged", target, client)
         end
     end
@@ -414,6 +540,15 @@ lia.command.add("plyungag", {
         if IsValid(target) then
             target:setNetVar("liaGagged", false)
             lia.log.add(client, "plyUngag", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyungag",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
             hook.Run("PlayerUngagged", target, client)
         end
     end
@@ -429,6 +564,15 @@ lia.command.add("plymute", {
         if IsValid(target) then
             target:setLiliaData("VoiceBan", true)
             lia.log.add(client, "plyMute", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plymute",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
             hook.Run("PlayerMuted", target, client)
         end
     end
@@ -444,6 +588,15 @@ lia.command.add("plyunmute", {
         if IsValid(target) then
             target:setLiliaData("VoiceBan", false)
             lia.log.add(client, "plyUnmute", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyunmute",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
             hook.Run("PlayerUnmuted", target, client)
         end
     end
@@ -461,6 +614,15 @@ lia.command.add("plybring", {
             returnPositions[target] = target:GetPos()
             target:SetPos(client:GetPos() + client:GetForward() * 50)
             lia.log.add(client, "plyBring", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plybring",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -476,6 +638,15 @@ lia.command.add("plygoto", {
             returnPositions[client] = client:GetPos()
             client:SetPos(target:GetPos() + target:GetForward() * 50)
             lia.log.add(client, "plyGoto", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plygoto",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -493,6 +664,15 @@ lia.command.add("plyreturn", {
             target:SetPos(pos)
             returnPositions[target] = nil
             lia.log.add(client, "plyReturn", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyreturn",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -508,6 +688,15 @@ lia.command.add("plyjail", {
             target:Lock()
             target:Freeze(true)
             lia.log.add(client, "plyJail", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyjail",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -523,6 +712,15 @@ lia.command.add("plyunjail", {
             target:UnLock()
             target:Freeze(false)
             lia.log.add(client, "plyUnjail", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyunjail",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -537,6 +735,15 @@ lia.command.add("plycloak", {
         if IsValid(target) then
             target:SetNoDraw(true)
             lia.log.add(client, "plyCloak", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plycloak",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -551,6 +758,15 @@ lia.command.add("plyuncloak", {
         if IsValid(target) then
             target:SetNoDraw(false)
             lia.log.add(client, "plyUncloak", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyuncloak",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -565,6 +781,15 @@ lia.command.add("plygod", {
         if IsValid(target) then
             target:GodEnable()
             lia.log.add(client, "plyGod", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plygod",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -579,6 +804,15 @@ lia.command.add("plyungod", {
         if IsValid(target) then
             target:GodDisable()
             lia.log.add(client, "plyUngod", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyungod",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -594,6 +828,15 @@ lia.command.add("plyignite", {
             local dur = tonumber(arguments[2]) or 5
             target:Ignite(dur)
             lia.log.add(client, "plyIgnite", target:Name(), dur)
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyignite",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -608,6 +851,15 @@ lia.command.add("plyextinguish", {
         if IsValid(target) then
             target:Extinguish()
             lia.log.add(client, "plyExtinguish", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plyextinguish",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
@@ -622,6 +874,15 @@ lia.command.add("plystrip", {
         if IsValid(target) then
             target:StripWeapons()
             lia.log.add(client, "plyStrip", target:Name())
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+            lia.db.insertTable({
+                timestamp = timestamp,
+                action = "plystrip",
+                target = target:Name(),
+                targetSteamID = target:SteamID(),
+                admin = IsValid(client) and client:Name() or tostring(client or ""),
+                adminSteamID = IsValid(client) and client:SteamID() or ""
+            }, nil, "staffactions")
         end
     end
 })
