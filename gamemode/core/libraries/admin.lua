@@ -1,6 +1,20 @@
 ﻿lia.administration = lia.administration or {}
 lia.administration.groups = lia.administration.groups or {}
 lia.administration.privileges = lia.administration.privileges or {}
+function lia.administration.savePrivileges(group)
+    if not SERVER or not group or not lia.administration.groups[group] then return end
+    lia.db.upsert({
+        usergroup = group,
+        privileges = util.TableToJSON(lia.administration.groups[group])
+    }, "privileges")
+end
+
+function lia.administration.syncPrivileges()
+    for grp in pairs(lia.administration.groups) do
+        lia.administration.savePrivileges(grp)
+    end
+end
+
 local DEFAULT_GROUPS = {
     user = true,
     admin = true,
@@ -53,6 +67,7 @@ function lia.administration.load()
         end
 
         if created then lia.administration.save(true) end
+        lia.administration.syncPrivileges()
         lia.admin("Bootstrap", L("adminSystemLoaded"))
     end
 
@@ -98,6 +113,7 @@ function lia.administration.createGroup(groupName, info)
         end
 
         lia.administration.save(true)
+        lia.administration.savePrivileges(groupName)
     end
 end
 
@@ -121,6 +137,7 @@ function lia.administration.registerPrivilege(privilege)
         end
 
         if allowed then lia.administration.groups[groupName][privilege.Name] = true end
+        lia.administration.savePrivileges(groupName)
     end
 end
 
@@ -139,6 +156,7 @@ function lia.administration.removeGroup(groupName)
     if SERVER then
         if CAMI and CAMI.UnregisterUsergroup then CAMI.UnregisterUsergroup(groupName) end
         lia.administration.save(true)
+        lia.db.delete("privileges", "usergroup = " .. lia.db.convertDataType(groupName))
     end
 end
 
@@ -161,7 +179,10 @@ if SERVER then
 
         if DEFAULT_GROUPS[groupName] then return end
         lia.administration.groups[groupName][permission] = true
-        if SERVER then lia.administration.save(true) end
+        if SERVER then
+            lia.administration.save(true)
+            lia.administration.savePrivileges(groupName)
+        end
     end
 
     function lia.administration.removePermission(groupName, permission)
@@ -172,13 +193,17 @@ if SERVER then
 
         if DEFAULT_GROUPS[groupName] then return end
         lia.administration.groups[groupName][permission] = nil
-        if SERVER then lia.administration.save(true) end
+        if SERVER then
+            lia.administration.save(true)
+            lia.administration.savePrivileges(groupName)
+        end
     end
 
     function lia.administration.save(network)
         lia.db.upsert({
             data = util.TableToJSON(lia.administration.groups)
         }, "admingroups")
+        lia.administration.syncPrivileges()
 
         if network then
             net.Start("updateAdminGroups")

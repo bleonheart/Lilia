@@ -264,6 +264,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_saveditems`;
+    DROP TABLE IF EXISTS `lia_privileges`;
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_warnings`;
 ]])
@@ -293,6 +294,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_saveditems;
+    DROP TABLE IF EXISTS lia_privileges;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
@@ -459,6 +461,11 @@ function lia.db.loadTables()
                 angles TEXT
             );
 
+            CREATE TABLE IF NOT EXISTS lia_privileges (
+                usergroup TEXT PRIMARY KEY,
+                privileges TEXT
+            );
+
         ]], done)
     else
         local queries = string.Explode(";", [[
@@ -601,6 +608,12 @@ function lia.db.loadTables()
                 `pos` TEXT NULL,
                 `angles` TEXT NULL,
                 PRIMARY KEY (`id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_privileges` (
+                `usergroup` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `privileges` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
+                PRIMARY KEY (`usergroup`)
             );
 
         ]])
