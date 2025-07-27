@@ -897,3 +897,24 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
         }
     end
 end)
+
+hook.Add("liaAdminRegisterTab", "AdminTabConfiguration", function(parent, tabs)
+    if hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false then
+        tabs["Configuration"] = {
+            icon = "icon16/cog.png",
+            build = function(sheet)
+                local panel = vgui.Create("DPanel", sheet)
+                panel:DockPadding(10, 10, 10, 10)
+                local pages = {}
+                hook.Run("PopulateConfigurationButtons", pages)
+                for _, page in ipairs(pages) do
+                    if page.name == "Configuration" and page.drawFunc then
+                        page.drawFunc(panel)
+                        break
+                    end
+                end
+                return panel
+            end
+        }
+    end
+end)

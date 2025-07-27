@@ -384,6 +384,9 @@ function MODULE:CreateMenuButtons(tabs)
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
+        for i = #pages, 1, -1 do
+            if pages[i].name == "Configuration" then table.remove(pages, i) end
+        end
         local currentBtn
         for _, page in ipairs(pages) do
             local btn = settingsPanel.sidebar:Add("liaMediumButton")
