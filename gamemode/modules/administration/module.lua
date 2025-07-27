@@ -1243,7 +1243,8 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
     if not pv or not pv.Name then return end
     lia.administration.privileges[pv.Name] = {
         Name = pv.Name,
-        MinAccess = pv.MinAccess or "user"
+        MinAccess = pv.MinAccess or "user",
+        Category = pv.Category or "Unassigned"
     }
 
     for g in pairs(lia.administration.groups) do
