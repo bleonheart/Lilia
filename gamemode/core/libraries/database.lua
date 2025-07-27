@@ -593,9 +593,7 @@ function lia.db.loadTables()
                 `locked` TINYINT(1) NULL,
                 PRIMARY KEY (`gamemode`, `map`, `id`)
             );
-
-
-
+        
             CREATE TABLE IF NOT EXISTS `lia_data` (
                 `gamemode` TEXT NULL,
                 `map` TEXT NULL,
