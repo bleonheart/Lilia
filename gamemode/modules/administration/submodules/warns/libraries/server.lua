@@ -2,7 +2,7 @@ local MODULE = MODULE
 
 function MODULE:GetWarnings(steamID)
     local condition = "warnedSteamID = " .. lia.db.convertDataType(steamID)
-    return lia.db.select({"id", "timestamp", "warning", "admin", "adminSteamID"}, "warnings", condition)
+    return lia.db.select({"id", "timestamp", "warning", "admin", "adminSteamID", "warned", "warnedSteamID"}, "warnings", condition)
         :next(function(res) return res.results or {} end)
 end
 
