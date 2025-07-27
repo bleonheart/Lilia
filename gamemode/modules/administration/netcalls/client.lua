@@ -93,6 +93,11 @@ local function handleTableData(id)
     local panel = vgui.Create("DPanel", ps)
     panel:Dock(FILL)
     panel.Paint = function() end
+    local search = panel:Add("DTextEntry")
+    search:Dock(TOP)
+    search:DockMargin(0, 0, 0, 5)
+    search:SetPlaceholderText(L("search"))
+
     local list = vgui.Create("DListView", panel)
     list:Dock(FILL)
     for _, col in ipairs(columns) do
@@ -107,6 +112,27 @@ local function handleTableData(id)
 
         local line = list:AddLine(unpack(cells))
         line.rowData = row
+    end
+
+    local function filter()
+        local q = search:GetValue():lower()
+        for _, line in ipairs(list:GetLines()) do
+            local s = ""
+            for i = 1, line:Columns() do
+                s = s .. line:GetColumnText(i):lower() .. " "
+            end
+            line:SetVisible(q == "" or s:find(q, 1, true))
+        end
+
+        list:InvalidateLayout()
+    end
+
+    search.OnChange = filter
+    local oldAdd = list.AddLine
+    function list:AddLine(...)
+        local line = oldAdd(self, ...)
+        filter()
+        return line
     end
 
     list.OnRowRightClick = function(self, _, line)
