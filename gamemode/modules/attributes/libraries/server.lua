@@ -1,4 +1,5 @@
-﻿function MODULE:PostPlayerLoadout(client)
+﻿local MODULE = MODULE
+function MODULE:PostPlayerLoadout(client)
     local char = client:getChar()
     if not char then return end
     lia.attribs.setup(client)

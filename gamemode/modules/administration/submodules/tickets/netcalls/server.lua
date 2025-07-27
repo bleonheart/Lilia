@@ -1,4 +1,5 @@
-﻿net.Receive("ViewClaims", function(_, client)
+﻿local MODULE = MODULE
+net.Receive("ViewClaims", function(_, client)
     local sid = net.ReadString()
     MODULE:GetAllCaseClaims():next(function(caseclaims)
         net.Start("ViewClaims")

@@ -1,4 +1,5 @@
-﻿function MODULE:CanPlayerModifyConfig(client)
+﻿local MODULE = MODULE
+function MODULE:CanPlayerModifyConfig(client)
     return client:hasPrivilege("Access Edit Configuration Menu")
 end
 

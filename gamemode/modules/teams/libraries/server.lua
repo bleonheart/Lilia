@@ -1,3 +1,4 @@
+local MODULE = MODULE
 function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]

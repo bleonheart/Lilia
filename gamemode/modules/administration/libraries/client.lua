@@ -1,4 +1,5 @@
-﻿function MODULE:ShowPlayerOptions(target, options)
+﻿local MODULE = MODULE
+function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if (client:hasPrivilege("Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
         local orderedOptions = {

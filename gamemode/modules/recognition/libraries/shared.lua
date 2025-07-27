@@ -1,4 +1,5 @@
-﻿local function isFakeNameExistant(name, nameList)
+﻿local MODULE = MODULE
+local function isFakeNameExistant(name, nameList)
     for _, n in pairs(nameList) do
         if n == name then return true end
     end

@@ -1,4 +1,5 @@
-﻿local defaultUserTools = {
+﻿local MODULE = MODULE
+local defaultUserTools = {
     remover = true,
 }
 

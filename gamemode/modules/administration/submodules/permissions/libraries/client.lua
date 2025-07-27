@@ -1,4 +1,5 @@
-﻿local ESP_DrawnEntities = {
+﻿local MODULE = MODULE
+local ESP_DrawnEntities = {
     lia_bodygrouper = true,
     lia_vendor = true,
 }

@@ -1,3 +1,4 @@
+local MODULE = MODULE
 function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled") then
         local count = 0
