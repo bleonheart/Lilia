@@ -292,6 +292,7 @@ if SERVER then
     util.AddNetworkString("liaCharBrowserRequest")
     util.AddNetworkString("liaCharBrowserChunk")
     util.AddNetworkString("liaCharBrowserDone")
+    util.AddNetworkString("liaDBTablesRequest")
     lia.administration.privileges = lia.administration.privileges or {}
     lia.administration.groups = lia.administration.groups or {}
     lia.administration.lastJoin = lia.administration.lastJoin or {}
@@ -555,6 +556,15 @@ if SERVER then
                 sendBigTable(p, {mode = "online", list = data}, "liaCharBrowserChunk", "liaCharBrowserDone")
             end)
         end
+    end)
+
+    net.Receive("liaDBTablesRequest", function(_, p)
+        if not allowed(p) then return end
+        lia.db.getTables():next(function(tables)
+            net.Start("liaDBTables")
+            net.WriteTable(tables or {})
+            net.Send(p)
+        end)
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
@@ -1001,6 +1011,29 @@ else
                 net.SendToServer()
                 net.Start("liaCharBrowserRequest")
                 net.WriteString("all")
+                net.SendToServer()
+                return pnl
+            end
+        }
+    end)
+
+    hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
+        if not canAccess() or not LocalPlayer():hasPrivilege("View DB Tables") then return end
+        tabs["DB Browser"] = {
+            icon = "icon16/database.png",
+            build = function(sheet)
+                local pnl = vgui.Create("DPanel", sheet)
+                pnl:DockPadding(10, 10, 10, 10)
+                local list = vgui.Create("DListView", pnl)
+                list:Dock(FILL)
+                list:AddColumn("Table")
+                lia.gui.dbBrowserList = list
+                function list:OnRowSelected(_, line)
+                    net.Start("liaRequestTableData")
+                    net.WriteString(line:GetColumnText(1))
+                    net.SendToServer()
+                end
+                net.Start("liaDBTablesRequest")
                 net.SendToServer()
                 return pnl
             end

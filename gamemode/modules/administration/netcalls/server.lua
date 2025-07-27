@@ -58,6 +58,15 @@ net.Receive("liaRequestTableData", function(_, client)
     lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res) sendTableData(client, tbl, res or {}) end)
 end)
 
+net.Receive("liaDBTablesRequest", function(_, client)
+    if not client:hasPrivilege("View DB Tables") then return end
+    lia.db.getTables():next(function(tables)
+        net.Start("liaDBTables")
+        net.WriteTable(tables or {})
+        net.Send(client)
+    end)
+end)
+
 net.Receive("lia_managesitrooms_action", function(_, client)
     if not client:hasPrivilege("Manage SitRooms") then return end
     local action = net.ReadUInt(2)
