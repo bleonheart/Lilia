@@ -435,9 +435,9 @@ net.Receive("liaTeleportToEntity", function(_, ply)
     lia.log.add(ply, "teleportToEntity", ent:GetClass())
 end)
 
--- from modules/administration/submodules/staffmanagement/libraries/server.lua
+-- from modules/administration/commands.lua
 net.Receive("RequestStaffActions", function(_, client)
-    local MODULE = lia.module.get("staffmanagement")
+    local MODULE = lia.module.get("administration")
     if not client:hasPrivilege("View Staff Actions") then return end
     local function queryStaffActions(callback)
         lia.db.query([[
@@ -456,7 +456,7 @@ net.Receive("RequestStaffActions", function(_, client)
 end)
 
 net.Receive("RequestPlayerWarnings", function(_, client)
-    local MODULE = lia.module.get("staffmanagement")
+    local MODULE = lia.module.get("warns")
     if not client:hasPrivilege("View Player Warnings") then return end
     local steamID = net.ReadString()
     MODULE:GetWarnings(steamID):next(function(rows)
@@ -467,7 +467,7 @@ net.Receive("RequestPlayerWarnings", function(_, client)
 end)
 
 net.Receive("RequestTicketClaims", function(_, client)
-    local MODULE = lia.module.get("staffmanagement")
+    local MODULE = lia.module.get("tickets")
     if not client:hasPrivilege("View Claims") then return end
     lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
         net.Start("TicketClaims")
