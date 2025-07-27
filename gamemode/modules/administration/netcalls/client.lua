@@ -92,12 +92,21 @@ end
 
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
+    local list = lia.gui.dbBrowserList
+    if IsValid(list) then
+        list:Clear()
+        for _, tbl in ipairs(tables or {}) do
+            list:AddLine(tbl)
+        end
+        return
+    end
+
     local frame = vgui.Create("DFrame")
     frame:SetTitle("Lilia Tables")
     frame:SetSize(300, 400)
     frame:Center()
     frame:MakePopup()
-    local list = vgui.Create("DListView", frame)
+    list = vgui.Create("DListView", frame)
     list:Dock(FILL)
     list:AddColumn("Table")
     for _, tbl in ipairs(tables or {}) do
