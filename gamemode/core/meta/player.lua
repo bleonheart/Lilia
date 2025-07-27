@@ -197,7 +197,7 @@ function playerMeta:isVIP()
 end
 
 function playerMeta:isStaffOnDuty()
-    return self:Team() == FACTION_STAFF
+    return self:Team() == FactionStaff
 end
 
 function playerMeta:isFaction(faction)
