@@ -99,6 +99,9 @@ local function makeList(parent)
 end
 
 local function buildRoster(panel)
+    panel.Paint = function(pnl, w, h)
+        derma.SkinHook("Paint", "Panel", pnl, w, h)
+    end
     local char = LocalPlayer():getChar()
     if not char then return end
     local fac = lia.faction.indices[char:getFaction()]
@@ -136,17 +139,24 @@ local function buildFactions(panel)
 end
 
 function MODULE:CreateMenuButtons(tabs)
+    -- Roster moved under the Information tab
+end
+
+function MODULE:CreateInformationButtons(pages)
     local ply = LocalPlayer()
     if not IsValid(ply) then return end
     local char = ply:getChar()
     if not char then return end
     if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
-    tabs[L("roster")] = function(panel)
-        rosterRows = {}
-        lists = {}
-        built = false
-        buildRoster(panel)
-    end
+    table.insert(pages, {
+        name = L("roster"),
+        drawFunc = function(panel)
+            rosterRows = {}
+            lists = {}
+            built = false
+            buildRoster(panel)
+        end
+    })
 end
 
 hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(parent, tabs)
