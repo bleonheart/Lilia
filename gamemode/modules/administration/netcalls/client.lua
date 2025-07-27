@@ -82,46 +82,60 @@ local function handleTableData(id)
         }
     end
 
-    local _, list = lia.util.CreateTableUI(tbl, columns, rows)
-    if IsValid(list) then
-        function list:OnRowSelected(_, line)
-            openRowInfo(line.rowData)
-        end
-
-        function list:OnRowRightClick(_, line)
-            if not IsValid(line) or not line.rowData then return end
-            openRowInfo(line.rowData)
-        end
+    local ps = lia.gui.dbBrowserPS
+    if not IsValid(ps) then
+        lia.util.CreateTableUI(tbl, columns, rows)
+        return
     end
+
+    ps.tableTabs = ps.tableTabs or {}
+    if ps.tableTabs[tbl] and IsValid(ps.tableTabs[tbl].tab) then
+        ps:CloseTab(ps.tableTabs[tbl].tab, true)
+    end
+
+    local panel = vgui.Create("DPanel", ps)
+    panel:Dock(FILL)
+    panel.Paint = function() end
+
+    local list = vgui.Create("DListView", panel)
+    list:Dock(FILL)
+    for _, col in ipairs(columns) do
+        list:AddColumn(col.name or col.field or L("na"))
+    end
+    for _, row in ipairs(rows) do
+        local lineData = {}
+        for _, col in ipairs(columns) do
+            local field = col.field or col.name
+            table.insert(lineData, row[field] or L("na"))
+        end
+        local line = list:AddLine(unpack(lineData))
+        line.rowData = row
+    end
+
+    function list:OnRowSelected(_, line)
+        openRowInfo(line.rowData)
+    end
+
+    function list:OnRowRightClick(_, line)
+        if not IsValid(line) or not line.rowData then return end
+        openRowInfo(line.rowData)
+    end
+
+    local info = ps:AddSheet(tbl, panel, "icon16/table.png")
+    ps.tableTabs[tbl] = {
+        tab = info.Tab,
+        panel = panel
+    }
+    ps:SetActiveTab(info.Tab)
 end
 
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
     local list = lia.gui.dbBrowserList
-    if IsValid(list) then
-        list:Clear()
-        for _, tbl in ipairs(tables or {}) do
-            list:AddLine(tbl)
-        end
-        return
-    end
-
-    local frame = vgui.Create("DFrame")
-    frame:SetTitle("Lilia Tables")
-    frame:SetSize(300, 400)
-    frame:Center()
-    frame:MakePopup()
-    list = vgui.Create("DListView", frame)
-    list:Dock(FILL)
-    list:AddColumn("Table")
+    if not IsValid(list) then return end
+    list:Clear()
     for _, tbl in ipairs(tables or {}) do
         list:AddLine(tbl)
-    end
-
-    function list:OnRowSelected(_, line)
-        net.Start("liaRequestTableData")
-        net.WriteString(line:GetColumnText(1))
-        net.SendToServer()
     end
 end)
 
