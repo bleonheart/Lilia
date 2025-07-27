@@ -314,3 +314,20 @@ net.Receive("managesitrooms", function()
         makeButton("rename", 2)
     end
 end)
+
+net.Receive("StaffActions", function()
+    local MODULE = lia.module.get("administration")
+    local data = net.ReadTable()
+    if IsValid(MODULE.actionList) then
+        MODULE.actionList:Clear()
+        for _, row in ipairs(data) do
+            MODULE.actionList:AddLine(
+                row.admin or "N/A",
+                row.adminSteamID or "",
+                row.userGroup or "",
+                row.action or "",
+                row.actionCount or 0
+            )
+        end
+    end
+end)
