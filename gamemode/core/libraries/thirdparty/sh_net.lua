@@ -1,5 +1,4 @@
-﻿local NetworkStringToIDCache = {}
-local pon = {}
+﻿local pon = {}
 _G.pon = pon
 local type, count = type, table.Count
 local tonumber = tonumber
