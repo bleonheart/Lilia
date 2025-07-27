@@ -383,22 +383,6 @@ local function sendBigTable(ply, tbl, strChunk, strDone)
 end
 
 if SERVER then
-    util.AddNetworkString("liaGroupsAdd")
-    util.AddNetworkString("liaGroupsRemove")
-    util.AddNetworkString("liaGroupsRequest")
-    util.AddNetworkString("liaGroupsApply")
-    util.AddNetworkString("liaGroupsDefaults")
-    util.AddNetworkString("liaGroupsRename")
-    util.AddNetworkString("liaGroupsDataChunk")
-    util.AddNetworkString("liaGroupsDataDone")
-    util.AddNetworkString("liaGroupsNotice")
-    util.AddNetworkString("liaPlayersRequest")
-    util.AddNetworkString("liaPlayersDataChunk")
-    util.AddNetworkString("liaPlayersDataDone")
-    util.AddNetworkString("liaCharBrowserRequest")
-    util.AddNetworkString("liaCharBrowserChunk")
-    util.AddNetworkString("liaCharBrowserDone")
-    util.AddNetworkString("liaDBTablesRequest")
     lia.administration.privileges = lia.administration.privileges or {}
     lia.administration.groups = lia.administration.groups or {}
     lia.administration.lastJoin = lia.administration.lastJoin or {}
