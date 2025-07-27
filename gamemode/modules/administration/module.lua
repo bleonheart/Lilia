@@ -960,9 +960,20 @@ else
         bottomBar:SetTall(36)
         bottomBar.Paint = function() end
         local addBtn = bottomBar:Add("liaMediumButton")
+        local renameBtn = bottomBar:Add("liaMediumButton")
+        local delBtn = bottomBar:Add("liaMediumButton")
         addBtn:Dock(LEFT)
         addBtn:DockMargin(0, 0, 6, 0)
-        addBtn:SetWide(120)
+        renameBtn:Dock(LEFT)
+        renameBtn:DockMargin(0, 0, 6, 0)
+        delBtn:Dock(LEFT)
+        delBtn:DockMargin(0, 0, 0, 0)
+        bottomBar.PerformLayout = function(_, w, _)
+            local third = (w - 12) / 3
+            addBtn:SetWide(third)
+            renameBtn:SetWide(third)
+            delBtn:SetWide(third)
+        end
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
             Derma_StringRequest("Create Group", "New group name:", "", function(txt)
@@ -974,13 +985,7 @@ else
             end)
         end
 
-        local renameBtn = bottomBar:Add("liaMediumButton")
-        renameBtn:Dock(FILL)
-        renameBtn:DockMargin(0, 0, 6, 0)
         renameBtn:SetText("Rename")
-        local delBtn = bottomBar:Add("liaMediumButton")
-        delBtn:Dock(RIGHT)
-        delBtn:SetWide(90)
         delBtn:SetText("Delete")
         local function updateButtons(g)
             local editable = not DEFAULT_GROUPS[g]
