@@ -612,14 +612,17 @@ net.Receive("liaGroupsRequest", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local function syncPrivileges()
         local payload = {}
         for group, perms in pairs(lia.administration.groups) do
             payload[group] = table.Copy(perms)
         end
+
         lia.administration.syncAdminGroups(payload)
     end
+
     syncPrivileges()
     sendBigTable(p, payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
 end)
@@ -628,6 +631,7 @@ net.Receive("liaPlayersRequest", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     sendBigTable(p, payloadPlayers(), "liaPlayersDataChunk", "liaPlayersDataDone")
 end)
@@ -636,6 +640,7 @@ net.Receive("liaCharBrowserRequest", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local mode = net.ReadString()
     if mode == "all" then
@@ -659,6 +664,7 @@ net.Receive("liaDBTablesRequest", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     lia.db.getTables():next(function(tables)
         net.Start("liaDBTables")
@@ -671,6 +677,7 @@ net.Receive("liaGroupsAdd", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local n = net.ReadString()
     if n == "" then return end
@@ -687,6 +694,7 @@ net.Receive("liaGroupsRemove", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local n = net.ReadString()
     if n == "" or DEFAULT_GROUPS[n] then return end
@@ -702,6 +710,7 @@ net.Receive("liaGroupsRename", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local old = net.ReadString()
     local new = net.ReadString()
@@ -725,6 +734,7 @@ net.Receive("liaGroupsApply", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local g = net.ReadString()
     local t = net.ReadTable()
@@ -744,6 +754,7 @@ net.Receive("liaGroupsDefaults", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
     end
+
     if not allowed(p) then return end
     local g = net.ReadString()
     if g == "" or DEFAULT_GROUPS[g] then return end
@@ -866,5 +877,3 @@ net.Receive("VendorTrade", function(_, client)
     if not hook.Run("CanPlayerAccessVendor", client, entity) then return end
     hook.Run("VendorTradeEvent", client, entity, uniqueID, isSellingToVendor)
 end)
-
-
