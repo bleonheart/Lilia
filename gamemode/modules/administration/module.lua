@@ -166,10 +166,18 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                 end)
             end
 
-            if not table.IsEmpty(entitiesByCreator) then
+            local hasEntities = false
+            for _, list in pairs(entitiesByCreator) do
+                if istable(list) and #list > 0 then
+                    hasEntities = true
+                    break
+                end
+            end
+
+            if hasEntities then
                 local sheetPanel = vgui.Create("DPropertySheet", panel)
-                sheetPanel:Dock(FILL)
-                sheetPanel:DockMargin(0, 0, 0, 10)
+                    sheetPanel:Dock(FILL)
+                    sheetPanel:DockMargin(0, 0, 0, 10)
                 for owner, list in SortedPairs(entitiesByCreator) do
                     local page = vgui.Create("DPanel", sheetPanel)
                     page:Dock(FILL)
@@ -240,13 +248,15 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
 
                         local btnContainer = vgui.Create("DPanel", itemPanel)
                         btnContainer:Dock(RIGHT)
-                        btnContainer:SetWide(380)
                         btnContainer.Paint = function() end
-                        local btnW, btnH = 120, 40
+                        local btnW, btnH = 90, 30
+                        local margin = 4
+                        local btnCount = 0
+
                         if client:hasPrivilege("View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
-                            btnView:DockMargin(5, 0, 5, 0)
+                            btnView:DockMargin(margin, 0, margin, 0)
                             btnView:SetWide(btnW)
                             btnView:SetTall(btnH)
                             btnView:SetText(L("view"))
@@ -256,12 +266,13 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                                 lia.option.set("thirdPersonEnabled", false)
                                 startSpectateView(ent, orig)
                             end
+                            btnCount = btnCount + 1
                         end
 
                         if client:hasPrivilege("Teleport to Entity (Entity Tab)") then
                             local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
                             btnTeleport:Dock(LEFT)
-                            btnTeleport:DockMargin(5, 0, 5, 0)
+                            btnTeleport:DockMargin(margin, 0, margin, 0)
                             btnTeleport:SetWide(btnW)
                             btnTeleport:SetTall(btnH)
                             btnTeleport:SetText(L("teleport"))
@@ -270,15 +281,19 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                                 net.WriteEntity(ent)
                                 net.SendToServer()
                             end
+                            btnCount = btnCount + 1
                         end
 
                         local btnWaypoint = vgui.Create("liaSmallButton", btnContainer)
-                        btnWaypoint:Dock(RIGHT)
-                        btnWaypoint:DockMargin(5, 0, 5, 0)
+                        btnWaypoint:Dock(LEFT)
+                        btnWaypoint:DockMargin(margin, 0, margin, 0)
                         btnWaypoint:SetWide(btnW)
                         btnWaypoint:SetTall(btnH)
                         btnWaypoint:SetText(L("waypointButton"))
                         btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
+                        btnCount = btnCount + 1
+
+                        btnContainer:SetWide(btnCount * (btnW + margin * 2))
                         entries[#entries + 1] = itemPanel
                     end
 

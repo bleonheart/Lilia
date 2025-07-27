@@ -127,7 +127,15 @@ function MODULE:CreateInformationButtons(pages)
         end)
     end
 
-    if not table.IsEmpty(entitiesByCreator) then
+    local hasEntities = false
+    for _, list in pairs(entitiesByCreator) do
+        if istable(list) and #list > 0 then
+            hasEntities = true
+            break
+        end
+    end
+
+    if hasEntities then
         table.insert(pages, {
             name = L("entities"),
             drawFunc = function(entitiesPanel)
@@ -204,13 +212,15 @@ function MODULE:CreateInformationButtons(pages)
 
                         local btnContainer = vgui.Create("DPanel", itemPanel)
                         btnContainer:Dock(RIGHT)
-                        btnContainer:SetWide(390)
                         btnContainer.Paint = function() end
-                        local btnW, btnH = 120, 40
+                        local btnW, btnH = 90, 30
+                        local margin = 4
+                        local btnCount = 0
+
                         if client:hasPrivilege("View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
-                            btnView:DockMargin(5, 0, 5, 0)
+                            btnView:DockMargin(margin, 0, margin, 0)
                             btnView:SetWide(btnW)
                             btnView:SetTall(btnH)
                             btnView:SetText(L("view"))
@@ -220,12 +230,13 @@ function MODULE:CreateInformationButtons(pages)
                                 lia.option.set("thirdPersonEnabled", false)
                                 startSpectateView(ent, orig)
                             end
+                            btnCount = btnCount + 1
                         end
 
                         if client:hasPrivilege("Teleport to Entity (Entity Tab)") then
                             local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
                             btnTeleport:Dock(LEFT)
-                            btnTeleport:DockMargin(5, 0, 5, 0)
+                            btnTeleport:DockMargin(margin, 0, margin, 0)
                             btnTeleport:SetWide(btnW)
                             btnTeleport:SetTall(btnH)
                             btnTeleport:SetText(L("teleport"))
@@ -234,15 +245,19 @@ function MODULE:CreateInformationButtons(pages)
                                 net.WriteEntity(ent)
                                 net.SendToServer()
                             end
+                            btnCount = btnCount + 1
                         end
 
                         local btnWaypoint = vgui.Create("liaSmallButton", btnContainer)
                         btnWaypoint:Dock(LEFT)
-                        btnWaypoint:DockMargin(5, 0, 5, 0)
+                        btnWaypoint:DockMargin(margin, 0, margin, 0)
                         btnWaypoint:SetWide(btnW)
                         btnWaypoint:SetTall(btnH)
                         btnWaypoint:SetText(L("waypointButton"))
                         btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
+                        btnCount = btnCount + 1
+
+                        btnContainer:SetWide(btnCount * (btnW + margin * 2))
                         entries[#entries + 1] = itemPanel
                     end
 
