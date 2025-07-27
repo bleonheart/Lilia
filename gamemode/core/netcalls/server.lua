@@ -632,6 +632,239 @@ net.Receive("send_logs_request", function(_, client)
 end)
 
 -- from modules/administration/module.lua (server)
+
+local function buildDefaultTable(g)
+    local t = {}
+    if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
+    for _, v in pairs(CAMI.GetPrivileges() or {}) do
+        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then
+            t[v.Name] = true
+        end
+    end
+    return t
+end
+
+local function ensureCAMIGroup(n, inh)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
+    local g = CAMI.GetUsergroups() or {}
+    if not g[n] then
+        CAMI.RegisterUsergroup({
+            Name = n,
+            Inherits = n == "developer" and "superadmin" or inh or "user"
+        })
+    end
+end
+
+local function dropCAMIGroup(n)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
+    local g = CAMI.GetUsergroups() or {}
+    if g[n] then
+        CAMI.UnregisterUsergroup(n)
+    end
+end
+
+local function getPrivList()
+    local cats = {}
+    for n, v in pairs(lia.administration.privileges) do
+        local cat = v.Category or "Unassigned"
+        cats[cat] = cats[cat] or {}
+        table.insert(cats[cat], n)
+    end
+
+    for _, list in pairs(cats) do
+        table.sort(list)
+    end
+
+    return cats
+end
+
+local function payloadGroups()
+    return {
+        cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
+        perms = lia.administration.groups or {},
+        privCategories = getPrivList()
+    }
+end
+
+local function getBanList()
+    local t = {}
+    local query = "SELECT steamID FROM lia_players WHERE banStart > 0"
+    if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
+        local db = lia.db.getObject()
+        if not db then return t end
+        local q = db:query(query)
+        q:start()
+        q:wait()
+        if not q:error() then
+            for _, row in ipairs(q:getData() or {}) do
+                t[row.steamID] = true
+            end
+        end
+    else
+        local data = lia.db.querySync(query)
+        if istable(data) then
+            for _, row in ipairs(data) do
+                t[row.steamID] = true
+            end
+        end
+    end
+
+    return t
+end
+
+local function payloadPlayers()
+    local bans = getBanList()
+    local plys = {}
+    for _, v in player.Iterator() do
+        if v:IsBot() then continue end
+        plys[#plys + 1] = {
+            name = v:Nick(),
+            id = v:SteamID(),
+            id64 = v:SteamID64(),
+            group = v:GetUserGroup(),
+            lastJoin = os.time(lia.time.toNumber(v.lastJoin)),
+            banned = bans[v:SteamID()] or false
+        }
+
+        bans[v:SteamID()] = nil
+    end
+
+    for id in pairs(bans) do
+        plys[#plys + 1] = {
+            name = "",
+            id = id,
+            id64 = util.SteamIDTo64(id),
+            group = "",
+            lastJoin = 0,
+            banned = true
+        }
+    end
+
+    return {
+        players = plys
+    }
+end
+
+local function buildCharEntry(client, row)
+    local stored = lia.char.loaded[row.id]
+    local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
+    local isBanned = stored and stored:getBanned() or row.banned
+    local allVars = {}
+
+    for varName, varInfo in pairs(lia.char.vars) do
+        local value
+        if stored then
+            if varName == "data" then
+                value = stored:getData()
+            elseif varName == "var" then
+                value = stored:getVar()
+            else
+                local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
+                if isfunction(getter) then
+                    value = getter(stored)
+                else
+                    value = stored.vars and stored.vars[varName]
+                end
+            end
+        else
+            if varName == "data" then
+                value = info
+            elseif varInfo.field and row[varInfo.field] ~= nil then
+                local raw = row[varInfo.field]
+                if isnumber(varInfo.default) then
+                    value = tonumber(raw) or varInfo.default
+                elseif isbool(varInfo.default) then
+                    value = tobool(raw)
+                elseif istable(varInfo.default) then
+                    value = util.JSONToTable(raw or "{}")
+                else
+                    value = raw
+                end
+            else
+                value = varInfo.default
+            end
+        end
+
+        allVars[varName] = value
+    end
+
+    local lastUsedText
+    if stored then
+        lastUsedText = L("onlineNow")
+    else
+        lastUsedText = row.lastJoinTime
+    end
+
+    local bannedState = false
+    if isBanned then
+        local num = tonumber(isBanned)
+        if num then
+            bannedState = num == 1 or num > os.time()
+        else
+            bannedState = tobool(isBanned)
+        end
+    end
+
+    local entry = {
+        ID = row.id,
+        Name = row.name,
+        Desc = row.desc,
+        Faction = row.faction,
+        SteamID = row.steamID,
+        Banned = bannedState and "Yes" or "No",
+        BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
+        BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
+        BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
+        Money = row.money,
+        LastUsed = lastUsedText,
+        allVars = allVars
+    }
+
+    entry.extraDetails = {}
+    hook.Run("CharListExtraDetails", client, entry, stored)
+    return entry
+end
+
+local function collectOnlineCharacters(client, callback)
+    local rows = {}
+    for _, ply in player.Iterator() do
+        local char = ply:getChar()
+        if char then
+            rows[#rows + 1] = {
+                id = char:getID(),
+                name = char:getName(),
+                desc = char:getDesc(),
+                faction = char:getFaction(),
+                money = char:getMoney(),
+                banned = char:getBanned(),
+                lastJoinTime = os.time(lia.time.toNumber(ply.lastJoin)),
+                steamID = ply:SteamID64()
+            }
+        end
+    end
+
+    local sendData = {}
+    for _, row in ipairs(rows) do
+        sendData[#sendData + 1] = buildCharEntry(client, row)
+    end
+
+    callback(sendData)
+end
+
+local function queryAllCharacters(client, callback)
+    lia.db.query("SELECT * FROM lia_characters", function(data)
+        local sendData = {}
+        for _, row in ipairs(data or {}) do
+            sendData[#sendData + 1] = buildCharEntry(client, row)
+        end
+        callback(sendData)
+    end)
+end
+
+local function applyToCAMI(g, _)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.RegisterUsergroup) then return end
+    ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
+end
 net.Receive("liaGroupsRequest", function(_, p)
     local function allowed(client)
         return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
@@ -648,7 +881,7 @@ net.Receive("liaGroupsRequest", function(_, p)
     end
 
     syncPrivileges()
-    local id = lia.net.WriteBigTable(p, lia.administration.payloadGroups())
+    local id = lia.net.WriteBigTable(p, payloadGroups())
     net.Start("liaGroupsDataDone")
     net.WriteString(id)
     net.Send(p)
@@ -660,7 +893,7 @@ net.Receive("liaPlayersRequest", function(_, p)
     end
 
     if not allowed(p) then return end
-    local id = lia.net.WriteBigTable(p, lia.administration.payloadPlayers())
+    local id = lia.net.WriteBigTable(p, payloadPlayers())
     net.Start("liaPlayersDataDone")
     net.WriteString(id)
     net.Send(p)
@@ -674,7 +907,7 @@ net.Receive("liaCharBrowserRequest", function(_, p)
     if not allowed(p) then return end
     local mode = net.ReadString()
     if mode == "all" then
-        lia.administration.queryAllCharacters(p, function(data)
+        queryAllCharacters(p, function(data)
             local id = lia.net.WriteBigTable(p, {
                 mode = "all",
                 list = data
@@ -684,7 +917,7 @@ net.Receive("liaCharBrowserRequest", function(_, p)
             net.Send(p)
         end)
     else
-        lia.administration.collectOnlineCharacters(p, function(data)
+        collectOnlineCharacters(p, function(data)
             local id = lia.net.WriteBigTable(p, {
                 mode = "online",
                 list = data
@@ -718,11 +951,11 @@ net.Receive("liaGroupsAdd", function(_, p)
     local n = net.ReadString()
     if n == "" then return end
     lia.administration.createGroup(n)
-    lia.administration.groups[n] = lia.administration.buildDefaultTable(n)
-    lia.administration.ensureCAMIGroup(n, "user")
+    lia.administration.groups[n] = buildDefaultTable(n)
+    ensureCAMIGroup(n, "user")
     lia.administration.save(true)
-    lia.administration.applyToCAMI(n, lia.administration.groups[n])
-    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    applyToCAMI(n, lia.administration.groups[n])
+    local id = lia.net.WriteBigTable(nil, payloadGroups())
     net.Start("liaGroupsDataDone")
     net.WriteString(id)
     net.Broadcast()
@@ -739,9 +972,9 @@ net.Receive("liaGroupsRemove", function(_, p)
     if n == "" or lia.administration.lia.administration.DefaultGroups[n] then return end
     lia.administration.removeGroup(n)
     lia.administration.groups[n] = nil
-    lia.administration.dropCAMIGroup(n)
+    dropCAMIGroup(n)
     lia.administration.save(true)
-    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    local id = lia.net.WriteBigTable(nil, payloadGroups())
     net.Start("liaGroupsDataDone")
     net.WriteString(id)
     net.Broadcast()
@@ -760,15 +993,15 @@ net.Receive("liaGroupsRename", function(_, p)
     if lia.administration.groups[new] or not lia.administration.groups[old] then return end
     lia.administration.groups[new] = lia.administration.groups[old]
     lia.administration.groups[old] = nil
-    lia.administration.dropCAMIGroup(old)
-    lia.administration.ensureCAMIGroup(new, "user")
+    dropCAMIGroup(old)
+    ensureCAMIGroup(new, "user")
     lia.administration.save(true)
-    lia.administration.applyToCAMI(new, lia.administration.groups[new])
+    applyToCAMI(new, lia.administration.groups[new])
     for _, ply in player.Iterator() do
         if ply:GetUserGroup() == old then lia.administration.setPlayerGroup(ply, new) end
     end
 
-    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    local id = lia.net.WriteBigTable(nil, payloadGroups())
     net.Start("liaGroupsDataDone")
     net.WriteString(id)
     net.Broadcast()
@@ -790,8 +1023,8 @@ net.Receive("liaGroupsApply", function(_, p)
     end
 
     lia.administration.save(true)
-    lia.administration.applyToCAMI(g, lia.administration.groups[g])
-    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    applyToCAMI(g, lia.administration.groups[g])
+    local id = lia.net.WriteBigTable(nil, payloadGroups())
     net.Start("liaGroupsDataDone")
     net.WriteString(id)
     net.Broadcast()
@@ -806,10 +1039,10 @@ net.Receive("liaGroupsDefaults", function(_, p)
     if not allowed(p) then return end
     local g = net.ReadString()
     if g == "" or lia.administration.lia.administration.DefaultGroups[g] then return end
-    lia.administration.groups[g] = lia.administration.buildDefaultTable(g)
+    lia.administration.groups[g] = buildDefaultTable(g)
     lia.administration.save(true)
-    lia.administration.applyToCAMI(g, lia.administration.groups[g])
-    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    applyToCAMI(g, lia.administration.groups[g])
+    local id = lia.net.WriteBigTable(nil, payloadGroups())
     net.Start("liaGroupsDataDone")
     net.WriteString(id)
     net.Broadcast()
