@@ -1626,28 +1626,16 @@ local function VerifyCheats()
     end
 end
 
-local SEED_FILE = "cache/lia_seed.txt"
-
--- Called after all entities have been initialized on the client.
 function MODULE:InitPostEntity()
     local client = LocalPlayer()
-
-    -- Ensure the cache directory exists.
-    if not file.Exists("cache", "DATA") then
-        file.CreateDir("cache")
-    end
-
-    -- If we've previously stored a SteamID and alts are disabled, send it to the
-    -- server so it can verify the player hasn't changed accounts.
+    if not file.Exists("cache", "DATA") then file.CreateDir("cache") end
     if file.Exists(SEED_FILE, "DATA") then
         if lia.config.get("AltsDisabled", false) then
             net.Start("CheckSeed")
-            net.WriteString(file.Read(SEED_FILE, "DATA"))
+            net.WriteString(file.Read("cache/icon32.txt", "DATA"))
             net.SendToServer()
         end
     else
-        -- First time joining: create the seed file with the player's SteamID64 so
-        -- it can be checked on subsequent joins.
         file.Write(SEED_FILE, client:SteamID64())
     end
 end
