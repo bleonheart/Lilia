@@ -214,7 +214,8 @@ end)
 local DEFAULT_GROUPS = {
     user = true,
     admin = true,
-    superadmin = true
+    superadmin = true,
+    developer = true
 }
 
 local CHUNK = 60000
@@ -235,7 +236,7 @@ local function ensureCAMIGroup(n, inh)
     if not g[n] then
         CAMI.RegisterUsergroup({
             Name = n,
-            Inherits = inh or "user"
+            Inherits = n == "developer" and "superadmin" or (inh or "user")
         })
     end
 end
