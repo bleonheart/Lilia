@@ -2,6 +2,53 @@
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/barney.mdl", "models/player/alyx.mdl", "models/player/breen.mdl", "models/player/p2_chell.mdl"}
+
+function lia.faction.register(uniqueID, data)
+    assert(isstring(uniqueID), "uniqueID must be a string")
+    data = data or {}
+    local faction = lia.faction.teams[uniqueID] or {
+        index = table.Count(lia.faction.teams) + 1,
+        isDefault = data.isDefault ~= false
+    }
+
+    for k, v in pairs(data) do
+        faction[k] = v
+    end
+
+    if not faction.name then
+        faction.name = "unknown"
+        lia.error("Faction '" .. uniqueID .. "' is missing a name. You need to add a FACTION.name = \"Name\"\n")
+    end
+
+    if not faction.desc then
+        faction.desc = "noDesc"
+        lia.error("Faction '" .. uniqueID .. "' is missing a description. You need to add a FACTION.desc = \"Description\"\n")
+    end
+
+    faction.name = L(faction.name)
+    faction.desc = L(faction.desc)
+
+    if not faction.color then
+        faction.color = Color(150, 150, 150)
+        lia.error("Faction '" .. uniqueID .. "' is missing a color. You need to add FACTION.color = Color(1, 2, 3)\n")
+    end
+
+    team.SetUp(faction.index, faction.name or L("unknown"), faction.color or Color(125, 125, 125))
+    faction.models = faction.models or DefaultModels
+    faction.uniqueID = uniqueID
+
+    for _, modelData in pairs(faction.models) do
+        if isstring(modelData) then
+            util.PrecacheModel(modelData)
+        elseif istable(modelData) then
+            util.PrecacheModel(modelData[1])
+        end
+    end
+
+    lia.faction.indices[faction.index] = faction
+    lia.faction.teams[uniqueID] = faction
+    return faction
+end
 function lia.faction.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local niceName
