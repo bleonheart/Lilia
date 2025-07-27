@@ -366,12 +366,13 @@ end
 
 function GM:OnContextMenuOpen()
     self.BaseClass:OnContextMenuOpen()
-    vgui.Create("liaQuick")
+    if not IsValid(lia.gui.quick) then vgui.Create("liaQuick") end
 end
 
 function GM:OnContextMenuClose()
     self.BaseClass:OnContextMenuClose()
-    if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
+    -- keep the quick menu open if the user released the context menu key
+    -- it will be closed via the new keybind instead
 end
 
 function GM:CharListLoaded()
