@@ -38,13 +38,22 @@ function populate(uid)
     if not built then return end
     local lst = lists[uid]
     if not IsValid(lst) then return end
+    local query = IsValid(lst.searchEntry) and lst.searchEntry:GetValue() or ""
     lst:Clear()
     for _, r in ipairs(rosterRows[uid] or {}) do
-        addRow(lst, r)
+        local info = (r.name .. " " .. r.steamID .. " " .. r.class .. " " .. tostring(r.hoursPlayed) .. " " .. tostring(r.lastOnline)):lower()
+        if query == "" or info:find(query:lower(), 1, true) then
+            addRow(lst, r)
+        end
     end
 end
 
-function makeList(parent)
+function makeList(parent, uid)
+    local search = parent:Add("DTextEntry")
+    search:Dock(TOP)
+    search:DockMargin(0, 0, 0, 5)
+    search:SetPlaceholderText(L("search"))
+
     local lst = parent:Add("DListView")
     lst:Dock(FILL)
     lst:SetMultiSelect(false)
@@ -53,6 +62,21 @@ function makeList(parent)
     lst:AddColumn("Class")
     lst:AddColumn("Hours Played")
     lst:AddColumn("Last Online")
+    local function populate(q)
+        lst:Clear()
+        q = q and string.lower(q) or ""
+        for _, r in ipairs(rosterRows[uid] or {}) do
+            local info = (r.name .. " " .. r.steamID .. " " .. r.class .. " " .. tostring(r.hoursPlayed) .. " " .. tostring(r.lastOnline)):lower()
+            if q == "" or info:find(q, 1, true) then
+                addRow(lst, r)
+            end
+        end
+    end
+
+    lst.searchEntry = search
+    populate()
+    search.OnChange = function() populate(search:GetValue()) end
+
     lst.OnRowRightClick = function(_, _, line)
         if not IsValid(line) or not line.rowData then return end
         local row = line.rowData
@@ -95,7 +119,7 @@ function buildRoster(panel)
     bg:Dock(FILL)
     bg:DockPadding(10, 10, 10, 10)
     bg.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
-    lists[uid] = makeList(bg)
+    lists[uid] = makeList(bg, uid)
     built = true
     net.Start("RosterRequest")
     net.WriteString(uid)
@@ -112,7 +136,7 @@ function buildFactions(panel)
         bg:Dock(FILL)
         bg:DockPadding(10, 10, 10, 10)
         bg.Paint = function(p, w, h) derma.SkinHook("Paint", "Panel", p, w, h) end
-        lists[fac.uniqueID] = makeList(bg)
+        lists[fac.uniqueID] = makeList(bg, fac.uniqueID)
         ps:AddSheet(fac.name or fac.uniqueID, pnl)
         net.Start("RosterRequest")
         net.WriteString(fac.uniqueID)
