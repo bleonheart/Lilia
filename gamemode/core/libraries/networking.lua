@@ -59,3 +59,31 @@ else
 
     playerMeta.getLocalVar = entityMeta.getNetVar
 end
+
+function lia.net.WriteBigTable(tbl)
+    local data = util.Compress(pon.encode(tbl))
+    local len = #data
+    net.WriteUInt(len, 32)
+    local i = 1
+    while i <= len do
+        local size = math.min(32768, len - i + 1)
+        net.WriteUInt(size, 16)
+        net.WriteData(data:sub(i, i + size - 1), size)
+        i = i + size
+    end
+end
+
+function lia.net.ReadBigTable()
+    local len = net.ReadUInt(32)
+    local read = 0
+    local parts = {}
+    while read < len do
+        local size = net.ReadUInt(16)
+        parts[#parts + 1] = net.ReadData(size)
+        read = read + size
+    end
+
+    local data = table.concat(parts)
+    local raw = util.Decompress(data)
+    return pon.decode(raw)
+end
