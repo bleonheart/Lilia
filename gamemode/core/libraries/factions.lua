@@ -2,6 +2,40 @@
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/barney.mdl", "models/player/alyx.mdl", "models/player/breen.mdl", "models/player/p2_chell.mdl"}
+
+function lia.faction.register(uniqueID, data)
+    data = data or {}
+    assert(isstring(uniqueID), "faction name must be a string")
+
+    local faction = lia.faction.teams[uniqueID] or {
+        index = table.Count(lia.faction.teams) + 1,
+        isDefault = true
+    }
+
+    for k, v in pairs(data) do
+        faction[k] = v
+    end
+
+    faction.uniqueID = uniqueID
+    faction.name = L(faction.name or "unknown")
+    faction.desc = L(faction.desc or "noDesc")
+    faction.color = faction.color or Color(150, 150, 150)
+    faction.models = faction.models or DefaultModels
+
+    for _, modelData in pairs(faction.models) do
+        if isstring(modelData) then
+            util.PrecacheModel(modelData)
+        elseif istable(modelData) then
+            util.PrecacheModel(modelData[1])
+        end
+    end
+
+    lia.faction.indices[faction.index] = faction
+    lia.faction.teams[uniqueID] = faction
+    team.SetUp(faction.index, faction.name, faction.color)
+
+    return faction.index
+end
 function lia.faction.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local niceName
