@@ -4,7 +4,6 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides NPC vendors who can buy and sell items with stock management and dialogue-driven transactions."
 
 lia.config.add("vendorDefaultMoney", "Default Vendor Money", 500, nil, {
--- Privileges moved to admin.lua
     desc = "Sets the default amount of money a vendor starts with",
     category = "Vendors",
     type = "Int",

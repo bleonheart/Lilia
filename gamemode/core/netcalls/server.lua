@@ -113,7 +113,6 @@ net.Receive("liaCharFetchNames", function(_, client)
     net.Send(client)
 end)
 
--- from modules/doors/netcalls/server.lua
 net.Receive("doorPerm", function(_, client)
     local door = net.ReadEntity()
     local target = net.ReadEntity()
@@ -137,7 +136,6 @@ net.Receive("doorPerm", function(_, client)
     end
 end)
 
--- from modules/chatbox/netcalls/server.lua
 net.Receive("msg", function(_, client)
     local text = net.ReadString()
     local charlimit = lia.config.get("MaxChatLength")
@@ -158,7 +156,6 @@ net.Receive("msg", function(_, client)
     end
 end)
 
--- from modules/mainmenu/netcalls/server.lua
 net.Receive("liaCharChoose", function(_, client)
     local function response(message)
         net.Start("liaCharChoose")
@@ -269,7 +266,6 @@ net.Receive("liaCharDelete", function(_, client)
     end
 end)
 
--- from modules/inventory/submodules/storage/netcalls/server.lua
 net.Receive("liaStorageExit", function(_, client)
     local storage = client.liaStorageEntity
     if IsValid(storage) then storage.receivers[client] = nil end
@@ -352,7 +348,6 @@ net.Receive("liaStorageTransfer", function(_, client)
     end)
 end)
 
--- from modules/inventory/submodules/storage/netcalls/shared.lua
 net.Receive("trunkInitStorage", function()
     local MODULE = lia.module.get("storage")
     local isTable = net.ReadBool()
@@ -367,13 +362,11 @@ net.Receive("trunkInitStorage", function()
     end
 end)
 
--- from libraries/workshop.lua
 net.Receive("WorkshopDownloader_Request", function(_, client)
     if not lia.config.get("AutoDownloadWorkshop", true) then return end
     lia.workshop.send(client)
 end)
 
--- from modules/interactionmenu/libraries/server.lua
 net.Receive("TransferMoneyFromP2P", function(_, sender)
     local MODULE = lia.module.get("interactionmenu")
     local amount = net.ReadUInt(32)
@@ -424,7 +417,6 @@ net.Receive("RunLocalOption", function(_, ply)
     if opt and opt.runServer then opt.onRun(ply) end
 end)
 
--- from modules/f1menu/libraries/server.lua
 net.Receive("liaTeleportToEntity", function(_, ply)
     local ent = net.ReadEntity()
     if not IsValid(ent) then return end
@@ -435,7 +427,6 @@ net.Receive("liaTeleportToEntity", function(_, ply)
     lia.log.add(ply, "teleportToEntity", ent:GetClass())
 end)
 
--- from modules/administration/commands.lua
 net.Receive("RequestStaffActions", function(_, client)
     local MODULE = lia.module.get("administration")
     if not client:hasPrivilege("View Staff Actions") then return end
@@ -500,7 +491,6 @@ net.Receive("RequestTicketClaims", function(_, client)
     end)
 end)
 
--- from modules/administration/submodules/warns/libraries/server.lua
 net.Receive("RequestRemoveWarning", function(_, client)
     local MODULE = lia.module.get("warns")
     if not client:hasPrivilege("Can Remove Warns") then return end
@@ -539,7 +529,6 @@ net.Receive("RequestRemoveWarning", function(_, client)
     end)
 end)
 
--- from modules/administration/submodules/itemspawner/libraries/server.lua
 local function fixupProp(client, ent, mins, maxs)
     local pos = ent:GetPos()
     local down, up = ent:LocalToWorld(mins), ent:LocalToWorld(maxs)
@@ -604,7 +593,6 @@ net.Receive("SpawnMenuGiveItem", function(_, client)
     lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
 end)
 
--- from modules/administration/submodules/logging/libraries/server.lua
 net.Receive("send_logs_request", function(_, client)
     local MODULE = lia.module.get("logging")
     if not MODULE:CanPlayerSeeLog(client) then return end
@@ -631,7 +619,6 @@ net.Receive("send_logs_request", function(_, client)
     fetch(1)
 end)
 
--- from modules/administration/module.lua (server)
 
 local function buildDefaultTable(g)
     local t = {}
@@ -1049,7 +1036,6 @@ net.Receive("liaGroupsDefaults", function(_, p)
     p:notify("Defaults restored for '" .. g .. "'.")
 end)
 
--- from modules/spawns/libraries/server.lua
 net.Receive("request_respawn", function(_, client)
     if not IsValid(client) or not client:getChar() then return end
     local respawnTime = lia.config.get("SpawnTime", 5)
@@ -1060,7 +1046,6 @@ net.Receive("request_respawn", function(_, client)
     if not client:Alive() and not client:getNetVar("IsDeadRestricted", false) then client:Spawn() end
 end)
 
--- from modules/attributes/libraries/server.lua
 net.Receive("ChangeAttribute", function(_, client)
     if not client:hasPrivilege("Commands - Manage Attributes") then return end
     local charID = net.ReadInt(32)
@@ -1130,7 +1115,6 @@ net.Receive("ChangeAttribute", function(_, client)
     end
 end)
 
--- from modules/inventory/submodules/vendor/libraries/server.lua
 net.Receive("VendorExit", function(_, client)
     local vendor = client.liaVendor
     if IsValid(vendor) then vendor:removeReceiver(client, true) end
