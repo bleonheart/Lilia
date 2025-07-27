@@ -13,7 +13,7 @@ function MODULE:CanPlayerAccessVendor(client, vendor)
     if client:CanEditVendor(vendor) then return true end
     if vendor:isClassAllowed(character:getClass()) then return true end
     if vendor:isFactionAllowed(client:Team()) then return true end
-    if flag and string.len(flag) == 1 and client:getChar():hasFlags(flag) then return true end
+    if flag and string.len(flag) == 1 and client:hasFlags(flag) then return true end
 end
 
 function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)
@@ -68,7 +68,7 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
         end
     end
 
-    if flag and not client:getChar():hasFlags(flag) then return false, L("vendorTradeRestrictedFlag") end
+    if flag and not client:hasFlags(flag) then return false, L("vendorTradeRestrictedFlag") end
     return true, nil, isWhitelisted
 end
 
