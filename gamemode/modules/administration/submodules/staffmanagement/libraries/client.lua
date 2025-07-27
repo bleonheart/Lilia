@@ -1,5 +1,4 @@
 local MODULE = MODULE
-
 net.Receive("StaffActions", function()
     local data = net.ReadTable()
     if IsValid(MODULE.actionList) then
@@ -38,7 +37,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
         build = function(sheet)
             local panel = vgui.Create("DPanel", sheet)
             panel:Dock(FILL)
-            panel:DockPadding(10,10,10,10)
+            panel:DockPadding(10, 10, 10, 10)
             local list = vgui.Create("DListView", panel)
             list:Dock(FILL)
             list:AddColumn(L("adminName"))
@@ -54,10 +53,13 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
                     for i = 1, line:Columns() do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
+
                     SetClipboardText(s:sub(1, -4))
                 end):SetIcon("icon16/page_copy.png")
+
                 m:Open()
             end
+
             net.Start("RequestStaffActions")
             net.SendToServer()
             return panel
@@ -69,7 +71,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
-            pnl:DockPadding(10,10,10,10)
+            pnl:DockPadding(10, 10, 10, 10)
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("player"))
@@ -85,10 +87,13 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
                     for i = 1, line:Columns() do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
+
                     SetClipboardText(s:sub(1, -4))
                 end):SetIcon("icon16/page_copy.png")
+
                 m:Open()
             end
+
             net.Start("RequestPlayerWarnings")
             net.WriteString(LocalPlayer():SteamID64())
             net.SendToServer()
@@ -101,7 +106,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
         build = function(sheet)
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
-            pnl:DockPadding(10,10,10,10)
+            pnl:DockPadding(10, 10, 10, 10)
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("timestamp"))
@@ -117,10 +122,13 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
                     for i = 1, line:Columns() do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
+
                     SetClipboardText(s:sub(1, -4))
                 end):SetIcon("icon16/page_copy.png")
+
                 m:Open()
             end
+
             net.Start("RequestTicketClaims")
             net.SendToServer()
             return pnl
