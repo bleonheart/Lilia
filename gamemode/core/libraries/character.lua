@@ -436,6 +436,14 @@ lia.char.registerVar("banned", {
     noDisplay = true
 })
 
+lia.char.registerVar("whitelists", {
+    field = "whitelists",
+    fieldType = "text",
+    default = {},
+    isLocal = true,
+    noDisplay = true
+})
+
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end

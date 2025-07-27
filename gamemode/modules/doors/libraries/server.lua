@@ -190,6 +190,7 @@ end
 
 function MODULE:KeyLock(client, door, time)
     if not IsValid(door) or not IsValid(client) then return end
+    if door:getNetVar("noKeying") then return end
     if hook.Run("CanPlayerLock", client, door) == false then return end
     local distance = client:GetPos():Distance(door:GetPos())
     local isProperEntity = door:isDoor() or door:IsVehicle() or door:isSimfphysCar()
@@ -202,6 +203,7 @@ end
 
 function MODULE:KeyUnlock(client, door, time)
     if not IsValid(door) or not IsValid(client) then return end
+    if door:getNetVar("noKeying") then return end
     if hook.Run("CanPlayerUnlock", client, door) == false then return end
     local distance = client:GetPos():Distance(door:GetPos())
     local isProperEntity = door:isDoor() or door:IsVehicle() or door:isSimfphysCar()
