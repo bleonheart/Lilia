@@ -11,6 +11,7 @@ net.Receive("trunkInitStorage", function()
         MODULE:InitializeStorage(entity)
     end
 end)
+
 net.Receive("liaStorageExit", function(_, client)
     local storage = client.liaStorageEntity
     if IsValid(storage) then storage.receivers[client] = nil end
@@ -92,6 +93,3 @@ net.Receive("liaStorageTransfer", function(_, client)
         if IsValid(client) then client:notifyLocalized("itemOnGround") end
     end)
 end)
-
-net.Receive("WorkshopDownloader_Request", function(_, client)
-    if not lia.config.get("AutoDownloadWorkshop", true) then return end
