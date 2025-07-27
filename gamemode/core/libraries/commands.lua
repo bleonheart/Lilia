@@ -582,19 +582,32 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                     local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
                     if not hasAccess then continue end
                     local hasDesc = cmdData.desc and cmdData.desc ~= ""
-                    local height = hasDesc and 80 or 40
+                    local baseX = 20
+                    local width = panel:GetWide()
+                    local descLines = {}
+                    local lineH = 0
+                    local height = 40
+                    if hasDesc then
+                        descLines = lia.util.wrapText(cmdData.desc, width - baseX - 20, "liaSmallFont")
+                        surface.SetFont("liaSmallFont")
+                        local _
+                        _, lineH = surface.GetTextSize("W")
+                        height = math.max(80, 45 + #descLines * lineH + 5)
+                    end
+
                     local commandPanel = vgui.Create("DPanel", iconLayout)
-                    commandPanel:SetSize(panel:GetWide(), height)
+                    commandPanel:SetSize(width, height)
                     commandPanel.Paint = function(self, w, h)
                         derma.SkinHook("Paint", "Panel", self, w, h)
-                        local baseX = 20
                         local text = "/" .. cmdName
                         if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
                         local privilegeText = privilege
                         if privilegeText == "Global" then privilegeText = nil end
                         if hasDesc then
                             draw.SimpleText(text, "liaMediumFont", baseX, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                            draw.SimpleText(cmdData.desc, "liaSmallFont", baseX, 45, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                            for i, line in ipairs(descLines) do
+                                draw.SimpleText(line, "liaSmallFont", baseX, 45 + (i - 1) * lineH, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                            end
                             if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
                         else
                             draw.SimpleText(text, "liaMediumFont", baseX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
