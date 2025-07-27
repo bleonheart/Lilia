@@ -61,29 +61,38 @@ else
 end
 
 function lia.net.WriteBigTable(tbl)
-    local data = util.Compress(pon.encode(tbl))
-    local len = #data
-    net.WriteUInt(len, 32)
-    local i = 1
-    while i <= len do
-        local size = math.min(32768, len - i + 1)
-        net.WriteUInt(size, 16)
-        net.WriteData(data:sub(i, i + size - 1), size)
-        i = i + size
+    local raw = pon.encode(tbl)
+    local data = util.Compress(raw)
+    local length = #data
+    net.WriteUInt(length, 32)
+    local pos = 1
+    while pos <= length do
+        local chunk = math.min(32768, length - pos + 1)
+        net.WriteUInt(chunk, 16)
+        net.WriteData(data:sub(pos, pos + chunk - 1), chunk)
+        pos = pos + chunk
     end
 end
 
 function lia.net.ReadBigTable()
-    local len = net.ReadUInt(32)
-    local read = 0
+    local length = net.ReadUInt(32)
+    local received = 0
     local parts = {}
-    while read < len do
-        local size = net.ReadUInt(16)
-        parts[#parts + 1] = net.ReadData(size)
-        read = read + size
+    while received < length do
+        local chunk = net.ReadUInt(16)
+        parts[#parts + 1] = net.ReadData(chunk)
+        received = received + chunk
     end
 
     local data = table.concat(parts)
     local raw = util.Decompress(data)
-    return pon.decode(raw)
+    local tbl = pon.decode(raw)
+    return tbl, length
+end
+
+if SERVER then
+    local networkStrings = {"lia_bigtable_test", "CurTimeSync", "actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharBrowserRequest", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaDBTableDataChunk", "liaDBTableDataDone", "liaDBTables", "liaDBTablesRequest", "liaGroupsAdd", "liaGroupsRemove", "liaGroupsRename", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaPlayersRequest", "liaRequestTableData", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "playerLoadedChar", "PlayerWarnings", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "RequestPlayerWarnings", "RequestStaffActions", "RequestTicketClaims", "rgnDone", "RosterRequest", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StaffActions", "StringRequest", "TicketClaims", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start"}
+    for _, netString in ipairs(networkStrings) do
+        util.AddNetworkString(netString)
+    end
 end

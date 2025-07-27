@@ -40,7 +40,6 @@ function MODULE:ReadLogEntries(category)
     return d
 end
 
-
 function MODULE:CanPlayerSeeLog(client)
     return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Can See Logs")
 end
