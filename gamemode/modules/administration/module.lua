@@ -16,7 +16,9 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             list:AddColumn(L("adminName"))
             list:AddColumn(L("steamID"))
             list:AddColumn(L("userGroup"))
-            list:AddColumn(L("staffActionCount"))
+            list:AddColumn(L("staffTicketsCount"))
+            list:AddColumn(L("staffWarningsCount"))
+            list:AddColumn(L("staffBansCount"))
             MODULE.actionList = list
             list.OnRowRightClick = function(_, _, line)
                 if not IsValid(line) then return end

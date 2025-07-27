@@ -938,7 +938,14 @@ net.Receive("StaffActions", function()
     if IsValid(MODULE.actionList) then
         MODULE.actionList:Clear()
         for _, row in ipairs(data) do
-            MODULE.actionList:AddLine(row.admin or "N/A", row.adminSteamID or "", row.userGroup or "", row.count or 0)
+            MODULE.actionList:AddLine(
+                row.admin or "N/A",
+                row.adminSteamID or "",
+                row.userGroup or "",
+                row.ticketCount or 0,
+                row.warningCount or 0,
+                row.banCount or 0
+            )
         end
     end
 end)
