@@ -118,56 +118,42 @@ function MODULE:CreateInformationButtons(pages)
         table.insert(pages, {
             name = L("entities"),
             drawFunc = function(entitiesPanel)
-                local count = 0
-                for _, list in pairs(entitiesByCreator) do
-                    count = count + #list
-                end
+                local sheet = entitiesPanel:Add("DPropertySheet")
+                sheet:Dock(FILL)
+                sheet:DockMargin(0, 0, 0, 10)
 
-                local searchEntry = vgui.Create("DTextEntry", entitiesPanel)
-                searchEntry:Dock(TOP)
-                searchEntry:DockMargin(0, 0, 0, 5)
-                searchEntry:SetTall(30)
-                searchEntry:SetPlaceholderText(L("searchEntities"))
-                local statsPanel = vgui.Create("DPanel", entitiesPanel)
-                statsPanel:Dock(TOP)
-                statsPanel:DockMargin(10, 0, 10, 5)
-                statsPanel:SetTall(30)
-                statsPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-                local statsLabel = vgui.Create("DLabel", statsPanel)
-                statsLabel:Dock(FILL)
-                statsLabel:SetFont("liaSmallFont")
-                statsLabel:SetTextColor(color_white)
-                statsLabel:SetContentAlignment(5)
-                statsLabel:SetText(L("totalPlayerEntities", count))
-                local scroll = vgui.Create("DScrollPanel", entitiesPanel)
-                scroll:Dock(FILL)
-                scroll:DockPadding(0, 0, 0, 10)
-                local canvas = scroll:GetCanvas()
-                local entries = {}
                 for owner, list in SortedPairs(entitiesByCreator) do
-                    local header = vgui.Create("DCollapsibleCategory", canvas)
-                    header:Dock(TOP)
-                    header:SetLabel(owner .. " - " .. #list .. " " .. L("entities"))
-                    header:SetExpanded(true)
-                    header.Header:SetFont("liaMediumFont")
-                    header.Header:SetTextColor(Color(255, 255, 255))
-                    header.Header:SetContentAlignment(5)
-                    header.Header:SetTall(30)
-                    header.Paint = function() end
-                    header.Header.Paint = function(_, w, h)
-                        surface.SetDrawColor(0, 0, 0, 255)
-                        surface.DrawOutlinedRect(0, 0, w, h, 2)
-                        surface.SetDrawColor(0, 0, 0, 150)
-                        surface.DrawRect(1, 1, w - 2, h - 2)
-                    end
+                    local page = vgui.Create("DPanel", sheet)
+                    page:Dock(FILL)
+                    page.Paint = function() end
 
-                    local listPanel = vgui.Create("DPanel", header)
-                    listPanel.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200)) end
-                    header:SetContents(listPanel)
-                    entries[header] = {}
+                    local searchEntry = vgui.Create("DTextEntry", page)
+                    searchEntry:Dock(TOP)
+                    searchEntry:DockMargin(0, 0, 0, 5)
+                    searchEntry:SetTall(30)
+                    searchEntry:SetPlaceholderText(L("searchEntities"))
+
+                    local infoPanel = vgui.Create("DPanel", page)
+                    infoPanel:Dock(TOP)
+                    infoPanel:DockMargin(10, 0, 10, 5)
+                    infoPanel:SetTall(30)
+                    infoPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
+                    local infoLabel = vgui.Create("DLabel", infoPanel)
+                    infoLabel:Dock(FILL)
+                    infoLabel:SetFont("liaSmallFont")
+                    infoLabel:SetTextColor(color_white)
+                    infoLabel:SetContentAlignment(5)
+                    infoLabel:SetText(L("totalPlayerEntities", #list))
+
+                    local scroll = vgui.Create("DScrollPanel", page)
+                    scroll:Dock(FILL)
+                    scroll:DockPadding(0, 0, 0, 10)
+                    local canvas = scroll:GetCanvas()
+                    local entries = {}
+
                     for _, ent in ipairs(list) do
                         local className = ent:GetClass()
-                        local itemPanel = vgui.Create("DPanel", listPanel)
+                        local itemPanel = vgui.Create("DPanel", canvas)
                         itemPanel:Dock(TOP)
                         itemPanel:DockMargin(10, 15, 10, 10)
                         itemPanel:SetTall(100)
@@ -188,13 +174,13 @@ function MODULE:CreateInformationButtons(pages)
                             lastModelFrame:SetSize(800, 800)
                             lastModelFrame:Center()
                             lastModelFrame:MakePopup()
-                            local infoLabel = vgui.Create("DLabel", lastModelFrame)
-                            infoLabel:SetText(L("pressInstructions"))
-                            infoLabel:SetFont("liaMediumFont")
-                            infoLabel:SizeToContents()
-                            infoLabel:Dock(TOP)
-                            infoLabel:DockMargin(0, 10, 0, 0)
-                            infoLabel:SetContentAlignment(5)
+                            local infoLabel2 = vgui.Create("DLabel", lastModelFrame)
+                            infoLabel2:SetText(L("pressInstructions"))
+                            infoLabel2:SetFont("liaMediumFont")
+                            infoLabel2:SizeToContents()
+                            infoLabel2:Dock(TOP)
+                            infoLabel2:DockMargin(0, 10, 0, 0)
+                            infoLabel2:SetContentAlignment(5)
                             local modelPanel = vgui.Create("DModelPanel", lastModelFrame)
                             modelPanel:Dock(FILL)
                             modelPanel:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
@@ -213,6 +199,7 @@ function MODULE:CreateInformationButtons(pages)
                         btnContainer:SetWide(380)
                         btnContainer.Paint = function() end
                         local btnW, btnH = 120, 40
+
                         if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
@@ -249,25 +236,20 @@ function MODULE:CreateInformationButtons(pages)
                         btnWaypoint:SetTall(btnH)
                         btnWaypoint:SetText(L("waypointButton"))
                         btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
-                        entries[header][#entries[header] + 1] = itemPanel
-                    end
-                end
 
-                searchEntry.OnTextChanged = function(entry)
-                    local q = entry:GetValue():lower()
-                    for header, panels in pairs(entries) do
-                        local anyVisible = false
-                        for _, pnl in ipairs(panels) do
-                            local ok = q == "" or pnl.infoText:find(q, 1, true)
-                            pnl:SetVisible(ok)
-                            if ok then anyVisible = true end
+                        entries[#entries + 1] = itemPanel
+                    end
+
+                    searchEntry.OnTextChanged = function(entry)
+                        local q = entry:GetValue():lower()
+                        for _, pnl in ipairs(entries) do
+                            pnl:SetVisible(q == "" or pnl.infoText:find(q, 1, true))
                         end
-
-                        header:SetVisible(anyVisible)
+                        canvas:InvalidateLayout()
+                        canvas:SizeToChildren(false, true)
                     end
 
-                    canvas:InvalidateLayout()
-                    canvas:SizeToChildren(false, true)
+                    sheet:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), page)
                 end
             end
         })
