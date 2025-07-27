@@ -555,24 +555,14 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
             searchEntry:SetPlaceholderText(L("searchCommands"))
             local scroll = vgui.Create("DScrollPanel", panel)
             scroll:Dock(FILL)
-            local iconLayout = vgui.Create("DIconLayout", scroll)
-            iconLayout:Dock(FILL)
-            iconLayout:SetSpaceY(5)
-            iconLayout:SetSpaceX(5)
-            iconLayout.PerformLayout = function(self)
-                local y = 0
-                local w = self:GetWide()
-                for _, child in ipairs(self:GetChildren()) do
-                    child:SetPos((w - child:GetWide()) * 0.5, y)
-                    y = y + child:GetTall() + self:GetSpaceY()
-                end
-
-                self:SetTall(y)
-            end
-
+            local listLayout = vgui.Create("DListLayout", scroll)
+            listLayout:Dock(FILL)
+            surface.SetFont("liaSmallFont")
+            local _, lineH = surface.GetTextSize("W")
             local function refresh()
-                iconLayout:Clear()
+                listLayout:Clear()
                 local filter = searchEntry:GetValue():lower()
+                local w = panel:GetWide()
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
                     if isnumber(cmdName) then continue end
                     local nameLower = cmdName:lower()
@@ -581,45 +571,32 @@ hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
                     if filter ~= "" and not (nameLower:find(filter) or descLower:find(filter) or syntaxLower:find(filter)) then continue end
                     local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
                     if not hasAccess then continue end
-                    local hasDesc = cmdData.desc and cmdData.desc ~= ""
-                    local baseX = 20
-                    local width = panel:GetWide()
                     local descLines = {}
-                    local lineH = 0
+                    if cmdData.desc and cmdData.desc ~= "" then descLines = lia.util.wrapText(cmdData.desc, w - 40, "liaSmallFont") end
                     local height = 40
-                    if hasDesc then
-                        descLines = lia.util.wrapText(cmdData.desc, width - baseX - 20, "liaSmallFont")
-                        surface.SetFont("liaSmallFont")
-                        local _
-                        _, lineH = surface.GetTextSize("W")
-                        height = math.max(80, 45 + #descLines * lineH + 5)
-                    end
-
-                    local commandPanel = vgui.Create("DPanel", iconLayout)
-                    commandPanel:SetSize(width, height)
-                    commandPanel.Paint = function(self, w, h)
-                        derma.SkinHook("Paint", "Panel", self, w, h)
+                    if #descLines > 0 then height = math.max(80, 45 + #descLines * lineH + 5) end
+                    local item = vgui.Create("DPanel", listLayout)
+                    item:Dock(TOP)
+                    item:DockMargin(0, 0, 0, 5) -- add 5px spacing below each item
+                    item:SetTall(height)
+                    item.Paint = function(self, iw, ih)
+                        derma.SkinHook("Paint", "Panel", self, iw, ih)
                         local text = "/" .. cmdName
                         if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
-                        local privilegeText = privilege
-                        if privilegeText == "Global" then privilegeText = nil end
-                        if hasDesc then
-                            draw.SimpleText(text, "liaMediumFont", baseX, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                            for i, line in ipairs(descLines) do
-                                draw.SimpleText(line, "liaSmallFont", baseX, 45 + (i - 1) * lineH, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                            end
-                            if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
-                        else
-                            draw.SimpleText(text, "liaMediumFont", baseX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                            if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, h * 0.5, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
+                        draw.SimpleText(text, "liaMediumFont", 20, 5, color_white, TEXT_ALIGN_LEFT)
+                        for i, line in ipairs(descLines) do
+                            draw.SimpleText(line, "liaSmallFont", 20, 45 + (i - 1) * lineH, color_white, TEXT_ALIGN_LEFT)
                         end
-                    end
-                end
 
-                iconLayout:InvalidateLayout(true)
+                        if privilege and privilege ~= "Global" then draw.SimpleText(privilege, "liaSmallFont", iw - 20, 5, color_white, TEXT_ALIGN_RIGHT) end
+                    end
+
+                    listLayout:Add(item)
+                end
             end
 
             searchEntry.OnTextChanged = refresh
+            panel.OnSizeChanged = refresh
             refresh()
         end
     })
