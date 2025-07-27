@@ -931,9 +931,9 @@ end)
 -- from modules/chatbox/libraries/client.lua
 net.Receive("RegenChat", RegenChat)
 
--- from modules/administration/submodules/staffmanagement/libraries/client.lua
+-- from modules/administration/module.lua
 net.Receive("StaffActions", function()
-    local MODULE = lia.module.get("staffmanagement")
+    local MODULE = lia.module.get("administration")
     local data = net.ReadTable()
     if IsValid(MODULE.actionList) then
         MODULE.actionList:Clear()
@@ -944,7 +944,7 @@ net.Receive("StaffActions", function()
 end)
 
 net.Receive("PlayerWarnings", function()
-    local MODULE = lia.module.get("staffmanagement")
+    local MODULE = lia.module.get("warns")
     local warnings = net.ReadTable()
     if IsValid(MODULE.warnList) then
         MODULE.warnList:Clear()
@@ -955,7 +955,7 @@ net.Receive("PlayerWarnings", function()
 end)
 
 net.Receive("TicketClaims", function()
-    local MODULE = lia.module.get("staffmanagement")
+    local MODULE = lia.module.get("tickets")
     local claims = net.ReadTable()
     if IsValid(MODULE.ticketList) then
         MODULE.ticketList:Clear()
