@@ -1638,6 +1638,3 @@ function MODULE:InitPostEntity()
         file.Write(filename, client:SteamID64())
     end
 end
-
-    net.SendToServer()
-end)

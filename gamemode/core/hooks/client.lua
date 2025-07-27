@@ -455,6 +455,22 @@ function GM:InitPostEntity()
     if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
 end
 
+function GM:HUDDrawTargetID()
+    return false
+end
+
+function GM:HUDDrawPickupHistory()
+    return false
+end
+
+function GM:HUDAmmoPickedUp()
+    return false
+end
+
+function GM:DrawDeathNotice()
+    return false
+end
+
 concommand.Add("dev_GetCameraOrigin", function(client)
     if client:isStaff() then
         lia.information(L("originLabel", math.ceil(client:GetPos().x), math.ceil(client:GetPos().y), math.ceil(client:GetPos().z)))
