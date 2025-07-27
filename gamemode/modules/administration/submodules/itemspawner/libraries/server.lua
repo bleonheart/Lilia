@@ -25,39 +25,4 @@ local function tryFixPropPosition(client, ent)
     fixupProp(client, ent, Vector(0, 0, m.z), Vector(0, 0, M.z))
 end
 
-net.Receive("SpawnMenuSpawnItem", function(_, client)
-    local id = net.ReadString()
-    if not IsValid(client) or not id or not client:hasPrivilege("Can Use Item Spawner") then return end
-    local startPos, dir = client:EyePos(), client:GetAimVector()
-    local tr = util.TraceLine({
-        start = startPos,
-        endpos = startPos + dir * 4096,
-        filter = client
-    })
 
-    if not tr.Hit then return end
-    lia.item.spawn(id, tr.HitPos, function(item)
-        local ent = item:getEntity()
-        if not IsValid(ent) then return end
-        tryFixPropPosition(client, ent)
-        undo.Create("item")
-        undo.SetPlayer(client)
-        undo.AddEntity(ent)
-        local name = lia.item.list[id] and lia.item.list[id].name or id
-        undo.SetCustomUndoText("Undone " .. name)
-        undo.Finish("Item (" .. name .. ")")
-        lia.log.add(client, "spawnItem", name, "SpawnMenuSpawnItem")
-    end, angle_zero, {})
-end)
-
-net.Receive("SpawnMenuGiveItem", function(_, client)
-    local id, targetID = net.ReadString(), net.ReadString()
-    if not IsValid(client) then return end
-    if not id then return end
-    if not client:hasPrivilege("Can Use Item Spawner") then return end
-    local targetChar = lia.char.getBySteamID(targetID)
-    local target = targetChar:getPlayer()
-    if not targetChar then return end
-    targetChar:getInv():add(id)
-    lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
-end)
