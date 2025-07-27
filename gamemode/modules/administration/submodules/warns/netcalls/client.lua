@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("PlayerWarnings", function()
     local warnings = net.ReadTable()
     if IsValid(MODULE.warnList) then

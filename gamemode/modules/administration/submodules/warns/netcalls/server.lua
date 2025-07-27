@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("RequestPlayerWarnings", function(_, client)
     if not client:hasPrivilege("View Player Warnings") then return end
     local steamID = net.ReadString()

@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("trunkInitStorage", function()
     local isTable = net.ReadBool()
     if isTable then

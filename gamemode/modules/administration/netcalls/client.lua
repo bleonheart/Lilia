@@ -1,3 +1,4 @@
+local MODULE = MODULE
 ﻿net.Receive("cfgList", function()
     local changed = net.ReadTable()
     for key, value in pairs(changed) do

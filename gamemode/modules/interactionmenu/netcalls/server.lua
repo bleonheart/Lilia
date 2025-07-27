@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("TransferMoneyFromP2P", function(_, sender)
     local amount = net.ReadUInt(32)
     local target = net.ReadEntity()
