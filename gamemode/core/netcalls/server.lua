@@ -620,7 +620,7 @@ net.Receive("send_logs_request", function(_, client)
 
     local logsByCategory = {}
     local function fetch(idx)
-        if idx > #catList then return MODULE:SendLogsInChunks(client, logsByCategory) end
+        if idx > #catList then return MODULE:SendLogs(client, logsByCategory) end
         local cat = catList[idx]
         MODULE:ReadLogEntries(cat):next(function(entries)
             logsByCategory[cat] = entries

@@ -281,33 +281,16 @@ local function dropCAMIGroup(n)
     if g[n] then CAMI.UnregisterUsergroup(n) end
 end
 
-local function sendBigTable(ply, tbl, strChunk, strDone)
-    local raw = util.TableToJSON(tbl)
-    local comp = util.Compress(raw)
-    local len = #comp
-    local id = util.CRC(tostring(SysTime()) .. len)
-    local parts = math.ceil(len / CHUNK)
-    for i = 1, parts do
-        local chunk = string.sub(comp, (i - 1) * CHUNK + 1, math.min(i * CHUNK, len))
-        net.Start(strChunk)
+local function sendBigTable(ply, tbl, _strChunk, strDone)
+    local id = lia.net.WriteBigTable(ply, tbl)
+    if strDone then
+        net.Start(strDone)
         net.WriteString(id)
-        net.WriteUInt(i, 16)
-        net.WriteUInt(parts, 16)
-        net.WriteUInt(#chunk, 16)
-        net.WriteData(chunk, #chunk)
         if IsEntity(ply) then
             net.Send(ply)
         else
             net.Broadcast()
         end
-    end
-
-    net.Start(strDone)
-    net.WriteString(id)
-    if IsEntity(ply) then
-        net.Send(ply)
-    else
-        net.Broadcast()
     end
 end
 

@@ -1,20 +1,9 @@
 ﻿local MODULE = MODULE
-function MODULE:SendLogsInChunks(client, categorizedLogs)
-    local json = util.TableToJSON(categorizedLogs)
-    local data = util.Compress(json)
-    local chunks = {}
-    for i = 1, #data, 32768 do
-        chunks[#chunks + 1] = string.sub(data, i, i + 32768 - 1)
-    end
-
-    for i, chunk in ipairs(chunks) do
-        net.Start("send_logs")
-        net.WriteUInt(i, 16)
-        net.WriteUInt(#chunks, 16)
-        net.WriteUInt(#chunk, 16)
-        net.WriteData(chunk, #chunk)
-        net.Send(client)
-    end
+function MODULE:SendLogs(client, categorizedLogs)
+    local id = lia.net.WriteBigTable(client, categorizedLogs)
+    net.Start("send_logs")
+    net.WriteString(id)
+    net.Send(client)
 end
 
 function MODULE:ReadLogEntries(category)

@@ -1050,26 +1050,12 @@ end)
 
 -- from modules/administration/submodules/logging/libraries/client.lua
 net.Receive("send_logs", function()
-    local receivedChunks = receivedChunks or {}
-    local chunkIndex = net.ReadUInt(16)
-    local numChunks = net.ReadUInt(16)
-    local chunkLen = net.ReadUInt(16)
-    local chunkData = net.ReadData(chunkLen)
-    receivedChunks[chunkIndex] = chunkData
-    for i = 1, numChunks do
-        if not receivedChunks[i] then return end
-    end
-
-    local fullData = table.concat(receivedChunks)
-    receivedChunks = {}
-    local jsonData = util.Decompress(fullData)
-    local categorizedLogs = util.JSONToTable(jsonData)
-    if not categorizedLogs then
-        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
-        return
-    end
-
-    if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
+    local id = net.ReadString()
+    hook.Add("LiaBigTableReceived", "liaLogs" .. id, function(receivedID, data)
+        if receivedID ~= id then return end
+        hook.Remove("LiaBigTableReceived", "liaLogs" .. id)
+        if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, data) end
+    end)
 end)
 
 -- from modules/recognition/libraries/client.lua
