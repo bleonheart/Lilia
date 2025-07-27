@@ -49,21 +49,14 @@ function MODULE:PlayerLoadedChar(client, character)
 
     local classIndex = character:getClass()
     local class = lia.class.list[classIndex]
-    if character then
-        if class and client:Team() == class.faction then
-            local oldClass = classIndex
-            timer.Simple(.3, function()
-                character:setClass(classIndex)
-                hook.Run("OnPlayerJoinClass", client, classIndex, oldClass)
-            end)
-        else
-            for _, v in pairs(lia.class.list) do
-                if v.faction == client:Team() and v.isDefault then
-                    character:setClass(v.index)
-                    break
-                end
-            end
-        end
+    if class and client:Team() == class.faction then
+        local oldClass = classIndex
+        timer.Simple(.3, function()
+            character:setClass(classIndex)
+            hook.Run("OnPlayerJoinClass", client, classIndex, oldClass)
+        end)
+    else
+        character:setClass(0)
     end
 end
 
