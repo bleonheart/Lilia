@@ -138,6 +138,16 @@ function lia.administration.removeGroup(groupName)
 end
 
 if SERVER then
+    function lia.administration.updateAdminGroups(client)
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.administration.groups)
+        if IsValid(client) then
+            net.Send(client)
+        else
+            net.Broadcast()
+        end
+    end
+
     function lia.administration.addPermission(groupName, permission)
         if not lia.administration.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
@@ -183,30 +193,16 @@ if SERVER then
     function lia.administration.addBan(steamid, reason, duration)
         if not steamid then Error("[Lilia Administration] lia.administration.addBan: no steam id specified!") end
         local banStart = os.time()
-
-
-        lia.db.query(Format(
-            "UPDATE lia_players SET banStart = %d, banDuration = %d, reason = '%s' WHERE steamID = %s",
-            banStart,
-            (duration or 0) * 60,
-            lia.db.escape(reason or L("genericReason")),
-            steamid
-        ))
+        lia.db.query(Format("UPDATE lia_players SET banStart = %d, banDuration = %d, reason = '%s' WHERE steamID = %s", banStart, (duration or 0) * 60, lia.db.escape(reason or L("genericReason")), steamid))
     end
 
     function lia.administration.removeBan(steamid)
         if not steamid then Error("[Lilia Administration] lia.administration.removeBan: no steam id specified!") end
-        lia.db.query(Format(
-            "UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s",
-            steamid
-        ), function() lia.admin("Ban", "Ban removed.") end)
+        lia.db.query(Format("UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s", steamid), function() lia.admin("Ban", "Ban removed.") end)
     end
 
     local function fetchBanRow(steamid)
-        local query = string.format(
-            "SELECT banStart, banDuration, reason FROM lia_players WHERE steamID = %s",
-            steamid
-        )
+        local query = string.format("SELECT banStart, banDuration, reason FROM lia_players WHERE steamID = %s", steamid)
         if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
             local db = lia.db.getObject()
             if not db then return nil end
@@ -238,9 +234,7 @@ if SERVER then
         return ban.start + ban.duration <= os.time()
     end
 
-    hook.Add("ShutDown", "lia_SaveAdmin", function()
-        lia.administration.save()
-    end)
+    hook.Add("ShutDown", "lia_SaveAdmin", function() lia.administration.save() end)
 end
 
 local function quote(str)
@@ -347,7 +341,6 @@ hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
     end)
 end)
 
-
 concommand.Add("plysetgroup", function(ply, _, args)
     if not IsValid(ply) then
         local target = lia.command.findPlayer(client, args[1])
@@ -362,19 +355,3 @@ concommand.Add("plysetgroup", function(ply, _, args)
         end
     end
 end)
-
-if SERVER then
-    hook.Add("PlayerInitialSpawn", "liaAdminSendGroups", function(client)
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.administration.groups)
-        net.Send(client)
-    end)
-
-    hook.Add("OnReloaded", "liaAdminSendGroups", function(client)
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.administration.groups)
-        net.Send(client)
-    end)
-else
-    -- moved to netcalls
-end

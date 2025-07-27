@@ -445,6 +445,7 @@ function GM:PlayerInitialSpawn(client)
         end
 
         hook.Run("PlayerLiliaDataLoaded", client)
+        lia.administration.updateAdminGroups(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)

@@ -38,7 +38,7 @@ lia.command.add("charunbanoffline", {
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
         lia.db.updateTable({
-            _banned = nil
+            banned = nil
         }, nil, nil, "id = " .. charID)
 
         lia.char.setCharData(charID, "charBanInfo", nil)
@@ -58,7 +58,7 @@ lia.command.add("charbanoffline", {
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
         lia.db.updateTable({
-            _banned = true
+            banned = true
         }, nil, nil, "id = " .. charID)
 
         lia.char.setCharData(charID, "charBanInfo", {
@@ -110,7 +110,7 @@ lia.command.add("charlist", {
             for _, row in ipairs(data) do
                 local stored = lia.char.loaded[row.id]
                 local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
-                local isBanned = stored and stored:getBanned() or row._banned
+                local isBanned = stored and stored:getBanned() or row.banned
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do
                     local value
@@ -713,10 +713,10 @@ lia.command.add("charunban", {
 
         client.liaNextSearch = CurTime() + 15
         local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT id, name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
+        lia.db.query("SELECT id, name, banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
                 local charID = tonumber(data[1].id)
-                local isBanned = data[1]._banned
+                local isBanned = data[1].banned
                 client.liaNextSearch = 0
                 if not isBanned then
                     client:notifyLocalized("charNotBanned")
@@ -724,7 +724,7 @@ lia.command.add("charunban", {
                 end
 
                 lia.db.updateTable({
-                    _banned = nil
+                    banned = nil
                 }, nil, nil, "id = " .. charID)
 
                 lia.char.setCharData(charID, "charBanInfo", nil)
