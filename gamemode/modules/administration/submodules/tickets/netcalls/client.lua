@@ -62,9 +62,7 @@ net.Receive("TicketSystemClose", function()
     if timer.Exists("ticketsystem-" .. requester:SteamID64()) then timer.Remove("ticketsystem-" .. requester:SteamID64()) end
 end)
 
-
 net.Receive("TicketClaims", function()
-    local MODULE = lia.module.get("tickets")
     local claims = net.ReadTable()
     if IsValid(MODULE.ticketList) then
         MODULE.ticketList:Clear()

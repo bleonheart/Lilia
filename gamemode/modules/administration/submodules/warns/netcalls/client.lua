@@ -1,5 +1,4 @@
 net.Receive("PlayerWarnings", function()
-    local MODULE = lia.module.get("warns")
     local warnings = net.ReadTable()
     if IsValid(MODULE.warnList) then
         MODULE.warnList:Clear()

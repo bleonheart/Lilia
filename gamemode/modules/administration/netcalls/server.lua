@@ -87,7 +87,10 @@ net.Receive("lia_managesitrooms_action", function(_, client)
             if not rooms[newName] and rooms[name] then
                 rooms[newName] = rooms[name]
                 rooms[name] = nil
-                lia.data.set("sitrooms", {map = game.GetMap(), rooms = rooms})
+                lia.data.set("sitrooms", {
+                    map = game.GetMap(),
+                    rooms = rooms
+                })
 
                 client:notifyLocalized("sitroomRenamed")
                 lia.log.add(client, "sitRoomRenamed", string.format("Map: %s | Old: %s | New: %s", game.GetMap(), name, newName), L("logRenamedSitroom"))
@@ -96,7 +99,10 @@ net.Receive("lia_managesitrooms_action", function(_, client)
     elseif action == 3 then
         if rooms[name] then
             rooms[name] = client:GetPos()
-            lia.data.set("sitrooms", {map = game.GetMap(), rooms = rooms})
+            lia.data.set("sitrooms", {
+                map = game.GetMap(),
+                rooms = rooms
+            })
 
             client:notifyLocalized("sitroomRepositioned")
             lia.log.add(client, "sitRoomRepositioned", string.format("Map: %s | Name: %s | New Position: %s", game.GetMap(), name, tostring(client:GetPos())), L("logRepositionedSitroom"))
@@ -105,7 +111,6 @@ net.Receive("lia_managesitrooms_action", function(_, client)
 end)
 
 net.Receive("RequestStaffActions", function(_, client)
-    local MODULE = lia.module.get("administration")
     if not client:hasPrivilege("View Staff Actions") then return end
     local function queryStaffActions(callback)
         lia.db.query([[
@@ -245,10 +250,7 @@ local function buildCharEntry(client, row)
     local isBanned = stored and stored:getBanned() or row.banned
     local allVars = {}
     for varName, varInfo in pairs(lia.char.vars) do
-        if varInfo.noDisplay or varInfo.noNetworking then
-            continue
-        end
-
+        if varInfo.noDisplay or varInfo.noNetworking then continue end
         local value
         if stored then
             if varName == "data" then
@@ -282,9 +284,7 @@ local function buildCharEntry(client, row)
             end
         end
 
-        if not checkBadType(varName, value) then
-            allVars[varName] = value
-        end
+        if not checkBadType(varName, value) then allVars[varName] = value end
     end
 
     local lastUsedText
@@ -630,5 +630,3 @@ net.Receive("ChangeAttribute", function(_, client)
         client:notifyLocalized("invalidMode")
     end
 end)
-
-

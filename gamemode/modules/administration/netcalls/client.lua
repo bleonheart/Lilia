@@ -97,7 +97,6 @@ local function handleTableData(id)
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 5)
     search:SetPlaceholderText(L("search"))
-
     local list = vgui.Create("DListView", panel)
     list:Dock(FILL)
     for _, col in ipairs(columns) do
@@ -121,6 +120,7 @@ local function handleTableData(id)
             for i = 1, line:ColumnCount() do
                 s = s .. line:GetColumnText(i):lower() .. " "
             end
+
             line:SetVisible(q == "" or s:find(q, 1, true))
         end
 
@@ -316,18 +316,11 @@ net.Receive("managesitrooms", function()
 end)
 
 net.Receive("StaffActions", function()
-    local MODULE = lia.module.get("administration")
     local data = net.ReadTable()
     if IsValid(MODULE.actionList) then
         MODULE.actionList:Clear()
         for _, row in ipairs(data) do
-            MODULE.actionList:AddLine(
-                row.admin or "N/A",
-                row.adminSteamID or "",
-                row.userGroup or "",
-                row.action or "",
-                row.actionCount or 0
-            )
+            MODULE.actionList:AddLine(row.admin or "N/A", row.adminSteamID or "", row.userGroup or "", row.action or "", row.actionCount or 0)
         end
     end
 end)

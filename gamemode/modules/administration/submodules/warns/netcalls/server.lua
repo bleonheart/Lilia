@@ -1,5 +1,4 @@
 net.Receive("RequestPlayerWarnings", function(_, client)
-    local MODULE = lia.module.get("warns")
     if not client:hasPrivilege("View Player Warnings") then return end
     local steamID = net.ReadString()
     MODULE:GetWarnings(steamID):next(function(rows)
@@ -10,7 +9,6 @@ net.Receive("RequestPlayerWarnings", function(_, client)
 end)
 
 net.Receive("RequestRemoveWarning", function(_, client)
-    local MODULE = lia.module.get("warns")
     if not client:hasPrivilege("Can Remove Warns") then return end
     local charID = net.ReadInt(32)
     local rowData = net.ReadTable()

@@ -1,5 +1,4 @@
 net.Receive("TransferMoneyFromP2P", function(_, sender)
-    local MODULE = lia.module.get("interactionmenu")
     local amount = net.ReadUInt(32)
     local target = net.ReadEntity()
     if lia.config.get("DisableCheaterActions", true) and sender:getNetVar("cheater", false) then
@@ -24,7 +23,6 @@ net.Receive("TransferMoneyFromP2P", function(_, sender)
 end)
 
 net.Receive("RunOption", function(_, ply)
-    local MODULE = lia.module.get("interactionmenu")
     if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
         lia.log.add(ply, "cheaterAction", "use interaction menu")
         return
@@ -37,7 +35,6 @@ net.Receive("RunOption", function(_, ply)
 end)
 
 net.Receive("RunLocalOption", function(_, ply)
-    local MODULE = lia.module.get("interactionmenu")
     if lia.config.get("DisableCheaterActions", true) and ply:getNetVar("cheater", false) then
         lia.log.add(ply, "cheaterAction", "use interaction menu")
         return

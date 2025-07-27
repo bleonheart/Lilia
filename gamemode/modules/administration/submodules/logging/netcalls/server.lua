@@ -1,5 +1,4 @@
 net.Receive("send_logs_request", function(_, client)
-    local MODULE = lia.module.get("logging")
     if not MODULE:CanPlayerSeeLog(client) then return end
     local categories = {}
     for _, logType in pairs(lia.log.types) do

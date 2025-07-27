@@ -1,5 +1,4 @@
 net.Receive("trunkInitStorage", function()
-    local MODULE = lia.module.get("storage")
     local isTable = net.ReadBool()
     if isTable then
         local vehicles = net.ReadTable()

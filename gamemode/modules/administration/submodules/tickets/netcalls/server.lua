@@ -52,9 +52,7 @@ net.Receive("TicketSystemClose", function(_, client)
     requester.CaseClaimed = nil
 end)
 
-
 net.Receive("RequestTicketClaims", function(_, client)
-    local MODULE = lia.module.get("tickets")
     if not client:hasPrivilege("View Claims") then return end
     lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
         net.Start("TicketClaims")
