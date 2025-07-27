@@ -118,6 +118,10 @@
             }
         }
 
+        table.sort(orderedOptions, function(a, b)
+            return tostring(a.name) < tostring(b.name)
+        end)
+
         for _, option in ipairs(orderedOptions) do
             table.insert(options, option)
         end
