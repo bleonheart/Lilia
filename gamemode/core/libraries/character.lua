@@ -268,7 +268,7 @@ lia.char.registerVar("money", {
 })
 
 lia.char.registerVar("skin", {
-    field = "_skin",
+    field = "skin",
     fieldType = "integer",
     default = 0,
     noDisplay = true,
@@ -288,7 +288,7 @@ lia.char.registerVar("skin", {
 })
 
 lia.char.registerVar("bodygroups", {
-    field = "_bodygroups",
+    field = "bodygroups",
     fieldType = "text",
     default = {},
     noDisplay = true,
@@ -429,7 +429,7 @@ lia.char.registerVar("lastPos", {
 })
 
 lia.char.registerVar("banned", {
-    field = "_banned",
+    field = "banned",
     fieldType = "integer",
     default = 0,
     isLocal = true,
@@ -515,8 +515,8 @@ if SERVER then
             name = data.name or "",
             desc = data.desc or "",
             model = data.model or "models/error.mdl",
-            _skin = data.skin or 0,
-            _bodygroups = data.bodygroups or {},
+            skin = data.skin or 0,
+            bodygroups = data.bodygroups or {},
             schema = SCHEMA and SCHEMA.folder or "lilia",
             createTime = timeStamp,
             lastJoinTime = timeStamp,

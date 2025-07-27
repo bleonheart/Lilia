@@ -11,7 +11,7 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = "Commands - " .. (isstring(data.privilege) and data.privilege or command)
+        local privilegeName = isstring(data.privilege) and data.privilege or "Access to " .. command .. " Command "
         if not lia.administration.privileges[privilegeName] then
             lia.administration.registerPrivilege({
                 Name = privilegeName,
@@ -61,7 +61,7 @@ function lia.command.hasAccess(client, command, data)
     if not privilege then privilege = accessLevels == "user" and "Global" or command end
     local hasAccess = true
     if accessLevels ~= "user" then
-        local privilegeName = "Commands - " .. privilege
+        local privilegeName = privilege
         hasAccess = client:hasPrivilege(privilegeName)
     end
 

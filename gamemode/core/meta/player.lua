@@ -26,7 +26,6 @@ function playerMeta:hasPrivilege(privilegeName)
     local group = self:GetUserGroup()
     local groups = lia.administration.groups or {}
     local perms = groups[group]
-    PrintTable(lia.administration.groups, 1)
     if not perms then
         self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
         return false
@@ -181,7 +180,7 @@ end
 function playerMeta:CanEditVendor(vendor)
     local hookResult = hook.Run("CanPerformVendorEdit", self, vendor)
     if hookResult ~= nil then return hookResult end
-    return self:hasPrivilege("Staff Permissions - Can Edit Vendors")
+    return self:hasPrivilege("Can Edit Vendors")
 end
 
 function playerMeta:isUser()

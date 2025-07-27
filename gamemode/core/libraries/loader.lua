@@ -381,7 +381,7 @@ end
 
 function lia.notifyAdmin(notification)
     for _, client in player.Iterator() do
-        if IsValid(client) and client:hasPrivilege("Staff Permissions - Can See Alting Notifications") then client:ChatPrint(notification) end
+        if IsValid(client) and client:hasPrivilege("Can See Alting Notifications") then client:ChatPrint(notification) end
     end
 end
 
@@ -545,6 +545,7 @@ function GM:OnReloaded()
     lia.faction.formatModelData()
     if SERVER then
         lia.config.send()
+        lia.administration.updateAdminGroups()
     else
         lia.option.load()
         lia.keybind.load()

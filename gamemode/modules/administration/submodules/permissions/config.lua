@@ -9,7 +9,7 @@ lia.option.add("espPlayers", "ESP Players", "Enable ESP for players", false, nil
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -18,7 +18,7 @@ lia.option.add("espItems", "ESP Items", "Enable ESP for items", false, nil, {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -27,7 +27,7 @@ lia.option.add("espProps", "ESP Props", "Enable ESP for props", false, nil, {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -36,7 +36,7 @@ lia.option.add("espEntities", "ESP Entities", "Enable ESP for entities", false, 
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -50,7 +50,7 @@ lia.option.add("espItemsColor", "ESP Items Color", "Sets the ESP color for items
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -64,7 +64,7 @@ lia.option.add("espEntitiesColor", "ESP Entities Color", "Sets the ESP color for
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -78,7 +78,7 @@ lia.option.add("espPropsColor", "ESP Props Color", "Sets the ESP color for props
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
@@ -92,7 +92,7 @@ lia.option.add("espPlayersColor", "ESP Players Color", "Sets the ESP color for p
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("Staff Permissions - No Clip Outside Staff Character")
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
     end
 })
 
