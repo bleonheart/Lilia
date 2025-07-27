@@ -35,8 +35,28 @@ function SWEP:DrawHUD()
     local information = {}
     if IsValid(target) then
         if not target:IsPlayer() then
-            if target.GetCreator and IsValid(target:GetCreator()) then table.Add(information, {L("entityClassESPLabel", target:GetClass()), L("entityCreatorESPLabel", tostring(target:GetCreator()))}) end
+            if target.GetCreator and IsValid(target:GetCreator()) then
+                table.Add(information, {L("entityClassESPLabel", target:GetClass()), L("entityCreatorESPLabel", tostring(target:GetCreator()))})
+            end
             if target:IsVehicle() and IsValid(target:GetDriver()) then target = target:GetDriver() end
+
+            if target:GetClass() == "lia_item" then
+                local item = target:getItemTable()
+                if item then
+                    table.insert(information, L("itemESPLabel", item:getName()))
+                    table.insert(information, L("itemWidthESPLabel", item.width or 1))
+                    table.insert(information, L("itemHeightESPLabel", item.height or 1))
+                    local creator = target:GetCreator()
+                    if IsValid(creator) then
+                        table.insert(information, L("spawner") .. ": " .. creator:Name() .. " - " .. creator:SteamID())
+                    end
+                    local extra = {}
+                    hook.Run("GetAdminStickItemInfo", extra, item, target)
+                    for _, v in ipairs(extra) do
+                        table.insert(information, tostring(v))
+                    end
+                end
+            end
         end
 
         if target:IsPlayer() then
