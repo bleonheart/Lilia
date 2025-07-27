@@ -121,18 +121,15 @@ function MODULE:CreateInformationButtons(pages)
                 local sheet = entitiesPanel:Add("DPropertySheet")
                 sheet:Dock(FILL)
                 sheet:DockMargin(0, 0, 0, 10)
-
                 for owner, list in SortedPairs(entitiesByCreator) do
                     local page = vgui.Create("DPanel", sheet)
                     page:Dock(FILL)
                     page.Paint = function() end
-
                     local searchEntry = vgui.Create("DTextEntry", page)
                     searchEntry:Dock(TOP)
                     searchEntry:DockMargin(0, 0, 0, 5)
                     searchEntry:SetTall(30)
                     searchEntry:SetPlaceholderText(L("searchEntities"))
-
                     local infoPanel = vgui.Create("DPanel", page)
                     infoPanel:Dock(TOP)
                     infoPanel:DockMargin(10, 0, 10, 5)
@@ -144,13 +141,11 @@ function MODULE:CreateInformationButtons(pages)
                     infoLabel:SetTextColor(color_white)
                     infoLabel:SetContentAlignment(5)
                     infoLabel:SetText(L("totalPlayerEntities", #list))
-
                     local scroll = vgui.Create("DScrollPanel", page)
                     scroll:Dock(FILL)
                     scroll:DockPadding(0, 0, 0, 10)
                     local canvas = scroll:GetCanvas()
                     local entries = {}
-
                     for _, ent in ipairs(list) do
                         local className = ent:GetClass()
                         local itemPanel = vgui.Create("DPanel", canvas)
@@ -199,7 +194,6 @@ function MODULE:CreateInformationButtons(pages)
                         btnContainer:SetWide(380)
                         btnContainer.Paint = function() end
                         local btnW, btnH = 120, 40
-
                         if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
                             local btnView = vgui.Create("liaSmallButton", btnContainer)
                             btnView:Dock(LEFT)
@@ -236,7 +230,6 @@ function MODULE:CreateInformationButtons(pages)
                         btnWaypoint:SetTall(btnH)
                         btnWaypoint:SetText(L("waypointButton"))
                         btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
-
                         entries[#entries + 1] = itemPanel
                     end
 
@@ -245,6 +238,7 @@ function MODULE:CreateInformationButtons(pages)
                         for _, pnl in ipairs(entries) do
                             pnl:SetVisible(q == "" or pnl.infoText:find(q, 1, true))
                         end
+
                         canvas:InvalidateLayout()
                         canvas:SizeToChildren(false, true)
                     end
@@ -259,27 +253,11 @@ function MODULE:CreateInformationButtons(pages)
         table.insert(pages, {
             name = L("modules"),
             drawFunc = function(modulesPanel)
-                local total = 0
-                for _ in pairs(lia.module.list) do
-                    total = total + 1
-                end
-
                 local searchEntry = vgui.Create("DTextEntry", modulesPanel)
                 searchEntry:Dock(TOP)
                 searchEntry:DockMargin(10, 0, 10, 5)
                 searchEntry:SetTall(30)
                 searchEntry:SetPlaceholderText(L("searchModules"))
-                local infoBox = vgui.Create("DPanel", modulesPanel)
-                infoBox:Dock(TOP)
-                infoBox:DockMargin(10, 0, 10, 5)
-                infoBox:SetTall(30)
-                infoBox.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-                local countLabel = vgui.Create("DLabel", infoBox)
-                countLabel:Dock(FILL)
-                countLabel:SetFont("liaSmallFont")
-                countLabel:SetTextColor(color_white)
-                countLabel:SetContentAlignment(5)
-                countLabel:SetText(L("modulesCount", total))
                 local scroll = vgui.Create("DScrollPanel", modulesPanel)
                 scroll:Dock(FILL)
                 scroll:DockPadding(0, 0, 0, 10)
@@ -330,11 +308,9 @@ function MODULE:CreateMenuButtons(tabs)
         local sheet = infoTabPanel:Add("DPropertySheet")
         sheet:Dock(FILL)
         sheet:DockMargin(20, 20, 20, 20)
-
         local pages = {}
         hook.Run("CreateInformationButtons", pages)
         if not pages then return end
-
         for _, page in ipairs(pages) do
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
@@ -348,11 +324,9 @@ function MODULE:CreateMenuButtons(tabs)
         local sheet = settingsPanel:Add("DPropertySheet")
         sheet:Dock(FILL)
         sheet:DockMargin(20, 20, 20, 20)
-
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
-
         for _, page in ipairs(pages) do
             local pnl = vgui.Create("DPanel", sheet)
             pnl:Dock(FILL)
