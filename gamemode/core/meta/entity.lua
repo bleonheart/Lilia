@@ -137,7 +137,6 @@ if SERVER then
     function entityMeta:setKeysNonOwnable(state)
         local flag = state and true or nil
         self:setNetVar("noSell", flag)
-        self:setNetVar("noKeying", flag)
     end
 
     function entityMeta:isDoor()
