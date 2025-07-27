@@ -1186,23 +1186,36 @@ else
 
     hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
         if not canAccess() or not LocalPlayer():hasPrivilege("View DB Tables") then return end
-        tabs["DB Browser"] = {
+        tabs["Database View"] = {
             icon = "icon16/database.png",
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
-                local list = vgui.Create("DListView", pnl)
+
+                local ps = vgui.Create("DPropertySheet", pnl)
+                ps:Dock(FILL)
+                lia.gui.dbBrowserPS = ps
+
+                local tblPanel = vgui.Create("DPanel", ps)
+                tblPanel:Dock(FILL)
+                tblPanel.Paint = function() end
+
+                local list = vgui.Create("DListView", tblPanel)
                 list:Dock(FILL)
                 list:AddColumn("Table")
                 lia.gui.dbBrowserList = list
+
                 function list:OnRowSelected(_, line)
                     net.Start("liaRequestTableData")
                     net.WriteString(line:GetColumnText(1))
                     net.SendToServer()
                 end
 
+                ps:AddSheet("Tables", tblPanel, "icon16/database.png")
+
                 net.Start("liaDBTablesRequest")
                 net.SendToServer()
+
                 return pnl
             end
         }
