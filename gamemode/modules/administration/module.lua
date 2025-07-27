@@ -887,7 +887,7 @@ else
             sheet:Dock(FILL)
             local reg = {}
             hook.Run("liaAdminRegisterTab", parent, reg)
-            for name, data in pairs(reg) do
+            for name, data in SortedPairs(reg) do
                 local pnl = data.build(sheet)
                 sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
             end
