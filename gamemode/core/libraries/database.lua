@@ -1,11 +1,11 @@
 ﻿lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}
 lia.db.prepared = lia.db.prepared or {}
-MYSQLOO_QUEUE = MYSQLOO_QUEUE or {}
-PREPARE_CACHE = {}
-MYSQLOO_INTEGER = 0
-MYSQLOO_STRING = 1
-MYSQLOO_BOOL = 2
+MysqlooQueue = MysqlooQueue or {}
+PrepareCache = {}
+MysqlooInteger = 0
+MysqlooString = 1
+MysqlooBool = 2
 local modules = {}
 local function ThrowQueryFault(query, fault)
     if string.find(fault, "duplicate column name:") or string.find(fault, "UNIQUE constraint failed: lia_config") then return end
@@ -181,9 +181,9 @@ modules.mysqloo = {
         local preparedStatement = lia.db.prepared[key]
         if preparedStatement then
             local _, freeIndex = lia.db.getObject()
-            PREPARE_CACHE[key] = PREPARE_CACHE[key] or {}
-            PREPARE_CACHE[key][freeIndex] = PREPARE_CACHE[key][freeIndex] or lia.db.getObject():prepare(preparedStatement.query)
-            local prepObj = PREPARE_CACHE[key][freeIndex]
+            PrepareCache[key] = PrepareCache[key] or {}
+            PrepareCache[key][freeIndex] = PrepareCache[key][freeIndex] or lia.db.getObject():prepare(preparedStatement.query)
+            local prepObj = PrepareCache[key][freeIndex]
             function prepObj:onSuccess(data)
                 if callback then callback(data, self:lastInsert()) end
             end
@@ -196,11 +196,11 @@ modules.mysqloo = {
             if table.Count(arguments) == table.Count(preparedStatement.values) then
                 local index = 1
                 for _, type in pairs(preparedStatement.values) do
-                    if type == MYSQLOO_INTEGER then
+                    if type == MysqlooInteger then
                         prepObj:setNumber(index, arguments[index])
-                    elseif type == MYSQLOO_STRING then
+                    elseif type == MysqlooString then
                         prepObj:setString(index, lia.db.convertDataType(arguments[index], true))
-                    elseif type == MYSQLOO_BOOL then
+                    elseif type == MysqlooBool then
                         prepObj:setBoolean(index, arguments[index])
                     end
 
@@ -1045,11 +1045,11 @@ end)
 
 function GM:RegisterPreparedStatements()
     lia.bootstrap("Database", L("preparedStatementsAdded"))
-    lia.db.prepare("itemData", "UPDATE lia_items SET data = ? WHERE itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
-    lia.db.prepare("itemx", "UPDATE lia_items SET x = ? WHERE itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-    lia.db.prepare("itemy", "UPDATE lia_items SET y = ? WHERE itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-    lia.db.prepare("itemq", "UPDATE lia_items SET quantity = ? WHERE itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-    lia.db.prepare("itemInstance", "INSERT INTO lia_items (invID, uniqueID, data, x, y, quantity) VALUES (?, ?, ?, ?, ?, ?)", {MYSQLOO_INTEGER, MYSQLOO_STRING, MYSQLOO_STRING, MYSQLOO_INTEGER, MYSQLOO_INTEGER, MYSQLOO_INTEGER,})
+    lia.db.prepare("itemData", "UPDATE lia_items SET data = ? WHERE itemID = ?", {MysqlooString, MysqlooInteger})
+    lia.db.prepare("itemx", "UPDATE lia_items SET x = ? WHERE itemID = ?", {MysqlooInteger, MysqlooInteger})
+    lia.db.prepare("itemy", "UPDATE lia_items SET y = ? WHERE itemID = ?", {MysqlooInteger, MysqlooInteger})
+    lia.db.prepare("itemq", "UPDATE lia_items SET quantity = ? WHERE itemID = ?", {MysqlooInteger, MysqlooInteger})
+    lia.db.prepare("itemInstance", "INSERT INTO lia_items (invID, uniqueID, data, x, y, quantity) VALUES (?, ?, ?, ?, ?, ?)", {MysqlooInteger, MysqlooString, MysqlooString, MysqlooInteger, MysqlooInteger, MysqlooInteger,})
 end
 
 function GM:SetupDatabase()
@@ -1085,5 +1085,5 @@ end
 
 function GM:OnMySQLOOConnected()
     hook.Run("RegisterPreparedStatements")
-    MYSQLOO_PREPARED = true
+    MysqlooPrepared = true
 end
