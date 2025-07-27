@@ -620,7 +620,7 @@ net.Receive("send_logs_request", function(_, client)
 
     local logsByCategory = {}
     local function fetch(idx)
-        if idx > #catList then return MODULE:SendLogsInChunks(client, logsByCategory) end
+        if idx > #catList then return MODULE:SendLogs(client, logsByCategory) end
         local cat = catList[idx]
         MODULE:ReadLogEntries(cat):next(function(entries)
             logsByCategory[cat] = entries
@@ -900,4 +900,22 @@ net.Receive("VendorTrade", function(_, client)
     if not IsValid(entity) or client:GetPos():Distance(entity:GetPos()) > 192 then return end
     if not hook.Run("CanPlayerAccessVendor", client, entity) then return end
     hook.Run("VendorTradeEvent", client, entity, uniqueID, isSellingToVendor)
+end)
+
+net.Receive("liaBigTableChunk", function(_, client)
+    local id = net.ReadString()
+    local idx = net.ReadUInt(16)
+    local total = net.ReadUInt(16)
+    local len = net.ReadUInt(16)
+    local data = net.ReadData(len)
+    lia.net.bigTables[id] = lia.net.bigTables[id] or {}
+    lia.net.bigTables[id][idx] = data
+end)
+
+net.Receive("liaBigTableDone", function(_, client)
+    local id = net.ReadString()
+    local tbl = lia.net.ReadBigTable(id)
+    if tbl then
+        hook.Run("LiaBigTableReceived", client, id, tbl)
+    end
 end)
