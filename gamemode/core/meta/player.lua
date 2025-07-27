@@ -576,6 +576,7 @@ if SERVER then
         net.Broadcast()
     end
 
+
     function playerMeta:banPlayer(reason, duration)
         if self:IsBot() then return end
         lia.administration.addBan(self:SteamID64(), reason, duration)
