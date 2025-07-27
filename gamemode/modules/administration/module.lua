@@ -4,23 +4,23 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Can Remove Warns",
+        Name = "Can Remove Warns",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Manage Prop Blacklist",
+        Name = "Manage Prop Blacklist",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access Configuration Menu",
+        Name = "Access Configuration Menu",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Access Edit Configuration Menu",
+        Name = "Access Edit Configuration Menu",
         MinAccess = "superadmin"
     },
     {
-        Name = "Staff Permissions - Manage UserGroups",
+        Name = "Manage UserGroups",
         MinAccess = "superadmin"
     }
 }
@@ -120,7 +120,7 @@ if SERVER then
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups")
     end
 
     local function getPrivList()
@@ -644,7 +644,7 @@ else
     end)
 
     local function canAccess()
-        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups")
     end
 
     hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
@@ -680,7 +680,7 @@ else
     function MODULE:CreateMenuButtons(tabs)
         local lp = LocalPlayer()
         if not IsValid(lp) then return end
-        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Staff Permissions - Manage UserGroups")) then return end
+        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Manage UserGroups")) then return end
         tabs[L("shortAdmin")] = function(parent)
             parent:Clear()
             local sheet = vgui.Create("DPropertySheet", parent)

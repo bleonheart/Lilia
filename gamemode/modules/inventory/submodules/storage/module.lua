@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Adds persistent storage containers and player vaults that integrate with the inventory for item management."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Can Spawn Storage",
+        Name = "Can Spawn Storage",
         MinAccess = "superadmin"
     }
 }

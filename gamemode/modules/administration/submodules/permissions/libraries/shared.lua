@@ -6,7 +6,7 @@ function MODULE:InitializedModules()
     if properties.List then
         for name in pairs(properties.List) do
             if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
-                local privilege = "Staff Permissions - Access Property " .. name:gsub("^%l", string.upper)
+                local privilege = "Access Property " .. name:gsub("^%l", string.upper)
                 if not lia.administration.privileges[privilege] then
                     lia.administration.registerPrivilege({
                         Name = privilege,
@@ -20,7 +20,7 @@ function MODULE:InitializedModules()
     for _, wep in ipairs(weapons.GetList()) do
         if wep.ClassName == "gmod_tool" and wep.Tool then
             for tool in pairs(wep.Tool) do
-                local privilege = "Staff Permissions - Access Tool " .. tool:gsub("^%l", string.upper)
+                local privilege = "Access Tool " .. tool:gsub("^%l", string.upper)
                 if not lia.administration.privileges[privilege] then
                     lia.administration.registerPrivilege({
                         Name = privilege,
@@ -62,14 +62,14 @@ properties.Add("ToggleCarBlacklist", {
     MenuLabel = L("ToggleCarBlacklist"),
     Order = 901,
     MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("Staff Permissions - Manage Car Blacklist") end,
+    Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("Manage Car Blacklist") end,
     Action = function(self, ent)
         self:MsgStart()
         net.WriteString(ent:GetModel())
         self:MsgEnd()
     end,
     Receive = function(_, _, ply)
-        if not ply:hasPrivilege("Staff Permissions - Manage Car Blacklist") then return end
+        if not ply:hasPrivilege("Manage Car Blacklist") then return end
         local model = net.ReadString()
         local list = lia.data.get("carBlacklist", {})
         if table.HasValue(list, model) then

@@ -4,23 +4,23 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - No OOC Cooldown",
+        Name = "No OOC Cooldown",
         MinAccess = "admin"
     },
     {
-        Name = "Staff Permissions - Admin Chat",
+        Name = "Admin Chat",
         MinAccess = "admin"
     },
     {
-        Name = "Staff Permissions - Local Event Chat",
+        Name = "Local Event Chat",
         MinAccess = "admin"
     },
     {
-        Name = "Staff Permissions - Event Chat",
+        Name = "Event Chat",
         MinAccess = "admin"
     },
     {
-        Name = "Staff Permissions - Always Have Access to Help Chat",
+        Name = "Always Have Access to Help Chat",
         MinAccess = "superadmin"
     },
 }
