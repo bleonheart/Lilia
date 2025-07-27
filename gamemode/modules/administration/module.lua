@@ -540,25 +540,6 @@ else
         btnBar:DockMargin(20, 20, 20, 12)
         btnBar.Paint = function() end
         local editable = not DEFAULT_GROUPS[g]
-        local tickAll = btnBar:Add("liaSmallButton")
-        tickAll:Dock(LEFT)
-        tickAll:SetWide(90)
-        tickAll:SetText("Tick All")
-        local untickAll = btnBar:Add("liaSmallButton")
-        untickAll:Dock(LEFT)
-        untickAll:DockMargin(6, 0, 0, 0)
-        untickAll:SetWide(90)
-        untickAll:SetText("Untick All")
-        local defaultsBtn = btnBar:Add("liaSmallButton")
-        defaultsBtn:Dock(LEFT)
-        defaultsBtn:DockMargin(6, 0, 0, 0)
-        defaultsBtn:SetWide(90)
-        defaultsBtn:SetText("Defaults")
-        if not editable then
-            tickAll:SetEnabled(false)
-            untickAll:SetEnabled(false)
-            defaultsBtn:SetEnabled(false)
-        end
 
         local delBtn, renameBtn
         if not DEFAULT_GROUPS[g] then
@@ -598,35 +579,6 @@ else
         inhVal:SetText(cami[g] and cami[g].Inherits or "user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
-        local memberNames = {}
-        for _, m in ipairs(PLAYER_LIST) do
-            if m.group == g then memberNames[#memberNames + 1] = m.name ~= "" and m.name or m.id end
-        end
-
-        local memLbl = scroll:Add("DLabel")
-        memLbl:Dock(TOP)
-        memLbl:DockMargin(20, 0, 0, 6)
-        memLbl:SetText("Members (" .. #memberNames .. ")")
-        setFont(memLbl, "liaBigFont")
-        memLbl:SizeToContents()
-        local memHolder = scroll:Add("DPanel")
-        memHolder:Dock(TOP)
-        memHolder:DockMargin(20, 0, 20, 20)
-        memHolder.Paint = function() end
-        local memLayout = vgui.Create("DListLayout", memHolder)
-        memLayout:Dock(FILL)
-        surface.SetFont("liaMediumFont")
-        local _, fh = surface.GetTextSize("W")
-        for _, n in ipairs(memberNames) do
-            local lbl = memLayout:Add("DLabel")
-            lbl:SetText(n)
-            setFont(lbl, "liaMediumFont")
-            lbl:SizeToContents()
-            lbl:Dock(TOP)
-            lbl:DockMargin(0, 0, 0, 4)
-            memHolder:SetTall(memHolder:GetTall() + fh + 4)
-        end
-
         local privLbl = scroll:Add("DLabel")
         privLbl:Dock(TOP)
         privLbl:DockMargin(20, 0, 0, 6)
@@ -691,20 +643,6 @@ else
 
         list:InvalidateLayout(true)
         listHolder:SetTall(list:GetTall())
-        local function setAll(state)
-            for _, cb in ipairs(checkboxes) do
-                cb:SetChecked(state)
-            end
-        end
-
-        tickAll.DoClick = function() if editable then setAll(true) end end
-        untickAll.DoClick = function() if editable then setAll(false) end end
-        defaultsBtn.DoClick = function()
-            if not editable then return end
-            net.Start("liaGroupsDefaults")
-            net.WriteString(g)
-            net.SendToServer()
-        end
 
         if renameBtn then
             renameBtn.DoClick = function()
@@ -731,37 +669,27 @@ else
 
     local function buildGroupsUI(panel, cami, perms)
         panel:Clear()
-        local sidebar = panel:Add("DScrollPanel")
-        sidebar:Dock(RIGHT)
-        sidebar:SetWide(200)
-        sidebar:DockMargin(0, 20, 20, 20)
-        local content = panel:Add("DPanel")
-        content:Dock(FILL)
-        content:DockMargin(10, 10, 10, 10)
-        local selected
-        local keys = {}
+        local sheet = panel:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        sheet:DockMargin(0, 0, 0, 40)
+
+        local keys, tabs = {}, {}
         for g in pairs(cami) do
             keys[#keys + 1] = g
         end
 
         table.sort(keys)
         for _, g in ipairs(keys) do
-            local b = sidebar:Add("liaMediumButton")
-            b:Dock(TOP)
-            b:DockMargin(0, 0, 0, 10)
-            b:SetTall(40)
-            b:SetText(g)
-            b.DoClick = function()
-                if IsValid(selected) then selected:SetSelected(false) end
-                b:SetSelected(true)
-                selected = b
-                renderGroupInfo(content, g, cami, perms)
-            end
+            local page = vgui.Create("DPanel", sheet)
+            page:Dock(FILL)
+            page.Paint = function() end
+            renderGroupInfo(page, g, cami, perms)
+            local info = sheet:AddSheet(g, page)
+            tabs[g] = info.Tab
         end
 
-        local addBtn = sidebar:Add("liaMediumButton")
-        addBtn:Dock(TOP)
-        addBtn:DockMargin(0, 20, 0, 0)
+        local addBtn = panel:Add("liaMediumButton")
+        addBtn:Dock(BOTTOM)
         addBtn:SetTall(36)
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
@@ -774,20 +702,10 @@ else
             end)
         end
 
-        if LAST_GROUP and cami[LAST_GROUP] then
-            for _, b in ipairs(sidebar:GetChildren()) do
-                if b.GetText and b:GetText() == LAST_GROUP then
-                    b:DoClick()
-                    break
-                end
-            end
-        elseif keys[1] then
-            for _, b in ipairs(sidebar:GetChildren()) do
-                if b.GetText and b:GetText() == keys[1] then
-                    b:DoClick()
-                    break
-                end
-            end
+        if LAST_GROUP and tabs[LAST_GROUP] then
+            sheet:SetActiveTab(tabs[LAST_GROUP])
+        elseif keys[1] and tabs[keys[1]] then
+            sheet:SetActiveTab(tabs[keys[1]])
         end
     end
 
