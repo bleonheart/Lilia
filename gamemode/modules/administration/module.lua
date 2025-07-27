@@ -669,6 +669,14 @@ else
             local m = DermaMenu()
             local opt = m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
+            m:AddOption(L("copyRow"), function()
+                local s = ""
+                for i = 1, line:Columns() do
+                    s = s .. line:GetColumnText(i) .. " | "
+                end
+
+                SetClipboardText(s:sub(1, -4))
+            end):SetIcon("icon16/page_copy.png")
             m:Open()
         end
     end
@@ -689,6 +697,20 @@ else
             if not filterID or tostring(sid) == tostring(filterID) then
                 list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
             end
+        end
+
+        list.OnRowRightClick = function(_, _, line)
+            if not IsValid(line) then return end
+            local m = DermaMenu()
+            m:AddOption(L("copyRow"), function()
+                local s = ""
+                for i = 1, line:Columns() do
+                    s = s .. line:GetColumnText(i) .. " | "
+                end
+
+                SetClipboardText(s:sub(1, -4))
+            end):SetIcon("icon16/page_copy.png")
+            m:Open()
         end
     end
 

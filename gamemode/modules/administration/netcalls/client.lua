@@ -87,6 +87,11 @@ local function handleTableData(id)
         function list:OnRowSelected(_, line)
             openRowInfo(line.rowData)
         end
+
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) or not line.rowData then return end
+            openRowInfo(line.rowData)
+        end
     end
 end
 
