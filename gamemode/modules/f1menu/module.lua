@@ -2,33 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Adds a comprehensive F1 menu that gathers character management screens such as inventory, stats, and help into a single place."
-MODULE.Privileges = {
-    {
-        Name = "Access Entity List",
-        MinAccess = "admin",
-        Category = MODULE.name
-    },
-    {
-        Name = "Teleport to Entity",
-        MinAccess = "admin",
-        Category = MODULE.name
-    },
-    {
-        Name = "Teleport to Entity (Entity Tab)",
-        MinAccess = "admin",
-        Category = MODULE.name
-    },
-    {
-        Name = "View Entity (Entity Tab)",
-        MinAccess = "admin",
-        Category = MODULE.name
-    },
-    {
-        Name = "Access Module List",
-        MinAccess = "user",
-        Category = MODULE.name
-    }
-}
+-- Privileges moved to admin.lua
 
 function MODULE:InitializedModules()
     local function getMenuTabNames()
