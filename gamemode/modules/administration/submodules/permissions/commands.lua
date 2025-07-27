@@ -156,12 +156,22 @@ lia.command.add("charlist", {
                     lastUsedText = row.lastJoinTime
                 end
 
+                local bannedState = false
+                if isBanned then
+                    local num = tonumber(isBanned)
+                    if num then
+                        bannedState = num == 1 or num > os.time()
+                    else
+                        bannedState = tobool(isBanned)
+                    end
+                end
+
                 local entry = {
                     ID = row.id,
                     Name = row.name,
                     Desc = row.desc,
                     Faction = row.faction,
-                    Banned = isBanned and "Yes" or "No",
+                    Banned = bannedState and "Yes" or "No",
                     BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                     BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                     BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
