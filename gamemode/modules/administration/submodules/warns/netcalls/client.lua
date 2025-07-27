@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("PlayerWarnings", function()
     local MODULE = lia.module.get("warns")
     local warnings = net.ReadTable()

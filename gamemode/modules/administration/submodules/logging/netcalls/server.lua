@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("send_logs_request", function(_, client)
     local MODULE = lia.module.get("logging")
     if not MODULE:CanPlayerSeeLog(client) then return end

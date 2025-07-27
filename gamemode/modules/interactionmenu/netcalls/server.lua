@@ -1,3 +1,4 @@
+local MODULE = MODULE
 net.Receive("TransferMoneyFromP2P", function(_, sender)
     local MODULE = lia.module.get("interactionmenu")
     local amount = net.ReadUInt(32)
