@@ -672,7 +672,7 @@ else
         end
     end
 
-    local function buildCharListUI(parent, mode)
+    local function buildCharListUI(parent, mode, filterID)
         parent:Clear()
         local list = parent:Add("DListView")
         list:Dock(FILL)
@@ -685,7 +685,36 @@ else
         list:AddColumn("Last Used")
         for _, v in ipairs(CHAR_LISTS[mode] or {}) do
             local sid = v.SteamID or v.steamID or ""
-            list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
+            if not filterID or tostring(sid) == tostring(filterID) then
+                list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
+            end
+        end
+    end
+
+    local function buildPlayerTabs(ps)
+        if not IsValid(ps) then return end
+        ps.playerTabs = ps.playerTabs or {}
+        for _, info in pairs(ps.playerTabs) do
+            if IsValid(info.tab) then ps:CloseTab(info.tab, true) end
+        end
+        ps.playerTabs = {}
+
+        local byPlayer = {}
+        for _, entry in ipairs(CHAR_LISTS.online or {}) do
+            local sid = tostring(entry.SteamID or entry.steamID or "")
+            byPlayer[sid] = byPlayer[sid] or {}
+            table.insert(byPlayer[sid], entry)
+        end
+
+        for sid, _ in SortedPairs(byPlayer) do
+            local page = vgui.Create("DPanel", ps)
+            page:Dock(FILL)
+            page.Paint = function() end
+            local ply = player.GetBySteamID64(sid)
+            local name = IsValid(ply) and ply:Nick() or util.SteamIDFrom64(sid)
+            local sheetInfo = ps:AddSheet(name, page, "icon16/user.png")
+            ps.playerTabs[sid] = {tab = sheetInfo.Tab, panel = page}
+            buildCharListUI(page, "online", sid)
         end
     end
 
@@ -895,6 +924,7 @@ else
             buildCharListUI(lia.gui.charBrowserAll, "all")
         elseif tbl.mode ~= "all" and IsValid(lia.gui.charBrowserOnline) then
             buildCharListUI(lia.gui.charBrowserOnline, "online")
+            buildPlayerTabs(lia.gui.charBrowserPS)
         end
     end
 
@@ -994,12 +1024,14 @@ else
                 pnl:DockPadding(10, 10, 10, 10)
                 local ps = pnl:Add("DPropertySheet")
                 ps:Dock(FILL)
+                lia.gui.charBrowserPS = ps
                 local online = vgui.Create("DPanel", ps)
                 online:Dock(FILL)
                 online.Paint = function() end
                 lia.gui.charBrowserOnline = online
                 ps:AddSheet("By Player Online", online, "icon16/user.png")
                 buildCharListUI(online, "online")
+                buildPlayerTabs(ps)
                 local all = vgui.Create("DPanel", ps)
                 all:Dock(FILL)
                 all.Paint = function() end
