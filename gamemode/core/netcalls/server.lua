@@ -718,6 +718,10 @@ local function buildCharEntry(client, row)
     local isBanned = stored and stored:getBanned() or row.banned
     local allVars = {}
     for varName, varInfo in pairs(lia.char.vars) do
+        if varInfo.noDisplay or varInfo.noNetworking then
+            continue
+        end
+
         local value
         if stored then
             if varName == "data" then
@@ -751,7 +755,9 @@ local function buildCharEntry(client, row)
             end
         end
 
-        allVars[varName] = value
+        if not checkBadType(varName, value) then
+            allVars[varName] = value
+        end
     end
 
     local lastUsedText
