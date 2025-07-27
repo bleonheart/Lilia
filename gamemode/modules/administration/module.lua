@@ -193,14 +193,22 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                     local entries = {}
                     for _, ent in ipairs(list) do
                         local className = ent:GetClass()
+                        local displayName = className
+                        if className == "lia_item" or ent.isItem and ent:isItem() then
+                            local itemTable = ent.getItemTable and ent:getItemTable()
+                            if itemTable then
+                                displayName = itemTable.getName and itemTable:getName() or L(itemTable.name or className)
+                            end
+                        end
+
                         local itemPanel = vgui.Create("DPanel", canvas)
                         itemPanel:Dock(TOP)
                         itemPanel:DockMargin(10, 15, 10, 10)
                         itemPanel:SetTall(100)
-                        itemPanel.infoText = className:lower()
+                        itemPanel.infoText = (displayName .. " " .. className):lower()
                         itemPanel.Paint = function(pnl, w, h)
                             derma.SkinHook("Paint", "Panel", pnl, w, h)
-                            draw.SimpleText(className, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(displayName, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                         end
 
                         local icon = vgui.Create("liaSpawnIcon", itemPanel)
@@ -250,7 +258,7 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                         btnWaypoint:SetWide(btnW)
                         btnWaypoint:SetTall(btnH)
                         btnWaypoint:SetText(L("waypointButton"))
-                        btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
+                        btnWaypoint.DoClick = function() client:setWaypoint(displayName, ent:GetPos()) end
                         btnCount = btnCount + 1
                         btnContainer:SetWide(btnCount * (btnW + margin * 2))
                         entries[#entries + 1] = itemPanel
