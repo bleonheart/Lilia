@@ -44,7 +44,6 @@ local function populate(uid)
     end
 end
 
-
 local function makeList(parent)
     local lst = parent:Add("DListView")
     lst:Dock(FILL)
@@ -86,9 +85,7 @@ local function makeList(parent)
 end
 
 local function buildRoster(panel)
-    panel.Paint = function(pnl, w, h)
-        derma.SkinHook("Paint", "Panel", pnl, w, h)
-    end
+    panel.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
     local char = LocalPlayer():getChar()
     if not char then return end
     local fac = lia.faction.indices[char:getFaction()]

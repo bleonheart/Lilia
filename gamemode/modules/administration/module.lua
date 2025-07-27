@@ -3,7 +3,6 @@ MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 -- Privileges moved to admin.lua
-
 hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
     local ply = LocalPlayer()
     if not ply:hasPrivilege("View Staff Actions") then return end
@@ -846,6 +845,7 @@ else
             renameBtn:SetWide(third)
             delBtn:SetWide(third)
         end
+
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
             Derma_StringRequest("Create Group", "New group name:", "", function(txt)
@@ -932,7 +932,6 @@ else
         end
     end
 
-
     local function canAccess()
         return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups")
     end
@@ -1007,20 +1006,16 @@ else
             build = function(sheet)
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
-
                 local ps = vgui.Create("DPropertySheet", pnl)
                 ps:Dock(FILL)
                 lia.gui.dbBrowserPS = ps
-
                 local tblPanel = vgui.Create("DPanel", ps)
                 tblPanel:Dock(FILL)
                 tblPanel.Paint = function() end
-
                 local list = vgui.Create("DListView", tblPanel)
                 list:Dock(FILL)
                 list:AddColumn("Table")
                 lia.gui.dbBrowserList = list
-
                 function list:OnRowSelected(_, line)
                     net.Start("liaRequestTableData")
                     net.WriteString(line:GetColumnText(1))
@@ -1028,10 +1023,8 @@ else
                 end
 
                 ps:AddSheet("Tables", tblPanel, "icon16/database.png")
-
                 net.Start("liaDBTablesRequest")
                 net.SendToServer()
-
                 return pnl
             end
         }
