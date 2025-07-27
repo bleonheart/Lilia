@@ -648,7 +648,10 @@ net.Receive("liaGroupsRequest", function(_, p)
     end
 
     syncPrivileges()
-    lia.administration.sendBigTable(p, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+    local id = lia.net.WriteBigTable(p, lia.administration.payloadGroups())
+    net.Start("liaGroupsDataDone")
+    net.WriteString(id)
+    net.Send(p)
 end)
 
 net.Receive("liaPlayersRequest", function(_, p)
@@ -657,7 +660,10 @@ net.Receive("liaPlayersRequest", function(_, p)
     end
 
     if not allowed(p) then return end
-    lia.administration.sendBigTable(p, lia.administration.payloadPlayers(), "liaPlayersDataChunk", "liaPlayersDataDone")
+    local id = lia.net.WriteBigTable(p, lia.administration.payloadPlayers())
+    net.Start("liaPlayersDataDone")
+    net.WriteString(id)
+    net.Send(p)
 end)
 
 net.Receive("liaCharBrowserRequest", function(_, p)
@@ -669,17 +675,23 @@ net.Receive("liaCharBrowserRequest", function(_, p)
     local mode = net.ReadString()
     if mode == "all" then
         lia.administration.queryAllCharacters(p, function(data)
-            lia.administration.sendBigTable(p, {
+            local id = lia.net.WriteBigTable(p, {
                 mode = "all",
                 list = data
-            }, "liaCharBrowserChunk", "liaCharBrowserDone")
+            })
+            net.Start("liaCharBrowserDone")
+            net.WriteString(id)
+            net.Send(p)
         end)
     else
         lia.administration.collectOnlineCharacters(p, function(data)
-            lia.administration.sendBigTable(p, {
+            local id = lia.net.WriteBigTable(p, {
                 mode = "online",
                 list = data
-            }, "liaCharBrowserChunk", "liaCharBrowserDone")
+            })
+            net.Start("liaCharBrowserDone")
+            net.WriteString(id)
+            net.Send(p)
         end)
     end
 end)
@@ -710,7 +722,10 @@ net.Receive("liaGroupsAdd", function(_, p)
     lia.administration.ensureCAMIGroup(n, "user")
     lia.administration.save(true)
     lia.administration.applyToCAMI(n, lia.administration.groups[n])
-    lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    net.Start("liaGroupsDataDone")
+    net.WriteString(id)
+    net.Broadcast()
     p:notify("Group '" .. n .. "' created.")
 end)
 
@@ -726,7 +741,10 @@ net.Receive("liaGroupsRemove", function(_, p)
     lia.administration.groups[n] = nil
     lia.administration.dropCAMIGroup(n)
     lia.administration.save(true)
-    lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    net.Start("liaGroupsDataDone")
+    net.WriteString(id)
+    net.Broadcast()
     p:notify("Group '" .. n .. "' removed.")
 end)
 
@@ -750,7 +768,10 @@ net.Receive("liaGroupsRename", function(_, p)
         if ply:GetUserGroup() == old then lia.administration.setPlayerGroup(ply, new) end
     end
 
-    lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    net.Start("liaGroupsDataDone")
+    net.WriteString(id)
+    net.Broadcast()
     p:notify("Group '" .. old .. "' renamed to '" .. new .. "'.")
 end)
 
@@ -770,7 +791,10 @@ net.Receive("liaGroupsApply", function(_, p)
 
     lia.administration.save(true)
     lia.administration.applyToCAMI(g, lia.administration.groups[g])
-    lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    net.Start("liaGroupsDataDone")
+    net.WriteString(id)
+    net.Broadcast()
     p:notify("Permissions saved for '" .. g .. "'.")
 end)
 
@@ -785,7 +809,10 @@ net.Receive("liaGroupsDefaults", function(_, p)
     lia.administration.groups[g] = lia.administration.buildDefaultTable(g)
     lia.administration.save(true)
     lia.administration.applyToCAMI(g, lia.administration.groups[g])
-    lia.administration.sendBigTable(nil, lia.administration.payloadGroups(), "liaGroupsDataChunk", "liaGroupsDataDone")
+    local id = lia.net.WriteBigTable(nil, lia.administration.payloadGroups())
+    net.Start("liaGroupsDataDone")
+    net.WriteString(id)
+    net.Broadcast()
     p:notify("Defaults restored for '" .. g .. "'.")
 end)
 
