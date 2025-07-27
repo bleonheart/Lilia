@@ -319,6 +319,7 @@ function GM:PlayerInitialSpawn(client)
     client:loadLiliaData(function(data)
         if not IsValid(client) then return end
         local address = client:IPAddress()
+        client:syncVars()
         client:setLiliaData("lastIP", address)
         lia.db.updateTable({
             lastIP = address
@@ -627,7 +628,22 @@ function GM:UpdateEntityPersistence(ent)
     end
 end
 
+function GM:CharDeleted(client, character)
+    lia.char.names[character:getID()] = nil
+    net.Start("liaCharFetchNames")
+    net.WriteTable(lia.char.names)
+    net.Send(client)
+end
+
+function GM:OnCharCreated(client, character, data)
+    lia.char.names[character:getID()] = data.name
+    net.Start("liaCharFetchNames")
+    net.WriteTable(lia.char.names)
+    net.Send(client)
+end
+
 function GM:EntityRemoved(ent)
+    ent:clearNetVars()
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
     local saved = lia.data.getPersistence()
     local key = makeKey(ent)
