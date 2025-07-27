@@ -1,57 +1,43 @@
-﻿local receivedChunks = {}
+local receivedChunks = {}
 local receivedPanel
-local function OpenLogsUI(panel, categorizedLogs)
-    panel:Clear()
-    local sidebar = panel:Add("DScrollPanel")
-    sidebar:Dock(RIGHT)
-    sidebar:SetWide(200)
-    sidebar:DockMargin(0, 20, 20, 20)
-    local contentPanel = panel:Add("DPanel")
+
+local function buildCategoryPanel(parent, logs)
+    local contentPanel = vgui.Create("DPanel", parent)
     contentPanel:Dock(FILL)
-    contentPanel:DockMargin(10, 10, 10, 10)
+    contentPanel:DockPadding(10, 10, 10, 10)
+
     local search = contentPanel:Add("DTextEntry")
     search:Dock(TOP)
     search:SetPlaceholderText(L("searchLogs"))
     search:SetTextColor(Color(255, 255, 255))
+
     local list = contentPanel:Add("DListView")
     list:Dock(FILL)
     list:SetMultiSelect(false)
     list:AddColumn(L("timestamp")):SetFixedWidth(150)
     list:AddColumn(L("logMessage"))
     list:AddColumn(L("steamID")):SetFixedWidth(110)
+
     local copyButton = contentPanel:Add("liaMediumButton")
     copyButton:Dock(BOTTOM)
     copyButton:SetText(L("copySelectedRow"))
     copyButton:SetTall(40)
-    local currentLogs = {}
-    local selectedButton
-    for category, logs in pairs(categorizedLogs) do
-        local btn = sidebar:Add("liaMediumButton")
-        btn:Dock(TOP)
-        btn:DockMargin(0, 0, 0, 10)
-        btn:SetTall(40)
-        btn:SetText(category)
-        btn.DoClick = function()
-            if IsValid(selectedButton) then selectedButton:SetSelected(false) end
-            btn:SetSelected(true)
-            selectedButton = btn
-            list:Clear()
-            currentLogs = logs
-            for _, log in ipairs(logs) do
+
+    local function populate(query)
+        list:Clear()
+        query = query and string.lower(query) or ""
+        for _, log in ipairs(logs) do
+            local msgMatch = string.find(string.lower(log.message), query, 1, true)
+            local idMatch = log.steamID and string.find(string.lower(log.steamID), query, 1, true)
+            if query == "" or msgMatch or idMatch then
                 list:AddLine(log.timestamp, log.message, log.steamID or "")
             end
         end
     end
 
-    search.OnChange = function()
-        local query = string.lower(search:GetValue())
-        list:Clear()
-        for _, log in ipairs(currentLogs) do
-            local msgMatch = string.find(string.lower(log.message), query, 1, true)
-            local idMatch = log.steamID and string.find(string.lower(log.steamID), query, 1, true)
-            if query == "" or msgMatch or idMatch then list:AddLine(log.timestamp, log.message, log.steamID or "") end
-        end
-    end
+    populate()
+
+    search.OnChange = function() populate(search:GetValue()) end
 
     copyButton.DoClick = function()
         local sel = list:GetSelectedLine()
@@ -64,14 +50,18 @@ local function OpenLogsUI(panel, categorizedLogs)
         end
     end
 
-    local firstCategory = next(categorizedLogs)
-    if firstCategory then
-        for _, btn in ipairs(sidebar:GetChildren()) do
-            if btn:GetText() == firstCategory then
-                btn:DoClick()
-                break
-            end
-        end
+    return contentPanel
+end
+
+local function OpenLogsUI(panel, categorizedLogs)
+    panel:Clear()
+    local sheet = panel:Add("DPropertySheet")
+    sheet:Dock(FILL)
+    sheet:DockMargin(10, 10, 10, 10)
+
+    for category, logs in pairs(categorizedLogs) do
+        local pnl = buildCategoryPanel(sheet, logs)
+        sheet:AddSheet(category, pnl)
     end
 end
 
