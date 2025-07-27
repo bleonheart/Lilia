@@ -245,3 +245,68 @@ net.Receive("KickCharacter", function(_, client)
         lia.char.setCharData(characterID, "factionKickWarn", true)
     end
 end)
+
+local function toSteamID(id)
+    if not id then return "" end
+    id = tostring(id)
+    if id:sub(1, 6) == "STEAM_" then return id end
+    return util.SteamIDFrom64(id)
+end
+
+net.Receive("RosterRequest", function(_, client)
+    local facUniqueID = net.ReadString()
+    local char = client:getChar()
+    if not char then return end
+    if not (client:IsSuperAdmin() or char:hasFlags("V")) then return end
+    local facTbl
+    if facUniqueID ~= "" then
+        for _, v in pairs(lia.faction.indices) do
+            if tostring(v.uniqueID) == facUniqueID then
+                facTbl = v
+                break
+            end
+        end
+    else
+        facTbl = lia.faction.indices[char:getFaction()]
+    end
+
+    if not facTbl then return end
+    local fields = [[lia_characters.name, lia_characters.faction, lia_characters.class, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline]]
+    local condition = "lia_characters.schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(facTbl.uniqueID)
+    local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
+    lia.db.query(query, function(data)
+        local out = {}
+        for _, v in ipairs(data or {}) do
+            local id = tonumber(v.id)
+            local online = lia.char.loaded[id] ~= nil
+            local lastOnline
+            if online then
+                lastOnline = L("onlineNow")
+            else
+                local last = tonumber(v.lastOnline)
+                if not isnumber(last) then last = os.time(lia.time.toNumber(v.lastJoinTime)) end
+                local diff = os.time() - last
+                local since = lia.time.TimeSince(last)
+                local stripped = since:match("^(.-)%sago$") or since
+                lastOnline = string.format("%s (%s) ago", stripped, lia.time.SecondsToDHM(diff))
+            end
+
+            local classID = tonumber(v.class) or v.class
+            local className = classID == 0 and "None" or lia.class.list and lia.class.list[classID] and lia.class.list[classID].name or tostring(classID or "")
+            out[#out + 1] = {
+                id = id,
+                name = v.name,
+                class = className,
+                classID = classID,
+                steamID = toSteamID(v.steamID),
+                lastOnline = lastOnline,
+                hoursPlayed = lia.time.SecondsToDHM(tonumber(v.totalOnlineTime) or 0)
+            }
+        end
+
+        net.Start("RosterData")
+        net.WriteString(facTbl.uniqueID)
+        net.WriteTable(out)
+        net.Send(client)
+    end)
+end)
