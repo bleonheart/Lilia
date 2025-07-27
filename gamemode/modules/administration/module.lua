@@ -618,11 +618,6 @@ if SERVER then
     end
 
     syncPrivileges()
-    hook.Add("PlayerInitialSpawn", "liaAdminTrackJoin", function(p)
-        if p:IsBot() then return end
-        lia.administration.lastJoin[p:SteamID()] = os.time()
-    end)
-
     net.Receive("liaGroupsRequest", function(_, p)
         if not allowed(p) then return end
         syncPrivileges()
