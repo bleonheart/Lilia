@@ -62,7 +62,6 @@ if SERVER then
     end)
 
     -- netcall moved to netcalls
-
     lia.workshop.AddWorkshop("3527535922")
     resource.AddWorkshop = lia.workshop.AddWorkshop
 else
@@ -190,21 +189,21 @@ else
             end)
         end
     end
-    lia.workshop.start = start
 
+    lia.workshop.start = start
     local function buildQueue(all)
         table.Empty(queue)
         for id in pairs(lia.workshop.serverIds or {}) do
             if id == FORCE_ID or all then queue[id] = true end
         end
     end
-    lia.workshop.buildQueue = buildQueue
 
+    lia.workshop.buildQueue = buildQueue
     local function refresh(tbl)
         if tbl then lia.workshop.serverIds = tbl end
     end
-    lia.workshop.refresh = refresh
 
+    lia.workshop.refresh = refresh
     function lia.workshop.checkPrompt()
         local opt = lia.option.get("autoDownloadWorkshop")
         local ids = lia.workshop.serverIds or {}
@@ -245,7 +244,6 @@ else
     end
 
     -- netcalls moved to netcalls
-
     hook.Add("InitializedOptions", "liaWorkshopPromptCheck", function() timer.Simple(0, lia.workshop.checkPrompt) end)
     concommand.Add("workshop_force_redownload", function()
         table.Empty(queue)
@@ -260,68 +258,58 @@ else
             name = L("workshopAddons"),
             drawFunc = function(container)
                 local ids = lia.workshop.serverIds or {}
-                local search = vgui.Create("DTextEntry", container)
-                search:Dock(TOP)
-                search:DockMargin(0, 0, 0, 5)
-                search:SetTall(30)
-                search:SetPlaceholderText(L("searchAddons"))
-                local info = vgui.Create("DPanel", container)
-                info:Dock(TOP)
-                info:DockMargin(10, 0, 10, 5)
-                info:SetTall(30)
-                info.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-                local lbl = vgui.Create("DLabel", info)
-                lbl:Dock(FILL)
-                lbl:SetFont("liaSmallFont")
-                lbl:SetTextColor(color_white)
-                lbl:SetContentAlignment(5)
-                lbl:SetText(L("totalAutoAddons", table.Count(ids)))
-                local sc = vgui.Create("DScrollPanel", container)
-                sc:Dock(FILL)
-                sc:DockPadding(0, 10, 0, 0)
-                local canvas = sc:GetCanvas()
-                local function item(id, size)
-                    steamworks.FileInfo(id, function(fi)
-                        if not fi then return end
-                        local p = vgui.Create("DPanel", canvas)
-                        p:Dock(TOP)
-                        p:DockMargin(0, 0, 0, 10)
-                        p.titleText = (fi.title or ""):lower()
-                        local html = vgui.Create("DHTML", p)
-                        html:SetSize(size, size)
-                        html:OpenURL(fi.previewurl)
-                        local title = vgui.Create("DLabel", p)
-                        title:SetFont("liaBigFont")
-                        title:SetText(fi.title or "ID:" .. id)
-                        local desc = vgui.Create("DLabel", p)
-                        desc:SetFont("liaMediumFont")
-                        desc:SetWrap(true)
-                        desc:SetText(fi.description or "")
-                        function p:PerformLayout()
+                local searchEntry = vgui.Create("DTextEntry", container)
+                searchEntry:Dock(TOP)
+                searchEntry:DockMargin(0, 0, 0, 5)
+                searchEntry:SetTall(30)
+                searchEntry:SetPlaceholderText(L("searchAddons"))
+                local scroll = vgui.Create("DScrollPanel", container)
+                scroll:Dock(FILL)
+                scroll:DockPadding(0, 10, 0, 0)
+                local canvas = scroll:GetCanvas()
+                local function createItem(id, size)
+                    steamworks.FileInfo(id, function(fileInfo)
+                        if not fileInfo then return end
+                        local panel = vgui.Create("DPanel", canvas)
+                        panel:Dock(TOP)
+                        panel:DockMargin(0, 0, 0, 10)
+                        panel.titleText = (fileInfo.title or ""):lower()
+                        local preview = vgui.Create("DHTML", panel)
+                        preview:SetSize(size, size)
+                        preview:OpenURL(fileInfo.previewurl)
+                        local titleLabel = vgui.Create("DLabel", panel)
+                        titleLabel:SetFont("liaBigFont")
+                        titleLabel:SetText(fileInfo.title or "ID:" .. id)
+                        local descLabel = vgui.Create("DLabel", panel)
+                        descLabel:SetFont("liaMediumFont")
+                        descLabel:SetWrap(true)
+                        descLabel:SetText(fileInfo.description or "")
+                        function panel:PerformLayout()
                             local pad = 10
-                            html:SetPos(pad, pad)
-                            title:SizeToContents()
-                            title:SetPos(pad + size + pad, pad)
-                            desc:SetPos(pad + size + pad, pad + title:GetTall() + 5)
-                            desc:SetWide(self:GetWide() - pad - size - pad)
-                            local _, h = desc:GetContentSize()
-                            desc:SetTall(h)
-                            self:SetTall(math.max(size + pad * 2, title:GetTall() + 5 + h + pad))
+                            preview:SetPos(pad, pad)
+                            titleLabel:SizeToContents()
+                            titleLabel:SetPos(pad + size + pad, pad)
+                            descLabel:SetPos(pad + size + pad, pad + titleLabel:GetTall() + 5)
+                            descLabel:SetWide(self:GetWide() - pad - size - pad)
+                            local _, h = descLabel:GetContentSize()
+                            descLabel:SetTall(h)
+                            self:SetTall(math.max(size + pad * 2, titleLabel:GetTall() + 5 + h + pad))
                         end
                     end)
                 end
 
                 for id in pairs(ids) do
-                    item(id, 200)
+                    createItem(id, 200)
                 end
 
-                search.OnTextChanged = function(self)
-                    local q = self:GetValue():lower()
+                searchEntry.OnTextChanged = function(entry)
+                    local query = entry:GetValue():lower()
                     for _, child in ipairs(canvas:GetChildren()) do
-                        if child.titleText then child:SetVisible(q == "" or child.titleText:find(q, 1, true)) end
+                        if child.titleText then child:SetVisible(query == "" or child.titleText:find(query, 1, true)) end
                     end
 
                     canvas:InvalidateLayout()
+                    canvas:SizeToChildren(false, true)
                 end
             end
         })
