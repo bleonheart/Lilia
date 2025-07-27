@@ -264,6 +264,8 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_logs`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_saveditems`;
+    DROP TABLE IF EXISTS `lia_warnings`;
+    DROP TABLE IF EXISTS `lia_ticketclaims`;
     DROP TABLE IF EXISTS `lia_privileges`;
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_staffactions`;
@@ -294,6 +296,8 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_saveditems;
+    DROP TABLE IF EXISTS lia_warnings;
+    DROP TABLE IF EXISTS lia_ticketclaims;
     DROP TABLE IF EXISTS lia_privileges;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_staffactions;
@@ -455,6 +459,26 @@ function lia.db.loadTables()
                 angles TEXT
             );
 
+            CREATE TABLE IF NOT EXISTS lia_warnings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME,
+                warned TEXT,
+                warnedSteamID TEXT,
+                warning TEXT,
+                admin TEXT,
+                adminSteamID TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS lia_ticketclaims (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME,
+                requester TEXT,
+                requesterSteamID TEXT,
+                message TEXT,
+                admin TEXT,
+                adminSteamID TEXT
+            );
+
             CREATE TABLE IF NOT EXISTS lia_privileges (
                 usergroup TEXT PRIMARY KEY,
                 privileges TEXT
@@ -595,6 +619,28 @@ function lia.db.loadTables()
                 `itemID` INT(12) NOT NULL,
                 `pos` TEXT NULL,
                 `angles` TEXT NULL,
+                PRIMARY KEY (`id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_warnings` (
+                `id` INT(12) NOT NULL AUTO_INCREMENT,
+                `timestamp` DATETIME NOT NULL,
+                `warned` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `warnedSteamID` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `warning` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
+                `admin` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `adminSteamID` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+                PRIMARY KEY (`id`)
+            );
+
+            CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
+                `id` INT(12) NOT NULL AUTO_INCREMENT,
+                `timestamp` DATETIME NOT NULL,
+                `requester` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `requesterSteamID` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `message` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
+                `admin` VARCHAR(128) NOT NULL COLLATE 'utf8mb4_general_ci',
+                `adminSteamID` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`id`)
             );
 

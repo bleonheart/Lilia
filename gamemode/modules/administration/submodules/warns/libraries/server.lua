@@ -1,25 +1,29 @@
-﻿local MODULE = MODULE
-function MODULE:GetWarnings(charID)
-    local condition = "charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"id", "timestamp", "reason", "admin"}, "warnings", condition):next(function(res) return res.results or {} end)
+local MODULE = MODULE
+
+function MODULE:GetWarnings(steamID)
+    local condition = "warnedSteamID = " .. lia.db.convertDataType(steamID)
+    return lia.db.select({"id", "timestamp", "warning", "admin", "adminSteamID"}, "warnings", condition)
+        :next(function(res) return res.results or {} end)
 end
 
-function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
+function MODULE:AddWarning(target, timestamp, reason, admin)
     lia.db.insertTable({
-        charID = charID,
-        steamID = steamID,
         timestamp = timestamp,
-        reason = reason,
-        admin = admin
+        warned = target:Nick(),
+        warnedSteamID = target:SteamID64(),
+        warning = reason,
+        admin = admin:Nick(),
+        adminSteamID = admin:SteamID64()
     }, nil, "warnings")
 end
 
-function MODULE:RemoveWarning(charID, index)
+function MODULE:RemoveWarning(steamID, index)
     local d = deferred.new()
-    self:GetWarnings(charID):next(function(rows)
+    self:GetWarnings(steamID):next(function(rows)
         if index < 1 or index > #rows then return d:resolve(nil) end
         local row = rows[index]
-        lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id)):next(function() d:resolve(row) end)
+        lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id))
+            :next(function() d:resolve(row) end)
     end)
     return d
 end
@@ -46,7 +50,7 @@ net.Receive("RequestRemoveWarning", function(_, client)
         return
     end
 
-    MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
+    MODULE:RemoveWarning(targetClient:SteamID64(), warnIndex):next(function(warn)
         if not warn then
             client:notifyLocalized("invalidWarningIndex")
             return
@@ -55,7 +59,7 @@ net.Receive("RequestRemoveWarning", function(_, client)
         targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
         client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
         hook.Run("WarningRemoved", client, targetClient, {
-            reason = warn.reason,
+            reason = warn.warning,
             admin = warn.admin
         }, warnIndex)
     end)
