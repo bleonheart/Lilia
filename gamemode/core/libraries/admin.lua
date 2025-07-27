@@ -223,11 +223,17 @@ if SERVER then
 
     function lia.administration.isBanned(steamid)
         local row = fetchBanRow(steamid)
-        if not row or tonumber(row.banStart or 0) <= 0 then return false end
+        if not row then return false end
+
+        local start = tonumber(row.banStart) or 0
+        if start <= 0 then return false end
+
+        local duration = tonumber(row.banDuration) or 0
+
         return {
             reason = row.reason,
-            start = tonumber(row.banStart) or 0,
-            duration = tonumber(row.banDuration) or 0,
+            start = start,
+            duration = duration,
         }
     end
 
