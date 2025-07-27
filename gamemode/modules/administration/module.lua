@@ -517,15 +517,7 @@ if SERVER then
         ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
     end
 
-    lia.administration.buildDefaultTable = buildDefaultTable
-    lia.administration.ensureCAMIGroup = ensureCAMIGroup
-    lia.administration.dropCAMIGroup = dropCAMIGroup
-    lia.administration.sendBigTable = sendBigTable
-    lia.administration.payloadGroups = payloadGroups
-    lia.administration.payloadPlayers = payloadPlayers
-    lia.administration.collectOnlineCharacters = collectOnlineCharacters
-    lia.administration.queryAllCharacters = queryAllCharacters
-    lia.administration.applyToCAMI = applyToCAMI
+    -- expose only what is necessary; helper functions are kept local
     function lia.administration.syncAdminGroups(payload)
         lia.administration.groups = payload or lia.administration.groups
         lia.administration.updateAdminGroups()
