@@ -49,30 +49,54 @@ else
     playerMeta.getLocalVar = entityMeta.getNetVar
 end
 
-function lia.net.WriteBigTable(tbl)
+lia.net.bigTables = lia.net.bigTables or {}
+local BIGTABLE_CHUNK = 60000
+
+function lia.net.WriteBigTable(receiver, tbl)
     local raw = pon.encode(tbl)
     local data = util.Compress(raw)
-    local length = #data
-    net.WriteUInt(length, 32)
-    local pos = 1
-    while pos <= length do
-        local chunk = math.min(32768, length - pos + 1)
-        net.WriteUInt(chunk, 16)
-        net.WriteData(data:sub(pos, pos + chunk - 1), chunk)
-        pos = pos + chunk
+    local len = #data
+    local id = util.CRC(tostring(SysTime()) .. len)
+    local parts = math.ceil(len / BIGTABLE_CHUNK)
+
+    for i = 1, parts do
+        local chunk = string.sub(data, (i - 1) * BIGTABLE_CHUNK + 1, math.min(i * BIGTABLE_CHUNK, len))
+        net.Start("liaBigTableChunk")
+        net.WriteString(id)
+        net.WriteUInt(i, 16)
+        net.WriteUInt(parts, 16)
+        net.WriteUInt(#chunk, 16)
+        net.WriteData(chunk, #chunk)
+        if SERVER then
+            if IsEntity(receiver) then
+                net.Send(receiver)
+            else
+                net.Broadcast()
+            end
+        else
+            net.SendToServer()
+        end
     end
+
+    net.Start("liaBigTableDone")
+    net.WriteString(id)
+    if SERVER then
+        if IsEntity(receiver) then
+            net.Send(receiver)
+        else
+            net.Broadcast()
+        end
+    else
+        net.SendToServer()
+    end
+
+    return id
 end
 
-function lia.net.ReadBigTable()
-    local length = net.ReadUInt(32)
-    local received = 0
-    local parts = {}
-    while received < length do
-        local chunk = net.ReadUInt(16)
-        parts[#parts + 1] = net.ReadData(chunk)
-        received = received + chunk
-    end
-
+function lia.net.ReadBigTable(id)
+    local parts = lia.net.bigTables[id]
+    if not parts then return end
+    lia.net.bigTables[id] = nil
     local data = table.concat(parts)
     local raw = util.Decompress(data)
     local tbl = pon.decode(raw)
