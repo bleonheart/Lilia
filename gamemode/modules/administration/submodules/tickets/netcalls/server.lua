@@ -15,9 +15,9 @@ net.Receive("TicketSystemClaim", function(_, client)
         return
     end
 
-    if (client:hasPrivilege("Staff Permissions - Always See Tickets") or client:isStaffOnDuty()) and not requester.CaseClaimed then
+    if (client:hasPrivilege("Always See Tickets") or client:isStaffOnDuty()) and not requester.CaseClaimed then
         for _, v in player.Iterator() do
-            if v:hasPrivilege("Staff Permissions - Always See Tickets") or v:isStaffOnDuty() then
+            if v:hasPrivilege("Always See Tickets") or v:isStaffOnDuty() then
                 net.Start("TicketSystemClaim")
                 net.WriteEntity(client)
                 net.WriteEntity(requester)
@@ -40,7 +40,7 @@ net.Receive("TicketSystemClose", function(_, client)
     if not requester or not IsValid(requester) or requester.CaseClaimed ~= client then return end
     if timer.Exists("ticketsystem-" .. requester:SteamID64()) then timer.Remove("ticketsystem-" .. requester:SteamID64()) end
     for _, v in player.Iterator() do
-        if v:hasPrivilege("Staff Permissions - Always See Tickets") or v:isStaffOnDuty() then
+        if v:hasPrivilege("Always See Tickets") or v:isStaffOnDuty() then
             net.Start("TicketSystemClose")
             net.WriteEntity(requester)
             net.Send(v)

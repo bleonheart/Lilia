@@ -1,4 +1,4 @@
-﻿local receivedChunks = {}
+local receivedChunks = {}
 local receivedPanel
 local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
