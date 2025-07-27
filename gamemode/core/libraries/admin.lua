@@ -20,7 +20,11 @@ function lia.administration.load()
         end
 
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
-            lia.administration.privileges[name] = priv
+            lia.administration.privileges[name] = {
+                Name = name,
+                MinAccess = priv.MinAccess or "user",
+                Category = priv.Category or "Unassigned"
+            }
         end
 
         if camiGroups and not table.IsEmpty(camiGroups) and CAMI then
@@ -99,6 +103,7 @@ end
 
 function lia.administration.registerPrivilege(privilege)
     if not privilege or not privilege.Name then return end
+    privilege.Category = privilege.Category or "Unassigned"
     lia.administration.privileges[privilege.Name] = privilege
     for groupName in pairs(lia.administration.groups) do
         local minAccess = privilege.MinAccess or "user"

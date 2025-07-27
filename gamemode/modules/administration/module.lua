@@ -295,7 +295,8 @@ if SERVER then
         for _, v in ipairs(CAMI.GetPrivileges() or {}) do
             lia.administration.privileges[v.Name] = {
                 Name = v.Name,
-                MinAccess = v.MinAccess or "user"
+                MinAccess = v.MinAccess or "user",
+                Category = v.Category or "Unassigned"
             }
         end
 
@@ -310,20 +311,25 @@ if SERVER then
     end
 
     local function getPrivList()
-        local t = {}
-        for n in pairs(lia.administration.privileges) do
-            t[#t + 1] = n
+        local cats = {}
+        for n, v in pairs(lia.administration.privileges) do
+            local cat = v.Category or "Unassigned"
+            cats[cat] = cats[cat] or {}
+            table.insert(cats[cat], n)
         end
 
-        table.sort(t)
-        return t
+        for _, list in pairs(cats) do
+            table.sort(list)
+        end
+
+        return cats
     end
 
     local function payloadGroups()
         return {
             cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
             perms = lia.administration.groups or {},
-            privList = getPrivList()
+            privCategories = getPrivList()
         }
     end
 
@@ -637,42 +643,52 @@ else
         local _, fh2 = surface.GetTextSize("W")
         local rowH = fh2 + 24
         local off = math.floor((rowH - fh2) * 0.5)
-        for _, priv in ipairs(PRIV_LIST) do
-            local row = vgui.Create("DPanel", list)
-            row:SetTall(rowH)
-            row:Dock(TOP)
-            row:DockMargin(0, 0, 0, 10)
-            row.Paint = function() end
-            local lbl = row:Add("DLabel")
-            lbl:Dock(LEFT)
-            lbl:SetText(priv)
-            setFont(lbl, "liaMediumFont")
-            lbl:SizeToContents()
-            lbl:DockMargin(0, off, 12, 0)
-            local chk = row:Add("liaCheckBox")
-            chk:Dock(LEFT)
-            chk:SetWide(32)
-            chk:SetChecked(current[priv] and true or false)
-            chk.OnChange = function(_, v)
-                if v then
-                    current[priv] = true
-                else
-                    current[priv] = nil
+        local catNames = {}
+        for cat in pairs(PRIV_LIST) do
+            catNames[#catNames + 1] = cat
+        end
+        table.sort(catNames)
+        for _, catName in ipairs(catNames) do
+            local displayName = catName
+            if catName == "Unassigned" then displayName = L("unassignedLabel") end
+            local cat = list:Add("DCollapsibleCategory")
+            cat:SetLabel(displayName)
+            cat:SetExpanded(true)
+            cat.Header:SetTall(rowH)
+            cat.Header:SetFont("liaMediumFont")
+            local catList = vgui.Create("DListLayout", cat)
+            cat:SetContents(catList)
+            for _, priv in ipairs(PRIV_LIST[catName]) do
+                local row = vgui.Create("DPanel", catList)
+                row:SetTall(rowH)
+                row:Dock(TOP)
+                row:DockMargin(0, 0, 0, 10)
+                row.Paint = function() end
+                local lbl = row:Add("DLabel")
+                lbl:Dock(LEFT)
+                lbl:SetText(priv)
+                setFont(lbl, "liaMediumFont")
+                lbl:SizeToContents()
+                lbl:DockMargin(0, off, 12, 0)
+                local chk = row:Add("liaCheckBox")
+                chk:Dock(LEFT)
+                chk:SetWide(32)
+                chk:SetChecked(current[priv] and true or false)
+                chk.OnChange = function(_, v)
+                    if v then
+                        current[priv] = true
+                    else
+                        current[priv] = nil
+                    end
                 end
+                if not editable then chk:SetEnabled(false) end
+                row.PerformLayout = function(_, w, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
+                checkboxes[#checkboxes + 1] = chk
             end
-
-            if not editable then chk:SetEnabled(false) end
-            row.PerformLayout = function(_, w, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
-            checkboxes[#checkboxes + 1] = chk
         end
 
         list:InvalidateLayout(true)
-        local totalH = 0
-        for _, c in ipairs(list:GetChildren()) do
-            totalH = totalH + c:GetTall() + 10
-        end
-
-        listHolder:SetTall(totalH)
+        listHolder:SetTall(list:GetTall())
         local function setAll(state)
             for _, cb in ipairs(checkboxes) do
                 cb:SetChecked(state)
@@ -777,7 +793,7 @@ else
         local data = table.concat(groupChunks[id])
         groupChunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
-        PRIV_LIST = tbl.privList or {}
+        PRIV_LIST = tbl.privCategories or {}
         lia.administration.groups = tbl.perms or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.administration.groups) end
     end
