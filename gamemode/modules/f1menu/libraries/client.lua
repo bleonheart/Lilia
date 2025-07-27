@@ -64,8 +64,21 @@ function MODULE:PlayerBindPress(client, bind, pressed)
         if IsValid(lia.gui.menu) then
             lia.gui.menu:remove()
         elseif client:getChar() then
-            vgui.Create("liaMenu")
+            local joinable = false
+            for _, class in pairs(lia.class.list) do
+                if class.faction == client:Team() and lia.class.canBe(client, class.index) then
+                    joinable = true
+                    break
+                end
+            end
+
+            if joinable then
+                lia.gui.openClassesMenu()
+            else
+                vgui.Create("liaMenu")
+            end
         end
+
         return true
     end
 end

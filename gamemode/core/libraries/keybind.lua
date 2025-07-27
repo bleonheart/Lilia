@@ -340,7 +340,7 @@ lia.keybind.add(KEY_NONE, "Open Inventory", function()
 end)
 
 lia.keybind.add(KEY_NONE, "Admin Mode", function() lia.command.send("adminmode") end)
-lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
+function lia.gui.openClassesMenu()
     local client = LocalPlayer()
     if not client:getChar() or vgui.CursorVisible() then return end
     if IsValid(lia.gui.classesFrame) then
@@ -528,4 +528,8 @@ lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
 
     lia.gui.classesFrame = frame
     loadClasses()
+end
+
+lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
+    lia.gui.openClassesMenu()
 end)
