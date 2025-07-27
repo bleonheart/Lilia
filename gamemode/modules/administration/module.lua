@@ -21,9 +21,8 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             list:AddColumn(L("adminName"))
             list:AddColumn(L("steamID"))
             list:AddColumn(L("userGroup"))
-            list:AddColumn(L("staffTicketsCount"))
-            list:AddColumn(L("staffWarningsCount"))
-            list:AddColumn(L("staffBansCount"))
+            list:AddColumn(L("staffAction"))
+            list:AddColumn(L("staffActionCount"))
             MODULE.actionList = list
             local function filter()
                 local q = search:GetValue():lower()
@@ -126,7 +125,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             end
 
             net.Start("RequestPlayerWarnings")
-            net.WriteString(LocalPlayer():SteamID64())
+            net.WriteString(LocalPlayer():SteamID())
             net.SendToServer()
             return pnl
         end
@@ -197,7 +196,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
 end)
 
 local function startSpectateView(ent, originalThirdPerson)
-    local yaw = client:EyeAngles().yaw
+    local yaw = LocalPlayer():EyeAngles().yaw
     local camZOffset = 50
     hook.Add("CalcView", "EntityViewCalcView", function()
         return {

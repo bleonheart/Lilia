@@ -23,7 +23,7 @@
             local warnsModule = lia.module.list["warns"]
             if warnsModule and warnsModule.AddWarning then
                 warnsModule:AddWarning(target, timestamp, L("cheaterWarningReason"), client)
-                lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count)
+                lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID())):next(function(count)
                     target:notifyLocalized("playerWarned", client:Nick(), L("cheaterWarningReason"))
                     client:notifyLocalized("warningIssued", target:Nick())
                     hook.Run("WarningIssued", client, target, L("cheaterWarningReason"), count)
