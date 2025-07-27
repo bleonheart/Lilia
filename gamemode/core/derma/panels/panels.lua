@@ -320,32 +320,51 @@ function QuickPanel:Paint(w, h)
 end
 
 function QuickPanel:populateOptions()
-    local opts = {}
+    local cats = {}
     for k, v in pairs(lia.option.stored) do
-        if v.isQuick then
-            opts[#opts + 1] = {
+        if v and (v.isQuick or v.data and v.data.isQuick) then
+            local cat = v.data and v.data.category or "General"
+            cats[cat] = cats[cat] or {}
+            cats[cat][#cats[cat] + 1] = {
                 key = k,
                 opt = v
             }
         end
     end
 
-    if #opts == 0 then
+    if not next(cats) then
         self:Remove()
         return
     end
 
-    table.sort(opts, function(a, b) return (a.opt.name or a.key) < (b.opt.name or b.key) end)
-    for _, info in ipairs(opts) do
-        local key = info.key
-        local opt = info.opt
-        local data = opt.data or {}
-        local val = lia.option.get(key, opt.default)
-        if opt.type == "Boolean" then
-            self:addCheck(opt.name, function(_, state) lia.option.set(key, state) end, val)
-        elseif opt.type == "Int" or opt.type == "Float" then
-            self:addSlider(opt.name, function(_, v) lia.option.set(key, v) end, val, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
+    local names = {}
+    for n in pairs(cats) do
+        names[#names + 1] = n
+    end
+
+    table.sort(names, function(a, b)
+        if a == "General" and b ~= "General" then return true end
+        if b == "General" and a ~= "General" then return false end
+        return a < b
+    end)
+
+    for i, cat in ipairs(names) do
+        self:addCategory(cat)
+        local list = cats[cat]
+        table.sort(list, function(a, b) return (a.opt.name or a.key) < (b.opt.name or b.key) end)
+        for _, info in ipairs(list) do
+            local key = info.key
+            local opt = info.opt
+            local data = opt.data or {}
+            local val = lia.option.get(key, opt.default)
+            if opt.type == "Boolean" then
+                self:addCheck(opt.name or key, function(_, state) lia.option.set(key, state) end, val)
+            elseif opt.type == "Int" or opt.type == "Float" then
+                self:addSlider(opt.name or key, function(_, v) lia.option.set(key, v) end, val, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
+            end
         end
+
+        if i < #names then self:addSpacer() end
     end
 end
 
