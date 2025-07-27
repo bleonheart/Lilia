@@ -1024,20 +1024,6 @@ else
                 local ps = vgui.Create("DPropertySheet", pnl)
                 ps:Dock(FILL)
                 lia.gui.dbBrowserPS = ps
-                local tblPanel = vgui.Create("DPanel", ps)
-                tblPanel:Dock(FILL)
-                tblPanel.Paint = function() end
-                local list = vgui.Create("DListView", tblPanel)
-                list:Dock(FILL)
-                list:AddColumn("Table")
-                lia.gui.dbBrowserList = list
-                function list:OnRowSelected(_, line)
-                    net.Start("liaRequestTableData")
-                    net.WriteString(line:GetColumnText(1))
-                    net.SendToServer()
-                end
-
-                ps:AddSheet("Tables", tblPanel, "icon16/database.png")
                 net.Start("liaDBTablesRequest")
                 net.SendToServer()
                 return pnl
