@@ -385,7 +385,6 @@ end
 if SERVER then
     lia.administration.privileges = lia.administration.privileges or {}
     lia.administration.groups = lia.administration.groups or {}
-    lia.administration.lastJoin = lia.administration.lastJoin or {}
     local function syncPrivileges()
         if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
         for _, v in pairs(CAMI.GetPrivileges() or {}) do
@@ -463,7 +462,7 @@ if SERVER then
                 id = v:SteamID(),
                 id64 = v:SteamID64(),
                 group = v:GetUserGroup(),
-                lastJoin = lia.administration.lastJoin[v:SteamID()] or os.time(),
+                lastJoin = os.time(lia.time.toNumber(v.lastJoin)),
                 banned = bans[v:SteamID()] or false
             }
 
@@ -576,7 +575,7 @@ if SERVER then
                     faction = char:getFaction(),
                     money = char:getMoney(),
                     banned = char:getBanned(),
-                    lastJoinTime = lia.administration.lastJoin[ply:SteamID()] or os.time(),
+                    lastJoinTime = os.time(lia.time.toNumber(ply.lastJoin)),
                     steamID = ply:SteamID64()
                 }
             end
@@ -961,9 +960,20 @@ else
         bottomBar:SetTall(36)
         bottomBar.Paint = function() end
         local addBtn = bottomBar:Add("liaMediumButton")
+        local renameBtn = bottomBar:Add("liaMediumButton")
+        local delBtn = bottomBar:Add("liaMediumButton")
         addBtn:Dock(LEFT)
         addBtn:DockMargin(0, 0, 6, 0)
-        addBtn:SetWide(120)
+        renameBtn:Dock(LEFT)
+        renameBtn:DockMargin(0, 0, 6, 0)
+        delBtn:Dock(LEFT)
+        delBtn:DockMargin(0, 0, 0, 0)
+        bottomBar.PerformLayout = function(_, w, _)
+            local third = (w - 12) / 3
+            addBtn:SetWide(third)
+            renameBtn:SetWide(third)
+            delBtn:SetWide(third)
+        end
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
             Derma_StringRequest("Create Group", "New group name:", "", function(txt)
@@ -975,13 +985,7 @@ else
             end)
         end
 
-        local renameBtn = bottomBar:Add("liaMediumButton")
-        renameBtn:Dock(FILL)
-        renameBtn:DockMargin(0, 0, 6, 0)
         renameBtn:SetText("Rename")
-        local delBtn = bottomBar:Add("liaMediumButton")
-        delBtn:Dock(RIGHT)
-        delBtn:SetWide(90)
         delBtn:SetText("Delete")
         local function updateButtons(g)
             local editable = not DEFAULT_GROUPS[g]
@@ -1239,7 +1243,8 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
     if not pv or not pv.Name then return end
     lia.administration.privileges[pv.Name] = {
         Name = pv.Name,
-        MinAccess = pv.MinAccess or "user"
+        MinAccess = pv.MinAccess or "user",
+        Category = pv.Category or "Unassigned"
     }
 
     for g in pairs(lia.administration.groups) do

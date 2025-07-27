@@ -10,7 +10,7 @@ function PANEL:Init()
     self.noAnchor = CurTime() + 0.4
     self.anchorMode = true
     self.invKey = lia.keybind.get("Open Inventory", KEY_I)
-    local btnW, btnH, spacing = 150, 40, 20
+    local btnH, spacing, padding = 40, 20, 40
     local topBar = self:Add("DPanel")
     topBar:Dock(TOP)
     topBar:SetTall(70)
@@ -66,7 +66,14 @@ function PANEL:Init()
     tabsContainer:Dock(FILL)
     function tabsContainer:PerformLayout(w, h)
         local btns = self:GetChildren()
-        local totalW = #btns * btnW + (#btns - 1) * spacing
+        surface.SetFont("liaMediumFont")
+        local totalW = -spacing
+        for _, btn in ipairs(btns) do
+            local textW = select(1, surface.GetTextSize(btn:GetText() or ""))
+            btn.realW = textW + padding
+            totalW = totalW + btn.realW + spacing
+        end
+
         local overflow = totalW - w
         if overflow > 0 then
             leftArrow:SetVisible(true)
@@ -78,20 +85,25 @@ function PANEL:Init()
             self.tabOffset = 0
         end
 
-        local center = (#btns + 1) / 2
-        for i, btn in ipairs(btns) do
-            btn:SetSize(btnW, btnH)
-            btn:SetPos(w * 0.5 - btnW * 0.5 + (i - center) * (btnW + spacing) + self.tabOffset, (h - btnH) * 0.5)
+        local x = w * 0.5 - totalW * 0.5 + (self.tabOffset or 0)
+        for _, btn in ipairs(btns) do
+            btn:SetSize(btn.realW, btnH)
+            btn:SetPos(x, (h - btnH) * 0.5)
+            x = x + btn.realW + spacing
         end
+
+        self.avgBtnWidth = #btns > 0 and totalW / #btns or 0
     end
 
     leftArrow.DoClick = function()
-        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + btnW + spacing
+        local step = (tabsContainer.avgBtnWidth or 150) + spacing
+        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + step
         tabsContainer:InvalidateLayout()
     end
 
     rightArrow.DoClick = function()
-        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - (btnW + spacing)
+        local step = (tabsContainer.avgBtnWidth or 150) + spacing
+        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - step
         tabsContainer:InvalidateLayout()
     end
 
