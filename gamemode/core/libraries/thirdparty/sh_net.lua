@@ -424,31 +424,3 @@ else
         NS_DS_NAME, NS_DS_DATA, NS_DS_LENGTH = nil, nil, nil
     end)
 end
-
-function net.WriteBigTable(tbl)
-    local data = util.Compress(pon.encode(tbl))
-    local len = #data
-    net.WriteUInt(len, 32)
-    local i = 1
-    while i <= len do
-        local size = math.min(32768, len - i + 1)
-        net.WriteUInt(size, 16)
-        net.WriteData(data:sub(i, i + size - 1), size)
-        i = i + size
-    end
-end
-
-function net.ReadBigTable()
-    local len = net.ReadUInt(32)
-    local read = 0
-    local parts = {}
-    while read < len do
-        local size = net.ReadUInt(16)
-        parts[#parts + 1] = net.ReadData(size)
-        read = read + size
-    end
-
-    local data = table.concat(parts)
-    local raw = util.Decompress(data)
-    return pon.decode(raw)
-end
