@@ -5,7 +5,8 @@ MODULE.desc = "Provides NPC vendors who can buy and sell items with stock manage
 MODULE.Privileges = {
     {
         Name = "Can Edit Vendors",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
 }
 

@@ -5,23 +5,28 @@ MODULE.desc = "Adds a comprehensive F1 menu that gathers character management sc
 MODULE.Privileges = {
     {
         Name = "Access Entity List",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Teleport to Entity",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Teleport to Entity (Entity Tab)",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "View Entity (Entity Tab)",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Access Module List",
-        MinAccess = "user"
+        MinAccess = "user",
+        Category = MODULE.name
     }
 }
 

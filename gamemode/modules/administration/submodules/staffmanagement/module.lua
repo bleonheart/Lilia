@@ -5,14 +5,17 @@ MODULE.desc = "Shows staff activity statistics and allows viewing warnings and t
 MODULE.Privileges = {
     {
         Name = "View Staff Actions",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "View Player Warnings",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "View Claims",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     }
 }

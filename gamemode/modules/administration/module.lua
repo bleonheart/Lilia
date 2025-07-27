@@ -5,23 +5,28 @@ MODULE.desc = "Provides a suite of administrative commands, configuration menus,
 MODULE.Privileges = {
     {
         Name = "Can Remove Warns",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
+        Category = MODULE.name
     },
     {
         Name = "Manage Prop Blacklist",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
+        Category = MODULE.name
     },
     {
         Name = "Access Configuration Menu",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
+        Category = MODULE.name
     },
     {
         Name = "Access Edit Configuration Menu",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
+        Category = MODULE.name
     },
     {
         Name = "Manage UserGroups",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
+        Category = MODULE.name
     }
 }
 

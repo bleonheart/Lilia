@@ -5,6 +5,7 @@ MODULE.desc = "Adds anti-cheat and anti-exploit protections along with monitorin
 MODULE.Privileges = {
     {
         Name = "Can See Alting Notifications",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
 }

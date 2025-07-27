@@ -5,22 +5,27 @@ MODULE.desc = "Replaces the default chat with a configurable box that supports c
 MODULE.Privileges = {
     {
         Name = "No OOC Cooldown",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Admin Chat",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Local Event Chat",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Event Chat",
-        MinAccess = "admin"
+        MinAccess = "admin",
+        Category = MODULE.name
     },
     {
         Name = "Always Have Access to Help Chat",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
+        Category = MODULE.name
     },
 }
