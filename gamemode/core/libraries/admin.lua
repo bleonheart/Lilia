@@ -19,6 +19,7 @@ local DEFAULT_GROUPS = {
     user = true,
     admin = true,
     superadmin = true,
+    developer = true,
 }
 
 function lia.administration.load()
@@ -49,7 +50,7 @@ function lia.administration.load()
             end
         end
 
-        local defaults = {"user", "admin", "superadmin"}
+        local defaults = {"user", "admin", "superadmin", "developer"}
         local created = false
         if table.Count(lia.administration.groups) == 0 then
             for _, grp in ipairs(defaults) do
@@ -90,7 +91,7 @@ function lia.administration.createGroup(groupName, info)
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            if groupName == "superadmin" then
+            if groupName == "superadmin" or groupName == "developer" then
                 allowed = true
             elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
@@ -107,7 +108,7 @@ function lia.administration.createGroup(groupName, info)
             if not CAMI.GetUsergroup(groupName) then
                 CAMI.RegisterUsergroup({
                     Name = groupName,
-                    Inherits = "user",
+                    Inherits = groupName == "developer" and "superadmin" or "user",
                 })
             end
         end
@@ -127,7 +128,7 @@ function lia.administration.registerPrivilege(privilege)
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            if groupName == "superadmin" then
+            if groupName == "superadmin" or groupName == "developer" then
                 allowed = true
             elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
@@ -142,7 +143,7 @@ function lia.administration.registerPrivilege(privilege)
 end
 
 function lia.administration.removeGroup(groupName)
-    if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
+    if groupName == "user" or groupName == "admin" or groupName == "superadmin" or groupName == "developer" then
         Error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
