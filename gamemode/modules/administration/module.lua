@@ -131,40 +131,6 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                 end
             end
 
-            local lastModelFrame
-            local function startSpectateView(ent, originalThirdPerson)
-                local yaw = client:EyeAngles().yaw
-                local camZOffset = 50
-                hook.Add("CalcView", "EntityViewCalcView", function()
-                    return {
-                        origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
-                        angles = Angle(0, yaw, 0),
-                        fov = 60
-                    }
-                end)
-
-                hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "liaMediumFont", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
-                hook.Add("Think", "EntityViewRotate", function()
-                    if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_W) then camZOffset = camZOffset + FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_S) then camZOffset = camZOffset - FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_SPACE) then
-                        hook.Remove("CalcView", "EntityViewCalcView")
-                        hook.Remove("HUDPaint", "EntityViewHUD")
-                        hook.Remove("Think", "EntityViewRotate")
-                        hook.Remove("CreateMove", "EntitySpectateCreateMove")
-                        lia.option.set("thirdPersonEnabled", originalThirdPerson)
-                    end
-                end)
-
-                hook.Add("CreateMove", "EntitySpectateCreateMove", function(cmd)
-                    cmd:SetForwardMove(0)
-                    cmd:SetSideMove(0)
-                    cmd:SetUpMove(0)
-                end)
-            end
-
             local hasEntities = false
             for _, list in pairs(entitiesByCreator) do
                 if istable(list) and #list > 0 then
@@ -196,9 +162,7 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
                         local displayName = className
                         if className == "lia_item" or ent.isItem and ent:isItem() then
                             local itemTable = ent.getItemTable and ent:getItemTable()
-                            if itemTable then
-                                displayName = itemTable.getName and itemTable:getName() or L(itemTable.name or className)
-                            end
+                            if itemTable then displayName = itemTable.getName and itemTable:getName() or L(itemTable.name or className) end
                         end
 
                         local itemPanel = vgui.Create("DPanel", canvas)
@@ -276,6 +240,12 @@ hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(tabs)
 
                     sheetPanel:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), page)
                 end
+            else
+                local msg = vgui.Create("DLabel", panel)
+                msg:Dock(FILL)
+                msg:SetFont("liaMediumFont")
+                msg:SetText("No player entities available")
+                msg:SetContentAlignment(5)
             end
             return panel
         end
