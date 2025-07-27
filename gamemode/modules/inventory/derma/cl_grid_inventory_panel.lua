@@ -1,4 +1,3 @@
--- draw inventory slots using the gamemode skin instead of a PNG material
 local function DrawSlot(x, y, w, h)
     surface.SetDrawColor(0, 0, 0, 255)
     surface.DrawOutlinedRect(x, y, w, h, 2)

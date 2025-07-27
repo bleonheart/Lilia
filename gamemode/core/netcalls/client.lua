@@ -730,7 +730,6 @@ net.Receive("liaItemInspect", function()
         model:SetFOV(math.Clamp(math.deg(2 * math.asin(r / d)), 20, 80))
     end)
 
-    -- disable zooming and camera movement so only rotation is allowed
     model.OnMouseWheeled = function() end
     model.OnMousePressed = function() end
     model.OnMouseReleased = function() end
@@ -792,7 +791,6 @@ net.Receive("liaCharacterData", function()
     hook.Run("CharDataLoaded", character)
 end)
 
--- from modules/doors/netcalls/client.lua
 net.Receive("doorMenu", function()
     if net.BytesLeft() > 0 then
         local entity = net.ReadEntity()
@@ -831,7 +829,6 @@ net.Receive("doorPerm", function()
     end
 end)
 
--- from modules/chatbox/netcalls/client.lua
 net.Receive("cMsg", function()
     local client = net.ReadEntity()
     local chatType = net.ReadString()
@@ -854,7 +851,6 @@ net.Receive("cMsg", function()
     end
 end)
 
--- from modules/teams/netcalls/client.lua
 net.Receive("classUpdate", function()
     local joinedClient = net.ReadEntity()
     if lia.gui.classes and lia.gui.classes:IsVisible() then
@@ -869,7 +865,6 @@ net.Receive("classUpdate", function()
     end
 end)
 
--- from modules/f1menu/netcalls/client.lua
 net.Receive("removeF1", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
 net.Receive("ForceUpdateF1", function()
     if IsValid(lia.gui.menu) then
@@ -878,7 +873,6 @@ net.Receive("ForceUpdateF1", function()
     end
 end)
 
--- from modules/mainmenu/netcalls/client.lua
 net.Receive("liaCharList", function()
     local newCharList = {}
     local length = net.ReadUInt(32)
@@ -897,7 +891,6 @@ net.Receive("liaCharList", function()
     hook.Run("ResetCharacterPanel")
 end)
 
--- from modules/inventory/submodules/storage/netcalls/client.lua
 net.Receive("liaStorageUnlock", function()
     local entity = net.ReadEntity()
     hook.Run("StorageUnlockPrompt", entity)
@@ -910,13 +903,11 @@ net.Receive("liaStorageOpen", function()
     hook.Run("StorageOpen", isCar and carInv or entity, isCar)
 end)
 
--- from libraries/admin.lua
 net.Receive("updateAdminGroups", function()
     local data = net.ReadTable() or {}
     lia.administration.groups = data
 end)
 
--- from libraries/workshop.lua
 net.Receive("WorkshopDownloader_Start", function()
     lia.workshop.refresh(net.ReadTable())
     lia.workshop.buildQueue(true)
@@ -928,10 +919,8 @@ net.Receive("WorkshopDownloader_Info", function()
     lia.workshop.checkPrompt()
 end)
 
--- from modules/chatbox/libraries/client.lua
 net.Receive("RegenChat", RegenChat)
 
--- from modules/administration/module.lua
 net.Receive("StaffActions", function()
     local MODULE = lia.module.get("administration")
     local data = net.ReadTable()
@@ -972,7 +961,6 @@ net.Receive("TicketClaims", function()
     end
 end)
 
--- from modules/administration/submodules/permissions/libraries/client.lua
 net.Receive("DisplayCharList", function()
     local sendData = net.ReadTable()
     local targetSteamIDsafe = net.ReadString()
@@ -1048,7 +1036,6 @@ net.Receive("DisplayCharList", function()
     end
 end)
 
--- from modules/administration/submodules/logging/libraries/client.lua
 net.Receive("send_logs", function()
     local id = net.ReadString()
     hook.Add("LiaBigTableReceived", "liaLogs" .. id, function(receivedID, data)
@@ -1058,13 +1045,11 @@ net.Receive("send_logs", function()
     end)
 end)
 
--- from modules/recognition/libraries/client.lua
 net.Receive("rgnDone", function()
     local client = LocalPlayer()
     hook.Run("OnCharRecognized", client, client:getChar():getID())
 end)
 
--- from modules/teams/libraries/client.lua
 net.Receive("RosterData", function()
     local uid = net.ReadString()
     local data = net.ReadTable()
@@ -1079,7 +1064,6 @@ net.Receive("RosterData", function()
     populate(uid)
 end)
 
--- from modules/inventory/submodules/vendor/libraries/client.lua
 net.Receive("VendorSync", function()
     local vendor = net.ReadEntity()
     if not IsValid(vendor) then return end

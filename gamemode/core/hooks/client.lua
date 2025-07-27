@@ -371,8 +371,6 @@ end
 
 function GM:OnContextMenuClose()
     self.BaseClass:OnContextMenuClose()
-    -- keep the quick menu open if the user released the context menu key
-    -- it will be closed via the new keybind instead
 end
 
 function GM:CharListLoaded()

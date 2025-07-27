@@ -61,7 +61,6 @@ if SERVER then
         end)
     end)
 
-    -- netcall moved to netcalls
     lia.workshop.AddWorkshop("3527535922")
     resource.AddWorkshop = lia.workshop.AddWorkshop
 else
@@ -243,7 +242,6 @@ else
         end
     end
 
-    -- netcalls moved to netcalls
     hook.Add("InitializedOptions", "liaWorkshopPromptCheck", function() timer.Simple(0, lia.workshop.checkPrompt) end)
     concommand.Add("workshop_force_redownload", function()
         table.Empty(queue)
