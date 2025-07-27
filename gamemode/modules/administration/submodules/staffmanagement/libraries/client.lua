@@ -46,6 +46,18 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
             list:AddColumn(L("staffAction"))
             list:AddColumn(L("count"))
             MODULE.actionList = list
+            list.OnRowRightClick = function(_, _, line)
+                if not IsValid(line) then return end
+                local m = DermaMenu()
+                m:AddOption(L("copyRow"), function()
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i) .. " | "
+                    end
+                    SetClipboardText(s:sub(1, -4))
+                end):SetIcon("icon16/page_copy.png")
+                m:Open()
+            end
             net.Start("RequestStaffActions")
             net.SendToServer()
             return panel
@@ -65,6 +77,18 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
             list:AddColumn(L("reason"))
             list:AddColumn(L("timestamp"))
             MODULE.warnList = list
+            list.OnRowRightClick = function(_, _, line)
+                if not IsValid(line) then return end
+                local m = DermaMenu()
+                m:AddOption(L("copyRow"), function()
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i) .. " | "
+                    end
+                    SetClipboardText(s:sub(1, -4))
+                end):SetIcon("icon16/page_copy.png")
+                m:Open()
+            end
             net.Start("RequestPlayerWarnings")
             net.WriteString(LocalPlayer():SteamID64())
             net.SendToServer()
@@ -85,6 +109,18 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
             list:AddColumn(L("admin"))
             list:AddColumn(L("message"))
             MODULE.ticketList = list
+            list.OnRowRightClick = function(_, _, line)
+                if not IsValid(line) then return end
+                local m = DermaMenu()
+                m:AddOption(L("copyRow"), function()
+                    local s = ""
+                    for i = 1, line:Columns() do
+                        s = s .. line:GetColumnText(i) .. " | "
+                    end
+                    SetClipboardText(s:sub(1, -4))
+                end):SetIcon("icon16/page_copy.png")
+                m:Open()
+            end
             net.Start("RequestTicketClaims")
             net.SendToServer()
             return pnl

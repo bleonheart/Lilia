@@ -17,6 +17,15 @@ local function buildCategoryPanel(parent, logs)
     list:AddColumn(L("timestamp")):SetFixedWidth(150)
     list:AddColumn(L("logMessage"))
     list:AddColumn(L("steamID")):SetFixedWidth(110)
+    list.OnRowRightClick = function(_, _, line)
+        if not IsValid(line) then return end
+        local text = "[" .. line:GetColumnText(1) .. "] " .. line:GetColumnText(2)
+        local id = line:GetColumnText(3)
+        if id and id ~= "" then text = text .. " [" .. id .. "]" end
+        local m = DermaMenu()
+        m:AddOption(L("copyRow"), function() SetClipboardText(text) end):SetIcon("icon16/page_copy.png")
+        m:Open()
+    end
 
     local copyButton = contentPanel:Add("liaMediumButton")
     copyButton:Dock(BOTTOM)
