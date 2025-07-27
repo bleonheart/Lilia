@@ -613,6 +613,24 @@ if SERVER then
         end
     end
 
+    -- expose helper functions to other modules
+    lia.administration.DEFAULT_GROUPS = DEFAULT_GROUPS
+    lia.administration.buildDefaultTable = buildDefaultTable
+    lia.administration.ensureCAMIGroup = ensureCAMIGroup
+    lia.administration.dropCAMIGroup = dropCAMIGroup
+    lia.administration.sendBigTable = sendBigTable
+    lia.administration.payloadGroups = payloadGroups
+    lia.administration.payloadPlayers = payloadPlayers
+    lia.administration.collectOnlineCharacters = collectOnlineCharacters
+    lia.administration.queryAllCharacters = queryAllCharacters
+    lia.administration.applyToCAMI = applyToCAMI
+    lia.administration.notify = notify
+
+    function lia.administration.syncAdminGroups(payload)
+        lia.administration.groups = payload or lia.administration.groups
+        lia.administration.updateAdminGroups()
+    end
+
     syncPrivileges()
 else
     local groupChunks, playerChunks, charChunks = {}, {}, {}
