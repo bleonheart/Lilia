@@ -127,6 +127,7 @@ function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
     self.expanded = false
+    self:SetSkin(lia.config.get("DermaSkin", "Lilia Skin"))
     self:SetSize(400, 36)
     self:SetPos(ScrW() - 36, -36)
     self:MakePopup()
@@ -149,13 +150,18 @@ function QuickPanel:Init()
 
     self.expand = self:Add("DButton")
     self.expand:SetContentAlignment(5)
-    self.expand:SetText("`")
+    self.expand:SetText("")
     self.expand:SetFont("DermaDefaultBold")
     self.expand:SetPaintBackground(false)
     self.expand:SetTextColor(color_white)
     self.expand:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     self.expand:SetSize(36, 36)
     self.expand:SetPos(0, 0)
+    self.expand.icon = self.expand:Add("DImage")
+    self.expand.icon:SetImage("settings.png")
+    self.expand.icon:SetSize(24, 24)
+    self.expand.icon:Dock(FILL)
+    self.expand.icon:DockMargin(6, 6, 6, 6)
     self.expand.DoClick = function()
         if self.expanded then
             self:SizeTo(self:GetWide(), 36, 0.15, nil, nil, function() self:MoveTo(ScrW() - 36, 30, 0.15) end)
@@ -285,25 +291,19 @@ end
 
 local color_dark = Color(255, 255, 255, 5)
 function QuickPanel:addCheck(text, cb, checked)
-    local x, y
-    local c
-    local btn = self:addButton(text, function(pnl)
-        pnl.checked = not pnl.checked
-        if cb then cb(pnl, pnl.checked) end
-    end)
-
-    btn.PaintOver = function(this, w, h)
-        x, y = w - 8, h * 0.5
-        if this.checked then
-            c = lia.config.get("Color")
-        else
-            c = color_dark
-        end
-
-        draw.SimpleText(self.icon or "F", "DermaDefault", x, y, c, 2, 1)
+    local btn = self:addButton(text)
+    local chk = btn:Add("liaCheckBox")
+    chk:SetChecked(checked)
+    chk:SetSize(22, 22)
+    chk.OnChange = function(_, v)
+        if cb then cb(btn, v) end
     end
-
-    btn.checked = checked
+    btn.DoClick = function()
+        chk:SetChecked(not chk:GetChecked())
+    end
+    btn.PerformLayout = function(this, w, h)
+        chk:SetPos(w - chk:GetWide() - 8, math.floor((h - chk:GetTall()) * 0.5))
+    end
     return btn
 end
 
