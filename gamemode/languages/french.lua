@@ -693,6 +693,7 @@ LANGUAGE = {
     plyBanned = "Joueur banni.",
     plyKilled = "Joueur tué.",
     plyGroupSet = "Groupe du joueur défini.",
+    yourGroupSet = "Votre groupe d'utilisateurs est désormais %s.",
     plyKickDesc = "Kick un joueur.",
     plyBanDesc = "Ban un joueur.",
     plyKillDesc = "Tue un joueur.",

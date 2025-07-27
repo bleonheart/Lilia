@@ -214,7 +214,9 @@ lia.command.add("plysetgroup", {
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and lia.administration.groups[arguments[2]] then
             lia.administration.setPlayerGroup(target, arguments[2])
+            target:notifyLocalized("yourGroupSet", arguments[2])
             client:notifyLocalized("plyGroupSet")
+            lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s' by %s", target:Name(), arguments[2], client:Name()))
             lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
         elseif IsValid(target) and not lia.administration.groups[arguments[2]] then
             client:notifyLocalized("groupNotExists")
