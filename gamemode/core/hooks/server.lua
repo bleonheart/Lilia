@@ -855,6 +855,17 @@ function ClientAddText(client, ...)
     net.Send(client)
 end
 
+concommand.Add("bots", function(ply, cmd, args)
+    if timer.Exists("BotsTimer") then timer.Remove("BotsTimer") end
+    timer.Create("BotsTimer", 2, 0, function()
+        if #player.GetAll() >= game.MaxPlayers() then
+            timer.Remove("BotsTimer")
+        else
+            RunConsoleCommand("bot")
+        end
+    end)
+end)
+
 concommand.Add("stopsoundall", function(client)
     if client:IsSuperAdmin() then
         for _, v in player.Iterator() do

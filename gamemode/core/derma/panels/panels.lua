@@ -126,6 +126,7 @@ local QuickPanel = {}
 function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
+    self.expanded = false
     self:SetSize(400, 36)
     self:SetPos(ScrW() - 36, -36)
     self:MakePopup()
@@ -154,19 +155,21 @@ function QuickPanel:Init()
     self.expand:SetTextColor(color_white)
     self.expand:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     self.expand:SetSize(36, 36)
+    self.expand:SetPos(0, 0)
     self.expand.DoClick = function()
         if self.expanded then
             self:SizeTo(self:GetWide(), 36, 0.15, nil, nil, function() self:MoveTo(ScrW() - 36, 30, 0.15) end)
             self.expanded = false
         else
             self:MoveTo(ScrW() - 400, 30, 0.15, nil, nil, function()
-                local height = 0
+                local h = 0
                 for _, v in pairs(self.items) do
-                    if IsValid(v) then height = height + v:GetTall() + 1 end
+                    if IsValid(v) then h = h + v:GetTall() + 1 end
                 end
 
-                height = math.min(height, ScrH() * 0.5)
-                self:SizeTo(self:GetWide(), height, 0.15)
+                h = math.min(h, ScrH() * 0.5)
+                local target = 36 + math.max(h, 0)
+                self:SizeTo(self:GetWide(), target, 0.15)
             end)
 
             self.expanded = true
@@ -174,24 +177,21 @@ function QuickPanel:Init()
     end
 
     self.scroll = self:Add("DScrollPanel")
-    self.scroll:SetPos(0, 36)
-    self.scroll:SetSize(self:GetWide(), ScrH() * 0.5)
-    self:MoveTo(self.x, 30, 0.05)
     self.items = {}
     hook.Run("SetupQuickMenu", self)
     self:populateOptions()
+    self:MoveTo(self.x, 30, 0.05)
+end
+
+function QuickPanel:PerformLayout(w, h)
+    self.scroll:SetPos(0, 36)
+    self.scroll:SetSize(w, math.max(h - 36, 0))
 end
 
 local function paintButton(button, w, h)
     local r, g, b = lia.config.get("Color"):Unpack()
-    local alpha = 100
-    if button.Depressed or button.m_bSelected then
-        alpha = 255
-    elseif button.Hovered then
-        alpha = 200
-    end
-
-    surface.SetDrawColor(r, g, b, alpha)
+    local a = button.Depressed or button.m_bSelected and 255 or button.Hovered and 200 or 100
+    surface.SetDrawColor(r, g, b, a)
     surface.SetMaterial(lia.util.getMaterial("vgui/gradient-r"))
     surface.DrawTexturedRect(0, 0, w / 2, h)
     surface.SetMaterial(lia.util.getMaterial("vgui/gradient-l"))
@@ -201,8 +201,8 @@ end
 local categoryDoClick = function(this)
     this.expanded = not this.expanded
     local items = lia.gui.quick.items
-    local index = table.KeyFromValue(items, this)
-    for i = index + 1, #items do
+    local i0 = table.KeyFromValue(items, this)
+    for i = i0 + 1, #items do
         if items[i].categoryLabel then break end
         if not items[i].h then items[i].w, items[i].h = items[i]:GetSize() end
         items[i]:SizeTo(items[i].w, this.expanded and (items[i].h or 36) or 0, 0.15)
@@ -224,91 +224,91 @@ function QuickPanel:addCategory(text)
     label.Paint = function() end
 end
 
-function QuickPanel:addButton(text, callback)
-    local button = self.scroll:Add("DButton")
-    button:SetText(text)
-    button:SetTall(36)
-    button:Dock(TOP)
-    button:DockMargin(0, 1, 0, 0)
-    button:SetFont("liaMediumLightFont")
-    button:SetExpensiveShadow(1, Color(0, 0, 0, 150))
-    button:SetContentAlignment(4)
-    button:SetTextInset(8, 0)
-    button:SetTextColor(color_white)
-    button.Paint = paintButton
-    if callback then button.DoClick = callback end
-    self.items[#self.items + 1] = button
-    return button
+function QuickPanel:addButton(text, cb)
+    local btn = self.scroll:Add("DButton")
+    btn:SetText(text)
+    btn:SetTall(36)
+    btn:Dock(TOP)
+    btn:DockMargin(0, 1, 0, 0)
+    btn:SetFont("liaMediumLightFont")
+    btn:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+    btn:SetContentAlignment(4)
+    btn:SetTextInset(8, 0)
+    btn:SetTextColor(color_white)
+    btn.Paint = paintButton
+    if cb then btn.DoClick = cb end
+    self.items[#self.items + 1] = btn
+    return btn
 end
 
 function QuickPanel:addSpacer()
-    local panel = self.scroll:Add("DPanel")
-    panel:SetTall(1)
-    panel:Dock(TOP)
-    panel:DockMargin(0, 1, 0, 0)
-    panel.Paint = function(_, w, h)
+    local pnl = self.scroll:Add("DPanel")
+    pnl:SetTall(1)
+    pnl:Dock(TOP)
+    pnl:DockMargin(0, 1, 0, 0)
+    pnl.Paint = function(_, w, h)
         surface.SetDrawColor(255, 255, 255, 10)
         surface.DrawRect(0, 0, w, h)
     end
 
-    self.items[#self.items + 1] = panel
-    return panel
+    self.items[#self.items + 1] = pnl
+    return pnl
 end
 
-function QuickPanel:addSlider(text, callback, value, min, max, decimal)
-    local slider = self.scroll:Add("DNumSlider")
-    slider:SetText(text)
-    slider:SetTall(36)
-    slider:Dock(TOP)
-    slider:DockMargin(0, 1, 0, 0)
-    slider:SetExpensiveShadow(1, Color(0, 0, 0, 150))
-    slider:SetMin(min or 0)
-    slider:SetMax(max or 100)
-    slider:SetDecimals(decimal or 0)
-    slider:SetValue(value or 0)
-    slider.Label:SetFont("liaMediumLightFont")
-    slider.Label:SetTextColor(color_white)
-    local textEntry = slider:GetTextArea()
-    textEntry:SetFont("liaMediumLightFont")
-    textEntry:SetTextColor(color_white)
-    if callback then
-        slider.OnValueChanged = function(this, newValue)
-            local roundedValue = math.Round(newValue, decimal or 0)
-            callback(this, roundedValue)
+function QuickPanel:addSlider(text, cb, val, min, max, dec)
+    local s = self.scroll:Add("DNumSlider")
+    s:SetText(text)
+    s:SetTall(36)
+    s:Dock(TOP)
+    s:DockMargin(0, 1, 0, 0)
+    s:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+    s:SetMin(min or 0)
+    s:SetMax(max or 100)
+    s:SetDecimals(dec or 0)
+    s:SetValue(val or 0)
+    s.Label:SetFont("liaMediumLightFont")
+    s.Label:SetTextColor(color_white)
+    local te = s:GetTextArea()
+    te:SetFont("liaMediumLightFont")
+    te:SetTextColor(color_white)
+    if cb then
+        s.OnValueChanged = function(this, newVal)
+            local r = math.Round(newVal, dec or 0)
+            cb(this, r)
         end
     end
 
-    self.items[#self.items + 1] = slider
-    slider.Paint = paintButton
-    return slider
+    self.items[#self.items + 1] = s
+    s.Paint = paintButton
+    return s
 end
 
 local color_dark = Color(255, 255, 255, 5)
-function QuickPanel:addCheck(text, callback, checked)
+function QuickPanel:addCheck(text, cb, checked)
     local x, y
-    local color
-    local button = self:addButton(text, function(panel)
-        panel.checked = not panel.checked
-        if callback then callback(panel, panel.checked) end
+    local c
+    local btn = self:addButton(text, function(pnl)
+        pnl.checked = not pnl.checked
+        if cb then cb(pnl, pnl.checked) end
     end)
 
-    button.PaintOver = function(this, w, h)
+    btn.PaintOver = function(this, w, h)
         x, y = w - 8, h * 0.5
         if this.checked then
-            color = lia.config.get("Color")
+            c = lia.config.get("Color")
         else
-            color = color_dark
+            c = color_dark
         end
 
-        draw.SimpleText(self.icon or "F", "DermaDefault", x, y, color, 2, 1)
+        draw.SimpleText(self.icon or "F", "DermaDefault", x, y, c, 2, 1)
     end
 
-    button.checked = checked
-    return button
+    btn.checked = checked
+    return btn
 end
 
-function QuickPanel:setIcon(char)
-    self.icon = char
+function QuickPanel:setIcon(ch)
+    self.icon = ch
 end
 
 function QuickPanel:Paint(w, h)
@@ -330,16 +330,21 @@ function QuickPanel:populateOptions()
         end
     end
 
+    if #opts == 0 then
+        self:Remove()
+        return
+    end
+
     table.sort(opts, function(a, b) return (a.opt.name or a.key) < (b.opt.name or b.key) end)
     for _, info in ipairs(opts) do
         local key = info.key
         local opt = info.opt
         local data = opt.data or {}
-        local value = lia.option.get(key, opt.default)
+        local val = lia.option.get(key, opt.default)
         if opt.type == "Boolean" then
-            self:addCheck(opt.name, function(_, state) lia.option.set(key, state) end, value)
+            self:addCheck(opt.name, function(_, state) lia.option.set(key, state) end, val)
         elseif opt.type == "Int" or opt.type == "Float" then
-            self:addSlider(opt.name, function(_, val) lia.option.set(key, val) end, value, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
+            self:addSlider(opt.name, function(_, v) lia.option.set(key, v) end, val, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
         end
     end
 end
