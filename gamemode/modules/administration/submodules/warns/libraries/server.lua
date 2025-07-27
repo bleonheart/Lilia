@@ -10,10 +10,10 @@ function MODULE:AddWarning(target, timestamp, reason, admin)
     lia.db.insertTable({
         timestamp = timestamp,
         warned = target:Nick(),
-        warnedSteamID = target:SteamID64(),
+        warnedSteamID = target:SteamID(),
         warning = reason,
         admin = admin:Nick(),
-        adminSteamID = admin:SteamID64()
+        adminSteamID = admin:SteamID()
     }, nil, "warnings")
 end
 
