@@ -385,7 +385,6 @@ end
 if SERVER then
     lia.administration.privileges = lia.administration.privileges or {}
     lia.administration.groups = lia.administration.groups or {}
-    lia.administration.lastJoin = lia.administration.lastJoin or {}
     local function syncPrivileges()
         if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
         for _, v in pairs(CAMI.GetPrivileges() or {}) do
@@ -463,7 +462,7 @@ if SERVER then
                 id = v:SteamID(),
                 id64 = v:SteamID64(),
                 group = v:GetUserGroup(),
-                lastJoin = lia.administration.lastJoin[v:SteamID()] or os.time(),
+                lastJoin = os.time(lia.time.toNumber(v.lastJoin)),
                 banned = bans[v:SteamID()] or false
             }
 
@@ -576,7 +575,7 @@ if SERVER then
                     faction = char:getFaction(),
                     money = char:getMoney(),
                     banned = char:getBanned(),
-                    lastJoinTime = lia.administration.lastJoin[ply:SteamID()] or os.time(),
+                    lastJoinTime = os.time(lia.time.toNumber(ply.lastJoin)),
                     steamID = ply:SteamID64()
                 }
             end
