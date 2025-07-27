@@ -36,7 +36,12 @@ function SWEP:DrawHUD()
     if IsValid(target) then
         if not target:IsPlayer() then
             if target.GetCreator and IsValid(target:GetCreator()) then
-                table.Add(information, {L("entityClassESPLabel", target:GetClass()), L("entityCreatorESPLabel", tostring(target:GetCreator()))})
+                local creator = target:GetCreator()
+                local creatorInfo = creator:Name()
+                if creator.SteamID then
+                    creatorInfo = creatorInfo .. " - " .. creator:SteamID()
+                end
+                table.Add(information, {L("entityClassESPLabel", target:GetClass()), L("entityCreatorESPLabel", creatorInfo)})
             end
             if target:IsVehicle() and IsValid(target:GetDriver()) then target = target:GetDriver() end
 
@@ -48,7 +53,7 @@ function SWEP:DrawHUD()
                     table.insert(information, L("itemHeightESPLabel", item.height or 1))
                     local creator = target:GetCreator()
                     if IsValid(creator) then
-                        table.insert(information, L("spawner") .. ": " .. creator:Name() .. " - " .. creator:SteamID())
+                        table.insert(information, L("entityCreatorESPLabel", creator:Name() .. " - " .. creator:SteamID()))
                     end
                     local extra = {}
                     hook.Run("GetAdminStickItemInfo", extra, item, target)
