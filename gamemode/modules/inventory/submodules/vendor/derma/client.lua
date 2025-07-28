@@ -857,17 +857,20 @@ end
 
 function PANEL:OnRowRightClick(line)
     local entity = liaVendorEnt
-    if entity:getNetVar("preset") ~= "none" then return end
     if IsValid(menu) then menu:Remove() end
     local uniqueID = line.item
     local itemTable = lia.item.list[uniqueID]
     menu = DermaMenu(self)
-    local mode, modePanel = menu:AddSubMenu(L("mode"))
-    modePanel:SetImage("icon16/key.png")
-    mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
-    mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VendorSellAndBuy) end):SetImage("icon16/cog.png")
-    mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VendorBuyOnly) end):SetImage("icon16/cog_delete.png")
-    mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VendorSellOnly) end):SetImage("icon16/cog_add.png")
+
+    if entity:getNetVar("preset") == "none" then
+        local mode, modePanel = menu:AddSubMenu(L("mode"))
+        modePanel:SetImage("icon16/key.png")
+        mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
+        mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VendorSellAndBuy) end):SetImage("icon16/cog.png")
+        mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VendorBuyOnly) end):SetImage("icon16/cog_delete.png")
+        mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VendorSellOnly) end):SetImage("icon16/cog_add.png")
+    end
+
     menu:AddOption(L("price"), function()
         Derma_StringRequest(itemTable:getName(), L("vendorPriceReq"), entity:getPrice(uniqueID), function(text)
             text = tonumber(text)
@@ -875,23 +878,25 @@ function PANEL:OnRowRightClick(line)
         end):SetParent(self)
     end):SetImage("icon16/coins.png")
 
-    local stock, stockPanel = menu:AddSubMenu(L("stock"))
-    stockPanel:SetImage("icon16/table.png")
-    stock:AddOption(L("disable"), function() lia.vendor.editor.stockDisable(uniqueID) end):SetImage("icon16/table_delete.png")
-    stock:AddOption(L("edit"), function()
-        local _, max = entity:getStock(uniqueID)
-        Derma_StringRequest(itemTable:getName(), L("vendorStockReq"), max or 1, function(text)
-            text = math.max(math.Round(tonumber(text) or 1), 1)
-            lia.vendor.editor.stockMax(uniqueID, text)
-        end):SetParent(self)
-    end):SetImage("icon16/table_edit.png")
+    if entity:getNetVar("preset") == "none" then
+        local stock, stockPanel = menu:AddSubMenu(L("stock"))
+        stockPanel:SetImage("icon16/table.png")
+        stock:AddOption(L("disable"), function() lia.vendor.editor.stockDisable(uniqueID) end):SetImage("icon16/table_delete.png")
+        stock:AddOption(L("edit"), function()
+            local _, max = entity:getStock(uniqueID)
+            Derma_StringRequest(itemTable:getName(), L("vendorStockReq"), max or 1, function(text)
+                text = math.max(math.Round(tonumber(text) or 1), 1)
+                lia.vendor.editor.stockMax(uniqueID, text)
+            end):SetParent(self)
+        end):SetImage("icon16/table_edit.png")
 
-    stock:AddOption(L("vendorEditCurStock"), function()
-        Derma_StringRequest(itemTable:getName(), L("vendorStockCurReq"), entity:getStock(uniqueID) or 0, function(text)
-            text = math.Round(tonumber(text) or 0)
-            lia.vendor.editor.stock(uniqueID, text)
-        end):SetParent(self)
-    end):SetImage("icon16/table_edit.png")
+        stock:AddOption(L("vendorEditCurStock"), function()
+            Derma_StringRequest(itemTable:getName(), L("vendorStockCurReq"), entity:getStock(uniqueID) or 0, function(text)
+                text = math.Round(tonumber(text) or 0)
+                lia.vendor.editor.stock(uniqueID, text)
+            end):SetParent(self)
+        end):SetImage("icon16/table_edit.png")
+    end
 
     menu:Open()
 end
