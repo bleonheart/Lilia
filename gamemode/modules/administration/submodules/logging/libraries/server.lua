@@ -1,9 +1,20 @@
 ﻿local MODULE = MODULE
-function MODULE:SendLogs(client, categorizedLogs)
-    local id = lia.net.WriteBigTable(client, categorizedLogs)
-    net.Start("send_logs")
-    net.WriteString(id)
-    net.Send(client)
+function MODULE:SendLogsInChunks(client, categorizedLogs)
+    local json = util.TableToJSON(categorizedLogs)
+    local data = util.Compress(json)
+    local chunks = {}
+    for i = 1, #data, 32768 do
+        chunks[#chunks + 1] = string.sub(data, i, i + 32768 - 1)
+    end
+
+    for i, chunk in ipairs(chunks) do
+        net.Start("send_logs")
+        net.WriteUInt(i, 16)
+        net.WriteUInt(#chunks, 16)
+        net.WriteUInt(#chunk, 16)
+        net.WriteData(chunk, #chunk)
+        net.Send(client)
+    end
 end
 
 function MODULE:ReadLogEntries(category)
@@ -28,6 +39,31 @@ function MODULE:ReadLogEntries(category)
     end)
     return d
 end
+
+net.Receive("send_logs_request", function(_, client)
+    if not MODULE:CanPlayerSeeLog(client) then return end
+    local categories = {}
+    for _, logType in pairs(lia.log.types) do
+        categories[logType.category or "Uncategorized"] = true
+    end
+
+    local catList = {}
+    for cat in pairs(categories) do
+        if hook.Run("CanPlayerSeeLogCategory", client, cat) ~= false then catList[#catList + 1] = cat end
+    end
+
+    local logsByCategory = {}
+    local function fetch(idx)
+        if idx > #catList then return MODULE:SendLogsInChunks(client, logsByCategory) end
+        local cat = catList[idx]
+        MODULE:ReadLogEntries(cat):next(function(entries)
+            logsByCategory[cat] = entries
+            fetch(idx + 1)
+        end)
+    end
+
+    fetch(1)
+end)
 
 function MODULE:CanPlayerSeeLog(client)
     return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Can See Logs")
@@ -145,21 +181,21 @@ function MODULE:OnPlayerObserve(client, state)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    local pattern = "adminSteamID = " .. lia.db.convertDataType(admin:SteamID())
+    local pattern = "adminSteamID = " .. lia.db.convertDataType(admin:SteamID64())
     lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    local pattern = "adminSteamID = " .. lia.db.convertDataType(admin:SteamID())
+    local pattern = "adminSteamID = " .. lia.db.convertDataType(admin:SteamID64())
     lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)
-    lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
+    lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
-    lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
+    lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
 end
 
 function MODULE:ItemTransfered(context)

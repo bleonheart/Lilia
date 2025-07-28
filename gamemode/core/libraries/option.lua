@@ -461,8 +461,7 @@ lia.option.add("descriptionWidth", "Description Width", "Adjust the description 
 })
 
 lia.option.add("invertWeaponScroll", "Invert Weapon Scroll", "Invert the weapon selection scroll direction", false, nil, {
-    category = "Weapon Selector",
-    isQuick = true,
+    category = "Weapon Selector"
 })
 
 lia.option.add("autoDownloadWorkshop", "Auto Workshop Download", "Automatically download server Workshop content", nil, nil, {

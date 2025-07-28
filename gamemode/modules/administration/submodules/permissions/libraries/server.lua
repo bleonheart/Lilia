@@ -302,6 +302,10 @@ function GM:PlayerSpawnedVehicle(client, entity)
     entity:SetCreator(client)
 end
 
+function GM:CanPlayerUseChar(client)
+    if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Can Bypass Character Lock") then return false, L("serverEventCharLock") end
+end
+
 local function handleDatabaseWipe(commandName)
     concommand.Add(commandName, function(client)
         if IsValid(client) then

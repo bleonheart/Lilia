@@ -16,7 +16,7 @@ if SERVER then
     end
 
     lia.vendor.editor.price = function(vendor)
-        -- allow editing prices regardless of preset
+        if vendor:getNetVar("preset") ~= "none" then return end
         local itemType = net.ReadString()
         local price = net.ReadInt(32)
         vendor:setItemPrice(itemType, price)

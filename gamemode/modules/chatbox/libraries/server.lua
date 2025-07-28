@@ -1,4 +1,3 @@
-﻿local MODULE = MODULE
-function MODULE:InitializedModules()
+﻿function MODULE:InitializedModules()
     SetGlobalBool("oocblocked", false)
 end

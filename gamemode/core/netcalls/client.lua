@@ -730,6 +730,7 @@ net.Receive("liaItemInspect", function()
         model:SetFOV(math.Clamp(math.deg(2 * math.asin(r / d)), 20, 80))
     end)
 
+    -- disable zooming and camera movement so only rotation is allowed
     model.OnMouseWheeled = function() end
     model.OnMousePressed = function() end
     model.OnMouseReleased = function() end
@@ -791,6 +792,7 @@ net.Receive("liaCharacterData", function()
     hook.Run("CharDataLoaded", character)
 end)
 
+-- from modules/doors/netcalls/client.lua
 net.Receive("doorMenu", function()
     if net.BytesLeft() > 0 then
         local entity = net.ReadEntity()
@@ -829,6 +831,7 @@ net.Receive("doorPerm", function()
     end
 end)
 
+-- from modules/chatbox/netcalls/client.lua
 net.Receive("cMsg", function()
     local client = net.ReadEntity()
     local chatType = net.ReadString()
@@ -851,6 +854,7 @@ net.Receive("cMsg", function()
     end
 end)
 
+-- from modules/teams/netcalls/client.lua
 net.Receive("classUpdate", function()
     local joinedClient = net.ReadEntity()
     if lia.gui.classes and lia.gui.classes:IsVisible() then
@@ -865,6 +869,7 @@ net.Receive("classUpdate", function()
     end
 end)
 
+-- from modules/f1menu/netcalls/client.lua
 net.Receive("removeF1", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
 net.Receive("ForceUpdateF1", function()
     if IsValid(lia.gui.menu) then
@@ -873,6 +878,7 @@ net.Receive("ForceUpdateF1", function()
     end
 end)
 
+-- from modules/mainmenu/netcalls/client.lua
 net.Receive("liaCharList", function()
     local newCharList = {}
     local length = net.ReadUInt(32)
@@ -891,6 +897,7 @@ net.Receive("liaCharList", function()
     hook.Run("ResetCharacterPanel")
 end)
 
+-- from modules/inventory/submodules/storage/netcalls/client.lua
 net.Receive("liaStorageUnlock", function()
     local entity = net.ReadEntity()
     hook.Run("StorageUnlockPrompt", entity)
@@ -903,11 +910,13 @@ net.Receive("liaStorageOpen", function()
     hook.Run("StorageOpen", isCar and carInv or entity, isCar)
 end)
 
+-- from libraries/admin.lua
 net.Receive("updateAdminGroups", function()
     local data = net.ReadTable() or {}
     lia.administration.groups = data
 end)
 
+-- from libraries/workshop.lua
 net.Receive("WorkshopDownloader_Start", function()
     lia.workshop.refresh(net.ReadTable())
     lia.workshop.buildQueue(true)
@@ -919,155 +928,3 @@ net.Receive("WorkshopDownloader_Info", function()
     lia.workshop.checkPrompt()
 end)
 
-net.Receive("RegenChat", RegenChat)
-net.Receive("DisplayCharList", function()
-    local sendData = net.ReadTable()
-    local targetSteamIDsafe = net.ReadString()
-    local extraColumns, extraOrder = {}, {}
-    for _, v in pairs(sendData or {}) do
-        if istable(v.extraDetails) then
-            for k in pairs(v.extraDetails) do
-                if not extraColumns[k] then
-                    extraColumns[k] = true
-                    table.insert(extraOrder, k)
-                end
-            end
-        end
-    end
-
-    local columns = {
-        {
-            name = "ID",
-            field = "ID"
-        },
-        {
-            name = "Name",
-            field = "Name"
-        },
-        {
-            name = "Desc",
-            field = "Desc"
-        },
-        {
-            name = "Faction",
-            field = "Faction"
-        },
-        {
-            name = "Banned",
-            field = "Banned"
-        },
-        {
-            name = "BanningAdminName",
-            field = "BanningAdminName"
-        },
-        {
-            name = "BanningAdminSteamID",
-            field = "BanningAdminSteamID"
-        },
-        {
-            name = "BanningAdminRank",
-            field = "BanningAdminRank"
-        },
-        {
-            name = "CharMoney",
-            field = "Money"
-        },
-        {
-            name = "LastUsed",
-            field = "LastUsed"
-        }
-    }
-
-    for _, name in ipairs(extraOrder) do
-        table.insert(columns, {
-            name = name,
-            field = name
-        })
-    end
-
-    local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
-    if IsValid(listView) then
-        for _, line in ipairs(listView:GetLines()) do
-            local dataIndex = line:GetID()
-            local rowData = sendData[dataIndex]
-            if rowData and rowData.Banned == "Yes" then
-                line.DoPaint = line.Paint
-                line.Paint = function(pnl, w, h)
-                    surface.SetDrawColor(200, 100, 100)
-                    surface.DrawRect(0, 0, w, h)
-                    pnl:DoPaint(w, h)
-                end
-            end
-
-            line.CharID = rowData and rowData.ID
-            if rowData and rowData.extraDetails then
-                local colIndex = 11
-                for _, name in ipairs(extraOrder) do
-                    line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
-                    colIndex = colIndex + 1
-                end
-            end
-        end
-
-        listView.OnRowRightClick = function(_, _, ln)
-            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
-                local dMenu = DermaMenu()
-                if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
-                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
-                    opt1:SetIcon("icon16/cancel.png")
-                end
-
-                if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
-                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
-                    opt2:SetIcon("icon16/accept.png")
-                end
-
-                dMenu:Open()
-            end
-        end
-    end
-end)
-
-net.Receive("send_logs", function()
-    local id = net.ReadString()
-    hook.Add("LiaBigTableReceived", "liaLogs" .. id, function(receivedID, data)
-        if receivedID ~= id then return end
-        hook.Remove("LiaBigTableReceived", "liaLogs" .. id)
-        if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, data) end
-    end)
-end)
-
-net.Receive("rgnDone", function()
-    local client = LocalPlayer()
-    hook.Run("OnCharRecognized", client, client:getChar():getID())
-end)
-
-net.Receive("RosterData", function()
-    local uid = net.ReadString()
-    local data = net.ReadTable()
-    local char = LocalPlayer():getChar()
-    if not char then return end
-    if not (LocalPlayer():IsSuperAdmin() or char:hasFlags("V")) then return end
-    for _, row in ipairs(data or {}) do
-        row.steamID = toSteamID(row.steamID)
-    end
-
-    rosterRows[uid] = data or {}
-    populate(uid)
-end)
-
-net.Receive("liaBigTableChunk", function()
-    local id = net.ReadString()
-    local idx = net.ReadUInt(16)
-    local total = net.ReadUInt(16)
-    local len = net.ReadUInt(16)
-    local data = net.ReadData(len)
-    lia.net.bigTables[id] = lia.net.bigTables[id] or {}
-    lia.net.bigTables[id][idx] = data
-end)
-
-net.Receive("liaBigTableDone", function()
-    local id = net.ReadString()
-    local tbl = lia.net.ReadBigTable(id)
-    if tbl then hook.Run("LiaBigTableReceived", id, tbl) end
-end)

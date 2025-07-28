@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local RULES = {
+﻿local RULES = {
     AccessIfStorageReceiver = function(inventory, _, context)
         local client = context.client
         if not IsValid(client) then return end

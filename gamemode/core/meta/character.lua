@@ -187,14 +187,8 @@ function characterMeta:setData(k, v, noReplication, receiver)
 end
 
 function characterMeta:getData(key, default)
-    self.dataVars = self.dataVars or {}
     if not key then return self.dataVars end
-
-    local value = self.dataVars[key]
-    if value == nil then
-        return default
-    end
-
+    local value = self.dataVars and self.dataVars[key] or default
     return value
 end
 

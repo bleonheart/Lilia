@@ -19,10 +19,6 @@ local RealmIDs = {
 
 local FilesToLoad = {
     {
-        path = "lilia/gamemode/core/libraries/networking.lua",
-        realm = "shared"
-    },
-    {
         path = "lilia/gamemode/core/libraries/languages.lua",
         realm = "shared"
     },
@@ -129,6 +125,10 @@ local FilesToLoad = {
     {
         path = "lilia/gamemode/core/libraries/websound.lua",
         realm = "client"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/networking.lua",
+        realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/attributes.lua",
@@ -349,6 +349,12 @@ lia.include("lilia/gamemode/core/libraries/data.lua", "server")
 function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Error] ")
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
+end
+
+function lia.deprecated(methodName, callback)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Deprecated] ")
+    MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n")
+    if callback and isfunction(callback) then callback() end
 end
 
 function lia.updater(msg)

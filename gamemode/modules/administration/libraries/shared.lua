@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-function MODULE:CanPlayerModifyConfig(client)
+﻿function MODULE:CanPlayerModifyConfig(client)
     return client:hasPrivilege("Access Edit Configuration Menu")
 end
 
@@ -24,32 +23,6 @@ properties.Add("TogglePropBlacklist", {
         else
             table.insert(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifyLocalized("addedToBlacklist", model)
-        end
-    end
-})
-
-properties.Add("ToggleCarBlacklist", {
-    MenuLabel = L("ToggleCarBlacklist"),
-    Order = 901,
-    MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("Manage Car Blacklist") end,
-    Action = function(self, ent)
-        self:MsgStart()
-        net.WriteString(ent:GetModel())
-        self:MsgEnd()
-    end,
-    Receive = function(_, _, ply)
-        if not ply:hasPrivilege("Manage Car Blacklist") then return end
-        local model = net.ReadString()
-        local list = lia.data.get("carBlacklist", {})
-        if table.HasValue(list, model) then
-            table.RemoveByValue(list, model)
-            lia.data.set("carBlacklist", list, true, true)
-            ply:notifyLocalized("removedFromBlacklist", model)
-        else
-            table.insert(list, model)
-            lia.data.set("carBlacklist", list, true, true)
             ply:notifyLocalized("addedToBlacklist", model)
         end
     end

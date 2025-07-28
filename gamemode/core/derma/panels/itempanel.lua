@@ -93,6 +93,7 @@ function PANEL:openInspect()
         model:SetFOV(math.Clamp(math.deg(2 * math.asin(r / d)), 20, 80))
     end)
 
+    -- disable zooming so inspecting only allows rotation
     model.OnMouseWheeled = function() end
     model.Think = function(p)
         if input.IsKeyDown(KEY_A) or input.IsKeyDown(KEY_D) then

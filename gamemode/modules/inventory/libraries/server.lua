@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
+﻿local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
     local bagItemID = inventory:getData("item")
     if not bagItemID then return end
     local bagItem = lia.item.instances[bagItemID]

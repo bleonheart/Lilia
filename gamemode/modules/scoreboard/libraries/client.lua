@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-function MODULE:ScoreboardHide()
+﻿function MODULE:ScoreboardHide()
     if IsValid(lia.gui.score) and lia.gui.score:IsVisible() then
         lia.gui.score:SetVisible(false)
         CloseDermaMenus()

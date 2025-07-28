@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-DoorOwner = 3
+﻿DoorOwner = 3
 DoorTenant = 2
 DoorGuest = 1
 DoorNone = 0

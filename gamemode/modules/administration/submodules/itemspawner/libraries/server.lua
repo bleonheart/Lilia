@@ -1,4 +1,4 @@
-local function fixupProp(client, ent, mins, maxs)
+﻿local function fixupProp(client, ent, mins, maxs)
     local pos = ent:GetPos()
     local down, up = ent:LocalToWorld(mins), ent:LocalToWorld(maxs)
     local trD = util.TraceLine({
@@ -26,9 +26,8 @@ local function tryFixPropPosition(client, ent)
 end
 
 net.Receive("SpawnMenuSpawnItem", function(_, client)
-    if not IsValid(client) then return end
     local id = net.ReadString()
-    if not id or not client:hasPrivilege("Can Use Item Spawner") then return end
+    if not IsValid(client) or not id or not client:hasPrivilege("Can Use Item Spawner") then return end
     local startPos, dir = client:EyePos(), client:GetAimVector()
     local tr = util.TraceLine({
         start = startPos,
@@ -40,7 +39,6 @@ net.Receive("SpawnMenuSpawnItem", function(_, client)
     lia.item.spawn(id, tr.HitPos, function(item)
         local ent = item:getEntity()
         if not IsValid(ent) then return end
-        ent:SetCreator(client)
         tryFixPropPosition(client, ent)
         undo.Create("item")
         undo.SetPlayer(client)
@@ -53,12 +51,13 @@ net.Receive("SpawnMenuSpawnItem", function(_, client)
 end)
 
 net.Receive("SpawnMenuGiveItem", function(_, client)
-    if not IsValid(client) then return end
     local id, targetID = net.ReadString(), net.ReadString()
-    if not id or not client:hasPrivilege("Can Use Item Spawner") then return end
+    if not IsValid(client) then return end
+    if not id then return end
+    if not client:hasPrivilege("Can Use Item Spawner") then return end
     local targetChar = lia.char.getBySteamID(targetID)
-    if not targetChar then return end
     local target = targetChar:getPlayer()
+    if not targetChar then return end
     targetChar:getInv():add(id)
     lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
 end)

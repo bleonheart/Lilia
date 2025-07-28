@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-spawnmenu.AddContentType("inventoryitem", function(container, data)
+﻿spawnmenu.AddContentType("inventoryitem", function(container, data)
     local client = LocalPlayer()
     if not client:hasPrivilege("Can Use Item Spawner") then return end
     local icon = vgui.Create("ContentIcon", container)

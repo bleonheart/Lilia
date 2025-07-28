@@ -15,8 +15,7 @@ function lia.command.add(command, data)
         if not lia.administration.privileges[privilegeName] then
             lia.administration.registerPrivilege({
                 Name = privilegeName,
-                MinAccess = superAdminOnly and "superadmin" or "admin",
-                Category = data.Category
+                MinAccess = superAdminOnly and "superadmin" or "admin"
             })
         end
     end

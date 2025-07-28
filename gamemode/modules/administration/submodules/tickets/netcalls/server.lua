@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-net.Receive("ViewClaims", function(_, client)
+﻿net.Receive("ViewClaims", function(_, client)
     local sid = net.ReadString()
     MODULE:GetAllCaseClaims():next(function(caseclaims)
         net.Start("ViewClaims")
@@ -50,13 +49,4 @@ net.Receive("TicketSystemClose", function(_, client)
 
     hook.Run("TicketSystemClose", client, requester)
     requester.CaseClaimed = nil
-end)
-
-net.Receive("RequestTicketClaims", function(_, client)
-    if not client:hasPrivilege("View Claims") then return end
-    lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
-        net.Start("TicketClaims")
-        net.WriteTable(res.results or {})
-        net.Send(client)
-    end)
 end)

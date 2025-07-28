@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local ESP_DrawnEntities = {
+﻿local ESP_DrawnEntities = {
     lia_bodygrouper = true,
     lia_vendor = true,
 }
@@ -65,3 +64,110 @@ function MODULE:HUDPaint()
     end
 end
 
+net.Receive("DisplayCharList", function()
+    local sendData = net.ReadTable()
+    local targetSteamIDsafe = net.ReadString()
+    local extraColumns, extraOrder = {}, {}
+    for _, v in pairs(sendData or {}) do
+        if istable(v.extraDetails) then
+            for k in pairs(v.extraDetails) do
+                if not extraColumns[k] then
+                    extraColumns[k] = true
+                    table.insert(extraOrder, k)
+                end
+            end
+        end
+    end
+
+    local columns = {
+        {
+            name = "ID",
+            field = "ID"
+        },
+        {
+            name = "Name",
+            field = "Name"
+        },
+        {
+            name = "Desc",
+            field = "Desc"
+        },
+        {
+            name = "Faction",
+            field = "Faction"
+        },
+        {
+            name = "Banned",
+            field = "Banned"
+        },
+        {
+            name = "BanningAdminName",
+            field = "BanningAdminName"
+        },
+        {
+            name = "BanningAdminSteamID",
+            field = "BanningAdminSteamID"
+        },
+        {
+            name = "BanningAdminRank",
+            field = "BanningAdminRank"
+        },
+        {
+            name = "CharMoney",
+            field = "Money"
+        },
+        {
+            name = "LastUsed",
+            field = "LastUsed"
+        }
+    }
+
+    for _, name in ipairs(extraOrder) do
+        table.insert(columns, {
+            name = name,
+            field = name
+        })
+    end
+
+    local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
+    if IsValid(listView) then
+        for _, line in ipairs(listView:GetLines()) do
+            local dataIndex = line:GetID()
+            local rowData = sendData[dataIndex]
+            if rowData and rowData.Banned == "Yes" then
+                line.DoPaint = line.Paint
+                line.Paint = function(pnl, w, h)
+                    surface.SetDrawColor(200, 100, 100)
+                    surface.DrawRect(0, 0, w, h)
+                    pnl:DoPaint(w, h)
+                end
+            end
+
+            line.CharID = rowData and rowData.ID
+            if rowData and rowData.extraDetails then
+                local colIndex = 11
+                for _, name in ipairs(extraOrder) do
+                    line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
+                    colIndex = colIndex + 1
+                end
+            end
+        end
+
+        listView.OnRowRightClick = function(_, _, ln)
+            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+                local dMenu = DermaMenu()
+                if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                    opt1:SetIcon("icon16/cancel.png")
+                end
+
+                if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                    opt2:SetIcon("icon16/accept.png")
+                end
+
+                dMenu:Open()
+            end
+        end
+    end
+end)

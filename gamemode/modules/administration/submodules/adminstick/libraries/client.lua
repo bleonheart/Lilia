@@ -46,7 +46,6 @@ local function OpenPlayerModelUI(tgt)
     fr:Center()
     function fr:OnClose()
         fr:Remove()
-        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -65,7 +64,6 @@ local function OpenPlayerModelUI(tgt)
         local id = GetIdentifier(tgt)
         if id ~= "" then RunConsoleCommand("say", "/charsetmodel " .. QuoteArgs(id, txt)) end
         fr:Remove()
-        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -98,7 +96,6 @@ local function OpenReasonUI(tgt, cmd)
     fr:Center()
     function fr:OnClose()
         fr:Remove()
-        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -132,7 +129,6 @@ local function OpenReasonUI(tgt, cmd)
         end
 
         fr:Remove()
-        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -406,7 +402,7 @@ end
 
 function MODULE:OpenAdminStickUI(tgt)
     local cl = LocalPlayer()
-    if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return false end
+    if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return end
     AdminStickIsOpen = true
     local menu = DermaMenu()
     menu:Center()
@@ -503,5 +499,4 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     menu:Open()
-    return true
 end

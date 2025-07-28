@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local ceil, clamp = math.ceil, math.Clamp
+﻿local ceil, clamp = math.ceil, math.Clamp
 local fade, shadowFade = 0, 0
 local respawnReq, hideKey = false, false
 function MODULE:HUDPaint()
