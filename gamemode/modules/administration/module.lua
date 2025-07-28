@@ -672,9 +672,9 @@ else
             q = q and q:lower() or ""
             for _, v in ipairs(PLAYER_LIST) do
                 local join = v.lastJoin > 0 and os.date("%Y-%m-%d %H:%M:%S", v.lastJoin) or ""
-                local text = (v.name .. " " .. v.id .. " " .. v.group .. " " .. join .. " " .. (v.banned and "yes" or "no")):lower()
+                local text = (v.name .. " " .. v.id .. " " .. v.group .. " " .. join .. " " .. (v.lastChar or "") .. " " .. (v.banned and "yes" or "no")):lower()
                 if q == "" or text:find(q, 1, true) then
-                    local row = list:AddLine(v.name, v.id, v.group, join, v.banned and "Yes" or "No")
+                    local row = list:AddLine(v.name, v.id, v.group, join, v.lastChar or "", v.banned and "Yes" or "No")
                     row.steamID = v.id
                     row.steamID64 = v.id64
                     if v.banned then row:SetBGColor(Color(255, 120, 120)) end
