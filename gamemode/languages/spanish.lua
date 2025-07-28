@@ -740,6 +740,7 @@ LANGUAGE = {
     noWarnings = "%s sin advertencias.",
     id = "ID",
     timestamp = "Fecha",
+    shortAdmin = "Admin",
     admin = "Administrador",
     noSound = "Debes especificar sonido.",
     removeWarning = "Quitar advertencia",

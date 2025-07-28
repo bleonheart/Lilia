@@ -740,6 +740,7 @@ LANGUAGE = {
     noWarnings = "У %s нет предупреждений.",
     id = "ID",
     timestamp = "Время",
+    shortAdmin = "Админ",
     admin = "Администратор",
     noSound = "Нужно указать звук.",
     removeWarning = "Удалить предупреждение",
