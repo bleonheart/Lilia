@@ -649,7 +649,6 @@ if SERVER then
 
     syncPrivileges()
 else
-    local groupChunks, playerChunks, charChunks = {}, {}, {}
     local PRIV_LIST, PLAYER_LIST, LAST_GROUP = {}, {}, nil
     local CHAR_LISTS = {
         online = {},
@@ -982,27 +981,18 @@ else
         end
     end
 
-    local function handleGroupDone(id)
-        local data = table.concat(groupChunks[id])
-        groupChunks[id] = nil
-        local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
+    local function handleGroupDone(tbl)
         PRIV_LIST = tbl.privCategories or {}
         lia.administration.groups = tbl.perms or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.administration.groups) end
     end
 
-    local function handlePlayerDone(id)
-        local data = table.concat(playerChunks[id])
-        playerChunks[id] = nil
-        local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
+    local function handlePlayerDone(tbl)
         PLAYER_LIST = tbl.players or {}
         if IsValid(lia.gui.players) then buildPlayersUI(lia.gui.players) end
     end
 
-    local function handleCharBrowserDone(id)
-        local data = table.concat(charChunks[id])
-        charChunks[id] = nil
-        local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
+    local function handleCharBrowserDone(tbl)
         CHAR_LISTS[tbl.mode or "online"] = tbl.list or {}
         if tbl.mode == "all" and IsValid(lia.gui.charBrowserAll) then
             buildCharListUI(lia.gui.charBrowserAll, "all")
@@ -1011,6 +1001,33 @@ else
             buildPlayerTabs(lia.gui.charBrowserPS)
         end
     end
+
+    net.Receive("liaGroupsDataDone", function()
+        local id = net.ReadString()
+        hook.Add("LiaBigTableReceived", "liaGroups" .. id, function(receivedID, data)
+            if receivedID ~= id then return end
+            hook.Remove("LiaBigTableReceived", "liaGroups" .. id)
+            handleGroupDone(data)
+        end)
+    end)
+
+    net.Receive("liaPlayersDataDone", function()
+        local id = net.ReadString()
+        hook.Add("LiaBigTableReceived", "liaPlayers" .. id, function(receivedID, data)
+            if receivedID ~= id then return end
+            hook.Remove("LiaBigTableReceived", "liaPlayers" .. id)
+            handlePlayerDone(data)
+        end)
+    end)
+
+    net.Receive("liaCharBrowserDone", function()
+        local id = net.ReadString()
+        hook.Add("LiaBigTableReceived", "liaCharBrowser" .. id, function(receivedID, data)
+            if receivedID ~= id then return end
+            hook.Remove("LiaBigTableReceived", "liaCharBrowser" .. id)
+            handleCharBrowserDone(data)
+        end)
+    end)
 
     local function canAccess()
         return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups")
