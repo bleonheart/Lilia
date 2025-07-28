@@ -30,6 +30,17 @@ local function tableToString(tbl, braces)
     return str
 end
 
+-- Determine how many columns a DListView line contains. Some versions of GMod
+-- do not provide a ``ColumnCount`` method so we count the ``Columns`` table if
+-- necessary.
+local function getColumnCount(line)
+    if isfunction(line.ColumnCount) then
+        return line:ColumnCount()
+    end
+
+    return istable(line.Columns) and #line.Columns or 0
+end
+
 local function openRowInfo(row)
     local columns = {
         {
@@ -118,7 +129,7 @@ local function handleTableData(id)
         local q = search:GetValue():lower()
         for _, line in ipairs(list:GetLines()) do
             local s = ""
-            for i = 1, line:ColumnCount() do
+            for i = 1, getColumnCount(line) do
                 s = s .. line:GetColumnText(i):lower() .. " "
             end
 

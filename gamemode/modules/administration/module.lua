@@ -3,6 +3,17 @@ MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
+
+-- Utility to determine how many columns a DListView line has. ``DListViewLine``
+-- does not always implement a ``ColumnCount`` method, so this helper falls back
+-- to counting the ``Columns`` table if needed.
+local function getColumnCount(line)
+    if isfunction(line.ColumnCount) then
+        return line:ColumnCount()
+    end
+
+    return istable(line.Columns) and #line.Columns or 0
+end
 hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
     local ply = LocalPlayer()
     if not ply:hasPrivilege("View Staff Actions") then return end
@@ -29,7 +40,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local q = search:GetValue():lower()
                 for _, line in ipairs(list:GetLines()) do
                     local s = ""
-                    for i = 1, line:ColumnCount() do
+                    for i = 1, getColumnCount(line) do
                         s = s .. line:GetColumnText(i):lower() .. " "
                     end
 
@@ -52,7 +63,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local m = DermaMenu()
                 m:AddOption(L("copyRow"), function()
                     local s = ""
-                    for i = 1, line:ColumnCount() do
+                    for i = 1, getColumnCount(line) do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
 
@@ -92,7 +103,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local q = search:GetValue():lower()
                 for _, line in ipairs(list:GetLines()) do
                     local s = ""
-                    for i = 1, line:ColumnCount() do
+                    for i = 1, getColumnCount(line) do
                         s = s .. line:GetColumnText(i):lower() .. " "
                     end
 
@@ -115,7 +126,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local m = DermaMenu()
                 m:AddOption(L("copyRow"), function()
                     local s = ""
-                    for i = 1, line:ColumnCount() do
+                    for i = 1, getColumnCount(line) do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
 
@@ -156,7 +167,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local q = search:GetValue():lower()
                 for _, line in ipairs(list:GetLines()) do
                     local s = ""
-                    for i = 1, line:ColumnCount() do
+                    for i = 1, getColumnCount(line) do
                         s = s .. line:GetColumnText(i):lower() .. " "
                     end
 
@@ -179,7 +190,7 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
                 local m = DermaMenu()
                 m:AddOption(L("copyRow"), function()
                     local s = ""
-                    for i = 1, line:ColumnCount() do
+                    for i = 1, getColumnCount(line) do
                         s = s .. line:GetColumnText(i) .. " | "
                     end
 
@@ -689,7 +700,7 @@ else
             opt:SetIcon("icon16/user.png")
             m:AddOption(L("copyRow"), function()
                 local s = ""
-                for i = 1, line:ColumnCount() do
+                for i = 1, getColumnCount(line) do
                     s = s .. line:GetColumnText(i) .. " | "
                 end
 
@@ -736,7 +747,7 @@ else
             local m = DermaMenu()
             m:AddOption(L("copyRow"), function()
                 local s = ""
-                for i = 1, line:ColumnCount() do
+                for i = 1, getColumnCount(line) do
                     s = s .. line:GetColumnText(i) .. " | "
                 end
 
