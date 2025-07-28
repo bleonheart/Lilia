@@ -221,6 +221,13 @@ local function getBanList()
     return t
 end
 
+local function fetchLastCharName(steamID64)
+    local query = "SELECT name FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID64) .. " ORDER BY lastJoinTime DESC LIMIT 1"
+    local data = lia.db.querySync(query)
+    if istable(data) and data[1] and data[1].name then return data[1].name end
+    return ""
+end
+
 local function payloadPlayers()
     local bans = getBanList()
     local plys = {}
@@ -232,7 +239,7 @@ local function payloadPlayers()
             id64 = v:SteamID64(),
             group = v:GetUserGroup(),
             lastJoin = os.time(lia.time.toNumber(v.lastJoin)),
-            lastChar = lia.char.lastUsed and lia.char.lastUsed[v:SteamID64()] or "",
+            lastChar = fetchLastCharName(v:SteamID64()),
             banned = bans[v:SteamID()] or false
         }
 
