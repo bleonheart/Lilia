@@ -512,47 +512,6 @@ net.Receive("liaGroupsRename", function(_, p)
     p:notify("Group '" .. old .. "' renamed to '" .. new .. "'.")
 end)
 
-net.Receive("liaGroupsApply", function(_, p)
-    local function allowed(client)
-        return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
-    end
-
-    if not allowed(p) then return end
-    local g = net.ReadString()
-    local t = net.ReadTable()
-    if g == "" or lia.administration.lia.administration.DefaultGroups[g] then return end
-    lia.administration.groups[g] = {}
-    for k, v in pairs(t) do
-        if v then lia.administration.groups[g][k] = true end
-    end
-
-    lia.administration.save(true)
-    applyToCAMI(g, lia.administration.groups[g])
-    local id = lia.net.WriteBigTable(nil, payloadGroups())
-    net.Start("liaGroupsDataDone")
-    net.WriteString(id)
-    net.Broadcast()
-    p:notify("Permissions saved for '" .. g .. "'.")
-end)
-
-net.Receive("liaGroupsDefaults", function(_, p)
-    local function allowed(client)
-        return IsValid(client) and client:IsSuperAdmin() and client:hasPrivilege("Manage UserGroups")
-    end
-
-    if not allowed(p) then return end
-    local g = net.ReadString()
-    if g == "" or lia.administration.lia.administration.DefaultGroups[g] then return end
-    lia.administration.groups[g] = buildDefaultTable(g)
-    lia.administration.save(true)
-    applyToCAMI(g, lia.administration.groups[g])
-    local id = lia.net.WriteBigTable(nil, payloadGroups())
-    net.Start("liaGroupsDataDone")
-    net.WriteString(id)
-    net.Broadcast()
-    p:notify("Defaults restored for '" .. g .. "'.")
-end)
-
 net.Receive("request_respawn", function(_, client)
     if not IsValid(client) or not client:getChar() then return end
     local respawnTime = lia.config.get("SpawnTime", 5)

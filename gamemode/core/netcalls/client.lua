@@ -206,18 +206,6 @@ net.Receive("charVar", function()
     end
 end)
 
-net.Receive("item", function()
-    local uniqueID = net.ReadString()
-    local id = net.ReadUInt(32)
-    local data = net.ReadTable()
-    local invID = net.ReadType()
-    local item = lia.item.new(uniqueID, id)
-    item.data = {}
-    if data then item.data = data end
-    item.invID = invID or 0
-    hook.Run("ItemInitialized", item)
-end)
-
 net.Receive("invData", function()
     local id = net.ReadUInt(32)
     local key = net.ReadString()

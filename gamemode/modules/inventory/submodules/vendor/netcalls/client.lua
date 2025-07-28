@@ -47,11 +47,6 @@ net.Receive("VendorEdit", function()
     end)
 end)
 
-net.Receive("VendorFaction", function()
-    local factionID = net.ReadUInt(8)
-    if IsValid(liaVendorEnt) then liaVendorEnt.factions[factionID] = true end
-end)
-
 net.Receive("VendorMoney", function()
     if not IsValid(liaVendorEnt) then return end
     local vendor = liaVendorEnt

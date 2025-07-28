@@ -191,3 +191,5 @@ function MODULE:CanDisplayCharInfo(name)
     if name == "class" and not class then return false end
     return true
 end
+
+net.Receive("removeF1", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
