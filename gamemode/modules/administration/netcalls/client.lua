@@ -1,5 +1,5 @@
 local MODULE = MODULE
-﻿net.Receive("cfgList", function()
+net.Receive("cfgList", function()
     local changed = net.ReadTable()
     for key, value in pairs(changed) do
         if lia.config.stored[key] then lia.config.stored[key].value = value end
