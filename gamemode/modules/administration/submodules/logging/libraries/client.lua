@@ -97,12 +97,18 @@ net.Receive("send_logs", function()
     if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
 end)
 
-function MODULE:CreateMenuButtons(tabs)
-    if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Can See Logs") then
-        tabs[L("logs")] = function(panel)
+hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(tabs)
+    if not (IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Can See Logs")) then return end
+
+    tabs[L("logs")] = {
+        icon = "icon16/page_copy.png",
+        build = function(sheet)
+            local panel = vgui.Create("DPanel", sheet)
+            panel:DockPadding(10, 10, 10, 10)
             receivedPanel = panel
             net.Start("send_logs_request")
             net.SendToServer()
+            return panel
         end
-    end
-end
+    }
+end)
