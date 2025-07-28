@@ -3,17 +3,14 @@ MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
-
 -- Utility to determine how many columns a DListView line has. ``DListViewLine``
 -- does not always implement a ``ColumnCount`` method, so this helper falls back
 -- to counting the ``Columns`` table if needed.
 local function getColumnCount(line)
-    if isfunction(line.ColumnCount) then
-        return line:ColumnCount()
-    end
-
+    if isfunction(line.ColumnCount) then return line:ColumnCount() end
     return istable(line.Columns) and #line.Columns or 0
 end
+
 hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
     local ply = LocalPlayer()
     if not ply:hasPrivilege("View Staff Actions") then return end
@@ -27,7 +24,6 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             search:Dock(TOP)
             search:DockMargin(0, 0, 0, 5)
             search:SetPlaceholderText(L("search"))
-
             local list = vgui.Create("DListView", panel)
             list:Dock(FILL)
             list:AddColumn(L("adminName"))
@@ -89,7 +85,6 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             search:Dock(TOP)
             search:DockMargin(0, 0, 0, 5)
             search:SetPlaceholderText(L("search"))
-
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("player"))
@@ -153,7 +148,6 @@ hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(tabs)
             search:Dock(TOP)
             search:DockMargin(0, 0, 0, 5)
             search:SetPlaceholderText(L("search"))
-
             local list = vgui.Create("DListView", pnl)
             list:Dock(FILL)
             list:AddColumn(L("timestamp"))
@@ -665,7 +659,6 @@ else
         search:Dock(TOP)
         search:DockMargin(0, 0, 0, 5)
         search:SetPlaceholderText(L("search"))
-
         local list = parent:Add("DListView")
         list:Dock(FILL)
         list:AddColumn("Name")
@@ -691,7 +684,6 @@ else
 
         populate()
         search.OnChange = function() populate(search:GetValue()) end
-
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.steamID then return end
             local m = DermaMenu()
@@ -716,7 +708,6 @@ else
         search:Dock(TOP)
         search:DockMargin(0, 0, 0, 5)
         search:SetPlaceholderText(L("search"))
-
         local list = parent:Add("DListView")
         list:Dock(FILL)
         list:AddColumn("ID")
@@ -732,15 +723,12 @@ else
             for _, v in ipairs(CHAR_LISTS[mode] or {}) do
                 local sid = v.SteamID or v.steamID or ""
                 local text = (tostring(v.ID) .. " " .. v.Name .. " " .. sid .. " " .. v.Faction .. " " .. tostring(v.Banned) .. " " .. tostring(v.Money) .. " " .. tostring(v.LastUsed)):lower()
-                if (not filterID or tostring(sid) == tostring(filterID)) and (q == "" or text:find(q, 1, true)) then
-                    list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed)
-                end
+                if (not filterID or tostring(sid) == tostring(filterID)) and (q == "" or text:find(q, 1, true)) then list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed) end
             end
         end
 
         populate()
         search.OnChange = function() populate(search:GetValue()) end
-
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) then return end
             local m = DermaMenu()
@@ -891,7 +879,9 @@ else
         sheet:Dock(FILL)
         sheet:DockMargin(0, 0, 0, 40)
         local keys, tabs = {}, {}
-        for g in pairs(cami) do
+        local groupSource = next(cami) and cami or perms or {}
+        PrintTable(groupSource, 1)
+        for g in pairs(groupSource) do
             keys[#keys + 1] = g
         end
 

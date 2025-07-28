@@ -473,7 +473,7 @@ net.Receive("liaGroupsRemove", function(_, p)
 
     if not allowed(p) then return end
     local n = net.ReadString()
-    if n == "" or lia.administration.lia.administration.DefaultGroups[n] then return end
+    if n == "" or lia.administration.DefaultGroups[n] then return end
     lia.administration.removeGroup(n)
     lia.administration.groups[n] = nil
     dropCAMIGroup(n)
@@ -493,7 +493,7 @@ net.Receive("liaGroupsRename", function(_, p)
     if not allowed(p) then return end
     local old = net.ReadString()
     local new = net.ReadString()
-    if old == "" or new == "" or lia.administration.lia.administration.DefaultGroups[old] or lia.administration.lia.administration.DefaultGroups[new] then return end
+    if old == "" or new == "" or lia.administration.DefaultGroups[old] or lia.administration.DefaultGroups[new] then return end
     if lia.administration.groups[new] or not lia.administration.groups[old] then return end
     lia.administration.groups[new] = lia.administration.groups[old]
     lia.administration.groups[old] = nil
