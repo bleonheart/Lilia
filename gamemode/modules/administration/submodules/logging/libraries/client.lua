@@ -76,25 +76,19 @@ local function OpenLogsUI(panel, categorizedLogs)
 end
 
 net.Receive("send_logs", function()
-    local chunkIndex = net.ReadUInt(16)
-    local numChunks = net.ReadUInt(16)
-    local chunkLen = net.ReadUInt(16)
-    local chunkData = net.ReadData(chunkLen)
-    receivedChunks[chunkIndex] = chunkData
-    for i = 1, numChunks do
-        if not receivedChunks[i] then return end
-    end
+    local id = net.ReadString()
+    hook.Add("LiaBigTableReceived", "AdminLogs" .. id, function(receivedID, data)
+        if receivedID ~= id then return end
+        hook.Remove("LiaBigTableReceived", "AdminLogs" .. id)
+        if not data then
+            chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
+            return
+        end
 
-    local fullData = table.concat(receivedChunks)
-    receivedChunks = {}
-    local jsonData = util.Decompress(fullData)
-    local categorizedLogs = util.JSONToTable(jsonData)
-    if not categorizedLogs then
-        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
-        return
-    end
-
-    if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
+        if IsValid(receivedPanel) then
+            OpenLogsUI(receivedPanel, data)
+        end
+    end)
 end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(tabs)
