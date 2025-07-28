@@ -1184,5 +1184,16 @@ LANGUAGE = {
     userGroups = "Groupes utilisateurs",
     addGroup = "Ajouter groupe",
     removeGroup = "Supprimer groupe",
-    groupName = "Nom du groupe"
+    groupName = "Nom du groupe",
+    itemWidthESPLabel = "Largeur : %s",
+    itemHeightESPLabel = "Hauteur : %s",
+    message = "Message",
+    player = "Joueur",
+    requester = "Demandeur",
+    roster = "Liste",
+    staffAction = "Action du staff",
+    staffActionCount = "Nombre d'actions",
+    staffManagement = "Gestion du staff",
+    ticketsTab = "Tickets",
+    userGroup = "Groupe"
 }
