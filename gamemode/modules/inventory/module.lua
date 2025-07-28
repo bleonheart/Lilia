@@ -9,15 +9,3 @@ MODULE.Dependencies = {
         Realm = "shared"
     },
 }
-
-lia.vendor.addPreset("utility_vendor", {
-    manhack_welder = {
-        mode = VendorSellAndBuy
-    },
-    item_suit = {
-        mode = VendorSellAndBuy
-    },
-    universalammo3 = {
-        mode = VendorSellAndBuy
-    },
-})

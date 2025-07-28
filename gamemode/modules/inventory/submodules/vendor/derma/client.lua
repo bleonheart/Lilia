@@ -756,6 +756,12 @@ function PANEL:Init()
     self:updateSellScale()
 end
 
+local VendorText = {
+    [VendorSellAndBuy] = "buyOnlynSell",
+    [VendorBuyOnly] = "buyOnly",
+    [VendorSellOnly] = "sellOnly",
+}
+
 function PANEL:getModeText(mode)
     return mode and L(VendorText[mode]) or L("none")
 end
