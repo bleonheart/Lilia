@@ -4,99 +4,99 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Integrates with the CAMI system to provide fine-grained permission management for commands and modules across the framework."
 MODULE.Privileges = {
     {
-        Name = "Can Bypass Character Lock",
+        Name = "Staff Permissions - Can Bypass Character Lock",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Grab World Props",
+        Name = "Staff Permissions - Can Grab World Props",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Grab Players",
+        Name = "Staff Permissions - Can Grab Players",
         MinAccess = "superadmin",
     },
     {
-        Name = "Physgun Pickup",
+        Name = "Staff Permissions - Physgun Pickup",
         MinAccess = "admin",
     },
     {
-        Name = "Can Access Item Informations",
+        Name = "Staff Permissions - Can Access Item Informations",
         MinAccess = "superadmin",
     },
     {
-        Name = "Physgun Pickup on Restricted Entities",
+        Name = "Staff Permissions - Physgun Pickup on Restricted Entities",
         MinAccess = "superadmin",
     },
     {
-        Name = "Physgun Pickup on Vehicles",
+        Name = "Staff Permissions - Physgun Pickup on Vehicles",
         MinAccess = "admin",
     },
     {
-        Name = "Can't be Grabbed with PhysGun",
+        Name = "Staff Permissions - Can't be Grabbed with PhysGun",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Physgun Reload",
+        Name = "Staff Permissions - Can Physgun Reload",
         MinAccess = "superadmin",
     },
     {
-        Name = "No Clip Outside Staff Character",
+        Name = "Staff Permissions - No Clip Outside Staff Character",
         MinAccess = "superadmin",
     },
     {
-        Name = "No Clip ESP Outside Staff Character",
+        Name = "Staff Permissions - No Clip ESP Outside Staff Character",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Property World Entities",
+        Name = "Staff Permissions - Can Property World Entities",
         MinAccess = "superadmin",
     },
     {
-        Name = "Manage Car Blacklist",
+        Name = "Staff Permissions - Manage Car Blacklist",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Spawn Ragdolls",
+        Name = "Spawn Permissions - Can Spawn Ragdolls",
         MinAccess = "admin",
     },
     {
-        Name = "Can Spawn SWEPs",
+        Name = "Spawn Permissions - Can Spawn SWEPs",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Spawn Effects",
+        Name = "Spawn Permissions - Can Spawn Effects",
         MinAccess = "admin",
     },
     {
-        Name = "Can Spawn Props",
+        Name = "Spawn Permissions - Can Spawn Props",
         MinAccess = "admin",
     },
     {
-        Name = "Can Spawn Blacklisted Props",
+        Name = "Spawn Permissions - Can Spawn Blacklisted Props",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Spawn NPCs",
+        Name = "Spawn Permissions - Can Spawn NPCs",
         MinAccess = "superadmin",
     },
     {
-        Name = "No Car Spawn Delay",
+        Name = "Spawn Permissions - No Car Spawn Delay",
         MinAccess = "superadmin",
     },
     {
-        Name = "No Spawn Delay",
+        Name = "Spawn Permissions - No Spawn Delay",
         MinAccess = "admin",
     },
     {
-        Name = "Can Spawn Cars",
+        Name = "Spawn Permissions - Can Spawn Cars",
         MinAccess = "admin",
     },
     {
-        Name = "Can Spawn Blacklisted Cars",
+        Name = "Spawn Permissions - Can Spawn Blacklisted Cars",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Spawn SENTs",
+        Name = "Spawn Permissions - Can Spawn SENTs",
         MinAccess = "admin",
     },
     {
@@ -108,15 +108,15 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
     },
     {
-        Name = "List Entities",
+        Name = "Staff Permissions - List Entities",
         MinAccess = "superadmin",
     },
     {
-        Name = "Can Remove Blocked Entities",
+        Name = "Staff Permissions - Can Remove Blocked Entities",
         MinAccess = "admin",
     },
     {
-        Name = "Can Remove World Entities",
+        Name = "Staff Permissions - Can Remove World Entities",
         MinAccess = "superadmin",
     },
 }

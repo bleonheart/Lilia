@@ -1,52 +1,57 @@
-local receivedChunks = {}
+﻿local receivedChunks = {}
 local receivedPanel
-
-local function buildCategoryPanel(parent, logs)
-    local contentPanel = vgui.Create("DPanel", parent)
+local function OpenLogsUI(panel, categorizedLogs)
+    panel:Clear()
+    local sidebar = panel:Add("DScrollPanel")
+    sidebar:Dock(RIGHT)
+    sidebar:SetWide(200)
+    sidebar:DockMargin(0, 20, 20, 20)
+    local contentPanel = panel:Add("DPanel")
     contentPanel:Dock(FILL)
-    contentPanel:DockPadding(10, 10, 10, 10)
-
+    contentPanel:DockMargin(10, 10, 10, 10)
     local search = contentPanel:Add("DTextEntry")
     search:Dock(TOP)
     search:SetPlaceholderText(L("searchLogs"))
     search:SetTextColor(Color(255, 255, 255))
-
     local list = contentPanel:Add("DListView")
     list:Dock(FILL)
     list:SetMultiSelect(false)
     list:AddColumn(L("timestamp")):SetFixedWidth(150)
     list:AddColumn(L("logMessage"))
     list:AddColumn(L("steamID")):SetFixedWidth(110)
-    list.OnRowRightClick = function(_, _, line)
-        if not IsValid(line) then return end
-        local text = "[" .. line:GetColumnText(1) .. "] " .. line:GetColumnText(2)
-        local id = line:GetColumnText(3)
-        if id and id ~= "" then text = text .. " [" .. id .. "]" end
-        local m = DermaMenu()
-        m:AddOption(L("copyRow"), function() SetClipboardText(text) end):SetIcon("icon16/page_copy.png")
-        m:Open()
-    end
-
     local copyButton = contentPanel:Add("liaMediumButton")
     copyButton:Dock(BOTTOM)
     copyButton:SetText(L("copySelectedRow"))
     copyButton:SetTall(40)
-
-    local function populate(query)
-        list:Clear()
-        query = query and string.lower(query) or ""
-        for _, log in ipairs(logs) do
-            local msgMatch = string.find(string.lower(log.message), query, 1, true)
-            local idMatch = log.steamID and string.find(string.lower(log.steamID), query, 1, true)
-            if query == "" or msgMatch or idMatch then
+    local currentLogs = {}
+    local selectedButton
+    for category, logs in pairs(categorizedLogs) do
+        local btn = sidebar:Add("liaMediumButton")
+        btn:Dock(TOP)
+        btn:DockMargin(0, 0, 0, 10)
+        btn:SetTall(40)
+        btn:SetText(category)
+        btn.DoClick = function()
+            if IsValid(selectedButton) then selectedButton:SetSelected(false) end
+            btn:SetSelected(true)
+            selectedButton = btn
+            list:Clear()
+            currentLogs = logs
+            for _, log in ipairs(logs) do
                 list:AddLine(log.timestamp, log.message, log.steamID or "")
             end
         end
     end
 
-    populate()
-
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnChange = function()
+        local query = string.lower(search:GetValue())
+        list:Clear()
+        for _, log in ipairs(currentLogs) do
+            local msgMatch = string.find(string.lower(log.message), query, 1, true)
+            local idMatch = log.steamID and string.find(string.lower(log.steamID), query, 1, true)
+            if query == "" or msgMatch or idMatch then list:AddLine(log.timestamp, log.message, log.steamID or "") end
+        end
+    end
 
     copyButton.DoClick = function()
         local sel = list:GetSelectedLine()
@@ -59,18 +64,14 @@ local function buildCategoryPanel(parent, logs)
         end
     end
 
-    return contentPanel
-end
-
-local function OpenLogsUI(panel, categorizedLogs)
-    panel:Clear()
-    local sheet = panel:Add("DPropertySheet")
-    sheet:Dock(FILL)
-    sheet:DockMargin(10, 10, 10, 10)
-
-    for category, logs in pairs(categorizedLogs) do
-        local pnl = buildCategoryPanel(sheet, logs)
-        sheet:AddSheet(category, pnl)
+    local firstCategory = next(categorizedLogs)
+    if firstCategory then
+        for _, btn in ipairs(sidebar:GetChildren()) do
+            if btn:GetText() == firstCategory then
+                btn:DoClick()
+                break
+            end
+        end
     end
 end
 
@@ -96,16 +97,12 @@ net.Receive("send_logs", function()
     if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
 end)
 
-hook.Add("liaAdminRegisterTab", "liaLogsTab", function(parent, tabs)
-    if not (IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can See Logs")) then return end
-    tabs[L("logs")] = {
-        icon = "icon16/page_white_text.png",
-        build = function(sheet)
-            receivedPanel = vgui.Create("DPanel", sheet)
-            receivedPanel:Dock(FILL)
+function MODULE:CreateMenuButtons(tabs)
+    if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Can See Logs") then
+        tabs[L("logs")] = function(panel)
+            receivedPanel = panel
             net.Start("send_logs_request")
             net.SendToServer()
-            return receivedPanel
         end
-    }
-end)
+    end
+end

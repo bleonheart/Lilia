@@ -263,8 +263,8 @@ function PANEL:populateItems()
         local item = lia.item.list[id]
         local mode = liaVendorEnt:getTradeMode(id)
         if item and mode then
-            if mode ~= VendorBuyOnly then self:updateItem(id, "vendor") end
-            if mode ~= VendorSellOnly then
+            if mode ~= VENDOR_BUYONLY then self:updateItem(id, "vendor") end
+            if mode ~= VENDOR_SELLONLY then
                 local pnl = self:updateItem(id, "me")
                 if pnl then pnl:setIsSelling(true) end
             end
@@ -276,8 +276,8 @@ function PANEL:shouldShow(id, which)
     if not IsValid(liaVendorEnt) then return false end
     local mode = liaVendorEnt:getTradeMode(id)
     if not mode then return false end
-    if which == "me" and mode == VendorSellOnly then return false end
-    if which == "vendor" and mode == VendorBuyOnly then return false end
+    if which == "me" and mode == VENDOR_SELLONLY then return false end
+    if which == "vendor" and mode == VENDOR_BUYONLY then return false end
     return true
 end
 
@@ -346,8 +346,8 @@ function PANEL:applyCategoryFilter()
         cat = cat:sub(1, 1):upper() .. cat:sub(2)
         if not self.currentCategory or self.currentCategory == L("vendorShowAll") or cat == self.currentCategory then
             local mode = liaVendorEnt:getTradeMode(id)
-            if mode ~= VendorBuyOnly then self:updateItem(id, "vendor") end
-            if mode ~= VendorSellOnly then
+            if mode ~= VENDOR_BUYONLY then self:updateItem(id, "vendor") end
+            if mode ~= VENDOR_SELLONLY then
                 local pnl = self:updateItem(id, "me")
                 if pnl then pnl:setIsSelling(true) end
             end
@@ -757,7 +757,7 @@ function PANEL:Init()
 end
 
 function PANEL:getModeText(mode)
-    return mode and L(VendorText[mode]) or L("none")
+    return mode and L(VENDOR_TEXT[mode]) or L("none")
 end
 
 function PANEL:OnRemove()
@@ -859,9 +859,9 @@ function PANEL:OnRowRightClick(line)
     local mode, modePanel = menu:AddSubMenu(L("mode"))
     modePanel:SetImage("icon16/key.png")
     mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")
-    mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VendorSellAndBuy) end):SetImage("icon16/cog.png")
-    mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VendorBuyOnly) end):SetImage("icon16/cog_delete.png")
-    mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VendorSellOnly) end):SetImage("icon16/cog_add.png")
+    mode:AddOption(L("buyOnlynSell"), function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLANDBUY) end):SetImage("icon16/cog.png")
+    mode:AddOption(L("buyOnly"), function() lia.vendor.editor.mode(uniqueID, VENDOR_BUYONLY) end):SetImage("icon16/cog_delete.png")
+    mode:AddOption(L("sellOnly"), function() lia.vendor.editor.mode(uniqueID, VENDOR_SELLONLY) end):SetImage("icon16/cog_add.png")
     menu:AddOption(L("price"), function()
         Derma_StringRequest(itemTable:getName(), L("vendorPriceReq"), entity:getPrice(uniqueID), function(text)
             text = tonumber(text)
@@ -897,7 +897,7 @@ function PANEL:ReloadItemList(filter)
     for k, v in SortedPairsByMemberValue(lia.item.list, "name") do
         local itemName = v.getName and v:getName() or L(v.name)
         if filter and not itemName:lower():find(filter:lower(), 1, true) then continue end
-        local mode = entity.items[k] and entity.items[k][VendorMode]
+        local mode = entity.items[k] and entity.items[k][VENDOR_MODE]
         local current, max = entity:getStock(k)
         local category = v.category or L("none")
         local panel = self.items:AddLine(itemName, self:getModeText(mode), entity:getPrice(k), max and current .. "/" .. max or "-", category)

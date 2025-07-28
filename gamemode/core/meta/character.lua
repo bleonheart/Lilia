@@ -88,7 +88,7 @@ function characterMeta:getStamina()
 end
 
 function characterMeta:hasClassWhitelist(class)
-    local wl = self:getWhitelists()
+    local wl = self:getData("whitelist", {})
     return wl[class] ~= nil
 end
 
@@ -212,16 +212,33 @@ if SERVER then
         return true
     end
 
+    function characterMeta:WhitelistAllClasses()
+        for class, _ in pairs(lia.class.list) do
+            if not lia.class.hasWhitelist(class) then self:classWhitelist(class) end
+        end
+    end
+
+    function characterMeta:WhitelistAllFactions()
+        for faction, _ in pairs(lia.faction.indices) do
+            self:setWhitelisted(faction, true)
+        end
+    end
+
+    function characterMeta:WhitelistEverything()
+        self:WhitelistAllFactions()
+        self:WhitelistAllClasses()
+    end
+
     function characterMeta:classWhitelist(class)
-        local wl = self:getWhitelists()
+        local wl = self:getData("whitelist", {})
         wl[class] = true
-        self:setWhitelists(wl)
+        self:setData("whitelist", wl)
     end
 
     function characterMeta:classUnWhitelist(class)
-        local wl = self:getWhitelists()
+        local wl = self:getData("whitelist", {})
         wl[class] = false
-        self:setWhitelists(wl)
+        self:setData("whitelist", wl)
     end
 
     function characterMeta:joinClass(class, isForced)
@@ -268,7 +285,7 @@ if SERVER then
             self:joinClass(validDefaultClass)
             hook.Run("OnPlayerJoinClass", client, validDefaultClass)
         else
-            self:setClass(0)
+            self:setClass(nil)
         end
     end
 

@@ -75,8 +75,8 @@ function ENT:setItem(itemID)
                 schema = folder,
                 map = map,
                 itemID = itemID,
-                pos = lia.data.encodetable(self:GetPos()),
-                angles = lia.data.encodetable(self:GetAngles())
+                _pos = lia.data.encodetable(self:GetPos()),
+                _angles = lia.data.encodetable(self:GetAngles())
             }, nil, "saveditems")
         end)
     end

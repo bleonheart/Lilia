@@ -291,7 +291,7 @@ if SERVER then
         if noSave or not lia.db then return end
         if key == "x" or key == "y" then
             value = tonumber(value)
-            if MysqlooPrepared then
+            if MYSQLOO_PREPARED then
                 lia.db.preparedCall("item" .. key, nil, value, self:getID())
             else
                 lia.db.updateTable({
@@ -303,7 +303,7 @@ if SERVER then
 
         local x, y = self.data.x, self.data.y
         self.data.x, self.data.y = nil, nil
-        if MysqlooPrepared then
+        if MYSQLOO_PREPARED then
             lia.db.preparedCall("itemData", nil, self.data, self:getID())
         else
             lia.db.updateTable({
@@ -337,7 +337,7 @@ if SERVER then
         end
 
         if noSave or not lia.db then return end
-        if MysqlooPrepared then
+        if MYSQLOO_PREPARED then
             lia.db.preparedCall("itemq", nil, self.quantity, self:getID())
         else
             lia.db.updateTable({

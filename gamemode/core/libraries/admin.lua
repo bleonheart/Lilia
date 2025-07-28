@@ -1,28 +1,21 @@
 ﻿lia.administration = lia.administration or {}
 lia.administration.groups = lia.administration.groups or {}
+lia.administration.banList = lia.administration.banList or {}
 lia.administration.privileges = lia.administration.privileges or {}
-function lia.administration.savePrivileges(group)
-    if not SERVER or not group or not lia.administration.groups[group] then return end
-    lia.db.upsert({
-        usergroup = group,
-        privileges = util.TableToJSON(lia.administration.groups[group])
-    }, "privileges")
-end
-
-function lia.administration.syncPrivileges()
-    for grp in pairs(lia.administration.groups) do
-        lia.administration.savePrivileges(grp)
-    end
-end
-
 local DEFAULT_GROUPS = {
     user = true,
     admin = true,
     superadmin = true,
-    developer = true,
 }
 
+function lia.administration.isDisabled()
+    local sysDisabled = hook.Run("ShouldLiliaAdminLoad") == false
+    local cmdDisabled = hook.Run("ShouldLiliaAdminCommandsLoad") == false
+    return sysDisabled, cmdDisabled
+end
+
 function lia.administration.load()
+    if lia.administration.isDisabled() then return end
     local camiGroups = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(data)
         if camiGroups and not table.IsEmpty(camiGroups) then
@@ -35,11 +28,7 @@ function lia.administration.load()
         end
 
         for name, priv in pairs(CAMI and CAMI.GetPrivileges and CAMI.GetPrivileges() or {}) do
-            lia.administration.privileges[name] = {
-                Name = name,
-                MinAccess = priv.MinAccess or "user",
-                Category = priv.Category or "Unassigned"
-            }
+            lia.administration.privileges[name] = priv
         end
 
         if camiGroups and not table.IsEmpty(camiGroups) and CAMI then
@@ -50,7 +39,7 @@ function lia.administration.load()
             end
         end
 
-        local defaults = {"user", "admin", "superadmin", "developer"}
+        local defaults = {"user", "admin", "superadmin"}
         local created = false
         if table.Count(lia.administration.groups) == 0 then
             for _, grp in ipairs(defaults) do
@@ -68,7 +57,6 @@ function lia.administration.load()
         end
 
         if created then lia.administration.save(true) end
-        lia.administration.syncPrivileges()
         lia.admin("Bootstrap", L("adminSystemLoaded"))
     end
 
@@ -79,6 +67,7 @@ function lia.administration.load()
 end
 
 function lia.administration.createGroup(groupName, info)
+    if lia.administration.isDisabled() then return end
     if lia.administration.groups[groupName] then
         Error("[Lilia Administration] This usergroup already exists!\n")
         return
@@ -91,7 +80,7 @@ function lia.administration.createGroup(groupName, info)
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            if groupName == "superadmin" or groupName == "developer" then
+            if groupName == "superadmin" then
                 allowed = true
             elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
@@ -108,19 +97,18 @@ function lia.administration.createGroup(groupName, info)
             if not CAMI.GetUsergroup(groupName) then
                 CAMI.RegisterUsergroup({
                     Name = groupName,
-                    Inherits = groupName == "developer" and "superadmin" or "user",
+                    Inherits = "user",
                 })
             end
         end
 
         lia.administration.save(true)
-        lia.administration.savePrivileges(groupName)
     end
 end
 
 function lia.administration.registerPrivilege(privilege)
+    if lia.administration.isDisabled() then return end
     if not privilege or not privilege.Name then return end
-    privilege.Category = privilege.Category or "Unassigned"
     lia.administration.privileges[privilege.Name] = privilege
     for groupName in pairs(lia.administration.groups) do
         local minAccess = privilege.MinAccess or "user"
@@ -128,7 +116,7 @@ function lia.administration.registerPrivilege(privilege)
         if CAMI and CAMI.UsergroupInherits then
             allowed = CAMI.UsergroupInherits(groupName, minAccess)
         else
-            if groupName == "superadmin" or groupName == "developer" then
+            if groupName == "superadmin" then
                 allowed = true
             elseif groupName == "admin" then
                 allowed = minAccess ~= "superadmin"
@@ -138,12 +126,12 @@ function lia.administration.registerPrivilege(privilege)
         end
 
         if allowed then lia.administration.groups[groupName][privilege.Name] = true end
-        lia.administration.savePrivileges(groupName)
     end
 end
 
 function lia.administration.removeGroup(groupName)
-    if groupName == "user" or groupName == "admin" or groupName == "superadmin" or groupName == "developer" then
+    if lia.administration.isDisabled() then return end
+    if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
         Error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
@@ -157,22 +145,12 @@ function lia.administration.removeGroup(groupName)
     if SERVER then
         if CAMI and CAMI.UnregisterUsergroup then CAMI.UnregisterUsergroup(groupName) end
         lia.administration.save(true)
-        lia.db.delete("privileges", "usergroup = " .. lia.db.convertDataType(groupName))
     end
 end
 
 if SERVER then
-    function lia.administration.updateAdminGroups(client)
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.administration.groups)
-        if IsValid(client) then
-            net.Send(client)
-        else
-            net.Broadcast()
-        end
-    end
-
     function lia.administration.addPermission(groupName, permission)
+        if lia.administration.isDisabled() then return end
         if not lia.administration.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
@@ -180,13 +158,11 @@ if SERVER then
 
         if DEFAULT_GROUPS[groupName] then return end
         lia.administration.groups[groupName][permission] = true
-        if SERVER then
-            lia.administration.save(true)
-            lia.administration.savePrivileges(groupName)
-        end
+        if SERVER then lia.administration.save(true) end
     end
 
     function lia.administration.removePermission(groupName, permission)
+        if lia.administration.isDisabled() then return end
         if not lia.administration.groups[groupName] then
             Error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
@@ -194,17 +170,14 @@ if SERVER then
 
         if DEFAULT_GROUPS[groupName] then return end
         lia.administration.groups[groupName][permission] = nil
-        if SERVER then
-            lia.administration.save(true)
-            lia.administration.savePrivileges(groupName)
-        end
+        if SERVER then lia.administration.save(true) end
     end
 
     function lia.administration.save(network)
+        if lia.administration.isDisabled() then return end
         lia.db.upsert({
             data = util.TableToJSON(lia.administration.groups)
         }, "admingroups")
-        lia.administration.syncPrivileges()
 
         if network then
             net.Start("updateAdminGroups")
@@ -214,67 +187,59 @@ if SERVER then
     end
 
     function lia.administration.setPlayerGroup(ply, usergroup)
-        if ply:IsBot() then return end
+        if lia.administration.isDisabled() or ply:IsBot() then return end
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
         if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia") end
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
-        if old ~= usergroup then
-            ply:notifyLocalized("yourGroupSet", usergroup)
-        end
     end
 
     function lia.administration.addBan(steamid, reason, duration)
+        if lia.administration.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.administration.addBan: no steam id specified!") end
         local banStart = os.time()
-        lia.db.query(Format("UPDATE lia_players SET banStart = %d, banDuration = %d, reason = '%s' WHERE steamID = %s", banStart, (duration or 0) * 60, lia.db.escape(reason or L("genericReason")), steamid))
+        lia.administration.banList[steamid] = {
+            reason = reason or L("genericReason"),
+            start = banStart,
+            duration = (duration or 0) * 60
+        }
+
+        lia.db.query(Format(
+            "UPDATE lia_players SET banStart = %d, banDuration = %d, reason = '%s' WHERE steamID = %s",
+            banStart,
+            (duration or 0) * 60,
+            lia.db.escape(reason or L("genericReason")),
+            steamid
+        ))
     end
 
     function lia.administration.removeBan(steamid)
+        if lia.administration.isDisabled() then return end
         if not steamid then Error("[Lilia Administration] lia.administration.removeBan: no steam id specified!") end
-        lia.db.query(Format("UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s", steamid), function() lia.admin("Ban", "Ban removed.") end)
-    end
-
-    local function fetchBanRow(steamid)
-        local query = string.format("SELECT banStart, banDuration, reason FROM lia_players WHERE steamID = %s", steamid)
-        if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
-            local db = lia.db.getObject()
-            if not db then return nil end
-            local q = db:query(query)
-            q:start()
-            q:wait()
-            if q:error() then return nil end
-            return q:getData() and q:getData()[1] or nil
-        else
-            local data = lia.db.querySync(query)
-            return istable(data) and data[1] or nil
-        end
+        lia.administration.banList[steamid] = nil
+        lia.db.query(Format(
+            "UPDATE lia_players SET banStart = 0, banDuration = 0, reason = '' WHERE steamID = %s",
+            steamid
+        ), function() lia.admin("Ban", "Ban removed.") end)
     end
 
     function lia.administration.isBanned(steamid)
-        local row = fetchBanRow(steamid)
-        if not row then return false end
-
-        local start = tonumber(row.banStart) or 0
-        if start <= 0 then return false end
-
-        local duration = tonumber(row.banDuration) or 0
-
-        return {
-            reason = row.reason,
-            start = start,
-            duration = duration,
-        }
+        if lia.administration.isDisabled() then return false end
+        return lia.administration.banList[steamid] or false
     end
 
     function lia.administration.hasBanExpired(steamid)
-        local ban = lia.administration.isBanned(steamid)
+        if lia.administration.isDisabled() then return true end
+        local ban = lia.administration.banList[steamid]
         if not ban then return true end
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
     end
 
-    hook.Add("ShutDown", "lia_SaveAdmin", function() lia.administration.save() end)
+    hook.Add("ShutDown", "lia_SaveAdmin", function()
+        if lia.administration.isDisabled() then return end
+        lia.administration.save()
+    end)
 end
 
 local function quote(str)
@@ -363,7 +328,7 @@ function lia.administration.execCommand(cmd, victim, dur, reason)
 end
 
 hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
-    if ply:IsBot() then return end
+    if lia.administration.isDisabled() or ply:IsBot() then return end
     local steam64 = util.SteamIDTo64(steamID)
     if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
         lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
@@ -381,14 +346,31 @@ hook.Add("PlayerAuthed", "lia_SetUserGroup", function(ply, steamID)
     end)
 end)
 
+hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
+    if lia.administration.isDisabled() then return end
+    lia.db.query("SELECT steamID, banStart, banDuration, reason FROM lia_players WHERE banStart > 0", function(data)
+        if istable(data) then
+            local bans = {}
+            for _, ban in pairs(data) do
+                bans[ban.steamID] = {
+                    reason = ban.reason,
+                    start = ban.banStart,
+                    duration = ban.banDuration
+                }
+            end
+
+            lia.administration.banList = bans
+        end
+    end)
+end)
+
 concommand.Add("plysetgroup", function(ply, _, args)
+    if lia.administration.isDisabled() then return end
     if not IsValid(ply) then
         local target = lia.command.findPlayer(client, args[1])
         if IsValid(target) then
             if lia.administration.groups[args[2]] then
                 lia.administration.setPlayerGroup(target, args[2])
-                lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s'", target:Name(), args[2]))
-                target:notifyLocalized("yourGroupSet", args[2])
             else
                 lia.admin("Error", "Usergroup not found.")
             end
@@ -397,3 +379,24 @@ concommand.Add("plysetgroup", function(ply, _, args)
         end
     end
 end)
+
+if SERVER then
+    hook.Add("PlayerInitialSpawn", "liaAdminSendGroups", function(client)
+        if lia.administration.isDisabled() then return end
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.administration.groups)
+        net.Send(client)
+    end)
+
+    hook.Add("OnReloaded", "liaAdminSendGroups", function(client)
+        if lia.administration.isDisabled() then return end
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.administration.groups)
+        net.Send(client)
+    end)
+else
+    net.Receive("updateAdminGroups", function()
+        local data = net.ReadTable() or {}
+        lia.administration.groups = data
+    end)
+end

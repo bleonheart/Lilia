@@ -445,7 +445,6 @@ function GM:PlayerInitialSpawn(client)
         end
 
         hook.Run("PlayerLiliaDataLoaded", client)
-        lia.administration.updateAdminGroups(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)
@@ -642,15 +641,15 @@ function GM:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
-    lia.db.select({"itemID", "pos", "angles"}, "saveditems", condition):next(function(res)
+    lia.db.select({"itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
             for _, row in ipairs(items) do
                 local id = tonumber(row.itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.decodeVector(row.pos)
-                angles[id] = lia.data.decodeAngle(row.angles)
+                positions[id] = lia.data.decodeVector(row._pos)
+                angles[id] = lia.data.decodeAngle(row._angles)
             end
 
             if #idRange > 0 then
@@ -1015,7 +1014,7 @@ concommand.Add("list_entities", function(client)
     end
 end)
 
-local networkStrings = {"RosterRequest", "actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaGroupsAdd", "liaGroupsData", "liaGroupsRemove", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaDBTables","liaDBTablesRequest", "liaRequestTableData", "liaDBTableData", "liaDBTableDataChunk", "liaDBTableDataDone", "RequestStaffActions", "StaffActions", "RequestPlayerWarnings", "PlayerWarnings", "RequestTicketClaims", "TicketClaims"}
+local networkStrings = {"RosterRequest", "actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaGroupsAdd", "liaGroupsData", "liaGroupsRemove", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaDBTables", "liaRequestTableData", "liaDBTableData", "liaDBTableDataChunk", "liaDBTableDataDone"}
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end

@@ -1,6 +1,6 @@
 ﻿local MODULE = MODULE
 chat.liaAddText = chat.liaAddText or chat.AddText
-LiaCvarChatfilter = CreateClientConVar("lia_chatfilter", "", true, false)
+LIA_CVAR_CHATFILTER = CreateClientConVar("lia_chatfilter", "", true, false)
 function MODULE:createChat()
     if IsValid(self.panel) then return end
     self.panel = vgui.Create("liaChatBox")

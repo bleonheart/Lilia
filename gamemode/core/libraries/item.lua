@@ -553,7 +553,7 @@ if SERVER then
         end
 
         if not isnumber(index) then index = NULL end
-        if MysqlooPrepared and isnumber(index) then
+        if MYSQLOO_PREPARED and isnumber(index) then
             lia.db.preparedCall("itemInstance", onItemCreated, index, uniqueID, itemData, x, y, itemTable.maxQuantity or 1)
         else
             lia.db.insertTable({

@@ -1,35 +1,31 @@
-local MODULE = MODULE
-
-function MODULE:GetWarnings(steamID)
-    local condition = "warnedSteamID = " .. lia.db.convertDataType(steamID)
-    return lia.db.select({"id", "timestamp", "warning", "admin", "adminSteamID", "warned", "warnedSteamID"}, "warnings", condition)
-        :next(function(res) return res.results or {} end)
+﻿local MODULE = MODULE
+function MODULE:GetWarnings(charID)
+    local condition = "charID = " .. lia.db.convertDataType(charID)
+    return lia.db.select({"id", "timestamp", "reason", "admin"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
-function MODULE:AddWarning(target, timestamp, reason, admin)
+function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
     lia.db.insertTable({
+        charID = charID,
+        steamID = steamID,
         timestamp = timestamp,
-        warned = target:Nick(),
-        warnedSteamID = target:SteamID64(),
-        warning = reason,
-        admin = admin:Nick(),
-        adminSteamID = admin:SteamID64()
+        reason = reason,
+        admin = admin
     }, nil, "warnings")
 end
 
-function MODULE:RemoveWarning(steamID, index)
+function MODULE:RemoveWarning(charID, index)
     local d = deferred.new()
-    self:GetWarnings(steamID):next(function(rows)
+    self:GetWarnings(charID):next(function(rows)
         if index < 1 or index > #rows then return d:resolve(nil) end
         local row = rows[index]
-        lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id))
-            :next(function() d:resolve(row) end)
+        lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id)):next(function() d:resolve(row) end)
     end)
     return d
 end
 
 net.Receive("RequestRemoveWarning", function(_, client)
-    if not client:hasPrivilege("Can Remove Warns") then return end
+    if not client:hasPrivilege("Staff Permissions - Can Remove Warns") then return end
     local charID = net.ReadInt(32)
     local rowData = net.ReadTable()
     local warnIndex = tonumber(rowData.ID or rowData.index)
@@ -50,7 +46,7 @@ net.Receive("RequestRemoveWarning", function(_, client)
         return
     end
 
-    MODULE:RemoveWarning(targetClient:SteamID64(), warnIndex):next(function(warn)
+    MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
         if not warn then
             client:notifyLocalized("invalidWarningIndex")
             return
@@ -59,7 +55,7 @@ net.Receive("RequestRemoveWarning", function(_, client)
         targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
         client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
         hook.Run("WarningRemoved", client, targetClient, {
-            reason = warn.warning,
+            reason = warn.reason,
             admin = warn.admin
         }, warnIndex)
     end)

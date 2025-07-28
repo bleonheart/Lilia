@@ -87,31 +87,17 @@ local function handleTableData(id)
         function list:OnRowSelected(_, line)
             openRowInfo(line.rowData)
         end
-
-        function list:OnRowRightClick(_, line)
-            if not IsValid(line) or not line.rowData then return end
-            openRowInfo(line.rowData)
-        end
     end
 end
 
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
-    local list = lia.gui.dbBrowserList
-    if IsValid(list) then
-        list:Clear()
-        for _, tbl in ipairs(tables or {}) do
-            list:AddLine(tbl)
-        end
-        return
-    end
-
     local frame = vgui.Create("DFrame")
     frame:SetTitle("Lilia Tables")
     frame:SetSize(300, 400)
     frame:Center()
     frame:MakePopup()
-    list = vgui.Create("DListView", frame)
+    local list = vgui.Create("DListView", frame)
     list:Dock(FILL)
     list:AddColumn("Table")
     for _, tbl in ipairs(tables or {}) do

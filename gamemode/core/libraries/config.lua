@@ -472,7 +472,7 @@ lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) 
     options = CLIENT and getDermaSkins() or {"Lilia Skin"}
 })
 
-hook.Add("liaAdminRegisterTab", "liaConfigPopulate", function(parent, tabs)
+hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
     local ConfigFormatting = {
         Int = function(key, name, config, parent)
             local container = vgui.Create("DPanel", parent)
@@ -891,14 +891,9 @@ hook.Add("liaAdminRegisterTab", "liaConfigPopulate", function(parent, tabs)
     end
 
     if hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false then
-        tabs["Configuration"] = {
-            icon = "icon16/wrench.png",
-            build = function(sheet)
-                local pnl = vgui.Create("DPanel", sheet)
-                pnl:Dock(FILL)
-                buildConfiguration(pnl)
-                return pnl
-            end
+        pages[#pages + 1] = {
+            name = "Configuration",
+            drawFunc = function(parent) buildConfiguration(parent) end
         }
     end
 end)

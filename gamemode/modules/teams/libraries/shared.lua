@@ -26,6 +26,9 @@ function MODULE:GetDefaultCharDesc(client, faction)
 end
 
 if SERVER then
+    util.AddNetworkString("RosterRequest")
+    util.AddNetworkString("RosterData")
+    util.AddNetworkString("KickCharacter")
     local function toSteamID(id)
         if not id then return "" end
         id = tostring(id)
@@ -176,11 +179,7 @@ else
         local fac = lia.faction.indices[char:getFaction()]
         if not fac then return end
         local uid = fac.uniqueID
-        local bg = panel:Add("DPanel")
-        bg:Dock(FILL)
-        bg:DockPadding(10, 10, 10, 10)
-        bg.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
-        lists[uid] = makeList(bg)
+        lists[uid] = makeList(panel)
         built = true
         net.Start("RosterRequest")
         net.WriteString(uid)
@@ -193,11 +192,7 @@ else
         for _, fac in pairs(lia.faction.indices) do
             local pnl = ps:Add("Panel")
             pnl:Dock(FILL)
-            local bg = pnl:Add("DPanel")
-            bg:Dock(FILL)
-            bg:DockPadding(10, 10, 10, 10)
-            bg.Paint = function(p, w, h) derma.SkinHook("Paint", "Panel", p, w, h) end
-            lists[fac.uniqueID] = makeList(bg)
+            lists[fac.uniqueID] = makeList(pnl)
             ps:AddSheet(fac.name or fac.uniqueID, pnl)
             net.Start("RosterRequest")
             net.WriteString(fac.uniqueID)

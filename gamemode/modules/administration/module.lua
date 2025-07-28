@@ -4,336 +4,38 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 MODULE.Privileges = {
     {
-        Name = "Can Remove Warns",
+        Name = "Staff Permissions - Can Remove Warns",
         MinAccess = "superadmin"
     },
     {
-        Name = "Manage Prop Blacklist",
+        Name = "Staff Permissions - Manage Prop Blacklist",
         MinAccess = "superadmin"
     },
     {
-        Name = "Access Configuration Menu",
+        Name = "Staff Permissions - Access Configuration Menu",
         MinAccess = "superadmin"
     },
     {
-        Name = "Access Edit Configuration Menu",
+        Name = "Staff Permissions - Access Edit Configuration Menu",
         MinAccess = "superadmin"
     },
     {
-        Name = "Manage UserGroups",
+        Name = "Staff Permissions - Manage UserGroups",
         MinAccess = "superadmin"
     }
 }
 
-hook.Add("liaAdminRegisterTab", "liaStaffManagementTab", function(parent, tabs)
-    local ply = LocalPlayer()
-    if not ply:hasPrivilege("View Staff Actions") then return end
-    tabs[L("staffManagement")] = {
-        icon = "icon16/chart_bar.png",
-        build = function(sheet)
-            local panel = vgui.Create("DPanel", sheet)
-            panel:Dock(FILL)
-            panel:DockPadding(10, 10, 10, 10)
-            local list = vgui.Create("DListView", panel)
-            list:Dock(FILL)
-            list:AddColumn(L("adminName"))
-            list:AddColumn(L("steamID"))
-            list:AddColumn(L("staffAction"))
-            list:AddColumn(L("count"))
-            MODULE.actionList = list
-            list.OnRowRightClick = function(_, _, line)
-                if not IsValid(line) then return end
-                local m = DermaMenu()
-                m:AddOption(L("copyRow"), function()
-                    local s = ""
-                    for i = 1, line:Columns() do
-                        s = s .. line:GetColumnText(i) .. " | "
-                    end
-
-                    SetClipboardText(s:sub(1, -4))
-                end):SetIcon("icon16/page_copy.png")
-
-                m:Open()
-            end
-
-            net.Start("RequestStaffActions")
-            net.SendToServer()
-            return panel
-        end
-    }
-
-    tabs[L("warnings")] = {
-        icon = "icon16/error.png",
-        build = function(sheet)
-            local pnl = vgui.Create("DPanel", sheet)
-            pnl:Dock(FILL)
-            pnl:DockPadding(10, 10, 10, 10)
-            local list = vgui.Create("DListView", pnl)
-            list:Dock(FILL)
-            list:AddColumn(L("player"))
-            list:AddColumn(L("steamID"))
-            list:AddColumn(L("admin"))
-            list:AddColumn(L("steamID"))
-            list:AddColumn(L("reason"))
-            list:AddColumn(L("timestamp"))
-            MODULE.warnList = list
-            list.OnRowRightClick = function(_, _, line)
-                if not IsValid(line) then return end
-                local m = DermaMenu()
-                m:AddOption(L("copyRow"), function()
-                    local s = ""
-                    for i = 1, line:Columns() do
-                        s = s .. line:GetColumnText(i) .. " | "
-                    end
-
-                    SetClipboardText(s:sub(1, -4))
-                end):SetIcon("icon16/page_copy.png")
-
-                m:Open()
-            end
-
-            net.Start("RequestPlayerWarnings")
-            net.WriteString(LocalPlayer():SteamID64())
-            net.SendToServer()
-            return pnl
-        end
-    }
-
-    tabs[L("ticketsTab")] = {
-        icon = "icon16/briefcase.png",
-        build = function(sheet)
-            local pnl = vgui.Create("DPanel", sheet)
-            pnl:Dock(FILL)
-            pnl:DockPadding(10, 10, 10, 10)
-            local list = vgui.Create("DListView", pnl)
-            list:Dock(FILL)
-            list:AddColumn(L("timestamp"))
-            list:AddColumn(L("requester"))
-            list:AddColumn(L("steamID"))
-            list:AddColumn(L("admin"))
-            list:AddColumn(L("steamID"))
-            list:AddColumn(L("message"))
-            MODULE.ticketList = list
-            list.OnRowRightClick = function(_, _, line)
-                if not IsValid(line) then return end
-                local m = DermaMenu()
-                m:AddOption(L("copyRow"), function()
-                    local s = ""
-                    for i = 1, line:Columns() do
-                        s = s .. line:GetColumnText(i) .. " | "
-                    end
-
-                    SetClipboardText(s:sub(1, -4))
-                end):SetIcon("icon16/page_copy.png")
-
-                m:Open()
-            end
-
-            net.Start("RequestTicketClaims")
-            net.SendToServer()
-            return pnl
-        end
-    }
-end)
-
-hook.Add("liaAdminRegisterTab", "liaEntitiesAdminTab", function(parent, tabs)
-    local client = LocalPlayer()
-    if not client:hasPrivilege("Staff Permission — Access Entity List") then return end
-    tabs[L("entities")] = {
-        icon = "icon16/bricks.png",
-        build = function(sheet)
-            local panel = vgui.Create("DPanel", sheet)
-            panel:Dock(FILL)
-            panel.Paint = function() end
-            local entitiesByCreator = {}
-            for _, ent in ents.Iterator() do
-                if IsValid(ent) and ent.GetCreator and IsValid(ent:GetCreator()) then
-                    local owner = ent:GetCreator():Nick()
-                    entitiesByCreator[owner] = entitiesByCreator[owner] or {}
-                    table.insert(entitiesByCreator[owner], ent)
-                end
-            end
-
-            local lastModelFrame
-            local function startSpectateView(ent, originalThirdPerson)
-                local yaw = client:EyeAngles().yaw
-                local camZOffset = 50
-                hook.Add("CalcView", "EntityViewCalcView", function()
-                    return {
-                        origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
-                        angles = Angle(0, yaw, 0),
-                        fov = 60
-                    }
-                end)
-
-                hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "liaMediumFont", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
-                hook.Add("Think", "EntityViewRotate", function()
-                    if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_W) then camZOffset = camZOffset + FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_S) then camZOffset = camZOffset - FrameTime() * 100 end
-                    if input.IsKeyDown(KEY_SPACE) then
-                        hook.Remove("CalcView", "EntityViewCalcView")
-                        hook.Remove("HUDPaint", "EntityViewHUD")
-                        hook.Remove("Think", "EntityViewRotate")
-                        hook.Remove("CreateMove", "EntitySpectateCreateMove")
-                        lia.option.set("thirdPersonEnabled", originalThirdPerson)
-                    end
-                end)
-
-                hook.Add("CreateMove", "EntitySpectateCreateMove", function(cmd)
-                    cmd:SetForwardMove(0)
-                    cmd:SetSideMove(0)
-                    cmd:SetUpMove(0)
-                end)
-            end
-
-            if not table.IsEmpty(entitiesByCreator) then
-                local sheetPanel = vgui.Create("DPropertySheet", panel)
-                sheetPanel:Dock(FILL)
-                sheetPanel:DockMargin(0, 0, 0, 10)
-                for owner, list in SortedPairs(entitiesByCreator) do
-                    local page = vgui.Create("DPanel", sheetPanel)
-                    page:Dock(FILL)
-                    page.Paint = function() end
-                    local searchEntry = vgui.Create("DTextEntry", page)
-                    searchEntry:Dock(TOP)
-                    searchEntry:DockMargin(0, 0, 0, 5)
-                    searchEntry:SetTall(30)
-                    searchEntry:SetPlaceholderText(L("searchEntities"))
-                    local infoPanel = vgui.Create("DPanel", page)
-                    infoPanel:Dock(TOP)
-                    infoPanel:DockMargin(10, 0, 10, 5)
-                    infoPanel:SetTall(30)
-                    infoPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-                    local infoLabel = vgui.Create("DLabel", infoPanel)
-                    infoLabel:Dock(FILL)
-                    infoLabel:SetFont("liaSmallFont")
-                    infoLabel:SetTextColor(color_white)
-                    infoLabel:SetContentAlignment(5)
-                    infoLabel:SetText(L("totalPlayerEntities", #list))
-                    local scroll = vgui.Create("DScrollPanel", page)
-                    scroll:Dock(FILL)
-                    scroll:DockPadding(0, 0, 0, 10)
-                    local canvas = scroll:GetCanvas()
-                    local entries = {}
-                    for _, ent in ipairs(list) do
-                        local className = ent:GetClass()
-                        local itemPanel = vgui.Create("DPanel", canvas)
-                        itemPanel:Dock(TOP)
-                        itemPanel:DockMargin(10, 15, 10, 10)
-                        itemPanel:SetTall(100)
-                        itemPanel.infoText = className:lower()
-                        itemPanel.Paint = function(pnl, w, h)
-                            derma.SkinHook("Paint", "Panel", pnl, w, h)
-                            draw.SimpleText(className, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                        end
-
-                        local icon = vgui.Create("liaSpawnIcon", itemPanel)
-                        icon:Dock(LEFT)
-                        icon:SetWide(64)
-                        icon:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
-                        icon.DoClick = function()
-                            if IsValid(lastModelFrame) then lastModelFrame:Close() end
-                            lastModelFrame = vgui.Create("DFrame")
-                            lastModelFrame:SetTitle(className)
-                            lastModelFrame:SetSize(800, 800)
-                            lastModelFrame:Center()
-                            lastModelFrame:MakePopup()
-                            local infoLabel2 = vgui.Create("DLabel", lastModelFrame)
-                            infoLabel2:SetText(L("pressInstructions"))
-                            infoLabel2:SetFont("liaMediumFont")
-                            infoLabel2:SizeToContents()
-                            infoLabel2:Dock(TOP)
-                            infoLabel2:DockMargin(0, 10, 0, 0)
-                            infoLabel2:SetContentAlignment(5)
-                            local modelPanel = vgui.Create("DModelPanel", lastModelFrame)
-                            modelPanel:Dock(FILL)
-                            modelPanel:SetModel(ent:GetModel() or "models/error.mdl", ent:GetSkin() or 0)
-                            modelPanel:SetFOV(45)
-                            local mn, mx = modelPanel.Entity:GetRenderBounds()
-                            local size = math.max(math.abs(mn.x) + math.abs(mx.x), math.abs(mn.y) + math.abs(mx.y), math.abs(mn.z) + math.abs(mx.z))
-                            modelPanel:SetCamPos(Vector(size, size, size))
-                            modelPanel:SetLookAt((mn + mx) * 0.5)
-                            local orig = lia.option.get("thirdPersonEnabled", false)
-                            lia.option.set("thirdPersonEnabled", false)
-                            startSpectateView(ent, orig)
-                        end
-
-                        local btnContainer = vgui.Create("DPanel", itemPanel)
-                        btnContainer:Dock(RIGHT)
-                        btnContainer:SetWide(380)
-                        btnContainer.Paint = function() end
-                        local btnW, btnH = 120, 40
-                        if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
-                            local btnView = vgui.Create("liaSmallButton", btnContainer)
-                            btnView:Dock(LEFT)
-                            btnView:DockMargin(5, 0, 5, 0)
-                            btnView:SetWide(btnW)
-                            btnView:SetTall(btnH)
-                            btnView:SetText(L("view"))
-                            btnView.DoClick = function()
-                                if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
-                                local orig = lia.option.get("thirdPersonEnabled", false)
-                                lia.option.set("thirdPersonEnabled", false)
-                                startSpectateView(ent, orig)
-                            end
-                        end
-
-                        if client:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then
-                            local btnTeleport = vgui.Create("liaSmallButton", btnContainer)
-                            btnTeleport:Dock(LEFT)
-                            btnTeleport:DockMargin(5, 0, 5, 0)
-                            btnTeleport:SetWide(btnW)
-                            btnTeleport:SetTall(btnH)
-                            btnTeleport:SetText(L("teleport"))
-                            btnTeleport.DoClick = function()
-                                net.Start("liaTeleportToEntity")
-                                net.WriteEntity(ent)
-                                net.SendToServer()
-                            end
-                        end
-
-                        local btnWaypoint = vgui.Create("liaSmallButton", btnContainer)
-                        btnWaypoint:Dock(RIGHT)
-                        btnWaypoint:DockMargin(5, 0, 5, 0)
-                        btnWaypoint:SetWide(btnW)
-                        btnWaypoint:SetTall(btnH)
-                        btnWaypoint:SetText(L("waypointButton"))
-                        btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
-                        entries[#entries + 1] = itemPanel
-                    end
-
-                    searchEntry.OnTextChanged = function(entry)
-                        local q = entry:GetValue():lower()
-                        for _, pnl in ipairs(entries) do
-                            pnl:SetVisible(q == "" or pnl.infoText:find(q, 1, true))
-                        end
-
-                        canvas:InvalidateLayout()
-                        canvas:SizeToChildren(false, true)
-                    end
-
-                    sheetPanel:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), page)
-                end
-            end
-            return panel
-        end
-    }
-end)
-
 local DEFAULT_GROUPS = {
     user = true,
     admin = true,
-    superadmin = true,
-    developer = true
+    superadmin = true
 }
 
 local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
     if not (CAMI and CAMI.GetPrivileges and CAMI.UsergroupInherits) then return t end
-    for _, v in pairs(CAMI.GetPrivileges() or {}) do
+    for _, v in ipairs(CAMI.GetPrivileges() or {}) do
         if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
     end
     return t
@@ -345,7 +47,7 @@ local function ensureCAMIGroup(n, inh)
     if not g[n] then
         CAMI.RegisterUsergroup({
             Name = n,
-            Inherits = n == "developer" and "superadmin" or inh or "user"
+            Inherits = inh or "user"
         })
     end
 end
@@ -387,15 +89,27 @@ local function sendBigTable(ply, tbl, strChunk, strDone)
 end
 
 if SERVER then
+    util.AddNetworkString("liaGroupsAdd")
+    util.AddNetworkString("liaGroupsRemove")
+    util.AddNetworkString("liaGroupsRequest")
+    util.AddNetworkString("liaGroupsApply")
+    util.AddNetworkString("liaGroupsDefaults")
+    util.AddNetworkString("liaGroupsRename")
+    util.AddNetworkString("liaGroupsDataChunk")
+    util.AddNetworkString("liaGroupsDataDone")
+    util.AddNetworkString("liaGroupsNotice")
+    util.AddNetworkString("liaPlayersRequest")
+    util.AddNetworkString("liaPlayersDataChunk")
+    util.AddNetworkString("liaPlayersDataDone")
     lia.administration.privileges = lia.administration.privileges or {}
     lia.administration.groups = lia.administration.groups or {}
+    lia.administration.lastJoin = lia.administration.lastJoin or {}
     local function syncPrivileges()
         if not (CAMI and CAMI.GetPrivileges and CAMI.GetUsergroups) then return end
-        for _, v in pairs(CAMI.GetPrivileges() or {}) do
+        for _, v in ipairs(CAMI.GetPrivileges() or {}) do
             lia.administration.privileges[v.Name] = {
                 Name = v.Name,
-                MinAccess = v.MinAccess or "user",
-                Category = v.Category or "Unassigned"
+                MinAccess = v.MinAccess or "user"
             }
         end
 
@@ -406,51 +120,33 @@ if SERVER then
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups")
+        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Staff Permissions - Manage UserGroups")
     end
 
     local function getPrivList()
-        local cats = {}
-        for n, v in pairs(lia.administration.privileges) do
-            local cat = v.Category or "Unassigned"
-            cats[cat] = cats[cat] or {}
-            table.insert(cats[cat], n)
+        local t = {}
+        for n in pairs(lia.administration.privileges) do
+            t[#t + 1] = n
         end
 
-        for _, list in pairs(cats) do
-            table.sort(list)
-        end
-        return cats
+        table.sort(t)
+        return t
     end
 
     local function payloadGroups()
         return {
             cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
             perms = lia.administration.groups or {},
-            privCategories = getPrivList()
+            privList = getPrivList()
         }
     end
 
     local function getBanList()
+        local data = file.Read("cfg/banned_user.cfg", "GAME")
         local t = {}
-        local query = "SELECT steamID FROM lia_players WHERE banStart > 0"
-        if lia.db.module == "mysqloo" and mysqloo and lia.db.getObject then
-            local db = lia.db.getObject()
-            if not db then return t end
-            local q = db:query(query)
-            q:start()
-            q:wait()
-            if not q:error() then
-                for _, row in ipairs(q:getData() or {}) do
-                    t[row.steamID] = true
-                end
-            end
-        else
-            local data = lia.db.querySync(query)
-            if istable(data) then
-                for _, row in ipairs(data) do
-                    t[row.steamID] = true
-                end
+        if data then
+            for sid in string.gmatch(data, "banid%s+%d+%s+(STEAM_%d:%d:%d+)") do
+                t[sid] = true
             end
         end
         return t
@@ -466,7 +162,7 @@ if SERVER then
                 id = v:SteamID(),
                 id64 = v:SteamID64(),
                 group = v:GetUserGroup(),
-                lastJoin = os.time(lia.time.toNumber(v.lastJoin)),
+                lastJoin = lia.administration.lastJoin[v:SteamID()] or os.time(),
                 banned = bans[v:SteamID()] or false
             }
 
@@ -480,128 +176,13 @@ if SERVER then
                 id64 = util.SteamIDTo64(id),
                 group = "",
                 lastJoin = 0,
+
                 banned = true
             }
         end
         return {
             players = plys
         }
-    end
-
-    local function buildCharEntry(client, row)
-        local stored = lia.char.loaded[row.id]
-        local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
-        local isBanned = stored and stored:getBanned() or row.banned
-        local allVars = {}
-        for varName, varInfo in pairs(lia.char.vars) do
-            local value
-            if stored then
-                if varName == "data" then
-                    value = stored:getData()
-                elseif varName == "var" then
-                    value = stored:getVar()
-                else
-                    local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
-                    if isfunction(getter) then
-                        value = getter(stored)
-                    else
-                        value = stored.vars and stored.vars[varName]
-                    end
-                end
-            else
-                if varName == "data" then
-                    value = info
-                elseif varInfo.field and row[varInfo.field] ~= nil then
-                    local raw = row[varInfo.field]
-                    if isnumber(varInfo.default) then
-                        value = tonumber(raw) or varInfo.default
-                    elseif isbool(varInfo.default) then
-                        value = tobool(raw)
-                    elseif istable(varInfo.default) then
-                        value = util.JSONToTable(raw or "{}")
-                    else
-                        value = raw
-                    end
-                else
-                    value = varInfo.default
-                end
-            end
-
-            allVars[varName] = value
-        end
-
-        local lastUsedText
-        if stored then
-            lastUsedText = L("onlineNow")
-        else
-            lastUsedText = row.lastJoinTime
-        end
-
-        local bannedState = false
-        if isBanned then
-            local num = tonumber(isBanned)
-            if num then
-                bannedState = num == 1 or num > os.time()
-            else
-                bannedState = tobool(isBanned)
-            end
-        end
-
-        local entry = {
-            ID = row.id,
-            Name = row.name,
-            Desc = row.desc,
-            Faction = row.faction,
-            SteamID = row.steamID,
-            Banned = bannedState and "Yes" or "No",
-            BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
-            BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
-            BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-            Money = row.money,
-            LastUsed = lastUsedText,
-            allVars = allVars
-        }
-
-        entry.extraDetails = {}
-        hook.Run("CharListExtraDetails", client, entry, stored)
-        return entry
-    end
-
-    local function collectOnlineCharacters(client, callback)
-        local rows = {}
-        for _, ply in player.Iterator() do
-            local char = ply:getChar()
-            if char then
-                rows[#rows + 1] = {
-                    id = char:getID(),
-                    name = char:getName(),
-                    desc = char:getDesc(),
-                    faction = char:getFaction(),
-                    money = char:getMoney(),
-                    banned = char:getBanned(),
-                    lastJoinTime = os.time(lia.time.toNumber(ply.lastJoin)),
-                    steamID = ply:SteamID64()
-                }
-            end
-        end
-
-        local sendData = {}
-        for _, row in ipairs(rows) do
-            sendData[#sendData + 1] = buildCharEntry(client, row)
-        end
-
-        callback(sendData)
-    end
-
-    local function queryAllCharacters(client, callback)
-        lia.db.query("SELECT * FROM lia_characters", function(data)
-            local sendData = {}
-            for _, row in ipairs(data or {}) do
-                sendData[#sendData + 1] = buildCharEntry(client, row)
-            end
-
-            callback(sendData)
-        end)
     end
 
     local function applyToCAMI(g, t)
@@ -621,6 +202,11 @@ if SERVER then
     end
 
     syncPrivileges()
+    hook.Add("PlayerInitialSpawn", "liaAdminTrackJoin", function(p)
+        if p:IsBot() then return end
+        lia.administration.lastJoin[p:SteamID()] = os.time()
+    end)
+
     net.Receive("liaGroupsRequest", function(_, p)
         if not allowed(p) then return end
         syncPrivileges()
@@ -630,35 +216,6 @@ if SERVER then
     net.Receive("liaPlayersRequest", function(_, p)
         if not allowed(p) then return end
         sendBigTable(p, payloadPlayers(), "liaPlayersDataChunk", "liaPlayersDataDone")
-    end)
-
-    net.Receive("liaCharBrowserRequest", function(_, p)
-        if not allowed(p) then return end
-        local mode = net.ReadString()
-        if mode == "all" then
-            queryAllCharacters(p, function(data)
-                sendBigTable(p, {
-                    mode = "all",
-                    list = data
-                }, "liaCharBrowserChunk", "liaCharBrowserDone")
-            end)
-        else
-            collectOnlineCharacters(p, function(data)
-                sendBigTable(p, {
-                    mode = "online",
-                    list = data
-                }, "liaCharBrowserChunk", "liaCharBrowserDone")
-            end)
-        end
-    end)
-
-    net.Receive("liaDBTablesRequest", function(_, p)
-        if not allowed(p) then return end
-        lia.db.getTables():next(function(tables)
-            net.Start("liaDBTables")
-            net.WriteTable(tables or {})
-            net.Send(p)
-        end)
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
@@ -733,13 +290,8 @@ if SERVER then
         notify(p, "Defaults restored for '" .. g .. "'.")
     end)
 else
-    local groupChunks, playerChunks, charChunks = {}, {}, {}
+    local groupChunks, playerChunks = {}, {}
     local PRIV_LIST, PLAYER_LIST, LAST_GROUP = {}, {}, nil
-    local CHAR_LISTS = {
-        online = {},
-        all = {}
-    }
-
     local function setFont(o, f)
         if IsValid(o) then o:SetFont(f) end
     end
@@ -766,87 +318,55 @@ else
             local m = DermaMenu()
             local opt = m:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end)
             opt:SetIcon("icon16/user.png")
-            m:AddOption(L("copyRow"), function()
-                local s = ""
-                for i = 1, line:Columns() do
-                    s = s .. line:GetColumnText(i) .. " | "
-                end
-
-                SetClipboardText(s:sub(1, -4))
-            end):SetIcon("icon16/page_copy.png")
-
             m:Open()
-        end
-    end
-
-    local function buildCharListUI(parent, mode, filterID)
-        parent:Clear()
-        local list = parent:Add("DListView")
-        list:Dock(FILL)
-        list:AddColumn("ID")
-        list:AddColumn("Name")
-        list:AddColumn("SteamID")
-        list:AddColumn("Faction")
-        list:AddColumn("Banned")
-        list:AddColumn("Money")
-        list:AddColumn("Last Used")
-        for _, v in ipairs(CHAR_LISTS[mode] or {}) do
-            local sid = v.SteamID or v.steamID or ""
-            if not filterID or tostring(sid) == tostring(filterID) then list:AddLine(v.ID, v.Name, util.SteamIDFrom64(tostring(sid)), v.Faction, v.Banned, v.Money, v.LastUsed) end
-        end
-
-        list.OnRowRightClick = function(_, _, line)
-            if not IsValid(line) then return end
-            local m = DermaMenu()
-            m:AddOption(L("copyRow"), function()
-                local s = ""
-                for i = 1, line:Columns() do
-                    s = s .. line:GetColumnText(i) .. " | "
-                end
-
-                SetClipboardText(s:sub(1, -4))
-            end):SetIcon("icon16/page_copy.png")
-
-            m:Open()
-        end
-    end
-
-    local function buildPlayerTabs(ps)
-        if not IsValid(ps) then return end
-        ps.playerTabs = ps.playerTabs or {}
-        for _, info in pairs(ps.playerTabs) do
-            if IsValid(info.tab) then ps:CloseTab(info.tab, true) end
-        end
-
-        ps.playerTabs = {}
-        local byPlayer = {}
-        for _, entry in ipairs(CHAR_LISTS.online or {}) do
-            local sid = tostring(entry.SteamID or entry.steamID or "")
-            byPlayer[sid] = byPlayer[sid] or {}
-            table.insert(byPlayer[sid], entry)
-        end
-
-        for sid, _ in SortedPairs(byPlayer) do
-            local page = vgui.Create("DPanel", ps)
-            page:Dock(FILL)
-            page.Paint = function() end
-            local ply = player.GetBySteamID64(sid)
-            local name = IsValid(ply) and ply:Nick() or util.SteamIDFrom64(sid)
-            local sheetInfo = ps:AddSheet(name, page, "icon16/user.png")
-            ps.playerTabs[sid] = {
-                tab = sheetInfo.Tab,
-                panel = page
-            }
-
-            buildCharListUI(page, "online", sid)
         end
     end
 
     local function renderGroupInfo(parent, g, cami, perms)
         parent:Clear()
+        LAST_GROUP = g
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
+        local btnBar = scroll:Add("DPanel")
+        btnBar:Dock(TOP)
+        btnBar:SetTall(36)
+        btnBar:DockMargin(20, 20, 20, 12)
+        btnBar.Paint = function() end
         local editable = not DEFAULT_GROUPS[g]
+        local tickAll = btnBar:Add("liaSmallButton")
+        tickAll:Dock(LEFT)
+        tickAll:SetWide(90)
+        tickAll:SetText("Tick All")
+        local untickAll = btnBar:Add("liaSmallButton")
+        untickAll:Dock(LEFT)
+        untickAll:DockMargin(6, 0, 0, 0)
+        untickAll:SetWide(90)
+        untickAll:SetText("Untick All")
+        local defaultsBtn = btnBar:Add("liaSmallButton")
+        defaultsBtn:Dock(LEFT)
+        defaultsBtn:DockMargin(6, 0, 0, 0)
+        defaultsBtn:SetWide(90)
+        defaultsBtn:SetText("Defaults")
+        if not editable then
+            tickAll:SetEnabled(false)
+            untickAll:SetEnabled(false)
+            defaultsBtn:SetEnabled(false)
+        end
+
+        local delBtn, renameBtn
+        if not DEFAULT_GROUPS[g] then
+            renameBtn = btnBar:Add("liaSmallButton")
+            renameBtn:Dock(RIGHT)
+            renameBtn:DockMargin(0, 0, 6, 0)
+            renameBtn:SetWide(90)
+            renameBtn:SetText("Rename")
+            delBtn = btnBar:Add("liaSmallButton")
+            delBtn:Dock(RIGHT)
+            delBtn:DockMargin(0, 0, 6, 0)
+            delBtn:SetWide(90)
+            delBtn:SetText("Delete")
+        end
+
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
         nameLbl:DockMargin(20, 0, 0, 0)
@@ -871,6 +391,35 @@ else
         inhVal:SetText(cami[g] and cami[g].Inherits or "user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
+        local memberNames = {}
+        for _, m in ipairs(PLAYER_LIST) do
+            if m.group == g then memberNames[#memberNames + 1] = m.name ~= "" and m.name or m.id end
+        end
+
+        local memLbl = scroll:Add("DLabel")
+        memLbl:Dock(TOP)
+        memLbl:DockMargin(20, 0, 0, 6)
+        memLbl:SetText("Members (" .. #memberNames .. ")")
+        setFont(memLbl, "liaBigFont")
+        memLbl:SizeToContents()
+        local memHolder = scroll:Add("DPanel")
+        memHolder:Dock(TOP)
+        memHolder:DockMargin(20, 0, 20, 20)
+        memHolder.Paint = function() end
+        local memLayout = vgui.Create("DListLayout", memHolder)
+        memLayout:Dock(FILL)
+        surface.SetFont("liaMediumFont")
+        local _, fh = surface.GetTextSize("W")
+        for _, n in ipairs(memberNames) do
+            local lbl = memLayout:Add("DLabel")
+            lbl:SetText(n)
+            setFont(lbl, "liaMediumFont")
+            lbl:SizeToContents()
+            lbl:Dock(TOP)
+            lbl:DockMargin(0, 0, 0, 4)
+            memHolder:SetTall(memHolder:GetTall() + fh + 4)
+        end
+
         local privLbl = scroll:Add("DLabel")
         privLbl:Dock(TOP)
         privLbl:DockMargin(20, 0, 0, 6)
@@ -889,95 +438,114 @@ else
         local _, fh2 = surface.GetTextSize("W")
         local rowH = fh2 + 24
         local off = math.floor((rowH - fh2) * 0.5)
-        local catNames = {}
-        for cat in pairs(PRIV_LIST) do
-            catNames[#catNames + 1] = cat
-        end
-
-        table.sort(catNames)
-        for _, catName in ipairs(catNames) do
-            local displayName = catName
-            if catName == "Unassigned" then displayName = L("unassignedLabel") end
-            local cat = list:Add("DCollapsibleCategory")
-            cat:SetLabel(displayName)
-            cat:SetExpanded(true)
-            cat.Header:SetTall(rowH)
-            cat.Header:SetFont("liaMediumFont")
-            local catList = vgui.Create("DListLayout", cat)
-            cat:SetContents(catList)
-            for _, priv in ipairs(PRIV_LIST[catName]) do
-                local row = vgui.Create("DPanel", catList)
-                row:SetTall(rowH)
-                row:Dock(TOP)
-                row:DockMargin(0, 0, 0, 10)
-                row.Paint = function() end
-                local lbl = row:Add("DLabel")
-                lbl:Dock(LEFT)
-                lbl:SetText(priv)
-                setFont(lbl, "liaMediumFont")
-                lbl:SizeToContents()
-                lbl:DockMargin(0, off, 12, 0)
-                local chk = row:Add("liaCheckBox")
-                chk:Dock(LEFT)
-                chk:SetWide(32)
-                chk:SetChecked(current[priv] and true or false)
-                chk.OnChange = function(_, v)
-                    if v then
-                        current[priv] = true
-                    else
-                        current[priv] = nil
-                    end
+        for _, priv in ipairs(PRIV_LIST) do
+            local row = vgui.Create("DPanel", list)
+            row:SetTall(rowH)
+            row:Dock(TOP)
+            row:DockMargin(0, 0, 0, 10)
+            row.Paint = function() end
+            local lbl = row:Add("DLabel")
+            lbl:Dock(LEFT)
+            lbl:SetText(priv)
+            setFont(lbl, "liaMediumFont")
+            lbl:SizeToContents()
+            lbl:DockMargin(0, off, 12, 0)
+            local chk = row:Add("liaCheckBox")
+            chk:Dock(LEFT)
+            chk:SetWide(32)
+            chk:SetChecked(current[priv] and true or false)
+            chk.OnChange = function(_, v)
+                if v then
+                    current[priv] = true
+                else
+                    current[priv] = nil
                 end
-
-                if not editable then chk:SetEnabled(false) end
-                row.PerformLayout = function(_, w, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
-                checkboxes[#checkboxes + 1] = chk
             end
+
+            if not editable then chk:SetEnabled(false) end
+            row.PerformLayout = function(_, w, h) chk:DockMargin(0, math.floor((h - chk:GetTall()) * 0.5), 0, 0) end
+            checkboxes[#checkboxes + 1] = chk
         end
 
         list:InvalidateLayout(true)
-        listHolder:SetTall(list:GetTall())
+        local totalH = 0
+        for _, c in ipairs(list:GetChildren()) do
+            totalH = totalH + c:GetTall() + 10
+        end
+
+        listHolder:SetTall(totalH)
+        local function setAll(state)
+            for _, cb in ipairs(checkboxes) do
+                cb:SetChecked(state)
+            end
+        end
+
+        tickAll.DoClick = function() if editable then setAll(true) end end
+        untickAll.DoClick = function() if editable then setAll(false) end end
+        defaultsBtn.DoClick = function()
+            if not editable then return end
+            net.Start("liaGroupsDefaults")
+            net.WriteString(g)
+            net.SendToServer()
+        end
+
+        if renameBtn then
+            renameBtn.DoClick = function()
+                Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
+                    if txt == "" or txt == g then return end
+                    net.Start("liaGroupsRename")
+                    net.WriteString(g)
+                    net.WriteString(txt)
+                    net.SendToServer()
+                end)
+            end
+        end
+
+        if delBtn then
+            delBtn.DoClick = function()
+                Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
+                    net.Start("liaGroupsRemove")
+                    net.WriteString(g)
+                    net.SendToServer()
+                end, "No")
+            end
+        end
     end
 
     local function buildGroupsUI(panel, cami, perms)
         panel:Clear()
-        local sheet = panel:Add("DPropertySheet")
-        sheet:Dock(FILL)
-        sheet:DockMargin(0, 0, 0, 40)
-        local keys, tabs = {}, {}
+        local sidebar = panel:Add("DScrollPanel")
+        sidebar:Dock(RIGHT)
+        sidebar:SetWide(200)
+        sidebar:DockMargin(0, 20, 20, 20)
+        local content = panel:Add("DPanel")
+        content:Dock(FILL)
+        content:DockMargin(10, 10, 10, 10)
+        local selected
+        local keys = {}
         for g in pairs(cami) do
             keys[#keys + 1] = g
         end
 
         table.sort(keys)
         for _, g in ipairs(keys) do
-            local page = vgui.Create("DPanel", sheet)
-            page:Dock(FILL)
-            page.Paint = function() end
-            renderGroupInfo(page, g, cami, perms)
-            local info = sheet:AddSheet(g, page)
-            tabs[g] = info.Tab
+            local b = sidebar:Add("liaMediumButton")
+            b:Dock(TOP)
+            b:DockMargin(0, 0, 0, 10)
+            b:SetTall(40)
+            b:SetText(g)
+            b.DoClick = function()
+                if IsValid(selected) then selected:SetSelected(false) end
+                b:SetSelected(true)
+                selected = b
+                renderGroupInfo(content, g, cami, perms)
+            end
         end
 
-        local bottomBar = panel:Add("DPanel")
-        bottomBar:Dock(BOTTOM)
-        bottomBar:SetTall(36)
-        bottomBar.Paint = function() end
-        local addBtn = bottomBar:Add("liaMediumButton")
-        local renameBtn = bottomBar:Add("liaMediumButton")
-        local delBtn = bottomBar:Add("liaMediumButton")
-        addBtn:Dock(LEFT)
-        addBtn:DockMargin(0, 0, 6, 0)
-        renameBtn:Dock(LEFT)
-        renameBtn:DockMargin(0, 0, 6, 0)
-        delBtn:Dock(LEFT)
-        delBtn:DockMargin(0, 0, 0, 0)
-        bottomBar.PerformLayout = function(_, w, _)
-            local third = (w - 12) / 3
-            addBtn:SetWide(third)
-            renameBtn:SetWide(third)
-            delBtn:SetWide(third)
-        end
+        local addBtn = sidebar:Add("liaMediumButton")
+        addBtn:Dock(TOP)
+        addBtn:DockMargin(0, 20, 0, 0)
+        addBtn:SetTall(36)
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
             Derma_StringRequest("Create Group", "New group name:", "", function(txt)
@@ -989,48 +557,20 @@ else
             end)
         end
 
-        renameBtn:SetText("Rename")
-        delBtn:SetText("Delete")
-        local function updateButtons(g)
-            local editable = not DEFAULT_GROUPS[g]
-            renameBtn:SetVisible(editable)
-            delBtn:SetVisible(editable)
-        end
-
-        renameBtn.DoClick = function()
-            local tab = sheet:GetActiveTab()
-            if not IsValid(tab) then return end
-            local g = tab:GetText()
-            Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
-                if txt == "" or txt == g then return end
-                net.Start("liaGroupsRename")
-                net.WriteString(g)
-                net.WriteString(txt)
-                net.SendToServer()
-            end)
-        end
-
-        delBtn.DoClick = function()
-            local tab = sheet:GetActiveTab()
-            if not IsValid(tab) then return end
-            local g = tab:GetText()
-            Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
-                net.Start("liaGroupsRemove")
-                net.WriteString(g)
-                net.SendToServer()
-            end, "No")
-        end
-
-        function sheet:OnActiveTabChanged(old, new)
-            if not IsValid(new) then return end
-            LAST_GROUP = new:GetText()
-            updateButtons(LAST_GROUP)
-        end
-
-        if LAST_GROUP and tabs[LAST_GROUP] then
-            sheet:SetActiveTab(tabs[LAST_GROUP])
-        elseif keys[1] and tabs[keys[1]] then
-            sheet:SetActiveTab(tabs[keys[1]])
+        if LAST_GROUP and cami[LAST_GROUP] then
+            for _, b in ipairs(sidebar:GetChildren()) do
+                if b.GetText and b:GetText() == LAST_GROUP then
+                    b:DoClick()
+                    break
+                end
+            end
+        elseif keys[1] then
+            for _, b in ipairs(sidebar:GetChildren()) do
+                if b.GetText and b:GetText() == keys[1] then
+                    b:DoClick()
+                    break
+                end
+            end
         end
     end
 
@@ -1038,7 +578,7 @@ else
         local data = table.concat(groupChunks[id])
         groupChunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
-        PRIV_LIST = tbl.privCategories or {}
+        PRIV_LIST = tbl.privList or {}
         lia.administration.groups = tbl.perms or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.administration.groups) end
     end
@@ -1049,19 +589,6 @@ else
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
         PLAYER_LIST = tbl.players or {}
         if IsValid(lia.gui.players) then buildPlayersUI(lia.gui.players) end
-    end
-
-    local function handleCharBrowserDone(id)
-        local data = table.concat(charChunks[id])
-        charChunks[id] = nil
-        local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
-        CHAR_LISTS[tbl.mode or "online"] = tbl.list or {}
-        if tbl.mode == "all" and IsValid(lia.gui.charBrowserAll) then
-            buildCharListUI(lia.gui.charBrowserAll, "all")
-        elseif tbl.mode ~= "all" and IsValid(lia.gui.charBrowserOnline) then
-            buildCharListUI(lia.gui.charBrowserOnline, "online")
-            buildPlayerTabs(lia.gui.charBrowserPS)
-        end
     end
 
     net.Receive("liaGroupsDataChunk", function()
@@ -1096,29 +623,13 @@ else
         if playerChunks[id] then handlePlayerDone(id) end
     end)
 
-    net.Receive("liaCharBrowserChunk", function()
-        local id = net.ReadString()
-        local idx = net.ReadUInt(16)
-        local total = net.ReadUInt(16)
-        local len = net.ReadUInt(16)
-        local dat = net.ReadData(len)
-        charChunks[id] = charChunks[id] or {}
-        charChunks[id][idx] = dat
-        if idx == total then handleCharBrowserDone(id) end
-    end)
-
-    net.Receive("liaCharBrowserDone", function()
-        local id = net.ReadString()
-        if charChunks[id] then handleCharBrowserDone(id) end
-    end)
-
     net.Receive("liaGroupsNotice", function()
         local msg = net.ReadString()
         if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
     end)
 
     local function canAccess()
-        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups")
+        return IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups")
     end
 
     hook.Add("liaAdminRegisterTab", "AdminTabUsergroups", function(parent, tabs)
@@ -1151,74 +662,17 @@ else
         }
     end)
 
-    hook.Add("liaAdminRegisterTab", "AdminTabCharBrowser", function(parent, tabs)
-        if not canAccess() then return end
-        tabs["Character List"] = {
-            icon = "icon16/table.png",
-            build = function(sheet)
-                local pnl = vgui.Create("DPanel", sheet)
-                pnl:DockPadding(10, 10, 10, 10)
-                local ps = pnl:Add("DPropertySheet")
-                ps:Dock(FILL)
-                lia.gui.charBrowserPS = ps
-                local online = vgui.Create("DPanel", ps)
-                online:Dock(FILL)
-                online.Paint = function() end
-                lia.gui.charBrowserOnline = online
-                buildCharListUI(online, "online")
-                buildPlayerTabs(ps)
-                local all = vgui.Create("DPanel", ps)
-                all:Dock(FILL)
-                all.Paint = function() end
-                lia.gui.charBrowserAll = all
-                ps:AddSheet("All Characters", all, "icon16/database.png")
-                buildCharListUI(all, "all")
-                net.Start("liaCharBrowserRequest")
-                net.WriteString("online")
-                net.SendToServer()
-                net.Start("liaCharBrowserRequest")
-                net.WriteString("all")
-                net.SendToServer()
-                return pnl
-            end
-        }
-    end)
-
-    hook.Add("liaAdminRegisterTab", "AdminTabDBBrowser", function(parent, tabs)
-        if not canAccess() or not LocalPlayer():hasPrivilege("View DB Tables") then return end
-        tabs["DB Browser"] = {
-            icon = "icon16/database.png",
-            build = function(sheet)
-                local pnl = vgui.Create("DPanel", sheet)
-                pnl:DockPadding(10, 10, 10, 10)
-                local list = vgui.Create("DListView", pnl)
-                list:Dock(FILL)
-                list:AddColumn("Table")
-                lia.gui.dbBrowserList = list
-                function list:OnRowSelected(_, line)
-                    net.Start("liaRequestTableData")
-                    net.WriteString(line:GetColumnText(1))
-                    net.SendToServer()
-                end
-
-                net.Start("liaDBTablesRequest")
-                net.SendToServer()
-                return pnl
-            end
-        }
-    end)
-
     function MODULE:CreateMenuButtons(tabs)
         local lp = LocalPlayer()
         if not IsValid(lp) then return end
-        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Manage UserGroups")) then return end
+        if not (lp:IsSuperAdmin() or lp:hasPrivilege("Staff Permissions - Manage UserGroups")) then return end
         tabs[L("shortAdmin")] = function(parent)
             parent:Clear()
             local sheet = vgui.Create("DPropertySheet", parent)
             sheet:Dock(FILL)
             local reg = {}
             hook.Run("liaAdminRegisterTab", parent, reg)
-            for name, data in SortedPairs(reg) do
+            for name, data in pairs(reg) do
                 local pnl = data.build(sheet)
                 sheet:AddSheet(name, pnl, data.icon or "icon16/application.png")
             end
@@ -1227,6 +681,7 @@ else
 end
 
 hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
+    if lia.administration.isDisabled() then return end
     lia.administration.groups[g.Name] = buildDefaultTable(g.Name)
     if SERVER then
         ensureCAMIGroup(g.Name, g.Inherits or "user")
@@ -1235,6 +690,7 @@ hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
 end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
+    if lia.administration.isDisabled() then return end
     lia.administration.groups[g.Name] = nil
     if SERVER then
         dropCAMIGroup(g.Name)
@@ -1243,11 +699,10 @@ hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if not pv or not pv.Name then return end
+    if lia.administration.isDisabled() or not pv or not pv.Name then return end
     lia.administration.privileges[pv.Name] = {
         Name = pv.Name,
-        MinAccess = pv.MinAccess or "user",
-        Category = pv.Category or "Unassigned"
+        MinAccess = pv.MinAccess or "user"
     }
 
     for g in pairs(lia.administration.groups) do
@@ -1258,7 +713,7 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
 end)
 
 hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if not pv or not pv.Name then return end
+    if lia.administration.isDisabled() or not pv or not pv.Name then return end
     lia.administration.privileges[pv.Name] = nil
     for _, p in pairs(lia.administration.groups) do
         p[pv.Name] = nil
@@ -1268,7 +723,7 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function
 end)
 
 hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
-    if not IsValid(ply) then return end
+    if lia.administration.isDisabled() or not IsValid(ply) then return end
     if not SERVER then return end
     lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(new), ply:SteamID64()))
 end)

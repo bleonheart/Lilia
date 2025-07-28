@@ -11,12 +11,12 @@ MODULE.Dependencies = {
 
 lia.vendor.addPreset("utility_vendor", {
     manhack_welder = {
-        mode = VendorSellAndBuy
+        mode = VENDOR_SELLANDBUY
     },
     item_suit = {
-        mode = VendorSellAndBuy
+        mode = VENDOR_SELLANDBUY
     },
     universalammo3 = {
-        mode = VendorSellAndBuy
+        mode = VENDOR_SELLANDBUY
     },
 })

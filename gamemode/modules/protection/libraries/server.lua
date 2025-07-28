@@ -32,9 +32,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     local attackerIsHuman = IsValid(attacker) and attacker:IsPlayer()
     if attackerIsHuman and IsCheater(attacker) then
         dmgInfo:SetDamage(0)
-        local hadKeys = attacker:HasWeapon("lia_keys")
-        attacker:StripWeapons()
-        if hadKeys then attacker:Give("lia_keys") end
+        LogCheaterAction(attacker, "deal damage")
         return true
     end
 
@@ -275,21 +273,10 @@ end
 function MODULE:OnCheaterCaught(client)
     if IsValid(client) then
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
-        local hadKeys = client:HasWeapon("lia_keys")
-        client:StripWeapons()
-        if hadKeys then client:Give("lia_keys") end
         client:notifyLocalized("caughtCheating")
         for _, p in player.Iterator() do
             if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64()) end
         end
-    end
-end
-
-function MODULE:PrePlayerLoadedChar(client)
-    if IsCheater(client) then
-        local hadKeys = client:HasWeapon("lia_keys")
-        client:StripWeapons()
-        if hadKeys then client:Give("lia_keys") end
     end
 end
 

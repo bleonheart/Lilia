@@ -66,7 +66,7 @@ net.Receive("send_logs_request", function(_, client)
 end)
 
 function MODULE:CanPlayerSeeLog(client)
-    return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Can See Logs")
+    return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Staff Permissions - Can See Logs")
 end
 
 function MODULE:OnCharDelete(client, id)
@@ -181,21 +181,21 @@ function MODULE:OnPlayerObserve(client, state)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    local pattern = "adminSteamID = " .. lia.db.convertDataType(admin:SteamID64())
+    local pattern = "admin LIKE '%" .. admin:SteamID64() .. "'"
     lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    local pattern = "adminSteamID = " .. lia.db.convertDataType(admin:SteamID64())
+    local pattern = "admin LIKE '%" .. admin:SteamID64() .. "'"
     lia.db.count("ticketclaims", pattern):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)
-    lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
+    lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
-    lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
+    lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
 end
 
 function MODULE:ItemTransfered(context)

@@ -340,7 +340,7 @@ lia.keybind.add(KEY_NONE, "Open Inventory", function()
 end)
 
 lia.keybind.add(KEY_NONE, "Admin Mode", function() lia.command.send("adminmode") end)
-function lia.gui.openClassesMenu()
+lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
     local client = LocalPlayer()
     if not client:getChar() or vgui.CursorVisible() then return end
     if IsValid(lia.gui.classesFrame) then
@@ -528,16 +528,4 @@ function lia.gui.openClassesMenu()
 
     lia.gui.classesFrame = frame
     loadClasses()
-end
-
-lia.keybind.add(KEY_NONE, "Open Classes Menu", function()
-    lia.gui.openClassesMenu()
-end)
-
-lia.keybind.add(KEY_F3, "Quick Menu", function()
-    if IsValid(lia.gui.quick) then
-        lia.gui.quick:Remove()
-    else
-        vgui.Create("liaQuick")
-    end
 end)
