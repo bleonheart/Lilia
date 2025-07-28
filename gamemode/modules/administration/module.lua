@@ -903,16 +903,26 @@ else
         local renameBtn = bottomBar:Add("liaMediumButton")
         local delBtn = bottomBar:Add("liaMediumButton")
         addBtn:Dock(LEFT)
-        addBtn:DockMargin(0, 0, 6, 0)
         renameBtn:Dock(LEFT)
-        renameBtn:DockMargin(0, 0, 6, 0)
         delBtn:Dock(LEFT)
-        delBtn:DockMargin(0, 0, 0, 0)
         bottomBar.PerformLayout = function(_, w, _)
-            local third = (w - 12) / 3
-            addBtn:SetWide(third)
-            renameBtn:SetWide(third)
-            delBtn:SetWide(third)
+            local buttons = {}
+            if addBtn:IsVisible() then buttons[#buttons + 1] = addBtn end
+            if renameBtn:IsVisible() then buttons[#buttons + 1] = renameBtn end
+            if delBtn:IsVisible() then buttons[#buttons + 1] = delBtn end
+
+            local count = #buttons
+            local spacing = 6
+            local wide = count > 0 and (w - spacing * (count - 1)) / count or 0
+
+            for i, btn in ipairs(buttons) do
+                btn:SetWide(wide)
+                if i < count then
+                    btn:DockMargin(0, 0, spacing, 0)
+                else
+                    btn:DockMargin(0, 0, 0, 0)
+                end
+            end
         end
 
         addBtn:SetText("Create Group")
@@ -932,6 +942,7 @@ else
             local editable = not lia.administration.DefaultGroups[g]
             renameBtn:SetVisible(editable)
             delBtn:SetVisible(editable)
+            bottomBar:InvalidateLayout(true)
         end
 
         renameBtn.DoClick = function()
@@ -968,6 +979,12 @@ else
             sheet:SetActiveTab(tabs[LAST_GROUP])
         elseif keys[1] and tabs[keys[1]] then
             sheet:SetActiveTab(tabs[keys[1]])
+        end
+
+        -- ensure buttons reflect editability of the initially selected group
+        local active = sheet:GetActiveTab()
+        if IsValid(active) then
+            updateButtons(active:GetText())
         end
     end
 
