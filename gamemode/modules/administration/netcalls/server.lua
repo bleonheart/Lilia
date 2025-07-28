@@ -232,6 +232,7 @@ local function payloadPlayers()
             id64 = v:SteamID64(),
             group = v:GetUserGroup(),
             lastJoin = os.time(lia.time.toNumber(v.lastJoin)),
+            lastChar = lia.char.lastUsed and lia.char.lastUsed[v:SteamID64()] or "",
             banned = bans[v:SteamID()] or false
         }
 
