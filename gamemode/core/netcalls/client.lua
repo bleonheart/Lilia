@@ -791,3 +791,19 @@ net.Receive("liaCharacterData", function()
 
     hook.Run("CharDataLoaded", character)
 end)
+
+net.Receive("liaBigTableChunk", function()
+    local id = net.ReadString()
+    local idx = net.ReadUInt(16)
+    local total = net.ReadUInt(16)
+    local len = net.ReadUInt(16)
+    local data = net.ReadData(len)
+    lia.net.bigTables[id] = lia.net.bigTables[id] or {}
+    lia.net.bigTables[id][idx] = data
+end)
+
+net.Receive("liaBigTableDone", function()
+    local id = net.ReadString()
+    local tbl = lia.net.ReadBigTable(id)
+    if tbl then hook.Run("LiaBigTableReceived", id, tbl) end
+end)
