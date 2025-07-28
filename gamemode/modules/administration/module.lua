@@ -1031,6 +1031,10 @@ else
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
                 lia.gui.usergroups = pnl
+                -- draw with any groups we already know about
+                if lia and lia.administration and lia.administration.groups then
+                    buildGroupsUI(pnl, {}, lia.administration.groups)
+                end
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
                 return pnl
