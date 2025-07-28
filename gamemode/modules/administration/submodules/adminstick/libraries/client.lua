@@ -406,7 +406,7 @@ end
 
 function MODULE:OpenAdminStickUI(tgt)
     local cl = LocalPlayer()
-    if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return end
+    if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return false end
     AdminStickIsOpen = true
     local menu = DermaMenu()
     menu:Center()
@@ -503,4 +503,5 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     menu:Open()
+    return true
 end
