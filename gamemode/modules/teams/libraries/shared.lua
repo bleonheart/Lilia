@@ -202,19 +202,24 @@ else
         built = true
     end
 
-    function MODULE:CreateMenuButtons(tabs)
+    -- move the roster display under the Information tab instead of creating a
+    -- dedicated menu button
+    hook.Add("CreateInformationButtons", "liaRosterInformation", function(pages)
         local ply = LocalPlayer()
         if not IsValid(ply) then return end
         local char = ply:getChar()
         if not char then return end
         if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
-        tabs[L("roster")] = function(panel)
-            rosterRows = {}
-            lists = {}
-            built = false
-            buildRoster(panel)
-        end
-    end
+        table.insert(pages, {
+            name = L("roster"),
+            drawFunc = function(panel)
+                rosterRows = {}
+                lists = {}
+                built = false
+                buildRoster(panel)
+            end
+        })
+    end)
 
     hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(tabs)
         local ply = LocalPlayer()
