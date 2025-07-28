@@ -85,15 +85,12 @@ net.Receive("send_logs", function()
             return
         end
 
-        if IsValid(receivedPanel) then
-            OpenLogsUI(receivedPanel, data)
-        end
+        if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, data) end
     end)
 end)
 
 hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(tabs)
-    if not (IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Can See Logs")) then return end
-
+    if not (IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can See Logs")) then return end
     tabs[L("logs")] = {
         icon = "icon16/page_copy.png",
         build = function(sheet)
