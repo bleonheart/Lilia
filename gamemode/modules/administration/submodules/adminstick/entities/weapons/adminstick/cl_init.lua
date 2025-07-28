@@ -4,7 +4,9 @@ function SWEP:PrimaryAttack()
     local client = LocalPlayer()
     if IsValid(target) then
         client.AdminStickTarget = target
-        MODULE:OpenAdminStickUI(target)
+        if not MODULE:OpenAdminStickUI(target) then
+            client.AdminStickTarget = nil
+        end
     end
 end
 
@@ -109,6 +111,8 @@ function SWEP:Reload()
     local client = LocalPlayer()
     if client:KeyDown(IN_SPEED) then
         client.AdminStickTarget = client
-        MODULE:OpenAdminStickUI(client)
+        if not MODULE:OpenAdminStickUI(client) then
+            client.AdminStickTarget = nil
+        end
     end
 end
