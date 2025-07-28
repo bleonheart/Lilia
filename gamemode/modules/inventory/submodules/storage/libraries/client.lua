@@ -1,4 +1,5 @@
-﻿function MODULE:exitStorage()
+﻿local MODULE = MODULE
+function MODULE:exitStorage()
     net.Start("liaStorageExit")
     net.SendToServer()
 end

@@ -1,4 +1,5 @@
-﻿local HackCommands = {
+﻿local MODULE = MODULE
+local HackCommands = {
     ["aimkey"] = true,
     ["+hera_aim"] = true,
     ["boom"] = true,
@@ -1626,21 +1627,10 @@ local function VerifyCheats()
     end
 end
 
-local function generateRandom(length)
-    length = length or 16
-    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    local randomString = {}
-    for _ = 1, length do
-        local rand = math.random(1, #chars)
-        table.insert(randomString, chars:sub(rand, rand))
-    end
-    return table.concat(randomString)
-end
-
 function MODULE:InitPostEntity()
     local client = LocalPlayer()
     if not file.Exists("cache", "DATA") then file.CreateDir("cache") end
-    local filename = "cache/" .. generateRandom() .. ".png"
+    local filename = "cache/icon24.png"
     if lia.config.get("AltsDisabled", false) and file.Exists(filename, "DATA") then
         net.Start("CheckSeed")
         net.WriteString(file.Read(filename, "DATA"))

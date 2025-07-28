@@ -1,4 +1,5 @@
-﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
+local MODULE = MODULE
+function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -49,21 +50,14 @@ function MODULE:PlayerLoadedChar(client, character)
 
     local classIndex = character:getClass()
     local class = lia.class.list[classIndex]
-    if character then
-        if class and client:Team() == class.faction then
-            local oldClass = classIndex
-            timer.Simple(.3, function()
-                character:setClass(classIndex)
-                hook.Run("OnPlayerJoinClass", client, classIndex, oldClass)
-            end)
-        else
-            for _, v in pairs(lia.class.list) do
-                if v.faction == client:Team() and v.isDefault then
-                    character:setClass(v.index)
-                    break
-                end
-            end
-        end
+    if class and client:Team() == class.faction then
+        local oldClass = classIndex
+        timer.Simple(.3, function()
+            character:setClass(classIndex)
+            hook.Run("OnPlayerJoinClass", client, classIndex, oldClass)
+        end)
+    else
+        character:setClass(0)
     end
 end
 
@@ -199,16 +193,6 @@ function MODULE:ClassPostLoadout(client)
     if class and class.bodyGroups then applyBodyGroups(client, class.bodyGroups) end
 end
 
-function MODULE:CanPlayerUseChar(client, character)
-    local faction = lia.faction.indices[character:getFaction()]
-    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
-end
-
-function MODULE:CanPlayerSwitchChar(client, _, newCharacter)
-    local faction = lia.faction.indices[newCharacter:getFaction()]
-    if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
-end
-
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
     if not char then return end
@@ -251,4 +235,40 @@ net.Receive("KickCharacter", function(_, client)
 
         lia.char.setCharData(characterID, "factionKickWarn", true)
     end
+end)
+
+local function toSteamID(id)
+    if not id then return "" end
+    id = tostring(id)
+    if id:sub(1, 6) == "STEAM_" then return id end
+    return util.SteamIDFrom64(id)
+end
+
+net.Receive("RosterRequest", function(_, client)
+    local char = client:getChar()
+    if not char then return end
+    if not (client:IsSuperAdmin() or char:hasFlags("V")) then return end
+    local uid = net.ReadString()
+    if not uid or uid == "" then return end
+
+    local data = {}
+    for _, ply in player.Iterator() do
+        local tChar = ply:getChar()
+        if tChar and lia.faction.indices[tChar:getFaction()] and lia.faction.indices[tChar:getFaction()].uniqueID == uid then
+            local class = lia.class.list[tChar:getClass()]
+            data[#data + 1] = {
+                id = tChar:getID(),
+                name = tChar:getName(),
+                steamID = toSteamID(ply:SteamID64()),
+                class = class and class.name or L("na"),
+                hoursPlayed = math.floor(ply:getTotalOnlineTime() / 3600),
+                lastOnline = L("onlineNow")
+            }
+        end
+    end
+
+    net.Start("RosterData")
+    net.WriteString(uid)
+    net.WriteTable(data)
+    net.Send(client)
 end)

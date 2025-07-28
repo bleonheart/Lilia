@@ -1,4 +1,27 @@
 ﻿local GM = GM or GAMEMODE
+local TalkRanges = {
+    ["Whispering"] = 120,
+    ["Talking"] = 300,
+    ["Yelling"] = 600,
+}
+
+function GM:PlayerCanHearPlayersVoice(listener, speaker)
+    if not IsValid(listener) and IsValid(speaker) or listener == speaker then return false, false end
+    if speaker:getNetVar("IsDeadRestricted", false) then return false, false end
+    if speaker:getNetVar("liaGagged", false) then return false, false end
+    if speaker:getLiliaData("VoiceBan", false) then return false, false end
+    if not lia.config.get("IsVoiceEnabled", true) then return false, false end
+    local voiceType = speaker:getNetVar("VoiceType", "Talking")
+    local range = TalkRanges[voiceType] or TalkRanges["Talking"]
+    local distanceSqr = listener:GetPos():DistToSqr(speaker:GetPos())
+    local canHear = distanceSqr <= range * range
+    return canHear, canHear
+end
+
+function GM:CanPlayerUseChar(client)
+    if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Staff Permissions - Can Bypass Character Lock") then return false, L("serverEventCharLock") end
+end
+
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     if not character:getInv() then return end
@@ -90,136 +113,6 @@ function GM:OnPickupMoney(client, moneyEntity)
         local amount = moneyEntity:getAmount()
         client:notifyLocalized("moneyTaken", lia.currency.get(amount))
         lia.log.add(client, "moneyPickedUp", amount)
-    end
-end
-
-function GM:CanItemBeTransfered(item, curInv, inventory)
-    if item.isBag and curInv ~= inventory and item.getInv and item:getInv() and table.Count(item:getInv():getItems()) > 0 then
-        local character = lia.char.loaded[curInv.client]
-        character:getPlayer():notifyLocalized("forbiddenActionStorage")
-        return false
-    end
-
-    if item.OnCanBeTransfered then
-        local itemHook = item:OnCanBeTransfered(curInv, inventory)
-        return itemHook ~= false
-    end
-end
-
-function GM:CanPlayerInteractItem(client, action, item)
-    action = string.lower(action)
-    if not client:Alive() then return false, L("forbiddenActionStorage") end
-    if client:getLocalVar("ragdoll", false) then return false, L("forbiddenActionStorage") end
-    if action == "drop" then
-        if hook.Run("CanPlayerDropItem", client, item) ~= false then
-            if not client.dropDelay then
-                client.dropDelay = true
-                timer.Create("DropDelay." .. client:SteamID64(), lia.config.get("DropDelay"), 1, function() if IsValid(client) then client.dropDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "take" then
-        if hook.Run("CanPlayerTakeItem", client, item) ~= false then
-            if not client.takeDelay then
-                client.takeDelay = true
-                timer.Create("TakeDelay." .. client:SteamID64(), lia.config.get("TakeDelay"), 1, function() if IsValid(client) then client.takeDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "equip" then
-        if hook.Run("CanPlayerEquipItem", client, item) ~= false then
-            if not client.equipDelay then
-                client.equipDelay = true
-                timer.Create("EquipDelay." .. client:SteamID64(), lia.config.get("EquipDelay"), 1, function() if IsValid(client) then client.equipDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "unequip" then
-        if hook.Run("CanPlayerUnequipItem", client, item) ~= false then
-            if not client.unequipDelay then
-                client.unequipDelay = true
-                timer.Create("UnequipDelay." .. client:SteamID64(), lia.config.get("UnequipDelay"), 1, function() if IsValid(client) then client.unequipDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "rotate" then return hook.Run("CanPlayerRotateItem", client, item) ~= false end
-end
-
-function GM:CanPlayerEquipItem(client, item)
-    local inventory = lia.inventory.instances[item.invID]
-    if client.equipDelay ~= nil then
-        client:notifyLocalized("switchCooldown")
-        return false
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyLocalized("forbiddenActionStorage")
-        return false
-    end
-end
-
-function GM:CanPlayerTakeItem(client, item)
-    local inventory = lia.inventory.instances[item.invID]
-    if client.takeDelay ~= nil then
-        client:notifyLocalized("switchCooldown")
-        return false
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyLocalized("forbiddenActionStorage")
-        return false
-    elseif client:IsFamilySharedAccount() then
-        client:notifyLocalized("familySharedPickupDisabled")
-        return false
-    elseif IsValid(item.entity) then
-        local character = client:getChar()
-        if item.entity.SteamID64 == client:SteamID64() and item.entity.liaCharID ~= character:getID() then
-            client:notifyLocalized("playerCharBelonging")
-            return false
-        end
-    end
-end
-
-function GM:CanPlayerDropItem(client, item)
-    local inventory = lia.inventory.instances[item.invID]
-    if client.dropDelay ~= nil then
-        client:notifyLocalized("switchCooldown")
-        return false
-    elseif item.isBag and item:getInv() then
-        local items = item:getInv():getItems()
-        for _, otheritem in pairs(items) do
-            if not otheritem.ignoreEquipCheck and otheritem:getData("equip", false) then
-                client:notifyLocalized("cantDropBagHasEquipped")
-                return false
-            end
-        end
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyLocalized("forbiddenActionStorage")
-        return false
     end
 end
 
@@ -430,6 +323,7 @@ function GM:PlayerInitialSpawn(client)
     client:loadLiliaData(function(data)
         if not IsValid(client) then return end
         local address = client:IPAddress()
+        client:syncVars()
         client:setLiliaData("lastIP", address)
         lia.db.updateTable({
             lastIP = address
@@ -445,6 +339,7 @@ function GM:PlayerInitialSpawn(client)
         end
 
         hook.Run("PlayerLiliaDataLoaded", client)
+        lia.administration.updateAdminGroups(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)
@@ -641,15 +536,15 @@ function GM:LoadData()
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
-    lia.db.select({"itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
+    lia.db.select({"itemID", "pos", "angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
             for _, row in ipairs(items) do
                 local id = tonumber(row.itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.decodeVector(row._pos)
-                angles[id] = lia.data.decodeAngle(row._angles)
+                positions[id] = lia.data.decodeVector(row.pos)
+                angles[id] = lia.data.decodeAngle(row.angles)
             end
 
             if #idRange > 0 then
@@ -737,7 +632,22 @@ function GM:UpdateEntityPersistence(ent)
     end
 end
 
+function GM:CharDeleted(client, character)
+    lia.char.names[character:getID()] = nil
+    net.Start("liaCharFetchNames")
+    net.WriteTable(lia.char.names)
+    net.Send(client)
+end
+
+function GM:OnCharCreated(client, character, data)
+    lia.char.names[character:getID()] = data.name
+    net.Start("liaCharFetchNames")
+    net.WriteTable(lia.char.names)
+    net.Send(client)
+end
+
 function GM:EntityRemoved(ent)
+    ent:clearNetVars()
     if not IsValid(ent) or not ent:isLiliaPersistent() then return end
     local saved = lia.data.getPersistence()
     local key = makeKey(ent)
@@ -903,6 +813,40 @@ function GM:LiliaTablesLoaded()
     timer.Simple(2, function() lia.entityDataLoaded = true end)
 end
 
+function GM:PlayerAuthed(ply, steamID)
+    local steam64 = util.SteamIDTo64(steamID)
+    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(ply:GetUserGroup()) and ply:GetUserGroup() ~= "user" then
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(ply:GetUserGroup()), steam64))
+        return
+    end
+
+    lia.db.query(Format("SELECT userGroup FROM lia_players WHERE steamID = %s", steam64), function(data)
+        local group = istable(data) and data[1] and data[1].userGroup
+        if not group or group == "" then
+            group = "user"
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
+        end
+
+        ply:SetUserGroup(group)
+    end)
+end
+
+function GM:PlayerSpray()
+    return true
+end
+
+function GM:PlayerDeathSound()
+    return true
+end
+
+function GM:CanPlayerSuicide()
+    return false
+end
+
+function GM:AllowPlayerPickup()
+    return false
+end
+
 function ClientAddText(client, ...)
     if not client or not IsValid(client) then
         lia.error(L("invalidClientChatAddText"))
@@ -915,74 +859,15 @@ function ClientAddText(client, ...)
     net.Send(client)
 end
 
-local TalkRanges = {
-    ["Whispering"] = 120,
-    ["Talking"] = 300,
-    ["Yelling"] = 600,
-}
-
-function GM:PlayerCanHearPlayersVoice(listener, speaker)
-    if not IsValid(listener) and IsValid(speaker) or listener == speaker then return false, false end
-    if speaker:getNetVar("IsDeadRestricted", false) then return false, false end
-    if speaker:getNetVar("liaGagged", false) then return false, false end
-    if speaker:getLiliaData("VoiceBan", false) then return false, false end
-    if not lia.config.get("IsVoiceEnabled", true) then return false, false end
-    local voiceType = speaker:getNetVar("VoiceType", "Talking")
-    local range = TalkRanges[voiceType] or TalkRanges["Talking"]
-    local distanceSqr = listener:GetPos():DistToSqr(speaker:GetPos())
-    local canHear = distanceSqr <= range * range
-    return canHear, canHear
-end
-
-local hl2Weapons = {"weapon_crowbar", "weapon_stunstick", "weapon_pistol", "weapon_357", "weapon_smg1", "weapon_ar2", "weapon_shotgun", "weapon_crossbow", "weapon_rpg"}
-lia.botCounter = lia.botCounter or 0
-local function NextBotName()
-    lia.botCounter = lia.botCounter + 1
-    return string.format("Bot%02d", lia.botCounter)
-end
-
-local function SpawnBot()
-    player.CreateNextBot(NextBotName())
-end
-
-local function SpawnArmedBot()
-    local bot = player.CreateNextBot(NextBotName())
-    if IsValid(bot) then
-        local wep = hl2Weapons[math.random(#hl2Weapons)]
-        bot:Give(wep)
-        bot:SelectWeapon(wep)
-    end
-end
-
-concommand.Add("bots", function(ply)
-    if IsValid(ply) then return end
-    local maxPlayers = game.MaxPlayers()
-    local currentCount = player.GetCount()
-    local toSpawn = maxPlayers - currentCount
-    if toSpawn <= 0 then return end
-    timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnBot() end)
-end)
-
-concommand.Add("armed_bot", function(ply)
-    if IsValid(ply) then return end
-    SpawnArmedBot()
-end)
-
-concommand.Add("armed_bots", function(ply)
-    if IsValid(ply) then return end
-    local maxPlayers = game.MaxPlayers()
-    local currentCount = player.GetCount()
-    local toSpawn = maxPlayers - currentCount
-    if toSpawn <= 0 then return end
-    timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnArmedBot() end)
-end)
-
-concommand.Add("kickbots", function()
-    for _, bot in player.Iterator() do
-        if bot:IsBot() then lia.administration.execCommand("kick", bot, nil, L("allBotsKicked")) end
-    end
+concommand.Add("bots", function(ply, cmd, args)
+    if timer.Exists("BotsTimer") then timer.Remove("BotsTimer") end
+    timer.Create("BotsTimer", 2, 0, function()
+        if #player.GetAll() >= game.MaxPlayers() then
+            timer.Remove("BotsTimer")
+        else
+            RunConsoleCommand("bot")
+        end
+    end)
 end)
 
 concommand.Add("stopsoundall", function(client)
@@ -1013,8 +898,3 @@ concommand.Add("list_entities", function(client)
         lia.information(string.format(L("totalEntities"), totalEntities))
     end
 end)
-
-local networkStrings = {"RosterRequest", "actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaGroupsAdd", "liaGroupsData", "liaGroupsRemove", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaDBTables", "liaRequestTableData", "liaDBTableData", "liaDBTableDataChunk", "liaDBTableDataDone"}
-for _, netString in ipairs(networkStrings) do
-    util.AddNetworkString(netString)
-end

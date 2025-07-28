@@ -1,4 +1,5 @@
-﻿net.Receive("cfgList", function()
+local MODULE = MODULE
+net.Receive("cfgList", function()
     local changed = net.ReadTable()
     for key, value in pairs(changed) do
         if lia.config.stored[key] then lia.config.stored[key].value = value end
@@ -27,6 +28,17 @@ local function tableToString(tbl, braces)
     local str = table.concat(out, ", ")
     if braces then str = "{" .. str .. "}" end
     return str
+end
+
+-- Determine how many columns a DListView line contains. Some versions of GMod
+-- do not provide a ``ColumnCount`` method so we count the ``Columns`` table if
+-- necessary.
+local function getColumnCount(line)
+    if isfunction(line.ColumnCount) then
+        return line:ColumnCount()
+    end
+
+    return istable(line.Columns) and #line.Columns or 0
 end
 
 local function openRowInfo(row)
@@ -71,9 +83,9 @@ local function handleTableData(id)
     local data = table.concat(dbChunks[id])
     dbChunks[id] = nil
     local payload = util.JSONToTable(util.Decompress(data) or "") or {}
-    local tbl = payload.tbl
+    local tblName = payload.tbl
     local rows = payload.data or {}
-    if not tbl or #rows == 0 then return end
+    if not tblName or #rows == 0 then return end
     local columns = {}
     for k in pairs(rows[1]) do
         columns[#columns + 1] = {
@@ -82,31 +94,81 @@ local function handleTableData(id)
         }
     end
 
-    local _, list = lia.util.CreateTableUI(tbl, columns, rows)
-    if IsValid(list) then
-        function list:OnRowSelected(_, line)
-            openRowInfo(line.rowData)
-        end
+    local ps = lia.gui.dbBrowserPS
+    if not IsValid(ps) then
+        lia.util.CreateTableUI(tblName, columns, rows)
+        return
     end
+
+    ps.tableTabs = ps.tableTabs or {}
+    if ps.tableTabs[tblName] and IsValid(ps.tableTabs[tblName].tab) then ps:CloseTab(ps.tableTabs[tblName].tab, true) end
+    local panel = vgui.Create("DPanel", ps)
+    panel:Dock(FILL)
+    panel.Paint = function() end
+    local search = panel:Add("DTextEntry")
+    search:Dock(TOP)
+    search:DockMargin(0, 0, 0, 5)
+    search:SetPlaceholderText(L("search"))
+    local list = vgui.Create("DListView", panel)
+    list:Dock(FILL)
+    for _, col in ipairs(columns) do
+        list:AddColumn(col.name)
+    end
+
+    for _, row in ipairs(rows) do
+        local cells = {}
+        for _, col in ipairs(columns) do
+            cells[#cells + 1] = row[col.field] or ""
+        end
+
+        local line = list:AddLine(unpack(cells))
+        line.rowData = row
+    end
+
+    local function filter()
+        local q = search:GetValue():lower()
+        for _, line in ipairs(list:GetLines()) do
+            local s = ""
+            for i = 1, getColumnCount(line) do
+                s = s .. line:GetColumnText(i):lower() .. " "
+            end
+
+            line:SetVisible(q == "" or s:find(q, 1, true))
+        end
+
+        list:InvalidateLayout()
+    end
+
+    search.OnChange = filter
+    local oldAdd = list.AddLine
+    function list:AddLine(...)
+        local line = oldAdd(self, ...)
+        filter()
+        return line
+    end
+
+    list.OnRowRightClick = function(self, _, line)
+        if not (IsValid(line) and line.rowData) then return end
+        local menu = DermaMenu()
+        menu:AddOption("See decoded entry", function() openRowInfo(line.rowData) end)
+        menu:AddOption("Copy row", function() SetClipboardText(util.TableToJSON(line.rowData)) end)
+        menu:Open()
+    end
+
+    local info = ps:AddSheet(tblName, panel, "icon16/table.png")
+    ps.tableTabs[tblName] = {
+        tab = info.Tab,
+        panel = panel
+    }
+
+    ps:SetActiveTab(info.Tab)
 end
 
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
-    local frame = vgui.Create("DFrame")
-    frame:SetTitle("Lilia Tables")
-    frame:SetSize(300, 400)
-    frame:Center()
-    frame:MakePopup()
-    local list = vgui.Create("DListView", frame)
-    list:Dock(FILL)
-    list:AddColumn("Table")
     for _, tbl in ipairs(tables or {}) do
-        list:AddLine(tbl)
-    end
-
-    function list:OnRowSelected(_, line)
         net.Start("liaRequestTableData")
-        net.WriteString(line:GetColumnText(1))
+        net.WriteString(tbl)
         net.SendToServer()
     end
 end)
@@ -262,5 +324,15 @@ net.Receive("managesitrooms", function()
         makeButton("teleport", 1)
         makeButton("reposition", 3)
         makeButton("rename", 2)
+    end
+end)
+
+net.Receive("StaffActions", function()
+    local data = net.ReadTable()
+    if IsValid(MODULE.actionList) then
+        MODULE.actionList:Clear()
+        for _, row in ipairs(data) do
+            MODULE.actionList:AddLine(row.admin or "N/A", row.adminSteamID or "", row.userGroup or "", row.action or "", row.actionCount or 0)
+        end
     end
 end)

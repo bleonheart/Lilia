@@ -1,4 +1,5 @@
-﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
+﻿local MODULE = MODULE
+function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = vendor:getNetVar("name") or L("unknown")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName, isFailed)
@@ -13,7 +14,7 @@ function MODULE:CanPlayerAccessVendor(client, vendor)
     if client:CanEditVendor(vendor) then return true end
     if vendor:isClassAllowed(character:getClass()) then return true end
     if vendor:isFactionAllowed(client:Team()) then return true end
-    if flag and string.len(flag) == 1 and client:getChar():hasFlags(flag) then return true end
+    if flag and string.len(flag) == 1 and client:hasFlags(flag) then return true end
 end
 
 function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)
@@ -26,8 +27,8 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
     local flag = item.flag
     if not vendor.items[itemType] then return false, L("vendorDoesNotHaveItem") end
     local state = vendor:getTradeMode(itemType)
-    if isSellingToVendor and state == VENDOR_SELLONLY then return false, L("sellOnly") end
-    if not isSellingToVendor and state == VENDOR_BUYONLY then return false, L("buyOnly") end
+    if isSellingToVendor and state == VendorSellOnly then return false, L("sellOnly") end
+    if not isSellingToVendor and state == VendorBuyOnly then return false, L("buyOnly") end
     if isSellingToVendor then
         if not client:getChar():getInv():hasItem(itemType) then return false, L("vendorPlayerDoesNotHaveItem") end
     else
@@ -68,20 +69,20 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
         end
     end
 
-    if flag and not client:getChar():hasFlags(flag) then return false, L("vendorTradeRestrictedFlag") end
+    if flag and not client:hasFlags(flag) then return false, L("vendorTradeRestrictedFlag") end
     return true, nil, isWhitelisted
 end
 
 function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
-    if not VENDOR_INVENTORY_MEASURE and lia.inventory.types["GridInv"] then
-        VENDOR_INVENTORY_MEASURE = lia.inventory.types["GridInv"]:new()
-        VENDOR_INVENTORY_MEASURE.data = {
+    if not VendorInventoryMeasure and lia.inventory.types["GridInv"] then
+        VendorInventoryMeasure = lia.inventory.types["GridInv"]:new()
+        VendorInventoryMeasure.data = {
             w = 8,
             h = 8
         }
 
-        VENDOR_INVENTORY_MEASURE.virtual = true
-        VENDOR_INVENTORY_MEASURE:onInstanced()
+        VendorInventoryMeasure.virtual = true
+        VendorInventoryMeasure:onInstanced()
     end
 
     local canAccess, reason = hook.Run("CanPlayerTradeWithVendor", client, vendor, itemType, isSellingToVendor)
@@ -103,17 +104,17 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
                 client = client,
                 item = item,
                 from = inventory,
-                to = VENDOR_INVENTORY_MEASURE
+                to = VendorInventoryMeasure
             }
 
-            local canTransfer, transferReason = VENDOR_INVENTORY_MEASURE:canAccess("transfer", context)
+            local canTransfer, transferReason = VendorInventoryMeasure:canAccess("transfer", context)
             if not canTransfer then
                 client:notifyLocalized(transferReason or L("vendorError"))
                 client.vendorTransaction = nil
                 return
             end
 
-            local canTransferItem, itemTransferReason = hook.Run("CanItemBeTransfered", item, inventory, VENDOR_INVENTORY_MEASURE, client)
+            local canTransferItem, itemTransferReason = hook.Run("CanItemBeTransfered", item, inventory, VendorInventoryMeasure, client)
             if canTransferItem == false then
                 client:notifyLocalized(itemTransferReason or "vendorError")
                 client.vendorTransaction = nil

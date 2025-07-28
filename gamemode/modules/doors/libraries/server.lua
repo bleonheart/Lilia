@@ -1,3 +1,4 @@
+local MODULE = MODULE
 function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled") then
         local count = 0
@@ -27,13 +28,13 @@ function MODULE:LoadData()
             local id = tonumber(row.id)
             local ent = ents.GetMapCreatedEntity(id)
             if IsValid(ent) and ent:isDoor() then
-                local factions = lia.data.deserialize(row._factions) or {}
+                local factions = lia.data.deserialize(row.factions) or {}
                 if istable(factions) and not table.IsEmpty(factions) then
                     ent.liaFactions = factions
                     ent:setNetVar("factions", util.TableToJSON(factions))
                 end
 
-                local classes = lia.data.deserialize(row._classes) or {}
+                local classes = lia.data.deserialize(row.classes) or {}
                 if istable(classes) and not table.IsEmpty(classes) then
                     ent.liaClasses = classes
                     ent:setNetVar("classes", util.TableToJSON(classes))
@@ -65,8 +66,8 @@ function MODULE:SaveData()
                 gamemode = folder,
                 map = map,
                 id = door:MapCreationID(),
-                _factions = lia.data.serialize(door.liaFactions or {}),
-                _classes = lia.data.serialize(door.liaClasses or {}),
+                factions = lia.data.serialize(door.liaFactions or {}),
+                classes = lia.data.serialize(door.liaClasses or {}),
                 disabled = door:getNetVar("disabled") and 1 or 0,
                 hidden = door:getNetVar("hidden") and 1 or 0,
                 ownable = door:getNetVar("noSell") and 0 or 1,
@@ -159,7 +160,7 @@ function MODULE:ShowTeam(client)
         local factions = entity:getNetVar("factions")
         local classes = entity:getNetVar("classes")
         if (not factions or factions == "[]") and (not classes or classes == "[]") then
-            if entity:checkDoorAccess(client, DOOR_TENANT) then
+            if entity:checkDoorAccess(client, DoorTenant) then
                 local door = entity
                 net.Start("doorMenu")
                 net.WriteEntity(door)

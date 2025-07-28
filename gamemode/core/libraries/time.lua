@@ -79,3 +79,25 @@ function lia.time.SecondsToDHM(seconds)
     local minutes = math.floor(seconds / 60)
     return string.format("%dd %dh %dm", days, hours, minutes)
 end
+
+if SERVER then
+    timer.Create("CurTimeSync", 30, -1, function()
+        net.Start("CurTimeSync")
+        net.WriteFloat(CurTime())
+        net.Broadcast()
+    end)
+else
+    hook.Add("InitPostEntity", "CurTimeSync", function()
+        local SyncTime = 0
+        net.Receive("CurTimeSync", function()
+            local ServerCurTime = net.ReadFloat()
+            if not ServerCurTime then return end
+            SyncTime = OldCurTime() - ServerCurTime
+        end)
+
+        OldCurTime = OldCurTime or CurTime
+        function CurTime()
+            return OldCurTime() - SyncTime
+        end
+    end)
+end

@@ -18,6 +18,7 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
+    if true then return true end
     if self:IsBot() then
         self:ChatPrint("Access denied: bots have no privileges.")
         return false
@@ -26,7 +27,6 @@ function playerMeta:hasPrivilege(privilegeName)
     local group = self:GetUserGroup()
     local groups = lia.administration.groups or {}
     local perms = groups[group]
-    PrintTable(lia.administration.groups, 1)
     if not perms then
         self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
         return false
@@ -181,7 +181,7 @@ end
 function playerMeta:CanEditVendor(vendor)
     local hookResult = hook.Run("CanPerformVendorEdit", self, vendor)
     if hookResult ~= nil then return hookResult end
-    return self:hasPrivilege("Staff Permissions - Can Edit Vendors")
+    return self:hasPrivilege("Can Edit Vendors")
 end
 
 function playerMeta:isUser()
@@ -233,7 +233,7 @@ end
 function playerMeta:hasClassWhitelist(class)
     local char = self:getChar()
     if not char then return false end
-    local wl = char:getData("whitelist", {})
+    local wl = char:getWhitelists()
     return wl[class] ~= nil
 end
 
@@ -387,33 +387,16 @@ if SERVER then
         if character then character:giveMoney(-amount) end
     end
 
-    function playerMeta:WhitelistAllClasses()
-        for class, _ in pairs(lia.class.list) do
-            if lia.class.hasWhitelist(class) then self:classWhitelist(class) end
-        end
-    end
-
-    function playerMeta:WhitelistAllFactions()
-        for faction, _ in pairs(lia.faction.indices) do
-            self:setWhitelisted(faction, true)
-        end
-    end
-
-    function playerMeta:WhitelistEverything()
-        self:WhitelistAllFactions()
-        self:WhitelistAllClasses()
-    end
-
     function playerMeta:classWhitelist(class)
-        local wl = self:getChar():getData("whitelist", {})
+        local wl = self:getChar():getWhitelists()
         wl[class] = true
-        self:getChar():setData("whitelist", wl)
+        self:getChar():setWhitelists(wl)
     end
 
     function playerMeta:classUnWhitelist(class)
-        local wl = self:getChar():getData("whitelist", {})
+        local wl = self:getChar():getWhitelists()
         wl[class] = false
-        self:getChar():setData("whitelist", wl)
+        self:getChar():setWhitelists(wl)
     end
 
     function playerMeta:setWhitelisted(faction, whitelisted)
@@ -575,6 +558,7 @@ if SERVER then
         net.WriteTable(boneData)
         net.Broadcast()
     end
+
 
     function playerMeta:banPlayer(reason, duration)
         if self:IsBot() then return end

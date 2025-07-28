@@ -268,7 +268,7 @@ lia.char.registerVar("money", {
 })
 
 lia.char.registerVar("skin", {
-    field = "_skin",
+    field = "skin",
     fieldType = "integer",
     default = 0,
     noDisplay = true,
@@ -288,7 +288,7 @@ lia.char.registerVar("skin", {
 })
 
 lia.char.registerVar("bodygroups", {
-    field = "_bodygroups",
+    field = "bodygroups",
     fieldType = "text",
     default = {},
     noDisplay = true,
@@ -414,7 +414,7 @@ lia.char.registerVar("recognition", {
 })
 
 lia.char.registerVar("FakeName", {
-    field = "recognized_as",
+    field = "fakenames",
     fieldType = "text",
     default = {},
     noDisplay = true
@@ -429,8 +429,17 @@ lia.char.registerVar("lastPos", {
 })
 
 lia.char.registerVar("banned", {
-    field = "_banned",
+    field = "banned",
+    fieldType = "integer",
+    default = 0,
+    isLocal = true,
+    noDisplay = true
+})
+
+lia.char.registerVar("whitelists", {
+    field = "whitelists",
     fieldType = "text",
+    default = {},
     isLocal = true,
     noDisplay = true
 })
@@ -438,7 +447,7 @@ lia.char.registerVar("banned", {
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
+    local results = lia.db.querySync("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, row in ipairs(results) do
@@ -455,13 +464,13 @@ function lia.char.getCharDataRaw(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
     if key then
-        local row = sql.Query("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
+        local row = lia.db.querySync("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
         if not row or not row[1] then return false end
         local decoded = pon.decode(row[1].value)
         return decoded[1]
     end
 
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
+    local results = lia.db.querySync("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
     local data = {}
     if istable(results) then
         for _, r in ipairs(results) do
@@ -514,8 +523,8 @@ if SERVER then
             name = data.name or "",
             desc = data.desc or "",
             model = data.model or "models/error.mdl",
-            _skin = data.skin or 0,
-            _bodygroups = data.bodygroups or {},
+            skin = data.skin or 0,
+            bodygroups = data.bodygroups or {},
             schema = SCHEMA and SCHEMA.folder or "lilia",
             createTime = timeStamp,
             lastJoinTime = timeStamp,
@@ -523,7 +532,7 @@ if SERVER then
             faction = data.faction or L("unknown"),
             money = data.money,
             recognition = data.recognition or "",
-            recognized_as = {}
+            fakenames = {}
         }, function(_, charID)
             local client
             for _, v in player.Iterator() do

@@ -1,6 +1,7 @@
-﻿function MODULE:ShowPlayerOptions(target, options)
+﻿local MODULE = MODULE
+function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
-    if (client:hasPrivilege("Staff Permissions - Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Staff Permissions - Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
+    if (client:hasPrivilege("Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
         local orderedOptions = {
             {
                 name = L("nameCopyFormat", target:Name()),
@@ -117,6 +118,10 @@
                 func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
             }
         }
+
+        table.sort(orderedOptions, function(a, b)
+            return tostring(a.name) < tostring(b.name)
+        end)
 
         for _, option in ipairs(orderedOptions) do
             table.insert(options, option)

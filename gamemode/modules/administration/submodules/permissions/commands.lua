@@ -38,7 +38,7 @@ lia.command.add("charunbanoffline", {
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
         lia.db.updateTable({
-            _banned = nil
+            banned = nil
         }, nil, nil, "id = " .. charID)
 
         lia.char.setCharData(charID, "charBanInfo", nil)
@@ -58,7 +58,7 @@ lia.command.add("charbanoffline", {
         local charData = lia.char.getCharData(charID)
         if not charData then return client:notify("Character not found.") end
         lia.db.updateTable({
-            _banned = true
+            banned = true
         }, nil, nil, "id = " .. charID)
 
         lia.char.setCharData(charID, "charBanInfo", {
@@ -110,7 +110,7 @@ lia.command.add("charlist", {
             for _, row in ipairs(data) do
                 local stored = lia.char.loaded[row.id]
                 local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
-                local isBanned = stored and stored:getBanned() or row._banned
+                local isBanned = stored and stored:getBanned() or row.banned
                 local allVars = {}
                 for varName, varInfo in pairs(lia.char.vars) do
                     local value
@@ -156,12 +156,22 @@ lia.command.add("charlist", {
                     lastUsedText = row.lastJoinTime
                 end
 
+                local bannedState = false
+                if isBanned then
+                    local num = tonumber(isBanned)
+                    if num then
+                        bannedState = num == 1 or num > os.time()
+                    else
+                        bannedState = tobool(isBanned)
+                    end
+                end
+
                 local entry = {
                     ID = row.id,
                     Name = row.name,
                     Desc = row.desc,
                     Faction = row.faction,
-                    Banned = isBanned and "Yes" or "No",
+                    Banned = bannedState and "Yes" or "No",
                     BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                     BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                     BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
@@ -472,7 +482,7 @@ lia.command.add("flaggive", {
         if not flags then
             local available = ""
             for k in SortedPairs(lia.flag.list) do
-                if not target:getChar():hasFlags(k) then available = available .. k .. " " end
+                if not target:hasFlags(k) then available = available .. k .. " " end
             end
 
             available = available:Trim()
@@ -483,7 +493,7 @@ lia.command.add("flaggive", {
             return client:requestString(L("giveFlagsMenu"), L("flagGiveDesc"), function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
         end
 
-        target:getChar():giveFlags(flags)
+        target:giveFlags(flags)
         client:notifyLocalized("flagGive", client:Name(), flags, target:Name())
         lia.log.add(client, "flagGive", target:Name(), flags)
     end,
@@ -508,9 +518,8 @@ lia.command.add("flaggiveall", {
             return
         end
 
-        local character = target:getChar()
         for k, _ in SortedPairs(lia.flag.list) do
-            if not character:hasFlags(k) then character:giveFlags(k) end
+            if not target:hasFlags(k) then target:giveFlags(k) end
         end
 
         client:notifyLocalized("gaveAllFlags")
@@ -543,7 +552,7 @@ lia.command.add("flagtakeall", {
         end
 
         for k, _ in SortedPairs(lia.flag.list) do
-            if character:hasFlags(k) then character:takeFlags(k) end
+            if target:hasFlags(k) then target:takeFlags(k) end
         end
 
         client:notifyLocalized("tookAllFlags")
@@ -565,11 +574,11 @@ lia.command.add("flagtake", {
 
         local flags = arguments[2]
         if not flags then
-            local currentFlags = target:getChar():getFlags()
+            local currentFlags = target:getFlags()
             return client:requestString(L("takeFlagsMenu"), L("flagTakeDesc"), function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
         end
 
-        target:getChar():takeFlags(flags)
+        target:takeFlags(flags)
         client:notifyLocalized("flagTake", client:Name(), flags, target:Name())
         lia.log.add(client, "flagTake", target:Name(), flags)
     end,
@@ -713,10 +722,10 @@ lia.command.add("charunban", {
 
         client.liaNextSearch = CurTime() + 15
         local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT id, name, _banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
+        lia.db.query("SELECT id, name, banned FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
                 local charID = tonumber(data[1].id)
-                local isBanned = data[1]._banned
+                local isBanned = data[1].banned
                 client.liaNextSearch = 0
                 if not isBanned then
                     client:notifyLocalized("charNotBanned")
@@ -724,7 +733,7 @@ lia.command.add("charunban", {
                 end
 
                 lia.db.updateTable({
-                    _banned = nil
+                    banned = nil
                 }, nil, nil, "id = " .. charID)
 
                 lia.char.setCharData(charID, "charBanInfo", nil)
@@ -1406,7 +1415,7 @@ lia.command.add("checkflags", {
             return
         end
 
-        local flags = target:getChar():getFlags()
+        local flags = target:getFlags()
         if flags and #flags > 0 then
             client:ChatPrint(L("charFlags", target:Name(), table.concat(flags, ", ")))
         else

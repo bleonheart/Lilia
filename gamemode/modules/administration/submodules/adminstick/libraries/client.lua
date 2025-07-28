@@ -46,6 +46,7 @@ local function OpenPlayerModelUI(tgt)
     fr:Center()
     function fr:OnClose()
         fr:Remove()
+        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -64,6 +65,7 @@ local function OpenPlayerModelUI(tgt)
         local id = GetIdentifier(tgt)
         if id ~= "" then RunConsoleCommand("say", "/charsetmodel " .. QuoteArgs(id, txt)) end
         fr:Remove()
+        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -96,6 +98,7 @@ local function OpenReasonUI(tgt, cmd)
     fr:Center()
     function fr:OnClose()
         fr:Remove()
+        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -129,6 +132,7 @@ local function OpenReasonUI(tgt, cmd)
         end
 
         fr:Remove()
+        LocalPlayer().AdminStickTarget = nil
         AdminStickIsOpen = false
     end
 
@@ -342,7 +346,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
     local take = GetOrCreateSubMenu(fm, "takeFlagsMenu", stores)
     local toGive, toTake = {}, {}
     for fl in pairs(lia.flag.list) do
-        if not tgt:getChar():hasFlags(fl) then
+        if not tgt:hasFlags(fl) then
             table.insert(toGive, {
                 name = L("giveFlagFormat", fl),
                 cmd = 'say /giveflag ' .. QuoteArgs(GetIdentifier(tgt), fl),
