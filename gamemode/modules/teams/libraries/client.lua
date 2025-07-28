@@ -43,9 +43,7 @@ function populate(uid)
     lst:Clear()
     for _, r in ipairs(rosterRows[uid] or {}) do
         local info = (r.name .. " " .. r.steamID .. " " .. r.class .. " " .. tostring(r.hoursPlayed) .. " " .. tostring(r.lastOnline)):lower()
-        if query == "" or info:find(query:lower(), 1, true) then
-            addRow(lst, r)
-        end
+        if query == "" or info:find(query:lower(), 1, true) then addRow(lst, r) end
     end
 end
 
@@ -54,7 +52,6 @@ function makeList(parent, uid)
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 5)
     search:SetPlaceholderText(L("search"))
-
     local lst = parent:Add("DListView")
     lst:Dock(FILL)
     lst:SetMultiSelect(false)
@@ -68,16 +65,13 @@ function makeList(parent, uid)
         q = q and string.lower(q) or ""
         for _, r in ipairs(rosterRows[uid] or {}) do
             local info = (r.name .. " " .. r.steamID .. " " .. r.class .. " " .. tostring(r.hoursPlayed) .. " " .. tostring(r.lastOnline)):lower()
-            if q == "" or info:find(q, 1, true) then
-                addRow(lst, r)
-            end
+            if q == "" or info:find(q, 1, true) then addRow(lst, r) end
         end
     end
 
     lst.searchEntry = search
     populate()
     search.OnChange = function() populate(search:GetValue()) end
-
     lst.OnRowRightClick = function(_, _, line)
         if not IsValid(line) or not line.rowData then return end
         local row = line.rowData
@@ -145,23 +139,6 @@ function buildFactions(panel)
     end
 
     built = true
-end
-
-function MODULE:CreateInformationButtons(pages)
-    local ply = LocalPlayer()
-    if not IsValid(ply) then return end
-    local char = ply:getChar()
-    if not char then return end
-    if not (ply:IsSuperAdmin() or char:hasFlags("V")) then return end
-    table.insert(pages, {
-        name = L("roster"),
-        drawFunc = function(panel)
-            rosterRows = {}
-            lists = {}
-            built = false
-            buildRoster(panel)
-        end
-    })
 end
 
 hook.Add("liaAdminRegisterTab", "AdminTabFactions", function(tabs)
