@@ -910,11 +910,9 @@ else
             if addBtn:IsVisible() then buttons[#buttons + 1] = addBtn end
             if renameBtn:IsVisible() then buttons[#buttons + 1] = renameBtn end
             if delBtn:IsVisible() then buttons[#buttons + 1] = delBtn end
-
             local count = #buttons
             local spacing = 6
             local wide = count > 0 and (w - spacing * (count - 1)) / count or 0
-
             for i, btn in ipairs(buttons) do
                 btn:SetWide(wide)
                 if i < count then
@@ -983,9 +981,7 @@ else
 
         -- ensure buttons reflect editability of the initially selected group
         local active = sheet:GetActiveTab()
-        if IsValid(active) then
-            updateButtons(active:GetText())
-        end
+        if IsValid(active) then updateButtons(active:GetText()) end
     end
 
     local function handleGroupDone(tbl)
@@ -1049,9 +1045,7 @@ else
                 pnl:DockPadding(10, 10, 10, 10)
                 lia.gui.usergroups = pnl
                 -- draw with any groups we already know about
-                if lia and lia.administration and lia.administration.groups then
-                    buildGroupsUI(pnl, {}, lia.administration.groups)
-                end
+                if lia and lia.administration and lia.administration.groups then buildGroupsUI(pnl, {}, lia.administration.groups) end
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
                 return pnl
@@ -1067,6 +1061,7 @@ else
                 local pnl = vgui.Create("DPanel", sheet)
                 pnl:DockPadding(10, 10, 10, 10)
                 lia.gui.players = pnl
+                if istable(PLAYER_LIST) then buildPlayersUI(pnl) end
                 net.Start("liaPlayersRequest")
                 net.SendToServer()
                 return pnl
