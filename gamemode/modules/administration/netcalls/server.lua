@@ -180,9 +180,17 @@ local function getPrivList()
     return cats
 end
 
+local function sanitizeCAMIGroups(groups)
+    local t = {}
+    for name, info in pairs(groups or {}) do
+        t[name] = {Inherits = info.Inherits}
+    end
+    return t
+end
+
 local function payloadGroups()
     return {
-        cami = CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {},
+        cami = sanitizeCAMIGroups(CAMI and CAMI.GetUsergroups and CAMI.GetUsergroups() or {}),
         perms = lia.administration.groups or {},
         privCategories = getPrivList()
     }
