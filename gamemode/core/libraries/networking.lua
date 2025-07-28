@@ -1,5 +1,6 @@
 ﻿lia.net = lia.net or {}
 lia.net.globals = lia.net.globals or {}
+lia.net.bigTables = lia.net.bigTables or {}
 local playerMeta = FindMetaTable("Player")
 local entityMeta = FindMetaTable("Entity")
 if SERVER then
