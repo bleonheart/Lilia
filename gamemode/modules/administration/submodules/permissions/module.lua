@@ -71,57 +71,57 @@ MODULE.Privileges = {
     {
         Name = "Can Spawn Ragdolls",
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn SWEPs",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn Effects",
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn Props",
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn Blacklisted Props",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn NPCs",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "No Car Spawn Delay",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "No Spawn Delay",
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn Cars",
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn Blacklisted Cars",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "Can Spawn SENTs",
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = "Spawn Permissions",
     },
     {
         Name = "UserGroups - Staff Group",
