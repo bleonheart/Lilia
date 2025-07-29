@@ -471,11 +471,12 @@ if SERVER then
     function lia.char.create(data, callback)
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
         data.money = data.money or lia.config.get("DefaultMoney")
+        local gamemode = SCHEMA and SCHEMA.folder or "lilia"
         lia.db.insertTable({
             name = data.name or "",
             desc = data.desc or "",
             model = data.model or "models/error.mdl",
-            schema = SCHEMA and SCHEMA.folder or "lilia",
+            schema = gamemode,
             createTime = timeStamp,
             lastJoinTime = timeStamp,
             steamID = data.steamID,
@@ -516,7 +517,8 @@ if SERVER then
         end
 
         fields = table.concat(fields, ", ")
-        local condition = "schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND steamID = " .. steamID64
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. steamID64
         if id then condition = condition .. " AND id = " .. id end
         local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
         lia.db.query(query, function(data)

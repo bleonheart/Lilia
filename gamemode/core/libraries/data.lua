@@ -127,55 +127,55 @@ function lia.data.decodeAngle(raw)
     return _decodeAngle(decoded)
 end
 
-local function buildCondition(folder, map)
-    local cond = folder and "folder = " .. lia.db.convertDataType(folder) or "folder IS NULL"
+local function buildCondition(gamemode, map)
+    local cond = gamemode and "gamemode = " .. lia.db.convertDataType(gamemode) or "gamemode IS NULL"
     cond = cond .. " AND " .. (map and "map = " .. lia.db.convertDataType(map) or "map IS NULL")
     return cond
 end
 
 function lia.data.set(key, value, global, ignoreMap)
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = ignoreMap and NULL or game.GetMap()
     if global then
-        folder = NULL
+        gamemode = NULL
         map = NULL
     else
-        if folder == nil then folder = NULL end
+        if gamemode == nil then gamemode = NULL end
         if map == nil then map = NULL end
     end
 
     lia.data.stored[key] = value
     lia.db.waitForTablesToLoad():next(function()
         local row = {
-            gamemode = folder,
+            gamemode = gamemode,
             map = map,
             data = lia.data.serialize(lia.data.stored)
         }
         return lia.db.upsert(row, "data")
-    end):next(function() hook.Run("OnDataSet", key, value, folder, map) end)
+    end):next(function() hook.Run("OnDataSet", key, value, gamemode, map) end)
 
     local path = "lilia/"
-    if folder and folder ~= NULL then path = path .. folder .. "/" end
+    if gamemode and gamemode ~= NULL then path = path .. gamemode .. "/" end
     if map and map ~= NULL then path = path .. map .. "/" end
     return path
 end
 
 function lia.data.delete(key, global, ignoreMap)
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = ignoreMap and nil or game.GetMap()
     if global then
-        folder = nil
+        gamemode = nil
         map = nil
     end
 
     lia.data.stored[key] = nil
-    local condition = buildCondition(folder, map)
+    local condition = buildCondition(gamemode, map)
     lia.db.waitForTablesToLoad():next(function()
         if not next(lia.data.stored) then
             return lia.db.delete("data", condition)
         else
             local row = {
-                gamemode = folder,
+                gamemode = gamemode,
                 map = map,
                 data = lia.data.serialize(lia.data.stored)
             }
@@ -186,10 +186,10 @@ function lia.data.delete(key, global, ignoreMap)
 end
 
 function lia.data.loadTables()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local function loadData(f, m)
-        local cond = buildCondition(f, m)
+    local function loadData(gm, m)
+        local cond = buildCondition(gm, m)
         return lia.db.select("data", "data", cond):next(function(res)
             local row = res.results and res.results[1]
             if row then
@@ -201,11 +201,11 @@ function lia.data.loadTables()
         end)
     end
 
-    lia.db.waitForTablesToLoad():next(function() return loadData(nil, nil) end):next(function() return loadData(folder, nil) end):next(function() return loadData(folder, map) end)
+    lia.db.waitForTablesToLoad():next(function() return loadData(nil, nil) end):next(function() return loadData(gamemode, nil) end):next(function() return loadData(gamemode, map) end)
 end
 
 local defaultCols = {
-    folder = true,
+    gamemode = true,
     map = true,
     class = true,
     pos = true,
@@ -241,10 +241,10 @@ function lia.data.loadPersistence()
 end
 
 function lia.data.savePersistence(entities)
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     lia.data.persistCache = entities
-    local condition = buildCondition(folder, map)
+    local condition = buildCondition(gamemode, map)
     local dynamic = {}
     local dynamicList = {}
     for _, ent in ipairs(entities) do
@@ -269,7 +269,7 @@ function lia.data.savePersistence(entities)
         local rows = {}
         for _, ent in ipairs(entities) do
             local row = {
-                gamemode = folder,
+                gamemode = gamemode,
                 map = map,
                 class = ent.class,
                 pos = lia.data.serialize(ent.pos),
@@ -289,16 +289,16 @@ function lia.data.savePersistence(entities)
 end
 
 function lia.data.loadPersistenceData(callback)
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = buildCondition(folder, map)
+    local condition = buildCondition(gamemode, map)
     ensurePersistenceColumns(baseCols):next(function() return lia.db.select("*", "persistence", condition) end):next(function(res)
         local rows = res.results or {}
         local entities = {}
         for _, row in ipairs(rows) do
             local ent = {}
             for k, v in pairs(row) do
-                if not defaultCols[k] and k ~= "id" and k ~= "folder" and k ~= "map" then ent[k] = lia.data.deserialize(v) end
+                if not defaultCols[k] and k ~= "id" and k ~= "gamemode" and k ~= "map" then ent[k] = lia.data.deserialize(v) end
             end
 
             ent.class = row.class

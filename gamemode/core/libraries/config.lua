@@ -67,8 +67,8 @@ end
 
 function lia.config.load()
     if SERVER then
-        local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        lia.db.select({"key", "value"}, "config", "schema = " .. lia.db.convertDataType(schema)):next(function(res)
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select({"key", "value"}, "config", "schema = " .. lia.db.convertDataType(gamemode)):next(function(res)
             local rows = res.results or {}
             local existing = {}
             for _, row in ipairs(rows) do
@@ -142,10 +142,10 @@ if SERVER then
             }
         end
 
-        local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local queries = {"DELETE FROM lia_config WHERE schema = " .. lia.db.convertDataType(schema)}
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local queries = {"DELETE FROM lia_config WHERE schema = " .. lia.db.convertDataType(gamemode)}
         for _, row in ipairs(rows) do
-            queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(schema) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
+            queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(gamemode) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
         end
 
         lia.db.transaction(queries)

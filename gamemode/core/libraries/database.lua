@@ -404,7 +404,7 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS lia_doors (
-                folder TEXT,
+                gamemode TEXT,
                 map TEXT,
                 id INTEGER,
                 factions TEXT,
@@ -416,12 +416,12 @@ function lia.db.loadTables()
                 price INTEGER,
                 locked INTEGER,
                 children TEXT,
-                PRIMARY KEY (folder, map, id)
+                PRIMARY KEY (gamemode, map, id)
             );
 
             CREATE TABLE IF NOT EXISTS lia_persistence (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                folder TEXT,
+                gamemode TEXT,
                 map TEXT,
                 class TEXT,
                 pos TEXT,
@@ -540,7 +540,7 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS `lia_doors` (
-                `folder` TEXT NULL,
+                `gamemode` TEXT NULL,
                 `map` TEXT NULL,
                 `id` INT NOT NULL,
                 `factions` TEXT NULL,
@@ -552,7 +552,7 @@ function lia.db.loadTables()
                 `price` INT NULL,
                 `locked` TINYINT(1) NULL,
                 `children` TEXT NULL,
-                PRIMARY KEY (`folder`, `map`, `id`)
+                PRIMARY KEY (`gamemode`, `map`, `id`)
             );
 
                 `schema` TEXT NULL,
@@ -562,15 +562,15 @@ function lia.db.loadTables()
             );
 
             CREATE TABLE IF NOT EXISTS `lia_data` (
-                `folder` TEXT NULL,
+                `gamemode` TEXT NULL,
                 `map` TEXT NULL,
                 `data` TEXT NULL,
-                PRIMARY KEY (`folder`, `map`)
+                PRIMARY KEY (`gamemode`, `map`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_persistence` (
                 `id` INT(12) NOT NULL AUTO_INCREMENT,
-                `folder` TEXT NULL,
+                `gamemode` TEXT NULL,
                 `map` TEXT NULL,
                 `class` TEXT NULL,
                 `pos` TEXT NULL,
