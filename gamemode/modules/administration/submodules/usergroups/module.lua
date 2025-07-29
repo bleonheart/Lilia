@@ -50,8 +50,8 @@ if SERVER then
         for _, v in ipairs(CAMI.GetPrivileges() or {}) do
             lia.admin.privileges[v.Name] = {
                 Name = v.Name,
-                MinAccess = v.MinAccess or "user"
-        Category = MODULE.name,
+                MinAccess = v.MinAccess or "user",
+                Category = MODULE.name,
             }
         end
 
@@ -492,13 +492,13 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
     if not pv or not pv.Name then return end
     lia.admin.privileges[pv.Name] = {
         Name = pv.Name,
-        MinAccess = pv.MinAccess or "user"
+        MinAccess = pv.MinAccess or "user",
         Category = MODULE.name,
     }
 
     for g in pairs(lia.admin.groups) do
         if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
-        Category = MODULE.name,
+        Category = MODULE.name
     end
 
     if SERVER then lia.admin.save(true) end
