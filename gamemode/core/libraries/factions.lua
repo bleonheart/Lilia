@@ -26,6 +26,12 @@ function lia.faction.register(uniqueID, data)
     faction.desc = L(faction.desc) or "noDesc"
     faction.color = faction.color or Color(150, 150, 150)
     faction.models = faction.models or DefaultModels
+    local overrideName = hook.Run("OverrideFactionName", uniqueID, faction.name)
+    if overrideName then faction.name = overrideName end
+    local overrideDesc = hook.Run("OverrideFactionDesc", uniqueID, faction.desc)
+    if overrideDesc then faction.desc = overrideDesc end
+    local overrideModels = hook.Run("OverrideFactionModels", uniqueID, faction.models)
+    if overrideModels then faction.models = overrideModels end
     team.SetUp(faction.index, faction.name or L and L("unknown") or "unknown", faction.color or Color(125, 125, 125))
     for _, modelData in pairs(faction.models) do
         if isstring(modelData) then
@@ -68,6 +74,12 @@ function lia.faction.loadFromDir(directory)
 
         FACTION.name = L(FACTION.name)
         FACTION.desc = L(FACTION.desc)
+        local overrideName = hook.Run("OverrideFactionName", niceName, FACTION.name)
+        if overrideName then FACTION.name = overrideName end
+        local overrideDesc = hook.Run("OverrideFactionDesc", niceName, FACTION.desc)
+        if overrideDesc then FACTION.desc = overrideDesc end
+        local overrideModels = hook.Run("OverrideFactionModels", niceName, FACTION.models)
+        if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then
             FACTION.color = Color(150, 150, 150)
             lia.error("Faction '" .. niceName .. "' is missing a color. You need to add FACTION.color = Color(1, 2, 3)\n")
