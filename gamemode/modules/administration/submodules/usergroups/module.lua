@@ -15,7 +15,7 @@ local function buildDefaultTable(g)
     local t = {}
     for _, v in ipairs(CAMI.GetPrivileges() or {}) do
         if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
-        Category = MODULE.name,
+        Category = MODULE.name
     end
     return t
 end

@@ -401,6 +401,7 @@ function GM:PlayerAuthed(client, steamid)
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(client:GetUserGroup()), steam64))
         return
     end
+
     lia.db.selectOne({"_userGroup", "_banStart", "_banDuration", "_banReason"}, "players", "_steamID = " .. steam64):next(function(data)
         if not IsValid(client) then return end
         local group = data and data._userGroup
@@ -410,13 +411,16 @@ function GM:PlayerAuthed(client, steamid)
         end
 
         client:SetUserGroup(group)
-
         local banStart = tonumber(data and data._banStart or 0) or 0
         if banStart > 0 then
             local duration = tonumber(data._banDuration or 0)
             local reason = data._banReason or L("genericReason")
             if duration > 0 and banStart + duration <= os.time() then
-                lia.db.updateTable({_banStart = nil, _banDuration = 0, _banReason = ""}, nil, "players", "_steamID = " .. steam64)
+                lia.db.updateTable({
+                    _banStart = nil,
+                    _banDuration = 0,
+                    _banReason = ""
+                }, nil, "players", "_steamID = " .. steam64)
             else
                 local minutes = 0
                 if duration > 0 then minutes = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end
@@ -964,6 +968,21 @@ end
 concommand.Add("kickbots", function()
     for _, bot in player.Iterator() do
         if bot:IsBot() then lia.command.execAdminCommand("kick", bot, nil, L("allBotsKicked")) end
+    end
+end)
+
+concommand.Add("plysetgroup", function(ply, _, args)
+    if not IsValid(ply) then
+        local target = lia.util.findPlayer(args[1])
+        if IsValid(target) then
+            if lia.admin.groups[args[2]] then
+                lia.admin.setPlayerGroup(target, args[2])
+            else
+                MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
+            end
+        else
+            MsgC(Color(200, 20, 20), "[Lilia Administration] Error: specified player not found.\n")
+        end
     end
 end)
 

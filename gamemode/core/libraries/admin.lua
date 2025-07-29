@@ -149,112 +149,85 @@ if SERVER then
         CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia")
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
-
-end
-
-function lia.admin.execCommand(cmd, victim, dur, reason)
-    if hook.Run("RunAdminSystemCommand") == true then return end
-    local id = IsValid(victim) and victim:SteamID() or tostring(victim)
-    if cmd == "kick" then
-        RunConsoleCommand("say", "/plykick " .. string.format("'%s'", tostring(id)) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-        return true
-    elseif cmd == "ban" then
-        RunConsoleCommand("say", "/plyban " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-        return true
-    elseif cmd == "unban" then
-        RunConsoleCommand("say", "/plyunban " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "mute" then
-        RunConsoleCommand("say", "/plymute " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-        return true
-    elseif cmd == "unmute" then
-        RunConsoleCommand("say", "/plyunmute " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "gag" then
-        RunConsoleCommand("say", "/plygag " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-        return true
-    elseif cmd == "ungag" then
-        RunConsoleCommand("say", "/plyungag " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "freeze" then
-        RunConsoleCommand("say", "/plyfreeze " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
-        return true
-    elseif cmd == "unfreeze" then
-        RunConsoleCommand("say", "/plyunfreeze " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "slay" then
-        RunConsoleCommand("say", "/plyslay " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "bring" then
-        RunConsoleCommand("say", "/plybring " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "goto" then
-        RunConsoleCommand("say", "/plygoto " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "return" then
-        RunConsoleCommand("say", "/plyreturn " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "jail" then
-        RunConsoleCommand("say", "/plyjail " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
-        return true
-    elseif cmd == "unjail" then
-        RunConsoleCommand("say", "/plyunjail " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "cloak" then
-        RunConsoleCommand("say", "/plycloak " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "uncloak" then
-        RunConsoleCommand("say", "/plyuncloak " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "god" then
-        RunConsoleCommand("say", "/plygod " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "ungod" then
-        RunConsoleCommand("say", "/plyungod " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "ignite" then
-        RunConsoleCommand("say", "/plyignite " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
-        return true
-    elseif cmd == "extinguish" or cmd == "unignite" then
-        RunConsoleCommand("say", "/plyextinguish " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "strip" then
-        RunConsoleCommand("say", "/plystrip " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "respawn" then
-        RunConsoleCommand("say", "/plyrespawn " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "blind" then
-        RunConsoleCommand("say", "/plyblind " .. string.format("'%s'", tostring(id)))
-        return true
-    elseif cmd == "unblind" then
-        RunConsoleCommand("say", "/plyunblind " .. string.format("'%s'", tostring(id)))
-        return true
-    end
-end
-
-
-concommand.Add("plysetgroup", function(ply, _, args)
-    if not IsValid(ply) then
-        local target = lia.util.findPlayer(args[1])
-        if IsValid(target) then
-            if lia.admin.groups[args[2]] then
-                lia.admin.setPlayerGroup(target, args[2])
-            else
-                MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
-            end
-        else
-            MsgC(Color(200, 20, 20), "[Lilia Administration] Error: specified player not found.\n")
+else
+    function lia.admin.execCommand(cmd, victim, dur, reason)
+        if hook.Run("RunAdminSystemCommand") == true then return end
+        local id = IsValid(victim) and victim:SteamID() or tostring(victim)
+        if cmd == "kick" then
+            RunConsoleCommand("say", "/plykick " .. string.format("'%s'", tostring(id)) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+            return true
+        elseif cmd == "ban" then
+            RunConsoleCommand("say", "/plyban " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+            return true
+        elseif cmd == "unban" then
+            RunConsoleCommand("say", "/plyunban " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "mute" then
+            RunConsoleCommand("say", "/plymute " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+            return true
+        elseif cmd == "unmute" then
+            RunConsoleCommand("say", "/plyunmute " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "gag" then
+            RunConsoleCommand("say", "/plygag " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
+            return true
+        elseif cmd == "ungag" then
+            RunConsoleCommand("say", "/plyungag " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "freeze" then
+            RunConsoleCommand("say", "/plyfreeze " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
+            return true
+        elseif cmd == "unfreeze" then
+            RunConsoleCommand("say", "/plyunfreeze " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "slay" then
+            RunConsoleCommand("say", "/plyslay " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "bring" then
+            RunConsoleCommand("say", "/plybring " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "goto" then
+            RunConsoleCommand("say", "/plygoto " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "return" then
+            RunConsoleCommand("say", "/plyreturn " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "jail" then
+            RunConsoleCommand("say", "/plyjail " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
+            return true
+        elseif cmd == "unjail" then
+            RunConsoleCommand("say", "/plyunjail " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "cloak" then
+            RunConsoleCommand("say", "/plycloak " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "uncloak" then
+            RunConsoleCommand("say", "/plyuncloak " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "god" then
+            RunConsoleCommand("say", "/plygod " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "ungod" then
+            RunConsoleCommand("say", "/plyungod " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "ignite" then
+            RunConsoleCommand("say", "/plyignite " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
+            return true
+        elseif cmd == "extinguish" or cmd == "unignite" then
+            RunConsoleCommand("say", "/plyextinguish " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "strip" then
+            RunConsoleCommand("say", "/plystrip " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "respawn" then
+            RunConsoleCommand("say", "/plyrespawn " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "blind" then
+            RunConsoleCommand("say", "/plyblind " .. string.format("'%s'", tostring(id)))
+            return true
+        elseif cmd == "unblind" then
+            RunConsoleCommand("say", "/plyunblind " .. string.format("'%s'", tostring(id)))
+            return true
         end
     end
-end)
-
-hook.Add("CAMI.PlayerHasAccess", "liaAdminPermissions", function(_, ply, priv, cb)
-    if not IsValid(ply) then return end
-    local group = ply:GetUserGroup()
-    local perms = lia.admin.groups[group]
-    if perms and perms[priv] then
-        cb(true)
-        return true
-    end
-end)
+end
