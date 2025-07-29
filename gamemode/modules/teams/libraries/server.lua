@@ -36,6 +36,7 @@ function MODULE:OnCharCreated(_, character)
     for _, item in pairs(items) do
         character:getInv():add(item, 1)
     end
+
     local defaultClass = lia.faction.getDefaultClass(character:getFaction())
     if defaultClass then
         character:setClass(defaultClass.index)
@@ -215,7 +216,7 @@ end
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
     if not char then return end
-    local isLeader = client:IsSuperAdmin() or char:getData("factionOwner") or char:getData("factionAdmin") or char:hasFlags("V")
+    local isLeader = client:IsSuperAdmin() or char:hasFlags("V")
     if not isLeader then return end
     local defaultFaction
     for _, fac in pairs(lia.faction.teams) do

@@ -16,7 +16,7 @@ net.Receive("CharacterInfo", function()
     local factionID = net.ReadString()
     local characterData = net.ReadTable()
     local character = LocalPlayer():getChar()
-    local isLeader = LocalPlayer():IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin") or character:hasFlags("V")
+    local isLeader = LocalPlayer():IsSuperAdmin() or character:hasFlags("V")
     if not isLeader then return end
     if IsValid(characterPanel) then characterPanel:Remove() end
     local rows = {}
