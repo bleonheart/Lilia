@@ -265,7 +265,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_chatbox`;
-    DROP TABLE IF EXISTS `lia_admingroups`;
+    DROP TABLE IF EXISTS `lia_admin`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_warnings`;
@@ -297,7 +297,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_chatbox;
-    DROP TABLE IF EXISTS lia_admingroups;
+    DROP TABLE IF EXISTS lia_admin;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_warnings;
@@ -469,8 +469,9 @@ function lia.db.loadTables()
                 _angles TEXT
             );
 
-            CREATE TABLE IF NOT EXISTS lia_admingroups (
-                _data TEXT
+            CREATE TABLE IF NOT EXISTS lia_admin (
+                _usergroups TEXT,
+                _privileges TEXT
             );
         ]], done)
     else
@@ -636,8 +637,9 @@ function lia.db.loadTables()
                 PRIMARY KEY (`_id`)
             );
 
-            CREATE TABLE IF NOT EXISTS `lia_admingroups` (
-                `_data` TEXT NULL
+            CREATE TABLE IF NOT EXISTS `lia_admin` (
+                `_usergroups` TEXT NULL,
+                `_privileges` TEXT NULL
             );
         ]])
         local i = 1
