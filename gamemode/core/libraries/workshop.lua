@@ -292,14 +292,23 @@ else
                         local title = fi.title or "ID:" .. id
                         local desc = fi.description or ""
                         local url = fi.previewurl or ""
-                        sheet:AddPreviewRow({
-                            title = title,
-                            desc = desc,
-                            url = url,
-                            size = 128
-                        })
+                        if sheet.AddPreviewRow then
+                            sheet:AddPreviewRow({
+                                title = title,
+                                desc = desc,
+                                url = url,
+                                size = 128
+                            })
+                        else
+                            if sheet.AddTextRow then
+                                sheet:AddTextRow({
+                                    title = title,
+                                    desc = desc
+                                })
+                            end
+                        end
 
-                        sheet:Refresh()
+                        if sheet.Refresh then sheet:Refresh() end
                     end)
                 end
             end
