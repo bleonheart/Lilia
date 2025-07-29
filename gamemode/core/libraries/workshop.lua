@@ -70,6 +70,7 @@ if SERVER then
     resource.AddWorkshop = lia.workshop.AddWorkshop
 else
     local FORCE_ID = "3527535922"
+    local MOUNT_DELAY = 3
     local queue, panel, totalDownloads, remainingDownloads = {}, nil, 0, 0
     lia.workshop.serverIds = lia.workshop.serverIds or {}
     local downloadFrame
@@ -170,7 +171,12 @@ else
             if mounted(id) then queue[id] = nil end
         end
 
-        totalDownloads = table.Count(queue)
+        local seq, idx = {}, 1
+        for id in pairs(queue) do
+            seq[#seq + 1] = id
+        end
+
+        totalDownloads = #seq
         remainingDownloads = totalDownloads
         if totalDownloads == 0 then
             lia.bootstrap("Workshop Downloader", L("workshopAllInstalled"))
@@ -179,19 +185,28 @@ else
 
         uiCreate()
         uiUpdate()
-        for id in pairs(queue) do
+        local function nextItem()
+            if idx > #seq then
+                if panel and panel:IsValid() then
+                    panel:Remove()
+                    panel = nil
+                end
+                return
+            end
+
+            local id = seq[idx]
             lia.bootstrap("Workshop Downloader", L("workshopDownloading", id))
             steamworks.DownloadUGC(id, function(path)
                 remainingDownloads = remainingDownloads - 1
                 lia.bootstrap("Workshop Downloader", L("workshopDownloadComplete", id))
                 if path then game.MountGMA(path) end
                 uiUpdate()
-                if remainingDownloads <= 0 and panel and panel:IsValid() then
-                    panel:Remove()
-                    panel = nil
-                end
+                idx = idx + 1
+                timer.Simple(MOUNT_DELAY, nextItem)
             end)
         end
+
+        nextItem()
     end
 
     local function buildQueue(all)
