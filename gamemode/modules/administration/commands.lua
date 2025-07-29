@@ -61,7 +61,6 @@ lia.command.add("addsitroom", {
             local rooms = lia.data.get("sitrooms", {})
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
-
             client:notifyLocalized("sitroomSet")
             lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(client:GetPos())), "Set the sitroom location")
         end)
@@ -209,7 +208,8 @@ lia.command.add("plysetgroup", {
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and lia.admin.groups[arguments[2]] then
-            lia.admin.setPlayerGroup(target, arguments[2])
+            ply:SetUserGroup(usergroup)
+            lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
             client:notifyLocalized("plyGroupSet")
             lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
         elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
@@ -231,6 +231,7 @@ lia.command.add("plyunban", {
                 _banDuration = 0,
                 _banReason = ""
             }, nil, "players", "_steamID = " .. steamid)
+
             client:notify("Player unbanned")
             lia.log.add(client, "plyUnban", steamid)
         end

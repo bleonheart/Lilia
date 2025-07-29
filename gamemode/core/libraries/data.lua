@@ -292,17 +292,13 @@ function lia.data.loadPersistenceData(callback)
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(folder, map)
-    ensurePersistenceColumns(baseCols):next(function()
-        return lia.db.select("*", "persistence", condition)
-    end):next(function(res)
+    ensurePersistenceColumns(baseCols):next(function() return lia.db.select("*", "persistence", condition) end):next(function(res)
         local rows = res.results or {}
         local entities = {}
         for _, row in ipairs(rows) do
             local ent = {}
             for k, v in pairs(row) do
-                if not defaultCols[k] and k ~= "_id" and k ~= "_folder" and k ~= "_map" then
-                    ent[k] = lia.data.deserialize(v)
-                end
+                if not defaultCols[k] and k ~= "_id" and k ~= "_folder" and k ~= "_map" then ent[k] = lia.data.deserialize(v) end
             end
 
             ent.class = row.class

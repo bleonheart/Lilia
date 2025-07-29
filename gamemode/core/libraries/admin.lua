@@ -16,6 +16,7 @@ function lia.admin.load()
             for _, grp in ipairs(defaults) do
                 lia.admin.createGroup(grp)
             end
+
             created = true
         else
             for _, grp in ipairs(defaults) do
@@ -25,6 +26,7 @@ function lia.admin.load()
                 end
             end
         end
+
         if created then lia.admin.save(true) end
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
@@ -42,9 +44,7 @@ function lia.admin.createGroup(groupName, info)
     end
 
     lia.admin.groups[groupName] = info or {}
-    if SERVER then
-        lia.admin.save(true)
-    end
+    if SERVER then lia.admin.save(true) end
 end
 
 function lia.admin.registerPrivilege(privilege)
@@ -64,9 +64,7 @@ function lia.admin.removeGroup(groupName)
     end
 
     lia.admin.groups[groupName] = nil
-    if SERVER then
-        lia.admin.save(true)
-    end
+    if SERVER then lia.admin.save(true) end
 end
 
 if SERVER then
@@ -108,12 +106,6 @@ if SERVER then
             net.WriteTable(lia.admin.groups)
             net.Broadcast()
         end
-    end
-
-    function lia.admin.setPlayerGroup(ply, usergroup)
-        local old = ply:GetUserGroup()
-        ply:SetUserGroup(usergroup)
-        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 else
     function lia.admin.execCommand(cmd, victim, dur, reason)

@@ -967,11 +967,13 @@ concommand.Add("kickbots", function()
 end)
 
 concommand.Add("plysetgroup", function(ply, _, args)
+    local target = lia.util.findPlayer(args[1])
+    local usergroup = args[2]
     if not IsValid(ply) then
-        local target = lia.util.findPlayer(args[1])
         if IsValid(target) then
-            if lia.admin.groups[args[2]] then
-                lia.admin.setPlayerGroup(target, args[2])
+            if lia.admin.groups[usergroup] then
+                ply:SetUserGroup(usergroup)
+                lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
             else
                 MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
             end

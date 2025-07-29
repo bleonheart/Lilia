@@ -522,6 +522,7 @@ if SERVER then
             _banDuration = (duration or 0) * 60,
             _banReason = reason or L("genericReason")
         }, nil, "players", "_steamID = " .. steam64)
+
         self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
     end
 

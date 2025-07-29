@@ -107,7 +107,11 @@ function MODULE:PlayerAuthed(client, steamid)
         if banStart > 0 then
             local duration = tonumber(banRecord._banDuration or 0)
             if duration > 0 and banStart + duration <= os.time() then
-                lia.db.updateTable({_banStart = nil, _banDuration = 0, _banReason = ""}, nil, "players", "_steamID = " .. ownerSteamID64)
+                lia.db.updateTable({
+                    _banStart = nil,
+                    _banDuration = 0,
+                    _banReason = ""
+                }, nil, "players", "_steamID = " .. ownerSteamID64)
             else
                 local timeLeft = 0
                 if duration > 0 then timeLeft = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end

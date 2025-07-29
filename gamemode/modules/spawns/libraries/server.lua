@@ -16,10 +16,13 @@ function MODULE:FetchSpawns()
                     ang = angle_zero
                 }
             end
+
             t[i] = spawnData
         end
+
         result[fac] = t
     end
+
     d:resolve(result)
     return d
 end
@@ -33,7 +36,9 @@ function MODULE:StoreSpawns(spawns)
         end
     end
 
-    lia.data.set("spawns", {factions = factions})
+    lia.data.set("spawns", {
+        factions = factions
+    })
     return deferred.resolve(true)
 end
 
@@ -76,20 +81,11 @@ local function SpawnPlayer(client)
             if factionSpawns and #factionSpawns > 0 then
                 local data = table.Random(factionSpawns)
                 local basePos = data.pos or data
-                if not isvector(basePos) then
-                    basePos = lia.data.decodeVector(basePos)
-                end
-
-                if not isvector(basePos) then
-                    basePos = Vector(0, 0, 0)
-                end
-
+                if not isvector(basePos) then basePos = lia.data.decodeVector(basePos) end
+                if not isvector(basePos) then basePos = Vector(0, 0, 0) end
                 local pos = basePos + Vector(0, 0, 16)
-
                 local ang = data.ang
-                if not isangle(ang) then
-                    ang = lia.data.decodeAngle(ang) or angle_zero
-                end
+                if not isangle(ang) then ang = lia.data.decodeAngle(ang) or angle_zero end
                 print("[SpawnPlayer] selected pos", pos, "ang", ang)
                 client:SetPos(pos)
                 client:SetEyeAngles(ang)

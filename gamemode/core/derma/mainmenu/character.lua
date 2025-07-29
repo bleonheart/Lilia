@@ -495,11 +495,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     end
 
     self.selectBtn.DoClick = function()
-        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err)
-            if err and err ~= "" then
-                LocalPlayer():notifyLocalized(err)
-            end
-        end)
+        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
         self:Remove()
     end
 
@@ -528,9 +524,7 @@ function PANEL:updateModelEntity(character)
     for i = 0, self.modelEntity:GetNumBodyGroups() - 1 do
         local value = groups[i]
         if value == nil then value = groups[tostring(i)] end
-        if value ~= nil then
-            self.modelEntity:SetBodygroup(i, tonumber(value) or 0)
-        end
+        if value ~= nil then self.modelEntity:SetBodygroup(i, tonumber(value) or 0) end
     end
 
     hook.Run("SetupPlayerModel", self.modelEntity, character)

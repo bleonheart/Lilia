@@ -15,9 +15,7 @@ local function buildDefaultTable(g)
     local t = {}
     for _, v in pairs(lia.admin.privileges or {}) do
         local min = v.MinAccess or "user"
-        if g == "superadmin" or (g == "admin" and min ~= "superadmin") or (min == "user") then
-            t[v.Name] = true
-        end
+        if g == "superadmin" or g == "admin" and min ~= "superadmin" or min == "user" then t[v.Name] = true end
     end
     return t
 end
@@ -31,8 +29,6 @@ if SERVER then
     util.AddNetworkString("liaGroupsDataChunk")
     util.AddNetworkString("liaGroupsDataDone")
     util.AddNetworkString("liaGroupsNotice")
-    lia.admin.privileges = lia.admin.privileges or {}
-    lia.admin.groups = lia.admin.groups or {}
     local function syncPrivileges()
         for n in pairs(lia.admin.groups) do
             lia.admin.groups[n] = lia.admin.groups[n] or buildDefaultTable(n)
@@ -40,7 +36,7 @@ if SERVER then
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() and p:hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Staff Permissions - Manage UserGroups")
     end
 
     local function getPrivList()
@@ -93,8 +89,6 @@ if SERVER then
     local function broadcastGroups()
         sendBigTable(nil, payload())
     end
-
-
 
     local function notify(p, msg)
         if IsValid(p) and p.notify then p:notify(msg) end
