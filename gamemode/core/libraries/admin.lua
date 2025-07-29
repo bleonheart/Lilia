@@ -184,8 +184,6 @@ if SERVER then
         if ban.duration == 0 then return false end
         return ban.start + ban.duration <= os.time()
     end
-
-    hook.Add("ShutDown", "lia_SaveAdmin", function() lia.admin.save() end)
 end
 
 local function quote(str)
