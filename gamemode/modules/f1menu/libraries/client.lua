@@ -345,31 +345,18 @@ function MODULE:CreateMenuButtons(tabs)
     end
 
     tabs[L("information")] = function(infoTabPanel)
-        infoTabPanel.sidebar = infoTabPanel:Add("DScrollPanel")
-        infoTabPanel.sidebar:Dock(LEFT)
-        infoTabPanel.sidebar:SetWide(200)
-        infoTabPanel.sidebar:DockMargin(20, 20, 0, 20)
-        infoTabPanel.mainContent = infoTabPanel:Add("DPanel")
-        infoTabPanel.mainContent:Dock(FILL)
-        infoTabPanel.mainContent:DockMargin(10, 10, 10, 10)
-        infoTabPanel.mainContent.Paint = function() end
+        local sheet = infoTabPanel:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        sheet:DockMargin(10, 10, 10, 10)
         local pages = {}
         hook.Run("CreateInformationButtons", pages)
         if not pages then return end
-        local currentBtn
         for _, page in ipairs(pages) do
-            local btn = infoTabPanel.sidebar:Add("liaMediumButton")
-            btn:SetText(page.name)
-            btn:Dock(TOP)
-            btn:DockMargin(0, 0, 0, 10)
-            btn:SetTall(40)
-            btn.DoClick = function()
-                if IsValid(currentBtn) then currentBtn:SetSelected(false) end
-                btn:SetSelected(true)
-                currentBtn = btn
-                infoTabPanel.mainContent:Clear()
-                page.drawFunc(infoTabPanel.mainContent)
-            end
+            local panel = vgui.Create("DPanel")
+            panel.Paint = function() end
+            panel:DockPadding(10, 10, 10, 10)
+            page.drawFunc(panel)
+            sheet:AddSheet(page.name, panel)
         end
     end
 
