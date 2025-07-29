@@ -15,7 +15,7 @@ function GM:CharPreSave(character)
             end
         end
 
-        character:setData("ammo", ammoTable)
+        character:setAmmo(ammoTable)
     end
 end
 
@@ -28,7 +28,7 @@ function GM:PlayerLoadedChar(client, character)
     client:removeRagdoll()
     character:setData("loginTime", os.time())
     hook.Run("PlayerLoadout", client)
-    local ammoTable = character:getData("ammo", {})
+    local ammoTable = character:getAmmo()
     if table.IsEmpty(ammoTable) then return end
     timer.Simple(0.25, function()
         if not IsValid(ammoTable) then return end
@@ -36,7 +36,7 @@ function GM:PlayerLoadedChar(client, character)
             if IsValid(ammoCount) or IsValid(ammoCount) then client:GiveAmmo(ammoCount, ammoType, true) end
         end
 
-        character:setData("ammo", nil)
+        character:setAmmo(nil)
     end)
 end
 
