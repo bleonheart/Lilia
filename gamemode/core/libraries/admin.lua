@@ -8,48 +8,23 @@ lia.admin.DefaultGroups = {
 }
 
 function lia.admin.load()
-    local camiGroups = CAMI.GetUsergroups and CAMI.GetUsergroups()
     local function continueLoad(data)
-        if camiGroups and not table.IsEmpty(camiGroups) then
-            lia.admin.groups = {}
-            for name in pairs(camiGroups) do
-                lia.admin.groups[name] = {}
-            end
-        else
-            lia.admin.groups = data or {}
-        end
-
-        for name, priv in pairs(CAMI.GetPrivileges() or {}) do
-            lia.admin.privileges[name] = priv
-        end
-
-        if camiGroups and not table.IsEmpty(camiGroups) then
-            for group in pairs(lia.admin.groups) do
-                for privName, priv in pairs(lia.admin.privileges) do
-                    if CAMI.UsergroupInherits(group, priv.MinAccess or "user") then lia.admin.groups[group][privName] = true end
-                end
-            end
-        end
-
+        lia.admin.groups = data or {}
         local defaults = {"user", "admin", "superadmin"}
         local created = false
-        if not (camiGroups and not table.IsEmpty(camiGroups)) then
-            if table.Count(lia.admin.groups) == 0 then
-                for _, grp in ipairs(defaults) do
+        if table.Count(lia.admin.groups) == 0 then
+            for _, grp in ipairs(defaults) do
+                lia.admin.createGroup(grp)
+            end
+            created = true
+        else
+            for _, grp in ipairs(defaults) do
+                if not lia.admin.groups[grp] then
                     lia.admin.createGroup(grp)
-                end
-
-                created = true
-            else
-                for _, grp in ipairs(defaults) do
-                    if not lia.admin.groups[grp] then
-                        lia.admin.createGroup(grp)
-                        created = true
-                    end
+                    created = true
                 end
             end
         end
-
         if created then lia.admin.save(true) end
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
@@ -68,13 +43,6 @@ function lia.admin.createGroup(groupName, info)
 
     lia.admin.groups[groupName] = info or {}
     if SERVER then
-        if not CAMI.GetUsergroup(groupName) then
-            CAMI.RegisterUsergroup({
-                Name = groupName,
-                Inherits = "user",
-            })
-        end
-
         lia.admin.save(true)
     end
 end
@@ -97,7 +65,6 @@ function lia.admin.removeGroup(groupName)
 
     lia.admin.groups[groupName] = nil
     if SERVER then
-        CAMI.UnregisterUsergroup(groupName)
         lia.admin.save(true)
     end
 end
@@ -113,7 +80,7 @@ if SERVER then
         lia.admin.groups[groupName][permission] = true
         if SERVER then
             lia.admin.save(true)
-            hook.Run("CAMI.OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
+            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
         end
     end
 
@@ -127,7 +94,7 @@ if SERVER then
         lia.admin.groups[groupName][permission] = nil
         if SERVER then
             lia.admin.save(true)
-            hook.Run("CAMI.OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
+            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
         end
     end
 
@@ -146,7 +113,6 @@ if SERVER then
     function lia.admin.setPlayerGroup(ply, usergroup)
         local old = ply:GetUserGroup()
         ply:SetUserGroup(usergroup)
-        CAMI.SignalUserGroupChanged(ply, old, usergroup, "Lilia")
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 else

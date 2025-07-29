@@ -1,7 +1,7 @@
 ﻿MODULE.name = "Permissions"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Integrates with the CAMI system to provide fine-grained permission management for commands and modules across the framework."
+MODULE.desc = "Provides fine-grained permission management for commands and modules across the framework."
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Bypass Character Lock",

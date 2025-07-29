@@ -1,7 +1,7 @@
 ﻿MODULE.name = "Usergroups"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Lists CAMI usergroups."
+MODULE.desc = "Lists usergroups."
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Manage UserGroups",
@@ -13,26 +13,13 @@ MODULE.Privileges = {
 local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
-    for _, v in ipairs(CAMI.GetPrivileges() or {}) do
-        if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
-        Category = MODULE.name
+    for _, v in pairs(lia.admin.privileges or {}) do
+        local min = v.MinAccess or "user"
+        if g == "superadmin" or (g == "admin" and min ~= "superadmin") or (min == "user") then
+            t[v.Name] = true
+        end
     end
     return t
-end
-
-local function ensureCAMIGroup(n, inh)
-    local g = CAMI.GetUsergroups() or {}
-    if not g[n] then
-        CAMI.RegisterUsergroup({
-            Name = n,
-            Inherits = inh or "user"
-        })
-    end
-end
-
-local function dropCAMIGroup(n)
-    local g = CAMI.GetUsergroups() or {}
-    if g[n] then CAMI.UnregisterUsergroup(n) end
 end
 
 if SERVER then
@@ -47,17 +34,8 @@ if SERVER then
     lia.admin.privileges = lia.admin.privileges or {}
     lia.admin.groups = lia.admin.groups or {}
     local function syncPrivileges()
-        for _, v in ipairs(CAMI.GetPrivileges() or {}) do
-            lia.admin.privileges[v.Name] = {
-                Name = v.Name,
-                MinAccess = v.MinAccess or "user",
-                Category = MODULE.name,
-            }
-        end
-
-        for n, d in pairs(CAMI.GetUsergroups() or {}) do
+        for n in pairs(lia.admin.groups) do
             lia.admin.groups[n] = lia.admin.groups[n] or buildDefaultTable(n)
-            ensureCAMIGroup(n, d.Inherits or "user")
         end
     end
 
@@ -77,8 +55,7 @@ if SERVER then
 
     local function payload()
         return {
-            cami = CAMI.GetUsergroups() or {},
-            perms = lia.admin.groups or {},
+            groups = lia.admin.groups or {},
             privList = getPrivList()
         }
     end
@@ -117,10 +94,7 @@ if SERVER then
         sendBigTable(nil, payload())
     end
 
-    local function applyToCAMI(g, t)
-        ensureCAMIGroup(g, CAMI.GetUsergroups()[g] and CAMI.GetUsergroups()[g].Inherits or "user")
-        hook.Run("CAMI.OnUsergroupPermissionsChanged", g, t)
-    end
+
 
     local function notify(p, msg)
         if IsValid(p) and p.notify then p:notify(msg) end
@@ -146,9 +120,9 @@ if SERVER then
         if n == "" then return end
         lia.admin.createGroup(n)
         lia.admin.groups[n] = buildDefaultTable(n)
-        ensureCAMIGroup(n, "user")
         lia.admin.save(true)
-        applyToCAMI(n, lia.admin.groups[n])
+        broadcastGroups()
+        notify(p, "Group '" .. n .. "' created.")
         broadcastGroups()
         notify(p, "Group '" .. n .. "' created.")
     end)
@@ -159,7 +133,6 @@ if SERVER then
         if n == "" or lia.admin.DefaultGroups[n] then return end
         lia.admin.removeGroup(n)
         lia.admin.groups[n] = nil
-        dropCAMIGroup(n)
         lia.admin.save(true)
         broadcastGroups()
         notify(p, "Group '" .. n .. "' removed.")
@@ -176,7 +149,6 @@ if SERVER then
         end
 
         lia.admin.save(true)
-        applyToCAMI(g, lia.admin.groups[g])
         broadcastGroups()
         notify(p, "Permissions saved for '" .. g .. "'.")
     end)
@@ -187,7 +159,6 @@ if SERVER then
         if g == "" or lia.admin.DefaultGroups[g] then return end
         lia.admin.groups[g] = buildDefaultTable(g)
         lia.admin.save(true)
-        applyToCAMI(g, lia.admin.groups[g])
         broadcastGroups()
         notify(p, "Defaults restored for '" .. g .. "'.")
     end)
@@ -199,7 +170,7 @@ else
         if IsValid(o) then o:SetFont(f) end
     end
 
-    local function renderGroupInfo(parent, g, cami, perms)
+    local function renderGroupInfo(parent, g, groups, perms)
         parent:Clear()
         LAST_GROUP = g
         local scroll = parent:Add("DScrollPanel")
@@ -262,11 +233,10 @@ else
         inhLbl:SetText("Inherits from:")
         setFont(inhLbl, "liaBigFont")
         inhLbl:SizeToContents()
-        local inh = cami[g] and cami[g].Inherits or "user"
         local inhVal = scroll:Add("DLabel")
         inhVal:Dock(TOP)
         inhVal:DockMargin(20, 2, 0, 20)
-        inhVal:SetText(inh)
+        inhVal:SetText("user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
         local privLbl = scroll:Add("DLabel")
@@ -363,7 +333,7 @@ else
         end
     end
 
-    local function buildGroupsUI(panel, cami, perms)
+    local function buildGroupsUI(panel, groups, perms)
         panel:Clear()
         local sidebar = panel:Add("DScrollPanel")
         sidebar:Dock(RIGHT)
@@ -374,7 +344,7 @@ else
         content:DockMargin(10, 10, 10, 10)
         local selected
         local keys = {}
-        for g in pairs(cami) do
+        for g in pairs(groups) do
             keys[#keys + 1] = g
         end
 
@@ -389,7 +359,7 @@ else
                 if IsValid(selected) then selected:SetSelected(false) end
                 b:SetSelected(true)
                 selected = b
-                renderGroupInfo(content, g, cami, perms)
+                renderGroupInfo(content, g, groups, perms)
             end
         end
 
@@ -408,7 +378,7 @@ else
             end)
         end
 
-        if LAST_GROUP and cami[LAST_GROUP] then
+        if LAST_GROUP and groups[LAST_GROUP] then
             for _, b in ipairs(sidebar:GetChildren()) do
                 if b.GetText and b:GetText() == LAST_GROUP then
                     b:DoClick()
@@ -433,8 +403,8 @@ else
         chunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
         PRIV_LIST = tbl.privList or {}
-        lia.admin.groups = tbl.perms or {}
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl.cami or {}, lia.admin.groups) end
+        lia.admin.groups = tbl.groups or {}
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.admin.groups, lia.admin.groups) end
     end
 
     net.Receive("liaGroupsDataChunk", function()
@@ -471,45 +441,3 @@ else
         end
     end
 end
-
-hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
-    lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
-    if SERVER then
-        ensureCAMIGroup(g.Name, g.Inherits or "user")
-        lia.admin.save(true)
-    end
-end)
-
-hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-    lia.admin.groups[g.Name] = nil
-    if SERVER then
-        dropCAMIGroup(g.Name)
-        lia.admin.save(true)
-    end
-end)
-
-hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = {
-        Name = pv.Name,
-        MinAccess = pv.MinAccess or "user",
-        Category = MODULE.name,
-    }
-
-    for g in pairs(lia.admin.groups) do
-        if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
-        Category = MODULE.name
-    end
-
-    if SERVER then lia.admin.save(true) end
-end)
-
-hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if not pv or not pv.Name then return end
-    lia.admin.privileges[pv.Name] = nil
-    for _, p in pairs(lia.admin.groups) do
-        p[pv.Name] = nil
-    end
-
-    if SERVER then lia.admin.save(true) end
-end)
