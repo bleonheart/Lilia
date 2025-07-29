@@ -11,7 +11,7 @@ function MODULE:InitializedModules()
                     lia.admin.registerPrivilege({
                         Name = privilege,
                         MinAccess = "admin",
-                        Category = MODULE.name
+                        Category = "Staff Permissions"
                     })
                 end
             end
@@ -26,7 +26,7 @@ function MODULE:InitializedModules()
                     lia.admin.registerPrivilege({
                         Name = privilege,
                         MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
-                        Category = MODULE.name
+                        Category = "Staff Permissions"
                     })
                 end
             end

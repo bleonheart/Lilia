@@ -6,26 +6,26 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - No OOC Cooldown",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "Chatbox",
     },
     {
         Name = "Staff Permissions - Admin Chat",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "Chatbox",
     },
     {
         Name = "Staff Permissions - Local Event Chat",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "Chatbox",
     },
     {
         Name = "Staff Permissions - Event Chat",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "Chatbox",
     },
     {
         Name = "Staff Permissions - Always Have Access to Help Chat",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Chatbox",
     },
 }

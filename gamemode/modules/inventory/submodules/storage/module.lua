@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Spawn Storage",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Storage",
     }
 }

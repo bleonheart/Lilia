@@ -6,7 +6,7 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Manage UserGroups",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Usergroups",
     }
 }
 
@@ -15,7 +15,7 @@ local function buildDefaultTable(g)
     local t = {}
     for _, v in ipairs(CAMI.GetPrivileges() or {}) do
         if CAMI.UsergroupInherits(g, v.MinAccess or "user") then t[v.Name] = true end
-        Category = MODULE.name
+        Category = "Usergroups"
     end
     return t
 end
@@ -51,7 +51,7 @@ if SERVER then
             lia.admin.privileges[v.Name] = {
                 Name = v.Name,
                 MinAccess = v.MinAccess or "user",
-                Category = MODULE.name,
+                Category = "Usergroups",
             }
         end
 
@@ -493,12 +493,12 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
     lia.admin.privileges[pv.Name] = {
         Name = pv.Name,
         MinAccess = pv.MinAccess or "user",
-        Category = MODULE.name,
+        Category = "Usergroups",
     }
 
     for g in pairs(lia.admin.groups) do
         if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.admin.groups[g][pv.Name] = true end
-        Category = MODULE.name
+        Category = "Usergroups"
     end
 
     if SERVER then lia.admin.save(true) end

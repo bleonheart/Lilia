@@ -6,11 +6,11 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Access Scoreboard Admin Options",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "Scoreboard",
     },
     {
         Name = "Staff Permissions - Can Access Scoreboard Info Out Of Staff",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "Scoreboard",
     },
 }

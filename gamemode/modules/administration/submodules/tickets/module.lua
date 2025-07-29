@@ -7,6 +7,6 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Always See Tickets",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Tickets",
     },
 }

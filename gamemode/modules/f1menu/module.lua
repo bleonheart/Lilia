@@ -6,27 +6,27 @@ MODULE.Privileges = {
     {
         Name = "Staff Permission — Access Entity List",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "F1 Menu",
     },
     {
         Name = "Staff Permission — Teleport to Entity",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "F1 Menu",
     },
     {
         Name = "Staff Permission — Teleport to Entity (Entity Tab)",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "F1 Menu",
     },
     {
         Name = "Staff Permission — View Entity (Entity Tab)",
         MinAccess = "admin",
-        Category = MODULE.name,
+        Category = "F1 Menu",
     },
     {
         Name = "Staff Permission — Access Module List",
         MinAccess = "user",
-        Category = MODULE.name,
+        Category = "F1 Menu",
     }
 }
 
