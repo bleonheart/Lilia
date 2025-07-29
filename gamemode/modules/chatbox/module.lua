@@ -2,7 +2,7 @@
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
-MODULE.CAMIPrivileges = {
+MODULE.Privileges = {
     {
         Name = "Staff Permissions - No OOC Cooldown",
         MinAccess = "admin"
