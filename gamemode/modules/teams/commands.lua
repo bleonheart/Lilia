@@ -194,12 +194,6 @@ lia.command.add("plywhitelist", {
     privilege = "Manage Whitelists",
     desc = "plyWhitelistDesc",
     syntax = "[player Name] [faction Faction]",
-    AdminStick = {
-        Name = "adminStickFactionWhitelistName",
-        Category = "characterManagement",
-        SubCategory = "adminStickSubCategorySetInfos",
-        Icon = "icon16/group_add.png"
-    },
     alias = {"factionwhitelist"},
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -224,12 +218,6 @@ lia.command.add("plyunwhitelist", {
     privilege = "Manage Whitelists",
     desc = "plyUnwhitelistDesc",
     syntax = "[player Name] [faction Faction]",
-    AdminStick = {
-        Name = "adminStickUnwhitelistName",
-        Category = "characterManagement",
-        SubCategory = "adminStickSubCategorySetInfos",
-        Icon = "icon16/group_delete.png"
-    },
     alias = {"factionunwhitelist"},
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -312,12 +300,6 @@ lia.command.add("classwhitelist", {
     privilege = "Manage Whitelists",
     desc = "classWhitelistDesc",
     syntax = "[player Name] [class Class]",
-    AdminStick = {
-        Name = "adminStickClassWhitelistName",
-        Category = "characterManagement",
-        SubCategory = "adminStickSubCategorySetInfos",
-        Icon = "icon16/user_add.png"
-    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))
@@ -348,12 +330,6 @@ lia.command.add("classunwhitelist", {
     privilege = "Manage Classes",
     desc = "classUnwhitelistDesc",
     syntax = "[player Name] [class Class]",
-    AdminStick = {
-        Name = "adminStickClassUnwhitelistName",
-        Category = "characterManagement",
-        SubCategory = "adminStickSubCategorySetInfos",
-        Icon = "icon16/user_delete.png"
-    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))
