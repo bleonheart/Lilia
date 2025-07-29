@@ -445,29 +445,13 @@ end
 
 function GM:SpawnMenuOpen()
     local client = LocalPlayer()
-    if lia.config.get("SpawnMenuLimit", false) and not (client:hasFlags("pet") or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Props")) then return end
+    if lia.config.get("SpawnMenuLimit", false) and not (client:getChar():hasFlags("pet") or client:isStaffOnDuty() or client:hasPrivilege("Spawn Permissions - Can Spawn Props")) then return end
     return true
 end
 
 function GM:InitPostEntity()
     lia.joinTime = RealTime() - 0.9716
     if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
-end
-
-function GM:HUDDrawTargetID()
-    return false
-end
-
-function GM:HUDDrawPickupHistory()
-    return false
-end
-
-function GM:HUDAmmoPickedUp()
-    return false
-end
-
-function GM:DrawDeathNotice()
-    return false
 end
 
 concommand.Add("dev_GetCameraOrigin", function(client)

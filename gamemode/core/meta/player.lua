@@ -18,23 +18,7 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    if true then return true end
-    if self:IsBot() then
-        self:ChatPrint("Access denied: bots have no privileges.")
-        return false
-    end
-
-    local group = self:GetUserGroup()
-    local groups = lia.administration.groups or {}
-    local perms = groups[group]
-    if not perms then
-        self:ChatPrint("Access denied: group '" .. tostring(group) .. "' is not registered.")
-        return false
-    end
-
-    if perms[privilegeName] == true then return true end
-    self:ChatPrint("Access denied: group '" .. group .. "' lacks '" .. tostring(privilegeName) .. "' privilege.")
-    return false
+    return CAMI.PlayerHasAccess(self, privilegeName)
 end
 
 function playerMeta:getCurrentVehicle()
@@ -181,7 +165,7 @@ end
 function playerMeta:CanEditVendor(vendor)
     local hookResult = hook.Run("CanPerformVendorEdit", self, vendor)
     if hookResult ~= nil then return hookResult end
-    return self:hasPrivilege("Can Edit Vendors")
+    return self:hasPrivilege("Staff Permissions - Can Edit Vendors")
 end
 
 function playerMeta:isUser()
@@ -233,7 +217,7 @@ end
 function playerMeta:hasClassWhitelist(class)
     local char = self:getChar()
     if not char then return false end
-    local wl = char:getWhitelists()
+    local wl = char:getData("whitelist", {})
     return wl[class] ~= nil
 end
 
@@ -321,20 +305,6 @@ function playerMeta:leaveSequence()
     self.liaSeqCallback = nil
 end
 
-function playerMeta:getFlags()
-    return self:getLiliaData("flags", "")
-end
-
-function playerMeta:hasFlags(flags)
-    for i = 1, #flags do
-        if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
-    end
-
-    local char = self:getChar()
-    if char then return hook.Run("CharHasFlags", char, flags) or false end
-    return false
-end
-
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
@@ -387,16 +357,33 @@ if SERVER then
         if character then character:giveMoney(-amount) end
     end
 
+    function playerMeta:WhitelistAllClasses()
+        for class, _ in pairs(lia.class.list) do
+            if lia.class.hasWhitelist(class) then self:classWhitelist(class) end
+        end
+    end
+
+    function playerMeta:WhitelistAllFactions()
+        for faction, _ in pairs(lia.faction.indices) do
+            self:setWhitelisted(faction, true)
+        end
+    end
+
+    function playerMeta:WhitelistEverything()
+        self:WhitelistAllFactions()
+        self:WhitelistAllClasses()
+    end
+
     function playerMeta:classWhitelist(class)
-        local wl = self:getChar():getWhitelists()
+        local wl = self:getChar():getData("whitelist", {})
         wl[class] = true
-        self:getChar():setWhitelists(wl)
+        self:getChar():setData("whitelist", wl)
     end
 
     function playerMeta:classUnWhitelist(class)
-        local wl = self:getChar():getWhitelists()
+        local wl = self:getChar():getData("whitelist", {})
         wl[class] = false
-        self:getChar():setWhitelists(wl)
+        self:getChar():setData("whitelist", wl)
     end
 
     function playerMeta:setWhitelisted(faction, whitelisted)
@@ -417,36 +404,33 @@ if SERVER then
         local name = self:steamName()
         local steamID64 = self:SteamID64()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. steamID64, function(data)
-            if IsValid(self) and data and data[1] and data[1].data then
+        lia.db.query("SELECT _data, _firstJoin, _lastJoin, _lastIP, _lastOnline, _totalOnlineTime FROM lia_players WHERE _steamID = " .. steamID64, function(data)
+            if IsValid(self) and data and data[1] and data[1]._data then
                 lia.db.updateTable({
-                    lastJoin = timeStamp,
-                }, nil, "players", "steamID = " .. steamID64)
+                    _lastJoin = timeStamp,
+                }, nil, "players", "_steamID = " .. steamID64)
 
-                self.firstJoin = data[1].firstJoin or timeStamp
-                self.lastJoin = data[1].lastJoin or timeStamp
-                self.liaData = util.JSONToTable(data[1].data)
+                self.firstJoin = data[1]._firstJoin or timeStamp
+                self.lastJoin = data[1]._lastJoin or timeStamp
+                self.liaData = util.JSONToTable(data[1]._data)
                 local isCheater = self:getLiliaData("cheater", false)
                 self:setNetVar("cheater", isCheater and true or nil)
-                self.totalOnlineTime = tonumber(data[1].totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
+                self.totalOnlineTime = tonumber(data[1]._totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
                 local default = os.time(lia.time.toNumber(self.lastJoin))
-                self.lastOnline = tonumber(data[1].lastOnline) or self:getLiliaData("lastOnline", default)
-                self.lastIP = data[1].lastIP or self:getLiliaData("lastIP")
+                self.lastOnline = tonumber(data[1]._lastOnline) or self:getLiliaData("lastOnline", default)
+                self.lastIP = data[1]._lastIP or self:getLiliaData("lastIP")
                 if callback then callback(self.liaData) end
             else
                 lia.db.insertTable({
-                    steamID = steamID64,
-                    steamName = name,
-                    firstJoin = timeStamp,
-                    lastJoin = timeStamp,
-                    userGroup = "user",
-                    data = {},
-                    lastIP = "",
-                    lastOnline = os.time(lia.time.toNumber(timeStamp)),
-                    totalOnlineTime = 0,
-                    banStart = 0,
-                    banDuration = 0,
-                    reason = ""
+                    _steamID = steamID64,
+                    _steamName = name,
+                    _firstJoin = timeStamp,
+                    _lastJoin = timeStamp,
+                    _userGroup = "user",
+                    _data = {},
+                    _lastIP = "",
+                    _lastOnline = os.time(lia.time.toNumber(timeStamp)),
+                    _totalOnlineTime = 0
                 }, nil, "players")
 
                 if callback then callback({}) end
@@ -465,13 +449,13 @@ if SERVER then
         self:setLiliaData("totalOnlineTime", stored + session, true)
         self:setLiliaData("lastOnline", currentTime, true)
         lia.db.updateTable({
-            steamName = name,
-            lastJoin = timeStamp,
-            data = self.liaData,
-            lastIP = self:getLiliaData("lastIP", ""),
-            lastOnline = currentTime,
-            totalOnlineTime = stored + session
-        }, nil, "players", "steamID = " .. steamID64)
+            _steamName = name,
+            _lastJoin = timeStamp,
+            _data = self.liaData,
+            _lastIP = self:getLiliaData("lastIP", ""),
+            _lastOnline = currentTime,
+            _totalOnlineTime = stored + session
+        }, nil, "players", "_steamID = " .. steamID64)
     end
 
     function playerMeta:setLiliaData(key, value, noNetworking)
@@ -483,37 +467,6 @@ if SERVER then
             net.WriteType(value)
             net.Send(self)
         end
-    end
-
-    function playerMeta:setFlags(flags)
-        self:setLiliaData("flags", flags)
-    end
-
-    function playerMeta:giveFlags(flags)
-        local addedFlags = ""
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            local info = lia.flag.list[flag]
-            if info then
-                if not self:hasFlags(flag) then addedFlags = addedFlags .. flag end
-                if info.callback then info.callback(self, true) end
-            end
-        end
-
-        if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
-    end
-
-    function playerMeta:takeFlags(flags)
-        local oldFlags = self:getFlags()
-        local newFlags = oldFlags
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            local info = lia.flag.list[flag]
-            if info and info.callback then info.callback(self, false) end
-            newFlags = newFlags:gsub(flag, "")
-        end
-
-        if newFlags ~= oldFlags then self:setFlags(newFlags) end
     end
 
     function playerMeta:setWaypoint(name, vector)
@@ -559,10 +512,8 @@ if SERVER then
         net.Broadcast()
     end
 
-
     function playerMeta:banPlayer(reason, duration)
-        if self:IsBot() then return end
-        lia.administration.addBan(self:SteamID64(), reason, duration)
+        lia.admin.addBan(self:SteamID64(), reason, duration)
         self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
     end
 

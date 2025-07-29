@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local predictedStamina = 100
+﻿local predictedStamina = 100
 local stmBlurAmount = 0
 local stmBlurAlpha = 0
 function MODULE:ConfigureCharacterCreationSteps(panel)

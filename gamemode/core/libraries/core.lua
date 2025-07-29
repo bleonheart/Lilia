@@ -19,10 +19,6 @@ local RealmIDs = {
 
 local FilesToLoad = {
     {
-        path = "lilia/gamemode/core/libraries/networking.lua",
-        realm = "shared"
-    },
-    {
         path = "lilia/gamemode/core/libraries/languages.lua",
         realm = "shared"
     },
@@ -129,6 +125,10 @@ local FilesToLoad = {
     {
         path = "lilia/gamemode/core/libraries/websound.lua",
         realm = "client"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/networking.lua",
+        realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/attributes.lua",
@@ -351,6 +351,12 @@ function lia.error(msg)
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
+function lia.deprecated(methodName, callback)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Deprecated] ")
+    MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n")
+    if callback and isfunction(callback) then callback() end
+end
+
 function lia.updater(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
     MsgC(Color(0, 255, 255), tostring(msg), "\n")
@@ -361,12 +367,6 @@ function lia.information(msg)
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
-function lia.admin(section, msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
-    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
-    MsgC(Color(255, 255, 255), tostring(msg), "\n")
-end
-
 function lia.bootstrap(section, msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Bootstrap] ")
     MsgC(Color(0, 255, 0), "[" .. section .. "] ")
@@ -375,7 +375,7 @@ end
 
 function lia.notifyAdmin(notification)
     for _, client in player.Iterator() do
-        if IsValid(client) and client:hasPrivilege("Can See Alting Notifications") then client:ChatPrint(notification) end
+        if IsValid(client) and client:hasPrivilege("Staff Permissions - Can See Alting Notifications") then client:ChatPrint(notification) end
     end
 end
 
@@ -389,8 +389,8 @@ function lia.applyPunishment(client, infraction, kick, ban, time, kickKey, banKe
     local bantime = time or 0
     kickKey = kickKey or "kickedForInfraction"
     banKey = banKey or "bannedForInfraction"
-    if kick then lia.administration.execCommand("kick", client, nil, L(kickKey, infraction)) end
-    if ban then lia.administration.execCommand("ban", client, bantime, L(banKey, infraction)) end
+    if kick then lia.command.execAdminCommand("kick", client, nil, L(kickKey, infraction)) end
+    if ban then lia.command.execAdminCommand("ban", client, bantime, L(banKey, infraction)) end
 end
 
 for _, files in ipairs(FilesToLoad) do
@@ -539,7 +539,6 @@ function GM:OnReloaded()
     lia.faction.formatModelData()
     if SERVER then
         lia.config.send()
-        lia.administration.updateAdminGroups()
     else
         lia.option.load()
         lia.keybind.load()

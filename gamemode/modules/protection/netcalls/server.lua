@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local MaliciousNet = {
+﻿local MaliciousNet = {
     ["Sbox_gm_attackofnullday_key"] = true,
     ["c"] = true,
     ["enablevac"] = true,
@@ -527,10 +526,10 @@ function MODULE:InitializedModules()
             client.nextExploitNotify = client.nextExploitNotify or 0
             if client.nextExploitNotify > CurTime() then return end
             client.nextExploitNotify = CurTime() + 2
-            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID(), tostring(name))
+            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
             client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
-                if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID(), tostring(name)) end
+                if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
             end
         end)
     end
@@ -547,9 +546,9 @@ function MODULE:InitializedModules()
             end
 
             net.Receive(netName, function(_, client)
-                lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID(), tostring(netName))
+                lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(netName))
                 for _, p in player.Iterator() do
-                    if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID(), tostring(netName)) end
+                    if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(netName)) end
                 end
             end)
         end
@@ -559,14 +558,14 @@ end
 net.Receive("CheckSeed", function(_, client)
     local sentSteamID = net.ReadString()
     if not sentSteamID or sentSteamID == "" then
-        lia.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID()))
-        lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID())
+        lia.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID64()))
+        lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID64())
         return
     end
 
     if client:SteamID64() ~= sentSteamID then
-        lia.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID(), sentSteamID))
-        lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID(), sentSteamID)
+        lia.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID64(), sentSteamID))
+        lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID64(), sentSteamID)
     end
 end)
 
@@ -575,6 +574,7 @@ net.Receive("CheckHack", function(_, client)
     local override = hook.Run("PlayerCheatDetected", client)
     client:setNetVar("cheater", true)
     client:setLiliaData("cheater", true)
+    client:saveLiliaData()
     hook.Run("OnCheaterCaught", client)
     if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
 end)

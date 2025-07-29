@@ -23,9 +23,9 @@ function PANEL:Init()
             net.SendToServer()
         end
 
-        menu:AddOption(L("tenant"), function() if accessData[ply] ~= DoorTenant then sendPerm(DoorTenant) end end):SetImage("icon16/user_add.png")
-        menu:AddOption(L("guest"), function() if accessData[ply] ~= DoorGuest then sendPerm(DoorGuest) end end):SetImage("icon16/user_green.png")
-        menu:AddOption(L("none"), function() if accessData[ply] ~= DoorNone then sendPerm(DoorNone) end end):SetImage("icon16/user_red.png")
+        menu:AddOption(L("tenant"), function() if accessData[ply] ~= DOOR_TENANT then sendPerm(DOOR_TENANT) end end):SetImage("icon16/user_add.png")
+        menu:AddOption(L("guest"), function() if accessData[ply] ~= DOOR_GUEST then sendPerm(DOOR_GUEST) end end):SetImage("icon16/user_green.png")
+        menu:AddOption(L("none"), function() if accessData[ply] ~= DOOR_NONE then sendPerm(DOOR_NONE) end end):SetImage("icon16/user_red.png")
         menu:Open()
     end
 end
@@ -37,13 +37,13 @@ function PANEL:setDoor(door, accessData, fallback)
     local client = LocalPlayer()
     for _, ply in player.Iterator() do
         if ply ~= client and ply:getChar() then
-            local label = L(AccessLabels[accessData[ply] or 0])
+            local label = L(ACCESS_LABELS[accessData[ply] or 0])
             local line = self.access:AddLine(ply:Name():gsub("#", "\226\128\139#"), label)
             line.player = ply
         end
     end
 
-    if self:CheckAccess(DoorOwner) then
+    if self:CheckAccess(DOOR_OWNER) then
         local btn = self:Add("DButton")
         btn:Dock(BOTTOM)
         btn:DockMargin(0, 5, 0, 0)
@@ -57,7 +57,7 @@ function PANEL:setDoor(door, accessData, fallback)
         self.sell = btn
     end
 
-    if self:CheckAccess(DoorTenant) then
+    if self:CheckAccess(DOOR_TENANT) then
         local entry = self:Add("DTextEntry")
         entry:Dock(TOP)
         entry:DockMargin(0, 0, 0, 5)
@@ -75,7 +75,7 @@ end
 
 function PANEL:CheckAccess(minimum)
     if not self.accessData then return false end
-    return (self.accessData[LocalPlayer()] or 0) >= (minimum or DoorGuest)
+    return (self.accessData[LocalPlayer()] or 0) >= (minimum or DOOR_GUEST)
 end
 
 function PANEL:Think()

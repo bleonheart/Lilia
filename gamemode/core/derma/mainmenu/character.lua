@@ -32,11 +32,6 @@ function PANEL:Init()
     self.content:DockMargin(64, 0, 64, 64)
     self.content:SetPaintBackground(false)
     self.music = self:Add("liaCharBGMusic")
-    self.modelRotation = 0
-    self.dragging = false
-    self.lastMouseX = 0
-    self.modelBaseAngles = Angle(0, 0, 0)
-    self.cameraOffset = nil
     self:createTitle()
     self:loadBackground()
     if clientChar and lia.characters and #lia.characters > 0 then
@@ -60,7 +55,7 @@ end
 
 function PANEL:hideExternalEntities()
     self.hiddenEntities = {}
-    for _, ent in ents.Iterator() do
+    for _, ent in ipairs(ents.GetAll()) do
         if ent ~= self.modelEntity and not ent:IsWorld() and not ent:CreatedByMap() then
             self.hiddenEntities[ent] = ent:GetNoDraw()
             ent:SetNoDraw(true)
@@ -87,8 +82,7 @@ function PANEL:loadBackground()
             local ent = self.modelEntity
             if not IsValid(ent) then return end
             local center = ent:GetPos() + Vector(0, 0, 60)
-            local offset = self.cameraOffset or ent:GetForward() * 70
-            local desired = center + offset
+            local desired = center + ent:GetForward() * 70
             self.currentCamPos = self.currentCamPos and LerpVector(FrameTime() * 5, self.currentCamPos, desired) or desired
             return {
                 origin = self.currentCamPos,
@@ -485,11 +479,9 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local cx = fx + (fw - bw) * 0.5
     local clientChar = LocalPlayer().getChar and LocalPlayer():getChar()
     local selectText = L("selectCharacter")
-    local banned = character:getBanned()
-    local isBanned = banned and ((isnumber(banned) and banned > os.time()) or banned == 1)
     if clientChar and character:getID() == clientChar:getID() then
         selectText = L("alreadyUsingCharacter")
-    elseif isBanned then
+    elseif character:getData("banned") then
         selectText = L("bannedCharacter")
     end
 
@@ -497,13 +489,17 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
     self.selectBtn:SetText(selectText)
-    if clientChar and character:getID() == clientChar:getID() or isBanned then
+    if clientChar and character:getID() == clientChar:getID() or character:getData("banned") then
         self.selectBtn:SetEnabled(false)
         self.selectBtn:SetTextColor(Color(255, 255, 255))
     end
 
     self.selectBtn.DoClick = function()
-        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
+        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err)
+            if err and err ~= "" then
+                LocalPlayer():notifyLocalized(err)
+            end
+        end)
         self:Remove()
     end
 
@@ -527,12 +523,14 @@ function PANEL:updateModelEntity(character)
     local model = character.getModel and character:getModel() or LocalPlayer():GetModel()
     self.modelEntity = ClientsideModel(model, RENDERGROUP_OPAQUE)
     if not IsValid(self.modelEntity) then return end
-    self.modelEntity:SetSkin(character:getSkin())
-    local groups = character:getBodygroups()
+    self.modelEntity:SetSkin(character:getData("skin", 0))
+    local groups = character:getData("groups", {})
     for i = 0, self.modelEntity:GetNumBodyGroups() - 1 do
         local value = groups[i]
         if value == nil then value = groups[tostring(i)] end
-        if value ~= nil then self.modelEntity:SetBodygroup(i, tonumber(value) or 0) end
+        if value ~= nil then
+            self.modelEntity:SetBodygroup(i, tonumber(value) or 0)
+        end
     end
 
     hook.Run("SetupPlayerModel", self.modelEntity, character)
@@ -545,9 +543,6 @@ function PANEL:updateModelEntity(character)
 
     ang.pitch, ang.roll = 0, 0
     self.modelEntity:SetPos(pos)
-    self.modelBaseAngles = ang
-    self.cameraOffset = ang:Forward() * 70
-    self.modelRotation = 0
     self.modelEntity:SetAngles(ang)
     for _, seq in ipairs(self.modelEntity:GetSequenceList()) do
         if seq:lower():find("idle") and seq ~= "idlenoise" then
@@ -713,7 +708,6 @@ function PANEL:OnRemove()
     end
 
     if IsValid(self.modelEntity) then self.modelEntity:Remove() end
-    self:MouseCapture(false)
 end
 
 function PANEL:Think()
@@ -724,35 +718,4 @@ function PANEL:Think()
     end
 end
 
-function PANEL:OnMousePressed(code)
-    if code == MOUSE_LEFT and self.isLoadMode then
-        self.dragging = true
-        self.lastMouseX = gui.MouseX()
-        self:MouseCapture(true)
-    end
-end
-
-function PANEL:OnMouseReleased(code)
-    if code == MOUSE_LEFT and self.dragging then
-        self.dragging = false
-        self:MouseCapture(false)
-    end
-end
-
-function PANEL:OnCursorMoved(x, y)
-    if self.dragging and IsValid(self.modelEntity) then
-        local delta = x - self.lastMouseX
-        self.lastMouseX = x
-        self.modelRotation = (self.modelRotation or 0) + delta
-        local ang = (self.modelBaseAngles or Angle()) + Angle(0, self.modelRotation, 0)
-        self.modelEntity:SetAngles(ang)
-    end
-end
-
 vgui.Register("liaCharacter", PANEL, "EditablePanel")
-hook.Add("CharDataLoaded", "liaUpdateCharacterMenuModel", function(character)
-    if not (IsValid(lia.gui.character) and lia.gui.character.isLoadMode) then return end
-    if not lia.characters then return end
-    local index = lia.gui.character.currentIndex or 1
-    if lia.characters[index] == character:getID() then lia.gui.character:updateModelEntity(character) end
-end)

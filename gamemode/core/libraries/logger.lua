@@ -780,11 +780,11 @@ function lia.log.add(client, logType, ...)
     end
 
     lia.db.insertTable({
-        timestamp = timestamp,
-        gamemode = engine.ActiveGamemode(),
-        category = category,
-        message = logString,
-        charID = charID,
-        steamID = steamID
+        _timestamp = timestamp,
+        _gamemode = engine.ActiveGamemode(),
+        _category = category,
+        _message = logString,
+        _charID = charID,
+        _steamID = steamID
     }, nil, "logs")
 end

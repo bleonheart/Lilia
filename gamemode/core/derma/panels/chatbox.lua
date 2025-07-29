@@ -235,7 +235,7 @@ function PANEL:addFilterButton(filter)
     tab.Paint = PaintFilterButton
     tab.DoClick = function(selfBtn)
         selfBtn.active = not selfBtn.active
-        local filters = LiaCvarChatfilter:GetString():lower()
+        local filters = LIA_CVAR_CHATFILTER:GetString():lower()
         if filters == "none" then filters = "" end
         if selfBtn.active then
             filters = filters .. filter .. ","
@@ -248,7 +248,7 @@ function PANEL:addFilterButton(filter)
         RunConsoleCommand("lia_chatfilter", filters)
     end
 
-    if LiaCvarChatfilter:GetString():lower():find(filter) then tab.active = true end
+    if LIA_CVAR_CHATFILTER:GetString():lower():find(filter) then tab.active = true end
 end
 
 function PANEL:addText(...)
@@ -283,7 +283,7 @@ function PANEL:addText(...)
     self.list[#self.list + 1] = panel
     local cls = CHAT_CLASS and CHAT_CLASS.filter and CHAT_CLASS.filter:lower() or "ic"
     panel.filter = cls
-    if LiaCvarChatfilter:GetString():lower():find(cls) then
+    if LIA_CVAR_CHATFILTER:GetString():lower():find(cls) then
         self.filtered[panel] = cls
         panel:SetVisible(false)
     else

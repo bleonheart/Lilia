@@ -7,166 +7,17 @@ local function LogCheaterAction(client, action)
     lia.log.add(client, "cheaterAction", action)
 end
 
-function MODULE:CanPlayerInteractItem(client, action, item)
-    action = string.lower(action)
-    if not client:Alive() then return false, L("forbiddenActionStorage") end
-    if client:getLocalVar("ragdoll", false) then return false, L("forbiddenActionStorage") end
-    if action == "drop" then
-        if hook.Run("CanPlayerDropItem", client, item) ~= false then
-            if not client.dropDelay then
-                client.dropDelay = true
-                timer.Create("DropDelay." .. client:SteamID64(), lia.config.get("DropDelay"), 1, function() if IsValid(client) then client.dropDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "take" then
-        if hook.Run("CanPlayerTakeItem", client, item) ~= false then
-            if not client.takeDelay then
-                client.takeDelay = true
-                timer.Create("TakeDelay." .. client:SteamID64(), lia.config.get("TakeDelay"), 1, function() if IsValid(client) then client.takeDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "equip" then
-        if hook.Run("CanPlayerEquipItem", client, item) ~= false then
-            if not client.equipDelay then
-                client.equipDelay = true
-                timer.Create("EquipDelay." .. client:SteamID64(), lia.config.get("EquipDelay"), 1, function() if IsValid(client) then client.equipDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "unequip" then
-        if hook.Run("CanPlayerUnequipItem", client, item) ~= false then
-            if not client.unequipDelay then
-                client.unequipDelay = true
-                timer.Create("UnequipDelay." .. client:SteamID64(), lia.config.get("UnequipDelay"), 1, function() if IsValid(client) then client.unequipDelay = nil end end)
-                return true
-            else
-                client:notifyLocalized("switchCooldown")
-                return false
-            end
-        else
-            return false
-        end
-    end
-
-    if action == "rotate" then return hook.Run("CanPlayerRotateItem", client, item) ~= false end
-end
-
-function MODULE:CanPlayerEquipItem(client, item)
-    local inventory = lia.inventory.instances[item.invID]
-    if client.equipDelay ~= nil then
-        client:notifyLocalized("switchCooldown")
-        return false
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyLocalized("forbiddenActionStorage")
-        return false
-    end
-end
-
-function MODULE:CanItemBeTransfered(item, curInv, inventory)
-    if item.isBag and curInv ~= inventory and item.getInv and item:getInv() and table.Count(item:getInv():getItems()) > 0 then
-        local character = lia.char.loaded[curInv.client]
-        character:getPlayer():notifyLocalized("forbiddenActionStorage")
-        return false
-    end
-
-    if item.OnCanBeTransfered then
-        local itemHook = item:OnCanBeTransfered(curInv, inventory)
-        return itemHook ~= false
-    end
-end
-
-function MODULE:CanPlayerTakeItem(client, item)
-    local inventory = lia.inventory.instances[item.invID]
-    if client.takeDelay ~= nil then
-        client:notifyLocalized("switchCooldown")
-        return false
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyLocalized("forbiddenActionStorage")
-        return false
-    elseif client:IsFamilySharedAccount() then
-        client:notifyLocalized("familySharedPickupDisabled")
-        return false
-    elseif IsValid(item.entity) then
-        local character = client:getChar()
-        if item.entity.SteamID64 == client:SteamID64() and item.entity.liaCharID ~= character:getID() then
-            client:notifyLocalized("playerCharBelonging")
-            return false
-        end
-    end
-end
-
-function MODULE:CanPlayerDropItem(client, item)
-    local inventory = lia.inventory.instances[item.invID]
-    if client.dropDelay ~= nil then
-        client:notifyLocalized("switchCooldown")
-        return false
-    elseif item.isBag and item:getInv() then
-        local items = item:getInv():getItems()
-        for _, otheritem in pairs(items) do
-            if not otheritem.ignoreEquipCheck and otheritem:getData("equip", false) then
-                client:notifyLocalized("cantDropBagHasEquipped")
-                return false
-            end
-        end
-    elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyLocalized("forbiddenActionStorage")
-        return false
-    end
-end
-
-function MODULE:CanPlayerUseChar(client, character)
-    if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Can Bypass Character Lock") then return false, L("serverEventCharLock") end
-    if character then
-        local banned = character:getBanned()
-        if banned and (isnumber(banned) and banned > os.time() or banned == 1) then return false, L("bannedCharacter") end
-        local faction = lia.faction.indices[character:getFaction()]
-        if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
-    end
-    return true
-end
-
-function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
-    if character:getID() == newCharacter:getID() then return false, L("alreadyUsingCharacter") end
-    local banTime = character:getBanned()
-    if banTime and (isnumber(banTime) and banTime > os.time() or banTime == 1) then return false, L("bannedCharacter") end
-    if not client:Alive() then return false, L("youAreDead") end
-    if client:hasRagdoll() then return false, L("youAreRagdolled") end
-    if client:hasValidVehicle() then return false, L("cannotSwitchInVehicle") end
-    local faction = lia.faction.indices[newCharacter:getFaction()]
-    if lia.module.list["teams"]:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
+function MODULE:CanPlayerSwitchChar(client, character)
     if not client:isStaffOnDuty() then
-        local damageCd = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
-        if damageCd > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCd then
+        local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
+        local switchCooldown = lia.config.get("CharacterSwitchCooldownTimer", 5)
+        if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then
             lia.log.add(client, "permissionDenied", "switch character (recent damage)")
             return false, L("tookDamageSwitchCooldown")
         end
 
-        local switchCd = lia.config.get("CharacterSwitchCooldownTimer", 5)
         local loginTime = character:getData("loginTime", 0)
-        if switchCd > 0 and loginTime + switchCd > os.time() then
+        if switchCooldown > 0 and loginTime + switchCooldown > os.time() then
             lia.log.add(client, "permissionDenied", "switch character (cooldown)")
             return false, L("switchCooldown")
         end
@@ -181,9 +32,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     local attackerIsHuman = IsValid(attacker) and attacker:IsPlayer()
     if attackerIsHuman and IsCheater(attacker) then
         dmgInfo:SetDamage(0)
-        local hadKeys = attacker:HasWeapon("lia_keys")
-        attacker:StripWeapons()
-        if hadKeys then attacker:Give("lia_keys") end
+        LogCheaterAction(attacker, "deal damage")
         return true
     end
 
@@ -244,7 +93,7 @@ function MODULE:PlayerAuthed(client, steamid)
     local steamID64 = util.SteamIDTo64(steamid)
     local ownerSteamID64 = client:OwnerSteamID64()
     local steamName = client:SteamName()
-    local steamID = client:SteamID()
+    local steamID = client:SteamID64()
     if KnownCheaters[steamID64] or KnownCheaters[ownerSteamID64] then
         lia.applyPunishment(client, L("usingThirdPartyCheats"), false, true, 0)
         lia.notifyAdmin(L("bannedCheaterNotify", steamName, steamID))
@@ -252,10 +101,10 @@ function MODULE:PlayerAuthed(client, steamid)
         return
     end
 
-    local banRecord = lia.administration.isBanned(ownerSteamID64)
+    local banRecord = lia.admin.isBanned(ownerSteamID64)
     if banRecord then
-        if lia.administration.hasBanExpired(ownerSteamID64) then
-            lia.administration.removeBan(ownerSteamID64)
+        if lia.admin.hasBanExpired(ownerSteamID64) then
+            lia.admin.removeBan(ownerSteamID64)
         else
             local duration = 0
             if banRecord.duration > 0 then duration = math.max(math.ceil((banRecord.start + banRecord.duration - os.time()) / 60), 0) end
@@ -408,6 +257,7 @@ function MODULE:PlayerInitialSpawn(client)
             local override = hook.Run("PlayerCheatDetected", client)
             client:setNetVar("cheater", true)
             client:setLiliaData("cheater", true)
+            client:saveLiliaData()
             hook.Run("OnCheaterCaught", client)
             if override ~= true then lia.applyPunishment(client, L("hackingInfraction"), true, true, 0, "kickedForInfractionPeriod", "bannedForInfractionPeriod") end
         end
@@ -423,22 +273,11 @@ end
 
 function MODULE:OnCheaterCaught(client)
     if IsValid(client) then
-        lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
-        local hadKeys = client:HasWeapon("lia_keys")
-        client:StripWeapons()
-        if hadKeys then client:Give("lia_keys") end
+        lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
         client:notifyLocalized("caughtCheating")
         for _, p in player.Iterator() do
-            if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
+            if p:isStaffOnDuty() or p:IsSuperAdmin() then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64()) end
         end
-    end
-end
-
-function MODULE:PrePlayerLoadedChar(client)
-    if IsCheater(client) then
-        local hadKeys = client:HasWeapon("lia_keys")
-        client:StripWeapons()
-        if hadKeys then client:Give("lia_keys") end
     end
 end
 

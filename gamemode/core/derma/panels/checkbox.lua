@@ -1,4 +1,5 @@
-﻿local PANEL = {}
+local PANEL = {}
+
 function PANEL:Init()
     self:SetText("")
     self:SetToggle(true)
@@ -9,7 +10,9 @@ end
 function PANEL:SetChecked(state)
     self.checked = state and true or false
     self:SetSelected(self.checked)
-    if self.OnChange then self:OnChange(self.checked) end
+    if self.OnChange then
+        self:OnChange(self.checked)
+    end
 end
 
 function PANEL:GetChecked()

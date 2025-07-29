@@ -1,38 +1,74 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
+local encodetable = lia.data.encodetable
+local TABLE = "spawns"
+local function buildCondition(folder, map)
+    return "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+end
 
 function MODULE:FetchSpawns()
-    local d = deferred.new()
-    local spawnsData = lia.data.get("spawns", {})
-    local factions = spawnsData.factions or spawnsData
-    local result = {}
-    for fac, spawns in pairs(factions) do
-        local t = {}
-        for i = 1, #spawns do
-            local spawnData = spawns[i]
-            if isvector(spawnData) then
-                spawnData = {pos = spawnData, ang = angle_zero}
-            elseif istable(spawnData) then
-                if spawnData.pos then spawnData.pos = lia.data.decodeVector(spawnData.pos) end
-                if spawnData.ang then spawnData.ang = lia.data.decodeAngle(spawnData.ang) end
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = buildCondition(folder, map)
+    return lia.db.selectOne({"_data"}, TABLE, condition):next(function(res)
+        local data = res and lia.data.deserialize(res._data) or {}
+        local factions = data.factions or data
+        local result = {}
+        for fac, spawns in pairs(factions or {}) do
+            local t = {}
+            for i = 1, #spawns do
+                local spawnData = lia.data.deserialize(spawns[i])
+                if isvector(spawnData) then
+                    spawnData = {
+                        pos = spawnData,
+                        ang = angle_zero
+                    }
+                end
+
+                t[i] = spawnData
             end
-            t[i] = spawnData
+
+            result[fac] = t
         end
-        result[fac] = t
-    end
-    d:resolve(result)
-    return d
+        return result
+    end)
 end
 
 function MODULE:StoreSpawns(spawns)
-    lia.data.set("spawns", {map = game.GetMap(), factions = spawns})
+    local factions = {}
+    for fac, list in pairs(spawns or {}) do
+        factions[fac] = {}
+        for _, data in ipairs(list) do
+            factions[fac][#factions[fac] + 1] = encodetable(data)
+        end
+    end
+
+    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    return lia.db.upsert({
+        _schema = folder,
+        _map = map,
+        _data = lia.data.serialize({
+            factions = factions
+        })
+    }, TABLE)
 end
 
 local function SpawnPlayer(client)
-    if not IsValid(client) then return end
+    print("[SpawnPlayer] called for", IsValid(client) and client:Name() or tostring(client))
+    if not IsValid(client) then
+        print("[SpawnPlayer] invalid client")
+        return
+    end
+
     local character = client:getChar()
-    if not character then return end
+    if not character then
+        print("[SpawnPlayer] no character")
+        return
+    end
+
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
+        print("[SpawnPlayer] using last position")
         client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
         client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
@@ -47,29 +83,46 @@ local function SpawnPlayer(client)
         end
     end
 
+    print("[SpawnPlayer] factionID", factionID or "nil")
     if factionID then
         MODULE:FetchSpawns():next(function(spawns)
+            print("[SpawnPlayer] spawns fetched:", spawns and "ok" or "nil")
             local factionSpawns = spawns and spawns[factionID]
+            print("[SpawnPlayer] spawn count", factionSpawns and #factionSpawns or 0)
             if factionSpawns and #factionSpawns > 0 then
                 local data = table.Random(factionSpawns)
                 local basePos = data.pos or data
-                if not isvector(basePos) then basePos = lia.data.decodeVector(basePos) end
-                if not isvector(basePos) then basePos = Vector(0, 0, 0) end
+                if not isvector(basePos) then
+                    basePos = lia.data.decodeVector(basePos)
+                end
+
+                if not isvector(basePos) then
+                    basePos = Vector(0, 0, 0)
+                end
+
                 local pos = basePos + Vector(0, 0, 16)
+
                 local ang = data.ang
-                if not isangle(ang) then ang = lia.data.decodeAngle(ang) or angle_zero end
+                if not isangle(ang) then
+                    ang = lia.data.decodeAngle(ang) or angle_zero
+                end
+                print("[SpawnPlayer] selected pos", pos, "ang", ang)
                 client:SetPos(pos)
                 client:SetEyeAngles(ang)
                 hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+            else
+                print("[SpawnPlayer] no valid spawns for faction")
             end
-        end)
+        end, function(err) print("[SpawnPlayer] FetchSpawns error:", err) end)
+    else
+        print("[SpawnPlayer] missing factionID")
     end
 end
 
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
-    local inVehicle = client:hasValidVehicle()
-    if IsValid(client) and not inVehicle and client:Alive() then
+    local InVehicle = client:hasValidVehicle()
+    if IsValid(client) and not InVehicle and client:Alive() then
         character:setLastPos({
             pos = client:GetPos(),
             ang = client:EyeAngles(),
@@ -135,7 +188,8 @@ net.Receive("request_respawn", function(_, client)
     local spawnTimeOverride = hook.Run("OverrideSpawnTime", client, respawnTime)
     if spawnTimeOverride then respawnTime = spawnTimeOverride end
     local lastDeathTime = client:getNetVar("lastDeathTime", os.time())
-    if os.time() - lastDeathTime < respawnTime then return end
+    local timePassed = os.time() - lastDeathTime
+    if timePassed < respawnTime then return end
     if not client:Alive() and not client:getNetVar("IsDeadRestricted", false) then client:Spawn() end
 end)
 

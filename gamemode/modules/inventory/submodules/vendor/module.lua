@@ -1,8 +1,14 @@
-﻿local MODULE = MODULE
-MODULE.name = "Vendors"
+﻿MODULE.name = "Vendors"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides NPC vendors who can buy and sell items with stock management and dialogue-driven transactions."
+MODULE.CAMIPrivileges = {
+    {
+        Name = "Staff Permissions - Can Edit Vendors",
+        MinAccess = "admin"
+    },
+}
+
 lia.config.add("vendorDefaultMoney", "Default Vendor Money", 500, nil, {
     desc = "Sets the default amount of money a vendor starts with",
     category = "Vendors",
@@ -11,30 +17,18 @@ lia.config.add("vendorDefaultMoney", "Default Vendor Money", 500, nil, {
     max = 100000
 })
 
-VendorWelcome = 1
-VendorLeave = 2
-VendorNoTrade = 3
-VendorPrice = 1
-VendorStock = 2
-VendorMode = 3
-VendorMaxStock = 4
-VendorSellAndBuy = 1
-VendorSellOnly = 2
-VendorBuyOnly = 3
-VendorText = {
-    [VendorSellAndBuy] = "buyOnlynSell",
-    [VendorBuyOnly] = "buyOnly",
-    [VendorSellOnly] = "sellOnly",
+VENDOR_WELCOME = 1
+VENDOR_LEAVE = 2
+VENDOR_NOTRADE = 3
+VENDOR_PRICE = 1
+VENDOR_STOCK = 2
+VENDOR_MODE = 3
+VENDOR_MAXSTOCK = 4
+VENDOR_SELLANDBUY = 1
+VENDOR_SELLONLY = 2
+VENDOR_BUYONLY = 3
+VENDOR_TEXT = {
+    [VENDOR_SELLANDBUY] = "buyOnlynSell",
+    [VENDOR_BUYONLY] = "buyOnly",
+    [VENDOR_SELLONLY] = "sellOnly",
 }
-
-lia.vendor.addPreset("Test Preset", {
-    manhack_welder = {
-        mode = VendorSellAndBuy
-    },
-    item_suit = {
-        mode = VendorSellAndBuy
-    },
-    universalammo3 = {
-        mode = VendorSellAndBuy
-    },
-})

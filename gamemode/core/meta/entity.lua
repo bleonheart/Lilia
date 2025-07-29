@@ -30,7 +30,7 @@ end
 
 function entityMeta:checkDoorAccess(client, access)
     if not self:isDoor() then return false end
-    access = access or DoorGuest
+    access = access or DOOR_GUEST
     if hook.Run("CanPlayerAccessDoor", client, self, access) then return true end
     if self.liaAccess and (self.liaAccess[client] or 0) >= access then return true end
     return false
@@ -132,11 +132,6 @@ if SERVER then
 
     function entityMeta:setLocked(state)
         self:setNetVar("locked", state)
-    end
-
-    function entityMeta:setKeysNonOwnable(state)
-        local flag = state and true or nil
-        self:setNetVar("noSell", flag)
     end
 
     function entityMeta:isDoor()

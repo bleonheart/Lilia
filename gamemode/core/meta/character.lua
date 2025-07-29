@@ -41,7 +41,7 @@ function characterMeta:getDisplayedName(client)
     if self:getPlayer() == client then return self:getName() end
     local characterID = self:getID()
     if ourCharacter:doesRecognize(characterID) then return self:getName() end
-    local myReg = ourCharacter:getFakeName()
+    local myReg = ourCharacter:getRecognizedAs()
     if ourCharacter:doesFakeRecognize(characterID) and myReg[characterID] then return myReg[characterID] end
     return L("unknown")
 end
@@ -53,15 +53,14 @@ function characterMeta:hasMoney(amount)
 end
 
 function characterMeta:getFlags()
-    local ply = self:getPlayer()
-    if IsValid(ply) then return ply:getFlags() end
-    return ""
+    return self:getData("f", "")
 end
 
 function characterMeta:hasFlags(flags)
-    local ply = self:getPlayer()
-    if IsValid(ply) then return ply:hasFlags(flags) end
-    return false
+    for i = 1, #flags do
+        if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
+    end
+    return hook.Run("CharHasFlags", self, flags) or false
 end
 
 function characterMeta:getItemWeapon(requireEquip)
@@ -88,7 +87,7 @@ function characterMeta:getStamina()
 end
 
 function characterMeta:hasClassWhitelist(class)
-    local wl = self:getWhitelists()
+    local wl = self:getData("whitelist", {})
     return wl[class] ~= nil
 end
 
@@ -161,25 +160,25 @@ function characterMeta:setData(k, v, noReplication, receiver)
         if istable(k) then
             for nk, nv in pairs(k) do
                 if nv == nil then
-                    lia.db.delete("chardata", "charID = " .. self:getID() .. " AND key = '" .. lia.db.escape(nk) .. "'")
+                    lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(nk) .. "'")
                 else
                     local encoded = pon.encode({nv})
                     lia.db.upsert({
-                        charID = self:getID(),
-                        key = nk,
-                        value = encoded
+                        _charID = self:getID(),
+                        _key = nk,
+                        _value = encoded
                     }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
                 end
             end
         else
             if v == nil then
-                lia.db.delete("chardata", "charID = " .. self:getID() .. " AND key = '" .. lia.db.escape(k) .. "'")
+                lia.db.delete("chardata", "_charID = " .. self:getID() .. " AND _key = '" .. lia.db.escape(k) .. "'")
             else
                 local encoded = pon.encode({v})
                 lia.db.upsert({
-                    charID = self:getID(),
-                    key = k,
-                    value = encoded
+                    _charID = self:getID(),
+                    _key = k,
+                    _value = encoded
                 }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
             end
         end
@@ -187,14 +186,8 @@ function characterMeta:setData(k, v, noReplication, receiver)
 end
 
 function characterMeta:getData(key, default)
-    self.dataVars = self.dataVars or {}
     if not key then return self.dataVars end
-
-    local value = self.dataVars[key]
-    if value == nil then
-        return default
-    end
-
+    local value = self.dataVars and self.dataVars[key] or default
     return value
 end
 
@@ -208,26 +201,43 @@ if SERVER then
         end
 
         local recognized = self:getRecognition()
-        local nameList = self:getFakeName()
+        local nameList = self:getRecognizedAs()
         if name ~= nil then
             nameList[id] = name
-            self:setFakeName(nameList)
+            self:setRecognizedAs(nameList)
         else
             self:setRecognition(recognized .. "," .. id .. ",")
         end
         return true
     end
 
+    function characterMeta:WhitelistAllClasses()
+        for class, _ in pairs(lia.class.list) do
+            if not lia.class.hasWhitelist(class) then self:classWhitelist(class) end
+        end
+    end
+
+    function characterMeta:WhitelistAllFactions()
+        for faction, _ in pairs(lia.faction.indices) do
+            self:setWhitelisted(faction, true)
+        end
+    end
+
+    function characterMeta:WhitelistEverything()
+        self:WhitelistAllFactions()
+        self:WhitelistAllClasses()
+    end
+
     function characterMeta:classWhitelist(class)
-        local wl = self:getWhitelists()
+        local wl = self:getData("whitelist", {})
         wl[class] = true
-        self:setWhitelists(wl)
+        self:setData("whitelist", wl)
     end
 
     function characterMeta:classUnWhitelist(class)
-        local wl = self:getWhitelists()
+        local wl = self:getData("whitelist", {})
         wl[class] = false
-        self:setWhitelists(wl)
+        self:setData("whitelist", wl)
     end
 
     function characterMeta:joinClass(class, isForced)
@@ -274,7 +284,7 @@ if SERVER then
             self:joinClass(validDefaultClass)
             hook.Run("OnPlayerJoinClass", client, validDefaultClass)
         else
-            self:setClass(0)
+            self:setClass(nil)
         end
     end
 
@@ -330,18 +340,34 @@ if SERVER then
     end
 
     function characterMeta:setFlags(flags)
-        local ply = self:getPlayer()
-        if IsValid(ply) then ply:setFlags(flags) end
+        self:setData("f", flags)
     end
 
     function characterMeta:giveFlags(flags)
-        local ply = self:getPlayer()
-        if IsValid(ply) then ply:giveFlags(flags) end
+        local addedFlags = ""
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            local info = lia.flag.list[flag]
+            if info then
+                if not self:hasFlags(flag) then addedFlags = addedFlags .. flag end
+                if info.callback then info.callback(self:getPlayer(), true) end
+            end
+        end
+
+        if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
     end
 
     function characterMeta:takeFlags(flags)
-        local ply = self:getPlayer()
-        if IsValid(ply) then ply:takeFlags(flags) end
+        local oldFlags = self:getFlags()
+        local newFlags = oldFlags
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            local info = lia.flag.list[flag]
+            if info and info.callback then info.callback(self:getPlayer(), false) end
+            newFlags = newFlags:gsub(flag, "")
+        end
+
+        if newFlags ~= oldFlags then self:setFlags(newFlags) end
     end
 
     function characterMeta:save(callback)
@@ -356,7 +382,7 @@ if SERVER then
             lia.db.updateTable(data, function()
                 if callback then callback() end
                 hook.Run("CharPostSave", self)
-            end, nil, "id = " .. self:getID())
+            end, nil, "_id = " .. self:getID())
         end
     end
 
@@ -407,13 +433,14 @@ if SERVER then
 
             client:SetTeam(self:getFaction())
             client:setNetVar("char", self:getID())
-            for k, v in pairs(self:getBodygroups()) do
+            PrintTable(self:getData("groups", {}), 1)
+            for k, v in pairs(self:getData("groups", {})) do
                 local index = tonumber(k)
                 local value = tonumber(v) or 0
                 if index then client:SetBodygroup(index, value) end
             end
 
-            client:SetSkin(self:getSkin())
+            client:SetSkin(self:getData("skin", 0))
             hook.Run("SetupPlayerModel", client, self)
             if not noNetworking then
                 for _, v in ipairs(self:getInv(true)) do
@@ -450,7 +477,7 @@ if SERVER then
     function characterMeta:ban(time)
         time = tonumber(time)
         if time then time = os.time() + math.max(math.ceil(time), 60) end
-        self:setBanned(time or true)
+        self:setData("banned", time or true)
         self:save()
         self:kick()
         hook.Run("OnCharPermakilled", self, time or nil)

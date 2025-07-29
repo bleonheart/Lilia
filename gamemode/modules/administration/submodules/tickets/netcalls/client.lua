@@ -61,13 +61,3 @@ net.Receive("TicketSystemClose", function()
 
     if timer.Exists("ticketsystem-" .. requester:SteamID64()) then timer.Remove("ticketsystem-" .. requester:SteamID64()) end
 end)
-
-net.Receive("TicketClaims", function()
-    local claims = net.ReadTable()
-    if IsValid(MODULE.ticketList) then
-        MODULE.ticketList:Clear()
-        for _, c in ipairs(claims) do
-            MODULE.ticketList:AddLine(os.date("%Y-%m-%d %H:%M:%S", c.timestamp or 0), c.requester or "", c.requesterSteamID or "", c.admin or "", c.adminSteamID or "", c.message or "")
-        end
-    end
-end)

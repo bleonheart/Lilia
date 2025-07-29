@@ -76,30 +76,33 @@ local function OpenLogsUI(panel, categorizedLogs)
 end
 
 net.Receive("send_logs", function()
-    local id = net.ReadString()
-    hook.Add("LiaBigTableReceived", "AdminLogs" .. id, function(receivedID, data)
-        if receivedID ~= id then return end
-        hook.Remove("LiaBigTableReceived", "AdminLogs" .. id)
-        if not data then
-            chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
-            return
-        end
+    local chunkIndex = net.ReadUInt(16)
+    local numChunks = net.ReadUInt(16)
+    local chunkLen = net.ReadUInt(16)
+    local chunkData = net.ReadData(chunkLen)
+    receivedChunks[chunkIndex] = chunkData
+    for i = 1, numChunks do
+        if not receivedChunks[i] then return end
+    end
 
-        if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, data) end
-    end)
+    local fullData = table.concat(receivedChunks)
+    receivedChunks = {}
+    local jsonData = util.Decompress(fullData)
+    local categorizedLogs = util.JSONToTable(jsonData)
+    if not categorizedLogs then
+        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
+        return
+    end
+
+    if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
 end)
 
-hook.Add("liaAdminRegisterTab", "AdminTabLogs", function(tabs)
-    if not (IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can See Logs")) then return end
-    tabs[L("logs")] = {
-        icon = "icon16/page_copy.png",
-        build = function(sheet)
-            local panel = vgui.Create("DPanel", sheet)
-            panel:DockPadding(10, 10, 10, 10)
+function MODULE:CreateMenuButtons(tabs)
+    if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Staff Permissions - Can See Logs") then
+        tabs[L("logs")] = function(panel)
             receivedPanel = panel
             net.Start("send_logs_request")
             net.SendToServer()
-            return panel
         end
-    }
-end)
+    end
+end

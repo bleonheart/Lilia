@@ -1,26 +1,25 @@
-local MODULE = MODULE
-function MODULE:GetWarnings(steamID)
-    local condition = "warnedSteamID = " .. lia.db.convertDataType(steamID)
-    return lia.db.select({"id", "timestamp", "warning", "admin", "adminSteamID", "warned", "warnedSteamID"}, "warnings", condition):next(function(res) return res.results or {} end)
+﻿local MODULE = MODULE
+function MODULE:GetWarnings(charID)
+    local condition = "_charID = " .. lia.db.convertDataType(charID)
+    return lia.db.select({"_id", "_timestamp", "_reason", "_admin"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
-function MODULE:AddWarning(target, timestamp, reason, admin)
+function MODULE:AddWarning(charID, steamID, timestamp, reason, admin)
     lia.db.insertTable({
-        timestamp = timestamp,
-        warned = target:Nick(),
-        warnedSteamID = target:SteamID(),
-        warning = reason,
-        admin = admin:Nick(),
-        adminSteamID = admin:SteamID()
+        _charID = charID,
+        _steamID = steamID,
+        _timestamp = timestamp,
+        _reason = reason,
+        _admin = admin
     }, nil, "warnings")
 end
 
-function MODULE:RemoveWarning(steamID, index)
+function MODULE:RemoveWarning(charID, index)
     local d = deferred.new()
-    self:GetWarnings(steamID):next(function(rows)
+    self:GetWarnings(charID):next(function(rows)
         if index < 1 or index > #rows then return d:resolve(nil) end
         local row = rows[index]
-        lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id)):next(function() d:resolve(row) end)
+        lia.db.delete("warnings", "_id = " .. lia.db.convertDataType(row._id)):next(function() d:resolve(row) end)
     end)
     return d
 end
@@ -56,8 +55,8 @@ net.Receive("RequestRemoveWarning", function(_, client)
         targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
         client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
         hook.Run("WarningRemoved", client, targetClient, {
-            reason = warn.reason,
-            admin = warn.admin
+            reason = warn._reason,
+            admin = warn._admin
         }, warnIndex)
     end)
 end)

@@ -68,18 +68,18 @@ end
 function lia.config.load()
     if SERVER then
         local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        lia.db.select({"key", "value"}, "config", "schema = " .. lia.db.convertDataType(schema)):next(function(res)
+        lia.db.select({"_key", "_value"}, "config", "_schema = " .. lia.db.convertDataType(schema)):next(function(res)
             local rows = res.results or {}
             local existing = {}
             for _, row in ipairs(rows) do
-                local decoded = util.JSONToTable(row.value)
-                lia.config.stored[row.key] = lia.config.stored[row.key] or {}
+                local decoded = util.JSONToTable(row._value)
+                lia.config.stored[row._key] = lia.config.stored[row._key] or {}
                 local value = decoded and decoded[1]
                 if value == nil or value == "" then
-                    lia.config.stored[row.key].value = lia.config.stored[row.key].default
+                    lia.config.stored[row._key].value = lia.config.stored[row._key].default
                 else
-                    lia.config.stored[row.key].value = value
-                    existing[row.key] = true
+                    lia.config.stored[row._key].value = value
+                    existing[row._key] = true
                 end
             end
 
@@ -88,9 +88,9 @@ function lia.config.load()
                 if not existing[k] then
                     lia.config.stored[k].value = v.default
                     inserts[#inserts + 1] = {
-                        schema = schema,
-                        key = k,
-                        value = {v.default}
+                        _schema = schema,
+                        _key = k,
+                        _value = {v.default}
                     }
                 end
             end
@@ -137,15 +137,15 @@ if SERVER then
         local rows = {}
         for k, v in pairs(changed) do
             rows[#rows + 1] = {
-                key = k,
-                value = {v}
+                _key = k,
+                _value = {v}
             }
         end
 
         local schema = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local queries = {"DELETE FROM lia_config WHERE schema = " .. lia.db.convertDataType(schema)}
+        local queries = {"DELETE FROM lia_config WHERE _schema = " .. lia.db.convertDataType(schema)}
         for _, row in ipairs(rows) do
-            queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(schema) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
+            queries[#queries + 1] = "INSERT INTO lia_config (_schema,_key,_value) VALUES (" .. lia.db.convertDataType(schema) .. ", " .. lia.db.convertDataType(row._key) .. ", " .. lia.db.convertDataType(row._value) .. ")"
         end
 
         lia.db.transaction(queries)
@@ -472,7 +472,7 @@ lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) 
     options = CLIENT and getDermaSkins() or {"Lilia Skin"}
 })
 
-hook.Add("liaAdminRegisterTab", "liaConfigPopulate", function(tabs)
+hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
     local ConfigFormatting = {
         Int = function(key, name, config, parent)
             local container = vgui.Create("DPanel", parent)
@@ -891,14 +891,9 @@ hook.Add("liaAdminRegisterTab", "liaConfigPopulate", function(tabs)
     end
 
     if hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false then
-        tabs["Configuration"] = {
-            icon = "icon16/wrench.png",
-            build = function(sheet)
-                local pnl = vgui.Create("DPanel", sheet)
-                pnl:Dock(FILL)
-                buildConfiguration(pnl)
-                return pnl
-            end
+        pages[#pages + 1] = {
+            name = "Configuration",
+            drawFunc = function(parent) buildConfiguration(parent) end
         }
     end
 end)

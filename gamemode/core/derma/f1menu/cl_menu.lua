@@ -10,7 +10,7 @@ function PANEL:Init()
     self.noAnchor = CurTime() + 0.4
     self.anchorMode = true
     self.invKey = lia.keybind.get("Open Inventory", KEY_I)
-    local btnH, spacing, padding = 40, 20, 40
+    local btnW, btnH, spacing = 150, 40, 20
     local topBar = self:Add("DPanel")
     topBar:Dock(TOP)
     topBar:SetTall(70)
@@ -66,14 +66,7 @@ function PANEL:Init()
     tabsContainer:Dock(FILL)
     function tabsContainer:PerformLayout(w, h)
         local btns = self:GetChildren()
-        surface.SetFont("liaMediumFont")
-        local totalW = -spacing
-        for _, btn in ipairs(btns) do
-            local textW = select(1, surface.GetTextSize(btn:GetText() or ""))
-            btn.realW = textW + padding
-            totalW = totalW + btn.realW + spacing
-        end
-
+        local totalW = #btns * btnW + (#btns - 1) * spacing
         local overflow = totalW - w
         if overflow > 0 then
             leftArrow:SetVisible(true)
@@ -85,25 +78,20 @@ function PANEL:Init()
             self.tabOffset = 0
         end
 
-        local x = w * 0.5 - totalW * 0.5 + (self.tabOffset or 0)
-        for _, btn in ipairs(btns) do
-            btn:SetSize(btn.realW, btnH)
-            btn:SetPos(x, (h - btnH) * 0.5)
-            x = x + btn.realW + spacing
+        local center = (#btns + 1) / 2
+        for i, btn in ipairs(btns) do
+            btn:SetSize(btnW, btnH)
+            btn:SetPos(w * 0.5 - btnW * 0.5 + (i - center) * (btnW + spacing) + self.tabOffset, (h - btnH) * 0.5)
         end
-
-        self.avgBtnWidth = #btns > 0 and totalW / #btns or 0
     end
 
     leftArrow.DoClick = function()
-        local step = (tabsContainer.avgBtnWidth or 150) + spacing
-        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + step
+        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + btnW + spacing
         tabsContainer:InvalidateLayout()
     end
 
     rightArrow.DoClick = function()
-        local step = (tabsContainer.avgBtnWidth or 150) + spacing
-        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - step
+        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - (btnW + spacing)
         tabsContainer:InvalidateLayout()
     end
 
@@ -122,9 +110,7 @@ function PANEL:Init()
         tabKeys[#tabKeys + 1] = k
     end
 
-    table.sort(tabKeys, function(a, b)
-        return L(a):lower() < L(b):lower()
-    end)
+    table.sort(tabKeys, function(a, b) return #L(a) < #L(b) end)
     self.tabList = {}
     for _, key in ipairs(tabKeys) do
         local cb = btnDefs[key]

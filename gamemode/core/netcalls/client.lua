@@ -23,11 +23,6 @@ net.Receive("setWaypointWithLogo", function()
     LocalPlayer():setWaypointWithLogo(name, pos, logo)
 end)
 
-net.Receive("updateAdminGroups", function()
-    local data = net.ReadTable() or {}
-    lia.administration.groups = data
-end)
-
 net.Receive("liaNotify", function()
     local message = net.ReadString()
     lia.notices.notify(message)
@@ -209,6 +204,18 @@ net.Receive("charVar", function()
         character:getVar()[key] = value
         hook.Run("OnCharLocalVarChanged", character, key, oldVar, value)
     end
+end)
+
+net.Receive("item", function()
+    local uniqueID = net.ReadString()
+    local id = net.ReadUInt(32)
+    local data = net.ReadTable()
+    local invID = net.ReadType()
+    local item = lia.item.new(uniqueID, id)
+    item.data = {}
+    if data then item.data = data end
+    item.invID = invID or 0
+    hook.Run("ItemInitialized", item)
 end)
 
 net.Receive("invData", function()
@@ -727,6 +734,7 @@ net.Receive("liaItemInspect", function()
     model.OnMouseWheeled = function() end
     model.OnMousePressed = function() end
     model.OnMouseReleased = function() end
+
     model.Think = function(p)
         if input.IsKeyDown(KEY_A) or input.IsKeyDown(KEY_D) then
             local ang = p.Entity:GetAngles()
@@ -740,14 +748,14 @@ net.Receive("liaItemInspect", function()
     local function drawLine(parent, title, val)
         local t = parent:Add("DLabel")
         t:Dock(TOP)
-        t:SetFont("liaMediumFont")
+        t:SetFont("liaBigTitle")
         t:SetTextColor(color_white)
         t:SetText(title)
         t:SizeToContentsY()
         local v = parent:Add("DLabel")
         v:Dock(TOP)
-        v:DockMargin(0, 2, 0, 5)
-        v:SetFont("liaMediumFont")
+        v:DockMargin(0, 2, 0, 10)
+        v:SetFont("liaBigText")
         v:SetTextColor(color_white)
         v:SetWrap(true)
         v:SetText(val ~= "" and val or "—")
@@ -781,22 +789,4 @@ net.Receive("liaCharacterData", function()
         local value = net.ReadType()
         character.dataVars[key] = value
     end
-
-    hook.Run("CharDataLoaded", character)
-end)
-
-net.Receive("liaBigTableChunk", function()
-    local id = net.ReadString()
-    local idx = net.ReadUInt(16)
-    local total = net.ReadUInt(16)
-    local len = net.ReadUInt(16)
-    local data = net.ReadData(len)
-    lia.net.bigTables[id] = lia.net.bigTables[id] or {}
-    lia.net.bigTables[id][idx] = data
-end)
-
-net.Receive("liaBigTableDone", function()
-    local id = net.ReadString()
-    local tbl = lia.net.ReadBigTable(id)
-    if tbl then hook.Run("LiaBigTableReceived", id, tbl) end
 end)

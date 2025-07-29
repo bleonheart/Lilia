@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-lia.command.add("plyviewclaims", {
+﻿lia.command.add("plyviewclaims", {
     adminOnly = true,
     privilege = "View Claims",
     desc = "plyViewClaimsDesc",
@@ -23,7 +22,7 @@ lia.command.add("plyviewclaims", {
             return
         end
 
-        local steamID = target:SteamID()
+        local steamID = target:SteamID64()
         MODULE:GetAllCaseClaims():next(function(caseclaims)
             local claim = caseclaims[steamID]
             if not claim then

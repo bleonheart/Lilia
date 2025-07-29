@@ -1,6 +1,5 @@
 ﻿lia.net = lia.net or {}
 lia.net.globals = lia.net.globals or {}
-lia.net.bigTables = lia.net.bigTables or {}
 local playerMeta = FindMetaTable("Player")
 local entityMeta = FindMetaTable("Entity")
 if SERVER then
@@ -59,53 +58,4 @@ else
     end
 
     playerMeta.getLocalVar = entityMeta.getNetVar
-end
-
-function lia.net.WriteBigTable(receiver, tbl)
-    local raw = pon.encode(tbl)
-    local data = util.Compress(raw)
-    local len = #data
-    local id = util.CRC(tostring(SysTime()) .. len)
-    local parts = math.ceil(len / 60000)
-    for i = 1, parts do
-        local chunk = string.sub(data, (i - 1) * 60000 + 1, math.min(i * 60000, len))
-        net.Start("liaBigTableChunk")
-        net.WriteString(id)
-        net.WriteUInt(i, 16)
-        net.WriteUInt(parts, 16)
-        net.WriteUInt(#chunk, 16)
-        net.WriteData(chunk, #chunk)
-        if SERVER then
-            if IsEntity(receiver) then
-                net.Send(receiver)
-            else
-                net.Broadcast()
-            end
-        else
-            net.SendToServer()
-        end
-    end
-
-    net.Start("liaBigTableDone")
-    net.WriteString(id)
-    if SERVER then
-        if IsEntity(receiver) then
-            net.Send(receiver)
-        else
-            net.Broadcast()
-        end
-    else
-        net.SendToServer()
-    end
-    return id
-end
-
-function lia.net.ReadBigTable(id)
-    local parts = lia.net.bigTables[id]
-    if not parts then return end
-    lia.net.bigTables[id] = nil
-    local data = table.concat(parts)
-    local raw = util.Decompress(data)
-    local tbl = pon.decode(raw)
-    return tbl, raw and #raw or 0
 end

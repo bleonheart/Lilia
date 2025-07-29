@@ -83,12 +83,3 @@ function lia.class.hasWhitelist(class)
     if info.isDefault then return false end
     return info.isWhitelisted
 end
-
-function lia.class.retrieveJoinable(client, class)
-    local index = tonumber(class)
-    if index and lia.class.canBe(client, index) then return index end
-    for key, classTable in pairs(lia.class.list) do
-        if lia.util.stringMatches(classTable.uniqueID, tostring(class)) or lia.util.stringMatches(classTable.name, tostring(class)) then if lia.class.canBe(client, key) then return key end end
-    end
-    return nil
-end

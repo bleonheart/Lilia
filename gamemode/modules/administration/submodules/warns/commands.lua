@@ -21,9 +21,10 @@ lia.command.add("warn", {
         end
 
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-        MODULE:AddWarning(target, timestamp, reason, client)
-        lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID())):next(function(count)
-            target:notifyLocalized("playerWarned", client:Nick(), reason)
+        local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
+        MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr)
+        lia.db.count("warnings", "_charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+            target:notifyLocalized("playerWarned", adminStr, reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
         end)
@@ -48,7 +49,7 @@ lia.command.add("viewwarns", {
             return
         end
 
-        MODULE:GetWarnings(target:SteamID()):next(function(warns)
+        MODULE:GetWarnings(target:getChar():getID()):next(function(warns)
             if #warns == 0 then
                 client:notifyLocalized("noWarnings", target:Nick())
                 return
@@ -58,9 +59,9 @@ lia.command.add("viewwarns", {
             for index, warn in ipairs(warns) do
                 table.insert(warningList, {
                     index = index,
-                    timestamp = warn.timestamp or L("na"),
-                    reason = warn.warning or L("na"),
-                    admin = (warn.admin or "") .. (warn.adminSteamID and " (" .. warn.adminSteamID .. ")" or "")
+                    timestamp = warn._timestamp or L("na"),
+                    reason = warn._reason or L("na"),
+                    admin = warn._admin or L("na")
                 })
             end
 

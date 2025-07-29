@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-function MODULE:PlayerDeath(client)
+﻿function MODULE:PlayerDeath(client)
     net.Start("removeF1")
     net.Send(client)
 end

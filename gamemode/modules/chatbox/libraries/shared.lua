@@ -184,9 +184,9 @@ lia.chat.register("adminchat", {
     syntax = "[string Text]",
     desc = "adminchatDesc",
     onGetColor = function() return Color(0, 196, 255) end,
-    onCanHear = function(_, listener) return listener:hasPrivilege("Admin Chat") end,
+    onCanHear = function(_, listener) return listener:hasPrivilege("Staff Permissions - Admin Chat") end,
     onCanSay = function(speaker)
-        if not speaker:hasPrivilege("Admin Chat") then
+        if not speaker:hasPrivilege("Staff Permissions - Admin Chat") then
             speaker:notifyLocalized("notAdminForTicket")
             return false
         end
@@ -222,7 +222,7 @@ lia.chat.register("pm", {
 lia.chat.register("eventlocal", {
     syntax = "[string Text]",
     desc = "eventlocalDesc",
-    onCanSay = function(speaker) return speaker:hasPrivilege("Local Event Chat") end,
+    onCanSay = function(speaker) return speaker:hasPrivilege("Staff Permissions - Local Event Chat") end,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
         if speaker:EyePos():Distance(listener:EyePos()) <= lia.config.get("ChatRange", 280) * 6 then return true end
@@ -236,7 +236,7 @@ lia.chat.register("eventlocal", {
 lia.chat.register("event", {
     syntax = "[string Text]",
     desc = "eventDesc",
-    onCanSay = function(speaker) return speaker:hasPrivilege("Event Chat") end,
+    onCanSay = function(speaker) return speaker:hasPrivilege("Staff Permissions - Event Chat") end,
     onCanHear = function() return true end,
     onChatAdd = function(_, text) chat.AddText(Color(255, 150, 0), text) end,
     prefix = {"/event"},
@@ -252,7 +252,7 @@ lia.chat.register("ooc", {
             return false
         end
 
-        if speaker:getLiliaData("oocBan", false) then
+        if table.HasValue(MODULE.OOCBans, speaker:SteamID64()) then
             speaker:notifyLocalized("oocBanned")
             return false
         end
@@ -264,7 +264,7 @@ lia.chat.register("ooc", {
 
         local customDelay = hook.Run("getOOCDelay", speaker)
         local oocDelay = customDelay or lia.config.get("OOCDelay", 10)
-        if not speaker:hasPrivilege("No OOC Cooldown") and oocDelay > 0 and speaker.liaLastOOC then
+        if not speaker:hasPrivilege("Staff Permissions - No OOC Cooldown") and oocDelay > 0 and speaker.liaLastOOC then
             local lastOOC = CurTime() - speaker.liaLastOOC
             if lastOOC <= oocDelay then
                 speaker:notifyLocalized("oocDelay", oocDelay - math.ceil(lastOOC))
@@ -336,7 +336,7 @@ lia.chat.register("help", {
     desc = "helpDesc",
     onCanSay = function() return true end,
     onCanHear = function(speaker, listener)
-        if listener:isStaffOnDuty() or listener == speaker or listener:hasPrivilege("Always Have Access to Help Chat") then return true end
+        if listener:isStaffOnDuty() or listener == speaker or listener:hasPrivilege("Staff Permissions - Always Have Access to Help Chat") then return true end
         return false
     end,
     onChatAdd = function(speaker, text) chat.AddText(Color(200, 50, 50), L("helpPrefix") .. " " .. speaker:GetName(), color_white, ": " .. text) end

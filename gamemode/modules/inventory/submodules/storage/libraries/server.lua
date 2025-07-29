@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local RULES = {
+﻿local RULES = {
     AccessIfStorageReceiver = function(inventory, _, context)
         local client = context.client
         if not IsValid(client) then return end
@@ -49,7 +48,7 @@ end
 
 function MODULE:CanPlayerSpawnStorage(client, _, info)
     if not client then return true end
-    if not client:hasPrivilege("Can Spawn Storage") then return false end
+    if not client:hasPrivilege("Staff Permissions - Can Spawn Storage") then return false end
     if not info.invType or not lia.inventory.types[info.invType] then return false end
 end
 

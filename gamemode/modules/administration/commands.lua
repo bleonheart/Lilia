@@ -1,4 +1,4 @@
-lia.command.add("adminmode", {
+﻿lia.command.add("adminmode", {
     desc = "adminModeDesc",
     onRun = function(client)
         if not IsValid(client) then return end
@@ -15,10 +15,10 @@ lia.command.add("adminmode", {
                 client:ChatPrint(L("noPrevChar"))
             end
         else
-            lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
+            lia.db.query(string.format("SELECT * FROM lia_characters WHERE _steamID = \"%s\"", lia.db.escape(steamID)), function(data)
                 for _, row in ipairs(data) do
-                    local id = tonumber(row.id)
-                    if row.faction == "staff" then
+                    local id = tonumber(row._id)
+                    if row._faction == "staff" then
                         client:setNetVar("OldCharID", client:getChar():getID())
                         net.Start("AdminModeSwapCharacter")
                         net.WriteInt(id, 32)
@@ -40,11 +40,19 @@ lia.command.add("managesitrooms", {
     desc = "manageSitroomsDesc",
     onRun = function(client)
         if not client:hasPrivilege("Manage SitRooms") then return end
-        local data = lia.data.get("sitrooms", {})
-        local rooms = data.rooms or data
-        net.Start("managesitrooms")
-        net.WriteTable(rooms)
-        net.Send(client)
+        local mapName = game.GetMap()
+        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local condition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
+        lia.db.select({"_name", "_pos"}, "sitrooms", condition):next(function(res)
+            local rooms = {}
+            for _, row in ipairs(res.results or {}) do
+                rooms[row._name] = lia.data.decodeVector(row._pos)
+            end
+
+            net.Start("managesitrooms")
+            net.WriteTable(rooms)
+            net.Send(client)
+        end)
     end
 })
 
@@ -59,14 +67,17 @@ lia.command.add("addsitroom", {
                 return
             end
 
-
-            local data = lia.data.get("sitrooms", {map = game.GetMap(), rooms = {}})
-            local rooms = data.rooms or data
-            rooms[name] = client:GetPos()
-            lia.data.set("sitrooms", {map = game.GetMap(), rooms = rooms})
+            local mapName = game.GetMap()
+            local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+            lia.db.upsert({
+                _folder = folder,
+                _map = mapName,
+                _name = name,
+                _pos = lia.data.serialize(client:GetPos()),
+            }, "sitrooms")
 
             client:notifyLocalized("sitroomSet")
-            lia.log.add(client, "sitRoomSet", string.format("Map: %s | Name: %s | Position: %s", game.GetMap(), name, tostring(client:GetPos())), "Set the sitroom location")
+            lia.log.add(client, "sitRoomSet", string.format("Map: %s | Name: %s | Position: %s", mapName, name, tostring(client:GetPos())), "Set the sitroom location")
         end)
     end
 })
@@ -89,29 +100,35 @@ lia.command.add("sendtositroom", {
             return
         end
 
-        local data = lia.data.get("sitrooms", {})
-        local rooms = data.rooms or data
-        local names = {}
-        for name in pairs(rooms) do
-            names[#names + 1] = name
-        end
+        local mapName = game.GetMap()
+        local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local condition = "_folder = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(mapName)
+        lia.db.select({"_name", "_pos"}, "sitrooms", condition):next(function(res)
+            local rooms = {}
+            local names = {}
+            for _, row in ipairs(res.results or {}) do
+                local pos = lia.data.decodeVector(row._pos)
+                rooms[row._name] = pos
+                names[#names + 1] = row._name
+            end
 
-        if #names == 0 then
-            client:notifyLocalized("sitroomNotSet")
-            return
-        end
-
-        client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt"), names, function(selection)
-            local pos = rooms[selection]
-            if not pos then
+            if #names == 0 then
                 client:notifyLocalized("sitroomNotSet")
                 return
             end
 
-            target:SetPos(pos)
-            client:notifyLocalized("sitroomTeleport", target:Nick())
-            target:notifyLocalized("sitroomArrive")
-            lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
+            client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt"), names, function(selection)
+                local pos = rooms[selection]
+                if not pos then
+                    client:notifyLocalized("sitroomNotSet")
+                    return
+                end
+
+                target:SetPos(pos)
+                client:notifyLocalized("sitroomTeleport", target:Nick())
+                target:notifyLocalized("sitroomArrive")
+                lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
+            end)
         end)
     end
 })
@@ -160,729 +177,469 @@ lia.command.add("dbbrowser", {
     end
 })
 
-lia.command.add("plykick", {
-    adminOnly = true,
-    privilege = "Kick Player",
-    desc = "plyKickDesc",
-    syntax = "[player Name] [string Reason optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
-            client:notifyLocalized("plyKicked")
-            lia.log.add(client, "plyKick", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plykick",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plyban", {
-    adminOnly = true,
-    privilege = "Ban Player",
-    desc = "plyBanDesc",
-    syntax = "[player Name] [number Duration optional] [string Reason optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
-            client:notifyLocalized("plyBanned")
-            lia.log.add(client, "plyBan", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyban",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plykill", {
-    adminOnly = true,
-    privilege = "Kill Player",
-    desc = "plyKillDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kill()
-            client:notifyLocalized("plyKilled")
-            lia.log.add(client, "plyKill", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plykill",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plysetgroup", {
-    adminOnly = true,
-    privilege = "Set Player Group",
-    desc = "plySetGroupDesc",
-    syntax = "[player Name] [string Group]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and lia.administration.groups[arguments[2]] then
-            lia.administration.setPlayerGroup(target, arguments[2])
-            target:notifyLocalized("yourGroupSet", arguments[2])
-            client:notifyLocalized("plyGroupSet")
-            lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s' by %s", target:Name(), arguments[2], client:Name()))
-            lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plysetgroup",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        elseif IsValid(target) and not lia.administration.groups[arguments[2]] then
-            client:notifyLocalized("groupNotExists")
-        end
-    end
-})
-
-lia.command.add("plyunban", {
-    adminOnly = true,
-    privilege = "Unban Player",
-    desc = "plyUnbanDesc",
-    syntax = "[string SteamID]",
-    onRun = function(client, arguments)
-        local steamid = arguments[1]
-        if steamid and steamid ~= "" then
-            lia.administration.removeBan(steamid)
-            client:notify("Player unbanned")
-            lia.log.add(client, "plyUnban", steamid)
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyunban",
-                target = steamid,
-                targetSteamID = steamid,
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plyfreeze", {
-    adminOnly = true,
-    privilege = "Freeze Player",
-    desc = "plyFreezeDesc",
-    syntax = "[player Name] [number Duration optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Freeze(true)
-            local dur = tonumber(arguments[2]) or 0
-            if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
-            lia.log.add(client, "plyFreeze", target:Name(), dur)
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyfreeze",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plyunfreeze", {
-    adminOnly = true,
-    privilege = "Unfreeze Player",
-    desc = "plyUnfreezeDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Freeze(false)
-            lia.log.add(client, "plyUnfreeze", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyunfreeze",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plyslay", {
-    adminOnly = true,
-    privilege = "Slay Player",
-    desc = "plySlayDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kill()
-            lia.log.add(client, "plySlay", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyslay",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plyrespawn", {
-    adminOnly = true,
-    privilege = "Respawn Player",
-    desc = "plyRespawnDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Spawn()
-            lia.log.add(client, "plyRespawn", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyrespawn",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-        end
-    end
-})
-
-lia.command.add("plyblind", {
-    adminOnly = true,
-    privilege = "Blind Player",
-    desc = "plyBlindDesc",
-    syntax = "[player Name] [number Time optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            net.Start("blindTarget")
-            net.WriteBool(true)
-            net.Send(target)
-            local dur = tonumber(arguments[2])
-            if dur and dur > 0 then
-                timer.Create("liaBlind" .. target:SteamID(), dur, 1, function()
-                    if IsValid(target) then
-                        net.Start("blindTarget")
-                        net.WriteBool(false)
-                        net.Send(target)
-                    end
-                end)
+local sysDisabled, cmdsDisabled = lia.admin.isDisabled()
+if not sysDisabled and not cmdsDisabled then
+    lia.command.add("plykick", {
+        adminOnly = true,
+        privilege = "Kick Player",
+        desc = "plyKickDesc",
+        syntax = "[player Name] [string Reason optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
+                client:notifyLocalized("plyKicked")
+                lia.log.add(client, "plyKick", target:Name())
             end
-
-            lia.log.add(client, "plyBlind", target:Name(), dur or 0)
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyblind",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
         end
-    end
-})
+    })
 
-lia.command.add("plyunblind", {
-    adminOnly = true,
-    privilege = "Unblind Player",
-    desc = "plyUnblindDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            net.Start("blindTarget")
-            net.WriteBool(false)
-            net.Send(target)
-            lia.log.add(client, "plyUnblind", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyunblind",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyban", {
+        adminOnly = true,
+        privilege = "Ban Player",
+        desc = "plyBanDesc",
+        syntax = "[player Name] [number Duration optional] [string Reason optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
+                client:notifyLocalized("plyBanned")
+                lia.log.add(client, "plyBan", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyblindfade", {
-    adminOnly = true,
-    privilege = "Blind Fade Player",
-    desc = "plyBlindFadeDesc",
-    syntax = "[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            local duration = tonumber(arguments[2]) or 0
-            local colorName = (arguments[3] or "black"):lower()
-            local fadeIn = tonumber(arguments[4])
-            local fadeOut = tonumber(arguments[5])
-            fadeIn = fadeIn or duration * 0.05
-            fadeOut = fadeOut or duration * 0.05
-            net.Start("blindFade")
-            net.WriteBool(colorName == "white")
-            net.WriteFloat(duration)
-            net.WriteFloat(fadeIn)
-            net.WriteFloat(fadeOut)
-            net.Send(target)
-            lia.log.add(client, "plyBlindFade", target:Name(), duration, colorName)
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyblindfade",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plykill", {
+        adminOnly = true,
+        privilege = "Kill Player",
+        desc = "plyKillDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Kill()
+                client:notifyLocalized("plyKilled")
+                lia.log.add(client, "plyKill", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("blindfadeall", {
-    adminOnly = true,
-    privilege = "Blind Fade All",
-    desc = "blindFadeAllDesc",
-    syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-    onRun = function(client, arguments)
-        local duration = tonumber(arguments[1]) or 0
-        local colorName = (arguments[2] or "black"):lower()
-        local fadeIn = tonumber(arguments[3]) or duration * 0.05
-        local fadeOut = tonumber(arguments[4]) or duration * 0.05
-        local isWhite = colorName == "white"
-        for _, ply in player.Iterator() do
-            if not ply:isStaffOnDuty() then
+    lia.command.add("plysetgroup", {
+        adminOnly = true,
+        privilege = "Set Player Group",
+        desc = "plySetGroupDesc",
+        syntax = "[player Name] [string Group]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) and lia.admin.groups[arguments[2]] then
+                lia.admin.setPlayerGroup(target, arguments[2])
+                client:notifyLocalized("plyGroupSet")
+                lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
+            elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
+                client:notifyLocalized("groupNotExists")
+            end
+        end
+    })
+
+    lia.command.add("plyunban", {
+        adminOnly = true,
+        privilege = "Unban Player",
+        desc = "plyUnbanDesc",
+        syntax = "[string SteamID]",
+        onRun = function(client, arguments)
+            local steamid = arguments[1]
+            if steamid and steamid ~= "" then
+                lia.admin.removeBan(steamid)
+                client:notify("Player unbanned")
+                lia.log.add(client, "plyUnban", steamid)
+            end
+        end
+    })
+
+    lia.command.add("plyfreeze", {
+        adminOnly = true,
+        privilege = "Freeze Player",
+        desc = "plyFreezeDesc",
+        syntax = "[player Name] [number Duration optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Freeze(true)
+                local dur = tonumber(arguments[2]) or 0
+                if dur > 0 then timer.Simple(dur, function() if IsValid(target) then target:Freeze(false) end end) end
+                lia.log.add(client, "plyFreeze", target:Name(), dur)
+            end
+        end
+    })
+
+    lia.command.add("plyunfreeze", {
+        adminOnly = true,
+        privilege = "Unfreeze Player",
+        desc = "plyUnfreezeDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Freeze(false)
+                lia.log.add(client, "plyUnfreeze", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyslay", {
+        adminOnly = true,
+        privilege = "Slay Player",
+        desc = "plySlayDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Kill()
+                lia.log.add(client, "plySlay", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyrespawn", {
+        adminOnly = true,
+        privilege = "Respawn Player",
+        desc = "plyRespawnDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Spawn()
+                lia.log.add(client, "plyRespawn", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyblind", {
+        adminOnly = true,
+        privilege = "Blind Player",
+        desc = "plyBlindDesc",
+        syntax = "[player Name] [number Time optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                net.Start("blindTarget")
+                net.WriteBool(true)
+                net.Send(target)
+                local dur = tonumber(arguments[2])
+                if dur and dur > 0 then
+                    timer.Create("liaBlind" .. target:SteamID(), dur, 1, function()
+                        if IsValid(target) then
+                            net.Start("blindTarget")
+                            net.WriteBool(false)
+                            net.Send(target)
+                        end
+                    end)
+                end
+
+                lia.log.add(client, "plyBlind", target:Name(), dur or 0)
+            end
+        end
+    })
+
+    lia.command.add("plyunblind", {
+        adminOnly = true,
+        privilege = "Unblind Player",
+        desc = "plyUnblindDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                net.Start("blindTarget")
+                net.WriteBool(false)
+                net.Send(target)
+                lia.log.add(client, "plyUnblind", target:Name())
+            end
+        end
+    })
+
+    lia.command.add("plyblindfade", {
+        adminOnly = true,
+        privilege = "Blind Fade Player",
+        desc = "plyBlindFadeDesc",
+        syntax = "[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                local duration = tonumber(arguments[2]) or 0
+                local colorName = (arguments[3] or "black"):lower()
+                local fadeIn = tonumber(arguments[4])
+                local fadeOut = tonumber(arguments[5])
+                fadeIn = fadeIn or duration * 0.05
+                fadeOut = fadeOut or duration * 0.05
                 net.Start("blindFade")
-                net.WriteBool(isWhite)
+                net.WriteBool(colorName == "white")
                 net.WriteFloat(duration)
                 net.WriteFloat(fadeIn)
                 net.WriteFloat(fadeOut)
-                net.Send(ply)
+                net.Send(target)
+                lia.log.add(client, "plyBlindFade", target:Name(), duration, colorName)
             end
         end
-        local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-        lia.db.insertTable({
-            timestamp = timestamp,
-            action = "blindfadeall",
-            target = "ALL",
-            targetSteamID = "0",
-            admin = IsValid(client) and client:Name() or tostring(client or ""),
-            adminSteamID = IsValid(client) and client:SteamID() or ""
-        }, nil, "staffactions")
-    end
-})
+    })
 
-lia.command.add("plygag", {
-    adminOnly = true,
-    privilege = "Gag Player",
-    desc = "plyGagDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:setNetVar("liaGagged", true)
-            lia.log.add(client, "plyGag", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plygag",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-            hook.Run("PlayerGagged", target, client)
+    lia.command.add("blindfadeall", {
+        adminOnly = true,
+        privilege = "Blind Fade All",
+        desc = "blindFadeAllDesc",
+        syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
+        onRun = function(_, arguments)
+            local duration = tonumber(arguments[1]) or 0
+            local colorName = (arguments[2] or "black"):lower()
+            local fadeIn = tonumber(arguments[3]) or duration * 0.05
+            local fadeOut = tonumber(arguments[4]) or duration * 0.05
+            local isWhite = colorName == "white"
+            for _, ply in player.Iterator() do
+                if not ply:isStaffOnDuty() then
+                    net.Start("blindFade")
+                    net.WriteBool(isWhite)
+                    net.WriteFloat(duration)
+                    net.WriteFloat(fadeIn)
+                    net.WriteFloat(fadeOut)
+                    net.Send(ply)
+                end
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyungag", {
-    adminOnly = true,
-    privilege = "Ungag Player",
-    desc = "plyUngagDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:setNetVar("liaGagged", false)
-            lia.log.add(client, "plyUngag", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyungag",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-            hook.Run("PlayerUngagged", target, client)
+    lia.command.add("plygag", {
+        adminOnly = true,
+        privilege = "Gag Player",
+        desc = "plyGagDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:setNetVar("liaGagged", true)
+                lia.log.add(client, "plyGag", target:Name())
+                hook.Run("PlayerGagged", target, client)
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plymute", {
-    adminOnly = true,
-    privilege = "Mute Player",
-    desc = "plyMuteDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:setLiliaData("VoiceBan", true)
-            lia.log.add(client, "plyMute", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plymute",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-            hook.Run("PlayerMuted", target, client)
+    lia.command.add("plyungag", {
+        adminOnly = true,
+        privilege = "Ungag Player",
+        desc = "plyUngagDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:setNetVar("liaGagged", false)
+                lia.log.add(client, "plyUngag", target:Name())
+                hook.Run("PlayerUngagged", target, client)
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyunmute", {
-    adminOnly = true,
-    privilege = "Unmute Player",
-    desc = "plyUnmuteDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:setLiliaData("VoiceBan", false)
-            lia.log.add(client, "plyUnmute", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyunmute",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
-            hook.Run("PlayerUnmuted", target, client)
+    lia.command.add("plymute", {
+        adminOnly = true,
+        privilege = "Mute Player",
+        desc = "plyMuteDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) and target:getChar() then
+                target:getChar():setData("VoiceBan", true)
+                lia.log.add(client, "plyMute", target:Name())
+                hook.Run("PlayerMuted", target, client)
+            end
         end
-    end
-})
+    })
 
-local returnPositions = {}
-lia.command.add("plybring", {
-    adminOnly = true,
-    privilege = "Bring Player",
-    desc = "plyBringDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            returnPositions[target] = target:GetPos()
-            target:SetPos(client:GetPos() + client:GetForward() * 50)
-            lia.log.add(client, "plyBring", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plybring",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyunmute", {
+        adminOnly = true,
+        privilege = "Unmute Player",
+        desc = "plyUnmuteDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) and target:getChar() then
+                target:getChar():setData("VoiceBan", false)
+                lia.log.add(client, "plyUnmute", target:Name())
+                hook.Run("PlayerUnmuted", target, client)
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plygoto", {
-    adminOnly = true,
-    privilege = "Goto Player",
-    desc = "plyGotoDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            returnPositions[client] = client:GetPos()
-            client:SetPos(target:GetPos() + target:GetForward() * 50)
-            lia.log.add(client, "plyGoto", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plygoto",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    local returnPositions = {}
+    lia.command.add("plybring", {
+        adminOnly = true,
+        privilege = "Bring Player",
+        desc = "plyBringDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                returnPositions[target] = target:GetPos()
+                target:SetPos(client:GetPos() + client:GetForward() * 50)
+                lia.log.add(client, "plyBring", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyreturn", {
-    adminOnly = true,
-    privilege = "Return Player",
-    desc = "plyReturnDesc",
-    syntax = "[player Name optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        target = IsValid(target) and target or client
-        local pos = returnPositions[target]
-        if pos then
-            target:SetPos(pos)
-            returnPositions[target] = nil
-            lia.log.add(client, "plyReturn", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyreturn",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plygoto", {
+        adminOnly = true,
+        privilege = "Goto Player",
+        desc = "plyGotoDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                returnPositions[client] = client:GetPos()
+                client:SetPos(target:GetPos() + target:GetForward() * 50)
+                lia.log.add(client, "plyGoto", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyjail", {
-    adminOnly = true,
-    privilege = "Jail Player",
-    desc = "plyJailDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Lock()
-            target:Freeze(true)
-            lia.log.add(client, "plyJail", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyjail",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyreturn", {
+        adminOnly = true,
+        privilege = "Return Player",
+        desc = "plyReturnDesc",
+        syntax = "[player Name optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            target = IsValid(target) and target or client
+            local pos = returnPositions[target]
+            if pos then
+                target:SetPos(pos)
+                returnPositions[target] = nil
+                lia.log.add(client, "plyReturn", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyunjail", {
-    adminOnly = true,
-    privilege = "Unjail Player",
-    desc = "plyUnjailDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:UnLock()
-            target:Freeze(false)
-            lia.log.add(client, "plyUnjail", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyunjail",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyjail", {
+        adminOnly = true,
+        privilege = "Jail Player",
+        desc = "plyJailDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Lock()
+                target:Freeze(true)
+                lia.log.add(client, "plyJail", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plycloak", {
-    adminOnly = true,
-    privilege = "Cloak Player",
-    desc = "plyCloakDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:SetNoDraw(true)
-            lia.log.add(client, "plyCloak", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plycloak",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyunjail", {
+        adminOnly = true,
+        privilege = "Unjail Player",
+        desc = "plyUnjailDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:UnLock()
+                target:Freeze(false)
+                lia.log.add(client, "plyUnjail", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyuncloak", {
-    adminOnly = true,
-    privilege = "Uncloak Player",
-    desc = "plyUncloakDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:SetNoDraw(false)
-            lia.log.add(client, "plyUncloak", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyuncloak",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plycloak", {
+        adminOnly = true,
+        privilege = "Cloak Player",
+        desc = "plyCloakDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:SetNoDraw(true)
+                lia.log.add(client, "plyCloak", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plygod", {
-    adminOnly = true,
-    privilege = "God Player",
-    desc = "plyGodDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:GodEnable()
-            lia.log.add(client, "plyGod", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plygod",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyuncloak", {
+        adminOnly = true,
+        privilege = "Uncloak Player",
+        desc = "plyUncloakDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:SetNoDraw(false)
+                lia.log.add(client, "plyUncloak", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyungod", {
-    adminOnly = true,
-    privilege = "Ungod Player",
-    desc = "plyUngodDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:GodDisable()
-            lia.log.add(client, "plyUngod", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyungod",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plygod", {
+        adminOnly = true,
+        privilege = "God Player",
+        desc = "plyGodDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:GodEnable()
+                lia.log.add(client, "plyGod", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyignite", {
-    adminOnly = true,
-    privilege = "Ignite Player",
-    desc = "plyIgniteDesc",
-    syntax = "[player Name] [number Duration optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            local dur = tonumber(arguments[2]) or 5
-            target:Ignite(dur)
-            lia.log.add(client, "plyIgnite", target:Name(), dur)
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyignite",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyungod", {
+        adminOnly = true,
+        privilege = "Ungod Player",
+        desc = "plyUngodDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:GodDisable()
+                lia.log.add(client, "plyUngod", target:Name())
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plyextinguish", {
-    adminOnly = true,
-    privilege = "Extinguish Player",
-    desc = "plyExtinguishDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Extinguish()
-            lia.log.add(client, "plyExtinguish", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plyextinguish",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyignite", {
+        adminOnly = true,
+        privilege = "Ignite Player",
+        desc = "plyIgniteDesc",
+        syntax = "[player Name] [number Duration optional]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                local dur = tonumber(arguments[2]) or 5
+                target:Ignite(dur)
+                lia.log.add(client, "plyIgnite", target:Name(), dur)
+            end
         end
-    end
-})
+    })
 
-lia.command.add("plystrip", {
-    adminOnly = true,
-    privilege = "Strip Player",
-    desc = "plyStripDesc",
-    syntax = "[player Name]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:StripWeapons()
-            lia.log.add(client, "plyStrip", target:Name())
-            local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            lia.db.insertTable({
-                timestamp = timestamp,
-                action = "plystrip",
-                target = target:Name(),
-                targetSteamID = target:SteamID(),
-                admin = IsValid(client) and client:Name() or tostring(client or ""),
-                adminSteamID = IsValid(client) and client:SteamID() or ""
-            }, nil, "staffactions")
+    lia.command.add("plyextinguish", {
+        adminOnly = true,
+        privilege = "Extinguish Player",
+        desc = "plyExtinguishDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:Extinguish()
+                lia.log.add(client, "plyExtinguish", target:Name())
+            end
         end
-    end
-})
+    })
+
+    lia.command.add("plystrip", {
+        adminOnly = true,
+        privilege = "Strip Player",
+        desc = "plyStripDesc",
+        syntax = "[player Name]",
+        onRun = function(client, arguments)
+            local target = lia.command.findPlayer(client, arguments[1])
+            if IsValid(target) then
+                target:StripWeapons()
+                lia.log.add(client, "plyStrip", target:Name())
+            end
+        end
+    })
+end

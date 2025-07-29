@@ -1,7 +1,6 @@
-﻿local MODULE = MODULE
-function MODULE:ShowPlayerOptions(target, options)
+﻿function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
-    if (client:hasPrivilege("Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
+    if (client:hasPrivilege("Staff Permissions - Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Staff Permissions - Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) and IsValid(target) then
         local orderedOptions = {
             {
                 name = L("nameCopyFormat", target:Name()),
@@ -111,17 +110,8 @@ function MODULE:ShowPlayerOptions(target, options)
                 name = "Return",
                 image = "icon16/arrow_redo.png",
                 func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
-            },
-            {
-                name = "Character List",
-                image = "icon16/user.png",
-                func = function() RunConsoleCommand("say", "/charlist " .. target:SteamID()) end
             }
         }
-
-        table.sort(orderedOptions, function(a, b)
-            return tostring(a.name) < tostring(b.name)
-        end)
 
         for _, option in ipairs(orderedOptions) do
             table.insert(options, option)

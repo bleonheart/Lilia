@@ -1,5 +1,4 @@
-﻿local MODULE = MODULE
-local ESP_DrawnEntities = {
+﻿local ESP_DrawnEntities = {
     lia_bodygrouper = true,
     lia_vendor = true,
 }
@@ -13,7 +12,7 @@ function MODULE:HUDPaint()
     local client = LocalPlayer()
     if not client:getChar() or not client:IsValid() or not client:IsPlayer() then return end
     if not client:isNoClipping() then return end
-    if not (client:hasPrivilege("No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
+    if not (client:hasPrivilege("Staff Permissions - No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
     local marginx, marginy = ScrW() * 0.1, ScrH() * 0.1
     local maxDistanceSq = 4096
     for _, ent in ents.Iterator() do

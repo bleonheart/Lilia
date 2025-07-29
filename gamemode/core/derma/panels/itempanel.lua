@@ -23,14 +23,14 @@ end
 local function drawLine(parent, title, val)
     local t = parent:Add("DLabel")
     t:Dock(TOP)
-    t:SetFont("liaMediumFont")
+    t:SetFont("liaBigTitle")
     t:SetTextColor(color_white)
     t:SetText(title)
     t:SizeToContentsY()
     local v = parent:Add("DLabel")
     v:Dock(TOP)
-    v:DockMargin(0, 2, 0, 5)
-    v:SetFont("liaMediumFont")
+    v:DockMargin(0, 2, 0, 10)
+    v:SetFont("liaBigText")
     v:SetTextColor(color_white)
     v:SetWrap(true)
     v:SetText(val ~= "" and val or "—")
@@ -93,6 +93,7 @@ function PANEL:openInspect()
         model:SetFOV(math.Clamp(math.deg(2 * math.asin(r / d)), 20, 80))
     end)
 
+    -- disable zooming so inspecting only allows rotation
     model.OnMouseWheeled = function() end
     model.Think = function(p)
         if input.IsKeyDown(KEY_A) or input.IsKeyDown(KEY_D) then
@@ -114,10 +115,11 @@ function PANEL:openInspect()
         end
     end
 
-    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("Can Access Item Informations") then
+    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("Staff Permissions - Can Access Item Informations") then
         local cr = self.ent:GetCreator()
         if IsValid(cr) then drawLine(scroll, L("spawner"), cr:Name() .. " - " .. cr:SteamID()) end
     end
+
 end
 
 function PANEL:buildButtons()
