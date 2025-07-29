@@ -6,7 +6,7 @@ MODULE.Privileges = {
     {
         Name = "Manage Prop Blacklist",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Blacklisting",
     },
     {
         Name = "Access Configuration Menu",
