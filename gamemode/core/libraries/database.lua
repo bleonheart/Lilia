@@ -262,9 +262,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_invdata`;
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
-    DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_doors`;
-    DROP TABLE IF EXISTS `lia_chatbox`;
     DROP TABLE IF EXISTS `lia_admingroups`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
@@ -294,9 +292,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_invdata;
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
-    DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_doors;
-    DROP TABLE IF EXISTS lia_chatbox;
     DROP TABLE IF EXISTS lia_admingroups;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
@@ -308,18 +304,6 @@ end
 
 function lia.db.loadTables()
     local function done()
-        local ignore = function() end
-        lia.db.fieldExists("lia_players", "_firstJoin"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _firstJoin DATETIME"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_lastJoin"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastJoin DATETIME"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_userGroup"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _userGroup VARCHAR(32)"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_lastIP"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastIP VARCHAR(64)"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_lastOnline"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastOnline INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_totalOnlineTime"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _totalOnlineTime FLOAT"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_banStart"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banStart INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_banDuration"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banDuration INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_players", "_banReason"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banReason TEXT"):catch(ignore) end end)
-        lia.db.fieldExists("lia_items", "_quantity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_items ADD COLUMN _quantity INTEGER"):catch(ignore) end end)
-        lia.db.fieldExists("lia_data", "_data"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_data ADD COLUMN _data TEXT"):catch(ignore) end end)
         lia.db.addDatabaseFields()
         lia.db.tablesLoaded = true
         hook.Run("LiliaTablesLoaded")
@@ -360,7 +344,7 @@ function lia.db.loadTables()
                 _money VARCHAR,
                 _faction VARCHAR,
                 recognition TEXT NOT NULL DEFAULT '',
-                recognized_as TEXT NOT NULL DEFAULT ''
+                fakenames TEXT NOT NULL DEFAULT ''
             );
 
             CREATE TABLE IF NOT EXISTS lia_inventories (
@@ -392,14 +376,6 @@ function lia.db.loadTables()
                 _key text,
                 _value text,
                 PRIMARY KEY (_schema, _key)
-            );
-
-
-            CREATE TABLE IF NOT EXISTS lia_bans (
-                _steamID TEXT,
-                _banStart INTEGER,
-                _banDuration INTEGER,
-                _reason TEXT
             );
 
             CREATE TABLE IF NOT EXISTS lia_logs (
@@ -443,12 +419,6 @@ function lia.db.loadTables()
                 PRIMARY KEY (_folder, _map, _id)
             );
 
-            CREATE TABLE IF NOT EXISTS lia_chatbox (
-                _schema TEXT,
-                _map TEXT,
-                _data TEXT,
-                PRIMARY KEY (_schema, _map)
-            );
             CREATE TABLE IF NOT EXISTS lia_persistence (
                 _id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _folder TEXT,
@@ -504,7 +474,7 @@ function lia.db.loadTables()
                 `_money` INT(10) UNSIGNED NULL DEFAULT '0',
                 `_faction` VARCHAR(255) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `recognition` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
-                `recognized_as` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
+                `fakenames` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_id`)
             );
 
@@ -539,15 +509,6 @@ function lia.db.loadTables()
                 `_key` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_general_ci',
                 `_value` TEXT NOT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_schema`, `_key`)
-            );
-
-
-            CREATE TABLE IF NOT EXISTS `lia_bans` (
-                `_steamID` varchar(64) NOT NULL,
-                `_banStart` int(32) NOT NULL,
-                `_banDuration` int(32) NOT NULL,
-                `_reason` varchar(512) DEFAULT '',
-                PRIMARY KEY (`_steamID`)
             );
 
             CREATE TABLE IF NOT EXISTS `lia_logs` (
@@ -598,14 +559,6 @@ function lia.db.loadTables()
                 `_data` TEXT NULL,
                 PRIMARY KEY (`_schema`, `_map`)
             );
-
-            CREATE TABLE IF NOT EXISTS `lia_chatbox` (
-                `_schema` TEXT NULL,
-                `_map` TEXT NULL,
-                `_data` TEXT NULL,
-                PRIMARY KEY (`_schema`, `_map`)
-            );
-
 
             CREATE TABLE IF NOT EXISTS `lia_data` (
                 `_folder` TEXT NULL,

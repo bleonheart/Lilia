@@ -41,7 +41,7 @@ function characterMeta:getDisplayedName(client)
     if self:getPlayer() == client then return self:getName() end
     local characterID = self:getID()
     if ourCharacter:doesRecognize(characterID) then return self:getName() end
-    local myReg = ourCharacter:getRecognizedAs()
+    local myReg = ourCharacter:getFakeName()
     if ourCharacter:doesFakeRecognize(characterID) and myReg[characterID] then return myReg[characterID] end
     return L("unknown")
 end
@@ -201,10 +201,10 @@ if SERVER then
         end
 
         local recognized = self:getRecognition()
-        local nameList = self:getRecognizedAs()
+        local nameList = self:getFakeName()
         if name ~= nil then
             nameList[id] = name
-            self:setRecognizedAs(nameList)
+            self:setFakeName(nameList)
         else
             self:setRecognition(recognized .. "," .. id .. ",")
         end
