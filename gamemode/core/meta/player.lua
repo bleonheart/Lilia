@@ -18,7 +18,9 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    return CAMI.PlayerHasAccess(self, privilegeName)
+    local group = self:GetUserGroup()
+    local perms = lia.admin.groups[group]
+    return perms and perms[privilegeName]
 end
 
 function playerMeta:getCurrentVehicle()

@@ -397,11 +397,6 @@ end
 
 function GM:PlayerAuthed(client, steamid)
     local steam64 = util.SteamIDTo64(steamid)
-    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(client:GetUserGroup()) and client:GetUserGroup() ~= "user" then
-        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(client:GetUserGroup()), steam64))
-        return
-    end
-
     lia.db.selectOne({"_userGroup", "_banStart", "_banDuration", "_banReason"}, "players", "_steamID = " .. steam64):next(function(data)
         if not IsValid(client) then return end
         local group = data and data._userGroup
