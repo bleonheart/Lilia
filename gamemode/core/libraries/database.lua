@@ -293,7 +293,6 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
     DROP TABLE IF EXISTS lia_doors;
-    DROP TABLE IF EXISTS lia_chatbox;
     DROP TABLE IF EXISTS lia_admin;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
