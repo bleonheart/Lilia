@@ -126,7 +126,6 @@ local QuickPanel = {}
 function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
-    self.expanded = false
     self:SetSkin(lia.config.get("DermaSkin", "Lilia Skin"))
     self:SetSize(400, 36)
     self:SetPos(ScrW() - 36, -36)

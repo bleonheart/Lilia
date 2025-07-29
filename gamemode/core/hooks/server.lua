@@ -663,9 +663,9 @@ function GM:LoadData()
         end
     end)
 
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
+    local condition = "schema = " .. lia.db.convertDataType(gamemode) .. " AND map = " .. lia.db.convertDataType(map)
     lia.db.select({"_itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
@@ -1026,3 +1026,4 @@ local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
+util.AddNetworkString("RequestRoster")

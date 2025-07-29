@@ -174,6 +174,7 @@ LANGUAGE = {
     searchEntities = "Buscar entidades...",
     searchOptions = "Buscar opciones...",
     commands = "Comandos",
+    roster = "Roster",
     classes = "Clases",
     searchFlags = "Buscar flags…",
     searchCommands = "Buscar comandos…",

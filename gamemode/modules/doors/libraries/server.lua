@@ -12,14 +12,14 @@
     end
 end
 
-local function buildCondition(folder, map)
-    return "folder = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
+local function buildCondition(gamemode, map)
+    return "gamemode = " .. lia.db.convertDataType(gamemode) .. " AND map = " .. lia.db.convertDataType(map)
 end
 
 function MODULE:LoadData()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local mapName = game.GetMap()
-    local condition = buildCondition(folder, mapName)
+    local condition = buildCondition(gamemode, mapName)
     local query = "SELECT * FROM lia_doors WHERE " .. condition
     lia.db.query(query):next(function(res)
         local rows = res.results or {}
@@ -56,13 +56,13 @@ function MODULE:LoadData()
 end
 
 function MODULE:SaveData()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local rows = {}
     for _, door in ipairs(ents.GetAll()) do
         if door:isDoor() then
             rows[#rows + 1] = {
-                gamemode = folder,
+                gamemode = gamemode,
                 map = map,
                 id = door:MapCreationID(),
                 factions = lia.data.serialize(door.liaFactions or {}),

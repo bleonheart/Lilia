@@ -1,13 +1,13 @@
 ﻿local TABLE = "chatbox"
-local function buildCondition(folder, map)
-    return "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
+local function buildCondition(gamemode, map)
+    return "schema = " .. lia.db.convertDataType(gamemode) .. " AND map = " .. lia.db.convertDataType(map)
 end
 
 function MODULE:SaveData()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     lia.db.upsert({
-        schema = folder,
+        schema = gamemode,
         map = map,
         data = lia.data.serialize({
             bans = self.OOCBans
@@ -16,9 +16,9 @@ function MODULE:SaveData()
 end
 
 function MODULE:LoadData()
-    local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = buildCondition(folder, map)
+    local condition = buildCondition(gamemode, map)
     lia.db.selectOne({"data"}, TABLE, condition):next(function(res)
         local data = res and lia.data.deserialize(res.data) or {}
         self.OOCBans = {}
