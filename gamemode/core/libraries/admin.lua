@@ -1,9 +1,8 @@
 ﻿lia.admin = lia.admin or {}
-lia.admin.bans = lia.admin.bans or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
-local DEFAULT_GROUPS = {
+lia.admin.DefaultGroups = {
     user = true,
     admin = true,
     superadmin = true,
@@ -111,7 +110,7 @@ if SERVER then
             return
         end
 
-        if DEFAULT_GROUPS[groupName] then return end
+        if lia.admin.DefaultGroups[groupName] then return end
         lia.admin.groups[groupName][permission] = true
         if SERVER then
             lia.admin.save(true)
@@ -125,7 +124,7 @@ if SERVER then
             return
         end
 
-        if DEFAULT_GROUPS[groupName] then return end
+        if lia.admin.DefaultGroups[groupName] then return end
         lia.admin.groups[groupName][permission] = nil
         if SERVER then
             lia.admin.save(true)

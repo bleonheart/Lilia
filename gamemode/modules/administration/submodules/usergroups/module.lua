@@ -9,12 +9,6 @@ MODULE.CAMIPrivileges = {
     }
 }
 
-local DEFAULT_GROUPS = {
-    user = true,
-    admin = true,
-    superadmin = true
-}
-
 local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
@@ -159,7 +153,7 @@ if SERVER then
     net.Receive("liaGroupsRemove", function(_, p)
         if not allowed(p) then return end
         local n = net.ReadString()
-        if n == "" or DEFAULT_GROUPS[n] then return end
+        if n == "" or lia.admin.DefaultGroups[n] then return end
         lia.admin.removeGroup(n)
         lia.admin.groups[n] = nil
         dropCAMIGroup(n)
@@ -172,7 +166,7 @@ if SERVER then
         if not allowed(p) then return end
         local g = net.ReadString()
         local t = net.ReadTable()
-        if g == "" or DEFAULT_GROUPS[g] then return end
+        if g == "" or lia.admin.DefaultGroups[g] then return end
         lia.admin.groups[g] = {}
         for k, v in pairs(t) do
             if v then lia.admin.groups[g][k] = true end
@@ -187,7 +181,7 @@ if SERVER then
     net.Receive("liaGroupsDefaults", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
-        if g == "" or DEFAULT_GROUPS[g] then return end
+        if g == "" or lia.admin.DefaultGroups[g] then return end
         lia.admin.groups[g] = buildDefaultTable(g)
         lia.admin.save(true)
         applyToCAMI(g, lia.admin.groups[g])
@@ -212,7 +206,7 @@ else
         btnBar:SetTall(36)
         btnBar:DockMargin(20, 20, 20, 12)
         btnBar.Paint = function() end
-        local editable = not DEFAULT_GROUPS[g]
+        local editable = not lia.admin.DefaultGroups[g]
         local tickAll = btnBar:Add("liaSmallButton")
         tickAll:Dock(LEFT)
         tickAll:SetWide(90)
@@ -239,7 +233,7 @@ else
         end
 
         local delBtn
-        if not DEFAULT_GROUPS[g] then
+        if not lia.admin.DefaultGroups[g] then
             delBtn = btnBar:Add("liaSmallButton")
             delBtn:Dock(RIGHT)
             delBtn:DockMargin(0, 0, 6, 0)
