@@ -502,6 +502,49 @@ if SERVER then
         return self.liaData
     end
 
+    function playerMeta:getFlags()
+        return self:getLiliaData("flags", "")
+    end
+
+    function playerMeta:hasFlags(flags)
+        for i = 1, #flags do
+            if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
+        end
+
+        return hook.Run("CharHasFlags", self, flags) or false
+    end
+
+    function playerMeta:setFlags(flags)
+        self:setLiliaData("flags", flags)
+    end
+
+    function playerMeta:giveFlags(flags)
+        local addedFlags = ""
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            local info = lia.flag.list[flag]
+            if info then
+                if not self:hasFlags(flag) then addedFlags = addedFlags .. flag end
+                if info.callback then info.callback(self, true) end
+            end
+        end
+
+        if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
+    end
+
+    function playerMeta:takeFlags(flags)
+        local oldFlags = self:getFlags()
+        local newFlags = oldFlags
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            local info = lia.flag.list[flag]
+            if info and info.callback then info.callback(self, false) end
+            newFlags = newFlags:gsub(flag, "")
+        end
+
+        if newFlags ~= oldFlags then self:setFlags(newFlags) end
+    end
+
     function playerMeta:setRagdoll(entity)
         self.liaRagdoll = entity
     end
@@ -967,6 +1010,18 @@ else
     function playerMeta:getAllLiliaData()
         lia.localData = lia.localData or {}
         return lia.localData
+    end
+
+    function playerMeta:getFlags()
+        return self:getLiliaData("flags", "")
+    end
+
+    function playerMeta:hasFlags(flags)
+        for i = 1, #flags do
+            if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
+        end
+
+        return hook.Run("CharHasFlags", self, flags) or false
     end
 
     function playerMeta:NetworkAnimation(active, boneData)

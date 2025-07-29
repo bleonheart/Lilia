@@ -342,7 +342,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
     local take = GetOrCreateSubMenu(fm, "takeFlagsMenu", stores)
     local toGive, toTake = {}, {}
     for fl in pairs(lia.flag.list) do
-        if not tgt:getChar():hasFlags(fl) then
+        if not tgt:hasFlags(fl) then
             table.insert(toGive, {
                 name = L("giveFlagFormat", fl),
                 cmd = 'say /giveflag ' .. QuoteArgs(GetIdentifier(tgt), fl),
