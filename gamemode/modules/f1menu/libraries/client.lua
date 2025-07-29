@@ -273,66 +273,64 @@ function MODULE:CreateInformationButtons(pages)
         })
     end
 
-    if client:hasPrivilege("Staff Permission — Access Module List") then
-        table.insert(pages, {
-            name = L("modules"),
-            drawFunc = function(modulesPanel)
-                local total = 0
-                for _ in pairs(lia.module.list) do
-                    total = total + 1
-                end
-
-                local searchEntry = vgui.Create("DTextEntry", modulesPanel)
-                searchEntry:Dock(TOP)
-                searchEntry:DockMargin(10, 0, 10, 5)
-                searchEntry:SetTall(30)
-                searchEntry:SetPlaceholderText(L("searchModules"))
-                local infoBox = vgui.Create("DPanel", modulesPanel)
-                infoBox:Dock(TOP)
-                infoBox:DockMargin(10, 0, 10, 5)
-                infoBox:SetTall(30)
-                infoBox.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
-                local countLabel = vgui.Create("DLabel", infoBox)
-                countLabel:Dock(FILL)
-                countLabel:SetFont("liaSmallFont")
-                countLabel:SetTextColor(color_white)
-                countLabel:SetContentAlignment(5)
-                countLabel:SetText(L("modulesCount", total))
-                local scroll = vgui.Create("DScrollPanel", modulesPanel)
-                scroll:Dock(FILL)
-                scroll:DockPadding(0, 0, 0, 10)
-                local canvas = scroll:GetCanvas()
-                local panels = {}
-                for _, moduleData in SortedPairs(lia.module.list) do
-                    local hasDesc = moduleData.desc and moduleData.desc ~= ""
-                    local height = hasDesc and 80 or 40
-                    local modulePanel = vgui.Create("DPanel", canvas)
-                    modulePanel:Dock(TOP)
-                    modulePanel:DockMargin(10, 5, 10, 0)
-                    modulePanel:SetTall(height)
-                    modulePanel.infoText = moduleData.name:lower() .. " " .. (moduleData.desc or ""):lower()
-                    modulePanel.Paint = function(pnl, w, h)
-                        derma.SkinHook("Paint", "Panel", pnl, w, h)
-                        draw.SimpleText(moduleData.name, "liaMediumFont", 20, 10, color_white)
-                        if moduleData.version then draw.SimpleText(tostring(moduleData.version), "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
-                        if hasDesc then draw.SimpleText(moduleData.desc, "liaSmallFont", 20, 45, color_white) end
-                    end
-
-                    panels[#panels + 1] = modulePanel
-                end
-
-                searchEntry.OnTextChanged = function(entry)
-                    local q = entry:GetValue():lower()
-                    for _, p in ipairs(panels) do
-                        p:SetVisible(q == "" or p.infoText:find(q, 1, true))
-                    end
-
-                    canvas:InvalidateLayout()
-                    canvas:SizeToChildren(false, true)
-                end
+    table.insert(pages, {
+        name = L("modules"),
+        drawFunc = function(modulesPanel)
+            local total = 0
+            for _ in pairs(lia.module.list) do
+                total = total + 1
             end
-        })
-    end
+
+            local searchEntry = vgui.Create("DTextEntry", modulesPanel)
+            searchEntry:Dock(TOP)
+            searchEntry:DockMargin(10, 0, 10, 5)
+            searchEntry:SetTall(30)
+            searchEntry:SetPlaceholderText(L("searchModules"))
+            local infoBox = vgui.Create("DPanel", modulesPanel)
+            infoBox:Dock(TOP)
+            infoBox:DockMargin(10, 0, 10, 5)
+            infoBox:SetTall(30)
+            infoBox.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200)) end
+            local countLabel = vgui.Create("DLabel", infoBox)
+            countLabel:Dock(FILL)
+            countLabel:SetFont("liaSmallFont")
+            countLabel:SetTextColor(color_white)
+            countLabel:SetContentAlignment(5)
+            countLabel:SetText(L("modulesCount", total))
+            local scroll = vgui.Create("DScrollPanel", modulesPanel)
+            scroll:Dock(FILL)
+            scroll:DockPadding(0, 0, 0, 10)
+            local canvas = scroll:GetCanvas()
+            local panels = {}
+            for _, moduleData in SortedPairs(lia.module.list) do
+                local hasDesc = moduleData.desc and moduleData.desc ~= ""
+                local height = hasDesc and 80 or 40
+                local modulePanel = vgui.Create("DPanel", canvas)
+                modulePanel:Dock(TOP)
+                modulePanel:DockMargin(10, 5, 10, 0)
+                modulePanel:SetTall(height)
+                modulePanel.infoText = moduleData.name:lower() .. " " .. (moduleData.desc or ""):lower()
+                modulePanel.Paint = function(pnl, w, h)
+                    derma.SkinHook("Paint", "Panel", pnl, w, h)
+                    draw.SimpleText(moduleData.name, "liaMediumFont", 20, 10, color_white)
+                    if moduleData.version then draw.SimpleText(tostring(moduleData.version), "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
+                    if hasDesc then draw.SimpleText(moduleData.desc, "liaSmallFont", 20, 45, color_white) end
+                end
+
+                panels[#panels + 1] = modulePanel
+            end
+
+            searchEntry.OnTextChanged = function(entry)
+                local q = entry:GetValue():lower()
+                for _, p in ipairs(panels) do
+                    p:SetVisible(q == "" or p.infoText:find(q, 1, true))
+                end
+
+                canvas:InvalidateLayout()
+                canvas:SizeToChildren(false, true)
+            end
+        end
+    })
 end
 
 function MODULE:CreateMenuButtons(tabs)
@@ -364,11 +362,9 @@ function MODULE:CreateMenuButtons(tabs)
         local sheet = settingsPanel:Add("DPropertySheet")
         sheet:Dock(FILL)
         sheet:DockMargin(10, 10, 10, 10)
-
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
-
         for _, page in ipairs(pages) do
             local panel = sheet:Add("DPanel")
             panel:Dock(FILL)

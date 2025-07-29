@@ -4,11 +4,6 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 MODULE.Privileges = {
     {
-        Name = "Can Remove Warns",
-        MinAccess = "superadmin",
-        Category = "Staff Permissions",
-    },
-    {
         Name = "Manage Prop Blacklist",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
