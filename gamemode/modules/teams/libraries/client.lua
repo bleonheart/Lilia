@@ -18,3 +18,7 @@ function MODULE:DrawCharInfo(client, _, info)
         info[#info + 1] = {className, classColor}
     end
 end
+
+function MODULE:CreateMenuButtons(tabs)
+    tabs["classes"] = function(panel) panel:Add("liaClasses") end
+end
