@@ -476,7 +476,6 @@ else
 end
 
 hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
-    if lia.admin.isDisabled() then return end
     lia.admin.groups[g.Name] = buildDefaultTable(g.Name)
     if SERVER then
         ensureCAMIGroup(g.Name, g.Inherits or "user")
@@ -485,7 +484,6 @@ hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
 end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
-    if lia.admin.isDisabled() then return end
     lia.admin.groups[g.Name] = nil
     if SERVER then
         dropCAMIGroup(g.Name)
@@ -494,7 +492,7 @@ hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
-    if lia.admin.isDisabled() or not pv or not pv.Name then return end
+    if not pv or not pv.Name then return end
     lia.admin.privileges[pv.Name] = {
         Name = pv.Name,
         MinAccess = pv.MinAccess or "user"
@@ -508,7 +506,7 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
 end)
 
 hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
-    if lia.admin.isDisabled() or not pv or not pv.Name then return end
+    if not pv or not pv.Name then return end
     lia.admin.privileges[pv.Name] = nil
     for _, p in pairs(lia.admin.groups) do
         p[pv.Name] = nil
