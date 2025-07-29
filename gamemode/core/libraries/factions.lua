@@ -1,14 +1,18 @@
 lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
-local DefaultModels = {"models/player/barney.mdl", "models/player/alyx.mdl", "models/player/breen.mdl", "models/player/p2_chell.mdl"}
-
+local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
 function lia.faction.register(uniqueID, data)
     assert(isstring(uniqueID), "uniqueID must be a string")
     assert(istable(data), "data must be a table")
-
-    local faction = lia.faction.teams[uniqueID] or {
-        index = table.Count(lia.faction.teams) + 1,
+    local existing = lia.faction.teams[uniqueID]
+    local constantName = "FACTION_" .. string.upper(uniqueID)
+    local providedIndex = tonumber(data.index)
+    local constantIndex = tonumber(_G[constantName])
+    local index = providedIndex or constantIndex or existing and existing.index or table.Count(lia.faction.teams) + 1
+    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, "faction index is already in use")
+    local faction = existing or {
+        index = index,
         isDefault = true
     }
 
@@ -16,17 +20,13 @@ function lia.faction.register(uniqueID, data)
         faction[k] = v
     end
 
-    faction.name = faction.name or "unknown"
-    faction.desc = faction.desc or "noDesc"
+    faction.index = index
+    faction.uniqueID = uniqueID
+    faction.name = L(faction.name) or "unknown"
+    faction.desc = L(faction.desc) or "noDesc"
     faction.color = faction.color or Color(150, 150, 150)
     faction.models = faction.models or DefaultModels
-    faction.uniqueID = uniqueID
-
-    faction.name = L(faction.name)
-    faction.desc = L(faction.desc)
-
-    team.SetUp(faction.index, faction.name or L("unknown"), faction.color or Color(125, 125, 125))
-
+    team.SetUp(faction.index, faction.name or L and L("unknown") or "unknown", faction.color or Color(125, 125, 125))
     for _, modelData in pairs(faction.models) do
         if isstring(modelData) then
             util.PrecacheModel(modelData)
@@ -37,9 +37,10 @@ function lia.faction.register(uniqueID, data)
 
     lia.faction.indices[faction.index] = faction
     lia.faction.teams[uniqueID] = faction
-
-    return faction
+    _G[constantName] = faction.index
+    return faction.index, faction
 end
+
 function lia.faction.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local niceName
@@ -241,6 +242,15 @@ function lia.faction.getDefaultClass(id)
     end
     return defaultClass
 end
+
+FACTION_STAFF = lia.faction.register("staff", {
+    name = "factionStaffName",
+    desc = "factionStaffDesc",
+    color = Color(255, 56, 252),
+    isDefault = false,
+    models = {"models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl",},
+    weapons = {"weapon_physgun", "gmod_tool"}
+})
 
 if CLIENT then
     function lia.faction.hasWhitelist(faction)
