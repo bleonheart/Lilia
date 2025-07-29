@@ -20,5 +20,8 @@ function MODULE:DrawCharInfo(client, _, info)
 end
 
 function MODULE:CreateMenuButtons(tabs)
-    tabs["classes"] = function(panel) panel:Add("liaClasses") end
+    local joinable = lia.class.retrieveJoinable(LocalPlayer())
+    if #joinable > 1 then
+        tabs["classes"] = function(panel) panel:Add("liaClasses") end
+    end
 end

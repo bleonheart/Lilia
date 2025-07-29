@@ -83,3 +83,15 @@ function lia.class.hasWhitelist(class)
     if info.isDefault then return false end
     return info.isWhitelisted
 end
+
+function lia.class.retrieveJoinable(client)
+    client = client or (CLIENT and LocalPlayer() or nil)
+    if not IsValid(client) then return {} end
+    local classes = {}
+    for _, class in pairs(lia.class.list) do
+        if lia.class.canBe(client, class.index) then
+            classes[#classes + 1] = class
+        end
+    end
+    return classes
+end
