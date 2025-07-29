@@ -3,9 +3,6 @@ MODULE.name = "Administration Utilities"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
--- Utility to determine how many columns a DListView line has. ``DListViewLine``
--- does not always implement a ``ColumnCount`` method, so this helper falls back
--- to counting the ``Columns`` table if needed.
 local function getColumnCount(line)
     if isfunction(line.ColumnCount) then return line:ColumnCount() end
     return istable(line.Columns) and #line.Columns or 0

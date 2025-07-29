@@ -656,10 +656,3 @@ concommand.Add("plysetgroup", function(ply, _, args)
         end
     end
 end)
-
-if CLIENT then
-    net.Receive("updateAdminGroups", function()
-        local data = net.ReadTable() or {}
-        lia.administration.groups = data
-    end)
-end

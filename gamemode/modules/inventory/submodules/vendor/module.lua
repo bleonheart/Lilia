@@ -27,7 +27,7 @@ VendorText = {
     [VendorSellOnly] = "sellOnly",
 }
 
-lia.vendor.addPreset("utility_vendor", {
+lia.vendor.addPreset("Test Preset", {
     manhack_welder = {
         mode = VendorSellAndBuy
     },

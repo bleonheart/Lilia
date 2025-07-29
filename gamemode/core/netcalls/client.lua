@@ -23,6 +23,11 @@ net.Receive("setWaypointWithLogo", function()
     LocalPlayer():setWaypointWithLogo(name, pos, logo)
 end)
 
+net.Receive("updateAdminGroups", function()
+    local data = net.ReadTable() or {}
+    lia.administration.groups = data
+end)
+
 net.Receive("liaNotify", function()
     local message = net.ReadString()
     lia.notices.notify(message)
