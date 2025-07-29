@@ -550,7 +550,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
         drawFunc = function(parent)
             local sheet = vgui.Create("liaSheet", parent)
             sheet:SetPlaceholderText(L("searchCommands"))
-            local useList = false
+            local useList = true
             if useList then
                 local data = {}
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
