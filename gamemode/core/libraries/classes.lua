@@ -1,5 +1,42 @@
-﻿lia.class = lia.class or {}
+lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
+function lia.class.register(uniqueID, data)
+    assert(isstring(uniqueID), "uniqueID must be a string")
+    assert(istable(data), "data must be a table")
+
+    local index = #lia.class.list + 1
+    local existing
+    for i, v in ipairs(lia.class.list) do
+        if v.uniqueID == uniqueID then
+            index = i
+            existing = v
+            break
+        end
+    end
+
+    local class = existing or { index = index }
+    for k, v in pairs(data) do
+        class[k] = v
+    end
+
+    class.uniqueID = uniqueID
+    class.name = class.name or L("unknown")
+    class.desc = class.desc or L("noDesc")
+    class.limit = class.limit or 0
+
+    if not class.faction or not team.Valid(class.faction) then
+        lia.error("Class '" .. uniqueID .. "' does not have a valid faction!\n")
+        return
+    end
+
+    if not class.OnCanBe then
+        class.OnCanBe = function() return true end
+    end
+
+    lia.class.list[index] = class
+
+    return class
+end
 function lia.class.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local index = #lia.class.list + 1
