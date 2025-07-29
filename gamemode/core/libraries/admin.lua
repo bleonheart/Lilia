@@ -8,8 +8,9 @@ lia.admin.DefaultGroups = {
 }
 
 function lia.admin.load()
-    local function continueLoad(data)
-        lia.admin.groups = data or {}
+    local function continueLoad(groups, privileges)
+        lia.admin.groups = groups or {}
+        lia.admin.privileges = privileges or lia.admin.privileges or {}
         local defaults = {"user", "admin", "superadmin"}
         local created = false
         if table.Count(lia.admin.groups) == 0 then
@@ -31,9 +32,10 @@ function lia.admin.load()
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
-    lia.db.selectOne({"_data"}, "admingroups"):next(function(res)
-        local data = res and util.JSONToTable(res._data or "") or {}
-        continueLoad(data)
+    lia.db.selectOne({"_usergroups", "_privileges"}, "admin"):next(function(res)
+        local groups = res and util.JSONToTable(res._usergroups or "") or {}
+        local privs = res and util.JSONToTable(res._privileges or "") or {}
+        continueLoad(groups, privs)
     end)
 end
 
@@ -98,8 +100,9 @@ if SERVER then
 
     function lia.admin.save(network)
         lia.db.upsert({
-            _data = util.TableToJSON(lia.admin.groups)
-        }, "admingroups")
+            _usergroups = util.TableToJSON(lia.admin.groups),
+            _privileges = util.TableToJSON(lia.admin.privileges)
+        }, "admin")
 
         if network then
             net.Start("updateAdminGroups")
