@@ -229,12 +229,14 @@ lia.command.add("plyunwhitelist", {
         end
 
         local faction = lia.util.findFaction(client, table.concat(arguments, " ", 2))
-        if faction and target:setWhitelisted(faction.index, false) then
+        if faction and not faction.isDefault and target:setWhitelisted(faction.index, false) then
             for _, v in player.Iterator() do
                 v:notifyLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
             end
 
             lia.log.add(client, "plyUnwhitelist", target:Name(), faction.name)
+        else
+            client:notifyLocalized("invalidFaction")
         end
     end
 })
