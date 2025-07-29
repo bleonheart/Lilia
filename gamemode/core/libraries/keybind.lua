@@ -300,8 +300,8 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
         end
 
         if allowEdit then
-            local resetAllBtn = container:Add("DButton")
-            resetAllBtn:Dock(TOP)
+            local resetAllBtn = container:Add("liaMediumButton")
+            resetAllBtn:Dock(BOTTOM)
             resetAllBtn:SetTall(30)
             resetAllBtn:SetText(L("resetAllKeybinds"))
             resetAllBtn.DoClick = function()
