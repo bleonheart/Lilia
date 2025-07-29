@@ -559,6 +559,7 @@ LANGUAGE = {
     adminStickUpdateInvSizeName = "Maj taille inv.",
     adminStickSetInvSizeName = "Définir taille inv.",
     adminStickTransferName = "Transférer joueur",
+    adminStickFactionWhitelistName = "Whitelist faction",
     adminStickUnwhitelistName = "Retirer whitelist",
     adminStickClassWhitelistName = "Whitelist classe",
     adminStickClassUnwhitelistName = "Unwhitelist classe",

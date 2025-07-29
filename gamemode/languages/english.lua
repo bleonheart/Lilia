@@ -559,6 +559,7 @@ LANGUAGE = {
     adminStickUpdateInvSizeName = "Update Inventory Size",
     adminStickSetInvSizeName = "Set Inventory Size",
     adminStickTransferName = "Transfer Player",
+    adminStickFactionWhitelistName = "Faction Whitelist",
     adminStickUnwhitelistName = "Unwhitelist Player",
     adminStickClassWhitelistName = "Class Whitelist",
     adminStickClassUnwhitelistName = "Class Unwhitelist",

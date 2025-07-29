@@ -378,6 +378,21 @@ lia.char.registerVar("lastPos", {
     noDisplay = true
 })
 
+lia.char.registerVar("ammo", {
+    field = "ammo",
+    fieldType = "text",
+    default = {},
+    isLocal = true,
+    noDisplay = true
+})
+
+lia.char.registerVar("classwhitelists", {
+    field = "classwhitelists",
+    fieldType = "text",
+    default = {},
+    noDisplay = true
+})
+
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
