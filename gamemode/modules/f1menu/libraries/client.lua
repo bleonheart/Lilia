@@ -91,8 +91,10 @@ function MODULE:CreateMenuButtons(tabs)
             local bn = tostring(b.name):lower()
             return an < bn
         end)
+
         for _, page in ipairs(pages) do
             local panel = vgui.Create("DPanel")
+            panel:Dock(FILL)
             panel.Paint = function() end
             panel:DockPadding(10, 10, 10, 10)
             page.drawFunc(panel)
@@ -102,10 +104,9 @@ function MODULE:CreateMenuButtons(tabs)
                 sheetData.Tab.liaOnSelect = page.onSelect
             end
         end
+
         function sheet:OnActiveTabChanged(oldTab, newTab)
-            if IsValid(newTab) and newTab.liaOnSelect then
-                newTab.liaOnSelect(newTab.liaPagePanel)
-            end
+            if IsValid(newTab) and newTab.liaOnSelect then newTab.liaOnSelect(newTab.liaPagePanel) end
         end
     end
 
@@ -121,6 +122,7 @@ function MODULE:CreateMenuButtons(tabs)
             local bn = tostring(b.name):lower()
             return an < bn
         end)
+
         for _, page in ipairs(pages) do
             local panel = sheet:Add("DPanel")
             panel:Dock(FILL)
