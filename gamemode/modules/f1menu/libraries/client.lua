@@ -86,6 +86,11 @@ function MODULE:CreateMenuButtons(tabs)
         local pages = {}
         hook.Run("CreateInformationButtons", pages)
         if not pages then return end
+        table.sort(pages, function(a, b)
+            local an = tostring(a.name):lower()
+            local bn = tostring(b.name):lower()
+            return an < bn
+        end)
         for _, page in ipairs(pages) do
             local panel = vgui.Create("DPanel")
             panel.Paint = function() end
@@ -111,6 +116,11 @@ function MODULE:CreateMenuButtons(tabs)
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
+        table.sort(pages, function(a, b)
+            local an = tostring(a.name):lower()
+            local bn = tostring(b.name):lower()
+            return an < bn
+        end)
         for _, page in ipairs(pages) do
             local panel = sheet:Add("DPanel")
             panel:Dock(FILL)
