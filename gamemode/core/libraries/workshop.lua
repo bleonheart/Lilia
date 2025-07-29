@@ -308,7 +308,7 @@ else
                             end
                         end
 
-                        if sheet.Refresh then sheet:Refresh() end
+                        if IsValid(sheet) and sheet.Refresh then sheet:Refresh() end
                     end)
                 end
             end
