@@ -77,6 +77,7 @@ function PANEL:AddTextRow(data)
             d = vgui.Create("DLabel", p)
             d:SetFont("liaSmallFont")
             d:SetWrap(true)
+            d:SetAutoStretchVertical(true)
             d:SetText(desc)
         end
 
@@ -130,6 +131,7 @@ function PANEL:AddPreviewRow(data)
             d = vgui.Create("DLabel", p)
             d:SetFont("liaSmallFont")
             d:SetWrap(true)
+            d:SetAutoStretchVertical(true)
             d:SetText(desc)
         end
 
