@@ -36,6 +36,12 @@ function MODULE:OnCharCreated(_, character)
     for _, item in pairs(items) do
         character:getInv():add(item, 1)
     end
+    local defaultClass = lia.faction.getDefaultClass(character:getFaction())
+    if defaultClass then
+        character:setClass(defaultClass.index)
+    else
+        character:setClass(0)
+    end
 end
 
 function MODULE:PlayerLoadedChar(client, character)
@@ -50,21 +56,22 @@ function MODULE:PlayerLoadedChar(client, character)
     local data = character:getData("pclass")
     local class = data and lia.class.list[data]
     if character then
-        if class and data then
+        if class and client:Team() == class.faction then
             local oldClass = character:getClass()
-            if client:Team() == class.faction then
-                timer.Simple(.3, function()
+            timer.Simple(.3, function()
+                if IsValid(client) then
                     character:setClass(class.index)
                     hook.Run("OnPlayerJoinClass", client, class.index, oldClass)
-                    return
-                end)
-            end
+                end
+            end)
         end
 
-        for _, v in pairs(lia.class.list) do
-            if v.faction == client:Team() and v.isDefault then
-                character:setClass(v.index)
-                break
+        if not lia.class.list[character:getClass()] then
+            local defClass = lia.faction.getDefaultClass(client:Team())
+            if defClass then
+                character:setClass(defClass.index)
+            else
+                character:setClass(0)
             end
         end
     end
