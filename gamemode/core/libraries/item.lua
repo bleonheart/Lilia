@@ -557,12 +557,12 @@ if SERVER then
             lia.db.preparedCall("itemInstance", onItemCreated, index, uniqueID, itemData, x, y, itemTable.maxQuantity or 1)
         else
             lia.db.insertTable({
-                _invID = index,
-                _uniqueID = uniqueID,
-                _data = itemData,
-                _x = x,
-                _y = y,
-                _quantity = itemTable.maxQuantity or 1
+                invID = index,
+                uniqueID = uniqueID,
+                data = itemData,
+                x = x,
+                y = y,
+                quantity = itemTable.maxQuantity or 1
             }, onItemCreated, "items")
         end
         return d
@@ -586,19 +586,19 @@ if SERVER then
             return
         end
 
-        lia.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM lia_items WHERE _itemID IN " .. range, function(results)
+        lia.db.query("SELECT _itemID, uniqueID, data, x, y, quantity FROM lia_items WHERE _itemID IN " .. range, function(results)
             if not results then return end
             for _, row in ipairs(results) do
                 local id = tonumber(row._itemID)
-                local itemDef = lia.item.list[row._uniqueID]
+                local itemDef = lia.item.list[row.uniqueID]
                 if id and itemDef then
-                    local item = lia.item.new(row._uniqueID, id)
-                    local itemData = util.JSONToTable(row._data or "[]") or {}
+                    local item = lia.item.new(row.uniqueID, id)
+                    local itemData = util.JSONToTable(row.data or "[]") or {}
                     item.invID = 0
                     item.data = itemData
-                    item.data.x = tonumber(row._x)
-                    item.data.y = tonumber(row._y)
-                    item.quantity = tonumber(row._quantity)
+                    item.data.x = tonumber(row.x)
+                    item.data.y = tonumber(row.y)
+                    item.quantity = tonumber(row.quantity)
                     item:onRestored()
                 end
             end

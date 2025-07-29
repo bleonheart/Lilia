@@ -1,7 +1,7 @@
 ﻿local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
-        local adminID = row._admin
+        local adminID = row.admin
         caseclaims[adminID] = caseclaims[adminID] or {
             name = adminID,
             claims = 0,
@@ -11,9 +11,9 @@
 
         local info = caseclaims[adminID]
         info.claims = info.claims + 1
-        if row._timestamp > info.lastclaim then info.lastclaim = row._timestamp end
-        local reqPly = player.GetBySteamID64(row._request)
-        info.claimedFor[row._request] = IsValid(reqPly) and reqPly:Nick() or row._request
+        if row.timestamp > info.lastclaim then info.lastclaim = row.timestamp end
+        local reqPly = player.GetBySteamID64(row.request)
+        info.claimedFor[row.request] = IsValid(reqPly) and reqPly:Nick() or row.request
     end
 
     for adminID, info in pairs(caseclaims) do
@@ -24,14 +24,14 @@
 end
 
 function MODULE:GetAllCaseClaims()
-    return lia.db.select({"_request", "_admin", "_timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
+    return lia.db.select({"request", "admin", "timestamp"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
     lia.db.insertTable({
-        _request = requester:SteamID64(),
-        _admin = admin:SteamID64(),
-        _timestamp = os.time()
+        request = requester:SteamID64(),
+        admin = admin:SteamID64(),
+        timestamp = os.time()
     }, nil, "ticketclaims")
 end
 

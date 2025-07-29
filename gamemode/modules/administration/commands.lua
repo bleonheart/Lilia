@@ -15,10 +15,10 @@
                 client:ChatPrint(L("noPrevChar"))
             end
         else
-            lia.db.query(string.format("SELECT * FROM lia_characters WHERE _steamID = \"%s\"", lia.db.escape(steamID)), function(data)
+            lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
                 for _, row in ipairs(data) do
-                    local id = tonumber(row._id)
-                    if row._faction == "staff" then
+                    local id = tonumber(row.id)
+                    if row.faction == "staff" then
                         client:setNetVar("OldCharID", client:getChar():getID())
                         net.Start("AdminModeSwapCharacter")
                         net.WriteInt(id, 32)
@@ -209,7 +209,7 @@ lia.command.add("plysetgroup", {
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and lia.admin.groups[arguments[2]] then
             ply:SetUserGroup(usergroup)
-            lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
             client:notifyLocalized("plyGroupSet")
             lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
         elseif IsValid(target) and not lia.admin.groups[arguments[2]] then
@@ -227,10 +227,10 @@ lia.command.add("plyunban", {
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
             lia.db.updateTable({
-                _banStart = nil,
-                _banDuration = 0,
-                _banReason = ""
-            }, nil, "players", "_steamID = " .. steamid)
+                banStart = nil,
+                banDuration = 0,
+                banReason = ""
+            }, nil, "players", "steamID = " .. steamid)
 
             client:notify("Player unbanned")
             lia.log.add(client, "plyUnban", steamid)

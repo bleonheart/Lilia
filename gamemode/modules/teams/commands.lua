@@ -57,7 +57,7 @@ lia.command.add("roster", {
 
         local isLeader = client:IsSuperAdmin() or character:getData("factionOwner") or character:getData("factionAdmin") or character:hasFlags("V")
         if not isLeader then return end
-        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
+        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline"
         if not character then
             client:notify("Character data not found for client:", client)
             return
@@ -75,20 +75,20 @@ lia.command.add("roster", {
             return
         end
 
-        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(faction.uniqueID)
-        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+        local condition = "lia_characters.schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
+        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
         lia.db.query(query, function(data)
             local characters = {}
             if data then
                 for _, v in ipairs(data) do
-                    local charID = tonumber(v._id)
+                    local charID = tonumber(v.id)
                     local isOnline = lia.char.loaded[charID] ~= nil
                     local lastOnlineText
                     if isOnline then
                         lastOnlineText = L("onlineNow")
                     else
-                        local last = tonumber(v._lastOnline)
-                        if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
+                        local last = tonumber(v.lastOnline)
+                        if not isnumber(last) then last = os.time(lia.time.toNumber(v.lastJoinTime)) end
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
@@ -97,11 +97,11 @@ lia.command.add("roster", {
 
                     table.insert(characters, {
                         id = charID,
-                        name = v._name,
-                        faction = v._faction,
-                        steamID = v._steamID,
+                        name = v.name,
+                        faction = v.faction,
+                        steamID = v.steamID,
                         lastOnline = lastOnlineText,
-                        hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
+                        hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
                     })
                 end
             else
@@ -122,7 +122,7 @@ lia.command.add("factionmanagement", {
     desc = "factionManagementDesc",
     syntax = "[faction Faction]",
     onRun = function(client, arguments)
-        local fields = "lia_characters._name, lia_characters._faction, lia_characters._id, lia_characters._steamID, lia_characters._lastJoinTime, lia_players._totalOnlineTime, lia_players._lastOnline"
+        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline"
         local faction
         local arg = table.concat(arguments, " ")
         if arg ~= "" then
@@ -148,20 +148,20 @@ lia.command.add("factionmanagement", {
             end
         end
 
-        local condition = "lia_characters._schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters._faction = " .. lia.db.convertDataType(faction.uniqueID)
-        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters._steamID = lia_players._steamID WHERE " .. condition
+        local condition = "lia_characters.schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
+        local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
         lia.db.query(query, function(data)
             local characters = {}
             if data then
                 for _, v in ipairs(data) do
-                    local charID = tonumber(v._id)
+                    local charID = tonumber(v.id)
                     local isOnline = lia.char.loaded[charID] ~= nil
                     local lastOnlineText
                     if isOnline then
                         lastOnlineText = L("onlineNow")
                     else
-                        local last = tonumber(v._lastOnline)
-                        if not isnumber(last) then last = os.time(lia.time.toNumber(v._lastJoinTime)) end
+                        local last = tonumber(v.lastOnline)
+                        if not isnumber(last) then last = os.time(lia.time.toNumber(v.lastJoinTime)) end
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
@@ -170,11 +170,11 @@ lia.command.add("factionmanagement", {
 
                     table.insert(characters, {
                         id = charID,
-                        name = v._name,
-                        faction = v._faction,
-                        steamID = v._steamID,
+                        name = v.name,
+                        faction = v.faction,
+                        steamID = v.steamID,
                         lastOnline = lastOnlineText,
-                        hoursPlayed = formatDHM(tonumber(v._totalOnlineTime) or 0)
+                        hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
                     })
                 end
             else

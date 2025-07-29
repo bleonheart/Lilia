@@ -34,13 +34,13 @@ end
 
 function MODULE:PlayerLoadedChar(client, character)
     local charID = character:getID()
-    lia.db.query("SELECT _key, _value FROM lia_chardata WHERE _charID = " .. charID, function(data)
+    lia.db.query("SELECT key, value FROM lia_chardata WHERE charID = " .. charID, function(data)
         if data then
             if not character.dataVars then character.dataVars = {} end
             for _, row in ipairs(data) do
-                local decodedValue = pon.decode(row._value)
-                character.dataVars[row._key] = decodedValue[1]
-                character:setData(row._key, decodedValue[1])
+                local decodedValue = pon.decode(row.value)
+                character.dataVars[row.key] = decodedValue[1]
+                character:setData(row.key, decodedValue[1])
             end
 
             local characterData = character:getData()

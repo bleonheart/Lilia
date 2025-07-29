@@ -101,17 +101,17 @@ function MODULE:PlayerAuthed(client, steamid)
         return
     end
 
-    lia.db.selectOne({"_banStart", "_banDuration", "_banReason"}, "players", "_steamID = " .. ownerSteamID64):next(function(banRecord)
+    lia.db.selectOne({"banStart", "banDuration", "banReason"}, "players", "steamID = " .. ownerSteamID64):next(function(banRecord)
         if not IsValid(client) then return end
-        local banStart = tonumber(banRecord and banRecord._banStart or 0) or 0
+        local banStart = tonumber(banRecord and banRecord.banStart or 0) or 0
         if banStart > 0 then
-            local duration = tonumber(banRecord._banDuration or 0)
+            local duration = tonumber(banRecord.banDuration or 0)
             if duration > 0 and banStart + duration <= os.time() then
                 lia.db.updateTable({
-                    _banStart = nil,
-                    _banDuration = 0,
-                    _banReason = ""
-                }, nil, "players", "_steamID = " .. ownerSteamID64)
+                    banStart = nil,
+                    banDuration = 0,
+                    banReason = ""
+                }, nil, "players", "steamID = " .. ownerSteamID64)
             else
                 local timeLeft = 0
                 if duration > 0 then timeLeft = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end

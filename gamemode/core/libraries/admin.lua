@@ -32,9 +32,9 @@ function lia.admin.load()
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
-    lia.db.selectOne({"_usergroups", "_privileges"}, "admin"):next(function(res)
-        local groups = res and util.JSONToTable(res._usergroups or "") or {}
-        local privs = res and util.JSONToTable(res._privileges or "") or {}
+    lia.db.selectOne({"usergroups", "privileges"}, "admin"):next(function(res)
+        local groups = res and util.JSONToTable(res.usergroups or "") or {}
+        local privs = res and util.JSONToTable(res.privileges or "") or {}
         continueLoad(groups, privs)
     end)
 end
@@ -100,8 +100,8 @@ if SERVER then
 
     function lia.admin.save(network)
         lia.db.upsert({
-            _usergroups = util.TableToJSON(lia.admin.groups),
-            _privileges = util.TableToJSON(lia.admin.privileges)
+            usergroups = util.TableToJSON(lia.admin.groups),
+            privileges = util.TableToJSON(lia.admin.privileges)
         }, "admin")
 
         if network then

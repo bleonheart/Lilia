@@ -249,8 +249,8 @@ net.Receive("KickCharacter", function(_, client)
 
     if not IsOnline then
         lia.db.updateTable({
-            _faction = defaultFaction.uniqueID
-        }, nil, "characters", "_id = " .. characterID)
+            faction = defaultFaction.uniqueID
+        }, nil, "characters", "id = " .. characterID)
 
         lia.char.setCharData(characterID, "factionKickWarn", true)
     end

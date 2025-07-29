@@ -22,8 +22,8 @@ end
 function GM:PlayerLoadedChar(client, character)
     local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
     lia.db.updateTable({
-        _lastJoinTime = timeStamp
-    }, nil, "characters", "_id = " .. character:getID())
+        lastJoinTime = timeStamp
+    }, nil, "characters", "id = " .. character:getID())
 
     client:removeRagdoll()
     character:setData("loginTime", os.time())
@@ -397,25 +397,25 @@ end
 
 function GM:PlayerAuthed(client, steamid)
     local steam64 = util.SteamIDTo64(steamid)
-    lia.db.selectOne({"_userGroup", "_banStart", "_banDuration", "_banReason"}, "players", "_steamID = " .. steam64):next(function(data)
+    lia.db.selectOne({"userGroup", "banStart", "banDuration", "banReason"}, "players", "steamID = " .. steam64):next(function(data)
         if not IsValid(client) then return end
-        local group = data and data._userGroup
+        local group = data and data.userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(group), steam64))
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
         end
 
         client:SetUserGroup(group)
-        local banStart = tonumber(data and data._banStart or 0) or 0
+        local banStart = tonumber(data and data.banStart or 0) or 0
         if banStart > 0 then
-            local duration = tonumber(data._banDuration or 0)
-            local reason = data._banReason or L("genericReason")
+            local duration = tonumber(data.banDuration or 0)
+            local reason = data.banReason or L("genericReason")
             if duration > 0 and banStart + duration <= os.time() then
                 lia.db.updateTable({
-                    _banStart = nil,
-                    _banDuration = 0,
-                    _banReason = ""
-                }, nil, "players", "_steamID = " .. steam64)
+                    banStart = nil,
+                    banDuration = 0,
+                    banReason = ""
+                }, nil, "players", "steamID = " .. steam64)
             else
                 local minutes = 0
                 if duration > 0 then minutes = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end
@@ -457,8 +457,8 @@ function GM:PlayerInitialSpawn(client)
         local address = client:IPAddress()
         client:setLiliaData("lastIP", address)
         lia.db.updateTable({
-            _lastIP = address
-        }, nil, "players", "_steamID = " .. client:SteamID64())
+            lastIP = address
+        }, nil, "players", "steamID = " .. client:SteamID64())
 
         net.Start("liaDataSync")
         net.WriteTable(data)
@@ -665,7 +665,7 @@ function GM:LoadData()
 
     local folder = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
-    local condition = "_schema = " .. lia.db.convertDataType(folder) .. " AND _map = " .. lia.db.convertDataType(map)
+    local condition = "schema = " .. lia.db.convertDataType(folder) .. " AND map = " .. lia.db.convertDataType(map)
     lia.db.select({"_itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
@@ -683,13 +683,13 @@ function GM:LoadData()
                     lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
                     lia.information(L("serverDeletedItems"))
                 else
-                    lia.db.query("SELECT _itemID, _uniqueID, _data FROM lia_items WHERE _itemID IN " .. range, function(data)
+                    lia.db.query("SELECT _itemID, uniqueID, data FROM lia_items WHERE _itemID IN " .. range, function(data)
                         if not data then return end
                         local loadedItems = {}
                         for _, row in ipairs(data) do
                             local itemID = tonumber(row._itemID)
-                            local itemData = util.JSONToTable(row._data or "[]")
-                            local uniqueID = row._uniqueID
+                            local itemData = util.JSONToTable(row.data or "[]")
+                            local uniqueID = row.uniqueID
                             local itemTable = lia.item.list[uniqueID]
                             local position = positions[itemID]
                             local ang = angles[itemID]
@@ -973,7 +973,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.admin.groups[usergroup] then
                 ply:SetUserGroup(usergroup)
-                lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
             else
                 MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
             end
