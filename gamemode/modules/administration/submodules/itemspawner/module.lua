@@ -6,5 +6,6 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Use Item Spawner",
         MinAccess = "admin"
+        Category = MODULE.name,
     }
 }
