@@ -62,7 +62,7 @@ function MODULE:SaveData()
     for _, door in ipairs(ents.GetAll()) do
         if door:isDoor() then
             rows[#rows + 1] = {
-                folder = folder,
+                gamemode = folder,
                 map = map,
                 id = door:MapCreationID(),
                 factions = lia.data.serialize(door.liaFactions or {}),

@@ -147,7 +147,7 @@ function lia.data.set(key, value, global, ignoreMap)
     lia.data.stored[key] = value
     lia.db.waitForTablesToLoad():next(function()
         local row = {
-            folder = folder,
+            gamemode = folder,
             map = map,
             data = lia.data.serialize(lia.data.stored)
         }
@@ -175,7 +175,7 @@ function lia.data.delete(key, global, ignoreMap)
             return lia.db.delete("data", condition)
         else
             local row = {
-                folder = folder,
+                gamemode = folder,
                 map = map,
                 data = lia.data.serialize(lia.data.stored)
             }
@@ -269,7 +269,7 @@ function lia.data.savePersistence(entities)
         local rows = {}
         for _, ent in ipairs(entities) do
             local row = {
-                folder = folder,
+                gamemode = folder,
                 map = map,
                 class = ent.class,
                 pos = lia.data.serialize(ent.pos),

@@ -267,59 +267,25 @@ else
         if not lia.config.get("AutoDownloadWorkshop", true) then return end
         table.insert(pages, {
             name = L("workshopAddons"),
-            drawFunc = function(container)
+            drawFunc = function(parent)
                 local ids = lia.workshop.serverIds or {}
-                local search = vgui.Create("DTextEntry", container)
-                search:Dock(TOP)
-                search:DockMargin(0, 0, 0, 5)
-                search:SetTall(30)
-                search:SetPlaceholderText(L("searchAddons"))
-                local sc = vgui.Create("DScrollPanel", container)
-                sc:Dock(FILL)
-                sc:DockPadding(0, 10, 0, 0)
-                local canvas = sc:GetCanvas()
-                local function item(id, size)
+                local sheet = vgui.Create("liaSheet", parent)
+                sheet:SetPlaceholderText(L("searchAddons"))
+                for id in pairs(ids) do
                     steamworks.FileInfo(id, function(fi)
                         if not fi then return end
-                        local p = vgui.Create("DPanel", canvas)
-                        p:Dock(TOP)
-                        p:DockMargin(0, 0, 0, 10)
-                        p.titleText = (fi.title or ""):lower()
-                        local html = vgui.Create("DHTML", p)
-                        html:SetSize(size, size)
-                        html:OpenURL(fi.previewurl)
-                        local title = vgui.Create("DLabel", p)
-                        title:SetFont("liaBigFont")
-                        title:SetText(fi.title or "ID:" .. id)
-                        local desc = vgui.Create("DLabel", p)
-                        desc:SetFont("liaMediumFont")
-                        desc:SetWrap(true)
-                        desc:SetText(fi.description or "")
-                        function p:PerformLayout()
-                            local pad = 10
-                            html:SetPos(pad, pad)
-                            title:SizeToContents()
-                            title:SetPos(pad + size + pad, pad)
-                            desc:SetPos(pad + size + pad, pad + title:GetTall() + 5)
-                            desc:SetWide(self:GetWide() - pad - size - pad)
-                            local _, h = desc:GetContentSize()
-                            desc:SetTall(h)
-                            self:SetTall(math.max(size + pad * 2, title:GetTall() + 5 + h + pad))
-                        end
+                        local title = fi.title or "ID:" .. id
+                        local desc = fi.description or ""
+                        local url = fi.previewurl or ""
+                        sheet:AddPreviewRow({
+                            title = title,
+                            desc = desc,
+                            url = url,
+                            size = 128
+                        })
+
+                        sheet:Refresh()
                     end)
-                end
-
-                for id in pairs(ids) do
-                    item(id, 200)
-                end
-
-                search.OnTextChanged = function(self)
-                    local q = self:GetValue():lower()
-                    for _, child in ipairs(canvas:GetChildren()) do
-                        if child.titleText then child:SetVisible(q == "" or child.titleText:find(q, 1, true)) end
-                    end
-
-                    canvas:InvalidateLayout()
                 end
             end
         })

@@ -215,52 +215,26 @@ function lia.module.get(identifier)
     return lia.module.list[identifier]
 end
 
-hook.Add("CreateInformationButtons", "liaModularity", function(pages)
+hook.Add("CreateInformationButtons", "liaInformationModulesUnified", function(pages)
     table.insert(pages, {
         name = L("modules"),
-        drawFunc = function(modulesPanel)
-            local total = 0
-            for _ in pairs(lia.module.list) do
-                total = total + 1
-            end
-
-            local searchEntry = vgui.Create("DTextEntry", modulesPanel)
-            searchEntry:Dock(TOP)
-            searchEntry:DockMargin(10, 0, 10, 5)
-            searchEntry:SetTall(30)
-            searchEntry:SetPlaceholderText(L("searchModules"))
-            local scroll = vgui.Create("DScrollPanel", modulesPanel)
-            scroll:Dock(FILL)
-            scroll:DockPadding(0, 0, 0, 10)
-            local canvas = scroll:GetCanvas()
-            local panels = {}
+        drawFunc = function(parent)
+            local sheet = vgui.Create("liaSheet", parent)
+            sheet:SetPlaceholderText(L("searchModules"))
             for _, moduleData in SortedPairs(lia.module.list) do
-                local hasDesc = moduleData.desc and moduleData.desc ~= ""
-                local height = hasDesc and 80 or 40
-                local modulePanel = vgui.Create("DPanel", canvas)
-                modulePanel:Dock(TOP)
-                modulePanel:DockMargin(10, 5, 10, 0)
-                modulePanel:SetTall(height)
-                modulePanel.infoText = moduleData.name:lower() .. " " .. (moduleData.desc or ""):lower()
-                modulePanel.Paint = function(pnl, w, h)
-                    derma.SkinHook("Paint", "Panel", pnl, w, h)
-                    draw.SimpleText(moduleData.name, "liaMediumFont", 20, 10, color_white)
-                    if moduleData.version then draw.SimpleText(tostring(moduleData.version), "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
-                    if hasDesc then draw.SimpleText(moduleData.desc, "liaSmallFont", 20, 45, color_white) end
-                end
+                local title = moduleData.name or ""
+                local desc = moduleData.desc or ""
+                local right = moduleData.version and tostring(moduleData.version) or ""
+                local row = sheet:AddTextRow({
+                    title = title,
+                    desc = desc,
+                    right = right
+                })
 
-                panels[#panels + 1] = modulePanel
+                row.filterText = (title .. " " .. desc .. " " .. right):lower()
             end
 
-            searchEntry.OnTextChanged = function(entry)
-                local q = entry:GetValue():lower()
-                for _, p in ipairs(panels) do
-                    p:SetVisible(q == "" or p.infoText:find(q, 1, true))
-                end
-
-                canvas:InvalidateLayout()
-                canvas:SizeToChildren(false, true)
-            end
+            sheet:Refresh()
         end
     })
 end)

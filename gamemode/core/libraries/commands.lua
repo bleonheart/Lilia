@@ -543,70 +543,52 @@ else
     end
 end
 
-hook.Add("CreateInformationButtons", "liaInformationCommands", function(pages)
+hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(pages)
     local client = LocalPlayer()
     table.insert(pages, {
         name = L("commands"),
-        drawFunc = function(panel)
-            local searchEntry = vgui.Create("DTextEntry", panel)
-            searchEntry:Dock(TOP)
-            searchEntry:SetTall(30)
-            searchEntry:SetPlaceholderText(L("searchCommands"))
-            local scroll = vgui.Create("DScrollPanel", panel)
-            scroll:Dock(FILL)
-            local iconLayout = vgui.Create("DIconLayout", scroll)
-            iconLayout:Dock(FILL)
-            iconLayout:SetSpaceY(5)
-            iconLayout:SetSpaceX(5)
-            iconLayout.PerformLayout = function(self)
-                local y = 0
-                local w = self:GetWide()
-                for _, child in ipairs(self:GetChildren()) do
-                    child:SetPos((w - child:GetWide()) * 0.5, y)
-                    y = y + child:GetTall() + self:GetSpaceY()
-                end
-
-                self:SetTall(y)
-            end
-
-            local function refresh()
-                iconLayout:Clear()
-                local filter = searchEntry:GetValue():lower()
+        drawFunc = function(parent)
+            local sheet = vgui.Create("liaSheet", parent)
+            sheet:SetPlaceholderText(L("searchCommands"))
+            local useList = false
+            if useList then
+                local data = {}
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
                     if isnumber(cmdName) then continue end
-                    local nameLower = cmdName:lower()
-                    local descLower = (cmdData.desc or ""):lower()
-                    local syntaxLower = (cmdData.syntax or ""):lower()
-                    if filter ~= "" and not (nameLower:find(filter) or descLower:find(filter) or syntaxLower:find(filter)) then continue end
-                    local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
+                    local hasAccess = lia.command.hasAccess(client, cmdName, cmdData)
                     if not hasAccess then continue end
-                    local hasDesc = cmdData.desc and cmdData.desc ~= ""
-                    local height = hasDesc and 80 or 40
-                    local commandPanel = vgui.Create("DPanel", iconLayout)
-                    commandPanel:SetSize(panel:GetWide(), height)
-                    commandPanel.Paint = function(self, w, h)
-                        derma.SkinHook("Paint", "Panel", self, w, h)
-                        local baseX = 20
-                        local text = "/" .. cmdName
-                        if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
-                        local privilegeText = privilege
-                        if privilegeText == "Global" then privilegeText = nil end
-                        if hasDesc then
-                            draw.SimpleText(text, "liaMediumFont", baseX, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                            draw.SimpleText(cmdData.desc, "liaSmallFont", baseX, 45, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                            if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, 45, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP) end
-                        else
-                            draw.SimpleText(text, "liaMediumFont", baseX, h * 0.5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                            if privilegeText then draw.SimpleText(privilegeText, "liaSmallFont", w - 20, h * 0.5, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER) end
-                        end
-                    end
+                    local text = "/" .. cmdName
+                    if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
+                    local desc = cmdData.desc or ""
+                    local priv = cmdData.privilege and cmdData.privilege ~= "Global" and cmdData.privilege or ""
+                    data[#data + 1] = {text, desc, priv}
                 end
 
-                iconLayout:InvalidateLayout(true)
+                sheet:AddListViewRow({
+                    columns = {L("command"), L("description"), L("privilege")},
+                    data = data,
+                    height = 300
+                })
+            else
+                for cmdName, cmdData in SortedPairs(lia.command.list) do
+                    if isnumber(cmdName) then continue end
+                    local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
+                    if not hasAccess then continue end
+                    local text = "/" .. cmdName
+                    if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
+                    local desc = cmdData.desc or ""
+                    local right = privilege and privilege ~= "Global" and privilege or ""
+                    local row = sheet:AddTextRow({
+                        title = text,
+                        desc = desc,
+                        right = right
+                    })
+
+                    row.filterText = (cmdName .. " " .. (cmdData.syntax or "") .. " " .. desc .. " " .. right):lower()
+                end
             end
 
-            searchEntry.OnTextChanged = refresh
-            refresh()
+            sheet:Refresh()
         end
     })
 end)
