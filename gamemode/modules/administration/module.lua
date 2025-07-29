@@ -6,21 +6,21 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Remove Warns",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Staff Permissions",
     },
     {
         Name = "Staff Permissions - Manage Prop Blacklist",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Staff Permissions",
     },
     {
         Name = "Staff Permissions - Access Configuration Menu",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Staff Permissions",
     },
     {
         Name = "Staff Permissions - Access Edit Configuration Menu",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Staff Permissions",
     },
 }

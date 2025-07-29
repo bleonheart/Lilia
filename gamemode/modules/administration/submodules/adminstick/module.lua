@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Use Admin Stick",
         MinAccess = "superadmin",
-        Category = MODULE.name,
+        Category = "Staff Permissions",
     },
 }
