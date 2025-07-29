@@ -5,7 +5,7 @@ MODULE.desc = "Adds persistent storage containers and player vaults that integra
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Spawn Storage",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
         Category = MODULE.name,
     }
 }

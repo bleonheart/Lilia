@@ -5,7 +5,7 @@ MODULE.desc = "Offers an in-game item spawner interface so administrators can qu
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Use Item Spawner",
-        MinAccess = "admin"
+        MinAccess = "admin",
         Category = MODULE.name,
     }
 }

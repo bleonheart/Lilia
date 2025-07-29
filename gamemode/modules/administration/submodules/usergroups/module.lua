@@ -5,7 +5,7 @@ MODULE.desc = "Lists CAMI usergroups."
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Manage UserGroups",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
         Category = MODULE.name,
     }
 }

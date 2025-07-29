@@ -5,7 +5,7 @@ MODULE.desc = "Adds the Admin Stick tool, allowing staff to quickly perform comm
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Use Admin Stick",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
         Category = MODULE.name,
     },
 }

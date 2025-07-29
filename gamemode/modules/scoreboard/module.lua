@@ -5,12 +5,12 @@ MODULE.desc = "Displays an immersive scoreboard showing recognized players, fact
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can Access Scoreboard Admin Options",
-        MinAccess = "admin"
+        MinAccess = "admin",
         Category = MODULE.name,
     },
     {
         Name = "Staff Permissions - Can Access Scoreboard Info Out Of Staff",
-        MinAccess = "admin"
+        MinAccess = "admin",
         Category = MODULE.name,
     },
 }

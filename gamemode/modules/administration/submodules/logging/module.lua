@@ -5,7 +5,7 @@ MODULE.desc = "Tracks administrative actions and server events, writing detailed
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can See Logs",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
         Category = MODULE.name,
     }
 }

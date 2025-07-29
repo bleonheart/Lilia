@@ -6,7 +6,7 @@ MODULE.desc = "Introduces a ticket system where players can submit help requests
 MODULE.Privileges = {
     {
         Name = "Staff Permissions - Always See Tickets",
-        MinAccess = "superadmin"
+        MinAccess = "superadmin",
         Category = MODULE.name,
     },
 }
