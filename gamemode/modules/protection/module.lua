@@ -6,5 +6,6 @@ MODULE.Privileges = {
     {
         Name = "Staff Permissions - Can See Alting Notifications",
         MinAccess = "admin"
+        Category = MODULE.name,
     },
 }
