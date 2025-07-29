@@ -559,6 +559,7 @@ LANGUAGE = {
     adminStickUpdateInvSizeName = "Обновить размер инв.",
     adminStickSetInvSizeName = "Установить размер инв.",
     adminStickTransferName = "Перевести игрока",
+    adminStickFactionWhitelistName = "Вайтлист фракции",
     adminStickUnwhitelistName = "Снять вайтлист",
     adminStickClassWhitelistName = "Вайтлист класса",
     adminStickClassUnwhitelistName = "Снять вайтлист класса",

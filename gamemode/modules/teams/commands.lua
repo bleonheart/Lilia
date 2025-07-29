@@ -194,6 +194,12 @@ lia.command.add("plywhitelist", {
     privilege = "Manage Whitelists",
     desc = "plyWhitelistDesc",
     syntax = "[player Name] [faction Faction]",
+    AdminStick = {
+        Name = "adminStickFactionWhitelistName",
+        Category = "characterManagement",
+        SubCategory = "adminStickSubCategorySetInfos",
+        Icon = "icon16/group_add.png"
+    },
     alias = {"factionwhitelist"},
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -218,6 +224,12 @@ lia.command.add("plyunwhitelist", {
     privilege = "Manage Whitelists",
     desc = "plyUnwhitelistDesc",
     syntax = "[player Name] [faction Faction]",
+    AdminStick = {
+        Name = "adminStickUnwhitelistName",
+        Category = "characterManagement",
+        SubCategory = "adminStickSubCategorySetInfos",
+        Icon = "icon16/group_delete.png"
+    },
     alias = {"factionunwhitelist"},
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])

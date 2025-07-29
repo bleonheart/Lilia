@@ -559,6 +559,7 @@ LANGUAGE = {
     adminStickUpdateInvSizeName = "Actualizar inventario",
     adminStickSetInvSizeName = "Fijar inventario",
     adminStickTransferName = "Transferir jugador",
+    adminStickFactionWhitelistName = "Whitelist facción",
     adminStickUnwhitelistName = "Quitar whitelist",
     adminStickClassWhitelistName = "Whitelist de clase",
     adminStickClassUnwhitelistName = "Quitar whitelist clase",
