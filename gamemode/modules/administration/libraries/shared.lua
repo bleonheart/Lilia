@@ -32,14 +32,14 @@ properties.Add("ToggleCarBlacklist", {
     MenuLabel = L("ToggleCarBlacklist"),
     Order = 901,
     MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("Manage Car Blacklist") end,
+    Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("Manage Vehicle Blacklist") end,
     Action = function(self, ent)
         self:MsgStart()
         net.WriteString(ent:GetModel())
         self:MsgEnd()
     end,
     Receive = function(_, _, ply)
-        if not ply:hasPrivilege("Manage Car Blacklist") then return end
+        if not ply:hasPrivilege("Manage Vehicle Blacklist") then return end
         local model = net.ReadString()
         local list = lia.data.get("carBlacklist", {})
         if table.HasValue(list, model) then

@@ -64,7 +64,12 @@ MODULE.Privileges = {
         Category = "Staff Permissions",
     },
     {
-        Name = "Manage Car Blacklist",
+        Name = "Manage Vehicle Blacklist",
+        MinAccess = "superadmin",
+        Category = "Staff Permissions",
+    },
+    {
+        Name = "Manage Entity Blacklist",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     },
