@@ -247,7 +247,11 @@ lia.command.add("plyunban", {
     onRun = function(client, arguments)
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
-            lia.admin.removeBan(steamid)
+            lia.db.updateTable({
+                _banStart = nil,
+                _banDuration = 0,
+                _banReason = ""
+            }, nil, "players", "_steamID = " .. steamid)
             client:notify("Player unbanned")
             lia.log.add(client, "plyUnban", steamid)
         end

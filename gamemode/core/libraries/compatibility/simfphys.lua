@@ -69,7 +69,7 @@ lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
     max = 20
 })
 
-CAMI.RegisterPrivilege({
+lia.admin.registerPrivilege({
     Name = "Staff Permissions - Can Edit Simfphys Cars",
     MinAccess = "superadmin"
 })
