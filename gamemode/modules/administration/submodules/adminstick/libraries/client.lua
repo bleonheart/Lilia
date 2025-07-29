@@ -329,15 +329,17 @@ local function IncludeCharacterManagement(tgt, menu, stores)
             if canWhitelist then
                 local facAdd, facRemove = {}, {}
                 for _, v in pairs(lia.faction.teams) do
-                    table.insert(facAdd, {
-                        name = v.name,
-                        cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.name)
-                    })
-
-                    table.insert(facRemove, {
-                        name = v.name,
-                        cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.name)
-                    })
+                    if not tgt:hasWhitelist(v.index) then
+                        table.insert(facAdd, {
+                            name = v.name,
+                            cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.name)
+                        })
+                    else
+                        table.insert(facRemove, {
+                            name = v.name,
+                            cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.name)
+                        })
+                    end
                 end
 
                 table.sort(facAdd, function(a, b) return a.name < b.name end)
@@ -361,15 +363,17 @@ local function IncludeCharacterManagement(tgt, menu, stores)
                 if classes and #classes > 0 then
                     local cw, cu = {}, {}
                     for _, c in ipairs(classes) do
-                        table.insert(cw, {
-                            name = c.name,
-                            cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                        })
-
-                        table.insert(cu, {
-                            name = c.name,
-                            cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                        })
+                        if not tgt:hasClassWhitelist(c.index) then
+                            table.insert(cw, {
+                                name = c.name,
+                                cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                            })
+                        else
+                            table.insert(cu, {
+                                name = c.name,
+                                cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                            })
+                        end
                     end
 
                     table.sort(cw, function(a, b) return a.name < b.name end)
