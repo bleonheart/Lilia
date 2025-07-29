@@ -271,35 +271,38 @@ local function IncludeCharacterManagement(tgt, menu, stores)
     local cl = LocalPlayer()
     local canFaction = cl:hasPrivilege("Commands - Manage Transfers")
     local canClass = cl:hasPrivilege("Commands - Manage Classes")
+    local canWhitelist = cl:hasPrivilege("Commands - Manage Whitelists")
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local char = tgt:getChar()
-    if char and canFaction then
+    if char then
         local facID = char:getFaction()
         local curName = L("unknown")
-        local facOptions = {}
         if facID then
-            for _, f in pairs(lia.faction.teams) do
-                if f.index == facID then
-                    curName = f.name
-                    for _, v in pairs(lia.faction.teams) do
-                        table.insert(facOptions, {
-                            name = v.name,
-                            cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(tgt), v.name)
-                        })
+            if canFaction then
+                local facOptions = {}
+                for _, f in pairs(lia.faction.teams) do
+                    if f.index == facID then
+                        curName = f.name
+                        for _, v in pairs(lia.faction.teams) do
+                            table.insert(facOptions, {
+                                name = v.name,
+                                cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(tgt), v.name)
+                            })
+                        end
+
+                        break
                     end
-
-                    break
                 end
-            end
 
-            table.sort(facOptions, function(a, b) return a.name < b.name end)
-            if #facOptions > 0 then
-                local fm = GetOrCreateSubMenu(charMenu, L("setFactionTitle", curName), stores)
-                for _, o in ipairs(facOptions) do
-                    fm:AddOption(L(o.name), function()
-                        cl:ConCommand(o.cmd)
-                        AdminStickIsOpen = false
-                    end):SetIcon("icon16/group.png")
+                table.sort(facOptions, function(a, b) return a.name < b.name end)
+                if #facOptions > 0 then
+                    local fm = GetOrCreateSubMenu(charMenu, L("setFactionTitle", curName), stores)
+                    for _, o in ipairs(facOptions) do
+                        fm:AddOption(L(o.name), function()
+                            cl:ConCommand(o.cmd)
+                            AdminStickIsOpen = false
+                        end):SetIcon("icon16/group.png")
+                    end
                 end
             end
 
@@ -320,6 +323,70 @@ local function IncludeCharacterManagement(tgt, menu, stores)
                         cl:ConCommand(o.cmd)
                         AdminStickIsOpen = false
                     end):SetIcon("icon16/user.png")
+                end
+            end
+
+            if canWhitelist then
+                local facAdd, facRemove = {}, {}
+                for _, v in pairs(lia.faction.teams) do
+                    table.insert(facAdd, {
+                        name = v.name,
+                        cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.name)
+                    })
+                    table.insert(facRemove, {
+                        name = v.name,
+                        cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.name)
+                    })
+                end
+
+                table.sort(facAdd, function(a, b) return a.name < b.name end)
+                table.sort(facRemove, function(a, b) return a.name < b.name end)
+                local fw = GetOrCreateSubMenu(charMenu, "adminStickFactionWhitelistName", stores)
+                for _, o in ipairs(facAdd) do
+                    fw:AddOption(L(o.name), function()
+                        cl:ConCommand(o.cmd)
+                        AdminStickIsOpen = false
+                    end):SetIcon("icon16/group_add.png")
+                end
+
+                local fu = GetOrCreateSubMenu(charMenu, "adminStickUnwhitelistName", stores)
+                for _, o in ipairs(facRemove) do
+                    fu:AddOption(L(o.name), function()
+                        cl:ConCommand(o.cmd)
+                        AdminStickIsOpen = false
+                    end):SetIcon("icon16/group_delete.png")
+                end
+
+                if classes and #classes > 0 then
+                    local cw, cu = {}, {}
+                    for _, c in ipairs(classes) do
+                        table.insert(cw, {
+                            name = c.name,
+                            cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                        })
+                        table.insert(cu, {
+                            name = c.name,
+                            cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                        })
+                    end
+
+                    table.sort(cw, function(a, b) return a.name < b.name end)
+                    table.sort(cu, function(a, b) return a.name < b.name end)
+                    local cwm = GetOrCreateSubMenu(charMenu, "adminStickClassWhitelistName", stores)
+                    for _, o in ipairs(cw) do
+                        cwm:AddOption(L(o.name), function()
+                            cl:ConCommand(o.cmd)
+                            AdminStickIsOpen = false
+                        end):SetIcon("icon16/user_add.png")
+                    end
+
+                    local cum = GetOrCreateSubMenu(charMenu, "adminStickClassUnwhitelistName", stores)
+                    for _, o in ipairs(cu) do
+                        cum:AddOption(L(o.name), function()
+                            cl:ConCommand(o.cmd)
+                            AdminStickIsOpen = false
+                        end):SetIcon("icon16/user_delete.png")
+                    end
                 end
             end
         end
