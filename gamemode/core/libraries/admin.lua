@@ -640,19 +640,55 @@ function lia.administration.execCommand(cmd, victim, dur, reason)
     end
 end
 
-concommand.Add("plysetgroup", function(ply, _, args)
-    if not IsValid(ply) then
-        local target = lia.command.findPlayer(client, args[1])
-        if IsValid(target) then
-            if lia.administration.groups[args[2]] then
-                lia.administration.setPlayerGroup(target, args[2])
-                lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s'", target:Name(), args[2]))
-                target:notifyLocalized("yourGroupSet", args[2])
-            else
-                lia.admin("Error", "Usergroup not found.")
-            end
-        else
-            lia.admin("Error", "Specified player not found.")
-        end
+local function dropCAMIGroup(n)
+    if not (CAMI and CAMI.GetUsergroups and CAMI.UnregisterUsergroup) then return end
+    local g = CAMI.GetUsergroups() or {}
+    if g[n] then CAMI.UnregisterUsergroup(n) end
+end
+
+hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g)
+    lia.administration.groups[g.Name] = buildDefaultTable(g.Name)
+    if SERVER then
+        ensureCAMIGroup(g.Name, g.Inherits or "user")
+        lia.administration.save(true)
     end
+end)
+
+hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g)
+    lia.administration.groups[g.Name] = nil
+    if SERVER then
+        dropCAMIGroup(g.Name)
+        lia.administration.save(true)
+    end
+end)
+
+hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv)
+    if not pv or not pv.Name then return end
+    lia.administration.privileges[pv.Name] = {
+        Name = pv.Name,
+        MinAccess = pv.MinAccess or "user",
+        Category = pv.Category or "Unassigned"
+    }
+
+    for g in pairs(lia.administration.groups) do
+        if CAMI.UsergroupInherits(g, pv.MinAccess or "user") then lia.administration.groups[g][pv.Name] = true end
+    end
+
+    if SERVER then lia.administration.save(true) end
+end)
+
+hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv)
+    if not pv or not pv.Name then return end
+    lia.administration.privileges[pv.Name] = nil
+    for _, p in pairs(lia.administration.groups) do
+        p[pv.Name] = nil
+    end
+
+    if SERVER then lia.administration.save(true) end
+end)
+
+hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new)
+    if not IsValid(ply) then return end
+    if not SERVER then return end
+    lia.db.query(string.format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(new), ply:SteamID64()))
 end)

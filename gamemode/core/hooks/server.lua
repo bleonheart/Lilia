@@ -899,6 +899,23 @@ concommand.Add("list_entities", function(client)
     end
 end)
 
+concommand.Add("plysetgroup", function(ply, _, args)
+    if not IsValid(ply) then
+        local target = lia.command.findPlayer(client, args[1])
+        if IsValid(target) then
+            if lia.administration.groups[args[2]] then
+                lia.administration.setPlayerGroup(target, args[2])
+                lia.admin("PlySetGroup", string.format("%s's usergroup set to '%s'", target:Name(), args[2]))
+                target:notifyLocalized("yourGroupSet", args[2])
+            else
+                lia.admin("Error", "Usergroup not found.")
+            end
+        else
+            lia.admin("Error", "Specified player not found.")
+        end
+    end
+end)
+
 local networkStrings = {"AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "BinaryQuestionRequest", "ButtonRequest", "ChangeAttribute", "CheckHack", "CheckSeed", "CreateTableUI", "CurTimeSync", "DisplayCharList", "KickCharacter", "NetStreamDS", "OpenInvMenu", "OptionsRequest", "PlayerWarnings", "RegenChat", "RequestDropdown", "RequestPlayerWarnings", "RequestRemoveWarning", "RequestStaffActions", "RequestTicketClaims", "RosterData", "RosterRequest", "RunLocalOption", "RunOption", "ServerChatAddText", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StaffActions", "StringRequest", "TicketClaims", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "actBar", "attrib", "blindFade", "blindTarget", "cMsg", "cfgList", "cfgSet", "charInfo", "charKick", "charSet", "charVar", "classUpdate", "cmd", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "liaBigTableChunk", "liaBigTableDone", "liaCharBrowserDone", "liaCharBrowserRequest", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCharacterData", "liaCharacterInvList", "liaCmdArgPrompt", "liaDBTableDataChunk", "liaDBTableDataDone", "liaDBTables", "liaDBTablesRequest", "liaData", "liaDataSync", "liaGroupsAdd", "liaGroupsDataDone", "liaGroupsRemove", "liaGroupsRename", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaPlayersDataDone", "liaPlayersRequest", "liaRequestTableData", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "lia_managesitrooms_action", "managesitrooms", "msg", "nDel", "nLcl", "nVar", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "removeF1", "request_respawn", "rgnDone", "send_logs", "send_logs_request", "seqSet", "setWaypoint", "setWaypointWithLogo", "trunkInitStorage", "updateAdminGroups"}
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
