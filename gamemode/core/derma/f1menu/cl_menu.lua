@@ -10,7 +10,7 @@ function PANEL:Init()
     self.noAnchor = CurTime() + 0.4
     self.anchorMode = true
     self.invKey = lia.keybind.get("Open Inventory", KEY_I)
-    local btnW, btnH, spacing = 150, 40, 20
+    local baseBtnW, btnH, spacing = 150, 40, 20
     local topBar = self:Add("DPanel")
     topBar:Dock(TOP)
     topBar:SetTall(70)
@@ -66,7 +66,10 @@ function PANEL:Init()
     tabsContainer:Dock(FILL)
     function tabsContainer:PerformLayout(w, h)
         local btns = self:GetChildren()
-        local totalW = #btns * btnW + (#btns - 1) * spacing
+        local totalW = -spacing
+        for _, btn in ipairs(btns) do
+            totalW = totalW + (btn.calcW or baseBtnW) + spacing
+        end
         local overflow = totalW - w
         if overflow > 0 then
             leftArrow:SetVisible(true)
@@ -78,20 +81,22 @@ function PANEL:Init()
             self.tabOffset = 0
         end
 
-        local center = (#btns + 1) / 2
-        for i, btn in ipairs(btns) do
-            btn:SetSize(btnW, btnH)
-            btn:SetPos(w * 0.5 - btnW * 0.5 + (i - center) * (btnW + spacing) + self.tabOffset, (h - btnH) * 0.5)
+        local x = (w - totalW) * 0.5 + (self.tabOffset or 0)
+        for _, btn in ipairs(btns) do
+            local bW = btn.calcW or baseBtnW
+            btn:SetSize(bW, btnH)
+            btn:SetPos(x, (h - btnH) * 0.5)
+            x = x + bW + spacing
         end
     end
 
     leftArrow.DoClick = function()
-        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + btnW + spacing
+        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + baseBtnW + spacing
         tabsContainer:InvalidateLayout()
     end
 
     rightArrow.DoClick = function()
-        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - (btnW + spacing)
+        tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - (baseBtnW + spacing)
         tabsContainer:InvalidateLayout()
     end
 
@@ -161,6 +166,9 @@ function PANEL:addTab(name, callback)
     local tab = self.tabs:Add("liaSmallButton")
     tab:SetText(L(name))
     tab:SetFont("liaMediumFont")
+    surface.SetFont(tab:GetFont())
+    local tw = select(1, surface.GetTextSize(tab:GetText()))
+    tab.calcW = math.max(baseBtnW, tw + 20)
     tab:SetTextColor(colors.text)
     tab:SetExpensiveShadow(1, Color(0, 0, 0, 100))
     tab:SetContentAlignment(5)
