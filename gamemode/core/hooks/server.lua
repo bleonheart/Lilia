@@ -402,6 +402,24 @@ function GM:ShutDown()
     lia.admin.save()
 end
 
+function GM:PlayerAuthed(client, steamid)
+    local steam64 = util.SteamIDTo64(steamid)
+    if CAMI and CAMI.GetUsergroup and CAMI.GetUsergroup(client:GetUserGroup()) and client:GetUserGroup() ~= "user" then
+        lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(client:GetUserGroup()), steam64))
+        return
+    end
+
+    lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", steam64), function(data)
+        local group = istable(data) and data[1] and data[1]._userGroup
+        if not group or group == "" then
+            group = "user"
+            lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(group), steam64))
+        end
+
+        client:SetUserGroup(group)
+    end)
+end
+
 function GM:PlayerDisconnected(client)
     client:saveLiliaData()
     local character = client:getChar()
@@ -937,51 +955,6 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     return canHear, canHear
 end
 
-local hl2Weapons = {"weapon_crowbar", "weapon_stunstick", "weapon_pistol", "weapon_357", "weapon_smg1", "weapon_ar2", "weapon_shotgun", "weapon_crossbow", "weapon_rpg"}
-lia.botCounter = lia.botCounter or 0
-local function NextBotName()
-    lia.botCounter = lia.botCounter + 1
-    return string.format("Bot%02d", lia.botCounter)
-end
-
-local function SpawnBot()
-    player.CreateNextBot(NextBotName())
-end
-
-local function SpawnArmedBot()
-    local bot = player.CreateNextBot(NextBotName())
-    if IsValid(bot) then
-        local wep = hl2Weapons[math.random(#hl2Weapons)]
-        bot:Give(wep)
-        bot:SelectWeapon(wep)
-    end
-end
-
-concommand.Add("bots", function(ply)
-    if IsValid(ply) then return end
-    local maxPlayers = game.MaxPlayers()
-    local currentCount = player.GetCount()
-    local toSpawn = maxPlayers - currentCount
-    if toSpawn <= 0 then return end
-    timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnBot() end)
-end)
-
-concommand.Add("armed_bot", function(ply)
-    if IsValid(ply) then return end
-    SpawnArmedBot()
-end)
-
-concommand.Add("armed_bots", function(ply)
-    if IsValid(ply) then return end
-    local maxPlayers = game.MaxPlayers()
-    local currentCount = player.GetCount()
-    local toSpawn = maxPlayers - currentCount
-    if toSpawn <= 0 then return end
-    timer.Remove("BotsSpawnTimer")
-    timer.Create("BotsSpawnTimer", 1.5, toSpawn, function() SpawnArmedBot() end)
-end)
-
 concommand.Add("kickbots", function()
     for _, bot in player.Iterator() do
         if bot:IsBot() then lia.command.execAdminCommand("kick", bot, nil, L("allBotsKicked")) end
@@ -996,6 +969,16 @@ concommand.Add("stopsoundall", function(client)
     else
         client:notifyLocalized("mustSuperAdminStopSound")
     end
+end)
+
+concommand.Add("bots", function()
+    timer.Create("Bots_Add_Timer", 2, 0, function()
+        if #player.GetAll() < game.MaxPlayers() then
+            game.ConsoleCommand("bot\n")
+        else
+            timer.Remove("Bots_Add_Timer")
+        end
+    end)
 end)
 
 concommand.Add("list_entities", function(client)
