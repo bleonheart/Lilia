@@ -174,6 +174,7 @@ LANGUAGE = {
     searchEntities = "Поиск сущностей...",
     searchOptions = "Поиск опций...",
     commands = "Команды",
+    roster = "Roster",
     classes = "Классы",
     searchFlags = "Поиск флагов…",
     searchCommands = "Поиск команд…",

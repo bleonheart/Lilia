@@ -25,3 +25,27 @@ function MODULE:CreateMenuButtons(tabs)
         tabs["classes"] = function(panel) panel:Add("liaClasses") end
     end
 end
+
+function MODULE:CreateInformationButtons(pages)
+    local client = LocalPlayer()
+    local character = client:getChar()
+    if not character then return end
+    local isLeader = client:IsSuperAdmin() or character:hasFlags("V")
+    if not isLeader then return end
+
+    table.insert(pages, {
+        name = L("roster"),
+        drawFunc = function(parent)
+            local sheet = vgui.Create("liaSheet", parent)
+            sheet:SetPlaceholderText(L("search"))
+            lia.gui.rosterSheet = sheet
+
+            net.Start("RequestRoster")
+            net.SendToServer()
+        end
+    })
+end
+
+hook.Add("F1MenuClosed", "liaRosterSheetCleanup", function()
+    lia.gui.rosterSheet = nil
+end)
