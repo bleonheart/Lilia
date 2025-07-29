@@ -13,7 +13,7 @@ function lia.command.add(command, data)
     if superAdminOnly or adminOnly then
         local privilegeName = "Commands - " .. (isstring(data.privilege) and data.privilege or command)
         if not CAMI.GetPrivilege(privilegeName) then
-            CAMI.RegisterPrivilege({
+            lia.admin.registerPrivilege({
                 Name = privilegeName,
                 MinAccess = superAdminOnly and "superadmin" or "admin"
             })
