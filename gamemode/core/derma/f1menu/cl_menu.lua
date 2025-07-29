@@ -11,6 +11,7 @@ function PANEL:Init()
     self.anchorMode = true
     self.invKey = lia.keybind.get("Open Inventory", KEY_I)
     local baseBtnW, btnH, spacing = 150, 40, 20
+    self.baseBtnW = baseBtnW
     local topBar = self:Add("DPanel")
     topBar:Dock(TOP)
     topBar:SetTall(70)
@@ -168,7 +169,7 @@ function PANEL:addTab(name, callback)
     tab:SetFont("liaMediumFont")
     surface.SetFont(tab:GetFont())
     local tw = select(1, surface.GetTextSize(tab:GetText()))
-    tab.calcW = math.max(baseBtnW, tw + 20)
+    tab.calcW = math.max(self.baseBtnW or 150, tw + 20)
     tab:SetTextColor(colors.text)
     tab:SetExpensiveShadow(1, Color(0, 0, 0, 100))
     tab:SetContentAlignment(5)
