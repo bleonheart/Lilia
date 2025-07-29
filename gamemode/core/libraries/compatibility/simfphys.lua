@@ -70,11 +70,11 @@ lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
 })
 
 lia.admin.registerPrivilege({
-    Name = "Staff Permissions - Can Edit Simfphys Cars",
+    Name = "Can Edit Simfphys Cars",
     MinAccess = "superadmin",
     Category = "Simfphys"
 })
 
 hook.Add("simfphysPhysicsCollide", "SIMFPHYS_simfphysPhysicsCollide", function() return true end)
 hook.Add("IsSuitableForTrunk", "SIMFPHYS_IsSuitableForTrunk", function(vehicle) if IsValid(vehicle) and vehicle:isSimfphysCar() then return true end end)
-hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent) if property == "editentity" and ent:isSimfphysCar() then return client:hasPrivilege("Staff Permissions - Can Edit Simfphys Cars") end end)
+hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent) if property == "editentity" and ent:isSimfphysCar() then return client:hasPrivilege("Can Edit Simfphys Cars") end end)

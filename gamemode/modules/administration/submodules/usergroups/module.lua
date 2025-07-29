@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Lists usergroups."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Manage UserGroups",
+        Name = "Manage UserGroups",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     }
@@ -36,7 +36,7 @@ if SERVER then
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Staff Permissions - Manage UserGroups")
+        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups")
     end
 
     local function getPrivList()
@@ -423,7 +423,7 @@ else
     end)
 
     function MODULE:CreateMenuButtons(tabs)
-        if IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Staff Permissions - Manage UserGroups") then
+        if IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups") then
             tabs[L("userGroups")] = function(parent)
                 lia.gui.usergroups = parent
                 parent:Clear()

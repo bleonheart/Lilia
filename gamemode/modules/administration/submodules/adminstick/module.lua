@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Adds the Admin Stick tool, allowing staff to quickly perform common moderation actions on players and entities with a single click."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Use Admin Stick",
+        Name = "Use Admin Stick",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     },

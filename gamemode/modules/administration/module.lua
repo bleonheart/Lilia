@@ -4,22 +4,22 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "Provides a suite of administrative commands, configuration menus, and moderation utilities so staff can effectively manage the server."
 MODULE.Privileges = {
     {
-        Name = "Staff Permissions - Can Remove Warns",
+        Name = "Can Remove Warns",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     },
     {
-        Name = "Staff Permissions - Manage Prop Blacklist",
+        Name = "Manage Prop Blacklist",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     },
     {
-        Name = "Staff Permissions - Access Configuration Menu",
+        Name = "Access Configuration Menu",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     },
     {
-        Name = "Staff Permissions - Access Edit Configuration Menu",
+        Name = "Access Edit Configuration Menu",
         MinAccess = "superadmin",
         Category = "Staff Permissions",
     },

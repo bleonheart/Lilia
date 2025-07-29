@@ -115,7 +115,7 @@ function PANEL:openInspect()
         end
     end
 
-    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("Staff Permissions - Can Access Item Informations") then
+    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("Can Access Item Informations") then
         local cr = self.ent:GetCreator()
         if IsValid(cr) then drawLine(scroll, L("spawner"), cr:Name() .. " - " .. cr:SteamID()) end
     end
