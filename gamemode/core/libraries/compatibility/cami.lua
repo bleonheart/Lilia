@@ -1,0 +1,5 @@
+hook.Add("CAMI.OnUsergroupRegistered", "liaSyncAdminGroupAdd", function(g) end)
+hook.Add("CAMI.OnUsergroupUnregistered", "liaSyncAdminGroupRemove", function(g) end)
+hook.Add("CAMI.OnPrivilegeRegistered", "liaSyncAdminPrivilegeAdd", function(pv) end)
+hook.Add("CAMI.OnPrivilegeUnregistered", "liaSyncAdminPrivilegeRemove", function(pv) end)
+hook.Add("CAMI.PlayerUsergroupChanged", "liaSyncAdminPlayerGroup", function(ply, old, new) end)
