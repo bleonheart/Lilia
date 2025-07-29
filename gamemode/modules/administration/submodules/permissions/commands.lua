@@ -471,7 +471,7 @@ lia.command.add("flaggive", {
         if not flags then
             local available = ""
             for k in SortedPairs(lia.flag.list) do
-                if not target:getChar():hasFlags(k) then available = available .. k .. " " end
+                if not target:hasFlags(k) then available = available .. k .. " " end
             end
 
             available = available:Trim()
@@ -482,7 +482,7 @@ lia.command.add("flaggive", {
             return client:requestString(L("giveFlagsMenu"), L("flagGiveDesc"), function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
         end
 
-        target:getChar():giveFlags(flags)
+        target:giveFlags(flags)
         client:notifyLocalized("flagGive", client:Name(), flags, target:Name())
         lia.log.add(client, "flagGive", target:Name(), flags)
     end,
@@ -507,9 +507,8 @@ lia.command.add("flaggiveall", {
             return
         end
 
-        local character = target:getChar()
         for k, _ in SortedPairs(lia.flag.list) do
-            if not character:hasFlags(k) then character:giveFlags(k) end
+            if not target:hasFlags(k) then target:giveFlags(k) end
         end
 
         client:notifyLocalized("gaveAllFlags")
@@ -535,14 +534,13 @@ lia.command.add("flagtakeall", {
             return
         end
 
-        local character = target:getChar()
-        if not character then
+        if not target:getChar() then
             client:notifyLocalized("invalidTarget")
             return
         end
 
         for k, _ in SortedPairs(lia.flag.list) do
-            if character:hasFlags(k) then character:takeFlags(k) end
+            if target:hasFlags(k) then target:takeFlags(k) end
         end
 
         client:notifyLocalized("tookAllFlags")
@@ -564,11 +562,11 @@ lia.command.add("flagtake", {
 
         local flags = arguments[2]
         if not flags then
-            local currentFlags = target:getChar():getFlags()
+            local currentFlags = target:getFlags()
             return client:requestString(L("takeFlagsMenu"), L("flagTakeDesc"), function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
         end
 
-        target:getChar():takeFlags(flags)
+        target:takeFlags(flags)
         client:notifyLocalized("flagTake", client:Name(), flags, target:Name())
         lia.log.add(client, "flagTake", target:Name(), flags)
     end,
@@ -1407,7 +1405,7 @@ lia.command.add("checkflags", {
             return
         end
 
-        local flags = target:getChar():getFlags()
+        local flags = target:getFlags()
         if flags and #flags > 0 then
             client:ChatPrint(L("charFlags", target:Name(), table.concat(flags, ", ")))
         else

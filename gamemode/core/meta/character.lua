@@ -53,14 +53,15 @@ function characterMeta:hasMoney(amount)
 end
 
 function characterMeta:getFlags()
-    return self:getData("f", "")
+    local ply = self:getPlayer()
+    if IsValid(ply) then return ply:getFlags() end
+    return ""
 end
 
 function characterMeta:hasFlags(flags)
-    for i = 1, #flags do
-        if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
-    end
-    return hook.Run("CharHasFlags", self, flags) or false
+    local ply = self:getPlayer()
+    if IsValid(ply) then return ply:hasFlags(flags) end
+    return false
 end
 
 function characterMeta:getItemWeapon(requireEquip)
@@ -340,34 +341,18 @@ if SERVER then
     end
 
     function characterMeta:setFlags(flags)
-        self:setData("f", flags)
+        local ply = self:getPlayer()
+        if IsValid(ply) then ply:setFlags(flags) end
     end
 
     function characterMeta:giveFlags(flags)
-        local addedFlags = ""
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            local info = lia.flag.list[flag]
-            if info then
-                if not self:hasFlags(flag) then addedFlags = addedFlags .. flag end
-                if info.callback then info.callback(self:getPlayer(), true) end
-            end
-        end
-
-        if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
+        local ply = self:getPlayer()
+        if IsValid(ply) then ply:giveFlags(flags) end
     end
 
     function characterMeta:takeFlags(flags)
-        local oldFlags = self:getFlags()
-        local newFlags = oldFlags
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            local info = lia.flag.list[flag]
-            if info and info.callback then info.callback(self:getPlayer(), false) end
-            newFlags = newFlags:gsub(flag, "")
-        end
-
-        if newFlags ~= oldFlags then self:setFlags(newFlags) end
+        local ply = self:getPlayer()
+        if IsValid(ply) then ply:takeFlags(flags) end
     end
 
     function characterMeta:save(callback)

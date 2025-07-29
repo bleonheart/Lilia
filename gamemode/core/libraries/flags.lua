@@ -10,13 +10,11 @@ end
 
 if SERVER then
     function lia.flag.onSpawn(client)
-        if client:getChar() then
-            local flags = client:getChar():getFlags()
-            for i = 1, #flags do
-                local flag = flags:sub(i, i)
-                local info = lia.flag.list[flag]
-                if info and info.callback then info.callback(client, true) end
-            end
+        local flags = client:getFlags()
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            local info = lia.flag.list[flag]
+            if info and info.callback then info.callback(client, true) end
         end
     end
 end
@@ -75,7 +73,7 @@ hook.Add("CreateInformationButtons", "liaInformationFlags", function(pages)
                     flagPanel:DockMargin(10, 5, 10, 0)
                     flagPanel:SetTall(height)
                     flagPanel.Paint = function(pnl, w, h)
-                        local hasFlag = client:getChar():hasFlags(flagName)
+                    local hasFlag = client:hasFlags(flagName)
                         derma.SkinHook("Paint", "Panel", pnl, w, h)
                         draw.SimpleText(L("flagLabel", flagName), "liaMediumFont", 20, 10, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                         local icon = hasFlag and "checkbox.png" or "unchecked.png"
