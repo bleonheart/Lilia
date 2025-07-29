@@ -62,7 +62,7 @@ end
 
 function lia.admin.createGroup(groupName, info)
     if lia.admin.groups[groupName] then
-        Error("[Lilia Administration] This usergroup already exists!\n")
+        lia.error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
 
@@ -86,12 +86,12 @@ end
 
 function lia.admin.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
-        Error("[Lilia Administration] The base usergroups cannot be removed!\n")
+        lia.error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
 
     if not lia.admin.groups[groupName] then
-        Error("[Lilia Administration] This usergroup doesn't exist!\n")
+        lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
         return
     end
 
@@ -105,7 +105,7 @@ end
 if SERVER then
     function lia.admin.addPermission(groupName, permission)
         if not lia.admin.groups[groupName] then
-            Error("[Lilia Administration] This usergroup doesn't exist!\n")
+            lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
@@ -119,7 +119,7 @@ if SERVER then
 
     function lia.admin.removePermission(groupName, permission)
         if not lia.admin.groups[groupName] then
-            Error("[Lilia Administration] This usergroup doesn't exist!\n")
+            lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
