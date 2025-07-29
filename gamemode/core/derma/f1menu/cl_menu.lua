@@ -110,7 +110,10 @@ function PANEL:Init()
         tabKeys[#tabKeys + 1] = k
     end
 
-    table.sort(tabKeys, function(a, b) return #L(a) < #L(b) end)
+    table.sort(tabKeys, function(a, b)
+        local aName, bName = tostring(L(a)):lower(), tostring(L(b)):lower()
+        return aName < bName
+    end)
     self.tabList = {}
     for _, key in ipairs(tabKeys) do
         local cb = btnDefs[key]
