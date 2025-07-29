@@ -154,14 +154,14 @@ net.Receive("DisplayCharList", function()
         end
 
         listView.OnRowRightClick = function(_, _, ln)
-            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Commands - Unban Offline") or LocalPlayer():hasPrivilege("Commands - Ban Offline")) then
+            if ln and ln.CharID and (LocalPlayer():hasPrivilege("Unban Offline") or LocalPlayer():hasPrivilege("Ban Offline")) then
                 local dMenu = DermaMenu()
-                if LocalPlayer():hasPrivilege("Commands - Unban Offline") then
+                if LocalPlayer():hasPrivilege("Unban Offline") then
                     local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt1:SetIcon("icon16/cancel.png")
                 end
 
-                if LocalPlayer():hasPrivilege("Commands - Ban Offline") then
+                if LocalPlayer():hasPrivilege("Ban Offline") then
                     local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt2:SetIcon("icon16/accept.png")
                 end
