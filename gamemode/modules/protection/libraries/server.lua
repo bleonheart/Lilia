@@ -101,19 +101,22 @@ function MODULE:PlayerAuthed(client, steamid)
         return
     end
 
-    local banRecord = lia.admin.isBanned(ownerSteamID64)
-    if banRecord then
-        if lia.admin.hasBanExpired(ownerSteamID64) then
-            lia.admin.removeBan(ownerSteamID64)
-        else
-            local duration = 0
-            if banRecord.duration > 0 then duration = math.max(math.ceil((banRecord.start + banRecord.duration - os.time()) / 60), 0) end
-            lia.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, duration)
-            lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
-            lia.log.add(nil, "altBanned", steamName, steamID)
-            return
+    lia.db.selectOne({"_banStart", "_banDuration", "_banReason"}, "players", "_steamID = " .. ownerSteamID64):next(function(banRecord)
+        if not IsValid(client) then return end
+        local banStart = tonumber(banRecord and banRecord._banStart or 0) or 0
+        if banStart > 0 then
+            local duration = tonumber(banRecord._banDuration or 0)
+            if duration > 0 and banStart + duration <= os.time() then
+                lia.db.updateTable({_banStart = nil, _banDuration = 0, _banReason = ""}, nil, "players", "_steamID = " .. ownerSteamID64)
+            else
+                local timeLeft = 0
+                if duration > 0 then timeLeft = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end
+                lia.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, timeLeft)
+                lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
+                lia.log.add(nil, "altBanned", steamName, steamID)
+            end
         end
-    end
+    end)
 
     if lia.config.get("AltsDisabled", false) and client:IsFamilySharedAccount() then
         lia.applyPunishment(client, L("familySharingDisabled"), true, false)

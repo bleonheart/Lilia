@@ -230,13 +230,6 @@ local logTypeMap = {
 }
 
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
-    local banRecord = lia.admin.isBanned(steamID64)
-    local banExpired = lia.admin.hasBanExpired(steamID64)
-    if banRecord then
-        if not banExpired then return false, L("banMessage", banRecord.duration / 60, banRecord.reason) end
-        lia.admin.removeBan(steamID64)
-    end
-
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID64, playerName, serverPassword, clientPassword)
         lia.information(L("passwordMismatchInfo", playerName, steamID64, serverPassword, clientPassword))
@@ -408,15 +401,28 @@ function GM:PlayerAuthed(client, steamid)
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(client:GetUserGroup()), steam64))
         return
     end
-
-    lia.db.query(Format("SELECT _userGroup FROM lia_players WHERE _steamID = %s", steam64), function(data)
-        local group = istable(data) and data[1] and data[1]._userGroup
+    lia.db.selectOne({"_userGroup", "_banStart", "_banDuration", "_banReason"}, "players", "_steamID = " .. steam64):next(function(data)
+        if not IsValid(client) then return end
+        local group = data and data._userGroup
         if not group or group == "" then
             group = "user"
             lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(group), steam64))
         end
 
         client:SetUserGroup(group)
+
+        local banStart = tonumber(data and data._banStart or 0) or 0
+        if banStart > 0 then
+            local duration = tonumber(data._banDuration or 0)
+            local reason = data._banReason or L("genericReason")
+            if duration > 0 and banStart + duration <= os.time() then
+                lia.db.updateTable({_banStart = nil, _banDuration = 0, _banReason = ""}, nil, "players", "_steamID = " .. steam64)
+            else
+                local minutes = 0
+                if duration > 0 then minutes = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end
+                client:Kick(L("banMessage", minutes, reason))
+            end
+        end
     end)
 end
 

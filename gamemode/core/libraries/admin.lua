@@ -1,6 +1,5 @@
 ﻿lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
-lia.admin.banList = lia.admin.banList or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.DefaultGroups = {
     user = true,
@@ -151,39 +150,6 @@ if SERVER then
         lia.db.query(Format("UPDATE lia_players SET _userGroup = '%s' WHERE _steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
     end
 
-    function lia.admin.addBan(steamid, reason, duration)
-        if not steamid then Error("[Lilia Administration] lia.admin.addBan: no steam id specified!") end
-        local banStart = os.time()
-        lia.admin.banList[steamid] = {
-            reason = reason or L("genericReason"),
-            start = banStart,
-            duration = (duration or 0) * 60
-        }
-
-        lia.db.insertTable({
-            _steamID = "\"" .. steamid .. "\"",
-            _banStart = banStart,
-            _banDuration = (duration or 0) * 60,
-            _reason = reason or L("genericReason")
-        }, nil, "bans")
-    end
-
-    function lia.admin.removeBan(steamid)
-        if not steamid then Error("[Lilia Administration] lia.admin.removeBan: no steam id specified!") end
-        lia.admin.banList[steamid] = nil
-        lia.db.query(Format("DELETE FROM lia_bans WHERE _steamID = '%s'", lia.db.escape(steamid)), function() MsgC(Color(0, 200, 0), "[Lilia Administration] Ban removed.\n") end)
-    end
-
-    function lia.admin.isBanned(steamid)
-        return lia.admin.banList[steamid] or false
-    end
-
-    function lia.admin.hasBanExpired(steamid)
-        local ban = lia.admin.banList[steamid]
-        if not ban then return true end
-        if ban.duration == 0 then return false end
-        return ban.start + ban.duration <= os.time()
-    end
 end
 
 function lia.admin.execCommand(cmd, victim, dur, reason)
@@ -267,22 +233,6 @@ function lia.admin.execCommand(cmd, victim, dur, reason)
     end
 end
 
-hook.Add("OnDatabaseLoaded", "lia_LoadBans", function()
-    lia.db.query("SELECT * FROM lia_bans", function(data)
-        if istable(data) then
-            local bans = {}
-            for _, ban in pairs(data) do
-                bans[ban._steamID] = {
-                    reason = ban._reason,
-                    start = ban._banStart,
-                    duration = ban._banDuration
-                }
-            end
-
-            lia.admin.banList = bans
-        end
-    end)
-end)
 
 concommand.Add("plysetgroup", function(ply, _, args)
     if not IsValid(ply) then

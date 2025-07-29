@@ -321,6 +321,9 @@ function lia.db.loadTables()
         lia.db.fieldExists("lia_players", "_lastIP"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastIP VARCHAR(64)"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_lastOnline"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _lastOnline INTEGER"):catch(ignore) end end)
         lia.db.fieldExists("lia_players", "_totalOnlineTime"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _totalOnlineTime FLOAT"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_banStart"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banStart INTEGER"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_banDuration"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banDuration INTEGER"):catch(ignore) end end)
+        lia.db.fieldExists("lia_players", "_banReason"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_players ADD COLUMN _banReason TEXT"):catch(ignore) end end)
         lia.db.fieldExists("lia_items", "_quantity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_items ADD COLUMN _quantity INTEGER"):catch(ignore) end end)
         lia.db.fieldExists("lia_data", "_data"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_data ADD COLUMN _data TEXT"):catch(ignore) end end)
         lia.db.addDatabaseFields()
@@ -339,7 +342,10 @@ function lia.db.loadTables()
                 _data varchar,
                 _lastIP varchar,
                 _lastOnline integer,
-                _totalOnlineTime float
+                _totalOnlineTime float,
+                _banStart integer,
+                _banDuration integer,
+                _banReason text
             );
             CREATE TABLE IF NOT EXISTS lia_chardata (
                 _charID INTEGER NOT NULL,
@@ -518,6 +524,9 @@ function lia.db.loadTables()
                 `_lastIP` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
                 `_lastOnline` INT(32) NULL DEFAULT 0,
                 `_totalOnlineTime` FLOAT NULL DEFAULT 0,
+                `_banStart` INT(32) NULL DEFAULT NULL,
+                `_banDuration` INT(32) NULL DEFAULT 0,
+                `_banReason` TEXT NULL COLLATE 'utf8mb4_general_ci',
                 PRIMARY KEY (`_steamID`)
             );
 
