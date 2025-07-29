@@ -91,7 +91,16 @@ function MODULE:CreateMenuButtons(tabs)
             panel.Paint = function() end
             panel:DockPadding(10, 10, 10, 10)
             page.drawFunc(panel)
-            sheet:AddSheet(page.name, panel)
+            local sheetData = sheet:AddSheet(page.name, panel)
+            if page.onSelect then
+                sheetData.Tab.liaPagePanel = panel
+                sheetData.Tab.liaOnSelect = page.onSelect
+            end
+        end
+        function sheet:OnActiveTabChanged(oldTab, newTab)
+            if IsValid(newTab) and newTab.liaOnSelect then
+                newTab.liaOnSelect(newTab.liaPagePanel)
+            end
         end
     end
 

@@ -589,7 +589,9 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
             end
 
             sheet:Refresh()
-        end
+            parent.refreshSheet = function() if IsValid(sheet) then sheet:Refresh() end end
+        end,
+        onSelect = function(pnl) if pnl.refreshSheet then pnl.refreshSheet() end end
     })
 end)
 
