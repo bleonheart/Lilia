@@ -302,7 +302,7 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
         if allowEdit then
             local resetAllBtn = container:Add("liaMediumButton")
             resetAllBtn:Dock(BOTTOM)
-            resetAllBtn:SetTall(30)
+            resetAllBtn:SetTall(40)
             resetAllBtn:SetText(L("resetAllKeybinds"))
             resetAllBtn.DoClick = function()
                 for action, data in pairs(lia.keybind.stored) do

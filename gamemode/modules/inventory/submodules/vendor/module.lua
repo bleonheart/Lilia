@@ -6,7 +6,7 @@ MODULE.Privileges = {
     {
         Name = "Can Edit Vendors",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Vendors",
     },
 }
 
