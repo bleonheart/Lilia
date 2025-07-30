@@ -6,7 +6,7 @@ MODULE.Privileges = {
     {
         Name = "Manage UserGroups",
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = "Staff Permissions"
     }
 }
 
@@ -26,33 +26,49 @@ if SERVER then
     util.AddNetworkString("liaGroupsRequest")
     util.AddNetworkString("liaGroupsApply")
     util.AddNetworkString("liaGroupsDefaults")
+    util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsDataChunk")
     util.AddNetworkString("liaGroupsDataDone")
     util.AddNetworkString("liaGroupsNotice")
     local function syncPrivileges()
+        lia.admin.groups = lia.admin.groups or {}
         for n in pairs(lia.admin.groups) do
             lia.admin.groups[n] = lia.admin.groups[n] or buildDefaultTable(n)
         end
     end
 
     local function allowed(p)
-        return IsValid(p) and p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups")
+        return IsValid(p) and (p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups"))
     end
 
-    local function getPrivList()
-        local t = {}
-        for n in pairs(lia.admin.privileges) do
-            t[#t + 1] = n
+    local function getPrivMap()
+        local map = {}
+        for k, v in pairs(lia.admin.privileges or {}) do
+            local name = istable(v) and v.Name or k
+            local cat = istable(v) and (v.Category or "General") or "General"
+            if name then
+                map[cat] = map[cat] or {}
+                table.insert(map[cat], name)
+            end
         end
 
-        table.sort(t)
-        return t
+        local cats = {}
+        for c in pairs(map) do
+            table.sort(map[c], function(a, b) return a:lower() < b:lower() end)
+            cats[#cats + 1] = c
+        end
+
+        table.sort(cats, function(a, b) return a:lower() < b:lower() end)
+        return {
+            categories = cats,
+            byCategory = map
+        }
     end
 
     local function payload()
         return {
             groups = lia.admin.groups or {},
-            privList = getPrivList()
+            privMap = getPrivMap()
         }
     end
 
@@ -110,13 +126,14 @@ if SERVER then
 
     net.Receive("liaGroupsAdd", function(_, p)
         if not allowed(p) then return end
-        local n = net.ReadString()
+        local n = string.Trim(net.ReadString() or "")
         if n == "" then return end
+        lia.admin.groups = lia.admin.groups or {}
+        if lia.admin.DefaultGroups and lia.admin.DefaultGroups[n] then return end
+        if lia.admin.groups[n] then return end
         lia.admin.createGroup(n)
         lia.admin.groups[n] = buildDefaultTable(n)
         lia.admin.save()
-        broadcastGroups()
-        notify(p, "Group '" .. n .. "' created.")
         broadcastGroups()
         notify(p, "Group '" .. n .. "' created.")
     end)
@@ -124,21 +141,38 @@ if SERVER then
     net.Receive("liaGroupsRemove", function(_, p)
         if not allowed(p) then return end
         local n = net.ReadString()
-        if n == "" or lia.admin.DefaultGroups[n] then return end
+        if n == "" or lia.admin.DefaultGroups and lia.admin.DefaultGroups[n] then return end
         lia.admin.removeGroup(n)
-        lia.admin.groups[n] = nil
+        if lia.admin.groups then lia.admin.groups[n] = nil end
         lia.admin.save()
         broadcastGroups()
         notify(p, "Group '" .. n .. "' removed.")
+    end)
+
+    net.Receive("liaGroupsRename", function(_, p)
+        if not allowed(p) then return end
+        local old = string.Trim(net.ReadString() or "")
+        local new = string.Trim(net.ReadString() or "")
+        if old == "" or new == "" then return end
+        if old == new then return end
+        if not lia.admin.groups or not lia.admin.groups[old] then return end
+        if lia.admin.groups[new] or lia.admin.DefaultGroups and lia.admin.DefaultGroups[new] then return end
+        if lia.admin.DefaultGroups and lia.admin.DefaultGroups[old] then return end
+        local perms = lia.admin.groups[old]
+        lia.admin.groups[new] = perms
+        lia.admin.groups[old] = nil
+        lia.admin.save()
+        broadcastGroups()
+        notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
     end)
 
     net.Receive("liaGroupsApply", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
         local t = net.ReadTable()
-        if g == "" or lia.admin.DefaultGroups[g] then return end
+        if g == "" or lia.admin.DefaultGroups and lia.admin.DefaultGroups[g] then return end
         lia.admin.groups[g] = {}
-        for k, v in pairs(t) do
+        for k, v in pairs(t or {}) do
             if v then lia.admin.groups[g][k] = true end
         end
 
@@ -150,7 +184,7 @@ if SERVER then
     net.Receive("liaGroupsDefaults", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
-        if g == "" or lia.admin.DefaultGroups[g] then return end
+        if g == "" or lia.admin.DefaultGroups and lia.admin.DefaultGroups[g] then return end
         lia.admin.groups[g] = buildDefaultTable(g)
         lia.admin.save()
         broadcastGroups()
@@ -158,36 +192,91 @@ if SERVER then
     end)
 else
     local chunks = {}
-    local PRIV_LIST = {}
+    local PRIV_MAP = {
+        categories = {},
+        byCategory = {}
+    }
+
     local LAST_GROUP
     local function setFont(o, f)
         if IsValid(o) then o:SetFont(f) end
     end
 
+    local function buildCategoryList(parent, g, perms, editable)
+        local wrap = parent:Add("DPanel")
+        wrap:Dock(BOTTOM)
+        wrap:DockMargin(20, 0, 20, 4)
+        wrap.Paint = function() end
+        local catList = vgui.Create("DCategoryList", wrap)
+        catList:Dock(FILL)
+        local current = table.Copy(perms[g] or {})
+        surface.SetFont("liaMediumFont")
+        local _, fh = surface.GetTextSize("W")
+        local cbSize = math.max(20, fh + 6)
+        local rowH = math.max(fh + 14, cbSize + 8)
+        local off = math.floor((rowH - fh) * 0.5)
+        local function addRow(container, name)
+            local row = vgui.Create("DPanel", container)
+            row:Dock(TOP)
+            row:DockMargin(0, 0, 0, 8)
+            row:SetTall(rowH)
+            row.Paint = function() end
+            local lbl = row:Add("DLabel")
+            lbl:Dock(FILL)
+            lbl:DockMargin(0, off, 8, 0)
+            lbl:SetText(name)
+            setFont(lbl, "liaMediumFont")
+            lbl:SizeToContents()
+            local chk = row:Add("liaCheckBox")
+            chk:SetSize(cbSize, cbSize)
+            chk:Dock(RIGHT)
+            chk:SetChecked(current[name] and true or false)
+            chk.OnChange = function(_, v)
+                if v then
+                    current[name] = true
+                else
+                    current[name] = nil
+                end
+            end
+
+            if not editable then chk:SetEnabled(false) end
+        end
+
+        for _, catName in ipairs(PRIV_MAP.categories or {}) do
+            local cat = catList:Add(catName)
+            cat:SetExpanded(false)
+            local list = vgui.Create("DListLayout")
+            list:Dock(FILL)
+            for _, privName in ipairs(PRIV_MAP.byCategory[catName] or {}) do
+                addRow(list, privName)
+            end
+
+            cat:SetContents(list)
+            cat.OnToggle = function()
+                timer.Simple(0, function()
+                    if not IsValid(wrap) then return end
+                    wrap:InvalidateLayout(true)
+                end)
+            end
+        end
+        return wrap, catList, current
+    end
+
     local function renderGroupInfo(parent, g, groups, perms)
         parent:Clear()
         LAST_GROUP = g
+        local editable = not lia.admin.DefaultGroups[g]
+        local bottom = parent:Add("DPanel")
+        bottom:Dock(BOTTOM)
+        bottom:SetTall(36)
+        bottom:DockMargin(10, 0, 10, 10)
+        bottom.Paint = function() end
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
-        local btnBar = scroll:Add("DPanel")
-        btnBar:Dock(TOP)
-        btnBar:SetTall(36)
-        btnBar:DockMargin(20, 20, 20, 12)
-        btnBar.Paint = function() end
-        local editable = not lia.admin.DefaultGroups[g]
-
-        local delBtn
-        if not lia.admin.DefaultGroups[g] then
-            delBtn = btnBar:Add("liaSmallButton")
-            delBtn:Dock(RIGHT)
-            delBtn:DockMargin(0, 0, 6, 0)
-            delBtn:SetWide(90)
-            delBtn:SetText("Delete")
-        end
-
+        scroll:DockMargin(0, 0, 0, 6)
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
-        nameLbl:DockMargin(20, 0, 0, 0)
+        nameLbl:DockMargin(20, 20, 0, 0)
         nameLbl:SetText("Name:")
         setFont(nameLbl, "liaBigFont")
         nameLbl:SizeToContents()
@@ -205,75 +294,84 @@ else
         inhLbl:SizeToContents()
         local inhVal = scroll:Add("DLabel")
         inhVal:Dock(TOP)
-        inhVal:DockMargin(20, 2, 0, 20)
+        inhVal:DockMargin(20, 2, 0, 0)
         inhVal:SetText("user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
+        local spacer = scroll:Add("DPanel")
+        spacer:Dock(FILL)
+        spacer.Paint = function() end
         local privLbl = scroll:Add("DLabel")
-        privLbl:Dock(TOP)
+        privLbl:Dock(BOTTOM)
         privLbl:DockMargin(20, 0, 0, 6)
         privLbl:SetText("Privileges")
         setFont(privLbl, "liaBigFont")
         privLbl:SizeToContents()
-        local listHolder = scroll:Add("DPanel")
-        listHolder:Dock(TOP)
-        listHolder:DockMargin(20, 0, 20, 20)
-        listHolder:InvalidateParent(true)
-        listHolder:SetTall(0)
-        listHolder.Paint = function() end
-        local list = vgui.Create("DListLayout", listHolder)
-        list:Dock(FILL)
-        local current = table.Copy(perms[g] or {})
-        surface.SetFont("liaMediumFont")
-        local _, fh = surface.GetTextSize("W")
-        local rowH = fh + 24
-        local off = math.floor((rowH - fh) * 0.5)
-        for _, priv in ipairs(PRIV_LIST) do
-            local row = vgui.Create("DPanel", list)
-            row:SetTall(rowH)
-            row:Dock(TOP)
-            row:DockMargin(0, 0, 0, 10)
-            row.Paint = function() end
-            local lbl = row:Add("DLabel")
-            lbl:Dock(LEFT)
-            lbl:SetText(priv)
-            setFont(lbl, "liaMediumFont")
-            lbl:SizeToContents()
-            lbl:DockMargin(0, off, 12, 0)
-            local chk = row:Add("liaCheckBox")
-            chk:Dock(LEFT)
-            chk:SetWide(32)
-            chk:SetChecked(current[priv] and true or false)
-            chk.OnChange = function(_, v)
-                if v then
-                    current[priv] = true
-                else
-                    current[priv] = nil
-                end
+        local wrap, catList, current = buildCategoryList(scroll, g, perms, editable)
+        if editable then
+            local createBtn = bottom:Add("liaMediumButton")
+            local renameBtn = bottom:Add("liaMediumButton")
+            local delBtn = bottom:Add("liaMediumButton")
+            createBtn:SetText("Create Group")
+            renameBtn:SetText("Rename Group")
+            delBtn:SetText("Delete Group")
+            createBtn.DoClick = function()
+                Derma_StringRequest("Create Group", "New group name:", "", function(txt)
+                    txt = string.Trim(txt or "")
+                    if txt == "" then return end
+                    LAST_GROUP = txt
+                    net.Start("liaGroupsAdd")
+                    net.WriteString(txt)
+                    net.SendToServer()
+                end)
             end
 
-            if not editable then chk:SetEnabled(false) end
-            row.PerformLayout = function(_, w, h)
-                local m = math.floor((h - chk:GetTall()) * 0.5)
-                chk:DockMargin(0, m, 0, 0)
+            renameBtn.DoClick = function()
+                Derma_StringRequest("Rename Group", "New name for '" .. g .. "':", g, function(txt)
+                    txt = string.Trim(txt or "")
+                    if txt == "" or txt == g then return end
+                    LAST_GROUP = txt
+                    net.Start("liaGroupsRename")
+                    net.WriteString(g)
+                    net.WriteString(txt)
+                    net.SendToServer()
+                end)
             end
-        end
 
-        list:InvalidateLayout(true)
-        local h = 0
-        for _, c in ipairs(list:GetChildren()) do
-            h = h + c:GetTall() + 10
-        end
-
-        listHolder:SetTall(h)
-
-        if delBtn then
             delBtn.DoClick = function()
                 Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
                     net.Start("liaGroupsRemove")
                     net.WriteString(g)
                     net.SendToServer()
                 end, "No")
+            end
+
+            bottom.PerformLayout = function(pnl, w, bh)
+                local bw = math.floor(w / 3)
+                createBtn:SetPos(0, 0)
+                createBtn:SetSize(bw, bh)
+                renameBtn:SetPos(bw, 0)
+                renameBtn:SetSize(bw, bh)
+                delBtn:SetPos(bw * 2, 0)
+                delBtn:SetSize(w - bw * 2, bh)
+            end
+        else
+            local addBtn = bottom:Add("liaMediumButton")
+            addBtn:SetText("Create Group")
+            addBtn.DoClick = function()
+                Derma_StringRequest("Create Group", "New group name:", "", function(txt)
+                    txt = string.Trim(txt or "")
+                    if txt == "" then return end
+                    LAST_GROUP = txt
+                    net.Start("liaGroupsAdd")
+                    net.WriteString(txt)
+                    net.SendToServer()
+                end)
+            end
+
+            bottom.PerformLayout = function(_, w, bh)
+                addBtn:SetPos(0, 0)
+                addBtn:SetSize(w, bh)
             end
         end
     end
@@ -284,30 +382,15 @@ else
         sheet:Dock(FILL)
         sheet:DockMargin(10, 10, 10, 10)
         local keys = {}
-        for g in pairs(groups) do
+        for g in pairs(groups or {}) do
             keys[#keys + 1] = g
         end
 
-        table.sort(keys)
+        table.sort(keys, function(a, b) return a:lower() < b:lower() end)
         for _, g in ipairs(keys) do
             local page = sheet:Add("DPanel")
             renderGroupInfo(page, g, groups, perms)
             sheet:AddSheet(g, page)
-        end
-
-        local addBtn = panel:Add("liaMediumButton")
-        addBtn:Dock(BOTTOM)
-        addBtn:DockMargin(10, 0, 10, 10)
-        addBtn:SetTall(36)
-        addBtn:SetText("Create Group")
-        addBtn.DoClick = function()
-            Derma_StringRequest("Create Group", "New group name:", "", function(txt)
-                if txt == "" then return end
-                LAST_GROUP = txt
-                net.Start("liaGroupsAdd")
-                net.WriteString(txt)
-                net.SendToServer()
-            end)
         end
 
         if LAST_GROUP and groups[LAST_GROUP] then
@@ -326,7 +409,11 @@ else
         local data = table.concat(chunks[id])
         chunks[id] = nil
         local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
-        PRIV_LIST = tbl.privList or {}
+        PRIV_MAP = tbl.privMap or {
+            categories = {},
+            byCategory = {}
+        }
+
         lia.admin.groups = tbl.groups or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.admin.groups, lia.admin.groups) end
     end

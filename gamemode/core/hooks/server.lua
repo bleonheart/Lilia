@@ -470,6 +470,9 @@ function GM:PlayerInitialSpawn(client)
         end
 
         hook.Run("PlayerLiliaDataLoaded", client)
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.admin.groups)
+        net.Broadcast()
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)

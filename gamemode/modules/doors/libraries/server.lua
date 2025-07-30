@@ -78,8 +78,8 @@ function MODULE:SaveData()
         end
     end
 
-    lia.db.delete("lia_doors", condition):next(function()
-        if #rows > 0 then return lia.db.bulkInsert("lia_doors", rows) end
+    lia.db.delete("doors", condition):next(function()
+        if #rows > 0 then return lia.db.bulkInsert("doors", rows) end
     end)
 end
 
