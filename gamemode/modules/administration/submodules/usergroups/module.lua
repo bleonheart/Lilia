@@ -459,7 +459,9 @@ else
             byCategory = {}
         }
 
-        if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 then PRIV_MAP = computePrivMapLocal() end
+        if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then
+            PRIV_MAP = computePrivMapLocal()
+        end
         lia.adminstrator.groups = tbl.groups or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.adminstrator.groups, lia.adminstrator.groups) end
     end
