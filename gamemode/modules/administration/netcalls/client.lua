@@ -6,7 +6,6 @@
 
     hook.Run("InitializedConfig")
 end)
-
 local function deserializeFallback(raw)
     if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
     if istable(raw) then return raw end
@@ -240,4 +239,8 @@ net.Receive("managesitrooms", function()
         makeButton("reposition", 3)
         makeButton("rename", 2)
     end
+end)
+
+lia.net.readBigTable("updateAdminGroups", function(data)
+    lia.administrator.groups = data or {}
 end)

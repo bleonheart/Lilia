@@ -145,12 +145,15 @@ if SERVER then
     end
 
     function lia.administrator.sync(client)
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.administrator.groups)
         if client and IsValid(client) then
-            net.Send(client)
+            lia.net.writeBigTable(client, "updateAdminGroups", lia.administrator.groups)
         else
-            net.Broadcast()
+            local players = player.GetHumans()
+            if #players > 0 then
+                for _, ply in ipairs(players) do
+                    lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups)
+                end
+            end
         end
     end
 
