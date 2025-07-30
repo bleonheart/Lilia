@@ -1,20 +1,6 @@
 ﻿local MODULE = MODULE
-function MODULE:SendLogsInChunks(client, categorizedLogs)
-    local json = util.TableToJSON(categorizedLogs)
-    local data = util.Compress(json)
-    local chunks = {}
-    for i = 1, #data, 32768 do
-        chunks[#chunks + 1] = string.sub(data, i, i + 32768 - 1)
-    end
-
-    for i, chunk in ipairs(chunks) do
-        net.Start("send_logs")
-        net.WriteUInt(i, 16)
-        net.WriteUInt(#chunks, 16)
-        net.WriteUInt(#chunk, 16)
-        net.WriteData(chunk, #chunk)
-        net.Send(client)
-    end
+function MODULE:SendLogs(client, categorizedLogs)
+    lia.net.writeBigTable(client, "send_logs", categorizedLogs)
 end
 
 function MODULE:ReadLogEntries(category)
@@ -43,22 +29,22 @@ end
 net.Receive("send_logs_request", function(_, client)
     if not MODULE:CanPlayerSeeLog(client) then return end
     local categories = {}
-    for _, logType in pairs(lia.log.types) do
-        categories[logType.category or "Uncategorized"] = true
+    for _, v in pairs(lia.log.types) do
+        categories[v.category or "Uncategorized"] = true
     end
 
     local catList = {}
-    for cat in pairs(categories) do
-        if hook.Run("CanPlayerSeeLogCategory", client, cat) ~= false then catList[#catList + 1] = cat end
+    for k in pairs(categories) do
+        if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then catList[#catList + 1] = k end
     end
 
     local logsByCategory = {}
-    local function fetch(idx)
-        if idx > #catList then return MODULE:SendLogsInChunks(client, logsByCategory) end
-        local cat = catList[idx]
+    local function fetch(i)
+        if i > #catList then return MODULE:SendLogs(client, logsByCategory) end
+        local cat = catList[i]
         MODULE:ReadLogEntries(cat):next(function(entries)
             logsByCategory[cat] = entries
-            fetch(idx + 1)
+            fetch(i + 1)
         end)
     end
 

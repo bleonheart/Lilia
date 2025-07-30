@@ -1,21 +1,17 @@
-local receivedChunks = {}
 local receivedPanel
 local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     local sheet = panel:Add("DPropertySheet")
     sheet:Dock(FILL)
     sheet:DockMargin(10, 10, 10, 10)
-
     for category, logs in pairs(categorizedLogs) do
         local page = sheet:Add("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
-
         local search = page:Add("DTextEntry")
         search:Dock(TOP)
         search:SetPlaceholderText(L("searchLogs"))
         search:SetTextColor(Color(255, 255, 255))
-
         local list = page:Add("DListView")
         list:Dock(FILL)
         list:SetMultiSelect(false)
@@ -40,38 +36,23 @@ local function OpenLogsUI(panel, categorizedLogs)
             if not IsValid(line) or not line.rowData then return end
             local data = line.rowData
             local menu = DermaMenu()
-            if data.steamID and data.steamID ~= "" then
-                menu:AddOption(L("copySteamID"), function() SetClipboardText(data.steamID) end)
-            end
+            if data.steamID and data.steamID ~= "" then menu:AddOption(L("copySteamID"), function() SetClipboardText(data.steamID) end) end
             menu:AddOption(L("copyLogMessage"), function() SetClipboardText(data.message or "") end)
             menu:AddOption(L("copyRow"), function()
                 local text = "[" .. data.timestamp .. "] " .. data.message
-                if data.steamID and data.steamID ~= "" then
-                    text = text .. " [" .. data.steamID .. "]"
-                end
+                if data.steamID and data.steamID ~= "" then text = text .. " [" .. data.steamID .. "]" end
                 SetClipboardText(text)
             end)
+
             menu:Open()
         end
+
         populate("")
         sheet:AddSheet(category, page)
     end
 end
 
-net.Receive("send_logs", function()
-    local chunkIndex = net.ReadUInt(16)
-    local numChunks = net.ReadUInt(16)
-    local chunkLen = net.ReadUInt(16)
-    local chunkData = net.ReadData(chunkLen)
-    receivedChunks[chunkIndex] = chunkData
-    for i = 1, numChunks do
-        if not receivedChunks[i] then return end
-    end
-
-    local fullData = table.concat(receivedChunks)
-    receivedChunks = {}
-    local jsonData = util.Decompress(fullData)
-    local categorizedLogs = util.JSONToTable(jsonData)
+lia.net.readBigTable("send_logs", function(categorizedLogs)
     if not categorizedLogs then
         chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         return
