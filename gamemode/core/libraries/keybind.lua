@@ -203,104 +203,104 @@ end)
 hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
     local function buildKeybinds(parent)
         parent:Clear()
-        local container = parent:Add("DPanel")
-        container:Dock(FILL)
         local allowEdit = lia.config.get("AllowKeybindEditing", true)
-        local searchEntry, scroll
-        local function populateRows(filter)
-            scroll:Clear()
-            if not istable(lia.keybind.stored) then return end
-            local taken = {}
-            for action, data in pairs(lia.keybind.stored) do
-                if istable(data) and data.value then taken[data.value] = action end
-            end
+        local sheet = parent:Add("liaSheet")
+        sheet:Dock(FILL)
+        sheet:SetPlaceholderText(L("searchKeybinds"))
+        sheet:SetSpacing(4)
+        sheet:SetPadding(4)
 
-            local sortedActions = {}
-            for action, data in pairs(lia.keybind.stored) do
-                if istable(data) and (filter == "" or tostring(action):lower():find(filter, 1, true)) then sortedActions[#sortedActions + 1] = action end
-            end
+        local taken = {}
+        for action, data in pairs(lia.keybind.stored) do
+            if istable(data) and data.value then taken[data.value] = action end
+        end
 
-            table.sort(sortedActions, function(a, b)
-                local la, lb = #tostring(a), #tostring(b)
-                if la == lb then return tostring(a) < tostring(b) end
-                return la < lb
-            end)
+        local sortedActions = {}
+        for action, data in pairs(lia.keybind.stored) do
+            if istable(data) then sortedActions[#sortedActions + 1] = action end
+        end
 
-            for _, action in ipairs(sortedActions) do
-                local data = lia.keybind.stored[action]
-                local row = scroll:Add("DPanel")
-                row:Dock(TOP)
-                row:DockMargin(4, 4, 4, 4)
-                row:SetTall(50)
-                local lbl = row:Add("DLabel")
-                lbl:Dock(FILL)
-                lbl:SetFont("liaBigFont")
-                lbl:SetText(action)
-                local currentKey = lia.keybind.get(action, KEY_NONE)
-                if allowEdit then
-                    local combo = row:Add("DComboBox")
-                    combo:Dock(RIGHT)
-                    combo:SetWide(200)
-                    combo:SetFont("liaMediumFont")
-                    combo:SetValue(input.GetKeyName(currentKey) or "NONE")
-                    local choices = {}
-                    for name, code in pairs(KeybindKeys) do
-                        if not taken[code] or code == currentKey then
-                            choices[#choices + 1] = {
-                                txt = input.GetKeyName(code) or name,
-                                keycode = code
-                            }
-                        end
+        table.sort(sortedActions, function(a, b)
+            local la, lb = #tostring(a), #tostring(b)
+            if la == lb then return tostring(a) < tostring(b) end
+            return la < lb
+        end)
+
+        for _, action in ipairs(sortedActions) do
+            local data = lia.keybind.stored[action]
+            local rowPanel = vgui.Create("DPanel")
+            rowPanel:SetTall(50)
+            rowPanel:DockPadding(4, 4, 4, 4)
+            rowPanel.Paint = nil
+
+            local lbl = rowPanel:Add("DLabel")
+            lbl:Dock(FILL)
+            lbl:SetFont("liaBigFont")
+            lbl:SetText(action)
+
+            local currentKey = lia.keybind.get(action, KEY_NONE)
+            if allowEdit then
+                local combo = rowPanel:Add("DComboBox")
+                combo:Dock(RIGHT)
+                combo:SetWide(200)
+                combo:SetFont("liaMediumFont")
+                combo:SetValue(input.GetKeyName(currentKey) or "NONE")
+                local choices = {}
+                for name, code in pairs(KeybindKeys) do
+                    if not taken[code] or code == currentKey then
+                        choices[#choices + 1] = {txt = input.GetKeyName(code) or name, keycode = code}
                     end
-
-                    table.sort(choices, function(a, b) return a.txt < b.txt end)
-                    for _, c in ipairs(choices) do
-                        combo:AddChoice(c.txt, c.keycode)
-                    end
-
-                    combo.OnSelect = function(_, _, _, newKey)
-                        if not newKey then return end
-                        for tk, tv in pairs(taken) do
-                            if tk == newKey and tv ~= action then
-                                combo:SetValue(input.GetKeyName(currentKey) or "NONE")
-                                return
-                            end
-                        end
-
-                        taken[currentKey] = nil
-                        if lia.keybind.stored[currentKey] == action then lia.keybind.stored[currentKey] = nil end
-                        data.value = newKey
-                        lia.keybind.stored[newKey] = action
-                        taken[newKey] = action
-                        lia.keybind.save()
-                        currentKey = newKey
-                    end
-
-                    local unbindButton = row:Add("DButton")
-                    unbindButton:Dock(RIGHT)
-                    unbindButton:SetWide(100)
-                    unbindButton:SetFont("liaMediumFont")
-                    unbindButton:SetText(L("unbind"):upper())
-                    unbindButton.DoClick = function()
-                        taken[currentKey] = nil
-                        if lia.keybind.stored[currentKey] == action then lia.keybind.stored[currentKey] = nil end
-                        data.value = KEY_NONE
-                        lia.keybind.stored[KEY_NONE] = action
-                        lia.keybind.save()
-                        combo:SetValue(input.GetKeyName(KEY_NONE) or "NONE")
-                        currentKey = KEY_NONE
-                    end
-                else
-                    local textLabel = row:Add("DLabel")
-                    textLabel:Dock(FILL)
-                    textLabel:SetFont("liaBigFont")
-                    textLabel:SetText(input.GetKeyName(currentKey) or "NONE")
                 end
+
+                table.sort(choices, function(a, b) return a.txt < b.txt end)
+                for _, c in ipairs(choices) do
+                    combo:AddChoice(c.txt, c.keycode)
+                end
+
+                combo.OnSelect = function(_, _, _, newKey)
+                    if not newKey then return end
+                    for tk, tv in pairs(taken) do
+                        if tk == newKey and tv ~= action then
+                            combo:SetValue(input.GetKeyName(currentKey) or "NONE")
+                            return
+                        end
+                    end
+
+                    taken[currentKey] = nil
+                    if lia.keybind.stored[currentKey] == action then lia.keybind.stored[currentKey] = nil end
+                    data.value = newKey
+                    lia.keybind.stored[newKey] = action
+                    taken[newKey] = action
+                    lia.keybind.save()
+                    currentKey = newKey
+                end
+
+                local unbindButton = rowPanel:Add("DButton")
+                unbindButton:Dock(RIGHT)
+                unbindButton:SetWide(100)
+                unbindButton:SetFont("liaMediumFont")
+                unbindButton:SetText(L("unbind"):upper())
+                unbindButton.DoClick = function()
+                    taken[currentKey] = nil
+                    if lia.keybind.stored[currentKey] == action then lia.keybind.stored[currentKey] = nil end
+                    data.value = KEY_NONE
+                    lia.keybind.stored[KEY_NONE] = action
+                    lia.keybind.save()
+                    combo:SetValue(input.GetKeyName(KEY_NONE) or "NONE")
+                    currentKey = KEY_NONE
+                end
+            else
+                local textLabel = rowPanel:Add("DLabel")
+                textLabel:Dock(RIGHT)
+                textLabel:SetFont("liaBigFont")
+                textLabel:SetText(input.GetKeyName(currentKey) or "NONE")
             end
+
+            sheet:AddPanelRow(rowPanel, {height = 50, filterText = tostring(action):lower()})
         end
 
         if allowEdit then
-            local resetAllBtn = container:Add("liaMediumButton")
+            local resetAllBtn = parent:Add("liaMediumButton")
             resetAllBtn:Dock(BOTTOM)
             resetAllBtn:SetTall(40)
             resetAllBtn:SetText(L("resetAllKeybinds"))
@@ -314,18 +314,9 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 end
 
                 lia.keybind.save()
-                populateRows(searchEntry:GetValue():lower())
+                sheet:Refresh()
             end
         end
-
-        searchEntry = container:Add("DTextEntry")
-        searchEntry:Dock(TOP)
-        searchEntry:SetTall(30)
-        searchEntry:SetPlaceholderText(L("searchKeybinds"))
-        searchEntry.OnTextChanged = function() populateRows(searchEntry:GetValue():lower()) end
-        scroll = container:Add("DScrollPanel")
-        scroll:Dock(FILL)
-        populateRows("")
     end
 
     pages[#pages + 1] = {

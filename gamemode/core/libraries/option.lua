@@ -435,19 +435,17 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
         name = L("options"),
         drawFunc = function(parent)
             parent:Clear()
-            local searchEntry = vgui.Create("DTextEntry", parent)
-            searchEntry:Dock(TOP)
-            searchEntry:SetTall(30)
-            searchEntry:DockMargin(5, 5, 5, 5)
-            searchEntry:SetPlaceholderText(L("searchOptions"))
-            local scroll = vgui.Create("DScrollPanel", parent)
-            scroll:Dock(FILL)
+            local sheet = parent:Add("liaSheet")
+            sheet:Dock(FILL)
+            sheet:SetPlaceholderText(L("searchOptions"))
+
             local function refresh()
-                scroll:Clear()
-                buildOptions(scroll, searchEntry:GetValue():lower())
+                sheet:Clear()
+                buildOptions(sheet.canvas, sheet.search:GetValue():lower())
+                sheet:Refresh()
             end
 
-            searchEntry.OnTextChanged = function() refresh() end
+            sheet.search.OnTextChanged = refresh
             refresh()
         end
     }

@@ -810,15 +810,11 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
 
     local function buildConfiguration(parent)
         parent:Clear()
-        local search = vgui.Create("DTextEntry", parent)
-        search:Dock(TOP)
-        search:SetTall(30)
-        search:DockMargin(5, 5, 5, 5)
-        search:SetPlaceholderText(L("searchConfigs"))
-        local scroll = vgui.Create("DScrollPanel", parent)
-        scroll:Dock(FILL)
+        local sheet = parent:Add("liaSheet")
+        sheet:Dock(FILL)
+        sheet:SetPlaceholderText(L("searchConfigs"))
         local function populate(filter)
-            scroll:Clear()
+            sheet:Clear()
             local categories = {}
             local keys = {}
             for k in pairs(lia.config.stored) do
@@ -851,7 +847,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             table.sort(categoryNames)
             for _, categoryName in ipairs(categoryNames) do
                 local items = categories[categoryName]
-                local cat = vgui.Create("DCollapsibleCategory", scroll)
+                local cat = vgui.Create("DCollapsibleCategory", sheet.canvas)
                 cat:Dock(TOP)
                 cat:SetLabel(categoryName)
                 cat:SetExpanded(true)
@@ -886,7 +882,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             end
         end
 
-        search.OnTextChanged = function() populate(search:GetValue():lower()) end
+        sheet.search.OnTextChanged = function() populate(sheet.search:GetValue():lower()) end
         populate("")
     end
 
