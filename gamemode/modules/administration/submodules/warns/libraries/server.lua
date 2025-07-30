@@ -60,3 +60,12 @@ net.Receive("RequestRemoveWarning", function(_, client)
         }, warnIndex)
     end)
 end)
+
+net.Receive("liaRequestAllWarnings", function(_, client)
+    if not client:hasPrivilege("View Player Warnings") then return end
+    lia.db.select({"timestamp", "steamID", "admin", "reason"}, "warnings"):next(function(res)
+        net.Start("liaAllWarnings")
+        net.WriteTable(res.results or {})
+        net.Send(client)
+    end)
+end)

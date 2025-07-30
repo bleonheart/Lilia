@@ -61,3 +61,4 @@ net.Receive("TicketSystemClose", function()
 
     if timer.Exists("ticketsystem-" .. requester:SteamID64()) then timer.Remove("ticketsystem-" .. requester:SteamID64()) end
 end)
+

@@ -27,6 +27,8 @@ net.Receive("TicketSystemClaim", function(_, client)
 
         hook.Run("TicketSystemClaim", client, requester)
         requester.CaseClaimed = client
+        local t = MODULE.ActiveTickets[requester:SteamID64()]
+        if t then t.admin = client:SteamID() end
     end
 end)
 
@@ -49,4 +51,12 @@ net.Receive("TicketSystemClose", function(_, client)
 
     hook.Run("TicketSystemClose", client, requester)
     requester.CaseClaimed = nil
+    MODULE.ActiveTickets[requester:SteamID64()] = nil
+end)
+
+net.Receive("liaRequestActiveTickets", function(_, client)
+    if not (client:hasPrivilege("Always See Tickets") or client:isStaffOnDuty()) then return end
+    net.Start("liaActiveTickets")
+    net.WriteTable(MODULE.ActiveTickets or {})
+    net.Send(client)
 end)

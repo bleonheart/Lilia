@@ -1,4 +1,6 @@
-﻿local function buildClaimTable(rows)
+MODULE.ActiveTickets = MODULE.ActiveTickets or {}
+
+local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
         local adminID = row.admin
@@ -52,6 +54,7 @@ function MODULE:PlayerDisconnected(client)
             net.Send(v)
         end
     end
+    MODULE.ActiveTickets[client:SteamID64()] = nil
 end
 
 function MODULE:SendPopup(noob, message)
@@ -66,7 +69,16 @@ function MODULE:SendPopup(noob, message)
     end
 
     if IsValid(noob) and noob:IsPlayer() then
+        MODULE.ActiveTickets[noob:SteamID64()] = {
+            timestamp = os.time(),
+            requester = noob:SteamID(),
+            admin = noob.CaseClaimed and IsValid(noob.CaseClaimed) and noob.CaseClaimed:SteamID() or nil,
+            message = message
+        }
         timer.Remove("ticketsystem-" .. noob:SteamID64())
-        timer.Create("ticketsystem-" .. noob:SteamID64(), 60, 1, function() if IsValid(noob) and noob:IsPlayer() then noob.CaseClaimed = nil end end)
+        timer.Create("ticketsystem-" .. noob:SteamID64(), 60, 1, function()
+            if IsValid(noob) and noob:IsPlayer() then noob.CaseClaimed = nil end
+            MODULE.ActiveTickets[noob:SteamID64()] = nil
+        end)
     end
 end
