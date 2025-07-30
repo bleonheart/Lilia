@@ -57,8 +57,6 @@ lia.command.add("spawnremoveinradius", {
                         table.remove(list, i)
                         removedCount = removedCount + 1
                     end
-
-                    ::continue::
                 end
 
                 if #list == 0 then spawns[faction] = nil end
@@ -99,7 +97,6 @@ lia.command.add("spawnremovebyname", {
                         if data.map and data.map:lower() ~= curMap then continue end
                         table.remove(list, i)
                         removedCount = removedCount + 1
-                        ::continue::
                     end
 
                     if removedCount > 0 then
