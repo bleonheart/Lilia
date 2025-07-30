@@ -69,6 +69,27 @@ function lia.admin.removeGroup(groupName)
     if SERVER then lia.admin.save() end
 end
 
+function lia.admin.renameGroup(oldName, newName)
+    if lia.admin.DefaultGroups[oldName] then
+        lia.error("[Lilia Administration] The base usergroups cannot be renamed!\n")
+        return
+    end
+
+    if not lia.admin.groups[oldName] then
+        lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
+        return
+    end
+
+    if lia.admin.groups[newName] then
+        lia.error("[Lilia Administration] This usergroup already exists!\n")
+        return
+    end
+
+    lia.admin.groups[newName] = lia.admin.groups[oldName]
+    lia.admin.groups[oldName] = nil
+    if SERVER then lia.admin.save() end
+end
+
 if SERVER then
     function lia.admin.addPermission(groupName, permission)
         if not lia.admin.groups[groupName] then
