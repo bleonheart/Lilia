@@ -58,6 +58,7 @@ end
 function MODULE:SaveData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
+    local condition = buildCondition(gamemode, map)
     local rows = {}
     for _, door in ipairs(ents.GetAll()) do
         if door:isDoor() then
@@ -76,6 +77,10 @@ function MODULE:SaveData()
             }
         end
     end
+
+    lia.db.delete("doors", condition):next(function()
+        if #rows > 0 then return lia.db.bulkInsert("doors", rows) end
+    end)
 end
 
 function MODULE:InitPostEntity()
