@@ -80,12 +80,15 @@ net.Receive("send_logs", function()
     if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
 end)
 
-function MODULE:CreateMenuButtons(tabs)
+function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can See Logs") then
-        tabs[L("logs")] = function(panel)
-            receivedPanel = panel
-            net.Start("send_logs_request")
-            net.SendToServer()
-        end
+        table.insert(pages, {
+            name = L("logs"),
+            drawFunc = function(panel)
+                receivedPanel = panel
+                net.Start("send_logs_request")
+                net.SendToServer()
+            end
+        })
     end
 end
