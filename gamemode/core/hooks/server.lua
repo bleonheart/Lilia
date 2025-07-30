@@ -1003,6 +1003,7 @@ concommand.Add("bots", function()
     end)
 end)
 
+local resetCalled = 0
 concommand.Add("lia_wipedb", function(client)
     if IsValid(client) then
         client:notifyLocalized("commandConsoleOnly")

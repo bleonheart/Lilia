@@ -307,9 +307,9 @@ else
     function lia.util.DrawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
         local steps = (outlinewidth * 2) / 3
         if steps < 1 then steps = 1 end
-        for x = -outlinewidth, outlinewidth, steps do
-            for y = -outlinewidth, outlinewidth, steps do
-                draw.DrawText(text, font, x + x, y + y, outlinecolour, xalign)
+        for ox = -outlinewidth, outlinewidth, steps do
+            for oy = -outlinewidth, outlinewidth, steps do
+                draw.DrawText(text, font, x + ox, y + oy, outlinecolour, xalign)
             end
         end
         return draw.DrawText(text, font, x, y, colour, xalign)

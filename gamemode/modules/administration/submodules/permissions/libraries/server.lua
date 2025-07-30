@@ -1,5 +1,4 @@
 ﻿local GM = GM or GAMEMODE
-local resetCalled = 0
 local restrictedProperties = {
     persist = true,
     drive = true,

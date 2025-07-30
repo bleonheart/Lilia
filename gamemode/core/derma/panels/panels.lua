@@ -289,7 +289,6 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
     return s
 end
 
-local color_dark = Color(255, 255, 255, 5)
 function QuickPanel:addCheck(text, cb, checked)
     local btn = self:addButton(text)
     local chk = btn:Add("liaCheckBox")
@@ -297,7 +296,7 @@ function QuickPanel:addCheck(text, cb, checked)
     chk:SetSize(22, 22)
     chk.OnChange = function(_, v) if cb then cb(btn, v) end end
     btn.DoClick = function() chk:SetChecked(not chk:GetChecked()) end
-    btn.PerformLayout = function(this, w, h) chk:SetPos(w - chk:GetWide() - 8, math.floor((h - chk:GetTall()) * 0.5)) end
+    btn.PerformLayout = function(_, w, h) chk:SetPos(w - chk:GetWide() - 8, math.floor((h - chk:GetTall()) * 0.5)) end
     return btn
 end
 
