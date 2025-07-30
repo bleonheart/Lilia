@@ -13,6 +13,7 @@ function MODULE:HUDPaint()
     if not client:getChar() or not client:IsValid() or not client:IsPlayer() then return end
     if not client:isNoClipping() then return end
     if not (client:hasPrivilege("No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
+    if not lia.option.get("espEnabled", false) then return end
     local marginx, marginy = ScrW() * 0.1, ScrH() * 0.1
     local maxDistanceSq = 4096
     for _, ent in ents.Iterator() do

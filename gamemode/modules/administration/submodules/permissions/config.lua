@@ -4,6 +4,16 @@
     type = "Boolean"
 })
 
+lia.option.add("espEnabled", "ESP Enabled", "Toggle ESP features", false, nil, {
+    category = "ESP",
+    isQuick = true,
+    visible = function()
+        local ply = LocalPlayer()
+        if not IsValid(ply) then return false end
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
+    end
+})
+
 lia.option.add("espPlayers", "ESP Players", "Enable ESP for players", false, nil, {
     category = "ESP",
     isQuick = true,
