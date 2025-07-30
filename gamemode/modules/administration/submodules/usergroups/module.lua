@@ -280,14 +280,9 @@ else
 
     local function buildGroupsUI(panel, groups, perms)
         panel:Clear()
-        local sidebar = panel:Add("DScrollPanel")
-        sidebar:Dock(RIGHT)
-        sidebar:SetWide(200)
-        sidebar:DockMargin(0, 20, 20, 20)
-        local content = panel:Add("DPanel")
-        content:Dock(FILL)
-        content:DockMargin(10, 10, 10, 10)
-        local selected
+        local sheet = panel:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        sheet:DockMargin(10, 10, 10, 10)
         local keys = {}
         for g in pairs(groups) do
             keys[#keys + 1] = g
@@ -295,22 +290,14 @@ else
 
         table.sort(keys)
         for _, g in ipairs(keys) do
-            local b = sidebar:Add("liaMediumButton")
-            b:Dock(TOP)
-            b:DockMargin(0, 0, 0, 10)
-            b:SetTall(40)
-            b:SetText(g)
-            b.DoClick = function()
-                if IsValid(selected) then selected:SetSelected(false) end
-                b:SetSelected(true)
-                selected = b
-                renderGroupInfo(content, g, groups, perms)
-            end
+            local page = sheet:Add("DPanel")
+            renderGroupInfo(page, g, groups, perms)
+            sheet:AddSheet(g, page)
         end
 
-        local addBtn = sidebar:Add("liaMediumButton")
+        local addBtn = panel:Add("liaMediumButton")
         addBtn:Dock(BOTTOM)
-        addBtn:DockMargin(0, 20, 0, 0)
+        addBtn:DockMargin(10, 0, 10, 10)
         addBtn:SetTall(36)
         addBtn:SetText("Create Group")
         addBtn.DoClick = function()
@@ -324,22 +311,14 @@ else
         end
 
         if LAST_GROUP and groups[LAST_GROUP] then
-            for _, b in ipairs(sidebar:GetChildren()) do
-                if b.GetText and b:GetText() == LAST_GROUP then
-                    b:DoClick()
+            for _, tab in ipairs(sheet.Items) do
+                if tab.Name == LAST_GROUP then
+                    sheet:SetActiveTab(tab.Tab)
                     break
                 end
             end
-        else
-            local first = keys[1]
-            if first then
-                for _, b in ipairs(sidebar:GetChildren()) do
-                    if b.GetText and b:GetText() == first then
-                        b:DoClick()
-                        break
-                    end
-                end
-            end
+        elseif sheet.Items[1] then
+            sheet:SetActiveTab(sheet.Items[1].Tab)
         end
     end
 
