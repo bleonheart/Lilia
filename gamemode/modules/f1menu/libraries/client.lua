@@ -71,7 +71,7 @@ function MODULE:PlayerBindPress(client, bind, pressed)
 end
 
 function MODULE:CreateMenuButtons(tabs)
-    tabs[L("status")] = function(statusPanel)
+    tabs[L("you")] = function(statusPanel)
         statusPanel.info = vgui.Create("liaCharInfo", statusPanel)
         statusPanel.info:Dock(FILL)
         statusPanel.info:setup()
