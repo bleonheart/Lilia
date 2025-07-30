@@ -67,15 +67,18 @@ function PANEL:AddTextRow(data)
     local title = data.title or ""
     local desc = data.desc or ""
     local right = data.right or ""
+    local compact = data.compact
     local row = self:AddRow(function(p, row)
+        local titleFont = compact and "liaSmallFont" or "liaMediumFont"
+        local descFont = compact and "liaMiniFont" or "liaSmallFont"
         local t = vgui.Create("DLabel", p)
-        t:SetFont("liaMediumFont")
+        t:SetFont(titleFont)
         t:SetText(title)
         t:SizeToContents()
         local d
         if desc ~= "" then
             d = vgui.Create("DLabel", p)
-            d:SetFont("liaSmallFont")
+            d:SetFont(descFont)
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
             d:SetText(desc)
@@ -84,26 +87,29 @@ function PANEL:AddTextRow(data)
         local r
         if right ~= "" then
             r = vgui.Create("DLabel", p)
-            r:SetFont("liaSmallFont")
+            r:SetFont(descFont)
             r:SetText(right)
             r:SizeToContents()
         end
 
         p.PerformLayout = function()
             local pad = self.padding
+            if compact then pad = math.ceil(pad * 0.5) end
+            local spacing = compact and 2 or 5
             t:SetPos(pad, pad)
             if d then
-                d:SetPos(pad, pad + t:GetTall() + 5)
+                d:SetPos(pad, pad + t:GetTall() + spacing)
                 d:SetWide(p:GetWide() - pad * 2 - (r and r:GetWide() + 10 or 0))
                 d:SizeToContentsY()
             end
 
             if r then
-                local y = d and pad + t:GetTall() + 5 + d:GetTall() - r:GetTall() or p:GetTall() * 0.5 - r:GetTall() * 0.5
+                local y = d and pad + t:GetTall() + spacing + d:GetTall() - r:GetTall() or p:GetTall() * 0.5 - r:GetTall() * 0.5
                 r:SetPos(p:GetWide() - r:GetWide() - pad, math.max(pad, y))
             end
 
-            local h = d and pad + t:GetTall() + 5 + d:GetTall() + pad or math.max(40, pad + t:GetTall() + pad)
+            local baseMin = compact and 30 or 40
+            local h = d and pad + t:GetTall() + spacing + d:GetTall() + pad or math.max(baseMin, pad + t:GetTall() + pad)
             p:SetTall(h)
         end
 

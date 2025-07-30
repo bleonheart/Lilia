@@ -27,15 +27,14 @@ net.Receive("CharacterInfo", function()
         local originals = {}
         for _, data in ipairs(characterData) do
             if data.faction == factionID then
-                rows[#rows + 1] = {data.id, data.name, data.lastOnline, data.hoursPlayed}
+                rows[#rows + 1] = {data.name, data.class or "None", data.lastOnline, data.hoursPlayed}
                 originals[#originals + 1] = data
             end
         end
 
         local row = sheet:AddListViewRow({
-            columns = {"ID", "Name", "Last Online", "Hours Played"},
+            columns = {"Name", "Class", "Last Online", "Hours Played"},
             data = rows,
-            height = 300,
             getLineText = function(line)
                 local s = ""
                 for i = 1, 4 do
@@ -46,6 +45,10 @@ net.Receive("CharacterInfo", function()
             end
         })
 
+        if row and row.panel then
+            row.panel:Dock(FILL)
+        end
+
         if row and row.widget then
             for i, line in ipairs(row.widget:GetLines() or {}) do
                 line.rowData = originals[i]
@@ -55,13 +58,15 @@ net.Receive("CharacterInfo", function()
                 if not IsValid(line) or not line.rowData then return end
                 local rowData = line.rowData
                 local menu = DermaMenu()
-                menu:AddOption("Kick", function()
-                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
-                        net.Start("KickCharacter")
-                        net.WriteInt(tonumber(rowData.id), 32)
-                        net.SendToServer()
-                    end, "No")
-                end)
+                if rowData.steamID ~= LocalPlayer():SteamID() then
+                    menu:AddOption("Kick", function()
+                        Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                            net.Start("KickCharacter")
+                            net.WriteInt(tonumber(rowData.id), 32)
+                            net.SendToServer()
+                        end, "No")
+                    end)
+                end
 
                 menu:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
                 menu:AddOption(L("copyRow"), function()
@@ -90,8 +95,8 @@ net.Receive("CharacterInfo", function()
     end
 
     local columns = {
-        {name = "ID", field = "id"},
         {name = "Name", field = "name"},
+        {name = "Class", field = "class"},
         {name = "Last Online", field = "lastOnline"},
         {name = "Hours Played", field = "hoursPlayed"}
     }
@@ -106,14 +111,16 @@ net.Receive("CharacterInfo", function()
             if not IsValid(line) or not line.rowData then return end
             local rowData = line.rowData
             local menu = DermaMenu()
-            menu:AddOption("Kick", function()
-                Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
-                    net.Start("KickCharacter")
-                    net.WriteInt(tonumber(rowData.id), 32)
-                    net.SendToServer()
-                    if IsValid(frame) then frame:Remove() end
-                end, "No")
-            end)
+            if rowData.steamID ~= LocalPlayer():SteamID() then
+                menu:AddOption("Kick", function()
+                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                        net.Start("KickCharacter")
+                        net.WriteInt(tonumber(rowData.id), 32)
+                        net.SendToServer()
+                        if IsValid(frame) then frame:Remove() end
+                    end, "No")
+                end)
+            end
 
             menu:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
             menu:AddOption(L("copyRow"), function()
