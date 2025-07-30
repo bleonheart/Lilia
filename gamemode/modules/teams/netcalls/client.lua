@@ -1,3 +1,4 @@
+local characterPanel
 ﻿net.Receive("classUpdate", function()
     local joinedClient = net.ReadEntity()
     if lia.gui.classes and lia.gui.classes:IsVisible() then
@@ -25,7 +26,7 @@ net.Receive("CharacterInfo", function()
         local rows = {}
         local originals = {}
         for _, data in ipairs(characterData) do
-            if data.faction == factionID and data.id ~= character:getID() then
+            if data.faction == factionID then
                 rows[#rows + 1] = {data.id, data.name, data.lastOnline, data.hoursPlayed}
                 originals[#originals + 1] = data
             end
@@ -85,7 +86,7 @@ net.Receive("CharacterInfo", function()
     if IsValid(characterPanel) then characterPanel:Remove() end
     local rows = {}
     for _, data in ipairs(characterData) do
-        if data.faction == factionID and data.id ~= character:getID() then table.insert(rows, data) end
+        if data.faction == factionID then table.insert(rows, data) end
     end
 
     local columns = {
@@ -98,6 +99,7 @@ net.Receive("CharacterInfo", function()
     local frame, list = lia.util.CreateTableUI("Character Information", columns, rows, {
         {name = "Kick", net = "KickCharacter"}
     })
+    characterPanel = frame
 
     if IsValid(list) then
         list.OnRowRightClick = function(_, _, line)
