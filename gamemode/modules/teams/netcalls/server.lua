@@ -19,7 +19,9 @@ net.Receive("RequestRoster", function(_, client)
     if not factionIndex then return end
     local faction = lia.faction.indices[factionIndex]
     if not faction then return end
-    local condition = "lia_characters.schema = '" .. lia.db.escape(SCHEMA.folder) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
+
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local condition = "lia_characters.schema = '" .. lia.db.escape(gamemode) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
     local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
     lia.db.query(query, function(data)
         local characters = {}
