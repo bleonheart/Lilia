@@ -221,6 +221,8 @@ hook.Add("CreateInformationButtons", "liaInformationModulesUnified", function(pa
         drawFunc = function(parent)
             local sheet = vgui.Create("liaSheet", parent)
             sheet:SetPlaceholderText(L("searchModules"))
+            sheet:SetPadding(5)
+            sheet:SetSpacing(4)
             for _, moduleData in SortedPairs(lia.module.list) do
                 local title = moduleData.name or ""
                 local desc = moduleData.desc or ""
@@ -228,7 +230,8 @@ hook.Add("CreateInformationButtons", "liaInformationModulesUnified", function(pa
                 local row = sheet:AddTextRow({
                     title = title,
                     desc = desc,
-                    right = right
+                    right = right,
+                    compact = true
                 })
 
                 row.filterText = (title .. " " .. desc .. " " .. right):lower()
