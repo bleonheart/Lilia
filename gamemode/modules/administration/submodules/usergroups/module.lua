@@ -11,21 +11,14 @@ MODULE.Privileges = {
 }
 
 local CHUNK = 60000
-local function buildDefaultTable(g)
-    local t = {}
-    for _, v in pairs(lia.administrator.privileges or {}) do
-        local min = v.MinAccess or "user"
-        if g == "superadmin" or g == "admin" and min ~= "superadmin" or min == "user" then t[v.Name] = true end
-    end
-    return t
-end
 
 if SERVER then
     local function syncPrivileges()
         lia.administrator.groups = lia.administrator.groups or {}
         for n in pairs(lia.administrator.groups) do
-            lia.administrator.groups[n] = lia.administrator.groups[n] or buildDefaultTable(n)
+            lia.administrator.groups[n] = lia.administrator.groups[n] or {}
         end
+        lia.administrator.syncPrivileges()
     end
 
     local function getPrivMap()
@@ -118,7 +111,6 @@ if SERVER then
         if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
         if lia.administrator.groups[n] then return end
         lia.administrator.createGroup(n)
-        lia.administrator.groups[n] = buildDefaultTable(n)
         lia.administrator.save()
         broadcastGroups()
         p:notify(p, "Group '" .. n .. "' created.")
