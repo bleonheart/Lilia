@@ -95,8 +95,7 @@ function PANEL:AddTextRow(data)
             if d then
                 d:SetPos(pad, pad + t:GetTall() + 5)
                 d:SetWide(p:GetWide() - pad * 2 - (r and r:GetWide() + 10 or 0))
-                local _, h = d:GetContentSize()
-                d:SetTall(h)
+                d:SizeToContentsY()
             end
 
             if r then
@@ -150,8 +149,7 @@ function PANEL:AddPreviewRow(data)
             if d then
                 d:SetPos(pad + size + pad, pad + t:GetTall() + 5)
                 d:SetWide(p:GetWide() - (pad + size + pad) - pad - (r and r:GetWide() + 10 or 0))
-                local _, h = d:GetContentSize()
-                d:SetTall(h)
+                d:SizeToContentsY()
             end
 
             if r then
