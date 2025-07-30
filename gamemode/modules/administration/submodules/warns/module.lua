@@ -19,8 +19,8 @@ if CLIENT then
         local list = panelRef:Add("DListView")
         list:Dock(FILL)
         list:AddColumn(L("timestamp")):SetFixedWidth(150)
-        list:AddColumn(L("warned", "Warned")):SetFixedWidth(110)
-        list:AddColumn(L("warner", "Warner")):SetFixedWidth(110)
+        list:AddColumn(L("Warned", "Warned")):SetFixedWidth(110)
+        list:AddColumn(L("Warner", "Warner")):SetFixedWidth(110)
         list:AddColumn(L("reason"))
         for _, warn in ipairs(warnings) do
             list:AddLine(warn.timestamp or "", warn.steamID or "", warn.admin or "", warn.reason or "")

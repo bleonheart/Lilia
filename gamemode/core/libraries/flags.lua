@@ -67,7 +67,7 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
                     derma.SkinHook("Paint", "Panel", pnl2, w, h)
                     local hasFlag = client:hasFlags(flagName)
                     local icon = hasFlag and "checkbox.png" or "unchecked.png"
-                    local s = 32
+                    local s = 40
                     lia.util.drawTexture(icon, color_white, w - s - sheet.padding, h * 0.5 - s * 0.5, s, s)
                 end
 
