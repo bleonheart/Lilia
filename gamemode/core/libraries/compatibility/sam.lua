@@ -227,13 +227,13 @@ lia.command.add("plygetplaytime", {
     end
 })
 
-lia.admin.registerPrivilege({
+lia.adminstrator.registerPrivilege({
     Name = "Can See SAM Notifications Outside Staff Character",
     MinAccess = "superadmin",
     Category = "SAM"
 })
 
-lia.admin.registerPrivilege({
+lia.adminstrator.registerPrivilege({
     Name = "Can Bypass Staff Faction SAM Command whitelist",
     MinAccess = "superadmin",
     Category = "SAM"

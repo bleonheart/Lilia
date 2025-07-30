@@ -7,7 +7,7 @@ function MODULE:InitializedModules()
         for name in pairs(properties.List) do
             if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
                 local privilege = "Access Property " .. name:gsub("^%l", string.upper)
-                lia.admin.registerPrivilege({
+                lia.adminstrator.registerPrivilege({
                     Name = privilege,
                     MinAccess = "admin",
                     Category = "Properties"
@@ -20,7 +20,7 @@ function MODULE:InitializedModules()
         if wep.ClassName == "gmod_tool" and wep.Tool then
             for tool in pairs(wep.Tool) do
                 local privilege = "Access Tool " .. tool:gsub("^%l", string.upper)
-                lia.admin.registerPrivilege({
+                lia.adminstrator.registerPrivilege({
                     Name = privilege,
                     MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
                     Category = "Tools"

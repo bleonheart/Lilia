@@ -69,7 +69,7 @@ lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
     max = 20
 })
 
-lia.admin.registerPrivilege({
+lia.adminstrator.registerPrivilege({
     Name = "Can Edit Simfphys Cars",
     MinAccess = "superadmin",
     Category = "Simfphys"

@@ -1,34 +1,34 @@
-﻿lia.admin = lia.admin or {}
-lia.admin.groups = lia.admin.groups or {}
-lia.admin.privileges = lia.admin.privileges or {}
-lia.admin.DefaultGroups = {
+﻿lia.adminstrator = lia.adminstrator or {}
+lia.adminstrator.groups = lia.adminstrator.groups or {}
+lia.adminstrator.privileges = lia.adminstrator.privileges or {}
+lia.adminstrator.DefaultGroups = {
     user = true,
     admin = true,
     superadmin = true,
 }
 
-function lia.admin.load()
+function lia.adminstrator.load()
     local function continueLoad(groups, privileges)
-        lia.admin.groups = groups or {}
-        lia.admin.privileges = privileges or lia.admin.privileges or {}
+        lia.adminstrator.groups = groups or {}
+        lia.adminstrator.privileges = privileges or lia.adminstrator.privileges or {}
         local defaults = {"user", "admin", "superadmin"}
         local created = false
-        if table.Count(lia.admin.groups) == 0 then
+        if table.Count(lia.adminstrator.groups) == 0 then
             for _, grp in ipairs(defaults) do
-                lia.admin.createGroup(grp)
+                lia.adminstrator.createGroup(grp)
             end
 
             created = true
         else
             for _, grp in ipairs(defaults) do
-                if not lia.admin.groups[grp] then
-                    lia.admin.createGroup(grp)
+                if not lia.adminstrator.groups[grp] then
+                    lia.adminstrator.createGroup(grp)
                     created = true
                 end
             end
         end
 
-        if created then lia.admin.save() end
+        if created then lia.adminstrator.save() end
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
@@ -39,99 +39,107 @@ function lia.admin.load()
     end)
 end
 
-function lia.admin.createGroup(groupName, info)
-    if lia.admin.groups[groupName] then
+function lia.adminstrator.createGroup(groupName, info)
+    if lia.adminstrator.groups[groupName] then
         lia.error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
 
-    lia.admin.groups[groupName] = info or {}
-    if SERVER then lia.admin.save() end
+    lia.adminstrator.groups[groupName] = info or {}
+    if SERVER then lia.adminstrator.save() end
 end
 
-function lia.admin.registerPrivilege(privilege)
+function lia.adminstrator.registerPrivilege(privilege)
     if not privilege or not privilege.Name then return end
-    lia.admin.privileges[privilege.Name] = privilege
+    lia.adminstrator.privileges[privilege.Name] = privilege
 end
 
-function lia.admin.removeGroup(groupName)
+function lia.adminstrator.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
         lia.error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
 
-    if not lia.admin.groups[groupName] then
+    if not lia.adminstrator.groups[groupName] then
         lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
         return
     end
 
-    lia.admin.groups[groupName] = nil
-    if SERVER then lia.admin.save() end
+    lia.adminstrator.groups[groupName] = nil
+    if SERVER then lia.adminstrator.save() end
 end
 
-function lia.admin.renameGroup(oldName, newName)
-    if lia.admin.DefaultGroups[oldName] then
+function lia.adminstrator.renameGroup(oldName, newName)
+    if lia.adminstrator.DefaultGroups[oldName] then
         lia.error("[Lilia Administration] The base usergroups cannot be renamed!\n")
         return
     end
 
-    if not lia.admin.groups[oldName] then
+    if not lia.adminstrator.groups[oldName] then
         lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
         return
     end
 
-    if lia.admin.groups[newName] then
+    if lia.adminstrator.groups[newName] then
         lia.error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
 
-    lia.admin.groups[newName] = lia.admin.groups[oldName]
-    lia.admin.groups[oldName] = nil
-    if SERVER then lia.admin.save() end
+    lia.adminstrator.groups[newName] = lia.adminstrator.groups[oldName]
+    lia.adminstrator.groups[oldName] = nil
+    if SERVER then lia.adminstrator.save() end
 end
 
 if SERVER then
-    function lia.admin.addPermission(groupName, permission)
-        if not lia.admin.groups[groupName] then
+    function lia.adminstrator.addPermission(groupName, permission)
+        if not lia.adminstrator.groups[groupName] then
             lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
-        if lia.admin.DefaultGroups[groupName] then return end
-        lia.admin.groups[groupName][permission] = true
+        if lia.adminstrator.DefaultGroups[groupName] then return end
+        lia.adminstrator.groups[groupName][permission] = true
         if SERVER then
-            lia.admin.save()
-            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
+            lia.adminstrator.save()
+            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.adminstrator.groups[groupName])
         end
     end
 
-    function lia.admin.removePermission(groupName, permission)
-        if not lia.admin.groups[groupName] then
+    function lia.adminstrator.removePermission(groupName, permission)
+        if not lia.adminstrator.groups[groupName] then
             lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
-        if lia.admin.DefaultGroups[groupName] then return end
-        lia.admin.groups[groupName][permission] = nil
+        if lia.adminstrator.DefaultGroups[groupName] then return end
+        lia.adminstrator.groups[groupName][permission] = nil
         if SERVER then
-            lia.admin.save()
-            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
+            lia.adminstrator.save()
+            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.adminstrator.groups[groupName])
         end
     end
 
-    function lia.admin.save(noNetwork)
+    function lia.adminstrator.sync(client)
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.adminstrator.groups)
+        if client and IsValid(client) then
+            net.Start(client)
+        else
+            net.Broadcast()
+        end
+    end
+
+    function lia.adminstrator.save(noNetwork)
         lia.db.upsert({
-            usergroups = util.TableToJSON(lia.admin.groups),
-            privileges = util.TableToJSON(lia.admin.privileges)
+            usergroups = util.TableToJSON(lia.adminstrator.groups),
+            privileges = util.TableToJSON(lia.adminstrator.privileges)
         }, "admin")
 
         if noNetwork then return end
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.admin.groups)
-        net.Broadcast()
+        lia.adminstrator.sync()
     end
 else
-    function lia.admin.execCommand(cmd, victim, dur, reason)
+    function lia.adminstrator.execCommand(cmd, victim, dur, reason)
         if hook.Run("RunAdminSystemCommand") == true then return end
         local id = IsValid(victim) and victim:SteamID() or tostring(victim)
         if cmd == "kick" then

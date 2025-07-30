@@ -392,7 +392,7 @@ function GM:ShutDown()
         if v:getChar() then v:getChar():save() end
     end
 
-    lia.admin.save(true)
+    lia.adminstrator.save(true)
 end
 
 function GM:PlayerAuthed(client, steamid)
@@ -470,9 +470,7 @@ function GM:PlayerInitialSpawn(client)
         end
 
         hook.Run("PlayerLiliaDataLoaded", client)
-        net.Start("updateAdminGroups")
-        net.WriteTable(lia.admin.groups)
-        net.Broadcast()
+        lia.adminstrator.sync(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)
@@ -923,7 +921,7 @@ function GM:LiliaTablesLoaded()
     lia.db.addDatabaseFields()
     lia.data.loadTables()
     lia.data.loadPersistence()
-    lia.admin.load()
+    lia.adminstrator.load()
     lia.config.load()
     hook.Run("LoadData")
     hook.Run("PostLoadData")
@@ -974,7 +972,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
     local usergroup = args[2]
     if not IsValid(ply) then
         if IsValid(target) then
-            if lia.admin.groups[usergroup] then
+            if lia.adminstrator.groups[usergroup] then
                 target:SetUserGroup(usergroup)
                 lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID64()))
             else

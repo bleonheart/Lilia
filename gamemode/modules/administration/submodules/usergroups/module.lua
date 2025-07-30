@@ -42,26 +42,38 @@ if SERVER then
     end
 
     local function getPrivMap()
-        local map = {}
+        local byCat = {}
+        local seen = {}
         for k, v in pairs(lia.admin.privileges or {}) do
-            local name = istable(v) and v.Name or k
-            local cat = istable(v) and (v.Category or "General") or "General"
-            if name then
-                map[cat] = map[cat] or {}
-                table.insert(map[cat], name)
+            local name, cat
+            if istable(v) then
+                name = v.Name or isstring(k) and k or nil
+                cat = v.Category or "General"
+            elseif isstring(v) then
+                name = v
+                cat = "General"
+            end
+
+            if isstring(name) and name ~= "" and not seen[name] then
+                seen[name] = true
+                cat = isstring(cat) and cat or "General"
+                byCat[cat] = byCat[cat] or {}
+                byCat[cat][#byCat[cat] + 1] = name
             end
         end
 
         local cats = {}
-        for c in pairs(map) do
-            table.sort(map[c], function(a, b) return a:lower() < b:lower() end)
+        for c in pairs(byCat) do
             cats[#cats + 1] = c
         end
 
         table.sort(cats, function(a, b) return a:lower() < b:lower() end)
+        for _, c in ipairs(cats) do
+            table.sort(byCat[c], function(a, b) return a:lower() < b:lower() end)
+        end
         return {
             categories = cats,
-            byCategory = map
+            byCategory = byCat
         }
     end
 
@@ -202,9 +214,45 @@ else
         if IsValid(o) then o:SetFont(f) end
     end
 
+    local function computePrivMapLocal()
+        local byCat = {}
+        local seen = {}
+        for k, v in pairs(lia.admin.privileges or {}) do
+            local name, cat
+            if istable(v) then
+                name = v.Name or isstring(k) and k or nil
+                cat = v.Category or "General"
+            elseif isstring(v) then
+                name = v
+                cat = "General"
+            end
+
+            if isstring(name) and name ~= "" and not seen[name] then
+                seen[name] = true
+                cat = isstring(cat) and cat or "General"
+                byCat[cat] = byCat[cat] or {}
+                byCat[cat][#byCat[cat] + 1] = name
+            end
+        end
+
+        local cats = {}
+        for c in pairs(byCat) do
+            cats[#cats + 1] = c
+        end
+
+        table.sort(cats, function(a, b) return a:lower() < b:lower() end)
+        for _, c in ipairs(cats) do
+            table.sort(byCat[c], function(a, b) return a:lower() < b:lower() end)
+        end
+        return {
+            categories = cats,
+            byCategory = byCat
+        }
+    end
+
     local function buildCategoryList(parent, g, perms, editable)
         local wrap = parent:Add("DPanel")
-        wrap:Dock(BOTTOM)
+        wrap:Dock(FILL)
         wrap:DockMargin(20, 0, 20, 4)
         wrap.Paint = function() end
         local catList = vgui.Create("DCategoryList", wrap)
@@ -244,14 +292,14 @@ else
 
         for _, catName in ipairs(PRIV_MAP.categories or {}) do
             local cat = catList:Add(catName)
-            cat:SetExpanded(false)
-            local list = vgui.Create("DListLayout")
+            local list = vgui.Create("DListLayout", cat)
             list:Dock(FILL)
             for _, privName in ipairs(PRIV_MAP.byCategory[catName] or {}) do
                 addRow(list, privName)
             end
 
             cat:SetContents(list)
+            cat:SetExpanded(false)
             cat.OnToggle = function()
                 timer.Simple(0, function()
                     if not IsValid(wrap) then return end
@@ -298,12 +346,9 @@ else
         inhVal:SetText("user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
-        local spacer = scroll:Add("DPanel")
-        spacer:Dock(FILL)
-        spacer.Paint = function() end
         local privLbl = scroll:Add("DLabel")
-        privLbl:Dock(BOTTOM)
-        privLbl:DockMargin(20, 0, 0, 6)
+        privLbl:Dock(TOP)
+        privLbl:DockMargin(20, 10, 0, 6)
         privLbl:SetText("Privileges")
         setFont(privLbl, "liaBigFont")
         privLbl:SizeToContents()
@@ -414,6 +459,7 @@ else
             byCategory = {}
         }
 
+        if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 then PRIV_MAP = computePrivMapLocal() end
         lia.admin.groups = tbl.groups or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.admin.groups, lia.admin.groups) end
     end
