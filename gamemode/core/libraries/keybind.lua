@@ -314,7 +314,7 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 end
 
                 lia.keybind.save()
-                sheet:Refresh()
+                buildKeybinds(parent)
             end
         end
     end
