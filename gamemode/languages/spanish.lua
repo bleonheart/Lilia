@@ -205,6 +205,7 @@ LANGUAGE = {
     plygetplaytimeDesc = "Muestra el tiempo total de un personaje.",
     workshopAddons = "Addons",
     totalAutoAddons = "Addons auto‑descargados: %s",
+    addonSize = "Este addon pesa %s",
     itemOnGround = "Tu ítem se colocó en el suelo.",
     fixpac_success = "PAC reiniciado y cachés limpiados.",
     pacenable_success = "PAC habilitado.",

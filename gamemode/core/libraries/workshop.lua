@@ -289,24 +289,24 @@ else
                 for id in pairs(ids) do
                     steamworks.FileInfo(id, function(fi)
                         if not fi then return end
-                        local title = fi.title or "ID:" .. id
-                        local desc = fi.description or ""
-                        local url = fi.previewurl or ""
-                        if sheet.AddPreviewRow then
-                            sheet:AddPreviewRow({
+                    local title = fi.title or "ID:" .. id
+                    local desc = fi.size and L("addonSize", formatSize(fi.size)) or ""
+                    local url = fi.previewurl or ""
+                    if sheet.AddPreviewRow then
+                        sheet:AddPreviewRow({
+                            title = title,
+                            desc = desc,
+                            url = url,
+                            size = 128
+                        })
+                    else
+                        if sheet.AddTextRow then
+                            sheet:AddTextRow({
                                 title = title,
-                                desc = desc,
-                                url = url,
-                                size = 128
+                                desc = desc
                             })
-                        else
-                            if sheet.AddTextRow then
-                                sheet:AddTextRow({
-                                    title = title,
-                                    desc = desc
-                                })
-                            end
                         end
+                    end
 
                         if IsValid(sheet) and sheet.Refresh then sheet:Refresh() end
                     end)
