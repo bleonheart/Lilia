@@ -1640,7 +1640,13 @@ function MODULE:InitPostEntity()
 end
 
 function MODULE:CreateInformationButtons(pages)
+    -- Moved to the admin tab
+end
+
+function MODULE:CreateMenuButtons(tabs)
     local client = LocalPlayer()
+    if not (IsValid(client) and client:isStaffOnDuty()) then return end
+
     local entitiesByCreator = {}
     for _, ent in ents.Iterator() do
         if IsValid(ent) and ent.GetCreator and IsValid(ent:GetCreator()) then
@@ -1684,13 +1690,11 @@ function MODULE:CreateInformationButtons(pages)
     end
 
     if not table.IsEmpty(entitiesByCreator) then
-        table.insert(pages, {
-            name = L("entities"),
-            drawFunc = function(entitiesPanel)
-                local count = 0
-                for _, list in pairs(entitiesByCreator) do
-                    count = count + #list
-                end
+        tabs[L("entities")] = function(entitiesPanel)
+            local count = 0
+            for _, list in pairs(entitiesByCreator) do
+                count = count + #list
+            end
 
                 local statsPanel = vgui.Create("DPanel", entitiesPanel)
                 statsPanel:Dock(TOP)
@@ -1806,7 +1810,7 @@ function MODULE:CreateInformationButtons(pages)
                     tabs:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), page)
                 end
             end
-        })
+        end
     end
 end
 
