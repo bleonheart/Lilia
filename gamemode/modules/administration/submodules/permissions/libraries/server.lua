@@ -326,5 +326,4 @@ local function handleDatabaseWipe(commandName)
     end)
 end
 
-handleDatabaseWipe("lia_recreatedb")
 handleDatabaseWipe("lia_wipedb")
