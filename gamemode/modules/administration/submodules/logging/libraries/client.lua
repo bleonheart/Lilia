@@ -22,12 +22,6 @@ local function OpenLogsUI(panel, categorizedLogs)
         list:AddColumn(L("timestamp")):SetFixedWidth(150)
         list:AddColumn(L("logMessage"))
         list:AddColumn(L("steamID")):SetFixedWidth(110)
-
-        local copyButton = page:Add("liaMediumButton")
-        copyButton:Dock(BOTTOM)
-        copyButton:SetText(L("copySelectedRow"))
-        copyButton:SetTall(40)
-
         local function populate(filter)
             filter = string.lower(filter or "")
             list:Clear()
@@ -35,24 +29,30 @@ local function OpenLogsUI(panel, categorizedLogs)
                 local msgMatch = string.find(string.lower(log.message), filter, 1, true)
                 local idMatch = log.steamID and string.find(string.lower(log.steamID), filter, 1, true)
                 if filter == "" or msgMatch or idMatch then
-                    list:AddLine(log.timestamp, log.message, log.steamID or "")
+                    local line = list:AddLine(log.timestamp, log.message, log.steamID or "")
+                    line.rowData = log
                 end
             end
         end
 
         search.OnChange = function() populate(search:GetValue()) end
-
-        copyButton.DoClick = function()
-            local sel = list:GetSelectedLine()
-            if sel then
-                local line = list:GetLine(sel)
-                local text = "[" .. line:GetColumnText(1) .. "] " .. line:GetColumnText(2)
-                local id = line:GetColumnText(3)
-                if id and id ~= "" then text = text .. " [" .. id .. "]" end
-                SetClipboardText(text)
+        list.OnRowRightClick = function(_, _, line)
+            if not IsValid(line) or not line.rowData then return end
+            local data = line.rowData
+            local menu = DermaMenu()
+            if data.steamID and data.steamID ~= "" then
+                menu:AddOption(L("copySteamID"), function() SetClipboardText(data.steamID) end)
             end
+            menu:AddOption(L("copyLogMessage"), function() SetClipboardText(data.message or "") end)
+            menu:AddOption(L("copyRow"), function()
+                local text = "[" .. data.timestamp .. "] " .. data.message
+                if data.steamID and data.steamID ~= "" then
+                    text = text .. " [" .. data.steamID .. "]"
+                end
+                SetClipboardText(text)
+            end)
+            menu:Open()
         end
-
         populate("")
         sheet:AddSheet(category, page)
     end
