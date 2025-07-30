@@ -231,7 +231,6 @@ hook.Add("CreateInformationButtons", "liaInformationModulesUnified", function(pa
                     title = title,
                     desc = desc,
                     right = right,
-                    compact = true
                 })
 
                 row.filterText = (title .. " " .. desc .. " " .. right):lower()
