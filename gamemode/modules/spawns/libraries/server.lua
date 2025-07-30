@@ -1,5 +1,4 @@
 ﻿local MODULE = MODULE
-local encodetable = lia.data.encodetable
 function MODULE:FetchSpawns()
     local d = deferred.new()
     local stored = lia.data.get("spawns", {})
@@ -32,7 +31,7 @@ function MODULE:StoreSpawns(spawns)
     for fac, list in pairs(spawns or {}) do
         factions[fac] = {}
         for _, data in ipairs(list) do
-            factions[fac][#factions[fac] + 1] = encodetable(data)
+            factions[fac][#factions[fac] + 1] = lia.data.encodetable(data)
         end
     end
 
@@ -43,21 +42,11 @@ function MODULE:StoreSpawns(spawns)
 end
 
 local function SpawnPlayer(client)
-    print("[SpawnPlayer] called for", IsValid(client) and client:Name() or tostring(client))
-    if not IsValid(client) then
-        print("[SpawnPlayer] invalid client")
-        return
-    end
-
+    if not IsValid(client) then return end
     local character = client:getChar()
-    if not character then
-        print("[SpawnPlayer] no character")
-        return
-    end
-
+    if not character then return end
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
-        print("[SpawnPlayer] using last position")
         client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
         client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
@@ -72,20 +61,16 @@ local function SpawnPlayer(client)
         end
     end
 
-    print("[SpawnPlayer] factionID", factionID or "nil")
     if factionID then
         MODULE:FetchSpawns():next(function(spawns)
-            print("[SpawnPlayer] spawns fetched:", spawns and "ok" or "nil")
             local factionSpawns = spawns and spawns[factionID]
-            print("[SpawnPlayer] spawn count", factionSpawns and #factionSpawns or 0)
             if factionSpawns and #factionSpawns > 0 then
                 local valid = {}
                 local curMap = game.GetMap():lower()
                 for _, v in ipairs(factionSpawns) do
-                    if not v.map or v.map:lower() == curMap then
-                        valid[#valid + 1] = v
-                    end
+                    if not v.map or v.map:lower() == curMap then valid[#valid + 1] = v end
                 end
+
                 if #valid > 0 then
                     local data = table.Random(valid)
                     local basePos = data.pos or data
@@ -94,19 +79,12 @@ local function SpawnPlayer(client)
                     local pos = basePos + Vector(0, 0, 16)
                     local ang = data.ang
                     if not isangle(ang) then ang = lia.data.decodeAngle(ang) or angle_zero end
-                    print("[SpawnPlayer] selected pos", pos, "ang", ang)
                     client:SetPos(pos)
                     client:SetEyeAngles(ang)
                     hook.Run("PlayerSpawnPointSelected", client, pos, ang)
-                else
-                    print("[SpawnPlayer] no spawns for this map")
                 end
-            else
-                print("[SpawnPlayer] no valid spawns for faction")
             end
-        end, function(err) print("[SpawnPlayer] FetchSpawns error:", err) end)
-    else
-        print("[SpawnPlayer] missing factionID")
+        end, function(err) end)
     end
 end
 
