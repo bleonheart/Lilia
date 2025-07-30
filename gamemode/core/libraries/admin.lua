@@ -11,6 +11,7 @@ function lia.administrator.load()
     local function continueLoad(groups, privileges)
         lia.administrator.groups = groups or {}
         lia.administrator.privileges = privileges or lia.administrator.privileges or {}
+        lia.administrator.syncPrivileges()
         local defaults = {"user", "admin", "superadmin"}
         local created = false
         if table.Count(lia.administrator.groups) == 0 then
@@ -46,12 +47,36 @@ function lia.administrator.createGroup(groupName, info)
     end
 
     lia.administrator.groups[groupName] = info or {}
+    lia.administrator.syncPrivileges()
     if SERVER then lia.administrator.save() end
+end
+
+local function shouldGrant(g, min)
+    return g == "superadmin" or g == "admin" and min ~= "superadmin" or min == "user"
+end
+
+local function grantPrivilegeToGroups(priv)
+    if not SERVER then return end
+    local min = priv.MinAccess or "user"
+    for groupName, permissions in pairs(lia.administrator.groups or {}) do
+        permissions = permissions or {}
+        lia.administrator.groups[groupName] = permissions
+        if shouldGrant(groupName, min) and not permissions[priv.Name] then
+            permissions[priv.Name] = true
+        end
+    end
+end
+
+function lia.administrator.syncPrivileges()
+    for _, priv in pairs(lia.administrator.privileges or {}) do
+        grantPrivilegeToGroups(priv)
+    end
 end
 
 function lia.administrator.registerPrivilege(privilege)
     if not privilege or not privilege.Name then return end
     lia.administrator.privileges[privilege.Name] = privilege
+    grantPrivilegeToGroups(privilege)
 end
 
 function lia.administrator.removeGroup(groupName)
