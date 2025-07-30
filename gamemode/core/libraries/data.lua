@@ -81,12 +81,14 @@ function lia.data.deserialize(raw)
     local decoded
     if istable(raw) then
         decoded = raw
-    else
+    elseif isstring(raw) then
         decoded = util.JSONToTable(raw)
         if not decoded then
             local ok, ponDecoded = pcall(pon.decode, raw)
             if ok then decoded = ponDecoded end
         end
+    else
+        decoded = raw
     end
 
     if decoded == nil then return nil end
@@ -98,12 +100,14 @@ function lia.data.decodeVector(raw)
     local decoded
     if istable(raw) then
         decoded = raw
-    else
+    elseif isstring(raw) then
         decoded = util.JSONToTable(raw)
         if not decoded then
             local ok, ponDecoded = pcall(pon.decode, raw)
             if ok then decoded = ponDecoded end
         end
+    else
+        decoded = raw
     end
 
     if decoded == nil then return nil end
@@ -115,12 +119,14 @@ function lia.data.decodeAngle(raw)
     local decoded
     if istable(raw) then
         decoded = raw
-    else
+    elseif isstring(raw) then
         decoded = util.JSONToTable(raw)
         if not decoded then
             local ok, ponDecoded = pcall(pon.decode, raw)
             if ok then decoded = ponDecoded end
         end
+    else
+        decoded = raw
     end
 
     if decoded == nil then return nil end
