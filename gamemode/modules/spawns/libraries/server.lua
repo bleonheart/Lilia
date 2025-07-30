@@ -79,17 +79,28 @@ local function SpawnPlayer(client)
             local factionSpawns = spawns and spawns[factionID]
             print("[SpawnPlayer] spawn count", factionSpawns and #factionSpawns or 0)
             if factionSpawns and #factionSpawns > 0 then
-                local data = table.Random(factionSpawns)
-                local basePos = data.pos or data
-                if not isvector(basePos) then basePos = lia.data.decodeVector(basePos) end
-                if not isvector(basePos) then basePos = Vector(0, 0, 0) end
-                local pos = basePos + Vector(0, 0, 16)
-                local ang = data.ang
-                if not isangle(ang) then ang = lia.data.decodeAngle(ang) or angle_zero end
-                print("[SpawnPlayer] selected pos", pos, "ang", ang)
-                client:SetPos(pos)
-                client:SetEyeAngles(ang)
-                hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+                local valid = {}
+                local curMap = game.GetMap():lower()
+                for _, v in ipairs(factionSpawns) do
+                    if not v.map or v.map:lower() == curMap then
+                        valid[#valid + 1] = v
+                    end
+                end
+                if #valid > 0 then
+                    local data = table.Random(valid)
+                    local basePos = data.pos or data
+                    if not isvector(basePos) then basePos = lia.data.decodeVector(basePos) end
+                    if not isvector(basePos) then basePos = Vector(0, 0, 0) end
+                    local pos = basePos + Vector(0, 0, 16)
+                    local ang = data.ang
+                    if not isangle(ang) then ang = lia.data.decodeAngle(ang) or angle_zero end
+                    print("[SpawnPlayer] selected pos", pos, "ang", ang)
+                    client:SetPos(pos)
+                    client:SetEyeAngles(ang)
+                    hook.Run("PlayerSpawnPointSelected", client, pos, ang)
+                else
+                    print("[SpawnPlayer] no spawns for this map")
+                end
             else
                 print("[SpawnPlayer] no valid spawns for faction")
             end
