@@ -175,30 +175,6 @@ else
         btnBar:DockMargin(20, 20, 20, 12)
         btnBar.Paint = function() end
         local editable = not lia.admin.DefaultGroups[g]
-        local tickAll = btnBar:Add("liaSmallButton")
-        tickAll:Dock(LEFT)
-        tickAll:SetWide(90)
-        tickAll:SetText("Tick All")
-        local untickAll = btnBar:Add("liaSmallButton")
-        untickAll:Dock(LEFT)
-        untickAll:DockMargin(6, 0, 0, 0)
-        untickAll:SetWide(90)
-        untickAll:SetText("Untick All")
-        local defaultsBtn = btnBar:Add("liaSmallButton")
-        defaultsBtn:Dock(LEFT)
-        defaultsBtn:DockMargin(6, 0, 0, 0)
-        defaultsBtn:SetWide(90)
-        defaultsBtn:SetText("Defaults")
-        local saveBtn = btnBar:Add("liaSmallButton")
-        saveBtn:Dock(RIGHT)
-        saveBtn:SetWide(90)
-        saveBtn:SetText("Save")
-        if not editable then
-            tickAll:SetEnabled(false)
-            untickAll:SetEnabled(false)
-            defaultsBtn:SetEnabled(false)
-            saveBtn:SetEnabled(false)
-        end
 
         local delBtn
         if not lia.admin.DefaultGroups[g] then
@@ -248,7 +224,6 @@ else
         local list = vgui.Create("DListLayout", listHolder)
         list:Dock(FILL)
         local current = table.Copy(perms[g] or {})
-        local checkboxes = {}
         surface.SetFont("liaMediumFont")
         local _, fh = surface.GetTextSize("W")
         local rowH = fh + 24
@@ -282,8 +257,6 @@ else
                 local m = math.floor((h - chk:GetTall()) * 0.5)
                 chk:DockMargin(0, m, 0, 0)
             end
-
-            checkboxes[#checkboxes + 1] = chk
         end
 
         list:InvalidateLayout(true)
@@ -293,28 +266,6 @@ else
         end
 
         listHolder:SetTall(h)
-        local function setAll(state)
-            for _, cb in ipairs(checkboxes) do
-                cb:SetChecked(state)
-            end
-        end
-
-        tickAll.DoClick = function() if editable then setAll(true) end end
-        untickAll.DoClick = function() if editable then setAll(false) end end
-        defaultsBtn.DoClick = function()
-            if not editable then return end
-            net.Start("liaGroupsDefaults")
-            net.WriteString(g)
-            net.SendToServer()
-        end
-
-        saveBtn.DoClick = function()
-            if not editable then return end
-            net.Start("liaGroupsApply")
-            net.WriteString(g)
-            net.WriteTable(current)
-            net.SendToServer()
-        end
 
         if delBtn then
             delBtn.DoClick = function()
@@ -358,7 +309,7 @@ else
         end
 
         local addBtn = sidebar:Add("liaMediumButton")
-        addBtn:Dock(TOP)
+        addBtn:Dock(BOTTOM)
         addBtn:DockMargin(0, 20, 0, 0)
         addBtn:SetTall(36)
         addBtn:SetText("Create Group")
