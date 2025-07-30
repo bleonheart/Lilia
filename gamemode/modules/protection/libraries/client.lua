@@ -1639,7 +1639,7 @@ function MODULE:InitPostEntity()
     end
 end
 
-function MODULE:CreateMenuButtons(tabs)
+function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     if not (IsValid(client) and client:isStaffOnDuty()) then return end
     local entitiesByCreator = {}
@@ -1685,7 +1685,9 @@ function MODULE:CreateMenuButtons(tabs)
     end
 
     if not table.IsEmpty(entitiesByCreator) then
-        tabs[L("entities")] = function(entitiesPanel)
+        table.insert(pages, {
+            name = L("entities"),
+            drawFunc = function(entitiesPanel)
             local count = 0
             for _, list in pairs(entitiesByCreator) do
                 count = count + #list
@@ -1802,7 +1804,7 @@ function MODULE:CreateMenuButtons(tabs)
                 sheet:Refresh()
                 tabs:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), page)
             end
-        end
+        })
     end
 end
 
