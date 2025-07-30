@@ -423,7 +423,7 @@ else
     end)
 
     function MODULE:CreateMenuButtons(tabs)
-        if IsValid(LocalPlayer()) and LocalPlayer():IsSuperAdmin() and LocalPlayer():hasPrivilege("Manage UserGroups") then
+        if IsValid(LocalPlayer()) then
             tabs[L("userGroups")] = function(parent)
                 lia.gui.usergroups = parent
                 parent:Clear()

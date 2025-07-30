@@ -438,7 +438,6 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             local sheet = parent:Add("liaSheet")
             sheet:Dock(FILL)
             sheet:SetPlaceholderText(L("searchOptions"))
-
             local function refresh()
                 sheet:Clear()
                 buildOptions(sheet.canvas, sheet.search:GetValue():lower())
@@ -459,11 +458,13 @@ lia.option.add("descriptionWidth", "Description Width", "Adjust the description 
 })
 
 lia.option.add("invertWeaponScroll", "Invert Weapon Scroll", "Invert the weapon selection scroll direction", false, nil, {
-    category = "Weapon Selector"
+    category = "Weapon Selector",
+    isQuick = true,
 })
 
 lia.option.add("autoDownloadWorkshop", "Auto Workshop Download", "Automatically download server Workshop content", nil, nil, {
     category = "Workshop",
     type = "Boolean",
+    isQuick = true,
     shouldNetwork = true
 })

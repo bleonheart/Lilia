@@ -305,25 +305,3 @@ end
 function GM:CanPlayerUseChar(client)
     if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("Can Bypass Character Lock") then return false, L("serverEventCharLock") end
 end
-
-local function handleDatabaseWipe(commandName)
-    concommand.Add(commandName, function(client)
-        if IsValid(client) then
-            client:notifyLocalized("commandConsoleOnly")
-            return
-        end
-
-        if resetCalled < RealTime() then
-            resetCalled = RealTime() + 3
-            MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeConfirm", commandName) .. "\n")
-        else
-            resetCalled = 0
-            MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeProgress") .. "\n")
-            hook.Run("OnWipeTables")
-            lia.db.wipeTables(lia.db.loadTables)
-            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-        end
-    end)
-end
-
-handleDatabaseWipe("lia_wipedb")

@@ -111,6 +111,40 @@ function PANEL:AddTextRow(data)
     end)
 end
 
+function PANEL:AddSubsheetRow(cfg)
+    cfg = cfg or {}
+    local title = cfg.title or ""
+    local build = cfg.build
+    return self:AddRow(function(p, row)
+        local cat = vgui.Create("DCollapsibleCategory", p)
+        cat:Dock(FILL)
+        cat:SetLabel("")
+        cat:SetExpanded(false)
+        cat.Header:SetTall(28)
+        cat.Header.Paint = function(pnl, w, h)
+            derma.SkinHook("Paint", "Panel", pnl, w, h)
+            draw.SimpleText(title, "liaSmallFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
+
+        local subsheet = vgui.Create("liaSheet", cat)
+        subsheet:Dock(FILL)
+        cat:SetContents(subsheet)
+        if build then build(subsheet) end
+        row.widget = cat
+        row.subsheet = subsheet
+        row.filterFunc = function(q)
+            subsheet.search:SetValue(q)
+            subsheet:Refresh()
+            for _, sr in ipairs(subsheet.rows or {}) do
+                if sr.panel:IsVisible() then return true end
+            end
+            return false
+        end
+
+        row.filterText = title:lower()
+    end)
+end
+
 function PANEL:AddPreviewRow(data)
     local title = data.title or ""
     local desc = data.desc or ""
@@ -121,6 +155,7 @@ function PANEL:AddPreviewRow(data)
         local html = vgui.Create("DHTML", p)
         html:SetSize(size, size)
         if url ~= "" then html:OpenURL(url) end
+        html:SetMouseInputEnabled(false)
         local t = vgui.Create("DLabel", p)
         t:SetFont("liaMediumFont")
         t:SetText(title)

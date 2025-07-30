@@ -967,13 +967,13 @@ concommand.Add("kickbots", function()
 end)
 
 concommand.Add("plysetgroup", function(ply, _, args)
-    local target = lia.util.findPlayer(args[1])
+    local target = lia.util.findPlayer(ply, args[1])
     local usergroup = args[2]
     if not IsValid(ply) then
         if IsValid(target) then
             if lia.admin.groups[usergroup] then
-                ply:SetUserGroup(usergroup)
-                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+                target:SetUserGroup(usergroup)
+                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID64()))
             else
                 MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
             end
@@ -1003,6 +1003,24 @@ concommand.Add("bots", function()
     end)
 end)
 
+concommand.Add("lia_wipedb", function(client)
+    if IsValid(client) then
+        client:notifyLocalized("commandConsoleOnly")
+        return
+    end
+
+    if resetCalled < RealTime() then
+        resetCalled = RealTime() + 3
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeConfirm", "lia_wipedb") .. "\n")
+    else
+        resetCalled = 0
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeProgress") .. "\n")
+        hook.Run("OnWipeTables")
+        lia.db.wipeTables(lia.db.loadTables)
+        game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
+    end
+end)
+
 concommand.Add("list_entities", function(client)
     local entityCount = {}
     local totalEntities = 0
@@ -1022,8 +1040,21 @@ concommand.Add("list_entities", function(client)
     end
 end)
 
+local oldRunConsole = RunConsoleCommand
+RunConsoleCommand = function(cmd, ...)
+    if cmd == "lia_wipedb" then return end
+    return oldRunConsole(cmd, ...)
+end
+
+local oldGameConsoleCommand = game.ConsoleCommand
+game.ConsoleCommand = function(cmd)
+    if cmd:sub(1, #"lia_wipedb") == "lia_wipedb" then return end
+    return oldGameConsoleCommand(cmd)
+end
+
 local networkStrings = {"actBar", "AdminModeSwapCharacter", "AnimationStatus", "ArgumentsRequest", "attrib", "BinaryQuestionRequest", "blindFade", "blindTarget", "ButtonRequest", "cfgList", "cfgSet", "CharacterInfo", "charInfo", "charKick", "charSet", "charVar", "CheckHack", "CheckSeed", "classUpdate", "cmd", "cMsg", "CreateTableUI", "DisplayCharList", "doorMenu", "doorPerm", "gVar", "invAct", "invData", "invQuantity", "KickCharacter", "lia_managesitrooms_action", "liaCharacterData", "liaCharacterInvList", "liaCharChoose", "liaCharCreate", "liaCharDelete", "liaCharFetchNames", "liaCharList", "liaCmdArgPrompt", "liaData", "liaDataSync", "liaGroupsAdd", "liaGroupsData", "liaGroupsRemove", "liaGroupsRequest", "liaInventoryAdd", "liaInventoryData", "liaInventoryDelete", "liaInventoryInit", "liaInventoryRemove", "liaItemDelete", "liaItemInspect", "liaItemInstance", "liaNotify", "liaNotifyL", "liaPACPartAdd", "liaPACPartRemove", "liaPACPartReset", "liaPACSync", "liaStorageExit", "liaStorageOpen", "liaStorageTransfer", "liaStorageUnlock", "liaTeleportToEntity", "liaTransferItem", "managesitrooms", "msg", "nDel", "NetStreamDS", "nLcl", "nVar", "OpenInvMenu", "OptionsRequest", "playerLoadedChar", "postPlayerLoadedChar", "prePlayerLoadedChar", "RegenChat", "removeF1", "request_respawn", "RequestDropdown", "rgnDone", "send_logs", "send_logs_request", "seqSet", "ServerChatAddText", "setWaypoint", "setWaypointWithLogo", "SpawnMenuGiveItem", "SpawnMenuSpawnItem", "StringRequest", "TicketSystem", "TicketSystemClaim", "TicketSystemClose", "TransferMoneyFromP2P", "trunkInitStorage", "updateAdminGroups", "VendorAllowClass", "VendorAllowFaction", "VendorEdit", "VendorExit", "VendorMaxStock", "VendorMode", "VendorMoney", "VendorOpen", "VendorPrice", "VendorStock", "VendorSync", "VendorTrade", "VerifyCheats", "VerifyCheatsResponse", "ViewClaims", "WorkshopDownloader_Info", "WorkshopDownloader_Request", "WorkshopDownloader_Start", "liaDBTables", "liaRequestTableData", "liaDBTableData"}
 for _, netString in ipairs(networkStrings) do
     util.AddNetworkString(netString)
 end
+
 util.AddNetworkString("RequestRoster")
