@@ -1692,11 +1692,6 @@ function MODULE:CreateInformationButtons(pages)
                     count = count + #list
                 end
 
-                local searchEntry = vgui.Create("DTextEntry", entitiesPanel)
-                searchEntry:Dock(TOP)
-                searchEntry:DockMargin(0, 0, 0, 5)
-                searchEntry:SetTall(30)
-                searchEntry:SetPlaceholderText(L("searchEntities"))
                 local statsPanel = vgui.Create("DPanel", entitiesPanel)
                 statsPanel:Dock(TOP)
                 statsPanel:DockMargin(10, 0, 10, 5)
@@ -1708,39 +1703,24 @@ function MODULE:CreateInformationButtons(pages)
                 statsLabel:SetTextColor(color_white)
                 statsLabel:SetContentAlignment(5)
                 statsLabel:SetText(L("totalPlayerEntities", count))
-                local scroll = vgui.Create("DScrollPanel", entitiesPanel)
-                scroll:Dock(FILL)
-                scroll:DockPadding(0, 0, 0, 10)
-                local canvas = scroll:GetCanvas()
-                local entries = {}
-                for owner, list in SortedPairs(entitiesByCreator) do
-                    local header = vgui.Create("DCollapsibleCategory", canvas)
-                    header:Dock(TOP)
-                    header:SetLabel(owner .. " - " .. #list .. " " .. L("entities"))
-                    header:SetExpanded(true)
-                    header.Header:SetFont("liaMediumFont")
-                    header.Header:SetTextColor(Color(255, 255, 255))
-                    header.Header:SetContentAlignment(5)
-                    header.Header:SetTall(30)
-                    header.Paint = function() end
-                    header.Header.Paint = function(_, w, h)
-                        surface.SetDrawColor(0, 0, 0, 255)
-                        surface.DrawOutlinedRect(0, 0, w, h, 2)
-                        surface.SetDrawColor(0, 0, 0, 150)
-                        surface.DrawRect(1, 1, w - 2, h - 2)
-                    end
 
-                    local listPanel = vgui.Create("DPanel", header)
-                    listPanel.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200)) end
-                    header:SetContents(listPanel)
-                    entries[header] = {}
+                local tabs = vgui.Create("DPropertySheet", entitiesPanel)
+                tabs:Dock(FILL)
+                tabs:DockPadding(0, 0, 0, 10)
+
+                for owner, list in SortedPairs(entitiesByCreator) do
+                    local page = vgui.Create("DPanel", tabs)
+                    page:Dock(FILL)
+                    page.Paint = function() end
+
+                    local sheet = vgui.Create("liaSheet", page)
+                    sheet:Dock(FILL)
+                    sheet:SetPlaceholderText(L("searchEntities"))
+
                     for _, ent in ipairs(list) do
                         local className = ent:GetClass()
-                        local itemPanel = vgui.Create("DPanel", listPanel)
-                        itemPanel:Dock(TOP)
-                        itemPanel:DockMargin(10, 15, 10, 10)
+                        local itemPanel = vgui.Create("DPanel")
                         itemPanel:SetTall(100)
-                        itemPanel.infoText = className:lower()
                         itemPanel.Paint = function(pnl, w, h)
                             derma.SkinHook("Paint", "Panel", pnl, w, h)
                             draw.SimpleText(className, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -1818,25 +1798,12 @@ function MODULE:CreateInformationButtons(pages)
                         btnWaypoint:SetTall(btnH)
                         btnWaypoint:SetText(L("waypointButton"))
                         btnWaypoint.DoClick = function() client:setWaypoint(className, ent:GetPos()) end
-                        entries[header][#entries[header] + 1] = itemPanel
-                    end
-                end
 
-                searchEntry.OnTextChanged = function(entry)
-                    local q = entry:GetValue():lower()
-                    for header, panels in pairs(entries) do
-                        local anyVisible = false
-                        for _, pnl in ipairs(panels) do
-                            local ok = q == "" or pnl.infoText:find(q, 1, true)
-                            pnl:SetVisible(ok)
-                            if ok then anyVisible = true end
-                        end
-
-                        header:SetVisible(anyVisible)
+                        sheet:AddPanelRow(itemPanel, {height = 100, filterText = className:lower()})
                     end
 
-                    canvas:InvalidateLayout()
-                    canvas:SizeToChildren(false, true)
+                    sheet:Refresh()
+                    tabs:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), page)
                 end
             end
         })
