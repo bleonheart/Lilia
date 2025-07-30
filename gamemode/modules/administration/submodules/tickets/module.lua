@@ -22,7 +22,7 @@ if CLIENT then
         list:AddColumn(L("timestamp")):SetFixedWidth(150)
         list:AddColumn(L("requester")):SetFixedWidth(110)
         list:AddColumn(L("claimingAdmin")):SetFixedWidth(110)
-        list:AddColumn(L("message", "Message"))
+        list:AddColumn(L("Ticket Message", "Message"))
         for _, t in pairs(tickets) do
             local admin = t.admin or L("unassignedLabel")
             local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
