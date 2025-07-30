@@ -1699,6 +1699,12 @@ function MODULE:PopulateAdminTabs(pages)
                     searchSheet:SetPlaceholderText(L("searchEntities"))
                     for _, ent in ipairs(list) do
                         local className = ent:GetClass()
+                        if className == "lia_item" and ent.getItemTable then
+                            local item = ent:getItemTable()
+                            if item and item.name then
+                                className = item.name
+                            end
+                        end
                         local itemPanel = vgui.Create("DPanel")
                         itemPanel:SetTall(100)
                         itemPanel.Paint = function(pnl, w, h)
