@@ -57,7 +57,7 @@ lia.command.add("roster", {
 
         local isLeader = client:IsSuperAdmin() or character:hasFlags("V")
         if not isLeader then return end
-        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline"
+        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
         if not character then
             client:notify("Character data not found for client:", client)
             return
@@ -96,11 +96,14 @@ lia.command.add("roster", {
                         lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
                     end
 
+                    local classID = tonumber(v._class) or 0
+                    local classData = lia.class.list[classID]
                     table.insert(characters, {
                         id = charID,
                         name = v.name,
                         faction = v.faction,
                         steamID = v.steamID,
+                        class = classData and classData.name or "None",
                         lastOnline = lastOnlineText,
                         hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
                     })
@@ -123,7 +126,7 @@ lia.command.add("factionmanagement", {
     desc = "factionManagementDesc",
     syntax = "[faction Faction]",
     onRun = function(client, arguments)
-        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline"
+        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
         local faction
         local arg = table.concat(arguments, " ")
         if arg ~= "" then
@@ -170,11 +173,14 @@ lia.command.add("factionmanagement", {
                         lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
                     end
 
+                    local classID = tonumber(v._class) or 0
+                    local classData = lia.class.list[classID]
                     table.insert(characters, {
                         id = charID,
                         name = v.name,
                         faction = v.faction,
                         steamID = v.steamID,
+                        class = classData and classData.name or "None",
                         lastOnline = lastOnlineText,
                         hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
                     })
