@@ -67,7 +67,7 @@ function PANEL:AddTextRow(data)
     local title = data.title or ""
     local desc = data.desc or ""
     local right = data.right or ""
-    return self:AddRow(function(p, row)
+    local row = self:AddRow(function(p, row)
         local t = vgui.Create("DLabel", p)
         t:SetFont("liaMediumFont")
         t:SetText(title)
@@ -109,6 +109,8 @@ function PANEL:AddTextRow(data)
 
         row.filterText = (title .. " " .. desc .. " " .. right):lower()
     end)
+    row.panel:InvalidateLayout(true)
+    return row
 end
 
 function PANEL:AddSubsheetRow(cfg)
@@ -151,7 +153,7 @@ function PANEL:AddPreviewRow(data)
     local right = data.right or ""
     local url = data.url or ""
     local size = data.size or 128
-    return self:AddRow(function(p, row)
+    local row = self:AddRow(function(p, row)
         local html = vgui.Create("DHTML", p)
         html:SetSize(size, size)
         if url ~= "" then html:OpenURL(url) end
@@ -199,6 +201,8 @@ function PANEL:AddPreviewRow(data)
 
         row.filterText = (title .. " " .. desc .. " " .. right):lower()
     end)
+    row.panel:InvalidateLayout(true)
+    return row
 end
 
 function PANEL:AddListViewRow(cfg)
@@ -207,7 +211,7 @@ function PANEL:AddListViewRow(cfg)
     local data = cfg.data or {}
     local height = cfg.height or 260
     local getLineText = cfg.getLineText
-    return self:AddRow(function(p, row)
+    local row = self:AddRow(function(p, row)
         local lv = vgui.Create("DListView", p)
         lv:Dock(FILL)
         for _, v in ipairs(cols) do
@@ -240,6 +244,8 @@ function PANEL:AddListViewRow(cfg)
             return any
         end
     end)
+    row.panel:InvalidateLayout(true)
+    return row
 end
 
 function PANEL:AddIconLayoutRow(cfg)
@@ -247,7 +253,7 @@ function PANEL:AddIconLayoutRow(cfg)
     local height = cfg.height or 240
     local build = cfg.build
     local space = cfg.space or 6
-    return self:AddRow(function(p, row)
+    local row = self:AddRow(function(p, row)
         local layout = vgui.Create("DIconLayout", p)
         layout:Dock(FILL)
         layout:SetSpaceX(space)
@@ -268,6 +274,8 @@ function PANEL:AddIconLayoutRow(cfg)
             return any
         end
     end)
+    row.panel:InvalidateLayout(true)
+    return row
 end
 
 function PANEL:RegisterCustomFilter(row, fn)
