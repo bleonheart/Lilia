@@ -24,6 +24,7 @@ if SERVER then
     util.AddNetworkString("liaGroupsAdd")
     util.AddNetworkString("liaGroupsRemove")
     util.AddNetworkString("liaGroupsRequest")
+    util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsApply")
     util.AddNetworkString("liaGroupsDefaults")
     util.AddNetworkString("liaGroupsDataChunk")
@@ -132,6 +133,16 @@ if SERVER then
         notify(p, "Group '" .. n .. "' removed.")
     end)
 
+    net.Receive("liaGroupsRename", function(_, p)
+        if not allowed(p) then return end
+        local old = net.ReadString()
+        local new = net.ReadString()
+        if old == "" or new == "" or lia.admin.DefaultGroups[old] then return end
+        lia.admin.renameGroup(old, new)
+        broadcastGroups()
+        notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
+    end)
+
     net.Receive("liaGroupsApply", function(_, p)
         if not allowed(p) then return end
         local g = net.ReadString()
@@ -169,20 +180,35 @@ else
         LAST_GROUP = g
         local scroll = parent:Add("DScrollPanel")
         scroll:Dock(FILL)
-        local btnBar = scroll:Add("DPanel")
-        btnBar:Dock(TOP)
+        local btnBar = parent:Add("DPanel")
+        btnBar:Dock(BOTTOM)
         btnBar:SetTall(36)
-        btnBar:DockMargin(20, 20, 20, 12)
+        btnBar:DockMargin(20, 10, 20, 12)
         btnBar.Paint = function() end
         local editable = not lia.admin.DefaultGroups[g]
 
+        local createBtn = btnBar:Add("liaSmallButton")
+        createBtn:SetText("Create Group")
+        createBtn:SetWide(90)
+        local renameBtn
         local delBtn
-        if not lia.admin.DefaultGroups[g] then
+
+        if editable then
+            createBtn:Dock(LEFT)
+            createBtn:DockMargin(0, 0, 6, 0)
+
+            renameBtn = btnBar:Add("liaSmallButton")
+            renameBtn:Dock(LEFT)
+            renameBtn:DockMargin(0, 0, 6, 0)
+            renameBtn:SetWide(90)
+            renameBtn:SetText("Rename Group")
+
             delBtn = btnBar:Add("liaSmallButton")
             delBtn:Dock(RIGHT)
-            delBtn:DockMargin(0, 0, 6, 0)
             delBtn:SetWide(90)
-            delBtn:SetText("Delete")
+            delBtn:SetText("Delete Group")
+        else
+            createBtn:Dock(FILL)
         end
 
         local nameLbl = scroll:Add("DLabel")
@@ -267,6 +293,29 @@ else
 
         listHolder:SetTall(h)
 
+        createBtn.DoClick = function()
+            Derma_StringRequest("Create Group", "New group name:", "", function(txt)
+                if txt == "" then return end
+                LAST_GROUP = txt
+                net.Start("liaGroupsAdd")
+                net.WriteString(txt)
+                net.SendToServer()
+            end)
+        end
+
+        if renameBtn then
+            renameBtn.DoClick = function()
+                Derma_StringRequest("Rename Group", "New group name:", g, function(txt)
+                    if txt == "" or txt == g then return end
+                    LAST_GROUP = txt
+                    net.Start("liaGroupsRename")
+                    net.WriteString(g)
+                    net.WriteString(txt)
+                    net.SendToServer()
+                end)
+            end
+        end
+
         if delBtn then
             delBtn.DoClick = function()
                 Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
@@ -293,21 +342,6 @@ else
             local page = sheet:Add("DPanel")
             renderGroupInfo(page, g, groups, perms)
             sheet:AddSheet(g, page)
-        end
-
-        local addBtn = panel:Add("liaMediumButton")
-        addBtn:Dock(BOTTOM)
-        addBtn:DockMargin(10, 0, 10, 10)
-        addBtn:SetTall(36)
-        addBtn:SetText("Create Group")
-        addBtn.DoClick = function()
-            Derma_StringRequest("Create Group", "New group name:", "", function(txt)
-                if txt == "" then return end
-                LAST_GROUP = txt
-                net.Start("liaGroupsAdd")
-                net.WriteString(txt)
-                net.SendToServer()
-            end)
         end
 
         if LAST_GROUP and groups[LAST_GROUP] then
