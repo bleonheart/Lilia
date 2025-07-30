@@ -105,7 +105,7 @@ function MODULE:CreateMenuButtons(tabs)
             end
         end
 
-        function sheet:OnActiveTabChanged(oldTab, newTab)
+        function sheet:OnActiveTabChanged(_, newTab)
             if IsValid(newTab) and newTab.liaOnSelect then newTab.liaOnSelect(newTab.liaPagePanel) end
         end
     end
