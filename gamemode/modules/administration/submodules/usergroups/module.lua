@@ -422,9 +422,11 @@ else
         if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
     end)
 
-    function MODULE:CreateMenuButtons(tabs)
-        if IsValid(LocalPlayer()) then
-            tabs[L("userGroups")] = function(parent)
+    function MODULE:PopulateAdminTabs(pages)
+        if not IsValid(LocalPlayer()) then return end
+        table.insert(pages, {
+            name = L("userGroups"),
+            drawFunc = function(parent)
                 lia.gui.usergroups = parent
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
@@ -432,6 +434,6 @@ else
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end
-        end
+        })
     end
 end
