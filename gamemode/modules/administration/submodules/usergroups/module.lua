@@ -21,15 +21,6 @@ local function buildDefaultTable(g)
 end
 
 if SERVER then
-    util.AddNetworkString("liaGroupsAdd")
-    util.AddNetworkString("liaGroupsRemove")
-    util.AddNetworkString("liaGroupsRequest")
-    util.AddNetworkString("liaGroupsApply")
-    util.AddNetworkString("liaGroupsDefaults")
-    util.AddNetworkString("liaGroupsRename")
-    util.AddNetworkString("liaGroupsDataChunk")
-    util.AddNetworkString("liaGroupsDataDone")
-    util.AddNetworkString("liaGroupsNotice")
     local function syncPrivileges()
         lia.adminstrator.groups = lia.adminstrator.groups or {}
         for n in pairs(lia.adminstrator.groups) do
@@ -459,9 +450,7 @@ else
             byCategory = {}
         }
 
-        if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then
-            PRIV_MAP = computePrivMapLocal()
-        end
+        if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then PRIV_MAP = computePrivMapLocal() end
         lia.adminstrator.groups = tbl.groups or {}
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.adminstrator.groups, lia.adminstrator.groups) end
     end

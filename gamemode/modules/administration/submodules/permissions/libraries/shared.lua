@@ -4,9 +4,9 @@
 
 function MODULE:InitializedModules()
     if properties.List then
-        for name in pairs(properties.List) do
+        for name, prop in pairs(properties.List) do
             if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
-                local privilege = "Access Property " .. name:gsub("^%l", string.upper)
+                local privilege = "Access to " .. prop.MenuLabel .. " property"
                 lia.adminstrator.registerPrivilege({
                     Name = privilege,
                     MinAccess = "admin",
