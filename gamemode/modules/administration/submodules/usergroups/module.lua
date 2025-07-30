@@ -13,7 +13,7 @@ MODULE.Privileges = {
 local CHUNK = 60000
 local function buildDefaultTable(g)
     local t = {}
-    for _, v in pairs(lia.adminstrator.privileges or {}) do
+    for _, v in pairs(lia.administrator.privileges or {}) do
         local min = v.MinAccess or "user"
         if g == "superadmin" or g == "admin" and min ~= "superadmin" or min == "user" then t[v.Name] = true end
     end
@@ -22,20 +22,16 @@ end
 
 if SERVER then
     local function syncPrivileges()
-        lia.adminstrator.groups = lia.adminstrator.groups or {}
-        for n in pairs(lia.adminstrator.groups) do
-            lia.adminstrator.groups[n] = lia.adminstrator.groups[n] or buildDefaultTable(n)
+        lia.administrator.groups = lia.administrator.groups or {}
+        for n in pairs(lia.administrator.groups) do
+            lia.administrator.groups[n] = lia.administrator.groups[n] or buildDefaultTable(n)
         end
-    end
-
-    local function allowed(p)
-        return IsValid(p) and (p:IsSuperAdmin() or p:hasPrivilege("Manage UserGroups"))
     end
 
     local function getPrivMap()
         local byCat = {}
         local seen = {}
-        for k, v in pairs(lia.adminstrator.privileges or {}) do
+        for k, v in pairs(lia.administrator.privileges or {}) do
             local name, cat
             if istable(v) then
                 name = v.Name or isstring(k) and k or nil
@@ -70,7 +66,7 @@ if SERVER then
 
     local function payload()
         return {
-            groups = lia.adminstrator.groups or {},
+            groups = lia.administrator.groups or {},
             privMap = getPrivMap()
         }
     end
@@ -109,89 +105,49 @@ if SERVER then
         sendBigTable(nil, payload())
     end
 
-    local function notify(p, msg)
-        if IsValid(p) and p.notify then p:notify(msg) end
-        net.Start("liaGroupsNotice")
-        net.WriteString(msg)
-        if IsEntity(p) then
-            net.Send(p)
-        else
-            net.Broadcast()
-        end
-    end
-
     syncPrivileges()
     net.Receive("liaGroupsRequest", function(_, p)
-        if not allowed(p) then return end
         syncPrivileges()
         sendBigTable(p, payload())
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
-        if not allowed(p) then return end
         local n = string.Trim(net.ReadString() or "")
         if n == "" then return end
-        lia.adminstrator.groups = lia.adminstrator.groups or {}
-        if lia.adminstrator.DefaultGroups and lia.adminstrator.DefaultGroups[n] then return end
-        if lia.adminstrator.groups[n] then return end
-        lia.adminstrator.createGroup(n)
-        lia.adminstrator.groups[n] = buildDefaultTable(n)
-        lia.adminstrator.save()
+        lia.administrator.groups = lia.administrator.groups or {}
+        if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
+        if lia.administrator.groups[n] then return end
+        lia.administrator.createGroup(n)
+        lia.administrator.groups[n] = buildDefaultTable(n)
+        lia.administrator.save()
         broadcastGroups()
-        notify(p, "Group '" .. n .. "' created.")
+        p:notify(p, "Group '" .. n .. "' created.")
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
-        if not allowed(p) then return end
         local n = net.ReadString()
-        if n == "" or lia.adminstrator.DefaultGroups and lia.adminstrator.DefaultGroups[n] then return end
-        lia.adminstrator.removeGroup(n)
-        if lia.adminstrator.groups then lia.adminstrator.groups[n] = nil end
-        lia.adminstrator.save()
+        if n == "" or lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
+        lia.administrator.removeGroup(n)
+        if lia.administrator.groups then lia.administrator.groups[n] = nil end
+        lia.administrator.save()
         broadcastGroups()
-        notify(p, "Group '" .. n .. "' removed.")
+        p:notify(p, "Group '" .. n .. "' removed.")
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
-        if not allowed(p) then return end
         local old = string.Trim(net.ReadString() or "")
         local new = string.Trim(net.ReadString() or "")
         if old == "" or new == "" then return end
         if old == new then return end
-        if not lia.adminstrator.groups or not lia.adminstrator.groups[old] then return end
-        if lia.adminstrator.groups[new] or lia.adminstrator.DefaultGroups and lia.adminstrator.DefaultGroups[new] then return end
-        if lia.adminstrator.DefaultGroups and lia.adminstrator.DefaultGroups[old] then return end
-        local perms = lia.adminstrator.groups[old]
-        lia.adminstrator.groups[new] = perms
-        lia.adminstrator.groups[old] = nil
-        lia.adminstrator.save()
+        if not lia.administrator.groups or not lia.administrator.groups[old] then return end
+        if lia.administrator.groups[new] or lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[new] then return end
+        if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[old] then return end
+        local perms = lia.administrator.groups[old]
+        lia.administrator.groups[new] = perms
+        lia.administrator.groups[old] = nil
+        lia.administrator.save()
         broadcastGroups()
-        notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
-    end)
-
-    net.Receive("liaGroupsApply", function(_, p)
-        if not allowed(p) then return end
-        local g = net.ReadString()
-        local t = net.ReadTable()
-        if g == "" or lia.adminstrator.DefaultGroups and lia.adminstrator.DefaultGroups[g] then return end
-        lia.adminstrator.groups[g] = {}
-        for k, v in pairs(t or {}) do
-            if v then lia.adminstrator.groups[g][k] = true end
-        end
-
-        lia.adminstrator.save()
-        broadcastGroups()
-        notify(p, "Permissions saved for '" .. g .. "'.")
-    end)
-
-    net.Receive("liaGroupsDefaults", function(_, p)
-        if not allowed(p) then return end
-        local g = net.ReadString()
-        if g == "" or lia.adminstrator.DefaultGroups and lia.adminstrator.DefaultGroups[g] then return end
-        lia.adminstrator.groups[g] = buildDefaultTable(g)
-        lia.adminstrator.save()
-        broadcastGroups()
-        notify(p, "Defaults restored for '" .. g .. "'.")
+        p:notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
     end)
 else
     local chunks = {}
@@ -208,7 +164,7 @@ else
     local function computePrivMapLocal()
         local byCat = {}
         local seen = {}
-        for k, v in pairs(lia.adminstrator.privileges or {}) do
+        for k, v in pairs(lia.administrator.privileges or {}) do
             local name, cat
             if istable(v) then
                 name = v.Name or isstring(k) and k or nil
@@ -304,7 +260,7 @@ else
     local function renderGroupInfo(parent, g, groups, perms)
         parent:Clear()
         LAST_GROUP = g
-        local editable = not lia.adminstrator.DefaultGroups[g]
+        local editable = not lia.administrator.DefaultGroups[g]
         local bottom = parent:Add("DPanel")
         bottom:Dock(BOTTOM)
         bottom:SetTall(36)
@@ -451,8 +407,8 @@ else
         }
 
         if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then PRIV_MAP = computePrivMapLocal() end
-        lia.adminstrator.groups = tbl.groups or {}
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.adminstrator.groups, lia.adminstrator.groups) end
+        lia.administrator.groups = tbl.groups or {}
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups) end
     end
 
     net.Receive("liaGroupsDataChunk", function()
@@ -469,11 +425,6 @@ else
     net.Receive("liaGroupsDataDone", function()
         local id = net.ReadString()
         if chunks[id] then handleDone(id) end
-    end)
-
-    net.Receive("liaGroupsNotice", function()
-        local msg = net.ReadString()
-        if IsValid(LocalPlayer()) and LocalPlayer().notify then LocalPlayer():notify(msg) end
     end)
 
     function MODULE:PopulateAdminTabs(pages)

@@ -12,7 +12,7 @@ function lia.command.add(command, data)
 
     if superAdminOnly or adminOnly then
         local privilegeName = isstring(data.privilege) and data.privilege or "Access to " .. command
-        lia.adminstrator.registerPrivilege({
+        lia.administrator.registerPrivilege({
             Name = privilegeName,
             MinAccess = superAdminOnly and "superadmin" or "admin",
             Category = "Commands"
