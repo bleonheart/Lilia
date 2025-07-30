@@ -286,11 +286,17 @@ else
                 local ids = lia.workshop.serverIds or {}
                 local sheet = vgui.Create("liaSheet", parent)
                 sheet:SetPlaceholderText(L("searchAddons"))
-                for id in pairs(ids) do
-                    steamworks.FileInfo(id, function(fi)
-                        if not fi then return end
+
+                local info, totalSize = {}, 0
+                local pending = table.Count(ids)
+                if pending <= 0 then return end
+
+                local function populate()
+                    for id, fi in pairs(info) do
+                        if not fi then continue end
                         local title = fi.title or "ID:" .. id
-                        local desc = fi.size and L("addonSize", formatSize(fi.size)) or ""
+                        local percent = totalSize > 0 and string.format("%.2f%%", (fi.size or 0) / totalSize * 100) or "0%"
+                        local desc = fi.size and L("addonSize", formatSize(fi.size), percent) or ""
                         local url = fi.previewurl or ""
                         if sheet.AddPreviewRow then
                             sheet:AddPreviewRow({
@@ -299,17 +305,24 @@ else
                                 url = url,
                                 size = 64
                             })
-                        else
-                            if sheet.AddTextRow then
-                                sheet:AddTextRow({
-                                    title = title,
-                                    desc = desc,
-                                    compact = true
-                                })
-                            end
+                        elseif sheet.AddTextRow then
+                            sheet:AddTextRow({
+                                title = title,
+                                desc = desc,
+                                compact = true
+                            })
                         end
+                    end
 
-                        if IsValid(sheet) and sheet.Refresh then sheet:Refresh() end
+                    if IsValid(sheet) and sheet.Refresh then sheet:Refresh() end
+                end
+
+                for id in pairs(ids) do
+                    steamworks.FileInfo(id, function(fi)
+                        info[id] = fi
+                        if fi and fi.size then totalSize = totalSize + fi.size end
+                        pending = pending - 1
+                        if pending <= 0 then populate() end
                     end)
                 end
             end
