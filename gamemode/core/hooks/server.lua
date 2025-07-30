@@ -392,7 +392,7 @@ function GM:ShutDown()
         if v:getChar() then v:getChar():save() end
     end
 
-    lia.admin.save()
+    lia.admin.save(true)
 end
 
 function GM:PlayerAuthed(client, steamid)

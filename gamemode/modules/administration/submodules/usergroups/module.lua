@@ -114,7 +114,7 @@ if SERVER then
         if n == "" then return end
         lia.admin.createGroup(n)
         lia.admin.groups[n] = buildDefaultTable(n)
-        lia.admin.save(true)
+        lia.admin.save()
         broadcastGroups()
         notify(p, "Group '" .. n .. "' created.")
         broadcastGroups()
@@ -127,7 +127,7 @@ if SERVER then
         if n == "" or lia.admin.DefaultGroups[n] then return end
         lia.admin.removeGroup(n)
         lia.admin.groups[n] = nil
-        lia.admin.save(true)
+        lia.admin.save()
         broadcastGroups()
         notify(p, "Group '" .. n .. "' removed.")
     end)
@@ -142,7 +142,7 @@ if SERVER then
             if v then lia.admin.groups[g][k] = true end
         end
 
-        lia.admin.save(true)
+        lia.admin.save()
         broadcastGroups()
         notify(p, "Permissions saved for '" .. g .. "'.")
     end)
@@ -152,7 +152,7 @@ if SERVER then
         local g = net.ReadString()
         if g == "" or lia.admin.DefaultGroups[g] then return end
         lia.admin.groups[g] = buildDefaultTable(g)
-        lia.admin.save(true)
+        lia.admin.save()
         broadcastGroups()
         notify(p, "Defaults restored for '" .. g .. "'.")
     end)

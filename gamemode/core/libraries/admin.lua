@@ -28,7 +28,7 @@ function lia.admin.load()
             end
         end
 
-        if created then lia.admin.save(true) end
+        if created then lia.admin.save() end
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
@@ -46,7 +46,7 @@ function lia.admin.createGroup(groupName, info)
     end
 
     lia.admin.groups[groupName] = info or {}
-    if SERVER then lia.admin.save(true) end
+    if SERVER then lia.admin.save() end
 end
 
 function lia.admin.registerPrivilege(privilege)
@@ -66,7 +66,7 @@ function lia.admin.removeGroup(groupName)
     end
 
     lia.admin.groups[groupName] = nil
-    if SERVER then lia.admin.save(true) end
+    if SERVER then lia.admin.save() end
 end
 
 if SERVER then
@@ -79,7 +79,7 @@ if SERVER then
         if lia.admin.DefaultGroups[groupName] then return end
         lia.admin.groups[groupName][permission] = true
         if SERVER then
-            lia.admin.save(true)
+            lia.admin.save()
             hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
         end
     end
@@ -93,22 +93,21 @@ if SERVER then
         if lia.admin.DefaultGroups[groupName] then return end
         lia.admin.groups[groupName][permission] = nil
         if SERVER then
-            lia.admin.save(true)
+            lia.admin.save()
             hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
         end
     end
 
-    function lia.admin.save(network)
+    function lia.admin.save(noNetwork)
         lia.db.upsert({
             usergroups = util.TableToJSON(lia.admin.groups),
             privileges = util.TableToJSON(lia.admin.privileges)
         }, "admin")
 
-        if network then
-            net.Start("updateAdminGroups")
-            net.WriteTable(lia.admin.groups)
-            net.Broadcast()
-        end
+        if noNetwork then return end
+        net.Start("updateAdminGroups")
+        net.WriteTable(lia.admin.groups)
+        net.Broadcast()
     end
 else
     function lia.admin.execCommand(cmd, victim, dur, reason)
