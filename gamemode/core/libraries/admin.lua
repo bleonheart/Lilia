@@ -1,94 +1,77 @@
 ﻿lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}
-lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.DefaultGroups = {
     user = true,
     admin = true,
-    superadmin = true,
+    superadmin = true
 }
 
-function lia.administrator.load()
-    local function continueLoad(groups, privileges)
-        lia.administrator.groups = groups or {}
-        lia.administrator.privileges = privileges or lia.administrator.privileges or {}
-        lia.administrator.syncPrivileges()
-        local defaults = {"user", "admin", "superadmin"}
-        local created = false
-        if table.Count(lia.administrator.groups) == 0 then
-            for _, grp in ipairs(defaults) do
-                lia.administrator.createGroup(grp)
-            end
+local function shouldGrant(group, minAccess)
+    if group == "superadmin" then return true end
+    if group == "admin" and minAccess ~= "superadmin" then return true end
+    return minAccess == "user"
+end
 
-            created = true
-        else
-            for _, grp in ipairs(defaults) do
-                if not lia.administrator.groups[grp] then
-                    lia.administrator.createGroup(grp)
-                    created = true
-                end
-            end
+function lia.administrator.save(noNetwork)
+    lia.db.upsert({
+        usergroups = util.TableToJSON(lia.administrator.groups)
+    }, "admin")
+
+    if not noNetwork and SERVER then lia.administrator.sync() end
+end
+
+function lia.administrator.ensureDefaultGroups()
+    local defaults = {"user", "admin", "superadmin"}
+    local created = false
+    if table.Count(lia.administrator.groups) == 0 then
+        for _, name in ipairs(defaults) do
+            lia.administrator.createGroup(name)
         end
 
-        if created then lia.administrator.save() end
-        lia.bootstrap("Administration", L("adminSystemLoaded"))
+        created = true
+    else
+        for _, name in ipairs(defaults) do
+            if not lia.administrator.groups[name] then
+                lia.administrator.createGroup(name)
+                created = true
+            end
+        end
     end
 
-    lia.db.selectOne({"usergroups", "privileges"}, "admin"):next(function(res)
+    if created then lia.administrator.save() end
+end
+
+function lia.administrator.load()
+    lia.db.selectOne({"usergroups"}, "admin"):next(function(res)
         local groups = res and util.JSONToTable(res.usergroups or "") or {}
-        local privs = res and util.JSONToTable(res.privileges or "") or {}
-        continueLoad(groups, privs)
+        lia.administrator.groups = groups
+        lia.administrator.ensureDefaultGroups()
+        lia.bootstrap("Administration", L("adminSystemLoaded"))
     end)
 end
 
-function lia.administrator.createGroup(groupName, info)
-    if lia.administrator.groups[groupName] then
+function lia.administrator.createGroup(name)
+    if lia.administrator.groups[name] then
         lia.error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
 
-    lia.administrator.groups[groupName] = info or {}
-    lia.administrator.syncPrivileges()
+    lia.administrator.groups[name] = {}
     if SERVER then lia.administrator.save() end
 end
 
-local function shouldGrant(g, min)
-    return g == "superadmin" or g == "admin" and min ~= "superadmin" or min == "user"
-end
-
-local function grantPrivilegeToGroups(priv)
-    if not SERVER then return end
-    local min = priv.MinAccess or "user"
-    for groupName, permissions in pairs(lia.administrator.groups or {}) do
-        permissions = permissions or {}
-        lia.administrator.groups[groupName] = permissions
-        if shouldGrant(groupName, min) and not permissions[priv.Name] then permissions[priv.Name] = true end
-    end
-end
-
-function lia.administrator.syncPrivileges()
-    for _, priv in pairs(lia.administrator.privileges or {}) do
-        grantPrivilegeToGroups(priv)
-    end
-end
-
-function lia.administrator.registerPrivilege(privilege)
-    if not privilege or not privilege.Name then return end
-    lia.administrator.privileges[privilege.Name] = privilege
-    grantPrivilegeToGroups(privilege)
-end
-
-function lia.administrator.removeGroup(groupName)
-    if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
+function lia.administrator.removeGroup(name)
+    if lia.administrator.DefaultGroups[name] then
         lia.error("[Lilia Administration] The base usergroups cannot be removed!\n")
         return
     end
 
-    if not lia.administrator.groups[groupName] then
+    if not lia.administrator.groups[name] then
         lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
         return
     end
 
-    lia.administrator.groups[groupName] = nil
+    lia.administrator.groups[name] = nil
     if SERVER then lia.administrator.save() end
 end
 
@@ -114,498 +97,72 @@ function lia.administrator.renameGroup(oldName, newName)
 end
 
 if SERVER then
-    function lia.administrator.addPermission(groupName, permission)
-        if not lia.administrator.groups[groupName] then
+    function lia.administrator.addPermission(group, permission)
+        if not lia.administrator.groups[group] then
             lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
-        if lia.administrator.DefaultGroups[groupName] then return end
-        lia.administrator.groups[groupName][permission] = true
-        if SERVER then
-            lia.administrator.save()
-            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
-        end
+        if lia.administrator.DefaultGroups[group] then return end
+        lia.administrator.groups[group][permission] = true
+        lia.administrator.save()
     end
 
-    function lia.administrator.removePermission(groupName, permission)
-        if not lia.administrator.groups[groupName] then
+    function lia.administrator.removePermission(group, permission)
+        if not lia.administrator.groups[group] then
             lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
             return
         end
 
-        if lia.administrator.DefaultGroups[groupName] then return end
-        lia.administrator.groups[groupName][permission] = nil
-        if SERVER then
-            lia.administrator.save()
-            hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
+        if lia.administrator.DefaultGroups[group] then return end
+        lia.administrator.groups[group][permission] = nil
+        lia.administrator.save()
+    end
+
+    function lia.administrator.registerPrivilege(priv)
+        if not priv or not priv.Name then return end
+        local minAccess = priv.MinAccess or "user"
+        for groupName in pairs(lia.administrator.groups) do
+            if shouldGrant(groupName, minAccess) then lia.administrator.groups[groupName][priv.Name] = true end
         end
+
+        lia.administrator.save()
     end
 
     function lia.administrator.sync(client)
         if client and IsValid(client) then
             lia.net.writeBigTable(client, "updateAdminGroups", lia.administrator.groups)
         else
-            local players = player.GetHumans()
-            if #players > 0 then
-                for _, ply in ipairs(players) do
-                    lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups)
-                end
+            for _, ply in ipairs(player.GetHumans()) do
+                lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups)
             end
         end
     end
 
-    function lia.administrator.save(noNetwork)
-        lia.db.upsert({
-            usergroups = util.TableToJSON(lia.administrator.groups),
-            privileges = util.TableToJSON(lia.administrator.privileges)
-        }, "admin")
-
-        if noNetwork then return end
-        lia.administrator.sync()
-    end
+    net.Receive("liaGroupsRequest", function(_, ply) lia.administrator.sync(ply) end)
 else
     function lia.administrator.execCommand(cmd, victim, dur, reason)
         if hook.Run("RunAdminSystemCommand") == true then return end
         local id = IsValid(victim) and victim:SteamID() or tostring(victim)
-        if cmd == "kick" then
-            RunConsoleCommand("say", "/plykick " .. string.format("'%s'", tostring(id)) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-            return true
-        elseif cmd == "ban" then
-            RunConsoleCommand("say", "/plyban " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-            return true
-        elseif cmd == "unban" then
-            RunConsoleCommand("say", "/plyunban " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "mute" then
-            RunConsoleCommand("say", "/plymute " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-            return true
-        elseif cmd == "unmute" then
-            RunConsoleCommand("say", "/plyunmute " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "gag" then
-            RunConsoleCommand("say", "/plygag " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0) .. (reason and " " .. string.format("'%s'", tostring(reason)) or ""))
-            return true
-        elseif cmd == "ungag" then
-            RunConsoleCommand("say", "/plyungag " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "freeze" then
-            RunConsoleCommand("say", "/plyfreeze " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
-            return true
-        elseif cmd == "unfreeze" then
-            RunConsoleCommand("say", "/plyunfreeze " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "slay" then
-            RunConsoleCommand("say", "/plyslay " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "bring" then
-            RunConsoleCommand("say", "/plybring " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "goto" then
-            RunConsoleCommand("say", "/plygoto " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "return" then
-            RunConsoleCommand("say", "/plyreturn " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "jail" then
-            RunConsoleCommand("say", "/plyjail " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
-            return true
-        elseif cmd == "unjail" then
-            RunConsoleCommand("say", "/plyunjail " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "cloak" then
-            RunConsoleCommand("say", "/plycloak " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "uncloak" then
-            RunConsoleCommand("say", "/plyuncloak " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "god" then
-            RunConsoleCommand("say", "/plygod " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "ungod" then
-            RunConsoleCommand("say", "/plyungod " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "ignite" then
-            RunConsoleCommand("say", "/plyignite " .. string.format("'%s'", tostring(id)) .. " " .. tostring(dur or 0))
-            return true
-        elseif cmd == "extinguish" or cmd == "unignite" then
-            RunConsoleCommand("say", "/plyextinguish " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "strip" then
-            RunConsoleCommand("say", "/plystrip " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "respawn" then
-            RunConsoleCommand("say", "/plyrespawn " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "blind" then
-            RunConsoleCommand("say", "/plyblind " .. string.format("'%s'", tostring(id)))
-            return true
-        elseif cmd == "unblind" then
-            RunConsoleCommand("say", "/plyunblind " .. string.format("'%s'", tostring(id)))
-            return true
-        end
+        local args = {"'" .. id .. "'"}
+        if dur then table.insert(args, tostring(dur)) end
+        if reason then table.insert(args, "'" .. tostring(reason) .. "'") end
+        RunConsoleCommand("say", "/ply" .. cmd, unpack(args))
+        return true
     end
 end
 
-if SERVER then
-    local function syncPrivileges()
-        lia.administrator.groups = lia.administrator.groups or {}
-        for n in pairs(lia.administrator.groups) do
-            lia.administrator.groups[n] = lia.administrator.groups[n] or {}
+hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
+    if not IsValid(LocalPlayer()) then return end
+    pages[#pages + 1] = {
+        name = L("userGroups"),
+        drawFunc = function(parent)
+            lia.gui.usergroups = parent
+            parent:Clear()
+            parent:DockPadding(10, 10, 10, 10)
+            parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
+            net.Start("liaGroupsRequest")
+            net.SendToServer()
         end
-
-        lia.administrator.syncPrivileges()
-    end
-
-    local function getPrivMap()
-        local byCat = {}
-        local seen = {}
-        for k, v in pairs(lia.administrator.privileges or {}) do
-            local name, cat
-            if istable(v) then
-                name = v.Name or isstring(k) and k or nil
-                cat = v.Category or "General"
-            elseif isstring(v) then
-                name = v
-                cat = "General"
-            end
-
-            if isstring(name) and name ~= "" and not seen[name] then
-                seen[name] = true
-                cat = isstring(cat) and cat or "General"
-                byCat[cat] = byCat[cat] or {}
-                byCat[cat][#byCat[cat] + 1] = name
-            end
-        end
-
-        local cats = {}
-        for c in pairs(byCat) do
-            cats[#cats + 1] = c
-        end
-
-        table.sort(cats, function(a, b) return a:lower() < b:lower() end)
-        for _, c in ipairs(cats) do
-            table.sort(byCat[c], function(a, b) return a:lower() < b:lower() end)
-        end
-        return {
-            categories = cats,
-            byCategory = byCat
-        }
-    end
-
-    local function payload()
-        return {
-            groups = lia.administrator.groups or {},
-            privMap = getPrivMap()
-        }
-    end
-
-    local function broadcastGroups()
-        local players = player.GetHumans()
-        for _, ply in ipairs(players) do
-            lia.net.writeBigTable(ply, "liaGroupsData", payload())
-        end
-    end
-
-    syncPrivileges()
-    net.Receive("liaGroupsRequest", function(_, p)
-        syncPrivileges()
-        lia.net.writeBigTable(p, "liaGroupsData", payload())
-    end)
-
-    net.Receive("liaGroupsAdd", function(_, p)
-        local n = string.Trim(net.ReadString() or "")
-        if n == "" then return end
-        lia.administrator.groups = lia.administrator.groups or {}
-        if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
-        if lia.administrator.groups[n] then return end
-        lia.administrator.createGroup(n)
-        lia.administrator.save()
-        broadcastGroups()
-        p:notify(p, "Group '" .. n .. "' created.")
-    end)
-
-    net.Receive("liaGroupsRemove", function(_, p)
-        local n = net.ReadString()
-        if n == "" or lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
-        lia.administrator.removeGroup(n)
-        if lia.administrator.groups then lia.administrator.groups[n] = nil end
-        lia.administrator.save()
-        broadcastGroups()
-        p:notify(p, "Group '" .. n .. "' removed.")
-    end)
-
-    net.Receive("liaGroupsRename", function(_, p)
-        local old = string.Trim(net.ReadString() or "")
-        local new = string.Trim(net.ReadString() or "")
-        if old == "" or new == "" then return end
-        if old == new then return end
-        if not lia.administrator.groups or not lia.administrator.groups[old] then return end
-        if lia.administrator.groups[new] or lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[new] then return end
-        if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[old] then return end
-        local perms = lia.administrator.groups[old]
-        lia.administrator.groups[new] = perms
-        lia.administrator.groups[old] = nil
-        lia.administrator.save()
-        broadcastGroups()
-        p:notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
-    end)
-else
-    local PRIV_MAP = {
-        categories = {},
-        byCategory = {}
     }
-
-    local LAST_GROUP
-    local function setFont(o, f)
-        if IsValid(o) then o:SetFont(f) end
-    end
-
-    local function computePrivMapLocal()
-        local byCat = {}
-        local seen = {}
-        for k, v in pairs(lia.administrator.privileges or {}) do
-            local name, cat
-            if istable(v) then
-                name = v.Name or isstring(k) and k or nil
-                cat = v.Category or "General"
-            elseif isstring(v) then
-                name = v
-                cat = "General"
-            end
-
-            if isstring(name) and name ~= "" and not seen[name] then
-                seen[name] = true
-                cat = isstring(cat) and cat or "General"
-                byCat[cat] = byCat[cat] or {}
-                byCat[cat][#byCat[cat] + 1] = name
-            end
-        end
-
-        local cats = {}
-        for c in pairs(byCat) do
-            cats[#cats + 1] = c
-        end
-
-        table.sort(cats, function(a, b) return a:lower() < b:lower() end)
-        for _, c in ipairs(cats) do
-            table.sort(byCat[c], function(a, b) return a:lower() < b:lower() end)
-        end
-        return {
-            categories = cats,
-            byCategory = byCat
-        }
-    end
-
-    local function buildCategoryList(parent, g, perms, editable)
-        local wrap = parent:Add("DPanel")
-        wrap:Dock(FILL)
-        wrap:DockMargin(20, 0, 20, 4)
-        wrap.Paint = function() end
-        local catList = vgui.Create("DCategoryList", wrap)
-        catList:Dock(FILL)
-        local current = table.Copy(perms[g] or {})
-        surface.SetFont("liaMediumFont")
-        local _, fh = surface.GetTextSize("W")
-        local cbSize = math.max(20, fh + 6)
-        local rowH = math.max(fh + 14, cbSize + 8)
-        local off = math.floor((rowH - fh) * 0.5)
-        local function addRow(container, name)
-            local row = vgui.Create("DPanel", container)
-            row:Dock(TOP)
-            row:DockMargin(0, 0, 0, 8)
-            row:SetTall(rowH)
-            row.Paint = function() end
-            local lbl = row:Add("DLabel")
-            lbl:Dock(FILL)
-            lbl:DockMargin(0, off, 8, 0)
-            lbl:SetText(name)
-            setFont(lbl, "liaMediumFont")
-            lbl:SizeToContents()
-            local chk = row:Add("liaCheckBox")
-            chk:SetSize(cbSize, cbSize)
-            chk:Dock(RIGHT)
-            chk:SetChecked(current[name] and true or false)
-            chk.OnChange = function(_, v)
-                if v then
-                    current[name] = true
-                else
-                    current[name] = nil
-                end
-            end
-
-            if not editable then chk:SetEnabled(false) end
-        end
-
-        for _, catName in ipairs(PRIV_MAP.categories or {}) do
-            local cat = catList:Add(catName)
-            local list = vgui.Create("DListLayout", cat)
-            list:Dock(FILL)
-            for _, privName in ipairs(PRIV_MAP.byCategory[catName] or {}) do
-                addRow(list, privName)
-            end
-
-            cat:SetContents(list)
-            cat:SetExpanded(true)
-            cat.OnToggle = function()
-                timer.Simple(0, function()
-                    if not IsValid(wrap) then return end
-                    wrap:InvalidateLayout(true)
-                end)
-            end
-        end
-        return wrap, catList, current
-    end
-
-    local function renderGroupInfo(parent, g, groups, perms)
-        parent:Clear()
-        LAST_GROUP = g
-        local editable = not lia.administrator.DefaultGroups[g]
-        local bottom = parent:Add("DPanel")
-        bottom:Dock(BOTTOM)
-        bottom:SetTall(36)
-        bottom:DockMargin(10, 0, 10, 10)
-        bottom.Paint = function() end
-        local scroll = parent:Add("DScrollPanel")
-        scroll:Dock(FILL)
-        scroll:DockMargin(0, 0, 0, 6)
-        local nameLbl = scroll:Add("DLabel")
-        nameLbl:Dock(TOP)
-        nameLbl:DockMargin(20, 20, 0, 0)
-        nameLbl:SetText("Name:")
-        setFont(nameLbl, "liaBigFont")
-        nameLbl:SizeToContents()
-        local nameVal = scroll:Add("DLabel")
-        nameVal:Dock(TOP)
-        nameVal:DockMargin(20, 2, 0, 10)
-        nameVal:SetText(g)
-        setFont(nameVal, "liaMediumFont")
-        nameVal:SizeToContents()
-        local inhLbl = scroll:Add("DLabel")
-        inhLbl:Dock(TOP)
-        inhLbl:DockMargin(20, 10, 0, 0)
-        inhLbl:SetText("Inherits from:")
-        setFont(inhLbl, "liaBigFont")
-        inhLbl:SizeToContents()
-        local inhVal = scroll:Add("DLabel")
-        inhVal:Dock(TOP)
-        inhVal:DockMargin(20, 2, 0, 0)
-        inhVal:SetText("user")
-        setFont(inhVal, "liaMediumFont")
-        inhVal:SizeToContents()
-        local privLbl = scroll:Add("DLabel")
-        privLbl:Dock(TOP)
-        privLbl:DockMargin(20, 10, 0, 6)
-        privLbl:SetText("Privileges")
-        setFont(privLbl, "liaBigFont")
-        privLbl:SizeToContents()
-        local wrap, catList, current = buildCategoryList(scroll, g, perms, editable)
-        if editable then
-            local createBtn = bottom:Add("liaMediumButton")
-            local renameBtn = bottom:Add("liaMediumButton")
-            local delBtn = bottom:Add("liaMediumButton")
-            createBtn:SetText("Create Group")
-            renameBtn:SetText("Rename Group")
-            delBtn:SetText("Delete Group")
-            createBtn.DoClick = function()
-                Derma_StringRequest("Create Group", "New group name:", "", function(txt)
-                    txt = string.Trim(txt or "")
-                    if txt == "" then return end
-                    LAST_GROUP = txt
-                    net.Start("liaGroupsAdd")
-                    net.WriteString(txt)
-                    net.SendToServer()
-                end)
-            end
-
-            renameBtn.DoClick = function()
-                Derma_StringRequest("Rename Group", "New name for '" .. g .. "':", g, function(txt)
-                    txt = string.Trim(txt or "")
-                    if txt == "" or txt == g then return end
-                    LAST_GROUP = txt
-                    net.Start("liaGroupsRename")
-                    net.WriteString(g)
-                    net.WriteString(txt)
-                    net.SendToServer()
-                end)
-            end
-
-            delBtn.DoClick = function()
-                Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
-                    net.Start("liaGroupsRemove")
-                    net.WriteString(g)
-                    net.SendToServer()
-                end, "No")
-            end
-
-            bottom.PerformLayout = function(pnl, w, bh)
-                local bw = math.floor(w / 3)
-                createBtn:SetPos(0, 0)
-                createBtn:SetSize(bw, bh)
-                renameBtn:SetPos(bw, 0)
-                renameBtn:SetSize(bw, bh)
-                delBtn:SetPos(bw * 2, 0)
-                delBtn:SetSize(w - bw * 2, bh)
-            end
-        else
-            local addBtn = bottom:Add("liaMediumButton")
-            addBtn:SetText("Create Group")
-            addBtn.DoClick = function()
-                Derma_StringRequest("Create Group", "New group name:", "", function(txt)
-                    txt = string.Trim(txt or "")
-                    if txt == "" then return end
-                    LAST_GROUP = txt
-                    net.Start("liaGroupsAdd")
-                    net.WriteString(txt)
-                    net.SendToServer()
-                end)
-            end
-
-            bottom.PerformLayout = function(_, w, bh)
-                addBtn:SetPos(0, 0)
-                addBtn:SetSize(w, bh)
-            end
-        end
-    end
-
-    local function buildGroupsUI(panel, groups, perms)
-        panel:Clear()
-        local sheet = panel:Add("DPropertySheet")
-        sheet:Dock(FILL)
-        sheet:DockMargin(10, 10, 10, 10)
-        local keys = {}
-        for g in pairs(groups or {}) do
-            keys[#keys + 1] = g
-        end
-
-        table.sort(keys, function(a, b) return a:lower() < b:lower() end)
-        for _, g in ipairs(keys) do
-            local page = sheet:Add("DPanel")
-            renderGroupInfo(page, g, groups, perms)
-            sheet:AddSheet(g, page)
-        end
-
-        if LAST_GROUP and groups[LAST_GROUP] then
-            for _, tab in ipairs(sheet.Items) do
-                if tab.Name == LAST_GROUP then
-                    sheet:SetActiveTab(tab.Tab)
-                    break
-                end
-            end
-        elseif sheet.Items[1] then
-            sheet:SetActiveTab(sheet.Items[1].Tab)
-        end
-    end
-
-    lia.net.readBigTable("liaGroupsData", function(tbl)
-        tbl = tbl or {}
-        PRIV_MAP = tbl.privMap or {
-            categories = {},
-            byCategory = {}
-        }
-
-        if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then PRIV_MAP = computePrivMapLocal() end
-        lia.administrator.groups = tbl.groups or {}
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups) end
-    end)
-end
+end)
