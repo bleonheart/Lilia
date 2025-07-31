@@ -55,7 +55,7 @@ lia.command.add("roster", {
             return
         end
 
-        local isLeader = client:IsSuperAdmin() or character:hasFlags("V")
+        local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
         if not isLeader then return end
         local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
         if not character then

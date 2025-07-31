@@ -11,7 +11,7 @@ end
 net.Receive("RequestRoster", function(_, client)
     local character = client:getChar()
     if not character then return end
-    local isLeader = client:IsSuperAdmin() or character:hasFlags("V")
+    local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
     if not isLeader then return end
     local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
     local factionIndex = character:getFaction()

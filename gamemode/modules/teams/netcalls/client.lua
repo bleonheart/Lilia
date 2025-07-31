@@ -17,7 +17,7 @@ net.Receive("CharacterInfo", function()
     local factionID = net.ReadString()
     local characterData = net.ReadTable()
     local character = LocalPlayer():getChar()
-    local isLeader = LocalPlayer():IsSuperAdmin() or (character and character:hasFlags("V"))
+    local isLeader = LocalPlayer():hasPrivilege("Manage Faction Members") or (character and character:hasFlags("V"))
     if not isLeader then return end
 
     if IsValid(lia.gui.rosterSheet) then
