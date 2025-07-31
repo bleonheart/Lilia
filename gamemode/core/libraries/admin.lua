@@ -24,7 +24,7 @@ function lia.administrator.load()
     local function ensureDefaults(groups)
         local defaults = {"user", "admin", "superadmin"}
         local created = false
-        if table.Count(groups) == 0 then
+        if not table.IsEmpty(groups) then
             for _, grp in ipairs(defaults) do
                 groups[grp] = groups[grp] or {}
             end
@@ -181,9 +181,7 @@ if SERVER then
         local privs = {}
         for groupName, perms in pairs(lia.administrator.groups) do
             for name, allowed in pairs(perms or {}) do
-                if allowed and not seen[name] then
-                    seen[name] = true
-                end
+                if allowed and not seen[name] then seen[name] = true end
             end
         end
 
@@ -195,9 +193,11 @@ if SERVER then
                 min = "admin"
             end
 
-            privs[#privs + 1] = { Name = name, MinAccess = min }
+            privs[#privs + 1] = {
+                Name = name,
+                MinAccess = min
+            }
         end
-
         return privs
     end
 
