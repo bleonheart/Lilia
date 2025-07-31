@@ -10,8 +10,6 @@ MODULE.Privileges = {
     }
 }
 
-local CHUNK = 60000
-
 if SERVER then
     local function syncPrivileges()
         lia.administrator.groups = lia.administrator.groups or {}
@@ -64,44 +62,17 @@ if SERVER then
         }
     end
 
-    local function sendBigTable(ply, tbl)
-        local raw = util.TableToJSON(tbl) or "{}"
-        local comp = util.Compress(raw)
-        local len = #comp
-        local id = util.CRC(tostring(SysTime()) .. len)
-        local parts = math.ceil(len / CHUNK)
-        for i = 1, parts do
-            local chunk = string.sub(comp, (i - 1) * CHUNK + 1, math.min(i * CHUNK, len))
-            net.Start("liaGroupsDataChunk")
-            net.WriteString(id)
-            net.WriteUInt(i, 16)
-            net.WriteUInt(parts, 16)
-            net.WriteUInt(#chunk, 16)
-            net.WriteData(chunk, #chunk)
-            if IsEntity(ply) then
-                net.Send(ply)
-            else
-                net.Broadcast()
-            end
-        end
-
-        net.Start("liaGroupsDataDone")
-        net.WriteString(id)
-        if IsEntity(ply) then
-            net.Send(ply)
-        else
-            net.Broadcast()
-        end
-    end
-
     local function broadcastGroups()
-        sendBigTable(nil, payload())
+        local players = player.GetHumans()
+        for _, ply in ipairs(players) do
+            lia.net.writeBigTable(ply, "liaGroupsData", payload())
+        end
     end
 
     syncPrivileges()
     net.Receive("liaGroupsRequest", function(_, p)
         syncPrivileges()
-        sendBigTable(p, payload())
+        lia.net.writeBigTable(p, "liaGroupsData", payload())
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
@@ -142,7 +113,6 @@ if SERVER then
         p:notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
     end)
 else
-    local chunks = {}
     local PRIV_MAP = {
         categories = {},
         byCategory = {}
@@ -389,10 +359,8 @@ else
         end
     end
 
-    local function handleDone(id)
-        local data = table.concat(chunks[id])
-        chunks[id] = nil
-        local tbl = util.JSONToTable(util.Decompress(data) or "") or {}
+    lia.net.readBigTable("liaGroupsData", function(tbl)
+        tbl = tbl or {}
         PRIV_MAP = tbl.privMap or {
             categories = {},
             byCategory = {}
@@ -400,23 +368,9 @@ else
 
         if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then PRIV_MAP = computePrivMapLocal() end
         lia.administrator.groups = tbl.groups or {}
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups) end
-    end
-
-    net.Receive("liaGroupsDataChunk", function()
-        local id = net.ReadString()
-        local idx = net.ReadUInt(16)
-        local total = net.ReadUInt(16)
-        local len = net.ReadUInt(16)
-        local dat = net.ReadData(len)
-        chunks[id] = chunks[id] or {}
-        chunks[id][idx] = dat
-        if idx == total then handleDone(id) end
-    end)
-
-    net.Receive("liaGroupsDataDone", function()
-        local id = net.ReadString()
-        if chunks[id] then handleDone(id) end
+        if IsValid(lia.gui.usergroups) then
+            buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups)
+        end
     end)
 
     function MODULE:PopulateAdminTabs(pages)
