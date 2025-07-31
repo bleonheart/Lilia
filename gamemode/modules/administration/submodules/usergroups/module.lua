@@ -16,6 +16,7 @@ if SERVER then
         for n in pairs(lia.administrator.groups) do
             lia.administrator.groups[n] = lia.administrator.groups[n] or {}
         end
+
         lia.administrator.syncPrivileges()
     end
 
@@ -368,9 +369,7 @@ else
 
         if not PRIV_MAP.categories or #PRIV_MAP.categories == 0 or not next(PRIV_MAP.byCategory) then PRIV_MAP = computePrivMapLocal() end
         lia.administrator.groups = tbl.groups or {}
-        if IsValid(lia.gui.usergroups) then
-            buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups)
-        end
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups) end
     end)
 
     function MODULE:PopulateAdminTabs(pages)
