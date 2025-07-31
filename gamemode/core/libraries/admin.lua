@@ -95,6 +95,10 @@ function lia.administrator.removeGroup(groupName)
 end
 
 function lia.administrator.renameGroup(oldName, newName)
+    oldName = string.Trim(oldName or "")
+    newName = string.Trim(newName or "")
+    if oldName == "" or newName == "" or oldName == newName then return end
+
     if lia.administrator.DefaultGroups[oldName] then
         lia.error("[Lilia Administration] The base usergroups cannot be renamed!\n")
         return
@@ -105,7 +109,7 @@ function lia.administrator.renameGroup(oldName, newName)
         return
     end
 
-    if lia.administrator.groups[newName] then
+    if lia.administrator.groups[newName] or lia.administrator.DefaultGroups[newName] then
         lia.error("[Lilia Administration] This usergroup already exists!\n")
         return
     end
