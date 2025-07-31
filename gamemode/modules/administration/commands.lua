@@ -207,12 +207,14 @@ lia.command.add("plysetgroup", {
     syntax = "[player Name] [string Group]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) and lia.administrator.groups[arguments[2]] then
-            ply:SetUserGroup(usergroup)
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), ply:SteamID64()))
+        local usergroup = tostring(arguments[2] or "")
+
+        if IsValid(target) and lia.administrator.groups[usergroup] then
+            target:SetUserGroup(usergroup)
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID64()))
             client:notifyLocalized("plyGroupSet")
-            lia.log.add(client, "plySetGroup", target:Name(), arguments[2])
-        elseif IsValid(target) and not lia.administrator.groups[arguments[2]] then
+            lia.log.add(client, "plySetGroup", target:Name(), usergroup)
+        elseif IsValid(target) and usergroup ~= "" and not lia.administrator.groups[usergroup] then
             client:notifyLocalized("groupNotExists")
         end
     end
