@@ -73,8 +73,8 @@ function lia.administrator.load()
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
-    lia.db.selectOne({"groups", "usergroups", "privileges"}, "admin"):next(function(res)
-        local newGroups = res and util.JSONToTable(res.groups or "") or {}
+    lia.db.selectOne("*", "admin"):next(function(res)
+        local newGroups = res and util.JSONToTable(res.usergroups or res.groups or "") or {}
         local created = ensureDefaults(newGroups)
         if table.Count(newGroups) == 0 then
             local oldGroups = res and util.JSONToTable(res.usergroups or "") or {}
@@ -203,7 +203,6 @@ if SERVER then
 
     function lia.administrator.save(noNetwork)
         lia.db.upsert({
-            groups = util.TableToJSON(lia.administrator.groups),
             usergroups = util.TableToJSON(lia.administrator.groups),
             privileges = util.TableToJSON(extractPrivileges())
         }, "admin")
