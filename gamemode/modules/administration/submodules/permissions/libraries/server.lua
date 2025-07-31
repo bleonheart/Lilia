@@ -1,4 +1,9 @@
 ﻿local GM = GM or GAMEMODE
+lia.administrator.registerPrivilege({
+    Name = "Use Disallowed Tools",
+    MinAccess = "superadmin",
+    Category = "Tools"
+})
 local restrictedProperties = {
     persist = true,
     drive = true,
@@ -13,7 +18,7 @@ function GM:PlayerSpawnProp(client, model)
         return false
     end
 
-    local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Props") or client:hasFlags("e")
+    local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Props") or client:hasFlags("e")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "prop", model)
         client:notifyLocalized("noSpawnPropsPerm")
@@ -36,7 +41,7 @@ function GM:CanProperty(client, property, entity)
     end
 
     if entity:GetCreator() == client and (property == "remover" or property == "collision") then return true end
-    if client:IsSuperAdmin() or client:hasPrivilege("Access Property " .. property:gsub("^%l", string.upper)) and client:isStaffOnDuty() then return true end
+    if client:hasPrivilege("Access Property " .. property:gsub("^%l", string.upper)) and client:isStaffOnDuty() then return true end
     lia.log.add(client, "permissionDenied", "modify property " .. property)
     client:notifyLocalized("noModifyProperty")
     return false
@@ -56,7 +61,6 @@ function GM:PhysgunPickup(client, entity)
         return true
     end
 
-    if client:IsSuperAdmin() then return true end
     if entity:GetCreator() == client and (entity:isProp() or entity:isItem()) then return true end
     if client:hasPrivilege("Physgun Pickup") then
         if entity:IsVehicle() then
@@ -121,7 +125,7 @@ function GM:PlayerNoClip(ply, enabled)
 end
 
 function GM:PlayerSpawnEffect(client)
-    local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Effects") or client:hasFlags("L")
+    local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Effects") or client:hasFlags("L")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "effect")
         client:notifyLocalized("noSpawnEffects")
@@ -130,7 +134,7 @@ function GM:PlayerSpawnEffect(client)
 end
 
 function GM:PlayerSpawnNPC(client)
-    local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn NPCs") or client:hasFlags("n")
+    local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn NPCs") or client:hasFlags("n")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "npc")
         client:notifyLocalized("noSpawnNPCs")
@@ -139,7 +143,7 @@ function GM:PlayerSpawnNPC(client)
 end
 
 function GM:PlayerSpawnRagdoll(client)
-    local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Ragdolls") or client:hasFlags("r")
+    local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn Ragdolls") or client:hasFlags("r")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "ragdoll")
         client:notifyLocalized("noSpawnRagdolls")
@@ -148,7 +152,7 @@ function GM:PlayerSpawnRagdoll(client)
 end
 
 function GM:PlayerSpawnSENT(client)
-    local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn SENTs") or client:hasFlags("E")
+    local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn SENTs") or client:hasFlags("E")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "sent")
         client:notifyLocalized("noSpawnSents")
@@ -157,7 +161,7 @@ function GM:PlayerSpawnSENT(client)
 end
 
 function GM:PlayerSpawnSWEP(client)
-    local canSpawn = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn SWEPs") or client:hasFlags("z")
+    local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn SWEPs") or client:hasFlags("z")
     if not canSpawn then
         lia.log.add(client, "spawnDenied", "swep", tostring(swep))
         client:notifyLocalized("noSpawnSweps")
@@ -166,7 +170,7 @@ function GM:PlayerSpawnSWEP(client)
 end
 
 function GM:PlayerGiveSWEP(client)
-    local canGive = client:IsSuperAdmin() or client:isStaffOnDuty() or client:hasPrivilege("Can Spawn SWEPs") or client:hasFlags("W")
+    local canGive = client:isStaffOnDuty() or client:hasPrivilege("Can Spawn SWEPs") or client:hasFlags("W")
     if not canGive then
         lia.log.add(client, "permissionDenied", "give swep")
         client:notifyLocalized("noGiveSweps")
@@ -208,19 +212,17 @@ function GM:CanTool(client, _, tool)
         return true
     end
 
-    if DisallowedTools[tool] and not client:IsSuperAdmin() then
+    if DisallowedTools[tool] and not client:hasPrivilege("Use Disallowed Tools") then
         lia.log.add(client, "toolDenied", tool)
         client:notifyLocalized("toolNotAllowed", tool)
         return false
     end
 
     local privilege = "Access Tool " .. tool:gsub("^%l", string.upper)
-    local isSuperAdmin = client:IsSuperAdmin()
     local isStaffOrFlagged = client:isStaffOnDuty() or client:hasFlags("t")
     local hasPriv = client:hasPrivilege(privilege)
-    if not isSuperAdmin and not (isStaffOrFlagged and hasPriv) then
+    if not (isStaffOrFlagged and hasPriv) then
         local reasons = {}
-        if not isSuperAdmin then table.insert(reasons, "SuperAdmin") end
         if not isStaffOrFlagged then table.insert(reasons, "On-duty staff or flag 't'") end
         if not hasPriv then table.insert(reasons, "Privilege '" .. privilege .. "'") end
         lia.log.add(client, "toolDenied", tool)

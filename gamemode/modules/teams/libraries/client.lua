@@ -30,7 +30,7 @@ function MODULE:CreateInformationButtons(pages)
     local client = LocalPlayer()
     local character = client:getChar()
     if not character then return end
-    local isLeader = client:IsSuperAdmin() or character:hasFlags("V")
+    local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
     if not isLeader then return end
 
     table.insert(pages, {

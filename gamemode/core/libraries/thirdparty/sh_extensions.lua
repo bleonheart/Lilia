@@ -123,7 +123,8 @@ local function GiveWeapon(ply, ent, args)
 
     if swep == nil then return end
     if IsValid(ply) then
-        if not swep.Spawnable and not ply:IsAdmin() or swep.AdminOnly and not ply:IsAdmin() then return end
+        local hasPrivilege = ply:hasPrivilege("Can Spawn SWEPs")
+        if (not swep.Spawnable or swep.AdminOnly) and not hasPrivilege then return end
         if not hook.Run("PlayerGiveSWEP", ply, className, swep) then return end
     end
 
@@ -196,7 +197,7 @@ properties.Add("lia_npc_weapon", {
             Header:SetText(CategoryName)
             PropPanel:Add(Header)
             for _, WeaponTable in SortedPairsByMemberValue(v, "PrintName") do
-                if WeaponTable.AdminOnly and not LocalPlayer():IsAdmin() then continue end
+                if WeaponTable.AdminOnly and not LocalPlayer():hasPrivilege("Can Spawn SWEPs") then continue end
                 local icon = vgui.Create("ContentIcon", PropPanel)
                 icon:SetMaterial("entities/" .. WeaponTable.ClassName .. ".png")
                 icon:SetName(WeaponTable.PrintName or "#" .. WeaponTable.ClassName)

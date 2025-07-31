@@ -150,7 +150,7 @@ end
 
 local function IncludeAdminMenu(tgt, menu, stores)
     local cl = LocalPlayer()
-    if cl:GetUserGroup() == "user" then return end
+    if not (cl:hasPrivilege("Use Admin Stick") or cl:isStaffOnDuty()) then return end
     local mod = GetOrCreateSubMenu(menu, "moderationTools", stores)
     local tp = {
         {
