@@ -29,3 +29,18 @@ MODULE.Privileges = {
         Category = "Staff Permissions",
     },
 }
+
+function MODULE:PopulateAdminTabs(pages)
+    if not IsValid(LocalPlayer()) then return end
+    table.insert(pages, {
+        name = L("userGroups"),
+        drawFunc = function(parent)
+            lia.gui.usergroups = parent
+            parent:Clear()
+            parent:DockPadding(10, 10, 10, 10)
+            parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
+            net.Start("liaGroupsRequest")
+            net.SendToServer()
+        end
+    })
+end
