@@ -99,17 +99,9 @@ if SERVER then
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
-        local old = string.Trim(net.ReadString() or "")
-        local new = string.Trim(net.ReadString() or "")
-        if old == "" or new == "" then return end
-        if old == new then return end
-        if not lia.administrator.groups or not lia.administrator.groups[old] then return end
-        if lia.administrator.groups[new] or lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[new] then return end
-        if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[old] then return end
-        local perms = lia.administrator.groups[old]
-        lia.administrator.groups[new] = perms
-        lia.administrator.groups[old] = nil
-        lia.administrator.save()
+        local old = net.ReadString()
+        local new = net.ReadString()
+        lia.administrator.renameGroup(old, new)
         broadcastGroups()
         p:notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
     end)
