@@ -10,6 +10,16 @@ local function shouldGrant(g, min)
     return g == "superadmin" or g == "admin" and min ~= "superadmin" or min == "user"
 end
 
+function lia.administrator.registerPrivilege(priv)
+    if not priv or not priv.Name then return end
+    local min = priv.MinAccess or "user"
+    for groupName, permissions in pairs(lia.administrator.groups) do
+        permissions[priv.Name] = shouldGrant(groupName, min) and true or permissions[priv.Name]
+    end
+
+    if SERVER then lia.administrator.save() end
+end
+
 function lia.administrator.load()
     local function ensureDefaults(groups)
         local defaults = {"user", "admin", "superadmin"}
