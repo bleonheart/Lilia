@@ -176,9 +176,36 @@ if SERVER then
         end
     end
 
+    local function extractPrivileges()
+        local seen = {}
+        local privs = {}
+        for groupName, perms in pairs(lia.administrator.groups) do
+            for name, allowed in pairs(perms or {}) do
+                if allowed and not seen[name] then
+                    seen[name] = true
+                end
+            end
+        end
+
+        for name in pairs(seen) do
+            local min = "superadmin"
+            if lia.administrator.groups.user and lia.administrator.groups.user[name] then
+                min = "user"
+            elseif lia.administrator.groups.admin and lia.administrator.groups.admin[name] then
+                min = "admin"
+            end
+
+            privs[#privs + 1] = { Name = name, MinAccess = min }
+        end
+
+        return privs
+    end
+
     function lia.administrator.save(noNetwork)
         lia.db.upsert({
-            groups = util.TableToJSON(lia.administrator.groups)
+            groups = util.TableToJSON(lia.administrator.groups),
+            usergroups = util.TableToJSON(lia.administrator.groups),
+            privileges = util.TableToJSON(extractPrivileges())
         }, "admin")
 
         if noNetwork then return end
