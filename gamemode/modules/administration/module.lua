@@ -4,28 +4,28 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleAdministrationDesc")
 MODULE.Privileges = {
     {
-        Name = "Manage Prop Blacklist",
+        Name = L("managePropBlacklist"),
         MinAccess = "superadmin",
-        Category = "Blacklisting",
+        Category = L("categoryBlacklisting"),
     },
     {
-        Name = "Manage Vehicle Blacklist",
+        Name = L("manageVehicleBlacklist"),
         MinAccess = "superadmin",
-        Category = "Blacklisting",
+        Category = L("categoryBlacklisting"),
     },
     {
-        Name = "Manage Entity Blacklist",
+        Name = L("manageEntityBlacklist"),
         MinAccess = "superadmin",
-        Category = "Blacklisting",
+        Category = L("categoryBlacklisting"),
     },
     {
-        Name = "Access Configuration Menu",
+        Name = L("accessConfigurationMenu"),
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     },
     {
-        Name = "Access Edit Configuration Menu",
+        Name = L("accessEditConfigurationMenu"),
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     },
 }

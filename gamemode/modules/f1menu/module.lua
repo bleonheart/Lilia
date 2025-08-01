@@ -4,23 +4,23 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleF1MenuDesc")
 MODULE.Privileges = {
     {
-        Name = "Staff Permission — Access Entity List",
+        Name = L("accessEntityList"),
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     },
     {
-        Name = "Staff Permission — Teleport to Entity",
+        Name = L("teleportToEntity"),
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     },
     {
-        Name = "Staff Permission — Teleport to Entity (Entity Tab)",
+        Name = L("teleportToEntityTab"),
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     },
     {
-        Name = "Staff Permission — View Entity (Entity Tab)",
+        Name = L("viewEntityTab"),
         MinAccess = "admin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     },
 }
