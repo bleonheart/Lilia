@@ -1,9 +1,13 @@
 ﻿local MODULE = MODULE
-function MODULE:SendLogs(client, categorizedLogs)
+local function SendLogs(client, categorizedLogs)
     lia.net.writeBigTable(client, "send_logs", categorizedLogs)
 end
 
-function MODULE:ReadLogEntries(category)
+local function CanPlayerSeeLog(client)
+    return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Can See Logs")
+end
+
+local function ReadLogEntries(category)
     local d = deferred.new()
     local maxDays = lia.config.get("LogRetentionDays", 7)
     local maxLines = lia.config.get("MaxLogLines", 1000)
@@ -27,7 +31,7 @@ function MODULE:ReadLogEntries(category)
 end
 
 net.Receive("send_logs_request", function(_, client)
-    if not MODULE:CanPlayerSeeLog(client) then return end
+    if not CanPlayerSeeLog(client) then return end
     local categories = {}
     for _, v in pairs(lia.log.types) do
         categories[v.category or "Uncategorized"] = true
@@ -40,9 +44,9 @@ net.Receive("send_logs_request", function(_, client)
 
     local logsByCategory = {}
     local function fetch(i)
-        if i > #catList then return MODULE:SendLogs(client, logsByCategory) end
+        if i > #catList then return SendLogs(client, logsByCategory) end
         local cat = catList[i]
-        MODULE:ReadLogEntries(cat):next(function(entries)
+        ReadLogEntries(cat):next(function(entries)
             if #entries > 0 then logsByCategory[cat] = entries end
             fetch(i + 1)
         end)
@@ -50,10 +54,6 @@ net.Receive("send_logs_request", function(_, client)
 
     fetch(1)
 end)
-
-function MODULE:CanPlayerSeeLog(client)
-    return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("Can See Logs")
-end
 
 function MODULE:OnCharDelete(client, id)
     lia.log.add(client, "charDelete", id)
