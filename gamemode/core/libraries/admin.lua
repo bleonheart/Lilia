@@ -405,6 +405,7 @@ if SERVER then
         else
             lia.administrator.removePermission(group, privilege)
         end
+
         lia.administrator.save()
         broadcastGroups()
     end)
@@ -493,6 +494,7 @@ else
                 else
                     current[name] = nil
                 end
+
                 if editable then
                     net.Start("liaGroupsSetPerm")
                     net.WriteString(g)
@@ -650,22 +652,20 @@ else
         PRIV_LIST = computePrivilegeList(lia.administrator.groups)
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups) end
     end)
-end
 
-hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
-    if not IsValid(LocalPlayer()) then return end
-    pages[#pages + 1] = {
-        name = L("userGroups"),
-        drawFunc = function(parent)
-            lia.gui.usergroups = parent
-            parent:Clear()
-            parent:DockPadding(10, 10, 10, 10)
-            parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
-            if lia.administrator.groups then
-                buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups)
+    hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
+        if not IsValid(LocalPlayer()) then return end
+        pages[#pages + 1] = {
+            name = L("userGroups"),
+            drawFunc = function(parent)
+                lia.gui.usergroups = parent
+                parent:Clear()
+                parent:DockPadding(10, 10, 10, 10)
+                parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
+                if lia.administrator.groups then buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups) end
+                net.Start("liaGroupsRequest")
+                net.SendToServer()
             end
-            net.Start("liaGroupsRequest")
-            net.SendToServer()
-        end
-    }
-end)
+        }
+    end)
+end
