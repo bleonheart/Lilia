@@ -1222,5 +1222,9 @@ LANGUAGE = {
     missingMysqlooBinaries = "Le serveur n'a pas les binaires pour mysqloo !",
     factionMissingName = "La faction '%s' n'a pas de nom. Vous devez ajouter FACTION.name",
     factionMissingDesc = "La faction '%s' n'a pas de description. Vous devez ajouter FACTION.desc",
+    permaPropSavedLog = "%s perma-propped %s (%s) at %s",
+    permaPropOverlapLog = "Perma-prop spawned at %s overlapping prop at %s.",
+    dupeCrashAttemptLog = "Player '%s' [%s] attempted to duplicate oversized entities.",
+    unprotectedVJNetCallLog = "%s triggered unprotected net message '%s'.",
     defaultGameDescription = "A Lilia Gamemode",
 }

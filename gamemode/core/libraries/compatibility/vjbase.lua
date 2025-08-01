@@ -29,4 +29,6 @@ timer.Simple(10, function()
     concommand.Remove("vj_cleanup")
 end)
 
-lia.log.addType("unprotectedVJNetCall", function(client, netMessage) return string.format("%s triggered unprotected net message '%s'", client:Name(), netMessage) end, "VJ Base")
+lia.log.addType("unprotectedVJNetCall", function(client, netMessage)
+    return L("unprotectedVJNetCallLog", client:Name(), netMessage)
+end, "VJ Base")
