@@ -286,7 +286,7 @@ lia.chat.register("me's", {
     format = "mePossessiveFormat",
     onCanHear = lia.config.get("ChatRange", 280),
     onChatAdd = function(speaker, text, anonymous)
-        local speako = anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or "Console"
+        local speako = anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console")
         local texCol = lia.config.get("ChatColor")
         if LocalPlayer():getTracedEntity() == speaker then texCol = lia.config.get("ChatListenColor") end
         texCol = Color(texCol.r, texCol.g, texCol.b)
@@ -310,7 +310,7 @@ lia.chat.register("mefarfar", {
     desc = "mefarfarDesc",
     format = "emoteFormat",
     onChatAdd = function(speaker, text, anonymous)
-        local speako = anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or "Console"
+        local speako = anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console")
         local texCol = lia.config.get("ChatColor")
         if LocalPlayer():getTracedEntity() == speaker then texCol = lia.config.get("ChatListenColor") end
         texCol = Color(texCol.r + 45, texCol.g + 45, texCol.b + 45)

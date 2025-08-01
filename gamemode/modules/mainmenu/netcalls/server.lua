@@ -75,7 +75,7 @@ net.Receive("liaCharCreate", function(_, client)
         if isfunction(charVar.onValidate) then
             local result = {charVar.onValidate(value, data, client)}
             if result[1] == false then
-                result[2] = result[2] or "Validation error"
+                result[2] = result[2] or "validationError"
                 return response(nil, unpack(result, 2))
             end
         end
