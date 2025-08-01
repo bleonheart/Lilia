@@ -171,16 +171,45 @@ function playerMeta:CanEditVendor(vendor)
     return self:hasPrivilege("Can Edit Vendors")
 end
 
+local function groupDerivesFrom(groupName, target)
+    local groups = lia.administrator.groups or {}
+    local visited = {}
+    while groupName and not visited[groupName] do
+        if groupName:lower() == target:lower() then return true end
+        visited[groupName] = true
+        local info = groups[groupName] and groups[groupName]._info
+        groupName = info and info.inheritance
+    end
+    return false
+end
+
+local function groupHasType(groupName, t)
+    local groups = lia.administrator.groups or {}
+    local visited = {}
+    t = t:lower()
+    while groupName and not visited[groupName] do
+        visited[groupName] = true
+        local data = groups[groupName]
+        if not data then break end
+        local info = data._info or {}
+        for _, typ in ipairs(info.types or {}) do
+            if tostring(typ):lower() == t then return true end
+        end
+        groupName = info.inheritance
+    end
+    return false
+end
+
 function playerMeta:isUser()
-    return self:IsUserGroup("user")
+    return groupDerivesFrom(self:GetUserGroup(), "user")
 end
 
 function playerMeta:isStaff()
-    return self:hasPrivilege("UserGroups - Staff Group")
+    return groupHasType(self:GetUserGroup(), "Staff")
 end
 
 function playerMeta:isVIP()
-    return self:hasPrivilege("UserGroups - VIP Group")
+    return groupHasType(self:GetUserGroup(), "VIP")
 end
 
 function playerMeta:isStaffOnDuty()
