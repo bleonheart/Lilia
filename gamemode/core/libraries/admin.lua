@@ -199,16 +199,18 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
-    function lia.administrator.sync(client)
-        if client and IsValid(client) then
-            lia.net.writeBigTable(client, "updateAdminGroups", lia.administrator.groups)
-        else
-            local players = player.GetHumans()
-            if #players > 0 then
-                for _, ply in ipairs(players) do
-                    lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups)
-                end
-            end
+    util.AddNetworkString("updateAdminPrivileges")
+    function lia.administrator.sync(c)
+        if c and IsValid(c) then
+            lia.net.writeBigTable(c, "updateAdminPrivileges", lia.administrator.privileges)
+            lia.net.writeBigTable(c, "updateAdminGroups", lia.administrator.groups)
+            return
+        end
+
+        local t = player.GetHumans()
+        for _, p in ipairs(t) do
+            lia.net.writeBigTable(p, "updateAdminPrivileges", lia.administrator.privileges)
+            lia.net.writeBigTable(p, "updateAdminGroups", lia.administrator.groups)
         end
     end
 
@@ -341,7 +343,7 @@ if SERVER then
 
     ensureStructures()
     net.Receive("liaGroupsRequest", function(_, p)
-        ensureStructures()
+        lia.net.writeBigTable(p, "updateAdminPrivileges", lia.administrator.privileges or {})
         lia.net.writeBigTable(p, "updateAdminGroups", lia.administrator.groups or {})
     end)
 
@@ -677,6 +679,11 @@ else
         tbl = tbl or {}
         lia.administrator.groups = tbl
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
+    end)
+
+    lia.net.readBigTable("updateAdminGroups", function(tbl)
+        tbl = tbl or {}
+        lia.administrator.privileges = tbl
     end)
 
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
