@@ -7,109 +7,6 @@ lia.administrator.DefaultGroups = {
     superadmin = true
 }
 
-lia.administrator.DEFAULT_PRIVILEGES = lia.administrator.DEFAULT_PRIVILEGES or {
-    {
-        Name = "kick",
-        MinAccess = "admin"
-    },
-    {
-        Name = "ban",
-        MinAccess = "admin"
-    },
-    {
-        Name = "unban",
-        MinAccess = "admin"
-    },
-    {
-        Name = "mute",
-        MinAccess = "admin"
-    },
-    {
-        Name = "unmute",
-        MinAccess = "admin"
-    },
-    {
-        Name = "gag",
-        MinAccess = "admin"
-    },
-    {
-        Name = "ungag",
-        MinAccess = "admin"
-    },
-    {
-        Name = "freeze",
-        MinAccess = "admin"
-    },
-    {
-        Name = "unfreeze",
-        MinAccess = "admin"
-    },
-    {
-        Name = "slay",
-        MinAccess = "admin"
-    },
-    {
-        Name = "bring",
-        MinAccess = "admin"
-    },
-    {
-        Name = "goto",
-        MinAccess = "admin"
-    },
-    {
-        Name = "return",
-        MinAccess = "admin"
-    },
-    {
-        Name = "jail",
-        MinAccess = "admin"
-    },
-    {
-        Name = "unjail",
-        MinAccess = "admin"
-    },
-    {
-        Name = "cloak",
-        MinAccess = "admin"
-    },
-    {
-        Name = "uncloak",
-        MinAccess = "admin"
-    },
-    {
-        Name = "god",
-        MinAccess = "admin"
-    },
-    {
-        Name = "ungod",
-        MinAccess = "admin"
-    },
-    {
-        Name = "ignite",
-        MinAccess = "admin"
-    },
-    {
-        Name = "extinguish",
-        MinAccess = "admin"
-    },
-    {
-        Name = "strip",
-        MinAccess = "admin"
-    },
-    {
-        Name = "respawn",
-        MinAccess = "admin"
-    },
-    {
-        Name = "blind",
-        MinAccess = "admin"
-    },
-    {
-        Name = "unblind",
-        MinAccess = "admin"
-    }
-}
-
 local level = {
     user = 1,
     admin = 2,
@@ -152,9 +49,9 @@ function lia.administrator.load()
         return created
     end
 
-    local function rebuildPrivileges(privs)
-        lia.administrator.privileges = {}
-        if not istable(privs) then return end
+    local function migratePrivileges(groups, privs)
+        if not istable(privs) or table.Count(privs) == 0 then return false end
+        local changed = false
         for k, v in pairs(privs) do
             local name
             local min = "user"
@@ -165,19 +62,14 @@ function lia.administrator.load()
                 name = v
             end
 
-            if isstring(name) and name ~= "" then lia.administrator.privileges[name] = min end
-        end
-    end
-
-    local function applyPrivilegesToGroups(groups)
-        local changed = false
-        for groupName, permissions in pairs(groups) do
-            permissions = permissions or {}
-            groups[groupName] = permissions
-            for name, min in pairs(lia.administrator.privileges or {}) do
-                if permissions[name] == nil then
-                    permissions[name] = shouldGrant(groupName, min)
-                    changed = true
+            if isstring(name) and name ~= "" then
+                for groupName, permissions in pairs(groups) do
+                    permissions = permissions or {}
+                    groups[groupName] = permissions
+                    if shouldGrant(groupName, min) and not permissions[name] then
+                        permissions[name] = true
+                        changed = true
+                    end
                 end
             end
         end
@@ -193,31 +85,28 @@ function lia.administrator.load()
         local newGroups = res and util.JSONToTable(res.usergroups or res.groups or "") or {}
         local inherits = res and util.JSONToTable(res.inheritances or "") or {}
         local types = res and util.JSONToTable(res.types or "") or {}
-        local storedPrivs = res and util.JSONToTable(res.privileges or "") or {}
         for name, data in pairs(newGroups) do
             data._info = data._info or {}
             data._info.inheritance = inherits[name] or data._info.inheritance or "user"
             data._info.types = types[name] or data._info.types or {}
         end
 
-        rebuildPrivileges(storedPrivs)
         local created = ensureDefaults(newGroups)
-        lia.administrator._loading = true
-        lia.administrator.groups = newGroups
-        local seeded = false
-        if table.Count(lia.administrator.privileges) == 0 then
-            for _, p in ipairs(lia.administrator.DEFAULT_PRIVILEGES) do
-                lia.administrator.registerPrivilege(p)
-            end
-
-            seeded = true
+        if table.Count(newGroups) == 0 then
+            local oldGroups = res and util.JSONToTable(res.usergroups or "") or {}
+            created = ensureDefaults(oldGroups) or created
+            if migratePrivileges(oldGroups, res and util.JSONToTable(res.privileges or "") or {}) then created = true end
+            newGroups = oldGroups
         end
 
-        local merged = applyPrivilegesToGroups(newGroups)
-        if created or merged or seeded then lia.administrator.save(true) end
+        lia.administrator._loading = true
+        if created then
+            lia.administrator.groups = newGroups
+            lia.administrator.save(true)
+        end
+
         lia.administrator._loading = false
         continueLoad(newGroups)
-        if created or merged or seeded then lia.administrator.save() end
     end)
 end
 
@@ -547,11 +436,9 @@ if SERVER then
     end)
 else
     local LAST_GROUP
-    local _admin_groups_ready = false
-    local _admin_privs_ready = false
     local function computePrivilegeList(groups)
         local list, seen = {}, {}
-        for name in pairs(lia.administrator.privileges or {}) do
+        for name in pairs(lia.administrator.privileges) do
             list[#list + 1], seen[name] = name, true
         end
 
@@ -592,12 +479,10 @@ else
     end
 
     local function buildPrivilegeList(parent, g, groups, editable)
-        local wrap = parent:Add("DPanel")
-        wrap:Dock(FILL)
-        wrap:DockMargin(20, 0, 20, 4)
-        wrap.Paint = function() end
-        local catList = wrap:Add("DCategoryList")
-        catList:Dock(FILL)
+        local container = parent:Add("DPanel")
+        container:Dock(TOP)
+        container:DockMargin(20, 0, 20, 4)
+        container.Paint = function() end
         local current = table.Copy(groups[g] or {})
         current._info = nil
         surface.SetFont("liaMediumFont")
@@ -605,8 +490,10 @@ else
         local cb = math.max(20, fh + 6)
         local rowH = math.max(fh + 14, cb + 8)
         local off = math.floor((rowH - fh) * 0.5)
-        local function addRow(container, name)
-            local row = container:Add("DPanel")
+        local list = container:Add("DListLayout")
+        list:Dock(TOP)
+        local function addRow(name)
+            local row = list:Add("DPanel")
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
             row:SetTall(rowH)
@@ -641,20 +528,14 @@ else
             end
         end
 
-        local cat = catList:Add("All")
-        local list = vgui.Create("DListLayout", cat)
-        list:Dock(FILL)
-        for _, priv in ipairs(computePrivilegeList(groups)) do
-            addRow(list, priv)
+        local names = computePrivilegeList(groups)
+        for _, priv in ipairs(names) do
+            addRow(priv)
         end
-
-        cat:SetContents(list)
-        cat:SetExpanded(true)
-        cat.OnToggle = function() timer.Simple(0, function() if IsValid(wrap) then wrap:InvalidateLayout(true) end end) end
-        return wrap, catList, current
+        return container, current
     end
 
-    local function renderGroupInfo(parent, g, groups, perms)
+    function renderGroupInfo(parent, g, groups, perms)
         parent:Clear()
         LAST_GROUP = g
         local editable = not lia.administrator.DefaultGroups[g]
@@ -694,8 +575,8 @@ else
         inhVal:SetFont("liaMediumFont")
         inhVal:SizeToContents()
         local function hasType(t)
-            for _, typ in ipairs(info.types or {}) do
-                if tostring(typ):lower() == t:lower() then return true end
+            for _, v in ipairs(info.types or {}) do
+                if tostring(v):lower() == t:lower() then return true end
             end
             return false
         end
@@ -730,7 +611,7 @@ else
         privLbl:SetText(L("privilegesLabel"))
         privLbl:SetFont("liaBigFont")
         privLbl:SizeToContents()
-        buildPrivilegeList(scroll, g, perms, editable)
+        buildPrivilegeList(scroll, g, groups, editable)
         if editable then
             local createBtn = bottom:Add("liaMediumButton")
             local renameBtn = bottom:Add("liaMediumButton")
@@ -738,7 +619,7 @@ else
             createBtn:SetText(L("createGroup"))
             renameBtn:SetText(L("renameGroup"))
             delBtn:SetText(L("deleteGroup"))
-            createBtn.DoClick = promptCreateGroup
+            createBtn.DoClick = function() promptCreateGroup() end
             renameBtn.DoClick = function()
                 Derma_StringRequest(L("renameGroup"), string.format(L("renameGroupPrompt"), g), g, function(txt)
                     txt = string.Trim(txt or "")
@@ -771,7 +652,7 @@ else
         else
             local addBtn = bottom:Add("liaMediumButton")
             addBtn:SetText(L("createGroup"))
-            addBtn.DoClick = promptCreateGroup
+            addBtn.DoClick = function() promptCreateGroup() end
             bottom.PerformLayout = function(_, w, bh)
                 addBtn:SetPos(0, 0)
                 addBtn:SetSize(w, bh)
@@ -780,6 +661,7 @@ else
     end
 
     local function buildGroupsUI(panel, groups, perms)
+        PRIV_LIST = computePrivilegeList(groups)
         panel:Clear()
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
@@ -808,33 +690,12 @@ else
         end
     end
 
-    local function tryBuildGroups()
-        if not IsValid(lia.gui.usergroups) then return end
-        if not _admin_groups_ready or not _admin_privs_ready then
-            lia.gui.usergroups:Clear()
-            local lbl = lia.gui.usergroups:Add("DLabel")
-            lbl:Dock(FILL)
-            lbl:SetContentAlignment(5)
-            lbl:SetText(L("loading") or "Loading...")
-            lbl:SetFont("liaMediumFont")
-            return
-        end
-
-        buildGroupsUI(lia.gui.usergroups, lia.administrator.groups or {}, lia.administrator.groups or {})
-    end
-
     lia.net.readBigTable("updateAdminGroups", function(tbl)
-        lia.administrator.groups = tbl or {}
-        _admin_groups_ready = true
-        tryBuildGroups()
+        lia.administrator.groups = tbl
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
     end)
 
-    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
-        lia.administrator.privileges = tbl or {}
-        _admin_privs_ready = true
-        tryBuildGroups()
-    end)
-
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         if not IsValid(LocalPlayer()) then return end
         pages[#pages + 1] = {
@@ -844,7 +705,7 @@ else
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
                 parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
-                tryBuildGroups()
+                buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups)
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end
