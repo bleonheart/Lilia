@@ -646,6 +646,7 @@ else
     end
 
     local function buildGroupsUI(panel, groups, perms)
+        PrintTable(groups)
         PRIV_LIST = computePrivilegeList(groups)
         panel:Clear()
         local sheet = panel:Add("DPropertySheet")
@@ -690,7 +691,8 @@ else
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
                 parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
-                if lia.administrator.groups then buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups) end
+                PrintTable(lia.administrator.groups, 1)
+                buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups)
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end
