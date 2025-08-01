@@ -416,7 +416,7 @@ else
     end
 
     local function promptCreateGroup()
-        LocalPlayer():requestArguments("Create Group", {
+        lia.util.requestArguments("Create Group", {
             Name = "string",
             Inheritance = {"table", {"user", "admin", "superadmin"}},
             Staff = "boolean",
