@@ -466,7 +466,7 @@ else
         wrap:Dock(FILL)
         wrap:DockMargin(20, 0, 20, 4)
         wrap.Paint = function() end
-        local catList = vgui.Create("DCategoryList", wrap)
+        local catList = wrap:Add("DCategoryList")
         catList:Dock(FILL)
         local current = table.Copy(perms[g] or {})
         current._info = nil
@@ -476,7 +476,7 @@ else
         local rowH = math.max(fh + 14, cbSize + 8)
         local off = math.floor((rowH - fh) * 0.5)
         local function addRow(container, name)
-            local row = vgui.Create("DPanel", container)
+            local row = container:Add("DPanel")
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
             row:SetTall(rowH)
@@ -491,23 +491,24 @@ else
             chk:SetSize(cbSize, cbSize)
             chk:Dock(RIGHT)
             chk:SetChecked(current[name] and true or false)
-            chk.OnChange = function(_, v)
-                if v then
-                    current[name] = true
-                else
-                    current[name] = nil
-                end
+            if editable then
+                chk.OnChange = function(_, v)
+                    if v then
+                        current[name] = true
+                    else
+                        current[name] = nil
+                    end
 
-                if editable then
                     net.Start("liaGroupsSetPerm")
                     net.WriteString(g)
                     net.WriteString(name)
                     net.WriteBool(v)
                     net.SendToServer()
                 end
+            else
+                chk:SetMouseInputEnabled(false)
+                chk:SetCursor("arrow")
             end
-
-            if not editable then chk:SetEnabled(false) end
         end
 
         local cat = catList:Add("All")
@@ -519,12 +520,7 @@ else
 
         cat:SetContents(list)
         cat:SetExpanded(true)
-        cat.OnToggle = function()
-            timer.Simple(0, function()
-                if not IsValid(wrap) then return end
-                wrap:InvalidateLayout(true)
-            end)
-        end
+        cat.OnToggle = function() timer.Simple(0, function() if IsValid(wrap) then wrap:InvalidateLayout(true) end end) end
         return wrap, catList, current
     end
 
@@ -565,7 +561,6 @@ else
         inhVal:SetText(info.inheritance or "user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
-
         local function hasType(t)
             for _, typ in ipairs(info.types or {}) do
                 if tostring(typ):lower() == t:lower() then return true end
@@ -585,7 +580,6 @@ else
         staffVal:SetText(hasType("Staff") and L("yes") or L("no"))
         setFont(staffVal, "liaMediumFont")
         staffVal:SizeToContents()
-
         local vipLbl = scroll:Add("DLabel")
         vipLbl:Dock(TOP)
         vipLbl:DockMargin(20, 10, 0, 0)
