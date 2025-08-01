@@ -766,7 +766,7 @@ end
 
 function lia.log.add(client, logType, ...)
     local logString, category = lia.log.getString(client, logType, ...)
-    if not isstring(category) then category = "Uncategorized" end
+    if not isstring(category) then category = L("uncategorized") end
     if not isstring(logString) then return end
     hook.Run("OnServerLog", client, logType, logString, category)
     lia.printLog(category, logString)

@@ -34,7 +34,7 @@ net.Receive("send_logs_request", function(_, client)
     if not CanPlayerSeeLog(client) then return end
     local categories = {}
     for _, v in pairs(lia.log.types) do
-        categories[v.category or "Uncategorized"] = true
+        categories[v.category or L("uncategorized")] = true
     end
 
     local catList = {}

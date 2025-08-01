@@ -1195,5 +1195,8 @@ R: Бросить]],
     agoFormat = "%s (%s) ago",
     gmaFileBlocked = "Blocked %s",
     gmaFileNotWhitelisted = "Warning: File %s not whitelisted. Skipping..",
+    itemNotFound = "Предмет не найден",
+    compatibilityConditionError = "Ошибка проверки совместимости: %s",
+    uncategorized = "Без категории",
     defaultGameDescription = "A Lilia Gamemode",
 }

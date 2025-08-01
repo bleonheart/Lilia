@@ -1195,5 +1195,8 @@ Ricarica: Droppa]],
     agoFormat = "%s (%s) ago",
     gmaFileBlocked = "Blocked %s",
     gmaFileNotWhitelisted = "Warning: File %s not whitelisted. Skipping..",
+    itemNotFound = "Oggetto non trovato",
+    compatibilityConditionError = "Errore di condizione di compatibilità: %s",
+    uncategorized = "Senza categoria",
     defaultGameDescription = "A Lilia Gamemode",
 }
