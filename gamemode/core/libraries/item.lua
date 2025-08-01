@@ -115,8 +115,8 @@ local DefaultFunctions = {
             if not target or not targetInv then return false end
             inv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
             targetInv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
-            client:setAction("Giving " .. item.name .. " to " .. target:Name(), lia.config.get("ItemGiveSpeed", 6))
-            target:setAction(client:Name() .. " is giving you a " .. item.name, lia.config.get("ItemGiveSpeed", 6))
+            client:setAction(L("givingItemTo", L(item.name), target:Name()), lia.config.get("ItemGiveSpeed", 6))
+            target:setAction(L("givingYouItem", client:Name(), L(item.name)), lia.config.get("ItemGiveSpeed", 6))
             client:doStaredAction(target, function()
                 local res = hook.Run("HandleItemTransferRequest", client, item:getID(), nil, nil, targetInv:getID())
                 if not res then return end
@@ -142,7 +142,7 @@ local DefaultFunctions = {
             local target = client:getTracedEntity()
             if not (IsValid(target) and target:IsPlayer() and target:Alive() and client:GetPos():DistToSqr(target:GetPos()) < 6500) then return false end
             if hook.Run("CanPlayerRequestInspectionOnItem", client, target, item) == false then return false end
-            target:binaryQuestion(client:Name() .. " wants to show you their " .. item.name .. ".", L("yes"), L("no"), false, function(choice)
+            target:binaryQuestion(L("inspectRequest", client:Name(), L(item.name)), L("yes"), L("no"), false, function(choice)
                 if choice == 0 then
                     net.Start("liaItemInspect")
                     net.WriteString(item.uniqueID)
