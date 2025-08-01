@@ -1,7 +1,9 @@
-﻿lia.net = lia.net or {}
+﻿lia = lia or {}
+lia.net = lia.net or {}
+lia.net._buffers = lia.net._buffers or {}
+lia.net._sendq = lia.net._sendq or {}
 lia.net.globals = lia.net.globals or {}
 function lia.net.readBigTable(netStr, callback)
-    lia.net._buffers = lia.net._buffers or {}
     lia.net._buffers[netStr] = lia.net._buffers[netStr] or {}
     net.Receive(netStr, function(_, ply)
         local sid = net.ReadUInt(32)
@@ -26,6 +28,13 @@ function lia.net.readBigTable(netStr, callback)
             state.count = state.count + 1
         end
 
+        if CLIENT then
+            net.Start("LIA_BigTable_Ack")
+            net.WriteUInt(sid, 32)
+            net.WriteUInt(idx, 16)
+            net.SendToServer()
+        end
+
         if state.count == state.total then
             buffers[sid] = nil
             local full = table.concat(state.parts, "", 1, total)
@@ -41,51 +50,98 @@ function lia.net.readBigTable(netStr, callback)
 end
 
 if SERVER then
-    function lia.net.writeBigTable(targets, netStr, tbl, chunkSize, chunkDelay)
+    util.AddNetworkString("LIA_BigTable_Ack")
+    net.Receive("LIA_BigTable_Ack", function(_, ply)
+        if not IsValid(ply) then return end
+        local sid = net.ReadUInt(32)
+        local last = net.ReadUInt(16)
+        local q = lia.net._sendq[ply]
+        if not q then return end
+        local s = q[sid]
+        if not s then return end
+        if last ~= s.idx then return end
+        if s.idx >= s.total then
+            q[sid] = nil
+            return
+        end
+
+        s.idx = s.idx + 1
+        local part = s.chunks[s.idx]
+        if not part then
+            q[sid] = nil
+            return
+        end
+
+        net.Start(s.netStr)
+        net.WriteUInt(sid, 32)
+        net.WriteUInt(s.total, 16)
+        net.WriteUInt(s.idx, 16)
+        net.WriteUInt(#part, 16)
+        net.WriteData(part, #part)
+        net.Send(ply)
+        if s.idx == s.total then q[sid] = nil end
+    end)
+
+    local function beginStream(ply, netStr, chunks, sid)
+        lia.net._sendq[ply] = lia.net._sendq[ply] or {}
+        local s = {
+            netStr = netStr,
+            chunks = chunks,
+            total = #chunks,
+            idx = 1
+        }
+
+        lia.net._sendq[ply][sid] = s
+        local first = chunks[1]
+        if not first then
+            lia.net._sendq[ply][sid] = nil
+            return
+        end
+
+        net.Start(netStr)
+        net.WriteUInt(sid, 32)
+        net.WriteUInt(s.total, 16)
+        net.WriteUInt(1, 16)
+        net.WriteUInt(#first, 16)
+        net.WriteData(first, #first)
+        net.Send(ply)
+        if s.total == 1 then lia.net._sendq[ply][sid] = nil end
+    end
+
+    function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
         if not istable(tbl) then return end
         local json = util.TableToJSON(tbl)
         if not json then return end
         local data = util.Compress(json)
         if not data or #data == 0 then return end
-        local size = chunkSize or 4096
-        local delay = chunkDelay or 1
-        local total = math.ceil(#data / size)
-        local sid = util.CRC(tostring(SysTime()) .. json) % 4294967295
-        local idx, pos = 0, 1
-        local function sendNext()
-            if targets then
-                if istable(targets) then
-                    for i = #targets, 1, -1 do
-                        if not IsValid(targets[i]) then table.remove(targets, i) end
-                    end
-
-                    if #targets == 0 then return end
-                elseif not IsValid(targets) then
-                    return
-                end
-            end
-
-            idx = idx + 1
-            local chunk = string.sub(data, pos, pos + size - 1)
-            net.Start(netStr)
-            net.WriteUInt(sid, 32)
-            net.WriteUInt(total, 16)
-            net.WriteUInt(idx, 16)
-            net.WriteUInt(#chunk, 16)
-            net.WriteData(chunk, #chunk)
-            if not targets then
-                net.Broadcast()
-            else
-                net.Send(targets)
-            end
-
+        local size = math.max(256, math.min(4096, chunkSize or 2048))
+        local chunks = {}
+        local pos = 1
+        while pos <= #data do
+            local part = string.sub(data, pos, pos + size - 1)
+            chunks[#chunks + 1] = part
             pos = pos + size
-            if pos <= #data then timer.Simple(delay, sendNext) end
         end
 
-        sendNext()
+        local sid = (tonumber(util.CRC(tostring(SysTime()) .. json)) or 0) % 4294967296
+        if istable(targets) then
+            for i = #targets, 1, -1 do
+                local ply = targets[i]
+                if IsValid(ply) then beginStream(ply, netStr, chunks, sid) end
+            end
+        elseif IsValid(targets) then
+            beginStream(targets, netStr, chunks, sid)
+        else
+            for _, ply in ipairs(player.GetHumans()) do
+                beginStream(ply, netStr, chunks, sid)
+            end
+        end
     end
+else
+    util.AddNetworkString = util.AddNetworkString or function() end
+end
 
+if SERVER then
     function checkBadType(name, object)
         if isfunction(object) then
             lia.error("Net var '" .. name .. "' contains a bad object type!")
@@ -134,6 +190,8 @@ if SERVER then
         net.WriteTable(lia.char.names)
         net.Send(client)
     end)
+
+    util.AddNetworkString("LIA_BigTable_Test")
 else
     function getNetVar(key, default)
         local value = lia.net.globals[key]
