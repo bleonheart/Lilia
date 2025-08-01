@@ -436,9 +436,11 @@ if SERVER then
     end)
 else
     local LAST_GROUP
+    local _admin_groups_ready = false
+    local _admin_privs_ready = false
     local function computePrivilegeList(groups)
         local list, seen = {}, {}
-        for name in pairs(lia.administrator.privileges) do
+        for name in pairs(lia.administrator.privileges or {}) do
             list[#list + 1], seen[name] = name, true
         end
 
@@ -617,7 +619,7 @@ else
         privLbl:SetText(L("privilegesLabel"))
         privLbl:SetFont("liaBigFont")
         privLbl:SizeToContents()
-        local wrap = buildPrivilegeList(scroll, g, perms, editable)
+        buildPrivilegeList(scroll, g, perms, editable)
         if editable then
             local createBtn = bottom:Add("liaMediumButton")
             local renameBtn = bottom:Add("liaMediumButton")
@@ -667,8 +669,6 @@ else
     end
 
     local function buildGroupsUI(panel, groups, perms)
-        PrintTable(groups)
-        PRIV_LIST = computePrivilegeList(groups)
         panel:Clear()
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
@@ -697,12 +697,33 @@ else
         end
     end
 
+    local function tryBuildGroups()
+        if not IsValid(lia.gui.usergroups) then return end
+        if not _admin_groups_ready or not _admin_privs_ready then
+            lia.gui.usergroups:Clear()
+            local lbl = lia.gui.usergroups:Add("DLabel")
+            lbl:Dock(FILL)
+            lbl:SetContentAlignment(5)
+            lbl:SetText(L("loading") or "Loading...")
+            lbl:SetFont("liaMediumFont")
+            return
+        end
+
+        buildGroupsUI(lia.gui.usergroups, lia.administrator.groups or {}, lia.administrator.groups or {})
+    end
+
     lia.net.readBigTable("updateAdminGroups", function(tbl)
-        lia.administrator.groups = tbl
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
+        lia.administrator.groups = tbl or {}
+        _admin_groups_ready = true
+        tryBuildGroups()
     end)
 
-    lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
+        lia.administrator.privileges = tbl or {}
+        _admin_privs_ready = true
+        tryBuildGroups()
+    end)
+
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         if not IsValid(LocalPlayer()) then return end
         pages[#pages + 1] = {
@@ -712,8 +733,7 @@ else
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
                 parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
-                PrintTable(lia.administrator.groups, 1)
-                buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups)
+                tryBuildGroups()
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end
