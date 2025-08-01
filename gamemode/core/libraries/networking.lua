@@ -148,8 +148,6 @@ if SERVER then
             end
         end
     end
-else
-    util.AddNetworkString = util.AddNetworkString or function() end
 end
 
 if SERVER then
