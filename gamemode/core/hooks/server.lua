@@ -320,7 +320,7 @@ function GM:InitializedSchema()
 end
 
 function GM:GetGameDescription()
-    return istable(SCHEMA) and tostring(SCHEMA.name) or "A Lilia Gamemode"
+    return istable(SCHEMA) and tostring(SCHEMA.name) or L("defaultGameDescription")
 end
 
 function GM:PostPlayerLoadout(client)

@@ -1192,4 +1192,5 @@ LANGUAGE = {
     agoFormat = "%s (%s) ago",
     gmaFileBlocked = "Blocked %s",
     gmaFileNotWhitelisted = "Warning: File %s not whitelisted. Skipping..",
+    defaultGameDescription = "A Lilia Gamemode",
 }
