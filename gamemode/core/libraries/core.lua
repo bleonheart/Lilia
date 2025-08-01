@@ -539,7 +539,6 @@ function GM:OnReloaded()
     lia.faction.formatModelData()
     if SERVER then
         lia.config.send()
-        lia.administrator.sync()
     else
         lia.option.load()
         lia.keybind.load()

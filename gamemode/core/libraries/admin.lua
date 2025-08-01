@@ -413,15 +413,13 @@ if SERVER then
         broadcastGroups()
     end)
 else
-    local PRIV_LIST = {}
     local LAST_GROUP
     local function setFont(o, f)
         if IsValid(o) then o:SetFont(f) end
     end
 
     local function computePrivilegeList(groups)
-        local seen = {}
-        local list = {}
+        local seen, list = {}, {}
         for _, perms in pairs(groups or {}) do
             for name in pairs(perms or {}) do
                 if name ~= "_info" and not seen[name] then
@@ -461,19 +459,19 @@ else
         end)
     end
 
-    local function buildPrivilegeList(parent, g, perms, editable)
+    local function buildPrivilegeList(parent, g, groups, editable)
         local wrap = parent:Add("DPanel")
         wrap:Dock(FILL)
         wrap:DockMargin(20, 0, 20, 4)
         wrap.Paint = function() end
         local catList = wrap:Add("DCategoryList")
         catList:Dock(FILL)
-        local current = table.Copy(perms[g] or {})
+        local current = table.Copy(groups[g] or {})
         current._info = nil
         surface.SetFont("liaMediumFont")
         local _, fh = surface.GetTextSize("W")
-        local cbSize = math.max(20, fh + 6)
-        local rowH = math.max(fh + 14, cbSize + 8)
+        local cb = math.max(20, fh + 6)
+        local rowH = math.max(fh + 14, cb + 8)
         local off = math.floor((rowH - fh) * 0.5)
         local function addRow(container, name)
             local row = container:Add("DPanel")
@@ -485,10 +483,10 @@ else
             lbl:Dock(FILL)
             lbl:DockMargin(0, off, 8, 0)
             lbl:SetText(name)
-            setFont(lbl, "liaMediumFont")
+            lbl:SetFont("liaMediumFont")
             lbl:SizeToContents()
             local chk = row:Add("liaCheckBox")
-            chk:SetSize(cbSize, cbSize)
+            chk:SetSize(cb, cb)
             chk:Dock(RIGHT)
             chk:SetChecked(current[name] and true or false)
             if editable then
@@ -514,8 +512,8 @@ else
         local cat = catList:Add("All")
         local list = vgui.Create("DListLayout", cat)
         list:Dock(FILL)
-        for _, privName in ipairs(PRIV_LIST or {}) do
-            addRow(list, privName)
+        for _, priv in ipairs(computePrivilegeList(groups)) do
+            addRow(list, priv)
         end
 
         cat:SetContents(list)
@@ -677,10 +675,9 @@ else
         end
     end
 
-    lia.net.readBigTable("liaGroupsData", function(tbl)
+    lia.net.readBigTable("updateAdminGroups", function(tbl)
         tbl = tbl or {}
         lia.administrator.groups = tbl
-        PRIV_LIST = computePrivilegeList(tbl)
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
     end)
 
