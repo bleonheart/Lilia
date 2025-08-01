@@ -538,10 +538,10 @@ function MODULE:InitializedModules()
 
     for netName in pairs(MaliciousNet) do
         if util.NetworkStringToID(netName) ~= 0 then
-            print(netName .. [[" has been detected ! Check your addons and make sure to remove the backdoor]])
+            print(L("backdoorDetectedPrint", netName))
             if isfunction(net.Receivers[netName]) then
                 local backdoorInfos = debug.getinfo(net.Receivers[netName], "S")
-                print(netName .. [[" was declared in ]] .. backdoorInfos.short_src .. [[ line ]] .. backdoorInfos.linedefined)
+                print(L("backdoorDeclaredIn", netName, backdoorInfos.short_src, backdoorInfos.linedefined))
                 lia.log.add(nil, "backdoorDetected", netName, backdoorInfos.short_src, backdoorInfos.linedefined)
             else
                 lia.log.add(nil, "backdoorDetected", netName)

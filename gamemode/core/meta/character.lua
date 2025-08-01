@@ -168,7 +168,7 @@ function characterMeta:setData(k, v, noReplication, receiver)
                         charID = self:getID(),
                         key = nk,
                         value = encoded
-                    }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
+                    }, "chardata", function(success, err) if not success then print(L("failedCharDataInsert", err)) end end)
                 end
             end
         else
@@ -180,7 +180,7 @@ function characterMeta:setData(k, v, noReplication, receiver)
                     charID = self:getID(),
                     key = k,
                     value = encoded
-                }, "chardata", function(success, err) if not success then print("Failed to insert character data: " .. err) end end)
+                }, "chardata", function(success, err) if not success then print(L("failedCharDataInsert", err)) end end)
             end
         end
     end

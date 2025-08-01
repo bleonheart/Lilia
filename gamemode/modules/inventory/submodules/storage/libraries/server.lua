@@ -39,7 +39,7 @@ function MODULE:PlayerSpawnedProp(client, model, entity)
             if isfunction(data.OnSpawn) then data.OnSpawn(storage) end
         end
     end, function(err)
-        lia.error("Unable to create storage entity for " .. client:Name() .. "\n" .. err .. "\n")
+        lia.error(L("storageSpawnError", client:Name(), err))
         if IsValid(storage) then SafeRemoveEntity(storage) end
     end)
 

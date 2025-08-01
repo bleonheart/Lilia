@@ -235,7 +235,7 @@ function lia.db.connect(callback, reconnect)
         lia.db.escape = dbModule.escape
         lia.db.query = dbModule.query
     else
-        lia.error("[Lilia] '" .. (lia.db.module or "Unavailable") .. "' is not a valid data storage method! \n")
+        lia.error(L("invalidDataStorage", lia.db.module or "Unavailable"))
     end
 end
 

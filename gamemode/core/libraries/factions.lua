@@ -64,12 +64,12 @@ function lia.faction.loadFromDir(directory)
         lia.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
             FACTION.name = "unknown"
-            lia.error("Faction '" .. niceName .. "' is missing a name. You need to add a FACTION.name = \"Name\"\n")
+            lia.error(L("factionMissingName", niceName))
         end
 
         if not FACTION.desc then
             FACTION.desc = "noDesc"
-            lia.error("Faction '" .. niceName .. "' is missing a description. You need to add a FACTION.desc = \"Description\"\n")
+            lia.error(L("factionMissingDesc", niceName))
         end
 
         FACTION.name = L(FACTION.name)
@@ -82,7 +82,7 @@ function lia.faction.loadFromDir(directory)
         if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then
             FACTION.color = Color(150, 150, 150)
-            lia.error("Faction '" .. niceName .. "' is missing a color. You need to add FACTION.color = Color(1, 2, 3)\n")
+            lia.error(L("factionMissingColor", niceName))
         end
 
         team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))

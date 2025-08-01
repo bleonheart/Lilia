@@ -56,7 +56,7 @@ function MODULE:PlayerLoadedChar(client, character)
 
             net.Send(client)
         else
-            print("No data found for character ID:", charID)
+            print(L("noCharDataForID", charID))
         end
     end)
 

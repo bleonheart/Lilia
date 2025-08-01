@@ -25,7 +25,7 @@ function lia.class.register(uniqueID, data)
     class.limit = class.limit or 0
 
     if not class.faction or not team.Valid(class.faction) then
-        lia.error("Class '" .. uniqueID .. "' does not have a valid faction!\n")
+        lia.error(L("classNoFaction", uniqueID))
         return
     end
 
@@ -63,7 +63,7 @@ function lia.class.loadFromDir(directory)
         CLASS.limit = 0
         lia.include(directory .. "/" .. v, "shared")
         if not CLASS.faction or not team.Valid(CLASS.faction) then
-            lia.error("Class '" .. niceName .. "' does not have a valid faction!\n")
+            lia.error(L("classNoFaction", niceName))
             CLASS = nil
             continue
         end

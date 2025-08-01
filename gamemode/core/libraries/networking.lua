@@ -38,7 +38,7 @@ if SERVER then
 
     function checkBadType(name, object)
         if isfunction(object) then
-            lia.error("Net var '" .. name .. "' contains a bad object type!")
+            lia.error(L("badNetVarType", name))
             return true
         elseif istable(object) then
             for k, v in pairs(object) do
