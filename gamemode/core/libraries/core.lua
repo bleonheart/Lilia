@@ -200,6 +200,8 @@ local FilesToLoad = {
     }
 }
 
+-- Compatibility files will only load if their associated global is present or
+-- if an optional `condition` function returns true.
 local ConditionalFiles = {
     {
         path = "lilia/gamemode/core/libraries/compatibility/vcmod.lua",
@@ -547,7 +549,19 @@ end
 
 local loadedCompatibility = {}
 for _, file in ipairs(ConditionalFiles) do
-    if _G[file.global] then
+    local shouldLoad = false
+    if isfunction(file.condition) then
+        local ok, result = pcall(file.condition)
+        if ok then
+            shouldLoad = result
+        else
+            lia.error("Compatibility condition error: " .. tostring(result))
+        end
+    elseif file.global then
+        shouldLoad = _G[file.global] ~= nil
+    end
+
+    if shouldLoad then
         lia.include(file.path, file.realm or "shared")
         loadedCompatibility[#loadedCompatibility + 1] = file.name
     end

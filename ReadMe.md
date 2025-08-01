@@ -75,7 +75,7 @@
   Privileges with inheritance and file logs.
 
 * **Modular Extensions**
-  Hot-loading modules with third-party addon compatibility.
+  Hot-loading modules with third-party addon compatibility using global or custom conditions.
 
 * **Workshop & Config**
   Manage client downloads and tweak hundreds of in-game settings.
