@@ -425,7 +425,6 @@ else
         table.sort(list, function(a, b) return a:lower() < b:lower() end)
         return list
     end
-    
 
     local function promptCreateGroup()
         lia.util.requestArguments(L("createGroup"), {

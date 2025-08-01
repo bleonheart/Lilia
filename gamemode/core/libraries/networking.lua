@@ -51,6 +51,29 @@ end
 
 if SERVER then
     util.AddNetworkString("LIA_BigTable_Ack")
+    local function sendChunk(ply, s, sid, idx)
+        if not IsValid(ply) then
+            if lia.net._sendq[ply] then lia.net._sendq[ply][sid] = nil end
+            return
+        end
+
+        local part = s.chunks[idx]
+        if not part then
+            if lia.net._sendq[ply] then lia.net._sendq[ply][sid] = nil end
+            return
+        end
+
+        s.idx = idx
+        net.Start(s.netStr)
+        net.WriteUInt(sid, 32)
+        net.WriteUInt(s.total, 16)
+        net.WriteUInt(idx, 16)
+        net.WriteUInt(#part, 16)
+        net.WriteData(part, #part)
+        net.Send(ply)
+        if idx == s.total and lia.net._sendq[ply] then lia.net._sendq[ply][sid] = nil end
+    end
+
     net.Receive("LIA_BigTable_Ack", function(_, ply)
         if not IsValid(ply) then return end
         local sid = net.ReadUInt(32)
@@ -65,21 +88,14 @@ if SERVER then
             return
         end
 
-        s.idx = s.idx + 1
-        local part = s.chunks[s.idx]
-        if not part then
-            q[sid] = nil
-            return
-        end
-
-        net.Start(s.netStr)
-        net.WriteUInt(sid, 32)
-        net.WriteUInt(s.total, 16)
-        net.WriteUInt(s.idx, 16)
-        net.WriteUInt(#part, 16)
-        net.WriteData(part, #part)
-        net.Send(ply)
-        if s.idx == s.total then q[sid] = nil end
+        timer.Simple(0, function()
+            if not IsValid(ply) then return end
+            local qq = lia.net._sendq[ply]
+            if not qq then return end
+            local ss = qq[sid]
+            if not ss then return end
+            sendChunk(ply, ss, sid, ss.idx + 1)
+        end)
     end)
 
     local function beginStream(ply, netStr, chunks, sid)
@@ -88,24 +104,18 @@ if SERVER then
             netStr = netStr,
             chunks = chunks,
             total = #chunks,
-            idx = 1
+            idx = 0
         }
 
         lia.net._sendq[ply][sid] = s
-        local first = chunks[1]
-        if not first then
-            lia.net._sendq[ply][sid] = nil
-            return
-        end
-
-        net.Start(netStr)
-        net.WriteUInt(sid, 32)
-        net.WriteUInt(s.total, 16)
-        net.WriteUInt(1, 16)
-        net.WriteUInt(#first, 16)
-        net.WriteData(first, #first)
-        net.Send(ply)
-        if s.total == 1 then lia.net._sendq[ply][sid] = nil end
+        timer.Simple(0, function()
+            if not IsValid(ply) then return end
+            local q = lia.net._sendq[ply]
+            if not q then return end
+            local ss = q[sid]
+            if not ss then return end
+            sendChunk(ply, ss, sid, 1)
+        end)
     end
 
     function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
