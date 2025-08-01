@@ -50,6 +50,7 @@ function lia.net.readBigTable(netStr, callback)
 end
 
 if SERVER then
+    local chunkTime = 0.05
     util.AddNetworkString("LIA_BigTable_Ack")
     local function sendChunk(ply, s, sid, idx)
         if not IsValid(ply) then
@@ -88,7 +89,7 @@ if SERVER then
             return
         end
 
-        timer.Simple(0, function()
+        timer.Simple(chunkTime, function()
             if not IsValid(ply) then return end
             local qq = lia.net._sendq[ply]
             if not qq then return end
@@ -108,7 +109,7 @@ if SERVER then
         }
 
         lia.net._sendq[ply][sid] = s
-        timer.Simple(0, function()
+        timer.Simple(chunkTime, function()
             if not IsValid(ply) then return end
             local q = lia.net._sendq[ply]
             if not q then return end
