@@ -1,7 +1,7 @@
-﻿MODULE.name = "Scoreboard"
+MODULE.name = L("moduleScoreboardName")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Displays an immersive scoreboard showing recognized players, faction information, and built-in admin options for staff."
+MODULE.desc = L("moduleScoreboardDesc")
 MODULE.Privileges = {
     {
         Name = "Can Access Scoreboard Admin Options",
