@@ -7,6 +7,109 @@ lia.administrator.DefaultGroups = {
     superadmin = true
 }
 
+lia.administrator.DEFAULT_PRIVILEGES = lia.administrator.DEFAULT_PRIVILEGES or {
+    {
+        Name = "kick",
+        MinAccess = "admin"
+    },
+    {
+        Name = "ban",
+        MinAccess = "admin"
+    },
+    {
+        Name = "unban",
+        MinAccess = "admin"
+    },
+    {
+        Name = "mute",
+        MinAccess = "admin"
+    },
+    {
+        Name = "unmute",
+        MinAccess = "admin"
+    },
+    {
+        Name = "gag",
+        MinAccess = "admin"
+    },
+    {
+        Name = "ungag",
+        MinAccess = "admin"
+    },
+    {
+        Name = "freeze",
+        MinAccess = "admin"
+    },
+    {
+        Name = "unfreeze",
+        MinAccess = "admin"
+    },
+    {
+        Name = "slay",
+        MinAccess = "admin"
+    },
+    {
+        Name = "bring",
+        MinAccess = "admin"
+    },
+    {
+        Name = "goto",
+        MinAccess = "admin"
+    },
+    {
+        Name = "return",
+        MinAccess = "admin"
+    },
+    {
+        Name = "jail",
+        MinAccess = "admin"
+    },
+    {
+        Name = "unjail",
+        MinAccess = "admin"
+    },
+    {
+        Name = "cloak",
+        MinAccess = "admin"
+    },
+    {
+        Name = "uncloak",
+        MinAccess = "admin"
+    },
+    {
+        Name = "god",
+        MinAccess = "admin"
+    },
+    {
+        Name = "ungod",
+        MinAccess = "admin"
+    },
+    {
+        Name = "ignite",
+        MinAccess = "admin"
+    },
+    {
+        Name = "extinguish",
+        MinAccess = "admin"
+    },
+    {
+        Name = "strip",
+        MinAccess = "admin"
+    },
+    {
+        Name = "respawn",
+        MinAccess = "admin"
+    },
+    {
+        Name = "blind",
+        MinAccess = "admin"
+    },
+    {
+        Name = "unblind",
+        MinAccess = "admin"
+    }
+}
+
 local level = {
     user = 1,
     admin = 2,
@@ -49,9 +152,9 @@ function lia.administrator.load()
         return created
     end
 
-    local function migratePrivileges(groups, privs)
-        if not istable(privs) or table.Count(privs) == 0 then return false end
-        local changed = false
+    local function rebuildPrivileges(privs)
+        lia.administrator.privileges = {}
+        if not istable(privs) then return end
         for k, v in pairs(privs) do
             local name
             local min = "user"
@@ -62,14 +165,19 @@ function lia.administrator.load()
                 name = v
             end
 
-            if isstring(name) and name ~= "" then
-                for groupName, permissions in pairs(groups) do
-                    permissions = permissions or {}
-                    groups[groupName] = permissions
-                    if shouldGrant(groupName, min) and not permissions[name] then
-                        permissions[name] = true
-                        changed = true
-                    end
+            if isstring(name) and name ~= "" then lia.administrator.privileges[name] = min end
+        end
+    end
+
+    local function applyPrivilegesToGroups(groups)
+        local changed = false
+        for groupName, permissions in pairs(groups) do
+            permissions = permissions or {}
+            groups[groupName] = permissions
+            for name, min in pairs(lia.administrator.privileges or {}) do
+                if permissions[name] == nil then
+                    permissions[name] = shouldGrant(groupName, min)
+                    changed = true
                 end
             end
         end
@@ -85,28 +193,31 @@ function lia.administrator.load()
         local newGroups = res and util.JSONToTable(res.usergroups or res.groups or "") or {}
         local inherits = res and util.JSONToTable(res.inheritances or "") or {}
         local types = res and util.JSONToTable(res.types or "") or {}
+        local storedPrivs = res and util.JSONToTable(res.privileges or "") or {}
         for name, data in pairs(newGroups) do
             data._info = data._info or {}
             data._info.inheritance = inherits[name] or data._info.inheritance or "user"
             data._info.types = types[name] or data._info.types or {}
         end
 
+        rebuildPrivileges(storedPrivs)
         local created = ensureDefaults(newGroups)
-        if table.Count(newGroups) == 0 then
-            local oldGroups = res and util.JSONToTable(res.usergroups or "") or {}
-            created = ensureDefaults(oldGroups) or created
-            if migratePrivileges(oldGroups, res and util.JSONToTable(res.privileges or "") or {}) then created = true end
-            newGroups = oldGroups
-        end
-
         lia.administrator._loading = true
-        if created then
-            lia.administrator.groups = newGroups
-            lia.administrator.save(true)
+        lia.administrator.groups = newGroups
+        local seeded = false
+        if table.Count(lia.administrator.privileges) == 0 then
+            for _, p in ipairs(lia.administrator.DEFAULT_PRIVILEGES) do
+                lia.administrator.registerPrivilege(p)
+            end
+
+            seeded = true
         end
 
+        local merged = applyPrivilegesToGroups(newGroups)
+        if created or merged or seeded then lia.administrator.save(true) end
         lia.administrator._loading = false
         continueLoad(newGroups)
+        if created or merged or seeded then lia.administrator.save() end
     end)
 end
 
