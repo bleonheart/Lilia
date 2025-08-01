@@ -1172,6 +1172,8 @@ LANGUAGE = {
     userGroups = "Groupes utilisateurs",
     noDataCharID = "No data found for character ID: %s",
     failedInsertCharData = "Failed to insert character data: %s",
+    validationError = "Erreur de validation",
+    allInfoFor = "=== Toutes les informations pour %s ===",
     backdoorDetectedConsole = "%s has been detected! Check your addons and remove the backdoor.",
     backdoorDeclaredIn = "%s was declared in %s line %s",
     unableCreateStorageEntity = "Unable to create storage entity for %s\n%s",

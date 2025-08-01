@@ -1545,7 +1545,7 @@ lia.command.add("getallinfos", {
             return
         end
 
-        print("=== All information for " .. char:getName() .. " ===")
+        print(L("allInfoFor", char:getName()))
         for column, value in pairs(data) do
             if istable(value) then
                 print(column .. ":")
