@@ -1736,7 +1736,7 @@ function MODULE:PopulateAdminTabs(pages)
                             btn.DoClick = func
                         end
 
-                        if client:hasPrivilege("Staff Permission — View Entity (Entity Tab)") then
+                        if client:hasPrivilege(L("viewEntityTab")) then
                             makeBtn("view", function()
                                 if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
                                 local prevTP = lia.option.get("thirdPersonEnabled", false)
@@ -1745,7 +1745,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end)
                         end
 
-                        if client:hasPrivilege("Staff Permission — Teleport to Entity (Entity Tab)") then
+                        if client:hasPrivilege(L("teleportToEntityTab")) then
                             makeBtn("teleport", function()
                                 net.Start("liaTeleportToEntity")
                                 net.WriteEntity(ent)

@@ -218,7 +218,7 @@ function GM:CanTool(client, _, tool)
         return false
     end
 
-    local privilege = "Access Tool " .. tool:gsub("^%l", string.upper)
+    local privilege = L("accessToolPrivilege", tool:gsub("^%l", string.upper))
     local isStaffOrFlagged = client:isStaffOnDuty() or client:hasFlags("t")
     local hasPriv = client:hasPrivilege(privilege)
     if not (isStaffOrFlagged and hasPriv) then
