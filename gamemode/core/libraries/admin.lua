@@ -1,5 +1,5 @@
 ﻿lia.administrator = lia.administrator or {}
-lia.administrator.groups = lia.administrator.privileges or {}
+lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.DefaultGroups = {
     user = true,
@@ -22,8 +22,8 @@ function lia.administrator.registerPrivilege(priv)
     local name = tostring(priv.Name)
     local min = priv.MinAccess or "user"
     lia.administrator.privileges[name] = min
-    for groupName, permissions in pairs(lia.administrator.groups) do
-        permissions[name] = shouldGrant(groupName, min) and true or permissions[name]
+    for groupName, perms in pairs(lia.administrator.groups) do
+        perms[name] = perms[name] or shouldGrant(groupName, min)
     end
 
     if SERVER then lia.administrator.save() end
