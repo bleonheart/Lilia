@@ -235,7 +235,7 @@ function lia.db.connect(callback, reconnect)
         lia.db.escape = dbModule.escape
         lia.db.query = dbModule.query
     else
-        lia.error("[Lilia] '" .. (lia.db.module or "Unavailable") .. "' is not a valid data storage method! \n")
+        lia.error(L("invalidStorageModule", lia.db.module or "Unavailable"))
     end
 end
 
@@ -243,11 +243,11 @@ function lia.db.wipeTables(callback)
     local function realCallback()
         if lia.db.module == "mysqloo" then
             lia.db.query("SET FOREIGN_KEY_CHECKS = 1;", function()
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " ALL LILIA DATA HAS BEEN WIPED\n")
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), L("dataWiped") .. "\n")
                 if isfunction(callback) then callback() end
             end)
         else
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " ALL LILIA DATA HAS BEEN WIPED\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), L("dataWiped") .. "\n")
             if isfunction(callback) then callback() end
         end
     end
