@@ -6,7 +6,7 @@ function lia.command.add(command, data)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     if not data.onRun then
-        lia.error("Command '" .. command .. "' does not have a callback, not adding!\n")
+        lia.error(L("commandNoCallback", command))
         return
     end
 

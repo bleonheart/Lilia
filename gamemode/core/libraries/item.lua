@@ -182,7 +182,7 @@ function lia.item.get(identifier)
 end
 
 function lia.item.getItemByID(itemID)
-    assert(isnumber(itemID), "itemID must be a number")
+    assert(isnumber(itemID), L("itemIDNumberRequired"))
     local item = lia.item.instances[itemID]
     if not item then return nil, L("itemNotFound") end
     local location = "unknown"
@@ -199,14 +199,14 @@ function lia.item.getItemByID(itemID)
 end
 
 function lia.item.getInstancedItemByID(itemID)
-    assert(isnumber(itemID), "itemID must be a number")
+    assert(isnumber(itemID), L("itemIDNumberRequired"))
     local item = lia.item.instances[itemID]
     if not item then return nil, L("itemNotFound") end
     return item
 end
 
 function lia.item.getItemDataByID(itemID)
-    assert(isnumber(itemID), "itemID must be a number")
+    assert(isnumber(itemID), L("itemIDNumberRequired"))
     local item = lia.item.instances[itemID]
     if not item then return nil, L("itemNotFound") end
     return item.data
@@ -506,7 +506,7 @@ end
 
 if SERVER then
     function lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)
-        assert(isnumber(itemID), "itemID must be a number")
+        assert(isnumber(itemID), L("itemIDNumberRequired"))
         assert(isstring(key), "key must be a string")
         local item = lia.item.instances[itemID]
         if not item then return false, L("itemNotFound") end

@@ -64,12 +64,12 @@ function lia.faction.loadFromDir(directory)
         lia.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
             FACTION.name = "unknown"
-            lia.error("Faction '" .. niceName .. "' is missing a name. You need to add a FACTION.name = \"Name\"\n")
+            lia.error(L("factionMissingName", niceName))
         end
 
         if not FACTION.desc then
             FACTION.desc = "noDesc"
-            lia.error("Faction '" .. niceName .. "' is missing a description. You need to add a FACTION.desc = \"Description\"\n")
+            lia.error(L("factionMissingDesc", niceName))
         end
 
         FACTION.name = L(FACTION.name)
