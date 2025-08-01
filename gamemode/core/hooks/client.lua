@@ -490,7 +490,7 @@ concommand.Add("vgui_cleanup", function()
     for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
         if not (v.Init and debug.getinfo(v.Init, "Sln").short_src:find("chatbox")) then v:Remove() end
     end
-end, nil, "Removes every panel that you have left over (like that errored DFrame filling up your screen)")
+end, nil, L("vguiCleanupCommandDesc"))
 
 concommand.Add("weighpoint_stop", function() hook.Add("HUDPaint", "WeighPoint", function() end) end)
 concommand.Add("dev_GetEntPos", function(client) if client:isStaff() then lia.information(client:getTracedEntity():GetPos().x, client:getTracedEntity():GetPos().y, client:getTracedEntity():GetPos().z) end end)
