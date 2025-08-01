@@ -438,7 +438,7 @@ else
     local LAST_GROUP
     local function computePrivilegeList(groups)
         local list, seen = {}, {}
-        for name in pairs(lia.administrator.privileges) do
+        for name in pairs(lia.administrator.privileges or {}) do
             list[#list + 1], seen[name] = name, true
         end
 
@@ -479,10 +479,6 @@ else
     end
 
     local function buildPrivilegeList(parent, g, groups, editable)
-        local container = parent:Add("DPanel")
-        container:Dock(TOP)
-        container:DockMargin(20, 0, 20, 4)
-        container.Paint = function() end
         local current = table.Copy(groups[g] or {})
         current._info = nil
         surface.SetFont("liaMediumFont")
@@ -490,8 +486,9 @@ else
         local cb = math.max(20, fh + 6)
         local rowH = math.max(fh + 14, cb + 8)
         local off = math.floor((rowH - fh) * 0.5)
-        local list = container:Add("DListLayout")
+        local list = parent:Add("DListLayout")
         list:Dock(TOP)
+        list:DockMargin(20, 0, 20, 4)
         local function addRow(name)
             local row = list:Add("DPanel")
             row:Dock(TOP)
@@ -528,11 +525,10 @@ else
             end
         end
 
-        local names = computePrivilegeList(groups)
-        for _, priv in ipairs(names) do
+        for _, priv in ipairs(computePrivilegeList(groups)) do
             addRow(priv)
         end
-        return container, current
+        return list, current
     end
 
     function renderGroupInfo(parent, g, groups, perms)
@@ -674,6 +670,7 @@ else
         table.sort(keys, function(a, b) return a:lower() < b:lower() end)
         for _, g in ipairs(keys) do
             local page = sheet:Add("DPanel")
+            page:Dock(FILL)
             renderGroupInfo(page, g, groups, perms)
             sheet:AddSheet(g, page)
         end
