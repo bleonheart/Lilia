@@ -170,6 +170,7 @@ if SERVER then
     util.AddNetworkString("liaGroupsRemove")
     util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsSetPerm")
+    util.AddNetworkString("liaGroupPermChanged")
     function lia.administrator.addPermission(groupName, permission)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))
@@ -431,7 +432,11 @@ if SERVER then
         end
 
         lia.administrator.save()
-        broadcastGroups()
+        net.Start("liaGroupPermChanged")
+        net.WriteString(group)
+        net.WriteString(privilege)
+        net.WriteBool(value)
+        net.Broadcast()
         p:notifyLocalized("groupPermissionsUpdated")
     end)
 else
@@ -662,6 +667,7 @@ else
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
         sheet:DockMargin(10, 10, 10, 10)
+        panel.pages = {}
         local keys = {}
         for g in pairs(groups or {}) do
             keys[#keys + 1] = g
@@ -673,6 +679,7 @@ else
             page:Dock(FILL)
             renderGroupInfo(page, g, groups, perms)
             sheet:AddSheet(g, page)
+            panel.pages[g] = page
         end
 
         if LAST_GROUP and groups[LAST_GROUP] then
@@ -693,6 +700,27 @@ else
     end)
 
     lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
+
+    net.Receive("liaGroupPermChanged", function()
+        local group = net.ReadString()
+        local privilege = net.ReadString()
+        local value = net.ReadBool()
+
+        lia.administrator.groups = lia.administrator.groups or {}
+        lia.administrator.groups[group] = lia.administrator.groups[group] or {}
+        if value then
+            lia.administrator.groups[group][privilege] = true
+        elseif lia.administrator.groups[group] then
+            lia.administrator.groups[group][privilege] = nil
+        end
+
+        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.pages then
+            local page = lia.gui.usergroups.pages[group]
+            if IsValid(page) then
+                renderGroupInfo(page, group, lia.administrator.groups, lia.administrator.groups)
+            end
+        end
+    end)
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         if not IsValid(LocalPlayer()) then return end
         pages[#pages + 1] = {
