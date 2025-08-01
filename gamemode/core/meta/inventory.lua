@@ -177,7 +177,7 @@ if SERVER then
     end
 
     function Inventory:removeItem(itemID, preserveItem)
-        assert(isnumber(itemID), "itemID must be a number for remove")
+        assert(isnumber(itemID), L("itemIDNumberRequired"))
         local d = deferred.new()
         local instance = self.items[itemID]
         if instance then
@@ -281,7 +281,7 @@ if SERVER then
                 local uniqueID = result.uniqueID
                 local itemTable = lia.item.list[uniqueID]
                 if not itemTable then
-                    lia.error("Inventory " .. self.id .. " contains invalid item " .. uniqueID .. " (" .. itemID .. ")\n")
+                    lia.error(L("inventoryInvalidItem", self.id, uniqueID, itemID))
                     continue
                 end
 

@@ -63,7 +63,7 @@ if SERVER then
             end
         end
 
-        assert(isnumber(id) and id >= 0, "No inventories implement loadFromStorage for ID " .. tostring(id))
+        assert(isnumber(id) and id >= 0, L("noInventoryLoader", tostring(id)))
         return lia.inventory.loadFromDefaultStorage(id, noCache)
     end
 
@@ -75,7 +75,7 @@ if SERVER then
             local typeID = results._invType
             local invType = lia.inventory.types[typeID]
             if not invType then
-                lia.error("Inventory " .. id .. " has invalid type " .. typeID .. "\n")
+                lia.error(L("inventoryInvalidType", id, typeID))
                 return
             end
 
