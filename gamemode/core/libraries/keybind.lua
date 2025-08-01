@@ -300,8 +300,7 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
         end
 
         if allowEdit then
-            local resetAllBtn = parent:Add("liaMediumButton")
-            resetAllBtn:Dock(BOTTOM)
+            local resetAllBtn = vgui.Create("liaMediumButton")
             resetAllBtn:SetTall(40)
             resetAllBtn:SetText(L("resetAllKeybinds"))
             resetAllBtn.DoClick = function()
@@ -316,6 +315,7 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 lia.keybind.save()
                 buildKeybinds(parent)
             end
+            sheet:AddPanelRow(resetAllBtn, {height = 40})
         end
     end
 
