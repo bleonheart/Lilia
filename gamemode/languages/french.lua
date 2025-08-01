@@ -712,6 +712,7 @@ LANGUAGE = {
     viewWarnsDesc = "Affiche les avertissements d’un joueur.",
     warnPlayer = "Avertir",
     viewPlayerWarnings = "Voir les avertissements",
+    playerWarningsTitle = "Avertissements de %s",
     warnings = "Avertissements",
     warning = "Avertissement",
     warnUsage = "Usage : warn [joueur] [raison]",

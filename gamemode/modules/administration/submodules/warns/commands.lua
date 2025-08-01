@@ -65,7 +65,7 @@ lia.command.add("viewwarns", {
                 })
             end
 
-            lia.util.CreateTableUI(client, target:Nick() .. "'s " .. L("warnings"), {
+            lia.util.CreateTableUI(client, L("playerWarningsTitle", target:Nick()), {
                 {
                     name = L("id"),
                     field = "index"

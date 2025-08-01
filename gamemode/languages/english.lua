@@ -712,6 +712,7 @@ LANGUAGE = {
     viewWarnsDesc = "Displays all warnings issued to the specified player.",
     warnPlayer = "Warn Player",
     viewPlayerWarnings = "View Player Warnings",
+    playerWarningsTitle = "%s's Warnings",
     warnings = "Warnings",
     warning = "Warning",
     warnUsage = "Usage: warn [player] [reason]",

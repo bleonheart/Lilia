@@ -712,6 +712,7 @@ LANGUAGE = {
     viewWarnsDesc = "Показать предупреждения игрока.",
     warnPlayer = "Предупредить",
     viewPlayerWarnings = "Предупреждения игрока",
+    playerWarningsTitle = "Предупреждения %s",
     warnings = "Предупреждения",
     warning = "Предупреждение",
     warnUsage = "Использование: warn [игрок] [причина]",
