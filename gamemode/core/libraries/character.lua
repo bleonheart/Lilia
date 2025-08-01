@@ -236,7 +236,7 @@ lia.char.registerVar("faction", {
     onSet = function(character, value)
         local oldVar = character:getFaction()
         local faction = lia.faction.indices[value]
-        assert(faction, tostring(value) .. " is an invalid faction index")
+        assert(faction, L("invalidFactionIndex", tostring(value)))
         local client = character:getPlayer()
         client:SetTeam(value)
         character.vars.faction = faction.uniqueID
@@ -533,7 +533,7 @@ if SERVER then
             for _, v in ipairs(results) do
                 local charId = tonumber(v.id)
                 if not charId then
-                    lia.error("[Lilia] Attempt to load character '" .. (data.name or "nil") .. "' with invalid ID!")
+                    lia.error(L("invalidCharacterID", data.name or "nil"))
                     continue
                 end
 
