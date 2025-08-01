@@ -241,5 +241,3 @@ net.Receive("managesitrooms", function()
         makeButton("rename", 2)
     end
 end)
-
-lia.net.readBigTable("updateAdminGroups", function(data) lia.administrator.groups = data or {} end)

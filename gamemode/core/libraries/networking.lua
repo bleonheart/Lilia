@@ -1,5 +1,4 @@
-﻿lia = lia or {}
-lia.net = lia.net or {}
+﻿lia.net = lia.net or {}
 lia.net._sendq = lia.net._sendq or {}
 lia.net.globals = lia.net.globals or {}
 lia.net._buffers = lia.net._buffers or {}

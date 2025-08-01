@@ -672,16 +672,11 @@ else
     end
 
     lia.net.readBigTable("updateAdminGroups", function(tbl)
-        tbl = tbl or {}
         lia.administrator.groups = tbl
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
     end)
 
-    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
-        tbl = tbl or {}
-        lia.administrator.privileges = tbl
-    end)
-
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         if not IsValid(LocalPlayer()) then return end
         pages[#pages + 1] = {
