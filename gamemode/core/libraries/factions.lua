@@ -82,7 +82,7 @@ function lia.faction.loadFromDir(directory)
         if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then
             FACTION.color = Color(150, 150, 150)
-            lia.error("Faction '" .. niceName .. "' is missing a color. You need to add FACTION.color = Color(1, 2, 3)\n")
+            lia.error(L("factionMissingColor", niceName))
         end
 
         team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))
