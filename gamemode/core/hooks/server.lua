@@ -452,6 +452,7 @@ function GM:PlayerInitialSpawn(client)
 
     lia.config.send(client)
     client.liaJoinTime = RealTime()
+    lia.administrator.sync(client)
     client:loadLiliaData(function(data)
         if not IsValid(client) then return end
         local address = client:IPAddress()
@@ -470,7 +471,6 @@ function GM:PlayerInitialSpawn(client)
         end
 
         hook.Run("PlayerLiliaDataLoaded", client)
-        lia.administrator.sync(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)
