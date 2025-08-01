@@ -626,14 +626,14 @@ function GM:LoadData()
         for _, ent in ipairs(entities) do
             local cls = ent.class
             if not isstring(cls) or cls == "" then
-                lia.error("Invalid entity class.")
+                lia.error(L("invalidEntityClass"))
                 continue
             end
 
             local decodedPos = lia.data.decode(ent.pos)
             local decodedAng = lia.data.decode(ent.angles)
             if not decodedPos then
-                lia.error("Invalid position for " .. cls .. ".")
+                lia.error(L("invalidEntityPosition", cls))
                 continue
             end
 
@@ -644,7 +644,7 @@ function GM:LoadData()
 
             local createdEnt = ents.Create(cls)
             if not IsValid(createdEnt) then
-                lia.error("Failed to create entity " .. cls .. ".")
+                lia.error(L("failedEntityCreation", cls))
                 continue
             end
 
