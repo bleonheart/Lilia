@@ -124,7 +124,7 @@ end
 
 function lia.administrator.createGroup(groupName, info)
     if lia.administrator.groups[groupName] then
-        lia.error("[Lilia Administration] This usergroup already exists!\n")
+        lia.error(L("usergroupExists"))
         return
     end
 
@@ -140,12 +140,12 @@ end
 
 function lia.administrator.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
-        lia.error("[Lilia Administration] The base usergroups cannot be removed!\n")
+        lia.error(L("baseUsergroupCannotBeRemoved"))
         return
     end
 
     if not lia.administrator.groups[groupName] then
-        lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
+        lia.error(L("usergroupDoesntExist"))
         return
     end
 
@@ -155,17 +155,17 @@ end
 
 function lia.administrator.renameGroup(oldName, newName)
     if lia.administrator.DefaultGroups[oldName] then
-        lia.error("[Lilia Administration] The base usergroups cannot be renamed!\n")
+        lia.error(L("baseUsergroupCannotBeRenamed"))
         return
     end
 
     if not lia.administrator.groups[oldName] then
-        lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
+        lia.error(L("usergroupDoesntExist"))
         return
     end
 
     if lia.administrator.groups[newName] then
-        lia.error("[Lilia Administration] This usergroup already exists!\n")
+        lia.error(L("usergroupExists"))
         return
     end
 
@@ -177,7 +177,7 @@ end
 if SERVER then
     function lia.administrator.addPermission(groupName, permission)
         if not lia.administrator.groups[groupName] then
-            lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
+            lia.error(L("usergroupDoesntExist"))
             return
         end
 
@@ -189,7 +189,7 @@ if SERVER then
 
     function lia.administrator.removePermission(groupName, permission)
         if not lia.administrator.groups[groupName] then
-            lia.error("[Lilia Administration] This usergroup doesn't exist!\n")
+            lia.error(L("usergroupDoesntExist"))
             return
         end
 
