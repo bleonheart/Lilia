@@ -23,6 +23,8 @@ function lia.administrator.registerPrivilege(priv)
     local min = priv.MinAccess or "user"
     lia.administrator.privileges[name] = min
     for groupName, perms in pairs(lia.administrator.groups) do
+        perms = perms or {}
+        lia.administrator.groups[groupName] = perms
         perms[name] = perms[name] or shouldGrant(groupName, min)
     end
 
