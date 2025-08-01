@@ -145,7 +145,7 @@ lia.command.add("returnsitroom", {
 lia.command.add("dbbrowser", {
     superAdminOnly = true,
     privilege = "View DB Tables",
-    desc = "Open database browser",
+    desc = "dbBrowserDesc",
     onRun = function(client)
         lia.db.getTables():next(function(tables)
             net.Start("liaDBTables")
