@@ -93,7 +93,7 @@ lia.command.add("roster", {
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
                     end
 
                     local classID = tonumber(v._class) or 0
@@ -170,7 +170,7 @@ lia.command.add("factionmanagement", {
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format("%s (%s) ago", timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
                     end
 
                     local classID = tonumber(v._class) or 0
@@ -180,7 +180,7 @@ lia.command.add("factionmanagement", {
                         name = v.name,
                         faction = v.faction,
                         steamID = v.steamID,
-                        class = classData and classData.name or "None",
+                        class = classData and classData.name or L("none"),
                         lastOnline = lastOnlineText,
                         hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
                     })
