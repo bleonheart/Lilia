@@ -20,7 +20,8 @@ end
 function playerMeta:hasPrivilege(privilegeName)
     local group = self:GetUserGroup()
     local perms = lia.administrator.groups and lia.administrator.groups[group]
-    return perms and perms[privilegeName] or false
+    if perms then return perms[privilegeName] or false end
+    return false
 end
 
 function playerMeta:getCurrentVehicle()
