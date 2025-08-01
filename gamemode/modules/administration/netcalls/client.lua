@@ -65,7 +65,7 @@ end
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
     local frame = vgui.Create("DFrame")
-    frame:SetTitle("Lilia Tables")
+    frame:SetTitle(L("dbTablesTitle"))
     frame:SetSize(300, 400)
     frame:Center()
     frame:MakePopup()
