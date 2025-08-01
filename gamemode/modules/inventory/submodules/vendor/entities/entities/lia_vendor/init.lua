@@ -12,14 +12,18 @@ end
 
 function ENT:Use(activator)
     if not hook.Run("CanPlayerAccessVendor", activator, self) then
-        if self.messages[VENDOR_NOTRADE] then activator:notify(self:getNetVar("name") .. ": " .. L(self.messages[VENDOR_NOTRADE], activator)) end
+        if self.messages[VENDOR_NOTRADE] then
+            activator:notify(L("vendorMessageFormat", self:getNetVar("name"), L(self.messages[VENDOR_NOTRADE], activator)))
+        end
         return
     end
 
     lia.log.add(activator, "vendorAccess", self:getNetVar("name"))
     self.receivers[#self.receivers + 1] = activator
     activator.liaVendor = self
-    if self:getNetVar("welcomeMessage") then activator:notify(self:getNetVar("name") .. ": " .. self:getNetVar("welcomeMessage")) end
+    if self:getNetVar("welcomeMessage") then
+        activator:notify(L("vendorMessageFormat", self:getNetVar("name"), self:getNetVar("welcomeMessage")))
+    end
     hook.Run("PlayerAccessVendor", activator, self)
 end
 
