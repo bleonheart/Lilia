@@ -1,8 +1,8 @@
 ﻿lia = lia or {}
 lia.net = lia.net or {}
-lia.net._buffers = lia.net._buffers or {}
 lia.net._sendq = lia.net._sendq or {}
 lia.net.globals = lia.net.globals or {}
+lia.net._buffers = lia.net._buffers or {}
 function lia.net.readBigTable(netStr, callback)
     lia.net._buffers[netStr] = lia.net._buffers[netStr] or {}
     net.Receive(netStr, function(_, ply)
