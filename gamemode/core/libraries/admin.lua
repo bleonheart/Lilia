@@ -33,31 +33,17 @@ end
 
 function lia.administrator.load()
     local function ensureDefaults(groups)
-        local defaults = {"user", "admin", "superadmin"}
         local created = false
-        if not table.IsEmpty(groups) then
-            for _, grp in ipairs(defaults) do
-                groups[grp] = groups[grp] or {
+        for _, grp in ipairs({"user", "admin", "superadmin"}) do
+            if not groups[grp] then
+                groups[grp] = {
                     _info = {
                         inheritance = "user",
                         types = {}
                     }
                 }
-            end
 
-            created = true
-        else
-            for _, grp in ipairs(defaults) do
-                if not groups[grp] then
-                    groups[grp] = {
-                        _info = {
-                            inheritance = "user",
-                            types = {}
-                        }
-                    }
-
-                    created = true
-                end
+                created = true
             end
         end
         return created
@@ -113,11 +99,13 @@ function lia.administrator.load()
             newGroups = oldGroups
         end
 
+        lia.administrator._loading = true
         if created then
             lia.administrator.groups = newGroups
-            lia.administrator.save()
+            lia.administrator.save(true)
         end
 
+        lia.administrator._loading = false
         continueLoad(newGroups)
     end)
 end
@@ -175,6 +163,13 @@ function lia.administrator.renameGroup(oldName, newName)
 end
 
 if SERVER then
+    util.AddNetworkString("updateAdminPrivileges")
+    util.AddNetworkString("updateAdminGroups")
+    util.AddNetworkString("liaGroupsRequest")
+    util.AddNetworkString("liaGroupsAdd")
+    util.AddNetworkString("liaGroupsRemove")
+    util.AddNetworkString("liaGroupsRename")
+    util.AddNetworkString("liaGroupsSetPerm")
     function lia.administrator.addPermission(groupName, permission)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))
@@ -199,18 +194,26 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
-    util.AddNetworkString("updateAdminPrivileges")
     function lia.administrator.sync(c)
+        lia.net.ready = lia.net.ready or setmetatable({}, {
+            __mode = "k"
+        })
+
+        local function push(ply)
+            if not IsValid(ply) then return end
+            if not lia.net.ready[ply] then return end
+            lia.net.writeBigTable(ply, "updateAdminPrivileges", lia.administrator.privileges or {})
+            timer.Simple(0.15, function() if IsValid(ply) and lia.net.ready[ply] then lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {}) end end)
+        end
+
         if c and IsValid(c) then
-            lia.net.writeBigTable(c, "updateAdminPrivileges", lia.administrator.privileges)
-            lia.net.writeBigTable(c, "updateAdminGroups", lia.administrator.groups)
+            push(c)
             return
         end
 
         local t = player.GetHumans()
         for _, p in ipairs(t) do
-            lia.net.writeBigTable(p, "updateAdminPrivileges", lia.administrator.privileges)
-            lia.net.writeBigTable(p, "updateAdminGroups", lia.administrator.groups)
+            push(p)
         end
     end
 
@@ -240,7 +243,20 @@ if SERVER then
             types = util.TableToJSON(types)
         }, "admin")
 
-        if noNetwork then return end
+        if noNetwork or lia.administrator._loading then return end
+        lia.net.ready = lia.net.ready or setmetatable({}, {
+            __mode = "k"
+        })
+
+        local hasReady = false
+        for ply in pairs(lia.net.ready) do
+            if IsValid(ply) and lia.net.ready[ply] then
+                hasReady = true
+                break
+            end
+        end
+
+        if not hasReady then return end
         lia.administrator.sync()
     end
 else
@@ -335,16 +351,25 @@ if SERVER then
     end
 
     local function broadcastGroups()
+        lia.net.ready = lia.net.ready or setmetatable({}, {
+            __mode = "k"
+        })
+
         local players = player.GetHumans()
         for _, ply in ipairs(players) do
-            lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {})
+            if lia.net.ready[ply] then lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {}) end
         end
     end
 
     ensureStructures()
     net.Receive("liaGroupsRequest", function(_, p)
-        lia.net.writeBigTable(p, "updateAdminPrivileges", lia.administrator.privileges or {})
-        lia.net.writeBigTable(p, "updateAdminGroups", lia.administrator.groups or {})
+        if not IsValid(p) then return end
+        lia.net.ready = lia.net.ready or setmetatable({}, {
+            __mode = "k"
+        })
+
+        lia.net.ready[p] = true
+        lia.administrator.sync(p)
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
@@ -407,6 +432,7 @@ if SERVER then
 
         lia.administrator.save()
         broadcastGroups()
+        p:notifyLocalized("groupPermissionsUpdated")
     end)
 else
     local LAST_GROUP
