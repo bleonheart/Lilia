@@ -515,7 +515,6 @@ if SERVER then
         for i = 1, #flags do
             if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
         end
-
         return hook.Run("CharHasFlags", self, flags) or false
     end
 
@@ -1025,7 +1024,6 @@ else
         for i = 1, #flags do
             if self:getFlags():find(flags:sub(i, i), 1, true) then return true end
         end
-
         return hook.Run("CharHasFlags", self, flags) or false
     end
 
