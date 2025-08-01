@@ -392,6 +392,22 @@ if SERVER then
         broadcastGroups()
         p:notify(p, L("groupRenamed", old, new))
     end)
+
+    net.Receive("liaGroupsSetPerm", function(_, p)
+        local group = net.ReadString()
+        local privilege = net.ReadString()
+        local value = net.ReadBool()
+        if group == "" or privilege == "" then return end
+        if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[group] then return end
+        if not lia.administrator.groups or not lia.administrator.groups[group] then return end
+        if value then
+            lia.administrator.addPermission(group, privilege)
+        else
+            lia.administrator.removePermission(group, privilege)
+        end
+        lia.administrator.save()
+        broadcastGroups()
+    end)
 else
     local PRIV_LIST = {}
     local LAST_GROUP
@@ -476,6 +492,13 @@ else
                     current[name] = true
                 else
                     current[name] = nil
+                end
+                if editable then
+                    net.Start("liaGroupsSetPerm")
+                    net.WriteString(g)
+                    net.WriteString(name)
+                    net.WriteBool(v)
+                    net.SendToServer()
                 end
             end
 
