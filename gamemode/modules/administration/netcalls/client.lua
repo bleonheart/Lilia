@@ -59,7 +59,7 @@ local function openRowInfo(row)
         }
     end
 
-    lia.util.CreateTableUI("Row Details", columns, rows)
+    lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
 end
 
 net.Receive("liaDBTables", function()
@@ -71,7 +71,7 @@ net.Receive("liaDBTables", function()
     frame:MakePopup()
     local list = vgui.Create("DListView", frame)
     list:Dock(FILL)
-    list:AddColumn("Table")
+    list:AddColumn(L("dbTableColumn"))
     for _, tbl in ipairs(tables or {}) do
         list:AddLine(tbl)
     end
