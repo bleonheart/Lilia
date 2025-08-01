@@ -47,8 +47,8 @@ if SERVER then
         if not json then return end
         local data = util.Compress(json)
         if not data or #data == 0 then return end
-        local size = chunkSize or 8192
-        local delay = chunkDelay or 0
+        local size = chunkSize or 4096
+        local delay = chunkDelay or 1
         local total = math.ceil(#data / size)
         local sid = util.CRC(tostring(SysTime()) .. json) % 4294967295
         local idx, pos = 0, 1
