@@ -976,10 +976,10 @@ concommand.Add("plysetgroup", function(ply, _, args)
                 target:SetUserGroup(usergroup)
                 lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID64()))
             else
-                MsgC(Color(200, 20, 20), "[Lilia Administration] Error: usergroup not found.\n")
+                MsgC(Color(200, 20, 20), L("consoleUsergroupNotFound") .. "\n")
             end
         else
-            MsgC(Color(200, 20, 20), "[Lilia Administration] Error: specified player not found.\n")
+            MsgC(Color(200, 20, 20), L("consolePlayerNotFound") .. "\n")
         end
     end
 end)
