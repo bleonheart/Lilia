@@ -26,14 +26,25 @@ function lia.administrator.load()
         local created = false
         if not table.IsEmpty(groups) then
             for _, grp in ipairs(defaults) do
-                groups[grp] = groups[grp] or { _info = { inheritance = "user", types = {} } }
+                groups[grp] = groups[grp] or {
+                    _info = {
+                        inheritance = "user",
+                        types = {}
+                    }
+                }
             end
 
             created = true
         else
             for _, grp in ipairs(defaults) do
                 if not groups[grp] then
-                    groups[grp] = { _info = { inheritance = "user", types = {} } }
+                    groups[grp] = {
+                        _info = {
+                            inheritance = "user",
+                            types = {}
+                        }
+                    }
+
                     created = true
                 end
             end
@@ -77,7 +88,6 @@ function lia.administrator.load()
         local newGroups = res and util.JSONToTable(res.usergroups or res.groups or "") or {}
         local inherits = res and util.JSONToTable(res.inheritances or "") or {}
         local types = res and util.JSONToTable(res.types or "") or {}
-
         for name, data in pairs(newGroups) do
             data._info = data._info or {}
             data._info.inheritance = inherits[name] or data._info.inheritance or "user"
@@ -108,7 +118,11 @@ function lia.administrator.createGroup(groupName, info)
     end
 
     info = info or {}
-    info._info = info._info or { inheritance = "user", types = {} }
+    info._info = info._info or {
+        inheritance = "user",
+        types = {}
+    }
+
     lia.administrator.groups[groupName] = info
     if SERVER then lia.administrator.save() end
 end
@@ -341,7 +355,13 @@ if SERVER then
         lia.administrator.groups = lia.administrator.groups or {}
         if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
         if lia.administrator.groups[n] then return end
-        lia.administrator.createGroup(n, { _info = { inheritance = data.inherit or "user", types = data.types or {} } })
+        lia.administrator.createGroup(n, {
+            _info = {
+                inheritance = data.inherit or "user",
+                types = data.types or {}
+            }
+        })
+
         lia.administrator.save()
         broadcastGroups()
         p:notify(p, "Group '" .. n .. "' created.")
@@ -416,6 +436,7 @@ else
                 inherit = data.Inheritance or "user",
                 types = types
             })
+
             net.SendToServer()
         end)
     end
@@ -531,7 +552,6 @@ else
             renameBtn:SetText("Rename Group")
             delBtn:SetText("Delete Group")
             createBtn.DoClick = promptCreateGroup
-
             renameBtn.DoClick = function()
                 Derma_StringRequest("Rename Group", "New name for '" .. g .. "':", g, function(txt)
                     txt = string.Trim(txt or "")
@@ -565,7 +585,6 @@ else
             local addBtn = bottom:Add("liaMediumButton")
             addBtn:SetText("Create Group")
             addBtn.DoClick = promptCreateGroup
-
             bottom.PerformLayout = function(_, w, bh)
                 addBtn:SetPos(0, 0)
                 addBtn:SetSize(w, bh)
