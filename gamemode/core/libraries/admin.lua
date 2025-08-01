@@ -423,8 +423,8 @@ else
         local seen = {}
         local list = {}
         for _, perms in pairs(groups or {}) do
-            for name, val in pairs(perms or {}) do
-                if name ~= "_info" and val and not seen[name] then
+            for name in pairs(perms or {}) do
+                if name ~= "_info" and not seen[name] then
                     seen[name] = true
                     list[#list + 1] = name
                 end
@@ -648,6 +648,7 @@ else
     end
 
     local function buildGroupsUI(panel, groups, perms)
+        PRIV_LIST = computePrivilegeList(groups)
         panel:Clear()
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
@@ -679,8 +680,8 @@ else
     lia.net.readBigTable("liaGroupsData", function(tbl)
         tbl = tbl or {}
         lia.administrator.groups = tbl
-        PRIV_LIST = computePrivilegeList(lia.administrator.groups)
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups, lia.administrator.groups) end
+        PRIV_LIST = computePrivilegeList(tbl)
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
     end)
 
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
