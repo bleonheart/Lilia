@@ -55,7 +55,7 @@ properties.Add("ToggleCarBlacklist", {
 })
 
 properties.Add("copytoclipboard", {
-    MenuLabel = "Copy Model to Clipboard",
+    MenuLabel = L("copyModelClipboard"),
     Order = 999,
     MenuIcon = "icon16/cup.png",
     Filter = function(_, ent)
