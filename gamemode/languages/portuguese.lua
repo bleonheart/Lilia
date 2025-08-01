@@ -1195,5 +1195,8 @@ Reload: Largar]],
     agoFormat = "%s (%s) ago",
     gmaFileBlocked = "Blocked %s",
     gmaFileNotWhitelisted = "Warning: File %s not whitelisted. Skipping..",
+    itemNotFound = "Item não encontrado",
+    compatibilityConditionError = "Erro de condição de compatibilidade: %s",
+    uncategorized = "Sem categoria",
     defaultGameDescription = "A Lilia Gamemode",
 }

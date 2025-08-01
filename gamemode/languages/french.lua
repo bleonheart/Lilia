@@ -1192,5 +1192,8 @@ LANGUAGE = {
     agoFormat = "%s (%s) ago",
     gmaFileBlocked = "Blocked %s",
     gmaFileNotWhitelisted = "Warning: File %s not whitelisted. Skipping..",
+    itemNotFound = "Objet introuvable",
+    compatibilityConditionError = "Erreur de condition de compatibilité : %s",
+    uncategorized = "Non classé",
     defaultGameDescription = "A Lilia Gamemode",
 }
