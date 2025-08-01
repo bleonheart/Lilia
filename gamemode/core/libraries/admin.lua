@@ -335,14 +335,14 @@ if SERVER then
     local function broadcastGroups()
         local players = player.GetHumans()
         for _, ply in ipairs(players) do
-            lia.net.writeBigTable(ply, "liaGroupsData", lia.administrator.groups or {})
+            lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {})
         end
     end
 
     ensureStructures()
     net.Receive("liaGroupsRequest", function(_, p)
         ensureStructures()
-        lia.net.writeBigTable(p, "liaGroupsData", lia.administrator.groups or {})
+        lia.net.writeBigTable(p, "updateAdminGroups", lia.administrator.groups or {})
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
