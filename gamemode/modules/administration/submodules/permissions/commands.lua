@@ -40,12 +40,12 @@ lia.command.add("charunbanoffline", {
     syntax = "[number Char ID]",
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
-        if not charID then return client:notify("Invalid character ID.") end
+        if not charID then return client:notifyLocalized("invalidCharID") end
         local charData = lia.char.getCharData(charID)
-        if not charData then return client:notify("Character not found.") end
+        if not charData then return client:notifyLocalized("characterNotFound") end
         lia.char.setCharData(charID, "banned", nil)
         lia.char.setCharData(charID, "charBanInfo", nil)
-        client:notify("Offline character ID " .. charID .. " has been unbanned.")
+        client:notifyLocalized("offlineCharUnbanned", charID)
         lia.log.add(client, "charUnbanOffline", charID)
     end
 })
@@ -57,9 +57,9 @@ lia.command.add("charbanoffline", {
     syntax = "[number Char ID]",
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
-        if not charID then return client:notify("Invalid character ID.") end
+        if not charID then return client:notifyLocalized("invalidCharID") end
         local charData = lia.char.getCharData(charID)
-        if not charData then return client:notify("Character not found.") end
+        if not charData then return client:notifyLocalized("characterNotFound") end
         lia.char.setCharData(charID, "banned", true)
         lia.char.setCharData(charID, "charBanInfo", {
             name = client:Nick(),
@@ -69,12 +69,12 @@ lia.command.add("charbanoffline", {
 
         for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
-                ply:Kick("You have been banned.")
+                ply:Kick(L("youHaveBeenBanned"))
                 break
             end
         end
 
-        client:notify("Offline character ID " .. charID .. " has been banned.")
+        client:notifyLocalized("offlineCharBanned", charID)
         lia.log.add(client, "charBanOffline", charID)
     end
 })
@@ -102,7 +102,7 @@ lia.command.add("charlist", {
         local steam64 = target:SteamID64()
         lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steam64), function(data)
             if not data or #data == 0 then
-                client:notify("No characters found for this player.")
+                client:notifyLocalized("noCharactersForPlayer")
                 return
             end
 

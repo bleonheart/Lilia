@@ -294,7 +294,7 @@ else
                 local function populate()
                     for id, fi in pairs(info) do
                         if not fi then continue end
-                        local title = fi.title or "ID:" .. id
+                        local title = fi.title or string.format(L("idPrefix"), id)
                         local percent = totalSize > 0 and string.format("%.2f%%", (fi.size or 0) / totalSize * 100) or "0%"
                         local desc = fi.size and L("addonSize", formatSize(fi.size), percent) or ""
                         local url = fi.previewurl or ""

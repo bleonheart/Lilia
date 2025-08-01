@@ -51,7 +51,7 @@ lia.command.add("roster", {
     onRun = function(client)
         local character = client:getChar()
         if not character then
-            client:notify("Character data not found for client:", client)
+            client:notifyLocalized("charDataMissingClient", client:Name())
             return
         end
 
@@ -59,19 +59,19 @@ lia.command.add("roster", {
         if not isLeader then return end
         local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
         if not character then
-            client:notify("Character data not found for client:", client)
+            client:notifyLocalized("charDataMissingClient", client:Name())
             return
         end
 
         local factionIndex = character:getFaction()
         if not factionIndex then
-            client:notify("Faction data not found for character:", character)
+            client:notifyLocalized("factionDataMissingCharacter", character:getName())
             return
         end
 
         local faction = lia.faction.indices[factionIndex]
         if not faction then
-            client:notify("Faction data not found for index:", factionIndex)
+            client:notifyLocalized("factionDataMissingIndex", factionIndex)
             return
         end
 
@@ -109,7 +109,7 @@ lia.command.add("roster", {
                     })
                 end
             else
-                client:notify("No data found for the specified condition.")
+                client:notifyLocalized("noDataCondition")
             end
 
             net.Start("CharacterInfo")
@@ -135,19 +135,19 @@ lia.command.add("factionmanagement", {
         else
             local character = client:getChar()
             if not character then
-                client:notify("Character data not found for client:", client)
+                client:notifyLocalized("charDataMissingClient", client:Name())
                 return
             end
 
             local factionIndex = character:getFaction()
             if not factionIndex then
-                client:notify("Faction data not found for character:", character)
+                client:notifyLocalized("factionDataMissingCharacter", character:getName())
                 return
             end
 
             faction = lia.faction.indices[factionIndex]
             if not faction then
-                client:notify("Faction data not found for index:", factionIndex)
+                client:notifyLocalized("factionDataMissingIndex", factionIndex)
                 return
             end
         end
@@ -186,7 +186,7 @@ lia.command.add("factionmanagement", {
                     })
                 end
             else
-                client:notify("No data found for the specified condition.")
+                client:notifyLocalized("noDataCondition")
             end
 
             net.Start("CharacterInfo")
