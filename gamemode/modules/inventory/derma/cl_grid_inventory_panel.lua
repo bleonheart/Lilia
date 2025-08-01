@@ -1,12 +1,11 @@
 local PANEL = {}
-
--- draws a slot background similar to the skin panels
 local function drawSlot(x, y, w, h)
     surface.SetDrawColor(0, 0, 0, 255)
     surface.DrawOutlinedRect(x, y, w, h, 2)
     surface.SetDrawColor(0, 0, 0, 150)
     surface.DrawRect(x + 1, y + 1, w - 2, h - 2)
 end
+
 function PANEL:Init()
     self:SetPaintBackground(false)
     self.icons = {}

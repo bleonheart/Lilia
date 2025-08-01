@@ -200,8 +200,6 @@ local FilesToLoad = {
     }
 }
 
--- Compatibility files will only load if their associated global is present or
--- if an optional `condition` function returns true.
 local ConditionalFiles = {
     {
         path = "lilia/gamemode/core/libraries/compatibility/vcmod.lua",

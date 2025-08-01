@@ -730,7 +730,6 @@ net.Receive("liaItemInspect", function()
         model:SetFOV(math.Clamp(math.deg(2 * math.asin(r / d)), 20, 80))
     end)
 
-    -- disable zooming and camera movement so only rotation is allowed
     model.OnMouseWheeled = function() end
     model.OnMousePressed = function() end
     model.OnMouseReleased = function() end

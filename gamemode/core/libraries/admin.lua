@@ -361,7 +361,6 @@ if SERVER then
 
         lia.administrator.save()
         broadcastGroups()
-        -- Notify the player that the group was created
         p:notifyLocalized("groupCreated", n)
     end)
 
@@ -372,7 +371,6 @@ if SERVER then
         if lia.administrator.groups then lia.administrator.groups[n] = nil end
         lia.administrator.save()
         broadcastGroups()
-        -- Inform the player about the removal
         p:notifyLocalized("groupRemoved", n)
     end)
 
@@ -389,7 +387,6 @@ if SERVER then
         lia.administrator.groups[old] = nil
         lia.administrator.save()
         broadcastGroups()
-        -- Let the player know about the rename
         p:notifyLocalized("groupRenamed", old, new)
     end)
 
