@@ -160,7 +160,7 @@ lia.command.add("charlist", {
                     Name = row.name,
                     Desc = row.desc,
                     Faction = row.faction,
-                    Banned = info.banned and "Yes" or "No",
+                    Banned = info.banned and L("yes") or L("no"),
                     BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
                     BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
                     BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",

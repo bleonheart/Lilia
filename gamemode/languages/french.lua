@@ -993,6 +993,7 @@ LANGUAGE = {
     charIDCopyFormat = "CharID : %s (copié)",
     steamIDCopyFormat = "SteamID : %s (copié)",
     steamID64CopyFormat = "SteamID64 : %s (copié)",
+    charlistTitle = "Charlist for SteamID64: %s",
     giveFlagFormat = "Donner drapeau %s",
     takeFlagFormat = "Retirer drapeau %s",
     setFactionTitle = "Définir faction (%s)",

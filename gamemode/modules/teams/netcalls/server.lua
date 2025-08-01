@@ -46,7 +46,7 @@ net.Receive("RequestRoster", function(_, client)
                     name = v.name,
                     faction = v.faction,
                     steamID = v.steamID,
-                    class = classData and classData.name or "None",
+                    class = classData and classData.name or L("none"),
                     lastOnline = lastOnlineText,
                     hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
                 })

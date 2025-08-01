@@ -996,6 +996,7 @@ LANGUAGE = {
     charIDCopyFormat = "CharID: %s (copy)",
     steamIDCopyFormat = "SteamID: %s (copy)",
     steamID64CopyFormat = "SteamID64: %s (copy)",
+    charlistTitle = "Charlist for SteamID64: %s",
     giveFlagFormat = "Give Flag %s",
     takeFlagFormat = "Take Flag %s",
     setFactionTitle = "Set Faction (%s)",
