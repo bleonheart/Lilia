@@ -410,10 +410,6 @@ if SERVER then
     end)
 else
     local LAST_GROUP
-    local function setFont(o, f)
-        if IsValid(o) then o:SetFont(f) end
-    end
-
     local function computePrivilegeList(groups)
         local list, seen = {}, {}
         for name in pairs(lia.administrator.privileges) do
@@ -429,6 +425,7 @@ else
         table.sort(list, function(a, b) return a:lower() < b:lower() end)
         return list
     end
+    
 
     local function promptCreateGroup()
         lia.util.requestArguments(L("createGroup"), {
@@ -681,7 +678,7 @@ else
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
     end)
 
-    lia.net.readBigTable("updateAdminGroups", function(tbl)
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
         tbl = tbl or {}
         lia.administrator.privileges = tbl
     end)
