@@ -429,7 +429,9 @@ CREATE TABLE IF NOT EXISTS lia_saveditems (
 );
 CREATE TABLE IF NOT EXISTS lia_admin (
     usergroups text,
-    privileges text
+    privileges text,
+    inheritances text,
+    types text
 );
 CREATE TABLE IF NOT EXISTS lia_data (
     gamemode text,
@@ -572,7 +574,9 @@ CREATE TABLE IF NOT EXISTS `lia_saveditems` (
 );
 CREATE TABLE IF NOT EXISTS `lia_admin` (
     `usergroups` text default null,
-    `privileges` text default null
+    `privileges` text default null,
+    `inheritances` text default null,
+    `types` text default null
 );
 ]])
         local index = 1

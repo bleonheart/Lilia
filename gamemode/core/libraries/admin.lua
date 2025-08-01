@@ -26,14 +26,14 @@ function lia.administrator.load()
         local created = false
         if not table.IsEmpty(groups) then
             for _, grp in ipairs(defaults) do
-                groups[grp] = groups[grp] or {}
+                groups[grp] = groups[grp] or { _info = { inheritance = "user", types = {} } }
             end
 
             created = true
         else
             for _, grp in ipairs(defaults) do
                 if not groups[grp] then
-                    groups[grp] = {}
+                    groups[grp] = { _info = { inheritance = "user", types = {} } }
                     created = true
                 end
             end
@@ -75,6 +75,15 @@ function lia.administrator.load()
 
     lia.db.selectOne("*", "admin"):next(function(res)
         local newGroups = res and util.JSONToTable(res.usergroups or res.groups or "") or {}
+        local inherits = res and util.JSONToTable(res.inheritances or "") or {}
+        local types = res and util.JSONToTable(res.types or "") or {}
+
+        for name, data in pairs(newGroups) do
+            data._info = data._info or {}
+            data._info.inheritance = inherits[name] or data._info.inheritance or "user"
+            data._info.types = types[name] or data._info.types or {}
+        end
+
         local created = ensureDefaults(newGroups)
         if table.Count(newGroups) == 0 then
             local oldGroups = res and util.JSONToTable(res.usergroups or "") or {}
@@ -98,7 +107,9 @@ function lia.administrator.createGroup(groupName, info)
         return
     end
 
-    lia.administrator.groups[groupName] = info or {}
+    info = info or {}
+    info._info = info._info or { inheritance = "user", types = {} }
+    lia.administrator.groups[groupName] = info
     if SERVER then lia.administrator.save() end
 end
 
@@ -181,7 +192,7 @@ if SERVER then
         local privs = {}
         for groupName, perms in pairs(lia.administrator.groups) do
             for name, allowed in pairs(perms or {}) do
-                if allowed and not seen[name] then seen[name] = true end
+                if name ~= "_info" and allowed and not seen[name] then seen[name] = true end
             end
         end
 
@@ -202,9 +213,18 @@ if SERVER then
     end
 
     function lia.administrator.save(noNetwork)
+        local inherits, types = {}, {}
+        for name, data in pairs(lia.administrator.groups) do
+            local info = istable(data._info) and data._info or {}
+            inherits[name] = info.inheritance
+            types[name] = info.types
+        end
+
         lia.db.upsert({
             usergroups = util.TableToJSON(lia.administrator.groups),
-            privileges = util.TableToJSON(extractPrivileges())
+            privileges = util.TableToJSON(extractPrivileges()),
+            inheritances = util.TableToJSON(inherits),
+            types = util.TableToJSON(types)
         }, "admin")
 
         if noNetwork then return end
@@ -315,12 +335,13 @@ if SERVER then
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
-        local n = string.Trim(net.ReadString() or "")
+        local data = net.ReadTable()
+        local n = string.Trim(tostring(data.name or ""))
         if n == "" then return end
         lia.administrator.groups = lia.administrator.groups or {}
         if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
         if lia.administrator.groups[n] then return end
-        lia.administrator.createGroup(n)
+        lia.administrator.createGroup(n, { _info = { inheritance = data.inherit or "user", types = data.types or {} } })
         lia.administrator.save()
         broadcastGroups()
         p:notify(p, "Group '" .. n .. "' created.")
@@ -363,7 +384,7 @@ else
         local list = {}
         for _, perms in pairs(groups or {}) do
             for name, val in pairs(perms or {}) do
-                if val and not seen[name] then
+                if name ~= "_info" and val and not seen[name] then
                     seen[name] = true
                     list[#list + 1] = name
                 end
@@ -374,6 +395,31 @@ else
         return list
     end
 
+    local function promptCreateGroup()
+        LocalPlayer():requestArguments("Create Group", {
+            Name = "string",
+            Inheritance = {"table", {"user", "admin", "superadmin"}},
+            Staff = "boolean",
+            User = "boolean",
+            VIP = "boolean"
+        }, function(data)
+            local name = string.Trim(tostring(data.Name or ""))
+            if name == "" then return end
+            local types = {}
+            if data.Staff then types[#types + 1] = "Staff" end
+            if data.User then types[#types + 1] = "User" end
+            if data.VIP then types[#types + 1] = "VIP" end
+            LAST_GROUP = name
+            net.Start("liaGroupsAdd")
+            net.WriteTable({
+                name = name,
+                inherit = data.Inheritance or "user",
+                types = types
+            })
+            net.SendToServer()
+        end)
+    end
+
     local function buildPrivilegeList(parent, g, perms, editable)
         local wrap = parent:Add("DPanel")
         wrap:Dock(FILL)
@@ -382,6 +428,7 @@ else
         local catList = vgui.Create("DCategoryList", wrap)
         catList:Dock(FILL)
         local current = table.Copy(perms[g] or {})
+        current._info = nil
         surface.SetFont("liaMediumFont")
         local _, fh = surface.GetTextSize("W")
         local cbSize = math.max(20, fh + 6)
@@ -465,7 +512,8 @@ else
         local inhVal = scroll:Add("DLabel")
         inhVal:Dock(TOP)
         inhVal:DockMargin(20, 2, 0, 0)
-        inhVal:SetText("user")
+        local info = groups[g] and groups[g]._info or {}
+        inhVal:SetText(info.inheritance or "user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
         local privLbl = scroll:Add("DLabel")
@@ -482,16 +530,7 @@ else
             createBtn:SetText("Create Group")
             renameBtn:SetText("Rename Group")
             delBtn:SetText("Delete Group")
-            createBtn.DoClick = function()
-                Derma_StringRequest("Create Group", "New group name:", "", function(txt)
-                    txt = string.Trim(txt or "")
-                    if txt == "" then return end
-                    LAST_GROUP = txt
-                    net.Start("liaGroupsAdd")
-                    net.WriteString(txt)
-                    net.SendToServer()
-                end)
-            end
+            createBtn.DoClick = promptCreateGroup
 
             renameBtn.DoClick = function()
                 Derma_StringRequest("Rename Group", "New name for '" .. g .. "':", g, function(txt)
@@ -525,16 +564,7 @@ else
         else
             local addBtn = bottom:Add("liaMediumButton")
             addBtn:SetText("Create Group")
-            addBtn.DoClick = function()
-                Derma_StringRequest("Create Group", "New group name:", "", function(txt)
-                    txt = string.Trim(txt or "")
-                    if txt == "" then return end
-                    LAST_GROUP = txt
-                    net.Start("liaGroupsAdd")
-                    net.WriteString(txt)
-                    net.SendToServer()
-                end)
-            end
+            addBtn.DoClick = promptCreateGroup
 
             bottom.PerformLayout = function(_, w, bh)
                 addBtn:SetPos(0, 0)
