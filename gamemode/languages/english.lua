@@ -587,6 +587,7 @@ LANGUAGE = {
     sitroomRepositioned = "SitRoom repositioned successfully.",
     enterSitroomPrompt = "Enter the name of the SitRoom:",
     invalidName = "Invalid name!",
+    nameAlreadyExists = "A character with this name already exists.",
     sitroomSet = "SitRoom has been set!",
     sendToSitRoomDesc = "Send a player to a SitRoom",
     sitroomNotSet = "No SitRoom has been set!",

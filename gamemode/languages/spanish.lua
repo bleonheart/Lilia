@@ -587,6 +587,7 @@ LANGUAGE = {
     sitroomRepositioned = "Sala reubicada.",
     enterSitroomPrompt = "Nombre de la sala:",
     invalidName = "Nombre inválido",
+    nameAlreadyExists = "Ya existe un personaje con ese nombre.",
     sitroomSet = "Sala establecida.",
     sendToSitRoomDesc = "Enviar jugador a sala",
     sitroomNotSet = "No hay sala establecida.",
