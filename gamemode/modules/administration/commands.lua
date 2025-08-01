@@ -234,7 +234,7 @@ lia.command.add("plyunban", {
                 banReason = ""
             }, nil, "players", "steamID = " .. steamid)
 
-            client:notify("Player unbanned")
+            client:notifyLocalized("playerUnbanned")
             lia.log.add(client, "plyUnban", steamid)
         end
     end
