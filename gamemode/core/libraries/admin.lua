@@ -638,6 +638,9 @@ hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
             parent:Clear()
             parent:DockPadding(10, 10, 10, 10)
             parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
+            if lia.administrator.groups then
+                buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups)
+            end
             net.Start("liaGroupsRequest")
             net.SendToServer()
         end
