@@ -494,6 +494,8 @@ else
         local list = parent:Add("DListLayout")
         list:Dock(TOP)
         list:DockMargin(20, 0, 20, 4)
+        lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
+        lia.gui.usergroups.checks[g] = lia.gui.usergroups.checks[g] or {}
         local function addRow(name)
             local row = list:Add("DPanel")
             row:Dock(TOP)
@@ -510,8 +512,14 @@ else
             chk:SetSize(cb + 12, cb)
             chk:Dock(RIGHT)
             chk:SetChecked(current[name] and true or false)
+            chk._suppress = false
             if editable then
                 chk.OnChange = function(_, v)
+                    if chk._suppress then
+                        chk._suppress = false
+                        return
+                    end
+
                     if v then
                         current[name] = true
                     else
@@ -528,6 +536,8 @@ else
                 chk:SetMouseInputEnabled(false)
                 chk:SetCursor("arrow")
             end
+
+            lia.gui.usergroups.checks[g][name] = chk
         end
 
         for _, priv in ipairs(computePrivilegeList(groups)) do
@@ -668,6 +678,8 @@ else
         sheet:Dock(FILL)
         sheet:DockMargin(10, 10, 10, 10)
         panel.pages = {}
+        panel.checks = {}
+        lia.gui.usergroups.checks = {}
         local keys = {}
         for g in pairs(groups or {}) do
             keys[#keys + 1] = g
@@ -700,27 +712,27 @@ else
     end)
 
     lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
-
     net.Receive("liaGroupPermChanged", function()
         local group = net.ReadString()
         local privilege = net.ReadString()
         local value = net.ReadBool()
-
         lia.administrator.groups = lia.administrator.groups or {}
         lia.administrator.groups[group] = lia.administrator.groups[group] or {}
         if value then
             lia.administrator.groups[group][privilege] = true
-        elseif lia.administrator.groups[group] then
+        else
             lia.administrator.groups[group][privilege] = nil
         end
 
-        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.pages then
-            local page = lia.gui.usergroups.pages[group]
-            if IsValid(page) then
-                renderGroupInfo(page, group, lia.administrator.groups, lia.administrator.groups)
+        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.checks and lia.gui.usergroups.checks[group] then
+            local chk = lia.gui.usergroups.checks[group][privilege]
+            if IsValid(chk) and chk:GetChecked() ~= value then
+                chk._suppress = true
+                chk:SetChecked(value)
             end
         end
     end)
+
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         if not IsValid(LocalPlayer()) then return end
         pages[#pages + 1] = {
