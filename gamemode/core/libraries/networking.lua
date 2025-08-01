@@ -1,20 +1,24 @@
 ﻿lia.net = lia.net or {}
 lia.net.globals = lia.net.globals or {}
 if SERVER then
-    function lia.net.writeBigTable(target, netStr, tbl, chunkSize)
+    function lia.net.writeBigTable(target, netStr, tbl, chunkSize, chunkDelay)
         if not istable(tbl) then return end
         local json = util.TableToJSON(tbl)
         if not json then return end
         local data = util.Compress(json)
         if not data then return end
-        local size = chunkSize or 32768
+        local size = chunkSize or 8192
+        local delay = chunkDelay or 0.05
         local total = math.ceil(#data / size)
         if total < 1 then total = 1 end
         local sid = tonumber(util.CRC(tostring(SysTime()) .. tostring(tbl) .. tostring(math.random())), 10) or 0
         local idx = 0
-        for i = 1, #data, size do
+        local pos = 1
+
+        local function sendNext()
+            if not IsValid(target) then return end
             idx = idx + 1
-            local chunk = string.sub(data, i, i + size - 1)
+            local chunk = string.sub(data, pos, pos + size - 1)
             net.Start(netStr)
             net.WriteUInt(sid, 32)
             net.WriteUInt(total, 16)
@@ -22,7 +26,14 @@ if SERVER then
             net.WriteUInt(#chunk, 16)
             net.WriteData(chunk, #chunk)
             net.Send(target)
+
+            pos = pos + size
+            if pos <= #data then
+                timer.Simple(delay, sendNext)
+            end
         end
+
+        sendNext()
     end
 
     function checkBadType(name, object)
