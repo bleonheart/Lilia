@@ -553,7 +553,7 @@ for _, file in ipairs(ConditionalFiles) do
         if ok then
             shouldLoad = result
         else
-            lia.error("Compatibility condition error: " .. tostring(result))
+            lia.error(L("compatibilityConditionError", tostring(result)))
         end
     elseif file.global then
         shouldLoad = _G[file.global] ~= nil

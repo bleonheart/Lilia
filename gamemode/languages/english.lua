@@ -1198,5 +1198,8 @@ Reload: Drop]],
     agoFormat = "%s (%s) ago",
     gmaFileBlocked = "Blocked %s",
     gmaFileNotWhitelisted = "Warning: File %s not whitelisted. Skipping..",
+    itemNotFound = "Item not found",
+    compatibilityConditionError = "Compatibility condition error: %s",
+    uncategorized = "Uncategorized",
     defaultGameDescription = "A Lilia Gamemode",
 }
