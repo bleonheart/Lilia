@@ -33,7 +33,7 @@ net.Receive("CharacterInfo", function()
         end
 
         local row = sheet:AddListViewRow({
-            columns = {"Name", "Class", "Last Online", "Hours Played"},
+            columns = {L("name"), L("class"), L("lastOnline"), L("hoursPlayed")},
             data = rows,
             getLineText = function(line)
                 local s = ""
@@ -59,16 +59,16 @@ net.Receive("CharacterInfo", function()
                 local rowData = line.rowData
                 local menu = DermaMenu()
                 if rowData.steamID ~= LocalPlayer():SteamID() then
-                    menu:AddOption("Kick", function()
-                        Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                    menu:AddOption(L("kick"), function()
+                        Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                             net.Start("KickCharacter")
                             net.WriteInt(tonumber(rowData.id), 32)
                             net.SendToServer()
-                        end, "No")
+                        end, L("no"))
                     end)
                 end
 
-                menu:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for key, value in pairs(rowData) do
@@ -95,14 +95,14 @@ net.Receive("CharacterInfo", function()
     end
 
     local columns = {
-        {name = "Name", field = "name"},
-        {name = "Class", field = "class"},
-        {name = "Last Online", field = "lastOnline"},
-        {name = "Hours Played", field = "hoursPlayed"}
+        {name = L("name"), field = "name"},
+        {name = L("class"), field = "class"},
+        {name = L("lastOnline"), field = "lastOnline"},
+        {name = L("hoursPlayed"), field = "hoursPlayed"}
     }
 
-    local frame, list = lia.util.CreateTableUI("Character Information", columns, rows, {
-        {name = "Kick", net = "KickCharacter"}
+    local frame, list = lia.util.CreateTableUI(L("characterInformation"), columns, rows, {
+        {name = L("kick"), net = "KickCharacter"}
     })
     characterPanel = frame
 
@@ -112,17 +112,17 @@ net.Receive("CharacterInfo", function()
             local rowData = line.rowData
             local menu = DermaMenu()
             if rowData.steamID ~= LocalPlayer():SteamID() then
-                menu:AddOption("Kick", function()
-                    Derma_Query("Are you sure you want to kick this player?", "Confirm", "Yes", function()
+                menu:AddOption(L("kick"), function()
+                    Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                         net.Start("KickCharacter")
                         net.WriteInt(tonumber(rowData.id), 32)
                         net.SendToServer()
                         if IsValid(frame) then frame:Remove() end
-                    end, "No")
+                    end, L("no"))
                 end)
             end
 
-            menu:AddOption("View Character List", function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+            menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do

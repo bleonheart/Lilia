@@ -364,7 +364,7 @@ if SERVER then
 
         lia.administrator.save()
         broadcastGroups()
-        p:notify(p, "Group '" .. n .. "' created.")
+        p:notify(p, L("groupCreated", n))
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
@@ -374,7 +374,7 @@ if SERVER then
         if lia.administrator.groups then lia.administrator.groups[n] = nil end
         lia.administrator.save()
         broadcastGroups()
-        p:notify(p, "Group '" .. n .. "' removed.")
+        p:notify(p, L("groupRemoved", n))
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
@@ -390,7 +390,7 @@ if SERVER then
         lia.administrator.groups[old] = nil
         lia.administrator.save()
         broadcastGroups()
-        p:notify(p, "Group '" .. old .. "' renamed to '" .. new .. "'.")
+        p:notify(p, L("groupRenamed", old, new))
     end)
 else
     local PRIV_LIST = {}
@@ -416,7 +416,7 @@ else
     end
 
     local function promptCreateGroup()
-        lia.util.requestArguments("Create Group", {
+        lia.util.requestArguments(L("createGroup"), {
             Name = "string",
             Inheritance = {"table", {"user", "admin", "superadmin"}},
             Staff = "boolean",
@@ -515,7 +515,7 @@ else
         local nameLbl = scroll:Add("DLabel")
         nameLbl:Dock(TOP)
         nameLbl:DockMargin(20, 20, 0, 0)
-        nameLbl:SetText("Name:")
+        nameLbl:SetText(L("name") .. ":")
         setFont(nameLbl, "liaBigFont")
         nameLbl:SizeToContents()
         local nameVal = scroll:Add("DLabel")
@@ -527,7 +527,7 @@ else
         local inhLbl = scroll:Add("DLabel")
         inhLbl:Dock(TOP)
         inhLbl:DockMargin(20, 10, 0, 0)
-        inhLbl:SetText("Inherits from:")
+        inhLbl:SetText(L("inheritsFrom"))
         setFont(inhLbl, "liaBigFont")
         inhLbl:SizeToContents()
         local inhVal = scroll:Add("DLabel")
@@ -540,7 +540,7 @@ else
         local privLbl = scroll:Add("DLabel")
         privLbl:Dock(TOP)
         privLbl:DockMargin(20, 10, 0, 6)
-        privLbl:SetText("Privileges")
+        privLbl:SetText(L("privilegesLabel"))
         setFont(privLbl, "liaBigFont")
         privLbl:SizeToContents()
         local wrap, catList, current = buildPrivilegeList(scroll, g, perms, editable)
@@ -548,12 +548,12 @@ else
             local createBtn = bottom:Add("liaMediumButton")
             local renameBtn = bottom:Add("liaMediumButton")
             local delBtn = bottom:Add("liaMediumButton")
-            createBtn:SetText("Create Group")
-            renameBtn:SetText("Rename Group")
-            delBtn:SetText("Delete Group")
+            createBtn:SetText(L("createGroup"))
+            renameBtn:SetText(L("renameGroup"))
+            delBtn:SetText(L("deleteGroup"))
             createBtn.DoClick = promptCreateGroup
             renameBtn.DoClick = function()
-                Derma_StringRequest("Rename Group", "New name for '" .. g .. "':", g, function(txt)
+                Derma_StringRequest(L("renameGroup"), string.format(L("renameGroupPrompt"), g), g, function(txt)
                     txt = string.Trim(txt or "")
                     if txt == "" or txt == g then return end
                     LAST_GROUP = txt
@@ -565,11 +565,11 @@ else
             end
 
             delBtn.DoClick = function()
-                Derma_Query("Delete group '" .. g .. "'?", "Confirm", "Yes", function()
+                Derma_Query(string.format(L("deleteGroupPrompt"), g), L("confirm"), L("yes"), function()
                     net.Start("liaGroupsRemove")
                     net.WriteString(g)
                     net.SendToServer()
-                end, "No")
+                end, L("no"))
             end
 
             bottom.PerformLayout = function(pnl, w, bh)
@@ -583,7 +583,7 @@ else
             end
         else
             local addBtn = bottom:Add("liaMediumButton")
-            addBtn:SetText("Create Group")
+            addBtn:SetText(L("createGroup"))
             addBtn.DoClick = promptCreateGroup
             bottom.PerformLayout = function(_, w, bh)
                 addBtn:SetPos(0, 0)

@@ -226,14 +226,14 @@ properties.Add("lia_npc_weapon", {
             WarningText:SetContentAlignment(5)
             WarningText:SetTextColor(color_white)
             WarningText:SetFont("DermaLarge")
-            WarningText:SetText("WARNING! Not all NPCs can use weapons and not all weapons are usable by NPCs.")
+            WarningText:SetText(L("npcWeaponWarning1"))
             local WarningText2 = vgui.Create("DLabel", WarningThing)
             WarningText2:Dock(TOP)
             WarningText2:SetHeight(35)
             WarningText2:SetContentAlignment(5)
             WarningText2:SetTextColor(color_white)
             WarningText2:SetFont("DermaLarge")
-            WarningText2:SetText("This is entirely dependent on the Addon the weapon and the NPC are from. This mod cannot change that.")
+            WarningText2:SetText(L("npcWeaponWarning2"))
         end
     end,
     Receive = function(_, _, ply)
@@ -475,7 +475,7 @@ AddEntFunctionProperty("lia_healthcharger_recharge", "Recharge", 655, "item_heal
     ent:Remove()
 end, "icon16/arrow_refresh.png")
 
-AddEntFunctionProperty("lia_vehicle_exit", "Kick Driver", 655, function(ent)
+AddEntFunctionProperty("lia_vehicle_exit", L("kickDriver"), 655, function(ent)
     if ent:IsVehicle() and ent:GetNWBool("HasDriver") then return true end
     return false
 end, function(ent)
@@ -483,7 +483,7 @@ end, function(ent)
     ent:GetDriver():ExitVehicle()
 end, "icon16/car.png")
 
-AddEntFireProperty("lia_vehicle_radar", "Enable Radar", 655, function(ent)
+AddEntFireProperty("lia_vehicle_radar", L("enableRadar"), 655, function(ent)
     if not ent:IsVehicle() or ent:GetClass() ~= "prop_vehicle_jeep" then return false end
     if ent:LookupAttachment("controlpanel0_ll") == 0 then return false end
     if ent:LookupAttachment("controlpanel0_ur") == 0 then return false end
@@ -491,7 +491,7 @@ AddEntFireProperty("lia_vehicle_radar", "Enable Radar", 655, function(ent)
     return true
 end, "EnableRadar", "icon16/application_add.png")
 
-AddEntFireProperty("lia_vehicle_radar_off", "Disable Radar", 655, function(ent)
+AddEntFireProperty("lia_vehicle_radar_off", L("disableRadar"), 655, function(ent)
     if not ent:IsVehicle() or ent:GetClass() ~= "prop_vehicle_jeep" then return false end
     if not ent:GetNWBool("m_bRadarEnabled", false) then return false end
     return true

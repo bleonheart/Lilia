@@ -1,1 +1,4 @@
-﻿timer.Create("LiliaULXWarning", 10, 0, function() MsgC(Color(255, 0, 0), "[ULX WARNING] Using ULX will completely break Lilia. Remove ULX immediately. A free Lilia admin menu is in development to replace it.\n") end)
+
+timer.Create("LiliaULXWarning", 10, 0, function()
+    MsgC(Color(255, 0, 0), "[ULX WARNING] " .. L("ulxBreakWarning") .. "\n")
+end)

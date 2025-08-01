@@ -158,12 +158,12 @@ net.Receive("DisplayCharList", function()
             if ln and ln.CharID and (LocalPlayer():hasPrivilege("Unban Offline") or LocalPlayer():hasPrivilege("Ban Offline")) then
                 local dMenu = DermaMenu()
                 if LocalPlayer():hasPrivilege("Unban Offline") then
-                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
+                    local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt1:SetIcon("icon16/cancel.png")
                 end
 
                 if LocalPlayer():hasPrivilege("Ban Offline") then
-                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
+                    local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. ln.CharID .. [["]]) end)
                     opt2:SetIcon("icon16/accept.png")
                 end
 
