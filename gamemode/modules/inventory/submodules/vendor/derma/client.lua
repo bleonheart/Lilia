@@ -555,7 +555,7 @@ end
 
 function PANEL:setItemType(itemType)
     local item = lia.item.list[itemType]
-    assert(item, tostring(itemType) .. " is not a valid item")
+    assert(item, L("invalidItemTypeOrID", tostring(itemType)))
     self.item = item
     self.icon:SetModel(item.model, item.skin or 0)
     self:updateLabel()

@@ -85,7 +85,7 @@ lia.command.add("charlist", {
     desc = "charListDesc",
     syntax = "[string Player Or Steam ID]",
     AdminStick = {
-        Name = "Open CharList",
+        Name = "adminStickOpenCharListName",
         Category = "playerInformation",
         Icon = "icon16/user_gray.png"
     },
@@ -1322,7 +1322,7 @@ lia.command.add("getmodel", {
             return
         end
 
-        local model = entity:GetModel() or "No model found."
+        local model = entity:GetModel() or L("noModelFound")
         client:ChatPrint(L("modelIs", model))
     end
 })

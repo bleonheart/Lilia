@@ -1,7 +1,7 @@
-﻿MODULE.name = "Storage"
+MODULE.name = L("moduleStorageName")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Adds persistent storage containers and player vaults that integrate with the inventory for item management."
+MODULE.desc = L("moduleStorageDesc")
 MODULE.Privileges = {
     {
         Name = "Can Spawn Storage",
