@@ -27,7 +27,7 @@ net.Receive("CharacterInfo", function()
         local originals = {}
         for _, data in ipairs(characterData) do
             if data.faction == factionID then
-                rows[#rows + 1] = {data.name, data.class or "None", data.lastOnline, data.hoursPlayed}
+                rows[#rows + 1] = {data.name, data.class or L("none"), data.lastOnline, data.hoursPlayed}
                 originals[#originals + 1] = data
             end
         end

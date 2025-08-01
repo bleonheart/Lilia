@@ -130,12 +130,12 @@ net.Receive("DisplayCharList", function()
         })
     end
 
-    local _, listView = lia.util.CreateTableUI("Charlist for SteamID64: " .. targetSteamIDsafe, columns, sendData)
+    local _, listView = lia.util.CreateTableUI(L("charlistTitle", targetSteamIDsafe), columns, sendData)
     if IsValid(listView) then
         for _, line in ipairs(listView:GetLines()) do
             local dataIndex = line:GetID()
             local rowData = sendData[dataIndex]
-            if rowData and rowData.Banned == "Yes" then
+            if rowData and rowData.Banned == L("yes") then
                 line.DoPaint = line.Paint
                 line.Paint = function(pnl, w, h)
                     surface.SetDrawColor(200, 100, 100)
