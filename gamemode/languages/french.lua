@@ -756,6 +756,7 @@ LANGUAGE = {
     doorResetData = "Données porte réinitialisées.",
     lastClaimDate = "Dernier ticket",
     timeSinceLastClaim = "Depuis",
+    dbBrowserDesc = "Ouvrir le navigateur de base de données.",
     claimedFor = "Pris pour",
     charVoiceToggleDesc = "Toggle ban vocal d’un personnage.",
     tookDamageSwitchCooldown = "Vous avez pris des dégâts récemment.",
@@ -1310,5 +1311,7 @@ LANGUAGE = {
     permaPropOverlapLog = "Perma-prop spawned at %s overlapping prop at %s.",
     dupeCrashAttemptLog = "Player '%s' [%s] attempted to duplicate oversized entities.",
     unprotectedVJNetCallLog = "%s triggered unprotected net message '%s'.",
+    accessPropertyPrivilege = "Accès à la propriété %s",
+    accessToolPrivilege = "Accès à l'outil %s",
     defaultGameDescription = "A Lilia Gamemode",
 }
