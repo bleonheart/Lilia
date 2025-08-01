@@ -565,6 +565,39 @@ else
         inhVal:SetText(info.inheritance or "user")
         setFont(inhVal, "liaMediumFont")
         inhVal:SizeToContents()
+
+        local function hasType(t)
+            for _, typ in ipairs(info.types or {}) do
+                if tostring(typ):lower() == t:lower() then return true end
+            end
+            return false
+        end
+
+        local staffLbl = scroll:Add("DLabel")
+        staffLbl:Dock(TOP)
+        staffLbl:DockMargin(20, 10, 0, 0)
+        staffLbl:SetText(L("isStaffLabel"))
+        setFont(staffLbl, "liaBigFont")
+        staffLbl:SizeToContents()
+        local staffVal = scroll:Add("DLabel")
+        staffVal:Dock(TOP)
+        staffVal:DockMargin(20, 2, 0, 0)
+        staffVal:SetText(hasType("Staff") and L("yes") or L("no"))
+        setFont(staffVal, "liaMediumFont")
+        staffVal:SizeToContents()
+
+        local vipLbl = scroll:Add("DLabel")
+        vipLbl:Dock(TOP)
+        vipLbl:DockMargin(20, 10, 0, 0)
+        vipLbl:SetText(L("isVIPLabel"))
+        setFont(vipLbl, "liaBigFont")
+        vipLbl:SizeToContents()
+        local vipVal = scroll:Add("DLabel")
+        vipVal:Dock(TOP)
+        vipVal:DockMargin(20, 2, 0, 0)
+        vipVal:SetText(hasType("VIP") and L("yes") or L("no"))
+        setFont(vipVal, "liaMediumFont")
+        vipVal:SizeToContents()
         local privLbl = scroll:Add("DLabel")
         privLbl:Dock(TOP)
         privLbl:DockMargin(20, 10, 0, 6)
