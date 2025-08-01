@@ -4,8 +4,8 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleLoggerDesc")
 MODULE.Privileges = {
     {
-        Name = "Can See Logs",
+        Name = L("canSeeLogs"),
         MinAccess = "superadmin",
-        Category = "Staff Permissions",
+        Category = L("categoryStaffPermissions"),
     }
 }

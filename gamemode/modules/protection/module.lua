@@ -4,8 +4,8 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleProtectionDesc")
 MODULE.Privileges = {
     {
-        Name = "Can See Alting Notifications",
+        Name = L("canSeeAltingNotifications"),
         MinAccess = "admin",
-        Category = "Management",
+        Category = L("categoryManagement"),
     },
 }
