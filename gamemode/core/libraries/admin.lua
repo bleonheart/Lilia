@@ -502,7 +502,7 @@ else
             lbl:SetFont("liaMediumFont")
             lbl:SizeToContents()
             local chk = row:Add("liaCheckBox")
-            chk:SetSize(cb, cb)
+            chk:SetSize(cb + 12, cb)
             chk:Dock(RIGHT)
             chk:SetChecked(current[name] and true or false)
             if editable then
