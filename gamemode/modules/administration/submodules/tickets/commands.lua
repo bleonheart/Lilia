@@ -1,3 +1,4 @@
+local MODULE = MODULE
 ﻿lia.command.add("plyviewclaims", {
     adminOnly = true,
     privilege = "View Claims",
