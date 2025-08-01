@@ -364,7 +364,8 @@ if SERVER then
 
         lia.administrator.save()
         broadcastGroups()
-        p:notify(p, L("groupCreated", n))
+        -- Notify the player that the group was created
+        p:notify(L("groupCreated", n))
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
@@ -374,7 +375,8 @@ if SERVER then
         if lia.administrator.groups then lia.administrator.groups[n] = nil end
         lia.administrator.save()
         broadcastGroups()
-        p:notify(p, L("groupRemoved", n))
+        -- Inform the player about the removal
+        p:notify(L("groupRemoved", n))
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
@@ -390,7 +392,8 @@ if SERVER then
         lia.administrator.groups[old] = nil
         lia.administrator.save()
         broadcastGroups()
-        p:notify(p, L("groupRenamed", old, new))
+        -- Let the player know about the rename
+        p:notify(L("groupRenamed", old, new))
     end)
 
     net.Receive("liaGroupsSetPerm", function(_, p)
