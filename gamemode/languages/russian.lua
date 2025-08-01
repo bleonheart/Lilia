@@ -587,6 +587,7 @@ LANGUAGE = {
     sitroomRepositioned = "Атмосфера перемещена.",
     enterSitroomPrompt = "Введите имя атмосферы:",
     invalidName = "Неверное имя!",
+    nameAlreadyExists = "Персонаж с таким именем уже существует.",
     sitroomSet = "Атмосфера установлена!",
     sendToSitRoomDesc = "Отправить игрока в атмосферу",
     sitroomNotSet = "Атмосфера не настроена!",

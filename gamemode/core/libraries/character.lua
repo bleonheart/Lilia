@@ -118,7 +118,7 @@ lia.char.registerVar("name", {
 
         if not lia.config.get("AllowExistNames", true) then
             for _, v in pairs(lia.char.names) do
-                if v == value then return false, "A character with this name already exists." end
+                if v == value then return false, "nameAlreadyExists" end
             end
         end
         return true
