@@ -59,7 +59,7 @@ end
 
 function GM:PlayerShouldPermaKill(client)
     local character = client:getChar()
-    return character:getData("markedForDeath", false)
+    return character:getMarkedForDeath()
 end
 
 function GM:CharLoaded(id)

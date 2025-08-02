@@ -396,6 +396,14 @@ lia.char.registerVar("classwhitelists", {
     noDisplay = true
 })
 
+lia.char.registerVar("markedForDeath", {
+    field = "markedfordeath",
+    fieldType = "boolean",
+    default = false,
+    noDisplay = true,
+    noNetworking = true
+})
+
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
