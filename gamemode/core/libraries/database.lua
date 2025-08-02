@@ -392,10 +392,12 @@ CREATE TABLE IF NOT EXISTS lia_ticketclaims (
 CREATE TABLE IF NOT EXISTS lia_warnings (
     id integer primary key autoincrement,
     charID integer,
-    steamID text,
+    warned text,
+    warnedSteamID text,
     timestamp datetime,
-    reason text,
-    admin text
+    message text,
+    warner text,
+    warnerSteamID text
 );
 CREATE TABLE IF NOT EXISTS lia_doors (
     gamemode text,
@@ -528,10 +530,12 @@ CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
 CREATE TABLE IF NOT EXISTS `lia_warnings` (
     `id` int not null auto_increment,
     `charID` int default null,
-    `steamID` varchar(64) default null collate 'utf8mb4_general_ci',
+    `warned` text collate 'utf8mb4_general_ci',
+    `warnedSteamID` varchar(64) default null collate 'utf8mb4_general_ci',
     `timestamp` datetime not null,
-    `reason` text collate 'utf8mb4_general_ci',
-    `admin` text collate 'utf8mb4_general_ci',
+    `message` text collate 'utf8mb4_general_ci',
+    `warner` text collate 'utf8mb4_general_ci',
+    `warnerSteamID` varchar(64) default null collate 'utf8mb4_general_ci',
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_doors` (
