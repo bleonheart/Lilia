@@ -248,10 +248,12 @@ function GM:PlayerSay(client, message)
 
     local logType = logTypeMap[chatType] or "chat"
     lia.chat.send(client, chatType, message, anonymous)
-    if logType == "chat" then
-        lia.log.add(client, logType, chatType and chatType:upper() or "??", message)
-    else
-        lia.log.add(client, logType, message)
+    if lia.chat.classes[chatType] then
+        if logType == "chat" then
+            lia.log.add(client, logType, chatType and chatType:upper() or "??", message)
+        else
+            lia.log.add(client, logType, message)
+        end
     end
 
     hook.Run("PostPlayerSay", client, message, chatType, anonymous)

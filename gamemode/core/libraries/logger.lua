@@ -93,7 +93,7 @@ lia.log.types = {
     },
     ["command"] = {
         func = function(client, text) return string.format("Player '%s' ran command: %s.", client:Name(), text) end,
-        category = "Chat"
+        category = "Commands"
     },
     ["money"] = {
         func = function(client, amount) return string.format("Player '%s' changed money by: %s.", client:Name(), amount) end,
