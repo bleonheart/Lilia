@@ -67,7 +67,7 @@ properties.Add("copytoclipboard", {
         self:MsgStart()
         local s = ent:GetModel()
         SetClipboardText(s)
-        print(s)
+        lia.admin(s)
         self:MsgEnd()
     end,
     Receive = function() end

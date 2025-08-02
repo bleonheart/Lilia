@@ -258,12 +258,6 @@ local ConditionalFiles = {
         realm = "server"
     },
     {
-        path = "lilia/gamemode/core/libraries/compatibility/ulx.lua",
-        global = "ulx",
-        name = "ULX",
-        realm = "server"
-    },
-    {
         path = "lilia/gamemode/core/libraries/compatibility/permaprops.lua",
         global = "PermaProps",
         name = "PermaProps",
@@ -368,6 +362,11 @@ end
 function lia.information(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Information] ")
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
+end
+
+function lia.admin(msg)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
+    MsgC(Color(255, 153, 0), tostring(msg), "\n")
 end
 
 function lia.bootstrap(section, msg)

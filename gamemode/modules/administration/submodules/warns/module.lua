@@ -29,10 +29,19 @@ if CLIENT then
 
         addSizedColumn(L("timestamp"))
         addSizedColumn(L("Warned", "Warned"))
+        addSizedColumn(L("Warned Steam ID", "Warned Steam ID"))
         addSizedColumn(L("Warner", "Warner"))
-        addSizedColumn(L("reason"))
+        addSizedColumn(L("Warner Steam ID", "Warner Steam ID"))
+        addSizedColumn(L("Warning Message", "Warning Message"))
         for _, warn in ipairs(warnings) do
-            list:AddLine(warn.timestamp or "", warn.steamID or "", warn.admin or "", warn.reason or "")
+            list:AddLine(
+                warn.timestamp or "",
+                warn.warned or "",
+                warn.warnedSteamID or "",
+                warn.warner or "",
+                warn.warnerSteamID or "",
+                warn.message or ""
+            )
         end
     end)
 
