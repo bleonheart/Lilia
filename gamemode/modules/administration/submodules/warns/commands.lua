@@ -21,10 +21,11 @@ lia.command.add("warn", {
         end
 
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-        local adminStr = client:Nick() .. " (" .. client:SteamID() .. ")"
-        MODULE:AddWarning(target:getChar():getID(), target:SteamID64(), timestamp, reason, adminStr)
+        local warnerName = client:Nick()
+        local warnerSteamID = client:SteamID()
+        MODULE:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID64(), timestamp, reason, warnerName, warnerSteamID)
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-            target:notifyLocalized("playerWarned", adminStr, reason)
+            target:notifyLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
         end)
@@ -60,8 +61,9 @@ lia.command.add("viewwarns", {
                 table.insert(warningList, {
                     index = index,
                     timestamp = warn.timestamp or L("na"),
-                    reason = warn.reason or L("na"),
-                    admin = warn.admin or L("na")
+                    warner = warn.warner or L("na"),
+                    warnerSteamID = warn.warnerSteamID or L("na"),
+                    warningMessage = warn.message or L("na")
                 })
             end
 
@@ -75,12 +77,16 @@ lia.command.add("viewwarns", {
                     field = "timestamp"
                 },
                 {
-                    name = L("reason"),
-                    field = "reason"
+                    name = L("Warner", "Warner"),
+                    field = "warner"
                 },
                 {
-                    name = L("admin"),
-                    field = "admin"
+                    name = L("Warner Steam ID", "Warner Steam ID"),
+                    field = "warnerSteamID"
+                },
+                {
+                    name = L("Warning Message", "Warning Message"),
+                    field = "warningMessage"
                 }
             }, warningList, {
                 {
