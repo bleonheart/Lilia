@@ -202,13 +202,15 @@ local function groupHasType(groupName, t)
     return false
 end
 
+local oldIsAdmin = playerMeta.IsAdmin
+local oldIsSuperAdmin = playerMeta.IsSuperAdmin
+
 function playerMeta:IsAdmin()
-    return groupDerivesFrom(self:GetUserGroup(), "admin")
+    return (oldIsAdmin and oldIsAdmin(self)) or groupDerivesFrom(self:GetUserGroup(), "admin")
 end
 
 function playerMeta:IsSuperAdmin()
-    return groupDerivesFrom(self:GetUserGroup(), "superadmin")
-end
+    return (oldIsSuperAdmin and oldIsSuperAdmin(self)) or groupDerivesFrom(self:GetUserGroup(), "superadmin")
 
 function playerMeta:isUser()
     return groupDerivesFrom(self:GetUserGroup(), "user")
