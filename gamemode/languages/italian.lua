@@ -566,6 +566,7 @@ LANGUAGE = {
     adminStickUnwhitelistName = "Rimuovi Whitelist",
     adminStickClassWhitelistName = "Whitelist Classe",
     adminStickClassUnwhitelistName = "Unwhitelist Classe",
+    adminStickSetClassName = "Imposta Classe",
     uiBodygroupsFor = "Bodygroups per %s",
     groupID = "ID Gruppo",
     range = "Raggio",
