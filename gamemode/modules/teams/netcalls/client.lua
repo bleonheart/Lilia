@@ -26,10 +26,8 @@ net.Receive("CharacterInfo", function()
         local rows = {}
         local originals = {}
         for _, data in ipairs(characterData) do
-            if data.faction == factionID then
-                rows[#rows + 1] = {data.name, data.class or L("none"), data.lastOnline, data.hoursPlayed}
-                originals[#originals + 1] = data
-            end
+            rows[#rows + 1] = {data.name, data.class or L("none"), data.lastOnline, data.hoursPlayed}
+            originals[#originals + 1] = data
         end
 
         local row = sheet:AddListViewRow({
@@ -91,7 +89,7 @@ net.Receive("CharacterInfo", function()
     if IsValid(characterPanel) then characterPanel:Remove() end
     local rows = {}
     for _, data in ipairs(characterData) do
-        if data.faction == factionID then table.insert(rows, data) end
+        table.insert(rows, data)
     end
 
     local columns = {
