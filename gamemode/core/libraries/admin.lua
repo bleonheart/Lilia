@@ -7,7 +7,6 @@ lia.administrator.DefaultGroups = {
     superadmin = 3
 }
 
-lia.administrator._camiSource = "lia"
 local function getGroupLevel(group)
     local levels = lia.administrator.DefaultGroups or {}
     if levels[group] then return levels[group] end
@@ -58,12 +57,12 @@ local function camiRegisterUsergroup(name, inherits)
         CAMI.RegisterUsergroup({
             Name = name,
             Inherits = inherits or "user"
-        }, lia.administrator._camiSource)
+        }, "Lilia")
     end
 end
 
 local function camiUnregisterUsergroup(name)
-    if CAMI and name ~= "user" and name ~= "admin" and name ~= "superadmin" then CAMI.UnregisterUsergroup(name, lia.administrator._camiSource) end
+    if CAMI and name ~= "user" and name ~= "admin" and name ~= "superadmin" then CAMI.UnregisterUsergroup(name, "Lilia") end
 end
 
 local function camiRegisterPrivilege(name, min)
@@ -418,7 +417,7 @@ if SERVER then
         if old == new then return end
         ply:SetUserGroup(new)
         if CAMI then
-            CAMI.SignalUserGroupChanged(ply, old, new, source or lia.administrator._camiSource)
+            CAMI.SignalUserGroupChanged(ply, old, new, source or "Lilia")
             lia.admin(string.format("[CAMI] Player usergroup changed: %s (%s) %s -> %s", ply:Nick(), ply:SteamID(), old, new))
         end
     end
@@ -431,7 +430,7 @@ if SERVER then
         local new = tostring(newGroup or "user")
         if IsValid(ply) then ply:SetUserGroup(new) end
         if CAMI then
-            CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or lia.administrator._camiSource)
+            CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or "Lilia")
             lia.admin(string.format("[CAMI] SteamID usergroup changed: %s %s -> %s", sid, old, new))
         end
     end
