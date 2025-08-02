@@ -1059,6 +1059,7 @@ LANGUAGE = {
     serverEventCharLock = "Attualmente il server è in un evento e non puoi cambiare personaggio.",
     allBotsKicked = "Tutti i bot kickati",
     itemESPLabel = "Oggetto: %s",
+    itemSizeESPLabel = "Dimensione dell'oggetto: %sx%s",
     propModelESPLabel = "Modello Prop: %s",
     entityClassESPLabel = "Classe Entità: %s",
     entityCreatorESPLabel = "Creatore: %s",

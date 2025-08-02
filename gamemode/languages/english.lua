@@ -1059,6 +1059,7 @@ LANGUAGE = {
     serverEventCharLock = "Currently the server is in an event and you're unable to change characters.",
     allBotsKicked = "All bots kicked",
     itemESPLabel = "Item: %s",
+    itemSizeESPLabel = "Item Size: %sx%s",
     propModelESPLabel = "Prop Model: %s",
     entityClassESPLabel = "Entity Class: %s",
     entityCreatorESPLabel = "Creator: %s",
