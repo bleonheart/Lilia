@@ -1,8 +1,28 @@
 hook.Add("ULibGroupAccessChanged", "liaULXCAMI", function(group_name, access, revoke)
-    if revoke then
-        print(group_name .. " lost permission: " .. access)
+    if not group_name or not access then return end
+    if not revoke then
+        if CAMI and not CAMI.GetPrivilege(access) then
+            CAMI.RegisterPrivilege({
+                Name = access,
+                MinAccess = "admin"
+            })
+        end
+
+        if lia.administrator and lia.administrator.addPermission then
+            lia.administrator.addPermission(group_name, access, true)
+        end
+
+        if CAMI then
+            lia.admin(string.format("[CAMI] Permission '%s' granted to group '%s'", access, group_name))
+        end
     else
-        print(group_name .. " gained permission: " .. access)
+        if lia.administrator and lia.administrator.removePermission then
+            lia.administrator.removePermission(group_name, access, true)
+        end
+
+        if CAMI then
+            lia.admin(string.format("[CAMI] Permission '%s' revoked from group '%s'", access, group_name))
+        end
     end
 end)
 
