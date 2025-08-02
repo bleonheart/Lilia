@@ -44,7 +44,7 @@ end
 
 function L(key, ...)
     local languages = lia.lang.stored or {}
-    local langKey = lia.config.get("Language", "english"):lower()
+    local langKey = lia.config and lia.config.get("Language", "english"):lower() or "english"
     local info = languages[langKey]
     return string.format(info and info[key] or key, ...)
 end
