@@ -1184,6 +1184,7 @@ LANGUAGE = {
     downloadingWorkshopAddonsTitle = "Téléchargement Workshop",
     workshopDownloadPrompt = "Télécharger le contenu pour le serveur ? (%s/%s) (%s)",
     workshopDownloader = "Téléchargeur Workshop",
+    mountContent = "Monter le contenu",
     moduleSkipped = "Module Ignoré",
     moduleDisabledTitle = "Module Désactivé",
     module = "Module",

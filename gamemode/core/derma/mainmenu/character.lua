@@ -203,6 +203,20 @@ function PANEL:createStartButton()
     end
 
     table.insert(buttonsData, {
+        id = "mount",
+        text = L("mountContent"),
+        doClick = function()
+            self:clickSound()
+            if lia.workshop and lia.workshop.mountContent then
+                lia.workshop.mountContent()
+            else
+                net.Start("WorkshopDownloader_Request")
+                net.SendToServer()
+            end
+        end
+    })
+
+    table.insert(buttonsData, {
         id = "disconnect",
         text = L("disconnect"),
         doClick = function()
