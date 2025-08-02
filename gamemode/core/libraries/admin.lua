@@ -25,7 +25,8 @@ end
 
 local function shouldGrant(group, min)
     local levels = lia.administrator.DefaultGroups or {}
-    return getGroupLevel(group) >= (levels[min] or 1)
+    local m = tostring(min or "user"):lower()
+    return getGroupLevel(group) >= (levels[m] or 1)
 end
 
 function lia.administrator.registerPrivilege(priv)
@@ -33,7 +34,7 @@ function lia.administrator.registerPrivilege(priv)
     local name = tostring(priv.Name)
     if name == "" then return end
     if lia.administrator.privileges[name] ~= nil then return end
-    local min = priv.MinAccess or "user"
+    local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[name] = min
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
@@ -97,7 +98,7 @@ function lia.administrator.load()
             local min = "user"
             if istable(v) then
                 name = v.Name or isstring(k) and k or nil
-                min = v.MinAccess or "user"
+                min = tostring(v.MinAccess or "user"):lower()
             elseif isstring(v) then
                 name = v
             end
