@@ -1061,3 +1061,26 @@ game.ConsoleCommand = function(cmd)
     if cmd:sub(1, #"lia_wipedb") == "lia_wipedb" then return end
     return oldGameConsoleCommand(cmd)
 end
+
+gameevent.Listen("server_addban")
+gameevent.Listen("server_removeban")
+
+hook.Add("server_addban", "LiliaLogServerBan", function(data)
+    print(string.format("[BAN] %s (%s) was banned for %d minute(s): %s", data.name, data.networkid, data.ban_length, data.ban_reason))
+    local steam64 = util.SteamIDTo64(data.networkid)
+    lia.db.updateTable({
+        banStart = os.time(),
+        banDuration = (tonumber(data.ban_length) or 0) * 60,
+        banReason = data.ban_reason or ""
+    }, nil, "players", "steamID = " .. steam64)
+end)
+
+hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
+    print("[UNBAN] " .. data.networkid .. " was unbanned.")
+    local steam64 = util.SteamIDTo64(data.networkid)
+    lia.db.updateTable({
+        banStart = nil,
+        banDuration = 0,
+        banReason = ""
+    }, nil, "players", "steamID = " .. steam64)
+end)
