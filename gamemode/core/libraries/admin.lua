@@ -1047,15 +1047,20 @@ if CAMI then
 
     hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, old, new, source)
         if not IsValid(ply) then return end
-        if tostring(ply:GetUserGroup() or "user") ~= tostring(new or "user") then ply:SetUserGroup(tostring(new or "user")) end
-        lia.admin(string.format("[CAMI] PlayerUsergroupChanged: %s (%s) %s -> %s (source=%s)", ply:Nick(), ply:SteamID(), tostring(old or "user"), tostring(new or "user"), tostring(source)))
+        local newGroup = tostring(new or "user")
+        if tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
+        lia.admin(string.format("[CAMI] PlayerUsergroupChanged: %s (%s) %s -> %s (source=%s)", ply:Nick(), ply:SteamID(), tostring(old or "user"), newGroup, tostring(source)))
     end)
 
     hook.Add("CAMI.SteamIDUsergroupChanged", "liaAdminSIDUGChanged", function(steamId, old, new, source)
         local sid = tostring(steamId or "")
         if sid == "" then return end
+        local newGroup = tostring(new or "user")
         local ply = player.GetBySteamID and player.GetBySteamID(sid)
-        if IsValid(ply) and tostring(ply:GetUserGroup() or "user") ~= tostring(new or "user") then ply:SetUserGroup(tostring(new or "user")) end
-        lia.admin(string.format("[CAMI] SteamIDUsergroupChanged: %s %s -> %s (source=%s)", sid, tostring(old or "user"), tostring(new or "user"), tostring(source)))
+        if IsValid(ply) and tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
+        local steam64 = util.SteamIDTo64(sid)
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), steam64))
+        lia.admin(string.format("[CAMI] SteamIDUsergroupChanged: %s %s -> %s (source=%s)", sid, tostring(old or "user"), newGroup, tostring(source)))
     end)
 end
