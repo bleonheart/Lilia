@@ -85,12 +85,6 @@ hook.Add("CAMI.OnUsergroupUnregistered", "liaAdminOnUsergroupUnregistered", func
     end
 end)
 
-hook.Add("CAMI.PlayerHasAccess", "liaAdminPlayerHasAccess", function(actor, privilege, callback, target, extra)
-    local ok = lia.administrator.hasAccess(actor, privilege, target)
-    callback(ok and true or false, "")
-    return true
-end)
-
 hook.Add("OnUsergroupCreated", "liaAdminCAMIRegisterGroup", function(name, data)
     if lia.administrator.DefaultGroups[name] then return end
     local inh = data and data._info and data._info.inheritance or "user"

@@ -171,18 +171,6 @@ function playerMeta:CanEditVendor(vendor)
     return self:hasPrivilege("Can Edit Vendors")
 end
 
-local function groupDerivesFrom(groupName, target)
-    local groups = lia.administrator.groups or {}
-    local visited = {}
-    while groupName and not visited[groupName] do
-        if groupName:lower() == target:lower() then return true end
-        visited[groupName] = true
-        local info = groups[groupName] and groups[groupName]._info
-        groupName = info and info.inheritance
-    end
-    return false
-end
-
 local function groupHasType(groupName, t)
     local groups = lia.administrator.groups or {}
     local visited = {}
@@ -199,20 +187,6 @@ local function groupHasType(groupName, t)
         groupName = info.inheritance
     end
     return false
-end
-
-local oldIsAdmin = playerMeta.IsAdmin
-local oldIsSuperAdmin = playerMeta.IsSuperAdmin
-function playerMeta:IsAdmin()
-    return oldIsAdmin and oldIsAdmin(self) or groupDerivesFrom(self:GetUserGroup(), "admin")
-end
-
-function playerMeta:IsSuperAdmin()
-    return oldIsSuperAdmin and oldIsSuperAdmin(self) or groupDerivesFrom(self:GetUserGroup(), "superadmin")
-end
-
-function playerMeta:isUser()
-    return groupDerivesFrom(self:GetUserGroup(), "user")
 end
 
 function playerMeta:isStaff()
