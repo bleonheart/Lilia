@@ -24,9 +24,24 @@ if CLIENT then
         list:AddColumn(L("claimingAdmin")):SetFixedWidth(110)
         list:AddColumn(L("Ticket Message", "Message"))
         for _, t in pairs(tickets) do
-            local admin = t.admin or L("unassignedLabel")
+            local admin = L("unassignedLabel")
+            if t.admin then
+                local adminPly = player.GetBySteamID(t.admin)
+                if IsValid(adminPly) then
+                    admin = adminPly:Nick()
+                else
+                    admin = t.admin
+                end
+            end
+
+            local requester = t.requester or ""
+            if requester ~= "" then
+                local requesterPly = player.GetBySteamID(requester)
+                if IsValid(requesterPly) then requester = requesterPly:Nick() end
+            end
+
             local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-            list:AddLine(ts, t.requester or "", admin, t.message or "")
+            list:AddLine(ts, requester, admin, t.message or "")
         end
     end)
 
