@@ -385,9 +385,12 @@ CREATE TABLE IF NOT EXISTS lia_logs (
     steamID varchar
 );
 CREATE TABLE IF NOT EXISTS lia_ticketclaims (
-    request text,
+    timestamp integer,
+    requester text,
+    requesterSteamID text,
     admin text,
-    timestamp integer
+    adminSteamID text,
+    message text
 );
 CREATE TABLE IF NOT EXISTS lia_warnings (
     id integer primary key autoincrement,
@@ -521,9 +524,12 @@ CREATE TABLE IF NOT EXISTS `lia_logs` (
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
-    `request` varchar(64) not null collate 'utf8mb4_general_ci',
+    `timestamp` int not null,
+    `requester` varchar(64) not null collate 'utf8mb4_general_ci',
+    `requesterSteamID` varchar(64) not null collate 'utf8mb4_general_ci',
     `admin` varchar(64) not null collate 'utf8mb4_general_ci',
-    `timestamp` int not null
+    `adminSteamID` varchar(64) not null collate 'utf8mb4_general_ci',
+    `message` text collate 'utf8mb4_general_ci'
 );
 CREATE TABLE IF NOT EXISTS `lia_warnings` (
     `id` int not null auto_increment,
