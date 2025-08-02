@@ -41,6 +41,7 @@ function lia.administrator.hasAccess(ply, privilege, target)
         end
     end
 
+    if tostring(grp):lower() == "superadmin" then return true end
     local g = lia.administrator.groups and lia.administrator.groups[grp] or nil
     if g and g[privilege] == true then return true end
     local min = lia.administrator.privileges and lia.administrator.privileges[privilege] or "user"
