@@ -1328,4 +1328,9 @@ Recargar: Soltar]],
     accessPropertyPrivilege = "Acceso a la propiedad %s",
     accessToolPrivilege = "Acceso a la herramienta %s",
     defaultGameDescription = "A Lilia Gamemode",
+
+    changeWeaponPopup = "Cambiar arma (Popup)",
+    changeWeaponOf = "Cambiar el arma de %s",
+    npcWeaponWarning1 = "¡ADVERTENCIA! No todos los NPC pueden usar armas y no todas las armas son utilizables por NPCs.",
+    npcWeaponWarning2 = "Esto depende totalmente del addon del que provienen el arma y el NPC. Este mod no puede cambiar eso.",
 }

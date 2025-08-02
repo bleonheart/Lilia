@@ -147,7 +147,7 @@ AddEntFunctionProperty("lia_npc_weapon_strip", "Strip Weapon", 651, function(ent
 end, function(ent) ent:GetActiveWeapon():Remove() end, "icon16/gun.png")
 
 properties.Add("lia_npc_weapon", {
-    MenuLabel = "Change Weapon (Popup)",
+    MenuLabel = L("changeWeaponPopup"),
     MenuIcon = "icon16/gun.png",
     Order = 650,
     Filter = function(_, ent, ply)
@@ -159,7 +159,7 @@ properties.Add("lia_npc_weapon", {
         if not IsValid(ent) then return false end
         local frame = vgui.Create("DFrame")
         frame:SetSize(ScrW() / 1.2, ScrH() / 1.1)
-        frame:SetTitle("Change weapon of " .. language.GetPhrase("#" .. ent:GetClass()))
+        frame:SetTitle(L("changeWeaponOf", language.GetPhrase("#" .. ent:GetClass())))
         frame:Center()
         frame:MakePopup()
         frame:SetDraggable(false)
@@ -226,14 +226,15 @@ properties.Add("lia_npc_weapon", {
             WarningText:SetContentAlignment(5)
             WarningText:SetTextColor(color_white)
             WarningText:SetFont("DermaLarge")
-            WarningText:SetText("WARNING! Not all NPCs can use weapons and not all weapons are usable by NPCs.")
+            WarningText:SetText(L("npcWeaponWarning1"))
+
             local WarningText2 = vgui.Create("DLabel", WarningThing)
             WarningText2:Dock(TOP)
             WarningText2:SetHeight(35)
             WarningText2:SetContentAlignment(5)
             WarningText2:SetTextColor(color_white)
             WarningText2:SetFont("DermaLarge")
-            WarningText2:SetText("This is entirely dependent on the addon the weapon and the NPC are from. This mod cannot change that.")
+            WarningText2:SetText(L("npcWeaponWarning2"))
         end
     end,
     Receive = function(_, _, ply)

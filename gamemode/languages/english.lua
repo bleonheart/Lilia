@@ -1433,4 +1433,9 @@ Reload: Drop]],
     categoryManagement = "Management",
     categoryWarning = "Warning",
     categoryProtection = "Protection",
+
+    changeWeaponPopup = "Change Weapon (Popup)",
+    changeWeaponOf = "Change weapon of %s",
+    npcWeaponWarning1 = "WARNING! Not all NPCs can use weapons and not all weapons are usable by NPCs.",
+    npcWeaponWarning2 = "This is entirely dependent on the addon the weapon and the NPC are from. This mod cannot change that.",
 }

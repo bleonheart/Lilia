@@ -1328,4 +1328,9 @@ R: Бросить]],
     accessPropertyPrivilege = "Доступ к свойству %s",
     accessToolPrivilege = "Доступ к инструменту %s",
     defaultGameDescription = "A Lilia Gamemode",
+
+    changeWeaponPopup = "Смена оружия (всплывающее)",
+    changeWeaponOf = "Сменить оружие у %s",
+    npcWeaponWarning1 = "ПРЕДУПРЕЖДЕНИЕ! Не все NPC могут использовать оружие, и не все оружия подходят для NPC.",
+    npcWeaponWarning2 = "Это полностью зависит от аддона, из которого оружие и NPC. Этот мод не может это изменить.",
 }
