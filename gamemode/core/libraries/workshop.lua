@@ -51,7 +51,6 @@ if SERVER then
     end
 
     hook.Add("PlayerInitialSpawn", "liaWorkshopInit", function(ply)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
         timer.Simple(2, function()
             if IsValid(ply) then
                 net.Start("WorkshopDownloader_Info")
@@ -225,7 +224,6 @@ else
     end)
 
     hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
         table.insert(pages, {
             name = L("workshopAddons"),
             drawFunc = function(parent)
