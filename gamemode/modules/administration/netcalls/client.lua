@@ -72,7 +72,11 @@ net.Receive("liaDBTables", function()
     frame:MakePopup()
     local list = vgui.Create("DListView", frame)
     list:Dock(FILL)
-    list:AddColumn(L("dbTableColumn"))
+    local col = list:AddColumn(L("dbTableColumn"))
+    surface.SetFont(col.Header:GetFont())
+    local w = surface.GetTextSize(col.Header:GetText())
+    col:SetMinWidth(w + 16)
+    col:SetWidth(w + 16)
     for _, tbl in ipairs(tables or {}) do
         list:AddLine(tbl)
     end

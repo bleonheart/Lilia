@@ -19,10 +19,19 @@ if CLIENT then
         ticketPanel:Clear()
         local list = ticketPanel:Add("DListView")
         list:Dock(FILL)
-        list:AddColumn(L("timestamp")):SetFixedWidth(150)
-        list:AddColumn(L("requester")):SetFixedWidth(110)
-        list:AddColumn(L("claimingAdmin")):SetFixedWidth(110)
-        list:AddColumn(L("Ticket Message", "Message"))
+        local function addSizedColumn(text)
+            local col = list:AddColumn(text)
+            surface.SetFont(col.Header:GetFont())
+            local w = surface.GetTextSize(col.Header:GetText())
+            col:SetMinWidth(w + 16)
+            col:SetWidth(w + 16)
+            return col
+        end
+
+        addSizedColumn(L("timestamp"))
+        addSizedColumn(L("requester"))
+        addSizedColumn(L("claimingAdmin"))
+        addSizedColumn(L("Ticket Message", "Message"))
         for _, t in pairs(tickets) do
             local admin = L("unassignedLabel")
             if t.admin then
