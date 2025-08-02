@@ -5,8 +5,8 @@ if SERVER then
     lia.workshop.cache = lia.workshop.cache or {}
     function lia.workshop.AddWorkshop(id)
         id = tostring(id)
-        if not lia.workshop.ids[id] then lia.bootstrap("Workshop Downloader", L("workshopAdded", id)) end
-        lia.bootstrap("Workshop Downloader", L("workshopDownloading", id))
+        if not lia.workshop.ids[id] then lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id)) end
+        lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
         lia.workshop.ids[id] = true
     end
 
@@ -14,7 +14,7 @@ if SERVER then
         id = tostring(id)
         if not lia.workshop.known[id] then
             lia.workshop.known[id] = true
-            lia.bootstrap("Workshop Downloader", L("workshopAdded", id))
+            lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id))
         end
     end
 
@@ -179,7 +179,7 @@ else
         totalDownloads = #seq
         remainingDownloads = totalDownloads
         if totalDownloads == 0 then
-            lia.bootstrap("Workshop Downloader", L("workshopAllInstalled"))
+            lia.bootstrap(L("workshopDownloader"), L("workshopAllInstalled"))
             return
         end
 
@@ -195,10 +195,10 @@ else
             end
 
             local id = seq[idx]
-            lia.bootstrap("Workshop Downloader", L("workshopDownloading", id))
+            lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
             steamworks.DownloadUGC(id, function(path)
                 remainingDownloads = remainingDownloads - 1
-                lia.bootstrap("Workshop Downloader", L("workshopDownloadComplete", id))
+                lia.bootstrap(L("workshopDownloader"), L("workshopDownloadComplete", id))
                 if path then game.MountGMA(path) end
                 uiUpdate()
                 idx = idx + 1
@@ -275,7 +275,7 @@ else
         table.Empty(queue)
         buildQueue(true)
         start()
-        lia.bootstrap("Workshop Downloader", L("workshopForcedRedownload"))
+        lia.bootstrap(L("workshopDownloader"), L("workshopForcedRedownload"))
     end)
 
     hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
