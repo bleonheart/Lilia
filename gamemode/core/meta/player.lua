@@ -18,10 +18,9 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    local group = self:GetUserGroup()
-    local perms = lia.administrator.groups and lia.administrator.groups[group]
-    if perms then return perms[privilegeName] end
-    return false
+    local override = hook.Run("PlayerHasPrivilege", self, privilegeName)
+    if override ~= nil then return override end
+    return lia.administrator.hasAccess(self, privilegeName)
 end
 
 function playerMeta:getCurrentVehicle()

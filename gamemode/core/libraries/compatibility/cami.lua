@@ -1,5 +1,4 @@
 local function registerGroupsWithCAMI()
-    if not CAMI or not CAMI.RegisterUsergroup then return end
     for name, data in pairs(lia.administrator.groups or {}) do
         if not lia.administrator.DefaultGroups[name] then
             local inh = data._info and data._info.inheritance or "user"
@@ -12,7 +11,6 @@ local function registerGroupsWithCAMI()
 end
 
 local function registerPrivilegesWithCAMI()
-    if not CAMI or not CAMI.RegisterPrivilege then return end
     for name, min in pairs(lia.administrator.privileges or {}) do
         CAMI.RegisterPrivilege({
             Name = name,

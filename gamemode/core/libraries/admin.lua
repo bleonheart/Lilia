@@ -29,7 +29,7 @@ local function shouldGrant(group, min)
     return getGroupLevel(group) >= (levels[m] or 1)
 end
 
-function lia.administrator.hasAccess(ply, privilege, target)
+function lia.administrator.hasAccess(ply, privilege)
     local grp = "user"
     if isstring(ply) then
         grp = ply
