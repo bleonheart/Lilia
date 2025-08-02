@@ -57,7 +57,11 @@ end)
 
 net.Receive("liaRequestActiveTickets", function(_, client)
     if not (client:hasPrivilege("Always See Tickets") or client:isStaffOnDuty()) then return end
+    local tickets = {}
+    for _, data in pairs(MODULE.ActiveTickets or {}) do
+        tickets[#tickets + 1] = data
+    end
     net.Start("liaActiveTickets")
-    net.WriteTable(MODULE.ActiveTickets or {})
+    net.WriteTable(tickets)
     net.Send(client)
 end)
