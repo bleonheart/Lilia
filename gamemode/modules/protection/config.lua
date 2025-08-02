@@ -1,139 +1,139 @@
-﻿lia.config.add("SwitchCooldownOnAllEntities", "Apply cooldown on all entities", false, nil, {
-    desc = "If true, character switch cooldowns gets applied by all types of damage.",
-    category = "Character",
-    type = "Boolean"
+lia.config.add("SwitchCooldownOnAllEntities", L("switchCooldownOnAllEntities"), false, nil, {
+    desc = L("switchCooldownOnAllEntitiesDesc"),
+    category = L("categoryCharacter"),
+    type = "Boolean",
 })
 
-lia.config.add("OnDamageCharacterSwitchCooldownTimer", "Switch cooldown after damage", 15, nil, {
-    desc = "Cooldown duration (in seconds) after taking damage to switch characters.",
-    category = "Character",
+lia.config.add("OnDamageCharacterSwitchCooldownTimer", L("onDamageCharacterSwitchCooldownTimer"), 15, nil, {
+    desc = L("onDamageCharacterSwitchCooldownTimerDesc"),
+    category = L("categoryCharacter"),
     type = "Float",
     min = 0,
     max = 120
 })
 
-lia.config.add("CharacterSwitchCooldownTimer", "Character switch cooldown timer", 5, nil, {
-    desc = "Cooldown duration (in seconds) for switching characters.",
-    category = "Character",
+lia.config.add("CharacterSwitchCooldownTimer", L("characterSwitchCooldownTimer"), 5, nil, {
+    desc = L("characterSwitchCooldownTimerDesc"),
+    category = L("categoryCharacter"),
     type = "Float",
     min = 0,
     max = 120
 })
 
-lia.config.add("ExplosionRagdoll", "Explosion Ragdoll on Hit", false, nil, {
-    desc = "Determines whether being hit by an explosion results in ragdolling",
-    category = "Quality of Life",
-    type = "Boolean"
+lia.config.add("ExplosionRagdoll", L("explosionRagdoll"), false, nil, {
+    desc = L("explosionRagdollDesc"),
+    category = L("categoryQualityOfLife"),
+    type = "Boolean",
 })
 
-lia.config.add("CarRagdoll", "Car Ragdoll on Hit", false, nil, {
-    desc = "Determines whether being hit by a car results in ragdolling",
-    category = "Quality of Life",
-    type = "Boolean"
+lia.config.add("CarRagdoll", L("carRagdoll"), false, nil, {
+    desc = L("carRagdollDesc"),
+    category = L("categoryQualityOfLife"),
+    type = "Boolean",
 })
 
-lia.config.add("NPCsDropWeapons", "NPCs Drop Weapons on Death", false, nil, {
-    desc = "Controls whether NPCs drop weapons upon death",
-    category = "Quality of Life",
-    type = "Boolean"
+lia.config.add("NPCsDropWeapons", L("npcsDropWeapons"), false, nil, {
+    desc = L("npcsDropWeaponsDesc"),
+    category = L("categoryQualityOfLife"),
+    type = "Boolean",
 })
 
-lia.config.add("TimeUntilDroppedSWEPRemoved", "Time Until Dropped SWEP Removed", 15, nil, {
-    desc = "Specifies the duration (in seconds) until a dropped SWEP is removed",
-    category = "Protection",
+lia.config.add("TimeUntilDroppedSWEPRemoved", L("timeUntilDroppedSWEPRemoved"), 15, nil, {
+    desc = L("timeUntilDroppedSWEPRemovedDesc"),
+    category = L("categoryProtection"),
     type = "Float",
     min = 0,
     max = 300
 })
 
-lia.config.add("AltsDisabled", "Disable Alts", false, nil, {
-    desc = "Whether or not alting is permitted",
-    category = "Protection",
-    type = "Boolean"
+lia.config.add("AltsDisabled", L("altsDisabled"), false, nil, {
+    desc = L("altsDisabledDesc"),
+    category = L("categoryProtection"),
+    type = "Boolean",
 })
 
-lia.config.add("ActsActive", "Enable Acts", false, nil, {
-    desc = "Determines whether acts are active",
-    category = "Protection",
-    type = "Boolean"
+lia.config.add("ActsActive", L("actsActive"), false, nil, {
+    desc = L("actsActiveDesc"),
+    category = L("categoryProtection"),
+    type = "Boolean",
 })
 
-lia.config.add("PassableOnFreeze", "Passable on Freeze", false, nil, {
-    desc = "Makes it so that props frozen can be passed through when frozen",
-    category = "Protection",
-    type = "Boolean"
+lia.config.add("PassableOnFreeze", L("passableOnFreeze"), false, nil, {
+    desc = L("passableOnFreezeDesc"),
+    category = L("categoryProtection"),
+    type = "Boolean",
 })
 
-lia.config.add("PlayerSpawnVehicleDelay", "Player Spawn Vehicle Delay", 30, nil, {
-    desc = "Delay for spawning a vehicle after the previous one",
-    category = "Protection",
+lia.config.add("PlayerSpawnVehicleDelay", L("playerSpawnVehicleDelay"), 30, nil, {
+    desc = L("playerSpawnVehicleDelayDesc"),
+    category = L("categoryProtection"),
     type = "Float",
     min = 0,
     max = 300
 })
 
-lia.config.add("ToolInterval", "Tool Gun Usage Cooldown", 0, nil, {
-    desc = "Tool Gun Usage Cooldown",
-    category = "Protection",
+lia.config.add("ToolInterval", L("toolInterval"), 0, nil, {
+    desc = L("toolIntervalDesc"),
+    category = L("categoryProtection"),
     type = "Float",
     min = 0,
     max = 60
 })
 
-lia.config.add("DisableLuaRun", "Disable Lua Run Hooks", false, nil, {
-    desc = "Whether or not Lilia should prevent lua_run hooks on maps",
-    category = "Protection",
-    type = "Boolean"
+lia.config.add("DisableLuaRun", L("disableLuaRun"), false, nil, {
+    desc = L("disableLuaRunDesc"),
+    category = L("categoryProtection"),
+    type = "Boolean",
 })
 
-lia.config.add("EquipDelay", "Equip Delay", 0, nil, {
-    desc = "Time delay between equipping items.",
-    category = "Items",
+lia.config.add("EquipDelay", L("equipDelay"), 0, nil, {
+    desc = L("equipDelayDesc"),
+    category = L("categoryItems"),
     type = "Float",
     min = 0,
     max = 10
 })
 
-lia.config.add("UnequipDelay", "Unequip Delay", 0, nil, {
-    desc = "Time delay between unequipping items.",
-    category = "Items",
+lia.config.add("UnequipDelay", L("unequipDelay"), 0, nil, {
+    desc = L("unequipDelayDesc"),
+    category = L("categoryItems"),
     type = "Float",
     min = 0,
     max = 10
 })
 
-lia.config.add("DropDelay", "Drop Delay", 0, nil, {
-    desc = "Time delay between dropping items.",
-    category = "Items",
+lia.config.add("DropDelay", L("dropDelay"), 0, nil, {
+    desc = L("dropDelayDesc"),
+    category = L("categoryItems"),
     type = "Float",
     min = 0,
     max = 10
 })
 
-lia.config.add("TakeDelay", "Take Delay", 0, nil, {
-    desc = "Time delay between taking items.",
-    category = "Items",
+lia.config.add("TakeDelay", L("takeDelay"), 0, nil, {
+    desc = L("takeDelayDesc"),
+    category = L("categoryItems"),
     type = "Float",
     min = 0,
     max = 10
 })
 
-lia.config.add("ItemGiveSpeed", "Item Give Speed", 6, nil, {
-    desc = "How fast transferring items between players via giveForward is.",
-    category = "Items",
+lia.config.add("ItemGiveSpeed", L("itemGiveSpeed"), 6, nil, {
+    desc = L("itemGiveSpeedDesc"),
+    category = L("categoryItems"),
     type = "Int",
     min = 1,
     max = 60
 })
 
-lia.config.add("ItemGiveEnabled", "Is Item Giving Enabled", true, nil, {
-    desc = "Determines if item giving via giveForward is enabled.",
-    category = "Items",
-    type = "Boolean"
+lia.config.add("ItemGiveEnabled", L("itemGiveEnabled"), true, nil, {
+    desc = L("itemGiveEnabledDesc"),
+    category = L("categoryItems"),
+    type = "Boolean",
 })
 
-lia.config.add("DisableCheaterActions", "Disable Cheater Actions", true, nil, {
-    desc = "Prevents flagged cheaters from interacting with the game.",
-    category = "Protection",
-    type = "Boolean"
+lia.config.add("DisableCheaterActions", L("disableCheaterActions"), true, nil, {
+    desc = L("disableCheaterActionsDesc"),
+    category = L("categoryProtection"),
+    type = "Boolean",
 })
