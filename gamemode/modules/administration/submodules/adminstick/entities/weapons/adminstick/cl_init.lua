@@ -35,7 +35,20 @@ function SWEP:DrawHUD()
     local information = {}
     if IsValid(target) then
         if not target:IsPlayer() then
-            if target.GetCreator and IsValid(target:GetCreator()) then table.Add(information, {L("entityClassESPLabel", target:GetClass()), L("entityCreatorESPLabel", tostring(target:GetCreator()))}) end
+            if target.GetCreator and IsValid(target:GetCreator()) then
+                table.insert(information, L("entityClassESPLabel", target:GetClass()))
+                table.insert(information, L("entityCreatorESPLabel", tostring(target:GetCreator())))
+            end
+
+            if target.isItem and target:isItem() then
+                local itemTable = target.getItemTable and target:getItemTable()
+                if itemTable then
+                    local itemName = L(itemTable.getName and itemTable:getName() or itemTable.name)
+                    table.insert(information, L("itemESPLabel", itemName))
+                    table.insert(information, L("itemSizeESPLabel", itemTable:getWidth(), itemTable:getHeight()))
+                end
+            end
+
             if target:IsVehicle() and IsValid(target:GetDriver()) then target = target:GetDriver() end
         end
 
