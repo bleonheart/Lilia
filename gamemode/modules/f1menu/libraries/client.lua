@@ -133,25 +133,29 @@ function MODULE:CreateMenuButtons(tabs)
         end
     end
 
-    tabs[L("admin")] = function(adminPanel)
-        local sheet = adminPanel:Add("DPropertySheet")
-        sheet:Dock(FILL)
-        sheet:DockMargin(10, 10, 10, 10)
-        local pages = {}
-        hook.Run("PopulateAdminTabs", pages)
-        if not pages then return end
-        table.sort(pages, function(a, b)
-            local an = tostring(a.name):lower()
-            local bn = tostring(b.name):lower()
-            return an < bn
-        end)
+    local adminPages = {}
+    hook.Run("PopulateAdminTabs", adminPages)
+    if not table.IsEmpty(adminPages) then
+        tabs[L("admin")] = function(adminPanel)
+            local sheet = adminPanel:Add("DPropertySheet")
+            sheet:Dock(FILL)
+            sheet:DockMargin(10, 10, 10, 10)
+            local pages = {}
+            hook.Run("PopulateAdminTabs", pages)
+            if table.IsEmpty(pages) then return end
+            table.sort(pages, function(a, b)
+                local an = tostring(a.name):lower()
+                local bn = tostring(b.name):lower()
+                return an < bn
+            end)
 
-        for _, page in ipairs(pages) do
-            local panel = sheet:Add("DPanel")
-            panel:Dock(FILL)
-            panel.Paint = function() end
-            if page.drawFunc then page.drawFunc(panel) end
-            sheet:AddSheet(page.name, panel)
+            for _, page in ipairs(pages) do
+                local panel = sheet:Add("DPanel")
+                panel:Dock(FILL)
+                panel.Paint = function() end
+                if page.drawFunc then page.drawFunc(panel) end
+                sheet:AddSheet(page.name, panel)
+            end
         end
     end
 end
