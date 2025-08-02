@@ -1051,3 +1051,9 @@ else
         end
     end
 end
+
+function playerMeta:playTimeGreaterThan(time)
+    local playTime = self:getPlayTime()
+    if not playTime or not time then return false end
+    return playTime > time
+end
