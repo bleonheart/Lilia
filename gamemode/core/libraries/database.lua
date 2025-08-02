@@ -264,11 +264,14 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_invdata`;
     DROP TABLE IF EXISTS `lia_config`;
     DROP TABLE IF EXISTS `lia_logs`;
+    DROP TABLE IF EXISTS `lia_ticketclaims`;
     DROP TABLE IF EXISTS `lia_doors`;
     DROP TABLE IF EXISTS `lia_admin`;
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_warnings`;
+    DROP TABLE IF EXISTS `lia_chardata`;
+    DROP TABLE IF EXISTS `lia_data`;
 ]])
             local done = 0
             for i = 1, #queries do
@@ -294,12 +297,14 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_invdata;
     DROP TABLE IF EXISTS lia_config;
     DROP TABLE IF EXISTS lia_logs;
+    DROP TABLE IF EXISTS lia_ticketclaims;
     DROP TABLE IF EXISTS lia_doors;
     DROP TABLE IF EXISTS lia_admin;
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_chardata;
+    DROP TABLE IF EXISTS lia_data;
 ]], realCallback)
     end
 end
