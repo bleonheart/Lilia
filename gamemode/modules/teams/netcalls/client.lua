@@ -21,6 +21,7 @@ net.Receive("CharacterInfo", function()
 
     if IsValid(lia.gui.rosterSheet) then
         local sheet = lia.gui.rosterSheet
+        sheet.search:SetValue("")
         sheet:Clear()
         local rows = {}
         local originals = {}
