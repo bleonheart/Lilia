@@ -270,6 +270,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_warnings`;
+    DROP TABLE IF EXISTS `lia_playerkills`;
     DROP TABLE IF EXISTS `lia_chardata`;
     DROP TABLE IF EXISTS `lia_data`;
 ]])
@@ -303,6 +304,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_warnings;
+    DROP TABLE IF EXISTS lia_playerkills;
     DROP TABLE IF EXISTS lia_chardata;
     DROP TABLE IF EXISTS lia_data;
 ]], realCallback)
@@ -406,6 +408,17 @@ CREATE TABLE IF NOT EXISTS lia_warnings (
     message text,
     warner text,
     warnerSteamID text
+);
+CREATE TABLE IF NOT EXISTS lia_playerkills (
+    id integer primary key autoincrement,
+    player varchar(255) NOT NULL,
+    reason varchar(255),
+    steamID varchar(255),
+    submitterName varchar(255),
+    submitterSteamID varchar(255),
+    rank varchar(255),
+    timestamp integer,
+    evidence varchar(255)
 );
 CREATE TABLE IF NOT EXISTS lia_doors (
     gamemode text,
@@ -547,6 +560,18 @@ CREATE TABLE IF NOT EXISTS `lia_warnings` (
     `message` text collate 'utf8mb4_general_ci',
     `warner` text collate 'utf8mb4_general_ci',
     `warnerSteamID` varchar(64) default null collate 'utf8mb4_general_ci',
+    primary key (`id`)
+);
+CREATE TABLE IF NOT EXISTS `lia_playerkills` (
+    `id` int not null auto_increment,
+    `player` varchar(255) not null collate 'utf8mb4_general_ci',
+    `reason` varchar(255) default null collate 'utf8mb4_general_ci',
+    `steamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `submitterName` varchar(255) default null collate 'utf8mb4_general_ci',
+    `submitterSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `rank` varchar(255) default null collate 'utf8mb4_general_ci',
+    `timestamp` int default null,
+    `evidence` varchar(255) default null collate 'utf8mb4_general_ci',
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_doors` (
