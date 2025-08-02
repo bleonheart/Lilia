@@ -86,7 +86,7 @@ function PANEL:showError(msg, ...)
     if IsValid(self.error) then self.error:Remove() end
     if not msg or msg == "" then return end
     local text = L(msg, ...)
-    assert(IsValid(self.content), "no step is available")
+    assert(IsValid(self.content), L("noStepAvailable"))
     local err = self.content:Add("DLabel")
     err:SetFont("liaCharSubTitleFont")
     err:SetText(text)
@@ -125,8 +125,8 @@ function PANEL:showMessage(msg, ...)
 end
 
 function PANEL:addStep(step, priority)
-    assert(IsValid(step), "Invalid panel for step")
-    assert(step.isCharCreateStep, "Panel must inherit liaCharacterCreateStep")
+    assert(IsValid(step), L("invalidPanelForStep"))
+    assert(step.isCharCreateStep, L("panelMustInherit"))
     if isnumber(priority) then
         table.insert(self.steps, priority, step)
     else
