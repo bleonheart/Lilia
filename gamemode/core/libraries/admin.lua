@@ -2,30 +2,27 @@
 lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.DefaultGroups = {
-    user = true,
-    admin = true,
-    superadmin = true
-}
-
-local level = {
     user = 1,
     admin = 2,
     superadmin = 3
 }
 
 local function shouldGrant(group, min)
-    return (level[group] or 0) >= (level[min] or 1)
+    local levels = lia.administrator.DefaultGroups or {}
+    return (levels[group] or 0) >= (levels[min] or 1)
 end
 
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.Name then return end
     local name = tostring(priv.Name)
+    if name == "" then return end
+    if lia.administrator.privileges[name] ~= nil then return end
     local min = priv.MinAccess or "user"
     lia.administrator.privileges[name] = min
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
-        perms[name] = perms[name] or shouldGrant(groupName, min)
+        if shouldGrant(groupName, min) then perms[name] = true end
     end
 
     if SERVER then lia.administrator.save() end
@@ -171,7 +168,7 @@ if SERVER then
     util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsSetPerm")
     util.AddNetworkString("liaGroupPermChanged")
-    function lia.administrator.addPermission(groupName, permission)
+    function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))
             return
@@ -179,11 +176,11 @@ if SERVER then
 
         if lia.administrator.DefaultGroups[groupName] then return end
         lia.administrator.groups[groupName][permission] = true
-        lia.administrator.save()
+        lia.administrator.save(silent and true or false)
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
-    function lia.administrator.removePermission(groupName, permission)
+    function lia.administrator.removePermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))
             return
@@ -191,7 +188,7 @@ if SERVER then
 
         if lia.administrator.DefaultGroups[groupName] then return end
         lia.administrator.groups[groupName][permission] = nil
-        lia.administrator.save()
+        lia.administrator.save(silent and true or false)
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
@@ -426,12 +423,11 @@ if SERVER then
         if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[group] then return end
         if not lia.administrator.groups or not lia.administrator.groups[group] then return end
         if value then
-            lia.administrator.addPermission(group, privilege)
+            lia.administrator.addPermission(group, privilege, true)
         else
-            lia.administrator.removePermission(group, privilege)
+            lia.administrator.removePermission(group, privilege, true)
         end
 
-        lia.administrator.save()
         net.Start("liaGroupPermChanged")
         net.WriteString(group)
         net.WriteString(privilege)
@@ -546,7 +542,7 @@ else
         return list, current
     end
 
-    function renderGroupInfo(parent, g, groups, perms)
+    function renderGroupInfo(parent, g, groups)
         parent:Clear()
         LAST_GROUP = g
         local editable = not lia.administrator.DefaultGroups[g]
@@ -671,8 +667,7 @@ else
         end
     end
 
-    local function buildGroupsUI(panel, groups, perms)
-        PRIV_LIST = computePrivilegeList(groups)
+    local function buildGroupsUI(panel, groups)
         panel:Clear()
         local sheet = panel:Add("DPropertySheet")
         sheet:Dock(FILL)
@@ -689,7 +684,7 @@ else
         for _, g in ipairs(keys) do
             local page = sheet:Add("DPanel")
             page:Dock(FILL)
-            renderGroupInfo(page, g, groups, perms)
+            renderGroupInfo(page, g, groups)
             sheet:AddSheet(g, page)
             panel.pages[g] = page
         end
@@ -708,7 +703,7 @@ else
 
     lia.net.readBigTable("updateAdminGroups", function(tbl)
         lia.administrator.groups = tbl
-        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl, tbl) end
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl) end
     end)
 
     lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
@@ -742,7 +737,7 @@ else
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
                 parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
-                buildGroupsUI(parent, lia.administrator.groups, lia.administrator.groups)
+                buildGroupsUI(parent, lia.administrator.groups)
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end
