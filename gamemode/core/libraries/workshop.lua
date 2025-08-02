@@ -80,6 +80,27 @@ else
         return false
     end
 
+    local function gmaDir()
+        local ip = game.GetIPAddress() or "0.0.0.0"
+        ip = string.gsub(ip, ":", "_")
+        local dir = "lilia/" .. engine.ActiveGamemode() .. "_" .. ip
+        if not file.IsDir(dir, "DATA") then file.CreateDir(dir) end
+        return dir
+    end
+
+    local function gmaPath(id)
+        return gmaDir() .. "/" .. id .. ".gma"
+    end
+
+    local function mountLocal(id)
+        local rel = gmaPath(id)
+        if file.Exists(rel, "DATA") then
+            game.MountGMA("data/" .. rel)
+            return true
+        end
+        return false
+    end
+
     local function formatSize(bytes)
         if not bytes or bytes <= 0 then return "0 B" end
         local units = {"B", "KB", "MB", "GB", "TB"}
@@ -123,7 +144,7 @@ else
 
     local function start()
         for id in pairs(queue) do
-            if mounted(id) then queue[id] = nil end
+            if mounted(id) or mountLocal(id) then queue[id] = nil end
         end
 
         local seq, idx = {}, 1
@@ -154,7 +175,15 @@ else
             steamworks.DownloadUGC(id, function(path)
                 remainingDownloads = remainingDownloads - 1
                 lia.bootstrap(L("workshopDownloader"), L("workshopDownloadComplete", id))
-                if path then game.MountGMA(path) end
+                if path then
+                    local rel = gmaPath(id)
+                    local data = file.Read(path, "GAME")
+                    if data then
+                        file.Write(rel, data)
+                        path = "data/" .. rel
+                    end
+                    game.MountGMA(path)
+                end
                 uiUpdate()
                 idx = idx + 1
                 timer.Simple(MOUNT_DELAY, nextItem)
