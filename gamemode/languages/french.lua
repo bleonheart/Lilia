@@ -1095,6 +1095,7 @@ LANGUAGE = {
     propModelESPLabel = "Modèle prop : %s",
     entityClassESPLabel = "Classe entité : %s",
     entityCreatorESPLabel = "Créateur : %s",
+    unconfiguredDoorESPLabel = "Porte non configurée",
     nicknameLabel = "Pseudo : %s",
     steamNameLabel = "Nom Steam : %s",
     steamIDLabel = "SteamID : %s",
