@@ -102,7 +102,7 @@ lia.command.add("doorbuy", {
     },
     onRun = function(client)
         if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
-            lia.log.add(client, "cheaterAction", "buy door")
+            lia.log.add(client, "cheaterAction", L("cheaterActionBuyDoor"))
             return
         end
 

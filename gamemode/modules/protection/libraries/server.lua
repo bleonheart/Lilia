@@ -17,13 +17,13 @@ function MODULE:CanPlayerSwitchChar(client, character)
         local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
         local switchCooldown = lia.config.get("CharacterSwitchCooldownTimer", 5)
         if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then
-            lia.log.add(client, "permissionDenied", "switch character (recent damage)")
+            lia.log.add(client, "permissionDenied", L("logSwitchCharRecentDamage"))
             return false, L("tookDamageSwitchCooldown")
         end
 
         local loginTime = character:getData("loginTime", 0)
         if switchCooldown > 0 and loginTime + switchCooldown > os.time() then
-            lia.log.add(client, "permissionDenied", "switch character (cooldown)")
+            lia.log.add(client, "permissionDenied", L("logSwitchCharCooldown"))
             return false, L("switchCooldown")
         end
     end
@@ -37,7 +37,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     local attackerIsHuman = IsValid(attacker) and attacker:IsPlayer()
     if attackerIsHuman and IsCheater(attacker) then
         dmgInfo:SetDamage(0)
-        LogCheaterAction(attacker, "deal damage")
+        LogCheaterAction(attacker, L("cheaterActionDealDamage"))
         return true
     end
 
