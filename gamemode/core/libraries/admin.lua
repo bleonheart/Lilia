@@ -142,7 +142,7 @@ function lia.administrator.load()
 
     local function continueLoad(groups)
         lia.administrator.groups = groups or {}
-        lia.bootstrap("Administration", L("adminSystemLoaded"))
+        lia.bootstrap(L("administration"), L("adminSystemLoaded"))
         hook.Run("OnAdminSystemLoaded", lia.administrator.groups or {}, lia.administrator.privileges or {})
     end
 

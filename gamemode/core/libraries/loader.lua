@@ -570,7 +570,7 @@ end
 
 if #loadedCompatibility > 0 then
     local message = #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))
-    lia.bootstrap("Compatibility", message)
+    lia.bootstrap(L("compatibility"), message)
 end
 
 if game.IsDedicated() then concommand.Remove("gm_save") end
