@@ -923,9 +923,9 @@ lia.command.add("pktoggle", {
             return
         end
 
-        local currentState = character:getData("markedForDeath", false)
+        local currentState = character:getMarkedForDeath()
         local newState = not currentState
-        character:setData("markedForDeath", newState)
+        character:setMarkedForDeath(newState)
         if newState then
             client:notifyLocalized("pktoggle_true")
         else
