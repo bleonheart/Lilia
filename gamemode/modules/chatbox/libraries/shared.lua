@@ -297,7 +297,7 @@ lia.chat.register("me's", {
             nameCol = Color(tempCol.r + 40, tempCol.b + 60, tempCol.g + 40)
         end
 
-        chat.AddText(nameCol, "**" .. speako .. "'s", texCol, " " .. text)
+        chat.AddText(nameCol, L("mePossessiveFormat", speako, ""), texCol, text)
     end,
     prefix = {"/me's", "/action's"},
     font = "liaChatFontItalics",
@@ -321,7 +321,7 @@ lia.chat.register("mefarfar", {
             nameCol = Color(tempCol.r + 40, tempCol.b + 60, tempCol.g + 40)
         end
 
-        chat.AddText(nameCol, "**" .. speako, texCol, " " .. text)
+        chat.AddText(nameCol, L("emoteFormat", speako, ""), texCol, text)
     end,
     onCanHear = lia.config.get("ChatRange", 280) * 4,
     prefix = {"/mefarfar", "/actionyy", "/meyy"},
