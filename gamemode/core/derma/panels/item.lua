@@ -81,7 +81,7 @@ end
 
 function PANEL:openActionMenu()
     local itemTable = self.itemTable
-    assert(itemTable, "attempt to open action menu for invalid item")
+    assert(itemTable, L("invalidActionMenuItem"))
     itemTable.player = LocalPlayer()
     local menu = DermaMenu()
     if hook.Run("OnCreateItemInteractionMenu", self, menu, itemTable) then

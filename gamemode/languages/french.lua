@@ -1373,4 +1373,11 @@ LANGUAGE = {
     changeWeaponOf = "Changer l'arme de %s",
     npcWeaponWarning1 = "AVERTISSEMENT ! Tous les PNJ ne peuvent pas utiliser des armes et toutes les armes ne sont pas utilisables par les PNJ.",
     npcWeaponWarning2 = "Cela dépend entièrement de l'addon dont proviennent l'arme et le PNJ. Ce mod ne peut pas changer cela.",
+    noInventorySet = "No inventory has been set!",
+    invalidActionMenuItem = "Attempt to open action menu for invalid item",
+    idMustBeNumber = "id must be a number",
+    invalidCharVar = "Invalid character variable %s",
+    noStepAvailable = "No step is available",
+    invalidPanelForStep = "Invalid panel for step",
+    panelMustInherit = "Panel must inherit liaCharacterCreateStep",
 }

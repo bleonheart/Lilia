@@ -167,7 +167,7 @@ end)
 
 net.Receive("AdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
-    assert(isnumber(id), "id must be a number")
+    assert(isnumber(id), L("idMustBeNumber"))
     local d = deferred.new()
     net.Receive("liaCharChoose", function()
         local message = net.ReadString()
