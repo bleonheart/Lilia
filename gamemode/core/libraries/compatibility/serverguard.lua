@@ -27,6 +27,13 @@ function serverguard.permission:Add(identifier, priv)
                     Name = identifier,
                     MinAccess = "invalid"
                 })
+                if lia.administrator and lia.administrator.registerPrivilege then
+                    lia.administrator.registerPrivilege({
+                        Name = identifier,
+                        MinAccess = "admin",
+                        Category = "ServerGuard"
+                    })
+                end
             end
         end
     elseif istable(identifier) then
@@ -37,7 +44,12 @@ function serverguard.permission:Add(identifier, priv)
 end
 
 function serverguard.permission:Remove(identifier)
-    if isstring(identifier) and self.stored[identifier] then self.stored[identifier] = nil end
+    if isstring(identifier) and self.stored[identifier] then
+        self.stored[identifier] = nil
+        if lia.administrator and lia.administrator.unregisterPrivilege then
+            lia.administrator.unregisterPrivilege(identifier)
+        end
+    end
 end
 
 if SERVER then
@@ -116,6 +128,32 @@ else
         end
     end)
 end
+
+hook.Add("serverguard.RankPermissionGiven", "liaServerGuardHandlePermissionGiven", function(rankName, permission)
+    if not rankName or not permission then return end
+    if CAMI and not CAMI.GetPrivilege(permission) then
+        CAMI.RegisterPrivilege({
+            Name = permission,
+            MinAccess = "admin"
+        })
+    end
+    if lia.administrator and lia.administrator.addPermission then
+        lia.administrator.addPermission(rankName, permission, true)
+    end
+    if CAMI then
+        lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName))
+    end
+end)
+
+hook.Add("serverguard.RankPermissionTaken", "liaServerGuardHandlePermissionTaken", function(rankName, permission)
+    if not rankName or not permission then return end
+    if lia.administrator and lia.administrator.removePermission then
+        lia.administrator.removePermission(rankName, permission, true)
+    end
+    if CAMI then
+        lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName))
+    end
+end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "serverguard.CAMI.OnPrivilegeRegistered", OnPrivilegeRegistered)
 hook.Add("CAMI.PlayerHasAccess", "serverguard.CAMI.PlayerHasAccess", function(client, privilege, callback)
