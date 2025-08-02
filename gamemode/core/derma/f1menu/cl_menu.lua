@@ -9,7 +9,7 @@ function PANEL:Init()
     self:SetPopupStayAtBack(true)
     self.noAnchor = CurTime() + 0.4
     self.anchorMode = true
-    self.invKey = lia.keybind.get("Open Inventory", KEY_I)
+    self.invKey = lia.keybind.get(L("Open Inventory"), KEY_I)
     local baseBtnW, btnH, spacing = 150, 40, 20
     self.baseBtnW = baseBtnW
     local topBar = self:Add("DPanel")
