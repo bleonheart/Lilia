@@ -428,6 +428,16 @@ CREATE TABLE IF NOT EXISTS lia_bans (
     timestamp integer,
     evidence varchar(255)
 );
+CREATE TABLE IF NOT EXISTS lia_staffactions (
+    id integer primary key autoincrement,
+    player varchar(255) NOT NULL,
+    playerSteamID varchar(255),
+    steamID varchar(255),
+    action varchar(255),
+    staffName varchar(255),
+    staffSteamID varchar(255),
+    timestamp integer
+);
 CREATE TABLE IF NOT EXISTS lia_doors (
     gamemode text,
     map text,
@@ -587,6 +597,17 @@ CREATE TABLE IF NOT EXISTS `lia_bans` (
     `bannerSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
     `timestamp` int default null,
     `evidence` varchar(255) default null collate 'utf8mb4_general_ci',
+    primary key (`id`)
+);
+CREATE TABLE IF NOT EXISTS `lia_staffactions` (
+    `id` int not null auto_increment,
+    `player` varchar(255) not null collate 'utf8mb4_general_ci',
+    `playerSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `steamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `action` varchar(255) default null collate 'utf8mb4_general_ci',
+    `staffName` varchar(255) default null collate 'utf8mb4_general_ci',
+    `staffSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `timestamp` int default null,
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_doors` (
