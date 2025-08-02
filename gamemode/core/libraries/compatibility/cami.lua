@@ -41,7 +41,9 @@ local function liaAdminBootstrapFromCAMI()
                 local min = tostring(pr.MinAccess or "user"):lower()
                 lia.administrator.privileges[pr.Name] = min
                 for groupName in pairs(lia.administrator.groups or {}) do
-                    if shouldGrant(groupName, min) then lia.administrator.groups[groupName][pr.Name] = true end
+                    if lia.administrator.shouldGrant and lia.administrator.shouldGrant(groupName, min) then
+                        lia.administrator.groups[groupName][pr.Name] = true
+                    end
                 end
             end
         end
@@ -69,7 +71,9 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaAdminOnPrivilegeRegistered", function
     for groupName, perms in pairs(lia.administrator.groups or {}) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
-        if shouldGrant(groupName, min) then perms[name] = true end
+        if lia.administrator.shouldGrant and lia.administrator.shouldGrant(groupName, min) then
+            perms[name] = true
+        end
     end
 
     if SERVER then

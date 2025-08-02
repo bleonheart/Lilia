@@ -8,7 +8,8 @@ lia.administrator.DefaultGroups = {
 }
 
 lia.administrator._camiSource = "lia"
-local function getGroupLevel(group)
+
+function lia.administrator.getGroupLevel(group)
     local levels = lia.administrator.DefaultGroups or {}
     if levels[group] then return levels[group] end
     local visited, current = {}, group
@@ -23,11 +24,15 @@ local function getGroupLevel(group)
     return levels.user or 1
 end
 
-local function shouldGrant(group, min)
+local getGroupLevel = lia.administrator.getGroupLevel
+
+function lia.administrator.shouldGrant(group, min)
     local levels = lia.administrator.DefaultGroups or {}
     local m = tostring(min or "user"):lower()
     return getGroupLevel(group) >= (levels[m] or 1)
 end
+
+local shouldGrant = lia.administrator.shouldGrant
 
 local function rebuildPrivileges()
     lia.administrator.privileges = {}
