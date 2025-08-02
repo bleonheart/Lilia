@@ -449,11 +449,6 @@ lia.config.add("MaxViewDistance", "Maximum View Distance", 32768, nil, {
     max = 32768,
 })
 
-lia.config.add("AutoDownloadWorkshop", "Auto Download Workshop Content", true, nil, {
-    desc = "Automatically download both collection and module-defined WorkshopContent.",
-    category = "Workshop",
-    type = "Boolean"
-})
 
 local function getDermaSkins()
     local skins = {}

@@ -51,7 +51,6 @@ if SERVER then
     end
 
     hook.Add("PlayerInitialSpawn", "liaWorkshopInit", function(ply)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
         timer.Simple(2, function()
             if IsValid(ply) then
                 net.Start("WorkshopDownloader_Info")
@@ -62,7 +61,6 @@ if SERVER then
     end)
 
     net.Receive("WorkshopDownloader_Request", function(_, client)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
         lia.workshop.send(client)
     end)
 
@@ -97,6 +95,15 @@ else
         if file.Exists(rel, "DATA") then
             game.MountGMA("data/" .. rel)
             return true
+        end
+        return false
+    end
+
+    function lia.workshop.hasContentToDownload()
+        for id in pairs(lia.workshop.serverIds or {}) do
+            if id ~= FORCE_ID and not mounted(id) and not mountLocal(id) then
+                return true
+            end
         end
         return false
     end
@@ -202,6 +209,9 @@ else
 
     local function refresh(tbl)
         if tbl then lia.workshop.serverIds = tbl end
+        for id in pairs(lia.workshop.serverIds or {}) do
+            if id ~= FORCE_ID then mountLocal(id) end
+        end
     end
 
     net.Receive("WorkshopDownloader_Start", function()
@@ -215,8 +225,36 @@ else
     end)
 
     function lia.workshop.mountContent()
-        net.Start("WorkshopDownloader_Request")
-        net.SendToServer()
+        local ids = lia.workshop.serverIds or {}
+        local needed = {}
+        for id in pairs(ids) do
+            if id ~= FORCE_ID and not mounted(id) and not mountLocal(id) then
+                needed[#needed + 1] = id
+            end
+        end
+        if #needed == 0 then
+            lia.bootstrap(L("workshopDownloader"), L("workshopAllInstalled"))
+            return
+        end
+        local pending, totalSize = #needed, 0
+        for _, id in ipairs(needed) do
+            steamworks.FileInfo(id, function(fi)
+                if fi and fi.size then totalSize = totalSize + fi.size end
+                pending = pending - 1
+                if pending <= 0 then
+                    Derma_Query(
+                        L("workshopConfirmMount", formatSize(totalSize)),
+                        L("workshopDownloader"),
+                        L("yes"),
+                        function()
+                            net.Start("WorkshopDownloader_Request")
+                            net.SendToServer()
+                        end,
+                        L("no")
+                    )
+                end
+            end)
+        end
     end
     concommand.Add("workshop_force_redownload", function()
         table.Empty(queue)
@@ -226,7 +264,6 @@ else
     end)
 
     hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
         table.insert(pages, {
             name = L("workshopAddons"),
             drawFunc = function(parent)
@@ -240,24 +277,28 @@ else
 
                 local function populate()
                     for id, fi in pairs(info) do
-                        if not fi then continue end
-                        local title = fi.title or string.format(L("idPrefix"), id)
-                        local percent = totalSize > 0 and string.format("%.2f%%", (fi.size or 0) / totalSize * 100) or "0%"
-                        local desc = fi.size and L("addonSize", formatSize(fi.size), percent) or ""
-                        local url = fi.previewurl or ""
-                        if sheet.AddPreviewRow then
-                            sheet:AddPreviewRow({
-                                title = title,
-                                desc = desc,
-                                url = url,
-                                size = 64
-                            })
-                        elseif sheet.AddTextRow then
-                            sheet:AddTextRow({
-                                title = title,
-                                desc = desc,
-                                compact = true
-                            })
+                        if fi then
+                            local title = fi.title or string.format(L("idPrefix"), id)
+                            local percent = "0%"
+                            if totalSize > 0 then
+                                percent = string.format("%.2f%%", (fi.size or 0) / totalSize * 100)
+                            end
+                            local desc = fi.size and L("addonSize", formatSize(fi.size), percent) or ""
+                            local url = fi.previewurl or ""
+                            if sheet.AddPreviewRow then
+                                sheet:AddPreviewRow({
+                                    title = title,
+                                    desc = desc,
+                                    url = url,
+                                    size = 64
+                                })
+                            elseif sheet.AddTextRow then
+                                sheet:AddTextRow({
+                                    title = title,
+                                    desc = desc,
+                                    compact = true
+                                })
+                            end
                         end
                     end
 

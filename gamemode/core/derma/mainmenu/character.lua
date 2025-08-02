@@ -202,19 +202,21 @@ function PANEL:createStartButton()
         })
     end
 
-    table.insert(buttonsData, {
-        id = "mount",
-        text = L("mountContent"),
-        doClick = function()
-            self:clickSound()
-            if lia.workshop and lia.workshop.mountContent then
-                lia.workshop.mountContent()
-            else
-                net.Start("WorkshopDownloader_Request")
-                net.SendToServer()
+    if lia.workshop and lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
+        table.insert(buttonsData, {
+            id = "mount",
+            text = L("mountContent"),
+            doClick = function()
+                self:clickSound()
+                if lia.workshop and lia.workshop.mountContent then
+                    lia.workshop.mountContent()
+                else
+                    net.Start("WorkshopDownloader_Request")
+                    net.SendToServer()
+                end
             end
-        end
-    })
+        })
+    end
 
     table.insert(buttonsData, {
         id = "disconnect",
