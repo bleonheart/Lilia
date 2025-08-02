@@ -458,10 +458,32 @@ else
         surface.SetFont("liaSmallFont")
         local controls, watchers = {}, {}
         local validate
+
+        local ordered = {}
+        local grouped = {strings = {}, dropdowns = {}, bools = {}, rest = {}}
         for name, typeInfo in pairs(argTypes) do
             local fieldType, dataTbl = typeInfo, nil
             if istable(typeInfo) then fieldType, dataTbl = typeInfo[1], typeInfo[2] end
             fieldType = string.lower(tostring(fieldType))
+            local info = {name = name, fieldType = fieldType, dataTbl = dataTbl}
+            if fieldType == "string" then
+                table.insert(grouped.strings, info)
+            elseif fieldType == "table" then
+                table.insert(grouped.dropdowns, info)
+            elseif fieldType == "boolean" then
+                table.insert(grouped.bools, info)
+            else
+                table.insert(grouped.rest, info)
+            end
+        end
+        for _, group in ipairs({grouped.strings, grouped.dropdowns, grouped.bools, grouped.rest}) do
+            for _, v in ipairs(group) do
+                table.insert(ordered, v)
+            end
+        end
+
+        for _, info in ipairs(ordered) do
+            local name, fieldType, dataTbl = info.name, info.fieldType, info.dataTbl
             local panel = vgui.Create("DPanel", scroll)
             panel:Dock(TOP)
             panel:DockMargin(0, 0, 0, 5)
