@@ -34,6 +34,12 @@ function MODULE:HUDPaint()
         elseif ent.isProp and ent:isProp() and lia.option.get("espProps") then
             entityType = "Props"
             label = L("propModelESPLabel", ent:GetModel() or L("unknown"))
+        elseif ent:isDoor() and lia.option.get("espUnconfiguredDoors") then
+            local hasVar = ent:getNetVar("name") ~= nil or ent:getNetVar("title") ~= nil or ent:getNetVar("price") ~= nil or ent:getNetVar("noSell") ~= nil or ent:getNetVar("factions") ~= nil or ent:getNetVar("classes") ~= nil or ent:getNetVar("disabled") ~= nil or ent:getNetVar("hidden") ~= nil or ent:getNetVar("locked") ~= nil
+            if not hasVar then
+                entityType = "UnconfiguredDoors"
+                label = L("unconfiguredDoorESPLabel")
+            end
         elseif ESP_DrawnEntities[ent:GetClass()] and lia.option.get("espEntities") then
             entityType = "Entities"
             label = L("entityClassESPLabel", ent:GetClass() or L("unknown"))

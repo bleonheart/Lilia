@@ -54,6 +54,16 @@ lia.option.add("espEntities", "ESP Entities", "Enable ESP for entities", false, 
     end
 })
 
+lia.option.add("espUnconfiguredDoors", "ESP Unconfigured Doors", "Enable ESP for doors without configuration", false, nil, {
+    category = "ESP",
+    isQuick = true,
+    visible = function()
+        local ply = LocalPlayer()
+        if not IsValid(ply) then return false end
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
+    end
+})
+
 lia.option.add("espItemsColor", "ESP Items Color", "Sets the ESP color for items", {
     r = 0,
     g = 255,
@@ -86,6 +96,20 @@ lia.option.add("espPropsColor", "ESP Props Color", "Sets the ESP color for props
     r = 255,
     g = 0,
     b = 0,
+    a = 255
+}, nil, {
+    category = "ESP",
+    visible = function()
+        local ply = LocalPlayer()
+        if not IsValid(ply) then return false end
+        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
+    end
+})
+
+lia.option.add("espUnconfiguredDoorsColor", "ESP Unconfigured Doors Color", "Sets the ESP color for unconfigured doors", {
+    r = 255,
+    g = 0,
+    b = 255,
     a = 255
 }, nil, {
     category = "ESP",
