@@ -474,7 +474,7 @@ else
             local textW = select(1, surface.GetTextSize(name))
             local ctrl
             if fieldType == "boolean" then
-                ctrl = vgui.Create("DCheckBox", panel)
+                ctrl = vgui.Create("liaCheckBox", panel)
             elseif fieldType == "table" then
                 ctrl = vgui.Create("DComboBox", panel)
                 if istable(dataTbl) then
@@ -496,7 +496,12 @@ else
             end
 
             panel.PerformLayout = function(_, w, h)
-                local ctrlH, ctrlW = 30, w * 0.7
+                local ctrlH, ctrlW
+                if fieldType == "boolean" then
+                    ctrlH, ctrlW = 22, 22
+                else
+                    ctrlH, ctrlW = 30, w * 0.7
+                end
                 local totalW = textW + 10 + ctrlW
                 local xOff = (w - totalW) / 2
                 label:SetPos(xOff, (h - label:GetTall()) / 2)
