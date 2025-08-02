@@ -240,15 +240,6 @@ if SERVER then
     util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsSetPerm")
     util.AddNetworkString("liaGroupPermChanged")
-    function lia.administrator.setUserGroup(ply, newGroup)
-        if not IsValid(ply) then return end
-        local old = tostring(ply.GetUserGroup and ply:GetUserGroup() or "user")
-        newGroup = tostring(newGroup or "user")
-        if old == newGroup then return end
-        if ply.SetUserGroup then ply:SetUserGroup(newGroup) end
-        if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, newGroup, lia.administrator._camiSource) end
-    end
-
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))
@@ -856,14 +847,12 @@ if CAMI then
             end
         end
 
-        if CAMI and CAMI.GetPrivileges then
-            for _, pr in pairs(CAMI.GetPrivileges() or {}) do
-                if lia.administrator.privileges[pr.Name] == nil then
-                    local min = tostring(pr.MinAccess or "user"):lower()
-                    lia.administrator.privileges[pr.Name] = min
-                    for groupName in pairs(lia.administrator.groups or {}) do
-                        if shouldGrant(groupName, min) then lia.administrator.groups[groupName][pr.Name] = true end
-                    end
+        for _, pr in pairs(CAMI.GetPrivileges() or {}) do
+            if lia.administrator.privileges[pr.Name] == nil then
+                local min = tostring(pr.MinAccess or "user"):lower()
+                lia.administrator.privileges[pr.Name] = min
+                for groupName in pairs(lia.administrator.groups or {}) do
+                    if shouldGrant(groupName, min) then lia.administrator.groups[groupName][pr.Name] = true end
                 end
             end
         end
