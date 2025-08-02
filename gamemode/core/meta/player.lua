@@ -725,6 +725,8 @@ if SERVER then
     end
 
     function playerMeta:getPlayTime()
+        local hookResult = hook.Run("getPlayTime", self)
+        if hookResult ~= nil then return hookResult end
         local diff = os.time(lia.time.toNumber(self.lastJoin)) - os.time(lia.time.toNumber(self.firstJoin))
         return diff + RealTime() - (self.liaJoinTime or RealTime())
     end
@@ -926,6 +928,8 @@ else
     end
 
     function playerMeta:getPlayTime()
+        local hookResult = hook.Run("getPlayTime", self)
+        if hookResult ~= nil then return hookResult end
         local diff = os.time(lia.time.toNumber(lia.lastJoin)) - os.time(lia.time.toNumber(lia.firstJoin))
         return diff + RealTime() - (lia.joinTime or 0)
     end
