@@ -22,7 +22,7 @@ function MODULE:HUDPaint()
         if ent:IsPlayer() then
             entityType = "Players"
             if ent:getNetVar("cheater") then
-                label = "CHEATER"
+                label = string.upper(L("cheater"))
                 nameLabel = ent:Name():gsub("#", "\226\128\139#")
             else
                 label = ent:Name():gsub("#", "\226\128\139#")
@@ -82,43 +82,43 @@ net.Receive("DisplayCharList", function()
 
     local columns = {
         {
-            name = "ID",
+            name = L("id"),
             field = "ID"
         },
         {
-            name = "Name",
+            name = L("name"),
             field = "Name"
         },
         {
-            name = "Desc",
+            name = L("desc"),
             field = "Desc"
         },
         {
-            name = "Faction",
+            name = L("faction"),
             field = "Faction"
         },
         {
-            name = "Banned",
+            name = L("banned"),
             field = "Banned"
         },
         {
-            name = "BanningAdminName",
+            name = L("banningAdminName"),
             field = "BanningAdminName"
         },
         {
-            name = "BanningAdminSteamID",
+            name = L("banningAdminSteamID"),
             field = "BanningAdminSteamID"
         },
         {
-            name = "BanningAdminRank",
+            name = L("banningAdminRank"),
             field = "BanningAdminRank"
         },
         {
-            name = "CharMoney",
+            name = L("charMoney"),
             field = "Money"
         },
         {
-            name = "LastUsed",
+            name = L("lastUsed"),
             field = "LastUsed"
         }
     }

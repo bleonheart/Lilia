@@ -29,19 +29,19 @@ end
 local function openRowInfo(row)
     local columns = {
         {
-            name = "Field",
+            name = L("field"),
             field = "field"
         },
         {
-            name = "Type",
+            name = L("type"),
             field = "type"
         },
         {
-            name = "Coded",
+            name = L("coded"),
             field = "coded"
         },
         {
-            name = "Decoded",
+            name = L("decoded"),
             field = "decoded"
         }
     }
