@@ -5,7 +5,7 @@ local function formatDHM(seconds)
     local hours = math.floor(seconds / 3600)
     seconds = seconds % 3600
     local minutes = math.floor(seconds / 60)
-    return string.format("%dd %dh %dm", days, hours, minutes)
+    return L("daysHoursMinutes", days, hours, minutes)
 end
 
 net.Receive("RequestRoster", function(_, client)

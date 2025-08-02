@@ -236,7 +236,7 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
             local lbl = rowPanel:Add("DLabel")
             lbl:Dock(FILL)
             lbl:SetFont("liaBigFont")
-            lbl:SetText(action)
+            lbl:SetText(L(action))
 
             local currentKey = lia.keybind.get(action, KEY_NONE)
             if allowEdit then
