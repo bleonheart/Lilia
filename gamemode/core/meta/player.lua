@@ -574,14 +574,17 @@ if SERVER then
         net.Broadcast()
     end
 
-    function playerMeta:banPlayer(reason, duration)
+    function playerMeta:banPlayer(reason, duration, banner)
         local steam64 = self:SteamID64()
-        local banStart = os.time()
-        lia.db.updateTable({
-            banStart = banStart,
-            banDuration = (duration or 0) * 60,
-            banReason = reason or L("genericReason")
-        }, nil, "players", "steamID = " .. steam64)
+        lia.db.insertTable({
+            player = self:Name(),
+            playerSteamID = steam64,
+            reason = reason or L("genericReason"),
+            bannerName = IsValid(banner) and banner:Name() or "",
+            bannerSteamID = IsValid(banner) and banner:SteamID64() or "",
+            timestamp = os.time(),
+            evidence = ""
+        }, nil, "bans")
 
         self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
     end
