@@ -394,6 +394,7 @@ LANGUAGE = {
     flagToolgun = "Autorise le toolgun",
     flagPac3 = "Autorise PAC3.",
     flagFactionRoster = "Autorise la gestion du roster de votre faction.",
+    flagFactionKick = "Autorise l'expulsion de membres de votre faction via le roster.",
     classNoInfo = "Infos de classe introuvables.",
     classWrongTeam = "Mauvaise équipe pour cette classe.",
     classFull = "Classe pleine.",

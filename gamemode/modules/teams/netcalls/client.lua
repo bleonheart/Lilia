@@ -18,6 +18,7 @@ net.Receive("CharacterInfo", function()
     local character = LocalPlayer():getChar()
     local isLeader = LocalPlayer():hasPrivilege("Manage Faction Members") or (character and character:hasFlags("V"))
     if not isLeader then return end
+    local canKick = LocalPlayer():hasPrivilege("Manage Faction Members") or (character and character:hasFlags("K"))
 
     if IsValid(lia.gui.rosterSheet) then
         local sheet = lia.gui.rosterSheet
@@ -52,7 +53,7 @@ net.Receive("CharacterInfo", function()
                 if not IsValid(line) or not line.rowData then return end
                 local rowData = line.rowData
                 local menu = DermaMenu()
-                if rowData.steamID ~= LocalPlayer():SteamID() then
+                if canKick and rowData.steamID ~= LocalPlayer():SteamID() then
                     menu:AddOption(L("kick"), function()
                         Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                             net.Start("KickCharacter")
@@ -95,9 +96,9 @@ net.Receive("CharacterInfo", function()
         {name = L("hoursPlayed"), field = "hoursPlayed"}
     }
 
-    local frame, list = lia.util.CreateTableUI(L("characterInformation"), columns, rows, {
-        {name = L("kick"), net = "KickCharacter"}
-    })
+    local actions = {}
+    if canKick then actions[#actions + 1] = {name = L("kick"), net = "KickCharacter"} end
+    local frame, list = lia.util.CreateTableUI(L("characterInformation"), columns, rows, actions)
     characterPanel = frame
 
     if IsValid(list) then
@@ -105,7 +106,7 @@ net.Receive("CharacterInfo", function()
             if not IsValid(line) or not line.rowData then return end
             local rowData = line.rowData
             local menu = DermaMenu()
-            if rowData.steamID ~= LocalPlayer():SteamID() then
+            if canKick and rowData.steamID ~= LocalPlayer():SteamID() then
                 menu:AddOption(L("kick"), function()
                     Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                         net.Start("KickCharacter")

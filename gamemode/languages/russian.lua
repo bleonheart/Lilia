@@ -394,6 +394,7 @@ LANGUAGE = {
     flagToolgun = "Доступ к Toolgun",
     flagPac3 = "Дает доступ к PAC3.",
     flagFactionRoster = "Дает доступ к управлению составом вашей фракции.",
+    flagFactionKick = "Дает возможность исключать членов фракции через состав.",
     classNoInfo = "Информация о классе не найдена.",
     classWrongTeam = "Вы не в нужной команде для этого класса.",
     classFull = "Класс заполнен.",
