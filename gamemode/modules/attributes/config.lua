@@ -83,3 +83,12 @@ lia.config.add("AllowPush", "Allow Push", true, nil, {
     category = "General",
     type = "Boolean"
 })
+
+lia.config.add("PunchPlaytime", "Punch Playtime Protection", 7200, nil, {
+    desc = "Minimum playtime in seconds required to punch.",
+    category = "General",
+    isGlobal = true,
+    type = "Int",
+    min = 0,
+    max = 86400
+})
