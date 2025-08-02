@@ -198,6 +198,12 @@ local FilesToLoad = {
 
 local ConditionalFiles = {
     {
+        path = "lilia/gamemode/core/libraries/compatibility/cami.lua",
+        global = "CAMI",
+        name = "CAMI",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/compatibility/vcmod.lua",
         global = "VCMod",
         name = "VCMod",
