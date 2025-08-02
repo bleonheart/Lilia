@@ -30,7 +30,7 @@ function MODULE:InitializedModules()
     end
 end
 
-lia.flag.add("p", "Access to the physgun.", function(client, isGiven)
+lia.flag.add("p", L("flagPhysgun"), function(client, isGiven)
     if isGiven then
         client:Give("weapon_physgun")
         client:SelectWeapon("weapon_physgun")
@@ -39,7 +39,7 @@ lia.flag.add("p", "Access to the physgun.", function(client, isGiven)
     end
 end)
 
-lia.flag.add("t", "Access to the toolgun", function(client, isGiven)
+lia.flag.add("t", L("flagToolgun"), function(client, isGiven)
     if isGiven then
         client:Give("gmod_tool")
         client:SelectWeapon("gmod_tool")
@@ -48,11 +48,11 @@ lia.flag.add("t", "Access to the toolgun", function(client, isGiven)
     end
 end)
 
-lia.flag.add("C", "Access to spawn vehicles.")
-lia.flag.add("z", "Access to spawn SWEPS.")
-lia.flag.add("E", "Access to spawn SENTs.")
-lia.flag.add("L", "Access to spawn Effects.")
-lia.flag.add("r", "Access to spawn ragdolls.")
-lia.flag.add("e", "Access to spawn props.")
-lia.flag.add("n", "Access to spawn NPCs.")
-lia.flag.add("V", "Access to manage your faction roster.")
+lia.flag.add("C", L("flagSpawnVehicles"))
+lia.flag.add("z", L("flagSpawnSweps"))
+lia.flag.add("E", L("flagSpawnSents"))
+lia.flag.add("L", L("flagSpawnEffects"))
+lia.flag.add("r", L("flagSpawnRagdolls"))
+lia.flag.add("e", L("flagSpawnProps"))
+lia.flag.add("n", L("flagSpawnNpcs"))
+lia.flag.add("V", L("flagFactionRoster"))
