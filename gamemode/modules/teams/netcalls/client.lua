@@ -43,10 +43,6 @@ net.Receive("CharacterInfo", function()
             end
         })
 
-        if row and row.panel then
-            row.panel:Dock(FILL)
-        end
-
         if row and row.widget then
             for i, line in ipairs(row.widget:GetLines() or {}) do
                 line.rowData = originals[i]
