@@ -152,7 +152,7 @@ lia.command.add("doortoggleownable", {
             door:setNetVar("noSell", newState and true or nil)
             lia.log.add(client, "doorToggleOwnable", door, newState)
             hook.Run("DoorOwnableToggled", client, door, newState)
-            client:notify(newState and L("doorMadeUnownable") or L("doorMadeOwnable"))
+            client:notifyLocalized(newState and "doorMadeUnownable" or "doorMadeOwnable")
             MODULE:SaveData()
         else
             client:notifyLocalized("doorNotValid")
@@ -204,7 +204,7 @@ lia.command.add("doortoggleenabled", {
             door:setNetVar("disabled", newState and true or nil)
             lia.log.add(client, newState and "doorDisable" or "doorEnable", door)
             hook.Run("DoorEnabledToggled", client, door, newState)
-            client:notify(newState and L("doorSetDisabled") or L("doorSetNotDisabled"))
+            client:notifyLocalized(newState and "doorSetDisabled" or "doorSetNotDisabled")
             MODULE:SaveData()
         else
             client:notifyLocalized("doorNotValid")
@@ -228,7 +228,7 @@ lia.command.add("doortogglehidden", {
             entity:setNetVar("hidden", newState)
             lia.log.add(client, "doorSetHidden", entity, newState)
             hook.Run("DoorHiddenToggled", client, entity, newState)
-            client:notify(newState and L("doorSetHidden") or L("doorSetNotHidden"))
+            client:notifyLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
             MODULE:SaveData()
         else
             client:notifyLocalized("doorNotValid")

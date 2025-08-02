@@ -37,7 +37,7 @@ if SERVER then
     end
 
     function lia.darkrp.notify(client, _, _, message)
-        client:notify(message)
+        client:notifyLocalized(message)
     end
 else
     local function wrapCharacters(text, remainingWidth, maxWidth)
