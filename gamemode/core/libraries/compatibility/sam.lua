@@ -1,24 +1,4 @@
 ﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
-hook.Add("InitializedModules", "liaSAM", function()
-    for _, commandInfo in ipairs(sam.command.get_commands()) do
-        local customSyntax = ""
-        for _, argInfo in ipairs(commandInfo.args) do
-            customSyntax = customSyntax == "" and "[" or customSyntax .. " ["
-            customSyntax = customSyntax .. (argInfo.default and tostring(type(argInfo.default)) or "string") .. " "
-            customSyntax = customSyntax .. argInfo.name .. "]"
-        end
-
-        if lia.command.list[commandInfo.name] then continue end
-        lia.command.add(commandInfo.name, {
-            desc = commandInfo.help,
-            adminOnly = commandInfo.default_rank == "admin",
-            superAdminOnly = commandInfo.default_rank == "superadmin",
-            syntax = customSyntax,
-            onRun = function(_, arguments) RunConsoleCommand("sam", commandInfo.name, unpack(arguments)) end
-        })
-    end
-end)
-
 hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
     local id = isstring(victim) and victim or IsValid(victim) and victim:SteamID()
     if not id then return end
@@ -177,61 +157,6 @@ lia.command.add("cleardecals", {
     end
 })
 
-lia.command.add("playtime", {
-    adminOnly = false,
-    privilege = "View Own Playtime",
-    desc = "playtimeDesc",
-    onRun = function(client)
-        local secs = client:getPlayTime()
-        if not secs then
-            client:ChatPrint(L("playtimeError"))
-            return
-        end
-
-        local h = math.floor(secs / 3600)
-        local m = math.floor((secs % 3600) / 60)
-        local s = secs % 60
-        client:ChatPrint(L("playtimeYour", h, m, s))
-    end
-})
-
-lia.command.add("plygetplaytime", {
-    adminOnly = true,
-    privilege = "View Playtime",
-    syntax = "[player Name]",
-    AdminStick = {
-        Name = "adminStickGetPlayTimeName",
-        Category = "moderationTools",
-        SubCategory = "misc",
-        Icon = "icon16/time.png"
-    },
-    desc = "plygetplaytimeDesc",
-    onRun = function(client, args)
-        if not args[1] then
-            client:notifyLocalized("specifyPlayer")
-            return
-        end
-
-        local target = lia.util.findPlayer(client, args[1])
-        if not IsValid(target) then
-            client:notifyLocalized("targetNotFound")
-            return
-        end
-
-        local secs = target:getPlayTime()
-        local h = math.floor(secs / 3600)
-        local m = math.floor((secs % 3600) / 60)
-        local s = secs % 60
-        client:ChatPrint(L("playtimeFor", target:Nick(), h, m, s))
-    end
-})
-
-hook.Add("getPlayTime", "liaSAM", function(client)
-    if client.sam_get_play_time then
-        return client:sam_get_play_time()
-    end
-end)
-
 lia.administrator.registerPrivilege({
     Name = "Can See SAM Notifications Outside Staff Character",
     MinAccess = "superadmin",
@@ -256,4 +181,8 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     type = "Boolean"
 })
 
+sam.config.set("Restrictions.Tool", false)
+sam.config.set("Restrictions.Spawning", false)
+sam.config.set("Restrictions.Limits", false)
 hook.Add("ShouldLiliaAdminCommandsLoad", "liaSAM", function() return false end)
+hook.Add("getPlayTime", "liaSAM", function(client) if client.sam_get_play_time then return client:sam_get_play_time() end end)
