@@ -566,6 +566,7 @@ LANGUAGE = {
     adminStickUnwhitelistName = "Снять вайтлист",
     adminStickClassWhitelistName = "Вайтлист класса",
     adminStickClassUnwhitelistName = "Снять вайтлист класса",
+    adminStickSetClassName = "Установить класс",
     uiBodygroupsFor = "Бодигруппы %s",
     groupID = "ID группы",
     range = "Дальность",

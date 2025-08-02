@@ -317,7 +317,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
                 end
 
                 table.sort(cls, function(a, b) return a.name < b.name end)
-                local cm = GetOrCreateSubMenu(charMenu, "Set Class", stores)
+                local cm = GetOrCreateSubMenu(charMenu, "adminStickSetClassName", stores)
                 for _, o in ipairs(cls) do
                     cm:AddOption(L(o.name), function()
                         cl:ConCommand(o.cmd)
