@@ -134,16 +134,24 @@ if SERVER then
         end
 
         local sid = (tonumber(util.CRC(tostring(SysTime()) .. json)) or 0) % 4294967296
+        local delay = 0
+        local function schedule(ply)
+            if not IsValid(ply) then return end
+            timer.Simple(delay, function()
+                if IsValid(ply) then beginStream(ply, netStr, chunks, sid) end
+            end)
+            delay = delay + chunkTime
+        end
+
         if istable(targets) then
             for i = #targets, 1, -1 do
-                local ply = targets[i]
-                if IsValid(ply) then beginStream(ply, netStr, chunks, sid) end
+                schedule(targets[i])
             end
         elseif IsValid(targets) then
-            beginStream(targets, netStr, chunks, sid)
+            schedule(targets)
         else
             for _, ply in ipairs(player.GetHumans()) do
-                beginStream(ply, netStr, chunks, sid)
+                schedule(ply)
             end
         end
     end
