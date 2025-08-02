@@ -73,7 +73,6 @@ else
     local MOUNT_DELAY = 3
     local queue, panel, totalDownloads, remainingDownloads = {}, nil, 0, 0
     lia.workshop.serverIds = lia.workshop.serverIds or {}
-    local downloadFrame
     local function mounted(id)
         for _, addon in pairs(engine.GetAddons() or {}) do
             if tostring(addon.wsid or addon.workshopid) == tostring(id) and addon.mounted then return true end
@@ -90,50 +89,6 @@ else
             unit = unit + 1
         end
         return string.format("%.2f %s", bytes, units[unit])
-    end
-
-    local function showPrompt(total, have, size)
-        if IsValid(downloadFrame) then return end
-        local text = L("workshopDownloadPrompt", total - have, total, formatSize(size))
-        local frame = vgui.Create("DFrame")
-        downloadFrame = frame
-        frame:SetTitle(L("downloads"))
-        frame:SetSize(500, 150)
-        frame:Center()
-        frame:MakePopup()
-        frame:SetZPos(10000)
-        frame:MoveToFront()
-        local lbl = frame:Add("DLabel")
-        lbl:Dock(TOP)
-        lbl:SetWrap(true)
-        lbl:SetText(text)
-        lbl:DockMargin(10, 10, 10, 10)
-        lbl:SetTall(60)
-        local btnPanel = frame:Add("DPanel")
-        btnPanel:Dock(BOTTOM)
-        btnPanel:SetTall(40)
-        btnPanel.Paint = nil
-        local btnWidth = (frame:GetWide() - 5) / 2
-        local yes = btnPanel:Add("DButton")
-        yes:Dock(LEFT)
-        yes:SetText(L("yes"))
-        yes:DockMargin(0, 0, 5, 0)
-        yes:SetWide(btnWidth)
-        yes.DoClick = function()
-            lia.option.set("autoDownloadWorkshop", true)
-            net.Start("WorkshopDownloader_Request")
-            net.SendToServer()
-            frame:Close()
-        end
-
-        local no = btnPanel:Add("DButton")
-        no:Dock(RIGHT)
-        no:SetText(L("no"))
-        no:SetWide(btnWidth)
-        no.DoClick = function()
-            lia.option.set("autoDownloadWorkshop", false)
-            frame:Close()
-        end
     end
 
     local function uiCreate()
@@ -220,45 +175,6 @@ else
         if tbl then lia.workshop.serverIds = tbl end
     end
 
-    function lia.workshop.checkPrompt()
-        local opt = lia.option.get("autoDownloadWorkshop")
-        local ids = lia.workshop.serverIds or {}
-        local totalIds = table.Count(ids)
-        local have, missing = 0, {}
-        for id in pairs(ids) do
-            if mounted(id) then
-                have = have + 1
-            else
-                missing[#missing + 1] = id
-            end
-        end
-
-        local forcedMissing = not mounted(FORCE_ID)
-        if forcedMissing then
-            buildQueue(false)
-            start()
-        end
-
-        if opt == nil then
-            local size, pending = 0, #missing
-            if pending == 0 then
-                showPrompt(totalIds, have, 0)
-                return
-            end
-
-            for _, id in ipairs(missing) do
-                steamworks.FileInfo(id, function(fi)
-                    if fi and fi.size then size = size + fi.size end
-                    pending = pending - 1
-                    if pending <= 0 then showPrompt(totalIds, have, size) end
-                end)
-            end
-        elseif opt then
-            buildQueue(true)
-            start()
-        end
-    end
-
     net.Receive("WorkshopDownloader_Start", function()
         refresh(net.ReadTable())
         buildQueue(true)
@@ -267,10 +183,12 @@ else
 
     net.Receive("WorkshopDownloader_Info", function()
         refresh(net.ReadTable())
-        lia.workshop.checkPrompt()
     end)
 
-    hook.Add("InitializedOptions", "liaWorkshopPromptCheck", function() timer.Simple(0, lia.workshop.checkPrompt) end)
+    function lia.workshop.mountContent()
+        net.Start("WorkshopDownloader_Request")
+        net.SendToServer()
+    end
     concommand.Add("workshop_force_redownload", function()
         table.Empty(queue)
         buildQueue(true)
