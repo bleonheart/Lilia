@@ -1,7 +1,14 @@
+hook.Add("ULibGroupAccessChanged", "liaULXCAMI", function(group_name, access, revoke)
+    if revoke then
+        print(group_name .. " lost permission: " .. access)
+    else
+        print(group_name .. " gained permission: " .. access)
+    end
+end)
+
 hook.Add("RunAdminSystemCommand", "liaULX", function(cmd, _, target, dur, reason)
     local id = isstring(target) and target or IsValid(target) and target:SteamID()
     if not id then return end
-
     if cmd == "kick" then
         RunConsoleCommand("ulx", "kick", id, reason or "")
         return true
@@ -70,6 +77,3 @@ hook.Add("RunAdminSystemCommand", "liaULX", function(cmd, _, target, dur, reason
         return true
     end
 end)
-
-hook.Add("ShouldLiliaAdminCommandsLoad", "liaULX", function() return false end)
-

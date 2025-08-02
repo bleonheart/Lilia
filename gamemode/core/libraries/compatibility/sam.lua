@@ -146,6 +146,16 @@ function sam.player.send_message(client, msg, tbl)
     end
 end
 
+hook.Add("SAM.RankPermissionGiven", "liaSAMHandlePermissionGiven", function(rankName, permission)
+    local message = string.format("Permission '%s' was granted to rank '%s'.", permission, rankName)
+    print(message)
+end)
+
+hook.Add("SAM.RankPermissionTaken", "liaSAMHandlePermissionTaken", function(rankName, permission)
+    local message = string.format("Permission '%s' was revoked from rank '%s'.", permission, rankName)
+    print(message)
+end)
+
 lia.command.add("cleardecals", {
     adminOnly = true,
     privilege = "Clear Decals",
@@ -184,5 +194,4 @@ lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
 sam.config.set("Restrictions.Tool", false)
 sam.config.set("Restrictions.Spawning", false)
 sam.config.set("Restrictions.Limits", false)
-hook.Add("ShouldLiliaAdminCommandsLoad", "liaSAM", function() return false end)
-hook.Add("getPlayTime", "liaSAM", function(client) if client.sam_get_play_time then return client:sam_get_play_time() end end)
+hook.Add("getPlayTime", "liaSAM", function(client) return client:sam_get_play_time() end)

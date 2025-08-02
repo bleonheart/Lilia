@@ -1,80 +1,103 @@
-local function run(cmd, ...)
-    RunConsoleCommand("serverguard", cmd, ...)
-    RunConsoleCommand("sg", cmd, ...)
+local function OnPrivilegeRegistered(privilege)
+    local permission = privilege.Name
+    serverguard.permission:Add(permission)
+    if SERVER then
+        local defaultRank = privilege.MinAccess
+        defaultRank = defaultRank:sub(1, 1):upper() .. defaultRank:sub(2)
+        for rank, _ in pairs(serverguard.ranks:GetStored()) do
+            if serverguard.ranks:HasPermission(rank, permission) == nil and (defaultRank == "User" or serverguard.ranks:HasPermission(rank, defaultRank)) then serverguard.ranks:GivePermission(rank, permission) end
+        end
+    end
 end
+
+local function RegisterPrivileges()
+    if CAMI then
+        for _, v in pairs(CAMI.GetPrivileges()) do
+            OnPrivilegeRegistered(v)
+        end
+    end
+end
+
+hook.Add("CAMI.OnPrivilegeRegistered", "serverguard.CAMI.OnPrivilegeRegistered", OnPrivilegeRegistered)
+hook.Add("CAMI.PlayerHasAccess", "serverguard.CAMI.PlayerHasAccess", function(client, privilege, callback)
+    callback(not not serverguard.player:HasPermission(client, privilege), "serverguard")
+    return true
+end)
 
 hook.Add("RunAdminSystemCommand", "liaServerGuard", function(cmd, _, target, dur, reason)
     local id = isstring(target) and target or IsValid(target) and target:SteamID()
     if not id then return end
-
     if cmd == "kick" then
-        run("kick", id, reason or "")
+        RunConsoleCommand("serverguard", "kick", id, reason or "")
         return true
     elseif cmd == "ban" then
-        run("ban", id, tostring(dur or 0), reason or "")
+        RunConsoleCommand("serverguard", "ban", id, tostring(dur or 0), reason or "")
         return true
     elseif cmd == "unban" then
-        run("unban", id)
+        RunConsoleCommand("serverguard", "unban", id)
         return true
     elseif cmd == "mute" then
-        run("mute", id, tostring(dur or 0))
+        RunConsoleCommand("serverguard", "mute", id, tostring(dur or 0))
         return true
     elseif cmd == "unmute" then
-        run("unmute", id)
+        RunConsoleCommand("serverguard", "unmute", id)
         return true
     elseif cmd == "gag" then
-        run("gag", id, tostring(dur or 0))
+        RunConsoleCommand("serverguard", "gag", id, tostring(dur or 0))
         return true
     elseif cmd == "ungag" then
-        run("ungag", id)
+        RunConsoleCommand("serverguard", "ungag", id)
         return true
     elseif cmd == "freeze" then
-        run("freeze", id, tostring(dur or 0))
+        RunConsoleCommand("serverguard", "freeze", id, tostring(dur or 0))
         return true
     elseif cmd == "unfreeze" then
-        run("unfreeze", id)
+        RunConsoleCommand("serverguard", "unfreeze", id)
         return true
     elseif cmd == "slay" then
-        run("slay", id)
+        RunConsoleCommand("serverguard", "slay", id)
         return true
     elseif cmd == "bring" then
-        run("bring", id)
+        RunConsoleCommand("serverguard", "bring", id)
         return true
     elseif cmd == "goto" then
-        run("goto", id)
+        RunConsoleCommand("serverguard", "goto", id)
         return true
     elseif cmd == "return" then
-        run("return", id)
+        RunConsoleCommand("serverguard", "return", id)
         return true
     elseif cmd == "jail" then
-        run("jail", id, tostring(dur or 0))
+        RunConsoleCommand("serverguard", "jail", id, tostring(dur or 0))
         return true
     elseif cmd == "unjail" then
-        run("unjail", id)
+        RunConsoleCommand("serverguard", "unjail", id)
         return true
     elseif cmd == "cloak" then
-        run("cloak", id)
+        RunConsoleCommand("serverguard", "cloak", id)
         return true
     elseif cmd == "uncloak" then
-        run("uncloak", id)
+        RunConsoleCommand("serverguard", "uncloak", id)
         return true
     elseif cmd == "god" then
-        run("god", id)
+        RunConsoleCommand("serverguard", "god", id)
         return true
     elseif cmd == "ungod" then
-        run("ungod", id)
+        RunConsoleCommand("serverguard", "ungod", id)
         return true
     elseif cmd == "ignite" then
-        run("ignite", id, tostring(dur or 0))
+        RunConsoleCommand("serverguard", "ignite", id, tostring(dur or 0))
         return true
     elseif cmd == "extinguish" or cmd == "unignite" then
-        run("extinguish", id)
+        RunConsoleCommand("serverguard", "extinguish", id)
         return true
     elseif cmd == "strip" then
-        run("strip", id)
+        RunConsoleCommand("serverguard", "strip", id)
         return true
     end
 end)
 
-hook.Add("ShouldLiliaAdminCommandsLoad", "liaServerGuard", function() return false end)
-
+if SERVER then
+    hook.Add("serverguard.RanksLoaded", "serverguard.RanksLoaded", RegisterPrivileges)
+else
+    RegisterPrivileges()
+end
