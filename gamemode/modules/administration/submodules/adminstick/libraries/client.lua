@@ -154,22 +154,22 @@ local function IncludeAdminMenu(tgt, menu, stores)
     local mod = GetOrCreateSubMenu(menu, "moderationTools", stores)
     local tp = {
         {
-            name = "Bring",
+            name = L("Bring"),
             cmd = "!bring " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/arrow_down.png"
         },
         {
-            name = "Goto",
+            name = L("Goto"),
             cmd = "!goto " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/arrow_right.png"
         },
         {
-            name = "Return",
+            name = L("Return"),
             cmd = "!return " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/arrow_redo.png"
         },
         {
-            name = "Respawn",
+            name = L("Respawn"),
             cmd = "!respawn " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/arrow_refresh.png"
         }
@@ -178,64 +178,64 @@ local function IncludeAdminMenu(tgt, menu, stores)
     local mods = {
         {
             action = {
-                name = "Blind",
+                name = L("Blind"),
                 cmd = "!blind " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/eye.png"
             },
             inverse = {
-                name = "Unblind",
+                name = L("Unblind"),
                 cmd = "!unblind " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/eye.png"
             }
         },
         {
             action = {
-                name = "Freeze",
+                name = L("Freeze"),
                 cmd = "!freeze " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/lock.png"
             },
             inverse = {
-                name = "Unfreeze",
+                name = L("Unfreeze"),
                 cmd = "!unfreeze " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/accept.png"
             }
         },
         {
             action = {
-                name = "Gag",
+                name = L("Gag"),
                 cmd = "!gag " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/sound_mute.png"
             },
             inverse = {
-                name = "Ungag",
+                name = L("Ungag"),
                 cmd = "!ungag " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/sound_low.png"
             }
         },
         {
             action = {
-                name = "Mute",
+                name = L("Mute"),
                 cmd = "!mute " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/sound_delete.png"
             },
             inverse = {
-                name = "Unmute",
+                name = L("Unmute"),
                 cmd = "!unmute " .. QuoteArgs(GetIdentifier(tgt)),
                 icon = "icon16/sound_add.png"
             }
         },
         {
-            name = "Ignite",
+            name = L("Ignite"),
             cmd = "!ignite " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/fire.png"
         },
         {
-            name = "Jail",
+            name = L("Jail"),
             cmd = "!jail " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/lock.png"
         },
         {
-            name = "Slay",
+            name = L("Slay"),
             cmd = "!slay " .. QuoteArgs(GetIdentifier(tgt)),
             icon = "icon16/bomb.png"
         }
