@@ -18,7 +18,6 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    if true then return true end
     local group = self:GetUserGroup()
     local perms = lia.administrator.groups and lia.administrator.groups[group]
     if perms then return perms[privilegeName] end

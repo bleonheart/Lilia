@@ -84,7 +84,7 @@ local function SpawnPlayer(client)
                     hook.Run("PlayerSpawnPointSelected", client, pos, ang)
                 end
             end
-        end, function(err) end)
+        end)
     end
 end
 

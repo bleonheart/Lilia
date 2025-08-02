@@ -14,7 +14,6 @@ net.Receive("classUpdate", function()
 end)
 
 net.Receive("CharacterInfo", function()
-    local factionID = net.ReadString()
     local characterData = net.ReadTable()
     local character = LocalPlayer():getChar()
     local isLeader = LocalPlayer():hasPrivilege("Manage Faction Members") or (character and character:hasFlags("V"))

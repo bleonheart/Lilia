@@ -113,7 +113,6 @@ lia.command.add("roster", {
             end
 
             net.Start("CharacterInfo")
-            net.WriteString(faction.uniqueID)
             net.WriteTable(characters)
             net.Send(client)
         end)
@@ -190,7 +189,6 @@ lia.command.add("factionmanagement", {
             end
 
             net.Start("CharacterInfo")
-            net.WriteString(faction.uniqueID)
             net.WriteTable(characters)
             net.Send(client)
         end)

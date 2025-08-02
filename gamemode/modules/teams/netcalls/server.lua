@@ -54,7 +54,6 @@ net.Receive("RequestRoster", function(_, client)
         end
 
         net.Start("CharacterInfo")
-        net.WriteString(faction.uniqueID)
         net.WriteTable(characters)
         net.Send(client)
     end)

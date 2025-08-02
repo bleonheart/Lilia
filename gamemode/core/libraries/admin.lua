@@ -7,11 +7,11 @@ lia.administrator.DefaultGroups = {
     superadmin = 3
 }
 
+lia.administrator._camiSource = "lia"
 local function getGroupLevel(group)
     local levels = lia.administrator.DefaultGroups or {}
     if levels[group] then return levels[group] end
-    local visited = {}
-    local current = group
+    local visited, current = {}, group
     for _ = 1, 16 do
         if visited[current] then break end
         visited[current] = true
@@ -29,6 +29,24 @@ local function shouldGrant(group, min)
     return getGroupLevel(group) >= (levels[m] or 1)
 end
 
+function lia.administrator.hasAccess(ply, privilege, target)
+    local grp = "user"
+    if isstring(ply) then
+        grp = ply
+    elseif IsValid(ply) then
+        if ply.getUserGroup then
+            grp = tostring(ply:getUserGroup() or "user")
+        elseif ply.GetUserGroup then
+            grp = tostring(ply:GetUserGroup() or "user")
+        end
+    end
+
+    local g = lia.administrator.groups and lia.administrator.groups[grp] or nil
+    if g and g[privilege] == true then return true end
+    local min = lia.administrator.privileges and lia.administrator.privileges[privilege] or "user"
+    return shouldGrant(grp, min)
+end
+
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.Name then return end
     local name = tostring(priv.Name)
@@ -41,6 +59,18 @@ function lia.administrator.registerPrivilege(priv)
         lia.administrator.groups[groupName] = perms
         if shouldGrant(groupName, min) then perms[name] = true end
     end
+
+    if CAMI and CAMI.RegisterPrivilege then
+        CAMI.RegisterPrivilege({
+            Name = name,
+            MinAccess = min
+        })
+    end
+
+    hook.Run("OnPrivilegeRegistered", {
+        Name = name,
+        MinAccess = min
+    })
 
     if SERVER then lia.administrator.save() end
 end
@@ -72,6 +102,29 @@ function lia.administrator.applyInheritance(groupName)
     end
 end
 
+local function registerGroupsWithCAMI()
+    if not CAMI or not CAMI.RegisterUsergroup then return end
+    for name, data in pairs(lia.administrator.groups or {}) do
+        if not lia.administrator.DefaultGroups[name] then
+            local inh = data._info and data._info.inheritance or "user"
+            CAMI.RegisterUsergroup({
+                Name = name,
+                Inherits = inh
+            }, lia.administrator._camiSource)
+        end
+    end
+end
+
+local function registerPrivilegesWithCAMI()
+    if not CAMI or not CAMI.RegisterPrivilege then return end
+    for name, min in pairs(lia.administrator.privileges or {}) do
+        CAMI.RegisterPrivilege({
+            Name = name,
+            MinAccess = min
+        })
+    end
+end
+
 function lia.administrator.load()
     local function ensureDefaults(groups)
         local created = false
@@ -94,8 +147,7 @@ function lia.administrator.load()
         if not istable(privs) or table.Count(privs) == 0 then return false end
         local changed = false
         for k, v in pairs(privs) do
-            local name
-            local min = "user"
+            local name, min = nil, "user"
             if istable(v) then
                 name = v.Name or isstring(k) and k or nil
                 min = tostring(v.MinAccess or "user"):lower()
@@ -120,6 +172,9 @@ function lia.administrator.load()
     local function continueLoad(groups)
         lia.administrator.groups = groups or {}
         lia.bootstrap("Administration", L("adminSystemLoaded"))
+        hook.Run("OnAdminSystemLoaded", lia.administrator.groups or {}, lia.administrator.privileges or {})
+        registerGroupsWithCAMI()
+        registerPrivilegesWithCAMI()
     end
 
     lia.db.selectOne("*", "admin"):next(function(res)
@@ -166,6 +221,14 @@ function lia.administrator.createGroup(groupName, info)
 
     lia.administrator.groups[groupName] = info
     lia.administrator.applyInheritance(groupName)
+    if CAMI and CAMI.RegisterUsergroup and not lia.administrator.DefaultGroups[groupName] then
+        CAMI.RegisterUsergroup({
+            Name = groupName,
+            Inherits = info._info.inheritance or "user"
+        }, lia.administrator._camiSource)
+    end
+
+    hook.Run("OnUsergroupCreated", groupName, lia.administrator.groups[groupName])
     if SERVER then lia.administrator.save() end
 end
 
@@ -181,6 +244,8 @@ function lia.administrator.removeGroup(groupName)
     end
 
     lia.administrator.groups[groupName] = nil
+    if CAMI and CAMI.UnregisterUsergroup then CAMI.UnregisterUsergroup(groupName, lia.administrator._camiSource) end
+    hook.Run("OnUsergroupRemoved", groupName)
     if SERVER then lia.administrator.save() end
 end
 
@@ -203,6 +268,16 @@ function lia.administrator.renameGroup(oldName, newName)
     lia.administrator.groups[newName] = lia.administrator.groups[oldName]
     lia.administrator.groups[oldName] = nil
     lia.administrator.applyInheritance(newName)
+    if CAMI and CAMI.UnregisterUsergroup and CAMI.RegisterUsergroup then
+        CAMI.UnregisterUsergroup(oldName, lia.administrator._camiSource)
+        local inh = lia.administrator.groups[newName]._info and lia.administrator.groups[newName]._info.inheritance or "user"
+        CAMI.RegisterUsergroup({
+            Name = newName,
+            Inherits = inh
+        }, lia.administrator._camiSource)
+    end
+
+    hook.Run("OnUsergroupRenamed", oldName, newName)
     if SERVER then lia.administrator.save() end
 end
 
@@ -458,6 +533,16 @@ if SERVER then
         lia.administrator.groups[new] = perms
         lia.administrator.groups[old] = nil
         lia.administrator.applyInheritance(new)
+        if CAMI and CAMI.UnregisterUsergroup and CAMI.RegisterUsergroup then
+            CAMI.UnregisterUsergroup(old, lia.administrator._camiSource)
+            local inh = perms._info and perms._info.inheritance or "user"
+            CAMI.RegisterUsergroup({
+                Name = new,
+                Inherits = inh
+            }, lia.administrator._camiSource)
+        end
+
+        hook.Run("OnUsergroupRenamed", old, new)
         lia.administrator.save()
         broadcastGroups()
         p:notifyLocalized("groupRenamed", old, new)
@@ -823,7 +908,7 @@ else
             RunConsoleCommand("say", "/plyunfreeze " .. string.format("'%s'", tostring(id)))
             return true
         elseif cmd == "slay" then
-            RunConsoleCommand("say", "/plyslay " .. string.format("'%s'", tostring(id)))
+            RunConsoleCommand("say", "/plyslay " .. string.format("'%s}", tostring(id)))
             return true
         elseif cmd == "bring" then
             RunConsoleCommand("say", "/plybring " .. string.format("'%s'", tostring(id)))
@@ -873,3 +958,73 @@ else
         end
     end
 end
+
+hook.Add("CAMI.OnPrivilegeRegistered", "liaAdminOnPrivilegeRegistered", function(priv)
+    if not priv or not priv.Name then return end
+    local name = tostring(priv.Name)
+    if name == "" then return end
+    if lia.administrator.privileges[name] ~= nil then return end
+    local min = tostring(priv.MinAccess or "user"):lower()
+    lia.administrator.privileges[name] = min
+    for groupName, perms in pairs(lia.administrator.groups or {}) do
+        perms = perms or {}
+        lia.administrator.groups[groupName] = perms
+        if shouldGrant(groupName, min) then perms[name] = true end
+    end
+
+    if SERVER then
+        lia.administrator.save()
+        lia.administrator.sync()
+    end
+end)
+
+hook.Add("CAMI.OnPrivilegeUnregistered", "liaAdminOnPrivilegeUnregistered", function(priv)
+    if not priv or not priv.Name then return end
+    local name = tostring(priv.Name)
+    lia.administrator.privileges[name] = nil
+    for g, perms in pairs(lia.administrator.groups or {}) do
+        perms[name] = nil
+    end
+
+    if SERVER then
+        lia.administrator.save()
+        lia.administrator.sync()
+    end
+end)
+
+hook.Add("CAMI.OnUsergroupRegistered", "liaAdminOnUsergroupRegistered", function(ug)
+    if not ug or not ug.Name then return end
+    local n = tostring(ug.Name)
+    if n == "" or lia.administrator.DefaultGroups[n] then return end
+    if lia.administrator.groups[n] then return end
+    lia.administrator.groups[n] = {
+        _info = {
+            inheritance = tostring(ug.Inherits or "user"),
+            types = {}
+        }
+    }
+
+    lia.administrator.applyInheritance(n)
+    if SERVER then
+        lia.administrator.save()
+        lia.administrator.sync()
+    end
+end)
+
+hook.Add("CAMI.OnUsergroupUnregistered", "liaAdminOnUsergroupUnregistered", function(ug)
+    if not ug or not ug.Name then return end
+    local n = tostring(ug.Name)
+    if lia.administrator.DefaultGroups[n] then return end
+    if not lia.administrator.groups[n] then return end
+    lia.administrator.groups[n] = nil
+    if SERVER then
+        lia.administrator.save()
+        lia.administrator.sync()
+    end
+end)
+
+hook.Add("CAMI.PlayerHasAccess", "liaAdminPlayerHasAccess", function(actor, privilege, callback, target, extra)
+    local ok = lia.administrator.hasAccess(actor, privilege, target)
+    callback(ok and true or false, "")
+    return true
+end)
