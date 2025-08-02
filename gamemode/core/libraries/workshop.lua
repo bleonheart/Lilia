@@ -209,6 +209,9 @@ else
 
     local function refresh(tbl)
         if tbl then lia.workshop.serverIds = tbl end
+        for id in pairs(lia.workshop.serverIds or {}) do
+            if id ~= FORCE_ID then mountLocal(id) end
+        end
     end
 
     net.Receive("WorkshopDownloader_Start", function()
