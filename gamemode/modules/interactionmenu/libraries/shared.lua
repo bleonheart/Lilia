@@ -99,7 +99,7 @@ AddAction(L("changeToWhisper"), {
     onRun = function(client)
         if CLIENT then return end
         client:setNetVar("VoiceType", "Whispering")
-        client:notifyLocalized("voiceModeSet", "Whispering")
+        client:notifyLocalized("voiceModeSet", L("whispering"))
     end,
     runServer = true
 })
@@ -109,7 +109,7 @@ AddAction(L("changeToTalk"), {
     onRun = function(client)
         if CLIENT then return end
         client:setNetVar("VoiceType", "Talking")
-        client:notifyLocalized("voiceModeSet", "Talking")
+        client:notifyLocalized("voiceModeSet", L("talking"))
     end,
     runServer = true
 })
@@ -119,7 +119,7 @@ AddAction(L("changeToYell"), {
     onRun = function(client)
         if CLIENT then return end
         client:setNetVar("VoiceType", "Yelling")
-        client:notifyLocalized("voiceModeSet", "Yelling")
+        client:notifyLocalized("voiceModeSet", L("yelling"))
     end,
     runServer = true
 })
