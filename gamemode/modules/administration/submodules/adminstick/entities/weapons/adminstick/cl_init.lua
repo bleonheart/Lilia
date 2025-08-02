@@ -64,6 +64,8 @@ function SWEP:DrawHUD()
         end
     end
 
+    hook.Run("AddToAdminStickHUD", client, target, information)
+
     local length, thickness = 20, 1
     surface.SetDrawColor(crossColor)
     surface.DrawRect(x - length / 2, y - thickness / 2, length, thickness)
