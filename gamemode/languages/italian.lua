@@ -394,6 +394,7 @@ LANGUAGE = {
     flagToolgun = "Dà accesso alla Toolgun",
     flagPac3 = "Dà accesso a PAC3.",
     flagFactionRoster = "Dà accesso alla gestione del roster della tua fazione.",
+    flagFactionKick = "Dà accesso a espellere membri della tua fazione tramite il roster.",
     classNoInfo = "Informazioni classe non trovate.",
     classWrongTeam = "Non sei nel team corretto per unirti a questa classe.",
     classFull = "Questa classe è attualmente piena.",
