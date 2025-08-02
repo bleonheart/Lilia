@@ -234,6 +234,18 @@ local ConditionalFiles = {
         realm = "server"
     },
     {
+        path = "lilia/gamemode/core/libraries/compatibility/ulx.lua",
+        global = "ulx",
+        name = "ULX",
+        realm = "shared"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
+        global = "serverguard",
+        name = "ServerGuard",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/compatibility/sam.lua",
         global = "sam",
         name = "SAM",
