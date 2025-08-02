@@ -1,3 +1,26 @@
+local function registerGroupsWithCAMI()
+    if not CAMI or not CAMI.RegisterUsergroup then return end
+    for name, data in pairs(lia.administrator.groups or {}) do
+        if not lia.administrator.DefaultGroups[name] then
+            local inh = data._info and data._info.inheritance or "user"
+            CAMI.RegisterUsergroup({
+                Name = name,
+                Inherits = inh
+            }, lia.administrator._camiSource)
+        end
+    end
+end
+
+local function registerPrivilegesWithCAMI()
+    if not CAMI or not CAMI.RegisterPrivilege then return end
+    for name, min in pairs(lia.administrator.privileges or {}) do
+        CAMI.RegisterPrivilege({
+            Name = name,
+            MinAccess = min
+        })
+    end
+end
+
 hook.Add("CAMI.OnPrivilegeRegistered", "liaAdminOnPrivilegeRegistered", function(priv)
     if not priv or not priv.Name then return end
     local name = tostring(priv.Name)
@@ -66,4 +89,45 @@ hook.Add("CAMI.PlayerHasAccess", "liaAdminPlayerHasAccess", function(actor, priv
     local ok = lia.administrator.hasAccess(actor, privilege, target)
     callback(ok and true or false, "")
     return true
+end)
+
+hook.Add("OnUsergroupCreated", "liaAdminCAMIRegisterGroup", function(name, data)
+    if not CAMI or not CAMI.RegisterUsergroup then return end
+    if lia.administrator.DefaultGroups[name] then return end
+    local inh = data and data._info and data._info.inheritance or "user"
+    CAMI.RegisterUsergroup({
+        Name = name,
+        Inherits = inh
+    }, lia.administrator._camiSource)
+end)
+
+hook.Add("OnUsergroupRemoved", "liaAdminCAMIUnregisterGroup", function(name)
+    if CAMI and CAMI.UnregisterUsergroup then
+        CAMI.UnregisterUsergroup(name, lia.administrator._camiSource)
+    end
+end)
+
+hook.Add("OnUsergroupRenamed", "liaAdminCAMIRenameGroup", function(oldName, newName)
+    if CAMI and CAMI.UnregisterUsergroup and CAMI.RegisterUsergroup then
+        CAMI.UnregisterUsergroup(oldName, lia.administrator._camiSource)
+        local inh = lia.administrator.groups[newName] and lia.administrator.groups[newName]._info and lia.administrator.groups[newName]._info.inheritance or "user"
+        CAMI.RegisterUsergroup({
+            Name = newName,
+            Inherits = inh
+        }, lia.administrator._camiSource)
+    end
+end)
+
+hook.Add("OnPrivilegeRegistered", "liaAdminCAMIRegisterPrivilege", function(priv)
+    if CAMI and CAMI.RegisterPrivilege and priv and priv.Name then
+        CAMI.RegisterPrivilege({
+            Name = priv.Name,
+            MinAccess = priv.MinAccess
+        })
+    end
+end)
+
+hook.Add("OnAdminSystemLoaded", "liaAdminCAMILoad", function()
+    registerGroupsWithCAMI()
+    registerPrivilegesWithCAMI()
 end)
