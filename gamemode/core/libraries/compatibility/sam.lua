@@ -147,13 +147,32 @@ function sam.player.send_message(client, msg, tbl)
 end
 
 hook.Add("SAM.RankPermissionGiven", "liaSAMHandlePermissionGiven", function(rankName, permission)
-    local message = string.format("Permission '%s' was granted to rank '%s'.", permission, rankName)
-    print(message)
+    if not rankName or not permission then return end
+    if CAMI and not CAMI.GetPrivilege(permission) then
+        CAMI.RegisterPrivilege({
+            Name = permission,
+            MinAccess = "admin"
+        })
+    end
+
+    if lia.administrator and lia.administrator.addPermission then
+        lia.administrator.addPermission(rankName, permission, true)
+    end
+
+    if CAMI then
+        lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName))
+    end
 end)
 
 hook.Add("SAM.RankPermissionTaken", "liaSAMHandlePermissionTaken", function(rankName, permission)
-    local message = string.format("Permission '%s' was revoked from rank '%s'.", permission, rankName)
-    print(message)
+    if not rankName or not permission then return end
+    if lia.administrator and lia.administrator.removePermission then
+        lia.administrator.removePermission(rankName, permission, true)
+    end
+
+    if CAMI then
+        lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName))
+    end
 end)
 
 lia.command.add("cleardecals", {
