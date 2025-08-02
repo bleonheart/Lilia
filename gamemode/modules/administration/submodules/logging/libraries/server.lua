@@ -167,11 +167,11 @@ function MODULE:OnPlayerObserve(client, state)
 end
 
 function MODULE:TicketSystemClaim(admin, requester)
-    lia.db.count("ticketclaims", "admin = " .. lia.db.convertDataType(admin:SteamID64())):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
+    lia.db.count("ticketclaims", "admin = " .. lia.db.convertDataType(admin:SteamID())):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
-    lia.db.count("ticketclaims", "admin = " .. lia.db.convertDataType(admin:SteamID64())):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
+    lia.db.count("ticketclaims", "admin = " .. lia.db.convertDataType(admin:SteamID())):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
 function MODULE:WarningIssued(admin, target, reason, index)

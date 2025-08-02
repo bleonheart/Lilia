@@ -23,7 +23,7 @@ lia.command.add("plyviewclaims", {
             return
         end
 
-        local steamID = target:SteamID64()
+        local steamID = target:SteamID()
         MODULE:GetAllCaseClaims():next(function(caseclaims)
             local claim = caseclaims[steamID]
             if not claim then

@@ -14,12 +14,12 @@ local function buildClaimTable(rows)
         local info = caseclaims[adminID]
         info.claims = info.claims + 1
         if row.timestamp > info.lastclaim then info.lastclaim = row.timestamp end
-        local reqPly = player.GetBySteamID64(row.request)
+        local reqPly = player.GetBySteamID(row.request)
         info.claimedFor[row.request] = IsValid(reqPly) and reqPly:Nick() or row.request
     end
 
     for adminID, info in pairs(caseclaims) do
-        local ply = player.GetBySteamID64(adminID)
+        local ply = player.GetBySteamID(adminID)
         if IsValid(ply) then info.name = ply:Nick() end
     end
     return caseclaims
@@ -31,8 +31,8 @@ end
 
 function MODULE:TicketSystemClaim(admin, requester)
     lia.db.insertTable({
-        request = requester:SteamID64(),
-        admin = admin:SteamID64(),
+        request = requester:SteamID(),
+        admin = admin:SteamID(),
         timestamp = os.time()
     }, nil, "ticketclaims")
 end
@@ -55,7 +55,7 @@ function MODULE:PlayerDisconnected(client)
         end
     end
 
-    MODULE.ActiveTickets[client:SteamID64()] = nil
+    MODULE.ActiveTickets[client:SteamID()] = nil
 end
 
 function MODULE:SendPopup(noob, message)
@@ -70,17 +70,17 @@ function MODULE:SendPopup(noob, message)
     end
 
     if IsValid(noob) and noob:IsPlayer() then
-        MODULE.ActiveTickets[noob:SteamID64()] = {
+        MODULE.ActiveTickets[noob:SteamID()] = {
             timestamp = os.time(),
             requester = noob:SteamID(),
             admin = noob.CaseClaimed and IsValid(noob.CaseClaimed) and noob.CaseClaimed:SteamID() or nil,
             message = message
         }
 
-        timer.Remove("ticketsystem-" .. noob:SteamID64())
-        timer.Create("ticketsystem-" .. noob:SteamID64(), 60, 1, function()
+        timer.Remove("ticketsystem-" .. noob:SteamID())
+        timer.Create("ticketsystem-" .. noob:SteamID(), 60, 1, function()
             if IsValid(noob) and noob:IsPlayer() then noob.CaseClaimed = nil end
-            MODULE.ActiveTickets[noob:SteamID64()] = nil
+            MODULE.ActiveTickets[noob:SteamID()] = nil
         end)
     end
 end
