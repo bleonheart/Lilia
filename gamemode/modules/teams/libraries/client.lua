@@ -39,9 +39,12 @@ function MODULE:CreateInformationButtons(pages)
             local sheet = vgui.Create("liaSheet", parent)
             sheet:SetPlaceholderText(L("search"))
             lia.gui.rosterSheet = sheet
-
-            net.Start("RequestRoster")
-            net.SendToServer()
+        end,
+        onSelect = function()
+            if IsValid(lia.gui.rosterSheet) then
+                net.Start("RequestRoster")
+                net.SendToServer()
+            end
         end
     })
 end
