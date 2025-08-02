@@ -19,6 +19,46 @@ local function registerPrivilegesWithCAMI()
     end
 end
 
+local function liaAdminBootstrapFromCAMI()
+    if CAMI and CAMI.GetUsergroups then
+        for _, ug in pairs(CAMI.GetUsergroups() or {}) do
+            if not lia.administrator.DefaultGroups[ug.Name] and not lia.administrator.groups[ug.Name] then
+                lia.administrator.groups[ug.Name] = {
+                    _info = {
+                        inheritance = tostring(ug.Inherits or "user"),
+                        types = {}
+                    }
+                }
+
+                lia.administrator.applyInheritance(ug.Name)
+            end
+        end
+    end
+
+    if CAMI and CAMI.GetPrivileges then
+        for _, pr in pairs(CAMI.GetPrivileges() or {}) do
+            if lia.administrator.privileges[pr.Name] == nil then
+                local min = tostring(pr.MinAccess or "user"):lower()
+                lia.administrator.privileges[pr.Name] = min
+                for groupName in pairs(lia.administrator.groups or {}) do
+                    if shouldGrant(groupName, min) then lia.administrator.groups[groupName][pr.Name] = true end
+                end
+            end
+        end
+    end
+
+    if SERVER then
+        lia.administrator.save(true)
+        lia.administrator.sync()
+    end
+end
+
+hook.Add("CAMI.PlayerHasAccess", "liaAdminCAMIPlayerHasAccess", function(ply, privilege, callback, target, extra)
+    local ok = lia.administrator.hasAccess(ply, privilege) and true or false
+    callback(ok, ok and "" or "denied")
+    return true
+end)
+
 hook.Add("CAMI.OnPrivilegeRegistered", "liaAdminOnPrivilegeRegistered", function(priv)
     if not priv or not priv.Name then return end
     local name = tostring(priv.Name)
@@ -112,4 +152,5 @@ end)
 hook.Add("OnAdminSystemLoaded", "liaAdminCAMILoad", function()
     registerGroupsWithCAMI()
     registerPrivilegesWithCAMI()
+    liaAdminBootstrapFromCAMI()
 end)

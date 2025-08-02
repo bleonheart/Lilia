@@ -37,8 +37,6 @@ local function rebuildPrivileges()
                 local current = lia.administrator.privileges[priv]
                 local groupLevel = getGroupLevel(groupName)
                 local currentLevel = current and getGroupLevel(current) or math.huge
-
-                -- Determine the base default group name for this group's level.
                 if not current or groupLevel < currentLevel then
                     local base
                     for name, lvl in pairs(lia.administrator.DefaultGroups or {}) do
@@ -47,6 +45,7 @@ local function rebuildPrivileges()
                             break
                         end
                     end
+
                     lia.administrator.privileges[priv] = base or "user"
                 end
             end
@@ -138,6 +137,7 @@ function lia.administrator.load()
         end
         return created
     end
+
     local function continueLoad(groups)
         lia.administrator.groups = groups or {}
         lia.admin(L("adminSystemLoaded"))
@@ -155,6 +155,7 @@ function lia.administrator.load()
                     inheritance = row.inheritance or "user",
                     types = util.JSONToTable(row.types or "") or {}
                 }
+
                 groups[name] = privs
             end
         end
@@ -165,6 +166,7 @@ function lia.administrator.load()
         for n in pairs(groups) do
             lia.administrator.applyInheritance(n)
         end
+
         rebuildPrivileges()
         if created then lia.administrator.save(true) end
         lia.administrator._loading = false
@@ -238,6 +240,15 @@ if SERVER then
     util.AddNetworkString("liaGroupsRename")
     util.AddNetworkString("liaGroupsSetPerm")
     util.AddNetworkString("liaGroupPermChanged")
+    function lia.administrator.setUserGroup(ply, newGroup)
+        if not IsValid(ply) then return end
+        local old = tostring(ply.GetUserGroup and ply:GetUserGroup() or "user")
+        newGroup = tostring(newGroup or "user")
+        if old == newGroup then return end
+        if ply.SetUserGroup then ply:SetUserGroup(newGroup) end
+        if CAMI and CAMI.SignalUserGroupChanged then CAMI.SignalUserGroupChanged(ply, old, newGroup, lia.administrator._camiSource) end
+    end
+
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))
@@ -302,7 +313,6 @@ if SERVER then
 
         lia.db.query("DELETE FROM lia_admin")
         lia.db.bulkInsert("admin", rows)
-
         if noNetwork or lia.administrator._loading then return end
         lia.net.ready = lia.net.ready or setmetatable({}, {
             __mode = "k"
