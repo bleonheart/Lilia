@@ -61,6 +61,6 @@ net.Receive("TicketSystemClose", function()
         if v.idiot == requester then v:Remove() end
     end
 
-    if timer.Exists("ticketsystem-" .. requester:SteamID64()) then timer.Remove("ticketsystem-" .. requester:SteamID64()) end
+    if timer.Exists("ticketsystem-" .. requester:SteamID()) then timer.Remove("ticketsystem-" .. requester:SteamID()) end
 end)
 

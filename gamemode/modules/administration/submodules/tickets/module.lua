@@ -45,7 +45,7 @@ if CLIENT then
 
             local requester = t.requester or ""
             if requester ~= "" then
-                local requesterPly = player.GetBySteamID(requester)
+                  local requesterPly = player.GetBySteamID(requester)
                 if IsValid(requesterPly) then requester = requesterPly:Nick() end
             end
 

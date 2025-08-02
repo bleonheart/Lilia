@@ -11,8 +11,8 @@ function MODULE:TicketFrame(requester, message, claimed)
             local txt = v:GetChildren()[5]
             txt:AppendText("\n" .. message)
             txt:GotoTextEnd()
-            timer.Remove("ticketsystem-" .. requester:SteamID64())
-            timer.Create("ticketsystem-" .. requester:SteamID64(), 60, 1, function() if IsValid(v) then v:Remove() end end)
+            timer.Remove("ticketsystem-" .. requester:SteamID())
+            timer.Create("ticketsystem-" .. requester:SteamID(), 60, 1, function() if IsValid(v) then v:Remove() end end)
             surface.PlaySound("ui/hint.wav")
             return
         end
@@ -132,9 +132,9 @@ function MODULE:TicketFrame(requester, message, claimed)
             end
         end
 
-        if IsValid(requester) and timer.Exists("ticketsystem-" .. requester:SteamID64()) then timer.Remove("ticketsystem-" .. requester:SteamID64()) end
+        if IsValid(requester) and timer.Exists("ticketsystem-" .. requester:SteamID()) then timer.Remove("ticketsystem-" .. requester:SteamID()) end
     end
 
     table.insert(TicketFrames, frm)
-    timer.Create("ticketsystem-" .. requester:SteamID64(), 60, 1, function() if IsValid(frm) then frm:Remove() end end)
+    timer.Create("ticketsystem-" .. requester:SteamID(), 60, 1, function() if IsValid(frm) then frm:Remove() end end)
 end
