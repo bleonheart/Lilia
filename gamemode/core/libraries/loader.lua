@@ -254,7 +254,7 @@ local ConditionalFiles = {
     {
         path = "lilia/gamemode/core/libraries/compatibility/sitanywhere.lua",
         global = "SitAnywhere",
-        name = "SitAnywhere",
+        name = "Sit Anywhere",
         realm = "server"
     },
     {
