@@ -18,7 +18,7 @@
 
         local character = target:getChar()
         if not character then
-            client:notifyLocalized("invalid", "Character")
+            client:notifyLocalized("invalid", L("character"))
             return
         end
 
@@ -637,7 +637,7 @@ lia.command.add("cleanitems", {
             SafeRemoveEntity(v)
         end
 
-        client:notifyLocalized("cleaningFinished", "Items", count)
+        client:notifyLocalized("cleaningFinished", L("items"), count)
     end
 })
 
@@ -654,7 +654,7 @@ lia.command.add("cleanprops", {
             end
         end
 
-        client:notifyLocalized("cleaningFinished", "Props", count)
+        client:notifyLocalized("cleaningFinished", L("props"), count)
     end
 })
 
@@ -671,7 +671,7 @@ lia.command.add("cleannpcs", {
             end
         end
 
-        client:notifyLocalized("cleaningFinished", "NPCs", count)
+        client:notifyLocalized("cleaningFinished", L("npcs"), count)
     end
 })
 
