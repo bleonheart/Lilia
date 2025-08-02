@@ -19,10 +19,6 @@ local RealmIDs = {
 
 local FilesToLoad = {
     {
-        path = "lilia/gamemode/core/libraries/languages.lua",
-        realm = "shared"
-    },
-    {
         path = "lilia/gamemode/core/libraries/networking.lua",
         realm = "shared"
     },
@@ -341,6 +337,7 @@ function lia.includeGroupedDir(dir, raw, recursive, forceRealm)
     end
 end
 
+lia.include("lilia/gamemode/core/libraries/languages.lua", "shared")
 lia.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
 lia.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.include("lilia/gamemode/core/libraries/database.lua", "server")
