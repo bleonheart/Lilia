@@ -600,22 +600,14 @@ else
         frame:MakePopup()
         local listView = vgui.Create("DListView", frame)
         listView:Dock(FILL)
-        local totalFixedWidth = 0
-        local dynamicColumns = 0
-        for _, colInfo in ipairs(columns) do
-            if colInfo.width then
-                totalFixedWidth = totalFixedWidth + colInfo.width
-            else
-                dynamicColumns = dynamicColumns + 1
-            end
-        end
-
-        local availableWidth = frame:GetWide() - totalFixedWidth
-        local dynamicWidth = dynamicColumns > 0 and math.max(availableWidth / dynamicColumns, 50) or 0
         for _, colInfo in ipairs(columns) do
             local columnName = colInfo.name or L("na")
-            local columnWidth = colInfo.width or dynamicWidth
-            listView:AddColumn(columnName):SetFixedWidth(columnWidth)
+            local col = listView:AddColumn(columnName)
+            surface.SetFont(col.Header:GetFont())
+            local textW = surface.GetTextSize(columnName)
+            local minWidth = textW + 16
+            col:SetMinWidth(minWidth)
+            col:SetWidth(colInfo.width or minWidth)
         end
 
         for _, row in ipairs(data) do

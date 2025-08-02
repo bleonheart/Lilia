@@ -18,10 +18,19 @@ if CLIENT then
         panelRef:Clear()
         local list = panelRef:Add("DListView")
         list:Dock(FILL)
-        list:AddColumn(L("timestamp")):SetFixedWidth(150)
-        list:AddColumn(L("Warned", "Warned")):SetFixedWidth(110)
-        list:AddColumn(L("Warner", "Warner")):SetFixedWidth(110)
-        list:AddColumn(L("reason"))
+        local function addSizedColumn(text)
+            local col = list:AddColumn(text)
+            surface.SetFont(col.Header:GetFont())
+            local w = surface.GetTextSize(col.Header:GetText())
+            col:SetMinWidth(w + 16)
+            col:SetWidth(w + 16)
+            return col
+        end
+
+        addSizedColumn(L("timestamp"))
+        addSizedColumn(L("Warned", "Warned"))
+        addSizedColumn(L("Warner", "Warner"))
+        addSizedColumn(L("reason"))
         for _, warn in ipairs(warnings) do
             list:AddLine(warn.timestamp or "", warn.steamID or "", warn.admin or "", warn.reason or "")
         end
