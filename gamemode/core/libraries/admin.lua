@@ -483,7 +483,7 @@ if SERVER then
 
     ensureStructures()
     net.Receive("liaGroupsRequest", function(_, p)
-        if not IsValid(p) then return end
+        if not IsValid(p) or not p:hasPrivilege("Manage Usergroups") then return end
         lia.net.ready = lia.net.ready or setmetatable({}, {
             __mode = "k"
         })
@@ -493,6 +493,7 @@ if SERVER then
     end)
 
     net.Receive("liaGroupsAdd", function(_, p)
+        if not p:hasPrivilege("Manage Usergroups") then return end
         local data = net.ReadTable()
         local n = string.Trim(tostring(data.name or ""))
         if n == "" then return end
@@ -512,6 +513,7 @@ if SERVER then
     end)
 
     net.Receive("liaGroupsRemove", function(_, p)
+        if not p:hasPrivilege("Manage Usergroups") then return end
         local n = net.ReadString()
         if n == "" or lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[n] then return end
         lia.administrator.removeGroup(n)
@@ -522,6 +524,7 @@ if SERVER then
     end)
 
     net.Receive("liaGroupsRename", function(_, p)
+        if not p:hasPrivilege("Manage Usergroups") then return end
         local old = string.Trim(net.ReadString() or "")
         local new = string.Trim(net.ReadString() or "")
         if old == "" or new == "" then return end
@@ -549,6 +552,7 @@ if SERVER then
     end)
 
     net.Receive("liaGroupsSetPerm", function(_, p)
+        if not p:hasPrivilege("Manage Usergroups") then return end
         local group = net.ReadString()
         local privilege = net.ReadString()
         local value = net.ReadBool()
@@ -862,7 +866,7 @@ else
     end)
 
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
-        if not IsValid(LocalPlayer()) then return end
+        if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege("Manage Usergroups") then return end
         pages[#pages + 1] = {
             name = L("userGroups"),
             drawFunc = function(parent)

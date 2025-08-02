@@ -28,4 +28,9 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = L("categoryStaffPermissions"),
     },
+    {
+        Name = L("manageUsergroups"),
+        MinAccess = "superadmin",
+        Category = L("categoryStaffPermissions"),
+    },
 }
