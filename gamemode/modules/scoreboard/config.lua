@@ -1,44 +1,44 @@
-﻿lia.config.add("sbWidth", "Scoreboard Width", 0.35, nil, {
-    desc = "Scoreboard Width",
-    category = "Scoreboard",
+lia.config.add("sbWidth", L("sbWidth"), 0.35, nil, {
+    desc = L("sbWidthDesc"),
+    category = L("moduleScoreboardName"),
     type = "Float",
     min = 0.1,
     max = 1.0
 })
 
-lia.config.add("sbHeight", "Scoreboard Height", 0.65, nil, {
-    desc = "Scoreboard Height",
-    category = "Scoreboard",
+lia.config.add("sbHeight", L("sbHeight"), 0.65, nil, {
+    desc = L("sbHeightDesc"),
+    category = L("moduleScoreboardName"),
     type = "Float",
     min = 0.1,
     max = 1.0
 })
 
-lia.config.add("ClassHeaders", "Class Headers", true, nil, {
-    desc = "Should class headers exist?",
-    category = "Scoreboard",
+lia.config.add("ClassHeaders", L("classHeaders"), true, nil, {
+    desc = L("classHeadersDesc"),
+    category = L("moduleScoreboardName"),
     type = "Boolean"
 })
 
-lia.config.add("UseSolidBackground", "Use Solid Background in Scoreboard", false, nil, {
-    desc = "Use a solid background for the scoreboard",
-    category = "Scoreboard",
+lia.config.add("UseSolidBackground", L("useSolidBackground"), false, nil, {
+    desc = L("useSolidBackgroundDesc"),
+    category = L("moduleScoreboardName"),
     type = "Boolean"
 })
 
-lia.config.add("ClassLogo", "Should Class Logo Appear in the Player Bar", false, nil, {
-    desc = "Toggle display of class logo next to player entries",
-    category = "Scoreboard",
+lia.config.add("ClassLogo", L("classLogo"), false, nil, {
+    desc = L("classLogoDesc"),
+    category = L("moduleScoreboardName"),
     type = "Boolean"
 })
 
-lia.config.add("ScoreboardBackgroundColor", "Scoreboard Background Color", {
+lia.config.add("ScoreboardBackgroundColor", L("scoreboardBackgroundColor"), {
     r = 255,
     g = 100,
     b = 100,
     a = 255
 }, nil, {
-    desc = "Sets the background color of the scoreboard. This only applies if 'UseSolidBackground' is enabled.",
-    category = "Scoreboard",
+    desc = L("scoreboardBackgroundColorDesc"),
+    category = L("moduleScoreboardName"),
     type = "Color"
 })
