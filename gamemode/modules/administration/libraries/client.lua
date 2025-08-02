@@ -37,77 +37,77 @@
                 end
             },
             {
-                name = "Blind",
+                name = L("Blind"),
                 image = "icon16/eye.png",
                 func = function() RunConsoleCommand("say", "!blind " .. target:SteamID()) end
             },
             {
-                name = "Freeze",
+                name = L("Freeze"),
                 image = "icon16/lock.png",
                 func = function() RunConsoleCommand("say", "!freeze " .. target:SteamID()) end
             },
             {
-                name = "Gag",
+                name = L("Gag"),
                 image = "icon16/sound_mute.png",
                 func = function() RunConsoleCommand("say", "!gag " .. target:SteamID()) end
             },
             {
-                name = "Ignite",
+                name = L("Ignite"),
                 image = "icon16/fire.png",
                 func = function() RunConsoleCommand("say", "!ignite " .. target:SteamID()) end
             },
             {
-                name = "Jail",
+                name = L("Jail"),
                 image = "icon16/lock.png",
                 func = function() RunConsoleCommand("say", "!jail " .. target:SteamID()) end
             },
             {
-                name = "Mute",
+                name = L("Mute"),
                 image = "icon16/sound_delete.png",
                 func = function() RunConsoleCommand("say", "!mute " .. target:SteamID()) end
             },
             {
-                name = "Slay",
+                name = L("Slay"),
                 image = "icon16/bomb.png",
                 func = function() RunConsoleCommand("say", "!slay " .. target:SteamID()) end
             },
             {
-                name = "Unblind",
+                name = L("Unblind"),
                 image = "icon16/eye.png",
                 func = function() RunConsoleCommand("say", "!unblind " .. target:SteamID()) end
             },
             {
-                name = "Ungag",
+                name = L("Ungag"),
                 image = "icon16/sound_low.png",
                 func = function() RunConsoleCommand("say", "!ungag " .. target:SteamID()) end
             },
             {
-                name = "Unfreeze",
+                name = L("Unfreeze"),
                 image = "icon16/accept.png",
                 func = function() RunConsoleCommand("say", "!unfreeze " .. target:SteamID()) end
             },
             {
-                name = "Unmute",
+                name = L("Unmute"),
                 image = "icon16/sound_add.png",
                 func = function() RunConsoleCommand("say", "!unmute " .. target:SteamID()) end
             },
             {
-                name = "Bring",
+                name = L("Bring"),
                 image = "icon16/arrow_down.png",
                 func = function() RunConsoleCommand("say", "!bring " .. target:SteamID()) end
             },
             {
-                name = "Goto",
+                name = L("Goto"),
                 image = "icon16/arrow_right.png",
                 func = function() RunConsoleCommand("say", "!goto " .. target:SteamID()) end
             },
             {
-                name = "Respawn",
+                name = L("Respawn"),
                 image = "icon16/arrow_refresh.png",
                 func = function() RunConsoleCommand("say", "!respawn " .. target:SteamID()) end
             },
             {
-                name = "Return",
+                name = L("Return"),
                 image = "icon16/arrow_redo.png",
                 func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
             }
