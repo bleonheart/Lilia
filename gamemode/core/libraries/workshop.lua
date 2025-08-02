@@ -62,7 +62,6 @@ if SERVER then
     end)
 
     net.Receive("WorkshopDownloader_Request", function(_, client)
-        if not lia.config.get("AutoDownloadWorkshop", true) then return end
         lia.workshop.send(client)
     end)
 
