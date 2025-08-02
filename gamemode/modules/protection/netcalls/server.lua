@@ -538,15 +538,15 @@ function MODULE:InitializedModules()
 
     for netName in pairs(MaliciousNet) do
         if util.NetworkStringToID(netName) ~= 0 then
-            print(L("backdoorDetectedConsole", netName))
+            lia.admin(L("backdoorDetectedConsole", netName))
             if isfunction(net.Receivers[netName]) then
                 local backdoorInfos = debug.getinfo(net.Receivers[netName], "S")
-                print(L("backdoorDeclaredIn", netName, backdoorInfos.short_src, backdoorInfos.linedefined))
+                lia.admin(L("backdoorDeclaredIn", netName, backdoorInfos.short_src, backdoorInfos.linedefined))
                 lia.log.add(nil, "backdoorDetected", netName, backdoorInfos.short_src, backdoorInfos.linedefined)
             else
                 lia.log.add(nil, "backdoorDetected", netName)
             end
-
+            
             net.Receive(netName, function(_, client)
                 lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(netName))
                 for _, p in player.Iterator() do
