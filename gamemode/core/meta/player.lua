@@ -211,7 +211,6 @@ end
 
 function playerMeta:IsSuperAdmin()
     return (oldIsSuperAdmin and oldIsSuperAdmin(self)) or groupDerivesFrom(self:GetUserGroup(), "superadmin")
-end
 
 function playerMeta:isUser()
     return groupDerivesFrom(self:GetUserGroup(), "user")

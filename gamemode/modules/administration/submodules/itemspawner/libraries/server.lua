@@ -40,6 +40,12 @@ net.Receive("SpawnMenuSpawnItem", function(_, client)
         local ent = item:getEntity()
         if not IsValid(ent) then return end
         tryFixPropPosition(client, ent)
+        if IsValid(client) then
+            ent.SteamID64 = client:SteamID64()
+            local char = client:getChar()
+            if char then ent.liaCharID = char:getID() end
+            ent:SetCreator(client)
+        end
         undo.Create("item")
         undo.SetPlayer(client)
         undo.AddEntity(ent)
