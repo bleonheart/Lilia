@@ -435,9 +435,9 @@ CREATE TABLE IF NOT EXISTS lia_saveditems (
     _angles text
 );
 CREATE TABLE IF NOT EXISTS lia_admin (
-    usergroups text,
+    usergroup text PRIMARY KEY,
     privileges text,
-    inheritances text,
+    inheritance text,
     types text
 );
 CREATE TABLE IF NOT EXISTS lia_data (
@@ -585,10 +585,11 @@ CREATE TABLE IF NOT EXISTS `lia_saveditems` (
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_admin` (
-    `usergroups` text default null,
+    `usergroup` text not null,
     `privileges` text default null,
-    `inheritances` text default null,
-    `types` text default null
+    `inheritance` text default null,
+    `types` text default null,
+    PRIMARY KEY (`usergroup`)
 );
 ]])
         local index = 1
