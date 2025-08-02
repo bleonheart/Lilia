@@ -55,7 +55,7 @@ lia.command.add("blockooc", {
     onRun = function(client)
         local blocked = GetGlobalBool("oocblocked", false)
         SetGlobalBool("oocblocked", not blocked)
-        client:notify(blocked and L("unlockedOOC") or L("blockedOOC"))
+        client:notifyLocalized(blocked and "unlockedOOC" or "blockedOOC")
         lia.log.add(client, "blockOOC", not blocked)
     end
 })
