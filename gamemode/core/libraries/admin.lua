@@ -7,9 +7,43 @@ lia.administrator.DefaultGroups = {
     superadmin = 3
 }
 
+local function resolveBase(group)
+    local levels = lia.administrator.DefaultGroups or {}
+    if levels[group] then return group end
+    local seen = {}
+    local current = group
+    for _ = 1, 32 do
+        if not isstring(current) or seen[current] then break end
+        seen[current] = true
+        local g = lia.administrator.groups and lia.administrator.groups[current] or nil
+        local parent = g and g._info and g._info.inheritance or nil
+        if levels[parent] then return parent end
+        current = parent
+    end
+    return "user"
+end
+
 local function shouldGrant(group, min)
     local levels = lia.administrator.DefaultGroups or {}
-    return (levels[group] or 0) >= (levels[min] or 1)
+    local base = resolveBase(group)
+    return (levels[base] or 0) >= (levels[min] or 1)
+end
+
+local function setStoredPrivilegesFromList(list)
+    local map = {}
+    if istable(list) then
+        for k, v in pairs(list) do
+            if istable(v) and isstring(v.Name) and v.Name ~= "" then
+                map[v.Name] = v.MinAccess or "user"
+            elseif isstring(v) and v ~= "" then
+                map[v] = "user"
+            elseif isstring(k) and k ~= "" and isstring(v) then
+                map[k] = v
+            end
+        end
+    end
+
+    lia.administrator.privileges = map
 end
 
 function lia.administrator.registerPrivilege(priv)
@@ -22,10 +56,34 @@ function lia.administrator.registerPrivilege(priv)
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
-        if shouldGrant(groupName, min) then perms[name] = true end
+        if shouldGrant(groupName, min) and not perms[name] then perms[name] = true end
     end
 
     if SERVER then lia.administrator.save() end
+end
+
+function lia.administrator.applyGroupInheritance(groupName)
+    local groups = lia.administrator.groups or {}
+    local grp = groups[groupName]
+    if not grp then return end
+    local inherit = grp._info and grp._info.inheritance or "user"
+    if isstring(inherit) and groups[inherit] then
+        for k, v in pairs(groups[inherit]) do
+            if k ~= "_info" and v and not grp[k] then grp[k] = true end
+        end
+    end
+
+    for priv, min in pairs(lia.administrator.privileges or {}) do
+        if shouldGrant(groupName, min) and not grp[priv] then grp[priv] = true end
+    end
+end
+
+function lia.administrator.rebuildAllGroupPermissions()
+    for g in pairs(lia.administrator.groups or {}) do
+        lia.administrator.applyGroupInheritance(g)
+    end
+
+    if SERVER then lia.administrator.save(true) end
 end
 
 function lia.administrator.load()
@@ -75,6 +133,7 @@ function lia.administrator.load()
 
     local function continueLoad(groups)
         lia.administrator.groups = groups or {}
+        lia.administrator.rebuildAllGroupPermissions()
         lia.bootstrap("Administration", L("adminSystemLoaded"))
     end
 
@@ -82,6 +141,8 @@ function lia.administrator.load()
         local newGroups = res and util.JSONToTable(res.usergroups or res.groups or "") or {}
         local inherits = res and util.JSONToTable(res.inheritances or "") or {}
         local types = res and util.JSONToTable(res.types or "") or {}
+        local storedPrivList = res and util.JSONToTable(res.privileges or "") or {}
+        setStoredPrivilegesFromList(storedPrivList)
         for name, data in pairs(newGroups) do
             data._info = data._info or {}
             data._info.inheritance = inherits[name] or data._info.inheritance or "user"
@@ -92,7 +153,7 @@ function lia.administrator.load()
         if table.Count(newGroups) == 0 then
             local oldGroups = res and util.JSONToTable(res.usergroups or "") or {}
             created = ensureDefaults(oldGroups) or created
-            if migratePrivileges(oldGroups, res and util.JSONToTable(res.privileges or "") or {}) then created = true end
+            if migratePrivileges(oldGroups, storedPrivList) then created = true end
             newGroups = oldGroups
         end
 
@@ -120,6 +181,7 @@ function lia.administrator.createGroup(groupName, info)
     }
 
     lia.administrator.groups[groupName] = info
+    lia.administrator.applyGroupInheritance(groupName)
     if SERVER then lia.administrator.save() end
 end
 
@@ -439,8 +501,9 @@ else
     local LAST_GROUP
     local function computePrivilegeList(groups)
         local list, seen = {}, {}
-        for name in pairs(lia.administrator.privileges or {}) do
-            list[#list + 1], seen[name] = name, true
+        for k, v in pairs(lia.administrator.privileges or {}) do
+            local name = isstring(k) and k or istable(v) and v.Name or isstring(v) and v or nil
+            if isstring(name) and name ~= "" and not seen[name] then list[#list + 1], seen[name] = name, true end
         end
 
         for _, data in pairs(groups or {}) do
@@ -706,7 +769,11 @@ else
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl) end
     end)
 
-    lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
+        lia.administrator.privileges = tbl or {}
+        if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups or {}) end
+    end)
+
     net.Receive("liaGroupPermChanged", function()
         local group = net.ReadString()
         local privilege = net.ReadString()

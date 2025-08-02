@@ -472,6 +472,13 @@ lia.config.add("DermaSkin", "Derma UI Skin", "Lilia Skin", function(_, newSkin) 
     options = CLIENT and getDermaSkins() or {"Lilia Skin"}
 })
 
+lia.config.add("Language", "Language", "English", nil, {
+    desc = "Determines the language setting for the game.",
+    category = "General",
+    type = "Table",
+    options = lia.lang.getLanguages()
+})
+
 hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
     local ConfigFormatting = {
         Int = function(key, name, config, parent)
