@@ -35,8 +35,19 @@ local function rebuildPrivileges()
         for priv, allowed in pairs(perms) do
             if priv ~= "_info" and allowed == true then
                 local current = lia.administrator.privileges[priv]
-                if not current or getGroupLevel(groupName) < getGroupLevel(current) then
-                    lia.administrator.privileges[priv] = groupName
+                local groupLevel = getGroupLevel(groupName)
+                local currentLevel = current and getGroupLevel(current) or math.huge
+
+                -- Determine the base default group name for this group's level.
+                if not current or groupLevel < currentLevel then
+                    local base
+                    for name, lvl in pairs(lia.administrator.DefaultGroups or {}) do
+                        if lvl == groupLevel then
+                            base = name
+                            break
+                        end
+                    end
+                    lia.administrator.privileges[priv] = base or "user"
                 end
             end
         end
