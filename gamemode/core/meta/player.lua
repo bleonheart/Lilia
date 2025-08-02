@@ -204,13 +204,13 @@ end
 
 local oldIsAdmin = playerMeta.IsAdmin
 local oldIsSuperAdmin = playerMeta.IsSuperAdmin
-
 function playerMeta:IsAdmin()
-    return (oldIsAdmin and oldIsAdmin(self)) or groupDerivesFrom(self:GetUserGroup(), "admin")
+    return oldIsAdmin and oldIsAdmin(self) or groupDerivesFrom(self:GetUserGroup(), "admin")
 end
 
 function playerMeta:IsSuperAdmin()
-    return (oldIsSuperAdmin and oldIsSuperAdmin(self)) or groupDerivesFrom(self:GetUserGroup(), "superadmin")
+    return oldIsSuperAdmin and oldIsSuperAdmin(self) or groupDerivesFrom(self:GetUserGroup(), "superadmin")
+end
 
 function playerMeta:isUser()
     return groupDerivesFrom(self:GetUserGroup(), "user")
