@@ -62,7 +62,12 @@ lia.command.add("addsitroom", {
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
             client:notifyLocalized("sitroomSet")
-            lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(client:GetPos())), "Set the sitroom location")
+            lia.log.add(
+                client,
+                "sitRoomSet",
+                L("sitroomSetDetail", name, tostring(client:GetPos())),
+                L("logSetSitroom")
+            )
         end)
     end
 })

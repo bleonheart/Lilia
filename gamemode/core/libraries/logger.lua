@@ -489,30 +489,40 @@ lia.log.types = {
         category = "Admin"
     },
     ["sitRoomSet"] = {
-        func = function(client, pos, message) return string.format("Sit room set at %s by '%s': %s. Position: %s", os.date("%Y-%m-%d %H:%M:%S"), client:Name(), message, pos) end,
-        category = "Admin"
+        func = function(client, pos, message)
+            return L("sitroomSetLog", os.date("%Y-%m-%d %H:%M:%S"), client:Name(), message, pos)
+        end,
+        category = "Admin",
     },
     ["sitRoomRenamed"] = {
-        func = function(client, details) return string.format("%s renamed a SitRoom: %s", client:Name(), details) end,
-        category = "Admin"
+        func = function(client, details)
+            return L("sitroomRenamedLog", client:Name(), details)
+        end,
+        category = "Admin",
     },
     ["sitRoomRepositioned"] = {
-        func = function(client, details) return string.format("%s repositioned a SitRoom: %s", client:Name(), details) end,
-        category = "Admin"
+        func = function(client, details)
+            return L("sitroomRepositionedLog", client:Name(), details)
+        end,
+        category = "Admin",
     },
     ["sendToSitRoom"] = {
         func = function(client, targetName, roomName)
-            if targetName == client:Name() then return string.format("Player '%s' teleported to SitRoom '%s'.", client:Name(), roomName) end
-            return string.format("Player '%s' sent '%s' to SitRoom '%s'.", client:Name(), targetName, roomName)
+            if targetName == client:Name() then
+                return L("sitroomTeleportedLog", client:Name(), roomName)
+            end
+            return L("sitroomSentLog", client:Name(), targetName, roomName)
         end,
-        category = "Admin"
+        category = "Admin",
     },
     ["sitRoomReturn"] = {
         func = function(client, targetName)
-            if targetName == client:Name() then return string.format("Player '%s' returned from a SitRoom.", client:Name()) end
-            return string.format("Player '%s' returned '%s' from a SitRoom.", client:Name(), targetName)
+            if targetName == client:Name() then
+                return L("sitroomReturnSelfLog", client:Name())
+            end
+            return L("sitroomReturnOtherLog", client:Name(), targetName)
         end,
-        category = "Admin"
+        category = "Admin",
     },
     ["attribSet"] = {
         func = function(client, targetName, attrib, value) return string.format("Admin '%s' set %s's '%s' attribute to %d.", client:Name(), targetName, attrib, value) end,
