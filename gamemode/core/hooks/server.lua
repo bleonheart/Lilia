@@ -399,7 +399,7 @@ end
 
 function GM:PlayerAuthed(client, steamid)
     local steam64 = util.SteamIDTo64(steamid)
-    lia.db.selectOne({"userGroup", "banStart", "banDuration", "banReason"}, "players", "steamID = " .. steam64):next(function(data)
+    lia.db.selectOne({"userGroup"}, "players", "steamID = " .. steam64):next(function(data)
         if not IsValid(client) then return end
         local group = data and data.userGroup
         if not group or group == "" then
@@ -408,22 +408,11 @@ function GM:PlayerAuthed(client, steamid)
         end
 
         client:SetUserGroup(group)
-        local banStart = tonumber(data and data.banStart or 0) or 0
-        if banStart > 0 then
-            local duration = tonumber(data.banDuration or 0)
-            local reason = data.banReason or L("genericReason")
-            if duration > 0 and banStart + duration <= os.time() then
-                lia.db.updateTable({
-                    banStart = nil,
-                    banDuration = 0,
-                    banReason = ""
-                }, nil, "players", "steamID = " .. steam64)
-            else
-                local minutes = 0
-                if duration > 0 then minutes = math.max(math.ceil((banStart + duration - os.time()) / 60), 0) end
-                client:Kick(L("banMessage", minutes, reason))
-            end
-        end
+        lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. steam64):next(function(banData)
+            if not IsValid(client) or not banData then return end
+            local reason = banData.reason or L("genericReason")
+            client:Kick(L("banMessage", 0, reason))
+        end)
     end)
 end
 
@@ -1068,19 +1057,20 @@ gameevent.Listen("server_removeban")
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
     lia.admin(string.format("[BAN] %s (%s) was banned for %d minute(s): %s", data.name, data.networkid, data.ban_length, data.ban_reason))
     local steam64 = util.SteamIDTo64(data.networkid)
-    lia.db.updateTable({
-        banStart = os.time(),
-        banDuration = (tonumber(data.ban_length) or 0) * 60,
-        banReason = data.ban_reason or ""
-    }, nil, "players", "steamID = " .. steam64)
+    lia.db.insertTable({
+        player = data.name or "",
+        playerSteamID = steam64,
+        reason = data.ban_reason or "",
+        bannerName = "",
+        bannerSteamID = "",
+        timestamp = os.time(),
+        evidence = ""
+    }, nil, "bans")
 end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin("[UNBAN] " .. data.networkid .. " was unbanned.")
     local steam64 = util.SteamIDTo64(data.networkid)
-    lia.db.updateTable({
-        banStart = nil,
-        banDuration = 0,
-        banReason = ""
-    }, nil, "players", "steamID = " .. steam64)
+    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steam64)
 end)
+

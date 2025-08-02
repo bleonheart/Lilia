@@ -163,7 +163,7 @@ lia.command.add("plyban", {
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
-            target:banPlayer(arguments[3], arguments[2])
+            target:banPlayer(arguments[3], arguments[2], client)
             client:notifyLocalized("plyBanned")
             lia.log.add(client, "plyBan", target:Name())
         end
@@ -208,11 +208,7 @@ lia.command.add("plyunban", {
     onRun = function(client, arguments)
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
-            lia.db.updateTable({
-                banStart = nil,
-                banDuration = 0,
-                banReason = ""
-            }, nil, "players", "steamID = " .. steamid)
+            lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steamid)
 
             client:notifyLocalized("playerUnbanned")
             lia.log.add(client, "plyUnban", steamid)

@@ -271,6 +271,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_warnings`;
     DROP TABLE IF EXISTS `lia_playerkills`;
+    DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_chardata`;
     DROP TABLE IF EXISTS `lia_data`;
 ]])
@@ -305,6 +306,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_warnings;
     DROP TABLE IF EXISTS lia_playerkills;
+    DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_chardata;
     DROP TABLE IF EXISTS lia_data;
 ]], realCallback)
@@ -329,10 +331,7 @@ CREATE TABLE IF NOT EXISTS lia_players (
     data varchar,
     lastIP varchar,
     lastOnline integer,
-    totalOnlineTime float,
-    banStart integer,
-    banDuration integer,
-    banReason text
+    totalOnlineTime float
 );
 CREATE TABLE IF NOT EXISTS lia_chardata (
     charID integer not null,
@@ -419,6 +418,16 @@ CREATE TABLE IF NOT EXISTS lia_playerkills (
     timestamp integer,
     evidence varchar(255)
 );
+CREATE TABLE IF NOT EXISTS lia_bans (
+    id integer primary key autoincrement,
+    player varchar(255) NOT NULL,
+    playerSteamID varchar(255),
+    reason varchar(255),
+    bannerName varchar(255),
+    bannerSteamID varchar(255),
+    timestamp integer,
+    evidence varchar(255)
+);
 CREATE TABLE IF NOT EXISTS lia_doors (
     gamemode text,
     map text,
@@ -476,9 +485,6 @@ CREATE TABLE IF NOT EXISTS `lia_players` (
     `lastIP` varchar(64) default null collate 'utf8mb4_general_ci',
     `lastOnline` int(32) default 0,
     `totalOnlineTime` float default 0,
-    `banStart` int(32) default null,
-    `banDuration` int(32) default 0,
-    `banReason` text collate 'utf8mb4_general_ci',
     primary key (`steamID`)
 );
 CREATE TABLE IF NOT EXISTS `lia_chardata` (
@@ -568,6 +574,17 @@ CREATE TABLE IF NOT EXISTS `lia_playerkills` (
     `steamID` varchar(255) default null collate 'utf8mb4_general_ci',
     `submitterName` varchar(255) default null collate 'utf8mb4_general_ci',
     `submitterSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `timestamp` int default null,
+    `evidence` varchar(255) default null collate 'utf8mb4_general_ci',
+    primary key (`id`)
+);
+CREATE TABLE IF NOT EXISTS `lia_bans` (
+    `id` int not null auto_increment,
+    `player` varchar(255) not null collate 'utf8mb4_general_ci',
+    `playerSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
+    `reason` varchar(255) default null collate 'utf8mb4_general_ci',
+    `bannerName` varchar(255) default null collate 'utf8mb4_general_ci',
+    `bannerSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
     `timestamp` int default null,
     `evidence` varchar(255) default null collate 'utf8mb4_general_ci',
     primary key (`id`)
