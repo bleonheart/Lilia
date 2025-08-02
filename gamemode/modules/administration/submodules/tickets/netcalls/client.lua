@@ -4,10 +4,10 @@ net.Receive("ViewClaims", function()
     local steamid = net.ReadString()
     if steamid and steamid ~= "" and steamid ~= " " then
         local v = tbl[steamid]
-        print(L("claimRecordLast", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
+        lia.admin(L("claimRecordLast", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
     else
         for _, v in pairs(tbl) do
-            print(L("claimRecord", v.name, v.claims))
+            lia.admin(L("claimRecord", v.name, v.claims))
         end
     end
 end)

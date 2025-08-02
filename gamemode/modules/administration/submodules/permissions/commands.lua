@@ -1545,13 +1545,13 @@ lia.command.add("getallinfos", {
             return
         end
 
-        print(L("allInfoFor", char:getName()))
+        lia.admin(L("allInfoFor", char:getName()))
         for column, value in pairs(data) do
             if istable(value) then
-                print(column .. ":")
+                lia.admin(column .. ":")
                 PrintTable(value)
             else
-                print(column .. " = " .. tostring(value))
+                lia.admin(column .. " = " .. tostring(value))
             end
         end
 
