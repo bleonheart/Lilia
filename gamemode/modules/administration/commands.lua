@@ -62,12 +62,7 @@ lia.command.add("addsitroom", {
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
             client:notifyLocalized("sitroomSet")
-            lia.log.add(
-                client,
-                "sitRoomSet",
-                L("sitroomSetDetail", name, tostring(client:GetPos())),
-                L("logSetSitroom")
-            )
+            lia.log.add(client, "sitRoomSet", L("sitroomSetDetail", name, tostring(client:GetPos())), L("logSetSitroom"))
         end)
     end
 })
@@ -160,21 +155,6 @@ lia.command.add("dbbrowser", {
     end
 })
 
-lia.command.add("plykick", {
-    adminOnly = true,
-    privilege = "Kick Player",
-    desc = "plyKickDesc",
-    syntax = "[player Name] [string Reason optional]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        if IsValid(target) then
-            target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
-            client:notifyLocalized("plyKicked")
-            lia.log.add(client, "plyKick", target:Name())
-        end
-    end
-})
-
 lia.command.add("plyban", {
     adminOnly = true,
     privilege = "Ban Player",
@@ -190,6 +170,21 @@ lia.command.add("plyban", {
     end
 })
 
+lia.command.add("plykick", {
+    adminOnly = true,
+    privilege = "Kick Player",
+    desc = "plyKickDesc",
+    syntax = "[player Name] [string Reason optional]",
+    onRun = function(client, arguments)
+        local target = lia.command.findPlayer(client, arguments[1])
+        if IsValid(target) then
+            target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
+            client:notifyLocalized("plyKicked")
+            lia.log.add(client, "plyKick", target:Name())
+        end
+    end
+})
+
 lia.command.add("plykill", {
     adminOnly = true,
     privilege = "Kill Player",
@@ -201,26 +196,6 @@ lia.command.add("plykill", {
             target:Kill()
             client:notifyLocalized("plyKilled")
             lia.log.add(client, "plyKill", target:Name())
-        end
-    end
-})
-
-lia.command.add("plysetgroup", {
-    adminOnly = true,
-    privilege = "Set Player Group",
-    desc = "plySetGroupDesc",
-    syntax = "[player Name] [string Group]",
-    onRun = function(client, arguments)
-        local target = lia.command.findPlayer(client, arguments[1])
-        local usergroup = tostring(arguments[2] or "")
-
-        if IsValid(target) and lia.administrator.groups[usergroup] then
-            target:SetUserGroup(usergroup)
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID64()))
-            client:notifyLocalized("plyGroupSet")
-            lia.log.add(client, "plySetGroup", target:Name(), usergroup)
-        elseif IsValid(target) and usergroup ~= "" and not lia.administrator.groups[usergroup] then
-            client:notifyLocalized("groupNotExists")
         end
     end
 })

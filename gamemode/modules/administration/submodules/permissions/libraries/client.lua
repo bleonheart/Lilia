@@ -10,63 +10,87 @@ end
 
 function MODULE:HUDPaint()
     local client = LocalPlayer()
-    if not client:getChar() or not client:IsValid() or not client:IsPlayer() then return end
+    if not client:IsValid() or not client:IsPlayer() or not client:getChar() then return end
     if not client:isNoClipping() then return end
     if not (client:hasPrivilege("No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
     if not lia.option.get("espEnabled", false) then return end
-    local marginx, marginy = ScrW() * 0.1, ScrH() * 0.1
+    local sx, sy = ScrW(), ScrH()
+    local marginx, marginy = sx * 0.1, sy * 0.1
     local maxDistanceSq = 4096
-    for _, ent in ents.Iterator() do
+    for _, ent in pairs(ents.GetAll()) do
         if not IsValid(ent) or ent == client then continue end
-        local entityType, label, nameLabel
+        local typ, label, sublabel, baseColor
         if ent:IsPlayer() then
-            entityType = "Players"
-            if ent:getNetVar("cheater") then
+            typ = "Players"
+            sublabel = ent:Name():gsub("#", "\226\128\139#")
+            if ent:getNetVar("cheater", false) then
                 label = string.upper(L("cheater"))
-                nameLabel = ent:Name():gsub("#", "\226\128\139#")
+                baseColor = Color(255, 0, 0)
             else
-                label = ent:Name():gsub("#", "\226\128\139#")
+                label = sublabel
+                baseColor = lia.config.get("espPlayersColor") or Color(255, 255, 255)
             end
-        elseif ent.isItem and ent:isItem() and lia.option.get("espItems") then
-            entityType = "Items"
-            local itemTable = ent.getItemTable and ent:getItemTable()
-            label = L("itemESPLabel", itemTable and itemTable.name or L("unknown"))
-        elseif ent.isProp and ent:isProp() and lia.option.get("espProps") then
-            entityType = "Props"
+        elseif ent.isItem and ent:isItem() and lia.option.get("espItems", false) then
+            typ = "Items"
+            label = L("itemESPLabel", ent.getItemTable and ent:getItemTable().name or L("unknown"))
+            baseColor = lia.config.get("espItemsColor") or Color(255, 255, 255)
+        elseif ent.isProp and ent:isProp() and lia.option.get("espProps", false) then
+            typ = "Props"
             label = L("propModelESPLabel", ent:GetModel() or L("unknown"))
-        elseif ent:isDoor() and lia.option.get("espUnconfiguredDoors") then
-            local hasVar = ent:getNetVar("name") ~= nil or ent:getNetVar("title") ~= nil or ent:getNetVar("price") ~= nil or ent:getNetVar("noSell") ~= nil or ent:getNetVar("factions") ~= nil or ent:getNetVar("classes") ~= nil or ent:getNetVar("disabled") ~= nil or ent:getNetVar("hidden") ~= nil or ent:getNetVar("locked") ~= nil
-            if not hasVar then
-                entityType = "UnconfiguredDoors"
-                label = L("unconfiguredDoorESPLabel")
-            end
-        elseif ESP_DrawnEntities[ent:GetClass()] and lia.option.get("espEntities") then
-            entityType = "Entities"
+            baseColor = lia.config.get("espPropsColor") or Color(255, 255, 255)
+        elseif ESP_DrawnEntities[ent:GetClass()] and lia.option.get("espEntities", false) then
+            typ = "Entities"
             label = L("entityClassESPLabel", ent:GetClass() or L("unknown"))
+            baseColor = lia.config.get("espEntitiesColor") or Color(255, 255, 255)
         end
 
-        if not entityType then continue end
-        local vPos, clientPos = ent:GetPos(), client:GetPos()
-        if not vPos or not clientPos then continue end
-        local scrPos = vPos:ToScreen()
-        if not scrPos.visible then continue end
-        local distanceSq = clientPos:DistToSqr(vPos)
-        local factor = 1 - math.Clamp(distanceSq / maxDistanceSq, 0, 1)
-        local size = math.max(20, 48 * factor)
+        if not typ then continue end
+        local pos = ent:GetPos()
+        if not pos then continue end
+        local distSq = client:GetPos():DistToSqr(pos)
+        if distSq > maxDistanceSq then continue end
+        local screenPos = pos:ToScreen()
+        if not screenPos.visible then continue end
+        local factor = 1 - math.Clamp(distSq / maxDistanceSq, 0, 1)
+        local boxSize = math.max(20, 48 * factor)
         local alpha = math.Clamp(255 * factor, 120, 255)
-        local cheater = ent:getNetVar("cheater", false)
-        local colorToUse = ColorAlpha(lia.config.get("esp" .. entityType .. "Color") or Color(255, 255, 255), alpha)
-        if cheater then colorToUse = ColorAlpha(Color(255, 0, 0), alpha) end
-        local x, y = math.Clamp(scrPos.x, marginx, ScrW() - marginx), math.Clamp(scrPos.y, marginy, ScrH() - marginy)
-        surface.SetDrawColor(colorToUse.r, colorToUse.g, colorToUse.b, colorToUse.a)
-        surface.DrawRect(x - size / 2, y - size / 2, size, size)
+        local color = Color(baseColor.r, baseColor.g, baseColor.b, alpha)
+        local x = math.Clamp(screenPos.x, marginx, sx - marginx)
+        local y = math.Clamp(screenPos.y, marginy, sy - marginy)
+        surface.SetDrawColor(color.r, color.g, color.b, color.a)
+        surface.DrawRect(x - boxSize / 2, y - boxSize / 2, boxSize, boxSize)
         surface.SetFont("liaMediumFont")
-        local _, lineH = surface.GetTextSize("W")
-        if nameLabel then
-            draw.SimpleTextOutlined(label, "liaMediumFont", x, y - size - lineH / 2, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
-            draw.SimpleTextOutlined(nameLabel, "liaMediumFont", x, y - size + lineH / 2, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
-        else
-            draw.SimpleTextOutlined(label, "liaMediumFont", x, y - size, ColorAlpha(colorToUse, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        local _, textHeight = surface.GetTextSize("W")
+        draw.SimpleTextOutlined(label, "liaMediumFont", x, y - boxSize - textHeight / 2, Color(color.r, color.g, color.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        if sublabel then draw.SimpleTextOutlined(sublabel, "liaMediumFont", x, y - boxSize + textHeight / 2, Color(color.r, color.g, color.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200)) end
+        if typ == "Players" then
+            local barOffset = 8 * factor
+            local barWidth = math.max(70, 200 * factor)
+            local barHeight = math.max(10, 30 * factor)
+            local yPos = y + boxSize / 2 + 10
+            surface.SetDrawColor(0, 0, 0, alpha)
+            surface.DrawRect(x - barWidth / 2, yPos, barWidth, barHeight)
+            local hpFrac = math.Clamp(ent:Health() / ent:GetMaxHealth(), 0, 1)
+            surface.SetDrawColor(183, 8, 0, alpha)
+            surface.DrawRect(x - (barWidth - barOffset) / 2, yPos + barOffset / 2, (barWidth - barOffset) * hpFrac, barHeight - barOffset)
+            draw.SimpleTextOutlined(ent:Health(), "liaSmallFont", x, yPos + barHeight / 2, Color(255, 255, 255, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, alpha))
+            if ent:Armor() > 0 then
+                yPos = yPos + barHeight + 5
+                surface.SetDrawColor(0, 0, 0, alpha)
+                surface.DrawRect(x - barWidth / 2, yPos, barWidth, barHeight)
+                local armorFrac = math.Clamp(ent:Armor() / 100, 0, 1)
+                surface.SetDrawColor(0, 0, 255, alpha)
+                surface.DrawRect(x - (barWidth - barOffset) / 2, yPos + barOffset / 2, (barWidth - barOffset) * armorFrac, barHeight - barOffset)
+                draw.SimpleTextOutlined(ent:Armor(), "liaSmallFont", x, yPos + barHeight / 2, Color(255, 255, 255, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, alpha))
+            end
+
+            local wep = ent:GetActiveWeapon()
+            if IsValid(wep) then
+                local ammo, reserve = wep:Clip1(), ent:GetAmmoCount(wep:GetPrimaryAmmoType())
+                local wepName = wep:GetPrintName()
+                if ammo >= 0 and reserve >= 0 then wepName = wepName .. " [" .. ammo .. "/" .. reserve .. "]" end
+                draw.SimpleTextOutlined(wepName, "liaSmallFont", x, yPos + barHeight + 5, Color(255, 255, 255, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, alpha))
+            end
         end
     end
 end

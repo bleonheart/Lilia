@@ -489,37 +489,27 @@ lia.log.types = {
         category = "Admin"
     },
     ["sitRoomSet"] = {
-        func = function(client, pos, message)
-            return L("sitroomSetLog", os.date("%Y-%m-%d %H:%M:%S"), client:Name(), message, pos)
-        end,
+        func = function(client, pos, message) return L("sitroomSetLog", os.date("%Y-%m-%d %H:%M:%S"), client:Name(), message, pos) end,
         category = "Admin",
     },
     ["sitRoomRenamed"] = {
-        func = function(client, details)
-            return L("sitroomRenamedLog", client:Name(), details)
-        end,
+        func = function(client, details) return L("sitroomRenamedLog", client:Name(), details) end,
         category = "Admin",
     },
     ["sitRoomRepositioned"] = {
-        func = function(client, details)
-            return L("sitroomRepositionedLog", client:Name(), details)
-        end,
+        func = function(client, details) return L("sitroomRepositionedLog", client:Name(), details) end,
         category = "Admin",
     },
     ["sendToSitRoom"] = {
         func = function(client, targetName, roomName)
-            if targetName == client:Name() then
-                return L("sitroomTeleportedLog", client:Name(), roomName)
-            end
+            if targetName == client:Name() then return L("sitroomTeleportedLog", client:Name(), roomName) end
             return L("sitroomSentLog", client:Name(), targetName, roomName)
         end,
         category = "Admin",
     },
     ["sitRoomReturn"] = {
         func = function(client, targetName)
-            if targetName == client:Name() then
-                return L("sitroomReturnSelfLog", client:Name())
-            end
+            if targetName == client:Name() then return L("sitroomReturnSelfLog", client:Name()) end
             return L("sitroomReturnOtherLog", client:Name(), targetName)
         end,
         category = "Admin",
@@ -682,10 +672,6 @@ lia.log.types = {
     },
     ["plyUnfreeze"] = {
         func = function(client, targetName) return string.format("Admin '%s' unfroze player '%s'.", client:Name(), targetName) end,
-        category = "Admin"
-    },
-    ["plySetGroup"] = {
-        func = function(client, targetName, group) return string.format("Admin '%s' set %s's group to '%s'.", client:Name(), targetName, group) end,
         category = "Admin"
     },
     ["plyBlind"] = {
