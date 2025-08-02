@@ -86,10 +86,10 @@ function MODULE:TicketFrame(requester, message, claimed)
     end
 
     local isLocalPlayer = requester == LocalPlayer()
-    createButton("goto", mat_lightning, 20, function() lia.command.execAdminCommand("goto", requester) end, isLocalPlayer)
-    createButton("return", mat_arrow, 40, function() lia.command.execAdminCommand("return", requester) end, isLocalPlayer)
-    createButton("freeze", mat_link, 60, function() lia.command.execAdminCommand("freeze", requester) end, isLocalPlayer)
-    createButton("bring", mat_arrow, 80, function() lia.command.execAdminCommand("bring", requester) end, isLocalPlayer)
+    createButton("goto", mat_lightning, 20, function() lia.administrator.execCommand("goto", requester) end, isLocalPlayer)
+    createButton("return", mat_arrow, 40, function() lia.administrator.execCommand("return", requester) end, isLocalPlayer)
+    createButton("freeze", mat_link, 60, function() lia.administrator.execCommand("freeze", requester) end, isLocalPlayer)
+    createButton("bring", mat_arrow, 80, function() lia.administrator.execCommand("bring", requester) end, isLocalPlayer)
     local shouldClose = false
     local claimButton
     claimButton = createButton("claimCase", mat_case, 100, function()

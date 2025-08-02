@@ -386,8 +386,8 @@ function lia.applyPunishment(client, infraction, kick, ban, time, kickKey, banKe
     local bantime = time or 0
     kickKey = kickKey or "kickedForInfraction"
     banKey = banKey or "bannedForInfraction"
-    if kick then lia.command.execAdminCommand("kick", client, nil, L(kickKey, infraction)) end
-    if ban then lia.command.execAdminCommand("ban", client, bantime, L(banKey, infraction)) end
+    if kick then lia.administrator.execCommand("kick", client, nil, L(kickKey, infraction)) end
+    if ban then lia.administrator.execCommand("ban", client, bantime, L(banKey, infraction)) end
 end
 
 for _, files in ipairs(FilesToLoad) do
