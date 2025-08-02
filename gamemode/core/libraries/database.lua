@@ -416,7 +416,6 @@ CREATE TABLE IF NOT EXISTS lia_playerkills (
     steamID varchar(255),
     submitterName varchar(255),
     submitterSteamID varchar(255),
-    rank varchar(255),
     timestamp integer,
     evidence varchar(255)
 );
@@ -569,7 +568,6 @@ CREATE TABLE IF NOT EXISTS `lia_playerkills` (
     `steamID` varchar(255) default null collate 'utf8mb4_general_ci',
     `submitterName` varchar(255) default null collate 'utf8mb4_general_ci',
     `submitterSteamID` varchar(255) default null collate 'utf8mb4_general_ci',
-    `rank` varchar(255) default null collate 'utf8mb4_general_ci',
     `timestamp` int default null,
     `evidence` varchar(255) default null collate 'utf8mb4_general_ci',
     primary key (`id`)
