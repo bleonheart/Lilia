@@ -987,18 +987,18 @@ concommand.Add("plysetgroup", function(ply, _, args)
 end)
 
 lia.administrator.registerPrivilege({
-    Name = "Stop Sound For Everyone",
+    Name = L("stopSoundForEveryone"),
     MinAccess = "superadmin",
-    Category = "Server"
+    Category = L("categoryServer")
 })
 
 concommand.Add("stopsoundall", function(client)
-    if client:hasPrivilege("Stop Sound For Everyone") then
+    if client:hasPrivilege(L("stopSoundForEveryone")) then
         for _, v in player.Iterator() do
             v:ConCommand("stopsound")
         end
     else
-        client:notifyLocalized("mustSuperAdminStopSound")
+        client:notifyLocalized("mustSuperAdminStopSound", L("stopSoundForEveryone"))
     end
 end)
 

@@ -8,7 +8,7 @@ ITEM.functions.Read = {
     onClick = function(item)
         local frame = vgui.Create("DFrame")
         frame:SetSize(540, 680)
-        frame:SetTitle(item.name)
+        frame:SetTitle(L(item.name))
         frame:MakePopup()
         frame:Center()
         frame.html = frame:Add("DHTML")
