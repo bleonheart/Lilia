@@ -42,7 +42,7 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaAdminOnPrivilegeUnregistered", func
     if not priv or not priv.Name then return end
     local name = tostring(priv.Name)
     lia.administrator.privileges[name] = nil
-    for g, perms in pairs(lia.administrator.groups or {}) do
+    for _, perms in pairs(lia.administrator.groups or {}) do
         perms[name] = nil
     end
 

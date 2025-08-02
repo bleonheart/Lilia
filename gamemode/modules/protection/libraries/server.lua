@@ -4,6 +4,7 @@ lia.administrator.registerPrivilege({
     MinAccess = "admin",
     Category = L("categoryProtection")
 })
+
 local function IsCheater(client)
     return lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false)
 end
@@ -288,9 +289,7 @@ function MODULE:OnCheaterCaught(client)
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
         client:notifyLocalized("caughtCheating")
         for _, p in player.Iterator() do
-            if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then
-                p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64())
-            end
+            if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64()) end
         end
     end
 end

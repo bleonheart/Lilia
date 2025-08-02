@@ -529,9 +529,7 @@ function MODULE:InitializedModules()
             lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
             client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
-                if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then
-                    p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
-                end
+                if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
             end
         end)
     end
@@ -546,13 +544,11 @@ function MODULE:InitializedModules()
             else
                 lia.log.add(nil, "backdoorDetected", netName)
             end
-            
+
             net.Receive(netName, function(_, client)
                 lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(netName))
                 for _, p in player.Iterator() do
-                    if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then
-                        p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(netName))
-                    end
+                    if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(netName)) end
                 end
             end)
         end
