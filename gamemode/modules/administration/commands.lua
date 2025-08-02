@@ -159,11 +159,11 @@ lia.command.add("plyban", {
     adminOnly = true,
     privilege = "Ban Player",
     desc = "plyBanDesc",
-    syntax = "[player Name] [number Duration optional] [string Reason optional]",
+    syntax = "[player Name] [number Duration optional] [string Reason]",
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
-            target:banPlayer(arguments[3] or L("genericReason"), arguments[2])
+            target:banPlayer(arguments[3], arguments[2])
             client:notifyLocalized("plyBanned")
             lia.log.add(client, "plyBan", target:Name())
         end
