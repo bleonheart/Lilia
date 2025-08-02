@@ -1325,4 +1325,9 @@ LANGUAGE = {
     accessPropertyPrivilege = "Accès à la propriété %s",
     accessToolPrivilege = "Accès à l'outil %s",
     defaultGameDescription = "A Lilia Gamemode",
+
+    changeWeaponPopup = "Changer d'arme (Popup)",
+    changeWeaponOf = "Changer l'arme de %s",
+    npcWeaponWarning1 = "AVERTISSEMENT ! Tous les PNJ ne peuvent pas utiliser des armes et toutes les armes ne sont pas utilisables par les PNJ.",
+    npcWeaponWarning2 = "Cela dépend entièrement de l'addon dont proviennent l'arme et le PNJ. Ce mod ne peut pas changer cela.",
 }

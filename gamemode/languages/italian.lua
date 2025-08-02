@@ -1328,4 +1328,9 @@ Ricarica: Droppa]],
     accessPropertyPrivilege = "Accesso alla proprietà %s",
     accessToolPrivilege = "Accesso allo strumento %s",
     defaultGameDescription = "A Lilia Gamemode",
+
+    changeWeaponPopup = "Cambia Arma (Popup)",
+    changeWeaponOf = "Cambia l'arma di %s",
+    npcWeaponWarning1 = "ATTENZIONE! Non tutti i PNG possono usare armi e non tutte le armi sono utilizzabili dai PNG.",
+    npcWeaponWarning2 = "Dipende interamente dall'addon da cui provengono l'arma e il PNG. Questa mod non può cambiarlo.",
 }
