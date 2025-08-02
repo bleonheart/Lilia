@@ -8,9 +8,9 @@ local function getMenuTabNames()
     return tabs
 end
 
-lia.config.add("DefaultMenuTab", "Default Menu Tab", L("you"), nil, {
-    desc = "Specifies which tab is opened by default when the menu is shown.",
-    category = "Menu",
+lia.config.add("DefaultMenuTab", L("defaultMenuTab"), L("you"), nil, {
+    desc = L("defaultMenuTabDesc"),
+    category = L("categoryMenu"),
     type = "Table",
     options = CLIENT and getMenuTabNames() or {L("you")}
 })

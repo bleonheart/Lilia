@@ -1,6 +1,6 @@
-﻿lia.config.add("SpawnMenuLimit", "Limit Spawn Menu Access", false, nil, {
-    desc = "Determines if the spawn menu is limited to PET flag holders or staff",
-    category = "Staff",
+﻿lia.config.add("SpawnMenuLimit", L("spawnMenuLimit"), false, nil, {
+    desc = L("spawnMenuLimitDesc"),
+    category = L("categoryStaff"),
     type = "Boolean"
 })
 
@@ -110,13 +110,13 @@ lia.option.add("espPlayersColor", "ESP Players Color", "Sets the ESP color for p
     end
 })
 
-lia.option.add("BarsAlwaysVisible", "Bars Always Visible", "Make all bars always visible", false, nil, {
-    category = "General",
+lia.option.add("BarsAlwaysVisible", L("barsAlwaysVisible"), L("barsAlwaysVisibleDesc"), false, nil, {
+    category = L("categoryGeneral"),
     isQuick = true,
 })
 
-lia.option.add("descriptionWidth", "Description Width", "Adjust the description width on the HUD", 0.5, nil, {
-    category = "HUD",
+lia.option.add("descriptionWidth", L("descriptionWidth"), L("descriptionWidthDesc"), 0.5, nil, {
+    category = L("categoryHUD"),
     min = 0.1,
     max = 1,
     decimals = 2
@@ -153,13 +153,13 @@ lia.option.add("thirdPersonDistance", "Distance", "Adjust the camera distance in
     max = lia.config.get("MaxThirdPersonDistance", 100),
 })
 
-lia.option.add("ChatShowTime", "Show Chat Timestamp", "Should chat show timestamp", false, nil, {
-    category = "Chat",
+lia.option.add("ChatShowTime", L("chatShowTime"), L("chatShowTimeDesc"), false, nil, {
+    category = L("categoryChat"),
     type = "Boolean"
 })
 
-lia.option.add("voiceRange", "Voice Range", "Display a circle showing your current voice range", false, nil, {
-    category = "HUD",
+lia.option.add("voiceRange", L("voiceRange"), L("voiceRangeDesc"), false, nil, {
+    category = L("categoryHUD"),
     isQuick = true,
     type = "Boolean"
 })
