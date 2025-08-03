@@ -711,6 +711,8 @@ function lia.db.convertDataType(value, noEscape)
         else
             return "'" .. lia.db.escape(util.TableToJSON(value)) .. "'"
         end
+    elseif isbool(value) then
+        return value and 1 or 0
     elseif value == NULL then
         return "NULL"
     end
