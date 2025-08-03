@@ -201,8 +201,7 @@ lia.char.registerVar("model", {
                 newData.model = model
             elseif istable(model) then
                 newData.model = model[1]
-                newData.data = newData.data or {}
-                newData.data.skin = model[2] or 0
+                newData.skin = model[2] or 0
                 local groups = {}
                 if isstring(model[3]) then
                     local i = 0
@@ -216,10 +215,55 @@ lia.char.registerVar("model", {
                     end
                 end
 
-                newData.data.groups = groups
+                newData.bodygroups = groups
             end
         end
     end
+})
+
+lia.char.registerVar("skin", {
+    field = "skin",
+    fieldType = "integer",
+    default = 0,
+    onSet = function(character, value)
+        local oldVar = character:getSkin()
+        character.vars.skin = value
+        local client = character:getPlayer()
+        if IsValid(client) and client:getChar() == character then client:SetSkin(value) end
+        net.Start("charSet")
+        net.WriteString("skin")
+        net.WriteType(character.vars.skin)
+        net.WriteType(character:getID())
+        net.Broadcast()
+        hook.Run("OnCharVarChanged", character, "skin", oldVar, value)
+    end,
+    onGet = function(character, default) return character.vars.skin or default or 0 end,
+    noDisplay = true
+})
+
+lia.char.registerVar("bodygroups", {
+    field = "bodygroups",
+    fieldType = "text",
+    default = {},
+    onSet = function(character, value)
+        local oldVar = character:getBodygroups()
+        character.vars.bodygroups = value
+        local client = character:getPlayer()
+        if IsValid(client) and client:getChar() == character then
+            for k, v in pairs(value or {}) do
+                local index = tonumber(k)
+                if index then client:SetBodygroup(index, v or 0) end
+            end
+        end
+        net.Start("charSet")
+        net.WriteString("bodygroups")
+        net.WriteType(character.vars.bodygroups)
+        net.WriteType(character:getID())
+        net.Broadcast()
+        hook.Run("OnCharVarChanged", character, "bodygroups", oldVar, value)
+    end,
+    onGet = function(character, default) return character.vars.bodygroups or default or {} end,
+    noDisplay = true
 })
 
 lia.char.registerVar("class", {
@@ -262,6 +306,14 @@ lia.char.registerVar("faction", {
 
 lia.char.registerVar("money", {
     field = "money",
+    fieldType = "integer",
+    default = 0,
+    isLocal = true,
+    noDisplay = true
+})
+
+lia.char.registerVar("loginTime", {
+    field = "logintime",
     fieldType = "integer",
     default = 0,
     isLocal = true,

@@ -535,8 +535,8 @@ function PANEL:updateModelEntity(character)
     local model = character.getModel and character:getModel() or LocalPlayer():GetModel()
     self.modelEntity = ClientsideModel(model, RENDERGROUP_OPAQUE)
     if not IsValid(self.modelEntity) then return end
-    self.modelEntity:SetSkin(character:getData("skin", 0))
-    local groups = character:getData("groups", {})
+    self.modelEntity:SetSkin(character:getSkin())
+    local groups = character:getBodygroups()
     for i = 0, self.modelEntity:GetNumBodyGroups() - 1 do
         local value = groups[i]
         if value == nil then value = groups[tostring(i)] end
