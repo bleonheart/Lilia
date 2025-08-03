@@ -34,7 +34,7 @@ if CLIENT then
 
         addSizedColumn(L("timestamp"))
         addSizedColumn(L("requester"))
-        addSizedColumn(L("claimingAdmin"))
+        addSizedColumn(L("admin"))
         addSizedColumn(L("Ticket Message", "Message"))
 
         local function populate(filter)
@@ -44,17 +44,15 @@ if CLIENT then
                 local admin = L("unassignedLabel")
                 if t.admin then
                     local adminPly = lia.util.getBySteamID(t.admin)
-                    if IsValid(adminPly) then
-                        admin = adminPly:Nick()
-                    else
-                        admin = t.admin
-                    end
+                    local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
+                    admin = string.format("%s (%s)", adminName, t.admin)
                 end
 
                 local requester = t.requester or ""
                 if requester ~= "" then
                     local requesterPly = lia.util.getBySteamID(requester)
-                    if IsValid(requesterPly) then requester = requesterPly:Nick() end
+                    local requesterName = IsValid(requesterPly) and requesterPly:Nick() or requester
+                    requester = string.format("%s (%s)", requesterName, requester)
                 end
 
                 local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
