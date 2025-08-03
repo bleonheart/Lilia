@@ -56,7 +56,7 @@ MODULE.Privileges = {
     {
         Name = L("noClipESPOffsetStaff"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffMovement"),
+        Category = L("categoryStaffSettings"),
     },
     {
         Name = L("canPropertyWorldEntities"),
@@ -96,7 +96,7 @@ MODULE.Privileges = {
     {
         Name = L("canSpawnBlacklistedProps"),
         MinAccess = "superadmin",
-        Category = L("categorySpawnProps"),
+        Category = L("categorySpawnBlacklisting"),
     },
     {
         Name = L("canSpawnNPCs"),
@@ -121,7 +121,7 @@ MODULE.Privileges = {
     {
         Name = L("canSpawnBlacklistedCars"),
         MinAccess = "superadmin",
-        Category = L("categorySpawnVehicles"),
+        Category = L("categorySpawnBlacklisting"),
     },
     {
         Name = L("canSpawnSENTs"),
@@ -141,7 +141,7 @@ MODULE.Privileges = {
     {
         Name = L("listEntities"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffManagement"),
+        Category = L("categoryStaffTools"),
     },
     {
         Name = L("canRemoveBlockedEntities"),
