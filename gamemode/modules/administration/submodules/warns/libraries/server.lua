@@ -1,12 +1,11 @@
-﻿local MODULE = MODULE
-function MODULE:GetWarnings(charID)
-    local condition = "charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID"}, "warnings", condition):next(function(res) return res.results or {} end)
+local MODULE = MODULE
+function MODULE:GetWarnings(warnedSteamID)
+    local condition = "warnedSteamID = " .. lia.db.convertDataType(warnedSteamID)
+    return lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "warnedSteamID"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
-function MODULE:AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID)
+function MODULE:AddWarning(warned, warnedSteamID, timestamp, message, warner, warnerSteamID)
     lia.db.insertTable({
-        charID = charID,
         warned = warned,
         warnedSteamID = warnedSteamID,
         timestamp = timestamp,
@@ -16,9 +15,9 @@ function MODULE:AddWarning(charID, warned, warnedSteamID, timestamp, message, wa
     }, nil, "warnings")
 end
 
-function MODULE:RemoveWarning(charID, index)
+function MODULE:RemoveWarning(warnedSteamID, index)
     local d = deferred.new()
-    self:GetWarnings(charID):next(function(rows)
+    self:GetWarnings(warnedSteamID):next(function(rows)
         if index < 1 or index > #rows then return d:resolve(nil) end
         local row = rows[index]
         lia.db.delete("warnings", "id = " .. lia.db.convertDataType(row.id)):next(function() d:resolve(row) end)
@@ -28,7 +27,7 @@ end
 
 net.Receive("RequestRemoveWarning", function(_, client)
     if not client:hasPrivilege("Can Remove Warns") then return end
-    local charID = net.ReadInt(32)
+    net.ReadInt(32) -- legacy charID, unused
     local rowData = net.ReadTable()
     local warnIndex = tonumber(rowData.ID or rowData.index)
     if not warnIndex then
@@ -36,19 +35,27 @@ net.Receive("RequestRemoveWarning", function(_, client)
         return
     end
 
-    local targetChar = lia.char.loaded[charID]
-    if not targetChar then
-        client:notifyLocalized("characterNotFound")
+    local warnedSteamID = rowData.warnedSteamID
+    if not warnedSteamID then
+        client:notifyLocalized("playerNotFound")
         return
     end
 
-    local targetClient = targetChar:getPlayer()
+    local targetClient = player.GetBySteamID64 and player.GetBySteamID64(warnedSteamID)
+    if not IsValid(targetClient) then
+        for _, v in ipairs(player.GetAll()) do
+            if v:SteamID64() == warnedSteamID then
+                targetClient = v
+                break
+            end
+        end
+    end
     if not IsValid(targetClient) then
         client:notifyLocalized("playerNotFound")
         return
     end
 
-    MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
+    MODULE:RemoveWarning(warnedSteamID, warnIndex):next(function(warn)
         if not warn then
             client:notifyLocalized("invalidWarningIndex")
             return

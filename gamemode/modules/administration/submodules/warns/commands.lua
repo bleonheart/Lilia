@@ -23,8 +23,8 @@ lia.command.add("warn", {
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local warnerName = client:Nick()
         local warnerSteamID = client:SteamID()
-        MODULE:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID64(), timestamp, reason, warnerName, warnerSteamID)
-        lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
+        MODULE:AddWarning(target:Nick(), target:SteamID64(), timestamp, reason, warnerName, warnerSteamID)
+        lia.db.count("warnings", "warnedSteamID = " .. lia.db.convertDataType(target:SteamID64())):next(function(count)
             target:notifyLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", reason)
             client:notifyLocalized("warningIssued", target:Nick())
             hook.Run("WarningIssued", client, target, reason, count)
@@ -50,7 +50,7 @@ lia.command.add("viewwarns", {
             return
         end
 
-        MODULE:GetWarnings(target:getChar():getID()):next(function(warns)
+        MODULE:GetWarnings(target:SteamID64()):next(function(warns)
             if #warns == 0 then
                 client:notifyLocalized("noWarnings", target:Nick())
                 return
@@ -63,7 +63,8 @@ lia.command.add("viewwarns", {
                     timestamp = warn.timestamp or L("na"),
                     warner = warn.warner or L("na"),
                     warnerSteamID = warn.warnerSteamID or L("na"),
-                    warningMessage = warn.message or L("na")
+                    warningMessage = warn.message or L("na"),
+                    warnedSteamID = warn.warnedSteamID
                 })
             end
 
@@ -93,7 +94,7 @@ lia.command.add("viewwarns", {
                     name = L("removeWarning"),
                     net = "RequestRemoveWarning"
                 }
-            }, target:getChar():getID())
+            }, 0)
 
             lia.log.add(client, "viewWarns", target)
         end)

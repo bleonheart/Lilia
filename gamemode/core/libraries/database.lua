@@ -400,7 +400,6 @@ CREATE TABLE IF NOT EXISTS lia_ticketclaims (
 );
 CREATE TABLE IF NOT EXISTS lia_warnings (
     id integer primary key autoincrement,
-    charID integer,
     warned text,
     warnedSteamID text,
     timestamp datetime,
@@ -568,7 +567,6 @@ CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
 );
 CREATE TABLE IF NOT EXISTS `lia_warnings` (
     `id` int not null auto_increment,
-    `charID` int default null,
     `warned` text collate 'utf8mb4_general_ci',
     `warnedSteamID` varchar(64) default null collate 'utf8mb4_general_ci',
     `timestamp` datetime not null,
