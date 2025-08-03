@@ -9,6 +9,11 @@ lia.net.readBigTable("liaAllFlags", function(data)
 
     panelRef:Clear()
 
+    local search = panelRef:Add("DTextEntry")
+    search:Dock(TOP)
+    search:SetPlaceholderText(L("search"))
+    search:SetTextColor(Color(255, 255, 255))
+
     local list = panelRef:Add("DListView")
     list:Dock(FILL)
 
@@ -25,9 +30,22 @@ lia.net.readBigTable("liaAllFlags", function(data)
     addSizedColumn(L("steamID"))
     addSizedColumn(L("flags"))
 
-    for _, entry in ipairs(data or {}) do
-        list:AddLine(entry.name or "", entry.steamID or "", entry.flags or "")
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, entry in ipairs(data or {}) do
+            local name = entry.name or ""
+            local steamID = entry.steamID or ""
+            local flags = entry.flags or ""
+            if filter == "" or name:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or flags:lower():find(filter, 1, true) then
+                list:AddLine(name, steamID, flags)
+            end
+        end
     end
+
+    search.OnChange = function() populate(search:GetValue()) end
+    populate("")
+
     function list:OnRowRightClick(_, line)
         if not IsValid(line) then return end
         local menu = DermaMenu()

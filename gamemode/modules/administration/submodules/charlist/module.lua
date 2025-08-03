@@ -72,12 +72,48 @@ else
                     }
 
                     local function createList(parent, rows)
-                        local list = parent:Add("DListView")
+                        local container = parent:Add("DPanel")
+                        container:Dock(FILL)
+                        container.Paint = function() end
+                        local search = container:Add("DTextEntry")
+                        search:Dock(TOP)
+                        search:SetPlaceholderText(L("search"))
+                        search:SetTextColor(Color(255, 255, 255))
+                        local list = container:Add("DListView")
                         list:Dock(FILL)
                         for _, col in ipairs(columns) do list:AddColumn(col.name) end
-                        for _, row in ipairs(rows) do
-                            list:AddLine(row.ID, row.Name, row.Desc, row.Faction, row.SteamID, row.LastUsed, row.Banned and L("yes") or L("no"))
+
+                        local function populate(filter)
+                            list:Clear()
+                            filter = string.lower(filter or "")
+                            for _, row in ipairs(rows) do
+                                local values = {
+                                    row.ID,
+                                    row.Name,
+                                    row.Desc,
+                                    row.Faction,
+                                    row.SteamID,
+                                    row.LastUsed,
+                                    row.Banned and L("yes") or L("no")
+                                }
+                                local match = false
+                                if filter == "" then
+                                    match = true
+                                else
+                                    for _, value in ipairs(values) do
+                                        if tostring(value):lower():find(filter, 1, true) then
+                                            match = true
+                                            break
+                                        end
+                                    end
+                                end
+                                if match then list:AddLine(unpack(values)) end
+                            end
                         end
+
+                        search.OnChange = function() populate(search:GetValue()) end
+                        populate("")
+
                         function list:OnRowRightClick(_, line)
                             if not IsValid(line) then return end
                             local menu = DermaMenu()

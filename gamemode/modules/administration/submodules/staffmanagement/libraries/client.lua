@@ -2,6 +2,10 @@ local panelRef
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:Clear()
+    local search = panelRef:Add("DTextEntry")
+    search:Dock(TOP)
+    search:SetPlaceholderText(L("search"))
+    search:SetTextColor(Color(255, 255, 255))
     local list = panelRef:Add("DListView")
     list:Dock(FILL)
     local function addSizedColumn(text)
@@ -23,21 +27,42 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     addSizedColumn("Mute Count")
     addSizedColumn("Jail Count")
     addSizedColumn("Strip Count")
-    for _, info in ipairs(data) do
-        list:AddLine(
-            info.player or "",
-            info.steamID or "",
-            info.warnings or 0,
-            info.tickets or 0,
-            info.kicks or 0,
-            info.kills or 0,
-            info.respawns or 0,
-            info.blinds or 0,
-            info.mutes or 0,
-            info.jails or 0,
-            info.strips or 0
-        )
+
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, info in ipairs(data) do
+            local entries = {
+                info.player or "",
+                info.steamID or "",
+                info.warnings or 0,
+                info.tickets or 0,
+                info.kicks or 0,
+                info.kills or 0,
+                info.respawns or 0,
+                info.blinds or 0,
+                info.mutes or 0,
+                info.jails or 0,
+                info.strips or 0
+            }
+            local match = false
+            if filter == "" then
+                match = true
+            else
+                for _, value in ipairs(entries) do
+                    if tostring(value):lower():find(filter, 1, true) then
+                        match = true
+                        break
+                    end
+                end
+            end
+            if match then list:AddLine(unpack(entries)) end
+        end
     end
+
+    search.OnChange = function() populate(search:GetValue()) end
+    populate("")
+
     function list:OnRowRightClick(_, line)
         if not IsValid(line) then return end
         local menu = DermaMenu()
