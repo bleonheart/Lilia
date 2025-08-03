@@ -756,6 +756,10 @@ else
             cat:SetContents(pnl)
             cat:SetExpanded(true)
         end
+        categoryList:InvalidateLayout(true)
+        local canvas = categoryList:GetCanvas()
+        canvas:SizeToChildren(false, true)
+        categoryList:SetTall(canvas:GetTall())
         return categoryList, current
     end
 
