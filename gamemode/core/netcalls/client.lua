@@ -296,8 +296,7 @@ net.Receive("actBar", function()
 
     local text = net.ReadString()
     local time = net.ReadFloat()
-    local display = text:sub(1, 1) == "@" and L(text:sub(2)) or text
-    lia.bar.drawAction(display, time)
+    lia.bar.drawAction(text:sub(1, 1) == "@" and L(text:sub(2)) or text, time)
 end)
 
 net.Receive("OpenInvMenu", function()

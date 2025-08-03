@@ -902,11 +902,11 @@ function PANEL:ReloadItemList(filter)
     self.lines = {}
     self.items:Clear()
     for k, v in SortedPairsByMemberValue(lia.item.list, "name") do
-        local itemName = v.getName and v:getName() or L(v.name)
-        if filter and not itemName:lower():find(filter:lower(), 1, true) then continue end
+        local name = v.getName and v:getName() or v.name
+        if filter and not (v.getName and name or L(name)):lower():find(filter:lower(), 1, true) then continue end
         local mode = entity.items[k] and entity.items[k][VENDOR_MODE]
         local current, max = entity:getStock(k)
-        local panel = self.items:AddLine(itemName, self:getModeText(mode), entity:getPrice(k), max and current .. "/" .. max or "-", v.category or L("none"))
+        local panel = self.items:AddLine(v.getName and name or L(name), self:getModeText(mode), entity:getPrice(k), max and current .. "/" .. max or "-", v.category or L("none"))
         panel.item = k
         self.lines[k] = panel
     end
