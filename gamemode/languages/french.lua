@@ -1479,6 +1479,7 @@ LANGUAGE = {
     categorySpawnSENTs = "Spawn: SENTs",
     categorySpawnSWEPs = "Spawn: SWEPs",
     categorySpawnStorage = "Spawn: Storage",
+    categorySpawnBlacklisting = "Spawn: Blacklisting",
     categoryPAC3 = "PAC3",
     categorySAM = "SAM",
     categoryServerGuard = "ServerGuard",
