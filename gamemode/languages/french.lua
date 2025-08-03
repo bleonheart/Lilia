@@ -1500,6 +1500,10 @@ LANGUAGE = {
     categoryQualityOfLife = "Quality of Life",
     categoryRecognition = "Reconnaissance",
 
+    moduleStaffManagementName = "Gestion du personnel",
+    moduleStaffManagementDesc = "Aperçu des actions du personnel",
+    viewStaffManagement = "Voir la gestion du personnel",
+    manageSpawns = "Gérer les points d'apparition",
     changeWeaponPopup = "Changer d'arme (Popup)",
     changeWeaponOf = "Changer l'arme de %s",
     npcWeaponWarning1 = "AVERTISSEMENT ! Tous les PNJ ne peuvent pas utiliser des armes et toutes les armes ne sont pas utilisables par les PNJ.",

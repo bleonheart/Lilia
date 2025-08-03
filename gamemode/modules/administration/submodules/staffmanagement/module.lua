@@ -1,11 +1,11 @@
-MODULE.name = "Staff Management"
+MODULE.name = L("moduleStaffManagementName")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Overview of staff actions"
+MODULE.desc = L("moduleStaffManagementDesc")
 MODULE.Privileges = {
     {
-        Name = "View Staff Management",
+        Name = L("viewStaffManagement"),
         MinAccess = "superadmin",
-        Category = "Staff"
+        Category = L("categoryStaffManagement"),
     }
 }
