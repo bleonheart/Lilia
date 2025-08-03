@@ -1,5 +1,6 @@
 local MODULE = MODULE
 local rosterPanel
+local charMenuContext
 local function requestPlayerCharacters(steamID, line, buildMenu)
     charMenuContext = {
         pos = {gui.MousePos()},
@@ -32,7 +33,7 @@ local function OpenRoster(panel, data)
         list:AddColumn(L("name", "Name"))
         list:AddColumn(L("steamID", "SteamID"))
         list:AddColumn(L("class", "Class"))
-        list:AddColumn(L("playtime", "Playtime"))
+        list:AddColumn(L("characterPlaytime", "Character Playtime"))
         list:AddColumn(L("lastOnline", "Last Online"))
         local function populate(filter)
             list:Clear()
@@ -50,14 +51,25 @@ local function OpenRoster(panel, data)
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.rowData or not line.rowData.steamID then return end
             local parentList = self
-            requestPlayerCharacters(line.rowData.steamID, line, function(menu, ln, steamID)
-                menu:AddOption(L("kick"), function()
-                    Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
-                        net.Start("KickCharacter")
-                        net.WriteInt(ln.rowData.id, 32)
-                        net.SendToServer()
-                    end, L("no"))
-                end):SetIcon("icon16/user_delete.png")
+            requestPlayerCharacters(line.rowData.steamID, line, function(menu, ln, steamID, characters)
+                if LocalPlayer():hasPrivilege("Can Manage Factions") then
+                    menu:AddOption(L("kick"), function()
+                        Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
+                            net.Start("KickCharacter")
+                            net.WriteInt(ln.rowData.id, 32)
+                            net.SendToServer()
+                        end, L("no"))
+                    end):SetIcon("icon16/user_delete.png")
+                end
+
+                local charSubMenu = menu:AddSubMenu(L("viewCharacterList", "View Character List"))
+                if not characters or #characters == 0 then
+                    charSubMenu:AddOption(L("none", "None"))
+                else
+                    for _, name in ipairs(characters) do
+                        charSubMenu:AddOption(name)
+                    end
+                end
 
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
@@ -70,6 +82,11 @@ local function OpenRoster(panel, data)
                     SetClipboardText(string.sub(rowString, 1, -4))
                 end):SetIcon("icon16/page_copy.png")
 
+                menu:AddOption(L("copyName", "Copy Name"), function()
+                    local name = ln.rowData and ln.rowData.name or ln:GetColumnText(1) or ""
+                    SetClipboardText(name)
+                end):SetIcon("icon16/page_copy.png")
+
                 menu:AddOption(L("copySteamID", "Copy SteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
                 menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
             end)
@@ -80,6 +97,19 @@ local function OpenRoster(panel, data)
 end
 
 lia.net.readBigTable("liaFactionRosterData", function(data) if IsValid(rosterPanel) then OpenRoster(rosterPanel, data or {}) end end)
+lia.net.readBigTable("liaPlayerCharacters", function(data)
+    if not data or not charMenuContext then return end
+    local menu = DermaMenu()
+    if charMenuContext.buildMenu then
+        charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {})
+    end
+    if charMenuContext.pos then
+        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
+    else
+        menu:Open()
+    end
+    charMenuContext = nil
+end)
 function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can Manage Factions") then
         table.insert(pages, {
