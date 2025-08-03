@@ -286,7 +286,6 @@ lia.chat.register("me's", {
     format = "mePossessiveFormat",
     onCanHear = lia.config.get("ChatRange", 280),
     onChatAdd = function(speaker, text, anonymous)
-        local speako = anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console")
         local texCol = lia.config.get("ChatColor")
         if LocalPlayer():getTracedEntity() == speaker then texCol = lia.config.get("ChatListenColor") end
         texCol = Color(texCol.r, texCol.g, texCol.b)
@@ -297,7 +296,7 @@ lia.chat.register("me's", {
             nameCol = Color(tempCol.r + 40, tempCol.b + 60, tempCol.g + 40)
         end
 
-        chat.AddText(nameCol, L("mePossessiveFormat", speako, ""), texCol, text)
+        chat.AddText(nameCol, L("mePossessiveFormat", anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console"), ""), texCol, text)
     end,
     prefix = {"/me's", "/action's"},
     font = "liaChatFontItalics",
@@ -310,7 +309,6 @@ lia.chat.register("mefarfar", {
     desc = "mefarfarDesc",
     format = "emoteFormat",
     onChatAdd = function(speaker, text, anonymous)
-        local speako = anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console")
         local texCol = lia.config.get("ChatColor")
         if LocalPlayer():getTracedEntity() == speaker then texCol = lia.config.get("ChatListenColor") end
         texCol = Color(texCol.r + 45, texCol.g + 45, texCol.b + 45)
@@ -321,7 +319,7 @@ lia.chat.register("mefarfar", {
             nameCol = Color(tempCol.r + 40, tempCol.b + 60, tempCol.g + 40)
         end
 
-        chat.AddText(nameCol, L("emoteFormat", speako, ""), texCol, text)
+        chat.AddText(nameCol, L("emoteFormat", anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, "ic") or IsValid(speaker) and speaker:Name() or language.GetPhrase("#Console"), ""), texCol, text)
     end,
     onCanHear = lia.config.get("ChatRange", 280) * 4,
     prefix = {"/mefarfar", "/actionyy", "/meyy"},

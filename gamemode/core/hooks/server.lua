@@ -417,8 +417,8 @@ function GM:PlayerAuthed(client, steamid)
         client:SetUserGroup(group)
         lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. lia.db.convertDataType(steam64)):next(function(banData)
             if not IsValid(client) or not banData then return end
-            local reason = banData.reason or L("genericReason")
-            client:Kick(L("banMessage", 0, reason))
+            local reason = banData.reason
+            client:Kick(L("banMessage", 0, reason or L("genericReason")))
         end)
     end)
 end
@@ -1051,8 +1051,12 @@ concommand.Add("list_entities", function(client)
     if not IsValid(client) then
         lia.information(L("entitiesOnServer"))
         for _, entity in ents.Iterator() do
-            local className = entity:GetClass() or L("unknown")
-            entityCount[className] = (entityCount[className] or 0) + 1
+            local className = entity:GetClass()
+            if className then
+                entityCount[className] = (entityCount[className] or 0) + 1
+            else
+                entityCount[L("unknown")] = (entityCount[L("unknown")] or 0) + 1
+            end
             totalEntities = totalEntities + 1
         end
 

@@ -643,10 +643,9 @@ else
         local listView = vgui.Create("DListView", frame)
         listView:Dock(FILL)
         for _, colInfo in ipairs(columns) do
-            local columnName = colInfo.name or L("na")
-            local col = listView:AddColumn(columnName)
+            local col = listView:AddColumn(colInfo.name or L("na"))
             surface.SetFont(col.Header:GetFont())
-            local textW = surface.GetTextSize(columnName)
+            local textW = surface.GetTextSize(colInfo.name or L("na"))
             local minWidth = textW + 16
             col:SetMinWidth(minWidth)
             col:SetWidth(colInfo.width or minWidth)
@@ -655,8 +654,7 @@ else
         for _, row in ipairs(data) do
             local lineData = {}
             for _, colInfo in ipairs(columns) do
-                local fieldName = colInfo.field or L("na")
-                table.insert(lineData, row[fieldName] or L("na"))
+                table.insert(lineData, row[colInfo.field] or L("na"))
             end
 
             local line = listView:AddLine(unpack(lineData))

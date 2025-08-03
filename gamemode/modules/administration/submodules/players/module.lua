@@ -77,7 +77,6 @@ if CLIENT then
                 local steamName = v.steamName or ""
                 local steamID = v.steamID or ""
                 local userGroup = v.userGroup or ""
-                local firstJoin = v.firstJoin or L("unknown")
                 local lastOnlineText
                 if IsValid(player.GetBySteamID(steamID)) then
                     lastOnlineText = L("onlineNow")
@@ -97,7 +96,7 @@ if CLIENT then
                 local charCount = tonumber(v.characterCount) or 0
                 local warnings = tonumber(v.warnings) or 0
                 if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
-                    local line = list:AddLine(steamName, steamID, userGroup, firstJoin, lastOnlineText, playtime, charCount, warnings)
+                    local line = list:AddLine(steamName, steamID, userGroup, v.firstJoin or L("unknown"), lastOnlineText, playtime, charCount, warnings)
                     line.steamID = v.steamID
                 end
             end

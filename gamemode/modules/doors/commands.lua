@@ -319,7 +319,6 @@ lia.command.add("doorinfo", {
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() then
             local disabled = door:getNetVar("disabled", false)
-            local name = door:getNetVar("title", door:getNetVar("name", L("doorTitle")))
             local price = door:getNetVar("price", 0)
             local noSell = door:getNetVar("noSell", false)
             local factionsRaw = door:getNetVar("factions", "[]")
@@ -330,7 +329,6 @@ lia.command.add("doorinfo", {
                 if info then table.insert(factionNames, info.name) end
             end
 
-            local factionsString = not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none")
             local classesDataRaw = door:getNetVar("classes", "[]")
             local classesTable = util.JSONToTable(classesDataRaw) or {}
             local classNames = {}
@@ -339,8 +337,6 @@ lia.command.add("doorinfo", {
                 local info = lia.class.list[idx]
                 if info then table.insert(classNames, info.name) end
             end
-
-            local classesString = not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none")
             local hidden = door:getNetVar("hidden", false)
             local locked = door:getNetVar("locked", false)
             local doorData = {
@@ -350,7 +346,7 @@ lia.command.add("doorinfo", {
                 },
                 {
                     property = L("name"),
-                    value = tostring(name)
+                    value = tostring(door:getNetVar("title", door:getNetVar("name", L("doorTitle"))))
                 },
                 {
                     property = L("price"),
@@ -362,11 +358,11 @@ lia.command.add("doorinfo", {
                 },
                 {
                     property = L("doorInfoFactions"),
-                    value = tostring(factionsString)
+                    value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none"))
                 },
                 {
                     property = L("classes"),
-                    value = tostring(classesString)
+                    value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
                 },
                 {
                     property = L("doorInfoHidden"),
