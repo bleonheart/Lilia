@@ -50,7 +50,6 @@ end
 
 if SERVER then
     local chunkTime = 0.05
-    util.AddNetworkString("LIA_BigTable_Ack")
     local function sendChunk(ply, s, sid, idx)
         if not IsValid(ply) then
             if lia.net._sendq[ply] then lia.net._sendq[ply][sid] = nil end
@@ -205,7 +204,6 @@ if SERVER then
         net.Send(client)
     end)
 
-    util.AddNetworkString("LIA_BigTable_Test")
 else
     function getNetVar(key, default)
         local value = lia.net.globals[key]
