@@ -506,14 +506,20 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
     self.selectBtn:SetText(selectText)
-    if clientChar and character:getID() == clientChar:getID() or character:isBanned() then
+    if clientChar and character:getID() == clientChar:getID() then
         self.selectBtn:SetEnabled(false)
         self.selectBtn:SetTextColor(Color(255, 255, 255))
     end
 
     self.selectBtn.DoClick = function()
-        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
-        self:Remove()
+        if character:isBanned() then
+            net.Start("PK_Notice")
+            net.WriteString(character:getName())
+            net.Send(client)
+        else
+            lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
+            self:Remove()
+        end
     end
 
     self.deleteBtn = self:Add("liaSmallButton")

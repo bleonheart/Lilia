@@ -52,15 +52,6 @@ if SERVER then
             end
         end
     end)
-
-    function MODULE:CanPlayerUseChar(client, character)
-        if character:isBanned() then
-            net.Start("PK_Notice")
-            net.WriteString(character:getName())
-            net.Send(client)
-            return false, L("bannedCharacter")
-        end
-    end
 else
     net.Receive("OpenPKViewer", function()
         local cases = net.ReadTable()
