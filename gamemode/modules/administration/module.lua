@@ -21,16 +21,16 @@ MODULE.Privileges = {
     {
         Name = L("accessConfigurationMenu"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryManagement"),
     },
     {
         Name = L("accessEditConfigurationMenu"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryManagement"),
     },
     {
         Name = L("manageUsergroups"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryManagement"),
     },
 }

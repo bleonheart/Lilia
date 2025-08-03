@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = L("alwaysSpawnAdminStick"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryAdminStick"),
     },
 }
