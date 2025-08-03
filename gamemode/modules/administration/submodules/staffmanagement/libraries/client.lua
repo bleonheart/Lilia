@@ -18,6 +18,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     end
     addSizedColumn("Player")
     addSizedColumn("Player Steam ID")
+    addSizedColumn(L("usergroup", "Usergroup"))
     addSizedColumn("Warning Count")
     addSizedColumn("Ticket Count")
     addSizedColumn("Kick Count")
@@ -35,6 +36,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
             local entries = {
                 info.player or "",
                 info.steamID or "",
+                info.usergroup or "",
                 info.warnings or 0,
                 info.tickets or 0,
                 info.kicks or 0,
