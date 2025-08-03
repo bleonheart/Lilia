@@ -1,8 +1,8 @@
 ﻿local GM = GM or GAMEMODE
 lia.administrator.registerPrivilege({
-    Name = "Use Disallowed Tools",
+    Name = L("useDisallowedTools"),
     MinAccess = "superadmin",
-    Category = "Tools"
+    Category = L("categoryTools")
 })
 local restrictedProperties = {
     persist = true,

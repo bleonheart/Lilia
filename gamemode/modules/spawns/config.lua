@@ -24,6 +24,6 @@ lia.config.add("DeathPopupEnabled", "Enable Death Popup", true, nil, {
 
 lia.config.add("StaffHasGodMode", "Staff God Mode", true, nil, {
     desc = "Whether or not Staff On Duty has God Mode",
-    category = "Staff",
+    category = L("categoryStaffSettings"),
     type = "Boolean"
 })
