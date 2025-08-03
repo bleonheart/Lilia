@@ -52,7 +52,18 @@ local function buildSummary()
                     end
                 end
                 local list = {}
-                for _, info in pairs(summary) do list[#list + 1] = info end
+                for _, info in pairs(summary) do
+                    info.warnings = info.warnings or 0
+                    info.tickets = info.tickets or 0
+                    info.kicks = info.kicks or 0
+                    info.kills = info.kills or 0
+                    info.respawns = info.respawns or 0
+                    info.blinds = info.blinds or 0
+                    info.mutes = info.mutes or 0
+                    info.jails = info.jails or 0
+                    info.strips = info.strips or 0
+                    list[#list + 1] = info
+                end
                 d:resolve(list)
             end)
         end)
