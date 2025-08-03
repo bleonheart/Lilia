@@ -155,14 +155,14 @@ hook.Add("SAM.RankPermissionGiven", "liaSAMHandlePermissionGiven", function(rank
         })
     end
 
-    lia.administrator.addPermission(rankName, permission, true)
-    if CAMI then lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName)) end
+    if SERVER then lia.administrator.addPermission(rankName, permission, true) end
+    lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName))
 end)
 
 hook.Add("SAM.RankPermissionTaken", "liaSAMHandlePermissionTaken", function(rankName, permission)
     if not rankName or not permission then return end
-    lia.administrator.removePermission(rankName, permission, true)
-    if CAMI then lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName)) end
+    if SERVER then lia.administrator.removePermission(rankName, permission, true) end
+    lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName))
 end)
 
 lia.command.add("cleardecals", {

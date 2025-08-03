@@ -27,6 +27,7 @@ function serverguard.permission:Add(identifier, priv)
                     Name = identifier,
                     MinAccess = "invalid"
                 })
+
                 if lia.administrator and lia.administrator.registerPrivilege then
                     lia.administrator.registerPrivilege({
                         Name = identifier,
@@ -46,9 +47,7 @@ end
 function serverguard.permission:Remove(identifier)
     if isstring(identifier) and self.stored[identifier] then
         self.stored[identifier] = nil
-        if lia.administrator and lia.administrator.unregisterPrivilege then
-            lia.administrator.unregisterPrivilege(identifier)
-        end
+        if lia.administrator and lia.administrator.unregisterPrivilege then lia.administrator.unregisterPrivilege(identifier) end
     end
 end
 
@@ -137,22 +136,15 @@ hook.Add("serverguard.RankPermissionGiven", "liaServerGuardHandlePermissionGiven
             MinAccess = "admin"
         })
     end
-    if lia.administrator and lia.administrator.addPermission then
-        lia.administrator.addPermission(rankName, permission, true)
-    end
-    if CAMI then
-        lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName))
-    end
+
+    if SERVER then lia.administrator.addPermission(rankName, permission, true) end
+    lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName))
 end)
 
 hook.Add("serverguard.RankPermissionTaken", "liaServerGuardHandlePermissionTaken", function(rankName, permission)
     if not rankName or not permission then return end
-    if lia.administrator and lia.administrator.removePermission then
-        lia.administrator.removePermission(rankName, permission, true)
-    end
-    if CAMI then
-        lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName))
-    end
+    if SERVER then lia.administrator.removePermission(rankName, permission, true) end
+    lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName))
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "serverguard.CAMI.OnPrivilegeRegistered", OnPrivilegeRegistered)

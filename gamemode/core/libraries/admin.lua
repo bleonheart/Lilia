@@ -600,10 +600,12 @@ if SERVER then
         if group == "" or privilege == "" then return end
         if lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[group] then return end
         if not lia.administrator.groups or not lia.administrator.groups[group] then return end
-        if value then
-            lia.administrator.addPermission(group, privilege, true)
-        else
-            lia.administrator.removePermission(group, privilege, true)
+        if SERVER then
+            if value then
+                lia.administrator.addPermission(group, privilege, true)
+            else
+                lia.administrator.removePermission(group, privilege, true)
+            end
         end
 
         net.Start("liaGroupPermChanged")
