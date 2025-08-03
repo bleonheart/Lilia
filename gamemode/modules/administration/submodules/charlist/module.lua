@@ -12,10 +12,17 @@ MODULE.Privileges = {
 if SERVER then
     net.Receive("liaRequestFullCharList", function(_, client)
         if not IsValid(client) or not client:hasPrivilege("List Characters") then return end
-        lia.db.query("SELECT id, name, `desc`, faction, steamID, lastJoinTime, banned, playtime, money FROM lia_characters", function(data)
+        lia.db.query([[SELECT c.id, c.name, c.`desc`, c.faction, c.steamID, c.lastJoinTime, c.banned, c.playtime, c.money, d.value AS charBanInfo
+FROM lia_characters AS c
+LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], function(data)
             local payload = {all = {}, players = {}}
             for _, row in ipairs(data or {}) do
                 local stored = lia.char.loaded[row.id]
+                local banInfo = {}
+                if row.charBanInfo and row.charBanInfo ~= "" then
+                    local decoded = pon.decode(row.charBanInfo)
+                    banInfo = decoded and decoded[1] or {}
+                end
                 local entry = {
                     ID = row.id,
                     Name = row.name,
@@ -24,6 +31,9 @@ if SERVER then
                     SteamID = row.steamID,
                     LastUsed = stored and "Online" or row.lastJoinTime,
                     Banned = tonumber(row.banned) == 1,
+                    BanningAdminName = banInfo.name or "",
+                    BanningAdminSteamID = banInfo.steamID or "",
+                    BanningAdminRank = banInfo.rank or "",
                     PlayTime = tonumber(row.playtime) or 0,
                     Money = tonumber(row.money) or 0
                 }
@@ -79,6 +89,9 @@ else
                         {name = L("steamID"), field = "SteamID"},
                         {name = L("lastUsed"), field = "LastUsed"},
                         {name = L("banned"), field = "Banned", format = function(val) return val and L("yes") or L("no") end},
+                        {name = L("banningAdminName"), field = "BanningAdminName"},
+                        {name = L("banningAdminSteamID"), field = "BanningAdminSteamID"},
+                        {name = L("banningAdminRank"), field = "BanningAdminRank"},
                         {name = L("playtime"), field = "PlayTime", format = function(val) return formatPlayTime(val or 0) end},
                         {name = L("money"), field = "Money", format = function(val) return lia.currency.get(tonumber(val) or 0) end}
                     }
