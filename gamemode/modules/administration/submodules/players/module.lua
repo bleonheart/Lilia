@@ -6,6 +6,7 @@ MODULE.desc = L("modulePlayerListDesc", "View player accounts and characters.")
 if CLIENT then
     local panelRef
     local charMenuPos
+    local charMenuRow
 
     lia.net.readBigTable("liaAllPlayers", function(players)
         if not IsValid(panelRef) then return end
@@ -32,6 +33,7 @@ if CLIENT then
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.steamID then return end
             charMenuPos = {gui.MousePos()}
+            charMenuRow = {list = list, line = line}
             net.Start("liaRequestPlayerCharacters")
             net.WriteString(line.steamID)
             net.SendToServer()
@@ -41,6 +43,18 @@ if CLIENT then
     lia.net.readBigTable("liaPlayerCharacters", function(data)
         if not data then return end
         local menu = DermaMenu()
+        if charMenuRow and IsValid(charMenuRow.list) and IsValid(charMenuRow.line) then
+            menu:AddOption(L("copyRow"), function()
+                local list, line = charMenuRow.list, charMenuRow.line
+                local rowString = ""
+                for i, column in ipairs(list.Columns or {}) do
+                    local header = column.Header and column.Header:GetText() or ("Column " .. i)
+                    local value = line:GetColumnText(i) or ""
+                    rowString = rowString .. header .. " " .. value .. " | "
+                end
+                SetClipboardText(string.sub(rowString, 1, -4))
+            end):SetIcon("icon16/page_copy.png")
+        end
         local chars = data.characters or {}
         if #chars == 0 then
             menu:AddOption(L("none", "None"))
