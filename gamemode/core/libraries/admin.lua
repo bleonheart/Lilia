@@ -940,25 +940,7 @@ else
 
     lia.net.readBigTable("updateAdminPrivilegeMeta", function(tbl)
         lia.administrator.privMeta = tbl or {}
-        if IsValid(lia.gui.usergroups) and lia.administrator.groups then
-            local pnl = lia.gui.usergroups
-            pnl:Clear()
-            local sheet = pnl:Add("DPropertySheet")
-            sheet:Dock(FILL)
-            sheet:DockMargin(10, 10, 10, 10)
-            local keys = {}
-            for g in pairs(lia.administrator.groups or {}) do
-                keys[#keys + 1] = g
-            end
-
-            table.sort(keys, function(a, b) return a:lower() < b:lower() end)
-            for _, g in ipairs(keys) do
-                local page = sheet:Add("DPanel")
-                page:Dock(FILL)
-                renderGroupInfo(page, g, lia.administrator.groups)
-                sheet:AddSheet(g, page)
-            end
-        end
+        if IsValid(lia.gui.usergroups) and lia.administrator.groups then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups) end
     end)
 
     net.Receive("liaGroupPermChanged", function()
