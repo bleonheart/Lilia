@@ -1,9 +1,9 @@
 ﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
-    local vendorName = vendor:getNetVar("name") or L("unknown")
+    local vendorName = vendor:getNetVar("name")
     if not isSellingToVendor then
-        lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName, isFailed)
+        lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
     else
-        lia.log.add(client, "vendorSell", item and (item:getName() or item.name) or "", vendorName)
+        lia.log.add(client, "vendorSell", item and (item:getName() or item.name) or "", vendorName or L("unknown"))
     end
 end
 

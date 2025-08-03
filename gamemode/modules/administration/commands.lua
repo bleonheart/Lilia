@@ -2001,8 +2001,8 @@ lia.command.add("getmodel", {
             return
         end
 
-        local model = entity:GetModel() or L("noModelFound")
-        client:ChatPrint(L("modelIs", model))
+        local model = entity:GetModel()
+        client:ChatPrint(model and L("modelIs", model) or L("noModelFound"))
     end
 })
 

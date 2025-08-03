@@ -157,8 +157,7 @@ lia.log.types = {
     },
     ["itemAdded"] = {
         func = function(client, itemName)
-            local ownerName = IsValid(client) and client:Name() or L("unknown")
-            return string.format("Item '%s' added to %s's inventory.", itemName, ownerName)
+            return string.format("Item '%s' added to %s's inventory.", itemName, IsValid(client) and client:Name() or L("unknown"))
         end,
         category = "Items"
     },
@@ -330,47 +329,41 @@ lia.log.types = {
     },
     ["vendorAccess"] = {
         func = function(client, vendor)
-            local vendorName = vendor:getNetVar("name") or L("unknown")
-            return string.format("%s accessed vendor %s", client:Name(), vendorName)
+            return string.format("%s accessed vendor %s", client:Name(), vendor:getNetVar("name") or L("unknown"))
         end,
         category = "Items"
     },
     ["vendorExit"] = {
         func = function(client, vendor)
-            local vendorName = vendor:getNetVar("name") or L("unknown")
-            return string.format("%s exited vendor %s", client:Name(), vendorName)
+            return string.format("%s exited vendor %s", client:Name(), vendor:getNetVar("name") or L("unknown"))
         end,
         category = "Items"
     },
     ["vendorSell"] = {
         func = function(client, item, vendor)
-            local vendorName = vendor:getNetVar("name") or L("unknown")
-            return string.format("%s sold a %s to %s", client:Name(), item, vendorName)
+            return string.format("%s sold a %s to %s", client:Name(), item, vendor:getNetVar("name") or L("unknown"))
         end,
         category = "Items"
     },
     ["vendorEdit"] = {
         func = function(client, vendor, key)
-            local vendorName = vendor:getNetVar("name") or L("unknown")
-            return string.format("%s edited vendor %s with key %s", client:Name(), vendorName, key)
+            return string.format("%s edited vendor %s with key %s", client:Name(), vendor:getNetVar("name") or L("unknown"), key)
         end,
         category = "Items"
     },
     ["vendorBuy"] = {
         func = function(client, item, vendor, isFailed)
-            local vendorName = vendor:getNetVar("name") or L("unknown")
             if isFailed then
-                return string.format("%s tried to buy a %s from %s but it failed. They likely had no space!", client:Name(), item, vendorName)
+                return string.format("%s tried to buy a %s from %s but it failed. They likely had no space!", client:Name(), item, vendor:getNetVar("name") or L("unknown"))
             else
-                return string.format("%s bought a %s from %s", client:Name(), item, vendorName)
+                return string.format("%s bought a %s from %s", client:Name(), item, vendor:getNetVar("name") or L("unknown"))
             end
         end,
         category = "Items"
     },
     ["restockvendor"] = {
         func = function(client, vendor)
-            local vendorName = IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown")
-            return string.format("%s restocked vendor %s", client:Name(), vendorName)
+            return string.format("%s restocked vendor %s", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"))
         end,
         category = "Items"
     },
@@ -380,8 +373,7 @@ lia.log.types = {
     },
     ["resetvendormoney"] = {
         func = function(client, vendor, amount)
-            local vendorName = IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown")
-            return string.format("%s set vendor %s money to %s", client:Name(), vendorName, lia.currency.get(amount))
+            return string.format("%s set vendor %s money to %s", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"), lia.currency.get(amount))
         end,
         category = "Items"
     },
@@ -391,8 +383,7 @@ lia.log.types = {
     },
     ["restockvendormoney"] = {
         func = function(client, vendor, amount)
-            local vendorName = IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown")
-            return string.format("%s restocked vendor %s money to %s", client:Name(), vendorName, lia.currency.get(amount))
+            return string.format("%s restocked vendor %s money to %s", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"), lia.currency.get(amount))
         end,
         category = "Items"
     },

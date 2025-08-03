@@ -33,12 +33,11 @@ function MODULE:HUDPaint()
     lia.util.drawText(L(txtKey), x + 2, y + 2, Color(0, 0, 0, ceil(shadowFade * 255)), 0, 0, "liaHugeFont")
     lia.util.drawText(L(txtKey), x, y, Color(255, 255, 255, ceil(shadowFade * 255)), 0, 0, "liaHugeFont")
     if not hideKey then
-        local dt = left > 0 and L("respawnIn", left) or L("respawnKey", input.GetKeyName(KEY_SPACE))
         surface.SetFont("liaMediumFont")
-        local dw = select(1, surface.GetTextSize(dt))
+        local dw = select(1, surface.GetTextSize(left > 0 and L("respawnIn", left) or L("respawnKey", input.GetKeyName(KEY_SPACE))))
         local dx, dy = (ScrW() - dw) / 2, y + h + 10
-        lia.util.drawText(dt, dx + 1, dy + 1, Color(0, 0, 0, 255), 0, 0, "liaMediumFont")
-        lia.util.drawText(dt, dx, dy, Color(255, 255, 255, 255), 0, 0, "liaMediumFont")
+        lia.util.drawText(left > 0 and L("respawnIn", left) or L("respawnKey", input.GetKeyName(KEY_SPACE)), dx + 1, dy + 1, Color(0, 0, 0, 255), 0, 0, "liaMediumFont")
+        lia.util.drawText(left > 0 and L("respawnIn", left) or L("respawnKey", input.GetKeyName(KEY_SPACE)), dx, dy, Color(255, 255, 255, 255), 0, 0, "liaMediumFont")
     end
 
     if left <= 0 and input.IsKeyDown(KEY_SPACE) then

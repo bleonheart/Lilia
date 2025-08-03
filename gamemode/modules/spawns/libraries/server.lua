@@ -131,9 +131,8 @@ function MODULE:PlayerDeath(client, _, attacker)
         if lia.config.get("DeathPopupEnabled", true) then
             local dateStr = lia.time.GetDate()
             local attackerChar = attacker:getChar()
-            local charId = attackerChar and tostring(attackerChar:getID()) or L("na")
             local steamId = tostring(attacker:SteamID())
-            ClientAddText(client, Color(255, 0, 0), "[" .. string.upper(L("death")) .. "]: ", Color(255, 255, 255), dateStr, " - ", L("killedBy"), " ", Color(255, 215, 0), L("characterID"), ": ", Color(255, 255, 255), charId, " (", Color(0, 255, 0), steamId, Color(255, 255, 255), ")")
+            ClientAddText(client, Color(255, 0, 0), "[" .. string.upper(L("death")) .. "]: ", Color(255, 255, 255), dateStr, " - ", L("killedBy"), " ", Color(255, 215, 0), L("characterID"), ": ", Color(255, 255, 255), attackerChar and tostring(attackerChar:getID()) or L("na"), " (", Color(0, 255, 0), steamId, Color(255, 255, 255), ")")
         end
     end
 

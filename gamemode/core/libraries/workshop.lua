@@ -277,24 +277,22 @@ else
                 local function populate()
                     for id, fi in pairs(info) do
                         if fi then
-                            local title = fi.title or L("idPrefix", id)
                             local percent = "0%"
                             if totalSize > 0 then
                                 percent = string.format("%.2f%%", (fi.size or 0) / totalSize * 100)
                             end
-                            local desc = fi.size and L("addonSize", formatSize(fi.size), percent) or ""
                             local url = fi.previewurl or ""
                             if sheet.AddPreviewRow then
                                 sheet:AddPreviewRow({
-                                    title = title,
-                                    desc = desc,
+                                    title = fi.title or L("idPrefix", id),
+                                    desc = fi.size and L("addonSize", formatSize(fi.size), percent) or "",
                                     url = url,
                                     size = 64
                                 })
                             elseif sheet.AddTextRow then
                                 sheet:AddTextRow({
-                                    title = title,
-                                    desc = desc,
+                                    title = fi.title or L("idPrefix", id),
+                                    desc = fi.size and L("addonSize", formatSize(fi.size), percent) or "",
                                     compact = true
                                 })
                             end
