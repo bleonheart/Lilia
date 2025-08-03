@@ -141,8 +141,7 @@ local function HandleModerationOption(opt, tgt)
     elseif opt.name == "Kick" then
         OpenReasonUI(tgt, "kick")
     else
-        local cmdName = opt.cmd:match("!([^%s]+)")
-        RunAdminCommand(cmdName, tgt)
+        RunAdminCommand(opt.cmd, tgt)
     end
 
     AdminStickIsOpen = false
@@ -155,22 +154,22 @@ local function IncludeAdminMenu(tgt, menu, stores)
     local tp = {
         {
             name = L("Bring"),
-            cmd = "!bring " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "bring",
             icon = "icon16/arrow_down.png"
         },
         {
             name = L("Goto"),
-            cmd = "!goto " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "goto",
             icon = "icon16/arrow_right.png"
         },
         {
             name = L("Return"),
-            cmd = "!return " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "return",
             icon = "icon16/arrow_redo.png"
         },
         {
             name = L("Respawn"),
-            cmd = "!respawn " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "respawn",
             icon = "icon16/arrow_refresh.png"
         }
     }
@@ -179,64 +178,64 @@ local function IncludeAdminMenu(tgt, menu, stores)
         {
             action = {
                 name = L("Blind"),
-                cmd = "!blind " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "blind",
                 icon = "icon16/eye.png"
             },
             inverse = {
                 name = L("Unblind"),
-                cmd = "!unblind " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "unblind",
                 icon = "icon16/eye.png"
             }
         },
         {
             action = {
                 name = L("Freeze"),
-                cmd = "!freeze " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "freeze",
                 icon = "icon16/lock.png"
             },
             inverse = {
                 name = L("Unfreeze"),
-                cmd = "!unfreeze " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "unfreeze",
                 icon = "icon16/accept.png"
             }
         },
         {
             action = {
                 name = L("Gag"),
-                cmd = "!gag " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "gag",
                 icon = "icon16/sound_mute.png"
             },
             inverse = {
                 name = L("Ungag"),
-                cmd = "!ungag " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "ungag",
                 icon = "icon16/sound_low.png"
             }
         },
         {
             action = {
                 name = L("Mute"),
-                cmd = "!mute " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "mute",
                 icon = "icon16/sound_delete.png"
             },
             inverse = {
                 name = L("Unmute"),
-                cmd = "!unmute " .. QuoteArgs(GetIdentifier(tgt)),
+                cmd = "unmute",
                 icon = "icon16/sound_add.png"
             }
         },
         {
             name = L("Ignite"),
-            cmd = "!ignite " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "ignite",
             icon = "icon16/fire.png"
         },
         {
             name = L("Jail"),
-            cmd = "!jail " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "jail",
             icon = "icon16/lock.png"
         },
         {
             name = L("Slay"),
-            cmd = "!slay " .. QuoteArgs(GetIdentifier(tgt)),
+            cmd = "slay",
             icon = "icon16/bomb.png"
         }
     }
@@ -259,9 +258,8 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     for _, o in ipairs(tp) do
         mod:AddOption(L(o.name), function()
-            cl:ChatPrint(L("adminStickExecutedCommand", o.cmd))
-            local cmdName = o.cmd:match("!([^%s]+)")
-            RunAdminCommand(cmdName, tgt)
+            cl:ChatPrint(L("adminStickExecutedCommand", o.cmd .. " " .. QuoteArgs(GetIdentifier(tgt))))
+            RunAdminCommand(o.cmd, tgt)
             AdminStickIsOpen = false
         end):SetIcon(o.icon)
     end
