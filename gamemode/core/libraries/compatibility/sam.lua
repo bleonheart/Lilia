@@ -177,26 +177,26 @@ lia.command.add("cleardecals", {
 })
 
 lia.administrator.registerPrivilege({
-    Name = "Can See SAM Notifications Outside Staff Character",
+    Name = L("canSeeSAMNotificationsOutsideStaff"),
     MinAccess = "superadmin",
-    Category = "SAM"
+    Category = L("categorySAM")
 })
 
 lia.administrator.registerPrivilege({
-    Name = "Can Bypass Staff Faction SAM Command whitelist",
+    Name = L("canBypassSAMFactionWhitelist"),
     MinAccess = "superadmin",
-    Category = "SAM"
+    Category = L("categorySAM")
 })
 
 lia.config.add("AdminOnlyNotification", "Admin Only Notifications", true, nil, {
     desc = "Restricts certain notifications to admins with specific permissions or those on duty.",
-    category = "Staff",
+    category = L("categorySAM"),
     type = "Boolean"
 })
 
 lia.config.add("SAMEnforceStaff", "Enforce Staff Rank To SAM", true, nil, {
     desc = "Determines whether staff enforcement for SAM commands is enabled",
-    category = "Staff",
+    category = L("categorySAM"),
     type = "Boolean"
 })
 

@@ -6,11 +6,11 @@ MODULE.Privileges = {
     {
         Name = L("canAccessScoreboardAdminOptions"),
         MinAccess = "admin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryScoreboard"),
     },
     {
         Name = L("canAccessScoreboardInfoOutOfStaff"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryScoreboard"),
     },
 }

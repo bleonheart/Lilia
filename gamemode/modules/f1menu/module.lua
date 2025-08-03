@@ -6,21 +6,21 @@ MODULE.Privileges = {
     {
         Name = L("accessEntityList"),
         MinAccess = "admin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryMenu"),
     },
     {
         Name = L("teleportToEntity"),
         MinAccess = "admin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryMenu"),
     },
     {
         Name = L("teleportToEntityTab"),
         MinAccess = "admin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryMenu"),
     },
     {
         Name = L("viewEntityTab"),
         MinAccess = "admin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryMenu"),
     },
 }

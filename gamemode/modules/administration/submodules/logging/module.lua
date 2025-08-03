@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = L("canSeeLogs"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryLogging"),
     }
 }
