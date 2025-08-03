@@ -7,6 +7,15 @@
     return plyList
 end
 
+function lia.util.getBySteamID(steamID)
+    if not isstring(steamID) or steamID == "" then return end
+    for _, client in player.Iterator() do
+        local sid = client:SteamID()
+        local sid64 = client:SteamID64()
+        if (sid == steamID or sid64 == steamID) and client:getChar() then return client end
+    end
+end
+
 function lia.util.FindPlayersInSphere(origin, radius)
     local plys = {}
     local r2 = radius ^ 2
@@ -458,14 +467,24 @@ else
         surface.SetFont("liaSmallFont")
         local controls, watchers = {}, {}
         local validate
-
         local ordered = {}
-        local grouped = {strings = {}, dropdowns = {}, bools = {}, rest = {}}
+        local grouped = {
+            strings = {},
+            dropdowns = {},
+            bools = {},
+            rest = {}
+        }
+
         for name, typeInfo in pairs(argTypes) do
             local fieldType, dataTbl = typeInfo, nil
             if istable(typeInfo) then fieldType, dataTbl = typeInfo[1], typeInfo[2] end
             fieldType = string.lower(tostring(fieldType))
-            local info = {name = name, fieldType = fieldType, dataTbl = dataTbl}
+            local info = {
+                name = name,
+                fieldType = fieldType,
+                dataTbl = dataTbl
+            }
+
             if fieldType == "string" then
                 table.insert(grouped.strings, info)
             elseif fieldType == "table" then
@@ -476,6 +495,7 @@ else
                 table.insert(grouped.rest, info)
             end
         end
+
         for _, group in ipairs({grouped.strings, grouped.dropdowns, grouped.bools, grouped.rest}) do
             for _, v in ipairs(group) do
                 table.insert(ordered, v)
@@ -525,6 +545,7 @@ else
                 else
                     ctrlH, ctrlW = 30, w * 0.7
                 end
+
                 local totalW = textW + 10 + ctrlW
                 local xOff = (w - totalW) / 2
                 label:SetPos(xOff, (h - label:GetTall()) / 2)
