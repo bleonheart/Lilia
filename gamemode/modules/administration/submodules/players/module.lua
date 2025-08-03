@@ -93,7 +93,7 @@ if CLIENT then
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = L("agoFormat", timeStripped, formatDHM(lastDiff))
                     else
                         lastOnlineText = L("unknown")
                     end
