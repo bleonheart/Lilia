@@ -1,6 +1,7 @@
 ﻿lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
+lia.administrator.privMeta = lia.administrator.privMeta or {}
 lia.administrator.DefaultGroups = {
     user = 1,
     admin = 2,
@@ -29,7 +30,7 @@ local function shouldGrant(group, min)
 end
 
 local function rebuildPrivileges()
-    lia.administrator.privileges = {}
+    lia.administrator.privileges = lia.administrator.privileges or {}
     for groupName, perms in pairs(lia.administrator.groups or {}) do
         for priv, allowed in pairs(perms) do
             if priv ~= "_info" and allowed == true then
@@ -96,9 +97,12 @@ local function camiBootstrapFromExisting()
         local m = tostring(pr.MinAccess or "user"):lower()
         if lia.administrator.privileges[n] == nil then
             lia.administrator.privileges[n] = m
+            lia.administrator.privMeta[n] = tostring(pr.Category or "Unassigned")
             for g in pairs(lia.administrator.groups or {}) do
                 if shouldGrant(g, m) then lia.administrator.groups[g][n] = true end
             end
+        else
+            lia.administrator.privMeta[n] = lia.administrator.privMeta[n] or tostring(pr.Category or "Unassigned")
         end
     end
 
@@ -131,6 +135,7 @@ function lia.administrator.registerPrivilege(priv)
     if lia.administrator.privileges[name] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[name] = min
+    lia.administrator.privMeta[name] = tostring(priv.Category or "Unassigned")
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
@@ -140,7 +145,8 @@ function lia.administrator.registerPrivilege(priv)
     if CAMI then camiRegisterPrivilege(name, min) end
     hook.Run("OnPrivilegeRegistered", {
         Name = name,
-        MinAccess = min
+        MinAccess = min,
+        Category = lia.administrator.privMeta[name]
     })
 
     if SERVER then lia.administrator.save() end
@@ -150,6 +156,7 @@ function lia.administrator.unregisterPrivilege(name)
     name = tostring(name or "")
     if name == "" or lia.administrator.privileges[name] == nil then return end
     lia.administrator.privileges[name] = nil
+    lia.administrator.privMeta[name] = nil
     for _, perms in pairs(lia.administrator.groups or {}) do
         perms[name] = nil
     end
@@ -322,6 +329,7 @@ end
 
 if SERVER then
     util.AddNetworkString("updateAdminPrivileges")
+    util.AddNetworkString("updateAdminPrivilegeMeta")
     util.AddNetworkString("updateAdminGroups")
     util.AddNetworkString("liaGroupsRequest")
     util.AddNetworkString("liaGroupsAdd")
@@ -362,6 +370,7 @@ if SERVER then
             if not IsValid(ply) then return end
             if not lia.net.ready[ply] then return end
             lia.net.writeBigTable(ply, "updateAdminPrivileges", lia.administrator.privileges or {})
+            timer.Simple(0.05, function() if IsValid(ply) and lia.net.ready[ply] then lia.net.writeBigTable(ply, "updateAdminPrivilegeMeta", lia.administrator.privMeta or {}) end end)
             timer.Simple(0.15, function() if IsValid(ply) and lia.net.ready[ply] then lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {}) end end)
         end
 
@@ -617,20 +626,34 @@ if SERVER then
     end)
 else
     local LAST_GROUP
-    local function computePrivilegeList(groups)
-        local list, seen = {}, {}
+    local function computeCategoryMap(groups)
+        local cats, seen = {}, {}
         for name in pairs(lia.administrator.privileges or {}) do
-            list[#list + 1], seen[name] = name, true
+            local c = lia.administrator.privMeta and lia.administrator.privMeta[name] or "Unassigned"
+            cats[c] = cats[c] or {}
+            cats[c][#cats[c] + 1], seen[name] = name, true
         end
 
         for _, data in pairs(groups or {}) do
             for name in pairs(data or {}) do
-                if name ~= "_info" and not seen[name] then list[#list + 1], seen[name] = name, true end
+                if name ~= "_info" and not seen[name] then
+                    local c = lia.administrator.privMeta and lia.administrator.privMeta[name] or "Unassigned"
+                    cats[c] = cats[c] or {}
+                    cats[c][#cats[c] + 1], seen[name] = name, true
+                end
             end
         end
 
-        table.sort(list, function(a, b) return a:lower() < b:lower() end)
-        return list
+        local keys = {}
+        for k in pairs(cats) do
+            keys[#keys + 1] = k
+        end
+
+        table.sort(keys, function(a, b) return a:lower() < b:lower() end)
+        for _, k in ipairs(keys) do
+            table.sort(cats[k], function(a, b) return a:lower() < b:lower() end)
+        end
+        return cats, keys
     end
 
     local function promptCreateGroup()
@@ -667,13 +690,13 @@ else
         local cb = math.max(20, fh + 6)
         local rowH = math.max(fh + 14, cb + 8)
         local off = math.floor((rowH - fh) * 0.5)
-        local list = parent:Add("DListLayout")
-        list:Dock(TOP)
-        list:DockMargin(20, 0, 20, 4)
+        local categoryList = parent:Add("DCategoryList")
+        categoryList:Dock(TOP)
+        categoryList:DockMargin(20, 0, 20, 4)
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
         lia.gui.usergroups.checks[g] = lia.gui.usergroups.checks[g] or {}
-        local function addRow(name)
-            local row = list:Add("DPanel")
+        local function addRow(container, name)
+            local row = container:Add("DPanel")
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
             row:SetTall(rowH)
@@ -716,10 +739,24 @@ else
             lia.gui.usergroups.checks[g][name] = chk
         end
 
-        for _, priv in ipairs(computePrivilegeList(groups)) do
-            addRow(priv)
+        local cats, order = computeCategoryMap(groups)
+        for _, catName in ipairs(order) do
+            local pnl = vgui.Create("DPanel", categoryList)
+            pnl:Dock(TOP)
+            pnl.Paint = function() end
+            local layout = vgui.Create("DListLayout", pnl)
+            layout:Dock(FILL)
+            for _, priv in ipairs(cats[catName]) do
+                addRow(layout, priv)
+            end
+
+            pnl:InvalidateLayout(true)
+            pnl:SizeToChildren(true, true)
+            local cat = categoryList:Add(catName)
+            cat:SetContents(pnl)
+            cat:SetExpanded(true)
         end
-        return list, current
+        return categoryList, current
     end
 
     function renderGroupInfo(parent, g, groups)
@@ -901,6 +938,29 @@ else
         end
     end)
 
+    lia.net.readBigTable("updateAdminPrivilegeMeta", function(tbl)
+        lia.administrator.privMeta = tbl or {}
+        if IsValid(lia.gui.usergroups) and lia.administrator.groups then
+            local pnl = lia.gui.usergroups
+            pnl:Clear()
+            local sheet = pnl:Add("DPropertySheet")
+            sheet:Dock(FILL)
+            sheet:DockMargin(10, 10, 10, 10)
+            local keys = {}
+            for g in pairs(lia.administrator.groups or {}) do
+                keys[#keys + 1] = g
+            end
+
+            table.sort(keys, function(a, b) return a:lower() < b:lower() end)
+            for _, g in ipairs(keys) do
+                local page = sheet:Add("DPanel")
+                page:Dock(FILL)
+                renderGroupInfo(page, g, lia.administrator.groups)
+                sheet:AddSheet(g, page)
+            end
+        end
+    end)
+
     net.Receive("liaGroupPermChanged", function()
         local group = net.ReadString()
         local privilege = net.ReadString()
@@ -1018,6 +1078,7 @@ if CAMI then
         if lia.administrator.privileges[name] ~= nil then return end
         local min = tostring(priv.MinAccess or "user"):lower()
         lia.administrator.privileges[name] = min
+        lia.administrator.privMeta[name] = tostring(priv.Category or "Unassigned")
         for groupName in pairs(lia.administrator.groups or {}) do
             if shouldGrant(groupName, min) then lia.administrator.groups[groupName][name] = true end
         end
@@ -1035,6 +1096,7 @@ if CAMI then
         if not isstring(name) or name == "" then return end
         if lia.administrator.privileges[name] == nil then return end
         lia.administrator.privileges[name] = nil
+        lia.administrator.privMeta[name] = nil
         for _, g in pairs(lia.administrator.groups or {}) do
             g[name] = nil
         end
