@@ -572,7 +572,7 @@ lia.command.add("plymute", {
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and target:getChar() then
-            target:getChar():setData("VoiceBan", true)
+            target:setLiliaData("VoiceBan", true)
             lia.log.add(client, "plyMute", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -597,7 +597,7 @@ lia.command.add("plyunmute", {
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and target:getChar() then
-            target:getChar():setData("VoiceBan", false)
+            target:setLiliaData("VoiceBan", false)
             lia.log.add(client, "plyUnmute", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1508,10 +1508,9 @@ lia.command.add("charvoicetoggle", {
             return false
         end
 
-        local char = target:getChar()
-        if char then
-            local isBanned = char:getData("VoiceBan", false)
-            char:setData("VoiceBan", not isBanned)
+        if target:getChar() then
+            local isBanned = target:getLiliaData("VoiceBan", false)
+            target:setLiliaData("VoiceBan", not isBanned)
             if isBanned then
                 client:notifyLocalized("voiceUnmuted", target:Name())
                 target:notifyLocalized("voiceUnmutedByAdmin")
