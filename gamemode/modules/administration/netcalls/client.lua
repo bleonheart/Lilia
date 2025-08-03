@@ -102,6 +102,27 @@ net.Receive("liaDBTableData", function()
 
     local _, list = lia.util.CreateTableUI(tbl, columns, data)
     if IsValid(list) then
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) or not line.rowData then return end
+            local rowData = line.rowData
+            local menu = DermaMenu()
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for key, value in pairs(rowData) do
+                    value = tostring(value or L("na"))
+                    rowString = rowString .. key:gsub("^%l", string.upper) .. " " .. value .. " | "
+                end
+
+                SetClipboardText(string.sub(rowString, 1, -4))
+            end)
+
+            menu:AddOption(L("viewEntry"), function()
+                openRowInfo(rowData)
+            end)
+
+            menu:Open()
+        end
+
         function list:OnRowSelected(_, line)
             openRowInfo(line.rowData)
         end

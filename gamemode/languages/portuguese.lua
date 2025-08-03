@@ -327,6 +327,7 @@ LANGUAGE = {
     selectClassPrompt = "Selecciona classe",
     typeFieldPrompt = "Escreve %s",
     copyRow = "Copiar linha",
+    viewEntry = "Ver entrada decodificada",
     copySteamID = "Copiar Steam ID",
     copyName = "Copiar nome",
     copyLogMessage = "Copiar Mensagem do Log",

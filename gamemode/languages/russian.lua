@@ -327,6 +327,7 @@ LANGUAGE = {
     selectClassPrompt = "Выберите класс",
     typeFieldPrompt = "Введите %s",
     copyRow = "Копировать строку",
+    viewEntry = "Просмотреть декодированную запись",
     copySteamID = "Скопировать Steam ID",
     copyName = "Скопировать имя",
     copyLogMessage = "Скопировать сообщение лога",

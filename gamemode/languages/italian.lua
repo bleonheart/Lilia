@@ -327,6 +327,7 @@ LANGUAGE = {
     selectClassPrompt = "Seleziona Classe",
     typeFieldPrompt = "Digita %s",
     copyRow = "Copia Riga",
+    viewEntry = "Visualizza voce decodificata",
     copySteamID = "Copia Steam ID",
     copyName = "Copia nome",
     copyLogMessage = "Copia Messaggio Log",
