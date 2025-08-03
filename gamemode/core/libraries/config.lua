@@ -229,6 +229,24 @@ lia.config.add("AllowExistNames", "Allow Duplicate Names", true, nil, {
     type = "Boolean"
 })
 
+lia.config.add("WhitelistEnabled", "Enable or disable the Whitelist", false, nil, {
+    desc = "Determines whether the whitelist feature is enabled on the server.",
+    category = "Server",
+    noNetworking = false,
+    schemaOnly = false,
+    isGlobal = false,
+    type = "Boolean"
+})
+
+lia.config.add("BlacklistedEnabled", "Enable or disable the Blacklist", false, nil, {
+    desc = "Determines whether the blacklist feature is enabled on the server.",
+    category = "Server",
+    noNetworking = false,
+    schemaOnly = false,
+    isGlobal = false,
+    type = "Boolean"
+})
+
 lia.config.add("MaxCharacters", "Max Characters", 5, nil, {
     desc = "Sets the maximum number of characters a player can have.",
     category = "Character",
@@ -448,7 +466,6 @@ lia.config.add("MaxViewDistance", "Maximum View Distance", 32768, nil, {
     min = 1000,
     max = 32768,
 })
-
 
 local function getDermaSkins()
     local skins = {}
