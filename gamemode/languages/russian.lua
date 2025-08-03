@@ -450,6 +450,7 @@ LANGUAGE = {
     cleaningFinished = "Очистка %s завершена: удалено сущностей %s.",
     invalidTarget = "Неверная цель!",
     money = "Деньги",
+    playtime = "Время в игре",
     noRagdoll = "У вас нет регдолла!",
     invCheckSelf = "Не для проверки своего инвентаря.",
     noBodygroups = "Нет бодигрупп для этой модели.",
