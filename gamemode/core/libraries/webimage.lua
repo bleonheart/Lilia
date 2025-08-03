@@ -195,4 +195,5 @@ lia.webimage.register("invslotfree.png", "https://github.com/LiliaFramework/liaI
 lia.webimage.register("vignette.png", "https://github.com/LiliaFramework/liaIcons/blob/main/vignette.png?raw=true")
 lia.webimage.register("dark_vignette.png", "https://github.com/LiliaFramework/liaIcons/blob/main/dark_vignette.png?raw=true")
 lia.webimage.register("invslotblocked.png", "https://github.com/LiliaFramework/liaIcons/blob/main/invslotblocked.png?raw=true")
+lia.webimage.register("settings.png", "https://github.com/LiliaFramework/liaIcons/blob/main/settings.png?raw=true")
 ensureDir(baseDir)

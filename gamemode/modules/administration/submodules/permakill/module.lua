@@ -241,9 +241,4 @@ else
         playPKMusic()
         timer.Simple(15, function() hook.Remove("HUDPaint", "PK") end)
     end)
-
-    net.Receive("PK_Notice", function(_)
-        local characterName = net.ReadString()
-        Derma_Query("Your character: " .. characterName .. ", has been permanently killed. An administrator has approved this PK.\nIf you believe this PK is unfair, see the options below.\nPKs are a regular part of RP; you can always make a new character. Have fun!", "Permanent Kill", "I aknowledge.", function() end)
-    end)
 end
