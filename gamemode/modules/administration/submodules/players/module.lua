@@ -40,6 +40,16 @@ if CLIENT then
         charMenuContext = nil
     end)
 
+    local function formatDHM(seconds)
+        seconds = math.max(seconds or 0, 0)
+        local days = math.floor(seconds / 86400)
+        seconds = seconds % 86400
+        local hours = math.floor(seconds / 3600)
+        seconds = seconds % 3600
+        local minutes = math.floor(seconds / 60)
+        return L("daysHoursMinutes", days, hours, minutes)
+    end
+
     lia.net.readBigTable("liaAllPlayers", function(players)
         if not IsValid(panelRef) then return end
         panelRef:Clear()
@@ -61,6 +71,11 @@ if CLIENT then
         addSizedColumn(L("steamName", "Steam Name"))
         addSizedColumn(L("steamID", "SteamID"))
         addSizedColumn(L("usergroup", "Usergroup"))
+        addSizedColumn(L("firstJoin", "First Join"))
+        addSizedColumn(L("lastOnline", "Last Online"))
+        addSizedColumn(L("playtime", "Playtime"))
+        addSizedColumn(L("characters", "Characters"))
+        addSizedColumn(L("warnings", "Warnings"))
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")
@@ -68,8 +83,27 @@ if CLIENT then
                 local steamName = v.steamName or ""
                 local steamID = v.steamID or ""
                 local userGroup = v.userGroup or ""
+                local firstJoin = v.firstJoin or L("unknown")
+                local lastOnlineText
+                if IsValid(player.GetBySteamID(steamID)) then
+                    lastOnlineText = L("onlineNow")
+                else
+                    local last = tonumber(v.lastOnline)
+                    if last and last > 0 then
+                        local lastDiff = os.time() - last
+                        local timeSince = lia.time.TimeSince(last)
+                        local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
+                        lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
+                    else
+                        lastOnlineText = L("unknown")
+                    end
+                end
+
+                local playtime = formatDHM(tonumber(v.totalOnlineTime) or 0)
+                local charCount = tonumber(v.characterCount) or 0
+                local warnings = tonumber(v.warnings) or 0
                 if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
-                    local line = list:AddLine(steamName, steamID, userGroup)
+                    local line = list:AddLine(steamName, steamID, userGroup, firstJoin, lastOnlineText, playtime, charCount, warnings)
                     line.steamID = v.steamID
                 end
             end
@@ -117,7 +151,15 @@ if CLIENT then
 else
     net.Receive("liaRequestPlayers", function(_, client)
         if not client:IsAdmin() then return end
-        lia.db.query("SELECT steamName, steamID, userGroup FROM lia_players", function(data) lia.net.writeBigTable(client, "liaAllPlayers", data or {}) end)
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local query = [[
+SELECT steamName, steamID, userGroup, firstJoin, lastOnline, totalOnlineTime,
+    (SELECT COUNT(*) FROM lia_characters WHERE steamID = lia_players.steamID AND schema = %s) AS characterCount,
+    (SELECT COUNT(*) FROM lia_warnings WHERE warnedSteamID = lia_players.steamID) AS warnings
+FROM lia_players
+]]
+        query = string.format(query, lia.db.convertDataType(gamemode))
+        lia.db.query(query, function(data) lia.net.writeBigTable(client, "liaAllPlayers", data or {}) end)
     end)
 
     net.Receive("liaRequestPlayerCharacters", function(_, client)
@@ -141,3 +183,4 @@ else
         end)
     end)
 end
+
