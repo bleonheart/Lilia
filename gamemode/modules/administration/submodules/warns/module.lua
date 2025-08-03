@@ -16,6 +16,10 @@ if CLIENT then
         local warnings = net.ReadTable() or {}
         if not IsValid(panelRef) then return end
         panelRef:Clear()
+        local search = panelRef:Add("DTextEntry")
+        search:Dock(TOP)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
         local list = panelRef:Add("DListView")
         list:Dock(FILL)
         local function addSizedColumn(text)
@@ -33,16 +37,37 @@ if CLIENT then
         addSizedColumn(L("Warner", "Warner"))
         addSizedColumn(L("Warner Steam ID", "Warner Steam ID"))
         addSizedColumn(L("Warning Message", "Warning Message"))
-        for _, warn in ipairs(warnings) do
-            list:AddLine(
-                warn.timestamp or "",
-                warn.warned or "",
-                warn.warnedSteamID or "",
-                warn.warner or "",
-                warn.warnerSteamID or "",
-                warn.message or ""
-            )
+
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, warn in ipairs(warnings) do
+                local entries = {
+                    warn.timestamp or "",
+                    warn.warned or "",
+                    warn.warnedSteamID or "",
+                    warn.warner or "",
+                    warn.warnerSteamID or "",
+                    warn.message or ""
+                }
+                local match = false
+                if filter == "" then
+                    match = true
+                else
+                    for _, value in ipairs(entries) do
+                        if tostring(value):lower():find(filter, 1, true) then
+                            match = true
+                            break
+                        end
+                    end
+                end
+                if match then list:AddLine(unpack(entries)) end
+            end
         end
+
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
+
         function list:OnRowRightClick(_, line)
             if not IsValid(line) then return end
             local menu = DermaMenu()

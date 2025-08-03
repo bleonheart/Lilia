@@ -9,13 +9,25 @@ local function OpenRoster(panel, data)
         local page = sheet:Add("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
+        local search = page:Add("DTextEntry")
+        search:Dock(TOP)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
         local list = page:Add("DListView")
         list:Dock(FILL)
         list:SetMultiSelect(false)
         list:AddColumn(L("name", "Name"))
-        for _, member in ipairs(members) do
-            list:AddLine(member)
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, member in ipairs(members) do
+                if filter == "" or string.lower(member):find(filter, 1, true) then
+                    list:AddLine(member)
+                end
+            end
         end
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
         function list:OnRowRightClick(_, line)
             if not IsValid(line) then return end
             local menu = DermaMenu()

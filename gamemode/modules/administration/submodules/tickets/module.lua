@@ -17,6 +17,10 @@ if CLIENT then
         local tickets = net.ReadTable() or {}
         if not IsValid(ticketPanel) then return end
         ticketPanel:Clear()
+        local search = ticketPanel:Add("DTextEntry")
+        search:Dock(TOP)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
         local list = ticketPanel:Add("DListView")
         list:Dock(FILL)
         local function addSizedColumn(text)
@@ -32,26 +36,47 @@ if CLIENT then
         addSizedColumn(L("requester"))
         addSizedColumn(L("claimingAdmin"))
         addSizedColumn(L("Ticket Message", "Message"))
-        for _, t in pairs(tickets) do
-            local admin = L("unassignedLabel")
-            if t.admin then
-                local adminPly = lia.util.getBySteamID(t.admin)
-                if IsValid(adminPly) then
-                    admin = adminPly:Nick()
-                else
-                    admin = t.admin
+
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, t in pairs(tickets) do
+                local admin = L("unassignedLabel")
+                if t.admin then
+                    local adminPly = lia.util.getBySteamID(t.admin)
+                    if IsValid(adminPly) then
+                        admin = adminPly:Nick()
+                    else
+                        admin = t.admin
+                    end
                 end
-            end
 
-            local requester = t.requester or ""
-            if requester ~= "" then
-                  local requesterPly = lia.util.getBySteamID(requester)
-                if IsValid(requesterPly) then requester = requesterPly:Nick() end
-            end
+                local requester = t.requester or ""
+                if requester ~= "" then
+                    local requesterPly = lia.util.getBySteamID(requester)
+                    if IsValid(requesterPly) then requester = requesterPly:Nick() end
+                end
 
-            local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-            list:AddLine(ts, requester, admin, t.message or "")
+                local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
+                local entries = {ts, requester, admin, t.message or ""}
+                local match = false
+                if filter == "" then
+                    match = true
+                else
+                    for _, value in ipairs(entries) do
+                        if tostring(value):lower():find(filter, 1, true) then
+                            match = true
+                            break
+                        end
+                    end
+                end
+                if match then list:AddLine(unpack(entries)) end
+            end
         end
+
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
+
         function list:OnRowRightClick(_, line)
             if not IsValid(line) then return end
             local menu = DermaMenu()

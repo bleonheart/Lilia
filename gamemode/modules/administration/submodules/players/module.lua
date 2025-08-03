@@ -11,6 +11,10 @@ if CLIENT then
     lia.net.readBigTable("liaAllPlayers", function(players)
         if not IsValid(panelRef) then return end
         panelRef:Clear()
+        local search = panelRef:Add("DTextEntry")
+        search:Dock(TOP)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
         local list = panelRef:Add("DListView")
         list:Dock(FILL)
         local function addSizedColumn(text)
@@ -25,10 +29,23 @@ if CLIENT then
         addSizedColumn(L("steamName", "Steam Name"))
         addSizedColumn(L("steamID", "SteamID"))
         addSizedColumn(L("usergroup", "Usergroup"))
-        for _, v in ipairs(players or {}) do
-            local line = list:AddLine(v.steamName or "", v.steamID or "", v.userGroup or "")
-            line.steamID = v.steamID
+
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, v in ipairs(players or {}) do
+                local steamName = v.steamName or ""
+                local steamID = v.steamID or ""
+                local userGroup = v.userGroup or ""
+                if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
+                    local line = list:AddLine(steamName, steamID, userGroup)
+                    line.steamID = v.steamID
+                end
+            end
         end
+
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
 
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.steamID then return end
