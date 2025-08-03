@@ -138,13 +138,11 @@ hook.Add("serverguard.RankPermissionGiven", "liaServerGuardHandlePermissionGiven
     end
 
     if SERVER then lia.administrator.addPermission(rankName, permission, true) end
-    lia.admin(string.format("[CAMI] Permission '%s' granted to rank '%s'", permission, rankName))
 end)
 
 hook.Add("serverguard.RankPermissionTaken", "liaServerGuardHandlePermissionTaken", function(rankName, permission)
     if not rankName or not permission then return end
     if SERVER then lia.administrator.removePermission(rankName, permission, true) end
-    lia.admin(string.format("[CAMI] Permission '%s' revoked from rank '%s'", permission, rankName))
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "serverguard.CAMI.OnPrivilegeRegistered", OnPrivilegeRegistered)

@@ -277,7 +277,6 @@ function lia.administrator.createGroup(groupName, info)
     lia.administrator.groups[groupName] = info
     lia.administrator.applyInheritance(groupName)
     camiRegisterUsergroup(groupName, info._info.inheritance or "user")
-    if CAMI then lia.admin(string.format("[CAMI] Usergroup created: %s inherits %s", groupName, info._info.inheritance or "user")) end
     hook.Run("OnUsergroupCreated", groupName, lia.administrator.groups[groupName])
     if SERVER then lia.administrator.save() end
 end
@@ -295,7 +294,6 @@ function lia.administrator.removeGroup(groupName)
 
     lia.administrator.groups[groupName] = nil
     camiUnregisterUsergroup(groupName)
-    if CAMI then lia.admin(string.format("[CAMI] Usergroup removed: %s", groupName)) end
     hook.Run("OnUsergroupRemoved", groupName)
     if SERVER then lia.administrator.save() end
 end
@@ -322,7 +320,6 @@ function lia.administrator.renameGroup(oldName, newName)
     camiUnregisterUsergroup(oldName)
     local inh = lia.administrator.groups[newName]._info and lia.administrator.groups[newName]._info.inheritance or "user"
     camiRegisterUsergroup(newName, inh)
-    if CAMI then lia.admin(string.format("[CAMI] Usergroup renamed: %s -> %s", oldName, newName)) end
     hook.Run("OnUsergroupRenamed", oldName, newName)
     if SERVER then lia.administrator.save() end
 end
@@ -416,10 +413,7 @@ if SERVER then
         local new = tostring(newGroup or "user")
         if old == new then return end
         ply:SetUserGroup(new)
-        if CAMI then
-            CAMI.SignalUserGroupChanged(ply, old, new, source or "Lilia")
-            lia.admin(string.format("[CAMI] Player usergroup changed: %s (%s) %s -> %s", ply:Nick(), ply:SteamID(), old, new))
-        end
+        if CAMI then CAMI.SignalUserGroupChanged(ply, old, new, source or "Lilia") end
     end
 
     function lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)
@@ -429,10 +423,7 @@ if SERVER then
         local old = IsValid(ply) and tostring(ply:GetUserGroup() or "user") or "user"
         local new = tostring(newGroup or "user")
         if IsValid(ply) then ply:SetUserGroup(new) end
-        if CAMI then
-            CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or "Lilia")
-            lia.admin(string.format("[CAMI] SteamID usergroup changed: %s %s -> %s", sid, old, new))
-        end
+        if CAMI then CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or "Lilia") end
     end
 else
     function lia.administrator.execCommand(cmd, victim, dur, reason)

@@ -9,10 +9,8 @@ hook.Add("ULibGroupAccessChanged", "liaULXCAMI", function(group_name, access, re
         end
 
         if SERVER then lia.administrator.addPermission(group_name, access, true) end
-        lia.admin(string.format("[CAMI] Permission '%s' granted to group '%s'", access, group_name))
     else
         if SERVER then lia.administrator.removePermission(group_name, access, true) end
-        if CAMI then lia.admin(string.format("[CAMI] Permission '%s' revoked from group '%s'", access, group_name)) end
     end
 end)
 
