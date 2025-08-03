@@ -274,7 +274,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
     local char = tgt:getChar()
     if char then
         local facID = char:getFaction()
-        local curName = L("unknown")
+        local curName
         if facID then
             if canFaction then
                 local facOptions = {}
@@ -294,7 +294,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
 
                 table.sort(facOptions, function(a, b) return a.name < b.name end)
                 if #facOptions > 0 then
-                    local fm = GetOrCreateSubMenu(charMenu, L("setFactionTitle", curName), stores)
+                    local fm = GetOrCreateSubMenu(charMenu, L("setFactionTitle", curName or L("unknown")), stores)
                     for _, o in ipairs(facOptions) do
                         fm:AddOption(L(o.name), function()
                             cl:ConCommand(o.cmd)

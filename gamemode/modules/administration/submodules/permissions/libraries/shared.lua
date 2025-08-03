@@ -6,9 +6,8 @@ function MODULE:InitializedModules()
     if properties.List then
         for name, prop in pairs(properties.List) do
             if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
-                local privilege = L("accessPropertyPrivilege", prop.MenuLabel)
                 lia.administrator.registerPrivilege({
-                    Name = privilege,
+                    Name = L("accessPropertyPrivilege", prop.MenuLabel),
                     MinAccess = "admin",
                     Category = L("categoryStaffManagement")
                 })
@@ -19,9 +18,8 @@ function MODULE:InitializedModules()
     for _, wep in ipairs(weapons.GetList()) do
         if wep.ClassName == "gmod_tool" and wep.Tool then
             for tool in pairs(wep.Tool) do
-                local privilege = L("accessToolPrivilege", tool:gsub("^%l", string.upper))
                 lia.administrator.registerPrivilege({
-                    Name = privilege,
+                    Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
                     MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
                     Category = L("categoryStaffTools")
                 })

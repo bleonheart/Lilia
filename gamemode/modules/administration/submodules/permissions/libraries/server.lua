@@ -218,13 +218,13 @@ function GM:CanTool(client, _, tool)
         return false
     end
 
-    local privilege = L("accessToolPrivilege", tool:gsub("^%l", string.upper))
+    local formattedTool = tool:gsub("^%l", string.upper)
     local isStaffOrFlagged = client:isStaffOnDuty() or client:hasFlags("t")
-    local hasPriv = client:hasPrivilege(privilege)
+    local hasPriv = client:hasPrivilege(L("accessToolPrivilege", formattedTool))
     if not (isStaffOrFlagged and hasPriv) then
         local reasons = {}
         if not isStaffOrFlagged then table.insert(reasons, "On-duty staff or flag 't'") end
-        if not hasPriv then table.insert(reasons, "Privilege '" .. privilege .. "'") end
+        if not hasPriv then table.insert(reasons, "Privilege '" .. L("accessToolPrivilege", formattedTool) .. "'") end
         lia.log.add(client, "toolDenied", tool)
         client:notifyLocalized("toolNoPermission", tool, table.concat(reasons, ", "))
         return false

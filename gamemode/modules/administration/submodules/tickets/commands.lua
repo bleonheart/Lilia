@@ -31,17 +31,6 @@ lia.command.add("plyviewclaims", {
                 return
             end
 
-            local claimedFor = L("none")
-            if not table.IsEmpty(claim.claimedFor) then
-                claimedFor = table.concat((function()
-                    local t = {}
-                    for sid, name in pairs(claim.claimedFor) do
-                        table.insert(t, string.format("%s (%s)", name, sid))
-                    end
-                    return t
-                end)(), "\n")
-            end
-
             local claimsData = {
                 {
                     steamID = steamID,
@@ -49,7 +38,13 @@ lia.command.add("plyviewclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
-                    claimedFor = claimedFor
+                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
+                        local t = {}
+                        for sid, name in pairs(claim.claimedFor) do
+                            table.insert(t, string.format("%s (%s)", name, sid))
+                        end
+                        return t
+                    end)(), "\n")
                 }
             }
 
@@ -98,24 +93,19 @@ lia.command.add("viewallclaims", {
 
             local claimsData = {}
             for steamID, claim in pairs(caseclaims) do
-                local claimedFor = L("none")
-                if not table.IsEmpty(claim.claimedFor) then
-                    claimedFor = table.concat((function()
-                        local t = {}
-                        for sid, name in pairs(claim.claimedFor) do
-                            table.insert(t, string.format("%s (%s)", name, sid))
-                        end
-                        return t
-                    end)(), ", ")
-                end
-
                 table.insert(claimsData, {
                     steamID = steamID,
                     name = claim.name,
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
-                    claimedFor = claimedFor
+                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
+                        local t = {}
+                        for sid, name in pairs(claim.claimedFor) do
+                            table.insert(t, string.format("%s (%s)", name, sid))
+                        end
+                        return t
+                    end)(), ", ")
                 })
             end
 
@@ -165,24 +155,19 @@ lia.command.add("viewclaims", {
             lia.log.add(client, "viewAllClaims")
             local claimsData = {}
             for steamID, claim in pairs(caseclaims) do
-                local claimedFor = L("none")
-                if not table.IsEmpty(claim.claimedFor) then
-                    claimedFor = table.concat((function()
-                        local t = {}
-                        for sid, name in pairs(claim.claimedFor) do
-                            table.insert(t, string.format("%s (%s)", name, sid))
-                        end
-                        return t
-                    end)(), "\n")
-                end
-
                 table.insert(claimsData, {
                     steamID = steamID,
                     name = claim.name,
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
-                    claimedFor = claimedFor
+                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
+                        local t = {}
+                        for sid, name in pairs(claim.claimedFor) do
+                            table.insert(t, string.format("%s (%s)", name, sid))
+                        end
+                        return t
+                    end)(), "\n")
                 })
             end
 

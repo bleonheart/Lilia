@@ -351,8 +351,7 @@ else
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = function() end
-            local labelText = L(name)
-            local textW = select(1, surface.GetTextSize(labelText))
+            local textW = select(1, surface.GetTextSize(L(name)))
             local ctrl
             if isfunction(fieldType) then
                 local options, mode = fieldType()
@@ -397,7 +396,7 @@ else
 
             local label = vgui.Create("DLabel", panel)
             label:SetFont("liaSmallFont")
-            label:SetText(labelText)
+            label:SetText(L(name))
             label:SizeToContents()
             panel.PerformLayout = function(_, w, h)
                 local ctrlH = 30

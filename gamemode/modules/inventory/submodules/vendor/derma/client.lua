@@ -178,10 +178,9 @@ function PANEL:createCategoryDropdown()
             item:SetPos(0, (i - 1) * 24)
             item:SetText(text)
             item.DoClick = function()
-                local all = L("vendorShowAll")
-                if cat == all then
+                if cat == L("vendorShowAll") then
                     self.currentCategory = nil
-                    btn:SetText(all)
+                    btn:SetText(L("vendorShowAll"))
                 else
                     self.currentCategory = cat
                     btn:SetText(text)

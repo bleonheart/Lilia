@@ -26,12 +26,12 @@ function MODULE:HUDPaint()
     if fade <= 0.01 then return end
     surface.SetDrawColor(0, 0, 0, ceil(fade ^ 0.5 * 255))
     surface.DrawRect(-1, -1, ScrW() + 2, ScrH() + 2)
-    local txt = L("youHaveDied")
+    local txtKey = "youHaveDied"
     surface.SetFont("liaHugeFont")
-    local w, h = surface.GetTextSize(txt)
+    local w, h = surface.GetTextSize(L(txtKey))
     local x, y = (ScrW() - w) / 2, (ScrH() - h) / 2
-    lia.util.drawText(txt, x + 2, y + 2, Color(0, 0, 0, ceil(shadowFade * 255)), 0, 0, "liaHugeFont")
-    lia.util.drawText(txt, x, y, Color(255, 255, 255, ceil(shadowFade * 255)), 0, 0, "liaHugeFont")
+    lia.util.drawText(L(txtKey), x + 2, y + 2, Color(0, 0, 0, ceil(shadowFade * 255)), 0, 0, "liaHugeFont")
+    lia.util.drawText(L(txtKey), x, y, Color(255, 255, 255, ceil(shadowFade * 255)), 0, 0, "liaHugeFont")
     if not hideKey then
         local dt = left > 0 and L("respawnIn", left) or L("respawnKey", input.GetKeyName(KEY_SPACE))
         surface.SetFont("liaMediumFont")

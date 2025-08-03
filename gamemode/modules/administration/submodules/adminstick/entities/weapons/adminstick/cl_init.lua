@@ -43,8 +43,7 @@ function SWEP:DrawHUD()
             if target.isItem and target:isItem() then
                 local itemTable = target.getItemTable and target:getItemTable()
                 if itemTable then
-                    local itemName = L(itemTable.getName and itemTable:getName() or itemTable.name)
-                    table.insert(information, L("itemESPLabel", itemName))
+                    table.insert(information, L("itemESPLabel", L(itemTable.getName and itemTable:getName() or itemTable.name)))
                     table.insert(information, L("itemSizeESPLabel", itemTable:getWidth(), itemTable:getHeight()))
                 end
             end

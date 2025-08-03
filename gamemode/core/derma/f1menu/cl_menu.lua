@@ -146,9 +146,8 @@ function PANEL:Init()
     self:MakePopup()
     local defaultTab = lia.config.get("DefaultMenuTab", L("you"))
     if not self.tabList[defaultTab] then
-        local statusKey = L("you")
-        if self.tabList[statusKey] then
-            defaultTab = statusKey
+        if self.tabList[L("you")] then
+            defaultTab = L("you")
         else
             local allKeys = {}
             for k in pairs(self.tabList) do
