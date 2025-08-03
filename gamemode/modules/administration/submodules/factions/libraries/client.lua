@@ -20,6 +20,7 @@ local function OpenRoster(panel, data)
     sheet:Dock(FILL)
     sheet:DockMargin(10, 10, 10, 10)
     for factionName, members in pairs(data) do
+        local membersData = members
         local page = sheet:Add("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
@@ -38,7 +39,7 @@ local function OpenRoster(panel, data)
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")
-            for _, member in ipairs(members) do
+            for _, member in ipairs(membersData) do
                 if filter == "" or string.lower(member.name):find(filter, 1, true) then
                     local line = list:AddLine(member.name, member.steamID or "", member.class or L("none"), member.playTime or "", member.lastOnline or "")
                     line.rowData = member
