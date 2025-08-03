@@ -1,5 +1,18 @@
 local MODULE = MODULE
 local rosterPanel
+local function requestPlayerCharacters(steamID, line, buildMenu)
+    charMenuContext = {
+        pos = {gui.MousePos()},
+        line = line,
+        steamID = steamID,
+        buildMenu = buildMenu
+    }
+
+    net.Start("liaRequestPlayerCharacters")
+    net.WriteString(steamID)
+    net.SendToServer()
+end
+
 local function OpenRoster(panel, data)
     panel:Clear()
     local sheet = panel:Add("DPropertySheet")
@@ -27,12 +40,13 @@ local function OpenRoster(panel, data)
                 end
             end
         end
+
         search.OnChange = function() populate(search:GetValue()) end
         populate("")
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.rowData or not line.rowData.steamID then return end
             local parentList = self
-            lia.admin.requestPlayerCharacters(line.rowData.steamID, line, function(menu, ln, steamID)
+            requestPlayerCharacters(line.rowData.steamID, line, function(menu, ln, steamID)
                 menu:AddOption(L("kick"), function()
                     Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                         net.Start("KickCharacter")
@@ -40,33 +54,28 @@ local function OpenRoster(panel, data)
                         net.SendToServer()
                     end, L("no"))
                 end):SetIcon("icon16/user_delete.png")
+
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for i, column in ipairs(parentList.Columns or {}) do
-                        local header = column.Header and column.Header:GetText() or ("Column " .. i)
+                        local header = column.Header and column.Header:GetText() or "Column " .. i
                         local value = ln:GetColumnText(i) or ""
                         rowString = rowString .. header .. " " .. value .. " | "
                     end
+
                     SetClipboardText(string.sub(rowString, 1, -4))
                 end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("copySteamID", "Copy SteamID"), function()
-                    SetClipboardText(steamID)
-                end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function()
-                    gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID))
-                end):SetIcon("icon16/world.png")
+
+                menu:AddOption(L("copySteamID", "Copy SteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
             end)
         end
+
         sheet:AddSheet(factionName, page)
     end
 end
 
-lia.net.readBigTable("liaFactionRosterData", function(data)
-    if IsValid(rosterPanel) then
-        OpenRoster(rosterPanel, data or {})
-    end
-end)
-
+lia.net.readBigTable("liaFactionRosterData", function(data) if IsValid(rosterPanel) then OpenRoster(rosterPanel, data or {}) end end)
 function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can Manage Factions") then
         table.insert(pages, {
@@ -79,4 +88,3 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 end
-
