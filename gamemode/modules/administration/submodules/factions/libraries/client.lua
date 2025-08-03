@@ -30,25 +30,32 @@ local function OpenRoster(panel, data)
         search.OnChange = function() populate(search:GetValue()) end
         populate("")
         function list:OnRowRightClick(_, line)
-            if not IsValid(line) or not line.rowData then return end
-            local menu = DermaMenu()
-            menu:AddOption(L("kick"), function()
-                Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
-                    net.Start("KickCharacter")
-                    net.WriteInt(line.rowData.id, 32)
-                    net.SendToServer()
-                end, L("no"))
-            end):SetIcon("icon16/user_delete.png")
-            menu:AddOption(L("copyRow"), function()
-                local rowString = ""
-                for i, column in ipairs(self.Columns or {}) do
-                    local header = column.Header and column.Header:GetText() or ("Column " .. i)
-                    local value = line:GetColumnText(i) or ""
-                    rowString = rowString .. header .. " " .. value .. " | "
-                end
-                SetClipboardText(string.sub(rowString, 1, -4))
-            end):SetIcon("icon16/page_copy.png")
-            menu:Open()
+            if not IsValid(line) or not line.rowData or not line.rowData.steamID then return end
+            local parentList = self
+            lia.admin.requestPlayerCharacters(line.rowData.steamID, line, function(menu, ln, steamID)
+                menu:AddOption(L("kick"), function()
+                    Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
+                        net.Start("KickCharacter")
+                        net.WriteInt(ln.rowData.id, 32)
+                        net.SendToServer()
+                    end, L("no"))
+                end):SetIcon("icon16/user_delete.png")
+                menu:AddOption(L("copyRow"), function()
+                    local rowString = ""
+                    for i, column in ipairs(parentList.Columns or {}) do
+                        local header = column.Header and column.Header:GetText() or ("Column " .. i)
+                        local value = ln:GetColumnText(i) or ""
+                        rowString = rowString .. header .. " " .. value .. " | "
+                    end
+                    SetClipboardText(string.sub(rowString, 1, -4))
+                end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("copySteamID", "Copy SteamID"), function()
+                    SetClipboardText(steamID)
+                end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function()
+                    gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID))
+                end):SetIcon("icon16/world.png")
+            end)
         end
         sheet:AddSheet(factionName, page)
     end

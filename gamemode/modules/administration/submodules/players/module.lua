@@ -5,8 +5,42 @@ MODULE.desc = L("modulePlayerListDesc", "View player accounts and characters.")
 
 if CLIENT then
     local panelRef
-    local charMenuPos
-    local charMenuRow
+    lia.admin = lia.admin or {}
+    local charMenuContext
+
+    function lia.admin.requestPlayerCharacters(steamID, line, buildMenu)
+        charMenuContext = {
+            pos = {gui.MousePos()},
+            line = line,
+            steamID = steamID,
+            buildMenu = buildMenu
+        }
+        net.Start("liaRequestPlayerCharacters")
+        net.WriteString(steamID)
+        net.SendToServer()
+    end
+
+    lia.net.readBigTable("liaPlayerCharacters", function(data)
+        if not data or not charMenuContext then return end
+        local menu = DermaMenu()
+        if charMenuContext.buildMenu then
+            charMenuContext.buildMenu(menu, charMenuContext.line, charMenuContext.steamID, data)
+        end
+        local chars = data.characters or {}
+        if #chars == 0 then
+            menu:AddOption(L("none", "None"))
+        else
+            for _, name in ipairs(chars) do
+                menu:AddOption(name)
+            end
+        end
+        if charMenuContext.pos then
+            menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
+        else
+            menu:Open()
+        end
+        charMenuContext = nil
+    end)
 
     lia.net.readBigTable("liaAllPlayers", function(players)
         if not IsValid(panelRef) then return end
@@ -49,42 +83,24 @@ if CLIENT then
 
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.steamID then return end
-            charMenuPos = {gui.MousePos()}
-            charMenuRow = {list = list, line = line}
-            net.Start("liaRequestPlayerCharacters")
-            net.WriteString(line.steamID)
-            net.SendToServer()
-        end
-    end)
-
-    lia.net.readBigTable("liaPlayerCharacters", function(data)
-        if not data then return end
-        local menu = DermaMenu()
-        if charMenuRow and IsValid(charMenuRow.list) and IsValid(charMenuRow.line) then
-            menu:AddOption(L("copyRow"), function()
-                local list, line = charMenuRow.list, charMenuRow.line
-                local rowString = ""
-                for i, column in ipairs(list.Columns or {}) do
-                    local header = column.Header and column.Header:GetText() or ("Column " .. i)
-                    local value = line:GetColumnText(i) or ""
-                    rowString = rowString .. header .. " " .. value .. " | "
-                end
-                SetClipboardText(string.sub(rowString, 1, -4))
-            end):SetIcon("icon16/page_copy.png")
-        end
-        local chars = data.characters or {}
-        if #chars == 0 then
-            menu:AddOption(L("none", "None"))
-        else
-            for _, name in ipairs(chars) do
-                menu:AddOption(name)
-            end
-        end
-
-        if charMenuPos then
-            menu:Open(charMenuPos[1], charMenuPos[2])
-        else
-            menu:Open()
+            local parentList = self
+            lia.admin.requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID)
+                menu:AddOption(L("copyRow"), function()
+                    local rowString = ""
+                    for i, column in ipairs(parentList.Columns or {}) do
+                        local header = column.Header and column.Header:GetText() or ("Column " .. i)
+                        local value = ln:GetColumnText(i) or ""
+                        rowString = rowString .. header .. " " .. value .. " | "
+                    end
+                    SetClipboardText(string.sub(rowString, 1, -4))
+                end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("copySteamID", "Copy SteamID"), function()
+                    SetClipboardText(steamID)
+                end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function()
+                    gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID))
+                end):SetIcon("icon16/world.png")
+            end)
         end
     end)
 
