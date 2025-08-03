@@ -53,7 +53,14 @@ else
                 panel.sheet = panel:Add("DPropertySheet")
                 panel.sheet:Dock(FILL)
                 function panel:buildSheets(data)
-                    self.sheet:Clear()
+                    -- Clear existing tabs without removing the tab scroller
+                    for _, v in ipairs(self.sheet.Items or {}) do
+                        if IsValid(v.Tab) then
+                            self.sheet:CloseTab(v.Tab, true)
+                        end
+                    end
+                    self.sheet.Items = {}
+
                     local columns = {
                         {name = L("id"), field = "ID"},
                         {name = L("name"), field = "Name"},
