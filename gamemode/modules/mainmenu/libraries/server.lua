@@ -17,13 +17,13 @@
 end
 
 function MODULE:CanPlayerUseChar(_, character)
-    if character:isBanned() then return false, L("bannedCharacter") end
+    if character:isBanned() then return false, L("permaKilledCharacter") end
     return true
 end
 
 function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
     if character:getID() == newCharacter:getID() then return false, L("alreadyUsingCharacter") end
-    if character:isBanned() then return false, L("bannedCharacter") end
+    if character:isBanned() then return false, L("permaKilledCharacter") end
     if not client:Alive() then return false, L("youAreDead") end
     if client:hasRagdoll() then return false, L("youAreRagdolled") end
     if client:hasValidVehicle() then return false, L("cannotSwitchInVehicle") end
