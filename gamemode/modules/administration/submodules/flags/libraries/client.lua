@@ -61,14 +61,14 @@ lia.net.readBigTable("liaAllFlags", function(data)
         menu:AddOption(L("modifyFlags"), function()
             local steamID = line:GetColumnText(2) or ""
             local currentFlags = line:GetColumnText(3) or ""
-            LocalPlayer():requestString(L("modifyFlags"), L("modifyFlagsDesc"), function(text)
+            Derma_StringRequest(L("modifyFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
                 text = string.gsub(text or "", "%s", "")
                 net.Start("liaModifyFlags")
                 net.WriteString(steamID)
                 net.WriteString(text)
                 net.SendToServer()
                 line:SetColumnText(3, text)
-            end, currentFlags)
+            end)
         end):SetIcon("icon16/flag_orange.png")
         menu:Open()
     end
