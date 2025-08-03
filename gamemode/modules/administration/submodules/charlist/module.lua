@@ -147,13 +147,14 @@ else
                     self.sheet:AddSheet(L("allCharacters"), allPanel)
 
                     for steamID, chars in pairs(data.players or {}) do
-                        local pnl = self.sheet:Add("DPanel")
-                        pnl:Dock(FILL)
-                        pnl.Paint = function() end
-                        createList(pnl, chars)
                         local ply = lia.util.getBySteamID(steamID)
-                        local title = IsValid(ply) and ply:Nick() or steamID
-                        self.sheet:AddSheet(title, pnl)
+                        if IsValid(ply) then
+                            local pnl = self.sheet:Add("DPanel")
+                            pnl:Dock(FILL)
+                            pnl.Paint = function() end
+                            createList(pnl, chars)
+                            self.sheet:AddSheet(ply:Nick(), pnl)
+                        end
                     end
                 end
 
