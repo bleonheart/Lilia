@@ -70,17 +70,38 @@ function SWEP:DrawHUD()
     surface.SetDrawColor(crossColor)
     surface.DrawRect(x - length / 2, y - thickness / 2, length, thickness)
     surface.DrawRect(x - thickness / 2, y - length / 2, thickness, length)
-    local startPosX, startPosY, buffer = x - 250, y + 10, 0
+
+    -- determine size of the information box
+    surface.SetFont("DebugFixed")
+    local maxWidth, totalHeight = 0, 0
     for _, v in pairs(information) do
-        surface.SetFont("DebugFixed")
-        surface.SetTextColor(color_black)
-        surface.SetTextPos(startPosX + 1, startPosY + buffer + 1)
-        surface.DrawText(v)
-        surface.SetTextColor(crossColor)
-        surface.SetTextPos(startPosX, startPosY + buffer)
-        surface.DrawText(v)
-        local _, t_h = surface.GetTextSize(v)
-        buffer = buffer + t_h + 4
+        local t_w, t_h = surface.GetTextSize(v)
+        maxWidth = math.max(maxWidth, t_w)
+        totalHeight = totalHeight + t_h + 4
+    end
+
+    if totalHeight > 0 then
+        local boxWidth = maxWidth + 20
+        local boxHeight = totalHeight + 20
+        local boxX = (ScrW() - boxWidth) / 2
+        local boxY = ScrH() - boxHeight - 20
+
+        -- draw background box
+        surface.SetDrawColor(Color(0, 0, 0, 200))
+        surface.DrawRect(boxX, boxY, boxWidth, boxHeight)
+
+        -- draw text inside box
+        local startPosX, startPosY, buffer = boxX + 10, boxY + 10, 0
+        for _, v in pairs(information) do
+            surface.SetTextColor(color_black)
+            surface.SetTextPos(startPosX + 1, startPosY + buffer + 1)
+            surface.DrawText(v)
+            surface.SetTextColor(crossColor)
+            surface.SetTextPos(startPosX, startPosY + buffer)
+            surface.DrawText(v)
+            local _, t_h = surface.GetTextSize(v)
+            buffer = buffer + t_h + 4
+        end
     end
 end
 
