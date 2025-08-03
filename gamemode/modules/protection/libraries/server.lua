@@ -32,21 +32,34 @@ function MODULE:CanPlayerSwitchChar(client, character)
 end
 
 function MODULE:EntityTakeDamage(entity, dmgInfo)
+    if IsValid(entity) and entity:IsVehicle() and entity:GetClass():find("prop_vehicle") then
+        local driver = entity:GetDriver()
+        if IsValid(driver) then
+            local hitPos = dmgInfo:GetDamagePosition()
+            if hitPos:Distance(driver:GetPos()) <= 53 then
+                local newHealth = driver:Health() - dmgInfo:GetDamage() * 0.3
+                if newHealth > 0 then
+                    driver:SetHealth(newHealth)
+                else
+                    driver:Kill()
+                end
+
+                dmgInfo:SetDamage(0)
+                return true
+            end
+        end
+    end
+
     local inflictor = dmgInfo:GetInflictor()
     local attacker = dmgInfo:GetAttacker()
-    local isValidClient = IsValid(entity) and entity:IsPlayer()
-    local attackerIsHuman = IsValid(attacker) and attacker:IsPlayer()
-    if attackerIsHuman and IsCheater(attacker) then
+    if IsValid(attacker) and attacker:IsPlayer() and IsCheater(attacker) then
         dmgInfo:SetDamage(0)
         LogCheaterAction(attacker, L("cheaterActionDealDamage"))
         return true
     end
 
-    local notSameEntity = attacker ~= entity
-    local isFallDamage = dmgInfo:IsFallDamage()
-    local inflictorIsProp = IsValid(inflictor) and inflictor:isProp()
-    if not isValidClient or isFallDamage then return end
-    if inflictorIsProp then
+    if not IsValid(entity) and entity:IsPlayer() or dmgInfo:IsFallDamage() then return end
+    if IsValid(inflictor) and inflictor:isProp() then
         dmgInfo:SetDamage(0)
         return
     end
@@ -54,25 +67,24 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
     if dmgInfo:IsExplosionDamage() and lia.config.get("ExplosionRagdoll", false) then
         dmgInfo:ScaleDamage(0.5)
         local dmgPos = dmgInfo:GetDamagePosition()
-        local direction = (entity:GetPos() - dmgPos):GetNormalized()
-        entity:SetVelocity(direction * 60 * dmgInfo:GetDamage())
-        local damageAmount = dmgInfo:GetDamage()
-        timer.Simple(0.05, function() if IsValid(entity) and not entity:hasRagdoll() and entity:Health() - damageAmount > 0 then entity:setRagdolled(true, 3) end end)
+        local dir = (entity:GetPos() - dmgPos):GetNormalized()
+        entity:SetVelocity(dir * 60 * dmgInfo:GetDamage())
+        local dmgAmt = dmgInfo:GetDamage()
+        timer.Simple(0.05, function() if IsValid(entity) and not entity:hasRagdoll() and entity:Health() - dmgAmt > 0 then entity:setRagdolled(true, 3) end end)
     end
 
-    if notSameEntity then
+    if attacker ~= entity then
         if entity:GetMoveType() == MOVETYPE_NOCLIP then return end
         if lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15) > 0 then
-            local applyCooldown = lia.config.get("SwitchCooldownOnAllEntities", false) or attackerIsHuman
-            if applyCooldown then entity.LastDamaged = CurTime() end
+            local applyCd = lia.config.get("SwitchCooldownOnAllEntities", false) or attacker:IsPlayer()
+            if applyCd then entity.LastDamaged = CurTime() end
         end
 
         if lia.config.get("CarRagdoll", false) and IsValid(inflictor) and inflictor:isSimfphysCar() then
             local veh = entity:GetVehicle()
-            local inSimCar = IsValid(veh) and veh:isSimfphysCar()
-            if not inSimCar then
+            if not (IsValid(veh) and veh:isSimfphysCar()) then
                 dmgInfo:ScaleDamage(0)
-                if not entity:hasRagdoll() and entity:Health() - dmgInfo:GetDamage() > 0 then entity:setRagdolled(true, 5) end
+                if not entity:hasRagdoll() and entity:Health() > 0 then entity:setRagdolled(true, 5) end
             end
         end
     end
