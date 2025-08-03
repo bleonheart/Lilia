@@ -270,7 +270,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS `lia_saveditems`;
     DROP TABLE IF EXISTS `lia_persistence`;
     DROP TABLE IF EXISTS `lia_warnings`;
-    DROP TABLE IF EXISTS `lia_playerkills`;
+    DROP TABLE IF EXISTS `lia_permakills`;
     DROP TABLE IF EXISTS `lia_bans`;
     DROP TABLE IF EXISTS `lia_chardata`;
     DROP TABLE IF EXISTS `lia_data`;
@@ -305,7 +305,7 @@ function lia.db.wipeTables(callback)
     DROP TABLE IF EXISTS lia_saveditems;
     DROP TABLE IF EXISTS lia_persistence;
     DROP TABLE IF EXISTS lia_warnings;
-    DROP TABLE IF EXISTS lia_playerkills;
+    DROP TABLE IF EXISTS lia_permakills;
     DROP TABLE IF EXISTS lia_bans;
     DROP TABLE IF EXISTS lia_chardata;
     DROP TABLE IF EXISTS lia_data;
@@ -408,7 +408,7 @@ CREATE TABLE IF NOT EXISTS lia_warnings (
     warner text,
     warnerSteamID text
 );
-CREATE TABLE IF NOT EXISTS lia_playerkills (
+CREATE TABLE IF NOT EXISTS lia_permakills (
     id integer primary key autoincrement,
     player varchar(255) NOT NULL,
     reason varchar(255),
@@ -577,7 +577,7 @@ CREATE TABLE IF NOT EXISTS `lia_warnings` (
     `warnerSteamID` varchar(64) default null collate 'utf8mb4_general_ci',
     primary key (`id`)
 );
-CREATE TABLE IF NOT EXISTS `lia_playerkills` (
+CREATE TABLE IF NOT EXISTS `lia_permakills` (
     `id` int not null auto_increment,
     `player` varchar(255) not null collate 'utf8mb4_general_ci',
     `reason` varchar(255) default null collate 'utf8mb4_general_ci',
