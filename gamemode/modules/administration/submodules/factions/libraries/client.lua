@@ -30,12 +30,16 @@ local function OpenRoster(panel, data)
         list:Dock(FILL)
         list:SetMultiSelect(false)
         list:AddColumn(L("name", "Name"))
+        list:AddColumn(L("steamID", "SteamID"))
+        list:AddColumn(L("class", "Class"))
+        list:AddColumn(L("playtime", "Playtime"))
+        list:AddColumn(L("lastOnline", "Last Online"))
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")
             for _, member in ipairs(members) do
                 if filter == "" or string.lower(member.name):find(filter, 1, true) then
-                    local line = list:AddLine(member.name)
+                    local line = list:AddLine(member.name, member.steamID or "", member.class or L("none"), member.playTime or "", member.lastOnline or "")
                     line.rowData = member
                 end
             end

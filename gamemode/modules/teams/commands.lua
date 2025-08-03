@@ -57,7 +57,7 @@ lia.command.add("roster", {
 
         local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
         if not isLeader then return end
-        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
+        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
         if not character then
             client:notifyLocalized("charDataMissingClient", client:Name())
             return
@@ -104,8 +104,8 @@ lia.command.add("roster", {
                         faction = v.faction,
                         steamID = v.steamID,
                         class = classData and classData.name or L("none"),
-                        lastOnline = lastOnlineText,
-                        hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
+                        playTime = formatDHM(tonumber(v.playtime) or 0),
+                        lastOnline = lastOnlineText
                     })
                 end
             else
@@ -125,7 +125,7 @@ lia.command.add("factionmanagement", {
     desc = "factionManagementDesc",
     syntax = "[faction Faction]",
     onRun = function(client, arguments)
-        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
+        local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
         local faction
         local arg = table.concat(arguments, " ")
         if arg ~= "" then
@@ -180,8 +180,8 @@ lia.command.add("factionmanagement", {
                         faction = v.faction,
                         steamID = v.steamID,
                         class = classData and classData.name or L("none"),
-                        lastOnline = lastOnlineText,
-                        hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
+                        playTime = formatDHM(tonumber(v.playtime) or 0),
+                        lastOnline = lastOnlineText
                     })
                 end
             else
@@ -218,6 +218,7 @@ lia.command.add("plywhitelist", {
         end
     end
 })
+
 
 lia.command.add("plyunwhitelist", {
     adminOnly = true,
