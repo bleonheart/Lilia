@@ -92,7 +92,7 @@ if CLIENT then
     end)
 
     function MODULE:PopulateAdminTabs(pages)
-        if not IsValid(LocalPlayer()) or not (LocalPlayer():hasPrivilege("Always See Tickets") or LocalPlayer():isStaffOnDuty()) then return end
+        if not IsValid(LocalPlayer()) or not (LocalPlayer():hasPrivilege(L("alwaysSeeTickets")) or LocalPlayer():isStaffOnDuty()) then return end
         table.insert(pages, {
             name = L("tickets", "Tickets"),
             drawFunc = function(panel)

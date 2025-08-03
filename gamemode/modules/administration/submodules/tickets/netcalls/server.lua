@@ -16,9 +16,9 @@ net.Receive("TicketSystemClaim", function(_, client)
         return
     end
 
-    if (client:hasPrivilege("Always See Tickets") or client:isStaffOnDuty()) and not requester.CaseClaimed then
+    if (client:hasPrivilege(L("alwaysSeeTickets")) or client:isStaffOnDuty()) and not requester.CaseClaimed then
         for _, v in player.Iterator() do
-            if v:hasPrivilege("Always See Tickets") or v:isStaffOnDuty() then
+            if v:hasPrivilege(L("alwaysSeeTickets")) or v:isStaffOnDuty() then
                 net.Start("TicketSystemClaim")
                 net.WriteEntity(client)
                 net.WriteEntity(requester)
@@ -43,7 +43,7 @@ net.Receive("TicketSystemClose", function(_, client)
     if not requester or not IsValid(requester) or requester.CaseClaimed ~= client then return end
     if timer.Exists("ticketsystem-" .. requester:SteamID()) then timer.Remove("ticketsystem-" .. requester:SteamID()) end
     for _, v in player.Iterator() do
-        if v:hasPrivilege("Always See Tickets") or v:isStaffOnDuty() then
+        if v:hasPrivilege(L("alwaysSeeTickets")) or v:isStaffOnDuty() then
             net.Start("TicketSystemClose")
             net.WriteEntity(requester)
             net.Send(v)
@@ -56,7 +56,7 @@ net.Receive("TicketSystemClose", function(_, client)
 end)
 
 net.Receive("liaRequestActiveTickets", function(_, client)
-    if not (client:hasPrivilege("Always See Tickets") or client:isStaffOnDuty()) then return end
+    if not (client:hasPrivilege(L("alwaysSeeTickets")) or client:isStaffOnDuty()) then return end
     local tickets = {}
     for _, data in pairs(MODULE.ActiveTickets or {}) do
         tickets[#tickets + 1] = data

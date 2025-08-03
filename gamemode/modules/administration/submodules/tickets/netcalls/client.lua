@@ -16,7 +16,7 @@ net.Receive("TicketSystem", function()
     local pl = net.ReadEntity()
     local msg = net.ReadString()
     local claimed = net.ReadEntity()
-    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("Always See Tickets") then
+    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege(L("alwaysSeeTickets")) then
         MODULE:TicketFrame(pl, msg, claimed)
     end
 end)
