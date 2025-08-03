@@ -29,14 +29,6 @@
                 end
             },
             {
-                name = L("steamID64CopyFormat", target:SteamID64()),
-                image = "icon16/page_copy.png",
-                func = function()
-                    client:ChatPrint(L("copiedToClipboard", target:Name(), "SteamID64"))
-                    SetClipboardText(target:SteamID64())
-                end
-            },
-            {
                 name = L("Blind"),
                 image = "icon16/eye.png",
                 func = function() RunConsoleCommand("say", "!blind " .. target:SteamID()) end

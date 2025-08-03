@@ -204,7 +204,7 @@ function GM:CanPlayerTakeItem(client, item)
         return false
     elseif IsValid(item.entity) then
         local character = client:getChar()
-        if item.entity.SteamID64 == client:SteamID64() and item.entity.liaCharID ~= character:getID() then
+        if item.entity.SteamID == client:SteamID() and item.entity.liaCharID ~= character:getID() then
             client:notifyLocalized("playerCharBelonging")
             return false
         end
@@ -236,10 +236,11 @@ local logTypeMap = {
 }
 
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
+    local steamID = util.SteamIDFrom64(steamID64)
     if serverPassword ~= "" and serverPassword ~= clientPassword then
-        lia.log.add(nil, "failedPassword", steamID64, playerName, serverPassword, clientPassword)
-        lia.information(L("passwordMismatchInfo", playerName, steamID64, serverPassword, clientPassword))
-        return false, L("passwordMismatchInfo", playerName, steamID64, serverPassword, clientPassword)
+        lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
+        lia.information(L("passwordMismatchInfo", playerName, steamID, serverPassword, clientPassword))
+        return false, L("passwordMismatchInfo", playerName, steamID, serverPassword, clientPassword)
     end
 end
 
@@ -456,7 +457,7 @@ function GM:PlayerInitialSpawn(client)
         client:setLiliaData("lastIP", address)
         lia.db.updateTable({
             lastIP = address
-        }, nil, "players", "steamID = " .. client:SteamID64())
+        }, nil, "players", "steamID = " .. client:SteamID())
 
         net.Start("liaDataSync")
         net.WriteTable(data)
@@ -523,7 +524,7 @@ function GM:SetupBotPlayer(client)
         faction = faction and faction.uniqueID or "unknown",
         desc = L("botDesc", botID),
         model = "models/player/phoenix.mdl",
-    }, botID, client, client:SteamID64())
+    }, botID, client, client:SteamID())
 
     local defaultClass = lia.faction.getDefaultClass(faction.index)
     if defaultClass then character:joinClass(defaultClass.index) end
@@ -989,7 +990,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.administrator.groups[usergroup] then
                 target:SetUserGroup(usergroup)
-                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID64()))
+                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID()))
             else
                 MsgC(Color(200, 20, 20), L("consoleUsergroupNotFound") .. "\n")
             end
@@ -1056,10 +1057,10 @@ concommand.Add("list_entities", function(client)
         end
 
         for className, count in pairs(entityCount) do
-            lia.information(string.format(L("entityClassCount"), className, count))
+            lia.information(L("entityClassCount", className, count))
         end
 
-        lia.information(string.format(L("totalEntities"), totalEntities))
+        lia.information(L("totalEntities", totalEntities))
     end
 end)
 

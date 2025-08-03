@@ -18,7 +18,7 @@
 
         target:setLiliaData("oocBanned", true)
         client:notifyLocalized("playerBannedFromOOC", target:Name())
-        lia.log.add(client, "banOOC", target:Name(), target:SteamID64())
+        lia.log.add(client, "banOOC", target:Name(), target:SteamID())
     end
 })
 
@@ -42,7 +42,7 @@ lia.command.add("unbanooc", {
 
         target:setLiliaData("oocBanned", nil)
         client:notifyLocalized("playerUnbannedFromOOC", target:Name())
-        lia.log.add(client, "unbanOOC", target:Name(), target:SteamID64())
+        lia.log.add(client, "unbanOOC", target:Name(), target:SteamID())
     end
 })
 

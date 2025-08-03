@@ -225,7 +225,7 @@ if SERVER then
             entity:setItem(self.id)
             instance.entity = entity
             if IsValid(client) then
-                entity.SteamID64 = client:SteamID64()
+                entity.SteamID = client:SteamID()
                 entity.liaCharID = client:getChar():getID()
                 entity:SetCreator(client)
             end

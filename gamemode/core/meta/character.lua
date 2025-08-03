@@ -18,7 +18,7 @@ function characterMeta:getPlayer()
     if IsValid(self.player) then return self.player end
     for _, v in player.Iterator() do
         if self.steamID then
-            if v:SteamID64() == self.steamID then
+            if v:SteamID() == self.steamID then
                 self.player = v
                 return v
             end
@@ -448,7 +448,7 @@ if SERVER then
     function characterMeta:kick()
         local client = self:getPlayer()
         client:KillSilent()
-        local curChar, steamID = client:getChar(), client:SteamID64()
+        local curChar, steamID = client:getChar(), client:SteamID()
         local isCurChar = curChar and curChar:getID() == self:getID() or false
         if self.steamID == steamID then
             net.Start("charKick")

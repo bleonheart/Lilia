@@ -41,7 +41,7 @@ net.Receive("SpawnMenuSpawnItem", function(_, client)
         if not IsValid(ent) then return end
         tryFixPropPosition(client, ent)
         if IsValid(client) then
-            ent.SteamID64 = client:SteamID64()
+            ent.SteamID = client:SteamID()
             local char = client:getChar()
             if char then ent.liaCharID = char:getID() end
             ent:SetCreator(client)
