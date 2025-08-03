@@ -93,7 +93,12 @@ if CLIENT then
                 end):SetIcon("icon16/page_copy.png")
 
                 menu:AddOption(L("copySteamID", "Copy SteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
+                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function()
+                    local steamID64 = util.SteamIDTo64(steamID)
+                    if steamID64 and steamID64 ~= "0" then
+                        steamworks.ViewPlayerProfile(steamID64)
+                    end
+                end):SetIcon("icon16/world.png")
             end)
         end
     end)
