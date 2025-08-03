@@ -46,12 +46,21 @@ local function SendRoster(client)
 
                     local classID = tonumber(v._class) or 0
                     local classData = lia.class.list[classID]
+                    local playTime = tonumber(v.playtime) or 0
+                    if isOnline then
+                        local char = lia.char.loaded[charID]
+                        if char then
+                            local loginTime = char:getLoginTime() or os.time()
+                            playTime = char:getPlayTime() + os.time() - loginTime
+                        end
+                    end
+
                     members[#members + 1] = {
                         name = v.name,
                         id = charID,
                         steamID = v.steamID,
                         class = classData and classData.name or L("none"),
-                        playTime = formatDHM(tonumber(v.playtime) or 0),
+                        playTime = formatDHM(playTime),
                         lastOnline = lastOnlineText
                     }
                 end

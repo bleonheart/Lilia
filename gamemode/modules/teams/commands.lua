@@ -98,13 +98,22 @@ lia.command.add("roster", {
 
                     local classID = tonumber(v._class) or 0
                     local classData = lia.class.list[classID]
+                    local playTime = tonumber(v.playtime) or 0
+                    if isOnline then
+                        local char = lia.char.loaded[charID]
+                        if char then
+                            local loginTime = char:getLoginTime() or os.time()
+                            playTime = char:getPlayTime() + os.time() - loginTime
+                        end
+                    end
+
                     table.insert(characters, {
                         id = charID,
                         name = v.name,
                         faction = v.faction,
                         steamID = v.steamID,
                         class = classData and classData.name or L("none"),
-                        playTime = formatDHM(tonumber(v.playtime) or 0),
+                        playTime = formatDHM(playTime),
                         lastOnline = lastOnlineText
                     })
                 end
@@ -174,13 +183,22 @@ lia.command.add("factionmanagement", {
 
                     local classID = tonumber(v._class) or 0
                     local classData = lia.class.list[classID]
+                    local playTime = tonumber(v.playtime) or 0
+                    if isOnline then
+                        local char = lia.char.loaded[charID]
+                        if char then
+                            local loginTime = char:getLoginTime() or os.time()
+                            playTime = char:getPlayTime() + os.time() - loginTime
+                        end
+                    end
+
                     table.insert(characters, {
                         id = charID,
                         name = v.name,
                         faction = v.faction,
                         steamID = v.steamID,
                         class = classData and classData.name or L("none"),
-                        playTime = formatDHM(tonumber(v.playtime) or 0),
+                        playTime = formatDHM(playTime),
                         lastOnline = lastOnlineText
                     })
                 end
