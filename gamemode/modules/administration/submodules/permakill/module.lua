@@ -4,11 +4,18 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = L("xdd")
 if SERVER then
     util.AddNetworkString("OpenPKViewer")
+    util.AddNetworkString("OpenPKMenu")
     util.AddNetworkString("SubmitPKCase")
+    util.AddNetworkString("PK_Screen")
+    util.AddNetworkString("PK_Notice")
     lia.command.add("charkill", {
         superAdminOnly = true,
         privilege = "Manage Characters",
-        onRun = function(client) netstream.Start(client, "OpenPKMenu", false) end
+        onRun = function(client)
+            net.Start("OpenPKMenu")
+            net.WriteBool(false)
+            net.Send(client)
+        end
     })
 
     lia.command.add("viewpermakills", {
@@ -119,7 +126,8 @@ else
         end
     end)
 
-    netstream.Hook("OpenPKMenu", function(isCharBan)
+    net.Receive("OpenPKMenu", function(_)
+        local isCharBan = net.ReadBool()
         local frame = vgui.Create("DFrame")
         frame:SetSize(600, 400)
         frame:SetTitle("PK Active Menu")
@@ -198,27 +206,9 @@ else
         end
     end)
 
-    net.Receive("PK_Screen", function()
+    net.Receive("PK_Screen", function(_)
         local name = net.ReadString()
-        local dob = net.ReadString()
-        local age = net.ReadInt(32)
-        local occupation = net.ReadString()
-        local placeOfBirth = net.ReadString()
-        local playersMoney = net.ReadInt(32)
-        local moneyStatus
-        if playersMoney >= 250000 then
-            moneyStatus = "Wealthy"
-        elseif playersMoney > 50000 then
-            moneyStatus = "Rich"
-        elseif playersMoney > 10000 then
-            moneyStatus = "Poor"
-        elseif playersMoney > 5000 then
-            moneyStatus = "Destitute"
-        else
-            moneyStatus = "Penniless"
-        end
-
-        local function PlayPKMusic()
+        local function playPKMusic()
             if pkmusic then
                 pkmusic:Stop()
                 pkmusic = nil
@@ -250,17 +240,14 @@ else
             surface.SetDrawColor(0, 0, 0, 255)
             LocalPlayer():ScreenFade(SCREENFADE.IN, Color(0, 0, 0, 255), 5, 2)
             draw.DrawText(name, "nutTitleFont", ScrW() * 0.5, ScrH() * 0.25, Color(255, 255, 255, math.Approach(255, 0, 100)), TEXT_ALIGN_CENTER)
-            draw.DrawText(dob .. " - 1939", "nutTitleFont", ScrW() * 0.5, ScrH() * 0.25 + 75, Color(255, 255, 255, math.Approach(255, 0, 100)), TEXT_ALIGN_CENTER)
-            draw.DrawText("Aged: " .. age, "nutTitleFont", ScrW() * 0.5, ScrH() * 0.25 + 150, Color(255, 255, 255, math.Approach(255, 0, 100)), TEXT_ALIGN_CENTER)
-            draw.DrawText("They were a " .. moneyStatus .. " " .. occupation .. " from " .. placeOfBirth, "nutTitleFont", ScrW() * 0.5, ScrH() * 0.25 + 225, Color(255, 255, 255, math.Approach(255, 0, 100)), TEXT_ALIGN_CENTER)
         end)
 
-        PlayPKMusic()
+        playPKMusic()
         timer.Simple(15, function() hook.Remove("HUDPaint", "PK") end)
     end)
 
-    net.Receive("PK_Notice", function()
+    net.Receive("PK_Notice", function(_)
         local characterName = net.ReadString()
-        Derma_Query("Your character: " .. characterName .. ", has been permanently killed. An administrator has approved this PK.\nIf you believe this PK is unfair, see the options below.\nPKs are a regular part of RP; you can always make a new character. Have fun!", "Permanent Kill", "I accept this PK.", function() end, "I don't accept this PK.", function() Derma_Query("Contact our Support Team if needed.", "Contact Staff", "Contact Staff VIA Discord", function() gui.OpenURL("https://discord.gg/AeBGuZ6agC") end, "Nevermind, Close", function() end) end)
+        Derma_Query("Your character: " .. characterName .. ", has been permanently killed. An administrator has approved this PK.\nIf you believe this PK is unfair, see the options below.\nPKs are a regular part of RP; you can always make a new character. Have fun!", "Permanent Kill", "I aknowledge.", function() end)
     end)
 end
