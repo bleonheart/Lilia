@@ -13,7 +13,8 @@ local function buildClaimTable(rows)
 
         local info = caseclaims[adminID]
         info.claims = info.claims + 1
-        if row.timestamp > info.lastclaim then info.lastclaim = row.timestamp end
+        local rowTime = isnumber(row.timestamp) and row.timestamp or os.time(lia.time.toNumber(row.timestamp))
+        if rowTime > info.lastclaim then info.lastclaim = rowTime end
         local reqPly = lia.util.getBySteamID(row.requesterSteamID)
         info.claimedFor[row.requesterSteamID] = IsValid(reqPly) and reqPly:Nick() or row.requester
     end
@@ -32,7 +33,7 @@ end
 function MODULE:TicketSystemClaim(admin, requester)
     local ticket = MODULE.ActiveTickets[requester:SteamID()]
     lia.db.insertTable({
-        timestamp = os.time(),
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
         requester = requester:Nick(),
         requesterSteamID = requester:SteamID(),
         admin = admin:Nick(),

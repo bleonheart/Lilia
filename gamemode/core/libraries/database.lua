@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS lia_logs (
     steamID varchar
 );
 CREATE TABLE IF NOT EXISTS lia_ticketclaims (
-    timestamp integer,
+    timestamp datetime,
     requester text,
     requesterSteamID text,
     admin text,
@@ -559,7 +559,7 @@ CREATE TABLE IF NOT EXISTS `lia_logs` (
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_ticketclaims` (
-    `timestamp` int not null,
+    `timestamp` datetime not null,
     `requester` varchar(64) not null collate 'utf8mb4_general_ci',
     `requesterSteamID` varchar(64) not null collate 'utf8mb4_general_ci',
     `admin` varchar(64) not null collate 'utf8mb4_general_ci',
