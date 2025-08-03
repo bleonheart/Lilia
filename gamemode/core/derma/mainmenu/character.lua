@@ -278,11 +278,10 @@ end
 
 function PANEL:addTab(name, callback, justClick, height)
     local btn = self.tabs:Add("liaMediumButton")
-    local label = L(name):upper()
     surface.SetFont(btn:GetFont())
-    local textW, textH = surface.GetTextSize(label)
+    local textW, textH = surface.GetTextSize(L(name):upper())
     btn:SetWide(textW + 40)
-    btn:SetText(label)
+    btn:SetText(L(name):upper())
     btn:SetTall(height or textH + 20)
     if justClick then
         if isfunction(callback) then btn.DoClick = function() callback(self) end end
@@ -495,17 +494,17 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local pad = 10
     local cx = fx + (fw - bw) * 0.5
     local clientChar = LocalPlayer().getChar and LocalPlayer():getChar()
-    local selectText = L("selectCharacter")
+    local selectKey = "selectCharacter"
     if clientChar and character:getID() == clientChar:getID() then
-        selectText = L("alreadyUsingCharacter")
+        selectKey = "alreadyUsingCharacter"
     elseif character:isBanned() then
-        selectText = L("permaKilledCharacter")
+        selectKey = "permaKilledCharacter"
     end
 
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
-    self.selectBtn:SetText(selectText)
+    self.selectBtn:SetText(L(selectKey))
     if clientChar and character:getID() == clientChar:getID() then
         self.selectBtn:SetEnabled(false)
         self.selectBtn:SetTextColor(Color(255, 255, 255))

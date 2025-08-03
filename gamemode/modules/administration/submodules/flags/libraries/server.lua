@@ -1,9 +1,7 @@
 -- luacheck: globals L net player lia
 
-local privilege = L("canAccessFlagManagement")
-
 net.Receive("liaRequestAllFlags", function(_, client)
-    if not client:hasPrivilege(privilege) then return end
+    if not client:hasPrivilege(L("canAccessFlagManagement")) then return end
 
     local data = {}
     for _, ply in ipairs(player.GetAll()) do
@@ -19,7 +17,7 @@ net.Receive("liaRequestAllFlags", function(_, client)
 end)
 
 net.Receive("liaModifyFlags", function(_, client)
-    if not client:hasPrivilege(privilege) then return end
+    if not client:hasPrivilege(L("canAccessFlagManagement")) then return end
     local steamID = net.ReadString()
     local flags = net.ReadString()
     local target = lia.util.findPlayerBySteamID(steamID)

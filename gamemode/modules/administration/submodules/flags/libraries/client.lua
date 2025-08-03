@@ -75,8 +75,7 @@ lia.net.readBigTable("liaAllFlags", function(data)
 end)
 
 function MODULE:PopulateAdminTabs(pages) -- luacheck: ignore self
-    local privilege = L("canAccessFlagManagement")
-    if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege(privilege) then return end
+    if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege(L("canAccessFlagManagement")) then return end
 
     table.insert(pages, {
         name = L("flagsManagement"),

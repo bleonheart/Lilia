@@ -1594,8 +1594,7 @@ lia.command.add("listbodygroups", {
         end
 
         if #bodygroups > 0 then
-            local title = L("uiBodygroupsFor", target:Nick())
-            lia.util.CreateTableUI(client, title, {
+            lia.util.CreateTableUI(client, L("uiBodygroupsFor", target:Nick()), {
                 {
                     name = L("groupID"),
                     field = "group"

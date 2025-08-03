@@ -41,13 +41,6 @@ if CLIENT then
             list:Clear()
             filter = string.lower(filter or "")
             for _, t in pairs(tickets) do
-                local admin = L("unassignedLabel")
-                if t.admin then
-                    local adminPly = lia.util.getBySteamID(t.admin)
-                    local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
-                    admin = string.format("%s (%s)", adminName, t.admin)
-                end
-
                 local requester = t.requester or ""
                 if requester ~= "" then
                     local requesterPly = lia.util.getBySteamID(requester)
@@ -56,7 +49,16 @@ if CLIENT then
                 end
 
                 local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-                local entries = {ts, requester, admin, t.message or ""}
+                local entries = {
+                    ts,
+                    requester,
+                    t.admin and (function()
+                        local adminPly = lia.util.getBySteamID(t.admin)
+                        local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
+                        return string.format("%s (%s)", adminName, t.admin)
+                    end)() or L("unassignedLabel"),
+                    t.message or ""
+                }
                 local match = false
                 if filter == "" then
                     match = true

@@ -55,10 +55,9 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
             sheet:SetPlaceholderText(L("searchFlags"))
             for flagName, flagData in SortedPairs(lia.flag.list) do
                 if isnumber(flagName) then continue end
-                local nameText = L("flagLabel", flagName)
                 local descText = flagData.desc or ""
                 local row = sheet:AddTextRow({
-                    title = nameText,
+                    title = L("flagLabel", flagName),
                     desc = descText
                 })
 

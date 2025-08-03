@@ -122,8 +122,7 @@ else
     local function uiCreate()
         if panel and panel:IsValid() then return end
         surface.SetFont("DermaLarge")
-        local title = L("downloadingWorkshopAddonsTitle")
-        local tw, th = surface.GetTextSize(title)
+        local tw, th = surface.GetTextSize(L("downloadingWorkshopAddonsTitle"))
         local pad, bh = 10, 20
         local w, h = math.max(tw, 200) + pad * 2, th + bh + pad * 3
         panel = vgui.Create("DPanel")
@@ -134,7 +133,7 @@ else
         derma.SkinHook("Paint", "Panel", panel, w, h)
         local lbl = vgui.Create("DLabel", panel)
         lbl:SetFont("DermaLarge")
-        lbl:SetText(title)
+        lbl:SetText(L("downloadingWorkshopAddonsTitle"))
         lbl:SizeToContents()
         lbl:SetPos(pad, pad)
         panel.bar = vgui.Create("DProgressBar", panel)
