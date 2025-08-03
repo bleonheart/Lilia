@@ -199,21 +199,29 @@ end
 function lia.administrator.load()
     local function ensureDefaults(groups)
         local created = false
-        for _, grp in ipairs({"user", "admin", "superadmin"}) do
-            if not groups[grp] then
-                groups[grp] = {
-                    _info = {
-                        inheritance = "user",
-                        types = {}
-                    }
-                }
-
+        local function ensure(name, inherit, types)
+            local g = groups[name]
+            if not g then
+                g = { _info = {} }
+                groups[name] = g
                 created = true
             end
+    
+            g._info = g._info or {}
+            if not g._info.inheritance or name == "superadmin" and g._info.inheritance == "user" then
+                g._info.inheritance = inherit
+            end
+    
+            if not istable(g._info.types) or #g._info.types == 0 then
+                g._info.types = types
+            end
         end
+    
+        ensure("user", "user", {"User"})
+        ensure("admin", "user", {"Staff"})
+        ensure("superadmin", "admin", {"Staff"})
         return created
     end
-
     local function continueLoad(groups)
         lia.administrator.groups = groups or {}
         if CAMI then
