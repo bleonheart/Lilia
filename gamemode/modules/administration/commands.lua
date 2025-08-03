@@ -826,11 +826,11 @@ lia.command.add("charlist", {
             local sendData = {}
             for _, row in ipairs(data) do
                 local stored = lia.char.loaded[row.id]
-                local info = stored and stored:getData() or lia.char.getCharData(row.id) or {}
-                local allVars = {}
-                for varName, varInfo in pairs(lia.char.vars) do
-                    local value
-                    if stored then
+                if stored then
+                    local info = stored:getData() or {}
+                    local allVars = {}
+                    for varName, varInfo in pairs(lia.char.vars) do
+                        local value
                         if varName == "data" then
                             value = stored:getData()
                         elseif varName == "var" then
@@ -843,52 +843,27 @@ lia.command.add("charlist", {
                                 value = stored.vars and stored.vars[varName]
                             end
                         end
-                    else
-                        if varName == "data" then
-                            value = info
-                        elseif varInfo.field and row[varInfo.field] ~= nil then
-                            local raw = row[varInfo.field]
-                            if isnumber(varInfo.default) then
-                                value = tonumber(raw) or varInfo.default
-                            elseif isbool(varInfo.default) then
-                                value = tobool(raw)
-                            elseif istable(varInfo.default) then
-                                value = util.JSONToTable(raw or "{}")
-                            else
-                                value = raw
-                            end
-                        else
-                            value = varInfo.default
-                        end
+                        allVars[varName] = value
                     end
 
-                    allVars[varName] = value
+                    local entry = {
+                        ID = row.id,
+                        Name = stored:getName(),
+                        Desc = row.desc,
+                        Faction = row.faction,
+                        Banned = info.banned and L("yes") or L("no"),
+                        BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
+                        BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
+                        BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
+                        Money = row.money,
+                        LastUsed = L("onlineNow"),
+                        allVars = allVars
+                    }
+
+                    entry.extraDetails = {}
+                    hook.Run("CharListExtraDetails", client, entry, stored)
+                    table.insert(sendData, entry)
                 end
-
-                local lastUsedText
-                if stored then
-                    lastUsedText = L("onlineNow")
-                else
-                    lastUsedText = row.lastJoinTime
-                end
-
-                local entry = {
-                    ID = row.id,
-                    Name = row.name,
-                    Desc = row.desc,
-                    Faction = row.faction,
-                    Banned = info.banned and L("yes") or L("no"),
-                    BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
-                    BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
-                    BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                    Money = row.money,
-                    LastUsed = lastUsedText,
-                    allVars = allVars
-                }
-
-                entry.extraDetails = {}
-                hook.Run("CharListExtraDetails", client, entry, stored)
-                table.insert(sendData, entry)
             end
 
             net.Start("DisplayCharList")
