@@ -70,13 +70,12 @@ else
                 panel.sheet = panel:Add("DPropertySheet")
                 panel.sheet:Dock(FILL)
                 function panel:buildSheets(data)
-                    -- Clear existing tabs without removing the tab scroller
-                    for _, v in ipairs(self.sheet.Items or {}) do
-                        if IsValid(v.Tab) then
-                            self.sheet:CloseTab(v.Tab, true)
-                        end
+                    -- Recreate the property sheet to avoid CloseTab errors
+                    if IsValid(self.sheet) then
+                        self.sheet:Remove()
                     end
-                    self.sheet.Items = {}
+                    self.sheet = self:Add("DPropertySheet")
+                    self.sheet:Dock(FILL)
 
                     local function formatPlayTime(secs)
                         local h = math.floor(secs / 3600)
