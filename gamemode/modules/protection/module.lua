@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = L("canSeeAltingNotifications"),
         MinAccess = "admin",
-        Category = L("categoryManagement"),
+        Category = L("categoryProtection"),
     },
 }

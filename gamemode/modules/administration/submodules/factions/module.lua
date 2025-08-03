@@ -6,7 +6,7 @@ MODULE.Privileges = {
     {
         Name = L("canManageFactions", "Can Manage Factions"),
         MinAccess = "admin",
-        Category = L("categoryManagement", "Management"),
+        Category = L("categoryFactions", "Factions"),
     },
 }
 

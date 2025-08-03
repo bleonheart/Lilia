@@ -5,7 +5,7 @@ MODULE.Privileges = {
     {
         Name = L("View DB Tables"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement")
+        Category = L("categoryDatabase", "Database")
     }
 }
 

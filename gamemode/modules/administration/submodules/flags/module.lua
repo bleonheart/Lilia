@@ -9,7 +9,7 @@ MODULE.Privileges = {
     {
         Name = L("canAccessFlagManagement"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryFlags", "Flags"),
     }
 }
 
