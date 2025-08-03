@@ -938,17 +938,36 @@ local TalkRanges = {
     ["Yelling"] = 600,
 }
 
+local function IsLineOfSightClear(listener, speaker)
+    local tr = util.TraceLine{
+        start = listener:GetShootPos(),
+        endpos = speaker:GetShootPos(),
+        filter = {listener, speaker},
+        mask = MASK_BLOCKLOS
+    }
+
+    if tr.Hit then
+        local ent = tr.Entity
+        if ent == speaker then return true end
+        if ent:GetClass() == "func_door_rotating" then return false end
+        return false
+    end
+    return true
+end
+
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
-    if not IsValid(listener) and IsValid(speaker) or listener == speaker then return false, false end
+    if not IsValid(listener) or not IsValid(speaker) or listener == speaker then return false, false end
     if speaker:getNetVar("IsDeadRestricted", false) then return false, false end
     if speaker:getNetVar("liaGagged", false) then return false, false end
     local char = speaker:getChar()
-    if not (char and not char:getData("VoiceBan", false)) then return false, false end
+    if not char or char:getData("VoiceBan", false) then return false, false end
     if not lia.config.get("IsVoiceEnabled", true) then return false, false end
     local voiceType = speaker:getNetVar("VoiceType", "Talking")
-    local range = TalkRanges[voiceType] or TalkRanges["Talking"]
-    local distanceSqr = listener:GetPos():DistToSqr(speaker:GetPos())
-    local canHear = distanceSqr <= range * range
+    local baseRange = TalkRanges[voiceType] or TalkRanges.Talking
+    local clearLOS = IsLineOfSightClear(listener, speaker)
+    local effectiveRange = clearLOS and baseRange or baseRange * 0.16
+    local distSqr = listener:GetPos():DistToSqr(speaker:GetPos())
+    local canHear = distSqr <= effectiveRange * effectiveRange
     return canHear, canHear
 end
 
@@ -1053,7 +1072,6 @@ end
 
 gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")
-
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
     lia.admin(string.format("[BAN] %s (%s) was banned for %d minute(s): %s", data.name, data.networkid, data.ban_length, data.ban_reason))
     local steam64 = util.SteamIDTo64(data.networkid)
@@ -1073,4 +1091,3 @@ hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     local steam64 = util.SteamIDTo64(data.networkid)
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steam64)
 end)
-
