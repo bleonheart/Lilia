@@ -1,6 +1,12 @@
 ﻿local GM = GM or GAMEMODE
 function GM:CharPreSave(character)
     local client = character:getPlayer()
+    local loginTime = character:getLoginTime()
+    if loginTime and loginTime > 0 then
+        local total = character:getPlayTime()
+        character:setPlayTime(total + os.time() - loginTime)
+        character:setLoginTime(os.time())
+    end
     if not character:getInv() then return end
     for _, v in pairs(character:getInv():getItems()) do
         if v.OnSave then v:call("OnSave", client) end

@@ -320,6 +320,14 @@ lia.char.registerVar("loginTime", {
     noDisplay = true
 })
 
+lia.char.registerVar("playTime", {
+    field = "playtime",
+    fieldType = "integer",
+    default = 0,
+    isLocal = true,
+    noDisplay = true
+})
+
 lia.char.registerVar("var", {
     default = {},
     noDisplay = true,
