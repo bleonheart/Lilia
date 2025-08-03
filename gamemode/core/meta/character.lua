@@ -459,10 +459,21 @@ if SERVER then
         hook.Run("OnCharKick", self, client)
     end
 
+    function characterMeta:isBanned()
+        local banned = self:getBanned()
+        return banned ~= 0 and (banned == -1 or banned > os.time())
+    end
+
     function characterMeta:ban(time)
         time = tonumber(time)
-        if time then time = os.time() + math.max(math.ceil(time), 60) end
-        self:setData("banned", time or true)
+        local value
+        if time then
+            value = os.time() + math.max(math.ceil(time), 60)
+        else
+            value = -1
+        end
+
+        self:setBanned(value)
         self:save()
         self:kick()
         hook.Run("OnCharPermakilled", self, time or nil)

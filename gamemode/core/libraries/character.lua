@@ -404,6 +404,13 @@ lia.char.registerVar("markedForDeath", {
     noNetworking = true
 })
 
+lia.char.registerVar("banned", {
+    field = "banned",
+    fieldType = "integer",
+    default = 0,
+    noDisplay = true
+})
+
 function lia.char.getCharData(charID, key)
     local charIDsafe = tonumber(charID)
     if not charIDsafe then return end
@@ -738,6 +745,35 @@ if SERVER then
                 client:SetupHands()
             end
         end
+        return true
+    end
+
+    function lia.char.getCharBanned(charID)
+        local charIDsafe = tonumber(charID)
+        if not charIDsafe then return end
+        local result = sql.Query("SELECT banned FROM lia_characters WHERE id = " .. charIDsafe .. " LIMIT 1")
+        if istable(result) and result[1] then
+            return tonumber(result[1].banned) or 0
+        end
+    end
+
+    function lia.char.setCharBanned(charID, value)
+        local charIDsafe = tonumber(charID)
+        if not charIDsafe then return end
+        value = tonumber(value) or 0
+        local promise = lia.db.updateTable({
+            banned = value
+        }, nil, "characters", "id = " .. charIDsafe)
+        if deferred.isPromise(promise) then
+            promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET banned", err)) end)
+        elseif promise == false then
+            return false
+        end
+
+        if lia.char.loaded[charIDsafe] then
+            lia.char.loaded[charIDsafe]:setBanned(value)
+        end
+
         return true
     end
 end
