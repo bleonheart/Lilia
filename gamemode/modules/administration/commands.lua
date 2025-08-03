@@ -214,6 +214,51 @@ lia.command.add("charlist", {
         local steamID = target:SteamID()
         lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
             if not data or #data == 0 then
+                client:notifyLocalized("noCharactersForPlayer")
+                return
+            end
+
+            local sendData = {}
+            for _, row in ipairs(data) do
+                local stored = lia.char.loaded[row.id]
+                if stored then
+                    local info = stored:getData() or {}
+                    local allVars = {}
+                    for varName, varInfo in pairs(lia.char.vars) do
+                        local value
+                        if varName == "data" then
+                            value = stored:getData()
+                        elseif varName == "var" then
+                            value = stored:getVar()
+                        else
+                            local getter = stored["get" .. varName:sub(1, 1):upper() .. varName:sub(2)]
+                            if isfunction(getter) then
+                                value = getter(stored)
+                            else
+                                value = stored.vars and stored.vars[varName]
+                            end
+                        end
+
+                        allVars[varName] = value
+                    end
+
+                    local entry = {
+                        ID = row.id,
+                        Name = stored:getName(),
+                        Desc = row.desc,
+                        Faction = row.faction,
+                        Banned = info.banned and L("yes") or L("no"),
+                        BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
+                        BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
+                        BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
+                        Money = row.money,
+                        LastUsed = L("onlineNow"),
+                        allVars = allVars
+                    }
+
+                    entry.extraDetails = {}
+                    hook.Run("CharListExtraDetails", client, entry, stored)
+                    table.insert(sendData, entry)
                 end
             end
 
