@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = L("canSpawnStorage"),
         MinAccess = "superadmin",
-        Category = L("categoryStorage"),
+        Category = L("categorySpawnStorage"),
     }
 }

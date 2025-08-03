@@ -2,7 +2,7 @@
 lia.administrator.registerPrivilege({
     Name = L("useDisallowedTools"),
     MinAccess = "superadmin",
-    Category = L("categoryTools")
+    Category = L("categoryStaffTools")
 })
 local restrictedProperties = {
     persist = true,
