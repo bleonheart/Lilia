@@ -20,6 +20,11 @@ lia.command.add("warn", {
             return
         end
 
+        if target == client then
+            client:notifyLocalized("cannotWarnSelf")
+            return
+        end
+
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local warnerName = client:Nick()
         local warnerSteamID = client:SteamID()

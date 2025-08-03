@@ -649,6 +649,7 @@ LANGUAGE = {
     moderationTools = "Moderation Tools",
     changePlayerModel = "Change Playermodel",
     cannotMuteSelf = "You cannot toggle mute on yourself.",
+    cannotWarnSelf = "You cannot warn yourself.",
     voiceUnmuted = "You have unmuted %s.",
     voiceUnmutedByAdmin = "You have been unmuted by an admin.",
     voiceMuted = "You have muted %s.",

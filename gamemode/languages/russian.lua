@@ -649,6 +649,7 @@ LANGUAGE = {
     moderationTools = "Модерация",
     changePlayerModel = "Сменить модель",
     cannotMuteSelf = "Нельзя мутить себя.",
+    cannotWarnSelf = "Нельзя предупреждать себя.",
     voiceUnmuted = "Вы размутили %s.",
     voiceUnmutedByAdmin = "Админ снял вам мут.",
     voiceMuted = "Вы замутили %s.",
