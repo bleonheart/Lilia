@@ -161,7 +161,7 @@ FROM lia_players
     end)
 
     net.Receive("liaRequestPlayerCharacters", function(_, client)
-        if not client:IsAdmin() then return end
+        if not (client:IsAdmin() or client:hasPrivilege("Can Manage Factions")) then return end
         local steamID = net.ReadString()
         if not steamID or steamID == "" then return end
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
