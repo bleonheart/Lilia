@@ -781,7 +781,7 @@ else
         categoryList:InvalidateLayout(true)
     end
 
-    function renderGroupInfo(parent, g, groups)
+    local function renderGroupInfo(parent, g, groups)
         parent:Clear()
         local isDefault = lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[g] ~= nil
         local editable = not isDefault
