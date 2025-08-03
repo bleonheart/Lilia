@@ -27,16 +27,16 @@ net.Receive("CharacterInfo", function()
         local rows = {}
         local originals = {}
         for _, data in ipairs(characterData) do
-            rows[#rows + 1] = {data.name, data.class or L("none"), data.lastOnline, data.hoursPlayed}
+            rows[#rows + 1] = {data.name, data.steamID, data.class or L("none"), data.playTime, data.lastOnline}
             originals[#originals + 1] = data
         end
 
         local row = sheet:AddListViewRow({
-            columns = {L("name"), L("class"), L("lastOnline"), L("hoursPlayed")},
+            columns = {L("name"), L("steamID"), L("class"), L("playtime"), L("lastOnline")},
             data = rows,
             getLineText = function(line)
                 local s = ""
-                for i = 1, 4 do
+                for i = 1, 5 do
                     local v = line:GetValue(i)
                     if v then s = s .. " " .. tostring(v) end
                 end
@@ -91,9 +91,10 @@ net.Receive("CharacterInfo", function()
 
     local columns = {
         {name = L("name"), field = "name"},
+        {name = L("steamID"), field = "steamID"},
         {name = L("class"), field = "class"},
-        {name = L("lastOnline"), field = "lastOnline"},
-        {name = L("hoursPlayed"), field = "hoursPlayed"}
+        {name = L("playtime"), field = "playTime"},
+        {name = L("lastOnline"), field = "lastOnline"}
     }
 
     local actions = {}

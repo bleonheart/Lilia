@@ -13,7 +13,7 @@ net.Receive("RequestRoster", function(_, client)
     if not character then return end
     local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
     if not isLeader then return end
-    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.totalOnlineTime, lia_players.lastOnline, lia_characters._class"
+    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
     local factionIndex = character:getFaction()
     if not factionIndex then return end
     local faction = lia.faction.indices[factionIndex]
@@ -47,8 +47,8 @@ net.Receive("RequestRoster", function(_, client)
                     faction = v.faction,
                     steamID = v.steamID,
                     class = classData and classData.name or L("none"),
-                    lastOnline = lastOnlineText,
-                    hoursPlayed = formatDHM(tonumber(v.totalOnlineTime) or 0)
+                    playTime = formatDHM(tonumber(v.playtime) or 0),
+                    lastOnline = lastOnlineText
                 })
             end
         end
