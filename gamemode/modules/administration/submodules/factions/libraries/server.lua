@@ -4,7 +4,10 @@ local function SendRoster(client)
     for _, faction in pairs(lia.faction.indices) do
         local members = {}
         for _, ply in ipairs(lia.faction.getPlayers(faction.index)) do
-            members[#members + 1] = ply:Name()
+            local char = ply:getChar()
+            if char then
+                members[#members + 1] = {name = ply:Name(), id = char:getID()}
+            end
         end
         data[faction.name] = members
     end

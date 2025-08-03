@@ -214,9 +214,9 @@ end
 
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
-    if not char then return end
-    local canKick = client:hasPrivilege("Manage Faction Members") or char:hasFlags("K")
-    if not canKick then return end
+    local canManageAny = client:hasPrivilege("Can Manage Factions")
+    local canKick = client:hasPrivilege("Manage Faction Members") or (char and char:hasFlags("K"))
+    if not canKick and not canManageAny then return end
     local defaultFaction
     for _, fac in pairs(lia.faction.teams) do
         if fac.isDefault then
@@ -231,11 +231,11 @@ net.Receive("KickCharacter", function(_, client)
     end
 
     local characterID = net.ReadUInt(32)
-    local IsOnline = false
+    local isOnline = false
     for _, target in player.Iterator() do
         local targetChar = target:getChar()
-        if targetChar and targetChar:getID() == characterID and targetChar:getFaction() == char:getFaction() then
-            IsOnline = true
+        if targetChar and targetChar:getID() == characterID and (canManageAny or (char and targetChar:getFaction() == char:getFaction())) then
+            isOnline = true
             local oldFaction = targetChar:getFaction()
             target:notifyLocalized("kickedFromFaction")
             targetChar.vars.faction = defaultFaction.uniqueID
@@ -247,7 +247,7 @@ net.Receive("KickCharacter", function(_, client)
         end
     end
 
-    if not IsOnline then
+    if not isOnline then
         lia.db.updateTable({
             faction = defaultFaction.uniqueID
         }, nil, "characters", "id = " .. characterID)

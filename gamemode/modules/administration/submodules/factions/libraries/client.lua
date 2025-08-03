@@ -21,16 +21,24 @@ local function OpenRoster(panel, data)
             list:Clear()
             filter = string.lower(filter or "")
             for _, member in ipairs(members) do
-                if filter == "" or string.lower(member):find(filter, 1, true) then
-                    list:AddLine(member)
+                if filter == "" or string.lower(member.name):find(filter, 1, true) then
+                    local line = list:AddLine(member.name)
+                    line.rowData = member
                 end
             end
         end
         search.OnChange = function() populate(search:GetValue()) end
         populate("")
         function list:OnRowRightClick(_, line)
-            if not IsValid(line) then return end
+            if not IsValid(line) or not line.rowData then return end
             local menu = DermaMenu()
+            menu:AddOption(L("kick"), function()
+                Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
+                    net.Start("KickCharacter")
+                    net.WriteInt(line.rowData.id, 32)
+                    net.SendToServer()
+                end, L("no"))
+            end):SetIcon("icon16/user_delete.png")
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for i, column in ipairs(self.Columns or {}) do
