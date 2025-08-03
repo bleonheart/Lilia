@@ -10,12 +10,11 @@
         local x, y = pos.x, pos.y
         local owner = entity:GetDTEntity(0)
         local classesRaw = entity:getNetVar("classes")
-        local name = entity:getNetVar("title", entity:getNetVar("name", IsValid(owner) and L("doorTitleOwned") or (not classesRaw or classesRaw == "[]") and not entity:getNetVar("factions") and L("doorTitle") or ""))
         local factions = entity:getNetVar("factions", "[]")
         local classes = classesRaw
         local price = entity:getNetVar("price", 0)
         local ownable = not entity:getNetVar("noSell", false)
-        lia.util.drawText(name, x, y, ColorAlpha(color_white, alpha), 1, 1)
+        lia.util.drawText(entity:getNetVar("title", entity:getNetVar("name", IsValid(owner) and L("doorTitleOwned") or (not classesRaw or classesRaw == "[]") and not entity:getNetVar("factions") and L("doorTitle") or "")), x, y, ColorAlpha(color_white, alpha), 1, 1)
         y = y + 20
         if ownable then
             lia.util.drawText(L("priceLabel", lia.currency.get(price)), x, y, ColorAlpha(color_white, alpha), 1, 1)
