@@ -7,7 +7,7 @@ MODULE.Privileges = {
     {
         Name = L("alwaysSeeTickets"),
         MinAccess = "superadmin",
-        Category = L("categoryStaffPermissions"),
+        Category = L("categoryTickets"),
     },
 }
 

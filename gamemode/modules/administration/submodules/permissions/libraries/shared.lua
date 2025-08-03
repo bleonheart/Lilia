@@ -10,7 +10,7 @@ function MODULE:InitializedModules()
                 lia.administrator.registerPrivilege({
                     Name = privilege,
                     MinAccess = "admin",
-                    Category = "Properties"
+                    Category = L("categoryProperties")
                 })
             end
         end
@@ -23,7 +23,7 @@ function MODULE:InitializedModules()
                 lia.administrator.registerPrivilege({
                     Name = privilege,
                     MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
-                    Category = "Tools"
+                    Category = L("categoryTools")
                 })
             end
         end

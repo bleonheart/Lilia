@@ -1,6 +1,6 @@
 ﻿lia.config.add("SpawnMenuLimit", L("spawnMenuLimit"), false, nil, {
     desc = L("spawnMenuLimitDesc"),
-    category = L("categoryStaff"),
+    category = L("categorySpawnGeneral"),
     type = "Boolean"
 })
 

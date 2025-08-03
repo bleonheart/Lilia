@@ -32,7 +32,7 @@ function serverguard.permission:Add(identifier, priv)
                     lia.administrator.registerPrivilege({
                         Name = identifier,
                         MinAccess = "admin",
-                        Category = "ServerGuard"
+                        Category = L("categoryServerGuard")
                     })
                 end
             end
