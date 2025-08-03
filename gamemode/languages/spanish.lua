@@ -450,6 +450,7 @@ LANGUAGE = {
     cleaningFinished = "Limpiaste %s: %s entidades.",
     invalidTarget = "Objetivo inválido",
     money = "Dinero",
+    playtime = "Tiempo de juego",
     noRagdoll = "No tienes ragdoll.",
     invCheckSelf = "No se usa para tu inventario.",
     noBodygroups = "Sin bodygroups.",

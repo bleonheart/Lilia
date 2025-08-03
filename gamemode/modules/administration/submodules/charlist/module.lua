@@ -12,7 +12,7 @@ MODULE.Privileges = {
 if SERVER then
     net.Receive("liaRequestFullCharList", function(_, client)
         if not IsValid(client) or not client:hasPrivilege("List Characters") then return end
-        lia.db.query("SELECT id, name, `desc`, faction, steamID, lastJoinTime, banned FROM lia_characters", function(data)
+        lia.db.query("SELECT id, name, `desc`, faction, steamID, lastJoinTime, banned, playtime, money FROM lia_characters", function(data)
             local payload = {all = {}, players = {}}
             for _, row in ipairs(data or {}) do
                 local stored = lia.char.loaded[row.id]
@@ -23,8 +23,11 @@ if SERVER then
                     Faction = row.faction,
                     SteamID = row.steamID,
                     LastUsed = stored and "Online" or row.lastJoinTime,
-                    Banned = tonumber(row.banned) == 1
+                    Banned = tonumber(row.banned) == 1,
+                    PlayTime = tonumber(row.playtime) or 0,
+                    Money = tonumber(row.money) or 0
                 }
+                hook.Run("CharListEntry", entry, row)
                 payload.all[#payload.all + 1] = entry
                 payload.players[row.steamID] = payload.players[row.steamID] or {}
                 table.insert(payload.players[row.steamID], entry)
@@ -61,6 +64,13 @@ else
                     end
                     self.sheet.Items = {}
 
+                    local function formatPlayTime(secs)
+                        local h = math.floor(secs / 3600)
+                        local m = math.floor((secs % 3600) / 60)
+                        local s = secs % 60
+                        return string.format("%02i:%02i:%02i", h, m, s)
+                    end
+
                     local columns = {
                         {name = L("id"), field = "ID"},
                         {name = L("name"), field = "Name"},
@@ -68,8 +78,11 @@ else
                         {name = L("faction"), field = "Faction"},
                         {name = L("steamID"), field = "SteamID"},
                         {name = L("lastUsed"), field = "LastUsed"},
-                        {name = L("banned"), field = "Banned"}
+                        {name = L("banned"), field = "Banned", format = function(val) return val and L("yes") or L("no") end},
+                        {name = L("playtime"), field = "PlayTime", format = function(val) return formatPlayTime(val or 0) end},
+                        {name = L("money"), field = "Money", format = function(val) return lia.currency.get(tonumber(val) or 0) end}
                     }
+                    hook.Run("CharListColumns", columns)
 
                     local function createList(parent, rows)
                         local container = parent:Add("DPanel")
@@ -87,15 +100,12 @@ else
                             list:Clear()
                             filter = string.lower(filter or "")
                             for _, row in ipairs(rows) do
-                                local values = {
-                                    row.ID,
-                                    row.Name,
-                                    row.Desc,
-                                    row.Faction,
-                                    row.SteamID,
-                                    row.LastUsed,
-                                    row.Banned and L("yes") or L("no")
-                                }
+                                local values = {}
+                                for _, col in ipairs(columns) do
+                                    local value = row[col.field]
+                                    if col.format then value = col.format(value, row) end
+                                    values[#values + 1] = value
+                                end
                                 local match = false
                                 if filter == "" then
                                     match = true
