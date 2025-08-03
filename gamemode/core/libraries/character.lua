@@ -595,7 +595,7 @@ if SERVER then
 
         fields = table.concat(fields, ", ")
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. steamID
+        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. lia.db.convertDataType(steamID)
         if id then condition = condition .. " AND id = " .. id end
         local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
         lia.db.query(query, function(data)

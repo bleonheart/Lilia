@@ -414,7 +414,6 @@ if SERVER then
             whitelists[SCHEMA.folder] = whitelists[SCHEMA.folder] or {}
             whitelists[SCHEMA.folder][data.uniqueID] = whitelisted and true or nil
             self:setLiliaData("whitelists", whitelists)
-            self:saveLiliaData()
             return true
         end
         return false
@@ -424,11 +423,11 @@ if SERVER then
         local name = self:steamName()
         local steamID = self:SteamID()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. steamID, function(data)
+        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
             if IsValid(self) and data and data[1] and data[1].data then
                 lia.db.updateTable({
                     lastJoin = timeStamp,
-                }, nil, "players", "steamID = " .. steamID)
+                }, nil, "players", "steamID = " .. lia.db.convertDataType(steamID))
 
                 self.firstJoin = data[1].firstJoin or timeStamp
                 self.lastJoin = data[1].lastJoin or timeStamp
@@ -466,8 +465,8 @@ if SERVER then
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", currentTime)
         local stored = self:getLiliaData("totalOnlineTime", 0)
         local session = RealTime() - (self.liaJoinTime or RealTime())
-        self:setLiliaData("totalOnlineTime", stored + session, true)
-        self:setLiliaData("lastOnline", currentTime, true)
+        self:setLiliaData("totalOnlineTime", stored + session, true, true)
+        self:setLiliaData("lastOnline", currentTime, true, true)
         lia.db.updateTable({
             steamName = name,
             lastJoin = timeStamp,
@@ -475,10 +474,10 @@ if SERVER then
             lastIP = self:getLiliaData("lastIP", ""),
             lastOnline = currentTime,
             totalOnlineTime = stored + session
-        }, nil, "players", "steamID = " .. steamID)
+        }, nil, "players", "steamID = " .. lia.db.convertDataType(steamID))
     end
 
-    function playerMeta:setLiliaData(key, value, noNetworking)
+    function playerMeta:setLiliaData(key, value, noNetworking, noSave)
         self.liaData = self.liaData or {}
         self.liaData[key] = value
         if not noNetworking then
@@ -486,6 +485,9 @@ if SERVER then
             net.WriteString(key)
             net.WriteType(value)
             net.Send(self)
+        end
+        if not noSave then
+            self:saveLiliaData()
         end
     end
 
