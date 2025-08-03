@@ -137,9 +137,7 @@ if SERVER then
         local delay = 0
         local function schedule(ply)
             if not IsValid(ply) then return end
-            timer.Simple(delay, function()
-                if IsValid(ply) then beginStream(ply, netStr, chunks, sid) end
-            end)
+            timer.Simple(delay, function() if IsValid(ply) then beginStream(ply, netStr, chunks, sid) end end)
             delay = delay + chunkTime
         end
 
@@ -215,4 +213,16 @@ else
     end
 
     FindMetaTable("Player").getLocalVar = FindMetaTable("Entity").getNetVar
+end
+
+local netStart = net.Start
+local netReceive = net.Receive
+function net.Start(msg, unreliable)
+    if util.NetworkStringToID(msg) == 0 and SERVER then util.AddNetworkString(msg) end
+    return netStart(msg, unreliable)
+end
+
+function net.Receive(msg, ...)
+    if util.NetworkStringToID(msg) == 0 and SERVER then util.AddNetworkString(msg) end
+    return netReceive(msg, ...)
 end
