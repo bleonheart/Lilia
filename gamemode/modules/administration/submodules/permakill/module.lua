@@ -1,3 +1,7 @@
+MODULE.name = L("xxdd")
+MODULE.author = "Samael"
+MODULE.discord = "@liliaplayer"
+MODULE.desc = L("xdd")
 if SERVER then
     util.AddNetworkString("OpenPKViewer")
     util.AddNetworkString("SubmitPKCase")
@@ -30,7 +34,7 @@ if SERVER then
             submitterSteamID = client:SteamID(),
             timestamp = os.time(),
             evidence = data.evidence
-        }, nil, "lia_permakills")
+        }, nil, "permakills")
 
         for _, ply in player.Iterator() do
             if ply:SteamID() == data.steamID and ply:getChar() then
@@ -71,10 +75,6 @@ else
             end
         end
 
-        local playerSearch = vgui.Create("DTextEntry", frame)
-        playerSearch:SetPos(20, 50)
-        playerSearch:SetSize(elementWidth, elementHeight)
-        playerSearch:SetPlaceholderText("Search for player...")
         local allPlayers = {}
         for _, ply in ipairs(player.GetAll()) do
             allPlayers[#allPlayers + 1] = {
@@ -84,30 +84,25 @@ else
         end
 
         local playerDropdown = vgui.Create("DComboBox", frame)
-        playerDropdown:SetPos(20, 80)
+        playerDropdown:SetPos(20, 50)
         playerDropdown:SetSize(elementWidth, elementHeight)
         playerDropdown:SetValue("Select Player")
-        local function updatePlayerList(filter)
-            playerDropdown:Clear()
-            for _, data in ipairs(allPlayers) do
-                if filter == "" or string.find(string.lower(data.name), string.lower(filter)) then playerDropdown:AddChoice(data.name, data.steamid) end
-            end
+        for _, data in ipairs(allPlayers) do
+            playerDropdown:AddChoice(data.name, data.steamid)
         end
 
-        updatePlayerList("")
-        playerSearch.OnChange = function(self) updatePlayerList(self:GetValue()) end
         local reasonBox = vgui.Create("DTextEntry", frame)
-        reasonBox:SetPos(20, 130)
+        reasonBox:SetPos(20, 100)
         reasonBox:SetSize(elementWidth, 50)
         reasonBox:SetPlaceholderText("Enter the reason...")
         setTransparentStyle(reasonBox)
         local evidenceBox = vgui.Create("DTextEntry", frame)
-        evidenceBox:SetPos(20, 180)
+        evidenceBox:SetPos(20, 160)
         evidenceBox:SetSize(elementWidth, 50)
         evidenceBox:SetPlaceholderText("Paste evidence links or text...")
         setTransparentStyle(evidenceBox)
         local submitButton = vgui.Create("DButton", frame)
-        submitButton:SetPos(20, 300)
+        submitButton:SetPos(20, 250)
         submitButton:SetSize(elementWidth, 50)
         submitButton:SetText("Submit PK Case")
         submitButton.Paint = function(self, w, h)
@@ -117,17 +112,17 @@ else
         end
 
         submitButton.DoClick = function()
-            local selectedPlayer, steamID = playerDropdown:GetSelected()
+            local selectedName, steamID = playerDropdown:GetSelected()
             local reason = reasonBox:GetText()
             local evidence = evidenceBox:GetText()
-            if not (selectedPlayer and reason ~= "" and evidence ~= "") then
+            if not (selectedName and steamID and reason ~= "" and evidence ~= "") then
                 LocalPlayer():ChatPrint("All fields are required.")
                 return
             end
 
             net.Start("SubmitPKCase")
             net.WriteTable({
-                player = selectedPlayer,
+                player = selectedName,
                 steamID = steamID,
                 reason = reason,
                 evidence = evidence
