@@ -35,8 +35,8 @@ function lia.char.new(data, id, client, steamID)
     character.id = id or 0
     character.player = client
     if IsValid(client) or steamID then
-        if IsValid(client) and isfunction(client.SteamID64) then
-            character.steamID = client:SteamID64()
+        if IsValid(client) and isfunction(client.SteamID) then
+            character.steamID = client:SteamID()
         else
             character.steamID = steamID
         end
@@ -517,10 +517,12 @@ end
 
 function lia.char.getBySteamID(steamID)
     if not isstring(steamID) or steamID == "" then return end
+    local lookupID = steamID
+    if string.match(steamID, "^%d+$") and #steamID >= 17 then
+        lookupID = util.SteamIDFrom64(steamID) or steamID
+    end
     for _, client in player.Iterator() do
-        local sid = client:SteamID()
-        local sid64 = client:SteamID64()
-        if (sid == steamID or sid64 == steamID) and client:getChar() then return client:getChar() end
+        if client:SteamID() == lookupID and client:getChar() then return client:getChar() end
     end
 end
 
@@ -562,7 +564,7 @@ if SERVER then
         }, function(_, charID)
             local client
             for _, v in player.Iterator() do
-                if v:SteamID64() == data.steamID then
+                if v:SteamID() == data.steamID then
                     client = v
                     break
                 end
@@ -585,7 +587,7 @@ if SERVER then
     end
 
     function lia.char.restore(client, callback, id)
-        local steamID64 = client:SteamID64()
+        local steamID = client:SteamID()
         local fields = {"id"}
         for _, var in pairs(lia.char.vars) do
             if var.field then fields[#fields + 1] = var.field end
@@ -593,7 +595,7 @@ if SERVER then
 
         fields = table.concat(fields, ", ")
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. steamID64
+        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. steamID
         if id then condition = condition .. " AND id = " .. id end
         local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
         lia.db.query(query, function(data)

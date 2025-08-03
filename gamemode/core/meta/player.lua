@@ -104,7 +104,7 @@ function playerMeta:isFemale()
 end
 
 function playerMeta:IsFamilySharedAccount()
-    return self:OwnerSteamID64() ~= self:SteamID64()
+    return util.SteamIDFrom64(self:OwnerSteamID64()) ~= self:SteamID()
 end
 
 function playerMeta:getItemDropPos()
@@ -422,13 +422,13 @@ if SERVER then
 
     function playerMeta:loadLiliaData(callback)
         local name = self:steamName()
-        local steamID64 = self:SteamID64()
+        local steamID = self:SteamID()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. steamID64, function(data)
+        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. steamID, function(data)
             if IsValid(self) and data and data[1] and data[1].data then
                 lia.db.updateTable({
                     lastJoin = timeStamp,
-                }, nil, "players", "steamID = " .. steamID64)
+                }, nil, "players", "steamID = " .. steamID)
 
                 self.firstJoin = data[1].firstJoin or timeStamp
                 self.lastJoin = data[1].lastJoin or timeStamp
@@ -442,7 +442,7 @@ if SERVER then
                 if callback then callback(self.liaData) end
             else
                 lia.db.insertTable({
-                    steamID = steamID64,
+                    steamID = steamID,
                     steamName = name,
                     firstJoin = timeStamp,
                     lastJoin = timeStamp,
@@ -461,7 +461,7 @@ if SERVER then
     function playerMeta:saveLiliaData()
         if self:IsBot() then return end
         local name = self:steamName()
-        local steamID64 = self:SteamID64()
+        local steamID = self:SteamID()
         local currentTime = os.time()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", currentTime)
         local stored = self:getLiliaData("totalOnlineTime", 0)
@@ -475,7 +475,7 @@ if SERVER then
             lastIP = self:getLiliaData("lastIP", ""),
             lastOnline = currentTime,
             totalOnlineTime = stored + session
-        }, nil, "players", "steamID = " .. steamID64)
+        }, nil, "players", "steamID = " .. steamID)
     end
 
     function playerMeta:setLiliaData(key, value, noNetworking)
@@ -575,13 +575,13 @@ if SERVER then
     end
 
     function playerMeta:banPlayer(reason, duration, banner)
-        local steam64 = self:SteamID64()
+        local steamID = self:SteamID()
         lia.db.insertTable({
             player = self:Name(),
-            playerSteamID = steam64,
+            playerSteamID = steamID,
             reason = reason or L("genericReason"),
             bannerName = IsValid(banner) and banner:Name() or "",
-            bannerSteamID = IsValid(banner) and banner:SteamID64() or "",
+            bannerSteamID = IsValid(banner) and banner:SteamID() or "",
             timestamp = os.time(),
             evidence = ""
         }, nil, "bans")

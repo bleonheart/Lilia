@@ -36,6 +36,6 @@ end)
 
 lia.log.addType("dupeCrashAttempt", function(client)
     local name = IsValid(client) and client:Name() or L("unknown")
-    local steamID = IsValid(client) and client:SteamID64() or L("na")
+    local steamID = IsValid(client) and client:SteamID() or L("na")
     return L("dupeCrashAttemptLog", name, steamID)
 end, "Security")

@@ -22,7 +22,7 @@
             local timestamp = os.date("%Y-%m-%d %H:%M:%S")
             local warnsModule = lia.module.list["warns"]
             if warnsModule and warnsModule.AddWarning then
-                warnsModule:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID64(), timestamp, L("cheaterWarningReason"), client:Nick(), client:SteamID())
+                warnsModule:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, L("cheaterWarningReason"), client:Nick(), client:SteamID())
                 lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
                     target:notifyLocalized("playerWarned", client:Nick() .. " (" .. client:SteamID() .. ")", L("cheaterWarningReason"))
                     client:notifyLocalized("warningIssued", target:Nick())
