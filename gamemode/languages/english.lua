@@ -1088,6 +1088,7 @@ LANGUAGE = {
     dbTablesTitle = "Lilia Tables",
     rowDetailsTitle = "Row Details",
     dbTableColumn = "Table",
+    databaseView = "Database View",
     permaPropOverlapWarning = "Warning: perma-props spawning too close together!",
     serverEventCharLock = "Currently the server is in an event and you're unable to change characters.",
     allBotsKicked = "All bots kicked",
