@@ -66,8 +66,7 @@ lia.command.add("viewwarns", {
                 table.insert(warningList, {
                     index = index,
                     timestamp = warn.timestamp or L("na"),
-                    warner = warn.warner or L("na"),
-                    warnerSteamID = warn.warnerSteamID or L("na"),
+                    admin = string.format("%s (%s)", warn.warner or L("na"), warn.warnerSteamID or L("na")),
                     warningMessage = warn.message or L("na")
                 })
             end
@@ -82,12 +81,8 @@ lia.command.add("viewwarns", {
                     field = "timestamp"
                 },
                 {
-                    name = L("Warner", "Warner"),
-                    field = "warner"
-                },
-                {
-                    name = L("Warner Steam ID", "Warner Steam ID"),
-                    field = "warnerSteamID"
+                    name = L("Admin", "Admin"),
+                    field = "admin"
                 },
                 {
                     name = L("Warning Message", "Warning Message"),

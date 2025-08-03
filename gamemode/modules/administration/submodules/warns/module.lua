@@ -33,9 +33,7 @@ if CLIENT then
 
         addSizedColumn(L("timestamp"))
         addSizedColumn(L("Warned", "Warned"))
-        addSizedColumn(L("Warned Steam ID", "Warned Steam ID"))
-        addSizedColumn(L("Warner", "Warner"))
-        addSizedColumn(L("Warner Steam ID", "Warner Steam ID"))
+        addSizedColumn(L("Admin", "Admin"))
         addSizedColumn(L("Warning Message", "Warning Message"))
 
         local function populate(filter)
@@ -44,10 +42,8 @@ if CLIENT then
             for _, warn in ipairs(warnings) do
                 local entries = {
                     warn.timestamp or "",
-                    warn.warned or "",
-                    warn.warnedSteamID or "",
-                    warn.warner or "",
-                    warn.warnerSteamID or "",
+                    string.format("%s (%s)", warn.warned or "", warn.warnedSteamID or ""),
+                    string.format("%s (%s)", warn.warner or "", warn.warnerSteamID or ""),
                     warn.message or ""
                 }
                 local match = false
