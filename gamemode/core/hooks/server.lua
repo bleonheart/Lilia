@@ -405,17 +405,16 @@ function GM:ShutDown()
 end
 
 function GM:PlayerAuthed(client, steamid)
-    local steam64 = util.SteamIDTo64(steamid)
-    lia.db.selectOne({"userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steam64)):next(function(data)
+    lia.db.selectOne({"userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steamid)):next(function(data)
         if not IsValid(client) then return end
         local group = data and data.userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), lia.db.convertDataType(steam64)))
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), lia.db.convertDataType(steamid)))
         end
 
         client:SetUserGroup(group)
-        lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. lia.db.convertDataType(steam64)):next(function(banData)
+        lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. lia.db.convertDataType(steamid)):next(function(banData)
             if not IsValid(client) or not banData then return end
             local reason = banData.reason or L("genericReason")
             client:Kick(L("banMessage", 0, reason))
@@ -1080,10 +1079,9 @@ gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
     lia.admin(string.format("[BAN] %s (%s) was banned for %d minute(s): %s", data.name, data.networkid, data.ban_length, data.ban_reason))
-    local steam64 = util.SteamIDTo64(data.networkid)
     lia.db.insertTable({
         player = data.name or "",
-        playerSteamID = steam64,
+        playerSteamID = data.networkid,
         reason = data.ban_reason or "",
         bannerName = "",
         bannerSteamID = "",
@@ -1094,6 +1092,5 @@ end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin("[UNBAN] " .. data.networkid .. " was unbanned.")
-    local steam64 = util.SteamIDTo64(data.networkid)
-    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steam64))
+    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
