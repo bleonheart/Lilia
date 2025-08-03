@@ -942,9 +942,9 @@ lia.command.add("charunbanoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyLocalized("invalidCharID") end
-        local charData = lia.char.getCharData(charID)
-        if not charData then return client:notifyLocalized("characterNotFound") end
-        lia.char.setCharData(charID, "banned", nil)
+        local banned = lia.char.getCharBanned(charID)
+        if banned == nil then return client:notifyLocalized("characterNotFound") end
+        lia.char.setCharBanned(charID, 0)
         lia.char.setCharData(charID, "charBanInfo", nil)
         client:notifyLocalized("offlineCharUnbanned", charID)
         lia.log.add(client, "charUnbanOffline", charID)
@@ -959,9 +959,9 @@ lia.command.add("charbanoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyLocalized("invalidCharID") end
-        local charData = lia.char.getCharData(charID)
-        if not charData then return client:notifyLocalized("characterNotFound") end
-        lia.char.setCharData(charID, "banned", true)
+        local banned = lia.char.getCharBanned(charID)
+        if banned == nil then return client:notifyLocalized("characterNotFound") end
+        lia.char.setCharBanned(charID, -1)
         lia.char.setCharData(charID, "charBanInfo", {
             name = client:Nick(),
             steamID = client:SteamID(),
@@ -1602,10 +1602,11 @@ lia.command.add("charunban", {
         end
 
         if charFound then
-            if charFound:getData("banned") then
-                charFound:setData("banned", nil)
+            if charFound:isBanned() then
+                charFound:setBanned(0)
                 charFound:setData("permakilled", nil)
                 charFound:setData("charBanInfo", nil)
+                charFound:save()
                 client:notifyLocalized("charUnBan", client:Name(), charFound:getName())
                 lia.log.add(client, "charUnban", charFound:getName(), charFound:getID())
             else
@@ -1618,14 +1619,14 @@ lia.command.add("charunban", {
         lia.db.query("SELECT id, name FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
                 local charID = tonumber(data[1].id)
-                local charData = lia.char.getCharData(charID)
+                local banned = lia.char.getCharBanned(charID)
                 client.liaNextSearch = 0
-                if not (charData and charData.banned) then
+                if not banned or banned == 0 then
                     client:notifyLocalized("charNotBanned")
                     return
                 end
 
-                lia.char.setCharData(charID, "banned", nil)
+                lia.char.setCharBanned(charID, 0)
                 lia.char.setCharData(charID, "charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), data[1].name)
                 lia.log.add(client, "charUnban", data[1].name, charID)
@@ -1750,7 +1751,7 @@ lia.command.add("charban", {
 
         local character = target:getChar()
         if character then
-            character:setData("banned", true)
+            character:setBanned(-1)
             character:setData("charBanInfo", {
                 name = client.steamName and client:steamName() or client:Name(),
                 steamID = client:SteamID(),
