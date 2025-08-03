@@ -36,18 +36,27 @@ net.Receive("RequestRoster", function(_, client)
                     local lastDiff = os.time() - last
                     local timeSince = lia.time.TimeSince(last)
                     local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                    lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
+                    lastOnlineText = L("agoFormat", timeStripped, formatDHM(lastDiff))
                 end
 
                 local classID = tonumber(v._class) or 0
                 local classData = lia.class.list[classID]
+                local playTime = tonumber(v.playtime) or 0
+                if isOnline then
+                    local char = lia.char.loaded[charID]
+                    if char then
+                        local loginTime = char:getLoginTime() or os.time()
+                        playTime = char:getPlayTime() + os.time() - loginTime
+                    end
+                end
+
                 table.insert(characters, {
                     id = charID,
                     name = v.name,
                     faction = v.faction,
                     steamID = v.steamID,
                     class = classData and classData.name or L("none"),
-                    playTime = formatDHM(tonumber(v.playtime) or 0),
+                    playTime = formatDHM(playTime),
                     lastOnline = lastOnlineText
                 })
             end
