@@ -447,6 +447,19 @@ local function IncludeFlagManagement(tgt, menu, stores)
             AdminStickIsOpen = false
         end):SetIcon(f.icon)
     end
+
+    fm:AddOption(L("modifyFlags"), function()
+        local char = tgt:getChar()
+        local currentFlags = char and char:getFlags() or ""
+        cl:requestString(L("modifyFlags"), L("modifyFlagsDesc"), function(text)
+            text = string.gsub(text or "", "%s", "")
+            net.Start("liaModifyFlags")
+            net.WriteString(tgt:SteamID())
+            net.WriteString(text)
+            net.SendToServer()
+        end, currentFlags)
+        AdminStickIsOpen = false
+    end):SetIcon("icon16/flag_orange.png")
 end
 
 local function AddCommandToMenu(menu, data, key, tgt, name, stores)
