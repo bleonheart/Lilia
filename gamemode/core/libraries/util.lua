@@ -9,10 +9,12 @@ end
 
 function lia.util.getBySteamID(steamID)
     if not isstring(steamID) or steamID == "" then return end
+    local sid = steamID
+    if steamID:match("^%d+$") and #steamID >= 17 then
+        sid = util.SteamIDFrom64(steamID)
+    end
     for _, client in player.Iterator() do
-        local sid = client:SteamID()
-        local sid64 = client:SteamID64()
-        if (sid == steamID or sid64 == steamID) and client:getChar() then return client end
+        if client:SteamID() == sid and client:getChar() then return client end
     end
 end
 
