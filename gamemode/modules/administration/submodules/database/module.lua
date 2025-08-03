@@ -74,7 +74,8 @@ else
                                 list:AddLine(unpack(lineData))
                             end
                         end
-                        self.sheet:AddSheet(tbl, pnl)
+                        local sheetName = tbl:gsub("^lia_", "")
+                        self.sheet:AddSheet(sheetName, pnl)
                     end
                 end
                 net.Start("liaRequestDatabaseView")
