@@ -93,7 +93,7 @@ lia.command.add("roster", {
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = L("agoFormat", timeStripped, formatDHM(lastDiff))
                     end
 
                     local classID = tonumber(v._class) or 0
@@ -169,7 +169,7 @@ lia.command.add("factionmanagement", {
                         local lastDiff = os.time() - last
                         local timeSince = lia.time.TimeSince(last)
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format(L("agoFormat"), timeStripped, formatDHM(lastDiff))
+                        lastOnlineText = L("agoFormat", timeStripped, formatDHM(lastDiff))
                     end
 
                     local classID = tonumber(v._class) or 0
