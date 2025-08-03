@@ -264,7 +264,7 @@ lia.command.add("charlist", {
 
             net.Start("DisplayCharList")
             net.WriteTable(sendData)
-            net.WriteString(steam64)
+            net.WriteString(steamID)
             net.Send(client)
         end)
     end
