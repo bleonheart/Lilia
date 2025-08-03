@@ -46,7 +46,8 @@ if SERVER then
         for _, ply in player.Iterator() do
             if ply:SteamID() == data.steamID and ply:getChar() then
                 if isCharBan then
-                    ply:getChar():setData("banned", true)
+                    ply:getChar():setBanned(-1)
+                    ply:getChar():save()
                     ply:getChar():kick()
                 else
                     ply:getChar():ban()
@@ -56,6 +57,15 @@ if SERVER then
             end
         end
     end)
+
+    function MODULE:CanPlayerUseChar(client, character)
+        if character:isBanned() then
+            net.Start("PK_Notice")
+            net.WriteString(character:getName())
+            net.Send(client)
+            return false, L("bannedCharacter")
+        end
+    end
 else
     net.Receive("OpenPKViewer", function()
         local cases = net.ReadTable()
