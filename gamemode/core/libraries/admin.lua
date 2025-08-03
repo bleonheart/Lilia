@@ -718,8 +718,8 @@ else
             lbl:SetFont("liaMediumFont")
             lbl:SetContentAlignment(4)
             local chk = row:Add("liaCheckBox")
-            local boxSize = 20
-            local rightOffset = 16
+            local boxSize = 28
+            local rightOffset = 12
             chk:SetSize(boxSize, boxSize)
             row.PerformLayout = function(self, w, h) chk:SetPos(w - boxSize - rightOffset, (h - boxSize) / 2) end
             chk:SetChecked(current[name] and true or false)
@@ -783,10 +783,9 @@ else
 
     function renderGroupInfo(parent, g, groups)
         parent:Clear()
-        LAST_GROUP = g
-        local editable = not lia.administrator.DefaultGroups[g]
-        local bottomTall = 44
-        local bottomMargin = 12
+        local isDefault = lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[g] ~= nil
+        local editable = not isDefault
+        local bottomTall, bottomMargin = 44, 12
         local bottom = parent:Add("DPanel")
         bottom:Dock(BOTTOM)
         bottom:SetTall(bottomTall)
@@ -813,24 +812,27 @@ else
         nameVal:SetFont("liaMediumFont")
         nameVal:SetContentAlignment(5)
         nameVal:SizeToContents()
-        local inhLbl = details:Add("DLabel")
-        inhLbl:Dock(TOP)
-        inhLbl:DockMargin(0, 10, 0, 0)
-        inhLbl:SetText(L("inheritsFrom"))
-        inhLbl:SetFont("liaBigFont")
-        inhLbl:SetContentAlignment(5)
-        inhLbl:SizeToContents()
-        local inhVal = details:Add("DLabel")
-        inhVal:Dock(TOP)
-        inhVal:DockMargin(0, 2, 0, 0)
-        local info = groups[g] and groups[g]._info or {}
-        inhVal:SetText(info.inheritance or "user")
-        inhVal:SetFont("liaMediumFont")
-        inhVal:SetContentAlignment(5)
-        inhVal:SizeToContents()
+        if not isDefault then
+            local inhLbl = details:Add("DLabel")
+            inhLbl:Dock(TOP)
+            inhLbl:DockMargin(0, 10, 0, 0)
+            inhLbl:SetText(L("inheritsFrom"))
+            inhLbl:SetFont("liaBigFont")
+            inhLbl:SetContentAlignment(5)
+            inhLbl:SizeToContents()
+            local inhVal = details:Add("DLabel")
+            inhVal:Dock(TOP)
+            inhVal:DockMargin(0, 2, 0, 0)
+            local info = groups[g] and groups[g]._info or {}
+            inhVal:SetText(info.inheritance or "user")
+            inhVal:SetFont("liaMediumFont")
+            inhVal:SetContentAlignment(5)
+            inhVal:SizeToContents()
+        end
+
         local function hasType(t)
-            for _, v in ipairs(info.types or {}) do
-                if tostring(v):lower() == t:lower() then return true end
+            for _, v in ipairs((groups[g]._info or {}).types or {}) do
+                if v:lower() == t:lower() then return true end
             end
             return false
         end
@@ -868,7 +870,6 @@ else
         local privContainer = content:Add("DPanel")
         privContainer:Dock(FILL)
         privContainer:DockMargin(20, 0, 20, 0)
-        privContainer:SetPaintBackground(false)
         privContainer.Paint = function() end
         buildPrivilegeList(privContainer, g, groups, editable)
         if editable then
@@ -878,16 +879,16 @@ else
             createBtn:SetText(L("createGroup"))
             renameBtn:SetText(L("renameGroup"))
             delBtn:SetText(L("deleteGroup"))
-            createBtn.DoClick = function() promptCreateGroup() end
+            createBtn.DoClick = promptCreateGroup
             renameBtn.DoClick = function()
                 Derma_StringRequest(L("renameGroup"), string.format(L("renameGroupPrompt"), g), g, function(txt)
                     txt = string.Trim(txt or "")
-                    if txt == "" or txt == g then return end
-                    LAST_GROUP = txt
-                    net.Start("liaGroupsRename")
-                    net.WriteString(g)
-                    net.WriteString(txt)
-                    net.SendToServer()
+                    if txt ~= "" and txt ~= g then
+                        net.Start("liaGroupsRename")
+                        net.WriteString(g)
+                        net.WriteString(txt)
+                        net.SendToServer()
+                    end
                 end)
             end
 
@@ -899,22 +900,22 @@ else
                 end, L("no"))
             end
 
-            bottom.PerformLayout = function(_, w, bh)
+            bottom.PerformLayout = function(_, w, h)
                 local bw = math.floor(w / 3)
                 createBtn:SetPos(0, 0)
-                createBtn:SetSize(bw, bh)
+                createBtn:SetSize(bw, h)
                 renameBtn:SetPos(bw, 0)
-                renameBtn:SetSize(bw, bh)
+                renameBtn:SetSize(bw, h)
                 delBtn:SetPos(bw * 2, 0)
-                delBtn:SetSize(w - bw * 2, bh)
+                delBtn:SetSize(w - bw * 2, h)
             end
         else
             local addBtn = bottom:Add("liaMediumButton")
             addBtn:SetText(L("createGroup"))
-            addBtn.DoClick = function() promptCreateGroup() end
-            bottom.PerformLayout = function(_, w, bh)
+            addBtn.DoClick = promptCreateGroup
+            bottom.PerformLayout = function(_, w, h)
                 addBtn:SetPos(0, 0)
-                addBtn:SetSize(w, bh)
+                addBtn:SetSize(w, h)
             end
         end
     end
