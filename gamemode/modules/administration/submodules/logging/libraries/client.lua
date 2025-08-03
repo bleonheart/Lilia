@@ -47,11 +47,6 @@ local function OpenLogsUI(panel, categorizedLogs)
             local menu = DermaMenu()
             if data.steamID and data.steamID ~= "" then menu:AddOption(L("copySteamID"), function() SetClipboardText(data.steamID) end) end
             menu:AddOption(L("copyLogMessage"), function() SetClipboardText(data.message or "") end)
-            menu:AddOption(L("copyRow"), function()
-                local text = "[" .. data.timestamp .. "] " .. data.message
-                if data.steamID and data.steamID ~= "" then text = text .. " [" .. data.steamID .. "]" end
-                SetClipboardText(text)
-            end)
 
             menu:Open()
         end
