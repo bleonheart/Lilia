@@ -1056,10 +1056,10 @@ concommand.Add("list_entities", function(client)
         end
 
         for className, count in pairs(entityCount) do
-            lia.information(string.format(L("entityClassCount"), className, count))
+            lia.information(L("entityClassCount", className, count))
         end
 
-        lia.information(string.format(L("totalEntities"), totalEntities))
+        lia.information(L("totalEntities", totalEntities))
     end
 end)
 
