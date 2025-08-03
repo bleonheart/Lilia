@@ -33,7 +33,7 @@ function lia.util.findPlayer(client, identifier)
     end
 
     if string.match(identifier, "^STEAM_%d+:%d+:%d+$") then
-        local ply = player.GetBySteamID(identifier)
+        local ply = lia.util.getBySteamID(identifier)
         if IsValid(ply) then return ply end
         if isValidClient then client:notifyLocalized("plyNoExist") end
         return nil
@@ -42,7 +42,7 @@ function lia.util.findPlayer(client, identifier)
     if string.match(identifier, "^%d+$") and #identifier >= 17 then
         local sid = util.SteamIDFrom64(identifier)
         if sid then
-            local ply = player.GetBySteamID(sid)
+            local ply = lia.util.getBySteamID(sid)
             if IsValid(ply) then return ply end
         end
 

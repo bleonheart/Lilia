@@ -35,7 +35,7 @@ if CLIENT then
         for _, t in pairs(tickets) do
             local admin = L("unassignedLabel")
             if t.admin then
-                local adminPly = player.GetBySteamID(t.admin)
+                local adminPly = lia.util.getBySteamID(t.admin)
                 if IsValid(adminPly) then
                     admin = adminPly:Nick()
                 else
@@ -45,7 +45,7 @@ if CLIENT then
 
             local requester = t.requester or ""
             if requester ~= "" then
-                  local requesterPly = player.GetBySteamID(requester)
+                  local requesterPly = lia.util.getBySteamID(requester)
                 if IsValid(requesterPly) then requester = requesterPly:Nick() end
             end
 
