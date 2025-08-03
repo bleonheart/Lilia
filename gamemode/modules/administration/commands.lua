@@ -191,6 +191,40 @@ lia.command.add("returnsitroom", {
     end
 })
 
+lia.command.add("charlist", {
+    adminOnly = true,
+    privilege = "List Characters",
+    desc = "charListDesc",
+    syntax = "[string Player Or Steam ID]",
+    AdminStick = {
+        Name = "adminStickOpenCharListName",
+        Category = "playerInformation",
+        Icon = "icon16/user_gray.png"
+    },
+    onRun = function(client, arguments)
+        local identifier = arguments[1]
+        local target
+        if identifier then
+            target = lia.util.findPlayer(client, identifier)
+            if not IsValid(target) then return end
+        else
+            target = client
+        end
+
+        local steamID = target:SteamID()
+        lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
+            if not data or #data == 0 then
+                end
+            end
+
+            net.Start("DisplayCharList")
+            net.WriteTable(sendData)
+            net.WriteString(steam64)
+            net.Send(client)
+        end)
+    end
+})
+
 lia.command.add("plyban", {
     adminOnly = true,
     privilege = "Ban Player",
