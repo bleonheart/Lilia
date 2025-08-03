@@ -278,7 +278,7 @@ else
                 local function populate()
                     for id, fi in pairs(info) do
                         if fi then
-                            local title = fi.title or string.format(L("idPrefix"), id)
+                            local title = fi.title or L("idPrefix", id)
                             local percent = "0%"
                             if totalSize > 0 then
                                 percent = string.format("%.2f%%", (fi.size or 0) / totalSize * 100)

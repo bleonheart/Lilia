@@ -863,7 +863,7 @@ else
             delBtn:SetText(L("deleteGroup"))
             createBtn.DoClick = promptCreateGroup
             renameBtn.DoClick = function()
-                Derma_StringRequest(L("renameGroup"), string.format(L("renameGroupPrompt"), g), g, function(txt)
+                Derma_StringRequest(L("renameGroup"), L("renameGroupPrompt", g), g, function(txt)
                     txt = string.Trim(txt or "")
                     if txt ~= "" and txt ~= g then
                         net.Start("liaGroupsRename")
@@ -875,7 +875,7 @@ else
             end
 
             delBtn.DoClick = function()
-                Derma_Query(string.format(L("deleteGroupPrompt"), g), L("confirm"), L("yes"), function()
+                Derma_Query(L("deleteGroupPrompt", g), L("confirm"), L("yes"), function()
                     net.Start("liaGroupsRemove")
                     net.WriteString(g)
                     net.SendToServer()
