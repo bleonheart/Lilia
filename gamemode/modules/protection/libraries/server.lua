@@ -107,6 +107,27 @@ local KnownCheaters = {
     ["76561198234911980"] = true,
 }
 
+local function collectSteamIDs(hookName)
+    local collected = {}
+    hook.Run(hookName, collected)
+    local flattened = {}
+    local function merge(tbl)
+        for k, v in pairs(tbl) do
+            if istable(v) then
+                merge(v)
+            else
+                if isstring(k) then
+                    flattened[k] = v
+                else
+                    flattened[v] = true
+                end
+            end
+        end
+    end
+    merge(collected)
+    return flattened
+end
+
 function MODULE:PlayerAuthed(client, steamid)
     local steamID64 = util.SteamIDTo64(steamid)
     local ownerSteamID64 = client:OwnerSteamID64()
@@ -126,13 +147,28 @@ function MODULE:PlayerAuthed(client, steamid)
         lia.log.add(nil, "altBanned", steamName, steamID)
     end)
 
+    local whitelistedSteamIDs = collectSteamIDs("GetWhitelistedSteamIDs")
+    local blacklistedSteamIDs = collectSteamIDs("GetBlacklistedSteamIDs")
+
+    local function punishIfBlacklisted(id, isAlt)
+        local reason = blacklistedSteamIDs[id]
+        if reason and not whitelistedSteamIDs[id] then
+            reason = reason ~= true and reason or L("familySharedAccountBlacklisted")
+            lia.applyPunishment(client, reason, false, true, 0)
+            if isAlt then
+                lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
+                lia.log.add(nil, "altBanned", steamName, steamID)
+            end
+            return true
+        end
+    end
+
+    if punishIfBlacklisted(steamID64) then return end
     if lia.config.get("AltsDisabled", false) and client:IsFamilySharedAccount() then
         lia.applyPunishment(client, L("familySharingDisabled"), true, false)
         lia.notifyAdmin(L("kickedAltNotify", steamName, steamID))
-    elseif lia.module.list["whitelist"] and lia.module.list["whitelist"].BlacklistedSteamID64[ownerSteamID64] then
-        lia.applyPunishment(client, L("familySharedAccountBlacklisted"), false, true, 0)
-        lia.notifyAdmin(L("bannedAltNotify", steamName, steamID))
-        lia.log.add(nil, "altBanned", steamName, steamID)
+    else
+        punishIfBlacklisted(ownerSteamID64, true)
     end
 end
 
