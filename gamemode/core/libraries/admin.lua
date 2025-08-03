@@ -627,19 +627,23 @@ if SERVER then
 else
     local LAST_GROUP
     local function computeCategoryMap(groups)
-        local cats, seen = {}, {}
+        local cats, labels, seen = {}, {}, {}
         for name in pairs(lia.administrator.privileges or {}) do
-            local c = lia.administrator.privMeta and lia.administrator.privMeta[name] or "Unassigned"
-            cats[c] = cats[c] or {}
-            cats[c][#cats[c] + 1], seen[name] = name, true
+            local c = tostring(lia.administrator.privMeta and lia.administrator.privMeta[name] or "Unassigned")
+            local key = c:lower()
+            labels[key] = labels[key] or c
+            cats[key] = cats[key] or {}
+            cats[key][#cats[key] + 1], seen[name] = name, true
         end
 
         for _, data in pairs(groups or {}) do
             for name in pairs(data or {}) do
                 if name ~= "_info" and not seen[name] then
-                    local c = lia.administrator.privMeta and lia.administrator.privMeta[name] or "Unassigned"
-                    cats[c] = cats[c] or {}
-                    cats[c][#cats[c] + 1], seen[name] = name, true
+                    local c = tostring(lia.administrator.privMeta and lia.administrator.privMeta[name] or "Unassigned")
+                    local key = c:lower()
+                    labels[key] = labels[key] or c
+                    cats[key] = cats[key] or {}
+                    cats[key][#cats[key] + 1], seen[name] = name, true
                 end
             end
         end
@@ -649,11 +653,19 @@ else
             keys[#keys + 1] = k
         end
 
-        table.sort(keys, function(a, b) return a:lower() < b:lower() end)
+        table.sort(keys, function(a, b) return a < b end)
         for _, k in ipairs(keys) do
             table.sort(cats[k], function(a, b) return a:lower() < b:lower() end)
         end
-        return cats, keys
+
+        local ordered = {}
+        for _, k in ipairs(keys) do
+            ordered[#ordered + 1] = {
+                label = labels[k],
+                items = cats[k]
+            }
+        end
+        return ordered
     end
 
     local function promptCreateGroup()
@@ -682,36 +694,35 @@ else
         end)
     end
 
-    local function buildPrivilegeList(parent, g, groups, editable)
+    local function buildPrivilegeList(container, g, groups, editable)
         local current = table.Copy(groups[g] or {})
         current._info = nil
         surface.SetFont("liaMediumFont")
         local _, fh = surface.GetTextSize("W")
-        local cb = math.max(20, fh + 6)
-        local rowH = math.max(fh + 14, cb + 8)
-        local off = math.floor((rowH - fh) * 0.5)
-        local categoryList = parent:Add("DCategoryList")
-        categoryList:Dock(TOP)
-        categoryList:DockMargin(20, 0, 20, 4)
+        local cb = math.max(24, fh + 10)
+        local rowH = math.max(fh + 28, cb + 14)
+        local categoryList = container:Add("DCategoryList")
+        categoryList:Dock(FILL)
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
         lia.gui.usergroups.checks[g] = lia.gui.usergroups.checks[g] or {}
-        local function addRow(container, name)
-            local row = container:Add("DPanel")
+        local function addRow(list, name)
+            local row = list:Add("DPanel")
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
             row:SetTall(rowH)
-            row.Paint = function() end
+            row.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
             local lbl = row:Add("DLabel")
             lbl:Dock(FILL)
-            lbl:DockMargin(0, off, 8, 0)
+            lbl:DockMargin(8, 0, 0, 0)
             lbl:SetText(name)
             lbl:SetFont("liaMediumFont")
-            lbl:SizeToContents()
+            lbl:SetContentAlignment(4)
             local chk = row:Add("liaCheckBox")
-            chk:SetSize(cb + 12, cb)
-            chk:Dock(RIGHT)
+            local boxSize = 20
+            local rightOffset = 16
+            chk:SetSize(boxSize, boxSize)
+            row.PerformLayout = function(self, w, h) chk:SetPos(w - boxSize - rightOffset, (h - boxSize) / 2) end
             chk:SetChecked(current[name] and true or false)
-            chk._suppress = false
             if editable then
                 chk.OnChange = function(_, v)
                     if chk._suppress then
@@ -739,68 +750,83 @@ else
             lia.gui.usergroups.checks[g][name] = chk
         end
 
-        local cats, order = computeCategoryMap(groups)
-        for _, catName in ipairs(order) do
-            local pnl = vgui.Create("DPanel", categoryList)
-            pnl:Dock(TOP)
-            pnl.Paint = function() end
-            local layout = vgui.Create("DListLayout", pnl)
-            layout:Dock(FILL)
-            for _, priv in ipairs(cats[catName]) do
-                addRow(layout, priv)
+        local ordered = computeCategoryMap(groups)
+        surface.SetFont("liaBigFont")
+        local _, hfh = surface.GetTextSize("W")
+        local headerH = math.max(hfh + 18, 36)
+        for _, cat in ipairs(ordered) do
+            local wrap = vgui.Create("DPanel")
+            wrap.Paint = function(pnl, w, h) derma.SkinHook("Paint", "InnerPanel", pnl, w, h) end
+            local list = vgui.Create("DListLayout", wrap)
+            list:Dock(TOP)
+            list:DockMargin(8, 8, 8, 8)
+            for _, priv in ipairs(cat.items) do
+                addRow(list, priv)
             end
 
-            pnl:InvalidateLayout(true)
-            pnl:SizeToChildren(true, true)
-            local cat = categoryList:Add(catName)
-            cat:SetContents(pnl)
-            cat:SetExpanded(true)
+            wrap:InvalidateLayout(true)
+            wrap:SizeToChildren(true, true)
+            local c = categoryList:Add(cat.label)
+            c:SetContents(wrap)
+            c:SetExpanded(false)
+            local header = c.Header or c.GetHeader and c:GetHeader() or nil
+            if IsValid(header) then
+                header:SetFont("liaBigFont")
+                header:SetTall(headerH)
+                header:SetTextInset(12, 0)
+                header:SetContentAlignment(4)
+            end
         end
+
         categoryList:InvalidateLayout(true)
-        local canvas = categoryList:GetCanvas()
-        canvas:SizeToChildren(false, true)
-        categoryList:SetTall(canvas:GetTall())
-        return categoryList, current
     end
 
     function renderGroupInfo(parent, g, groups)
         parent:Clear()
         LAST_GROUP = g
         local editable = not lia.administrator.DefaultGroups[g]
-        local bottomTall = 36
-        local bottomMargin = 10
+        local bottomTall = 44
+        local bottomMargin = 12
         local bottom = parent:Add("DPanel")
         bottom:Dock(BOTTOM)
         bottom:SetTall(bottomTall)
         bottom:DockMargin(10, 0, 10, bottomMargin)
         bottom.Paint = function() end
-        local scroll = parent:Add("DScrollPanel")
-        scroll:Dock(FILL)
-        scroll:DockMargin(0, 0, 0, bottomTall + bottomMargin)
-        local nameLbl = scroll:Add("DLabel")
+        local content = parent:Add("DPanel")
+        content:Dock(FILL)
+        content:DockMargin(0, 0, 0, bottomTall + bottomMargin)
+        content.Paint = function() end
+        local details = content:Add("DPanel")
+        details:Dock(TOP)
+        details:DockMargin(20, 20, 20, 10)
+        details.Paint = function() end
+        local nameLbl = details:Add("DLabel")
         nameLbl:Dock(TOP)
-        nameLbl:DockMargin(20, 20, 0, 0)
         nameLbl:SetText(L("name") .. ":")
         nameLbl:SetFont("liaBigFont")
+        nameLbl:SetContentAlignment(5)
         nameLbl:SizeToContents()
-        local nameVal = scroll:Add("DLabel")
+        local nameVal = details:Add("DLabel")
         nameVal:Dock(TOP)
-        nameVal:DockMargin(20, 2, 0, 10)
+        nameVal:DockMargin(0, 2, 0, 10)
         nameVal:SetText(g)
         nameVal:SetFont("liaMediumFont")
+        nameVal:SetContentAlignment(5)
         nameVal:SizeToContents()
-        local inhLbl = scroll:Add("DLabel")
+        local inhLbl = details:Add("DLabel")
         inhLbl:Dock(TOP)
-        inhLbl:DockMargin(20, 10, 0, 0)
+        inhLbl:DockMargin(0, 10, 0, 0)
         inhLbl:SetText(L("inheritsFrom"))
         inhLbl:SetFont("liaBigFont")
+        inhLbl:SetContentAlignment(5)
         inhLbl:SizeToContents()
-        local inhVal = scroll:Add("DLabel")
+        local inhVal = details:Add("DLabel")
         inhVal:Dock(TOP)
-        inhVal:DockMargin(20, 2, 0, 0)
+        inhVal:DockMargin(0, 2, 0, 0)
         local info = groups[g] and groups[g]._info or {}
         inhVal:SetText(info.inheritance or "user")
         inhVal:SetFont("liaMediumFont")
+        inhVal:SetContentAlignment(5)
         inhVal:SizeToContents()
         local function hasType(t)
             for _, v in ipairs(info.types or {}) do
@@ -809,37 +835,42 @@ else
             return false
         end
 
-        local staffLbl = scroll:Add("DLabel")
+        local staffLbl = details:Add("DLabel")
         staffLbl:Dock(TOP)
-        staffLbl:DockMargin(20, 10, 0, 0)
+        staffLbl:DockMargin(0, 10, 0, 0)
         staffLbl:SetText(L("isStaffLabel"))
         staffLbl:SetFont("liaBigFont")
+        staffLbl:SetContentAlignment(5)
         staffLbl:SizeToContents()
-        local staffVal = scroll:Add("DLabel")
+        local staffVal = details:Add("DLabel")
         staffVal:Dock(TOP)
-        staffVal:DockMargin(20, 2, 0, 0)
+        staffVal:DockMargin(0, 2, 0, 0)
         staffVal:SetText(hasType("Staff") and L("yes") or L("no"))
         staffVal:SetFont("liaMediumFont")
+        staffVal:SetContentAlignment(5)
         staffVal:SizeToContents()
-        local vipLbl = scroll:Add("DLabel")
+        local vipLbl = details:Add("DLabel")
         vipLbl:Dock(TOP)
-        vipLbl:DockMargin(20, 10, 0, 0)
+        vipLbl:DockMargin(0, 10, 0, 0)
         vipLbl:SetText(L("isVIPLabel"))
         vipLbl:SetFont("liaBigFont")
+        vipLbl:SetContentAlignment(5)
         vipLbl:SizeToContents()
-        local vipVal = scroll:Add("DLabel")
+        local vipVal = details:Add("DLabel")
         vipVal:Dock(TOP)
-        vipVal:DockMargin(20, 2, 0, 0)
+        vipVal:DockMargin(0, 2, 0, 0)
         vipVal:SetText(hasType("VIP") and L("yes") or L("no"))
         vipVal:SetFont("liaMediumFont")
+        vipVal:SetContentAlignment(5)
         vipVal:SizeToContents()
-        local privLbl = scroll:Add("DLabel")
-        privLbl:Dock(TOP)
-        privLbl:DockMargin(20, 10, 0, 6)
-        privLbl:SetText(L("privilegesLabel"))
-        privLbl:SetFont("liaBigFont")
-        privLbl:SizeToContents()
-        buildPrivilegeList(scroll, g, groups, editable)
+        details:InvalidateLayout(true)
+        details:SizeToChildren(true, true)
+        local privContainer = content:Add("DPanel")
+        privContainer:Dock(FILL)
+        privContainer:DockMargin(20, 0, 20, 0)
+        privContainer:SetPaintBackground(false)
+        privContainer.Paint = function() end
+        buildPrivilegeList(privContainer, g, groups, editable)
         if editable then
             local createBtn = bottom:Add("liaMediumButton")
             local renameBtn = bottom:Add("liaMediumButton")
@@ -905,6 +936,7 @@ else
         for _, g in ipairs(keys) do
             local page = sheet:Add("DPanel")
             page:Dock(FILL)
+            page.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
             renderGroupInfo(page, g, groups)
             sheet:AddSheet(g, page)
             panel.pages[g] = page
@@ -924,24 +956,10 @@ else
 
     lia.net.readBigTable("updateAdminGroups", function(tbl)
         lia.administrator.groups = tbl
-        if CAMI then
-            for n, t in pairs(tbl or {}) do
-                camiRegisterUsergroup(n, t._info and t._info.inheritance or "user")
-            end
-        end
-
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl) end
     end)
 
-    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
-        lia.administrator.privileges = tbl
-        if CAMI then
-            for n, m in pairs(tbl or {}) do
-                camiRegisterPrivilege(n, m)
-            end
-        end
-    end)
-
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
     lia.net.readBigTable("updateAdminPrivilegeMeta", function(tbl)
         lia.administrator.privMeta = tbl or {}
         if IsValid(lia.gui.usergroups) and lia.administrator.groups then buildGroupsUI(lia.gui.usergroups, lia.administrator.groups) end
