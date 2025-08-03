@@ -301,6 +301,7 @@ end
 
 function PANEL:backToMainMenu()
     self:clickSound()
+    if IsValid(lia.gui.charConfirm) then lia.gui.charConfirm:Remove() end
     if IsValid(self.infoFrame) then self.infoFrame:Remove() end
     if IsValid(self.leftArrow) then
         self.leftArrow:Remove()
