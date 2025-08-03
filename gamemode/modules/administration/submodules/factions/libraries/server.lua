@@ -1,4 +1,3 @@
-util.AddNetworkString("liaRequestFactionRoster")
 local function SendRoster(client)
     if not IsValid(client) or not client:hasPrivilege("Can Manage Factions") then return end
     local data = {}

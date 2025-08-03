@@ -328,15 +328,6 @@ function lia.administrator.renameGroup(oldName, newName)
 end
 
 if SERVER then
-    util.AddNetworkString("updateAdminPrivileges")
-    util.AddNetworkString("updateAdminPrivilegeMeta")
-    util.AddNetworkString("updateAdminGroups")
-    util.AddNetworkString("liaGroupsRequest")
-    util.AddNetworkString("liaGroupsAdd")
-    util.AddNetworkString("liaGroupsRemove")
-    util.AddNetworkString("liaGroupsRename")
-    util.AddNetworkString("liaGroupsSetPerm")
-    util.AddNetworkString("liaGroupPermChanged")
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             lia.error(L("usergroupDoesntExist"))

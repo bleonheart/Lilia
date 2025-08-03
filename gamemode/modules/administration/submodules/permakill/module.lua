@@ -3,11 +3,6 @@ MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = L("xdd")
 if SERVER then
-    util.AddNetworkString("OpenPKViewer")
-    util.AddNetworkString("OpenPKMenu")
-    util.AddNetworkString("SubmitPKCase")
-    util.AddNetworkString("PK_Screen")
-    util.AddNetworkString("PK_Notice")
     lia.command.add("charkill", {
         superAdminOnly = true,
         privilege = "Manage Characters",
