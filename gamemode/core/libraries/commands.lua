@@ -371,8 +371,7 @@ else
                 ctrl = vgui.Create("DComboBox", panel)
                 ctrl:SetValue(L("selectItemPrompt"))
                 for uniqueID, item in SortedPairsByMemberValue(lia.item.list, "name") do
-                    local itemName = item.getName and item:getName() or L(item.name)
-                    ctrl:AddChoice(itemName, uniqueID)
+                    ctrl:AddChoice(item.getName and item:getName() or L(item.name), uniqueID)
                 end
             elseif fieldType == "faction" then
                 ctrl = vgui.Create("DComboBox", panel)
