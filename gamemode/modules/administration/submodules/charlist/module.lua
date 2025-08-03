@@ -18,11 +18,7 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
             local payload = {all = {}, players = {}}
             for _, row in ipairs(data or {}) do
                 local stored = lia.char.loaded[row.id]
-                local banInfo = {}
-                if row.charBanInfo and row.charBanInfo ~= "" then
-                    local decoded = pon.decode(row.charBanInfo)
-                    banInfo = decoded and decoded[1] or {}
-                end
+                local isBanned = tonumber(row.banned) == 1
                 local entry = {
                     ID = row.id,
                     Name = row.name,
@@ -30,13 +26,20 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
                     Faction = row.faction,
                     SteamID = row.steamID,
                     LastUsed = stored and "Online" or row.lastJoinTime,
-                    Banned = tonumber(row.banned) == 1,
-                    BanningAdminName = banInfo.name or "",
-                    BanningAdminSteamID = banInfo.steamID or "",
-                    BanningAdminRank = banInfo.rank or "",
+                    Banned = isBanned,
                     PlayTime = tonumber(row.playtime) or 0,
                     Money = tonumber(row.money) or 0
                 }
+                if isBanned then
+                    local banInfo = {}
+                    if row.charBanInfo and row.charBanInfo ~= "" then
+                        local decoded = pon.decode(row.charBanInfo)
+                        banInfo = decoded and decoded[1] or {}
+                    end
+                    entry.BanningAdminName = banInfo.name or ""
+                    entry.BanningAdminSteamID = banInfo.steamID or ""
+                    entry.BanningAdminRank = banInfo.rank or ""
+                end
                 hook.Run("CharListEntry", entry, row)
                 payload.all[#payload.all + 1] = entry
                 payload.players[row.steamID] = payload.players[row.steamID] or {}
@@ -81,6 +84,14 @@ else
                         return string.format("%02i:%02i:%02i", h, m, s)
                     end
 
+                    local hasBanInfo = false
+                    for _, row in ipairs(data.all or {}) do
+                        if row.Banned then
+                            hasBanInfo = true
+                            break
+                        end
+                    end
+
                     local columns = {
                         {name = L("id"), field = "ID"},
                         {name = L("name"), field = "Name"},
@@ -88,13 +99,15 @@ else
                         {name = L("faction"), field = "Faction"},
                         {name = L("steamID"), field = "SteamID"},
                         {name = L("lastUsed"), field = "LastUsed"},
-                        {name = L("banned"), field = "Banned", format = function(val) return val and L("yes") or L("no") end},
-                        {name = L("banningAdminName"), field = "BanningAdminName"},
-                        {name = L("banningAdminSteamID"), field = "BanningAdminSteamID"},
-                        {name = L("banningAdminRank"), field = "BanningAdminRank"},
-                        {name = L("playtime"), field = "PlayTime", format = function(val) return formatPlayTime(val or 0) end},
-                        {name = L("money"), field = "Money", format = function(val) return lia.currency.get(tonumber(val) or 0) end}
+                        {name = L("banned"), field = "Banned", format = function(val) return val and L("yes") or L("no") end}
                     }
+                    if hasBanInfo then
+                        table.insert(columns, {name = L("banningAdminName"), field = "BanningAdminName"})
+                        table.insert(columns, {name = L("banningAdminSteamID"), field = "BanningAdminSteamID"})
+                        table.insert(columns, {name = L("banningAdminRank"), field = "BanningAdminRank"})
+                    end
+                    table.insert(columns, {name = L("playtime"), field = "PlayTime", format = function(val) return formatPlayTime(val or 0) end})
+                    table.insert(columns, {name = L("money"), field = "Money", format = function(val) return lia.currency.get(tonumber(val) or 0) end})
                     hook.Run("CharListColumns", columns)
 
                     local function createList(parent, rows)
@@ -117,7 +130,7 @@ else
                                 for _, col in ipairs(columns) do
                                     local value = row[col.field]
                                     if col.format then value = col.format(value, row) end
-                                    values[#values + 1] = value
+                                    values[#values + 1] = value or ""
                                 end
                                 local match = false
                                 if filter == "" then
