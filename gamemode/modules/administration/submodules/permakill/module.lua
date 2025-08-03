@@ -52,7 +52,71 @@ if SERVER then
 else
     net.Receive("OpenPKViewer", function()
         local cases = net.ReadTable()
-        OpenPKViewer(cases)
+        local frame = vgui.Create("DFrame")
+        frame:SetSize(300, 400)
+        frame:SetTitle("View PK Cases")
+        frame:Center()
+        frame:MakePopup()
+        local searchBox = vgui.Create("DTextEntry", frame)
+        searchBox:SetSize(280, 25)
+        searchBox:SetPos(10, 30)
+        searchBox:SetPlaceholderText("Search by player name...")
+        local caseList = vgui.Create("DListView", frame)
+        caseList:SetSize(280, 300)
+        caseList:SetPos(10, 60)
+        caseList:AddColumn("Player")
+        local function updateCaseList(filter)
+            caseList:Clear()
+            for _, c in ipairs(cases) do
+                if string.match(c.player:lower(), filter:lower()) then caseList:AddLine(c.player) end
+            end
+        end
+
+        updateCaseList("")
+        searchBox.OnChange = function() updateCaseList(searchBox:GetText()) end
+        caseList.OnRowSelected = function(_, _, line)
+            local sel = line:GetColumnText(1)
+            local detail
+            for _, c in ipairs(cases) do
+                if c.player == sel then
+                    detail = c
+                    break
+                end
+            end
+
+            if detail then
+                local df = vgui.Create("DFrame")
+                df:SetSize(400, 400)
+                df:SetTitle("PK Case Details")
+                df:Center()
+                df:MakePopup()
+                local y = 30
+                local function makeButton(txt, yOff, clip)
+                    local btn = vgui.Create("DButton", df)
+                    btn:SetPos(10, yOff)
+                    btn:SetSize(380, 20)
+                    btn:SetText(txt)
+                    btn:SetCursor("hand")
+                    btn:SetTextColor(Color(255, 255, 255))
+                    btn.DoClick = function() SetClipboardText(clip) end
+                    return btn
+                end
+
+                makeButton("Player: " .. detail.player, y, detail.player)
+                y = y + 25
+                makeButton("SteamID: " .. detail.steamID, y, detail.steamID)
+                y = y + 25
+                makeButton("Reason: " .. detail.reason, y, detail.reason)
+                y = y + 25
+                makeButton("Evidence: " .. detail.evidence, y, detail.evidence)
+                y = y + 25
+                makeButton("Submitter: " .. detail.submitterName, y, detail.submitterName)
+                y = y + 25
+                makeButton("Submitter SteamID: " .. detail.submitterSteamID, y, detail.submitterSteamID)
+                y = y + 25
+                makeButton("Timestamp: " .. os.date("%c", detail.timestamp), y, os.date("%c", detail.timestamp))
+            end
+        end
     end)
 
     netstream.Hook("OpenPKMenu", function(isCharBan)
@@ -133,74 +197,6 @@ else
             frame:Close()
         end
     end)
-
-    function OpenPKViewer(cases)
-        local frame = vgui.Create("DFrame")
-        frame:SetSize(300, 400)
-        frame:SetTitle("View PK Cases")
-        frame:Center()
-        frame:MakePopup()
-        local searchBox = vgui.Create("DTextEntry", frame)
-        searchBox:SetSize(280, 25)
-        searchBox:SetPos(10, 30)
-        searchBox:SetPlaceholderText("Search by player name...")
-        local caseList = vgui.Create("DListView", frame)
-        caseList:SetSize(280, 300)
-        caseList:SetPos(10, 60)
-        caseList:AddColumn("Player")
-        local function updateCaseList(filter)
-            caseList:Clear()
-            for _, c in ipairs(cases) do
-                if string.match(c.player:lower(), filter:lower()) then caseList:AddLine(c.player) end
-            end
-        end
-
-        updateCaseList("")
-        searchBox.OnChange = function() updateCaseList(searchBox:GetText()) end
-        caseList.OnRowSelected = function(_, _, line)
-            local sel = line:GetColumnText(1)
-            local detail
-            for _, c in ipairs(cases) do
-                if c.player == sel then
-                    detail = c
-                    break
-                end
-            end
-
-            if detail then
-                local df = vgui.Create("DFrame")
-                df:SetSize(400, 400)
-                df:SetTitle("PK Case Details")
-                df:Center()
-                df:MakePopup()
-                local y = 30
-                local function makeButton(txt, yOff, clip)
-                    local btn = vgui.Create("DButton", df)
-                    btn:SetPos(10, yOff)
-                    btn:SetSize(380, 20)
-                    btn:SetText(txt)
-                    btn:SetCursor("hand")
-                    btn:SetTextColor(Color(255, 255, 255))
-                    btn.DoClick = function() SetClipboardText(clip) end
-                    return btn
-                end
-
-                makeButton("Player: " .. detail.player, y, detail.player)
-                y = y + 25
-                makeButton("SteamID: " .. detail.steamID, y, detail.steamID)
-                y = y + 25
-                makeButton("Reason: " .. detail.reason, y, detail.reason)
-                y = y + 25
-                makeButton("Evidence: " .. detail.evidence, y, detail.evidence)
-                y = y + 25
-                makeButton("Submitter: " .. detail.submitterName, y, detail.submitterName)
-                y = y + 25
-                makeButton("Submitter SteamID: " .. detail.submitterSteamID, y, detail.submitterSteamID)
-                y = y + 25
-                makeButton("Timestamp: " .. os.date("%c", detail.timestamp), y, os.date("%c", detail.timestamp))
-            end
-        end
-    end
 
     net.Receive("PK_Screen", function()
         local name = net.ReadString()
