@@ -60,6 +60,20 @@ else
                         pnl.Paint = function() end
                         local list = pnl:Add("DListView")
                         list:Dock(FILL)
+                        function list:OnRowRightClick(_, line)
+                            if not IsValid(line) then return end
+                            local menu = DermaMenu()
+                            menu:AddOption(L("copyRow"), function()
+                                local rowString = ""
+                                for i, column in ipairs(self.Columns or {}) do
+                                    local header = column.Header and column.Header:GetText() or ("Column " .. i)
+                                    local value = line:GetColumnText(i) or ""
+                                    rowString = rowString .. header .. " " .. value .. " | "
+                                end
+                                SetClipboardText(string.sub(rowString, 1, -4))
+                            end):SetIcon("icon16/page_copy.png")
+                            menu:Open()
+                        end
                         if rows and rows[1] then
                             local columns = {}
                             for col in pairs(rows[1]) do
