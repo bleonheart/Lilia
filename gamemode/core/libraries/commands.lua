@@ -217,27 +217,25 @@ if SERVER then
             if command then
                 if not arguments then arguments = lia.command.extractArgs(text:sub(#match + 3)) end
                 local fields, valid = lia.command.parseSyntaxFields(command.syntax)
-                if valid and #fields > 0 then
+                if IsValid(client) and client:IsPlayer() and valid and #fields > 0 then
                     local tokens = combineBracketArgs(arguments)
                     local missing = {}
+                    local prefix = {}
                     for i, field in ipairs(fields) do
                         local arg = tokens[i]
                         if not arg or isPlaceholder(arg) then
-                            if not field.optional then missing[#missing + 1] = field.name end
+                            if not field.optional then missing[field.name] = field.type end
+                        else
+                            prefix[#prefix + 1] = arg
                         end
                     end
 
-                    if #missing > 0 then
-                        local msg = "Missing argument(s): " .. table.concat(missing, ", ")
-                        if command.syntax and command.syntax ~= "" then
-                            msg = msg .. " | Syntax: " .. command.syntax
-                        end
-
-                        if IsValid(client) then
-                            client:notify(msg)
-                        else
-                            print(msg)
-                        end
+                    if table.Count(missing) > 0 then
+                        net.Start("liaCmdArgPrompt")
+                        net.WriteString(match)
+                        net.WriteTable(missing)
+                        net.WriteTable(prefix)
+                        net.Send(client)
                         return true
                     end
                 end
