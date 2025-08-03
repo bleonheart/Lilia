@@ -649,6 +649,7 @@ LANGUAGE = {
     moderationTools = "Herramientas de moderación",
     changePlayerModel = "Cambiar modelo",
     cannotMuteSelf = "No puedes mutearte.",
+    cannotWarnSelf = "No puedes advertirte a ti mismo.",
     voiceUnmuted = "Has desmuteado a %s.",
     voiceUnmutedByAdmin = "Un admin te desmuteó.",
     voiceMuted = "Has muteado a %s.",
