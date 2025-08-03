@@ -526,10 +526,10 @@ function MODULE:InitializedModules()
             client.nextExploitNotify = client.nextExploitNotify or 0
             if client.nextExploitNotify > CurTime() then return end
             client.nextExploitNotify = CurTime() + 2
-            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(name))
+            lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID(), tostring(name))
             client:notifyLocalized("caughtExploiting")
             for _, p in player.Iterator() do
-                if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(name)) end
+                if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID(), tostring(name)) end
             end
         end)
     end
@@ -546,9 +546,9 @@ function MODULE:InitializedModules()
             end
 
             net.Receive(netName, function(_, client)
-                lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID64(), tostring(netName))
+                lia.log.add(client, "exploitAttempt", client:Name(), client:SteamID(), tostring(netName))
                 for _, p in player.Iterator() do
-                    if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID64(), tostring(netName)) end
+                    if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("exploitAttempt", client:Name(), client:SteamID(), tostring(netName)) end
                 end
             end)
         end
@@ -558,14 +558,14 @@ end
 net.Receive("CheckSeed", function(_, client)
     local sentSteamID = net.ReadString()
     if not sentSteamID or sentSteamID == "" then
-        lia.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID64()))
-        lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID64())
+        lia.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID()))
+        lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID())
         return
     end
 
-    if client:SteamID64() ~= sentSteamID then
-        lia.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID64(), sentSteamID))
-        lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID64(), sentSteamID)
+    if client:SteamID() ~= sentSteamID then
+        lia.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID(), sentSteamID))
+        lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID(), sentSteamID)
     end
 end)
 

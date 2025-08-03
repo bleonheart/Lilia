@@ -207,7 +207,7 @@ lia.log.types = {
         category = "Connections"
     },
     ["failedPassword"] = {
-        func = function(_, steamid64, name, svpass, clpass) return string.format("[%s] %s failed server password (Server: '%s', Client: '%s')", steamid64, name, svpass, clpass) end,
+        func = function(_, steamID, name, svpass, clpass) return string.format("[%s] %s failed server password (Server: '%s', Client: '%s')", steamID, name, svpass, clpass) end,
         category = "Connections"
     },
     ["exploitAttempt"] = {

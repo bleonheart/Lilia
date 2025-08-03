@@ -528,15 +528,6 @@ function MODULE:OpenAdminStickUI(tgt)
                 end,
                 icon = "icon16/page_copy.png"
             },
-            {
-                name = L("steamID64CopyFormat", tgt:SteamID64()),
-                cmd = function()
-                    cl:ChatPrint(L("copiedToClipboard", tgt:Name(), "SteamID64"))
-                    SetClipboardText(tgt:SteamID64())
-                    AdminStickIsOpen = false
-                end,
-                icon = "icon16/page_copy.png"
-            }
         }
 
         table.sort(info, function(a, b) return a.name < b.name end)

@@ -99,7 +99,7 @@ function MODULE:PlayerAuthed(client, steamid)
     local steamID64 = util.SteamIDTo64(steamid)
     local ownerSteamID64 = client:OwnerSteamID64()
     local steamName = client:SteamName()
-    local steamID = client:SteamID64()
+    local steamID = steamid
     if KnownCheaters[steamID64] or KnownCheaters[ownerSteamID64] then
         lia.applyPunishment(client, L("usingThirdPartyCheats"), false, true, 0)
         lia.notifyAdmin(L("bannedCheaterNotify", steamName, steamID))
@@ -271,10 +271,10 @@ end
 
 function MODULE:OnCheaterCaught(client)
     if IsValid(client) then
-        lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID64())
+        lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
         client:notifyLocalized("caughtCheating")
         for _, p in player.Iterator() do
-            if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID64()) end
+            if p:isStaffOnDuty() or p:hasPrivilege("Receive Cheater Notifications") then p:notifyLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
         end
     end
 end

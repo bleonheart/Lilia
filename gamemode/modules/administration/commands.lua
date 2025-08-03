@@ -51,7 +51,7 @@ lia.command.add("adminmode", {
     desc = "adminModeDesc",
     onRun = function(client)
         if not IsValid(client) then return end
-        local steamID = client:SteamID64()
+        local steamID = client:SteamID()
         if client:isStaffOnDuty() then
             local oldCharID = client:getNetVar("OldCharID", 0)
             if oldCharID > 0 then
@@ -232,11 +232,11 @@ lia.command.add("plykick", {
             lia.log.add(client, "plyKick", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plykick",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
         end
@@ -256,11 +256,11 @@ lia.command.add("plykill", {
             lia.log.add(client, "plyKill", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plykill",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
         end
@@ -338,11 +338,11 @@ lia.command.add("plyrespawn", {
             lia.log.add(client, "plyRespawn", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plyrespawn",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
         end
@@ -374,11 +374,11 @@ lia.command.add("plyblind", {
             lia.log.add(client, "plyBlind", target:Name(), dur or 0)
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plyblind",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
         end
@@ -492,11 +492,11 @@ lia.command.add("plymute", {
             lia.log.add(client, "plyMute", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plymute",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
 
@@ -581,11 +581,11 @@ lia.command.add("plyjail", {
             lia.log.add(client, "plyJail", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plyjail",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
         end
@@ -704,11 +704,11 @@ lia.command.add("plystrip", {
             lia.log.add(client, "plyStrip", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
-                playerSteamID = target:SteamID64(),
-                steamID = target:SteamID64(),
+                playerSteamID = target:SteamID(),
+                steamID = target:SteamID(),
                 action = "plystrip",
                 staffName = client:Name(),
-                staffSteamID = client:SteamID64(),
+                staffSteamID = client:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
         end
@@ -816,10 +816,10 @@ lia.command.add("charlist", {
             target = client
         end
 
-        local steam64 = target:SteamID64()
-        lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steam64), function(data)
-            if not data or #data == 0 then
-                client:notifyLocalized("noCharactersForPlayer")
+    local steamID = target:SteamID()
+    lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
+        if not data or #data == 0 then
+            client:notifyLocalized("noCharactersForPlayer")
                 return
             end
 

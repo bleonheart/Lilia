@@ -112,10 +112,9 @@ function lia.util.getAdmins()
 end
 
 function lia.util.findPlayerBySteamID64(SteamID64)
-    for _, client in player.Iterator() do
-        if client:SteamID64() == SteamID64 then return client end
-    end
-    return nil
+    local SteamID = util.SteamIDFrom64(SteamID64)
+    if not SteamID then return nil end
+    return lia.util.findPlayerBySteamID(SteamID)
 end
 
 function lia.util.findPlayerBySteamID(SteamID)

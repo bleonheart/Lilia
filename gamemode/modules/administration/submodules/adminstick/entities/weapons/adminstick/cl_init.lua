@@ -53,7 +53,7 @@ function SWEP:DrawHUD()
         end
 
         if target:IsPlayer() then
-            information = {L("nicknameLabel", target:Nick()), L("steamNameLabel", target.SteamName and target:SteamName() or target:Name()), L("steamIDLabel", target:SteamID()), L("steamID64Label", target:SteamID64()), L("healthLabel", target:Health()), L("armorLabel", target:Armor()), L("usergroupLabel", target:GetUserGroup())}
+            information = {L("nicknameLabel", target:Nick()), L("steamNameLabel", target.SteamName and target:SteamName() or target:Name()), L("steamIDLabel", target:SteamID()), L("healthLabel", target:Health()), L("armorLabel", target:Armor()), L("usergroupLabel", target:GetUserGroup())}
             if target:getChar() then
                 local char = target:getChar()
                 local faction = lia.faction.indices[target:Team()]
