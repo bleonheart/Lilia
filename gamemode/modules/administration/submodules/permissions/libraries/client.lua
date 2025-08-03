@@ -112,10 +112,6 @@ net.Receive("DisplayCharList", function()
 
     local columns = {
         {
-            name = L("id"),
-            field = "ID"
-        },
-        {
             name = L("name"),
             field = "Name"
         },
@@ -176,7 +172,7 @@ net.Receive("DisplayCharList", function()
 
             line.CharID = rowData and rowData.ID
             if rowData and rowData.extraDetails then
-                local colIndex = 11
+                local colIndex = 10
                 for _, name in ipairs(extraOrder) do
                     line:SetColumnText(colIndex, tostring(rowData.extraDetails[name] or ""))
                     colIndex = colIndex + 1
