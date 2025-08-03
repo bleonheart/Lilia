@@ -193,6 +193,11 @@ function characterMeta:getData(key, default)
     return value
 end
 
+function characterMeta:isBanned()
+    local banned = self:getBanned()
+    return banned ~= 0 and (banned == -1 or banned > os.time())
+end
+
 if SERVER then
     function characterMeta:recognize(character, name)
         local id
@@ -457,11 +462,6 @@ if SERVER then
         end
 
         hook.Run("OnCharKick", self, client)
-    end
-
-    function characterMeta:isBanned()
-        local banned = self:getBanned()
-        return banned ~= 0 and (banned == -1 or banned > os.time())
     end
 
     function characterMeta:ban(time)
