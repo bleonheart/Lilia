@@ -21,14 +21,8 @@ if CLIENT then
     lia.net.readBigTable("liaPlayerCharacters", function(data)
         if not data or not charMenuContext then return end
         local menu = DermaMenu()
-        if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, charMenuContext.steamID, data) end
-        local chars = data.characters or {}
-        if #chars == 0 then
-            menu:AddOption(L("none", "None"))
-        else
-            for _, name in ipairs(chars) do
-                menu:AddOption(name)
-            end
+        if charMenuContext.buildMenu then
+            charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {})
         end
 
         if charMenuContext.pos then
@@ -114,7 +108,16 @@ if CLIENT then
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.steamID then return end
             local parentList = self
-            requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID)
+            requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID, characters)
+                local charSubMenu = menu:AddSubMenu(L("viewCharacterList", "View Character List"))
+                if not characters or #characters == 0 then
+                    charSubMenu:AddOption(L("none", "None"))
+                else
+                    for _, name in ipairs(characters) do
+                        charSubMenu:AddOption(name)
+                    end
+                end
+
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for i, column in ipairs(parentList.Columns or {}) do
@@ -127,7 +130,6 @@ if CLIENT then
                 end):SetIcon("icon16/page_copy.png")
 
                 menu:AddOption(L("copySteamID", "Copy SteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                print(steamID)
                 menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
             end)
         end
