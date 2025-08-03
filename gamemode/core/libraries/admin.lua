@@ -425,7 +425,7 @@ if SERVER then
     function lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)
         local sid = tostring(steamId or "")
         if sid == "" then return end
-        local ply = player.GetBySteamID and player.GetBySteamID(sid)
+        local ply = lia.util.getBySteamID(sid)
         local old = IsValid(ply) and tostring(ply:GetUserGroup() or "user") or "user"
         local new = tostring(newGroup or "user")
         if IsValid(ply) then ply:SetUserGroup(new) end

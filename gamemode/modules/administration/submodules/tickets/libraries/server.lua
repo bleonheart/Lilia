@@ -14,12 +14,12 @@ local function buildClaimTable(rows)
         local info = caseclaims[adminID]
         info.claims = info.claims + 1
         if row.timestamp > info.lastclaim then info.lastclaim = row.timestamp end
-        local reqPly = player.GetBySteamID(row.requesterSteamID)
+        local reqPly = lia.util.getBySteamID(row.requesterSteamID)
         info.claimedFor[row.requesterSteamID] = IsValid(reqPly) and reqPly:Nick() or row.requester
     end
 
     for adminID, info in pairs(caseclaims) do
-        local ply = player.GetBySteamID(adminID)
+        local ply = lia.util.getBySteamID(adminID)
         if IsValid(ply) then info.name = ply:Nick() end
     end
     return caseclaims
