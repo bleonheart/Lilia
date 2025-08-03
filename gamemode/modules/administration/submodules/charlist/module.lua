@@ -19,12 +19,13 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
             for _, row in ipairs(data or {}) do
                 local stored = lia.char.loaded[row.id]
                 local isBanned = tonumber(row.banned) == 1
+                local steamID = tostring(row.steamID)
                 local entry = {
                     ID = row.id,
                     Name = row.name,
                     Desc = row.desc,
                     Faction = row.faction,
-                    SteamID = row.steamID,
+                    SteamID = steamID,
                     LastUsed = stored and "Online" or row.lastJoinTime,
                     Banned = isBanned,
                     PlayTime = tonumber(row.playtime) or 0,
@@ -42,8 +43,8 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
                 end
                 hook.Run("CharListEntry", entry, row)
                 payload.all[#payload.all + 1] = entry
-                payload.players[row.steamID] = payload.players[row.steamID] or {}
-                table.insert(payload.players[row.steamID], entry)
+                payload.players[steamID] = payload.players[steamID] or {}
+                table.insert(payload.players[steamID], entry)
             end
 
             lia.net.writeBigTable(client, "liaFullCharList", payload)
@@ -173,7 +174,7 @@ else
                     self.sheet:AddSheet(L("allCharacters"), allPanel)
 
                     for steamID, chars in pairs(data.players or {}) do
-                        local ply = lia.util.getBySteamID(steamID)
+                        local ply = lia.util.getBySteamID(tostring(steamID))
                         if IsValid(ply) then
                             local pnl = self.sheet:Add("DPanel")
                             pnl:Dock(FILL)
