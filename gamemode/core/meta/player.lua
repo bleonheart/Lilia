@@ -734,6 +734,10 @@ if SERVER then
         return diff + RealTime() - (self.liaJoinTime or RealTime())
     end
 
+    function playerMeta:getSessionTime()
+        return RealTime() - (self.liaJoinTime or RealTime())
+    end
+
     function playerMeta:getTotalOnlineTime()
         local stored = self:getLiliaData("totalOnlineTime", 0)
         return stored + RealTime() - (self.liaJoinTime or RealTime())
