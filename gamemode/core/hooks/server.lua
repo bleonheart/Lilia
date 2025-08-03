@@ -406,16 +406,16 @@ end
 
 function GM:PlayerAuthed(client, steamid)
     local steam64 = util.SteamIDTo64(steamid)
-    lia.db.selectOne({"userGroup"}, "players", "steamID = " .. steam64):next(function(data)
+    lia.db.selectOne({"userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steam64)):next(function(data)
         if not IsValid(client) then return end
         local group = data and data.userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), steam64))
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), lia.db.convertDataType(steam64)))
         end
 
         client:SetUserGroup(group)
-        lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. steam64):next(function(banData)
+        lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. lia.db.convertDataType(steam64)):next(function(banData)
             if not IsValid(client) or not banData then return end
             local reason = banData.reason or L("genericReason")
             client:Kick(L("banMessage", 0, reason))
@@ -457,7 +457,7 @@ function GM:PlayerInitialSpawn(client)
         client:setLiliaData("lastIP", address)
         lia.db.updateTable({
             lastIP = address
-        }, nil, "players", "steamID = " .. client:SteamID())
+        }, nil, "players", "steamID = " .. lia.db.convertDataType(client:SteamID()))
 
         net.Start("liaDataSync")
         net.WriteTable(data)
@@ -990,7 +990,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.administrator.groups[usergroup] then
                 target:SetUserGroup(usergroup)
-                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), target:SteamID()))
+                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), lia.db.convertDataType(target:SteamID())))
             else
                 MsgC(Color(200, 20, 20), L("consoleUsergroupNotFound") .. "\n")
             end
@@ -1095,5 +1095,5 @@ end)
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin("[UNBAN] " .. data.networkid .. " was unbanned.")
     local steam64 = util.SteamIDTo64(data.networkid)
-    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steam64)
+    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steam64))
 end)
