@@ -1,13 +1,10 @@
 if SERVER then
     util.AddNetworkString("OpenPKViewer")
     util.AddNetworkString("SubmitPKCase")
-
     lia.command.add("charkill", {
         superAdminOnly = true,
         privilege = "Manage Characters",
-        onRun = function(client)
-            netstream.Start(client, "OpenPKMenu", false)
-        end
+        onRun = function(client) netstream.Start(client, "OpenPKMenu", false) end
     })
 
     lia.command.add("viewpermakills", {
@@ -25,7 +22,6 @@ if SERVER then
     net.Receive("SubmitPKCase", function(_, client)
         local data = net.ReadTable()
         local isCharBan = net.ReadBool()
-
         lia.db.insertTable({
             player = data.player,
             reason = data.reason,
@@ -61,7 +57,6 @@ else
         frame:SetTitle("PK Active Menu")
         frame:Center()
         frame:MakePopup()
-
         local elementWidth, elementHeight = 550, 25
         local function setTransparentStyle(element)
             element:SetTextColor(Color(255, 255, 255))
@@ -80,7 +75,6 @@ else
         playerSearch:SetPos(20, 50)
         playerSearch:SetSize(elementWidth, elementHeight)
         playerSearch:SetPlaceholderText("Search for player...")
-
         local allPlayers = {}
         for _, ply in ipairs(player.GetAll()) do
             allPlayers[#allPlayers + 1] = {
@@ -93,33 +87,25 @@ else
         playerDropdown:SetPos(20, 80)
         playerDropdown:SetSize(elementWidth, elementHeight)
         playerDropdown:SetValue("Select Player")
-
         local function updatePlayerList(filter)
             playerDropdown:Clear()
             for _, data in ipairs(allPlayers) do
-                if filter == "" or string.find(string.lower(data.name), string.lower(filter)) then
-                    playerDropdown:AddChoice(data.name, data.steamid)
-                end
+                if filter == "" or string.find(string.lower(data.name), string.lower(filter)) then playerDropdown:AddChoice(data.name, data.steamid) end
             end
         end
 
         updatePlayerList("")
-        playerSearch.OnChange = function(self)
-            updatePlayerList(self:GetValue())
-        end
-
+        playerSearch.OnChange = function(self) updatePlayerList(self:GetValue()) end
         local reasonBox = vgui.Create("DTextEntry", frame)
         reasonBox:SetPos(20, 130)
         reasonBox:SetSize(elementWidth, 50)
         reasonBox:SetPlaceholderText("Enter the reason...")
         setTransparentStyle(reasonBox)
-
         local evidenceBox = vgui.Create("DTextEntry", frame)
         evidenceBox:SetPos(20, 180)
         evidenceBox:SetSize(elementWidth, 50)
         evidenceBox:SetPlaceholderText("Paste evidence links or text...")
         setTransparentStyle(evidenceBox)
-
         local submitButton = vgui.Create("DButton", frame)
         submitButton:SetPos(20, 300)
         submitButton:SetSize(elementWidth, 50)
@@ -134,7 +120,6 @@ else
             local selectedPlayer, steamID = playerDropdown:GetSelected()
             local reason = reasonBox:GetText()
             local evidence = evidenceBox:GetText()
-
             if not (selectedPlayer and reason ~= "" and evidence ~= "") then
                 LocalPlayer():ChatPrint("All fields are required.")
                 return
@@ -160,31 +145,23 @@ else
         frame:SetTitle("View PK Cases")
         frame:Center()
         frame:MakePopup()
-
         local searchBox = vgui.Create("DTextEntry", frame)
         searchBox:SetSize(280, 25)
         searchBox:SetPos(10, 30)
         searchBox:SetPlaceholderText("Search by player name...")
-
         local caseList = vgui.Create("DListView", frame)
         caseList:SetSize(280, 300)
         caseList:SetPos(10, 60)
         caseList:AddColumn("Player")
-
         local function updateCaseList(filter)
             caseList:Clear()
             for _, c in ipairs(cases) do
-                if string.match(c.player:lower(), filter:lower()) then
-                    caseList:AddLine(c.player)
-                end
+                if string.match(c.player:lower(), filter:lower()) then caseList:AddLine(c.player) end
             end
         end
 
         updateCaseList("")
-        searchBox.OnChange = function()
-            updateCaseList(searchBox:GetText())
-        end
-
+        searchBox.OnChange = function() updateCaseList(searchBox:GetText()) end
         caseList.OnRowSelected = function(_, _, line)
             local sel = line:GetColumnText(1)
             local detail
@@ -201,7 +178,6 @@ else
                 df:SetTitle("PK Case Details")
                 df:Center()
                 df:MakePopup()
-
                 local y = 30
                 local function makeButton(txt, yOff, clip)
                     local btn = vgui.Create("DButton", df)
@@ -210,9 +186,7 @@ else
                     btn:SetText(txt)
                     btn:SetCursor("hand")
                     btn:SetTextColor(Color(255, 255, 255))
-                    btn.DoClick = function()
-                        SetClipboardText(clip)
-                    end
+                    btn.DoClick = function() SetClipboardText(clip) end
                     return btn
                 end
 
@@ -233,14 +207,14 @@ else
         end
     end
 
-    net.Receive("PK_Screen", function(len)
+    net.Receive("PK_Screen", function()
         local name = net.ReadString()
         local dob = net.ReadString()
         local age = net.ReadInt(32)
         local occupation = net.ReadString()
         local placeOfBirth = net.ReadString()
         local playersMoney = net.ReadInt(32)
-        local moneyStatus = "Unknown"
+        local moneyStatus
         if playersMoney >= 250000 then
             moneyStatus = "Wealthy"
         elseif playersMoney > 50000 then
@@ -291,15 +265,11 @@ else
         end)
 
         PlayPKMusic()
-        timer.Simple(15, function()
-            hook.Remove("HUDPaint", "PK")
-        end)
+        timer.Simple(15, function() hook.Remove("HUDPaint", "PK") end)
     end)
 
-    net.Receive("PK_Notice", function(len)
+    net.Receive("PK_Notice", function()
         local characterName = net.ReadString()
-        Derma_Query("Your character: " .. characterName .. ", has been permanently killed. An administrator has approved this PK.\nIf you believe this PK is unfair, see the options below.\nPKs are a regular part of RP; you can always make a new character. Have fun!", "Permanent Kill", "I accept this PK.", function() end, "I don't accept this PK.", function()
-            Derma_Query("Contact our Support Team if needed.", "Contact Staff", "Contact Staff VIA Discord", function() gui.OpenURL("https://discord.gg/AeBGuZ6agC") end, "Nevermind, Close", function() end)
-        end)
+        Derma_Query("Your character: " .. characterName .. ", has been permanently killed. An administrator has approved this PK.\nIf you believe this PK is unfair, see the options below.\nPKs are a regular part of RP; you can always make a new character. Have fun!", "Permanent Kill", "I accept this PK.", function() end, "I don't accept this PK.", function() Derma_Query("Contact our Support Team if needed.", "Contact Staff", "Contact Staff VIA Discord", function() gui.OpenURL("https://discord.gg/AeBGuZ6agC") end, "Nevermind, Close", function() end) end)
     end)
 end

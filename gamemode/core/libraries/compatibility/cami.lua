@@ -1,4 +1,4 @@
-local function defaultAccessHandler(actor, privilege, callback, target, extra)
+local function defaultAccessHandler(actor, privilege, callback, _, extra)
     local grp = "user"
     if IsValid(actor) then
         if actor.getUserGroup then
@@ -8,7 +8,7 @@ local function defaultAccessHandler(actor, privilege, callback, target, extra)
         end
     end
 
-    local allow = false
+    local allow
     if tostring(grp):lower() == "superadmin" then
         allow = true
     else

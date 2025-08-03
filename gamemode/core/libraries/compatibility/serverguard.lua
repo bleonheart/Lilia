@@ -38,7 +38,7 @@ function serverguard.permission:Add(identifier, priv)
             end
         end
     elseif istable(identifier) then
-        for k, v in pairs(identifier) do
+        for _, v in pairs(identifier) do
             if type(v) == "string" then self:Add(v) end
         end
     end

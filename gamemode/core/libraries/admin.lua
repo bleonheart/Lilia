@@ -721,7 +721,7 @@ else
             local boxSize = 28
             local rightOffset = 12
             chk:SetSize(boxSize, boxSize)
-            row.PerformLayout = function(self, w, h) chk:SetPos(w - boxSize - rightOffset, (h - boxSize) / 2) end
+            row.PerformLayout = function(_, w, h) chk:SetPos(w - boxSize - rightOffset, (h - boxSize) / 2) end
             chk:SetChecked(current[name] and true or false)
             if editable then
                 chk.OnChange = function(_, v)
