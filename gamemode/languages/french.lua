@@ -1322,6 +1322,7 @@ LANGUAGE = {
     characterInformation = "Character Information",
     kickConfirm = "Are you sure you want to kick this player?",
     confirm = "Confirm",
+    firstJoin = "Première connexion",
     lastOnline = "Last Online",
     hoursPlayed = "Hours Played",
     banCharacter = "Ban Character",
