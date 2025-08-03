@@ -6,72 +6,72 @@ MODULE.Privileges = {
     {
         Name = L("canBypassCharacterLock"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryStaffManagement"),
     },
     {
         Name = L("canGrabWorldProps"),
         MinAccess = "superadmin",
-        Category = L("categoryPhysgun"),
+        Category = L("categoryStaffPhysgun"),
     },
     {
         Name = L("canGrabPlayers"),
         MinAccess = "superadmin",
-        Category = L("categoryPhysgun"),
+        Category = L("categoryStaffPhysgun"),
     },
     {
         Name = L("physgunPickup"),
         MinAccess = "admin",
-        Category = L("categoryPhysgun"),
+        Category = L("categoryStaffPhysgun"),
     },
     {
         Name = L("canAccessItemInformations"),
         MinAccess = "superadmin",
-        Category = L("categoryItems"),
+        Category = L("categoryStaffItems"),
     },
     {
         Name = L("physgunPickupRestrictedEntities"),
         MinAccess = "superadmin",
-        Category = L("categoryPhysgun"),
+        Category = L("categoryStaffPhysgun"),
     },
     {
         Name = L("physgunPickupVehicles"),
         MinAccess = "admin",
-        Category = L("categoryPhysgun"),
+        Category = L("categoryStaffPhysgun"),
     },
     {
         Name = L("cantBeGrabbedPhysgun"),
         MinAccess = "superadmin",
-        Category = L("categoryProtection"),
+        Category = L("categoryStaffProtection"),
     },
     {
         Name = L("canPhysgunReload"),
         MinAccess = "superadmin",
-        Category = L("categoryPhysgun"),
+        Category = L("categoryStaffPhysgun"),
     },
     {
         Name = L("noClipOutsideStaff"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryStaffMovement"),
     },
     {
         Name = L("noClipESPOffsetStaff"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryStaffMovement"),
     },
     {
         Name = L("canPropertyWorldEntities"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryStaffManagement"),
     },
     {
         Name = L("manageVehicleBlacklist"),
         MinAccess = "superadmin",
-        Category = L("categoryBlacklisting"),
+        Category = L("categoryStaffBlacklisting"),
     },
     {
         Name = L("manageEntityBlacklist"),
         MinAccess = "superadmin",
-        Category = L("categoryBlacklisting"),
+        Category = L("categoryStaffBlacklisting"),
     },
     {
         Name = L("canSpawnRagdolls"),
@@ -131,26 +131,26 @@ MODULE.Privileges = {
     {
         Name = L("usergroupStaff"),
         MinAccess = "admin",
-        Category = L("categoryUsergroups"),
+        Category = L("categoryStaffUsergroups"),
     },
     {
         Name = L("usergroupVIP"),
         MinAccess = "superadmin",
-        Category = L("categoryUsergroups"),
+        Category = L("categoryStaffUsergroups"),
     },
     {
         Name = L("listEntities"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryStaffManagement"),
     },
     {
         Name = L("canRemoveBlockedEntities"),
         MinAccess = "admin",
-        Category = L("categoryBlacklisting"),
+        Category = L("categoryStaffBlacklisting"),
     },
     {
         Name = L("canRemoveWorldEntities"),
         MinAccess = "superadmin",
-        Category = L("categoryManagement"),
+        Category = L("categoryStaffManagement"),
     },
 }

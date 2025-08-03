@@ -6,6 +6,6 @@ MODULE.Privileges = {
     {
         Name = L("canUseItemSpawner"),
         MinAccess = "admin",
-        Category = L("categoryItems"),
+        Category = L("categoryStaffItems"),
     }
 }
