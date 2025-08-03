@@ -69,10 +69,6 @@ if CLIENT then
         })
     end
 else
-    util.AddNetworkString("liaRequestPlayers")
-    util.AddNetworkString("liaAllPlayers")
-    util.AddNetworkString("liaRequestPlayerCharacters")
-    util.AddNetworkString("liaPlayerCharacters")
 
     net.Receive("liaRequestPlayers", function(_, client)
         if not client:IsAdmin() then return end

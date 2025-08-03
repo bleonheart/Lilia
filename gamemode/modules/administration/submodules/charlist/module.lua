@@ -84,7 +84,7 @@ else
                         pnl:Dock(FILL)
                         pnl.Paint = function() end
                         createList(pnl, chars)
-                        local ply = player.GetBySteamID(steamID)
+                        local ply = player.GetBySteamID64(steamID)
                         local title = IsValid(ply) and ply:Nick() or steamID
                         self.sheet:AddSheet(title, pnl)
                     end
