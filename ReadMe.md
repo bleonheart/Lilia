@@ -65,8 +65,8 @@
 * **Interaction Menu**
   Contextual radial options for money, voice and recognition.
 
-* **Administration Tools**
-  Built-in admin menu handles logging, tickets, warns, teleport and spectate. Optional compatibility is available for ULX, ServerGuard, and SAM.
+  * **Administration Tools**
+    Built-in admin menu handles logging, tickets, warns, teleport and spectate. Optional compatibility is available for CAMI, ULX, ServerGuard, and SAM.
 
 * **Performance & Protection**
   Tick monitoring, network profiling and anti-exploit checks.

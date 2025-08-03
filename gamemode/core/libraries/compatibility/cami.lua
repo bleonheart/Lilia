@@ -1,4 +1,25 @@
-local function defaultAccessHandler(actor, privilege, callback, target, extra)
+local function getGroupLevel(group)
+    local levels = lia.administrator.DefaultGroups or {}
+    if levels[group] then return levels[group] end
+    local visited, current = {}, group
+    for _ = 1, 16 do
+        if visited[current] then break end
+        visited[current] = true
+        local g = lia.administrator.groups and lia.administrator.groups[current]
+        local inh = g and g._info and g._info.inheritance or "user"
+        if levels[inh] then return levels[inh] end
+        current = inh
+    end
+    return levels.user or 1
+end
+
+local function shouldGrant(group, min)
+    local levels = lia.administrator.DefaultGroups or {}
+    local m = tostring(min or "user"):lower()
+    return getGroupLevel(group) >= (levels[m] or 1)
+end
+
+local function defaultAccessHandler(actor, privilege, callback, _target, extra)
     local grp = "user"
     if IsValid(actor) then
         if actor.getUserGroup then
@@ -107,21 +128,23 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaAdminPrivRemoved", function(priv)
     lia.admin(string.format("[CAMI] OnPrivilegeUnregistered: %s", name))
 end)
 
-hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, old, new, source)
-    if not IsValid(ply) then return end
-    local newGroup = tostring(new or "user")
-    if tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
-    lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
-    lia.admin(string.format("[CAMI] PlayerUsergroupChanged: %s (%s) %s -> %s (source=%s)", ply:Nick(), ply:SteamID(), tostring(old or "user"), newGroup, tostring(source)))
-end)
+if SERVER then
+    hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, old, new, source)
+        if not IsValid(ply) then return end
+        local newGroup = tostring(new or "user")
+        if tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), ply:SteamID64()))
+        lia.admin(string.format("[CAMI] PlayerUsergroupChanged: %s (%s) %s -> %s (source=%s)", ply:Nick(), ply:SteamID(), tostring(old or "user"), newGroup, tostring(source)))
+    end)
 
-hook.Add("CAMI.SteamIDUsergroupChanged", "liaAdminSIDUGChanged", function(steamId, old, new, source)
-    local sid = tostring(steamId or "")
-    if sid == "" then return end
-    local newGroup = tostring(new or "user")
-    local ply = player.GetBySteamID and player.GetBySteamID(sid)
-    if IsValid(ply) and tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
-    local steam64 = util.SteamIDTo64(sid)
-    lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), steam64))
-    lia.admin(string.format("[CAMI] SteamIDUsergroupChanged: %s %s -> %s (source=%s)", sid, tostring(old or "user"), newGroup, tostring(source)))
-end)
+    hook.Add("CAMI.SteamIDUsergroupChanged", "liaAdminSIDUGChanged", function(steamId, old, new, source)
+        local sid = tostring(steamId or "")
+        if sid == "" then return end
+        local newGroup = tostring(new or "user")
+        local ply = player.GetBySteamID and player.GetBySteamID(sid)
+        if IsValid(ply) and tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
+        local steam64 = util.SteamIDTo64(sid)
+        lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), steam64))
+        lia.admin(string.format("[CAMI] SteamIDUsergroupChanged: %s %s -> %s (source=%s)", sid, tostring(old or "user"), newGroup, tostring(source)))
+    end)
+end
