@@ -26,7 +26,7 @@ function GM:PlayerLoadedChar(client, character)
     }, nil, "characters", "id = " .. character:getID())
 
     client:removeRagdoll()
-    character:setData("loginTime", os.time())
+    character:setLoginTime(os.time())
     hook.Run("PlayerLoadout", client)
     local ammoTable = character:getAmmo()
     if table.IsEmpty(ammoTable) then return end
@@ -330,13 +330,13 @@ function GM:PostPlayerLoadout(client)
     if not character then return end
     client:Give("lia_hands")
     client:SetupHands()
-    for k, v in pairs(character:getData("groups", {})) do
+    for k, v in pairs(character:getBodygroups()) do
         local index = tonumber(k)
         local value = tonumber(v) or 0
         if index then client:SetBodygroup(index, value) end
     end
 
-    client:SetSkin(character:getData("skin", 0))
+    client:SetSkin(character:getSkin())
     client:setNetVar("VoiceType", "Talking")
 end
 

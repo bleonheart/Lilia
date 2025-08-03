@@ -54,8 +54,7 @@ function MODULE:PlayerLoadedChar(client, character)
         character:setData("factionKickWarn", nil)
     end
 
-    local data = character:getData("pclass")
-    local class = data and lia.class.list[data]
+    local class = lia.class.list[character:getClass()]
     if character then
         if class and client:Team() == class.faction then
             local oldClass = character:getClass()
