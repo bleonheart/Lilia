@@ -57,17 +57,17 @@ else
         local cases = net.ReadTable()
         local frame = vgui.Create("DFrame")
         frame:SetSize(300, 400)
-        frame:SetTitle("View PK Cases")
+        frame:SetTitle(L("viewPKCases"))
         frame:Center()
         frame:MakePopup()
         local searchBox = vgui.Create("DTextEntry", frame)
         searchBox:SetSize(280, 25)
         searchBox:SetPos(10, 30)
-        searchBox:SetPlaceholderText("Search by player name...")
+        searchBox:SetPlaceholderText(L("searchByPlayerName"))
         local caseList = vgui.Create("DListView", frame)
         caseList:SetSize(280, 300)
         caseList:SetPos(10, 60)
-        caseList:AddColumn("Player")
+        caseList:AddColumn(L("player"))
         local function updateCaseList(filter)
             caseList:Clear()
             for _, c in ipairs(cases) do
@@ -90,7 +90,7 @@ else
             if detail then
                 local df = vgui.Create("DFrame")
                 df:SetSize(400, 400)
-                df:SetTitle("PK Case Details")
+                df:SetTitle(L("pkCaseDetails"))
                 df:Center()
                 df:MakePopup()
                 local y = 30
@@ -105,19 +105,19 @@ else
                     return btn
                 end
 
-                makeButton("Player: " .. detail.player, y, detail.player)
+                makeButton(L("player") .. ": " .. detail.player, y, detail.player)
                 y = y + 25
-                makeButton("SteamID: " .. detail.steamID, y, detail.steamID)
+                makeButton(L("steamID") .. ": " .. detail.steamID, y, detail.steamID)
                 y = y + 25
-                makeButton("Reason: " .. detail.reason, y, detail.reason)
+                makeButton(L("reason") .. ": " .. detail.reason, y, detail.reason)
                 y = y + 25
-                makeButton("Evidence: " .. detail.evidence, y, detail.evidence)
+                makeButton(L("evidence") .. ": " .. detail.evidence, y, detail.evidence)
                 y = y + 25
-                makeButton("Submitter: " .. detail.submitterName, y, detail.submitterName)
+                makeButton(L("submitter") .. ": " .. detail.submitterName, y, detail.submitterName)
                 y = y + 25
-                makeButton("Submitter SteamID: " .. detail.submitterSteamID, y, detail.submitterSteamID)
+                makeButton(L("submitterSteamID") .. ": " .. detail.submitterSteamID, y, detail.submitterSteamID)
                 y = y + 25
-                makeButton("Timestamp: " .. os.date("%c", detail.timestamp), y, os.date("%c", detail.timestamp))
+                makeButton(L("timestamp") .. ": " .. os.date("%c", detail.timestamp), y, os.date("%c", detail.timestamp))
             end
         end
     end)
@@ -126,7 +126,7 @@ else
         local isCharBan = net.ReadBool()
         local frame = vgui.Create("DFrame")
         frame:SetSize(600, 400)
-        frame:SetTitle("PK Active Menu")
+        frame:SetTitle(L("pkActiveMenu"))
         frame:Center()
         frame:MakePopup()
         local elementWidth, elementHeight = 550, 25
@@ -154,7 +154,7 @@ else
         local playerDropdown = vgui.Create("DComboBox", frame)
         playerDropdown:SetPos(20, 50)
         playerDropdown:SetSize(elementWidth, elementHeight)
-        playerDropdown:SetValue("Select Player")
+        playerDropdown:SetValue(L("selectPlayer"))
         for _, data in ipairs(allPlayers) do
             playerDropdown:AddChoice(data.name, data.steamid)
         end
@@ -162,17 +162,17 @@ else
         local reasonBox = vgui.Create("DTextEntry", frame)
         reasonBox:SetPos(20, 100)
         reasonBox:SetSize(elementWidth, 50)
-        reasonBox:SetPlaceholderText("Enter the reason...")
+        reasonBox:SetPlaceholderText(L("enterReason"))
         setTransparentStyle(reasonBox)
         local evidenceBox = vgui.Create("DTextEntry", frame)
         evidenceBox:SetPos(20, 160)
         evidenceBox:SetSize(elementWidth, 50)
-        evidenceBox:SetPlaceholderText("Paste evidence links or text...")
+        evidenceBox:SetPlaceholderText(L("enterEvidence"))
         setTransparentStyle(evidenceBox)
         local submitButton = vgui.Create("DButton", frame)
         submitButton:SetPos(20, 250)
         submitButton:SetSize(elementWidth, 50)
-        submitButton:SetText("Submit PK Case")
+        submitButton:SetText(L("submitPKCase"))
         submitButton.Paint = function(self, w, h)
             surface.SetDrawColor(50, 50, 50, 200)
             surface.DrawRect(0, 0, w, h)
@@ -184,7 +184,7 @@ else
             local reason = reasonBox:GetText()
             local evidence = evidenceBox:GetText()
             if not (selectedName and steamID and reason ~= "" and evidence ~= "") then
-                LocalPlayer():ChatPrint("All fields are required.")
+                LocalPlayer():ChatPrint(L("allFieldsRequired"))
                 return
             end
 
