@@ -125,7 +125,13 @@ else
                         search:SetTextColor(Color(255, 255, 255))
                         local list = container:Add("DListView")
                         list:Dock(FILL)
-                        for _, col in ipairs(columns) do list:AddColumn(col.name) end
+                        local steamIDColumnIndex
+                        for i, col in ipairs(columns) do
+                            list:AddColumn(col.name)
+                            if col.field == "SteamID" then
+                                steamIDColumnIndex = i
+                            end
+                        end
 
                         local function populate(filter)
                             list:Clear()
@@ -158,6 +164,11 @@ else
                         function list:OnRowRightClick(_, line)
                             if not IsValid(line) then return end
                             local menu = DermaMenu()
+                            if steamIDColumnIndex then
+                                menu:AddOption(L("copySteamID"), function()
+                                    SetClipboardText(line:GetColumnText(steamIDColumnIndex) or "")
+                                end):SetIcon("icon16/page_copy.png")
+                            end
                             menu:AddOption(L("copyRow"), function()
                                 local rowString = ""
                                 for i, column in ipairs(self.Columns or {}) do
