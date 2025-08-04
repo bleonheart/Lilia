@@ -459,6 +459,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
             net.Start("liaModifyFlags")
             net.WriteString(tgt:SteamID())
             net.WriteString(text)
+            net.WriteBool(false)
             net.SendToServer()
         end)
         AdminStickIsOpen = false
