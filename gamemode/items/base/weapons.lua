@@ -136,7 +136,7 @@ if CLIENT then
     function ITEM:getName()
         local weapon = weapons.GetStored(self.class)
         if weapon and weapon.GetPrintName then
-            return language.GetPhrase(weapon:GetPrintName()):utf8upper()
+            return language.GetPhrase(weapon:GetPrintName())
         end
         return L(self.name)
     end
