@@ -30,7 +30,7 @@ function MODULE:HUDPaint()
             baseColor = lia.config.get("espItemsColor") or Color(255, 255, 255)
         elseif lia.option.get("espEntities", false) and ent:GetClass():StartWith("lia_") then
             kind = "Entities"
-            label = ent.PrintName and ent.PrintName or ent:GetClass()
+            label = ent.PrintName or ent:GetClass()
             baseColor = lia.config.get("espEntitiesColor") or Color(255, 255, 255)
         end
 
@@ -42,17 +42,18 @@ function MODULE:HUDPaint()
         draw.SimpleTextOutlined(label, "liaMediumFont", screenPos.x, screenPos.y, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
         if subLabel and subLabel ~= label then draw.SimpleTextOutlined(subLabel, "liaMediumFont", screenPos.x, screenPos.y + textHeight, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200)) end
         if kind == "Players" then
-            local barW, barH = 100, 14
+            local barW, barH = 100, 22
             local barX = screenPos.x - barW / 2
             local barY = screenPos.y + textHeight + 5
-            -- Health bar
             surface.SetDrawColor(0, 0, 0, 255)
             surface.DrawRect(barX, barY, barW, barH)
             local hpFrac = math.Clamp(ent:Health() / ent:GetMaxHealth(), 0, 1)
             surface.SetDrawColor(183, 8, 0, 255)
             surface.DrawRect(barX + 2, barY + 2, (barW - 4) * hpFrac, barH - 4)
-            draw.SimpleTextOutlined(ent:Health(), "liaSmallFont", screenPos.x, barY + barH / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
-            -- Armor bar
+            surface.SetFont("liaSmallFont")
+            local healthX = barX + barW / 2
+            local healthY = barY + barH / 2
+            draw.SimpleTextOutlined(ent:Health(), "liaSmallFont", healthX, healthY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
             if ent:Armor() > 0 then
                 barY = barY + barH + 5
                 surface.SetDrawColor(0, 0, 0, 255)
@@ -60,10 +61,11 @@ function MODULE:HUDPaint()
                 local armorFrac = math.Clamp(ent:Armor() / 100, 0, 1)
                 surface.SetDrawColor(0, 0, 255, 255)
                 surface.DrawRect(barX + 2, barY + 2, (barW - 4) * armorFrac, barH - 4)
-                draw.SimpleTextOutlined(ent:Armor(), "liaSmallFont", screenPos.x, barY + barH / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
+                local armorX = barX + barW / 2
+                local armorY = barY + barH / 2
+                draw.SimpleTextOutlined(ent:Armor(), "liaSmallFont", armorX, armorY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
             end
 
-            -- Weapon info
             local wep = ent:GetActiveWeapon()
             if IsValid(wep) then
                 local ammo, reserve = wep:Clip1(), ent:GetAmmoCount(wep:GetPrimaryAmmoType())
