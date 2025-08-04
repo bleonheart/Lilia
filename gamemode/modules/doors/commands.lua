@@ -4,6 +4,8 @@ lia.command.add("doorsell", {
     adminOnly = false,
     AdminStick = {
         Name = "adminStickDoorSellName",
+        Category = "doorManagement",
+        SubCategory = "doorActions",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -31,6 +33,8 @@ lia.command.add("admindoorsell", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickAdminDoorSellName",
+        Category = "doorManagement",
+        SubCategory = "doorActions",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -60,6 +64,8 @@ lia.command.add("doortogglelock", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickToggleDoorLockName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -98,6 +104,8 @@ lia.command.add("doorbuy", {
     adminOnly = false,
     AdminStick = {
         Name = "buyDoor",
+        Category = "doorManagement",
+        SubCategory = "doorActions",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -142,6 +150,8 @@ lia.command.add("doortoggleownable", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickToggleDoorOwnableName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -166,6 +176,8 @@ lia.command.add("doorresetdata", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickResetDoorDataName",
+        Category = "doorManagement",
+        SubCategory = "doorMaintenance",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -194,6 +206,8 @@ lia.command.add("doortoggleenabled", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickToggleDoorEnabledName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -218,6 +232,8 @@ lia.command.add("doortogglehidden", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickToggleDoorHiddenName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -243,6 +259,8 @@ lia.command.add("doorsetprice", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickSetDoorPriceName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
         TargetClass = "Door"
     },
     onRun = function(client, arguments)
@@ -268,6 +286,8 @@ lia.command.add("doorsettitle", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickSetDoorTitleName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
         TargetClass = "Door"
     },
     onRun = function(client, arguments)
@@ -298,6 +318,8 @@ lia.command.add("savedoors", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickSaveDoorsName",
+        Category = "doorManagement",
+        SubCategory = "doorMaintenance",
         TargetClass = "Door"
     },
     onRun = function(client)
@@ -313,6 +335,8 @@ lia.command.add("doorinfo", {
     privilege = "Manage Doors",
     AdminStick = {
         Name = "adminStickDoorInfoName",
+        Category = "doorManagement",
+        SubCategory = "doorInformation",
         TargetClass = "Door"
     },
     onRun = function(client)
