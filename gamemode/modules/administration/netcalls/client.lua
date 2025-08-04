@@ -294,7 +294,6 @@ net.Receive("managesitrooms", function()
     end
 end)
 
-local panelRef
 net.Receive("liaAllPKs", function()
     local cases = net.ReadTable() or {}
     if not IsValid(panelRef) then return end
@@ -357,7 +356,6 @@ net.Receive("liaAllPKs", function()
     end
 end)
 
-local rosterPanel
 local charMenuContext
 local function requestPlayerCharacters(steamID, line, buildMenu)
     charMenuContext = {
@@ -539,7 +537,6 @@ lia.net.readBigTable("liaPlayerCharacters", function(data)
     charMenuContext = nil
 end)
 
-local panelRef
 local function deserializeFallback(raw)
     if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
     if istable(raw) then return raw end
@@ -625,7 +622,6 @@ local function openDecodedTable(tableName, columns, data)
 end
 
 lia.net.readBigTable("liaDatabaseViewData", function(data) if IsValid(panelRef) then panelRef:buildSheets(data) end end)
-local panelRef
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:Clear()
@@ -697,7 +693,6 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     end
 end)
 
-local panelRef
 local charMenuContext
 local function requestPlayerCharacters(steamID, line, buildMenu)
     charMenuContext = {
@@ -821,7 +816,6 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     end
 end)
 
-local panelRef
 lia.net.readBigTable("liaFullCharList", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:buildSheets(data)
