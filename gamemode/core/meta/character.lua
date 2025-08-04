@@ -52,15 +52,11 @@ function characterMeta:hasMoney(amount)
     return self:getMoney() >= amount
 end
 
-function characterMeta:getFlags()
-    local ply = self:getPlayer()
-    if IsValid(ply) then return ply:getFlags() end
-    return ""
-end
-
-function characterMeta:hasFlags(flags)
-    local ply = self:getPlayer()
-    if IsValid(ply) then return ply:hasFlags(flags) end
+function characterMeta:hasFlags(flagStr)
+    local flags = self:getFlags()
+    for i = 1, #flagStr do
+        if flags:find(flagStr:sub(i, i), 1, true) then return true end
+    end
     return false
 end
 
@@ -345,19 +341,62 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
+    local charSetFlags = characterMeta.setFlags
+
     function characterMeta:setFlags(flags)
+        local oldFlags = self:getFlags()
+        charSetFlags(self, flags)
         local ply = self:getPlayer()
-        if IsValid(ply) then ply:setFlags(flags) end
+        if not IsValid(ply) then return end
+        -- handle removed flags
+        for i = 1, #oldFlags do
+            local flag = oldFlags:sub(i, i)
+            if not flags:find(flag, 1, true) and not ply:getPlayerFlags():find(flag, 1, true) then
+                local info = lia.flag.list[flag]
+                if info and info.callback then info.callback(ply, false) end
+            end
+        end
+        -- handle added flags
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            if not oldFlags:find(flag, 1, true) then
+                local info = lia.flag.list[flag]
+                if info and info.callback then info.callback(ply, true) end
+            end
+        end
     end
 
     function characterMeta:giveFlags(flags)
+        local addedFlags = ""
         local ply = self:getPlayer()
-        if IsValid(ply) then ply:giveFlags(flags) end
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            if not self:hasFlags(flag) then
+                addedFlags = addedFlags .. flag
+                local info = lia.flag.list[flag]
+                if info and info.callback and IsValid(ply) then info.callback(ply, true) end
+            end
+        end
+
+        if addedFlags ~= "" then charSetFlags(self, self:getFlags() .. addedFlags) end
     end
 
     function characterMeta:takeFlags(flags)
+        local oldFlags = self:getFlags()
+        local newFlags = oldFlags
         local ply = self:getPlayer()
-        if IsValid(ply) then ply:takeFlags(flags) end
+        for i = 1, #flags do
+            local flag = flags:sub(i, i)
+            local info = lia.flag.list[flag]
+            if info and info.callback and IsValid(ply) then
+                -- only run callback if player doesn't have this flag globally
+                local hasOther = ply:getPlayerFlags():find(flag, 1, true)
+                if not hasOther then info.callback(ply, false) end
+            end
+            newFlags = newFlags:gsub(flag, "")
+        end
+
+        if newFlags ~= oldFlags then charSetFlags(self, newFlags) end
     end
 
     function characterMeta:save(callback)

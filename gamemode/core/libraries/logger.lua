@@ -463,6 +463,22 @@ lia.log.types = {
         func = function(client, targetName) return string.format("Admin '%s' removed all flags from %s.", client:Name(), targetName) end,
         category = "Admin"
     },
+    ["playerFlagGive"] = {
+        func = function(client, targetName, flags) return string.format("Admin '%s' gave player flags '%s' to %s.", client:Name(), flags, targetName) end,
+        category = "Admin",
+    },
+    ["playerFlagGiveAll"] = {
+        func = function(client, targetName) return string.format("Admin '%s' gave all player flags to %s.", client:Name(), targetName) end,
+        category = "Admin",
+    },
+    ["playerFlagTake"] = {
+        func = function(client, targetName, flags) return string.format("Admin '%s' took player flags '%s' from %s.", client:Name(), flags, targetName) end,
+        category = "Admin",
+    },
+    ["playerFlagTakeAll"] = {
+        func = function(client, targetName) return string.format("Admin '%s' removed all player flags from %s.", client:Name(), targetName) end,
+        category = "Admin",
+    },
     ["voiceToggle"] = {
         func = function(client, targetName, state) return string.format("Admin '%s' toggled voice ban for %s: %s.", client:Name(), targetName, state) end,
         category = "Admin"

@@ -478,15 +478,17 @@ lia.net.readBigTable("liaAllFlags", function(data)
 
     addSizedColumn(L("name"))
     addSizedColumn(L("steamID"))
-    addSizedColumn(L("flags"))
+    addSizedColumn(L("charFlagsTitle"))
+    addSizedColumn(L("playerFlagsTitle"))
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")
         for _, entry in ipairs(data or {}) do
             local name = entry.name or ""
             local steamID = entry.steamID or ""
-            local flags = entry.flags or ""
-            if filter == "" or name:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or flags:lower():find(filter, 1, true) then list:AddLine(name, steamID, flags) end
+            local cFlags = entry.flags or ""
+            local pFlags = entry.playerFlags or ""
+            if filter == "" or name:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or cFlags:lower():find(filter, 1, true) or pFlags:lower():find(filter, 1, true) then list:AddLine(name, steamID, cFlags, pFlags) end
         end
     end
 
@@ -506,18 +508,33 @@ lia.net.readBigTable("liaAllFlags", function(data)
             SetClipboardText(string.sub(rowString, 1, -4))
         end):SetIcon("icon16/page_copy.png")
 
-        menu:AddOption(L("modifyFlags"), function()
+        menu:AddOption(L("modifyCharFlags"), function()
             local steamID = line:GetColumnText(2) or ""
             local currentFlags = line:GetColumnText(3) or ""
-            Derma_StringRequest(L("modifyFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+            Derma_StringRequest(L("modifyCharFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
                 text = string.gsub(text or "", "%s", "")
                 net.Start("liaModifyFlags")
                 net.WriteString(steamID)
                 net.WriteString(text)
+                net.WriteBool(false)
                 net.SendToServer()
                 line:SetColumnText(3, text)
             end)
         end):SetIcon("icon16/flag_orange.png")
+
+        menu:AddOption(L("modifyPlayerFlags"), function()
+            local steamID = line:GetColumnText(2) or ""
+            local currentFlags = line:GetColumnText(4) or ""
+            Derma_StringRequest(L("modifyPlayerFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+                text = string.gsub(text or "", "%s", "")
+                net.Start("liaModifyFlags")
+                net.WriteString(steamID)
+                net.WriteString(text)
+                net.WriteBool(true)
+                net.SendToServer()
+                line:SetColumnText(4, text)
+            end)
+        end):SetIcon("icon16/flag_green.png")
 
         menu:Open()
     end
