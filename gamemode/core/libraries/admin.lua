@@ -200,15 +200,34 @@ function lia.administrator.load()
     local function ensureDefaults(groups)
         local created = false
         for _, grp in ipairs({"user", "admin", "superadmin"}) do
-            if not groups[grp] then
-                groups[grp] = {
+            local data = groups[grp]
+            if not data then
+                data = {
                     _info = {
                         inheritance = "user",
-                        types = {}
+                        types = {},
                     }
                 }
 
+                groups[grp] = data
                 created = true
+            end
+
+            data._info = data._info or {inheritance = "user", types = {}}
+            data._info.types = data._info.types or {}
+            if grp == "admin" or grp == "superadmin" then
+                local hasStaff = false
+                for _, typ in ipairs(data._info.types) do
+                    if tostring(typ):lower() == "staff" then
+                        hasStaff = true
+                        break
+                    end
+                end
+
+                if not hasStaff then
+                    table.insert(data._info.types, "Staff")
+                    created = true
+                end
             end
         end
         return created
