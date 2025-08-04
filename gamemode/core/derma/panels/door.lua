@@ -1,7 +1,7 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self:SetSize(280, 240)
-    self:SetTitle(L("doorSettings"))
+    self:SetTitle(L("door") .. " " .. L("settings"))
     self:Center()
     self:MakePopup()
     self.access = self:Add("DListView")

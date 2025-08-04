@@ -1,12 +1,15 @@
 ﻿local MODULE = MODULE
 AdminStickIsOpen = false
+local playerInfoLabel = L("player") .. " " .. L("information")
+local giveFlagsLabel = L("give") .. " " .. L("flags")
+local takeFlagsLabel = L("take") .. " " .. L("flags")
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
-    playerInformation = "icon16/information.png",
+    [playerInfoLabel] = "icon16/information.png",
     characterManagement = "icon16/user_gray.png",
     flagsManagement = "icon16/flag_blue.png",
-    giveFlagsMenu = "icon16/flag_blue.png",
-    takeFlagsMenu = "icon16/flag_red.png",
+    [giveFlagsLabel] = "icon16/flag_blue.png",
+    [takeFlagsLabel] = "icon16/flag_red.png",
 }
 
 local function GetOrCreateSubMenu(parent, name, store)
@@ -413,8 +416,8 @@ local function IncludeFlagManagement(tgt, menu, stores)
     if not cl:hasPrivilege("Manage Flags") then return end
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local fm = GetOrCreateSubMenu(charMenu, "flagsManagement", stores)
-    local give = GetOrCreateSubMenu(fm, "giveFlagsMenu", stores)
-    local take = GetOrCreateSubMenu(fm, "takeFlagsMenu", stores)
+    local give = GetOrCreateSubMenu(fm, giveFlagsLabel, stores)
+    local take = GetOrCreateSubMenu(fm, takeFlagsLabel, stores)
     local toGive, toTake = {}, {}
     for fl in pairs(lia.flag.list) do
         if not tgt:hasFlags(fl) then
@@ -531,7 +534,7 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         table.sort(info, function(a, b) return a.name < b.name end)
-        local pi = GetOrCreateSubMenu(menu, "playerInformation", stores)
+        local pi = GetOrCreateSubMenu(menu, playerInfoLabel, stores)
         for _, o in ipairs(info) do
             pi:AddOption(L(o.name), o.cmd):SetIcon(o.icon)
         end

@@ -149,7 +149,7 @@ function PANEL:createStartButton()
     if hook.Run("CanPlayerCreateChar", client) ~= false then
         table.insert(buttonsData, {
             id = "create",
-            text = L("createCharacter"),
+            text = L("create") .. " " .. L("character"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -494,17 +494,17 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local pad = 10
     local cx = fx + (fw - bw) * 0.5
     local clientChar = LocalPlayer().getChar and LocalPlayer():getChar()
-    local selectKey = "selectCharacter"
+    local selectText = L("select") .. " " .. L("character")
     if clientChar and character:getID() == clientChar:getID() then
-        selectKey = "alreadyUsingCharacter"
+        selectText = L("alreadyUsingCharacter")
     elseif character:isBanned() then
-        selectKey = "permaKilledCharacter"
+        selectText = L("permaKilledCharacter")
     end
 
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
-    self.selectBtn:SetText(L(selectKey))
+    self.selectBtn:SetText(selectText)
     if clientChar and character:getID() == clientChar:getID() then
         self.selectBtn:SetEnabled(false)
         self.selectBtn:SetTextColor(Color(255, 255, 255))
@@ -523,7 +523,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn = self:Add("liaSmallButton")
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
-    self.deleteBtn:SetText(L("deleteCharacter"))
+    self.deleteBtn:SetText(L("delete") .. " " .. L("character"))
     self.deleteBtn.DoClick = function()
         if hook.Run("CanDeleteChar", character:getID()) == false then
             LocalPlayer():notifyLocalized("cannotDeleteChar")

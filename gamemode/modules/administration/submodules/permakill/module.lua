@@ -154,7 +154,7 @@ else
         local playerDropdown = vgui.Create("DComboBox", frame)
         playerDropdown:SetPos(20, 50)
         playerDropdown:SetSize(elementWidth, elementHeight)
-        playerDropdown:SetValue(L("selectPlayer"))
+        playerDropdown:SetValue(L("select") .. " " .. L("player"))
         for _, data in ipairs(allPlayers) do
             playerDropdown:AddChoice(data.name, data.steamid)
         end

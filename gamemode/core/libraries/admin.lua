@@ -651,7 +651,7 @@ else
     end
 
     local function promptCreateGroup()
-        lia.util.requestArguments(L("createGroup"), {
+        lia.util.requestArguments(L("create") .. " " .. L("group"), {
             Name = "string",
             Inheritance = {"table", {"user", "admin", "superadmin"}},
             Staff = "boolean",
@@ -858,12 +858,12 @@ else
             local createBtn = bottom:Add("liaMediumButton")
             local renameBtn = bottom:Add("liaMediumButton")
             local delBtn = bottom:Add("liaMediumButton")
-            createBtn:SetText(L("createGroup"))
-            renameBtn:SetText(L("renameGroup"))
-            delBtn:SetText(L("deleteGroup"))
+            createBtn:SetText(L("create") .. " " .. L("group"))
+            renameBtn:SetText(L("rename") .. " " .. L("group"))
+            delBtn:SetText(L("delete") .. " " .. L("group"))
             createBtn.DoClick = promptCreateGroup
             renameBtn.DoClick = function()
-                Derma_StringRequest(L("renameGroup"), L("renameGroupPrompt", g) .. ":", g, function(txt)
+                Derma_StringRequest(L("rename") .. " " .. L("group"), L("renameGroupPrompt", g) .. ":", g, function(txt)
                     txt = string.Trim(txt or "")
                     if txt ~= "" and txt ~= g then
                         net.Start("liaGroupsRename")
@@ -893,7 +893,7 @@ else
             end
         else
             local addBtn = bottom:Add("liaMediumButton")
-            addBtn:SetText(L("createGroup"))
+            addBtn:SetText(L("create") .. " " .. L("group"))
             addBtn.DoClick = promptCreateGroup
             bottom.PerformLayout = function(_, w, h)
                 addBtn:SetPos(0, 0)
