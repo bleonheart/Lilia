@@ -389,7 +389,7 @@ end
 
 function lia.notifyAdmin(notification)
     for _, client in player.Iterator() do
-        if IsValid(client) and client:hasPrivilege("Can See Alting Notifications") then client:ChatPrint(notification) end
+        if IsValid(client) and client:hasPrivilege("Can See Alting Notifications") then client:notify(notification) end
     end
 end
 

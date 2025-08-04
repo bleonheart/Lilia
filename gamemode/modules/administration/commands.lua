@@ -61,7 +61,7 @@ lia.command.add("adminmode", {
                 client:setNetVar("OldCharID", nil)
                 lia.log.add(client, "adminMode", oldCharID, L("adminModeLogBack"))
             else
-                client:ChatPrint(L("noPrevChar"))
+                client:notify(L("noPrevChar"))
             end
         else
             lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
@@ -77,7 +77,7 @@ lia.command.add("adminmode", {
                     end
                 end
 
-                client:ChatPrint(L("noStaffChar"))
+                client:notify(L("noStaffChar"))
             end)
         end
     end
@@ -1690,7 +1690,7 @@ lia.command.add("freezeallprops", {
         end
 
         client:notifyLocalized("freezeAllProps", target:Name())
-        client:ChatPrint(L("freezeAllPropsCount", count, target:Name()))
+        client:notify(L("freezeAllPropsCount", count, target:Name()))
     end
 })
 
@@ -1763,7 +1763,7 @@ lia.command.add("checkmoney", {
         end
 
         local money = target:getChar():getMoney()
-        client:ChatPrint(L("playerMoney", target:GetName(), lia.currency.get(money)))
+        client:notify(L("playerMoney", target:GetName(), lia.currency.get(money)))
     end
 })
 

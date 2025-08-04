@@ -7,7 +7,7 @@
             name = L("nameCopyFormat", target:Name()),
             image = "icon16/page_copy.png",
             func = function()
-                client:ChatPrint(L("copiedToClipboard", target:Name(), "Name"))
+                client:notify(L("copiedToClipboard", target:Name(), "Name"))
                 SetClipboardText(target:Name())
             end
         },
@@ -16,7 +16,7 @@
             image = "icon16/page_copy.png",
             func = function()
                 if target:getChar() then
-                    client:ChatPrint(L("copiedCharID", target:getChar():getID()))
+                    client:notify(L("copiedCharID", target:getChar():getID()))
                     SetClipboardText(target:getChar():getID())
                 end
             end
@@ -25,7 +25,7 @@
             name = L("steamIDCopyFormat", target:SteamID()),
             image = "icon16/page_copy.png",
             func = function()
-                client:ChatPrint(L("copiedToClipboard", target:Name(), "SteamID"))
+                client:notify(L("copiedToClipboard", target:Name(), "SteamID"))
                 SetClipboardText(target:SteamID())
             end
         },

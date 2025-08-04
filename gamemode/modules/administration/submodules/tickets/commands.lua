@@ -8,7 +8,7 @@ lia.command.add("viewtickets", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:ChatPrint(L("mustSpecifyPlayer"))
+            client:notify(L("mustSpecifyPlayer"))
             return
         end
 
@@ -24,7 +24,7 @@ lia.command.add("viewtickets", {
 
         MODULE:GetTicketsByRequester(steamID):next(function(tickets)
             if #tickets == 0 then
-                client:ChatPrint(L("noTicketsFound"))
+                client:notify(L("noTicketsFound"))
                 return
             end
 
@@ -61,7 +61,7 @@ lia.command.add("plyviewclaims", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:ChatPrint(L("mustSpecifyPlayer"))
+            client:notify(L("mustSpecifyPlayer"))
             return
         end
 
@@ -75,7 +75,7 @@ lia.command.add("plyviewclaims", {
         MODULE:GetAllCaseClaims():next(function(caseclaims)
             local claim = caseclaims[steamID]
             if not claim then
-                client:ChatPrint(L("noClaimsFound"))
+                client:notify(L("noClaimsFound"))
                 return
             end
 
@@ -135,7 +135,7 @@ lia.command.add("viewallclaims", {
     onRun = function(client)
         MODULE:GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
-                client:ChatPrint(L("noClaimsRecorded"))
+                client:notify(L("noClaimsRecorded"))
                 return
             end
 
@@ -196,7 +196,7 @@ lia.command.add("viewclaims", {
     onRun = function(client)
         MODULE:GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
-                client:ChatPrint(L("noClaimsData"))
+                client:notify(L("noClaimsData"))
                 return
             end
 
