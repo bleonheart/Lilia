@@ -590,7 +590,7 @@ lia.command.add("blindfadeall", {
     privilege = "Blind Fade All",
     desc = "blindFadeAllDesc",
     syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-    onRun = function(client, arguments)
+    onRun = function(_, arguments)
         local duration = tonumber(arguments[1]) or 0
         local colorName = (arguments[2] or "black"):lower()
         local fadeIn = tonumber(arguments[3]) or duration * 0.05
