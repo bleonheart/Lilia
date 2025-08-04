@@ -50,10 +50,12 @@ local function OpenRoster(panel, data)
         search.OnChange = function() populate(search:GetValue()) end
         populate("")
         function list:OnRowRightClick(_, line)
-            if not IsValid(line) or not line.rowData or not line.rowData.steamID then return end
+            if not IsValid(line) or not line.rowData then return end
             local parentList = self
-            requestPlayerCharacters(line.rowData.steamID, line, function(menu, ln, steamID, characters)
-                if LocalPlayer():hasPrivilege("Can Manage Factions") then
+            local steamID = line.rowData.steamID
+
+            local function buildMenu(menu, ln, sID)
+                if sID and sID ~= "" and LocalPlayer():hasPrivilege("Can Manage Factions") then
                     menu:AddOption(L("kick"), function()
                         Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                             net.Start("KickCharacter")
@@ -61,9 +63,9 @@ local function OpenRoster(panel, data)
                             net.SendToServer()
                         end, L("no"))
                     end):SetIcon("icon16/user_delete.png")
+                    menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. sID) end):SetIcon("icon16/page_copy.png")
                 end
 
-                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png")
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for i, column in ipairs(parentList.Columns or {}) do
@@ -71,7 +73,6 @@ local function OpenRoster(panel, data)
                         local value = ln:GetColumnText(i) or ""
                         rowString = rowString .. header .. " " .. value .. " | "
                     end
-
                     SetClipboardText(string.sub(rowString, 1, -4))
                 end):SetIcon("icon16/page_copy.png")
 
@@ -80,9 +81,22 @@ local function OpenRoster(panel, data)
                     SetClipboardText(name)
                 end):SetIcon("icon16/page_copy.png")
 
-                menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
-            end)
+                if sID and sID ~= "" then
+                    menu:AddOption(L("copySteamID"), function() SetClipboardText(sID) end):SetIcon("icon16/page_copy.png")
+                    menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(sID)) end):SetIcon("icon16/world.png")
+                end
+            end
+
+            if steamID and steamID ~= "" then
+                requestPlayerCharacters(steamID, line, function(menu, ln, sID)
+                    buildMenu(menu, ln, sID)
+                end)
+            else
+                local menu = DermaMenu()
+                buildMenu(menu, line, steamID or "")
+                local x, y = gui.MousePos()
+                menu:Open(x, y)
+            end
         end
 
         sheet:AddSheet(factionName, page)
