@@ -388,6 +388,8 @@ local function OpenRoster(panel, data)
     sheet:DockMargin(10, 10, 10, 10)
     for factionName, members in pairs(data) do
         local membersData = members
+        local factionTable = lia.util.findFaction(LocalPlayer(), factionName)
+        local isDefaultFaction = factionTable and factionTable.isDefault or false
         local page = sheet:Add("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
@@ -421,7 +423,7 @@ local function OpenRoster(panel, data)
             local parentList = self
             local steamID = line.rowData.steamID
             local function buildMenu(menu, ln, sID)
-                if sID and sID ~= "" and LocalPlayer():hasPrivilege("Can Manage Factions") then
+                if sID and sID ~= "" and LocalPlayer():hasPrivilege("Can Manage Factions") and not isDefaultFaction then
                     menu:AddOption(L("kick"), function()
                         Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                             net.Start("KickCharacter")
