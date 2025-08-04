@@ -1,4 +1,52 @@
 local MODULE = MODULE
+
+lia.command.add("viewtickets", {
+    adminOnly = true,
+    privilege = "View Claims",
+    desc = "viewTicketsDesc",
+    syntax = "[player Name]",
+    onRun = function(client, arguments)
+        local targetName = arguments[1]
+        if not targetName then
+            client:ChatPrint(L("mustSpecifyPlayer"))
+            return
+        end
+
+        local target = lia.util.findPlayer(client, targetName)
+        local steamID, displayName
+        if IsValid(target) then
+            steamID = target:SteamID()
+            displayName = target:Nick()
+        else
+            steamID = targetName
+            displayName = targetName
+        end
+
+        MODULE:GetTicketsByRequester(steamID):next(function(tickets)
+            if #tickets == 0 then
+                client:ChatPrint(L("noTicketsFound"))
+                return
+            end
+
+            local ticketsData = {}
+            for _, ticket in ipairs(tickets) do
+                ticketsData[#ticketsData + 1] = {
+                    timestamp = os.date("%Y-%m-%d %H:%M:%S", ticket.timestamp),
+                    admin = string.format("%s (%s)", ticket.admin or L("na"), ticket.adminSteamID or L("na")),
+                    message = ticket.message or ""
+                }
+            end
+
+            lia.util.CreateTableUI(client, L("ticketsForTitle", displayName), {
+                {name = L("timestamp"), field = "timestamp"},
+                {name = L("admin"), field = "admin"},
+                {name = L("message"), field = "message"}
+            }, ticketsData)
+
+            lia.log.add(client, "viewPlayerTickets", displayName)
+        end)
+    end
+})
 lia.command.add("plyviewclaims", {
     adminOnly = true,
     privilege = "View Claims",

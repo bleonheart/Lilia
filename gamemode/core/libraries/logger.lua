@@ -613,6 +613,10 @@ lia.log.types = {
         func = function(client) return string.format("Admin '%s' viewed all ticket claims.", client:Name()) end,
         category = "Admin"
     },
+    ["viewPlayerTickets"] = {
+        func = function(client, targetName) return string.format("Admin '%s' viewed tickets for %s.", client:Name(), targetName) end,
+        category = "Admin"
+    },
     ["ticketClaimed"] = {
         func = function(client, requester, count) return string.format("Admin '%s' claimed a ticket for %s. Total claims: %d.", client:Name(), requester, count or 0) end,
         category = "Admin"

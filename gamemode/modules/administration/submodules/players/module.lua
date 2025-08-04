@@ -98,9 +98,13 @@ if CLIENT then
                 end
                 local charCount = tonumber(v.characterCount) or 0
                 local warnings = tonumber(v.warnings) or 0
+                local ticketRequests = tonumber(v.ticketsRequested) or 0
+                local ticketClaims = tonumber(v.ticketsClaimed) or 0
                 if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
                     local line = list:AddLine(steamName, steamID, userGroup, v.firstJoin or L("unknown"), lastOnlineText, playtime, charCount, warnings)
                     line.steamID = v.steamID
+                    line.ticketRequests = ticketRequests
+                    line.ticketClaims = ticketClaims
                 end
             end
         end
@@ -125,6 +129,11 @@ if CLIENT then
 
                 menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
                 menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
+                menu:AddOption(L("viewWarnings"), function() LocalPlayer():ConCommand("say /viewwarns " .. steamID) end):SetIcon("icon16/error.png")
+                menu:AddOption(L("viewTicketRequests"), function() LocalPlayer():ConCommand("say /viewtickets " .. steamID) end):SetIcon("icon16/help.png")
+                if (ln.ticketClaims or 0) > 0 then
+                    menu:AddOption(L("viewTicketClaims"), function() LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end):SetIcon("icon16/page_white_text.png")
+                end
             end)
         end
     end)
@@ -147,7 +156,9 @@ else
         local query = [[
 SELECT steamName, steamID, userGroup, firstJoin, lastOnline, totalOnlineTime,
     (SELECT COUNT(*) FROM lia_characters WHERE steamID = lia_players.steamID AND schema = %s) AS characterCount,
-    (SELECT COUNT(*) FROM lia_warnings WHERE warnedSteamID = lia_players.steamID) AS warnings
+    (SELECT COUNT(*) FROM lia_warnings WHERE warnedSteamID = lia_players.steamID) AS warnings,
+    (SELECT COUNT(*) FROM lia_ticketclaims WHERE requesterSteamID = lia_players.steamID) AS ticketsRequested,
+    (SELECT COUNT(*) FROM lia_ticketclaims WHERE adminSteamID = lia_players.steamID) AS ticketsClaimed
 FROM lia_players
 ]]
         query = string.format(query, lia.db.convertDataType(gamemode))
