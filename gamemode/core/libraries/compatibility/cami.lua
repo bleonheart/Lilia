@@ -45,7 +45,6 @@ hook.Add("CAMI.OnUsergroupRegistered", "liaAdminUGAdded", function(usergroup)
             lia.administrator.sync()
         end
     end
-
 end)
 
 hook.Add("CAMI.OnUsergroupUnregistered", "liaAdminUGRemoved", function(usergroup)
@@ -59,7 +58,6 @@ hook.Add("CAMI.OnUsergroupUnregistered", "liaAdminUGRemoved", function(usergroup
             lia.administrator.sync()
         end
     end
-
 end)
 
 hook.Add("CAMI.OnPrivilegeRegistered", "liaAdminPrivAdded", function(priv)
@@ -77,7 +75,6 @@ hook.Add("CAMI.OnPrivilegeRegistered", "liaAdminPrivAdded", function(priv)
         lia.administrator.save()
         lia.administrator.sync()
     end
-
 end)
 
 hook.Add("CAMI.OnPrivilegeUnregistered", "liaAdminPrivRemoved", function(priv)
@@ -94,10 +91,10 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaAdminPrivRemoved", function(priv)
         lia.administrator.save()
         lia.administrator.sync()
     end
-
 end)
 
 hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, _, new)
+    if not SERVER then return end
     if not IsValid(ply) then return end
     local newGroup = tostring(new or "user")
     if tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
@@ -105,6 +102,7 @@ hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, _,
 end)
 
 hook.Add("CAMI.SteamIDUsergroupChanged", "liaAdminSIDUGChanged", function(steamId, _, new)
+    if not SERVER then return end
     local sid = tostring(steamId or "")
     if sid == "" then return end
     local newGroup = tostring(new or "user")
