@@ -2,6 +2,13 @@ MODULE.name = L("modulePlayerListName")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = L("modulePlayerListDesc")
+MODULE.Privileges = {
+    {
+        Name = L("canAccessPlayerList"),
+        MinAccess = "admin",
+        Category = L("players")
+    }
+}
 if CLIENT then
     local panelRef
     local charMenuContext
@@ -139,7 +146,7 @@ if CLIENT then
     end)
 
     function MODULE:PopulateAdminTabs(pages)
-        if not IsValid(LocalPlayer()) or not LocalPlayer():IsAdmin() then return end
+        if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege(L("canAccessPlayerList")) then return end
         table.insert(pages, {
             name = L("players"),
             drawFunc = function(panel)
@@ -151,7 +158,7 @@ if CLIENT then
     end
 else
     net.Receive("liaRequestPlayers", function(_, client)
-        if not client:IsAdmin() then return end
+        if not client:hasPrivilege(L("canAccessPlayerList")) then return end
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local query = [[
 SELECT steamName, steamID, userGroup, firstJoin, lastOnline, totalOnlineTime,
@@ -176,7 +183,7 @@ FROM lia_players
     end)
 
     net.Receive("liaRequestPlayerCharacters", function(_, client)
-        if not (client:IsAdmin() or client:hasPrivilege("Can Manage Factions")) then return end
+        if not (client:hasPrivilege(L("canAccessPlayerList")) or client:hasPrivilege("Can Manage Factions")) then return end
         local steamID = net.ReadString()
         if not steamID or steamID == "" then return end
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
