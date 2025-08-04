@@ -7,9 +7,44 @@ if SERVER then
         superAdminOnly = true,
         privilege = "Manage Characters",
         onRun = function(client)
-            net.Start("OpenPKMenu")
-            net.WriteBool(false)
-            net.Send(client)
+            local choices = {}
+            for _, ply in player.Iterator() do
+                choices[#choices + 1] = {ply:Nick(), {name = ply:Nick(), steamID = ply:SteamID()}}
+            end
+
+            local playerKey = L("player", client)
+            local reasonKey = L("reason", client)
+            local evidenceKey = L("evidence", client)
+            client:requestArguments(L("pkActiveMenu", client), {
+                [playerKey] = {"table", choices},
+                [reasonKey] = "string",
+                [evidenceKey] = "string"
+            }, function(data)
+                local selection = data[playerKey]
+                local reason = data[reasonKey]
+                local evidence = data[evidenceKey]
+                if not (isstring(evidence) and evidence:match("^https?://")) then
+                    client:notify("Evidence must be a valid URL.")
+                    return
+                end
+
+                lia.db.insertTable({
+                    player = selection.name,
+                    reason = reason,
+                    steamID = selection.steamID,
+                    submitterName = client:Name(),
+                    submitterSteamID = client:SteamID(),
+                    timestamp = os.time(),
+                    evidence = evidence
+                }, nil, "permakills")
+
+                for _, ply in player.Iterator() do
+                    if ply:SteamID() == selection.steamID and ply:getChar() then
+                        ply:getChar():ban()
+                        break
+                    end
+                end
+            end)
         end
     })
 
@@ -25,33 +60,6 @@ if SERVER then
         end
     })
 
-    net.Receive("SubmitPKCase", function(_, client)
-        local data = net.ReadTable()
-        local isCharBan = net.ReadBool()
-        lia.db.insertTable({
-            player = data.player,
-            reason = data.reason,
-            steamID = data.steamID,
-            submitterName = client:Name(),
-            submitterSteamID = client:SteamID(),
-            timestamp = os.time(),
-            evidence = data.evidence
-        }, nil, "permakills")
-
-        for _, ply in player.Iterator() do
-            if ply:SteamID() == data.steamID and ply:getChar() then
-                if isCharBan then
-                    ply:getChar():setBanned(-1)
-                    ply:getChar():save()
-                    ply:getChar():kick()
-                else
-                    ply:getChar():ban()
-                end
-
-                break
-            end
-        end
-    end)
 else
     net.Receive("OpenPKViewer", function()
         local cases = net.ReadTable()
@@ -122,85 +130,6 @@ else
         end
     end)
 
-    net.Receive("OpenPKMenu", function(_)
-        local isCharBan = net.ReadBool()
-        local frame = vgui.Create("DFrame")
-        frame:SetSize(600, 400)
-        frame:SetTitle(L("pkActiveMenu"))
-        frame:Center()
-        frame:MakePopup()
-        local elementWidth, elementHeight = 550, 25
-        local function setTransparentStyle(element)
-            element:SetTextColor(Color(255, 255, 255))
-            element.Paint = function(self, w, h)
-                surface.SetDrawColor(0, 0, 0, 0)
-                surface.DrawRect(0, 0, w, h)
-                if self:GetText() == "" then
-                    draw.SimpleText(self:GetPlaceholderText(), "Default", 5, h / 2, Color(255, 255, 255, 128), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                else
-                    self:DrawTextEntryText(self:GetTextColor(), Color(255, 255, 255), Color(255, 255, 255))
-                end
-            end
-        end
-
-        local allPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
-            allPlayers[#allPlayers + 1] = {
-                name = ply:Nick(),
-                steamid = ply:SteamID()
-            }
-        end
-
-        local playerDropdown = vgui.Create("DComboBox", frame)
-        playerDropdown:SetPos(20, 50)
-        playerDropdown:SetSize(elementWidth, elementHeight)
-        playerDropdown:SetValue(L("select") .. " " .. L("player"))
-        for _, data in ipairs(allPlayers) do
-            playerDropdown:AddChoice(data.name, data.steamid)
-        end
-
-        local reasonBox = vgui.Create("DTextEntry", frame)
-        reasonBox:SetPos(20, 100)
-        reasonBox:SetSize(elementWidth, 50)
-        reasonBox:SetPlaceholderText(L("enterReason"))
-        setTransparentStyle(reasonBox)
-        local evidenceBox = vgui.Create("DTextEntry", frame)
-        evidenceBox:SetPos(20, 160)
-        evidenceBox:SetSize(elementWidth, 50)
-        evidenceBox:SetPlaceholderText(L("enterEvidence"))
-        setTransparentStyle(evidenceBox)
-        local submitButton = vgui.Create("DButton", frame)
-        submitButton:SetPos(20, 250)
-        submitButton:SetSize(elementWidth, 50)
-        submitButton:SetText(L("submitPKCase"))
-        submitButton.Paint = function(self, w, h)
-            surface.SetDrawColor(50, 50, 50, 200)
-            surface.DrawRect(0, 0, w, h)
-            self:SetTextColor(Color(255, 255, 255))
-        end
-
-        submitButton.DoClick = function()
-            local selectedName, steamID = playerDropdown:GetSelected()
-            local reason = reasonBox:GetText()
-            local evidence = evidenceBox:GetText()
-            if not (selectedName and steamID and reason ~= "" and evidence ~= "") then
-                LocalPlayer():ChatPrint(L("allFieldsRequired"))
-                return
-            end
-
-            net.Start("SubmitPKCase")
-            net.WriteTable({
-                player = selectedName,
-                steamID = steamID,
-                reason = reason,
-                evidence = evidence
-            })
-
-            net.WriteBool(isCharBan)
-            net.SendToServer()
-            frame:Close()
-        end
-    end)
 
     net.Receive("PK_Screen", function(_)
         local name = net.ReadString()
