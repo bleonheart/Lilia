@@ -588,7 +588,7 @@ if SERVER then
             evidence = ""
         }, nil, "bans")
 
-        self:Kick(L("banMessage", self, duration or 0, reason or L("genericReason", self)))
+        self:Kick(L("banMessage", duration or 0, reason or L("genericReason")))
     end
 
     function playerMeta:setAction(text, time, callback)
