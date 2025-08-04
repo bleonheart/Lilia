@@ -476,13 +476,13 @@ local function OpenRoster(panel, data)
 end
 
 lia.net.readBigTable("liaAllFlags", function(data)
-    if not IsValid(panelRef) then return end
-    panelRef:Clear()
-    local search = panelRef:Add("DTextEntry")
+    if not IsValid(flagsPanel) then return end
+    flagsPanel:Clear()
+    local search = flagsPanel:Add("DTextEntry")
     search:Dock(TOP)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(255, 255, 255))
-    local list = panelRef:Add("DListView")
+    local list = flagsPanel:Add("DListView")
     list:Dock(FILL)
     local function addSizedColumn(text)
         local col = list:AddColumn(text)
