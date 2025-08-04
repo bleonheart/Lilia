@@ -621,43 +621,45 @@ end
 function GM:LoadData()
     lia.data.loadPersistenceData(function(entities)
         for _, ent in ipairs(entities) do
-            local cls = ent.class
-            if not isstring(cls) or cls == "" then
-                lia.error(L("invalidEntityClass"))
-                continue
-            end
-
-            local decodedPos = lia.data.decode(ent.pos)
-            local decodedAng = lia.data.decode(ent.angles)
-            if not decodedPos then
-                lia.error(L("invalidEntityPosition", cls))
-                continue
-            end
-
-            if IsEntityNearby(decodedPos, cls) then
-                lia.error(L("entityCreationAborted", cls, decodedPos.x, decodedPos.y, decodedPos.z))
-                continue
-            end
-
-            local createdEnt = ents.Create(cls)
-            if not IsValid(createdEnt) then
-                lia.error(L("failedEntityCreation", cls))
-                continue
-            end
-
-            createdEnt:SetPos(decodedPos)
-            if decodedAng then createdEnt:SetAngles(decodedAng) end
-            if ent.model then createdEnt:SetModel(ent.model) end
-            createdEnt:Spawn()
-            if ent.skin then createdEnt:SetSkin(tonumber(ent.skin) or 0) end
-            if istable(ent.bodygroups) then
-                for idx, val in pairs(ent.bodygroups) do
-                    createdEnt:SetBodygroup(tonumber(idx) or 0, tonumber(val) or 0)
+            repeat
+                local cls = ent.class
+                if not isstring(cls) or cls == "" then
+                    lia.error(L("invalidEntityClass"))
+                    break
                 end
-            end
 
-            createdEnt:Activate()
-            hook.Run("OnEntityLoaded", createdEnt, ent.data)
+                local decodedPos = lia.data.decode(ent.pos)
+                local decodedAng = lia.data.decode(ent.angles)
+                if not decodedPos then
+                    lia.error(L("invalidEntityPosition", cls))
+                    break
+                end
+
+                if IsEntityNearby(decodedPos, cls) then
+                    lia.error(L("entityCreationAborted", cls, decodedPos.x, decodedPos.y, decodedPos.z))
+                    break
+                end
+
+                local createdEnt = ents.Create(cls)
+                if not IsValid(createdEnt) then
+                    lia.error(L("failedEntityCreation", cls))
+                    break
+                end
+
+                createdEnt:SetPos(decodedPos)
+                if decodedAng then createdEnt:SetAngles(decodedAng) end
+                if ent.model then createdEnt:SetModel(ent.model) end
+                createdEnt:Spawn()
+                if ent.skin then createdEnt:SetSkin(tonumber(ent.skin) or 0) end
+                if istable(ent.bodygroups) then
+                    for idx, val in pairs(ent.bodygroups) do
+                        createdEnt:SetBodygroup(tonumber(idx) or 0, tonumber(val) or 0)
+                    end
+                end
+
+                createdEnt:Activate()
+                hook.Run("OnEntityLoaded", createdEnt, ent.data)
+            until true
         end
     end)
 
@@ -991,10 +993,10 @@ concommand.Add("plysetgroup", function(ply, _, args)
                 target:SetUserGroup(usergroup)
                 lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), lia.db.convertDataType(target:SteamID())))
             else
-                MsgC(Color(200, 20, 20), L("consoleUsergroupNotFound") .. "\n")
+                MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consoleUsergroupNotFound") .. "\n")
             end
         else
-            MsgC(Color(200, 20, 20), L("consolePlayerNotFound") .. "\n")
+            MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consolePlayerNotFound") .. "\n")
         end
     end
 end)
