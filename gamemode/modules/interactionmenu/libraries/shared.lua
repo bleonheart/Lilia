@@ -9,7 +9,7 @@ function AddAction(name, data)
     MODULE.Actions[name] = data
 end
 
-AddInteraction(L("giveMoney"), {
+AddInteraction("giveMoney", {
     serverRun = false,
     shouldShow = function(client, target) return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0 end,
     onRun = function(client, target)
@@ -55,7 +55,7 @@ AddInteraction(L("giveMoney"), {
     end
 })
 
-AddInteraction(L("inviteToClass"), {
+AddInteraction("inviteToClass", {
     runServer = true,
     shouldShow = function(client, target)
         local cChar = client:getChar()
@@ -94,7 +94,7 @@ AddInteraction(L("inviteToClass"), {
     end
 })
 
-AddAction(L("changeToWhisper"), {
+AddAction("changeToWhisper", {
     shouldShow = function(client) return client:getChar() and client:Alive() end,
     onRun = function(client)
         if CLIENT then return end
@@ -104,7 +104,7 @@ AddAction(L("changeToWhisper"), {
     runServer = true
 })
 
-AddAction(L("changeToTalk"), {
+AddAction("changeToTalk", {
     shouldShow = function(client) return client:getChar() and client:Alive() end,
     onRun = function(client)
         if CLIENT then return end
@@ -114,7 +114,7 @@ AddAction(L("changeToTalk"), {
     runServer = true
 })
 
-AddAction(L("changeToYell"), {
+AddAction("changeToYell", {
     shouldShow = function(client) return client:getChar() and client:Alive() end,
     onRun = function(client)
         if CLIENT then return end
@@ -171,7 +171,7 @@ local function doRange(ply, lvl)
     promptName(ply, function(nm) CharRecognize(ply, lvl, nm) end)
 end
 
-AddAction(L("recognizeInWhisperRange"), {
+AddAction("recognizeInWhisperRange", {
     shouldShow = function(ply) return canRecog(ply) end,
     onRun = function(ply)
         if CLIENT then return end
@@ -180,7 +180,7 @@ AddAction(L("recognizeInWhisperRange"), {
     runServer = true
 })
 
-AddAction(L("recognizeInTalkRange"), {
+AddAction("recognizeInTalkRange", {
     shouldShow = function(ply) return canRecog(ply) end,
     onRun = function(ply)
         if CLIENT then return end
@@ -189,7 +189,7 @@ AddAction(L("recognizeInTalkRange"), {
     runServer = true
 })
 
-AddAction(L("recognizeInYellRange"), {
+AddAction("recognizeInYellRange", {
     shouldShow = function(ply) return canRecog(ply) end,
     onRun = function(ply)
         if CLIENT then return end
@@ -198,7 +198,7 @@ AddAction(L("recognizeInYellRange"), {
     runServer = true
 })
 
-AddInteraction(L("recognizeOption"), {
+AddInteraction("recognizeOption", {
     runServer = true,
     shouldShow = function(ply, tgt)
         if not canRecog(ply) then return false end
@@ -220,7 +220,7 @@ AddInteraction(L("recognizeOption"), {
     end
 })
 
-AddInteraction(L("inviteToFaction"), {
+AddInteraction("inviteToFaction", {
     runServer = true,
     shouldShow = function(client, target)
         local cChar = client:getChar()
