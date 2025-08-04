@@ -9,7 +9,9 @@ if SERVER then
         onRun = function(client)
             local choices = {}
             for _, ply in player.Iterator() do
-                choices[#choices + 1] = {ply:Nick(), {name = ply:Nick(), steamID = ply:SteamID()}}
+                if ply:getChar() then
+                    choices[#choices + 1] = {ply:Nick(), {name = ply:Nick(), steamID = ply:SteamID(), charID = ply:getChar():getID()}}
+                end
             end
 
             local playerKey = L("player", client)
@@ -32,6 +34,7 @@ if SERVER then
                     player = selection.name,
                     reason = reason,
                     steamID = selection.steamID,
+                    charID = selection.charID,
                     submitterName = client:Name(),
                     submitterSteamID = client:SteamID(),
                     timestamp = os.time(),
@@ -48,88 +51,103 @@ if SERVER then
         end
     })
 
-    lia.command.add("viewpermakills", {
-        superAdminOnly = true,
-        privilege = "Manage Characters",
-        onRun = function(client)
-            lia.db.query("SELECT * FROM lia_permakills", function(data)
-                net.Start("OpenPKViewer")
-                net.WriteTable(data or {})
-                net.Send(client)
-            end)
-        end
-    })
-
+    net.Receive("liaRequestAllPKs", function(_, client)
+        if not client:hasPrivilege("Manage Characters") then return end
+        lia.db.query("SELECT * FROM lia_permakills", function(data)
+            net.Start("liaAllPKs")
+            net.WriteTable(data or {})
+            net.Send(client)
+        end)
+    end)
 else
-    net.Receive("OpenPKViewer", function()
-        local cases = net.ReadTable()
-        local frame = vgui.Create("DFrame")
-        frame:SetSize(300, 400)
-        frame:SetTitle(L("viewPKCases"))
-        frame:Center()
-        frame:MakePopup()
-        local searchBox = vgui.Create("DTextEntry", frame)
-        searchBox:SetSize(280, 25)
-        searchBox:SetPos(10, 30)
-        searchBox:SetPlaceholderText(L("searchByPlayerName"))
-        local caseList = vgui.Create("DListView", frame)
-        caseList:SetSize(280, 300)
-        caseList:SetPos(10, 60)
-        caseList:AddColumn(L("player"))
-        local function updateCaseList(filter)
-            caseList:Clear()
+    local panelRef
+    net.Receive("liaAllPKs", function()
+        local cases = net.ReadTable() or {}
+        if not IsValid(panelRef) then return end
+        panelRef:Clear()
+        local search = panelRef:Add("DTextEntry")
+        search:Dock(TOP)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
+        local list = panelRef:Add("DListView")
+        list:Dock(FILL)
+        local function addSizedColumn(text)
+            local col = list:AddColumn(text)
+            surface.SetFont(col.Header:GetFont())
+            local w = surface.GetTextSize(col.Header:GetText())
+            col:SetMinWidth(w + 16)
+            col:SetWidth(w + 16)
+            return col
+        end
+
+        addSizedColumn(L("timestamp"))
+        addSizedColumn(L("character"))
+        addSizedColumn(L("submitter"))
+        addSizedColumn(L("evidence"))
+
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
             for _, c in ipairs(cases) do
-                if string.match(c.player:lower(), filter:lower()) then caseList:AddLine(c.player) end
+                local charInfo = string.format("%s (%s, %s)", c.player or L("na"), c.steamID or L("na"), c.charID or L("na"))
+                local submitInfo = string.format("%s (%s)", c.submitterName or L("na"), c.submitterSteamID or L("na"))
+                local timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(c.timestamp) or 0)
+                local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
+                local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
+                if filter == "" or searchStr:lower():find(filter, 1, true) then
+                    local line = list:AddLine(unpack(lineData))
+                    line.steamID = c.steamID or ""
+                    line.reason = c.reason or ""
+                    line.evidence = c.evidence or ""
+                    line.submitter = c.submitterName or ""
+                    line.submitterSteamID = c.submitterSteamID or ""
+                    line.charID = c.charID
+                end
             end
         end
 
-        updateCaseList("")
-        searchBox.OnChange = function() updateCaseList(searchBox:GetText()) end
-        caseList.OnRowSelected = function(_, _, line)
-            local sel = line:GetColumnText(1)
-            local detail
-            for _, c in ipairs(cases) do
-                if c.player == sel then
-                    detail = c
-                    break
-                end
-            end
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
 
-            if detail then
-                local df = vgui.Create("DFrame")
-                df:SetSize(400, 400)
-                df:SetTitle(L("pkCaseDetails"))
-                df:Center()
-                df:MakePopup()
-                local y = 30
-                local function makeButton(txt, yOff, clip)
-                    local btn = vgui.Create("DButton", df)
-                    btn:SetPos(10, yOff)
-                    btn:SetSize(380, 20)
-                    btn:SetText(txt)
-                    btn:SetCursor("hand")
-                    btn:SetTextColor(Color(255, 255, 255))
-                    btn.DoClick = function() SetClipboardText(clip) end
-                    return btn
-                end
-
-                makeButton(L("player") .. ": " .. detail.player, y, detail.player)
-                y = y + 25
-                makeButton(L("steamID") .. ": " .. detail.steamID, y, detail.steamID)
-                y = y + 25
-                makeButton(L("reason") .. ": " .. detail.reason, y, detail.reason)
-                y = y + 25
-                makeButton(L("evidence") .. ": " .. detail.evidence, y, detail.evidence)
-                y = y + 25
-                makeButton(L("submitter") .. ": " .. detail.submitterName, y, detail.submitterName)
-                y = y + 25
-                makeButton(L("submitterSteamID") .. ": " .. detail.submitterSteamID, y, detail.submitterSteamID)
-                y = y + 25
-                makeButton(L("timestamp") .. ": " .. os.date("%c", detail.timestamp), y, os.date("%c", detail.timestamp))
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) then return end
+            local menu = DermaMenu()
+            menu:AddOption(L("copySubmitter"), function()
+                SetClipboardText(string.format("%s (%s)", line.submitter, line.submitterSteamID))
+            end):SetIcon("icon16/page_copy.png")
+            menu:AddOption(L("copyReason"), function() SetClipboardText(line.reason) end):SetIcon("icon16/page_copy.png")
+            menu:AddOption(L("copyEvidence"), function() SetClipboardText(line.evidence) end):SetIcon("icon16/page_copy.png")
+            menu:AddOption(L("copySteamID"), function() SetClipboardText(line.steamID) end):SetIcon("icon16/page_copy.png")
+            if line.evidence and line.evidence:match("^https?://") then
+                menu:AddOption(L("viewEvidence"), function() gui.OpenURL(line.evidence) end):SetIcon("icon16/world.png")
             end
+            menu:AddOption(L("banCharacter"), function()
+                LocalPlayer():ConCommand([[say "/charban ]] .. line.charID .. [["]])
+            end):SetIcon("icon16/cancel.png")
+            menu:AddOption(L("unbanCharacter"), function()
+                LocalPlayer():ConCommand([[say "/charunban ]] .. line.charID .. [["]])
+            end):SetIcon("icon16/accept.png")
+            menu:AddOption(L("banCharacterOffline"), function()
+                LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.charID .. [["]])
+            end):SetIcon("icon16/cancel.png")
+            menu:AddOption(L("unbanCharacterOffline"), function()
+                LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.charID .. [["]])
+            end):SetIcon("icon16/accept.png")
+            menu:Open()
         end
     end)
 
+    function MODULE:PopulateAdminTabs(pages)
+        if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege("Manage Characters") then return end
+        table.insert(pages, {
+            name = L("pkManager"),
+            drawFunc = function(panel)
+                panelRef = panel
+                net.Start("liaRequestAllPKs")
+                net.SendToServer()
+            end
+        })
+    end
 
     net.Receive("PK_Screen", function(_)
         local name = net.ReadString()
