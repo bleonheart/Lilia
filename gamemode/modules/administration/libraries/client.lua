@@ -2,7 +2,8 @@
     local client = LocalPlayer()
     if not IsValid(client) or not IsValid(target) then return end
     if not (client:hasPrivilege("Can Access Scoreboard Info Out Of Staff") or client:hasPrivilege("Can Access Scoreboard Admin Options") and client:isStaffOnDuty()) then return end
-    local orderedOptions = {
+
+    local copyOptions = {
         {
             name = L("nameCopyFormat", target:Name()),
             image = "icon16/page_copy.png",
@@ -28,86 +29,111 @@
                 client:notify(L("copiedToClipboard", target:Name(), "SteamID"))
                 SetClipboardText(target:SteamID())
             end
-        },
+        }
+    }
+
+    for _, v in ipairs(copyOptions) do
+        options[#options + 1] = v
+    end
+
+    local commandOptions = {
         {
+            cmd = "blind",
             name = L("Blind"),
             image = "icon16/eye.png",
             func = function() RunConsoleCommand("say", "!blind " .. target:SteamID()) end
         },
         {
+            cmd = "freeze",
             name = L("Freeze"),
             image = "icon16/lock.png",
             func = function() RunConsoleCommand("say", "!freeze " .. target:SteamID()) end
         },
         {
+            cmd = "gag",
             name = L("Gag"),
             image = "icon16/sound_mute.png",
             func = function() RunConsoleCommand("say", "!gag " .. target:SteamID()) end
         },
         {
+            cmd = "ignite",
             name = L("Ignite"),
             image = "icon16/fire.png",
             func = function() RunConsoleCommand("say", "!ignite " .. target:SteamID()) end
         },
         {
+            cmd = "jail",
             name = L("Jail"),
             image = "icon16/lock.png",
             func = function() RunConsoleCommand("say", "!jail " .. target:SteamID()) end
         },
         {
+            cmd = "mute",
             name = L("Mute"),
             image = "icon16/sound_delete.png",
             func = function() RunConsoleCommand("say", "!mute " .. target:SteamID()) end
         },
         {
+            cmd = "slay",
             name = L("Slay"),
             image = "icon16/bomb.png",
             func = function() RunConsoleCommand("say", "!slay " .. target:SteamID()) end
         },
         {
+            cmd = "unblind",
             name = L("Unblind"),
             image = "icon16/eye.png",
             func = function() RunConsoleCommand("say", "!unblind " .. target:SteamID()) end
         },
         {
+            cmd = "ungag",
             name = L("Ungag"),
             image = "icon16/sound_low.png",
             func = function() RunConsoleCommand("say", "!ungag " .. target:SteamID()) end
         },
         {
+            cmd = "unfreeze",
             name = L("Unfreeze"),
             image = "icon16/accept.png",
             func = function() RunConsoleCommand("say", "!unfreeze " .. target:SteamID()) end
         },
         {
+            cmd = "unmute",
             name = L("Unmute"),
             image = "icon16/sound_add.png",
             func = function() RunConsoleCommand("say", "!unmute " .. target:SteamID()) end
         },
         {
+            cmd = "bring",
             name = L("Bring"),
             image = "icon16/arrow_down.png",
             func = function() RunConsoleCommand("say", "!bring " .. target:SteamID()) end
         },
         {
+            cmd = "goto",
             name = L("Goto"),
             image = "icon16/arrow_right.png",
             func = function() RunConsoleCommand("say", "!goto " .. target:SteamID()) end
         },
         {
+            cmd = "respawn",
             name = L("Respawn"),
             image = "icon16/arrow_refresh.png",
             func = function() RunConsoleCommand("say", "!respawn " .. target:SteamID()) end
         },
         {
+            cmd = "return",
             name = L("return"),
             image = "icon16/arrow_redo.png",
             func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
         }
     }
 
-    for _, v in ipairs(orderedOptions) do
-        options[#options + 1] = v
+    for _, opt in ipairs(commandOptions) do
+        local cmd = lia.command.list[opt.cmd]
+        if cmd and lia.command.hasAccess(client, opt.cmd, cmd) then
+            options[#options + 1] = opt
+        end
     end
 end
 
