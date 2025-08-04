@@ -129,7 +129,7 @@ function PANEL:addClassDetails(parent, cl)
     add(L("name") .. ": " .. (cl.name or L("unnamed")))
     add(L("desc") .. ": " .. (cl.desc or L("noDesc")))
     add(L("faction") .. ": " .. (team.GetName(cl.faction) or L("none")))
-    add(L("isDefaultLabel") .. ": " .. (cl.isDefault and L("yes") or L("no")))
+    add(L("isDefault") .. ": " .. (cl.isDefault and L("yes") or L("no")))
     add(L("baseHealth") .. ": " .. tostring(cl.health or maxH))
     add(L("baseArmor") .. ": " .. tostring(cl.armor or maxA))
     local weps = cl.weapons or {}
