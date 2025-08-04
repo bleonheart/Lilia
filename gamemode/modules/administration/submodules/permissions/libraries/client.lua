@@ -9,7 +9,7 @@ function MODULE:HUDPaint()
     if not client:isNoClipping() then return end
     if not (client:hasPrivilege("No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
     if not lia.option.get("espEnabled", false) then return end
-    for _, ent in pairs(ents.GetAll()) do
+    for _, ent in ents.Iterator() do
         if not IsValid(ent) or ent == client or ent:IsWeapon() then continue end
         local pos = ent:GetPos()
         if not pos then continue end

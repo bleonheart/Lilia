@@ -55,7 +55,7 @@ end
 
 function PANEL:hideExternalEntities()
     self.hiddenEntities = {}
-    for _, ent in ipairs(ents.GetAll()) do
+    for _, ent in ents.Iterator() do
         if ent ~= self.modelEntity and not ent:IsWorld() and not ent:CreatedByMap() then
             self.hiddenEntities[ent] = ent:GetNoDraw()
             ent:SetNoDraw(true)
