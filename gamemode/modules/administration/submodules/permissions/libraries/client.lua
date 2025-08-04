@@ -9,10 +9,8 @@ function MODULE:HUDPaint()
     if not client:isNoClipping() then return end
     if not (client:hasPrivilege("No Clip ESP Outside Staff Character") or client:isStaffOnDuty()) then return end
     if not lia.option.get("espEnabled", false) then return end
-    local screenWidth, screenHeight = ScrW(), ScrH()
-    local marginX, marginY = screenWidth * 0.1, screenHeight * 0.1
     for _, ent in pairs(ents.GetAll()) do
-        if not IsValid(ent) or ent == client then continue end
+        if not IsValid(ent) or ent == client or ent:IsWeapon() then continue end
         local pos = ent:GetPos()
         if not pos then continue end
         local kind, label, subLabel, baseColor
@@ -28,48 +26,50 @@ function MODULE:HUDPaint()
             end
         elseif ent.isItem and ent:isItem() and lia.option.get("espItems", false) then
             kind = "Items"
-            label = L("item") .. ": " .. (ent.getItemTable and ent:getItemTable().name or L("unknown"))
+            label = ent.getItemTable and ent:getItemTable().name or L("unknown")
             baseColor = lia.config.get("espItemsColor") or Color(255, 255, 255)
         elseif lia.option.get("espEntities", false) and ent:GetClass():StartWith("lia_") then
             kind = "Entities"
-            label = L("entity") .. " " .. L("class") .. ": " .. (ent:GetClass() or L("unknown"))
+            label = ent.PrintName and ent.PrintName or ent:GetClass()
             baseColor = lia.config.get("espEntitiesColor") or Color(255, 255, 255)
         end
 
         if not kind then continue end
         local screenPos = pos:ToScreen()
-        screenPos.x = math.Clamp(screenPos.x, marginX, screenWidth - marginX)
-        screenPos.y = math.Clamp(screenPos.y, marginY, screenHeight - marginY)
+        if not screenPos.visible then continue end
         surface.SetFont("liaMediumFont")
         local _, textHeight = surface.GetTextSize("W")
         draw.SimpleTextOutlined(label, "liaMediumFont", screenPos.x, screenPos.y, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
         if subLabel and subLabel ~= label then draw.SimpleTextOutlined(subLabel, "liaMediumFont", screenPos.x, screenPos.y + textHeight, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200)) end
         if kind == "Players" then
-            local barWidth, barHeight = 100, 14
-            local barX = screenPos.x - barWidth / 2
+            local barW, barH = 100, 14
+            local barX = screenPos.x - barW / 2
             local barY = screenPos.y + textHeight + 5
+            -- Health bar
             surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawRect(barX, barY, barWidth, barHeight)
+            surface.DrawRect(barX, barY, barW, barH)
             local hpFrac = math.Clamp(ent:Health() / ent:GetMaxHealth(), 0, 1)
             surface.SetDrawColor(183, 8, 0, 255)
-            surface.DrawRect(barX + 2, barY + 2, (barWidth - 4) * hpFrac, barHeight - 4)
-            draw.SimpleTextOutlined(ent:Health(), "liaSmallFont", screenPos.x, barY + barHeight / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
+            surface.DrawRect(barX + 2, barY + 2, (barW - 4) * hpFrac, barH - 4)
+            draw.SimpleTextOutlined(ent:Health(), "liaSmallFont", screenPos.x, barY + barH / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
+            -- Armor bar
             if ent:Armor() > 0 then
-                barY = barY + barHeight + 5
+                barY = barY + barH + 5
                 surface.SetDrawColor(0, 0, 0, 255)
-                surface.DrawRect(barX, barY, barWidth, barHeight)
+                surface.DrawRect(barX, barY, barW, barH)
                 local armorFrac = math.Clamp(ent:Armor() / 100, 0, 1)
                 surface.SetDrawColor(0, 0, 255, 255)
-                surface.DrawRect(barX + 2, barY + 2, (barWidth - 4) * armorFrac, barHeight - 4)
-                draw.SimpleTextOutlined(ent:Armor(), "liaSmallFont", screenPos.x, barY + barHeight / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
+                surface.DrawRect(barX + 2, barY + 2, (barW - 4) * armorFrac, barH - 4)
+                draw.SimpleTextOutlined(ent:Armor(), "liaSmallFont", screenPos.x, barY + barH / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
             end
 
+            -- Weapon info
             local wep = ent:GetActiveWeapon()
             if IsValid(wep) then
                 local ammo, reserve = wep:Clip1(), ent:GetAmmoCount(wep:GetPrimaryAmmoType())
                 local wepName = wep:GetPrintName()
                 if ammo >= 0 and reserve >= 0 then wepName = wepName .. " [" .. ammo .. "/" .. reserve .. "]" end
-                draw.SimpleTextOutlined(wepName, "liaSmallFont", screenPos.x, barY + barHeight + 5, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255))
+                draw.SimpleTextOutlined(wepName, "liaSmallFont", screenPos.x, barY + barH + 5, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255))
             end
         end
     end
