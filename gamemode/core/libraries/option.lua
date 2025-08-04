@@ -499,16 +499,6 @@ lia.option.add("espItems", "ESP Items", "Enable ESP for items", false, nil, {
     end
 })
 
-lia.option.add("espProps", "ESP Props", "Enable ESP for props", false, nil, {
-    category = "ESP",
-    isQuick = true,
-    visible = function()
-        local ply = LocalPlayer()
-        if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
-    end
-})
-
 lia.option.add("espEntities", "ESP Entities", "Enable ESP for entities", false, nil, {
     category = "ESP",
     isQuick = true,
@@ -546,20 +536,6 @@ lia.option.add("espItemsColor", "ESP Items Color", "Sets the ESP color for items
 lia.option.add("espEntitiesColor", "ESP Entities Color", "Sets the ESP color for entities", {
     r = 255,
     g = 255,
-    b = 0,
-    a = 255
-}, nil, {
-    category = "ESP",
-    visible = function()
-        local ply = LocalPlayer()
-        if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege("No Clip Outside Staff Character")
-    end
-})
-
-lia.option.add("espPropsColor", "ESP Props Color", "Sets the ESP color for props", {
-    r = 255,
-    g = 0,
     b = 0,
     a = 255
 }, nil, {
