@@ -1343,6 +1343,110 @@ lia.command.add("flagtake", {
     alias = {"takeflag"}
 })
 
+lia.command.add("pflaggive", {
+    adminOnly = true,
+    privilege = "Manage Flags",
+    desc = "playerFlagGiveDesc",
+    syntax = "[player Name] [string Flags]",
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        local flags = arguments[2]
+        if not flags then
+            local available = ""
+            for k in SortedPairs(lia.flag.list) do
+                if not target:hasPlayerFlags(k) then available = available .. k .. " " end
+            end
+
+            available = available:Trim()
+            if available == "" then
+                client:notifyLocalized("noAvailableFlags")
+                return
+            end
+            return client:requestString(L("give") .. " " .. L("flags"), L("playerFlagGiveDesc"), function(text)
+                lia.command.run(client, "pflaggive", {target:Name(), text})
+            end, available)
+        end
+
+        target:givePlayerFlags(flags)
+        client:notifyLocalized("playerFlagGive", client:Name(), flags, target:Name())
+        lia.log.add(client, "playerFlagGive", target:Name(), flags)
+    end,
+    alias = {"givepflag", "playerflaggive"}
+})
+
+lia.command.add("pflaggiveall", {
+    adminOnly = true,
+    privilege = "Manage Flags",
+    desc = "giveAllFlagsDesc",
+    syntax = "[player Name]",
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        for k, _ in SortedPairs(lia.flag.list) do
+            if not target:hasPlayerFlags(k) then target:givePlayerFlags(k) end
+        end
+
+        client:notifyLocalized("gaveAllFlags")
+        lia.log.add(client, "playerFlagGiveAll", target:Name())
+    end
+})
+
+lia.command.add("pflagtakeall", {
+    adminOnly = true,
+    privilege = "Manage Flags",
+    desc = "takeAllFlagsDesc",
+    syntax = "[player Name]",
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        for k, _ in SortedPairs(lia.flag.list) do
+            if target:hasPlayerFlags(k) then target:takePlayerFlags(k) end
+        end
+
+        client:notifyLocalized("tookAllFlags")
+        lia.log.add(client, "playerFlagTakeAll", target:Name())
+    end
+})
+
+lia.command.add("pflagtake", {
+    adminOnly = true,
+    privilege = "Manage Flags",
+    desc = "playerFlagTakeDesc",
+    syntax = "[player Name] [string Flags]",
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        local flags = arguments[2]
+        if not flags then
+            local currentFlags = target:getPlayerFlags()
+            return client:requestString(L("take") .. " " .. L("flags"), L("playerFlagTakeDesc"), function(text)
+                lia.command.run(client, "pflagtake", {target:Name(), text})
+            end, currentFlags)
+        end
+
+        target:takePlayerFlags(flags)
+        client:notifyLocalized("playerFlagTake", client:Name(), flags, target:Name())
+        lia.log.add(client, "playerFlagTake", target:Name(), flags)
+    end,
+    alias = {"takepflag", "playerflagtake"}
+})
 lia.command.add("bringlostitems", {
     superAdminOnly = true,
     privilege = "Manage Items",

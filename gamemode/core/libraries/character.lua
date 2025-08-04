@@ -312,6 +312,13 @@ lia.char.registerVar("money", {
     noDisplay = true
 })
 
+lia.char.registerVar("flags", {
+    field = "charflags",
+    fieldType = "string",
+    default = "",
+    noDisplay = true
+})
+
 lia.char.registerVar("loginTime", {
     field = "logintime",
     fieldType = "integer",
