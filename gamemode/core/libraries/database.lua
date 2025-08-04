@@ -1048,9 +1048,9 @@ concommand.Add("database_list", function(ply)
     if IsValid(ply) then return end
     lia.db.GetCharacterTable(function(columns)
         if #columns == 0 then
-            print(L("dbColumnsNone"))
+            lia.error(L("dbColumnsNone"))
         else
-            print(L("dbColumnsList", table.concat(columns, ", ")))
+            lia.information(L("dbColumnsList", table.concat(columns, ", ")))
         end
     end)
 end)
