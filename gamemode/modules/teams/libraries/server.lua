@@ -5,7 +5,7 @@
         if info.OnSet then info:OnSet(client) end
         if oldClass ~= class and info.OnTransferred then info:OnTransferred(client, oldClass) end
     else
-        print("[" .. L("error") .. "] " .. L("invalidClassError", tostring(class)))
+        lia.error(L("invalidClassError", tostring(class)))
     end
 
     if info2 and info2.OnLeave then info2:OnLeave(client) end

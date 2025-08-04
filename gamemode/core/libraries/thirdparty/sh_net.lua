@@ -195,7 +195,7 @@ do
             if not k then continue end
             tv = sub(str, index, index)
             index = index + 1
-            if not self[tv] then print("did not find type: " .. tv) end
+            if not self[tv] then lia.error("did not find type: " .. tv) end
             index, v = self[tv](self, index, str, cache)
             cur[k] = v
         end

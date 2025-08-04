@@ -54,7 +54,7 @@ function MODULE:PlayerLoadedChar(client, character)
 
             net.Send(client)
         else
-            print(L("noDataCharID", charID))
+            lia.error(L("noDataCharID", charID))
         end
     end)
 
