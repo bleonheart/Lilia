@@ -703,10 +703,6 @@ else
     local function buildPrivilegeList(container, g, groups, editable)
         local current = table.Copy(groups[g] or {})
         current._info = nil
-        surface.SetFont("liaMediumFont")
-        local _, fh = surface.GetTextSize("W")
-        local cb = math.max(24, fh + 10)
-        local rowH = math.max(fh + 28, cb + 14)
         local categoryList = container:Add("DCategoryList")
         categoryList:Dock(FILL)
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
@@ -715,17 +711,22 @@ else
             local row = list:Add("DPanel")
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
-            row:SetTall(rowH)
+            local isUsergroup = name == L("usergroupStaff") or name == L("usergroupVIP")
+            local font = isUsergroup and "liaBigFont" or "liaMediumFont"
+            local boxSize = 28
+            local rightOffset = isUsergroup and 16 or 12
+            surface.SetFont(font)
+            local _, textHeight = surface.GetTextSize("W")
+            local rowHeight = math.max(textHeight + 28, boxSize + 14)
+            row:SetTall(rowHeight)
             row.Paint = function(pnl, w, h) derma.SkinHook("Paint", "Panel", pnl, w, h) end
             local lbl = row:Add("DLabel")
             lbl:Dock(FILL)
-            lbl:DockMargin(8, 0, 0, 0)
+            lbl:DockMargin(8, 0, isUsergroup and 16 or 0, 0)
             lbl:SetText(name)
-            lbl:SetFont("liaMediumFont")
+            lbl:SetFont(font)
             lbl:SetContentAlignment(4)
             local chk = row:Add("liaCheckBox")
-            local boxSize = 28
-            local rightOffset = 12
             chk:SetSize(boxSize, boxSize)
             row.PerformLayout = function(_, w, h) chk:SetPos(w - boxSize - rightOffset, (h - boxSize) / 2) end
             chk:SetChecked(current[name] and true or false)
