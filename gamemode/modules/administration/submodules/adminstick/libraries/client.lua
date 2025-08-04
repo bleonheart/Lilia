@@ -10,6 +10,16 @@ local subMenuIcons = {
     flagsManagement = "icon16/flag_blue.png",
     [giveFlagsLabel] = "icon16/flag_blue.png",
     [takeFlagsLabel] = "icon16/flag_red.png",
+    doorManagement = "icon16/door.png",
+    doorActions = "icon16/arrow_switch.png",
+    doorSettings = "icon16/cog.png",
+    doorMaintenance = "icon16/hammer.png",
+    doorInformation = "icon16/information.png",
+    items = "icon16/box.png",
+    misc = "icon16/application_view_tile.png",
+    adminStickSubCategoryBans = "icon16/lock.png",
+    adminStickSubCategoryGetInfos = "icon16/magnifier.png",
+    adminStickSubCategorySetInfos = "icon16/pencil.png",
 }
 
 local function GetOrCreateSubMenu(parent, name, store)

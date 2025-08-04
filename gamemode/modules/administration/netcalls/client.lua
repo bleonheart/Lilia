@@ -354,12 +354,12 @@ net.Receive("liaAllPKs", function()
             local owner = line.steamID and lia.util.getBySteamID(line.steamID)
             if IsValid(owner) then
                 if LocalPlayer():hasPrivilege("Manage Characters") then
-                    menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png")
-                    menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png")
+                    menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand('say "/charban ' .. line.charID .. '"') end):SetIcon("icon16/cancel.png")
+                    menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand('say "/charunban ' .. line.charID .. '"') end):SetIcon("icon16/accept.png")
                 end
             else
-                if LocalPlayer():hasPrivilege("Ban Offline") then menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png") end
-                if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png") end
+                if LocalPlayer():hasPrivilege("Ban Offline") then menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand('say "/charbanoffline ' .. line.charID .. '"') end):SetIcon("icon16/cancel.png") end
+                if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. line.charID .. '"') end):SetIcon("icon16/accept.png") end
             end
         end
 
@@ -455,14 +455,10 @@ local function OpenRoster(panel, data)
                 end
             end
 
-            if steamID and steamID ~= "" then
-                requestPlayerCharacters(steamID, line, function(menu, ln, sID) buildMenu(menu, ln, sID) end)
-            else
-                local menu = DermaMenu()
-                buildMenu(menu, line, steamID or "")
-                local x, y = gui.MousePos()
-                menu:Open(x, y)
-            end
+            local menu = DermaMenu()
+            buildMenu(menu, line, steamID or "")
+            local x, y = gui.MousePos()
+            menu:Open(x, y)
         end
 
         sheet:AddSheet(factionName, page)
