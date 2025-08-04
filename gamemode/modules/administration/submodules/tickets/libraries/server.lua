@@ -30,6 +30,24 @@ function MODULE:GetAllCaseClaims()
     return lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims"):next(function(res) return buildClaimTable(res.results) end)
 end
 
+function MODULE:GetTicketsByRequester(steamID)
+    local condition = "requesterSteamID = " .. lia.db.convertDataType(steamID)
+    return lia.db.select({"timestamp", "requester", "requesterSteamID", "admin", "adminSteamID", "message"}, "ticketclaims", condition):next(function(res)
+        local tickets = {}
+        for _, row in ipairs(res.results or {}) do
+            tickets[#tickets + 1] = {
+                timestamp = isnumber(row.timestamp) and row.timestamp or os.time(lia.time.toNumber(row.timestamp)),
+                requester = row.requester,
+                requesterSteamID = row.requesterSteamID,
+                admin = row.admin,
+                adminSteamID = row.adminSteamID,
+                message = row.message
+            }
+        end
+        return tickets
+    end)
+end
+
 function MODULE:TicketSystemClaim(admin, requester)
     local ticket = MODULE.ActiveTickets[requester:SteamID()]
     lia.db.insertTable({
