@@ -56,7 +56,7 @@ if CLIENT then
                         local adminPly = lia.util.getBySteamID(t.admin)
                         local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
                         return string.format("%s (%s)", adminName, t.admin)
-                    end)() or L("unassignedLabel"),
+                    end)() or L("unassigned"),
                     t.message or ""
                 }
                 local match = false

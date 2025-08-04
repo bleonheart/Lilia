@@ -36,15 +36,15 @@ function SWEP:DrawHUD()
     if IsValid(target) then
         if not target:IsPlayer() then
             if target.GetCreator and IsValid(target:GetCreator()) then
-                table.insert(information, L("entityClassESPLabel", target:GetClass()))
-                table.insert(information, L("entityCreatorESPLabel", tostring(target:GetCreator())))
+                table.insert(information, L("entity") .. " " .. L("class") .. ": " .. target:GetClass())
+                table.insert(information, L("creator") .. ": " .. tostring(target:GetCreator()))
             end
 
             if target.isItem and target:isItem() then
                 local itemTable = target.getItemTable and target:getItemTable()
                 if itemTable then
-                    table.insert(information, L("itemESPLabel", L(itemTable.getName and itemTable:getName() or itemTable.name)))
-                    table.insert(information, L("itemSizeESPLabel", itemTable:getWidth(), itemTable:getHeight()))
+                    table.insert(information, L("item") .. ": " .. L(itemTable.getName and itemTable:getName() or itemTable.name))
+                    table.insert(information, L("item") .. " " .. L("size") .. ": " .. itemTable:getWidth() .. "x" .. itemTable:getHeight())
                 end
             end
 
@@ -52,11 +52,18 @@ function SWEP:DrawHUD()
         end
 
         if target:IsPlayer() then
-            information = {L("nicknameLabel", target:Nick()), L("steamNameLabel", target.SteamName and target:SteamName() or target:Name()), L("steamIDLabel", target:SteamID()), L("healthLabel", target:Health()), L("armorLabel", target:Armor()), L("usergroupLabel", target:GetUserGroup())}
+            information = {
+                L("nickname") .. ": " .. target:Nick(),
+                L("steamName") .. ": " .. (target.SteamName and target:SteamName() or target:Name()),
+                L("steamID") .. ": " .. target:SteamID(),
+                L("health") .. ": " .. target:Health(),
+                L("armor") .. ": " .. target:Armor(),
+                L("usergroup") .. ": " .. target:GetUserGroup()
+            }
             if target:getChar() then
                 local char = target:getChar()
                 local faction = lia.faction.indices[target:Team()]
-                table.Add(information, {L("charNameIs", char:getName()), L("characterFactionLabel", faction.name)})
+                table.Add(information, {L("charNameIs", char:getName()), L("character") .. " " .. L("faction") .. ": " .. faction.name})
             else
                 table.insert(information, L("noLoadedCharacter"))
             end

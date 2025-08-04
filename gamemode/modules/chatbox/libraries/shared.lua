@@ -168,7 +168,7 @@ lia.chat.register("looc", {
 
         speaker.liaLastLOOC = CurTime()
     end,
-    onChatAdd = function(speaker, text) chat.AddText(Color(255, 50, 50), L("loocPrefix") .. " ", lia.config.get("ChatColor"), speaker:Name() .. ": " .. text) end,
+    onChatAdd = function(speaker, text) chat.AddText(Color(255, 50, 50), "[" .. L("looc") .. "] ", lia.config.get("ChatColor"), speaker:Name() .. ": " .. text) end,
     onCanHear = function(speaker, listener)
         if speaker == listener then return true end
         if speaker:EyePos():Distance(listener:EyePos()) <= lia.config.get("ChatRange", 280) then return true end
@@ -191,7 +191,7 @@ lia.chat.register("adminchat", {
         end
         return true
     end,
-    onChatAdd = function(speaker, text) chat.AddText(Color(255, 215, 0), L("adminChatPrefix") .. " ", Color(128, 0, 255, 255), speaker:getChar():getName(), ": ", Color(255, 255, 255), text) end,
+    onChatAdd = function(speaker, text) chat.AddText(Color(255, 215, 0), "[" .. L("adminChat") .. "] ", Color(128, 0, 255, 255), speaker:getChar():getName(), ": ", Color(255, 255, 255), text) end,
     prefix = {"/adminchat", "/asay", "/admin", "/a"}
 })
 
@@ -274,7 +274,7 @@ lia.chat.register("ooc", {
         speaker.liaLastOOC = CurTime()
     end,
     onCanHear = function() return true end,
-    onChatAdd = function(speaker, text) chat.AddText(Color(255, 50, 50), " " .. L("oocPrefix") .. " ", speaker, color_white, ": " .. text) end,
+    onChatAdd = function(speaker, text) chat.AddText(Color(255, 50, 50), " [" .. L("ooc") .. "] ", speaker, color_white, ": " .. text) end,
     prefix = {"//", "/ooc"},
     noSpaceAfter = true,
     filter = "ooc"
@@ -336,5 +336,5 @@ lia.chat.register("help", {
         if listener:isStaffOnDuty() or listener == speaker or listener:hasPrivilege("Always Have Access to Help Chat") then return true end
         return false
     end,
-    onChatAdd = function(speaker, text) chat.AddText(Color(200, 50, 50), L("helpPrefix") .. " " .. speaker:GetName(), color_white, ": " .. text) end
+    onChatAdd = function(speaker, text) chat.AddText(Color(200, 50, 50), "[" .. L("help") .. "] " .. speaker:GetName(), color_white, ": " .. text) end
 })

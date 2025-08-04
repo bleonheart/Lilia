@@ -481,8 +481,8 @@ end
 
 concommand.Add("dev_GetCameraOrigin", function(client)
     if client:isStaff() then
-        lia.information(L("originLabel", math.ceil(client:GetPos().x), math.ceil(client:GetPos().y), math.ceil(client:GetPos().z)))
-        lia.information(L("anglesLabel", math.ceil(client:GetAngles().x), math.ceil(client:GetAngles().y), math.ceil(client:GetAngles().z)))
+        lia.information(L("origin") .. " = (" .. math.ceil(client:GetPos().x) .. ", " .. math.ceil(client:GetPos().y) .. ", " .. math.ceil(client:GetPos().z) .. ")")
+        lia.information(L("angles") .. " = (" .. math.ceil(client:GetAngles().x) .. ", " .. math.ceil(client:GetAngles().y) .. ", " .. math.ceil(client:GetAngles().z) .. ")")
     end
 end)
 
@@ -601,7 +601,7 @@ concommand.Add("open_derma_preview", function()
         list:SetPadding(5)
         for i = 1, 10 do
             local item = vgui.Create("DLabel")
-            item:SetText(L("itemLabel", i))
+            item:SetText(L("item") .. " " .. i)
             item:SizeToContents()
             list:AddItem(item)
         end
@@ -631,7 +631,7 @@ concommand.Add("open_derma_preview", function()
         subScroll:SetTall(100)
         for i = 1, 20 do
             local line = subScroll:Add("DLabel")
-            line:SetText(L("lineLabel", i))
+            line:SetText(L("line") .. " " .. i)
             line:Dock(TOP)
             line:DockMargin(0, 0, 0, 5)
         end

@@ -17,7 +17,7 @@
         lia.util.drawText(entity:getNetVar("title", entity:getNetVar("name", IsValid(owner) and L("doorTitleOwned") or (not classesRaw or classesRaw == "[]") and not entity:getNetVar("factions") and L("doorTitle") or "")), x, y, ColorAlpha(color_white, alpha), 1, 1)
         y = y + 20
         if ownable then
-            lia.util.drawText(L("priceLabel", lia.currency.get(price)), x, y, ColorAlpha(color_white, alpha), 1, 1)
+            lia.util.drawText(L("price") .. ": " .. lia.currency.get(price), x, y, ColorAlpha(color_white, alpha), 1, 1)
             y = y + 20
         end
 
@@ -40,7 +40,7 @@
         if factions and factions ~= "[]" then
             local facs = util.JSONToTable(factions)
             if facs then
-                lia.util.drawText(L("doorFactions"), x, y, ColorAlpha(color_white, alpha), 1, 1)
+                lia.util.drawText(L("factions") .. ":", x, y, ColorAlpha(color_white, alpha), 1, 1)
                 y = y + 20
                 for _, id in ipairs(facs) do
                     local info = lia.faction.get(id)
@@ -53,7 +53,7 @@
         end
 
         if classData and #classData > 0 then
-            lia.util.drawText(L("doorClasses"), x, y, ColorAlpha(color_white, alpha), 1, 1)
+            lia.util.drawText(L("classes") .. ":", x, y, ColorAlpha(color_white, alpha), 1, 1)
             y = y + 20
             for _, data in ipairs(classData) do
                 lia.util.drawText(data.name, x, y, data.color or color_white, 1, 1)
