@@ -74,8 +74,9 @@ if CLIENT then
                 local steamName = v.steamName or ""
                 local steamID = v.steamID or ""
                 local userGroup = v.userGroup or ""
+                local ply = player.GetBySteamID(steamID)
                 local lastOnlineText
-                if IsValid(player.GetBySteamID(steamID)) then
+                if IsValid(ply) then
                     lastOnlineText = L("onlineNow")
                 else
                     local last = tonumber(v.lastOnline)
@@ -89,7 +90,12 @@ if CLIENT then
                     end
                 end
 
-                local playtime = formatDHM(tonumber(v.totalOnlineTime) or 0)
+                local playtime
+                if IsValid(ply) then
+                    playtime = formatDHM(ply:getPlayTime())
+                else
+                    playtime = formatDHM(tonumber(v.totalOnlineTime) or 0)
+                end
                 local charCount = tonumber(v.characterCount) or 0
                 local warnings = tonumber(v.warnings) or 0
                 if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
@@ -145,7 +151,17 @@ SELECT steamName, steamID, userGroup, firstJoin, lastOnline, totalOnlineTime,
 FROM lia_players
 ]]
         query = string.format(query, lia.db.convertDataType(gamemode))
-        lia.db.query(query, function(data) lia.net.writeBigTable(client, "liaAllPlayers", data or {}) end)
+        lia.db.query(query, function(data)
+            data = data or {}
+            for _, row in ipairs(data) do
+                local ply = player.GetBySteamID(tostring(row.steamID))
+                if IsValid(ply) then
+                    row.totalOnlineTime = ply:getPlayTime()
+                end
+            end
+
+            lia.net.writeBigTable(client, "liaAllPlayers", data)
+        end)
     end)
 
     net.Receive("liaRequestPlayerCharacters", function(_, client)
