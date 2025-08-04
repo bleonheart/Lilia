@@ -297,17 +297,17 @@ function MODULE:PopulateAdminTabs(pages)
                                 if IsValid(owner) then
                                     if LocalPlayer():hasPrivilege("Manage Characters") then
                                         if line.Banned then
-                                            menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.CharID .. [["]]) end):SetIcon("icon16/accept.png")
+                                            menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand('say "/charunban ' .. line.CharID .. '"') end):SetIcon("icon16/accept.png")
                                         else
-                                            menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
+                                            menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand('say "/charban ' .. line.CharID .. '"') end):SetIcon("icon16/cancel.png")
                                         end
                                     end
                                 else
                                     if LocalPlayer():hasPrivilege("Ban Offline") and not line.Banned then
-                                        menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
+                                        menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand('say "/charbanoffline ' .. line.CharID .. '"') end):SetIcon("icon16/cancel.png")
                                     end
                                     if LocalPlayer():hasPrivilege("Unban Offline") and line.Banned then
-                                        menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.CharID .. [["]]) end):SetIcon("icon16/accept.png")
+                                        menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. line.CharID .. '"') end):SetIcon("icon16/accept.png")
                                     end
                                 end
                             end
