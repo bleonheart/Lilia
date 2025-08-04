@@ -8,6 +8,8 @@ local subMenuIcons = {
     [playerInfoLabel] = "icon16/information.png",
     characterManagement = "icon16/user_gray.png",
     flagsManagement = "icon16/flag_blue.png",
+    charFlagsTitle = "icon16/flag_green.png",
+    playerFlagsTitle = "icon16/flag_orange.png",
     [giveFlagsLabel] = "icon16/flag_blue.png",
     [takeFlagsLabel] = "icon16/flag_red.png",
     doorManagement = "icon16/door.png",
@@ -426,11 +428,15 @@ local function IncludeFlagManagement(tgt, menu, stores)
     if not cl:hasPrivilege("Manage Flags") then return end
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local fm = GetOrCreateSubMenu(charMenu, "flagsManagement", stores)
-    local give = GetOrCreateSubMenu(fm, giveFlagsLabel, stores)
-    local take = GetOrCreateSubMenu(fm, takeFlagsLabel, stores)
+
+    -- Character flag management
+    local cf = GetOrCreateSubMenu(fm, "charFlagsTitle", stores)
+    local cGive = GetOrCreateSubMenu(cf, giveFlagsLabel, stores)
+    local cTake = GetOrCreateSubMenu(cf, takeFlagsLabel, stores)
+    local charObj = tgt:getChar()
     local toGive, toTake = {}, {}
     for fl in pairs(lia.flag.list) do
-        if not tgt:hasFlags(fl) then
+        if not charObj or not charObj:hasFlags(fl) then
             table.insert(toGive, {
                 name = L("giveFlagFormat", fl),
                 cmd = 'say /giveflag ' .. QuoteArgs(GetIdentifier(tgt), fl),
@@ -448,28 +454,77 @@ local function IncludeFlagManagement(tgt, menu, stores)
     table.sort(toGive, function(a, b) return a.name < b.name end)
     table.sort(toTake, function(a, b) return a.name < b.name end)
     for _, f in ipairs(toGive) do
-        give:AddOption(L(f.name), function()
+        cGive:AddOption(L(f.name), function()
             cl:ConCommand(f.cmd)
             AdminStickIsOpen = false
         end):SetIcon(f.icon)
     end
 
     for _, f in ipairs(toTake) do
-        take:AddOption(L(f.name), function()
+        cTake:AddOption(L(f.name), function()
             cl:ConCommand(f.cmd)
             AdminStickIsOpen = false
         end):SetIcon(f.icon)
     end
 
-    fm:AddOption(L("modifyFlags"), function()
-        local char = tgt:getChar()
-        local currentFlags = char and char:getFlags() or ""
-        Derma_StringRequest(L("modifyFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+    cf:AddOption(L("modifyCharFlags"), function()
+        local currentFlags = charObj and charObj:getFlags() or ""
+        Derma_StringRequest(L("modifyCharFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
             text = string.gsub(text or "", "%s", "")
             net.Start("liaModifyFlags")
             net.WriteString(tgt:SteamID())
             net.WriteString(text)
             net.WriteBool(false)
+            net.SendToServer()
+        end)
+        AdminStickIsOpen = false
+    end):SetIcon("icon16/flag_orange.png")
+
+    -- Player flag management
+    local pf = GetOrCreateSubMenu(fm, "playerFlagsTitle", stores)
+    local pGive = GetOrCreateSubMenu(pf, giveFlagsLabel, stores)
+    local pTake = GetOrCreateSubMenu(pf, takeFlagsLabel, stores)
+    local toGiveP, toTakeP = {}, {}
+    for fl in pairs(lia.flag.list) do
+        if not tgt:hasPlayerFlags(fl) then
+            table.insert(toGiveP, {
+                name = L("giveFlagFormat", fl),
+                cmd = 'say /pflaggive ' .. QuoteArgs(GetIdentifier(tgt), fl),
+                icon = "icon16/flag_blue.png"
+            })
+        else
+            table.insert(toTakeP, {
+                name = L("takeFlagFormat", fl),
+                cmd = 'say /pflagtake ' .. QuoteArgs(GetIdentifier(tgt), fl),
+                icon = "icon16/flag_red.png"
+            })
+        end
+    end
+
+    table.sort(toGiveP, function(a, b) return a.name < b.name end)
+    table.sort(toTakeP, function(a, b) return a.name < b.name end)
+    for _, f in ipairs(toGiveP) do
+        pGive:AddOption(L(f.name), function()
+            cl:ConCommand(f.cmd)
+            AdminStickIsOpen = false
+        end):SetIcon(f.icon)
+    end
+
+    for _, f in ipairs(toTakeP) do
+        pTake:AddOption(L(f.name), function()
+            cl:ConCommand(f.cmd)
+            AdminStickIsOpen = false
+        end):SetIcon(f.icon)
+    end
+
+    pf:AddOption(L("modifyPlayerFlags"), function()
+        local currentFlags = tgt:getPlayerFlags()
+        Derma_StringRequest(L("modifyPlayerFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+            text = string.gsub(text or "", "%s", "")
+            net.Start("liaModifyFlags")
+            net.WriteString(tgt:SteamID())
+            net.WriteString(text)
+            net.WriteBool(true)
             net.SendToServer()
         end)
         AdminStickIsOpen = false
