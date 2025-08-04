@@ -98,7 +98,7 @@ function lia.darkrp.createEntity(name, data)
     ITEM.name = name
     ITEM.model = data.model or ""
     ITEM.desc = data.desc or ""
-    ITEM.category = data.category or L("itemCatEntities")
+    ITEM.category = data.category or L("entities")
     ITEM.entityid = data.ent or ""
     ITEM.price = data.price or 0
     lia.information(L("generatedDarkRPItem", name))

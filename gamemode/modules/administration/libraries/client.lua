@@ -99,7 +99,7 @@
                 func = function() RunConsoleCommand("say", "!respawn " .. target:SteamID()) end
             },
             {
-                name = L("Return"),
+                name = L("return"),
                 image = "icon16/arrow_redo.png",
                 func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
             }

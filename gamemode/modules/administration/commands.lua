@@ -1503,7 +1503,7 @@ lia.command.add("charban", {
     desc = "banCharDesc",
     syntax = "[string Name or Number ID]",
     AdminStick = {
-        Name = "adminStickBanCharacterName",
+        Name = "banCharacter",
         Category = "characterManagement",
         SubCategory = "adminStickSubCategoryBans",
         Icon = "icon16/user_red.png"
@@ -1969,7 +1969,7 @@ lia.command.add("forcesay", {
     desc = "forceSayDesc",
     syntax = "[player Name] [string Message]",
     AdminStick = {
-        Name = "forceSayName",
+        Name = "Force Say",
         Category = "moderationTools",
         SubCategory = "misc",
         Icon = "icon16/comments.png"

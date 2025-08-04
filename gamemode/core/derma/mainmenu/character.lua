@@ -403,7 +403,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local info = {L("name") .. ": " .. (character:getName() or ""), L("desc") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
+    local info = {L("name") .. ": " .. (character:getName() or ""), L("description") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
     if character:getClass() then
         local cls = lia.class.list[character:getClass()]
         if cls and cls.name then table.insert(info, L("class") .. ": " .. cls.name) end

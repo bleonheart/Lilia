@@ -1,4 +1,4 @@
-MODULE.name = L("moduleStorageName")
+MODULE.name = L("storage")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleStorageDesc")

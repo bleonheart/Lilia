@@ -4,9 +4,9 @@
     desc = "banOOCCommandDesc",
     syntax = "[player Name]",
     AdminStick = {
-        Name = "banOOCCommandName",
+        Name = "Ban OOC",
         Category = "moderationTools",
-        SubCategory = "oocCategory",
+        SubCategory = "ooc",
         Icon = "icon16/sound_mute.png"
     },
     onRun = function(client, arguments)
@@ -28,9 +28,9 @@ lia.command.add("unbanooc", {
     desc = "unbanOOCCommandDesc",
     syntax = "[player Name]",
     AdminStick = {
-        Name = "unbanOOCCommandName",
+        Name = "Unban OOC",
         Category = "moderationTools",
-        SubCategory = "oocCategory",
+        SubCategory = "ooc",
         Icon = "icon16/sound.png"
     },
     onRun = function(client, arguments)

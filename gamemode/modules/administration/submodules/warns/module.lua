@@ -6,7 +6,7 @@ MODULE.Privileges = {
     {
         Name = L("canRemoveWarns"),
         MinAccess = "superadmin",
-        Category = L("categoryWarning"),
+        Category = L("warning"),
     },
 }
 
@@ -33,7 +33,7 @@ if CLIENT then
 
         addSizedColumn(L("timestamp"))
         addSizedColumn(L("Warned"))
-        addSizedColumn(L("Admin"))
+        addSizedColumn(L("admin"))
         addSizedColumn(L("Warning Message"))
 
         local function populate(filter)
