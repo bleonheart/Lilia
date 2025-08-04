@@ -998,7 +998,6 @@ LANGUAGE = {
     ["Goto"] = "Goto",
     ["Respawn"] = "Respawn",
     ["Return"] = "Return",
-    ["Blind"] = "Blind",
     ["Unblind"] = "Unblind",
     ["Freeze"] = "Freeze",
     ["Unfreeze"] = "Unfreeze",
