@@ -253,8 +253,12 @@ lia.command.add("charlist", {
 
                 local banInfo = info.charBanInfo
                 if not banInfo and row.charBanInfo and row.charBanInfo ~= "" then
-                    local decoded = pon.decode(row.charBanInfo)
-                    banInfo = decoded and decoded[1] or {}
+                    local ok, decoded = pcall(pon.decode, row.charBanInfo)
+                    if ok then
+                        banInfo = decoded and decoded[1] or {}
+                    else
+                        banInfo = util.JSONToTable(row.charBanInfo) or {}
+                    end
                 end
 
                 local entry = {
