@@ -20,6 +20,11 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
                 local stored = lia.char.loaded[row.id]
                 local isBanned = tonumber(row.banned) == 1
                 local steamID = tostring(row.steamID)
+                local playTime = tonumber(row.playtime) or 0
+                if stored then
+                    local loginTime = stored:getLoginTime() or os.time()
+                    playTime = stored:getPlayTime() + os.time() - loginTime
+                end
                 local entry = {
                     ID = row.id,
                     Name = row.name,
@@ -28,7 +33,7 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
                     SteamID = steamID,
                     LastUsed = stored and "Online" or row.lastJoinTime,
                     Banned = isBanned,
-                    PlayTime = tonumber(row.playtime) or 0,
+                    PlayTime = playTime,
                     Money = tonumber(row.money) or 0
                 }
                 if isBanned then
