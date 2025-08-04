@@ -79,7 +79,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
             return false
         end
 
-        if client:hasPrivilege(client, "Can Bypass Staff Faction SAM Command whitelist", nil) or client:isStaffOnDuty() then
+        if client:hasPrivilege(client, L("canBypassSAMFactionWhitelist"), nil) or client:isStaffOnDuty() then
             return true
         else
             client:notifyLocalized("staffRestrictedCommand")

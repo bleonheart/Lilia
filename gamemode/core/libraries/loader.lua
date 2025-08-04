@@ -248,19 +248,19 @@ local ConditionalFiles = {
     {
         path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
         global = "serverguard",
-        name = "ServerGuard",
+        name = L("categoryServerGuard"),
         realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sam.lua",
         global = "sam",
-        name = "SAM",
+        name = L("categorySAM"),
         realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/simfphys.lua",
         global = "simfphys",
-        name = "Simfphys",
+        name = L("categorySimfphys"),
         realm = "shared"
     },
     {
@@ -389,7 +389,7 @@ end
 
 function lia.notifyAdmin(notification)
     for _, client in player.Iterator() do
-        if IsValid(client) and client:hasPrivilege("Can See Alting Notifications") then client:notify(notification) end
+        if IsValid(client) and client:hasPrivilege(L("canSeeAltingNotifications")) then client:notify(notification) end
     end
 end
 
