@@ -39,8 +39,12 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
                 if isBanned then
                     local banInfo = {}
                     if row.charBanInfo and row.charBanInfo ~= "" then
-                        local decoded = pon.decode(row.charBanInfo)
-                        banInfo = decoded and decoded[1] or {}
+                        local ok, decoded = pcall(pon.decode, row.charBanInfo)
+                        if ok then
+                            banInfo = decoded and decoded[1] or {}
+                        else
+                            banInfo = util.JSONToTable(row.charBanInfo) or {}
+                        end
                     end
                     entry.BanningAdminName = banInfo.name or ""
                     entry.BanningAdminSteamID = banInfo.steamID or ""
