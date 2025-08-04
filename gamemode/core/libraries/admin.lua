@@ -713,7 +713,7 @@ else
             row:DockMargin(0, 0, 0, 8)
             local isUsergroup = name == L("usergroupStaff") or name == L("usergroupVIP")
             local font = isUsergroup and "liaBigFont" or "liaMediumFont"
-            local boxSize = 28
+            local boxSize = 56
             local rightOffset = isUsergroup and 16 or 12
             surface.SetFont(font)
             local _, textHeight = surface.GetTextSize("W")
@@ -728,7 +728,7 @@ else
             lbl:SetContentAlignment(4)
             local chk = row:Add("liaCheckBox")
             chk:SetSize(boxSize, boxSize)
-            row.PerformLayout = function(_, w, h) chk:SetPos(w - boxSize - rightOffset, (h - boxSize) / 2) end
+            row.PerformLayout = function(_, w, h) chk:SetPos(w - boxSize - rightOffset, h - boxSize) end
             chk:SetChecked(current[name] and true or false)
             if editable then
                 chk.OnChange = function(_, v)
@@ -854,11 +854,11 @@ else
         local staffPanel = details:Add("DPanel")
         staffPanel:Dock(TOP)
         staffPanel:DockMargin(0, 8, 0, 14)
-        staffPanel:SetTall(28)
+        staffPanel:SetTall(56)
         staffPanel.Paint = nil
         local staffChk = staffPanel:Add("liaCheckBox")
-        staffChk:SetSize(28, 28)
-        staffPanel.PerformLayout = function(_, w, h) staffChk:SetPos((w - 28) / 2, (h - 28) / 2) end
+        staffChk:SetSize(56, 56)
+        staffPanel.PerformLayout = function(_, w, h) staffChk:SetPos((w - 56) / 2, h - 56) end
         staffChk:SetChecked(hasType("Staff"))
         staffChk:SetMouseInputEnabled(false)
         staffChk:SetCursor("arrow")
@@ -872,11 +872,11 @@ else
         local vipPanel = details:Add("DPanel")
         vipPanel:Dock(TOP)
         vipPanel:DockMargin(0, 8, 0, 0)
-        vipPanel:SetTall(28)
+        vipPanel:SetTall(56)
         vipPanel.Paint = nil
         local vipChk = vipPanel:Add("liaCheckBox")
-        vipChk:SetSize(28, 28)
-        vipPanel.PerformLayout = function(_, w, h) vipChk:SetPos((w - 28) / 2, (h - 28) / 2) end
+        vipChk:SetSize(56, 56)
+        vipPanel.PerformLayout = function(_, w, h) vipChk:SetPos((w - 56) / 2, h - 56) end
         vipChk:SetChecked(hasType("VIP"))
         vipChk:SetMouseInputEnabled(false)
         vipChk:SetCursor("arrow")
