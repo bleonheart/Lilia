@@ -55,7 +55,7 @@ local function SendRoster(client)
                 end
 
                 local faction = lia.faction.teams[v.faction]
-                if faction then
+                if faction and faction.index ~= FACTION_STAFF then
                     data[faction.name] = data[faction.name] or {}
                     table.insert(data[faction.name], {
                         name = v.name,

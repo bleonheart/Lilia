@@ -215,7 +215,7 @@ end
 net.Receive("KickCharacter", function(_, client)
     local char = client:getChar()
     local canManageAny = client:hasPrivilege("Can Manage Factions")
-    local canKick = client:hasPrivilege("Manage Faction Members") or (char and char:hasFlags("K"))
+    local canKick = char and char:hasFlags("K")
     if not canKick and not canManageAny then return end
     local defaultFaction
     for _, fac in pairs(lia.faction.teams) do
@@ -234,9 +234,11 @@ net.Receive("KickCharacter", function(_, client)
     local isOnline = false
     for _, target in player.Iterator() do
         local targetChar = target:getChar()
-        if targetChar and targetChar:getID() == characterID and (canManageAny or (char and targetChar:getFaction() == char:getFaction())) then
+        if targetChar and targetChar:getID() == characterID and (canManageAny or (canKick and char and targetChar:getFaction() == char:getFaction())) then
             isOnline = true
             local oldFaction = targetChar:getFaction()
+            local oldFactionData = lia.faction.indices[oldFaction]
+            if oldFactionData and oldFactionData.isDefault then return end
             target:notifyLocalized("kickedFromFaction")
             targetChar.vars.faction = defaultFaction.uniqueID
             targetChar:setFaction(defaultFaction.index)
@@ -248,10 +250,15 @@ net.Receive("KickCharacter", function(_, client)
     end
 
     if not isOnline then
-        lia.db.updateTable({
-            faction = defaultFaction.uniqueID
-        }, nil, "characters", "id = " .. characterID)
-
-        lia.char.setCharData(characterID, "factionKickWarn", true)
+        lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID, function(data)
+            if not data or not data[1] then return end
+            local oldFactionID = data[1].faction
+            local oldFactionData = lia.faction.teams[oldFactionID]
+            if oldFactionData and oldFactionData.isDefault then return end
+            lia.db.updateTable({
+                faction = defaultFaction.uniqueID
+            }, nil, "characters", "id = " .. characterID)
+            lia.char.setCharData(characterID, "factionKickWarn", true)
+        end)
     end
 end)
