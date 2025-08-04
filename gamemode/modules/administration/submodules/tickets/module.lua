@@ -35,7 +35,7 @@ if CLIENT then
         addSizedColumn(L("timestamp"))
         addSizedColumn(L("requester"))
         addSizedColumn(L("admin"))
-        addSizedColumn(L("Ticket Message", "Message"))
+        addSizedColumn(L("Ticket Message"))
 
         local function populate(filter)
             list:Clear()
@@ -96,7 +96,7 @@ if CLIENT then
     function MODULE:PopulateAdminTabs(pages)
         if not IsValid(LocalPlayer()) or not (LocalPlayer():hasPrivilege(L("alwaysSeeTickets")) or LocalPlayer():isStaffOnDuty()) then return end
         table.insert(pages, {
-            name = L("tickets", "Tickets"),
+            name = L("tickets"),
             drawFunc = function(panel)
                 ticketPanel = panel
                 net.Start("liaRequestActiveTickets")

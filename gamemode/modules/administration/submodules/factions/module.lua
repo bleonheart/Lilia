@@ -1,12 +1,12 @@
-MODULE.name = L("moduleFactionMgmtName", "Faction Management")
+MODULE.name = L("moduleFactionMgmtName")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleFactionMgmtDesc", "View and manage faction rosters")
+MODULE.desc = L("moduleFactionMgmtDesc")
 MODULE.Privileges = {
     {
-        Name = L("canManageFactions", "Can Manage Factions"),
+        Name = L("canManageFactions"),
         MinAccess = "admin",
-        Category = L("categoryFactions", "Factions"),
+        Category = L("categoryFactions"),
     },
 }
 
