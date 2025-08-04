@@ -454,14 +454,10 @@ local function OpenRoster(panel, data)
                 end
             end
 
-            if steamID and steamID ~= "" then
-                requestPlayerCharacters(steamID, line, function(menu, ln, sID) buildMenu(menu, ln, sID) end)
-            else
-                local menu = DermaMenu()
-                buildMenu(menu, line, steamID or "")
-                local x, y = gui.MousePos()
-                menu:Open(x, y)
-            end
+            local menu = DermaMenu()
+            buildMenu(menu, line, steamID or "")
+            local x, y = gui.MousePos()
+            menu:Open(x, y)
         end
 
         sheet:AddSheet(factionName, page)
