@@ -108,7 +108,7 @@ if CLIENT then
             if not IsValid(line) or not line.steamID then return end
             local parentList = self
             requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID, characters)
-                local charSubMenu = menu:AddSubMenu(L("viewCharacterList"))
+                local charSubMenu = menu:AddSubMenu(L("view") .. L("characterList"))
                 if not characters or #characters == 0 then
                     charSubMenu:AddOption(L("none"))
                 else

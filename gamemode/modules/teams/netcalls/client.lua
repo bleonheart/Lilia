@@ -63,7 +63,7 @@ net.Receive("CharacterInfo", function()
                     end)
                 end
 
-                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+                menu:AddOption(L("view") .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for key, value in pairs(rowData) do
@@ -118,7 +118,7 @@ net.Receive("CharacterInfo", function()
                 end)
             end
 
-            menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+            menu:AddOption(L("view") .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do

@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleStaffManagementDesc")
 MODULE.Privileges = {
     {
-        Name = L("viewStaffManagement"),
+        Name = L("view").. L("moduleStaffManagementName"),
         MinAccess = "superadmin",
         Category = L("categoryStaffManagement"),
     }
