@@ -295,18 +295,20 @@ function MODULE:PopulateAdminTabs(pages)
                             if line.CharID then
                                 local owner = line.SteamID and lia.util.getBySteamID(line.SteamID)
                                 if IsValid(owner) then
-                                    if LocalPlayer():hasPrivilege("Manage Characters") then
-                                        if line.Banned then
+                                    if line.Banned then
+                                        if lia.command.hasAccess(LocalPlayer(), "charunban") then
                                             menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand('say "/charunban ' .. line.CharID .. '"') end):SetIcon("icon16/accept.png")
-                                        else
+                                        end
+                                    else
+                                        if lia.command.hasAccess(LocalPlayer(), "charban") then
                                             menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand('say "/charban ' .. line.CharID .. '"') end):SetIcon("icon16/cancel.png")
                                         end
                                     end
                                 else
-                                    if LocalPlayer():hasPrivilege("Ban Offline") and not line.Banned then
+                                    if not line.Banned and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then
                                         menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand('say "/charbanoffline ' .. line.CharID .. '"') end):SetIcon("icon16/cancel.png")
                                     end
-                                    if LocalPlayer():hasPrivilege("Unban Offline") and line.Banned then
+                                    if line.Banned and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then
                                         menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. line.CharID .. '"') end):SetIcon("icon16/accept.png")
                                     end
                                 end
