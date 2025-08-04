@@ -350,10 +350,18 @@ net.Receive("liaAllPKs", function()
         menu:AddOption(L("copyEvidence"), function() SetClipboardText(line.evidence) end):SetIcon("icon16/page_copy.png")
         menu:AddOption(L("copySteamID"), function() SetClipboardText(line.steamID) end):SetIcon("icon16/page_copy.png")
         if line.evidence and line.evidence:match("^https?://") then menu:AddOption(L("viewEvidence"), function() gui.OpenURL(line.evidence) end):SetIcon("icon16/world.png") end
-        menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png")
-        menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png")
-        menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png")
-        menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png")
+        if line.charID then
+            local owner = line.steamID and lia.util.getBySteamID(line.steamID)
+            if IsValid(owner) then
+                if LocalPlayer():hasPrivilege("Manage Characters") then
+                    menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png")
+                    menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png")
+                end
+            else
+                if LocalPlayer():hasPrivilege("Ban Offline") then menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png") end
+                if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png") end
+            end
+        end
         menu:Open()
     end
 end)
