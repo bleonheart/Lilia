@@ -587,6 +587,11 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     function list:OnRowRightClick(_, line)
         if not IsValid(line) then return end
         local menu = DermaMenu()
+        local steamID = line:GetColumnText(2)
+        local warningCount = tonumber(line:GetColumnText(4)) or 0
+        if warningCount > 0 then menu:AddOption(L("viewWarningsIssued"), function() LocalPlayer():ConCommand("say /viewwarnsissued " .. steamID) end):SetIcon("icon16/error.png") end
+        local ticketCount = tonumber(line:GetColumnText(5)) or 0
+        if ticketCount > 0 then menu:AddOption(L("viewTicketClaims"), function() LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end):SetIcon("icon16/page_white_text.png") end
         menu:AddOption(L("copyRow"), function()
             local rowString = ""
             for i, column in ipairs(self.Columns or {}) do
@@ -720,7 +725,6 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
             menu:AddOption(L("viewWarnings"), function() LocalPlayer():ConCommand("say /viewwarns " .. steamID) end):SetIcon("icon16/error.png")
             menu:AddOption(L("viewTicketRequests"), function() LocalPlayer():ConCommand("say /viewtickets " .. steamID) end):SetIcon("icon16/help.png")
-            if (ln.ticketClaims or 0) > 0 then menu:AddOption(L("viewTicketClaims"), function() LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end):SetIcon("icon16/page_white_text.png") end
         end)
     end
 end)

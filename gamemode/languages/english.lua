@@ -698,6 +698,7 @@ LANGUAGE = {
     viewTicketClaims = "View Ticket Claims",
     viewTicketRequests = "View Ticket Requests",
     viewWarnings = "View Warnings",
+    viewWarningsIssued = "View Warnings Issued",
     mustSpecifyPlayer = "You must specify a player name.",
     noClaimsFound = "No claims found for the specified player.",
     noTicketsFound = "No tickets found for the specified player.",
