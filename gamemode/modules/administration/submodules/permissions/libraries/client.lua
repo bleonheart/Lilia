@@ -1,8 +1,3 @@
-﻿local ESP_DrawnEntities = {
-    lia_bodygrouper = true,
-    lia_vendor = true,
-}
-
 function MODULE:PrePlayerDraw(client)
     if not IsValid(client) then return end
     if client:isNoClipping() then return true end
@@ -18,6 +13,8 @@ function MODULE:HUDPaint()
     local marginX, marginY = screenWidth * 0.1, screenHeight * 0.1
     for _, ent in pairs(ents.GetAll()) do
         if not IsValid(ent) or ent == client then continue end
+        local pos = ent:GetPos()
+        if not pos then continue end
         local kind, label, subLabel, baseColor
         if ent:IsPlayer() then
             kind = "Players"
@@ -33,15 +30,13 @@ function MODULE:HUDPaint()
             kind = "Items"
             label = L("item") .. ": " .. (ent.getItemTable and ent:getItemTable().name or L("unknown"))
             baseColor = lia.config.get("espItemsColor") or Color(255, 255, 255)
-        elseif ESP_DrawnEntities[ent:GetClass()] and lia.option.get("espEntities", false) then
+        elseif lia.option.get("espEntities", false) and ent:GetClass():StartWith("lia_") then
             kind = "Entities"
             label = L("entity") .. " " .. L("class") .. ": " .. (ent:GetClass() or L("unknown"))
             baseColor = lia.config.get("espEntitiesColor") or Color(255, 255, 255)
         end
 
         if not kind then continue end
-        local pos = ent:GetPos()
-        if not pos then continue end
         local screenPos = pos:ToScreen()
         screenPos.x = math.Clamp(screenPos.x, marginX, screenWidth - marginX)
         screenPos.y = math.Clamp(screenPos.y, marginY, screenHeight - marginY)
