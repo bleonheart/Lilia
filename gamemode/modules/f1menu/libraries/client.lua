@@ -153,8 +153,23 @@ function MODULE:CreateMenuButtons(tabs)
                 local panel = sheet:Add("DPanel")
                 panel:Dock(FILL)
                 panel.Paint = function() end
-                if page.drawFunc then page.drawFunc(panel) end
-                sheet:AddSheet(page.name, panel)
+                local sheetData = sheet:AddSheet(page.name, panel)
+
+                if page.drawFunc then
+                    sheetData.Tab.liaPagePanel = panel
+                    sheetData.Tab.liaOnSelect = page.drawFunc
+                end
+            end
+
+            function sheet:OnActiveTabChanged(_, newTab)
+                if IsValid(newTab) and newTab.liaOnSelect then
+                    newTab.liaOnSelect(newTab.liaPagePanel)
+                end
+            end
+
+            local initial = sheet:GetActiveTab()
+            if IsValid(initial) and initial.liaOnSelect then
+                initial.liaOnSelect(initial.liaPagePanel)
             end
         end
     end
