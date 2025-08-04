@@ -621,7 +621,12 @@ local function openDecodedTable(tableName, columns, data)
     lia.util.CreateTableUI(L("decodedTableTitle", tableName), columnDefs, decodedRows)
 end
 
-lia.net.readBigTable("liaDatabaseViewData", function(data) if IsValid(panelRef) then panelRef:buildSheets(data) end end)
+lia.net.readBigTable("liaDatabaseViewData", function(data)
+    if not IsValid(panelRef) or not isfunction(panelRef.buildSheets) then return end
+
+    panelRef:buildSheets(data)
+end)
+
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:Clear()
@@ -817,6 +822,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
 end)
 
 lia.net.readBigTable("liaFullCharList", function(data)
-    if not IsValid(panelRef) or not data then return end
+    if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
+
     panelRef:buildSheets(data)
 end)
