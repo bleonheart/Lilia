@@ -10,14 +10,12 @@ end
 
 net.Receive("RequestRoster", function(_, client)
     local character = client:getChar()
-    if not character then return end
-    local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
-    if not isLeader then return end
-    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
+    if not character or not character:hasFlags("V") then return end
     local factionIndex = character:getFaction()
-    if not factionIndex then return end
+    if not factionIndex or factionIndex == FACTION_STAFF then return end
     local faction = lia.faction.indices[factionIndex]
     if not faction then return end
+    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local condition = "lia_characters.schema = '" .. lia.db.escape(gamemode) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
     local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition

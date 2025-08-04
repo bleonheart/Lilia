@@ -26,24 +26,22 @@ end
 function MODULE:CreateInformationButtons(pages)
     local client = LocalPlayer()
     local character = client:getChar()
-    if not character then return end
-    local isLeader = client:hasPrivilege("Manage Faction Members") or character:hasFlags("V")
-    if isLeader then
-        table.insert(pages, {
-            name = L("roster"),
-            drawFunc = function(parent)
-                local sheet = vgui.Create("liaSheet", parent)
-                sheet:SetPlaceholderText(L("search"))
-                lia.gui.rosterSheet = sheet
-            end,
-            onSelect = function()
-                if IsValid(lia.gui.rosterSheet) then
-                    net.Start("RequestRoster")
-                    net.SendToServer()
-                end
+    if not character or client:isStaffOnDuty() then return end
+    if not character:hasFlags("V") then return end
+    table.insert(pages, {
+        name = L("roster"),
+        drawFunc = function(parent)
+            local sheet = vgui.Create("liaSheet", parent)
+            sheet:SetPlaceholderText(L("search"))
+            lia.gui.rosterSheet = sheet
+        end,
+        onSelect = function()
+            if IsValid(lia.gui.rosterSheet) then
+                net.Start("RequestRoster")
+                net.SendToServer()
             end
-        })
-    end
+        end
+    })
 end
 
 hook.Add("F1MenuClosed", "liaRosterSheetCleanup", function() lia.gui.rosterSheet = nil end)
