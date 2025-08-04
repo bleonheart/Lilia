@@ -51,19 +51,19 @@ end)
 
 lia.config.add("DamageInCars", "Take Damage in Cars", true, nil, {
     desc = "Whether or not you take damage while in cars",
-    category = L("categorySimfphys"),
+    category = "Simfphys Vehicles",
     type = "Boolean"
 })
 
 lia.config.add("CarEntryDelayEnabled", "Take Damage in Cars", true, nil, {
     desc = "Whether or not you take damage while in cars",
-    category = L("categorySimfphys"),
+    category = "Simfphys Vehicles",
     type = "Boolean"
 })
 
 lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
     desc = "Defines the time to enter vehicle.",
-    category = L("categorySimfphys"),
+    category = "Simfphys Vehicles",
     type = "Int",
     min = 1,
     max = 20
@@ -72,7 +72,7 @@ lia.config.add("TimeToEnterVehicle", "Time To Enter Vehicle", 4, nil, {
 lia.administrator.registerPrivilege({
     Name = L("canEditSimfphysCars"),
     MinAccess = "superadmin",
-    Category = L("categorySimfphys")
+    Category = "Simfphys Vehicles"
 })
 
 hook.Add("simfphysPhysicsCollide", "SIMFPHYS_simfphysPhysicsCollide", function() return true end)

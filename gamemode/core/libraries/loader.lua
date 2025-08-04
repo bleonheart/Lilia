@@ -248,19 +248,19 @@ local ConditionalFiles = {
     {
         path = "lilia/gamemode/core/libraries/compatibility/serverguard.lua",
         global = "serverguard",
-        name = L("categoryServerGuard"),
+        name = "ServerGuard",
         realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/sam.lua",
         global = "sam",
-        name = L("categorySAM"),
+        name = "SAM | Admin Mod",
         realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/simfphys.lua",
         global = "simfphys",
-        name = L("categorySimfphys"),
+        name = "Simfphys Vehicles",
         realm = "shared"
     },
     {
@@ -579,8 +579,5 @@ for _, file in ipairs(ConditionalFiles) do
     end
 end
 
-if #loadedCompatibility > 0 then
-    lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", ")))
-end
-
+if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
 if game.IsDedicated() then concommand.Remove("gm_save") end
