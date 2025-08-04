@@ -163,7 +163,7 @@ local function IncludeAdminMenu(tgt, menu, stores)
             icon = "icon16/arrow_right.png"
         },
         {
-            name = L("Return"),
+            name = L("return"),
             cmd = "return",
             icon = "icon16/arrow_redo.png"
         },

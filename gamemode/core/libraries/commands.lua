@@ -15,7 +15,7 @@ function lia.command.add(command, data)
         lia.administrator.registerPrivilege({
             Name = privilegeName,
             MinAccess = superAdminOnly and "superadmin" or "admin",
-            Category = L("categoryCommands")
+            Category = L("commands")
         })
     end
 
@@ -363,7 +363,7 @@ else
                 end
             elseif fieldType == "player" then
                 ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("selectPlayerPrompt"))
+                ctrl:SetValue(L("selectPlayer"))
                 for _, plyObj in player.Iterator() do
                     if IsValid(plyObj) then ctrl:AddChoice(plyObj:Name(), plyObj:SteamID()) end
                 end

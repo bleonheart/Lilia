@@ -116,7 +116,7 @@ net.Receive("DisplayCharList", function()
             field = "Name"
         },
         {
-            name = L("desc"),
+            name = L("description"),
             field = "Desc"
         },
         {

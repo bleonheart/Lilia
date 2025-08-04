@@ -1,5 +1,5 @@
 if CLIENT then TicketFrames = {} end
-MODULE.name = L("moduleTicketsName")
+MODULE.name = L("tickets")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleTicketsDesc")
@@ -7,7 +7,7 @@ MODULE.Privileges = {
     {
         Name = L("alwaysSeeTickets"),
         MinAccess = "superadmin",
-        Category = L("categoryTickets"),
+        Category = L("tickets"),
     },
 }
 
@@ -35,7 +35,7 @@ if CLIENT then
         addSizedColumn(L("timestamp"))
         addSizedColumn(L("requester"))
         addSizedColumn(L("admin"))
-        addSizedColumn(L("Ticket Message"))
+        addSizedColumn(L("message"))
 
         local function populate(filter)
             list:Clear()

@@ -490,7 +490,7 @@ function lia.item.generateWeapons()
         ITEM.name = override.name or wep.PrintName or className
         ITEM.desc = override.desc or L("weaponsDesc")
         -- assign a localized category based on weapon type
-        ITEM.category = override.category or (isGrenade and L("itemCatGrenades") or L("itemCatWeapons"))
+        ITEM.category = override.category or (isGrenade and L("itemCatGrenades") or L("weapons"))
         ITEM.model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl"
         ITEM.class = override.class or className
         local size = lia.item.holdTypeSizeMapping[holdType] or {

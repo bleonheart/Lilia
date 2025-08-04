@@ -123,7 +123,7 @@ lia.command.add("returnitems", {
     desc = "returnItemsDesc",
     syntax = "[player Name]",
     AdminStick = {
-        Name = "returnItemsName",
+        Name = "Return Items",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/arrow_refresh.png"

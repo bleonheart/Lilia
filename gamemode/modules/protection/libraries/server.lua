@@ -2,7 +2,7 @@
 lia.administrator.registerPrivilege({
     Name = L("receiveCheaterNotifications"),
     MinAccess = "admin",
-    Category = L("categoryProtection")
+    Category = L("protection")
 })
 
 local function IsCheater(client)

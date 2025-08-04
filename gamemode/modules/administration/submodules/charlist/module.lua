@@ -5,7 +5,7 @@ MODULE.Privileges = {
     {
         Name = L("List Characters"),
         MinAccess = "admin",
-        Category = L("categoryCharacter")
+        Category = L("character")
     }
 }
 
@@ -95,7 +95,7 @@ else
                     local columns = {
                         {name = L("id"), field = "ID"},
                         {name = L("name"), field = "Name"},
-                        {name = L("desc"), field = "Desc"},
+                        {name = L("description"), field = "Desc"},
                         {name = L("faction"), field = "Faction"},
                         {name = L("steamID"), field = "SteamID"},
                         {name = L("lastUsed"), field = "LastUsed"},

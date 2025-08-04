@@ -682,7 +682,7 @@ lia.config.add("ChatSizeDiff", "Enable Different Chat Size", false, nil, {
 
 lia.config.add("MusicVolume", L("mainMenuMusicVolume"), 0.25, nil, {
     desc = L("mainMenuMusicVolumeDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Float",
     min = 0.0,
     max = 1.0
@@ -690,49 +690,49 @@ lia.config.add("MusicVolume", L("mainMenuMusicVolume"), 0.25, nil, {
 
 lia.config.add("Music", L("mainMenuMusic"), "", nil, {
     desc = L("mainMenuMusicDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Generic"
 })
 
 lia.config.add("BackgroundURL", L("mainMenuBackgroundURL"), "", nil, {
     desc = L("mainMenuBackgroundURLDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Generic"
 })
 
 lia.config.add("CenterLogo", L("mainMenuCenterLogo"), "", nil, {
     desc = L("mainMenuCenterLogoDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Generic"
 })
 
 lia.config.add("DiscordURL", L("mainMenuDiscordURL"), "https://discord.gg/esCRH5ckbQ", nil, {
     desc = L("mainMenuDiscordURLDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Generic"
 })
 
 lia.config.add("Workshop", L("mainMenuWorkshopURL"), "https://steamcommunity.com/sharedfiles/filedetails/?id=3527535922", nil, {
     desc = L("mainMenuWorkshopURLDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Generic"
 })
 
 lia.config.add("CharMenuBGInputDisabled", L("mainMenuCharBGInputDisabled"), true, nil, {
     desc = L("mainMenuCharBGInputDisabledDesc"),
-    category = L("categoryMainMenu"),
+    category = L("mainMenu"),
     type = "Boolean"
 })
 
 lia.config.add("SwitchCooldownOnAllEntities", L("switchCooldownOnAllEntities"), false, nil, {
     desc = L("switchCooldownOnAllEntitiesDesc"),
-    category = L("categoryCharacter"),
+    category = L("character"),
     type = "Boolean",
 })
 
 lia.config.add("OnDamageCharacterSwitchCooldownTimer", L("onDamageCharacterSwitchCooldownTimer"), 15, nil, {
     desc = L("onDamageCharacterSwitchCooldownTimerDesc"),
-    category = L("categoryCharacter"),
+    category = L("character"),
     type = "Float",
     min = 0,
     max = 120
@@ -740,7 +740,7 @@ lia.config.add("OnDamageCharacterSwitchCooldownTimer", L("onDamageCharacterSwitc
 
 lia.config.add("CharacterSwitchCooldownTimer", L("characterSwitchCooldownTimer"), 5, nil, {
     desc = L("characterSwitchCooldownTimerDesc"),
-    category = L("categoryCharacter"),
+    category = L("character"),
     type = "Float",
     min = 0,
     max = 120
@@ -766,7 +766,7 @@ lia.config.add("NPCsDropWeapons", L("npcsDropWeapons"), false, nil, {
 
 lia.config.add("TimeUntilDroppedSWEPRemoved", L("timeUntilDroppedSWEPRemoved"), 15, nil, {
     desc = L("timeUntilDroppedSWEPRemovedDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Float",
     min = 0,
     max = 300
@@ -774,33 +774,33 @@ lia.config.add("TimeUntilDroppedSWEPRemoved", L("timeUntilDroppedSWEPRemoved"), 
 
 lia.config.add("AltsDisabled", L("altsDisabled"), false, nil, {
     desc = L("altsDisabledDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Boolean",
 })
 
 lia.config.add("ActsActive", L("actsActive"), false, nil, {
     desc = L("actsActiveDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Boolean",
 })
 
 lia.config.add("PassableOnFreeze", L("passableOnFreeze"), false, nil, {
     desc = L("passableOnFreezeDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Boolean",
 })
 
 lia.config.add("PlayerSpawnVehicleDelay", L("playerSpawnVehicleDelay"), 30, nil, {
     desc = L("playerSpawnVehicleDelayDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Float",
     min = 0,
     max = 300
 })
 
 lia.config.add("ToolInterval", L("toolInterval"), 0, nil, {
-    desc = L("toolIntervalDesc"),
-    category = L("categoryProtection"),
+    desc = L("toolInterval"),
+    category = L("protection"),
     type = "Float",
     min = 0,
     max = 60
@@ -808,13 +808,13 @@ lia.config.add("ToolInterval", L("toolInterval"), 0, nil, {
 
 lia.config.add("DisableLuaRun", L("disableLuaRun"), false, nil, {
     desc = L("disableLuaRunDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Boolean",
 })
 
 lia.config.add("EquipDelay", L("equipDelay"), 0, nil, {
     desc = L("equipDelayDesc"),
-    category = L("categoryItems"),
+    category = L("items"),
     type = "Float",
     min = 0,
     max = 10
@@ -822,7 +822,7 @@ lia.config.add("EquipDelay", L("equipDelay"), 0, nil, {
 
 lia.config.add("UnequipDelay", L("unequipDelay"), 0, nil, {
     desc = L("unequipDelayDesc"),
-    category = L("categoryItems"),
+    category = L("items"),
     type = "Float",
     min = 0,
     max = 10
@@ -830,7 +830,7 @@ lia.config.add("UnequipDelay", L("unequipDelay"), 0, nil, {
 
 lia.config.add("DropDelay", L("dropDelay"), 0, nil, {
     desc = L("dropDelayDesc"),
-    category = L("categoryItems"),
+    category = L("items"),
     type = "Float",
     min = 0,
     max = 10
@@ -838,7 +838,7 @@ lia.config.add("DropDelay", L("dropDelay"), 0, nil, {
 
 lia.config.add("TakeDelay", L("takeDelay"), 0, nil, {
     desc = L("takeDelayDesc"),
-    category = L("categoryItems"),
+    category = L("items"),
     type = "Float",
     min = 0,
     max = 10
@@ -846,7 +846,7 @@ lia.config.add("TakeDelay", L("takeDelay"), 0, nil, {
 
 lia.config.add("ItemGiveSpeed", L("itemGiveSpeed"), 6, nil, {
     desc = L("itemGiveSpeedDesc"),
-    category = L("categoryItems"),
+    category = L("items"),
     type = "Int",
     min = 1,
     max = 60
@@ -854,13 +854,13 @@ lia.config.add("ItemGiveSpeed", L("itemGiveSpeed"), 6, nil, {
 
 lia.config.add("ItemGiveEnabled", L("itemGiveEnabled"), true, nil, {
     desc = L("itemGiveEnabledDesc"),
-    category = L("categoryItems"),
+    category = L("items"),
     type = "Boolean",
 })
 
 lia.config.add("DisableCheaterActions", L("disableCheaterActions"), true, nil, {
     desc = L("disableCheaterActionsDesc"),
-    category = L("categoryProtection"),
+    category = L("protection"),
     type = "Boolean",
 })
 
@@ -902,7 +902,7 @@ lia.config.add("ClassDisplay", "Display Classes on Characters", true, nil, {
 
 lia.config.add("sbWidth", L("sbWidth"), 0.35, nil, {
     desc = L("sbWidthDesc"),
-    category = L("moduleScoreboardName"),
+    category = L("scoreboard"),
     type = "Float",
     min = 0.1,
     max = 1.0
@@ -910,7 +910,7 @@ lia.config.add("sbWidth", L("sbWidth"), 0.35, nil, {
 
 lia.config.add("sbHeight", L("sbHeight"), 0.65, nil, {
     desc = L("sbHeightDesc"),
-    category = L("moduleScoreboardName"),
+    category = L("scoreboard"),
     type = "Float",
     min = 0.1,
     max = 1.0
@@ -918,19 +918,19 @@ lia.config.add("sbHeight", L("sbHeight"), 0.65, nil, {
 
 lia.config.add("ClassHeaders", L("classHeaders"), true, nil, {
     desc = L("classHeadersDesc"),
-    category = L("moduleScoreboardName"),
+    category = L("scoreboard"),
     type = "Boolean"
 })
 
 lia.config.add("UseSolidBackground", L("useSolidBackground"), false, nil, {
     desc = L("useSolidBackgroundDesc"),
-    category = L("moduleScoreboardName"),
+    category = L("scoreboard"),
     type = "Boolean"
 })
 
 lia.config.add("ClassLogo", L("classLogo"), false, nil, {
     desc = L("classLogoDesc"),
-    category = L("moduleScoreboardName"),
+    category = L("scoreboard"),
     type = "Boolean"
 })
 
@@ -941,19 +941,19 @@ lia.config.add("ScoreboardBackgroundColor", L("scoreboardBackgroundColor"), {
     a = 255
 }, nil, {
     desc = L("scoreboardBackgroundColorDesc"),
-    category = L("moduleScoreboardName"),
+    category = L("scoreboard"),
     type = "Color"
 })
 
 lia.config.add("RecognitionEnabled", L("recognitionEnabled"), true, nil, {
     desc = L("recognitionEnabledDesc"),
-    category = L("categoryRecognition"),
+    category = L("recognition"),
     type = "Boolean"
 })
 
 lia.config.add("FakeNamesEnabled", L("fakeNamesEnabled"), false, nil, {
     desc = L("fakeNamesEnabledDesc"),
-    category = L("categoryRecognition"),
+    category = L("recognition"),
     type = "Boolean"
 })
 

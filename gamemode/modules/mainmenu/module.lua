@@ -1,4 +1,4 @@
-MODULE.name = L("moduleMainMenuName")
+MODULE.name = L("mainMenu")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = L("moduleMainMenuDesc")

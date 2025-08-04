@@ -127,7 +127,7 @@ function PANEL:addClassDetails(parent, cl)
     end
 
     add(L("name") .. ": " .. (cl.name or L("unnamed")))
-    add(L("desc") .. ": " .. (cl.desc or L("noDesc")))
+    add(L("description") .. ": " .. (cl.desc or L("noDesc")))
     add(L("faction") .. ": " .. (team.GetName(cl.faction) or L("none")))
     add(L("isDefault") .. ": " .. (cl.isDefault and L("yes") or L("no")))
     add(L("baseHealth") .. ": " .. tostring(cl.health or maxH))

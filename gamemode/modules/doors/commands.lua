@@ -70,7 +70,7 @@ lia.command.add("doortogglelock", {
             if toggleState then
                 door:Fire("lock")
                 door:EmitSound("doors/door_latch3.wav")
-                client:notifyLocalized("doorToggleLocked", L("locked"))
+                client:notifyLocalized("doorToggleLocked", L("locked"):lower())
                 lia.log.add(client, "toggleLock", door, "locked")
             else
                 door:Fire("unlock")
@@ -97,12 +97,12 @@ lia.command.add("doorbuy", {
     desc = "doorbuyDesc",
     adminOnly = false,
     AdminStick = {
-        Name = "adminStickDoorBuyName",
+        Name = "buyDoor",
         TargetClass = "Door"
     },
     onRun = function(client)
         if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
-            lia.log.add(client, "cheaterAction", L("cheaterActionBuyDoor"))
+            lia.log.add(client, "cheaterAction", L("buyDoor"):lower())
             return
         end
 
@@ -357,7 +357,7 @@ lia.command.add("doorinfo", {
                     value = tostring(noSell)
                 },
                 {
-                    property = L("doorInfoFactions"),
+                    property = L("factions"),
                     value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none"))
                 },
                 {
@@ -369,7 +369,7 @@ lia.command.add("doorinfo", {
                     value = tostring(hidden)
                 },
                 {
-                    property = L("doorInfoLocked"),
+                    property = L("locked"),
                     value = tostring(locked)
                 }
             }

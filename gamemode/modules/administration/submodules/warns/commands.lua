@@ -43,7 +43,7 @@ lia.command.add("viewwarns", {
     desc = "viewWarnsDesc",
     syntax = "[player Target]",
     AdminStick = {
-        Name = "viewPlayerWarnings",
+        Name = "View Player Warnings",
         Category = "moderationTools",
         SubCategory = "warnings",
         Icon = "icon16/eye.png"
@@ -81,7 +81,7 @@ lia.command.add("viewwarns", {
                     field = "timestamp"
                 },
                 {
-                    name = L("Admin"),
+                    name = L("admin"),
                     field = "admin"
                 },
                 {
