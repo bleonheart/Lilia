@@ -1,8 +1,9 @@
 ﻿local MODULE = MODULE
 AdminStickIsOpen = false
+local playerInfoLabel = L("player") .. " " .. L("information")
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
-    playerInformation = "icon16/information.png",
+    [playerInfoLabel] = "icon16/information.png",
     characterManagement = "icon16/user_gray.png",
     flagsManagement = "icon16/flag_blue.png",
     giveFlagsMenu = "icon16/flag_blue.png",
@@ -531,7 +532,7 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         table.sort(info, function(a, b) return a.name < b.name end)
-        local pi = GetOrCreateSubMenu(menu, "playerInformation", stores)
+        local pi = GetOrCreateSubMenu(menu, playerInfoLabel, stores)
         for _, o in ipairs(info) do
             pi:AddOption(L(o.name), o.cmd):SetIcon(o.icon)
         end

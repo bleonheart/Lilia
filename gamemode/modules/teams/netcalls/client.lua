@@ -63,7 +63,7 @@ net.Receive("CharacterInfo", function()
                     end)
                 end
 
-                menu:AddOption(L("view") .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+                menu:AddOption(L("view") .. " " .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for key, value in pairs(rowData) do
@@ -99,7 +99,7 @@ net.Receive("CharacterInfo", function()
 
     local actions = {}
     if canKick then actions[#actions + 1] = {name = L("kick"), net = "KickCharacter"} end
-    local frame, list = lia.util.CreateTableUI(L("characterInformation"), columns, rows, actions)
+    local frame, list = lia.util.CreateTableUI(L("character") .. " " .. L("information"), columns, rows, actions)
     characterPanel = frame
 
     if IsValid(list) then
@@ -118,7 +118,7 @@ net.Receive("CharacterInfo", function()
                 end)
             end
 
-            menu:AddOption(L("view") .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+            menu:AddOption(L("view") .. " " .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do
