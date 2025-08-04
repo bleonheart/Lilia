@@ -57,11 +57,18 @@ end)
 
 net.Receive("liaRequestActiveTickets", function(_, client)
     if not (client:hasPrivilege(L("alwaysSeeTickets")) or client:isStaffOnDuty()) then return end
-    local tickets = {}
-    for _, data in pairs(MODULE.ActiveTickets or {}) do
-        tickets[#tickets + 1] = data
-    end
-    net.Start("liaActiveTickets")
-    net.WriteTable(tickets)
-    net.Send(client)
+    lia.db.select({"timestamp", "requesterSteamID", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
+        local tickets = {}
+        for _, row in ipairs(res.results or {}) do
+            tickets[#tickets + 1] = {
+                requester = row.requesterSteamID,
+                timestamp = isnumber(row.timestamp) and row.timestamp or os.time(lia.time.toNumber(row.timestamp)),
+                admin = row.adminSteamID,
+                message = row.message,
+            }
+        end
+        net.Start("liaActiveTickets")
+        net.WriteTable(tickets)
+        net.Send(client)
+    end)
 end)
