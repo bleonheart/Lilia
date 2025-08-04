@@ -21,10 +21,7 @@ if CLIENT then
     lia.net.readBigTable("liaPlayerCharacters", function(data)
         if not data or not charMenuContext then return end
         local menu = DermaMenu()
-        if charMenuContext.buildMenu then
-            charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {})
-        end
-
+        if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
         if charMenuContext.pos then
             menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
         else
@@ -108,15 +105,7 @@ if CLIENT then
             if not IsValid(line) or not line.steamID then return end
             local parentList = self
             requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID, characters)
-                local charSubMenu = menu:AddSubMenu(L("viewCharacterList"))
-                if not characters or #characters == 0 then
-                    charSubMenu:AddOption(L("none"))
-                else
-                    for _, name in ipairs(characters) do
-                        charSubMenu:AddOption(name)
-                    end
-                end
-
+                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png")
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for i, column in ipairs(parentList.Columns or {}) do
@@ -129,7 +118,7 @@ if CLIENT then
                 end):SetIcon("icon16/page_copy.png")
 
                 menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
+                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
             end)
         end
     end)

@@ -63,15 +63,7 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/user_delete.png")
                 end
 
-                local charSubMenu = menu:AddSubMenu(L("viewCharacterList"))
-                if not characters or #characters == 0 then
-                    charSubMenu:AddOption(L("none"))
-                else
-                    for _, name in ipairs(characters) do
-                        charSubMenu:AddOption(name)
-                    end
-                end
-
+                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png")
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for i, column in ipairs(parentList.Columns or {}) do
@@ -89,7 +81,7 @@ local function OpenRoster(panel, data)
                 end):SetIcon("icon16/page_copy.png")
 
                 menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
+                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
             end)
         end
 
@@ -101,16 +93,16 @@ lia.net.readBigTable("liaFactionRosterData", function(data) if IsValid(rosterPan
 lia.net.readBigTable("liaPlayerCharacters", function(data)
     if not data or not charMenuContext then return end
     local menu = DermaMenu()
-    if charMenuContext.buildMenu then
-        charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {})
-    end
+    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
     if charMenuContext.pos then
         menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
     else
         menu:Open()
     end
+
     charMenuContext = nil
 end)
+
 function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can Manage Factions") then
         table.insert(pages, {

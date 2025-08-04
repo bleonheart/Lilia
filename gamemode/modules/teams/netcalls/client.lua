@@ -16,10 +16,9 @@ end)
 net.Receive("CharacterInfo", function()
     local characterData = net.ReadTable()
     local character = LocalPlayer():getChar()
-    local isLeader = LocalPlayer():hasPrivilege("Manage Faction Members") or (character and character:hasFlags("V"))
+    local isLeader = LocalPlayer():hasPrivilege("Manage Faction Members") or character and character:hasFlags("V")
     if not isLeader then return end
-    local canKick = LocalPlayer():hasPrivilege("Manage Faction Members") or (character and character:hasFlags("K"))
-
+    local canKick = LocalPlayer():hasPrivilege("Manage Faction Members") or character and character:hasFlags("K")
     if IsValid(lia.gui.rosterSheet) then
         local sheet = lia.gui.rosterSheet
         sheet.search:SetValue("")
@@ -63,7 +62,7 @@ net.Receive("CharacterInfo", function()
                     end)
                 end
 
-                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+                menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end):SetIcon("icon16/page_copy.png")
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for key, value in pairs(rowData) do
@@ -90,18 +89,38 @@ net.Receive("CharacterInfo", function()
     end
 
     local columns = {
-        {name = L("name"), field = "name"},
-        {name = L("steamID"), field = "steamID"},
-        {name = L("class"), field = "class"},
-        {name = L("playtime"), field = "playTime"},
-        {name = L("lastOnline"), field = "lastOnline"}
+        {
+            name = L("name"),
+            field = "name"
+        },
+        {
+            name = L("steamID"),
+            field = "steamID"
+        },
+        {
+            name = L("class"),
+            field = "class"
+        },
+        {
+            name = L("playtime"),
+            field = "playTime"
+        },
+        {
+            name = L("lastOnline"),
+            field = "lastOnline"
+        }
     }
 
     local actions = {}
-    if canKick then actions[#actions + 1] = {name = L("kick"), net = "KickCharacter"} end
+    if canKick then
+        actions[#actions + 1] = {
+            name = L("kick"),
+            net = "KickCharacter"
+        }
+    end
+
     local frame, list = lia.util.CreateTableUI(L("characterInformation"), columns, rows, actions)
     characterPanel = frame
-
     if IsValid(list) then
         list.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
@@ -118,7 +137,7 @@ net.Receive("CharacterInfo", function()
                 end)
             end
 
-            menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+            menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end):SetIcon("icon16/page_copy.png")
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do
