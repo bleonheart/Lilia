@@ -655,6 +655,7 @@ LANGUAGE = {
     changeToTalk = "Change voice mode to Talking range.",
     changeToYell = "Change voice mode to Yelling range.",
     voiceModeSet = "Voice range set to %s.",
+    voiceModeStatus = "You are %s.",
     whispering = "Whispering",
     talking = "Talking",
     yelling = "Yelling",
