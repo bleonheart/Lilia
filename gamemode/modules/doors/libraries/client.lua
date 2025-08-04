@@ -94,7 +94,7 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
             AdminMenu:AddOption(L("doorNoFactions")):SetEnabled(false)
         end
 
-        local setClassMenu = AdminMenu:AddSubMenu(L("doorSetDoorClass"))
+        local setClassMenu = AdminMenu:AddSubMenu(L("set") .. " " .. L("door") .. " " .. L("class"))
         for classID, classData in pairs(lia.class.list) do
             setClassMenu:AddOption(classData.name, function()
                 LocalPlayer():ConCommand('say /doorsetclass "' .. classID .. '"')
@@ -104,7 +104,7 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
 
         local existingClasses = target:getNetVar("classes")
         if existingClasses and existingClasses ~= "[]" then
-            setClassMenu:AddOption(L("doorRemoveDoorClass"), function()
+            setClassMenu:AddOption(L("remove") .. " " .. L("class"), function()
                 LocalPlayer():ConCommand('say /doorsetclass ""')
                 AdminStickIsOpen = false
             end)

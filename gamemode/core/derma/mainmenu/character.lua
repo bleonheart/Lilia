@@ -149,7 +149,7 @@ function PANEL:createStartButton()
     if hook.Run("CanPlayerCreateChar", client) ~= false then
         table.insert(buttonsData, {
             id = "create",
-            text = L("createCharacter"),
+            text = L("create") .. " " .. L("character"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -523,7 +523,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn = self:Add("liaSmallButton")
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
-    self.deleteBtn:SetText(L("deleteCharacter"))
+    self.deleteBtn:SetText(L("delete") .. " " .. L("character"))
     self.deleteBtn.DoClick = function()
         if hook.Run("CanDeleteChar", character:getID()) == false then
             LocalPlayer():notifyLocalized("cannotDeleteChar")

@@ -1159,7 +1159,7 @@ lia.command.add("flaggive", {
                 client:notifyLocalized("noAvailableFlags")
                 return
             end
-            return client:requestString(L("giveFlagsMenu"), L("flagGiveDesc"), function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
+            return client:requestString(L("give") .. " " .. L("flags"), L("flagGiveDesc"), function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
         end
 
         target:giveFlags(flags)
@@ -1243,7 +1243,7 @@ lia.command.add("flagtake", {
         local flags = arguments[2]
         if not flags then
             local currentFlags = target:getFlags()
-            return client:requestString(L("takeFlagsMenu"), L("flagTakeDesc"), function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
+            return client:requestString(L("take") .. " " .. L("flags"), L("flagTakeDesc"), function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
         end
 
         target:takeFlags(flags)
