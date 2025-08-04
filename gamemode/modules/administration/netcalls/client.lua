@@ -623,7 +623,6 @@ end
 
 lia.net.readBigTable("liaDatabaseViewData", function(data)
     if not IsValid(panelRef) or not isfunction(panelRef.buildSheets) then return end
-
     panelRef:buildSheets(data)
 end)
 
@@ -823,6 +822,5 @@ end)
 
 lia.net.readBigTable("liaFullCharList", function(data)
     if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
-
     panelRef:buildSheets(data)
 end)

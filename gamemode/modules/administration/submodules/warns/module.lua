@@ -35,17 +35,11 @@ if CLIENT then
         addSizedColumn(L("Warned"))
         addSizedColumn(L("admin"))
         addSizedColumn(L("Warning Message"))
-
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")
             for _, warn in ipairs(warnings) do
-                local entries = {
-                    warn.timestamp or "",
-                    string.format("%s (%s)", warn.warned or "", warn.warnedSteamID or ""),
-                    string.format("%s (%s)", warn.warner or "", warn.warnerSteamID or ""),
-                    warn.message or ""
-                }
+                local entries = {warn.timestamp or "", string.format("%s (%s)", warn.warned or "", warn.warnedSteamID or ""), string.format("%s (%s)", warn.warner or "", warn.warnerSteamID or ""), warn.message or ""}
                 local match = false
                 if filter == "" then
                     match = true
@@ -57,13 +51,13 @@ if CLIENT then
                         end
                     end
                 end
+
                 if match then list:AddLine(unpack(entries)) end
             end
         end
 
         search.OnChange = function() populate(search:GetValue()) end
         populate("")
-
         function list:OnRowRightClick(_, line)
             if not IsValid(line) then return end
             local menu = DermaMenu()
@@ -74,8 +68,10 @@ if CLIENT then
                     local value = line:GetColumnText(i) or ""
                     rowString = rowString .. header .. " " .. value .. " | "
                 end
+
                 SetClipboardText(string.sub(rowString, 1, -4))
             end):SetIcon("icon16/page_copy.png")
+
             menu:Open()
         end
     end)
