@@ -341,11 +341,15 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
-    local charSetFlags = characterMeta.setFlags
-
     function characterMeta:setFlags(flags)
         local oldFlags = self:getFlags()
-        charSetFlags(self, flags)
+        self.vars.flags = flags
+        net.Start("charSet")
+        net.WriteString("flags")
+        net.WriteType(flags)
+        net.WriteType(self:getID())
+        net.Broadcast()
+        hook.Run("OnCharVarChanged", self, "flags", oldFlags, flags)
         local ply = self:getPlayer()
         if not IsValid(ply) then return end
         -- handle removed flags
@@ -378,7 +382,7 @@ if SERVER then
             end
         end
 
-        if addedFlags ~= "" then charSetFlags(self, self:getFlags() .. addedFlags) end
+        if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
     end
 
     function characterMeta:takeFlags(flags)
@@ -396,7 +400,7 @@ if SERVER then
             newFlags = newFlags:gsub(flag, "")
         end
 
-        if newFlags ~= oldFlags then charSetFlags(self, newFlags) end
+        if newFlags ~= oldFlags then self:setFlags(newFlags) end
     end
 
     function characterMeta:save(callback)
