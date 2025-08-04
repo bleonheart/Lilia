@@ -26,7 +26,8 @@ local function tableToString(tbl)
     return table.concat(out, ", ")
 end
 
-local function openRowInfo(row)
+-- Exposed globally so other modules can reuse the row info UI
+function openRowInfo(row)
     local columns = {
         {
             name = L("field"),
@@ -63,7 +64,8 @@ local function openRowInfo(row)
     lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
 end
 
-local function openDecodedTable(tableName, columns, data)
+-- Exposed globally so other modules can reuse the decoded table UI
+function openDecodedTable(tableName, columns, data)
     local columnInfo = {}
     for _, col in ipairs(columns or {}) do
         columnInfo[#columnInfo + 1] = {
@@ -524,103 +526,6 @@ lia.net.readBigTable("liaAllFlags", function(data)
 end)
 
 lia.net.readBigTable("liaFactionRosterData", function(data) if IsValid(rosterPanel) then OpenRoster(rosterPanel, data or {}) end end)
-lia.net.readBigTable("liaPlayerCharacters", function(data)
-    if not data or not charMenuContext then return end
-    local menu = DermaMenu()
-    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
-    if charMenuContext.pos then
-        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
-    else
-        menu:Open()
-    end
-
-    charMenuContext = nil
-end)
-
-local function deserializeFallback(raw)
-    if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
-    if istable(raw) then return raw end
-    local decoded = util.JSONToTable(raw)
-    if decoded == nil then
-        local ok, result = pcall(pon.decode, raw)
-        if ok then decoded = result end
-    end
-    return decoded or raw
-end
-
-local function tableToString(tbl)
-    local out = {}
-    for _, value in pairs(tbl) do
-        out[#out + 1] = tostring(value)
-    end
-    return table.concat(out, ", ")
-end
-
-local function openRowInfo(row)
-    local columns = {
-        {
-            name = L("field"),
-            field = "field"
-        },
-        {
-            name = L("type"),
-            field = "type"
-        },
-        {
-            name = L("coded"),
-            field = "coded"
-        },
-        {
-            name = L("decoded"),
-            field = "decoded"
-        }
-    }
-
-    local rows = {}
-    for k, v in pairs(row or {}) do
-        local decoded = v
-        if isstring(v) then decoded = deserializeFallback(v) end
-        local codedStr = istable(v) and tableToString(v) or tostring(v)
-        local decodedStr = istable(decoded) and tableToString(decoded) or tostring(decoded)
-        rows[#rows + 1] = {
-            field = k,
-            type = type(v),
-            coded = codedStr,
-            decoded = decodedStr
-        }
-    end
-
-    lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
-end
-
-local function openDecodedTable(tableName, columns, data)
-    local columnDefs = {}
-    for _, col in ipairs(columns or {}) do
-        columnDefs[#columnDefs + 1] = {
-            name = col,
-            field = col
-        }
-    end
-
-    local decodedRows = {}
-    for _, row in ipairs(data or {}) do
-        local decodedRow = {}
-        for _, col in ipairs(columns or {}) do
-            local value = row[col]
-            if isstring(value) then value = deserializeFallback(value) end
-            if istable(value) then
-                decodedRow[col] = tableToString(value)
-            else
-                decodedRow[col] = tostring(value)
-            end
-        end
-
-        decodedRows[#decodedRows + 1] = decodedRow
-    end
-
-    lia.util.CreateTableUI(L("decodedTableTitle", tableName), columnDefs, decodedRows)
-end
-
 lia.net.readBigTable("liaDatabaseViewData", function(data)
     if not IsValid(panelRef) or not isfunction(panelRef.buildSheets) then return end
     panelRef:buildSheets(data)
