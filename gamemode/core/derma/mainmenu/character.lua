@@ -494,17 +494,17 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local pad = 10
     local cx = fx + (fw - bw) * 0.5
     local clientChar = LocalPlayer().getChar and LocalPlayer():getChar()
-    local selectKey = "selectCharacter"
+    local selectText = L("select") .. " " .. L("character")
     if clientChar and character:getID() == clientChar:getID() then
-        selectKey = "alreadyUsingCharacter"
+        selectText = L("alreadyUsingCharacter")
     elseif character:isBanned() then
-        selectKey = "permaKilledCharacter"
+        selectText = L("permaKilledCharacter")
     end
 
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
-    self.selectBtn:SetText(L(selectKey))
+    self.selectBtn:SetText(selectText)
     if clientChar and character:getID() == clientChar:getID() then
         self.selectBtn:SetEnabled(false)
         self.selectBtn:SetTextColor(Color(255, 255, 255))
