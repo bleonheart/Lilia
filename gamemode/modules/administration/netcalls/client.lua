@@ -362,6 +362,7 @@ net.Receive("liaAllPKs", function()
                 if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png") end
             end
         end
+
         menu:Open()
     end
 end)
@@ -632,20 +633,6 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     end
 end)
 
-local charMenuContext
-local function requestPlayerCharacters(steamID, line, buildMenu)
-    charMenuContext = {
-        pos = {gui.MousePos()},
-        line = line,
-        steamID = steamID,
-        buildMenu = buildMenu
-    }
-
-    net.Start("liaRequestPlayerCharacters")
-    net.WriteString(steamID)
-    net.SendToServer()
-end
-
 lia.net.readBigTable("liaPlayerCharacters", function(data)
     if not data or not charMenuContext then return end
     local menu = DermaMenu()
@@ -733,7 +720,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     function list:OnRowRightClick(_, line)
         if not IsValid(line) or not line.steamID then return end
         local parentList = self
-        requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID, characters)
+        requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID)
             menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png")
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
