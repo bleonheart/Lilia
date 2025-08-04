@@ -27,7 +27,7 @@ local function defaultAccessHandler(actor, privilege, callback, _, extra)
 end
 
 hook.Add("CAMI.PlayerHasAccess", "liaAdminAccess", defaultAccessHandler)
-hook.Add("CAMI.OnUsergroupRegistered", "liaAdminUGAdded", function(usergroup, source)
+hook.Add("CAMI.OnUsergroupRegistered", "liaAdminUGAdded", function(usergroup)
     local ug = usergroup or {}
     local n = ug.Name
     if not isstring(n) or n == "" then return end
@@ -48,7 +48,7 @@ hook.Add("CAMI.OnUsergroupRegistered", "liaAdminUGAdded", function(usergroup, so
 
 end)
 
-hook.Add("CAMI.OnUsergroupUnregistered", "liaAdminUGRemoved", function(usergroup, source)
+hook.Add("CAMI.OnUsergroupUnregistered", "liaAdminUGRemoved", function(usergroup)
     local ug = usergroup or {}
     local n = ug.Name
     if not isstring(n) or n == "" then return end
@@ -97,14 +97,14 @@ hook.Add("CAMI.OnPrivilegeUnregistered", "liaAdminPrivRemoved", function(priv)
 
 end)
 
-hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, old, new, source)
+hook.Add("CAMI.PlayerUsergroupChanged", "liaAdminPlyUGChanged", function(ply, _, new)
     if not IsValid(ply) then return end
     local newGroup = tostring(new or "user")
     if tostring(ply:GetUserGroup() or "user") ~= newGroup then ply:SetUserGroup(newGroup) end
     lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(newGroup), lia.db.convertDataType(ply:SteamID())))
 end)
 
-hook.Add("CAMI.SteamIDUsergroupChanged", "liaAdminSIDUGChanged", function(steamId, old, new, source)
+hook.Add("CAMI.SteamIDUsergroupChanged", "liaAdminSIDUGChanged", function(steamId, _, new)
     local sid = tostring(steamId or "")
     if sid == "" then return end
     local newGroup = tostring(new or "user")
