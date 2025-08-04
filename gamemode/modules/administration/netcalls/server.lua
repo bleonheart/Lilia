@@ -192,7 +192,7 @@ end)
 net.Receive("liaRequestAllFlags", function(_, client)
     if not client:hasPrivilege(L("canAccessFlagManagement")) then return end
     local data = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         local char = ply:getChar()
         data[#data + 1] = {
             name = ply:Name(),

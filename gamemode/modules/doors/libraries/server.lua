@@ -60,7 +60,7 @@ function MODULE:SaveData()
     local map = game.GetMap()
     local condition = buildCondition(gamemode, map)
     local rows = {}
-    for _, door in ipairs(ents.GetAll()) do
+    for _, door in ents.Iterator() do
         if door:isDoor() then
             rows[#rows + 1] = {
                 gamemode = gamemode,
