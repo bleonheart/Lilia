@@ -27,21 +27,45 @@ function MODULE:CreateInformationButtons(pages)
     local client = LocalPlayer()
     local character = client:getChar()
     if not character or client:isStaffOnDuty() then return end
-    if not character:hasFlags("V") then return end
-    table.insert(pages, {
-        name = L("roster"),
-        drawFunc = function(parent)
-            local sheet = vgui.Create("liaSheet", parent)
-            sheet:SetPlaceholderText(L("search"))
-            lia.gui.rosterSheet = sheet
-        end,
-        onSelect = function()
-            if IsValid(lia.gui.rosterSheet) then
-                net.Start("RequestRoster")
-                net.SendToServer()
+    if character:hasFlags("V") then
+        table.insert(pages, {
+            name = L("factionRoster"),
+            drawFunc = function(parent)
+                local sheet = vgui.Create("liaSheet", parent)
+                sheet:SetPlaceholderText(L("search"))
+                lia.gui.rosterSheet = sheet
+                lia.gui.currentRosterType = "faction"
+            end,
+            onSelect = function()
+                if IsValid(lia.gui.rosterSheet) then
+                    lia.gui.currentRosterType = "faction"
+                    net.Start("RequestFactionRoster")
+                    net.SendToServer()
+                end
             end
-        end
-    })
+        })
+    end
+    if character:hasFlags("W") then
+        table.insert(pages, {
+            name = L("classRoster"),
+            drawFunc = function(parent)
+                local sheet = vgui.Create("liaSheet", parent)
+                sheet:SetPlaceholderText(L("search"))
+                lia.gui.rosterSheet = sheet
+                lia.gui.currentRosterType = "class"
+            end,
+            onSelect = function()
+                if IsValid(lia.gui.rosterSheet) then
+                    lia.gui.currentRosterType = "class"
+                    net.Start("RequestClassRoster")
+                    net.SendToServer()
+                end
+            end
+        })
+    end
 end
 
-hook.Add("F1MenuClosed", "liaRosterSheetCleanup", function() lia.gui.rosterSheet = nil end)
+hook.Add("F1MenuClosed", "liaRosterSheetCleanup", function()
+    lia.gui.rosterSheet = nil
+    lia.gui.currentRosterType = nil
+end)

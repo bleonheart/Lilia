@@ -16,10 +16,13 @@ end)
 net.Receive("CharacterInfo", function()
     local characterData = net.ReadTable()
     local character = LocalPlayer():getChar()
-    if not character or LocalPlayer():Team() == FACTION_STAFF or not character:hasFlags("V") then return end
-    local factionData = lia.faction.indices[character:getFaction()]
-    local canKick = character:hasFlags("K")
-    if factionData and factionData.isDefault then canKick = false end
+    if not character or LocalPlayer():Team() == FACTION_STAFF or not (character:hasFlags("V") or character:hasFlags("W")) then return end
+    local canKick = false
+    if lia.gui.currentRosterType == "faction" then
+        local factionData = lia.faction.indices[character:getFaction()]
+        canKick = character:hasFlags("K")
+        if factionData and factionData.isDefault then canKick = false end
+    end
     if IsValid(lia.gui.rosterSheet) then
         local sheet = lia.gui.rosterSheet
         sheet.search:SetValue("")
