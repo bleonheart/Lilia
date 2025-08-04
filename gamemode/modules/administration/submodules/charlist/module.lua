@@ -158,7 +158,10 @@ else
                                         end
                                     end
                                 end
-                                if match then list:AddLine(unpack(values)) end
+                                if match then
+                                    local line = list:AddLine(unpack(values))
+                                    line.CharID = row.ID
+                                end
                             end
                         end
 
@@ -182,6 +185,30 @@ else
                                 end
                                 SetClipboardText(string.sub(rowString, 1, -4))
                             end):SetIcon("icon16/page_copy.png")
+
+                            if line.CharID then
+                                if LocalPlayer():hasPrivilege("Manage Characters") then
+                                    menu:AddOption(L("banCharacter"), function()
+                                        LocalPlayer():ConCommand([[say "/charban ]] .. line.CharID .. [["]])
+                                    end):SetIcon("icon16/cancel.png")
+                                    menu:AddOption(L("unbanCharacter"), function()
+                                        LocalPlayer():ConCommand([[say "/charunban ]] .. line.CharID .. [["]])
+                                    end):SetIcon("icon16/accept.png")
+                                end
+
+                                if LocalPlayer():hasPrivilege("Ban Offline") then
+                                    menu:AddOption(L("banCharacterOffline"), function()
+                                        LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.CharID .. [["]])
+                                    end):SetIcon("icon16/cancel.png")
+                                end
+
+                                if LocalPlayer():hasPrivilege("Unban Offline") then
+                                    menu:AddOption(L("unbanCharacterOffline"), function()
+                                        LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.CharID .. [["]])
+                                    end):SetIcon("icon16/accept.png")
+                                end
+                            end
+
                             menu:Open()
                         end
                     end
