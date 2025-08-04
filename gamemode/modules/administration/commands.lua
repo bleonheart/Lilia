@@ -307,7 +307,7 @@ lia.command.add("plykick", {
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
-            target:Kick(L("kickMessage", target, arguments[2] or L("genericReason")))
+            target:Kick(L("kickMessage", arguments[2] or L("genericReason")))
             client:notifyLocalized("plyKicked")
             lia.log.add(client, "plyKick", target:Name())
             lia.db.insertTable({
