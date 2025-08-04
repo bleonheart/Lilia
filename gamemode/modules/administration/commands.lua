@@ -191,6 +191,61 @@ lia.command.add("returnsitroom", {
     end
 })
 
+lia.command.add("charkill", {
+    superAdminOnly = true,
+    privilege = "Manage Characters",
+    onRun = function(client)
+        local choices = {}
+        for _, ply in player.Iterator() do
+            if ply:getChar() then
+                choices[#choices + 1] = {
+                    ply:Nick(),
+                    {
+                        name = ply:Nick(),
+                        steamID = ply:SteamID(),
+                        charID = ply:getChar():getID()
+                    }
+                }
+            end
+        end
+
+        local playerKey = L("player", client)
+        local reasonKey = L("reason", client)
+        local evidenceKey = L("evidence", client)
+        client:requestArguments(L("pkActiveMenu", client), {
+            [playerKey] = {"table", choices},
+            [reasonKey] = "string",
+            [evidenceKey] = "string"
+        }, function(data)
+            local selection = data[playerKey]
+            local reason = data[reasonKey]
+            local evidence = data[evidenceKey]
+            if not (isstring(evidence) and evidence:match("^https?://")) then
+                client:notify("Evidence must be a valid URL.")
+                return
+            end
+
+            lia.db.insertTable({
+                player = selection.name,
+                reason = reason,
+                steamID = selection.steamID,
+                charID = selection.charID,
+                submitterName = client:Name(),
+                submitterSteamID = client:SteamID(),
+                timestamp = os.time(),
+                evidence = evidence
+            }, nil, "permakills")
+
+            for _, ply in player.Iterator() do
+                if ply:SteamID() == selection.steamID and ply:getChar() then
+                    ply:getChar():ban()
+                    break
+                end
+            end
+        end)
+    end
+})
+
 lia.command.add("charlist", {
     adminOnly = true,
     privilege = "List Characters",
@@ -247,6 +302,7 @@ lia.command.add("charlist", {
                                 value = stored.vars and stored.vars[varName]
                             end
                         end
+
                         allVars[varName] = value
                     end
                 end

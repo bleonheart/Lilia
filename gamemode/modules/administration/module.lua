@@ -33,4 +33,29 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = L("categoryUsergroups"),
     },
+    {
+        Name = L("view") .. " " .. L("moduleStaffManagementName"),
+        MinAccess = "superadmin",
+        Category = L("categoryStaffManagement"),
+    },
+    {
+        Name = L("canAccessPlayerList"),
+        MinAccess = "admin",
+        Category = L("players")
+    },
+    {
+        Name = L("List Characters"),
+        MinAccess = "admin",
+        Category = L("character")
+    },
+    {
+        Name = L("View DB Tables"),
+        MinAccess = "superadmin",
+        Category = L("database")
+    },
+    {
+        Name = L("canAccessFlagManagement"),
+        MinAccess = "superadmin",
+        Category = L("flags"),
+    },
 }

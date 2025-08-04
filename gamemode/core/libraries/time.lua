@@ -56,6 +56,16 @@ function lia.time.GetDate()
     return string.format("%s, %02d %s %04d, %02d:%02d:%02d", L(weekdayKeys[ct.wday]), ct.day, L(monthKeys[ct.month]), ct.year, ct.hour, ct.min, ct.sec)
 end
 
+function lia.time.formatDHM(seconds)
+    seconds = math.max(seconds or 0, 0)
+    local days = math.floor(seconds / 86400)
+    seconds = seconds % 86400
+    local hours = math.floor(seconds / 3600)
+    seconds = seconds % 3600
+    local minutes = math.floor(seconds / 60)
+    return L("daysHoursMinutes", days, hours, minutes)
+end
+
 function lia.time.GetHour()
     local ct = os.date("*t")
     local american = lia.config.get("AmericanTimeStamps", false)

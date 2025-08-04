@@ -66,7 +66,10 @@ end
 local function openDecodedTable(tableName, columns, data)
     local columnInfo = {}
     for _, col in ipairs(columns or {}) do
-        columnInfo[#columnInfo + 1] = {name = col, field = col}
+        columnInfo[#columnInfo + 1] = {
+            name = col,
+            field = col
+        }
     end
 
     local decodedRows = {}
@@ -81,6 +84,7 @@ local function openDecodedTable(tableName, columns, data)
                 decodedRow[col] = tostring(value)
             end
         end
+
         decodedRows[#decodedRows + 1] = decodedRow
     end
 
@@ -141,14 +145,8 @@ net.Receive("liaDBTableData", function()
                 SetClipboardText(string.sub(rowString, 1, -4))
             end)
 
-            menu:AddOption(L("viewEntry"), function()
-                openRowInfo(rowData)
-            end)
-
-            menu:AddOption(L("viewDecodedTable"), function()
-                openDecodedTable(tbl, columnKeys, data)
-            end)
-
+            menu:AddOption(L("viewEntry"), function() openRowInfo(rowData) end)
+            menu:AddOption(L("viewDecodedTable"), function() openDecodedTable(tbl, columnKeys, data) end)
             menu:Open()
         end
 
@@ -294,4 +292,537 @@ net.Receive("managesitrooms", function()
         makeButton("reposition", 3)
         makeButton("rename", 2)
     end
+end)
+
+local panelRef
+net.Receive("liaAllPKs", function()
+    local cases = net.ReadTable() or {}
+    if not IsValid(panelRef) then return end
+    panelRef:Clear()
+    local search = panelRef:Add("DTextEntry")
+    search:Dock(TOP)
+    search:SetPlaceholderText(L("search"))
+    search:SetTextColor(Color(255, 255, 255))
+    local list = panelRef:Add("DListView")
+    list:Dock(FILL)
+    local function addSizedColumn(text)
+        local col = list:AddColumn(text)
+        surface.SetFont(col.Header:GetFont())
+        local w = surface.GetTextSize(col.Header:GetText())
+        col:SetMinWidth(w + 16)
+        col:SetWidth(w + 16)
+        return col
+    end
+
+    addSizedColumn(L("timestamp"))
+    addSizedColumn(L("character"))
+    addSizedColumn(L("submitter"))
+    addSizedColumn(L("evidence"))
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, c in ipairs(cases) do
+            local charInfo = string.format("%s (%s, %s)", c.player or L("na"), c.steamID or L("na"), c.charID or L("na"))
+            local submitInfo = string.format("%s (%s)", c.submitterName or L("na"), c.submitterSteamID or L("na"))
+            local timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(c.timestamp) or 0)
+            local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
+            local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
+            if filter == "" or searchStr:lower():find(filter, 1, true) then
+                local line = list:AddLine(unpack(lineData))
+                line.steamID = c.steamID or ""
+                line.reason = c.reason or ""
+                line.evidence = c.evidence or ""
+                line.submitter = c.submitterName or ""
+                line.submitterSteamID = c.submitterSteamID or ""
+                line.charID = c.charID
+            end
+        end
+    end
+
+    search.OnChange = function() populate(search:GetValue()) end
+    populate("")
+    function list:OnRowRightClick(_, line)
+        if not IsValid(line) then return end
+        local menu = DermaMenu()
+        menu:AddOption(L("copySubmitter"), function() SetClipboardText(string.format("%s (%s)", line.submitter, line.submitterSteamID)) end):SetIcon("icon16/page_copy.png")
+        menu:AddOption(L("copyReason"), function() SetClipboardText(line.reason) end):SetIcon("icon16/page_copy.png")
+        menu:AddOption(L("copyEvidence"), function() SetClipboardText(line.evidence) end):SetIcon("icon16/page_copy.png")
+        menu:AddOption(L("copySteamID"), function() SetClipboardText(line.steamID) end):SetIcon("icon16/page_copy.png")
+        if line.evidence and line.evidence:match("^https?://") then menu:AddOption(L("viewEvidence"), function() gui.OpenURL(line.evidence) end):SetIcon("icon16/world.png") end
+        menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png")
+        menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png")
+        menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/cancel.png")
+        menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.charID .. [["]]) end):SetIcon("icon16/accept.png")
+        menu:Open()
+    end
+end)
+
+local rosterPanel
+local charMenuContext
+local function requestPlayerCharacters(steamID, line, buildMenu)
+    charMenuContext = {
+        pos = {gui.MousePos()},
+        line = line,
+        steamID = steamID,
+        buildMenu = buildMenu
+    }
+
+    net.Start("liaRequestPlayerCharacters")
+    net.WriteString(steamID)
+    net.SendToServer()
+end
+
+local function OpenRoster(panel, data)
+    panel:Clear()
+    local sheet = panel:Add("DPropertySheet")
+    sheet:Dock(FILL)
+    sheet:DockMargin(10, 10, 10, 10)
+    for factionName, members in pairs(data) do
+        local membersData = members
+        local page = sheet:Add("DPanel")
+        page:Dock(FILL)
+        page:DockPadding(10, 10, 10, 10)
+        local search = page:Add("DTextEntry")
+        search:Dock(TOP)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
+        local list = page:Add("DListView")
+        list:Dock(FILL)
+        list:SetMultiSelect(false)
+        list:AddColumn(L("name"))
+        list:AddColumn(L("steamID"))
+        list:AddColumn(L("class"))
+        list:AddColumn(L("characterPlaytime"))
+        list:AddColumn(L("lastOnline"))
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, member in ipairs(membersData) do
+                if filter == "" or string.lower(member.name):find(filter, 1, true) then
+                    local line = list:AddLine(member.name, member.steamID or "", member.class or L("none"), member.playTime or "", member.lastOnline or "")
+                    line.rowData = member
+                end
+            end
+        end
+
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) or not line.rowData then return end
+            local parentList = self
+            local steamID = line.rowData.steamID
+            local function buildMenu(menu, ln, sID)
+                if sID and sID ~= "" and LocalPlayer():hasPrivilege("Can Manage Factions") then
+                    menu:AddOption(L("kick"), function()
+                        Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
+                            net.Start("KickCharacter")
+                            net.WriteInt(ln.rowData.id, 32)
+                            net.SendToServer()
+                        end, L("no"))
+                    end):SetIcon("icon16/user_delete.png")
+
+                    menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. sID) end):SetIcon("icon16/page_copy.png")
+                end
+
+                menu:AddOption(L("copyRow"), function()
+                    local rowString = ""
+                    for i, column in ipairs(parentList.Columns or {}) do
+                        local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                        local value = ln:GetColumnText(i) or ""
+                        rowString = rowString .. header .. " " .. value .. " | "
+                    end
+
+                    SetClipboardText(string.sub(rowString, 1, -4))
+                end):SetIcon("icon16/page_copy.png")
+
+                menu:AddOption(L("copyName"), function()
+                    local name = ln.rowData and ln.rowData.name or ln:GetColumnText(1) or ""
+                    SetClipboardText(name)
+                end):SetIcon("icon16/page_copy.png")
+
+                if sID and sID ~= "" then
+                    menu:AddOption(L("copySteamID"), function() SetClipboardText(sID) end):SetIcon("icon16/page_copy.png")
+                    menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(sID)) end):SetIcon("icon16/world.png")
+                end
+            end
+
+            if steamID and steamID ~= "" then
+                requestPlayerCharacters(steamID, line, function(menu, ln, sID) buildMenu(menu, ln, sID) end)
+            else
+                local menu = DermaMenu()
+                buildMenu(menu, line, steamID or "")
+                local x, y = gui.MousePos()
+                menu:Open(x, y)
+            end
+        end
+
+        sheet:AddSheet(factionName, page)
+    end
+end
+
+lia.net.readBigTable("liaAllFlags", function(data)
+    if not IsValid(panelRef) then return end
+    panelRef:Clear()
+    local search = panelRef:Add("DTextEntry")
+    search:Dock(TOP)
+    search:SetPlaceholderText(L("search"))
+    search:SetTextColor(Color(255, 255, 255))
+    local list = panelRef:Add("DListView")
+    list:Dock(FILL)
+    local function addSizedColumn(text)
+        local col = list:AddColumn(text)
+        surface.SetFont(col.Header:GetFont())
+        local w = surface.GetTextSize(col.Header:GetText())
+        col:SetMinWidth(w + 16)
+        col:SetWidth(w + 16)
+        return col
+    end
+
+    addSizedColumn(L("name"))
+    addSizedColumn(L("steamID"))
+    addSizedColumn(L("flags"))
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, entry in ipairs(data or {}) do
+            local name = entry.name or ""
+            local steamID = entry.steamID or ""
+            local flags = entry.flags or ""
+            if filter == "" or name:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or flags:lower():find(filter, 1, true) then list:AddLine(name, steamID, flags) end
+        end
+    end
+
+    search.OnChange = function() populate(search:GetValue()) end
+    populate("")
+    function list:OnRowRightClick(_, line)
+        if not IsValid(line) then return end
+        local menu = DermaMenu()
+        menu:AddOption(L("copyRow"), function()
+            local rowString = ""
+            for i, column in ipairs(self.Columns or {}) do
+                local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                local value = line:GetColumnText(i) or ""
+                rowString = rowString .. header .. " " .. value .. " | "
+            end
+
+            SetClipboardText(string.sub(rowString, 1, -4))
+        end):SetIcon("icon16/page_copy.png")
+
+        menu:AddOption(L("modifyFlags"), function()
+            local steamID = line:GetColumnText(2) or ""
+            local currentFlags = line:GetColumnText(3) or ""
+            Derma_StringRequest(L("modifyFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+                text = string.gsub(text or "", "%s", "")
+                net.Start("liaModifyFlags")
+                net.WriteString(steamID)
+                net.WriteString(text)
+                net.SendToServer()
+                line:SetColumnText(3, text)
+            end)
+        end):SetIcon("icon16/flag_orange.png")
+
+        menu:Open()
+    end
+end)
+
+lia.net.readBigTable("liaFactionRosterData", function(data) if IsValid(rosterPanel) then OpenRoster(rosterPanel, data or {}) end end)
+lia.net.readBigTable("liaPlayerCharacters", function(data)
+    if not data or not charMenuContext then return end
+    local menu = DermaMenu()
+    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
+    if charMenuContext.pos then
+        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
+    else
+        menu:Open()
+    end
+
+    charMenuContext = nil
+end)
+
+local panelRef
+local function deserializeFallback(raw)
+    if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
+    if istable(raw) then return raw end
+    local decoded = util.JSONToTable(raw)
+    if decoded == nil then
+        local ok, result = pcall(pon.decode, raw)
+        if ok then decoded = result end
+    end
+    return decoded or raw
+end
+
+local function tableToString(tbl)
+    local out = {}
+    for _, value in pairs(tbl) do
+        out[#out + 1] = tostring(value)
+    end
+    return table.concat(out, ", ")
+end
+
+local function openRowInfo(row)
+    local columns = {
+        {
+            name = L("field"),
+            field = "field"
+        },
+        {
+            name = L("type"),
+            field = "type"
+        },
+        {
+            name = L("coded"),
+            field = "coded"
+        },
+        {
+            name = L("decoded"),
+            field = "decoded"
+        }
+    }
+
+    local rows = {}
+    for k, v in pairs(row or {}) do
+        local decoded = v
+        if isstring(v) then decoded = deserializeFallback(v) end
+        local codedStr = istable(v) and tableToString(v) or tostring(v)
+        local decodedStr = istable(decoded) and tableToString(decoded) or tostring(decoded)
+        rows[#rows + 1] = {
+            field = k,
+            type = type(v),
+            coded = codedStr,
+            decoded = decodedStr
+        }
+    end
+
+    lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
+end
+
+local function openDecodedTable(tableName, columns, data)
+    local columnDefs = {}
+    for _, col in ipairs(columns or {}) do
+        columnDefs[#columnDefs + 1] = {
+            name = col,
+            field = col
+        }
+    end
+
+    local decodedRows = {}
+    for _, row in ipairs(data or {}) do
+        local decodedRow = {}
+        for _, col in ipairs(columns or {}) do
+            local value = row[col]
+            if isstring(value) then value = deserializeFallback(value) end
+            if istable(value) then
+                decodedRow[col] = tableToString(value)
+            else
+                decodedRow[col] = tostring(value)
+            end
+        end
+
+        decodedRows[#decodedRows + 1] = decodedRow
+    end
+
+    lia.util.CreateTableUI(L("decodedTableTitle", tableName), columnDefs, decodedRows)
+end
+
+lia.net.readBigTable("liaDatabaseViewData", function(data) if IsValid(panelRef) then panelRef:buildSheets(data) end end)
+local panelRef
+lia.net.readBigTable("liaStaffSummary", function(data)
+    if not IsValid(panelRef) or not data then return end
+    panelRef:Clear()
+    local search = panelRef:Add("DTextEntry")
+    search:Dock(TOP)
+    search:SetPlaceholderText(L("search"))
+    search:SetTextColor(Color(255, 255, 255))
+    local list = panelRef:Add("DListView")
+    list:Dock(FILL)
+    local function addSizedColumn(text)
+        local col = list:AddColumn(text)
+        surface.SetFont(col.Header:GetFont())
+        local w = surface.GetTextSize(col.Header:GetText())
+        col:SetMinWidth(w + 16)
+        col:SetWidth(w + 16)
+        return col
+    end
+
+    addSizedColumn("Player")
+    addSizedColumn("Player Steam ID")
+    addSizedColumn(L("usergroup"))
+    addSizedColumn("Warning Count")
+    addSizedColumn("Ticket Count")
+    addSizedColumn("Kick Count")
+    addSizedColumn("Kill Count")
+    addSizedColumn("Respawn Count")
+    addSizedColumn("Blind Count")
+    addSizedColumn("Mute Count")
+    addSizedColumn("Jail Count")
+    addSizedColumn("Strip Count")
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, info in ipairs(data) do
+            local entries = {info.player or "", info.steamID or "", info.usergroup or "", info.warnings or 0, info.tickets or 0, info.kicks or 0, info.kills or 0, info.respawns or 0, info.blinds or 0, info.mutes or 0, info.jails or 0, info.strips or 0}
+            local match = false
+            if filter == "" then
+                match = true
+            else
+                for _, value in ipairs(entries) do
+                    if tostring(value):lower():find(filter, 1, true) then
+                        match = true
+                        break
+                    end
+                end
+            end
+
+            if match then list:AddLine(unpack(entries)) end
+        end
+    end
+
+    search.OnChange = function() populate(search:GetValue()) end
+    populate("")
+    function list:OnRowRightClick(_, line)
+        if not IsValid(line) then return end
+        local menu = DermaMenu()
+        menu:AddOption(L("copyRow"), function()
+            local rowString = ""
+            for i, column in ipairs(self.Columns or {}) do
+                local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                local value = line:GetColumnText(i) or ""
+                rowString = rowString .. header .. " " .. value .. " | "
+            end
+
+            SetClipboardText(string.sub(rowString, 1, -4))
+        end):SetIcon("icon16/page_copy.png")
+
+        menu:Open()
+    end
+end)
+
+local panelRef
+local charMenuContext
+local function requestPlayerCharacters(steamID, line, buildMenu)
+    charMenuContext = {
+        pos = {gui.MousePos()},
+        line = line,
+        steamID = steamID,
+        buildMenu = buildMenu
+    }
+
+    net.Start("liaRequestPlayerCharacters")
+    net.WriteString(steamID)
+    net.SendToServer()
+end
+
+lia.net.readBigTable("liaPlayerCharacters", function(data)
+    if not data or not charMenuContext then return end
+    local menu = DermaMenu()
+    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
+    if charMenuContext.pos then
+        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
+    else
+        menu:Open()
+    end
+
+    charMenuContext = nil
+end)
+
+lia.net.readBigTable("liaAllPlayers", function(players)
+    if not IsValid(panelRef) then return end
+    panelRef:Clear()
+    local search = panelRef:Add("DTextEntry")
+    search:Dock(TOP)
+    search:SetPlaceholderText(L("search"))
+    search:SetTextColor(Color(255, 255, 255))
+    local list = panelRef:Add("DListView")
+    list:Dock(FILL)
+    local function addSizedColumn(text)
+        local col = list:AddColumn(text)
+        surface.SetFont(col.Header:GetFont())
+        local w = surface.GetTextSize(col.Header:GetText())
+        col:SetMinWidth(w + 16)
+        col:SetWidth(w + 16)
+        return col
+    end
+
+    addSizedColumn(L("steamName"))
+    addSizedColumn(L("steamID"))
+    addSizedColumn(L("usergroup"))
+    addSizedColumn(L("firstJoin"))
+    addSizedColumn(L("lastOnline"))
+    addSizedColumn(L("playtime"))
+    addSizedColumn(L("characters"))
+    addSizedColumn(L("warnings"))
+    local function populate(filter)
+        list:Clear()
+        filter = string.lower(filter or "")
+        for _, v in ipairs(players or {}) do
+            local steamName = v.steamName or ""
+            local steamID = v.steamID or ""
+            local userGroup = v.userGroup or ""
+            local ply = player.GetBySteamID(steamID)
+            local lastOnlineText
+            if IsValid(ply) then
+                lastOnlineText = L("onlineNow")
+            else
+                local last = tonumber(v.lastOnline)
+                if last and last > 0 then
+                    local lastDiff = os.time() - last
+                    local timeSince = lia.time.TimeSince(last)
+                    local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
+                    lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
+                else
+                    lastOnlineText = L("unknown")
+                end
+            end
+
+            local playtime
+            if IsValid(ply) then
+                playtime = lia.time.formatDHM(ply:getPlayTime())
+            else
+                playtime = lia.time.formatDHM(tonumber(v.totalOnlineTime) or 0)
+            end
+
+            local charCount = tonumber(v.characterCount) or 0
+            local warnings = tonumber(v.warnings) or 0
+            local ticketRequests = tonumber(v.ticketsRequested) or 0
+            local ticketClaims = tonumber(v.ticketsClaimed) or 0
+            if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
+                local line = list:AddLine(steamName, steamID, userGroup, v.firstJoin or L("unknown"), lastOnlineText, playtime, charCount, warnings)
+                line.steamID = v.steamID
+                line.ticketRequests = ticketRequests
+                line.ticketClaims = ticketClaims
+            end
+        end
+    end
+
+    search.OnChange = function() populate(search:GetValue()) end
+    populate("")
+    function list:OnRowRightClick(_, line)
+        if not IsValid(line) or not line.steamID then return end
+        local parentList = self
+        requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID, characters)
+            menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png")
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for i, column in ipairs(parentList.Columns or {}) do
+                    local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                    local value = ln:GetColumnText(i) or ""
+                    rowString = rowString .. header .. " " .. value .. " | "
+                end
+
+                SetClipboardText(string.sub(rowString, 1, -4))
+            end):SetIcon("icon16/page_copy.png")
+
+            menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
+            menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
+            menu:AddOption(L("viewWarnings"), function() LocalPlayer():ConCommand("say /viewwarns " .. steamID) end):SetIcon("icon16/error.png")
+            menu:AddOption(L("viewTicketRequests"), function() LocalPlayer():ConCommand("say /viewtickets " .. steamID) end):SetIcon("icon16/help.png")
+            if (ln.ticketClaims or 0) > 0 then menu:AddOption(L("viewTicketClaims"), function() LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end):SetIcon("icon16/page_white_text.png") end
+        end)
+    end
+end)
+
+local panelRef
+lia.net.readBigTable("liaFullCharList", function(data)
+    if not IsValid(panelRef) or not data then return end
+    panelRef:buildSheets(data)
 end)

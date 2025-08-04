@@ -1,13 +1,3 @@
-local function formatDHM(seconds)
-    seconds = math.max(seconds or 0, 0)
-    local days = math.floor(seconds / 86400)
-    seconds = seconds % 86400
-    local hours = math.floor(seconds / 3600)
-    seconds = seconds % 3600
-    local minutes = math.floor(seconds / 60)
-    return L("daysHoursMinutes", days, hours, minutes)
-end
-
 net.Receive("RequestRoster", function(_, client)
     local character = client:getChar()
     if not character or not character:hasFlags("V") then return end
@@ -34,7 +24,7 @@ net.Receive("RequestRoster", function(_, client)
                     local lastDiff = os.time() - last
                     local timeSince = lia.time.TimeSince(last)
                     local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                    lastOnlineText = L("agoFormat", timeStripped, formatDHM(lastDiff))
+                    lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                 end
 
                 local classID = tonumber(v._class) or 0
@@ -54,7 +44,7 @@ net.Receive("RequestRoster", function(_, client)
                     faction = v.faction,
                     steamID = v.steamID,
                     class = classData and classData.name or L("none"),
-                    playTime = formatDHM(playTime),
+                    playTime = lia.time.formatDHM(playTime),
                     lastOnline = lastOnlineText
                 })
             end
