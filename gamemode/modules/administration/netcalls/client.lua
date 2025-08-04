@@ -63,6 +63,30 @@ local function openRowInfo(row)
     lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
 end
 
+local function openDecodedTable(tableName, columns, data)
+    local columnInfo = {}
+    for _, col in ipairs(columns or {}) do
+        columnInfo[#columnInfo + 1] = {name = col, field = col}
+    end
+
+    local decodedRows = {}
+    for _, row in ipairs(data or {}) do
+        local decodedRow = {}
+        for _, col in ipairs(columns or {}) do
+            local value = row[col]
+            if isstring(value) then value = deserializeFallback(value) end
+            if istable(value) then
+                decodedRow[col] = tableToString(value)
+            else
+                decodedRow[col] = tostring(value)
+            end
+        end
+        decodedRows[#decodedRows + 1] = decodedRow
+    end
+
+    lia.util.CreateTableUI(L("decodedTableTitle", tableName), columnInfo, decodedRows)
+end
+
 net.Receive("liaDBTables", function()
     local tables = net.ReadTable()
     local frame = vgui.Create("DFrame")
@@ -92,8 +116,9 @@ net.Receive("liaDBTableData", function()
     local tbl = net.ReadString()
     local data = net.ReadTable()
     if not data or #data == 0 then return end
-    local columns = {}
+    local columnKeys, columns = {}, {}
     for k in pairs(data[1]) do
+        columnKeys[#columnKeys + 1] = k
         columns[#columns + 1] = {
             name = k,
             field = k
@@ -118,6 +143,10 @@ net.Receive("liaDBTableData", function()
 
             menu:AddOption(L("viewEntry"), function()
                 openRowInfo(rowData)
+            end)
+
+            menu:AddOption(L("viewDecodedTable"), function()
+                openDecodedTable(tbl, columnKeys, data)
             end)
 
             menu:Open()

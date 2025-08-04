@@ -81,6 +81,30 @@ else
         lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
     end
 
+    local function openDecodedTable(tableName, columns, data)
+        local columnDefs = {}
+        for _, col in ipairs(columns or {}) do
+            columnDefs[#columnDefs + 1] = {name = col, field = col}
+        end
+
+        local decodedRows = {}
+        for _, row in ipairs(data or {}) do
+            local decodedRow = {}
+            for _, col in ipairs(columns or {}) do
+                local value = row[col]
+                if isstring(value) then value = deserializeFallback(value) end
+                if istable(value) then
+                    decodedRow[col] = tableToString(value)
+                else
+                    decodedRow[col] = tostring(value)
+                end
+            end
+            decodedRows[#decodedRows + 1] = decodedRow
+        end
+
+        lia.util.CreateTableUI(L("decodedTableTitle", tableName), columnDefs, decodedRows)
+    end
+
     lia.net.readBigTable("liaDatabaseViewData", function(data)
         if IsValid(panelRef) then panelRef:buildSheets(data) end
     end)
@@ -107,6 +131,7 @@ else
                         pnl.Paint = function() end
                         local list = pnl:Add("DListView")
                         list:Dock(FILL)
+                        local columns = {}
                         function list:OnRowRightClick(_, line)
                             if not IsValid(line) or not line.rowData then return end
                             local menu = DermaMenu()
@@ -122,10 +147,12 @@ else
                             menu:AddOption(L("viewEntry"), function()
                                 openRowInfo(line.rowData)
                             end):SetIcon("icon16/table.png")
+                            menu:AddOption(L("viewDecodedTable"), function()
+                                openDecodedTable(tbl, columns, rows)
+                            end):SetIcon("icon16/table_go.png")
                             menu:Open()
                         end
                         if rows and rows[1] then
-                            local columns = {}
                             for col in pairs(rows[1]) do
                                 list:AddColumn(col)
                                 columns[#columns + 1] = col
