@@ -270,6 +270,7 @@ function MODULE:PopulateAdminTabs(pages)
                                     local line = list:AddLine(unpack(values))
                                     line.CharID = row.ID
                                     line.SteamID = row.SteamID
+                                    line.Banned = row.Banned
                                 end
                             end
                         end
@@ -295,12 +296,19 @@ function MODULE:PopulateAdminTabs(pages)
                                 local owner = line.SteamID and lia.util.getBySteamID(line.SteamID)
                                 if IsValid(owner) then
                                     if LocalPlayer():hasPrivilege("Manage Characters") then
-                                        menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
-                                        menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.CharID .. [["]]) end):SetIcon("icon16/accept.png")
+                                        if line.Banned then
+                                            menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand([[say "/charunban ]] .. line.CharID .. [["]]) end):SetIcon("icon16/accept.png")
+                                        else
+                                            menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand([[say "/charban ]] .. line.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
+                                        end
                                     end
                                 else
-                                    if LocalPlayer():hasPrivilege("Ban Offline") then menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.CharID .. [["]]) end):SetIcon("icon16/cancel.png") end
-                                    if LocalPlayer():hasPrivilege("Unban Offline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.CharID .. [["]]) end):SetIcon("icon16/accept.png") end
+                                    if LocalPlayer():hasPrivilege("Ban Offline") and not line.Banned then
+                                        menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charbanoffline ]] .. line.CharID .. [["]]) end):SetIcon("icon16/cancel.png")
+                                    end
+                                    if LocalPlayer():hasPrivilege("Unban Offline") and line.Banned then
+                                        menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand([[say "/charunbanoffline ]] .. line.CharID .. [["]]) end):SetIcon("icon16/accept.png")
+                                    end
                                 end
                             end
 
