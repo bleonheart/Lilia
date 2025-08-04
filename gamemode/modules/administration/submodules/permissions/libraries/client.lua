@@ -33,10 +33,6 @@ function MODULE:HUDPaint()
             kind = "Items"
             label = L("item") .. ": " .. (ent.getItemTable and ent:getItemTable().name or L("unknown"))
             baseColor = lia.config.get("espItemsColor") or Color(255, 255, 255)
-        elseif ent.isProp and ent:isProp() and lia.option.get("espProps", false) then
-            kind = "Props"
-            label = L("prop") .. " " .. L("model") .. ": " .. (ent:GetModel() or L("unknown"))
-            baseColor = lia.config.get("espPropsColor") or Color(255, 255, 255)
         elseif ESP_DrawnEntities[ent:GetClass()] and lia.option.get("espEntities", false) then
             kind = "Entities"
             label = L("entity") .. " " .. L("class") .. ": " .. (ent:GetClass() or L("unknown"))
