@@ -31,11 +31,11 @@ local function OpenRoster(panel, data)
         local list = page:Add("DListView")
         list:Dock(FILL)
         list:SetMultiSelect(false)
-        list:AddColumn(L("name", "Name"))
-        list:AddColumn(L("steamID", "SteamID"))
-        list:AddColumn(L("class", "Class"))
-        list:AddColumn(L("characterPlaytime", "Character Playtime"))
-        list:AddColumn(L("lastOnline", "Last Online"))
+        list:AddColumn(L("name"))
+        list:AddColumn(L("steamID"))
+        list:AddColumn(L("class"))
+        list:AddColumn(L("characterPlaytime"))
+        list:AddColumn(L("lastOnline"))
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")
@@ -63,9 +63,9 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/user_delete.png")
                 end
 
-                local charSubMenu = menu:AddSubMenu(L("viewCharacterList", "View Character List"))
+                local charSubMenu = menu:AddSubMenu(L("viewCharacterList"))
                 if not characters or #characters == 0 then
-                    charSubMenu:AddOption(L("none", "None"))
+                    charSubMenu:AddOption(L("none"))
                 else
                     for _, name in ipairs(characters) do
                         charSubMenu:AddOption(name)
@@ -83,13 +83,13 @@ local function OpenRoster(panel, data)
                     SetClipboardText(string.sub(rowString, 1, -4))
                 end):SetIcon("icon16/page_copy.png")
 
-                menu:AddOption(L("copyName", "Copy Name"), function()
+                menu:AddOption(L("copyName"), function()
                     local name = ln.rowData and ln.rowData.name or ln:GetColumnText(1) or ""
                     SetClipboardText(name)
                 end):SetIcon("icon16/page_copy.png")
 
-                menu:AddOption(L("copySteamID", "Copy SteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
+                menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
             end)
         end
 
@@ -114,7 +114,7 @@ end)
 function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("Can Manage Factions") then
         table.insert(pages, {
-            name = L("factionManagement", "Factions"),
+            name = L("factionManagement"),
             drawFunc = function(panel)
                 rosterPanel = panel
                 net.Start("liaRequestFactionRoster")

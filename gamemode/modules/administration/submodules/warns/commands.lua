@@ -81,11 +81,11 @@ lia.command.add("viewwarns", {
                     field = "timestamp"
                 },
                 {
-                    name = L("Admin", "Admin"),
+                    name = L("Admin"),
                     field = "admin"
                 },
                 {
-                    name = L("Warning Message", "Warning Message"),
+                    name = L("Warning Message"),
                     field = "warningMessage"
                 }
             }, warningList, {

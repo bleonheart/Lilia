@@ -1,7 +1,7 @@
-MODULE.name = L("modulePlayerListName", "Player List")
+MODULE.name = L("modulePlayerListName")
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("modulePlayerListDesc", "View player accounts and characters.")
+MODULE.desc = L("modulePlayerListDesc")
 if CLIENT then
     local panelRef
     local charMenuContext
@@ -62,14 +62,14 @@ if CLIENT then
             return col
         end
 
-        addSizedColumn(L("steamName", "Steam Name"))
-        addSizedColumn(L("steamID", "SteamID"))
-        addSizedColumn(L("usergroup", "Usergroup"))
-        addSizedColumn(L("firstJoin", "First Join"))
-        addSizedColumn(L("lastOnline", "Last Online"))
-        addSizedColumn(L("playtime", "Playtime"))
-        addSizedColumn(L("characters", "Characters"))
-        addSizedColumn(L("warnings", "Warnings"))
+        addSizedColumn(L("steamName"))
+        addSizedColumn(L("steamID"))
+        addSizedColumn(L("usergroup"))
+        addSizedColumn(L("firstJoin"))
+        addSizedColumn(L("lastOnline"))
+        addSizedColumn(L("playtime"))
+        addSizedColumn(L("characters"))
+        addSizedColumn(L("warnings"))
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")
@@ -108,9 +108,9 @@ if CLIENT then
             if not IsValid(line) or not line.steamID then return end
             local parentList = self
             requestPlayerCharacters(line.steamID, line, function(menu, ln, steamID, characters)
-                local charSubMenu = menu:AddSubMenu(L("viewCharacterList", "View Character List"))
+                local charSubMenu = menu:AddSubMenu(L("viewCharacterList"))
                 if not characters or #characters == 0 then
-                    charSubMenu:AddOption(L("none", "None"))
+                    charSubMenu:AddOption(L("none"))
                 else
                     for _, name in ipairs(characters) do
                         charSubMenu:AddOption(name)
@@ -128,8 +128,8 @@ if CLIENT then
                     SetClipboardText(string.sub(rowString, 1, -4))
                 end):SetIcon("icon16/page_copy.png")
 
-                menu:AddOption(L("copySteamID", "Copy SteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                menu:AddOption(L("openSteamProfile", "Open Steam Profile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
+                menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
+                menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. steamID) end):SetIcon("icon16/world.png")
             end)
         end
     end)
@@ -137,7 +137,7 @@ if CLIENT then
     function MODULE:PopulateAdminTabs(pages)
         if not IsValid(LocalPlayer()) or not LocalPlayer():IsAdmin() then return end
         table.insert(pages, {
-            name = L("players", "Players"),
+            name = L("players"),
             drawFunc = function(panel)
                 panelRef = panel
                 net.Start("liaRequestPlayers")
