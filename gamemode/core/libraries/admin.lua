@@ -204,7 +204,7 @@ function lia.administrator.load()
             if not data then
                 data = {
                     _info = {
-                        inheritance = "user",
+                        inheritance = grp,
                         types = {},
                     }
                 }
@@ -213,7 +213,12 @@ function lia.administrator.load()
                 created = true
             end
 
-            data._info = data._info or {inheritance = "user", types = {}}
+            data._info = data._info or {inheritance = grp, types = {}}
+            if data._info.inheritance ~= grp then
+                data._info.inheritance = grp
+                created = true
+            end
+
             data._info.types = data._info.types or {}
             if grp == "admin" or grp == "superadmin" then
                 local hasStaff = false
