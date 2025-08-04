@@ -70,7 +70,7 @@ if CLIENT then
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for i, column in ipairs(self.Columns or {}) do
-                    local header = column.Header and column.Header:GetText() or ("Column " .. i)
+                    local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
                     local value = line:GetColumnText(i) or ""
                     rowString = rowString .. header .. " " .. value .. " | "
                 end
