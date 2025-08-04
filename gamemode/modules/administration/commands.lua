@@ -204,15 +204,23 @@ lia.command.add("charlist", {
     onRun = function(client, arguments)
         local identifier = arguments[1]
         local target
+        local steamID
         if identifier then
             target = lia.util.findPlayer(client, identifier)
-            if not IsValid(target) then return end
+            if IsValid(target) then
+                steamID = target:SteamID()
+            elseif identifier:match("^STEAM_%d:%d:%d+$") then
+                steamID = identifier
+            else
+                client:notifyLocalized("targetNotFound")
+                return
+            end
         else
-            target = client
+            steamID = client:SteamID()
         end
 
-        local steamID = target:SteamID()
-        lia.db.query("SELECT * FROM lia_characters WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
+        local query = [[SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = ]] .. lia.db.convertDataType(steamID)
+        lia.db.query(query, function(data)
             if not data or #data == 0 then
                 client:notifyLocalized("noCharactersForPlayer")
                 return
@@ -220,11 +228,12 @@ lia.command.add("charlist", {
 
             local sendData = {}
             for _, row in ipairs(data) do
-                local stored = lia.char.loaded[row.id]
+                local charID = tonumber(row.id) or row.id
+                local stored = lia.char.loaded[charID]
+                local info = stored and stored:getData() or {}
+                local allVars = {}
                 if stored then
-                    local info = stored:getData() or {}
-                    local allVars = {}
-                    for varName, varInfo in pairs(lia.char.vars) do
+                    for varName in pairs(lia.char.vars) do
                         local value
                         if varName == "data" then
                             value = stored:getData()
@@ -238,28 +247,33 @@ lia.command.add("charlist", {
                                 value = stored.vars and stored.vars[varName]
                             end
                         end
-
                         allVars[varName] = value
                     end
-
-                    local entry = {
-                        ID = row.id,
-                        Name = stored:getName(),
-                        Desc = row.desc,
-                        Faction = row.faction,
-                        Banned = info.banned and L("yes") or L("no"),
-                        BanningAdminName = info.charBanInfo and info.charBanInfo.name or "",
-                        BanningAdminSteamID = info.charBanInfo and info.charBanInfo.steamID or "",
-                        BanningAdminRank = info.charBanInfo and info.charBanInfo.rank or "",
-                        Money = row.money,
-                        LastUsed = L("onlineNow"),
-                        allVars = allVars
-                    }
-
-                    entry.extraDetails = {}
-                    hook.Run("CharListExtraDetails", client, entry, stored)
-                    table.insert(sendData, entry)
                 end
+
+                local banInfo = info.charBanInfo
+                if not banInfo and row.charBanInfo and row.charBanInfo ~= "" then
+                    local decoded = pon.decode(row.charBanInfo)
+                    banInfo = decoded and decoded[1] or {}
+                end
+
+                local entry = {
+                    ID = charID,
+                    Name = stored and stored:getName() or row.name,
+                    Desc = row.desc,
+                    Faction = row.faction,
+                    Banned = (info.banned or tonumber(row.banned) == 1) and L("yes") or L("no"),
+                    BanningAdminName = banInfo and banInfo.name or "",
+                    BanningAdminSteamID = banInfo and banInfo.steamID or "",
+                    BanningAdminRank = banInfo and banInfo.rank or "",
+                    Money = row.money,
+                    LastUsed = stored and L("onlineNow") or row.lastJoinTime,
+                    allVars = allVars
+                }
+
+                entry.extraDetails = {}
+                hook.Run("CharListExtraDetails", client, entry, stored)
+                table.insert(sendData, entry)
             end
 
             net.Start("DisplayCharList")
