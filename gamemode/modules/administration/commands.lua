@@ -246,6 +246,20 @@ lia.command.add("charkill", {
     end
 })
 
+local function sanitizeForNet(tbl)
+    if type(tbl) ~= "table" then return tbl end
+    local result = {}
+    for k, v in pairs(tbl) do
+        local tv = type(v)
+        if tv == "table" then
+            result[k] = sanitizeForNet(v)
+        elseif tv ~= "function" then
+            result[k] = v
+        end
+    end
+    return result
+end
+
 lia.command.add("charlist", {
     adminOnly = true,
     privilege = "List Characters",
@@ -333,9 +347,11 @@ lia.command.add("charlist", {
 
                 entry.extraDetails = {}
                 hook.Run("CharListExtraDetails", client, entry, stored)
+                entry = sanitizeForNet(entry)
                 table.insert(sendData, entry)
             end
 
+            sendData = sanitizeForNet(sendData)
             net.Start("DisplayCharList")
             net.WriteTable(sendData)
             net.WriteString(steamID)
