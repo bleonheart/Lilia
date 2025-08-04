@@ -331,12 +331,15 @@ lia.command.add("charlist", {
                     end
                 end
 
+                local bannedVal = stored and stored:getBanned() or tonumber(row.banned) or 0
+                local isBanned = bannedVal ~= 0 and (bannedVal == -1 or bannedVal > os.time())
+
                 local entry = {
                     ID = charID,
                     Name = stored and stored:getName() or row.name,
                     Desc = row.desc,
                     Faction = row.faction,
-                    Banned = (info.banned or tonumber(row.banned) == 1) and L("yes") or L("no"),
+                    Banned = isBanned and L("yes") or L("no"),
                     BanningAdminName = banInfo and banInfo.name or "",
                     BanningAdminSteamID = banInfo and banInfo.steamID or "",
                     BanningAdminRank = banInfo and banInfo.rank or "",
