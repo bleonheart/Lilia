@@ -34,6 +34,53 @@ if SERVER then
     end)
 else
     local panelRef
+
+    local function deserializeFallback(raw)
+        if lia.data and lia.data.deserialize then return lia.data.deserialize(raw) end
+        if istable(raw) then return raw end
+        local decoded = util.JSONToTable(raw)
+        if decoded == nil then
+            local ok, result = pcall(pon.decode, raw)
+            if ok then decoded = result end
+        end
+
+        return decoded or raw
+    end
+
+    local function tableToString(tbl)
+        local out = {}
+        for _, value in pairs(tbl) do
+            out[#out + 1] = tostring(value)
+        end
+
+        return table.concat(out, ", ")
+    end
+
+    local function openRowInfo(row)
+        local columns = {
+            {name = L("field"), field = "field"},
+            {name = L("type"), field = "type"},
+            {name = L("coded"), field = "coded"},
+            {name = L("decoded"), field = "decoded"}
+        }
+
+        local rows = {}
+        for k, v in pairs(row or {}) do
+            local decoded = v
+            if isstring(v) then decoded = deserializeFallback(v) end
+            local codedStr = istable(v) and tableToString(v) or tostring(v)
+            local decodedStr = istable(decoded) and tableToString(decoded) or tostring(decoded)
+            rows[#rows + 1] = {
+                field = k,
+                type = type(v),
+                coded = codedStr,
+                decoded = decodedStr
+            }
+        end
+
+        lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
+    end
+
     lia.net.readBigTable("liaDatabaseViewData", function(data)
         if IsValid(panelRef) then panelRef:buildSheets(data) end
     end)
@@ -61,7 +108,7 @@ else
                         local list = pnl:Add("DListView")
                         list:Dock(FILL)
                         function list:OnRowRightClick(_, line)
-                            if not IsValid(line) then return end
+                            if not IsValid(line) or not line.rowData then return end
                             local menu = DermaMenu()
                             menu:AddOption(L("copyRow"), function()
                                 local rowString = ""
@@ -72,6 +119,9 @@ else
                                 end
                                 SetClipboardText(string.sub(rowString, 1, -4))
                             end):SetIcon("icon16/page_copy.png")
+                            menu:AddOption(L("viewEntry"), function()
+                                openRowInfo(line.rowData)
+                            end):SetIcon("icon16/table.png")
                             menu:Open()
                         end
                         if rows and rows[1] then
@@ -85,7 +135,8 @@ else
                                 for _, col in ipairs(columns) do
                                     lineData[#lineData + 1] = tostring(row[col])
                                 end
-                                list:AddLine(unpack(lineData))
+                                local line = list:AddLine(unpack(lineData))
+                                line.rowData = row
                             end
                         end
                         local sheetName = tbl:gsub("^lia_", "")
