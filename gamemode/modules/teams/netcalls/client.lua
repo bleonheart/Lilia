@@ -62,6 +62,9 @@ net.Receive("CharacterInfo", function()
                 end
 
                 menu:AddOption(L("view") .. " " .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+                menu:AddOption(L("copySteamID"), function()
+                    SetClipboardText(rowData.steamID or "")
+                end)
                 menu:AddOption(L("copyRow"), function()
                     local rowString = ""
                     for key, value in pairs(rowData) do
@@ -137,6 +140,7 @@ net.Receive("CharacterInfo", function()
             end
 
             menu:AddOption(L("view") .. " " .. L("characterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end)
+            menu:AddOption(L("copySteamID"), function() SetClipboardText(rowData.steamID or "") end)
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do
