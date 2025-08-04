@@ -112,7 +112,13 @@ net.Receive("CharacterInfo", function()
     }
 
     local actions = {}
-    if canKick then actions[#actions + 1] = {name = L("kick"), net = "KickCharacter"} end
+    if canKick then
+        actions[#actions + 1] = {
+            name = L("kick"),
+            net = "KickCharacter"
+        }
+    end
+
     local frame, list = lia.util.CreateTableUI(L("character") .. " " .. L("information"), columns, rows, actions)
     characterPanel = frame
     if IsValid(list) then
