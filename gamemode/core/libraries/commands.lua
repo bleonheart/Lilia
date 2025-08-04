@@ -81,23 +81,25 @@ function lia.command.extractArgs(text)
     local arguments = {}
     local curString = ""
     for i = 1, #text do
-        if i <= skip then continue end
-        local c = text:sub(i, i)
-        if c == "\"" or c == "'" then
-            local match = text:sub(i):match("%b" .. c .. c)
-            if match then
+        if i > skip then
+            local c = text:sub(i, i)
+            if c == "\"" or c == "'" then
+                local match = text:sub(i):match("%b" .. c .. c)
+                if match then
+                    curString = ""
+                    skip = i + #match
+                    arguments[#arguments + 1] = match:sub(2, -2)
+                else
+                    curString = curString .. c
+                end
+            elseif c == " " and curString ~= "" then
+                arguments[#arguments + 1] = curString
                 curString = ""
-                skip = i + #match
-                arguments[#arguments + 1] = match:sub(2, -2)
             else
-                curString = curString .. c
+                if not (c == " " and curString == "") then
+                    curString = curString .. c
+                end
             end
-        elseif c == " " and curString ~= "" then
-            arguments[#arguments + 1] = curString
-            curString = ""
-        else
-            if c == " " and curString == "" then continue end
-            curString = curString .. c
         end
     end
 
@@ -363,25 +365,25 @@ else
                 end
             elseif fieldType == "player" then
                 ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("selectPlayer"))
+                ctrl:SetValue(L("select") .. " " .. L("player"))
                 for _, plyObj in player.Iterator() do
                     if IsValid(plyObj) then ctrl:AddChoice(plyObj:Name(), plyObj:SteamID()) end
                 end
             elseif fieldType == "item" then
                 ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("selectItemPrompt"))
+                ctrl:SetValue(L("select") .. " " .. L("item"))
                 for uniqueID, item in SortedPairsByMemberValue(lia.item.list, "name") do
                     ctrl:AddChoice(item.getName and item:getName() or L(item.name), uniqueID)
                 end
             elseif fieldType == "faction" then
                 ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("selectFactionPrompt"))
+                ctrl:SetValue(L("select") .. " " .. L("faction"))
                 for _, fac in ipairs(lia.faction.indices) do
                     ctrl:AddChoice(L(fac.name), string.format("\"%s\"", fac.uniqueID))
                 end
             elseif fieldType == "class" then
                 ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("selectClassPrompt"))
+                ctrl:SetValue(L("select") .. " " .. L("class"))
                 for _, class in pairs(lia.class.list) do
                     ctrl:AddChoice(L(class.name), string.format("\"%s\"", class.uniqueID))
                 end
@@ -552,14 +554,16 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
             if useList then
                 local data = {}
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
-                    if isnumber(cmdName) then continue end
-                    local hasAccess = lia.command.hasAccess(client, cmdName, cmdData)
-                    if not hasAccess then continue end
-                    local text = "/" .. cmdName
-                    if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
-                    local desc = cmdData.desc or ""
-                    local priv = cmdData.privilege and cmdData.privilege ~= "Global" and cmdData.privilege or ""
-                    data[#data + 1] = {text, desc, priv}
+                    if not isnumber(cmdName) then
+                        local hasAccess = lia.command.hasAccess(client, cmdName, cmdData)
+                        if hasAccess then
+                            local text = "/" .. cmdName
+                            if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
+                            local desc = cmdData.desc or ""
+                            local priv = cmdData.privilege and cmdData.privilege ~= "Global" and cmdData.privilege or ""
+                            data[#data + 1] = {text, desc, priv}
+                        end
+                    end
                 end
 
                 sheet:AddListViewRow({
@@ -569,20 +573,22 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                 })
             else
                 for cmdName, cmdData in SortedPairs(lia.command.list) do
-                    if isnumber(cmdName) then continue end
-                    local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
-                    if not hasAccess then continue end
-                    local text = "/" .. cmdName
-                    if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
-                    local desc = cmdData.desc or ""
-                    local right = privilege and privilege ~= "Global" and privilege or ""
-                    local row = sheet:AddTextRow({
-                        title = text,
-                        desc = desc,
-                        right = right
-                    })
+                    if not isnumber(cmdName) then
+                        local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
+                        if hasAccess then
+                            local text = "/" .. cmdName
+                            if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
+                            local desc = cmdData.desc or ""
+                            local right = privilege and privilege ~= "Global" and privilege or ""
+                            local row = sheet:AddTextRow({
+                                title = text,
+                                desc = desc,
+                                right = right
+                            })
 
-                    row.filterText = (cmdName .. " " .. (cmdData.syntax or "") .. " " .. desc .. " " .. right):lower()
+                            row.filterText = (cmdName .. " " .. (cmdData.syntax or "") .. " " .. desc .. " " .. right):lower()
+                        end
+                    end
                 end
             end
 

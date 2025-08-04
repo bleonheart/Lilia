@@ -374,7 +374,7 @@ lia.command.add("doorinfo", {
                 }
             }
 
-            lia.util.CreateTableUI(client, L("doorInfoTitle"), {
+            lia.util.CreateTableUI(client, L("door") .. " " .. L("information"), {
                 {
                     name = L("doorInfoProperty"),
                     field = "property"

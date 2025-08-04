@@ -63,7 +63,7 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/user_delete.png")
                 end
 
-                local charSubMenu = menu:AddSubMenu(L("viewCharacterList"))
+                local charSubMenu = menu:AddSubMenu(L("view") .. " " .. L("characterList"))
                 if not characters or #characters == 0 then
                     charSubMenu:AddOption(L("none"))
                 else
