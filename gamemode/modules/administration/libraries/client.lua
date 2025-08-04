@@ -415,7 +415,7 @@ function MODULE:PopulateAdminTabs(pages)
         table.insert(pages, {
             name = L("flagsManagement"),
             drawFunc = function(panel)
-                panelRef = panel
+                flagsPanel = panel
                 net.Start("liaRequestAllFlags")
                 net.SendToServer()
             end
