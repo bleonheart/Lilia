@@ -29,7 +29,7 @@
             popup:MakePopup()
             local label = vgui.Create("DLabel", popup)
             label:Dock(TOP)
-            label:SetText(L("giveTo"))
+            label:SetText(L("giveTo") .. ":")
             local combo = vgui.Create("DComboBox", popup)
             combo:Dock(TOP)
             for _, character in pairs(lia.char.getAll()) do

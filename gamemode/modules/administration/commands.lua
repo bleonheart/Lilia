@@ -101,7 +101,7 @@ lia.command.add("addsitroom", {
     privilege = "Manage SitRooms",
     desc = "setSitroomDesc",
     onRun = function(client)
-        client:requestString(L("enterNamePrompt"), L("enterSitroomPrompt"), function(name)
+        client:requestString(L("enterNamePrompt"), L("enterSitroomPrompt") .. ":", function(name)
             if name == "" then
                 client:notifyLocalized("invalidName")
                 return
@@ -145,7 +145,7 @@ lia.command.add("sendtositroom", {
             return
         end
 
-        client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt"), names, function(selection)
+        client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt") .. ":", names, function(selection)
             local pos = rooms[selection]
             if not pos then
                 client:notifyLocalized("sitroomNotSet")

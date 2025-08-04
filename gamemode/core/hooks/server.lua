@@ -1050,7 +1050,7 @@ concommand.Add("list_entities", function(client)
     local entityCount = {}
     local totalEntities = 0
     if not IsValid(client) then
-        lia.information(L("entitiesOnServer"))
+        lia.information(L("entitiesOnServer") .. ":")
         for _, entity in ents.Iterator() do
             local className = entity:GetClass()
             if className then
