@@ -226,7 +226,6 @@ end
 function GM:DrawEntityInfo(e, a, pos)
     if not e:IsPlayer() or hook.Run("ShouldDrawPlayerInfo", e) == false then return end
     local ch = e:getChar()
-    if not ch then return end
     pos = pos or toScreen(e:GetPos() + (e:Crouching() and Vector(0, 0, 48) or Vector(0, 0, 80)))
     local x, y = pos.x, pos.y
     local charInfo = {}
@@ -237,7 +236,7 @@ function GM:DrawEntityInfo(e, a, pos)
         e.liaDescCache = nil
     end
 
-    local name = hook.Run("GetDisplayedName", e) or ch.getName(ch)
+    local name = hook.Run("GetDisplayedName", e) or (ch and ch.getName(ch) or e:Name())
     if name ~= e.liaNameCache then
         e.liaNameCache = name
         if #name > 250 then name = name:sub(1, 250) .. "..." end
@@ -248,7 +247,7 @@ function GM:DrawEntityInfo(e, a, pos)
         charInfo[#charInfo + 1] = {e.liaNameLines[i], color_white}
     end
 
-    local desc = hook.Run("GetDisplayedDescription", e, true) or ch.getDesc(ch)
+    local desc = hook.Run("GetDisplayedDescription", e, true) or (ch and ch.getDesc(ch) or L("noChar"))
     if desc ~= e.liaDescCache then
         e.liaDescCache = desc
         if #desc > 250 then desc = desc:sub(1, 250) .. "..." end
@@ -259,7 +258,7 @@ function GM:DrawEntityInfo(e, a, pos)
         charInfo[#charInfo + 1] = {e.liaDescLines[i]}
     end
 
-    hook.Run("DrawCharInfo", e, ch, charInfo)
+    if ch then hook.Run("DrawCharInfo", e, ch, charInfo) end
     for i = 1, #charInfo do
         local info = charInfo[i]
         local _, ty = lia.util.drawText(info[1]:gsub("#", "\226\128\139#"), x, y, ColorAlpha(info[2] or color_white, a), 1, 1, "liaSmallFont")
