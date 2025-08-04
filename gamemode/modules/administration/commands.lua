@@ -5,14 +5,14 @@
     onRun = function(client)
         local secs = client:getPlayTime()
         if not secs then
-            client:ChatPrint(L("playtimeError"))
+            client:notify(L("playtimeError"))
             return
         end
 
         local h = math.floor(secs / 3600)
         local m = math.floor((secs % 3600) / 60)
         local s = secs % 60
-        client:ChatPrint(L("playtimeYour", h, m, s))
+        client:notify(L("playtimeYour", h, m, s))
     end
 })
 
@@ -2285,7 +2285,7 @@ lia.command.add("checkflags", {
         if flags and #flags > 0 then
             client:ChatPrint(L("charFlags", target:Name(), table.concat(flags, ", ")))
         else
-            client:ChatPrint(L("noFlags", target:Name()))
+            client:notify(L("noFlags", target:Name()))
         end
     end
 })
