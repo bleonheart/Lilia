@@ -57,7 +57,7 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
                 if isnumber(flagName) then continue end
                 local descText = flagData.desc or ""
                 local row = sheet:AddTextRow({
-                    title = L("flagLabel", flagName),
+                    title = L("flag") .. " '" .. flagName .. "'",
                     desc = descText
                 })
 
