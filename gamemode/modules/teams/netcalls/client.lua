@@ -16,9 +16,8 @@ end)
 net.Receive("CharacterInfo", function()
     local characterData = net.ReadTable()
     local character = LocalPlayer():getChar()
-    local isLeader = LocalPlayer():hasPrivilege("Manage Faction Members") or character and character:hasFlags("V")
-    if not isLeader then return end
-    local canKick = LocalPlayer():hasPrivilege("Manage Faction Members") or character and character:hasFlags("K")
+    if not character or LocalPlayer():Team() == FACTION_STAFF or not character:hasFlags("V") then return end
+    local canKick = character:hasFlags("K")
     if IsValid(lia.gui.rosterSheet) then
         local sheet = lia.gui.rosterSheet
         sheet.search:SetValue("")
