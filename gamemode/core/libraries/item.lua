@@ -487,7 +487,7 @@ function lia.item.generateWeapons()
         local isGrenade = holdType == "grenade"
         local baseType = isGrenade and "base_grenade" or "base_weapons"
         local ITEM = lia.item.register(className, baseType, nil, nil, true)
-        ITEM.name = hook.Run("GetWeaponName", weapon) or override.name or language.GetPhrase(weapons[i]:GetPrintName()):utf8upper() or className
+        ITEM.name = hook.Run("GetWeaponName", weapon) or override.name or className
         ITEM.desc = override.desc or L("weaponsDesc")
         ITEM.category = override.category or isGrenade and L("itemCatGrenades") or L("weapons")
         ITEM.model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl"
