@@ -798,7 +798,7 @@ else
             local inhLbl = details:Add("DLabel")
             inhLbl:Dock(TOP)
             inhLbl:DockMargin(0, 10, 0, 0)
-            inhLbl:SetText(L("inheritsFrom"))
+            inhLbl:SetText(L("inheritsFrom") .. ":")
             inhLbl:SetFont("liaBigFont")
             inhLbl:SetContentAlignment(5)
             inhLbl:SizeToContents()
@@ -863,7 +863,7 @@ else
             delBtn:SetText(L("deleteGroup"))
             createBtn.DoClick = promptCreateGroup
             renameBtn.DoClick = function()
-                Derma_StringRequest(L("renameGroup"), L("renameGroupPrompt", g), g, function(txt)
+                Derma_StringRequest(L("renameGroup"), L("renameGroupPrompt", g) .. ":", g, function(txt)
                     txt = string.Trim(txt or "")
                     if txt ~= "" and txt ~= g then
                         net.Start("liaGroupsRename")

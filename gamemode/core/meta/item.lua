@@ -125,7 +125,7 @@ end
 
 function ITEM:printData()
     self:print(true)
-    lia.information(L("itemData"))
+    lia.information(L("itemData") .. ":")
     for k, v in pairs(self.data) do
         lia.information(Format(L("itemDataEntry"), k, v))
     end
