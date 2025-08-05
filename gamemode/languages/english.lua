@@ -86,6 +86,7 @@ LANGUAGE = {
     isDefault = "Is Default",
     yes = "Yes",
     no = "No",
+    keyBind = " (%s)",
     baseHealth = "Base Health",
     vendorYourItems = "Your Items",
     vendorItemsTitle = "Vendor Items",
