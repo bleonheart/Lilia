@@ -1,6 +1,6 @@
 ﻿lia.command.add("playtime", {
     adminOnly = false,
-    privilege = "View Own Playtime",
+    privilege = L("View Own Playtime"),
     desc = "playtimeDesc",
     onRun = function(client)
         local secs = client:getPlayTime()
@@ -18,7 +18,7 @@
 
 lia.command.add("plygetplaytime", {
     adminOnly = true,
-    privilege = "View Playtime",
+    privilege = L("View Playtime"),
     syntax = "[player Name]",
     AdminStick = {
         Name = "adminStickGetPlayTimeName",
@@ -85,7 +85,7 @@ lia.command.add("adminmode", {
 
 lia.command.add("managesitrooms", {
     superAdminOnly = true,
-    privilege = "Manage SitRooms",
+    privilege = L("Manage SitRooms"),
     desc = "manageSitroomsDesc",
     onRun = function(client)
         if not client:hasPrivilege(L("Manage SitRooms")) then return end
@@ -98,7 +98,7 @@ lia.command.add("managesitrooms", {
 
 lia.command.add("addsitroom", {
     superAdminOnly = true,
-    privilege = "Manage SitRooms",
+    privilege = L("Manage SitRooms"),
     desc = "setSitroomDesc",
     onRun = function(client)
         client:requestString(L("enterNamePrompt"), L("enterSitroomPrompt") .. ":", function(name)
@@ -118,7 +118,7 @@ lia.command.add("addsitroom", {
 
 lia.command.add("sendtositroom", {
     adminOnly = true,
-    privilege = "Manage SitRooms",
+    privilege = L("Manage SitRooms"),
     desc = "sendToSitRoomDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -162,7 +162,7 @@ lia.command.add("sendtositroom", {
 
 lia.command.add("returnsitroom", {
     adminOnly = true,
-    privilege = "Manage SitRooms",
+    privilege = L("Manage SitRooms"),
     desc = "returnFromSitroomDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -193,7 +193,7 @@ lia.command.add("returnsitroom", {
 
 lia.command.add("charkill", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "charkillDesc",
     onRun = function(client)
         local choices = {}
@@ -263,7 +263,7 @@ end
 
 lia.command.add("charlist", {
     adminOnly = true,
-    privilege = "List Characters",
+    privilege = L("List Characters"),
     desc = "charListDesc",
     syntax = "[string Player Or Steam ID]",
     AdminStick = {
@@ -366,7 +366,7 @@ lia.command.add("charlist", {
 
 lia.command.add("plyban", {
     adminOnly = true,
-    privilege = "Ban Player",
+    privilege = L("Ban Player"),
     desc = "plyBanDesc",
     syntax = "[player Name] [number Duration optional] [string Reason]",
     onRun = function(client, arguments)
@@ -381,7 +381,7 @@ lia.command.add("plyban", {
 
 lia.command.add("plykick", {
     adminOnly = true,
-    privilege = "Kick Player",
+    privilege = L("Kick Player"),
     desc = "plyKickDesc",
     syntax = "[player Name] [string Reason optional]",
     onRun = function(client, arguments)
@@ -405,7 +405,7 @@ lia.command.add("plykick", {
 
 lia.command.add("plykill", {
     adminOnly = true,
-    privilege = "Kill Player",
+    privilege = L("Kill Player"),
     desc = "plyKillDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -429,7 +429,7 @@ lia.command.add("plykill", {
 
 lia.command.add("plyunban", {
     adminOnly = true,
-    privilege = "Unban Player",
+    privilege = L("Unban Player"),
     desc = "plyUnbanDesc",
     syntax = "[string SteamID]",
     onRun = function(client, arguments)
@@ -444,7 +444,7 @@ lia.command.add("plyunban", {
 
 lia.command.add("plyfreeze", {
     adminOnly = true,
-    privilege = "Freeze Player",
+    privilege = L("Freeze Player"),
     desc = "plyFreezeDesc",
     syntax = "[player Name] [number Duration optional]",
     onRun = function(client, arguments)
@@ -460,7 +460,7 @@ lia.command.add("plyfreeze", {
 
 lia.command.add("plyunfreeze", {
     adminOnly = true,
-    privilege = "Unfreeze Player",
+    privilege = L("Unfreeze Player"),
     desc = "plyUnfreezeDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -474,7 +474,7 @@ lia.command.add("plyunfreeze", {
 
 lia.command.add("plyslay", {
     adminOnly = true,
-    privilege = "Slay Player",
+    privilege = L("Slay Player"),
     desc = "plySlayDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -488,7 +488,7 @@ lia.command.add("plyslay", {
 
 lia.command.add("plyrespawn", {
     adminOnly = true,
-    privilege = "Respawn Player",
+    privilege = L("Respawn Player"),
     desc = "plyRespawnDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -511,7 +511,7 @@ lia.command.add("plyrespawn", {
 
 lia.command.add("plyblind", {
     adminOnly = true,
-    privilege = "Blind Player",
+    privilege = L("Blind Player"),
     desc = "plyBlindDesc",
     syntax = "[player Name] [number Time optional]",
     onRun = function(client, arguments)
@@ -547,7 +547,7 @@ lia.command.add("plyblind", {
 
 lia.command.add("plyunblind", {
     adminOnly = true,
-    privilege = "Unblind Player",
+    privilege = L("Unblind Player"),
     desc = "plyUnblindDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -563,7 +563,7 @@ lia.command.add("plyunblind", {
 
 lia.command.add("plyblindfade", {
     adminOnly = true,
-    privilege = "Blind Fade Player",
+    privilege = L("Blind Fade Player"),
     desc = "plyBlindFadeDesc",
     syntax = "[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
     onRun = function(client, arguments)
@@ -588,7 +588,7 @@ lia.command.add("plyblindfade", {
 
 lia.command.add("blindfadeall", {
     adminOnly = true,
-    privilege = "Blind Fade All",
+    privilege = L("Blind Fade All"),
     desc = "blindFadeAllDesc",
     syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
     onRun = function(_, arguments)
@@ -612,7 +612,7 @@ lia.command.add("blindfadeall", {
 
 lia.command.add("plygag", {
     adminOnly = true,
-    privilege = "Gag Player",
+    privilege = L("Gag Player"),
     desc = "plyGagDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -627,7 +627,7 @@ lia.command.add("plygag", {
 
 lia.command.add("plyungag", {
     adminOnly = true,
-    privilege = "Ungag Player",
+    privilege = L("Ungag Player"),
     desc = "plyUngagDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -642,7 +642,7 @@ lia.command.add("plyungag", {
 
 lia.command.add("plymute", {
     adminOnly = true,
-    privilege = "Mute Player",
+    privilege = L("Mute Player"),
     desc = "plyMuteDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -667,7 +667,7 @@ lia.command.add("plymute", {
 
 lia.command.add("plyunmute", {
     adminOnly = true,
-    privilege = "Unmute Player",
+    privilege = L("Unmute Player"),
     desc = "plyUnmuteDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -683,7 +683,7 @@ lia.command.add("plyunmute", {
 local returnPositions = {}
 lia.command.add("plybring", {
     adminOnly = true,
-    privilege = "Bring Player",
+    privilege = L("Bring Player"),
     desc = "plyBringDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -698,7 +698,7 @@ lia.command.add("plybring", {
 
 lia.command.add("plygoto", {
     adminOnly = true,
-    privilege = "Goto Player",
+    privilege = L("Goto Player"),
     desc = "plyGotoDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -713,7 +713,7 @@ lia.command.add("plygoto", {
 
 lia.command.add("plyreturn", {
     adminOnly = true,
-    privilege = "Return Player",
+    privilege = L("Return Player"),
     desc = "plyReturnDesc",
     syntax = "[player Name optional]",
     onRun = function(client, arguments)
@@ -730,7 +730,7 @@ lia.command.add("plyreturn", {
 
 lia.command.add("plyjail", {
     adminOnly = true,
-    privilege = "Jail Player",
+    privilege = L("Jail Player"),
     desc = "plyJailDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -754,7 +754,7 @@ lia.command.add("plyjail", {
 
 lia.command.add("plyunjail", {
     adminOnly = true,
-    privilege = "Unjail Player",
+    privilege = L("Unjail Player"),
     desc = "plyUnjailDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -769,7 +769,7 @@ lia.command.add("plyunjail", {
 
 lia.command.add("plycloak", {
     adminOnly = true,
-    privilege = "Cloak Player",
+    privilege = L("Cloak Player"),
     desc = "plyCloakDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -783,7 +783,7 @@ lia.command.add("plycloak", {
 
 lia.command.add("plyuncloak", {
     adminOnly = true,
-    privilege = "Uncloak Player",
+    privilege = L("Uncloak Player"),
     desc = "plyUncloakDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -797,7 +797,7 @@ lia.command.add("plyuncloak", {
 
 lia.command.add("plygod", {
     adminOnly = true,
-    privilege = "God Player",
+    privilege = L("God Player"),
     desc = "plyGodDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -811,7 +811,7 @@ lia.command.add("plygod", {
 
 lia.command.add("plyungod", {
     adminOnly = true,
-    privilege = "Ungod Player",
+    privilege = L("Ungod Player"),
     desc = "plyUngodDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -825,7 +825,7 @@ lia.command.add("plyungod", {
 
 lia.command.add("plyignite", {
     adminOnly = true,
-    privilege = "Ignite Player",
+    privilege = L("Ignite Player"),
     desc = "plyIgniteDesc",
     syntax = "[player Name] [number Duration optional]",
     onRun = function(client, arguments)
@@ -840,7 +840,7 @@ lia.command.add("plyignite", {
 
 lia.command.add("plyextinguish", {
     adminOnly = true,
-    privilege = "Extinguish Player",
+    privilege = L("Extinguish Player"),
     desc = "plyExtinguishDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -854,7 +854,7 @@ lia.command.add("plyextinguish", {
 
 lia.command.add("plystrip", {
     adminOnly = true,
-    privilege = "Strip Player",
+    privilege = L("Strip Player"),
     desc = "plyStripDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -877,7 +877,7 @@ lia.command.add("plystrip", {
 
 lia.command.add("pktoggle", {
     adminOnly = true,
-    privilege = "Toggle Permakill",
+    privilege = L("Toggle Permakill"),
     desc = "togglePermakillDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -912,7 +912,7 @@ lia.command.add("pktoggle", {
 
 lia.command.add("charunbanoffline", {
     superAdminOnly = true,
-    privilege = "Unban Offline",
+    privilege = L("Unban Offline"),
     desc = "charUnbanOfflineDesc",
     syntax = "[number Char ID]",
     onRun = function(client, arguments)
@@ -929,7 +929,7 @@ lia.command.add("charunbanoffline", {
 
 lia.command.add("charbanoffline", {
     superAdminOnly = true,
-    privilege = "Ban Offline",
+    privilege = L("Ban Offline"),
     desc = "charBanOfflineDesc",
     syntax = "[number Char ID]",
     onRun = function(client, arguments)
@@ -958,7 +958,7 @@ lia.command.add("charbanoffline", {
 
 lia.command.add("playglobalsound", {
     superAdminOnly = true,
-    privilege = "Play Sounds",
+    privilege = L("Play Sounds"),
     desc = "playGlobalSoundDesc",
     syntax = "[string Sound]",
     onRun = function(client, arguments)
@@ -976,7 +976,7 @@ lia.command.add("playglobalsound", {
 
 lia.command.add("playsound", {
     superAdminOnly = true,
-    privilege = "Play Sounds",
+    privilege = L("Play Sounds"),
     desc = "playSoundDesc",
     syntax = "[player Name] [string Sound]",
     onRun = function(client, arguments)
@@ -998,7 +998,7 @@ lia.command.add("playsound", {
 
 lia.command.add("returntodeathpos", {
     adminOnly = true,
-    privilege = "Return Players",
+    privilege = L("Return Players"),
     desc = "returnToDeathPosDesc",
     onRun = function(client)
         if IsValid(client) and client:Alive() then
@@ -1027,7 +1027,7 @@ lia.command.add("roll", {
 
 lia.command.add("forcefallover", {
     adminOnly = true,
-    privilege = "Force Fallover",
+    privilege = L("Force Fallover"),
     desc = "forceFalloverDesc",
     syntax = "[player Name] [number Time optional]",
     onRun = function(client, arguments)
@@ -1071,7 +1071,7 @@ lia.command.add("forcefallover", {
 
 lia.command.add("forcegetup", {
     adminOnly = true,
-    privilege = "Force GetUp",
+    privilege = L("Force GetUp"),
     desc = "forceGetUpDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -1182,7 +1182,7 @@ lia.command.add("fallover", {
 
 lia.command.add("togglelockcharacters", {
     superAdminOnly = true,
-    privilege = "Toggle Character Lock",
+    privilege = L("Toggle Character Lock"),
     desc = "toggleCharLockDesc",
     onRun = function()
         local newVal = not GetGlobalBool("characterSwapLock", false)
@@ -1197,7 +1197,7 @@ lia.command.add("togglelockcharacters", {
 
 lia.command.add("checkinventory", {
     adminOnly = true,
-    privilege = "Check Inventories",
+    privilege = L("Check Inventories"),
     desc = "checkInventoryDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -1231,7 +1231,7 @@ lia.command.add("checkinventory", {
 
 lia.command.add("flaggive", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "flagGiveDesc",
     syntax = "[player Name] [string Flags]",
     onRun = function(client, arguments)
@@ -1265,7 +1265,7 @@ lia.command.add("flaggive", {
 
 lia.command.add("flaggiveall", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "giveAllFlagsDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -1292,7 +1292,7 @@ lia.command.add("flaggiveall", {
 
 lia.command.add("flagtakeall", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "takeAllFlagsDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -1324,7 +1324,7 @@ lia.command.add("flagtakeall", {
 
 lia.command.add("flagtake", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "flagTakeDesc",
     syntax = "[player Name] [string Flags]",
     onRun = function(client, arguments)
@@ -1349,7 +1349,7 @@ lia.command.add("flagtake", {
 
 lia.command.add("pflaggive", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "playerFlagGiveDesc",
     syntax = "[player Name] [string Flags]",
     onRun = function(client, arguments)
@@ -1385,7 +1385,7 @@ lia.command.add("pflaggive", {
 
 lia.command.add("pflaggiveall", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "giveAllFlagsDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -1406,7 +1406,7 @@ lia.command.add("pflaggiveall", {
 
 lia.command.add("pflagtakeall", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "takeAllFlagsDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -1427,7 +1427,7 @@ lia.command.add("pflagtakeall", {
 
 lia.command.add("pflagtake", {
     adminOnly = true,
-    privilege = "Manage Flags",
+    privilege = L("Manage Flags"),
     desc = "playerFlagTakeDesc",
     syntax = "[player Name] [string Flags]",
     onRun = function(client, arguments)
@@ -1453,7 +1453,7 @@ lia.command.add("pflagtake", {
 })
 lia.command.add("bringlostitems", {
     superAdminOnly = true,
-    privilege = "Manage Items",
+    privilege = L("Manage Items"),
     desc = "bringLostItemsDesc",
     onRun = function(client)
         for _, v in ipairs(ents.FindInSphere(client:GetPos(), 500)) do
@@ -1464,7 +1464,7 @@ lia.command.add("bringlostitems", {
 
 lia.command.add("charvoicetoggle", {
     adminOnly = true,
-    privilege = "Toggle Voice Ban Character",
+    privilege = L("Toggle Voice Ban Character"),
     desc = "charVoiceToggleDesc",
     syntax = "[string Name]",
     AdminStick = {
@@ -1505,7 +1505,7 @@ lia.command.add("charvoicetoggle", {
 
 lia.command.add("cleanitems", {
     superAdminOnly = true,
-    privilege = "Clean Entities",
+    privilege = L("Clean Entities"),
     desc = "cleanItemsDesc",
     onRun = function(client)
         local count = 0
@@ -1520,7 +1520,7 @@ lia.command.add("cleanitems", {
 
 lia.command.add("cleanprops", {
     superAdminOnly = true,
-    privilege = "Clean Entities",
+    privilege = L("Clean Entities"),
     desc = "cleanPropsDesc",
     onRun = function(client)
         local count = 0
@@ -1537,7 +1537,7 @@ lia.command.add("cleanprops", {
 
 lia.command.add("cleannpcs", {
     superAdminOnly = true,
-    privilege = "Clean Entities",
+    privilege = L("Clean Entities"),
     desc = "cleanNPCsDesc",
     onRun = function(client)
         local count = 0
@@ -1554,7 +1554,7 @@ lia.command.add("cleannpcs", {
 
 lia.command.add("charunban", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "charUnbanDesc",
     syntax = "[string Name or Number ID]",
     onRun = function(client, arguments)
@@ -1614,7 +1614,7 @@ lia.command.add("charunban", {
 
 lia.command.add("clearinv", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "clearInvDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -1637,7 +1637,7 @@ lia.command.add("clearinv", {
 
 lia.command.add("charkick", {
     adminOnly = true,
-    privilege = "Kick Characters",
+    privilege = L("Kick Characters"),
     desc = "kickCharDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -1669,7 +1669,7 @@ lia.command.add("charkick", {
 
 lia.command.add("freezeallprops", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "freezeAllPropsDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -1697,7 +1697,7 @@ lia.command.add("freezeallprops", {
 
 lia.command.add("charban", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "banCharDesc",
     syntax = "[string Name or Number ID]",
     AdminStick = {
@@ -1747,7 +1747,7 @@ lia.command.add("charban", {
 
 lia.command.add("checkmoney", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "checkMoneyDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -1770,7 +1770,7 @@ lia.command.add("checkmoney", {
 
 lia.command.add("listbodygroups", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "listBodygroupsDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -1814,7 +1814,7 @@ lia.command.add("listbodygroups", {
 
 lia.command.add("charsetspeed", {
     adminOnly = true,
-    privilege = "Manage Character Stats",
+    privilege = L("Manage Character Stats"),
     desc = "setSpeedDesc",
     syntax = "[player Name] [number Speed optional]",
     AdminStick = {
@@ -1837,7 +1837,7 @@ lia.command.add("charsetspeed", {
 
 lia.command.add("charsetmodel", {
     adminOnly = true,
-    privilege = "Manage Character Information",
+    privilege = L("Manage Character Information"),
     desc = "setModelDesc",
     syntax = "[player Name] [string Model optional]",
     onRun = function(client, arguments)
@@ -1857,7 +1857,7 @@ lia.command.add("charsetmodel", {
 
 lia.command.add("chargiveitem", {
     superAdminOnly = true,
-    privilege = "Manage Items",
+    privilege = L("Manage Items"),
     desc = "giveItemDesc",
     syntax = "[player Name] [item Item Name]",
     AdminStick = {
@@ -1906,7 +1906,7 @@ lia.command.add("chargiveitem", {
 
 lia.command.add("charsetdesc", {
     adminOnly = true,
-    privilege = "Manage Character Information",
+    privilege = L("Manage Character Information"),
     desc = "setDescDesc",
     syntax = "[player Name] [string Description optional]",
     AdminStick = {
@@ -1936,7 +1936,7 @@ lia.command.add("charsetdesc", {
 
 lia.command.add("charsetname", {
     adminOnly = true,
-    privilege = "Manage Character Information",
+    privilege = L("Manage Character Information"),
     desc = "setNameDesc",
     syntax = "[player Name] [string New Name optional]",
     AdminStick = {
@@ -1961,7 +1961,7 @@ lia.command.add("charsetname", {
 
 lia.command.add("charsetscale", {
     adminOnly = true,
-    privilege = "Manage Character Stats",
+    privilege = L("Manage Character Stats"),
     desc = "setScaleDesc",
     syntax = "[player Name] [number Scale optional]",
     AdminStick = {
@@ -1985,7 +1985,7 @@ lia.command.add("charsetscale", {
 
 lia.command.add("charsetjump", {
     adminOnly = true,
-    privilege = "Manage Character Stats",
+    privilege = L("Manage Character Stats"),
     desc = "setJumpDesc",
     syntax = "[player Name] [number Power optional]",
     AdminStick = {
@@ -2009,7 +2009,7 @@ lia.command.add("charsetjump", {
 
 lia.command.add("charsetbodygroup", {
     adminOnly = true,
-    privilege = "Manage Bodygroups",
+    privilege = L("Manage Bodygroups"),
     desc = "setBodygroupDesc",
     syntax = "[player Name] [string BodyGroup Name] [number Value]",
     onRun = function(client, arguments)
@@ -2038,7 +2038,7 @@ lia.command.add("charsetbodygroup", {
 
 lia.command.add("charsetskin", {
     adminOnly = true,
-    privilege = "Manage Character Stats",
+    privilege = L("Manage Character Stats"),
     desc = "setSkinDesc",
     syntax = "[player Name] [number Skin]",
     AdminStick = {
@@ -2064,7 +2064,7 @@ lia.command.add("charsetskin", {
 
 lia.command.add("charsetmoney", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "setMoneyDesc",
     syntax = "[player Name] [number Amount]",
     onRun = function(client, arguments)
@@ -2088,7 +2088,7 @@ lia.command.add("charsetmoney", {
 
 lia.command.add("charaddmoney", {
     superAdminOnly = true,
-    privilege = "Manage Characters",
+    privilege = L("Manage Characters"),
     desc = "addMoneyDesc",
     syntax = "[player Name] [number Amount]",
     onRun = function(client, arguments)
@@ -2115,7 +2115,7 @@ lia.command.add("charaddmoney", {
 
 lia.command.add("globalbotsay", {
     superAdminOnly = true,
-    privilege = "Bot Say",
+    privilege = L("Bot Say"),
     desc = "globalBotSayDesc",
     syntax = "[string Message]",
     onRun = function(client, arguments)
@@ -2133,7 +2133,7 @@ lia.command.add("globalbotsay", {
 
 lia.command.add("botsay", {
     superAdminOnly = true,
-    privilege = "Bot Say",
+    privilege = L("Bot Say"),
     desc = "botSayDesc",
     syntax = "[string Bot Name] [string Message]",
     onRun = function(client, arguments)
@@ -2163,7 +2163,7 @@ lia.command.add("botsay", {
 
 lia.command.add("forcesay", {
     superAdminOnly = true,
-    privilege = "Force Say",
+    privilege = L("Force Say"),
     desc = "forceSayDesc",
     syntax = "[player Name] [string Message]",
     AdminStick = {
@@ -2232,7 +2232,7 @@ lia.command.add("pm", {
 
 lia.command.add("chargetmodel", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "getCharModelDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -2254,7 +2254,7 @@ lia.command.add("chargetmodel", {
 
 lia.command.add("checkallmoney", {
     superAdminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "checkAllMoneyDesc",
     onRun = function(client)
         for _, target in player.Iterator() do
@@ -2266,7 +2266,7 @@ lia.command.add("checkallmoney", {
 
 lia.command.add("checkflags", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "checkFlagsDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -2293,7 +2293,7 @@ lia.command.add("checkflags", {
 
 lia.command.add("chargetname", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "getCharNameDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -2315,7 +2315,7 @@ lia.command.add("chargetname", {
 
 lia.command.add("chargethealth", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "getHealthDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -2337,7 +2337,7 @@ lia.command.add("chargethealth", {
 
 lia.command.add("chargetmoney", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "getMoneyDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -2360,7 +2360,7 @@ lia.command.add("chargetmoney", {
 
 lia.command.add("chargetinventory", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "getInventoryDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -2394,7 +2394,7 @@ lia.command.add("chargetinventory", {
 
 lia.command.add("getallinfos", {
     adminOnly = true,
-    privilege = "Get Character Info",
+    privilege = L("Get Character Info"),
     desc = "getAllInfosDesc",
     syntax = "[player Name]",
     AdminStick = {

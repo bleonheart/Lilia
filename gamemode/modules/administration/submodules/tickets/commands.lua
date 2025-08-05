@@ -2,7 +2,7 @@ local MODULE = MODULE
 
 lia.command.add("viewtickets", {
     adminOnly = true,
-    privilege = "View Claims",
+    privilege = L("View Claims"),
     desc = "viewTicketsDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -49,7 +49,7 @@ lia.command.add("viewtickets", {
 })
 lia.command.add("plyviewclaims", {
     adminOnly = true,
-    privilege = "View Claims",
+    privilege = L("View Claims"),
     desc = "plyViewClaimsDesc",
     syntax = "[player Name]",
     AdminStick = {
@@ -130,7 +130,7 @@ lia.command.add("plyviewclaims", {
 
 lia.command.add("viewallclaims", {
     adminOnly = true,
-    privilege = "View Claims",
+    privilege = L("View Claims"),
     desc = "viewAllClaimsDesc",
     onRun = function(client)
         MODULE:GetAllCaseClaims():next(function(caseclaims)
@@ -191,7 +191,7 @@ lia.command.add("viewallclaims", {
 
 lia.command.add("viewclaims", {
     adminOnly = true,
-    privilege = "View Claims",
+    privilege = L("View Claims"),
     desc = "viewClaimsDesc",
     onRun = function(client)
         MODULE:GetAllCaseClaims():next(function(caseclaims)
