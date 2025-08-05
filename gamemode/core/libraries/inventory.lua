@@ -25,8 +25,8 @@ local function checkType(typeID, struct, expected, prefix)
 end
 
 function lia.inventory.newType(typeID, invTypeStruct)
-    assert(not lia.inventory.types[typeID], "duplicate inventory type " .. typeID)
-    assert(istable(invTypeStruct), "expected table for argument #2")
+    assert(not lia.inventory.types[typeID], L("duplicateInventoryType", typeID))
+    assert(istable(invTypeStruct), L("expectedTableArg", 2))
     checkType(typeID, invTypeStruct, InvTypeStructType)
     debug.getregistry()[invTypeStruct.className] = invTypeStruct
     lia.inventory.types[typeID] = invTypeStruct
@@ -34,7 +34,7 @@ end
 
 function lia.inventory.new(typeID)
     local class = lia.inventory.types[typeID]
-    assert(class ~= nil, "bad inventory type " .. typeID)
+    assert(class ~= nil, L("badInventoryType", typeID))
     return setmetatable({
         items = {},
         config = table.Copy(class.config)
@@ -97,10 +97,10 @@ if SERVER then
         end)
     end
 
-    function lia.inventory.instance(typeID, initialData)
+function lia.inventory.instance(typeID, initialData)
         local invType = lia.inventory.types[typeID]
-        assert(istable(invType), "invalid inventory type " .. tostring(typeID))
-        assert(initialData == nil or istable(initialData), "initialData must be a table for lia.inventory.instance")
+        assert(istable(invType), L("invalidInventoryType", tostring(typeID)))
+        assert(initialData == nil or istable(initialData), L("initialDataMustBeTable"))
         initialData = initialData or {}
         return invType:initializeStorage(initialData):next(function(id)
             local instance = invType:new()
@@ -113,7 +113,7 @@ if SERVER then
     end
 
     function lia.inventory.loadAllFromCharID(charID)
-        assert(isnumber(charID), "charID must be a number")
+        assert(isnumber(charID), L("charIDMustBeNumber"))
         return lia.db.select({"invID"}, INV_TABLE, "charID = " .. charID):next(function(res) return deferred.map(res.results or {}, function(result) return lia.inventory.loadByID(tonumber(result.invID)) end) end)
     end
 
