@@ -428,8 +428,6 @@ local function IncludeFlagManagement(tgt, menu, stores)
     if not cl:hasPrivilege(L("Manage Flags")) then return end
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local fm = GetOrCreateSubMenu(charMenu, "flagsManagement", stores)
-
-    -- Character flag management
     local cf = GetOrCreateSubMenu(fm, "charFlagsTitle", stores)
     local cGive = GetOrCreateSubMenu(cf, giveFlagsLabel, stores)
     local cTake = GetOrCreateSubMenu(cf, takeFlagsLabel, stores)
@@ -477,10 +475,10 @@ local function IncludeFlagManagement(tgt, menu, stores)
             net.WriteBool(false)
             net.SendToServer()
         end)
+
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_orange.png")
 
-    -- Player flag management
     local pf = GetOrCreateSubMenu(fm, "playerFlagsTitle", stores)
     local pGive = GetOrCreateSubMenu(pf, giveFlagsLabel, stores)
     local pTake = GetOrCreateSubMenu(pf, takeFlagsLabel, stores)
@@ -527,6 +525,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
             net.WriteBool(true)
             net.SendToServer()
         end)
+
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_orange.png")
 end

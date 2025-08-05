@@ -1746,7 +1746,6 @@ Reload: Drop]],
     categorySecurity = "Security",
     categoryPermaProps = "PermaProps",
     categoryVJBase = "VJ Base",
-    -- Config localization
     categoryFonts = "Fonts",
     categoryData = "Data",
     categoryTimers = "Timers",
@@ -1806,8 +1805,6 @@ Reload: Drop]],
     allowKeybindEditing = "Allow Keybind Editing",
     allowKeybindEditingDesc = "Whether keybind editing is allowed",
     clearDecals = "Clear Decals",
-
-    -- Additional localization
     enableCrosshair = "Enable Crosshair",
     enableCrosshairDesc = "Enables the crosshair.",
     disableBars = "Disable Bars",
