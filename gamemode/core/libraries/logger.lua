@@ -1,21 +1,21 @@
 ﻿lia.log = lia.log or {}
 lia.log.types = {
     ["charRecognize"] = {
-        func = function(client, id, name) return string.format("Player '%s' recognized character with ID %s and name '%s'.", client:Name(), id, name) end,
+        func = function(client, id, name) return L("logPlayerRecognizedCharacter", client:Name(), id, name) end,
         category = L("character")
     },
     ["charCreate"] = {
-        func = function(client, character) return string.format("Player '%s' created a new character named '%s'.", client:Name(), character:getName()) end,
+        func = function(client, character) return L("logPlayerCreatedCharacter", client:Name(), character:getName()) end,
         category = L("character")
     },
     ["charLoad"] = {
-        func = function(client, name) return string.format("Player '%s' loaded character '%s'.", client:Name(), name) end,
+        func = function(client, name) return L("logPlayerLoadedCharacter", client:Name(), name) end,
         category = L("character")
     },
     ["charDelete"] = {
         func = function(client, id)
-            local name = IsValid(client) and client:Name() or "CONSOLE"
-            return string.format("%s deleted character ID %s.", name, id)
+            local name = IsValid(client) and client:Name() or L("console")
+            return L("logPlayerDeletedCharacter", name, id)
         end,
         category = L("character")
     },

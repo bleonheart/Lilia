@@ -206,7 +206,7 @@ function PANEL:setAttribute(k, v)
     self.key = k
     local nm = hook.Run("GetAttributeStartingMax", LocalPlayer(), k)
     self.name:SetText(L(v.name))
-    self:SetTooltip(L(v.desc or "noDesc") .. (nm and (" " .. L("max") .. ": " .. nm) or ""))
+    self:SetTooltip(L(v.desc or "noDesc") .. (nm and " " .. L("max", nm) or ""))
 end
 
 function PANEL:delta(d)
