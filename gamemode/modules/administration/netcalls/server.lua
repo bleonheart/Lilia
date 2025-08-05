@@ -157,7 +157,7 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
                 Desc = row.desc,
                 Faction = row.faction,
                 SteamID = steamID,
-                LastUsed = stored and "Online" or row.lastJoinTime,
+                LastUsed = stored and L("onlineNow") or row.lastJoinTime,
                 Banned = isBanned,
                 PlayTime = playTime,
                 Money = tonumber(row.money) or 0
