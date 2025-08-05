@@ -391,6 +391,7 @@ LANGUAGE = {
     noItemSpawnerPermission = "You don't have permission to use this.",
     keybinds = "Keybinds",
     itemUseOnTarget = "Use on Target",
+    placeDownEntity = "Place",
     invalidTargetNeedLiving = "You must be looking at a valid, living player to use this.",
     ammoLoadAll = "Load All",
     ammoLoadCustom = "Custom Amount",
