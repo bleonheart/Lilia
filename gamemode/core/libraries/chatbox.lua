@@ -6,7 +6,7 @@ end
 
 function lia.chat.register(chatType, data)
     data.syntax = data.syntax or ""
-    data.desc = data.desc and L(data.desc) or ""
+    data.desc = data.desc or ""
     if data.prefix then
         local prefixes = istable(data.prefix) and data.prefix or {data.prefix}
         local processed, lookup = {}, {}
