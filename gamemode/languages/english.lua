@@ -16,6 +16,7 @@ LANGUAGE = {
     bodygroups = "Bodygroups",
     flag = "Flag",
     group = "Group",
+    lilia = "Lilia",
     search = "Search...",
     select = "Select",
     storagelockDesc = "Lock or unlock the storage container you’re looking at. Provide a password to set the lock, or run without a password to remove it.",
