@@ -1,8 +1,8 @@
 ﻿local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
-ITEM.name = "INVALID NAME"
-ITEM.desc = ITEM.desc or "[[INVALID DESCRIPTION]]"
+ITEM.name = L("invalidItemName")
+ITEM.desc = ITEM.desc or L("invalidItemDesc")
 ITEM.id = ITEM.id or 0
 ITEM.uniqueID = "undefined"
 ITEM.isItem = true
