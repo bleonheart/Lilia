@@ -19,7 +19,7 @@
 lia.command.add("plygetplaytime", {
     adminOnly = true,
     privilege = L("View Playtime"),
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetPlayTimeName",
         Category = "moderationTools",
@@ -120,7 +120,7 @@ lia.command.add("sendtositroom", {
     adminOnly = true,
     privilege = L("Manage SitRooms"),
     desc = "sendToSitRoomDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "sendToSitRoom",
         Category = "moderationTools",
@@ -164,7 +164,7 @@ lia.command.add("returnsitroom", {
     adminOnly = true,
     privilege = L("Manage SitRooms"),
     desc = "returnFromSitroomDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "returnFromSitroom",
         Category = "moderationTools",
@@ -265,7 +265,7 @@ lia.command.add("charlist", {
     adminOnly = true,
     privilege = L("List Characters"),
     desc = "charListDesc",
-    syntax = "[string Player Or Steam ID]",
+    syntax = L("[string Player Or Steam ID]"),
     AdminStick = {
         Name = "adminStickOpenCharListName",
         Category = L("player") .. " " .. L("information"),
@@ -368,7 +368,7 @@ lia.command.add("plyban", {
     adminOnly = true,
     privilege = L("Ban Player"),
     desc = "plyBanDesc",
-    syntax = "[player Name] [number Duration optional] [string Reason]",
+    syntax = L("[player Name] [number Duration optional] [string Reason]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -383,7 +383,7 @@ lia.command.add("plykick", {
     adminOnly = true,
     privilege = L("Kick Player"),
     desc = "plyKickDesc",
-    syntax = "[player Name] [string Reason optional]",
+    syntax = L("[player Name] [string Reason optional]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -407,7 +407,7 @@ lia.command.add("plykill", {
     adminOnly = true,
     privilege = L("Kill Player"),
     desc = "plyKillDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -431,7 +431,7 @@ lia.command.add("plyunban", {
     adminOnly = true,
     privilege = L("Unban Player"),
     desc = "plyUnbanDesc",
-    syntax = "[string SteamID]",
+    syntax = L("[string SteamID]"),
     onRun = function(client, arguments)
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
@@ -446,7 +446,7 @@ lia.command.add("plyfreeze", {
     adminOnly = true,
     privilege = L("Freeze Player"),
     desc = "plyFreezeDesc",
-    syntax = "[player Name] [number Duration optional]",
+    syntax = L("[player Name] [number Duration optional]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -462,7 +462,7 @@ lia.command.add("plyunfreeze", {
     adminOnly = true,
     privilege = L("Unfreeze Player"),
     desc = "plyUnfreezeDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -476,7 +476,7 @@ lia.command.add("plyslay", {
     adminOnly = true,
     privilege = L("Slay Player"),
     desc = "plySlayDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -490,7 +490,7 @@ lia.command.add("plyrespawn", {
     adminOnly = true,
     privilege = L("Respawn Player"),
     desc = "plyRespawnDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -513,7 +513,7 @@ lia.command.add("plyblind", {
     adminOnly = true,
     privilege = L("Blind Player"),
     desc = "plyBlindDesc",
-    syntax = "[player Name] [number Time optional]",
+    syntax = L("[player Name] [number Time optional]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -549,7 +549,7 @@ lia.command.add("plyunblind", {
     adminOnly = true,
     privilege = L("Unblind Player"),
     desc = "plyUnblindDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -565,7 +565,7 @@ lia.command.add("plyblindfade", {
     adminOnly = true,
     privilege = L("Blind Fade Player"),
     desc = "plyBlindFadeDesc",
-    syntax = "[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
+    syntax = L("[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -590,7 +590,7 @@ lia.command.add("blindfadeall", {
     adminOnly = true,
     privilege = L("Blind Fade All"),
     desc = "blindFadeAllDesc",
-    syntax = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
+    syntax = L("[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]"),
     onRun = function(_, arguments)
         local duration = tonumber(arguments[1]) or 0
         local colorName = (arguments[2] or "black"):lower()
@@ -614,7 +614,7 @@ lia.command.add("plygag", {
     adminOnly = true,
     privilege = L("Gag Player"),
     desc = "plyGagDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -629,7 +629,7 @@ lia.command.add("plyungag", {
     adminOnly = true,
     privilege = L("Ungag Player"),
     desc = "plyUngagDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -644,7 +644,7 @@ lia.command.add("plymute", {
     adminOnly = true,
     privilege = L("Mute Player"),
     desc = "plyMuteDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and target:getChar() then
@@ -669,7 +669,7 @@ lia.command.add("plyunmute", {
     adminOnly = true,
     privilege = L("Unmute Player"),
     desc = "plyUnmuteDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) and target:getChar() then
@@ -685,7 +685,7 @@ lia.command.add("plybring", {
     adminOnly = true,
     privilege = L("Bring Player"),
     desc = "plyBringDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -700,7 +700,7 @@ lia.command.add("plygoto", {
     adminOnly = true,
     privilege = L("Goto Player"),
     desc = "plyGotoDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -715,7 +715,7 @@ lia.command.add("plyreturn", {
     adminOnly = true,
     privilege = L("Return Player"),
     desc = "plyReturnDesc",
-    syntax = "[player Name optional]",
+    syntax = L("[player Name optional]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         target = IsValid(target) and target or client
@@ -732,7 +732,7 @@ lia.command.add("plyjail", {
     adminOnly = true,
     privilege = L("Jail Player"),
     desc = "plyJailDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -756,7 +756,7 @@ lia.command.add("plyunjail", {
     adminOnly = true,
     privilege = L("Unjail Player"),
     desc = "plyUnjailDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -771,7 +771,7 @@ lia.command.add("plycloak", {
     adminOnly = true,
     privilege = L("Cloak Player"),
     desc = "plyCloakDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -785,7 +785,7 @@ lia.command.add("plyuncloak", {
     adminOnly = true,
     privilege = L("Uncloak Player"),
     desc = "plyUncloakDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -799,7 +799,7 @@ lia.command.add("plygod", {
     adminOnly = true,
     privilege = L("God Player"),
     desc = "plyGodDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -813,7 +813,7 @@ lia.command.add("plyungod", {
     adminOnly = true,
     privilege = L("Ungod Player"),
     desc = "plyUngodDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -827,7 +827,7 @@ lia.command.add("plyignite", {
     adminOnly = true,
     privilege = L("Ignite Player"),
     desc = "plyIgniteDesc",
-    syntax = "[player Name] [number Duration optional]",
+    syntax = L("[player Name] [number Duration optional]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -842,7 +842,7 @@ lia.command.add("plyextinguish", {
     adminOnly = true,
     privilege = L("Extinguish Player"),
     desc = "plyExtinguishDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -856,7 +856,7 @@ lia.command.add("plystrip", {
     adminOnly = true,
     privilege = L("Strip Player"),
     desc = "plyStripDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.command.findPlayer(client, arguments[1])
         if IsValid(target) then
@@ -879,7 +879,7 @@ lia.command.add("pktoggle", {
     adminOnly = true,
     privilege = L("Toggle Permakill"),
     desc = "togglePermakillDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickTogglePermakillName",
         Category = "characterManagement",
@@ -914,7 +914,7 @@ lia.command.add("charunbanoffline", {
     superAdminOnly = true,
     privilege = L("Unban Offline"),
     desc = "charUnbanOfflineDesc",
-    syntax = "[number Char ID]",
+    syntax = L("[number Char ID]"),
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyLocalized("invalidCharID") end
@@ -931,7 +931,7 @@ lia.command.add("charbanoffline", {
     superAdminOnly = true,
     privilege = L("Ban Offline"),
     desc = "charBanOfflineDesc",
-    syntax = "[number Char ID]",
+    syntax = L("[number Char ID]"),
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyLocalized("invalidCharID") end
@@ -960,7 +960,7 @@ lia.command.add("playglobalsound", {
     superAdminOnly = true,
     privilege = L("Play Sounds"),
     desc = "playGlobalSoundDesc",
-    syntax = "[string Sound]",
+    syntax = L("[string Sound]"),
     onRun = function(client, arguments)
         local sound = arguments[1]
         if not sound or sound == "" then
@@ -978,7 +978,7 @@ lia.command.add("playsound", {
     superAdminOnly = true,
     privilege = L("Play Sounds"),
     desc = "playSoundDesc",
-    syntax = "[player Name] [string Sound]",
+    syntax = L("[player Name] [string Sound]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local sound = arguments[2]
@@ -1029,7 +1029,7 @@ lia.command.add("forcefallover", {
     adminOnly = true,
     privilege = L("Force Fallover"),
     desc = "forceFalloverDesc",
-    syntax = "[player Name] [number Time optional]",
+    syntax = L("[player Name] [number Time optional]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1073,7 +1073,7 @@ lia.command.add("forcegetup", {
     adminOnly = true,
     privilege = L("Force GetUp"),
     desc = "forceGetUpDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1102,7 +1102,7 @@ lia.command.add("forcegetup", {
 lia.command.add("chardesc", {
     adminOnly = false,
     desc = "changeCharDesc",
-    syntax = "[string Desc optional]",
+    syntax = L("[string Desc optional]"),
     onRun = function(client, arguments)
         local desc = table.concat(arguments, " ")
         if not desc:find("%S") then return client:requestString(L("chgName"), L("chgNameDesc"), function(text) lia.command.run(client, "chardesc", {text}) end, client:getChar() and client:getChar():getDesc() or "") end
@@ -1138,7 +1138,7 @@ lia.command.add("chargetup", {
 lia.command.add("fallover", {
     adminOnly = false,
     desc = "fallOverDesc",
-    syntax = "[number Time optional]",
+    syntax = L("[number Time optional]"),
     onRun = function(client, arguments)
         if client:getNetVar("FallOverCooldown", false) then
             client:notifyLocalized("cmdCooldown")
@@ -1199,7 +1199,7 @@ lia.command.add("checkinventory", {
     adminOnly = true,
     privilege = L("Check Inventories"),
     desc = "checkInventoryDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickCheckInventoryName",
         Category = "characterManagement",
@@ -1233,7 +1233,7 @@ lia.command.add("flaggive", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "flagGiveDesc",
-    syntax = "[player Name] [string Flags]",
+    syntax = L("[player Name] [string Flags]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1267,7 +1267,7 @@ lia.command.add("flaggiveall", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "giveAllFlagsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGiveAllFlagsName",
         Category = "characterManagement",
@@ -1294,7 +1294,7 @@ lia.command.add("flagtakeall", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "takeAllFlagsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickTakeAllFlagsName",
         Category = "characterManagement",
@@ -1326,7 +1326,7 @@ lia.command.add("flagtake", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "flagTakeDesc",
-    syntax = "[player Name] [string Flags]",
+    syntax = L("[player Name] [string Flags]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1351,7 +1351,7 @@ lia.command.add("pflaggive", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "playerFlagGiveDesc",
-    syntax = "[player Name] [string Flags]",
+    syntax = L("[player Name] [string Flags]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1387,7 +1387,7 @@ lia.command.add("pflaggiveall", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "giveAllFlagsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1408,7 +1408,7 @@ lia.command.add("pflagtakeall", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "takeAllFlagsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1429,7 +1429,7 @@ lia.command.add("pflagtake", {
     adminOnly = true,
     privilege = L("Manage Flags"),
     desc = "playerFlagTakeDesc",
-    syntax = "[player Name] [string Flags]",
+    syntax = L("[player Name] [string Flags]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1466,7 +1466,7 @@ lia.command.add("charvoicetoggle", {
     adminOnly = true,
     privilege = L("Toggle Voice Ban Character"),
     desc = "charVoiceToggleDesc",
-    syntax = "[string Name]",
+    syntax = L("[string Name]"),
     AdminStick = {
         Name = "toggleVoice",
         Category = "moderationTools",
@@ -1556,7 +1556,7 @@ lia.command.add("charunban", {
     superAdminOnly = true,
     privilege = L("Manage Characters"),
     desc = "charUnbanDesc",
-    syntax = "[string Name or Number ID]",
+    syntax = L("[string Name or Number ID]"),
     onRun = function(client, arguments)
         if (client.liaNextSearch or 0) >= CurTime() then return L("searchingChar") end
         local queryArg = table.concat(arguments, " ")
@@ -1616,7 +1616,7 @@ lia.command.add("clearinv", {
     superAdminOnly = true,
     privilege = L("Manage Characters"),
     desc = "clearInvDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickClearInventoryName",
         Category = "characterManagement",
@@ -1639,7 +1639,7 @@ lia.command.add("charkick", {
     adminOnly = true,
     privilege = L("Kick Characters"),
     desc = "kickCharDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickKickCharacterName",
         Category = "characterManagement",
@@ -1671,7 +1671,7 @@ lia.command.add("freezeallprops", {
     superAdminOnly = true,
     privilege = L("Manage Characters"),
     desc = "freezeAllPropsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1699,7 +1699,7 @@ lia.command.add("charban", {
     superAdminOnly = true,
     privilege = L("Manage Characters"),
     desc = "banCharDesc",
-    syntax = "[string Name or Number ID]",
+    syntax = L("[string Name or Number ID]"),
     AdminStick = {
         Name = "banCharacter",
         Category = "characterManagement",
@@ -1749,7 +1749,7 @@ lia.command.add("checkmoney", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "checkMoneyDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickCheckMoneyName",
         Category = "characterManagement",
@@ -1772,7 +1772,7 @@ lia.command.add("listbodygroups", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "listBodygroupsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1816,7 +1816,7 @@ lia.command.add("charsetspeed", {
     adminOnly = true,
     privilege = L("Manage Character Stats"),
     desc = "setSpeedDesc",
-    syntax = "[player Name] [number Speed optional]",
+    syntax = L("[player Name] [number Speed optional]"),
     AdminStick = {
         Name = "adminStickSetCharSpeedName",
         Category = "characterManagement",
@@ -1839,7 +1839,7 @@ lia.command.add("charsetmodel", {
     adminOnly = true,
     privilege = L("Manage Character Information"),
     desc = "setModelDesc",
-    syntax = "[player Name] [string Model optional]",
+    syntax = L("[player Name] [string Model optional]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1859,7 +1859,7 @@ lia.command.add("chargiveitem", {
     superAdminOnly = true,
     privilege = L("Manage Items"),
     desc = "giveItemDesc",
-    syntax = "[player Name] [item Item Name]",
+    syntax = L("[player Name] [item Item Name]"),
     AdminStick = {
         Name = "adminStickGiveItemName",
         Category = "characterManagement",
@@ -1908,7 +1908,7 @@ lia.command.add("charsetdesc", {
     adminOnly = true,
     privilege = L("Manage Character Information"),
     desc = "setDescDesc",
-    syntax = "[player Name] [string Description optional]",
+    syntax = L("[player Name] [string Description optional]"),
     AdminStick = {
         Name = "adminStickSetCharDescName",
         Category = "characterManagement",
@@ -1938,7 +1938,7 @@ lia.command.add("charsetname", {
     adminOnly = true,
     privilege = L("Manage Character Information"),
     desc = "setNameDesc",
-    syntax = "[player Name] [string New Name optional]",
+    syntax = L("[player Name] [string New Name optional]"),
     AdminStick = {
         Name = "adminStickSetCharNameName",
         Category = "characterManagement",
@@ -1963,7 +1963,7 @@ lia.command.add("charsetscale", {
     adminOnly = true,
     privilege = L("Manage Character Stats"),
     desc = "setScaleDesc",
-    syntax = "[player Name] [number Scale optional]",
+    syntax = L("[player Name] [number Scale optional]"),
     AdminStick = {
         Name = "adminStickSetCharScaleName",
         Category = "characterManagement",
@@ -1987,7 +1987,7 @@ lia.command.add("charsetjump", {
     adminOnly = true,
     privilege = L("Manage Character Stats"),
     desc = "setJumpDesc",
-    syntax = "[player Name] [number Power optional]",
+    syntax = L("[player Name] [number Power optional]"),
     AdminStick = {
         Name = "adminStickSetCharJumpName",
         Category = "characterManagement",
@@ -2011,7 +2011,7 @@ lia.command.add("charsetbodygroup", {
     adminOnly = true,
     privilege = L("Manage Bodygroups"),
     desc = "setBodygroupDesc",
-    syntax = "[player Name] [string BodyGroup Name] [number Value]",
+    syntax = L("[player Name] [string BodyGroup Name] [number Value]"),
     onRun = function(client, arguments)
         local name = arguments[1]
         local bodyGroup = arguments[2]
@@ -2040,7 +2040,7 @@ lia.command.add("charsetskin", {
     adminOnly = true,
     privilege = L("Manage Character Stats"),
     desc = "setSkinDesc",
-    syntax = "[player Name] [number Skin]",
+    syntax = L("[player Name] [number Skin]"),
     AdminStick = {
         Name = "adminStickSetCharSkinName",
         Category = "characterManagement",
@@ -2066,7 +2066,7 @@ lia.command.add("charsetmoney", {
     superAdminOnly = true,
     privilege = L("Manage Characters"),
     desc = "setMoneyDesc",
-    syntax = "[player Name] [number Amount]",
+    syntax = L("[player Name] [number Amount]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local amount = tonumber(arguments[2])
@@ -2090,7 +2090,7 @@ lia.command.add("charaddmoney", {
     superAdminOnly = true,
     privilege = L("Manage Characters"),
     desc = "addMoneyDesc",
-    syntax = "[player Name] [number Amount]",
+    syntax = L("[player Name] [number Amount]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local amount = tonumber(arguments[2])
@@ -2117,7 +2117,7 @@ lia.command.add("globalbotsay", {
     superAdminOnly = true,
     privilege = L("Bot Say"),
     desc = "globalBotSayDesc",
-    syntax = "[string Message]",
+    syntax = L("[string Message]"),
     onRun = function(client, arguments)
         local message = table.concat(arguments, " ")
         if message == "" then
@@ -2135,7 +2135,7 @@ lia.command.add("botsay", {
     superAdminOnly = true,
     privilege = L("Bot Say"),
     desc = "botSayDesc",
-    syntax = "[string Bot Name] [string Message]",
+    syntax = L("[string Bot Name] [string Message]"),
     onRun = function(client, arguments)
         if #arguments < 2 then
             client:notifyLocalized("needBotAndMessage")
@@ -2165,7 +2165,7 @@ lia.command.add("forcesay", {
     superAdminOnly = true,
     privilege = L("Force Say"),
     desc = "forceSayDesc",
-    syntax = "[player Name] [string Message]",
+    syntax = L("[player Name] [string Message]"),
     AdminStick = {
         Name = "Force Say",
         Category = "moderationTools",
@@ -2206,7 +2206,7 @@ lia.command.add("getmodel", {
 
 lia.command.add("pm", {
     desc = "pmDesc",
-    syntax = "[player Name] [string Message]",
+    syntax = L("[player Name] [string Message]"),
     onRun = function(client, arguments)
         if not lia.config.get("AllowPMs") then
             client:notifyLocalized("pmsDisabled")
@@ -2234,7 +2234,7 @@ lia.command.add("chargetmodel", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "getCharModelDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetCharModelName",
         Category = "characterManagement",
@@ -2268,7 +2268,7 @@ lia.command.add("checkflags", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "checkFlagsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetCharFlagsName",
         Category = "characterManagement",
@@ -2295,7 +2295,7 @@ lia.command.add("chargetname", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "getCharNameDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetCharNameName",
         Category = "characterManagement",
@@ -2317,7 +2317,7 @@ lia.command.add("chargethealth", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "getHealthDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetCharHealthName",
         Category = "characterManagement",
@@ -2339,7 +2339,7 @@ lia.command.add("chargetmoney", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "getMoneyDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetCharMoneyName",
         Category = "characterManagement",
@@ -2362,7 +2362,7 @@ lia.command.add("chargetinventory", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "getInventoryDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetCharInventoryName",
         Category = "characterManagement",
@@ -2396,7 +2396,7 @@ lia.command.add("getallinfos", {
     adminOnly = true,
     privilege = L("Get Character Info"),
     desc = "getAllInfosDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "adminStickGetAllInfosName",
         Category = "characterManagement",

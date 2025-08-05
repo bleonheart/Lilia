@@ -3,7 +3,7 @@ lia.command.add("spawnadd", {
     privilege = "manageSpawns",
     adminOnly = true,
     desc = "spawnAddDesc",
-    syntax = "[faction Faction]",
+    syntax = L("[faction Faction]"),
     onRun = function(client, arguments)
         local factionName = arguments[1]
         if not factionName then return L("invalidArg") end
@@ -40,7 +40,7 @@ lia.command.add("spawnremoveinradius", {
     privilege = "manageSpawns",
     adminOnly = true,
     desc = "spawnRemoveInRadiusDesc",
-    syntax = "[number Radius optional]",
+    syntax = L("[number Radius optional]"),
     onRun = function(client, arguments)
         local position = client:GetPos()
         local radius = tonumber(arguments[1]) or 120
@@ -73,7 +73,7 @@ lia.command.add("spawnremovebyname", {
     privilege = "manageSpawns",
     adminOnly = true,
     desc = "spawnRemoveByNameDesc",
-    syntax = "[faction Faction]",
+    syntax = L("[faction Faction]"),
     onRun = function(client, arguments)
         local factionName = arguments[1]
         local factionInfo = lia.faction.indices[factionName:lower()]
@@ -121,7 +121,7 @@ lia.command.add("returnitems", {
     superAdminOnly = true,
     privilege = "returnItems",
     desc = "returnItemsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "returnItems",
         Category = "characterManagement",
