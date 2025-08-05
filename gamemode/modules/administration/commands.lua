@@ -1495,7 +1495,7 @@ lia.command.add("charvoicetoggle", {
                 target:notifyLocalized("voiceMutedByAdmin")
             end
 
-            lia.log.add(client, "voiceToggle", target:Name(), isBanned and "Unmuted" or "Muted")
+            lia.log.add(client, "voiceToggle", target:Name(), isBanned and L("unmuted") or L("muted"))
         else
             client:notifyLocalized("noValidCharacter")
         end

@@ -542,7 +542,7 @@ lia.log.types = {
         category = L("inv")
     },
     ["storageLock"] = {
-        func = function(client, entClass, state) return string.format("Admin '%s' %s storage %s.", client:Name(), state and "locked" or L("unlocked"), entClass) end,
+        func = function(client, entClass, state) return string.format("Admin '%s' %s storage %s.", client:Name(), state and L("locked") or L("unlocked"), entClass) end,
         category = L("inv")
     },
     ["storageUnlock"] = {
