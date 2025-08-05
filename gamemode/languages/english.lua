@@ -49,6 +49,7 @@ LANGUAGE = {
     itDesc = "Displays an in-character descriptive message.",
     wDesc = "Whispers a message.",
     yDesc = "Yells a message.",
+    manageSitrooms = "Manage Administration Rooms",
     manageSitroomsDesc = "Manage administration rooms on the current map: view existing administration rooms, teleport to them, rename them, or reposition them.",
     looc = "LOOC",
     loocDesc = "Out-of-character chat with a cooldown.",
