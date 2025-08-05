@@ -383,6 +383,7 @@ LANGUAGE = {
     copy = "Copy",
     giveToCharacter = "Give To Character...",
     giveTo = "Give to",
+    characterSteamIDFormat = "[%s] [%s]",
     spawnItem = "Spawn item",
     spawnItemTitle = "Spawn %s",
     spawnUndoText = "Undone %s",
