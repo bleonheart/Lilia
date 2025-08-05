@@ -1650,6 +1650,7 @@ Reload: Drop]],
     samEnforceStaff = "Enforce Staff Rank To SAM",
     samEnforceStaffDesc = "Determines whether staff enforcement for SAM commands is enabled",
     categorySAM = "SAM | Admin Mod",
+    categoryServerGuard = "ServerGuard",
     -- Config localization
     categoryFonts = "Fonts",
     categoryData = "Data",
