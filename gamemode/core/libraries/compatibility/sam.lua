@@ -126,7 +126,7 @@ end
 
 local function CanReadNotifications(client)
     if not lia.config.get("AdminOnlyNotification", true) then return true end
-    return client:hasPrivilege("Can See SAM Notifications") or client:isStaffOnDuty()
+    return client:hasPrivilege(L("canSeeSAMNotificationsOutsideStaff")) or client:isStaffOnDuty()
 end
 
 function sam.player.send_message(client, msg, tbl)
@@ -165,8 +165,8 @@ end)
 
 lia.command.add("cleardecals", {
     adminOnly = true,
-    privilege = L("clearDecals"),
-    desc = L("cleardecalsDesc"),
+    privilege = "clearDecals",
+    desc = "cleardecalsDesc",
     onRun = function()
         for _, v in player.Iterator() do
             v:ConCommand("r_cleardecals")

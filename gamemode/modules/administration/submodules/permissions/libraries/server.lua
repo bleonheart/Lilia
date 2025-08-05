@@ -41,7 +41,7 @@ function GM:CanProperty(client, property, entity)
     end
 
     if entity:GetCreator() == client and (property == "remover" or property == "collision") then return true end
-    if client:hasPrivilege("Access Property " .. property:gsub("^%l", string.upper)) and client:isStaffOnDuty() then return true end
+    if client:hasPrivilege(L("accessPropertyPrivilege", property:gsub("^%l", string.upper))) and client:isStaffOnDuty() then return true end
     lia.log.add(client, "permissionDenied", "modify property " .. property)
     client:notifyLocalized("noModifyProperty")
     return false
