@@ -1,6 +1,6 @@
 ﻿lia.command.add("togglecheater", {
     adminOnly = true,
-    privilege = "Toggle Cheater Status",
+    privilege = L("Toggle Cheater Status"),
     desc = "toggleCheaterDesc",
     syntax = "[player Target]",
     onRun = function(client, arguments)

@@ -1,6 +1,6 @@
 ﻿lia.command.add("plytransfer", {
     adminOnly = true,
-    privilege = "Manage Transfers",
+    privilege = L("Manage Transfers"),
     desc = "plyTransferDesc",
     syntax = "[player Name] [faction Faction]",
     alias = {"charsetfaction"},
@@ -38,7 +38,7 @@
 
 lia.command.add("plywhitelist", {
     adminOnly = true,
-    privilege = "Manage Whitelists",
+    privilege = L("Manage Whitelists"),
     desc = "plyWhitelistDesc",
     syntax = "[player Name] [faction Faction]",
     alias = {"factionwhitelist"},
@@ -62,7 +62,7 @@ lia.command.add("plywhitelist", {
 
 lia.command.add("plyunwhitelist", {
     adminOnly = true,
-    privilege = "Manage Whitelists",
+    privilege = L("Manage Whitelists"),
     desc = "plyUnwhitelistDesc",
     syntax = "[player Name] [faction Faction]",
     alias = {"factionunwhitelist"},
@@ -115,7 +115,7 @@ lia.command.add("beclass", {
 
 lia.command.add("setclass", {
     adminOnly = true,
-    privilege = "Manage Classes",
+    privilege = L("Manage Classes"),
     desc = "setClassDesc",
     syntax = "[player Name] [class Class]",
     onRun = function(client, arguments)
@@ -146,7 +146,7 @@ lia.command.add("setclass", {
 
 lia.command.add("classwhitelist", {
     adminOnly = true,
-    privilege = "Manage Whitelists",
+    privilege = L("Manage Whitelists"),
     desc = "classWhitelistDesc",
     syntax = "[player Name] [class Class]",
     onRun = function(client, arguments)
@@ -176,7 +176,7 @@ lia.command.add("classwhitelist", {
 
 lia.command.add("classunwhitelist", {
     adminOnly = true,
-    privilege = "Manage Classes",
+    privilege = L("Manage Classes"),
     desc = "classUnwhitelistDesc",
     syntax = "[player Name] [class Class]",
     onRun = function(client, arguments)
