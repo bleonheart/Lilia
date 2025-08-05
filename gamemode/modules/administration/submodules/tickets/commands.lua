@@ -4,7 +4,7 @@ lia.command.add("viewtickets", {
     adminOnly = true,
     privilege = L("View Claims"),
     desc = "viewTicketsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
@@ -51,7 +51,7 @@ lia.command.add("plyviewclaims", {
     adminOnly = true,
     privilege = L("View Claims"),
     desc = "plyViewClaimsDesc",
-    syntax = "[player Name]",
+    syntax = L("[player Name]"),
     AdminStick = {
         Name = "viewTicketClaims",
         Category = "moderationTools",

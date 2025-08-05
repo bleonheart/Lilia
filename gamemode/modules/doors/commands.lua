@@ -254,7 +254,7 @@ lia.command.add("doortogglehidden", {
 
 lia.command.add("doorsetprice", {
     desc = "doorsetpriceDesc",
-    syntax = "[number Price]",
+    syntax = L("[number Price]"),
     adminOnly = true,
     privilege = L("Manage Doors"),
     AdminStick = {
@@ -281,7 +281,7 @@ lia.command.add("doorsetprice", {
 
 lia.command.add("doorsettitle", {
     desc = "doorsettitleDesc",
-    syntax = "[string Title]",
+    syntax = L("[string Title]"),
     adminOnly = true,
     privilege = L("Manage Doors"),
     AdminStick = {
@@ -416,7 +416,7 @@ lia.command.add("doorinfo", {
 
 lia.command.add("dooraddfaction", {
     desc = "dooraddfactionDesc",
-    syntax = "[faction Faction]",
+    syntax = L("[faction Faction]"),
     adminOnly = true,
     privilege = L("Manage Doors"),
     onRun = function(client, arguments)
@@ -456,7 +456,7 @@ lia.command.add("dooraddfaction", {
 
 lia.command.add("doorremovefaction", {
     desc = "doorremovefactionDesc",
-    syntax = "[faction Faction]",
+    syntax = L("[faction Faction]"),
     adminOnly = true,
     privilege = L("Manage Doors"),
     onRun = function(client, arguments)
@@ -496,7 +496,7 @@ lia.command.add("doorremovefaction", {
 
 lia.command.add("doorsetclass", {
     desc = "doorsetclassDesc",
-    syntax = "[class Class]",
+    syntax = L("[class Class]"),
     adminOnly = true,
     privilege = L("Manage Doors"),
     onRun = function(client, arguments)

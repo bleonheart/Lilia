@@ -2,7 +2,7 @@
     adminOnly = true,
     privilege = L("Manage Transfers"),
     desc = "plyTransferDesc",
-    syntax = "[player Name] [faction Faction]",
+    syntax = L("[player Name] [faction Faction]"),
     alias = {"charsetfaction"},
     onRun = function(client, arguments)
         local targetPlayer = lia.util.findPlayer(client, arguments[1])
@@ -40,7 +40,7 @@ lia.command.add("plywhitelist", {
     adminOnly = true,
     privilege = L("Manage Whitelists"),
     desc = "plyWhitelistDesc",
-    syntax = "[player Name] [faction Faction]",
+    syntax = L("[player Name] [faction Faction]"),
     alias = {"factionwhitelist"},
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -64,7 +64,7 @@ lia.command.add("plyunwhitelist", {
     adminOnly = true,
     privilege = L("Manage Whitelists"),
     desc = "plyUnwhitelistDesc",
-    syntax = "[player Name] [faction Faction]",
+    syntax = L("[player Name] [faction Faction]"),
     alias = {"factionunwhitelist"},
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -89,7 +89,7 @@ lia.command.add("plyunwhitelist", {
 lia.command.add("beclass", {
     adminOnly = false,
     desc = "beClassDesc",
-    syntax = "[class Class]",
+    syntax = L("[class Class]"),
     onRun = function(client, arguments)
         local className = table.concat(arguments, " ")
         local character = client:getChar()
@@ -117,7 +117,7 @@ lia.command.add("setclass", {
     adminOnly = true,
     privilege = L("Manage Classes"),
     desc = "setClassDesc",
-    syntax = "[player Name] [class Class]",
+    syntax = L("[player Name] [class Class]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -148,7 +148,7 @@ lia.command.add("classwhitelist", {
     adminOnly = true,
     privilege = L("Manage Whitelists"),
     desc = "classWhitelistDesc",
-    syntax = "[player Name] [class Class]",
+    syntax = L("[player Name] [class Class]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))
@@ -178,7 +178,7 @@ lia.command.add("classunwhitelist", {
     adminOnly = true,
     privilege = L("Manage Classes"),
     desc = "classUnwhitelistDesc",
-    syntax = "[player Name] [class Class]",
+    syntax = L("[player Name] [class Class]"),
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))

@@ -3,7 +3,7 @@ lia.command.add("storagelock", {
     privilege = L("Lock Storage"),
     adminOnly = true,
     desc = "storagelockDesc",
-    syntax = "[string Password optional]",
+    syntax = L("[string Password optional]"),
     onRun = function(client, arguments)
         local entity = client:getTracedEntity()
         if entity and IsValid(entity) then
