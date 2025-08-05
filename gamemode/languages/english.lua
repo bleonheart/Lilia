@@ -96,6 +96,7 @@ LANGUAGE = {
     vendorNoItems = "No Items",
     vendorOneItem = "1 Item",
     vendorItems = "%s Items",
+    vendorItemQuantity = "%sx ",
     vendorDefaultName = "Jane Doe",
     vendorEditorButton = "Edit Vendor",
     vendorShowAll = "Show All",
