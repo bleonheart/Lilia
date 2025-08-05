@@ -1,8 +1,8 @@
-﻿local ITEM = lia.meta.item or {}
+local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
-ITEM.name = L("invalidItemName")
-ITEM.desc = ITEM.desc or L("invalidItemDesc")
+ITEM.name = L("invalidName")
+ITEM.desc = ITEM.desc or L("invalidDescription")
 ITEM.id = ITEM.id or 0
 ITEM.uniqueID = "undefined"
 ITEM.isItem = true
@@ -347,7 +347,7 @@ if SERVER then
     end
 
     function ITEM:interact(action, client, entity, data)
-        assert(client:IsPlayer() and IsValid(client), "Item action cannot be performed without a player")
+        assert(client:IsPlayer() and IsValid(client), L("itemActionNoPlayer"))
         local canInteract, reason = hook.Run("CanPlayerInteractItem", client, action, self, data)
         if canInteract == false then
             if reason then client:notifyLocalized(reason) end
