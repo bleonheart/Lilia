@@ -130,6 +130,7 @@ LANGUAGE = {
     sellOnly = "Sell Only",
     price = "Price",
     item = "Item",
+    inventory = "Inventory",
     line = "Line",
     size = "Size",
     meters = "%s Meters",

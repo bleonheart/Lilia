@@ -3,7 +3,7 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 function characterMeta:tostring()
-    return "character[" .. (self.id or 0) .. "]"
+    return L("character") .. "[" .. (self.id or 0) .. "]"
 end
 
 function characterMeta:eq(other)
