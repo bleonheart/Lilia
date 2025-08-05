@@ -481,7 +481,7 @@ lia.config.add("DermaSkin", L("dermaSkin"), "Lilia Skin", function(_, newSkin) h
     desc = L("dermaSkinDesc"),
     category = L("categoryVisuals"),
     type = "Table",
-    options = CLIENT and getDermaSkins() or {L("liliaSkin")}
+    options = CLIENT and getDermaSkins() or {"Lilia Skin"}
 })
 
 lia.config.add("Language", L("language"), "English", nil, {
