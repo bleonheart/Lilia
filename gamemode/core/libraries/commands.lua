@@ -3,6 +3,7 @@ lia.command.list = lia.command.list or {}
 function lia.command.add(command, data)
     data.syntax = data.syntax or ""
     data.desc = data.desc and L(data.desc) or ""
+    data.privilege = data.privilege and L(data.privilege) or nil
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     if not data.onRun then
@@ -11,7 +12,7 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = isstring(data.privilege) and data.privilege or "Access to " .. command
+        local privilegeName = data.privilege or "Access to " .. command
         lia.administrator.registerPrivilege({
             Name = privilegeName,
             MinAccess = superAdminOnly and "superadmin" or "admin",

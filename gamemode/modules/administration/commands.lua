@@ -88,7 +88,7 @@ lia.command.add("managesitrooms", {
     privilege = "Manage SitRooms",
     desc = "manageSitroomsDesc",
     onRun = function(client)
-        if not client:hasPrivilege("Manage SitRooms") then return end
+        if not client:hasPrivilege(L("Manage SitRooms")) then return end
         local rooms = lia.data.get("sitrooms", {})
         net.Start("managesitrooms")
         net.WriteTable(rooms)
