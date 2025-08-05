@@ -1,6 +1,6 @@
 ﻿lia.command.add("updateinvsize", {
     adminOnly = true,
-    privilege = "Set Inventory Size",
+    privilege = L("Set Inventory Size"),
     desc = "updateInventorySizeDesc",
     syntax = "[player Name]",
     onRun = function(client, arguments)
@@ -40,7 +40,7 @@
 
 lia.command.add("setinventorysize", {
     adminOnly = true,
-    privilege = "Set Inventory Size",
+    privilege = L("Set Inventory Size"),
     desc = "setInventorySizeDesc",
     syntax = "[player Name] [number Width] [number Height]",
     onRun = function(client, args)

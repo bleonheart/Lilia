@@ -1854,4 +1854,6 @@ Reload: Drop]],
     vendorDefaultMoney = "Default Vendor Money",
     vendorDefaultMoneyDesc = "Sets the default amount of money vendors start with.",
     vendor = "Vendor",
+    banLogFormat = "[BAN] %s (%s) was banned for %d minute(s): %s",
+    unbanLogFormat = "[UNBAN] %s was unbanned.",
 }
