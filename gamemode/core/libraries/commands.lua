@@ -1,7 +1,7 @@
 ﻿lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
 function lia.command.add(command, data)
-    data.syntax = data.syntax or ""
+    data.syntax = L(data.syntax or "")
     data.desc = data.desc or ""
     data.privilege = data.privilege or nil
     local superAdminOnly = data.superAdminOnly
@@ -584,7 +584,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                                 right = right
                             })
 
-                            row.filterText = (cmdName .. " " .. (cmdData.syntax or "") .. " " .. desc .. " " .. right):lower()
+                            row.filterText = (cmdName .. " " .. (cmdData.syntax or L("")) .. " " .. desc .. " " .. right):lower()
                         end
                     end
                 end

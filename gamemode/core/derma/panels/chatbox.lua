@@ -122,7 +122,7 @@ function PANEL:setActive(state)
                     end
 
                     btn.DoClick = function()
-                        local syntax = cmdInfo.syntax or ""
+                        local syntax = cmdInfo.syntax or L("")
                         self.text:SetText("/" .. cmdName .. " " .. syntax)
                         self.text:RequestFocus()
                         self.commandList:Remove()
