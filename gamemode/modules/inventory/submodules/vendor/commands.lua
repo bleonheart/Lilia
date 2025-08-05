@@ -1,5 +1,5 @@
 ﻿lia.command.add("restockvendor", {
-    privilege = "Manage Vendors",
+    privilege = L("Manage Vendors"),
     superAdminOnly = true,
     desc = "restockVendorDesc",
     AdminStick = {
@@ -27,7 +27,7 @@
 })
 
 lia.command.add("restockallvendors", {
-    privilege = "Manage Vendors",
+    privilege = L("Manage Vendors"),
     superAdminOnly = true,
     desc = "restockAllVendorsDesc",
     onRun = function(client)
@@ -47,7 +47,7 @@ lia.command.add("restockallvendors", {
 })
 
 lia.command.add("resetallvendormoney", {
-    privilege = "Manage Vendors",
+    privilege = L("Manage Vendors"),
     superAdminOnly = true,
     desc = "resetAllVendorMoneyDesc",
     syntax = "[number Amount]",
@@ -73,7 +73,7 @@ lia.command.add("resetallvendormoney", {
 })
 
 lia.command.add("restockvendormoney", {
-    privilege = "Manage Vendors",
+    privilege = L("Manage Vendors"),
     superAdminOnly = true,
     desc = "restockVendorMoneyDesc",
     syntax = "[number Amount]",
