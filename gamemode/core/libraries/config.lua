@@ -1,8 +1,8 @@
 ﻿lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 function lia.config.add(key, name, value, callback, data)
-    assert(isstring(key), "Expected config key to be string, got " .. type(key))
-    assert(istable(data), "Expected config data to be a table, got " .. type(data))
+    assert(isstring(key), L("configKeyString", type(key)))
+    assert(istable(data), L("configDataTable", type(data)))
     local t = type(value)
     local configType = t == "boolean" and "Boolean" or t == "number" and (math.floor(value) == value and "Int" or "Float") or t == "table" and value.r and value.g and value.b and "Color" or "Generic"
     data.type = data.type or configType
@@ -178,13 +178,13 @@ lia.config.add("PKWorld", L("pkWorld"), false, nil, {
     type = "Boolean"
 })
 
-lia.config.add("CurrencySingularName", L("currencySingularName"), "Dollar", function(newVal) lia.currency.singular = newVal end, {
+lia.config.add("CurrencySingularName", L("currencySingularName"), L("currencySingular"), function(newVal) lia.currency.singular = newVal end, {
     desc = L("currencySingularNameDesc"),
     category = L("money"),
     type = "Generic"
 })
 
-lia.config.add("CurrencyPluralName", L("currencyPluralName"), "Dollars", function(newVal) lia.currency.plural = newVal end, {
+lia.config.add("CurrencyPluralName", L("currencyPluralName"), L("currencyPlural"), function(newVal) lia.currency.plural = newVal end, {
     desc = L("currencyPluralNameDesc"),
     category = L("money"),
     type = "Generic"

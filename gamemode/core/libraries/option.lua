@@ -1,9 +1,9 @@
 ﻿lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
 function lia.option.add(key, name, desc, default, callback, data)
-    assert(isstring(key), "Expected option key to be a string, got " .. type(key))
-    assert(isstring(name), "Expected option name to be a string, got " .. type(name))
-    assert(istable(data), "Expected option data to be a table, got " .. type(data))
+    assert(isstring(key), L("optionKeyString", type(key)))
+    assert(isstring(name), L("optionNameString", type(name)))
+    assert(istable(data), L("optionDataTable", type(data)))
     local t = type(default)
     local optionType = t == "boolean" and "Boolean" or t == "number" and (math.floor(default) == default and "Int" or "Float") or t == "table" and default.r and default.g and default.b and "Color" or "Generic"
     if optionType == "Int" or optionType == "Float" then
