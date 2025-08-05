@@ -71,8 +71,9 @@ end
 function playerMeta:entitiesNearPlayer(radius, playerOnly)
     local nearbyEntities = {}
     for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
-        if playerOnly and not v:IsPlayer() then continue end
-        table.insert(nearbyEntities, v)
+        if not playerOnly or v:IsPlayer() then
+            table.insert(nearbyEntities, v)
+        end
     end
     return nearbyEntities
 end
