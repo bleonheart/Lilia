@@ -188,6 +188,7 @@ LANGUAGE = {
     alreadyHaveGrenade = "You already have this type of grenade.",
     invalidFaction = "The specified faction is not valid.",
     submit = "Submit",
+    subOption = "Sub Option",
     apply = "Apply",
     cfgSet = "%s has set \"%s\" to %s.",
     invalid = "You have provided an invalid %s",
