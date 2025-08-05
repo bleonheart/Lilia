@@ -60,7 +60,7 @@ function Inventory:new()
 end
 
 function Inventory:tostring()
-    return self.className .. "[" .. tostring(self.id) .. "]"
+    return L(self.className) .. "[" .. tostring(self.id) .. "]"
 end
 
 function Inventory:getType()

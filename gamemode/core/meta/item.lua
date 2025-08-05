@@ -32,7 +32,7 @@ function ITEM:eq(other)
 end
 
 function ITEM:tostring()
-    return "item[" .. self.uniqueID .. "][" .. self.id .. "]"
+    return L("item") .. "[" .. self.uniqueID .. "][" .. self.id .. "]"
 end
 
 function ITEM:getID()
