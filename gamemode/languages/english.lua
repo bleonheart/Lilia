@@ -411,6 +411,7 @@ LANGUAGE = {
     minutesAgo = "%s minutes ago",
     hoursAgo = "%s hours ago",
     daysAgo = "%s days ago",
+    ago = "ago",
     onlineNow = "Online now",
     weekdaySunday = "Sunday",
     weekdayMonday = "Monday",
