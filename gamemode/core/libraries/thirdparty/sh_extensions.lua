@@ -186,7 +186,7 @@ properties.Add("lia_npc_weapon", {
             end
 
             if not NpcUsable or not weapon.Spawnable and not weapon.AdminSpawnable then continue end
-            local cat = weapon.Category or "Other"
+            local cat = weapon.Category or L("other")
             if not isstring(cat) then cat = tostring(cat) end
             Categorised[cat] = Categorised[cat] or {}
             table.insert(Categorised[cat], weapon)
