@@ -409,7 +409,7 @@ function GM:CharListLoaded()
 end
 
 function GM:ForceDermaSkin()
-    return lia.config.get("DermaSkin", "Lilia Skin")
+    return lia.config.get("DermaSkin", L("liliaSkin"))
 end
 
 function GM:DermaSkinChanged()
