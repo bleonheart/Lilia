@@ -869,6 +869,7 @@ LANGUAGE = {
     kickedForInfraction = "Kicked for",
     bannedForInfraction = "Banned for",
     togglePermakillDesc = "Toggles a character’s permanent kill flag (marks or unmarks them for permanent death).",
+    charkillDesc = "Opens the PK case menu to permanently kill a character.",
     toggleCheaterDesc = "Toggle a player's cheater status.",
     cheaterMarked = "Marked %s as a cheater.",
     cheaterUnmarked = "Removed cheater status from %s.",
