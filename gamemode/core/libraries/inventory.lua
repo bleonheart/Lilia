@@ -19,7 +19,8 @@ local function checkType(typeID, struct, expected, prefix)
     for key, expectedType in pairs(expected) do
         local actualValue = struct[key]
         local expectedTypeString = isstring(expectedType) and expectedType or type(expectedType)
-        assert(type(actualValue) == expectedTypeString, "expected type of " .. prefix .. key .. " to be " .. expectedTypeString .. " for inventory type " .. typeID .. ", got " .. type(actualValue))
+        local fieldName = prefix .. key
+        assert(type(actualValue) == expectedTypeString, L("invTypeMismatch", fieldName, expectedTypeString, typeID, type(actualValue)))
         if istable(expectedType) then checkType(typeID, actualValue, expectedType, prefix .. key .. ".") end
     end
 end
