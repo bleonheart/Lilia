@@ -194,6 +194,7 @@ lia.command.add("returnsitroom", {
 lia.command.add("charkill", {
     superAdminOnly = true,
     privilege = "Manage Characters",
+    desc = "charkillDesc",
     onRun = function(client)
         local choices = {}
         for _, ply in player.Iterator() do
