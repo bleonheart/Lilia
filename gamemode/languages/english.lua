@@ -1070,6 +1070,7 @@ LANGUAGE = {
     ["Ignite"] = "Ignite",
     ["Jail"] = "Jail",
     ["Slay"] = "Slay",
+    ["Ban"] = "Ban",
     waypointButton = "Waypoint",
     ["Ban OOC"] = "Ban OOC",
     ["Ban Offline"] = "Ban Offline",

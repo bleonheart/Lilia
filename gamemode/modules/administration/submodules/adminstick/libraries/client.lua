@@ -151,7 +151,7 @@ local function OpenReasonUI(tgt, cmd)
 end
 
 local function HandleModerationOption(opt, tgt)
-    if opt.name == "Ban" then
+    if opt.name == L("Ban") then
         OpenReasonUI(tgt, "banid")
     elseif opt.name == L("kick") then
         OpenReasonUI(tgt, "kick")
