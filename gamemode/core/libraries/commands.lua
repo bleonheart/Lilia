@@ -12,7 +12,7 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = data.privilege or L("cmdAccessTo", command)
+        local privilegeName = data.privilege or L("accessTo", command)
         lia.administrator.registerPrivilege({
             Name = privilegeName,
             MinAccess = superAdminOnly and "superadmin" or "admin",
@@ -58,7 +58,7 @@ function lia.command.hasAccess(client, command, data)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
-    if not privilege then privilege = accessLevels == "user" and "Global" or command end
+    if not privilege then privilege = accessLevels == "user" and L("globalAccess") or command end
     local hasAccess = true
     if accessLevels ~= "user" then
         local privilegeName = "" .. privilege
