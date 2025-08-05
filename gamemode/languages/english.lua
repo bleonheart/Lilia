@@ -1058,6 +1058,7 @@ LANGUAGE = {
     cheater = "Cheater",
     ["Staff"] = "Staff",
     ["VIP"] = "VIP",
+    ["Ban"] = "Ban",
     ["Bring"] = "Bring",
     ["Goto"] = "Goto",
     ["Respawn"] = "Respawn",
