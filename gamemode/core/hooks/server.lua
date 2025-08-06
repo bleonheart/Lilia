@@ -1036,7 +1036,7 @@ concommand.Add("lia_wipedb", function(client)
 
     if resetCalled < RealTime() then
         resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeConfirm") .. "\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeConfirm", "lia_wipedb") .. "\n")
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeProgress") .. "\n")
