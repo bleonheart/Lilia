@@ -124,10 +124,12 @@ end
         Shared.
 
     Example Usage:
-        if lia.administrator.hasAccess(ply, "manageUsergroups") then
+        -- Check if a player entity has the "manageUsergroups" privilege
+        if lia.administrator.hasAccess(somePlayer, "manageUsergroups") then
             print("Player has access to manage usergroups.")
         end
 
+        -- Check if the "admin" group has the "kick" privilege
         if lia.administrator.hasAccess("admin", "kick") then
             print("Admins can kick players.")
         end
@@ -170,10 +172,16 @@ end
         Shared.
 
     Example Usage:
+        -- Register a new privilege "kick" for admins and above, under the "Player Management" category
         lia.administrator.registerPrivilege({
             Name = "kick",
             MinAccess = "admin",
             Category = "Player Management"
+        })
+
+        -- Register a privilege "viewLogs" for all users
+        lia.administrator.registerPrivilege({
+            Name = "viewLogs"
         })
 ]]
 function lia.administrator.registerPrivilege(priv)
@@ -217,6 +225,7 @@ end
         Shared.
 
     Example Usage:
+        -- Remove the "kick" privilege from all usergroups
         lia.administrator.unregisterPrivilege("kick")
 ]]
 function lia.administrator.unregisterPrivilege(name)
@@ -252,6 +261,7 @@ end
         Shared.
 
     Example Usage:
+        -- Apply inheritance to the "moderator" group (e.g., after changing its parent)
         lia.administrator.applyInheritance("moderator")
 ]]
 function lia.administrator.applyInheritance(groupName)
@@ -297,7 +307,7 @@ end
         Server.
 
     Example Usage:
-        -- Typically called during server initialization
+        -- Typically called during server initialization to load all admin data
         lia.administrator.load()
 ]]
 function lia.administrator.load()
@@ -411,10 +421,19 @@ end
         Shared (Server for saving).
 
     Example Usage:
+        -- Create a new "moderator" group that inherits from "admin" and is marked as "Staff"
         lia.administrator.createGroup("moderator", {
             _info = {
                 inheritance = "admin",
                 types = {"Staff"}
+            }
+        })
+
+        -- Create a "vip" group that inherits from "user"
+        lia.administrator.createGroup("vip", {
+            _info = {
+                inheritance = "user",
+                types = {"VIP"}
             }
         })
 ]]
@@ -453,6 +472,7 @@ end
         Shared (Server for saving).
 
     Example Usage:
+        -- Remove the "moderator" group from the admin system
         lia.administrator.removeGroup("moderator")
 ]]
 function lia.administrator.removeGroup(groupName)
@@ -489,6 +509,7 @@ end
         Shared (Server for saving).
 
     Example Usage:
+        -- Rename the "moderator" group to "junior_moderator"
         lia.administrator.renameGroup("moderator", "junior_moderator")
 ]]
 function lia.administrator.renameGroup(oldName, newName)
@@ -536,7 +557,11 @@ if SERVER then
             Server.
 
         Example Usage:
+            -- Grant the "kick" privilege to the "moderator" group
             lia.administrator.addPermission("moderator", "kick")
+
+            -- Grant the "ban" privilege to the "vip" group without network sync
+            lia.administrator.addPermission("vip", "ban", true)
     ]]
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
@@ -569,7 +594,11 @@ if SERVER then
             Server.
 
         Example Usage:
+            -- Remove the "kick" privilege from the "moderator" group
             lia.administrator.removePermission("moderator", "kick")
+
+            -- Remove the "ban" privilege from the "vip" group without network sync
+            lia.administrator.removePermission("vip", "ban", true)
     ]]
     function lia.administrator.removePermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
@@ -600,8 +629,11 @@ if SERVER then
             Server.
 
         Example Usage:
-            lia.administrator.sync() -- Syncs to all players
-            lia.administrator.sync(specificPlayer) -- Syncs to a specific player
+            -- Sync admin data to all players
+            lia.administrator.sync()
+
+            -- Sync admin data to a specific player
+            lia.administrator.sync(specificPlayer)
     ]]
     function lia.administrator.sync(c)
         lia.net.ready = lia.net.ready or setmetatable({}, {
@@ -643,8 +675,11 @@ if SERVER then
             Server.
 
         Example Usage:
+            -- Save all admin data and sync to clients
             lia.administrator.save()
-            lia.administrator.save(true) -- Save without network sync
+
+            -- Save admin data without syncing to clients
+            lia.administrator.save(true)
     ]]
     function lia.administrator.save(noNetwork)
         rebuildPrivileges()
@@ -698,7 +733,11 @@ if SERVER then
             Server.
 
         Example Usage:
+            -- Set a player's usergroup to "admin"
             lia.administrator.setPlayerUsergroup(player.GetByID(1), "admin")
+
+            -- Set a player's usergroup to "vip" with a custom source
+            lia.administrator.setPlayerUsergroup(somePlayer, "vip", "PromotionSystem")
     ]]
     function lia.administrator.setPlayerUsergroup(ply, newGroup, source)
         if not IsValid(ply) then return end
@@ -727,7 +766,11 @@ if SERVER then
             Server.
 
         Example Usage:
+            -- Set the usergroup of a player by SteamID to "admin"
             lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "admin")
+
+            -- Set the usergroup of a player by SteamID to "vip" with a custom source
+            lia.administrator.setSteamIDUsergroup("STEAM_0:1:654321", "vip", "PromotionSystem")
     ]]
     function lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)
         local sid = tostring(steamId or "")
@@ -758,8 +801,17 @@ else
             Client.
 
         Example Usage:
+            -- Kick a player with a reason
             lia.administrator.execCommand("kick", somePlayer, nil, "Breaking rules")
+
+            -- Ban a player by SteamID for 60 minutes with a reason
             lia.administrator.execCommand("ban", "STEAM_0:1:123456", 60, "Cheating")
+
+            -- Mute a player for 10 minutes
+            lia.administrator.execCommand("mute", somePlayer, 10, "Spamming")
+
+            -- Unban a player by SteamID
+            lia.administrator.execCommand("unban", "STEAM_0:1:123456")
     ]]
     function lia.administrator.execCommand(cmd, victim, dur, reason)
         if hook.Run("RunAdminSystemCommand") == true then return end
