@@ -1,15 +1,13 @@
 --[[
-# Attributes Library
+# Factions Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with faction management and team systems.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The factions library provides a system for managing player factions, teams, and group affiliations within the Lilia framework. It handles faction registration, team setup, model management, and provides utilities for working with faction data. The library supports faction-specific colors, models, and metadata, and integrates with Garry's Mod's team system.
 ]]
 lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}

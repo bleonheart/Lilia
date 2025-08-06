@@ -1,15 +1,29 @@
 ﻿--[[
-# Attributes Library
+# Character Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with character data and management.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The character library provides functions for creating, managing, and manipulating character data within the Lilia framework. It handles character creation, loading, saving, and provides various utility functions for working with character variables and metadata. Characters are the core data structure that represents a player's in-game identity and progress.
 
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The library features include:
+- **Character Lifecycle Management**: Complete creation, loading, saving, and deletion of character data
+- **Variable System**: Dynamic character variables with hooks for change detection and validation
+- **Database Integration**: Automatic persistence of character data with optimized query handling
+- **Multi-Character Support**: Players can have multiple characters with independent data and progression
+- **Character Validation**: Built-in validation for character data integrity and consistency
+- **Hook System**: Extensive hook system for custom character logic and data manipulation
+- **Networking**: Efficient client-server synchronization of character data and changes
+- **Memory Management**: Optimized memory usage with lazy loading and caching strategies
+- **Error Handling**: Robust error handling for database failures and data corruption
+- **Performance Optimization**: Efficient query patterns and data structure management
+- **Cross-Realm Support**: Works seamlessly on both client and server sides
+- **Plugin Integration**: Easy integration with external character-related addons and systems
+
+The character system is the foundation of the role-playing experience in Lilia, providing a flexible and extensible framework for character progression, customization, and data management. It supports complex character attributes, relationships, and persistent data across server sessions.
 ]]
 local characterMeta = lia.meta.character or {}
 lia.char = lia.char or {}

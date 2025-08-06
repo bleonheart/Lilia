@@ -1,15 +1,32 @@
 ﻿--[[
-# Attributes Library
+# Configuration Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with configuration variables and settings.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The configuration library provides a centralized system for managing configuration variables throughout the Lilia framework. It handles the registration, storage, and retrieval of config values with support for different data types, validation, and change callbacks. The system supports networking configuration changes to clients and provides a robust foundation for customizable server settings.
 
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The library features include:
+- **Type-Safe Configuration**: Support for various data types including strings, numbers, booleans, colors, and complex objects
+- **Validation System**: Built-in validation with custom validation rules and error handling
+- **Change Callbacks**: Automatic notification when configuration values change with custom callback support
+- **Client-Server Synchronization**: Automatic networking of configuration changes to connected clients
+- **Category Organization**: Hierarchical organization of configurations by category for better management
+- **Default Value Management**: Automatic handling of default values with fallback mechanisms
+- **Database Persistence**: Automatic saving and loading of configuration values to/from database
+- **Access Control**: Permission-based access to configuration modification and viewing
+- **Validation Rules**: Custom validation rules with min/max values, pattern matching, and custom validators
+- **Change History**: Optional tracking of configuration changes for audit purposes
+- **Hot Reloading**: Support for runtime configuration changes without server restart
+- **Import/Export**: Configuration backup and restore functionality
+- **UI Integration**: Built-in support for configuration management interfaces
+- **Performance Optimization**: Efficient caching and lookup mechanisms for configuration values
+- **Cross-Module Support**: Configuration sharing between different modules and addons
+
+The configuration system provides a flexible and powerful foundation for managing server settings, player preferences, and module configurations. It ensures consistency across the framework and provides an intuitive interface for both developers and administrators.
 ]]
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}

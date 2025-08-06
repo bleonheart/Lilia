@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Chatbox Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with chat systems and communication.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The chatbox library provides a comprehensive chat system for managing different types of communication within the Lilia framework. It handles chat type registration, message formatting, radius-based communication, and provides utilities for creating custom chat channels. The library supports both in-character and out-of-character communication with proper role-playing mechanics.
 ]]
 lia.chat = lia.chat or {}
 lia.chat.classes = lia.char.classes or {}

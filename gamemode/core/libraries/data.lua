@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Data Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with data serialization and storage.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The data library provides utilities for encoding, decoding, and managing data structures within the Lilia framework. It handles serialization of complex data types like Vectors, Angles, and Colors, and provides functions for data persistence and retrieval. The library supports various data formats and provides utilities for working with stored data.
 ]]
 lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}

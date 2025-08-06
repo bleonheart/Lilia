@@ -1,15 +1,15 @@
 ﻿--[[
-# Attributes Library
+# Vector Library
 
-This page documents the functions for working with character attributes.
+This page documents the extended functions for working with Vector objects in the Lilia framework.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The vector library extends the base Vector metatable with additional utility functions for common vector operations. These functions provide convenient methods for calculating distances, finding midpoints, rotating vectors, and other geometric operations that are commonly needed in game development.
 
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+All functions are available on both client and server realms and work with the standard Source engine Vector objects.
 ]]
 local vectorMeta = FindMetaTable("Vector")
 --[[

@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Networking Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with network communication and data transfer.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The networking library provides utilities for handling network communication between client and server within the Lilia framework. It supports large data transfers, table serialization, and provides a robust system for sending and receiving complex data structures. The library handles chunked data transfer, compression, and provides utilities for managing network state and buffers.
 ]]
 lia.net = lia.net or {}
 lia.net._sendq = lia.net._sendq or {}

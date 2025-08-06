@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Keybind Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with keybind management and input handling.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The keybind library provides a system for managing keyboard bindings and input handling within the Lilia framework. It handles keybind registration, storage, and provides utilities for creating customizable keybind systems. The library supports various key types, keybind persistence, and provides a foundation for user-configurable input systems.
 ]]
 lia.keybind = lia.keybind or {}
 lia.keybind.stored = lia.keybind.stored or {}

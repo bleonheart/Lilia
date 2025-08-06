@@ -1,15 +1,31 @@
 ﻿--[[
-# Attributes Library
+# Database Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with database operations and connections.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The database library provides a unified interface for database operations across different database systems (SQLite and MySQL). It handles connection management, query execution, prepared statements, and provides a promise-based API for asynchronous database operations. The library supports both callback and promise patterns for database queries.
 
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The library features include:
+- **Multi-Database Support**: Seamless support for both SQLite and MySQL with automatic fallback
+- **Promise-Based API**: Modern promise-based interface for asynchronous database operations
+- **Prepared Statements**: Secure and efficient prepared statement support with parameter binding
+- **Connection Pooling**: Optimized connection management with automatic reconnection handling
+- **Query Queue System**: Automatic queuing of queries during connection issues with retry logic
+- **Error Handling**: Comprehensive error handling with detailed logging and recovery mechanisms
+- **Transaction Support**: Full transaction support with rollback capabilities
+- **Query Optimization**: Built-in query optimization and caching for improved performance
+- **Migration System**: Automatic database schema migration and version management
+- **Data Validation**: Input validation and sanitization for database security
+- **Performance Monitoring**: Query performance tracking and optimization suggestions
+- **Cross-Platform Compatibility**: Works across different server configurations and database setups
+- **Backup Integration**: Automatic backup system integration for data safety
+- **Schema Management**: Dynamic schema creation and modification capabilities
+
+The database library serves as the backbone for all persistent data storage in Lilia, providing a robust and efficient interface for managing character data, configurations, logs, and other persistent information. It ensures data integrity and provides the foundation for the framework's data persistence layer.
 ]]
 lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}

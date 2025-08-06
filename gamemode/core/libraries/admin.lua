@@ -1,15 +1,27 @@
 ﻿--[[
-# Attributes Library
+# Administrator Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with administrator privileges and user groups.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The administrator library provides a comprehensive system for managing user permissions, privileges, and access control within the Lilia framework. It handles user group management, privilege registration, access checking, and integration with external permission systems like CAMI. The library supports hierarchical permission structures and provides tools for administrative operations.
 
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The library features include:
+- **Hierarchical Permission System**: Supports user, admin, and superadmin levels with inheritance
+- **CAMI Integration**: Seamless integration with the CAMI permission system for external addon compatibility
+- **Dynamic Privilege Management**: Register and manage privileges with automatic access level assignment
+- **Group Management**: Create custom user groups with specific permission sets
+- **Access Control**: Comprehensive checking system for command and feature access
+- **Privilege Validation**: Built-in validation for privilege requirements and user capabilities
+- **Cross-Realm Support**: Works on both client and server sides with proper networking
+- **Hook Integration**: Extensive hook system for custom permission logic and validation
+- **Database Persistence**: Automatic saving and loading of permission configurations
+- **Fallback Systems**: Graceful handling of missing permissions and default access levels
+
+The library serves as the foundation for all administrative functionality within Lilia, providing a robust and extensible permission system that can be easily integrated with external administrative tools and addons.
 ]]
 lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}

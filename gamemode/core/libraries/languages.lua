@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Languages Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with localization and language management.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The languages library provides a comprehensive localization system for managing multiple languages within the Lilia framework. It handles language file loading, translation management, and provides utilities for adding and retrieving localized strings. The library supports dynamic language switching and provides a foundation for multi-language support.
 ]]
 lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}

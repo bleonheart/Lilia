@@ -1,15 +1,33 @@
 ﻿--[[
-# Attributes Library
+# Inventory Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with inventory systems and item management.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The inventory library provides a flexible system for managing item storage and retrieval within the Lilia framework. It supports multiple inventory types, item stacking, grid-based layouts, and provides utilities for inventory operations such as adding, removing, and syncing items. The library handles both client and server-side inventory management with proper networking.
 
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The library features include:
+- **Multi-Inventory Support**: Support for different inventory types (backpack, storage, vendor, etc.) with custom behaviors
+- **Grid-Based Layout**: Flexible grid system for organizing items in visual inventory interfaces
+- **Item Stacking**: Automatic stacking of compatible items with quantity management
+- **Real-Time Synchronization**: Efficient client-server synchronization of inventory changes
+- **Type Validation**: Strict type checking and validation for inventory structures and operations
+- **Hook System**: Extensive hook system for custom inventory logic and item interactions
+- **Performance Optimization**: Optimized inventory operations with caching and efficient data structures
+- **Error Handling**: Robust error handling for inventory operations with rollback capabilities
+- **Cross-Realm Support**: Seamless operation on both client and server sides
+- **Plugin Integration**: Easy integration with external inventory and item management systems
+- **Storage Management**: Automatic storage allocation and deallocation for inventory instances
+- **Item Compatibility**: Built-in compatibility checking for item placement and stacking
+- **Inventory Persistence**: Automatic saving and loading of inventory data to/from database
+- **UI Integration**: Built-in support for inventory user interfaces and visual representations
+- **Access Control**: Permission-based access to inventory operations and modifications
+- **Backup Systems**: Automatic backup and recovery mechanisms for inventory data
+
+The inventory system provides the foundation for all item management and storage functionality in Lilia, supporting complex inventory interactions, item trading, and storage solutions. It ensures data integrity and provides a flexible framework for custom inventory implementations.
 ]]
 lia.inventory = lia.inventory or {}
 lia.inventory.types = lia.inventory.types or {}

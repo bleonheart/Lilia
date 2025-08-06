@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Flags Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with permission flags and player abilities.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The flags library provides a system for managing permission flags and player abilities within the Lilia framework. It handles flag registration, assignment, and provides utilities for granting and revoking special permissions to players. The library supports flag callbacks, descriptions, and provides a foundation for role-based permission systems.
 ]]
 lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}

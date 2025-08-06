@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Loader Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for loading and managing Lilia framework components.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The loader library is responsible for loading and initializing all core components of the Lilia framework. It manages the loading order of libraries, modules, and other framework components, ensuring proper initialization and dependency resolution. The library handles both client and server-side loading with appropriate realm management.
 ]]
 lia = lia or {
     util = {},

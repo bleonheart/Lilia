@@ -1,15 +1,13 @@
 ﻿--[[
-# Attributes Library
+# Notice Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with notification systems and user feedback.
 
 ---
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
-
-For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+The notice library provides a system for displaying notifications and messages to players within the Lilia framework. It handles both localized and non-localized notifications, supports different display styles, and provides utilities for sending notices to individual players or broadcasting to all players. The library manages notice positioning and timing on the client side.
 ]]
 if SERVER then
     --[[
