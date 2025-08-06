@@ -112,6 +112,36 @@ local KeybindKeys = {
     ["last"] = KEY_LAST
 }
 
+--[[
+    lia.keybind.add
+
+    Purpose:
+        Registers a new keybind action with a default key, description, and associated callback functions for press and release.
+
+    Parameters:
+        k (string|number) - The key to bind, either as a string (e.g., "f1", "a") or a key code (e.g., KEY_F1).
+        d (string) - The action name or description for the keybind.
+        cb (function) - The callback function to execute when the key is pressed.
+        rcb (function) - (Optional) The callback function to execute when the key is released.
+
+    Returns:
+        None.
+
+    Realm:
+        Client.
+
+    Example Usage:
+        -- Bind the "f1" key to open the inventory menu
+        lia.keybind.add("f1", "openInventory", function()
+            local f1Menu = vgui.Create("liaMenu")
+            f1Menu:setActiveTab("inv")
+        end)
+
+        -- Bind the "f2" key to toggle admin mode
+        lia.keybind.add("f2", "adminMode", function()
+            lia.command.send("adminmode")
+        end)
+]]
 function lia.keybind.add(k, d, cb, rcb)
     local c = isstring(k) and KeybindKeys[string.lower(k)] or k
     if not c then return end
@@ -123,12 +153,52 @@ function lia.keybind.add(k, d, cb, rcb)
     lia.keybind.stored[c] = d
 end
 
+--[[
+    lia.keybind.get
+
+    Purpose:
+        Retrieves the key code currently bound to a given action, or returns a default value if not set.
+
+    Parameters:
+        a (string) - The action name or description.
+        df (number) - (Optional) The default key code to return if the action is not found.
+
+    Returns:
+        keycode (number) - The key code currently bound to the action, or the default value.
+
+    Realm:
+        Client.
+
+    Example Usage:
+        -- Get the key code for the "openInventory" action, or KEY_NONE if not set
+        local key = lia.keybind.get("openInventory", KEY_NONE)
+        print("Key code for openInventory:", key)
+]]
 function lia.keybind.get(a, df)
     local act = lia.keybind.stored[a]
     if act then return act.value or act.default or df end
     return df
 end
 
+--[[
+    lia.keybind.save
+
+    Purpose:
+        Saves all current keybinds to a JSON file specific to the current gamemode and server IP, removing any legacy text file.
+
+    Parameters:
+        None.
+
+    Returns:
+        None.
+
+    Realm:
+        Client.
+
+    Example Usage:
+        -- Save the current keybinds after making changes
+        lia.keybind.save()
+]]
 function lia.keybind.save()
     local dp = "lilia/keybinds/" .. engine.ActiveGamemode()
     file.CreateDir(dp)
@@ -148,6 +218,26 @@ function lia.keybind.save()
     end
 end
 
+--[[
+    lia.keybind.load
+
+    Purpose:
+        Loads keybinds from the JSON file for the current gamemode and server IP, migrating from legacy text files if necessary.
+        If no saved keybinds are found, resets all keybinds to their default values and saves them.
+
+    Parameters:
+        None.
+
+    Returns:
+        None.
+
+    Realm:
+        Client.
+
+    Example Usage:
+        -- Load keybinds when the client starts
+        lia.keybind.load()
+]]
 function lia.keybind.load()
     local dp = "lilia/keybinds/" .. engine.ActiveGamemode()
     file.CreateDir(dp)
@@ -209,7 +299,6 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
         sheet:SetPlaceholderText(L("searchKeybinds"))
         sheet:SetSpacing(4)
         sheet:SetPadding(4)
-
         local taken = {}
         for action, data in pairs(lia.keybind.stored) do
             if istable(data) and data.value then taken[data.value] = action end
@@ -232,12 +321,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
             rowPanel:SetTall(50)
             rowPanel:DockPadding(4, 4, 4, 4)
             rowPanel.Paint = nil
-
             local lbl = rowPanel:Add("DLabel")
             lbl:Dock(FILL)
             lbl:SetFont("liaBigFont")
             lbl:SetText(L(action))
-
             local currentKey = lia.keybind.get(action, KEY_NONE)
             if allowEdit then
                 local combo = rowPanel:Add("DComboBox")
@@ -248,7 +335,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 local choices = {}
                 for name, code in pairs(KeybindKeys) do
                     if not taken[code] or code == currentKey then
-                        choices[#choices + 1] = {txt = input.GetKeyName(code) or name, keycode = code}
+                        choices[#choices + 1] = {
+                            txt = input.GetKeyName(code) or name,
+                            keycode = code
+                        }
                     end
                 end
 
@@ -296,7 +386,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 textLabel:SetText(input.GetKeyName(currentKey) or "NONE")
             end
 
-            sheet:AddPanelRow(rowPanel, {height = 50, filterText = tostring(action):lower()})
+            sheet:AddPanelRow(rowPanel, {
+                height = 50,
+                filterText = tostring(action):lower()
+            })
         end
 
         if allowEdit then
@@ -315,7 +408,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 lia.keybind.save()
                 buildKeybinds(parent)
             end
-            sheet:AddPanelRow(resetAllBtn, {height = 40})
+
+            sheet:AddPanelRow(resetAllBtn, {
+                height = 40
+            })
         end
     end
 
