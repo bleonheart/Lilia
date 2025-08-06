@@ -1,6 +1,5 @@
 ﻿lia.chat = lia.chat or {}
 lia.chat.classes = lia.char.classes or {}
-
 --[[
     lia.chat.timestamp
 
@@ -104,18 +103,7 @@ function lia.chat.register(chatType, data)
 
     data.color = data.color or Color(242, 230, 160)
     data.format = data.format or "chatFormat"
-    data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous)
-        chat.AddText(
-            lia.chat.timestamp(false),
-            data.color,
-            L(
-                data.format,
-                anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or L("console"),
-                text
-            )
-        )
-    end
-
+    data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), data.color, L(data.format, anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or L("console"), text)) end
     if CLIENT and data.prefix then
         local rawPrefixes = istable(data.prefix) and data.prefix or {data.prefix}
         local aliases, lookup = {}, {}
