@@ -2431,3 +2431,46 @@ lia.command.add("getallinfos", {
         client:notifyLocalized("infoPrintedConsole")
     end
 })
+
+lia.command.add("dropmoney", {
+    adminOnly = true,
+    privilege = L("manageCharacters"),
+    desc = "dropMoneyDesc",
+    syntax = L("[number Amount]"),
+    onRun = function(client, arguments)
+        local amount = tonumber(arguments[1])
+        if not amount or amount <= 0 then
+            client:notifyLocalized("invalidArg")
+            return
+        end
+
+        local character = client:getChar()
+        if not character or not character:hasMoney(amount) then
+            client:notifyLocalized("notEnoughMoney")
+            return
+        end
+
+        local maxEntities = lia.config.get("MaxMoneyEntities", 3)
+        local existingMoneyEntities = 0
+        for _, entity in pairs(ents.FindByClass("lia_money")) do
+            if entity.client == client then existingMoneyEntities = existingMoneyEntities + 1 end
+        end
+
+        if existingMoneyEntities >= maxEntities then
+            client:notifyLocalized("maxMoneyEntitiesReached", maxEntities)
+            return
+        end
+
+        character:takeMoney(amount)
+        local money = lia.currency.spawn(client:getItemDropPos(), amount)
+        if IsValid(money) then
+            money.client = client
+            money.charID = character:getID()
+            client:notifyLocalized("moneyDropped", lia.currency.get(amount))
+            lia.log.add(client, "moneyDropped", amount)
+        else
+            character:giveMoney(amount)
+            client:notifyLocalized("moneyDropFailed")
+        end
+    end
+})

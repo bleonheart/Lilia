@@ -1,5 +1,33 @@
 ﻿lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}
+--[[
+    lia.flag.add
+
+    Purpose:
+        Registers a new flag with an optional description and callback function. Flags are used to grant special abilities or permissions to players.
+        The callback, if provided, is called when the flag is given or removed from a player.
+
+    Parameters:
+        flag (string)      - The unique character representing the flag.
+        desc (string)      - (Optional) The description of the flag, will be localized if possible.
+        callback (function)- (Optional) Function to call when the flag is given or removed. Receives (client, isGiven).
+
+    Returns:
+        None.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Add a flag "F" that allows spawning furniture, with a description and a callback
+        lia.flag.add("F", "flagSpawnFurniture", function(client, isGiven)
+            if isGiven then
+                client:Give("spawn_furniture_tool")
+            else
+                client:StripWeapon("spawn_furniture_tool")
+            end
+        end)
+]]
 function lia.flag.add(flag, desc, callback)
     if lia.flag.list[flag] then return end
     lia.flag.list[flag] = {
@@ -9,8 +37,30 @@ function lia.flag.add(flag, desc, callback)
 end
 
 if SERVER then
+    --[[
+        lia.flag.onSpawn
+
+        Purpose:
+            Called when a player spawns. Iterates through all of the player's flags and executes any associated callbacks for each flag.
+            Ensures each flag's callback is only called once per spawn.
+
+        Parameters:
+            client (Player) - The player entity who has spawned.
+
+        Returns:
+            None.
+
+        Realm:
+            Server.
+
+        Example Usage:
+            -- Call onSpawn for a player after they have spawned
+            hook.Add("PlayerSpawn", "liaFlagOnSpawn", function(client)
+                lia.flag.onSpawn(client)
+            end)
+    ]]
     function lia.flag.onSpawn(client)
-        local flags = (client:getFlags() .. client:getPlayerFlags())
+        local flags = client:getFlags() .. client:getPlayerFlags()
         local processed = {}
         for i = 1, #flags do
             local flag = flags:sub(i, i)

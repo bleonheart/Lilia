@@ -18,6 +18,39 @@ local function buildMaterial(p, flags)
     return Material("data/" .. p, flags or "noclamp smooth")
 end
 
+--[[
+    lia.webimage.register
+
+    Purpose:
+        Registers a web image by downloading it from a URL and saving it locally for later use as a Material.
+        If the image is already cached or saved, it will be reused. Optionally, a callback can be provided
+        to be notified when the image is ready.
+
+    Parameters:
+        name (string)         - The local name to register the image as (used as the filename).
+        url (string)          - The URL to download the image from.
+        callback (function)   - (Optional) Function to call when the image is ready. Receives (material, fromCache, error).
+        flags (string)        - (Optional) Material flags to use when creating the Material.
+
+    Returns:
+        None.
+
+    Realm:
+        Client.
+
+    Example Usage:
+        -- Register a new web image and use it in a DImage panel
+        lia.webimage.register("myicon.png", "https://example.com/icon.png", function(mat, fromCache)
+            if mat and not mat:IsError() then
+                local img = vgui.Create("DImage")
+                img:SetMaterial(mat)
+                img:SetSize(64, 64)
+                img:Center()
+            else
+                print("Failed to load image!")
+            end
+        end)
+]]
 function lia.webimage.register(n, u, cb, flags)
     if isstring(u) then urlMap[u] = n end
     registered[n] = {
@@ -48,6 +81,33 @@ function lia.webimage.register(n, u, cb, flags)
     end)
 end
 
+--[[
+    lia.webimage.get
+
+    Purpose:
+        Retrieves a Material for a previously registered or downloaded web image.
+        If the image is cached, it returns the cached Material. If the image exists on disk,
+        it loads and returns the Material. Otherwise, returns nil.
+
+    Parameters:
+        name (string)     - The registered name or URL of the image.
+        flags (string)    - (Optional) Material flags to use when creating the Material.
+
+    Returns:
+        Material or nil - The Material object if found, or nil if not available.
+
+    Realm:
+        Client.
+
+    Example Usage:
+        -- Get a Material for a registered image and use it in a DImage
+        local mat = lia.webimage.get("myicon.png")
+        if mat then
+            local img = vgui.Create("DImage")
+            img:SetMaterial(mat)
+            img:SetSize(32, 32)
+        end
+]]
 function lia.webimage.get(n, flags)
     local key = urlMap[n] or n
     if cache[key] then return cache[key] end

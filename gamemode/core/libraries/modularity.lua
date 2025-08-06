@@ -62,6 +62,30 @@ local function collectModuleIDs(directory)
     return ids
 end
 
+--[[
+    lia.module.load
+
+    Purpose:
+        Loads a module by its unique ID from the specified path, initializing its environment, permissions, dependencies, and extras.
+        Handles both single-file and folder-based modules, and registers the module in lia.module.list.
+
+    Parameters:
+        uniqueID (string)      - The unique identifier for the module.
+        path (string)          - The path to the module's folder or file.
+        isSingleFile (boolean) - Whether the module is a single file.
+        variable (string|nil)  - The global variable name to use for the module (default: "MODULE").
+        skipSubmodules (bool)  - If true, submodules will not be loaded.
+
+    Returns:
+        None.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Load a module named "example" from the modules directory
+        lia.module.load("example", "gamemode/modules/example", false)
+]]
 function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
     variable = variable or "MODULE"
     local lowerVar = variable:lower()
@@ -108,7 +132,6 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
 
     MODULE.name = L(MODULE.name)
     MODULE.desc = L(MODULE.desc)
-
     local enabled, disableReason
     if isfunction(MODULE.enabled) then
         enabled, disableReason = MODULE.enabled()
@@ -178,6 +201,26 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
     end
 end
 
+--[[
+    lia.module.initialize
+
+    Purpose:
+        Initializes the schema and all modules for the current gamemode, including preloads, overrides, and base modules.
+        Loads all items for the schema and removes disabled modules from the module list.
+
+    Parameters:
+        None.
+
+    Returns:
+        None.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Initialize all modules and schema (usually called automatically)
+        lia.module.initialize()
+]]
 function lia.module.initialize()
     local schemaPath = engine.ActiveGamemode()
     lia.module.load("schema", schemaPath .. "/schema", false, "schema")
@@ -207,6 +250,29 @@ function lia.module.initialize()
     end
 end
 
+--[[
+    lia.module.loadFromDir
+
+    Purpose:
+        Loads all modules from the specified directory, registering them into lia.module.list.
+        Skips any modules whose IDs are present in the skip table.
+
+    Parameters:
+        directory (string) - The directory path to search for module folders.
+        group (string)     - The group type, usually "module" or "schema".
+        skip (table|nil)   - Optional table of module IDs to skip.
+
+    Returns:
+        None.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Load all modules from the "modules" directory, skipping any in the skip table
+        local skip = {examplemodule = true}
+        lia.module.loadFromDir("gamemode/modules", "module", skip)
+]]
 function lia.module.loadFromDir(directory, group, skip)
     local locationVar = group == "schema" and "SCHEMA" or "MODULE"
     local _, folders = file.Find(directory .. "/*", "LUA")
@@ -215,6 +281,28 @@ function lia.module.loadFromDir(directory, group, skip)
     end
 end
 
+--[[
+    lia.module.get
+
+    Purpose:
+        Retrieves a loaded module by its unique identifier from lia.module.list.
+
+    Parameters:
+        identifier (string) - The unique ID of the module to retrieve.
+
+    Returns:
+        table|nil - The module table if found, or nil if not loaded.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the "example" module
+        local exampleModule = lia.module.get("example")
+        if exampleModule then
+            print("Module name:", exampleModule.name)
+        end
+]]
 function lia.module.get(identifier)
     return lia.module.list[identifier]
 end
