@@ -17,17 +17,22 @@ function lia.lang.loadFromDir(directory)
                 NAME = nil
             end
 
-            lia.lang.stored[niceName] = table.Merge(lia.lang.stored[niceName] or {}, LANGUAGE)
+            local formatted = {}
+            for k, val in pairs(LANGUAGE) do
+                formatted[tostring(k)] = tostring(val)
+            end
+
+            lia.lang.stored[niceName] = table.Merge(lia.lang.stored[niceName] or {}, formatted)
             LANGUAGE = nil
         end
     end
 end
 
 function lia.lang.AddTable(name, tbl)
-    local lowerName = name:lower()
+    local lowerName = tostring(name):lower()
     lia.lang.stored[lowerName] = lia.lang.stored[lowerName] or {}
     for k, v in pairs(tbl) do
-        lia.lang.stored[lowerName][k] = v
+        lia.lang.stored[lowerName][tostring(k)] = tostring(v)
     end
 end
 
@@ -46,7 +51,12 @@ function L(key, ...)
     local languages = lia.lang.stored or {}
     local langKey = lia.config and lia.config.get("Language", "english"):lower() or "english"
     local info = languages[langKey]
-    return string.format(info and info[key] or key, ...)
+    local args = {...}
+    for i = 1, #args do
+        args[i] = tostring(args[i])
+    end
+    key = tostring(key)
+    return string.format(info and info[key] or key, unpack(args))
 end
 
 lia.lang.loadFromDir("lilia/gamemode/languages")
