@@ -273,7 +273,7 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     for _, o in ipairs(tp) do
         mod:AddOption(L(o.name), function()
-            cl:notify(L("adminStickExecutedCommand", o.cmd .. " " .. QuoteArgs(GetIdentifier(tgt))))
+            cl:notifyLocalized("adminStickExecutedCommand", o.cmd .. " " .. QuoteArgs(GetIdentifier(tgt)))
             RunAdminCommand(o.cmd, tgt)
             AdminStickIsOpen = false
         end):SetIcon(o.icon)
@@ -570,7 +570,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = L("charIDCopyFormat", tgt:getChar() and tgt:getChar():getID() or L("na")),
                 cmd = function()
                     if tgt:getChar() then
-                        cl:notify(L("copiedCharID", tgt:getChar():getID()))
+                        cl:notifyLocalized("copiedCharID", tgt:getChar():getID())
                         SetClipboardText(tgt:getChar():getID())
                     end
 
@@ -581,7 +581,7 @@ function MODULE:OpenAdminStickUI(tgt)
             {
                 name = L("nameCopyFormat", tgt:Name()),
                 cmd = function()
-                    cl:notify(L("copiedToClipboard", tgt:Name(), L("name")))
+                    cl:notifyLocalized("copiedToClipboard", tgt:Name(), L("name"))
                     SetClipboardText(tgt:Name())
                     AdminStickIsOpen = false
                 end,
@@ -590,7 +590,7 @@ function MODULE:OpenAdminStickUI(tgt)
             {
                 name = L("steamIDCopyFormat", tgt:SteamID()),
                 cmd = function()
-                    cl:notify(L("copiedToClipboard", tgt:Name(), L("steamID")))
+                    cl:notifyLocalized("copiedToClipboard", tgt:Name(), L("steamID"))
                     SetClipboardText(tgt:SteamID())
                     AdminStickIsOpen = false
                 end,

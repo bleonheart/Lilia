@@ -271,7 +271,7 @@ lia.command.add("doorsetprice", {
             door:setNetVar("price", price)
             lia.log.add(client, "doorSetPrice", door, price)
             hook.Run("DoorPriceSet", client, door, price)
-            client:notify(L("price") .. ": " .. lia.currency.get(price))
+            client:notifyLocalized("price", lia.currency.get(price))
             MODULE:SaveData()
         else
             client:notifyLocalized("doorNotValid")

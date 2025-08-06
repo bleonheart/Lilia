@@ -12,7 +12,7 @@
         local h = math.floor(secs / 3600)
         local m = math.floor((secs % 3600) / 60)
         local s = secs % 60
-        client:notify(L("playtimeYour", h, m, s))
+        client:notifyLocalized("playtimeYour", h, m, s)
     end
 })
 
@@ -1687,7 +1687,7 @@ lia.command.add("freezeallprops", {
         end
 
         client:notifyLocalized("freezeAllProps", target:Name())
-        client:notify(L("freezeAllPropsCount", count, target:Name()))
+        client:notifyLocalized("freezeAllPropsCount", count, target:Name())
     end
 })
 
@@ -1760,7 +1760,7 @@ lia.command.add("checkmoney", {
         end
 
         local money = target:getChar():getMoney()
-        client:notify(L("playerMoney", target:GetName(), lia.currency.get(money)))
+        client:notifyLocalized("playerMoney", target:GetName(), lia.currency.get(money))
     end
 })
 
@@ -2282,7 +2282,7 @@ lia.command.add("checkflags", {
         if flags and #flags > 0 then
             client:ChatPrint(L("charFlags", target:Name(), table.concat(flags, ", ")))
         else
-            client:notify(L("noFlags", target:Name()))
+            client:notifyLocalized("noFlags", target:Name())
         end
     end
 })
