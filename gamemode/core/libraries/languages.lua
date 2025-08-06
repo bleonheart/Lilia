@@ -49,14 +49,15 @@ end
 
 function L(key, ...)
     local languages = lia.lang.stored or {}
-    local langKey = lia.config and lia.config.get("Language", "english"):lower() or "english"
-    local info = languages[langKey]
+    local langKey = (lia.config and lia.config.get("Language", "english") or "english"):lower()
+    local translations = languages[langKey] or {}
+    local translation = translations[tostring(key)]
+    if not translation then return tostring(key) end
     local args = {...}
     for i = 1, #args do
         args[i] = tostring(args[i])
     end
-    key = tostring(key)
-    return string.format(info and info[key] or key, unpack(args))
+    return string.format(translation, unpack(args))
 end
 
 lia.lang.loadFromDir("lilia/gamemode/languages")

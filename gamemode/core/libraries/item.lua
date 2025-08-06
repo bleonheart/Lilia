@@ -279,7 +279,6 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     end
 
     if not luaGenerated and path then lia.include(path, "shared") end
-
     for funcName, funcTable in pairs(ITEM.functions) do
         if isstring(funcTable.name) then
             funcTable.name = L(funcTable.name)
@@ -291,7 +290,17 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     end
 
     if isstring(ITEM.name) then ITEM.name = L(ITEM.name) end
-    if isstring(ITEM.desc) then ITEM.desc = L(ITEM.desc) end
+    if ITEM.desc and isstring(ITEM.desc) then
+        local ok, result = pcall(L, ITEM.desc)
+        if ok then
+            ITEM.desc = result
+        else
+            print("[DEBUG] L error for desc:", ITEM.desc, "\nError:", result)
+            local info = debug.getinfo(L, "Sln")
+            print("[DEBUG] L defined at:", info.source, "line", info.linedefined)
+            print(debug.traceback())
+        end
+    end
 
     ITEM:onRegistered()
     local itemType = ITEM.uniqueID
