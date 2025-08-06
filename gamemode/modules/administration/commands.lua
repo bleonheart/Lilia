@@ -2115,7 +2115,7 @@ lia.command.add("charaddmoney", {
 
 lia.command.add("globalbotsay", {
     superAdminOnly = true,
-    privilege = L("Bot Say"),
+    privilege = L("botSay"),
     desc = "globalBotSayDesc",
     syntax = L("[string Message]"),
     onRun = function(client, arguments)
@@ -2133,7 +2133,7 @@ lia.command.add("globalbotsay", {
 
 lia.command.add("botsay", {
     superAdminOnly = true,
-    privilege = L("Bot Say"),
+    privilege = L("botSay"),
     desc = "botSayDesc",
     syntax = L("[string Bot Name] [string Message]"),
     onRun = function(client, arguments)
@@ -2163,11 +2163,11 @@ lia.command.add("botsay", {
 
 lia.command.add("forcesay", {
     superAdminOnly = true,
-    privilege = L("Force Say"),
+    privilege = L("forceSay"),
     desc = "forceSayDesc",
     syntax = L("[player Name] [string Message]"),
     AdminStick = {
-        Name = "Force Say",
+        Name = "adminStickForceSayName",
         Category = "moderationTools",
         SubCategory = "misc",
         Icon = "icon16/comments.png"
