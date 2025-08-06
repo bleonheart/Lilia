@@ -153,7 +153,7 @@ function MODULE:CreateMenuButtons(tabs)
                 local panel = sheet:Add("DPanel")
                 panel:Dock(FILL)
                 panel.Paint = function() end
-                local sheetData = sheet:AddSheet(page.name, panel)
+                local sheetData = sheet:AddSheet(page.name, panel, page.icon)
 
                 if page.drawFunc then
                     sheetData.Tab.liaPagePanel = panel

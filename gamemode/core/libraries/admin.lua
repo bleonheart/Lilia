@@ -1008,6 +1008,7 @@ else
         if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege(L("manageUsergroups")) then return end
         pages[#pages + 1] = {
             name = L("userGroups"),
+            icon = "icon16/group.png",
             drawFunc = function(parent)
                 lia.gui.usergroups = parent
                 parent:Clear()

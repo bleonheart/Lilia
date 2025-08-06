@@ -69,6 +69,7 @@ function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege(L("canSeeLogs")) then
         table.insert(pages, {
             name = L("logs"),
+            icon = "icon16/book_open.png",
             drawFunc = function(panel)
                 receivedPanel = panel
                 net.Start("send_logs_request")

@@ -80,6 +80,7 @@ if CLIENT then
         if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege(L("viewPlayerWarnings")) then return end
         table.insert(pages, {
             name = L("warnings"),
+            icon = "icon16/error.png",
             drawFunc = function(panel)
                 panelRef = panel
                 net.Start("liaRequestAllWarnings")

@@ -117,6 +117,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("viewStaffManagement")) then
         table.insert(pages, {
             name = L("moduleStaffManagementName"),
+            icon = "icon16/shield.png",
             drawFunc = function(panel)
                 panelRef = panel
                 net.Start("liaRequestStaffSummary")
@@ -128,6 +129,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("canAccessPlayerList")) then
         table.insert(pages, {
             name = L("players"),
+            icon = "icon16/user.png",
             drawFunc = function(panel)
                 panelRef = panel
                 net.Start("liaRequestPlayers")
@@ -139,6 +141,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("listCharacters")) then
         table.insert(pages, {
             name = L("characterList"),
+            icon = "icon16/book.png",
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
@@ -344,6 +347,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("viewDBTables")) then
         table.insert(pages, {
             name = L("databaseView"),
+            icon = "icon16/database.png",
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
@@ -414,6 +418,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("canAccessFlagManagement")) then
         table.insert(pages, {
             name = L("flagsManagement"),
+            icon = "icon16/flag_red.png",
             drawFunc = function(panel)
                 flagsPanel = panel
                 if flagsData then
@@ -430,6 +435,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("canManageFactions")) then
         table.insert(pages, {
             name = L("factionManagement"),
+            icon = "icon16/chart_organisation.png",
             drawFunc = function(panel)
                 rosterPanel = panel
                 net.Start("liaRequestFactionRoster")
@@ -441,6 +447,7 @@ function MODULE:PopulateAdminTabs(pages)
     if client:hasPrivilege(L("manageCharacters")) then
         table.insert(pages, {
             name = L("pkManager"),
+            icon = "icon16/lightning.png",
             drawFunc = function(panel)
                 panelRef = panel
                 net.Start("liaRequestAllPKs")
