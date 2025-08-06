@@ -1,3 +1,9 @@
+local function shouldGrant(group, min)
+    local levels = lia.administrator.DefaultGroups or {}
+    local m = tostring(min or "user"):lower()
+    return getGroupLevel(group) >= (levels[m] or 1)
+end
+
 local function defaultAccessHandler(actor, privilege, callback, _, extra)
     local grp = "user"
     if IsValid(actor) then
