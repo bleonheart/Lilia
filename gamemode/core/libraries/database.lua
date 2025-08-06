@@ -256,60 +256,42 @@ function lia.db.wipeTables(callback)
 
     if lia.db.module == "mysqloo" then
         local function startDeleting()
-            local queries = string.Explode(";", [[
-    DROP TABLE IF EXISTS `lia_players`;
-    DROP TABLE IF EXISTS `lia_characters`;
-    DROP TABLE IF EXISTS `lia_inventories`;
-    DROP TABLE IF EXISTS `lia_items`;
-    DROP TABLE IF EXISTS `lia_invdata`;
-    DROP TABLE IF EXISTS `lia_config`;
-    DROP TABLE IF EXISTS `lia_logs`;
-    DROP TABLE IF EXISTS `lia_ticketclaims`;
-    DROP TABLE IF EXISTS `lia_doors`;
-    DROP TABLE IF EXISTS `lia_admin`;
-    DROP TABLE IF EXISTS `lia_saveditems`;
-    DROP TABLE IF EXISTS `lia_persistence`;
-    DROP TABLE IF EXISTS `lia_warnings`;
-    DROP TABLE IF EXISTS `lia_permakills`;
-    DROP TABLE IF EXISTS `lia_bans`;
-    DROP TABLE IF EXISTS `lia_chardata`;
-    DROP TABLE IF EXISTS `lia_data`;
-]])
-            local done = 0
-            for i = 1, #queries do
-                queries[i] = string.Trim(queries[i])
-                if queries[i] == "" then
-                    done = done + 1
-                else
-                    lia.db.query(queries[i], function()
-                        done = done + 1
-                        if done >= #queries then realCallback() end
+            lia.db.query("SHOW TABLES LIKE 'lia\\_%';", function(data)
+                data = data or {}
+                local remaining = #data
+                if remaining == 0 then
+                    realCallback()
+                    return
+                end
+
+                for _, row in ipairs(data) do
+                    local tableName = row[1] or row[next(row)]
+                    lia.db.query("DROP TABLE IF EXISTS `" .. tableName .. "`;", function()
+                        remaining = remaining - 1
+                        if remaining <= 0 then realCallback() end
                     end)
                 end
-            end
+            end)
         end
 
         lia.db.query("SET FOREIGN_KEY_CHECKS = 0;", startDeleting)
     else
-        lia.db.query([[
-    DROP TABLE IF EXISTS lia_players;
-    DROP TABLE IF EXISTS lia_characters;
-    DROP TABLE IF EXISTS lia_inventories;
-    DROP TABLE IF EXISTS lia_items;
-    DROP TABLE IF EXISTS lia_invdata;
-    DROP TABLE IF EXISTS lia_config;
-    DROP TABLE IF EXISTS lia_logs;
-    DROP TABLE IF EXISTS lia_ticketclaims;
-    DROP TABLE IF EXISTS lia_doors;
-    DROP TABLE IF EXISTS lia_admin;
-    DROP TABLE IF EXISTS lia_saveditems;
-    DROP TABLE IF EXISTS lia_persistence;
-    DROP TABLE IF EXISTS lia_warnings;
-    DROP TABLE IF EXISTS lia_permakills;
-    DROP TABLE IF EXISTS lia_bans;
-    DROP TABLE IF EXISTS lia_chardata;
-    DROP TABLE IF EXISTS lia_data;
-]], realCallback)
+        lia.db.query([[SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lia_%';]], function(data)
+            data = data or {}
+            local remaining = #data
+            if remaining == 0 then
+                realCallback()
+                return
+            end
+
+            for _, row in ipairs(data) do
+                local tableName = row.name or row[1]
+                lia.db.query("DROP TABLE IF EXISTS " .. tableName .. ";", function()
+                    remaining = remaining - 1
+                    if remaining <= 0 then realCallback() end
+                end)
+            end
+        end)
     end
 end
 
