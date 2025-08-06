@@ -1034,6 +1034,7 @@ LANGUAGE = {
     blockedOOC = "Blocked OOC!",
     webImagesTitle = "Web Images",
     webImageTesterTitle = "WebImage Tester",
+    imageURLPlaceholder = "Image URL (e.g., https://i.imgur.com/WNdLdwQ.jpeg)",
     loadImage = "Load Image",
     webImagesCleared = "Web image cache cleared.",
     webSoundsTitle = "Web Sounds",
