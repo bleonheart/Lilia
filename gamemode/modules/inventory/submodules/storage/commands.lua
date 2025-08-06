@@ -1,6 +1,6 @@
 local MODULE = MODULE
 lia.command.add("storagelock", {
-    privilege = L("Lock Storage"),
+    privilege = L("lockStorage"),
     adminOnly = true,
     desc = "storagelockDesc",
     syntax = L("[string Password optional]"),

@@ -325,9 +325,9 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
     }
 end)
 
-lia.keybind.add(KEY_NONE, L("Open Inventory"), function()
+lia.keybind.add(KEY_NONE, L("openInventory"), function()
     local f1Menu = vgui.Create("liaMenu")
     f1Menu:setActiveTab(L("inv"))
 end)
 
-lia.keybind.add(KEY_NONE, L("Admin Mode"), function() lia.command.send("adminmode") end)
+lia.keybind.add(KEY_NONE, L("adminMode"), function() lia.command.send("adminmode") end)

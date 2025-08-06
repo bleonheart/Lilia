@@ -44,12 +44,12 @@ MODULE.Privileges = {
         Category = L("players")
     },
     {
-        Name = L("List Characters"),
+        Name = L("listCharacters"),
         MinAccess = "admin",
         Category = L("character")
     },
     {
-        Name = L("View DB Tables"),
+        Name = L("viewDBTables"),
         MinAccess = "superadmin",
         Category = L("database")
     },

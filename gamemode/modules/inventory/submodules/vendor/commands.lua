@@ -1,5 +1,5 @@
 ﻿lia.command.add("restockvendor", {
-    privilege = L("Manage Vendors"),
+    privilege = L("manageVendors"),
     superAdminOnly = true,
     desc = "restockVendorDesc",
     AdminStick = {
@@ -21,13 +21,13 @@
             client:notifyLocalized("vendorRestocked")
             lia.log.add(client, "restockvendor", target)
         else
-            client:notifyLocalized("NotLookingAtValidVendor")
+            client:notifyLocalized("notLookingAtValidVendor")
         end
     end
 })
 
 lia.command.add("restockallvendors", {
-    privilege = L("Manage Vendors"),
+    privilege = L("manageVendors"),
     superAdminOnly = true,
     desc = "restockAllVendorsDesc",
     onRun = function(client)
@@ -47,7 +47,7 @@ lia.command.add("restockallvendors", {
 })
 
 lia.command.add("resetallvendormoney", {
-    privilege = L("Manage Vendors"),
+    privilege = L("manageVendors"),
     superAdminOnly = true,
     desc = "resetAllVendorMoneyDesc",
     syntax = L("[number Amount]"),
@@ -73,7 +73,7 @@ lia.command.add("resetallvendormoney", {
 })
 
 lia.command.add("restockvendormoney", {
-    privilege = L("Manage Vendors"),
+    privilege = L("manageVendors"),
     superAdminOnly = true,
     desc = "restockVendorMoneyDesc",
     syntax = L("[number Amount]"),
@@ -99,7 +99,7 @@ lia.command.add("restockvendormoney", {
                 client:notifyLocalized("vendorNoMoneyVariable")
             end
         else
-            client:notifyLocalized("NotLookingAtValidVendor")
+            client:notifyLocalized("notLookingAtValidVendor")
         end
     end
 })

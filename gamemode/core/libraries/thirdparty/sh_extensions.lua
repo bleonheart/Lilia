@@ -329,7 +329,7 @@ AddEntFireProperty("lia_door_unlock", L("unlock"), 658, function(ent, ply)
 end, "Unlock", "icon16/lock_open.png")
 
 AddEntFireProperty("lia_func_movelinear_open", L("start"), 655, "func_movelinear", "Open", "icon16/arrow_right.png")
-AddEntFireProperty("lia_func_movelinear_close", L("return"), 656, "func_movelinear", "Close", "icon16/arrow_left.png")
+AddEntFireProperty("lia_func_movelinear_close", L("returnText"), 656, "func_movelinear", "Close", "icon16/arrow_left.png")
 AddEntFireProperty("lia_func_tracktrain_StartForward", L("startForward"), 655, function(ent, ply)
     if ent:GetNWInt("m_dir") == 1 then return false end
     return rb655_property_filter("func_tracktrain", ent, ply)
@@ -350,7 +350,7 @@ AddEntFireProperty("lia_func_tracktrain_Resume", L("resume"), 659, function(ent,
     return rb655_property_filter("func_tracktrain", ent, ply)
 end, "Resume", "icon16/resultset_next.png")
 
-AddEntFireProperty("lia_breakable_break", L("break"), 655, function(ent, ply)
+AddEntFireProperty("lia_breakable_break", L("breakAction"), 655, function(ent, ply)
     if ent:Health() < 1 then return false end
     return rb655_property_filter({"func_breakable", "func_physbox", "prop_physics", "func_pushable"}, ent, ply)
 end, "Break", ExplodeIcon)
