@@ -2,18 +2,110 @@
 characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:tostring()
     return L("character") .. "[" .. (self.id or 0) .. "]"
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:eq(other)
     return self:getID() == other:getID()
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getID()
     return self.id
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getPlayer()
     if IsValid(self.player) then return self.player end
     for _, v in player.Iterator() do
@@ -69,12 +161,58 @@ function characterMeta:getDisplayedName(client)
     return L("unknown")
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:hasMoney(amount)
     amount = tonumber(amount) or 0
     if amount < 0 then return false end
     return self:getMoney() >= amount
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:hasFlags(flagStr)
     local flags = self:getFlags()
     for i = 1, #flagStr do
@@ -83,6 +221,29 @@ function characterMeta:hasFlags(flagStr)
     return false
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getItemWeapon(requireEquip)
     if requireEquip == nil then requireEquip = true end
     local client = self:getPlayer()
@@ -96,29 +257,167 @@ function characterMeta:getItemWeapon(requireEquip)
     return false
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getMaxStamina()
     local maxStamina = hook.Run("getCharMaxStamina", self) or lia.config.get("DefaultStamina", 100)
     return maxStamina
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getStamina()
     local stamina = self:getPlayer():getLocalVar("stamina", 100) or lia.config.get("DefaultStamina", 100)
     return stamina
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:hasClassWhitelist(class)
     local wl = self:getClasswhitelists() or {}
     return wl[class] == true
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:isFaction(faction)
     return self:getFaction() == faction
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:isClass(class)
     return self:getClass() == class
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getAttrib(key, default)
     local att = self:getAttribs()[key] or default or 0
     local boosts = self:getBoosts()[key]
@@ -130,25 +429,140 @@ function characterMeta:getAttrib(key, default)
     return att
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getBoost(attribID)
     local boosts = self:getBoosts()
     return boosts[attribID]
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getBoosts()
     return self:getVar("boosts", {})
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:doesRecognize(id)
     if not isnumber(id) and id.getID then id = id:getID() end
     return hook.Run("isCharRecognized", self, id) ~= false
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:doesFakeRecognize(id)
     if not isnumber(id) and id.getID then id = id:getID() end
     return hook.Run("isCharFakeRecognized", self, id) ~= false
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:setData(k, v, noReplication, receiver)
     if not self.dataVars then self.dataVars = {} end
     local toNetwork = {}
@@ -205,6 +619,29 @@ function characterMeta:setData(k, v, noReplication, receiver)
     end
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:getData(key, default)
     self.dataVars = self.dataVars or {}
     if not key then return self.dataVars end
@@ -212,12 +649,58 @@ function characterMeta:getData(key, default)
     return value
 end
 
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
 function characterMeta:isBanned()
     local banned = self:getBanned()
     return banned ~= 0 and (banned == -1 or banned > os.time())
 end
 
 if SERVER then
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:recognize(character, name)
         local id
         if isnumber(character) then
@@ -237,35 +720,173 @@ if SERVER then
         return true
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:WhitelistAllClasses()
         for class, _ in pairs(lia.class.list) do
             if not lia.class.hasWhitelist(class) then self:classWhitelist(class) end
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:WhitelistAllFactions()
         for faction, _ in pairs(lia.faction.indices) do
             self:setWhitelisted(faction, true)
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:WhitelistEverything()
         self:WhitelistAllFactions()
         self:WhitelistAllClasses()
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:classWhitelist(class)
         local wl = self:getClasswhitelists() or {}
         wl[class] = true
         self:setClasswhitelists(wl)
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:classUnWhitelist(class)
         local wl = self:getClasswhitelists() or {}
         wl[class] = nil
         self:setClasswhitelists(wl)
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:joinClass(class, isForced)
         if not class then
             self:kickClass()
@@ -294,6 +915,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:kickClass()
         local client = self:getPlayer()
         if not client then return end
@@ -313,6 +957,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:updateAttrib(key, value)
         local client = self:getPlayer()
         local attribute = lia.attribs.list[key]
@@ -331,6 +998,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:setAttrib(key, value)
         local client = self:getPlayer()
         local attribute = lia.attribs.list[key]
@@ -348,6 +1038,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:addBoost(boostID, attribID, boostAmount)
         local boosts = self:getVar("boosts", {})
         boosts[attribID] = boosts[attribID] or {}
@@ -356,6 +1069,29 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:removeBoost(boostID, attribID)
         local boosts = self:getVar("boosts", {})
         boosts[attribID] = boosts[attribID] or {}
@@ -364,6 +1100,29 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:setFlags(flags)
         local oldFlags = self:getFlags()
         self.vars.flags = flags
@@ -392,6 +1151,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:giveFlags(flags)
         local addedFlags = ""
         local ply = self:getPlayer()
@@ -407,6 +1189,29 @@ if SERVER then
         if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:takeFlags(flags)
         local oldFlags = self:getFlags()
         local newFlags = oldFlags
@@ -425,6 +1230,29 @@ if SERVER then
         if newFlags ~= oldFlags then self:setFlags(newFlags) end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:save(callback)
         if self.isBot then return end
         local data = {}
@@ -441,6 +1269,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:sync(receiver)
         if receiver == nil then
             for _, v in player.Iterator() do
@@ -476,6 +1327,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:setup(noNetworking)
         local client = self:getPlayer()
         if IsValid(client) then
@@ -510,6 +1384,29 @@ if SERVER then
         end
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:kick()
         local client = self:getPlayer()
         client:KillSilent()
@@ -529,6 +1426,29 @@ if SERVER then
         hook.Run("OnCharKick", self, client)
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:ban(time)
         time = tonumber(time)
         local value
@@ -544,21 +1464,113 @@ if SERVER then
         hook.Run("OnCharPermakilled", self, time or nil)
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:delete()
         lia.char.delete(self:getID(), self:getPlayer())
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:destroy()
         local id = self:getID()
         lia.char.loaded[id] = nil
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:giveMoney(amount)
         local client = self:getPlayer()
         if not IsValid(client) then return false end
         return client:addMoney(amount)
     end
 
+    --[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
     function characterMeta:takeMoney(amount)
         amount = math.abs(amount)
         self:giveMoney(-amount)

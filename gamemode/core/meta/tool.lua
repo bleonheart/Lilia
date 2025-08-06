@@ -1,5 +1,28 @@
-﻿local ToolGunMeta = lia.meta.tool or {}
-function ToolGunMeta:Create()
+﻿local toolGunMeta = lia.meta.tool or {}
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Create()
     local object = {}
     setmetatable(object, self)
     self.__index = self
@@ -16,7 +39,30 @@ function ToolGunMeta:Create()
     return object
 end
 
-function ToolGunMeta:CreateConVars()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:CreateConVars()
     local mode = self:GetMode()
     if CLIENT then
         for cvar, default in pairs(self.ClientConVar) do
@@ -28,21 +74,136 @@ function ToolGunMeta:CreateConVars()
     end
 end
 
-function ToolGunMeta:UpdateData()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:UpdateData()
 end
 
-function ToolGunMeta:FreezeMovement()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:FreezeMovement()
 end
 
-function ToolGunMeta:DrawHUD()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:DrawHUD()
 end
 
-function ToolGunMeta:GetServerInfo(property)
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetServerInfo(property)
     local mode = self:GetMode()
     return ConVar(mode .. "_" .. property)
 end
 
-function ToolGunMeta:BuildConVarList()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:BuildConVarList()
     local mode = self:GetMode()
     local convars = {}
     for k, v in pairs(self.ClientConVar) do
@@ -51,77 +212,468 @@ function ToolGunMeta:BuildConVarList()
     return convars
 end
 
-function ToolGunMeta:GetClientInfo(property)
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetClientInfo(property)
     return self:GetOwner():GetInfo(self:GetMode() .. "_" .. property)
 end
 
-function ToolGunMeta:GetClientNumber(property, default)
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetClientNumber(property, default)
     return self:GetOwner():GetInfoNum(self:GetMode() .. "_" .. property, tonumber(default) or 0)
 end
 
-function ToolGunMeta:Allowed()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Allowed()
     if CLIENT then return true end
     return self.AllowedCVar:GetBool()
 end
 
-function ToolGunMeta:Init()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Init()
 end
 
-function ToolGunMeta:GetMode()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetMode()
     return self.Mode
 end
 
-function ToolGunMeta:GetSWEP()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetSWEP()
     return self.SWEP
 end
 
-function ToolGunMeta:GetOwner()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetOwner()
     return self:GetSWEP().Owner or self:GetOwner()
 end
 
-function ToolGunMeta:GetWeapon()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:GetWeapon()
     return self:GetSWEP().Weapon or self.Weapon
 end
 
-function ToolGunMeta:LeftClick()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:LeftClick()
     return false
 end
 
-function ToolGunMeta:RightClick()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:RightClick()
     return false
 end
 
-function ToolGunMeta:Reload()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Reload()
     self:ClearObjects()
 end
 
-function ToolGunMeta:Deploy()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Deploy()
     self:ReleaseGhostEntity()
 end
 
-function ToolGunMeta:Holster()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Holster()
     self:ReleaseGhostEntity()
 end
 
-function ToolGunMeta:Think()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:Think()
     self:ReleaseGhostEntity()
 end
 
-function ToolGunMeta:CheckObjects()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:CheckObjects()
     for _, v in pairs(self.Objects) do
         if not v.Ent:IsWorld() and not IsValid(v.Ent) then self:ClearObjects() end
     end
 end
 
-function ToolGunMeta:ClearObjects()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:ClearObjects()
     self.Objects = {}
 end
 
-function ToolGunMeta:ReleaseGhostEntity()
+--[[
+    getDisplayedName
+
+    Purpose:
+        Returns the name to display for this character to the given client, taking into account recognition and fake names.
+        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
+        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
+        If recognition is disabled, always returns the character's real name.
+
+    Parameters:
+        client (Player) - The player to check recognition against.
+
+    Returns:
+        string - The name to display for this character to the given client.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        -- Get the display name for a character as seen by a client
+        local displayName = character:getDisplayedName(client)
+        print("You see this character as: " .. displayName)
+]]
+function toolGunMeta:ReleaseGhostEntity()
     if IsValid(self.GhostEntity) then
         SafeRemoveEntity(self.GhostEntity)
         self.GhostEntity = nil
     end
 end
 
-lia.meta.tool = ToolGunMeta
+lia.meta.tool = toolGunMeta
