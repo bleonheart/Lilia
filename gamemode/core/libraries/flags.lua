@@ -3,7 +3,7 @@ lia.flag.list = lia.flag.list or {}
 function lia.flag.add(flag, desc, callback)
     if lia.flag.list[flag] then return end
     lia.flag.list[flag] = {
-        desc = desc,
+        desc = desc and L(desc) or desc,
         callback = callback
     }
 end
@@ -23,16 +23,16 @@ if SERVER then
     end
 end
 
-lia.flag.add("C", L("flagSpawnVehicles"))
-lia.flag.add("z", L("flagSpawnSweps"))
-lia.flag.add("E", L("flagSpawnSents"))
-lia.flag.add("L", L("flagSpawnEffects"))
-lia.flag.add("r", L("flagSpawnRagdolls"))
-lia.flag.add("e", L("flagSpawnProps"))
-lia.flag.add("n", L("flagSpawnNpcs"))
-lia.flag.add("Z", L("flagInviteToYourFaction"))
-lia.flag.add("X", L("flagInviteToYourClass"))
-lia.flag.add("p", L("flagPhysgun"), function(client, isGiven)
+lia.flag.add("C", "flagSpawnVehicles")
+lia.flag.add("z", "flagSpawnSweps")
+lia.flag.add("E", "flagSpawnSents")
+lia.flag.add("L", "flagSpawnEffects")
+lia.flag.add("r", "flagSpawnRagdolls")
+lia.flag.add("e", "flagSpawnProps")
+lia.flag.add("n", "flagSpawnNpcs")
+lia.flag.add("Z", "flagInviteToYourFaction")
+lia.flag.add("X", "flagInviteToYourClass")
+lia.flag.add("p", "flagPhysgun", function(client, isGiven)
     if isGiven then
         client:Give("weapon_physgun")
         client:SelectWeapon("weapon_physgun")
@@ -41,7 +41,7 @@ lia.flag.add("p", L("flagPhysgun"), function(client, isGiven)
     end
 end)
 
-lia.flag.add("t", L("flagToolgun"), function(client, isGiven)
+lia.flag.add("t", "flagToolgun", function(client, isGiven)
     if isGiven then
         client:Give("gmod_tool")
         client:SelectWeapon("gmod_tool")
