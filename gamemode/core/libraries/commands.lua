@@ -16,7 +16,7 @@ function lia.command.add(command, data)
         lia.administrator.registerPrivilege({
             Name = privilegeName,
             MinAccess = superAdminOnly and "superadmin" or "admin",
-            Category = L("commands")
+            Category = "commands"
         })
     end
 

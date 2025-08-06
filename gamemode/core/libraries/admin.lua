@@ -97,12 +97,12 @@ local function camiBootstrapFromExisting()
         local m = tostring(pr.MinAccess or "user"):lower()
         if lia.administrator.privileges[n] == nil then
             lia.administrator.privileges[n] = m
-            lia.administrator.privMeta[n] = tostring(pr.Category or L("unassigned"))
+            lia.administrator.privMeta[n] = L(pr.Category or "unassigned")
             for g in pairs(lia.administrator.groups or {}) do
                 if shouldGrant(g, m) then lia.administrator.groups[g][n] = true end
             end
         else
-            lia.administrator.privMeta[n] = lia.administrator.privMeta[n] or tostring(pr.Category or L("unassigned"))
+            lia.administrator.privMeta[n] = lia.administrator.privMeta[n] or L(pr.Category or "unassigned")
         end
     end
 
@@ -130,12 +130,13 @@ end
 
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.Name then return end
-    local name = tostring(priv.Name)
+    local name = L(priv.Name)
     if name == "" then return end
     if lia.administrator.privileges[name] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[name] = min
-    lia.administrator.privMeta[name] = tostring(priv.Category or L("unassigned"))
+    local category = L(priv.Category or "unassigned")
+    lia.administrator.privMeta[name] = category
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
@@ -146,7 +147,7 @@ function lia.administrator.registerPrivilege(priv)
     hook.Run("OnPrivilegeRegistered", {
         Name = name,
         MinAccess = min,
-        Category = lia.administrator.privMeta[name]
+        Category = category
     })
 
     if SERVER then lia.administrator.save() end

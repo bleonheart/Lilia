@@ -1,8 +1,8 @@
 ﻿local MODULE = MODULE
 lia.administrator.registerPrivilege({
-    Name = L("receiveCheaterNotifications"),
+    Name = "receiveCheaterNotifications",
     MinAccess = "admin",
-    Category = L("protection")
+    Category = "protection"
 })
 
 local function IsCheater(client)
