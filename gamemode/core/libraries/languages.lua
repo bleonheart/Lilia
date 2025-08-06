@@ -48,16 +48,24 @@ function lia.lang.getLanguages()
 end
 
 function L(key, ...)
-    local languages = lia.lang.stored or {}
-    local langKey = (lia.config and lia.config.get("Language", "english") or "english"):lower()
-    local translations = languages[langKey] or {}
-    local translation = translations[tostring(key)]
-    if not translation then return tostring(key) end
-    local args = {...}
-    for i = 1, #args do
-        args[i] = tostring(args[i])
+    local stored = lia.lang.stored or {}
+    local lang = lia.config and lia.config.get("Language", "english") or "english"
+    local template = (stored[lang:lower()] or {})[key] or tostring(key)
+    local count = select("#", ...)
+    local args = {}
+    for i = 1, count do
+        args[i] = tostring(select(i, ...) or "")
     end
-    return string.format(translation, unpack(args))
+
+    local needed = 0
+    for _ in template:gmatch("%%s") do
+        needed = needed + 1
+    end
+
+    for i = count + 1, needed do
+        args[i] = ""
+    end
+    return string.format(template, unpack(args))
 end
 
 lia.lang.loadFromDir("lilia/gamemode/languages")
