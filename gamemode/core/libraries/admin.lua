@@ -351,6 +351,7 @@ end
 if SERVER then
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
+            if lia.administrator._loading then return end
             lia.error(L("usergroupDoesntExist"))
             return
         end
@@ -363,6 +364,7 @@ if SERVER then
 
     function lia.administrator.removePermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
+            if lia.administrator._loading then return end
             lia.error(L("usergroupDoesntExist"))
             return
         end
