@@ -67,13 +67,11 @@ local function camiUnregisterUsergroup(name)
 end
 
 local function camiRegisterPrivilege(name, min)
-    if CAMI then
-        if not CAMI.GetPrivilege(name) then
-            CAMI.RegisterPrivilege({
-                Name = name,
-                MinAccess = tostring(min or "user"):lower()
-            })
-        end
+    if CAMI and not CAMI.GetPrivilege(name) then
+        CAMI.RegisterPrivilege({
+            Name = name,
+            MinAccess = tostring(min or "user"):lower()
+        })
     end
 end
 
@@ -214,7 +212,11 @@ function lia.administrator.load()
                 created = true
             end
 
-            data._info = data._info or {inheritance = grp, types = {}}
+            data._info = data._info or {
+                inheritance = grp,
+                types = {}
+            }
+
             if data._info.inheritance ~= grp then
                 data._info.inheritance = grp
                 created = true
