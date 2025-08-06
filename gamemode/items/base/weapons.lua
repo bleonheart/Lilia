@@ -38,8 +38,8 @@ ITEM:hook("drop", function(item)
 end)
 
 ITEM.functions.Unequip = {
-    name = L("unequip"),
-    tip = L("equipTip"),
+    name = "unequip",
+    tip = "equipTip",
     icon = "icon16/cross.png",
     onRun = function(item)
         local client = item.player
@@ -68,8 +68,8 @@ ITEM.functions.Unequip = {
 }
 
 ITEM.functions.Equip = {
-    name = L("equip"),
-    tip = L("equipTip"),
+    name = "equip",
+    tip = "equipTip",
     icon = "icon16/tick.png",
     onRun = function(item)
         local client = item.player
@@ -138,7 +138,7 @@ if CLIENT then
         if weapon and weapon.PrintName then
             return language.GetPhrase(weapon.PrintName)
         end
-        return L(self.name)
+        return self.name
     end
 
     function ITEM:paintOver(item, w, h)

@@ -1,8 +1,8 @@
 local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
-ITEM.name = L("invalidName")
-ITEM.desc = ITEM.desc or L("invalidDescription")
+ITEM.name = "invalidName"
+ITEM.desc = ITEM.desc or "invalidDescription"
 ITEM.id = ITEM.id or 0
 ITEM.uniqueID = "undefined"
 ITEM.isItem = true
@@ -396,11 +396,11 @@ if SERVER then
     end
 else
     function ITEM:getName()
-        return L(self.name)
+        return self.name
     end
 
     function ITEM:getDesc()
-        return L(self.desc)
+        return self.desc
     end
 end
 
