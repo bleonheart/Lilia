@@ -107,33 +107,6 @@ local function camiBootstrapFromExisting()
     rebuildPrivileges()
 end
 
---[[
-    lia.administrator.hasAccess
-
-    Purpose:
-        Checks if a player or usergroup has access to a specific privilege.
-
-    Parameters:
-        ply (Player|string) - The player entity or usergroup name to check.
-        privilege (string) - The privilege to check access for.
-
-    Returns:
-        hasAccess (boolean) - True if the player/usergroup has the privilege, false otherwise.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        -- Check if a player entity has the "manageUsergroups" privilege
-        if lia.administrator.hasAccess(somePlayer, "manageUsergroups") then
-            print("Player has access to manage usergroups.")
-        end
-
-        -- Check if the "admin" group has the "kick" privilege
-        if lia.administrator.hasAccess("admin", "kick") then
-            print("Admins can kick players.")
-        end
-]]
 function lia.administrator.hasAccess(ply, privilege)
     local grp = "user"
     if isstring(ply) then
@@ -153,37 +126,6 @@ function lia.administrator.hasAccess(ply, privilege)
     return shouldGrant(grp, min)
 end
 
---[[
-    lia.administrator.registerPrivilege
-
-    Purpose:
-        Registers a new privilege in the admin system, assigning it to all usergroups that meet the minimum access level.
-
-    Parameters:
-        priv (table) - A table containing privilege information:
-            Name (string) - The name of the privilege.
-            MinAccess (string) - (Optional) The minimum usergroup required to have this privilege. Defaults to "user".
-            Category (string) - (Optional) The category for the privilege.
-
-    Returns:
-        None.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        -- Register a new privilege "kick" for admins and above, under the "Player Management" category
-        lia.administrator.registerPrivilege({
-            Name = "kick",
-            MinAccess = "admin",
-            Category = "Player Management"
-        })
-
-        -- Register a privilege "viewLogs" for all users
-        lia.administrator.registerPrivilege({
-            Name = "viewLogs"
-        })
-]]
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.Name then return end
     local name = L(priv.Name)
@@ -209,25 +151,6 @@ function lia.administrator.registerPrivilege(priv)
     if SERVER then lia.administrator.save() end
 end
 
---[[
-    lia.administrator.unregisterPrivilege
-
-    Purpose:
-        Unregisters a privilege from the admin system, removing it from all usergroups.
-
-    Parameters:
-        name (string) - The name of the privilege to unregister.
-
-    Returns:
-        None.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        -- Remove the "kick" privilege from all usergroups
-        lia.administrator.unregisterPrivilege("kick")
-]]
 function lia.administrator.unregisterPrivilege(name)
     name = tostring(name or "")
     if name == "" or lia.administrator.privileges[name] == nil then return end
@@ -245,25 +168,6 @@ function lia.administrator.unregisterPrivilege(name)
     if SERVER then lia.administrator.save() end
 end
 
---[[
-    lia.administrator.applyInheritance
-
-    Purpose:
-        Applies inheritance to a usergroup, copying privileges from its parent group and ensuring minimum privileges are granted.
-
-    Parameters:
-        groupName (string) - The name of the usergroup to apply inheritance to.
-
-    Returns:
-        None.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        -- Apply inheritance to the "moderator" group (e.g., after changing its parent)
-        lia.administrator.applyInheritance("moderator")
-]]
 function lia.administrator.applyInheritance(groupName)
     local groups = lia.administrator.groups or {}
     local g = groups[groupName]
@@ -291,25 +195,6 @@ function lia.administrator.applyInheritance(groupName)
     end
 end
 
---[[
-    lia.administrator.load
-
-    Purpose:
-        Loads usergroups and privileges from the database, ensures default groups exist, applies inheritance, and synchronizes with CAMI if available.
-
-    Parameters:
-        None.
-
-    Returns:
-        None.
-
-    Realm:
-        Server.
-
-    Example Usage:
-        -- Typically called during server initialization to load all admin data
-        lia.administrator.load()
-]]
 function lia.administrator.load()
     local function ensureDefaults(groups)
         local created = false
@@ -404,39 +289,6 @@ function lia.administrator.load()
     end)
 end
 
---[[
-    lia.administrator.createGroup
-
-    Purpose:
-        Creates a new usergroup with the specified information, applies inheritance, registers with CAMI, and saves to the database.
-
-    Parameters:
-        groupName (string) - The name of the new usergroup.
-        info (table) - (Optional) Table containing group information, such as inheritance and types.
-
-    Returns:
-        None.
-
-    Realm:
-        Shared (Server for saving).
-
-    Example Usage:
-        -- Create a new "moderator" group that inherits from "admin" and is marked as "Staff"
-        lia.administrator.createGroup("moderator", {
-            _info = {
-                inheritance = "admin",
-                types = {"Staff"}
-            }
-        })
-
-        -- Create a "vip" group that inherits from "user"
-        lia.administrator.createGroup("vip", {
-            _info = {
-                inheritance = "user",
-                types = {"VIP"}
-            }
-        })
-]]
 function lia.administrator.createGroup(groupName, info)
     if lia.administrator.groups[groupName] then
         lia.error(L("usergroupExists"))
@@ -456,25 +308,6 @@ function lia.administrator.createGroup(groupName, info)
     if SERVER then lia.administrator.save() end
 end
 
---[[
-    lia.administrator.removeGroup
-
-    Purpose:
-        Removes a usergroup from the admin system, unregisters it from CAMI, and saves the changes.
-
-    Parameters:
-        groupName (string) - The name of the usergroup to remove.
-
-    Returns:
-        None.
-
-    Realm:
-        Shared (Server for saving).
-
-    Example Usage:
-        -- Remove the "moderator" group from the admin system
-        lia.administrator.removeGroup("moderator")
-]]
 function lia.administrator.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
         lia.error(L("baseUsergroupCannotBeRemoved"))
@@ -492,26 +325,6 @@ function lia.administrator.removeGroup(groupName)
     if SERVER then lia.administrator.save() end
 end
 
---[[
-    lia.administrator.renameGroup
-
-    Purpose:
-        Renames an existing usergroup, updates inheritance, synchronizes with CAMI, and saves the changes.
-
-    Parameters:
-        oldName (string) - The current name of the usergroup.
-        newName (string) - The new name for the usergroup.
-
-    Returns:
-        None.
-
-    Realm:
-        Shared (Server for saving).
-
-    Example Usage:
-        -- Rename the "moderator" group to "junior_moderator"
-        lia.administrator.renameGroup("moderator", "junior_moderator")
-]]
 function lia.administrator.renameGroup(oldName, newName)
     if lia.administrator.DefaultGroups[oldName] then
         lia.error(L("baseUsergroupCannotBeRenamed"))
@@ -539,30 +352,6 @@ function lia.administrator.renameGroup(oldName, newName)
 end
 
 if SERVER then
-    --[[
-        lia.administrator.addPermission
-
-        Purpose:
-            Adds a permission/privilege to a usergroup and saves the changes.
-
-        Parameters:
-            groupName (string) - The name of the usergroup.
-            permission (string) - The privilege to add.
-            silent (boolean) - (Optional) If true, suppresses network updates.
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Grant the "kick" privilege to the "moderator" group
-            lia.administrator.addPermission("moderator", "kick")
-
-            -- Grant the "ban" privilege to the "vip" group without network sync
-            lia.administrator.addPermission("vip", "ban", true)
-    ]]
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             if lia.administrator._loading then return end
@@ -576,30 +365,6 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
-    --[[
-        lia.administrator.removePermission
-
-        Purpose:
-            Removes a permission/privilege from a usergroup and saves the changes.
-
-        Parameters:
-            groupName (string) - The name of the usergroup.
-            permission (string) - The privilege to remove.
-            silent (boolean) - (Optional) If true, suppresses network updates.
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Remove the "kick" privilege from the "moderator" group
-            lia.administrator.removePermission("moderator", "kick")
-
-            -- Remove the "ban" privilege from the "vip" group without network sync
-            lia.administrator.removePermission("vip", "ban", true)
-    ]]
     function lia.administrator.removePermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             if lia.administrator._loading then return end
@@ -613,28 +378,6 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
-    --[[
-        lia.administrator.sync
-
-        Purpose:
-            Synchronizes admin privileges, privilege meta, and groups to a specific client or all clients.
-
-        Parameters:
-            c (Player) - (Optional) The player to sync to. If nil, syncs to all players.
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Sync admin data to all players
-            lia.administrator.sync()
-
-            -- Sync admin data to a specific player
-            lia.administrator.sync(specificPlayer)
-    ]]
     function lia.administrator.sync(c)
         lia.net.ready = lia.net.ready or setmetatable({}, {
             __mode = "k"
@@ -659,28 +402,6 @@ if SERVER then
         end
     end
 
-    --[[
-        lia.administrator.save
-
-        Purpose:
-            Saves all usergroups and their privileges to the database and synchronizes with clients if needed.
-
-        Parameters:
-            noNetwork (boolean) - (Optional) If true, suppresses network updates.
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Save all admin data and sync to clients
-            lia.administrator.save()
-
-            -- Save admin data without syncing to clients
-            lia.administrator.save(true)
-    ]]
     function lia.administrator.save(noNetwork)
         rebuildPrivileges()
         local rows = {}
@@ -715,30 +436,6 @@ if SERVER then
         lia.administrator.sync()
     end
 
-    --[[
-        lia.administrator.setPlayerUsergroup
-
-        Purpose:
-            Sets the usergroup of a player and notifies CAMI if available.
-
-        Parameters:
-            ply (Player) - The player entity to set the usergroup for.
-            newGroup (string) - The new usergroup name.
-            source (string) - (Optional) The source of the change (for CAMI).
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Set a player's usergroup to "admin"
-            lia.administrator.setPlayerUsergroup(player.GetByID(1), "admin")
-
-            -- Set a player's usergroup to "vip" with a custom source
-            lia.administrator.setPlayerUsergroup(somePlayer, "vip", "PromotionSystem")
-    ]]
     function lia.administrator.setPlayerUsergroup(ply, newGroup, source)
         if not IsValid(ply) then return end
         local old = tostring(ply:GetUserGroup() or "user")
@@ -748,30 +445,6 @@ if SERVER then
         if CAMI then CAMI.SignalUserGroupChanged(ply, old, new, source or "Lilia") end
     end
 
-    --[[
-        lia.administrator.setSteamIDUsergroup
-
-        Purpose:
-            Sets the usergroup of a player by SteamID and notifies CAMI if available.
-
-        Parameters:
-            steamId (string) - The SteamID of the player.
-            newGroup (string) - The new usergroup name.
-            source (string) - (Optional) The source of the change (for CAMI).
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Set the usergroup of a player by SteamID to "admin"
-            lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "admin")
-
-            -- Set the usergroup of a player by SteamID to "vip" with a custom source
-            lia.administrator.setSteamIDUsergroup("STEAM_0:1:654321", "vip", "PromotionSystem")
-    ]]
     function lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)
         local sid = tostring(steamId or "")
         if sid == "" then return end
@@ -782,37 +455,6 @@ if SERVER then
         if CAMI then CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or "Lilia") end
     end
 else
-    --[[
-        lia.administrator.execCommand
-
-        Purpose:
-            Executes an admin command as a chat command, such as kick, ban, mute, etc.
-
-        Parameters:
-            cmd (string) - The command to execute (e.g., "kick", "ban").
-            victim (Player|string) - The player entity or SteamID to target.
-            dur (number) - (Optional) Duration for timed commands (e.g., ban, mute).
-            reason (string) - (Optional) Reason for the command.
-
-        Returns:
-            success (boolean) - True if the command was executed, false otherwise.
-
-        Realm:
-            Client.
-
-        Example Usage:
-            -- Kick a player with a reason
-            lia.administrator.execCommand("kick", somePlayer, nil, "Breaking rules")
-
-            -- Ban a player by SteamID for 60 minutes with a reason
-            lia.administrator.execCommand("ban", "STEAM_0:1:123456", 60, "Cheating")
-
-            -- Mute a player for 10 minutes
-            lia.administrator.execCommand("mute", somePlayer, 10, "Spamming")
-
-            -- Unban a player by SteamID
-            lia.administrator.execCommand("unban", "STEAM_0:1:123456")
-    ]]
     function lia.administrator.execCommand(cmd, victim, dur, reason)
         if hook.Run("RunAdminSystemCommand") == true then return end
         local id = IsValid(victim) and victim:SteamID() or tostring(victim)
