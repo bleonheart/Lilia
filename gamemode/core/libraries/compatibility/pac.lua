@@ -244,4 +244,4 @@ lia.administrator.registerPrivilege({
     Category = L("categoryPAC3")
 })
 
-lia.flag.add("P", L("flagPac3"))
+lia.flag.add("P", "flagPac3")
