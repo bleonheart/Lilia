@@ -97,6 +97,7 @@ if CLIENT then
         if not IsValid(LocalPlayer()) or not (LocalPlayer():hasPrivilege(L("alwaysSeeTickets")) or LocalPlayer():isStaffOnDuty()) then return end
         table.insert(pages, {
             name = L("tickets"),
+            icon = "icon16/report.png",
             drawFunc = function(panel)
                 ticketPanel = panel
                 net.Start("liaRequestActiveTickets")
