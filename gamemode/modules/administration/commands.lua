@@ -334,7 +334,6 @@ lia.command.add("charlist", {
 
                 local bannedVal = stored and stored:getBanned() or tonumber(row.banned) or 0
                 local isBanned = bannedVal ~= 0 and (bannedVal == -1 or bannedVal > os.time())
-
                 local entry = {
                     ID = charID,
                     Name = stored and stored:getName() or row.name,
@@ -1371,9 +1370,7 @@ lia.command.add("pflaggive", {
                 client:notifyLocalized("noAvailableFlags")
                 return
             end
-            return client:requestString(L("give") .. " " .. L("flags"), L("playerFlagGiveDesc"), function(text)
-                lia.command.run(client, "pflaggive", {target:Name(), text})
-            end, available)
+            return client:requestString(L("give") .. " " .. L("flags"), L("playerFlagGiveDesc"), function(text) lia.command.run(client, "pflaggive", {target:Name(), text}) end, available)
         end
 
         target:givePlayerFlags(flags)
@@ -1440,9 +1437,7 @@ lia.command.add("pflagtake", {
         local flags = arguments[2]
         if not flags then
             local currentFlags = target:getPlayerFlags()
-            return client:requestString(L("take") .. " " .. L("flags"), L("playerFlagTakeDesc"), function(text)
-                lia.command.run(client, "pflagtake", {target:Name(), text})
-            end, currentFlags)
+            return client:requestString(L("take") .. " " .. L("flags"), L("playerFlagTakeDesc"), function(text) lia.command.run(client, "pflagtake", {target:Name(), text}) end, currentFlags)
         end
 
         target:takePlayerFlags(flags)
@@ -1451,6 +1446,7 @@ lia.command.add("pflagtake", {
     end,
     alias = {"takepflag", "playerflagtake"}
 })
+
 lia.command.add("bringlostitems", {
     superAdminOnly = true,
     privilege = L("manageItems"),
@@ -2432,6 +2428,6 @@ lia.command.add("getallinfos", {
             end
         end
 
-        client:ChatPrint(L("infoPrintedConsole"))
+        client:notifyLocalized("infoPrintedConsole")
     end
 })
