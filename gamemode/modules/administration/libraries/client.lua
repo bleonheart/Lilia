@@ -30,77 +30,77 @@
             end
         },
         {
-            name = L("Blind"),
+            name = L("blind"),
             image = "icon16/eye.png",
             func = function() RunConsoleCommand("say", "!blind " .. target:SteamID()) end
         },
         {
-            name = L("Freeze"),
+            name = L("freeze"),
             image = "icon16/lock.png",
             func = function() RunConsoleCommand("say", "!freeze " .. target:SteamID()) end
         },
         {
-            name = L("Gag"),
+            name = L("gag"),
             image = "icon16/sound_mute.png",
             func = function() RunConsoleCommand("say", "!gag " .. target:SteamID()) end
         },
         {
-            name = L("Ignite"),
+            name = L("ignite"),
             image = "icon16/fire.png",
             func = function() RunConsoleCommand("say", "!ignite " .. target:SteamID()) end
         },
         {
-            name = L("Jail"),
+            name = L("jail"),
             image = "icon16/lock.png",
             func = function() RunConsoleCommand("say", "!jail " .. target:SteamID()) end
         },
         {
-            name = L("Mute"),
+            name = L("mute"),
             image = "icon16/sound_delete.png",
             func = function() RunConsoleCommand("say", "!mute " .. target:SteamID()) end
         },
         {
-            name = L("Slay"),
+            name = L("slay"),
             image = "icon16/bomb.png",
             func = function() RunConsoleCommand("say", "!slay " .. target:SteamID()) end
         },
         {
-            name = L("Unblind"),
+            name = L("unblind"),
             image = "icon16/eye.png",
             func = function() RunConsoleCommand("say", "!unblind " .. target:SteamID()) end
         },
         {
-            name = L("Ungag"),
+            name = L("ungag"),
             image = "icon16/sound_low.png",
             func = function() RunConsoleCommand("say", "!ungag " .. target:SteamID()) end
         },
         {
-            name = L("Unfreeze"),
+            name = L("unfreeze"),
             image = "icon16/accept.png",
             func = function() RunConsoleCommand("say", "!unfreeze " .. target:SteamID()) end
         },
         {
-            name = L("Unmute"),
+            name = L("unmute"),
             image = "icon16/sound_add.png",
             func = function() RunConsoleCommand("say", "!unmute " .. target:SteamID()) end
         },
         {
-            name = L("Bring"),
+            name = L("bring"),
             image = "icon16/arrow_down.png",
             func = function() RunConsoleCommand("say", "!bring " .. target:SteamID()) end
         },
         {
-            name = L("Goto"),
+            name = L("goTo"),
             image = "icon16/arrow_right.png",
             func = function() RunConsoleCommand("say", "!goto " .. target:SteamID()) end
         },
         {
-            name = L("Respawn"),
+            name = L("respawn"),
             image = "icon16/arrow_refresh.png",
             func = function() RunConsoleCommand("say", "!respawn " .. target:SteamID()) end
         },
         {
-            name = L("return"),
+            name = L("returnText"),
             image = "icon16/arrow_redo.png",
             func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
         }
@@ -114,7 +114,7 @@ end
 function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    if client:hasPrivilege(L("View Staff Management")) then
+    if client:hasPrivilege(L("viewStaffManagement")) then
         table.insert(pages, {
             name = L("moduleStaffManagementName"),
             drawFunc = function(panel)
@@ -136,7 +136,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("List Characters")) then
+    if client:hasPrivilege(L("listCharacters")) then
         table.insert(pages, {
             name = L("characterList"),
             drawFunc = function(panel)
@@ -341,7 +341,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("View DB Tables")) then
+    if client:hasPrivilege(L("viewDBTables")) then
         table.insert(pages, {
             name = L("databaseView"),
             drawFunc = function(panel)
@@ -438,7 +438,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("Manage Characters")) then
+    if client:hasPrivilege(L("manageCharacters")) then
         table.insert(pages, {
             name = L("pkManager"),
             drawFunc = function(panel)

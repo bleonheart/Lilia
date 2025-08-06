@@ -32,9 +32,9 @@ if CLIENT then
         end
 
         addSizedColumn(L("timestamp"))
-        addSizedColumn(L("Warned"))
+        addSizedColumn(L("warned"))
         addSizedColumn(L("admin"))
-        addSizedColumn(L("Warning Message"))
+        addSizedColumn(L("warningMessage"))
         local function populate(filter)
             list:Clear()
             filter = string.lower(filter or "")

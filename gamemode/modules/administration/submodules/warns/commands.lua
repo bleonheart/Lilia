@@ -85,7 +85,7 @@ lia.command.add("viewwarns", {
                     field = "admin"
                 },
                 {
-                    name = L("Warning Message"),
+                    name = L("warningMessage"),
                     field = "warningMessage"
                 }
             }, warningList, {
