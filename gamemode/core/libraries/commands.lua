@@ -556,7 +556,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                         local hasAccess = lia.command.hasAccess(client, cmdName, cmdData)
                         if hasAccess then
                             local text = "/" .. cmdName
-                            if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
+                            if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. L(cmdData.syntax) end
                             local desc = cmdData.desc ~= "" and L(cmdData.desc) or ""
                             local priv = cmdData.privilege and L(cmdData.privilege) or ""
                             data[#data + 1] = {text, desc, priv}
@@ -575,7 +575,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                         local hasAccess, privilege = lia.command.hasAccess(client, cmdName, cmdData)
                         if hasAccess then
                             local text = "/" .. cmdName
-                            if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. cmdData.syntax end
+                            if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. L(cmdData.syntax) end
                             local desc = cmdData.desc ~= "" and L(cmdData.desc) or ""
                             local right = privilege and privilege ~= L("globalAccess") and privilege or ""
                             local row = sheet:AddTextRow({
@@ -584,7 +584,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                                 right = right
                             })
 
-                            row.filterText = (cmdName .. " " .. (cmdData.syntax or L("")) .. " " .. desc .. " " .. right):lower()
+                            row.filterText = (cmdName .. " " .. L(cmdData.syntax or "") .. " " .. desc .. " " .. right):lower()
                         end
                     end
                 end
