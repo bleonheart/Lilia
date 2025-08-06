@@ -1,26 +1,23 @@
 ﻿local panelMeta = FindMetaTable("Panel")
 --[[
-    getDisplayedName
+    liaListenForInventoryChanges
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Sets up hooks to listen for changes in the given inventory and calls corresponding panel methods when changes occur.
+        Automatically removes hooks when the inventory is deleted or when requested.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        inventory (Inventory) - The inventory object to listen for changes on.
 
     Returns:
-        string - The name to display for this character to the given client.
+        nil
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        -- Listen for changes on an inventory and update the panel accordingly
+        panel:liaListenForInventoryChanges(inventory)
 ]]
 function panelMeta:liaListenForInventoryChanges(inventory)
     assert(inventory, L("noInventorySet"))
@@ -61,27 +58,27 @@ function panelMeta:liaListenForInventoryChanges(inventory)
 end
 
 --[[
-    getDisplayedName
+    liaDeleteInventoryHooks
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Removes all hooks associated with inventory changes for the given inventory ID.
+        If no ID is provided, removes all inventory hooks associated with this panel.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        id (number, optional) - The inventory ID to remove hooks for. If nil, removes all hooks.
 
     Returns:
-        string - The name to display for this character to the given client.
+        nil
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        -- Remove hooks for a specific inventory
+        panel:liaDeleteInventoryHooks(inventoryID)
+
+        -- Remove all inventory hooks for this panel
+        panel:liaDeleteInventoryHooks()
 ]]
 function panelMeta:liaDeleteInventoryHooks(id)
     if not self.liaHookID then return end
@@ -105,54 +102,48 @@ function panelMeta:liaDeleteInventoryHooks(id)
 end
 
 --[[
-    getDisplayedName
+    SetScaledPos
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Sets the position of the panel using scaled screen coordinates for resolution independence.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        x (number) - The X position (unscaled).
+        y (number) - The Y position (unscaled).
 
     Returns:
-        string - The name to display for this character to the given client.
+        nil
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        -- Set the panel's position to (10, 20) in scaled screen units
+        panel:SetScaledPos(10, 20)
 ]]
 function panelMeta:SetScaledPos(x, y)
     self:SetPos(ScreenScale(x), ScreenScaleH(y))
 end
 
 --[[
-    getDisplayedName
+    SetScaledSize
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Sets the size of the panel using scaled screen dimensions for resolution independence.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        w (number) - The width (unscaled).
+        h (number) - The height (unscaled).
 
     Returns:
-        string - The name to display for this character to the given client.
+        nil
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        -- Set the panel's size to 100x50 in scaled screen units
+        panel:SetScaledSize(100, 50)
 ]]
 function panelMeta:SetScaledSize(w, h)
     self:SetSize(ScreenScale(w), ScreenScaleH(h))

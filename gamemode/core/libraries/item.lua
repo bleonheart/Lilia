@@ -188,7 +188,7 @@ lia.meta.item.height = 1
         identifier (string) - The unique identifier of the item.
 
     Returns:
-        table or nil - The item definition table if found, otherwise nil.
+        table or nil - The item definition table if found, otherwise none.
 
     Realm:
         Shared.
@@ -370,7 +370,7 @@ end
         invID (number) - The unique ID of the inventory.
 
     Returns:
-        table or nil - The inventory instance if found, otherwise nil.
+        table or nil - The inventory instance if found, otherwise none.
 
     Realm:
         Shared.

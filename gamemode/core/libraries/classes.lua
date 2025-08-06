@@ -1,3 +1,16 @@
+--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
 --[[
@@ -135,7 +148,7 @@ end
         class (number)  - The class index to check.
 
     Returns:
-        (boolean, string|nil) - True if the client can join, or false and a reason string if not.
+        (boolean, string|none) - True if the client can join, or false and a reason string if not.
 
     Realm:
         Shared.
@@ -168,7 +181,7 @@ end
         identifier (number|string) - The class index or uniqueID.
 
     Returns:
-        class (table|nil) - The class table if found, or nil.
+        class (table|none) - The class table if found, or none.
 
     Realm:
         Shared.
@@ -252,7 +265,7 @@ end
         class (string) - The uniqueID or name (or partial) to search for.
 
     Returns:
-        index (number|nil) - The class index if found, or nil.
+        index (number|none) - The class index if found, or none.
 
     Realm:
         Shared.

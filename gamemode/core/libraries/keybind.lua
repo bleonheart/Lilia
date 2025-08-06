@@ -1,4 +1,17 @@
-﻿lia.keybind = lia.keybind or {}
+﻿--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
+lia.keybind = lia.keybind or {}
 lia.keybind.stored = lia.keybind.stored or {}
 local KeybindKeys = {
     ["first"] = KEY_FIRST,
@@ -122,8 +135,8 @@ local KeybindKeys = {
     Parameters:
         k (string|number)      - The key to bind (as a string name or key code).
         d (string)             - The unique action name for this keybind.
-        cb (function|nil)      - The callback function to call when the key is pressed (optional).
-        rcb (function|nil)     - The callback function to call when the key is released (optional).
+        cb (function|none)      - The callback function to call when the key is pressed (optional).
+        rcb (function|none)     - The callback function to call when the key is released (optional).
 
     Returns:
         None.
@@ -158,10 +171,10 @@ end
 
     Parameters:
         a (string)         - The action name to look up.
-        df (number|nil)    - The default key code to return if the action is not found (optional).
+        df (number|none)    - The default key code to return if the action is not found (optional).
 
     Returns:
-        keyCode (number|nil) - The key code bound to the action, or the default value if not found.
+        keyCode (number|none) - The key code bound to the action, or the default value if not found.
 
     Realm:
         Client.
@@ -297,7 +310,6 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
         sheet:SetPlaceholderText(L("searchKeybinds"))
         sheet:SetSpacing(4)
         sheet:SetPadding(4)
-
         local taken = {}
         for action, data in pairs(lia.keybind.stored) do
             if istable(data) and data.value then taken[data.value] = action end
@@ -320,12 +332,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
             rowPanel:SetTall(50)
             rowPanel:DockPadding(4, 4, 4, 4)
             rowPanel.Paint = nil
-
             local lbl = rowPanel:Add("DLabel")
             lbl:Dock(FILL)
             lbl:SetFont("liaBigFont")
             lbl:SetText(L(action))
-
             local currentKey = lia.keybind.get(action, KEY_NONE)
             if allowEdit then
                 local combo = rowPanel:Add("DComboBox")
@@ -336,7 +346,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 local choices = {}
                 for name, code in pairs(KeybindKeys) do
                     if not taken[code] or code == currentKey then
-                        choices[#choices + 1] = {txt = input.GetKeyName(code) or name, keycode = code}
+                        choices[#choices + 1] = {
+                            txt = input.GetKeyName(code) or name,
+                            keycode = code
+                        }
                     end
                 end
 
@@ -384,7 +397,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 textLabel:SetText(input.GetKeyName(currentKey) or "NONE")
             end
 
-            sheet:AddPanelRow(rowPanel, {height = 50, filterText = tostring(action):lower()})
+            sheet:AddPanelRow(rowPanel, {
+                height = 50,
+                filterText = tostring(action):lower()
+            })
         end
 
         if allowEdit then
@@ -403,7 +419,10 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
                 lia.keybind.save()
                 buildKeybinds(parent)
             end
-            sheet:AddPanelRow(resetAllBtn, {height = 40})
+
+            sheet:AddPanelRow(resetAllBtn, {
+                height = 40
+            })
         end
     end
 

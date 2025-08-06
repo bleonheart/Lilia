@@ -1,4 +1,17 @@
-﻿lia.net = lia.net or {}
+﻿--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
+lia.net = lia.net or {}
 lia.net._sendq = lia.net._sendq or {}
 lia.net.globals = lia.net.globals or {}
 lia.net._buffers = lia.net._buffers or {}
@@ -231,7 +244,7 @@ if SERVER then
             object (any)    - The value to check.
 
         Returns:
-            true if a bad type (function) is found, otherwise nil.
+            true if a bad type (function) is found, otherwise none.
 
         Realm:
             Server.
@@ -262,7 +275,7 @@ if SERVER then
         Parameters:
             key (string)         - The variable name.
             value (any)          - The value to set (must not contain functions).
-            receiver (Player|nil)- Optional. If provided, only sends to this player.
+            receiver (player|none)- Optional. If provided, only sends to this player.
 
         Returns:
             None.

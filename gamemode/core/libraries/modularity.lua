@@ -1,4 +1,17 @@
-﻿lia.module = lia.module or {}
+﻿--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
+lia.module = lia.module or {}
 lia.module.list = lia.module.list or {}
 local ModuleFolders = {"config", "dependencies", "libs", "hooks", "libraries", "commands", "netcalls", "meta", "derma", "pim"}
 local ModuleFiles = {"pim.lua", "client.lua", "server.lua", "config.lua", "commands.lua"}
@@ -73,7 +86,7 @@ end
         uniqueID (string)      - The unique identifier for the module.
         path (string)          - The path to the module's folder or file.
         isSingleFile (boolean) - Whether the module is a single file.
-        variable (string|nil)  - The global variable name to use for the module (default: "MODULE").
+        variable (string|none)  - The global variable name to use for the module (default: "MODULE").
         skipSubmodules (bool)  - If true, submodules will not be loaded.
 
     Returns:
@@ -260,7 +273,7 @@ end
     Parameters:
         directory (string) - The directory path to search for module folders.
         group (string)     - The group type, usually "module" or "schema".
-        skip (table|nil)   - Optional table of module IDs to skip.
+        skip (table|none)   - Optional table of module IDs to skip.
 
     Returns:
         None.
@@ -291,7 +304,7 @@ end
         identifier (string) - The unique ID of the module to retrieve.
 
     Returns:
-        table|nil - The module table if found, or nil if not loaded.
+        table|none - The module table if found, or nil if not loaded.
 
     Realm:
         Shared.

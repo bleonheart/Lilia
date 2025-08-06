@@ -1,3 +1,16 @@
+--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
 lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
@@ -161,7 +174,7 @@ end
         identifier (number|string) - The faction index or unique ID.
 
     Returns:
-        faction (table|nil) - The faction table if found, or nil.
+        faction (table|none) - The faction table if found, or none.
 
     Realm:
         Shared.
@@ -186,7 +199,7 @@ end
         uniqueID (string) - The unique ID of the faction.
 
     Returns:
-        index (number|nil) - The index of the faction, or nil if not found.
+        index (number|none) - The index of the faction, or nil if not found.
 
     Realm:
         Shared.
@@ -318,7 +331,7 @@ end
         name (string)          - The name of the faction.
         color (Color)          - The color of the faction.
         default (boolean)      - Whether the faction is default.
-        models (table|nil)     - Table of model paths for the faction (optional).
+        models (table|none)     - Table of model paths for the faction (optional).
 
     Returns:
         FACTION (table)        - The created faction table.
@@ -502,7 +515,7 @@ end
         id (number|string) - The faction index or unique ID.
 
     Returns:
-        defaultClass (table|nil) - The default class table, or nil if not found.
+        defaultClass (table|none) - The default class table, or nil if not found.
 
     Realm:
         Shared.

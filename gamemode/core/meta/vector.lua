@@ -1,53 +1,58 @@
-﻿local vectorMeta = FindMetaTable("Vector")
+﻿--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
+local vectorMeta = FindMetaTable("Vector")
 --[[
-    getDisplayedName
+    Center
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the midpoint between this vector and another vector.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        vec2 (Vector) - The other vector to find the center with.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Vector - The center point between the two vectors.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local midpoint = vec1:Center(vec2)
+        print("Midpoint is: " .. tostring(midpoint))
 ]]
 function vectorMeta:Center(vec2)
     return (self + vec2) / 2
 end
 
 --[[
-    getDisplayedName
+    Distance
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Calculates the Euclidean distance between this vector and another vector.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        vec2 (Vector) - The other vector to measure distance to.
 
     Returns:
-        string - The name to display for this character to the given client.
+        number - The distance between the two vectors.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local dist = vec1:Distance(vec2)
+        print("Distance is: " .. dist)
 ]]
 function vectorMeta:Distance(vec2)
     local x, y, z = self.x, self.y, self.z
@@ -56,27 +61,24 @@ function vectorMeta:Distance(vec2)
 end
 
 --[[
-    getDisplayedName
+    RotateAroundAxis
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Rotates this vector around a given axis by a specified number of degrees.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        axis (Vector)   - The axis to rotate around.
+        degrees (number) - The angle in degrees to rotate.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Vector - The rotated vector.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local rotated = vec:RotateAroundAxis(Vector(0,0,1), 90)
+        print("Rotated vector: " .. tostring(rotated))
 ]]
 function vectorMeta:RotateAroundAxis(axis, degrees)
     local rad = math.rad(degrees)
@@ -87,27 +89,23 @@ end
 
 local right = Vector(0, -1, 0)
 --[[
-    getDisplayedName
+    Right
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the right vector (perpendicular) relative to this vector and an optional up vector.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        vUp (Vector) - (Optional) The up vector to use. Defaults to global vector_up.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Vector - The right vector.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local rightVec = vec:Right()
+        print("Right vector: " .. tostring(rightVec))
 ]]
 function vectorMeta:Right(vUp)
     if self[1] == 0 and self[2] == 0 then return right end
@@ -118,27 +116,23 @@ function vectorMeta:Right(vUp)
 end
 
 --[[
-    getDisplayedName
+    Up
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the up vector (perpendicular) relative to this vector and an optional up vector.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        vUp (Vector) - (Optional) The up vector to use. Defaults to global vector_up.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Vector - The up vector.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local upVec = vec:Up()
+        print("Up vector: " .. tostring(upVec))
 ]]
 function vectorMeta:Up(vUp)
     if self[1] == 0 and self[2] == 0 then return Vector(-self[3], 0, 0) end

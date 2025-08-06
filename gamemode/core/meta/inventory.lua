@@ -5,27 +5,24 @@ Inventory.data = {}
 Inventory.items = {}
 Inventory.id = -1
 --[[
-    getDisplayedName
+    getData
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Retrieves the value associated with the given key from the inventory's data table.
+        If the key does not exist, returns the provided default value.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        key (string) - The key to look up in the data table.
+        default (any) - The value to return if the key does not exist.
 
     Returns:
-        string - The name to display for this character to the given client.
+        any - The value associated with the key, or the default value if not found.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local value = inventory:getData("weight", 0)
 ]]
 function Inventory:getData(key, default)
     local value = self.data[key]
@@ -34,27 +31,22 @@ function Inventory:getData(key, default)
 end
 
 --[[
-    getDisplayedName
+    extend
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Creates a subclass of the Inventory with the specified class name.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        className (string) - The name of the subclass to create.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - The new subclass table.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local MyInventory = Inventory:extend("MyInventory")
 ]]
 function Inventory:extend(className)
     local base = debug.getregistry()[className] or {}
@@ -66,53 +58,46 @@ function Inventory:extend(className)
 end
 
 --[[
-    getDisplayedName
+    configure
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Configures the inventory type. Intended to be overridden by subclasses.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        function MyInventory:configure()
+            -- custom configuration
+        end
 ]]
 function Inventory:configure()
 end
 
 --[[
-    getDisplayedName
+    addDataProxy
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Adds a proxy function to be called when the specified data key changes.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        key (string) - The data key to watch.
+        onChange (function) - The function to call when the data changes.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:addDataProxy("weight", function(old, new) print(old, new) end)
 ]]
 function Inventory:addDataProxy(key, onChange)
     local dataConfig = self.config.data[key] or {}
@@ -121,27 +106,23 @@ function Inventory:addDataProxy(key, onChange)
 end
 
 --[[
-    getDisplayedName
+    getItemsByUniqueID
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns a table of items in the inventory that match the given uniqueID.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        uniqueID (string) - The uniqueID of the items to find.
+        onlyMain (boolean) - If true, only search the main inventory.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - A table of matching items.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local medkits = inventory:getItemsByUniqueID("medkit")
 ]]
 function Inventory:getItemsByUniqueID(uniqueID, onlyMain)
     local items = {}
@@ -152,27 +133,22 @@ function Inventory:getItemsByUniqueID(uniqueID, onlyMain)
 end
 
 --[[
-    getDisplayedName
+    register
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Registers a new inventory type with the given typeID.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        typeID (string) - The unique identifier for this inventory type.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        Inventory:register("my_inventory_type")
 ]]
 function Inventory:register(typeID)
     assert(isstring(typeID), L("registerTypeString", self.className))
@@ -194,108 +170,90 @@ function Inventory:register(typeID)
 end
 
 --[[
-    getDisplayedName
+    new
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Creates a new instance of this inventory type.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - The new inventory instance.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local inv = Inventory:new()
 ]]
 function Inventory:new()
     return lia.inventory.new(self.typeID)
 end
 
 --[[
-    getDisplayedName
+    tostring
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns a string representation of the inventory.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        string - The string representation.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        print(inventory:tostring())
 ]]
 function Inventory:tostring()
     return L(self.className) .. "[" .. tostring(self.id) .. "]"
 end
 
 --[[
-    getDisplayedName
+    getType
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Retrieves the inventory type table for this inventory.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - The inventory type table.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local typeTable = inventory:getType()
 ]]
 function Inventory:getType()
     return lia.inventory.types[self.typeID]
 end
 
 --[[
-    getDisplayedName
+    onDataChanged
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Called when a data key changes value. Invokes any registered proxies.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        key (string) - The data key that changed.
+        oldValue (any) - The old value.
+        newValue (any) - The new value.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:onDataChanged("weight", 10, 15)
 ]]
 function Inventory:onDataChanged(key, oldValue, newValue)
     local keyData = self.config.data[key]
@@ -307,54 +265,44 @@ function Inventory:onDataChanged(key, oldValue, newValue)
 end
 
 --[[
-    getDisplayedName
+    getItems
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the table of items in this inventory.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - The items table.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local items = inventory:getItems()
 ]]
 function Inventory:getItems()
     return self.items
 end
 
 --[[
-    getDisplayedName
+    getItemsOfType
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns a table of items in the inventory that match the given itemType (uniqueID).
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        itemType (string) - The uniqueID of the items to find.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - A table of matching items.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local bandages = inventory:getItemsOfType("bandage")
 ]]
 function Inventory:getItemsOfType(itemType)
     local items = {}
@@ -365,27 +313,22 @@ function Inventory:getItemsOfType(itemType)
 end
 
 --[[
-    getDisplayedName
+    getFirstItemOfType
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the first item in the inventory that matches the given itemType (uniqueID).
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        itemType (string) - The uniqueID of the item to find.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table|none - The first matching item, or nil if not found.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local medkit = inventory:getFirstItemOfType("medkit")
 ]]
 function Inventory:getFirstItemOfType(itemType)
     for _, item in pairs(self:getItems()) do
@@ -394,27 +337,22 @@ function Inventory:getFirstItemOfType(itemType)
 end
 
 --[[
-    getDisplayedName
+    hasItem
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Checks if the inventory contains at least one item of the given itemType (uniqueID).
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        itemType (string) - The uniqueID of the item to check for.
 
     Returns:
-        string - The name to display for this character to the given client.
+        boolean - True if at least one item is found, false otherwise.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        if inventory:hasItem("keycard") then ...
 ]]
 function Inventory:hasItem(itemType)
     for _, item in pairs(self:getItems()) do
@@ -424,27 +362,22 @@ function Inventory:hasItem(itemType)
 end
 
 --[[
-    getDisplayedName
+    getItemCount
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the total quantity of items in the inventory, optionally filtered by itemType.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        itemType (string|none) - The uniqueID of the item to count, or nil to count all items.
 
     Returns:
-        string - The name to display for this character to the given client.
+        number - The total quantity.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local count = inventory:getItemCount("ammo_9mm")
 ]]
 function Inventory:getItemCount(itemType)
     local count = 0
@@ -455,54 +388,44 @@ function Inventory:getItemCount(itemType)
 end
 
 --[[
-    getDisplayedName
+    getID
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns the unique ID of this inventory.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        number - The inventory ID.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local id = inventory:getID()
 ]]
 function Inventory:getID()
     return self.id
 end
 
 --[[
-    getDisplayedName
+    eq
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Checks if this inventory is equal to another by comparing their IDs.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        other (Inventory) - The other inventory to compare.
 
     Returns:
-        string - The name to display for this character to the given client.
+        boolean - True if the IDs match, false otherwise.
 
     Realm:
         Shared.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        if inventory:eq(otherInventory) then ...
 ]]
 function Inventory:eq(other)
     return self:getID() == other:getID()
@@ -510,29 +433,25 @@ end
 
 if SERVER then
     --[[
-    getDisplayedName
+    addItem
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Adds an item to the inventory and updates the database.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        item (Item) - The item to add.
+        noReplicate (boolean) - If true, do not replicate to clients.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Inventory - The inventory instance.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:addItem(item)
 ]]
-function Inventory:addItem(item, noReplicate)
+    function Inventory:addItem(item, noReplicate)
         self.items[item:getID()] = item
         item.invID = self:getID()
         local id = self.id
@@ -547,56 +466,46 @@ function Inventory:addItem(item, noReplicate)
     end
 
     --[[
-    getDisplayedName
+    add
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Adds an item to the inventory (alias for addItem).
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        item (Item) - The item to add.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Inventory - The inventory instance.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:add(item)
 ]]
-function Inventory:add(item)
+    function Inventory:add(item)
         return self:addItem(item)
     end
 
     --[[
-    getDisplayedName
+    syncItemAdded
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Synchronizes the addition of an item to all relevant clients.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        item (Item) - The item that was added.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:syncItemAdded(item)
 ]]
-function Inventory:syncItemAdded(item)
+    function Inventory:syncItemAdded(item)
         assert(istable(item) and item.getID, L("cannotSyncNonItem"))
         assert(self.items[item:getID()], L("itemDoesNotBelong", item:getID(), self.id))
         local recipients = self:getRecipients()
@@ -608,29 +517,24 @@ function Inventory:syncItemAdded(item)
     end
 
     --[[
-    getDisplayedName
+    initializeStorage
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Initializes persistent storage for the inventory and its initial data.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        initialData (table) - The initial data to store.
 
     Returns:
-        string - The name to display for this character to the given client.
+        deferred - A deferred object resolved with the new inventory ID.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:initializeStorage({char = 1, weight = 10})
 ]]
-function Inventory:initializeStorage(initialData)
+    function Inventory:initializeStorage(initialData)
         local d = deferred.new()
         local charID = initialData.char
         lia.db.insertTable({
@@ -657,55 +561,47 @@ function Inventory:initializeStorage(initialData)
     end
 
     --[[
-    getDisplayedName
+    restoreFromStorage
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Restores the inventory from persistent storage.
+        (To be implemented by subclasses if needed.)
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:restoreFromStorage()
 ]]
-function Inventory:restoreFromStorage()
+    function Inventory:restoreFromStorage()
     end
 
     --[[
-    getDisplayedName
+    removeItem
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Removes an item from the inventory and updates the database.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        itemID (number) - The ID of the item to remove.
+        preserveItem (boolean) - If true, do not delete the item from the database.
 
     Returns:
-        string - The name to display for this character to the given client.
+        deferred - A deferred object resolved when removal is complete.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:removeItem(123)
 ]]
-function Inventory:removeItem(itemID, preserveItem)
+    function Inventory:removeItem(itemID, preserveItem)
         assert(isnumber(itemID), L("itemIDNumberRequired"))
         local d = deferred.new()
         local instance = self.items[itemID]
@@ -731,56 +627,47 @@ function Inventory:removeItem(itemID, preserveItem)
     end
 
     --[[
-    getDisplayedName
+    remove
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Removes an item from the inventory (alias for removeItem).
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        itemID (number) - The ID of the item to remove.
 
     Returns:
-        string - The name to display for this character to the given client.
+        deferred - A deferred object resolved when removal is complete.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:remove(123)
 ]]
-function Inventory:remove(itemID)
+    function Inventory:remove(itemID)
         return self:removeItem(itemID)
     end
 
     --[[
-    getDisplayedName
+    setData
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Sets a data key to a value, updates the database, and synchronizes the change.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        key (string) - The data key to set.
+        value (any) - The value to set.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Inventory - The inventory instance.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:setData("weight", 20)
 ]]
-function Inventory:setData(key, value)
+    function Inventory:setData(key, value)
         local oldValue = self.data[key]
         self.data[key] = value
         local keyData = self.config.data[key]
@@ -806,29 +693,25 @@ function Inventory:setData(key, value)
     end
 
     --[[
-    getDisplayedName
+    canAccess
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Checks if an action can be performed on this inventory, using access rules.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        action (string) - The action to check (e.g., "repl").
+        context (table) - Additional context for the check.
 
     Returns:
-        string - The name to display for this character to the given client.
+        booleannone, string|none - True/false and optional reason, or nil if no rule applies.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local can, reason = inventory:canAccess("repl", {client = ply})
 ]]
-function Inventory:canAccess(action, context)
+    function Inventory:canAccess(action, context)
         context = context or {}
         local result, reason
         for _, rule in ipairs(self.config.accessRules) do
@@ -838,29 +721,25 @@ function Inventory:canAccess(action, context)
     end
 
     --[[
-    getDisplayedName
+    addAccessRule
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Adds an access rule to the inventory.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        rule (function) - The rule function to add.
+        priority (number|none) - The position to insert the rule at.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Inventory - The inventory instance.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:addAccessRule(myRule, 1)
 ]]
-function Inventory:addAccessRule(rule, priority)
+    function Inventory:addAccessRule(rule, priority)
         if isnumber(priority) then
             table.insert(self.config.accessRules, priority, rule)
         else
@@ -870,57 +749,47 @@ function Inventory:addAccessRule(rule, priority)
     end
 
     --[[
-    getDisplayedName
+    removeAccessRule
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Removes an access rule from the inventory.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        rule (function) - The rule function to remove.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Inventory - The inventory instance.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:removeAccessRule(myRule)
 ]]
-function Inventory:removeAccessRule(rule)
+    function Inventory:removeAccessRule(rule)
         table.RemoveByValue(self.config.accessRules, rule)
         return self
     end
 
     --[[
-    getDisplayedName
+    getRecipients
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Returns a table of clients who can receive inventory updates.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        table - A table of player objects.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local recipients = inventory:getRecipients()
 ]]
-function Inventory:getRecipients()
+    function Inventory:getRecipients()
         local recipients = {}
         for _, client in player.Iterator() do
             if self:canAccess("repl", {
@@ -933,83 +802,68 @@ function Inventory:getRecipients()
     end
 
     --[[
-    getDisplayedName
+    onInstanced
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Called when the inventory is instanced. Intended to be overridden.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        function Inventory:onInstanced() ... end
 ]]
-function Inventory:onInstanced()
+    function Inventory:onInstanced()
     end
 
     --[[
-    getDisplayedName
+    onLoaded
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Called when the inventory is loaded. Intended to be overridden.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        function Inventory:onLoaded() ... end
 ]]
-function Inventory:onLoaded()
+    function Inventory:onLoaded()
     end
 
     local ITEM_TABLE = "items"
     local ITEM_FIELDS = {"_itemID", "uniqueID", "data", "x", "y", "quantity"}
     --[[
-    getDisplayedName
+    loadItems
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Loads all items for this inventory from the database.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        deferred - A deferred object resolved with the items table.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:loadItems():next(function(items) ... end)
 ]]
-function Inventory:loadItems()
+    function Inventory:loadItems()
         return lia.db.select(ITEM_FIELDS, ITEM_TABLE, "invID = " .. self.id):next(function(res)
             local items = {}
             for _, result in ipairs(res.results or {}) do
@@ -1038,82 +892,68 @@ function Inventory:loadItems()
     end
 
     --[[
-    getDisplayedName
+    onItemsLoaded
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Called after items are loaded from the database. Intended to be overridden.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        items (table) - The loaded items.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        function Inventory:onItemsLoaded(items) ... end
 ]]
-function Inventory:onItemsLoaded()
+    function Inventory:onItemsLoaded()
     end
 
     --[[
-    getDisplayedName
+    instance
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Creates a new inventory instance with the given initial data.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        initialData (table) - The initial data for the inventory.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Inventory - The new inventory instance.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        local inv = Inventory:instance({char = 1})
 ]]
-function Inventory:instance(initialData)
+    function Inventory:instance(initialData)
         return lia.inventory.instance(self.typeID, initialData)
     end
 
     --[[
-    getDisplayedName
+    syncData
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Synchronizes a data key to clients.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        key (string) - The data key to sync.
+        recipients (table|none) - The clients to send to, or nil for all recipients.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:syncData("weight")
 ]]
-function Inventory:syncData(key, recipients)
+    function Inventory:syncData(key, recipients)
         if self.config.data[key] and self.config.data[key].noReplication then return end
         net.Start("liaInventoryData")
         net.WriteType(self.id)
@@ -1123,29 +963,24 @@ function Inventory:syncData(key, recipients)
     end
 
     --[[
-    getDisplayedName
+    sync
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Synchronizes the entire inventory to clients.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        recipients (table|none) - The clients to send to, or nil for all recipients.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:sync()
 ]]
-function Inventory:sync(recipients)
+    function Inventory:sync(recipients)
         net.Start("liaInventoryInit")
         net.WriteType(self.id)
         net.WriteString(self.typeID)
@@ -1174,56 +1009,46 @@ function Inventory:sync(recipients)
     end
 
     --[[
-    getDisplayedName
+    delete
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Deletes the inventory from the system.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:delete()
 ]]
-function Inventory:delete()
+    function Inventory:delete()
         lia.inventory.deleteByID(self.id)
     end
 
     --[[
-    getDisplayedName
+    destroy
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Destroys the inventory and all its items, and notifies clients.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        None.
 
     Returns:
-        string - The name to display for this character to the given client.
+        None.
 
     Realm:
-        Shared.
+        Server.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:destroy()
 ]]
-function Inventory:destroy()
+    function Inventory:destroy()
         for _, item in pairs(self:getItems()) do
             item:destroy()
         end
@@ -1235,29 +1060,24 @@ function Inventory:destroy()
     end
 else
     --[[
-    getDisplayedName
+    show
 
     Purpose:
-        Returns the name to display for this character to the given client, taking into account recognition and fake names.
-        If character recognition is enabled, the function checks if the client recognizes this character, and returns the appropriate name.
-        If not recognized, it may return a fake name if one is set and recognized, otherwise returns "unknown".
-        If recognition is disabled, always returns the character's real name.
+        Displays the inventory to the player.
 
     Parameters:
-        client (Player) - The player to check recognition against.
+        parent (panel|none) - The parent panel to attach to.
 
     Returns:
-        string - The name to display for this character to the given client.
+        Panel - The inventory UI panel.
 
     Realm:
-        Shared.
+        Client.
 
     Example Usage:
-        -- Get the display name for a character as seen by a client
-        local displayName = character:getDisplayedName(client)
-        print("You see this character as: " .. displayName)
+        inventory:show()
 ]]
-function Inventory:show(parent)
+    function Inventory:show(parent)
         return lia.inventory.show(self, parent)
     end
 end

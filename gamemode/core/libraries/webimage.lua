@@ -1,3 +1,16 @@
+--[[
+# Attributes Library
+
+This page documents the functions for working with character attributes.
+
+---
+
+## Overview
+
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+
+For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
+]]
 lia.webimage = lia.webimage or {}
 local ip = string.Replace(string.Replace(game.GetIPAddress() or "unknown", ":", "_"), "%.", "_")
 local gamemode = engine.ActiveGamemode() or "unknown"
@@ -87,7 +100,7 @@ end
     Purpose:
         Retrieves a Material for a previously registered or downloaded web image.
         If the image is cached, it returns the cached Material. If the image exists on disk,
-        it loads and returns the Material. Otherwise, returns nil.
+        it loads and returns the Material. Otherwise, returns none.
 
     Parameters:
         name (string)     - The registered name or URL of the image.
