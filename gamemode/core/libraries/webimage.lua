@@ -1,4 +1,4 @@
-﻿lia.webimage = lia.webimage or {}
+lia.webimage = lia.webimage or {}
 local ip = string.Replace(string.Replace(game.GetIPAddress() or "unknown", ":", "_"), "%.", "_")
 local gamemode = engine.ActiveGamemode() or "unknown"
 local baseDir = "lilia/" .. ip .. "/" .. gamemode .. "/"
@@ -161,7 +161,8 @@ concommand.Add("test_webimage_menu", function()
     local urlEntry = vgui.Create("DTextEntry", frame)
     urlEntry:SetPos(10, 30)
     urlEntry:SetSize(frame:GetWide() - 20, 25)
-    urlEntry:SetText("https://i.imgur.com/WNdLdwQ.jpeg")
+    urlEntry:SetText("")
+    urlEntry:SetPlaceholderText(L("imageURLPlaceholder"))
     local loadBtn = vgui.Create("DButton", frame)
     loadBtn:SetPos(10, 65)
     loadBtn:SetSize(frame:GetWide() - 20, 30)
