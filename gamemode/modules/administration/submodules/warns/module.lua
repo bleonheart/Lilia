@@ -1,7 +1,7 @@
-MODULE.name = L("moduleWarnsName")
+MODULE.name = "moduleWarnsName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleWarnsDesc")
+MODULE.desc = "moduleWarnsDesc"
 MODULE.Privileges = {
     {
         Name = L("canRemoveWarns"),

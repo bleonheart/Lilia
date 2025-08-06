@@ -1,7 +1,7 @@
-MODULE.name = L("storage")
+MODULE.name = "storage"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleStorageDesc")
+MODULE.desc = "moduleStorageDesc"
 MODULE.Privileges = {
     {
         Name = L("canSpawnStorage"),

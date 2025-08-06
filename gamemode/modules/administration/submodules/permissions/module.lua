@@ -1,7 +1,7 @@
-MODULE.name = L("modulePermissionsName")
+MODULE.name = "modulePermissionsName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("modulePermissionsDesc")
+MODULE.desc = "modulePermissionsDesc"
 MODULE.Privileges = {
     {
         Name = L("canBypassCharacterLock"),

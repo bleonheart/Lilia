@@ -1,7 +1,7 @@
-MODULE.name = L("moduleSpawnsName")
+MODULE.name = "moduleSpawnsName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleSpawnsDesc")
+MODULE.desc = "moduleSpawnsDesc"
 MODULE.Privileges = {
     {
         Name = L("manageSpawns"),

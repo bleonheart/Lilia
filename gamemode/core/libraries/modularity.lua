@@ -105,6 +105,9 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
         lia.include(coreFile, "shared")
     end
 
+    MODULE.name = L(MODULE.name)
+    MODULE.desc = L(MODULE.desc)
+
     local enabled, disableReason
     if isfunction(MODULE.enabled) then
         enabled, disableReason = MODULE.enabled()

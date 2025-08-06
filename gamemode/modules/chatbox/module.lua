@@ -1,7 +1,7 @@
-MODULE.name = L("moduleChatboxName")
+MODULE.name = "moduleChatboxName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleChatboxDesc")
+MODULE.desc = "moduleChatboxDesc"
 MODULE.Privileges = {
     {
         Name = L("noOOCCooldown"),

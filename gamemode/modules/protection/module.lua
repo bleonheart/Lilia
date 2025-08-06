@@ -1,7 +1,7 @@
-MODULE.name = L("protection")
+MODULE.name = "protection"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleProtectionDesc")
+MODULE.desc = "moduleProtectionDesc"
 MODULE.Privileges = {
     {
         Name = L("canSeeAltingNotifications"),
