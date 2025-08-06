@@ -2244,82 +2244,52 @@ Reload: Drop]],
     fontDesc = "Font Description",
     genericFont = "Generic Font",
     genericFontDesc = "Generic Font Description",
-
     viewCharacterList = "View Character List",
-
-    -- Command descriptions for administration module
-    ["[player Name]"] = "[player Name]",
-    ["[string Player Or Steam ID]"] = "[string Player Or Steam ID]",
-    ["[player Name] [number Duration optional] [string Reason]"] = "[player Name] [number Duration optional] [string Reason]",
-    ["[player Name] [string Reason optional]"] = "[player Name] [string Reason optional]",
-    ["[string SteamID]"] = "[string SteamID]",
-    ["[player Name] [number Duration optional]"] = "[player Name] [number Duration optional]",
-    ["[player Name] [number Time optional]"] = "[player Name] [number Time optional]",
-    ["[number Time optional]"] = "[number Time optional]",
-    ["[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]"] = "[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-    ["[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]"] = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
-    ["[player Name optional]"] = "[player Name optional]",
-    ["[number Char ID]"] = "[number Char ID]",
-    ["[string Sound]"] = "[string Sound]",
-    ["[player Name] [string Sound]"] = "[player Name] [string Sound]",
-    ["[string Desc optional]"] = "[string Desc optional]",
-    ["[player Name] [string Flags]"] = "[player Name] [string Flags]",
-    ["[string Name]"] = "[string Name]",
-    ["[string Name or Number ID]"] = "[string Name or Number ID]",
-    ["[player Name] [number Speed optional]"] = "[player Name] [number Speed optional]",
-    ["[player Name] [string Model optional]"] = "[player Name] [string Model optional]",
-    ["[player Name] [item Item Name]"] = "[player Name] [item Item Name]",
-    ["[player Name] [string Description optional]"] = "[player Name] [string Description optional]",
-    ["[player Name] [string New Name optional]"] = "[player Name] [string New Name optional]",
-    ["[player Name] [number Scale optional]"] = "[player Name] [number Scale optional]",
-    ["[player Name] [number Power optional]"] = "[player Name] [number Power optional]",
-    ["[player Name] [string BodyGroup Name] [number Value]"] = "[player Name] [string BodyGroup Name] [number Value]",
-    ["[player Name] [number Skin]"] = "[player Name] [number Skin]",
-    ["[player Name] [number Amount]"] = "[player Name] [number Amount]",
-    ["[string Message]"] = "[string Message]",
-    ["[string Bot Name] [string Message]"] = "[string Bot Name] [string Message]",
-    ["[player Name] [string Message]"] = "[player Name] [string Message]",
-
-    -- Command descriptions for attributes module
-    ["[player Name] [string Attribute Name] [number Level]"] = "[player Name] [string Attribute Name] [number Level]",
-
-    -- Command descriptions for chatbox module
-    ["[string Action]"] = "[string Action]",
-    ["[string Text]"] = "[string Text]",
-    ["[player Name] [string Message]"] = "[player Name] [string Message]",
-
-    -- Command descriptions for doors module
-    ["[number Price]"] = "[number Price]",
-    ["[string Title]"] = "[string Title]",
-    ["[faction Faction]"] = "[faction Faction]",
-    ["[class Class]"] = "[class Class]",
-
-    -- Command descriptions for inventory module
-    ["[player Name] [number Width] [number Height]"] = "[player Name] [number Width] [number Height]",
-
-    -- Command descriptions for inventory submodules
-    ["[string Password optional]"] = "[string Password optional]",
-    ["[number Amount]"] = "[number Amount]",
-
-    -- Command descriptions for protection module
-    ["[player Target]"] = "[player Target]",
-
-    -- Command descriptions for recognition module
-    ["[string Range optional] [string Name optional]"] = "[string Range optional] [string Name optional]",
-
-    -- Command descriptions for spawns module
-    ["[number Radius optional]"] = "[number Radius optional]",
-
-    -- Command descriptions for teams module
-    ["[player Name] [faction Faction]"] = "[player Name] [faction Faction]",
-    ["[class Class]"] = "[class Class]",
-    ["[player Name] [class Class]"] = "[player Name] [class Class]",
-
-    -- Command descriptions for tickets submodule
-    ["[player Target] [string Reason]"] = "[player Target] [string Reason]",
-    ["[player Target]"] = "[player Target]",
-
-    -- Command descriptions for warns submodule
-    ["[player Target] [string Reason]"] = "[player Target] [string Reason]",
-    ["[player Target]"] = "[player Target]",
+    syntaxPlayerName = "[player Name]",
+    syntaxStringPlayerOrSteamID = "[string Player Or Steam ID]",
+    syntaxPlayerNameNumberDurationOptionalStringReason = "[player Name] [number Duration optional] [string Reason]",
+    syntaxPlayerNameStringReasonOptional = "[player Name] [string Reason optional]",
+    syntaxStringSteamID = "[string SteamID]",
+    syntaxPlayerNameNumberDurationOptional = "[player Name] [number Duration optional]",
+    syntaxPlayerNameNumberTimeOptional = "[player Name] [number Time optional]",
+    syntaxNumberTimeOptional = "[number Time optional]",
+    syntaxPlayerNameNumberTimeOptionalStringColorOptionalNumberFadeInOptionalNumberFadeOutOptional = "[player Name] [number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
+    syntaxNumberTimeOptionalStringColorOptionalNumberFadeInOptionalNumberFadeOutOptional = "[number Time optional] [string Color optional] [number FadeIn optional] [number FadeOut optional]",
+    syntaxPlayerNameOptional = "[player Name optional]",
+    syntaxNumberCharID = "[number Char ID]",
+    syntaxStringSound = "[string Sound]",
+    syntaxPlayerNameStringSound = "[player Name] [string Sound]",
+    syntaxStringDescOptional = "[string Desc optional]",
+    syntaxPlayerNameStringFlags = "[player Name] [string Flags]",
+    syntaxStringName = "[string Name]",
+    syntaxStringNameOrNumberID = "[string Name or Number ID]",
+    syntaxPlayerNameNumberSpeedOptional = "[player Name] [number Speed optional]",
+    syntaxPlayerNameStringModelOptional = "[player Name] [string Model optional]",
+    syntaxPlayerNameItemItemName = "[player Name] [item Item Name]",
+    syntaxPlayerNameStringDescriptionOptional = "[player Name] [string Description optional]",
+    syntaxPlayerNameStringNewNameOptional = "[player Name] [string New Name optional]",
+    syntaxPlayerNameNumberScaleOptional = "[player Name] [number Scale optional]",
+    syntaxPlayerNameNumberPowerOptional = "[player Name] [number Power optional]",
+    syntaxPlayerNameStringBodyGroupNameNumberValue = "[player Name] [string BodyGroup Name] [number Value]",
+    syntaxPlayerNameNumberSkin = "[player Name] [number Skin]",
+    syntaxPlayerNameNumberAmount = "[player Name] [number Amount]",
+    syntaxStringMessage = "[string Message]",
+    syntaxStringBotNameStringMessage = "[string Bot Name] [string Message]",
+    syntaxPlayerNameStringMessage = "[player Name] [string Message]",
+    syntaxPlayerNameStringAttributeNameNumberLevel = "[player Name] [string Attribute Name] [number Level]",
+    syntaxStringAction = "[string Action]",
+    syntaxStringText = "[string Text]",
+    syntaxNumberPrice = "[number Price]",
+    syntaxStringTitle = "[string Title]",
+    syntaxFactionFaction = "[faction Faction]",
+    syntaxClassClass = "[class Class]",
+    syntaxPlayerNameNumberWidthNumberHeight = "[player Name] [number Width] [number Height]",
+    syntaxStringPasswordOptional = "[string Password optional]",
+    syntaxNumberAmount = "[number Amount]",
+    syntaxPlayerTarget = "[player Target]",
+    syntaxStringRangeOptionalStringNameOptional = "[string Range optional] [string Name optional]",
+    syntaxNumberRadiusOptional = "[number Radius optional]",
+    syntaxPlayerNameFactionFaction = "[player Name] [faction Faction]",
+    syntaxPlayerNameClassClass = "[player Name] [class Class]",
+    syntaxPlayerTargetStringReason = "[player Target] [string Reason]",
 }
