@@ -1,7 +1,7 @@
-MODULE.name = L("moduleAdministrationName")
+MODULE.name = "moduleAdministrationName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("moduleAdministrationDesc")
+MODULE.desc = "moduleAdministrationDesc"
 MODULE.Privileges = {
     {
         Name = L("managePropBlacklist"),
