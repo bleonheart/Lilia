@@ -4,8 +4,8 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleSpawnsDesc"
 MODULE.Privileges = {
     {
-        Name = L("manageSpawns"),
+        Name = "manageSpawns",
         MinAccess = "admin",
-        Category = L("categorySpawnPoints"),
+        Category = "categorySpawnPoints",
     }
 }

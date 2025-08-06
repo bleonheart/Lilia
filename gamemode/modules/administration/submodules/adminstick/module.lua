@@ -4,8 +4,8 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleAdminStickDesc"
 MODULE.Privileges = {
     {
-        Name = L("alwaysSpawnAdminStick"),
+        Name = "alwaysSpawnAdminStick",
         MinAccess = "superadmin",
-        Category = L("adminStick"),
+        Category = "adminStick",
     },
 }
