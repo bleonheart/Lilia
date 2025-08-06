@@ -652,7 +652,7 @@ lia.config.add("ChatListenColor", L("chatListenColor"), {
     type = "Color",
 })
 
-lia.config.add("OOCDelay", L("oocDelay"), 10, nil, {
+lia.config.add("OOCDelay", L("oocDelayTitle"), 10, nil, {
     desc = L("oocDelayDesc"),
     category = L("categoryChat"),
     type = "Float",
@@ -660,7 +660,7 @@ lia.config.add("OOCDelay", L("oocDelay"), 10, nil, {
     max = 60
 })
 
-lia.config.add("LOOCDelay", L("loocDelay"), 6, nil, {
+lia.config.add("LOOCDelay", L("loocDelayTitle"), 6, nil, {
     desc = L("loocDelayDesc"),
     category = L("categoryChat"),
     type = "Float",

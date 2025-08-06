@@ -210,10 +210,10 @@ lia.command.add("charkill", {
             end
         end
 
-        local playerKey = L("player", client)
-        local reasonKey = L("reason", client)
-        local evidenceKey = L("evidence", client)
-        client:requestArguments(L("pkActiveMenu", client), {
+        local playerKey = L("player")
+        local reasonKey = L("reason")
+        local evidenceKey = L("evidence")
+        client:requestArguments(L("pkActiveMenu"), {
             [playerKey] = {"table", choices},
             [reasonKey] = "string",
             [evidenceKey] = "string"
@@ -1975,7 +1975,7 @@ lia.command.add("charsetscale", {
         end
 
         target:SetModelScale(scale, 0)
-        client:notifyLocalized("changedScale", client:Name(), target:Name(), scale)
+        client:notifyLocalized("changedScale", target:Name(), scale)
     end
 })
 
@@ -1999,7 +1999,7 @@ lia.command.add("charsetjump", {
         end
 
         target:SetJumpPower(power)
-        client:notifyLocalized("changedJump", client:Name(), target:Name(), power)
+        client:notifyLocalized("changedJump", target:Name(), power)
     end
 })
 
