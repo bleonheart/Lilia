@@ -9,7 +9,7 @@ function MODULE:InitializedModules()
                 lia.administrator.registerPrivilege({
                     Name = L("accessPropertyPrivilege", prop.MenuLabel),
                     MinAccess = "admin",
-                    Category = L("categoryStaffManagement")
+                    Category = "categoryStaffManagement"
                 })
             end
         end
@@ -21,7 +21,7 @@ function MODULE:InitializedModules()
                 lia.administrator.registerPrivilege({
                     Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
                     MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
-                    Category = L("categoryStaffTools")
+                    Category = "categoryStaffTools"
                 })
             end
         end
