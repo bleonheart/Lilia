@@ -7,7 +7,7 @@
             name = L("nameCopyFormat", target:Name()),
             image = "icon16/page_copy.png",
             func = function()
-                client:notify(L("copiedToClipboard", target:Name(), L("name")))
+                client:notifyLocalized("copiedToClipboard", target:Name(), L("name"))
                 SetClipboardText(target:Name())
             end
         },
@@ -16,7 +16,7 @@
             image = "icon16/page_copy.png",
             func = function()
                 if target:getChar() then
-                    client:notify(L("copiedCharID", target:getChar():getID()))
+                    client:notifyLocalized("copiedCharID", target:getChar():getID())
                     SetClipboardText(target:getChar():getID())
                 end
             end
@@ -25,7 +25,7 @@
             name = L("steamIDCopyFormat", target:SteamID()),
             image = "icon16/page_copy.png",
             func = function()
-                client:notify(L("copiedToClipboard", target:Name(), L("steamID")))
+                client:notifyLocalized("copiedToClipboard", target:Name(), L("steamID"))
                 SetClipboardText(target:SteamID())
             end
         },
