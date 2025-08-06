@@ -271,7 +271,7 @@ lia.command.add("doorsetprice", {
             door:setNetVar("price", price)
             lia.log.add(client, "doorSetPrice", door, price)
             hook.Run("DoorPriceSet", client, door, price)
-            client:notifyLocalized("price", lia.currency.get(price))
+            client:notifyLocalized("doorSetPrice", lia.currency.get(price))
             MODULE:SaveData()
         else
             client:notifyLocalized("doorNotValid")
@@ -479,7 +479,7 @@ lia.command.add("doorremovefaction", {
                 door.liaFactions = facs
                 door:setNetVar("factions", util.TableToJSON(facs))
                 lia.log.add(client, "doorRemoveFaction", door, faction.name)
-                client:notifyLocalized("doorRemoveFaction", faction.name)
+                client:notifyLocalized("doorRemoveFactionSpecific", faction.name)
             elseif arguments[1] then
                 client:notifyLocalized("invalidFaction")
             else

@@ -355,7 +355,7 @@ if SERVER then
         if maxMoneyLimit > 0 and isnumber(maxMoneyLimit) and totalMoney > maxMoneyLimit then
             local excessMoney = totalMoney - maxMoneyLimit
             character:setMoney(maxMoneyLimit)
-            self:notifyLocalized("moneyLimit", lia.currency.get(maxMoneyLimit), lia.currency.plural, lia.currency.get(excessMoney), lia.currency.plural)
+            self:notifyLocalized("moneyLimitReached", lia.currency.get(maxMoneyLimit), lia.currency.plural, lia.currency.get(excessMoney), lia.currency.plural)
             local money = lia.currency.spawn(self:getItemDropPos(), excessMoney)
             if IsValid(money) then
                 money.client = self
