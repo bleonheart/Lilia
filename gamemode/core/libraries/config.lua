@@ -158,7 +158,7 @@ lia.config.add("MoneyModel", L("moneyModel"), "models/props_lab/box01a.mdl", nil
     type = "Generic"
 })
 
-lia.config.add("MoneyLimit", L("moneyLimit"), 0, nil, {
+lia.config.add("MoneyLimit", L("moneyLimitTitle"), 0, nil, {
     desc = L("moneyLimitDesc"),
     category = L("money"),
     type = "Int",
