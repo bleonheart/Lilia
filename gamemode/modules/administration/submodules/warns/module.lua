@@ -4,9 +4,9 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleWarnsDesc"
 MODULE.Privileges = {
     {
-        Name = L("canRemoveWarns"),
+        Name = "canRemoveWarns",
         MinAccess = "superadmin",
-        Category = L("warning"),
+        Category = "warning",
     },
 }
 

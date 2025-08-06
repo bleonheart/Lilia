@@ -4,13 +4,13 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleScoreboardDesc"
 MODULE.Privileges = {
     {
-        Name = L("canAccessScoreboardAdminOptions"),
+        Name = "canAccessScoreboardAdminOptions",
         MinAccess = "admin",
-        Category = L("scoreboard"),
+        Category = "scoreboard",
     },
     {
-        Name = L("canAccessScoreboardInfoOutOfStaff"),
+        Name = "canAccessScoreboardInfoOutOfStaff",
         MinAccess = "superadmin",
-        Category = L("scoreboard"),
+        Category = "scoreboard",
     },
 }
