@@ -584,7 +584,7 @@ else
         submit.DoClick = function()
             local args = {}
             if prefix then table.Add(args, prefix) end
-            for name, info in pairs(controls) do
+            for _, info in pairs(controls) do
                 local ctl = info.ctrl
                 local typ = info.type
                 local val
