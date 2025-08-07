@@ -57,6 +57,7 @@ function PANEL:Populate(data, canKick)
             row = self.sheet:AddRow(function(p, row)
                 local logoSize = 64
                 local margin = 8
+                local rowHeight = logoSize + self.sheet.padding * 2
                 -- Create logo image
                 local logo = vgui.Create("DImage", p)
                 logo:SetSize(logoSize, logoSize)
@@ -93,9 +94,8 @@ function PANEL:Populate(data, canKick)
                         r:SetPos(p:GetWide() - r:GetWide() - pad, math.max(pad, y))
                     end
 
-                    local baseMin = 300
-                    local h = d and pad + t:GetTall() + spacing + d:GetTall() + pad or math.max(baseMin, pad + t:GetTall() + pad)
-                    p:SetTall(h)
+                    local textH = pad + t:GetTall() + spacing + d:GetTall() + pad
+                    p:SetTall(math.max(rowHeight, textH))
                 end
 
                 row.filterText = (title .. " " .. desc .. " " .. right):lower()
@@ -105,7 +105,8 @@ function PANEL:Populate(data, canKick)
             row = self.sheet:AddTextRow({
                 title = title,
                 desc = desc,
-                right = right
+                right = right,
+                minHeight = self.sheet.padding * 2 + 64
             })
         end
 
