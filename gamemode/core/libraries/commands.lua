@@ -11,18 +11,38 @@ The commands library provides a system for registering and managing console comm
 ]]
 lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
+
+function lia.command.buildSyntaxFromArguments(args)
+    local tokens = {}
+    for _, arg in ipairs(args) do
+        local typ = arg.type or "string"
+        if typ == "bool" or typ == "boolean" then
+            typ = "bool"
+        elseif typ == "player" then
+            typ = "player"
+        elseif typ == "table" then
+            typ = "table"
+        else
+            typ = "string"
+        end
+        local name = arg.name or typ
+        local optional = arg.optional and " optional" or ""
+        tokens[#tokens + 1] = string.format("[%s %s%s]", typ, name, optional)
+    end
+    return table.concat(tokens, " ")
+end
 --[[
     lia.command.add
 
     Purpose:
-        Registers a new command with the Lilia command system. This function sets up the command's syntax, description,
-        privilege requirements, and access control. It also handles command aliases and ensures the command is accessible
-        via the appropriate privilege level.
+        Registers a new command with the Lilia command system. This function sets up the command's argument definitions,
+        description, privilege requirements, and access control. It also handles command aliases and ensures the command is
+        accessible via the appropriate privilege level.
 
     Parameters:
         command (string) - The name of the command to register.
         data (table) - A table containing command properties:
-            - syntax (string): The syntax string for the command (optional).
+            - arguments (table): Ordered argument definitions for the command (optional).
             - desc (string): The description of the command (optional).
             - privilege (string): The privilege required to use the command (optional).
             - superAdminOnly (boolean): If true, only superadmins can use the command (optional).
@@ -38,7 +58,10 @@ lia.command.list = lia.command.list or {}
 
     Example Usage:
         lia.command.add("kick", {
-            syntax = "[player] [reason optional]",
+            arguments = {
+                {name = "target", type = "player"},
+                {name = "reason", type = "string", optional = true}
+            },
             desc = "Kicks a player from the server.",
             privilege = "Kick Players",
             adminOnly = true,
@@ -48,6 +71,8 @@ lia.command.list = lia.command.list or {}
         })
 ]]
 function lia.command.add(command, data)
+    data.arguments = data.arguments or {}
+    data.syntax = lia.command.buildSyntaxFromArguments(data.arguments)
     data.syntax = L(data.syntax or "")
     data.desc = data.desc or ""
     data.privilege = data.privilege or nil
@@ -65,6 +90,15 @@ function lia.command.add(command, data)
             MinAccess = superAdminOnly and "superadmin" or "admin",
             Category = "commands"
         })
+    end
+
+    for _, arg in ipairs(data.arguments) do
+        if arg.type == "boolean" then
+            arg.type = "bool"
+        elseif arg.type ~= "player" and arg.type ~= "table" and arg.type ~= "bool" then
+            arg.type = "string"
+        end
+        arg.optional = arg.optional or false
     end
 
     local onRun = data.onRun
@@ -193,78 +227,6 @@ function lia.command.extractArgs(text)
     return arguments
 end
 
---[[
-    lia.command.parseSyntaxFields
-
-    Purpose:
-        Parses a command syntax string into a list of argument fields, extracting type, name, and optionality.
-
-    Parameters:
-        syntax (string) - The syntax string to parse (e.g., "[player] [reason optional]").
-
-    Returns:
-        fields (table) - A table of field tables: {name = string, type = string, optional = boolean}
-        valid (boolean) - Whether the syntax string is valid.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        local fields, valid = lia.command.parseSyntaxFields("[player] [reason optional]")
-        -- fields = {
-        --     {name = "player", type = "player", optional = false},
-        --     {name = "reason", type = "text", optional = true}
-        -- }
-        -- valid = true
-]]
-function lia.command.parseSyntaxFields(syntax)
-    local fields = {}
-    local valid = true
-    if not syntax or syntax == "" then return fields, true end
-    for token in syntax:gmatch("%b[]") do
-        local inner = token:sub(2, -2)
-        local typ, name = inner:match("^(%S+)%s+(.+)$")
-        local optional = inner:lower():find("optional", 1, true) ~= nil
-        if name then
-            typ = typ:lower()
-            if typ == "string" then
-                typ = "text"
-            elseif typ == "number" then
-                typ = "number"
-            elseif typ == "bool" or typ == "boolean" then
-                typ = "boolean"
-            elseif typ == "player" or typ == "ply" then
-                typ = "player"
-            elseif typ == "item" then
-                typ = "item"
-            elseif typ == "faction" then
-                typ = "faction"
-            elseif typ == "class" then
-                typ = "class"
-            else
-                valid = false
-            end
-        else
-            name = inner
-            typ = "text"
-            valid = false
-        end
-
-        if optional then name = name:gsub("%s+[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll]%s*$", "") end
-        fields[#fields + 1] = {
-            name = name,
-            type = typ,
-            optional = optional
-        }
-    end
-
-    local open = select(2, syntax:gsub("%[", ""))
-    local close = select(2, syntax:gsub("%]", ""))
-    if open ~= close then valid = false end
-    if syntax:gsub("%b[]", ""):find("%S") then valid = false end
-    return fields, valid
-end
-
 local function combineBracketArgs(args)
     local result = {}
     local buffer
@@ -371,21 +333,23 @@ if SERVER then
             local command = lia.command.list[match]
             if command then
                 if not arguments then arguments = lia.command.extractArgs(text:sub(#match + 3)) end
-                local fields, valid = lia.command.parseSyntaxFields(command.syntax)
-                if IsValid(client) and client:IsPlayer() and valid and #fields > 0 then
+                local fields = command.arguments or {}
+                if IsValid(client) and client:IsPlayer() and #fields > 0 then
                     local tokens = combineBracketArgs(arguments)
                     local missing = {}
                     local prefix = {}
                     for i, field in ipairs(fields) do
                         local arg = tokens[i]
                         if not arg or isPlaceholder(arg) then
-                            if not field.optional then missing[field.name] = field.type end
+                            if not field.optional then
+                                missing[#missing + 1] = field.name
+                            end
                         else
                             prefix[#prefix + 1] = arg
                         end
                     end
 
-                    if table.Count(missing) > 0 then
+                    if #missing > 0 then
                         net.Start("liaCmdArgPrompt")
                         net.WriteString(match)
                         net.WriteTable(missing)
@@ -431,74 +395,20 @@ else
             -- Opens a prompt for the "ban" command, requiring a player and duration
             lia.command.openArgumentPrompt("ban", {player = "player", duration = "number"})
     ]]
-    function lia.command.openArgumentPrompt(cmdKey, fields, prefix)
-        local ply = LocalPlayer()
+    function lia.command.openArgumentPrompt(cmdKey, missing, prefix)
         local command = lia.command.list[cmdKey]
         if not command then return end
-        local firstKey = istable(fields) and next(fields)
-        if not fields or isstring(fields) or firstKey and isnumber(firstKey) then
-            local args = fields
-            if isstring(args) then args = lia.command.extractArgs(args) end
-            local parsed, valid = lia.command.parseSyntaxFields(command.syntax)
-            if not valid then return end
-            fields = {}
-            prefix = {}
-            local tokens = args and combineBracketArgs(args) or {}
-            for i, field in ipairs(parsed) do
-                local arg = tokens[i]
-                if arg then
-                    prefix[#prefix + 1] = arg
-                else
-                    fields[field.name] = {
-                        type = field.type,
-                        optional = field.optional
-                    }
-                end
-            end
-        else
-            for k, v in pairs(fields) do
-                if not istable(v) then
-                    fields[k] = {
-                        type = v,
-                        optional = false
-                    }
-                end
-            end
-
-            local parsed, valid = lia.command.parseSyntaxFields(command.syntax)
-            if valid then
-                local tokens = prefix or {}
-                local index = 1
-                local newFields = {}
-                for _, field in ipairs(parsed) do
-                    local arg = tokens[index]
-                    if arg then
-                        index = index + 1
-                    else
-                        local info = fields[field.name]
-                        if not info then
-                            newFields[field.name] = {
-                                type = field.type,
-                                optional = field.optional
-                            }
-                        else
-                            if not istable(info) then
-                                info = {
-                                    type = info
-                                }
-                            end
-
-                            newFields[field.name] = {
-                                type = info.type,
-                                optional = field.optional
-                            }
-                        end
-                    end
-                end
-
-                fields = newFields
+        local fields = {}
+        local lookup = {}
+        for _, name in ipairs(missing or {}) do
+            lookup[name] = true
+        end
+        for _, arg in ipairs(command.arguments or {}) do
+            if lookup[arg.name] then
+                fields[arg.name] = arg
             end
         end
+        prefix = prefix or {}
 
         local numFields = table.Count(fields)
         local frameW, frameH = 600, 200 + numFields * 75
@@ -523,56 +433,56 @@ else
         for name, data in pairs(fields) do
             local fieldType = data.type
             local optional = data.optional
+            local options = data.options
+            local filter = data.filter
             local panel = vgui.Create("DPanel", scroll)
             panel:Dock(TOP)
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = function() end
-            local textW = select(1, surface.GetTextSize(L(name)))
+            local textW = select(1, surface.GetTextSize(L(data.description or name)))
             local ctrl
-            if isfunction(fieldType) then
-                local options, mode = fieldType()
-                if mode == "combo" then
-                    ctrl = vgui.Create("DComboBox", panel)
-                    for _, opt in ipairs(options) do
-                        ctrl:AddChoice(opt)
-                    end
-                end
-            elseif fieldType == "player" then
+            if fieldType == "player" then
                 ctrl = vgui.Create("DComboBox", panel)
                 ctrl:SetValue(L("select") .. " " .. L("player"))
+                local players = {}
                 for _, plyObj in player.Iterator() do
-                    if IsValid(plyObj) then ctrl:AddChoice(plyObj:Name(), plyObj:SteamID()) end
+                    if IsValid(plyObj) then players[#players + 1] = plyObj end
                 end
-            elseif fieldType == "item" then
+                if isfunction(filter) then
+                    local ok, res = pcall(filter, LocalPlayer(), players)
+                    if ok and istable(res) then players = res end
+                end
+                for _, plyObj in ipairs(players) do
+                    ctrl:AddChoice(plyObj:Name(), plyObj:SteamID())
+                end
+            elseif fieldType == "table" then
                 ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("select") .. " " .. L("item"))
-                for uniqueID, item in SortedPairsByMemberValue(lia.item.list, "name") do
-                    ctrl:AddChoice(item.getName and item:getName() or L(item.name), uniqueID)
+                ctrl:SetValue(L("select") .. " " .. L(name))
+                local opts = options
+                if isfunction(opts) then
+                    local ok, res = pcall(opts)
+                    if ok then opts = res end
                 end
-            elseif fieldType == "faction" then
-                ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("select") .. " " .. L("faction"))
-                for _, fac in ipairs(lia.faction.indices) do
-                    ctrl:AddChoice(L(fac.name), string.format("\"%s\"", fac.uniqueID))
+                if istable(opts) then
+                    for k, v in pairs(opts) do
+                        if isnumber(k) then
+                            ctrl:AddChoice(tostring(v), v)
+                        else
+                            ctrl:AddChoice(tostring(k), v)
+                        end
+                    end
                 end
-            elseif fieldType == "class" then
-                ctrl = vgui.Create("DComboBox", panel)
-                ctrl:SetValue(L("select") .. " " .. L("class"))
-                for _, class in pairs(lia.class.list) do
-                    ctrl:AddChoice(L(class.name), string.format("\"%s\"", class.uniqueID))
-                end
-            elseif fieldType == "text" or fieldType == "number" then
+            elseif fieldType == "bool" then
+                ctrl = vgui.Create("DCheckBox", panel)
+            else
                 ctrl = vgui.Create("DTextEntry", panel)
                 ctrl:SetFont("liaSmallFont")
-                if fieldType == "number" and ctrl.SetNumeric then ctrl:SetNumeric(true) end
-            elseif fieldType == "boolean" then
-                ctrl = vgui.Create("DCheckBox", panel)
             end
 
             local label = vgui.Create("DLabel", panel)
             label:SetFont("liaSmallFont")
-            label:SetText(L(name))
+            label:SetText(L(data.description or name))
             label:SizeToContents()
             panel.PerformLayout = function(_, w, h)
                 local ctrlH = 30
@@ -637,13 +547,13 @@ else
                     local ctl = data.ctrl
                     local ftype = data.type
                     local filled = false
-                    if isfunction(ftype) or ftype == "player" or ftype == "item" or ftype == "faction" or ftype == "class" then
+                    if ftype == "player" or ftype == "table" then
                         local txt, _ = ctl:GetSelected()
                         filled = txt ~= nil and txt ~= ""
-                    elseif ftype == "text" or ftype == "number" then
-                        filled = ctl:GetValue() ~= nil and ctl:GetValue() ~= ""
-                    elseif ftype == "boolean" then
+                    elseif ftype == "bool" then
                         filled = true
+                    else
+                        filled = ctl:GetValue() ~= nil and ctl:GetValue() ~= ""
                     end
 
                     if not filled then
@@ -661,42 +571,6 @@ else
         end
 
         validate()
-        submit.DoClick = function()
-            local args = {}
-            for key, field in pairs(fields) do
-                local ctlData = controls[key]
-                local ctl = ctlData.ctrl
-                local ftype = field.type
-                if isfunction(ftype) or ftype == "player" or ftype == "item" or ftype == "faction" or ftype == "class" then
-                    local txt, data = ctl:GetSelected()
-                    if txt and txt ~= "" then args[#args + 1] = data or txt end
-                elseif ftype == "text" or ftype == "number" then
-                    local val = ctl:GetValue()
-                    if val ~= "" or not field.optional then args[#args + 1] = val end
-                elseif ftype == "boolean" then
-                    args[#args + 1] = ctl:GetChecked() and "1" or "0"
-                end
-            end
-
-            if prefix then
-                if istable(prefix) then
-                    for i = #prefix, 1, -1 do
-                        table.insert(args, 1, prefix[i])
-                    end
-                else
-                    table.insert(args, 1, prefix)
-                end
-            end
-
-            local cmd = "/" .. cmdKey
-            for _, v in ipairs(args) do
-                cmd = cmd .. " " .. tostring(v)
-            end
-
-            ply:ConCommand("say " .. cmd)
-            frame:Remove()
-            AdminStickIsOpen = false
-        end
 
         local cancel = vgui.Create("DButton", buttons)
         cancel:Dock(RIGHT)
@@ -706,7 +580,28 @@ else
         cancel:SetIcon("icon16/cross.png")
         cancel.DoClick = function()
             frame:Remove()
-            AdminStickIsOpen = false
+        end
+
+        submit.DoClick = function()
+            local args = {}
+            if prefix then table.Add(args, prefix) end
+            for name, info in pairs(controls) do
+                local ctl = info.ctrl
+                local typ = info.type
+                local val
+                if typ == "player" or typ == "table" then
+                    local _, dataVal = ctl:GetSelected()
+                    val = dataVal or ctl:GetValue()
+                elseif typ == "bool" then
+                    val = ctl:GetChecked()
+                else
+                    val = ctl:GetValue()
+                end
+
+                args[#args + 1] = val ~= "" and val or nil
+            end
+            RunConsoleCommand("say", "/" .. cmdKey .. " " .. table.concat(args, " "))
+            frame:Remove()
         end
     end
 

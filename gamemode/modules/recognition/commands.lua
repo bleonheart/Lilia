@@ -8,7 +8,11 @@ end
 lia.command.add("recogwhisper", {
     privilege = "manageRecognition",
     adminOnly = true,
-    syntax = L("[player Name]"),
+    arguments = {
+
+        { name = "name", type = "player" },
+
+    },
     desc = "recogWhisperDesc",
     AdminStick = {
         Name = "recogWhisperStickName",
@@ -22,7 +26,11 @@ lia.command.add("recogwhisper", {
 lia.command.add("recognormal", {
     privilege = "manageRecognition",
     adminOnly = true,
-    syntax = L("[player Name]"),
+    arguments = {
+
+        { name = "name", type = "player" },
+
+    },
     desc = "recogNormalDesc",
     AdminStick = {
         Name = "recogNormalStickName",
@@ -36,7 +44,11 @@ lia.command.add("recognormal", {
 lia.command.add("recogyell", {
     privilege = "manageRecognition",
     adminOnly = true,
-    syntax = L("[player Name]"),
+    arguments = {
+
+        { name = "name", type = "player" },
+
+    },
     desc = "recogYellDesc",
     AdminStick = {
         Name = "recogYellStickName",
@@ -50,7 +62,13 @@ lia.command.add("recogyell", {
 lia.command.add("recogbots", {
     privilege = "manageRecognition",
     superAdminOnly = true,
-    syntax = L("[string Range optional] [string Name optional]"),
+    arguments = {
+
+        { name = "range", type = "string", optional = true },
+
+        { name = "name", type = "string", optional = true },
+
+    },
     desc = "recogBotsDesc",
     AdminStick = {
         Name = "recogBotsStickName",
