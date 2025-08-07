@@ -549,7 +549,7 @@ else
                 if not data.optional then
                     local ctl = data.ctrl
                     local ftype = data.type
-                    local filled = false
+                    local filled
                     if ftype == "player" or ftype == "table" then
                         local txt, _ = ctl:GetSelected()
                         filled = txt ~= nil and txt ~= ""
