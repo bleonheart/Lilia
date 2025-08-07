@@ -307,6 +307,7 @@ LANGUAGE = {
     attribSet = "You set %s's %s to %s.",
     attribUpdate = "You added %s's %s by %s.",
     door = "Door",
+    doorUnconfigured = "Unconfigured Door",
     doorTitle = "Unowned Door",
     doorTitleOwned = "Owned Door",
     doorIsNotOwnable = "This door cannot be owned.",
