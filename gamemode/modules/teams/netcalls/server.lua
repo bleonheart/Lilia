@@ -12,7 +12,7 @@ net.Receive("RequestFactionRoster", function(_, client)
     if not factionIndex or factionIndex == FACTION_STAFF then return end
     local faction = lia.faction.indices[factionIndex]
     if not faction then return end
-    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
+    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters.class, lia_characters.playtime"
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local condition = "lia_characters.schema = '" .. lia.db.escape(gamemode) .. "' AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
     local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
@@ -34,7 +34,7 @@ net.Receive("RequestFactionRoster", function(_, client)
                     lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                 end
 
-                local classID = tonumber(v._class) or 0
+                local classID = tonumber(v.class) or 0
                 local classData = lia.class.list[classID]
                 local playTime = tonumber(v.playtime) or 0
                 if isOnline then
@@ -72,9 +72,9 @@ net.Receive("RequestClassRoster", function(_, client)
     if not classIndex or classIndex == 0 then return end
     local faction = lia.faction.indices[factionIndex]
     if not faction then return end
-    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters._class, lia_characters.playtime"
+    local fields = "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters.class, lia_characters.playtime"
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local condition = "lia_characters.schema = '" .. lia.db.escape(gamemode) .. "' AND lia_characters._class = " .. lia.db.convertDataType(classIndex) .. " AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
+    local condition = "lia_characters.schema = '" .. lia.db.escape(gamemode) .. "' AND lia_characters.class = " .. lia.db.convertDataType(classIndex) .. " AND lia_characters.faction = " .. lia.db.convertDataType(faction.uniqueID)
     local query = "SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition
     lia.db.query(query, function(data)
         local characters = {}
@@ -94,7 +94,7 @@ net.Receive("RequestClassRoster", function(_, client)
                     lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                 end
 
-                local classID = tonumber(v._class) or 0
+                local classID = tonumber(v.class) or 0
                 local classData = lia.class.list[classID]
                 local playTime = tonumber(v.playtime) or 0
                 if isOnline then
