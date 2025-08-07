@@ -1,8 +1,22 @@
-﻿lia.command.add("plytransfer", {
+lia.command.add("plytransfer", {
     adminOnly = true,
     privilege = "manageTransfers",
     desc = "plyTransferDesc",
     alias = {"charsetfaction"},
+    arguments = {
+        {name = "name", type = "player"},
+        {
+            name = "faction",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.faction.teams) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        }
+    },
     onRun = function(client, arguments)
         local targetPlayer = lia.util.findPlayer(client, arguments[1])
         if not targetPlayer or not IsValid(targetPlayer) then
@@ -10,7 +24,7 @@
             return
         end
 
-        local factionName = table.concat(arguments, " ", 2)
+        local factionName = arguments[2]
         local faction = lia.faction.teams[factionName] or lia.util.findFaction(client, factionName)
         if not faction then
             client:notifyLocalized("invalidFaction")
@@ -30,7 +44,13 @@
         if faction.OnTransferred then faction:OnTransferred(targetPlayer, oldFaction) end
         hook.Run("PlayerLoadout", targetPlayer)
         client:notifyLocalized("transferSuccess", targetPlayer:Name(), L(faction.name, client))
-        if client ~= targetPlayer then targetPlayer:notifyLocalized("transferNotification", L(faction.name, targetPlayer), client:Name()) end
+        if client ~= targetPlayer then
+            targetPlayer:notifyLocalized(
+                "transferNotification",
+                L(faction.name, targetPlayer),
+                client:Name()
+            )
+        end
         lia.log.add(client, "plyTransfer", targetPlayer:Name(), oldFactionName, faction.name)
     end
 })
@@ -40,6 +60,20 @@ lia.command.add("plywhitelist", {
     privilege = "manageWhitelists",
     desc = "plyWhitelistDesc",
     alias = {"factionwhitelist"},
+    arguments = {
+        {name = "name", type = "player"},
+        {
+            name = "faction",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.faction.teams) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        }
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -47,7 +81,7 @@ lia.command.add("plywhitelist", {
             return
         end
 
-        local faction = lia.util.findFaction(client, table.concat(arguments, " ", 2))
+        local faction = lia.util.findFaction(client, arguments[2])
         if faction and target:setWhitelisted(faction.index, true) then
             for _, v in player.Iterator() do
                 v:notifyLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
@@ -63,6 +97,20 @@ lia.command.add("plyunwhitelist", {
     privilege = "manageWhitelists",
     desc = "plyUnwhitelistDesc",
     alias = {"factionunwhitelist"},
+    arguments = {
+        {name = "name", type = "player"},
+        {
+            name = "faction",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.faction.teams) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        }
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -70,7 +118,7 @@ lia.command.add("plyunwhitelist", {
             return
         end
 
-        local faction = lia.util.findFaction(client, table.concat(arguments, " ", 2))
+        local faction = lia.util.findFaction(client, arguments[2])
         if faction and not faction.isDefault and target:setWhitelisted(faction.index, false) then
             for _, v in player.Iterator() do
                 v:notifyLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
@@ -86,8 +134,21 @@ lia.command.add("plyunwhitelist", {
 lia.command.add("beclass", {
     adminOnly = false,
     desc = "beClassDesc",
+    arguments = {
+        {
+            name = "class",
+            type = "table",
+            options = function()
+                local options = {}
+                for _, v in pairs(lia.class.list) do
+                    options[L(v.name)] = v.uniqueID
+                end
+                return options
+            end
+        }
+    },
     onRun = function(client, arguments)
-        local className = table.concat(arguments, " ")
+        local className = arguments[1]
         local character = client:getChar()
         if not IsValid(client) or not character then
             client:notifyLocalized("illegalAccess")
@@ -113,6 +174,20 @@ lia.command.add("setclass", {
     adminOnly = true,
     privilege = "manageClasses",
     desc = "setClassDesc",
+    arguments = {
+        {name = "name", type = "player"},
+        {
+            name = "class",
+            type = "table",
+            options = function()
+                local options = {}
+                for _, v in pairs(lia.class.list) do
+                    options[L(v.name)] = v.uniqueID
+                end
+                return options
+            end
+        }
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -120,7 +195,7 @@ lia.command.add("setclass", {
             return
         end
 
-        local className = table.concat(arguments, " ", 2)
+        local className = arguments[2]
         local classID = lia.class.retrieveClass(className)
         local classData = lia.class.list[classID]
         if classData then
@@ -143,9 +218,23 @@ lia.command.add("classwhitelist", {
     adminOnly = true,
     privilege = "manageWhitelists",
     desc = "classWhitelistDesc",
+    arguments = {
+        {name = "name", type = "player"},
+        {
+            name = "class",
+            type = "table",
+            options = function()
+                local options = {}
+                for _, v in pairs(lia.class.list) do
+                    options[L(v.name)] = v.uniqueID
+                end
+                return options
+            end
+        }
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
-        local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))
+        local classID = lia.class.retrieveClass(arguments[2])
         if not target or not IsValid(target) then
             client:notifyLocalized("targetNotFound")
             return
@@ -173,15 +262,22 @@ lia.command.add("classunwhitelist", {
     privilege = "manageClasses",
     desc = "classUnwhitelistDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
-        { name = "class", type = "string" },
-
+        {name = "name", type = "player"},
+        {
+            name = "class",
+            type = "table",
+            options = function()
+                local options = {}
+                for _, v in pairs(lia.class.list) do
+                    options[L(v.name)] = v.uniqueID
+                end
+                return options
+            end
+        }
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
-        local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))
+        local classID = lia.class.retrieveClass(arguments[2])
         if not target or not IsValid(target) then
             client:notifyLocalized("targetNotFound")
             return

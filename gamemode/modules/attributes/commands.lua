@@ -1,14 +1,20 @@
-﻿lia.command.add("charsetattrib", {
+lia.command.add("charsetattrib", {
     superAdminOnly = true,
     desc = "setAttributes",
     arguments = {
-
-        { name = "name", type = "player" },
-
-        { name = "attributeName", type = "string" },
-
-        { name = "level", type = "string" },
-
+        {name = "name", type = "player"},
+        {
+            name = "attribute",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.attribs.list) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        },
+        {name = "level", type = "number"}
     },
     privilege = "manageAttributes",
     AdminStick = {
@@ -111,13 +117,19 @@ lia.command.add("charaddattrib", {
     superAdminOnly = true,
     desc = "addAttributes",
     arguments = {
-
-        { name = "name", type = "player" },
-
-        { name = "attributeName", type = "string" },
-
-        { name = "level", type = "string" },
-
+        {name = "name", type = "player"},
+        {
+            name = "attribute",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.attribs.list) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        },
+        {name = "level", type = "number"}
     },
     privilege = "manageAttributes",
     AdminStick = {
