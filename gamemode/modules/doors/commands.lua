@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 lia.command.add("doorsell", {
     desc = "doorsellDesc",
     adminOnly = false,
@@ -425,18 +425,26 @@ lia.command.add("doorinfo", {
 lia.command.add("dooraddfaction", {
     desc = "dooraddfactionDesc",
     arguments = {
-
-        { name = "faction", type = "string" },
-
+        {
+            name = "faction",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.faction.teams) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        }
     },
     adminOnly = true,
     privilege = "manageDoors",
     onRun = function(client, arguments)
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
+            local name = arguments[1]
             local faction
-            if arguments[1] then
-                local name = table.concat(arguments, " ")
+            if name then
                 for k, v in pairs(lia.faction.teams) do
                     if lia.util.stringMatches(k, name) or lia.util.stringMatches(v.name, name) then
                         faction = v
@@ -469,18 +477,26 @@ lia.command.add("dooraddfaction", {
 lia.command.add("doorremovefaction", {
     desc = "doorremovefactionDesc",
     arguments = {
-
-        { name = "faction", type = "string" },
-
+        {
+            name = "faction",
+            type = "table",
+            options = function()
+                local options = {}
+                for k, v in pairs(lia.faction.teams) do
+                    options[L(v.name)] = k
+                end
+                return options
+            end
+        }
     },
     adminOnly = true,
     privilege = "manageDoors",
     onRun = function(client, arguments)
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
+            local name = arguments[1]
             local faction
-            if arguments[1] then
-                local name = table.concat(arguments, " ")
+            if name then
                 for k, v in pairs(lia.faction.teams) do
                     if lia.util.stringMatches(k, name) or lia.util.stringMatches(v.name, name) then
                         faction = v
@@ -513,18 +529,26 @@ lia.command.add("doorremovefaction", {
 lia.command.add("doorsetclass", {
     desc = "doorsetclassDesc",
     arguments = {
-
-        { name = "class", type = "string" },
-
+        {
+            name = "class",
+            type = "table",
+            options = function()
+                local options = {}
+                for _, v in pairs(lia.class.list) do
+                    options[L(v.name)] = v.uniqueID
+                end
+                return options
+            end
+        }
     },
     adminOnly = true,
     privilege = "manageDoors",
     onRun = function(client, arguments)
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() and not door:getNetVar("disabled", false) then
+            local input = arguments[1]
             local class, classData
-            if arguments[1] then
-                local input = table.concat(arguments, " ")
+            if input then
                 local id = tonumber(input) or lia.class.retrieveClass(input)
                 if id then
                     class, classData = id, lia.class.list[id]
@@ -587,3 +611,4 @@ lia.command.add("togglealldoors", {
         MODULE:SaveData()
     end
 })
+
