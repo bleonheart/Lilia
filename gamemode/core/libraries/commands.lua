@@ -160,6 +160,7 @@ end
 ]]
 function lia.command.hasAccess(client, command, data)
     if not data then data = lia.command.list[command] end
+    if not data then return false, "unknown" end
     local privilegeKey = data.privilege
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly

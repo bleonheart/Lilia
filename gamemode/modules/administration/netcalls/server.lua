@@ -76,6 +76,15 @@ net.Receive("liaRequestAllPKs", function(_, client)
     end)
 end)
 
+net.Receive("liaRequestPKsCount", function(_, client)
+    if not client:hasPrivilege(L("manageCharacters")) then return end
+    lia.db.count("permakills"):next(function(count)
+        net.Start("liaPKsCount")
+        net.WriteInt(count or 0, 32)
+        net.Send(client)
+    end)
+end)
+
 net.Receive("liaRequestFactionRoster", function(_, client)
     if not IsValid(client) or not client:hasPrivilege(L("canManageFactions")) then return end
     local data = {}

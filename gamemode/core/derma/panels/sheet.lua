@@ -19,6 +19,13 @@ function PANEL:SetPlaceholderText(t)
     self.search:SetPlaceholderText(t or "")
 end
 
+function PANEL:PerformLayout()
+    self:SizeToChildren(false, true)
+    if self.scroll then
+        self.scroll:InvalidateLayout(true)
+    end
+end
+
 function PANEL:SetSpacing(y)
     self.spacingY = y or self.spacingY
 end

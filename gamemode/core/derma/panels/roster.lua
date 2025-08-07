@@ -1,19 +1,55 @@
 local PANEL = {}
 
 function PANEL:Init()
+    self:SetTall(500) -- Set minimum height for the roster panel
     self.sheet = self:Add("liaSheet")
     self.sheet:Dock(FILL)
     self.sheet:SetPlaceholderText(L("search"))
+    
+    -- Ensure proper sizing after initialization
+    timer.Simple(0.1, function()
+        if IsValid(self) then
+            self:InvalidateLayout(true)
+            self:SizeToChildren(false, true)
+        end
+    end)
+end
+
+function PANEL:PerformLayout()
+    self:SizeToChildren(false, true)
+    if self.sheet then
+        self.sheet:InvalidateLayout(true)
+    end
 end
 
 function PANEL:SetRosterType(t)
     self.rosterType = t
+    -- Request data when roster type is set
+    if t == "faction" then
+        net.Start("RequestFactionRoster")
+        net.SendToServer()
+    elseif t == "class" then
+        net.Start("RequestClassRoster")
+        net.SendToServer()
+    end
 end
 
 function PANEL:Populate(data, canKick)
     if not IsValid(self.sheet) then return end
     self.sheet.search:SetValue("")
     self.sheet:Clear()
+    
+    -- Handle empty data
+    if not data or #data == 0 then
+        self.sheet:AddTextRow({
+            title = L("none"),
+            desc = L("noMembers"),
+            compact = true
+        })
+        self.sheet:Refresh()
+        return
+    end
+    
     local rows = {}
     local originals = {}
     for _, v in ipairs(data) do
@@ -23,6 +59,7 @@ function PANEL:Populate(data, canKick)
     local row = self.sheet:AddListViewRow({
         columns = {L("name"), L("steamID"), L("class"), L("playtime"), L("lastOnline")},
         data = rows,
+        height = 400, -- Increased height for better visibility
         getLineText = function(line)
             local s = ""
             for i = 1, 5 do
@@ -68,6 +105,13 @@ function PANEL:Populate(data, canKick)
         end
     end
     self.sheet:Refresh()
+    -- Ensure proper sizing after populating data
+    timer.Simple(0.1, function()
+        if IsValid(self) then
+            self:InvalidateLayout(true)
+            self:SizeToChildren(false, true)
+        end
+    end)
 end
 
 vgui.Register("liaRoster", PANEL, "EditablePanel")
