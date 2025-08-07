@@ -70,7 +70,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
         local dir = (entity:GetPos() - dmgPos):GetNormalized()
         entity:SetVelocity(dir * 60 * dmgInfo:GetDamage())
         local dmgAmt = dmgInfo:GetDamage()
-        timer.Simple(0.05, function() if IsValid(entity) and not entity:hasRagdoll() and entity:Health() - dmgAmt > 0 then entity:setRagdolled(true, 3) end end)
+        timer.Simple(0.05, function() if IsValid(entity) and entity:IsPlayer() and not entity:hasRagdoll() and entity:Health() - dmgAmt > 0 then entity:setRagdolled(true, 3) end end)
     end
 
     if attacker ~= entity then
@@ -84,7 +84,7 @@ function MODULE:EntityTakeDamage(entity, dmgInfo)
             local veh = entity:GetVehicle()
             if not (IsValid(veh) and veh:isSimfphysCar()) then
                 dmgInfo:ScaleDamage(0)
-                if not entity:hasRagdoll() and entity:Health() > 0 then entity:setRagdolled(true, 5) end
+                if entity:IsPlayer() and not entity:hasRagdoll() and entity:Health() > 0 then entity:setRagdolled(true, 5) end
             end
         end
     end
