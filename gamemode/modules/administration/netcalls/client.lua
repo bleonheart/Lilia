@@ -416,7 +416,8 @@ local function OpenRoster(panel, data)
                     row = rosterSheet:AddRow(function(p, row)
                         local logoSize = 64
                         local margin = 8
-                        
+                        local rowHeight = logoSize + rosterSheet.padding * 2
+
                         -- Create logo image
                         local logo = vgui.Create("DImage", p)
                         logo:SetSize(logoSize, logoSize)
@@ -447,21 +448,20 @@ local function OpenRoster(panel, data)
                         p.PerformLayout = function()
                             local pad = rosterSheet.padding
                             local spacing = 5
-                            
+
                             logo:SetPos(pad, pad)
                             t:SetPos(pad + logoSize + pad, pad)
                             d:SetPos(pad + logoSize + pad, pad + t:GetTall() + spacing)
                             d:SetWide(p:GetWide() - (pad + logoSize + pad) - pad - (r:GetWide() + 10))
                             d:SizeToContentsY()
-                            
+
                             if r then
                                 local y = d and pad + t:GetTall() + spacing + d:GetTall() - r:GetTall() or p:GetTall() * 0.5 - r:GetTall() * 0.5
                                 r:SetPos(p:GetWide() - r:GetWide() - pad, math.max(pad, y))
                             end
-                            
-                            local baseMin = 300
-                            local h = d and pad + t:GetTall() + spacing + d:GetTall() + pad or math.max(baseMin, pad + t:GetTall() + pad)
-                            p:SetTall(h)
+
+                            local textH = pad + t:GetTall() + spacing + d:GetTall() + pad
+                            p:SetTall(math.max(rowHeight, textH))
                         end
                         
                         row.filterText = (title .. " " .. desc .. " " .. right):lower()
@@ -471,7 +471,8 @@ local function OpenRoster(panel, data)
                     row = rosterSheet:AddTextRow({
                         title = title,
                         desc = desc,
-                        right = right
+                        right = right,
+                        minHeight = rosterSheet.padding * 2 + 64
                     })
                 end
                 
