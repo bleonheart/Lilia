@@ -172,7 +172,13 @@ lia.command.add("classunwhitelist", {
     adminOnly = true,
     privilege = "manageClasses",
     desc = "classUnwhitelistDesc",
-    syntax = L("[player Name] [class Class]"),
+    arguments = {
+
+        { name = "name", type = "player" },
+
+        { name = "class", type = "string" },
+
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(table.concat(arguments, " ", 2))

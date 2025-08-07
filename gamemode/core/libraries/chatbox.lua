@@ -62,14 +62,15 @@ end
             format = "chatMeFormat",
             radius = 150,
             desc = "Performs an action.",
-            syntax = "/me <action>",
+            arguments = {{name = "action", type = "string"}},
             onChatAdd = function(speaker, text)
                 chat.AddText(lia.chat.timestamp(false), Color(200, 150, 255), speaker:Name() .. " " .. text)
             end
         })
 ]]
 function lia.chat.register(chatType, data)
-    data.syntax = L(data.syntax or "")
+    data.arguments = data.arguments or {}
+    data.syntax = L(lia.command.buildSyntaxFromArguments(data.arguments))
     data.desc = data.desc or ""
     if data.prefix then
         local prefixes = istable(data.prefix) and data.prefix or {data.prefix}
@@ -128,7 +129,7 @@ function lia.chat.register(chatType, data)
 
         if #aliases > 0 then
             lia.command.add(chatType, {
-                syntax = data.syntax,
+                arguments = data.arguments,
                 desc = data.desc,
                 alias = aliases,
                 onRun = function(_, args) lia.chat.parse(LocalPlayer(), table.concat(args, " ")) end

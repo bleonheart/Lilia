@@ -2,7 +2,11 @@
     adminOnly = true,
     privilege = "toggleCheaterStatus",
     desc = "toggleCheaterDesc",
-    syntax = L("[player Target]"),
+    arguments = {
+
+        { name = "target", type = "player" },
+
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then

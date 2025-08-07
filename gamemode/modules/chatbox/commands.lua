@@ -2,7 +2,11 @@
     adminOnly = true,
     privilege = "banOOC",
     desc = "banOOCCommandDesc",
-    syntax = L("[player Name]"),
+    arguments = {
+
+        { name = "name", type = "player" },
+
+    },
     AdminStick = {
         Name = "banOOCStickName",
         Category = "moderationTools",
@@ -26,7 +30,11 @@ lia.command.add("unbanooc", {
     adminOnly = true,
     privilege = "unbanOOC",
     desc = "unbanOOCCommandDesc",
-    syntax = L("[player Name]"),
+    arguments = {
+
+        { name = "name", type = "player" },
+
+    },
     AdminStick = {
         Name = "unbanOOCStickName",
         Category = "moderationTools",
