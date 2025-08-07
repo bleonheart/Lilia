@@ -7,6 +7,7 @@ function GM:CharPreSave(character)
         character:setPlayTime(total + os.time() - loginTime)
         character:setLoginTime(os.time())
     end
+
     if not character:getInv() then return end
     for _, v in pairs(character:getInv():getItems()) do
         if v.OnSave then v:call("OnSave", client) end
@@ -1058,6 +1059,7 @@ concommand.Add("list_entities", function(client)
             else
                 entityCount[L("unknown")] = (entityCount[L("unknown")] or 0) + 1
             end
+
             totalEntities = totalEntities + 1
         end
 

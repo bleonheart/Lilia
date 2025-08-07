@@ -1,13 +1,13 @@
-local MODULE = MODULE
-
+﻿local MODULE = MODULE
 lia.command.add("viewtickets", {
     adminOnly = true,
     privilege = "viewClaims",
     desc = "viewTicketsDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
@@ -42,23 +42,34 @@ lia.command.add("viewtickets", {
             end
 
             lia.util.CreateTableUI(client, L("ticketsForTitle", displayName), {
-                {name = L("timestamp"), field = "timestamp"},
-                {name = L("admin"), field = "admin"},
-                {name = L("message"), field = "message"}
+                {
+                    name = L("timestamp"),
+                    field = "timestamp"
+                },
+                {
+                    name = L("admin"),
+                    field = "admin"
+                },
+                {
+                    name = L("message"),
+                    field = "message"
+                }
             }, ticketsData)
 
             lia.log.add(client, "viewPlayerTickets", displayName)
         end)
     end
 })
+
 lia.command.add("plyviewclaims", {
     adminOnly = true,
     privilege = "viewClaims",
     desc = "plyViewClaimsDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     AdminStick = {
         Name = "viewTicketClaims",

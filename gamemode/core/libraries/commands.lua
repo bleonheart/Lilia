@@ -11,7 +11,6 @@ The commands library provides a system for registering and managing console comm
 ]]
 lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
-
 function lia.command.buildSyntaxFromArguments(args)
     local tokens = {}
     for _, arg in ipairs(args) do
@@ -25,12 +24,14 @@ function lia.command.buildSyntaxFromArguments(args)
         else
             typ = "string"
         end
+
         local name = arg.name or typ
         local optional = arg.optional and " optional" or ""
         tokens[#tokens + 1] = string.format("[%s %s%s]", typ, name, optional)
     end
     return table.concat(tokens, " ")
 end
+
 --[[
     lia.command.add
 
@@ -98,6 +99,7 @@ function lia.command.add(command, data)
         elseif arg.type ~= "player" and arg.type ~= "table" and arg.type ~= "bool" then
             arg.type = "string"
         end
+
         arg.optional = arg.optional or false
     end
 
@@ -342,9 +344,7 @@ if SERVER then
                     for i, field in ipairs(fields) do
                         local arg = tokens[i]
                         if not arg or isPlaceholder(arg) then
-                            if not field.optional then
-                                missing[#missing + 1] = field.name
-                            end
+                            if not field.optional then missing[#missing + 1] = field.name end
                         else
                             prefix[#prefix + 1] = arg
                         end
@@ -404,13 +404,12 @@ else
         for _, name in ipairs(missing or {}) do
             lookup[name] = true
         end
-        for _, arg in ipairs(command.arguments or {}) do
-            if lookup[arg.name] then
-                fields[arg.name] = arg
-            end
-        end
-        prefix = prefix or {}
 
+        for _, arg in ipairs(command.arguments or {}) do
+            if lookup[arg.name] then fields[arg.name] = arg end
+        end
+
+        prefix = prefix or {}
         local numFields = table.Count(fields)
         local frameW, frameH = 600, 200 + numFields * 75
         local frame = vgui.Create("DFrame")
@@ -450,10 +449,12 @@ else
                 for _, plyObj in player.Iterator() do
                     if IsValid(plyObj) then players[#players + 1] = plyObj end
                 end
+
                 if isfunction(filter) then
                     local ok, res = pcall(filter, LocalPlayer(), players)
                     if ok and istable(res) then players = res end
                 end
+
                 for _, plyObj in ipairs(players) do
                     ctrl:AddChoice(plyObj:Name(), plyObj:SteamID())
                 end
@@ -465,6 +466,7 @@ else
                     local ok, res = pcall(opts)
                     if ok then opts = res end
                 end
+
                 if istable(opts) then
                     for k, v in pairs(opts) do
                         if isnumber(k) then
@@ -572,17 +574,13 @@ else
         end
 
         validate()
-
         local cancel = vgui.Create("DButton", buttons)
         cancel:Dock(RIGHT)
         cancel:SetWide(270)
         cancel:SetText(L("cancel"))
         cancel:SetFont("liaSmallFont")
         cancel:SetIcon("icon16/cross.png")
-        cancel.DoClick = function()
-            frame:Remove()
-        end
-
+        cancel.DoClick = function() frame:Remove() end
         submit.DoClick = function()
             local args = {}
             if prefix then table.Add(args, prefix) end
@@ -601,6 +599,7 @@ else
 
                 args[#args + 1] = val ~= "" and val or nil
             end
+
             RunConsoleCommand("say", "/" .. cmdKey .. " " .. table.concat(args, " "))
             frame:Remove()
         end

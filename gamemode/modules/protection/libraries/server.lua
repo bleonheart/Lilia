@@ -124,6 +124,7 @@ local function collectSteamIDs(hookName)
             end
         end
     end
+
     merge(collected)
     return flattened
 end
@@ -149,7 +150,6 @@ function MODULE:PlayerAuthed(client, steamid)
 
     local whitelistedSteamIDs = collectSteamIDs("GetWhitelistedSteamIDs")
     local blacklistedSteamIDs = collectSteamIDs("GetBlacklistedSteamIDs")
-
     local function punishIfBlacklisted(id, isAlt)
         local reason = blacklistedSteamIDs[id]
         if reason and not whitelistedSteamIDs[id] then

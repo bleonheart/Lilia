@@ -1,8 +1,9 @@
 ﻿lia.chat.register("meclose", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "mecloseDesc",
     format = "emoteFormat",
@@ -15,9 +16,10 @@
 
 lia.chat.register("actions", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "actionsDesc",
     format = "emoteFormat",
@@ -28,9 +30,10 @@ lia.chat.register("actions", {
 
 lia.chat.register("mefar", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "mefarDesc",
     format = "emoteFormat",
@@ -43,9 +46,10 @@ lia.chat.register("mefar", {
 
 lia.chat.register("itclose", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "itcloseDesc",
     onChatAdd = function(_, text) chat.AddText(lia.config.get("ChatColor"), "**" .. text) end,
@@ -58,9 +62,10 @@ lia.chat.register("itclose", {
 
 lia.chat.register("itfar", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "itfarDesc",
     onChatAdd = function(_, text) chat.AddText(lia.config.get("ChatColor"), "**" .. text) end,
@@ -84,9 +89,10 @@ lia.chat.register("coinflip", {
 
 lia.chat.register("ic", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "icDesc",
     format = "icFormat",
@@ -104,9 +110,10 @@ lia.chat.register("ic", {
 
 lia.chat.register("me", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "meDesc",
     format = "emoteFormat",
@@ -124,9 +131,10 @@ lia.chat.register("me", {
 
 lia.chat.register("globalme", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "globalMeDesc",
     format = "emoteFormat",
@@ -140,9 +148,10 @@ lia.chat.register("globalme", {
 
 lia.chat.register("it", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "itDesc",
     onChatAdd = function(_, text) chat.AddText(lia.chat.timestamp(false), lia.config.get("ChatColor"), "**" .. text) end,
@@ -159,9 +168,10 @@ lia.chat.register("it", {
 
 lia.chat.register("w", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "wDesc",
     format = "whisperFormat",
@@ -179,9 +189,10 @@ lia.chat.register("w", {
 
 lia.chat.register("y", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "yDesc",
     format = "yellFormat",
@@ -199,9 +210,10 @@ lia.chat.register("y", {
 
 lia.chat.register("looc", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "loocDesc",
     onCanSay = function(speaker)
@@ -229,9 +241,10 @@ lia.chat.register("looc", {
 
 lia.chat.register("adminchat", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "adminchatDesc",
     onGetColor = function() return Color(0, 196, 255) end,
@@ -263,11 +276,14 @@ lia.chat.register("roll", {
 
 lia.chat.register("pm", {
     arguments = {
-
-        { name = "name", type = "player" },
-
-        { name = "message", type = "string" },
-
+        {
+            name = "name",
+            type = "player"
+        },
+        {
+            name = "message",
+            type = "string"
+        },
     },
     desc = "pmDesc",
     format = "pmFormat",
@@ -278,9 +294,10 @@ lia.chat.register("pm", {
 
 lia.chat.register("eventlocal", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "eventlocalDesc",
     onCanSay = function(speaker) return speaker:hasPrivilege(L("localEventChat")) end,
@@ -296,9 +313,10 @@ lia.chat.register("eventlocal", {
 
 lia.chat.register("event", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "eventDesc",
     onCanSay = function(speaker) return speaker:hasPrivilege(L("eventChat")) end,
@@ -310,9 +328,10 @@ lia.chat.register("event", {
 
 lia.chat.register("ooc", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "oocDesc",
     onCanSay = function(speaker, text)
@@ -352,9 +371,10 @@ lia.chat.register("ooc", {
 
 lia.chat.register("me's", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "mesDesc",
     format = "mePossessiveFormat",
@@ -380,9 +400,10 @@ lia.chat.register("me's", {
 
 lia.chat.register("mefarfar", {
     arguments = {
-
-        { name = "action", type = "string" },
-
+        {
+            name = "action",
+            type = "string"
+        },
     },
     desc = "mefarfarDesc",
     format = "emoteFormat",
@@ -408,9 +429,10 @@ lia.chat.register("mefarfar", {
 
 lia.chat.register("help", {
     arguments = {
-
-        { name = "text", type = "string" },
-
+        {
+            name = "text",
+            type = "string"
+        },
     },
     desc = "helpDesc",
     onCanSay = function() return true end,

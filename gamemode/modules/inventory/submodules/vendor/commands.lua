@@ -51,9 +51,10 @@ lia.command.add("resetallvendormoney", {
     superAdminOnly = true,
     desc = "resetAllVendorMoneyDesc",
     arguments = {
-
-        { name = "amount", type = "string" },
-
+        {
+            name = "amount",
+            type = "string"
+        },
     },
     AdminStick = {
         Name = "resetAllVendorMoneyStickName",
@@ -81,9 +82,10 @@ lia.command.add("restockvendormoney", {
     superAdminOnly = true,
     desc = "restockVendorMoneyDesc",
     arguments = {
-
-        { name = "amount", type = "string" },
-
+        {
+            name = "amount",
+            type = "string"
+        },
     },
     AdminStick = {
         Name = "restockVendorMoneyStickName",

@@ -67,6 +67,7 @@ net.Receive("liaRequestActiveTickets", function(_, client)
                 message = row.message,
             }
         end
+
         net.Start("liaActiveTickets")
         net.WriteTable(tickets)
         net.Send(client)

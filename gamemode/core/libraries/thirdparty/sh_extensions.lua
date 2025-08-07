@@ -1,4 +1,4 @@
-local friendliedNPCs = {}
+﻿local friendliedNPCs = {}
 local hostaliziedNPCs = {}
 local passive = {"npc_seagull", "npc_crow", "npc_piegon", "monster_cockroach", "npc_dog", "npc_gman", "npc_antlion_grub", "npc_turret_floor"}
 local friendly = {"npc_monk", "npc_alyx", "npc_barney", "npc_citizen", "npc_turret_floor", "npc_dog", "npc_vortigaunt", "npc_kleiner", "npc_eli", "npc_magnusson", "npc_breen", "npc_mossman", "npc_fisherman", "monster_barney", "monster_scientist", "player"}
@@ -227,7 +227,6 @@ properties.Add("lia_npc_weapon", {
             WarningText:SetTextColor(color_white)
             WarningText:SetFont("DermaLarge")
             WarningText:SetText(L("npcWeaponWarning1"))
-
             local WarningText2 = vgui.Create("DLabel", WarningThing)
             WarningText2:Dock(TOP)
             WarningText2:SetHeight(35)

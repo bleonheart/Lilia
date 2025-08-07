@@ -3,9 +3,10 @@
     privilege = "setInventorySize",
     desc = "updateInventorySizeDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -47,13 +48,18 @@ lia.command.add("setinventorysize", {
     privilege = "setInventorySize",
     desc = "setInventorySizeDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
-        { name = "width", type = "string" },
-
-        { name = "height", type = "string" },
-
+        {
+            name = "name",
+            type = "player"
+        },
+        {
+            name = "width",
+            type = "string"
+        },
+        {
+            name = "height",
+            type = "string"
+        },
     },
     onRun = function(client, args)
         local target = lia.util.findPlayer(client, args[1])

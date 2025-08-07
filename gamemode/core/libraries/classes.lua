@@ -1,4 +1,4 @@
---[[
+﻿--[[
 # Classes Library
 
 This page documents the functions for working with character classes and job systems.

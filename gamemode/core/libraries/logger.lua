@@ -1,4 +1,4 @@
---[[
+﻿--[[
 # Logger Library
 
 This page documents the functions for working with logging and audit systems.

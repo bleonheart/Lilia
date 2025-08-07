@@ -3,9 +3,10 @@
     privilege = "toggleCheaterStatus",
     desc = "toggleCheaterDesc",
     arguments = {
-
-        { name = "target", type = "player" },
-
+        {
+            name = "target",
+            type = "player"
+        },
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])

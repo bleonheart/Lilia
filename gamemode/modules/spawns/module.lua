@@ -1,4 +1,4 @@
-MODULE.name = "moduleSpawnsName"
+﻿MODULE.name = "moduleSpawnsName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleSpawnsDesc"

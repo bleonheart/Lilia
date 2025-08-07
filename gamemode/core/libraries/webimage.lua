@@ -1,4 +1,4 @@
---[[
+﻿--[[
 # Web Image Library
 
 This page documents the functions for working with web image downloading and caching.

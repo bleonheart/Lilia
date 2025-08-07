@@ -1,4 +1,4 @@
-MODULE.name = "scoreboard"
+﻿MODULE.name = "scoreboard"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleScoreboardDesc"

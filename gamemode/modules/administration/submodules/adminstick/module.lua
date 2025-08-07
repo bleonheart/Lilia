@@ -1,4 +1,4 @@
-MODULE.name = "adminStick"
+﻿MODULE.name = "adminStick"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleAdminStickDesc"

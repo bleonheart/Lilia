@@ -3,9 +3,10 @@
     privilege = "banOOC",
     desc = "banOOCCommandDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     AdminStick = {
         Name = "banOOCStickName",
@@ -31,9 +32,10 @@ lia.command.add("unbanooc", {
     privilege = "unbanOOC",
     desc = "unbanOOCCommandDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     AdminStick = {
         Name = "unbanOOCStickName",

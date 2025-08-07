@@ -1,4 +1,4 @@
-local ITEM = lia.meta.item or {}
+﻿local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
 ITEM.name = "invalidName"
@@ -10,7 +10,6 @@ ITEM.isStackable = false
 ITEM.quantity = 1
 ITEM.maxQuantity = 1
 ITEM.canSplit = true
-
 --[[
     isRotated
 

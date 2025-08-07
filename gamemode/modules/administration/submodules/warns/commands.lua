@@ -4,11 +4,14 @@ lia.command.add("warn", {
     privilege = "issueWarnings",
     desc = "warnDesc",
     arguments = {
-
-        { name = "target", type = "player" },
-
-        { name = "reason", type = "string" },
-
+        {
+            name = "target",
+            type = "player"
+        },
+        {
+            name = "reason",
+            type = "string"
+        },
     },
     AdminStick = {
         Name = "warnPlayer",
@@ -48,9 +51,10 @@ lia.command.add("viewwarns", {
     privilege = "viewPlayerWarnings",
     desc = "viewWarnsDesc",
     arguments = {
-
-        { name = "target", type = "player" },
-
+        {
+            name = "target",
+            type = "player"
+        },
     },
     AdminStick = {
         Name = "viewPlayerWarnings",

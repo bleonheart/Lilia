@@ -56,6 +56,7 @@ function MODULE:CreateInformationButtons(pages)
             end
         })
     end
+
     if character:hasFlags("W") then
         table.insert(pages, {
             name = L("classRoster"),

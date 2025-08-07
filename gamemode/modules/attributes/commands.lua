@@ -1,8 +1,11 @@
-lia.command.add("charsetattrib", {
+﻿lia.command.add("charsetattrib", {
     superAdminOnly = true,
     desc = "setAttributes",
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "attribute",
             type = "table",
@@ -14,7 +17,10 @@ lia.command.add("charsetattrib", {
                 return options
             end
         },
-        {name = "level", type = "number"}
+        {
+            name = "level",
+            type = "number"
+        }
     },
     privilege = "manageAttributes",
     AdminStick = {
@@ -51,9 +57,10 @@ lia.command.add("checkattributes", {
     adminOnly = true,
     desc = "checkAttributes",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     privilege = "manageAttributes",
     AdminStick = {
@@ -117,7 +124,10 @@ lia.command.add("charaddattrib", {
     superAdminOnly = true,
     desc = "addAttributes",
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "attribute",
             type = "table",
@@ -129,7 +139,10 @@ lia.command.add("charaddattrib", {
                 return options
             end
         },
-        {name = "level", type = "number"}
+        {
+            name = "level",
+            type = "number"
+        }
     },
     privilege = "manageAttributes",
     AdminStick = {

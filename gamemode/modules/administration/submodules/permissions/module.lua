@@ -1,4 +1,4 @@
-MODULE.name = "modulePermissionsName"
+﻿MODULE.name = "modulePermissionsName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "modulePermissionsDesc"

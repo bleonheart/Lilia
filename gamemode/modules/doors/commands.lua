@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 lia.command.add("doorsell", {
     desc = "doorsellDesc",
     adminOnly = false,
@@ -255,9 +255,10 @@ lia.command.add("doortogglehidden", {
 lia.command.add("doorsetprice", {
     desc = "doorsetpriceDesc",
     arguments = {
-
-        { name = "price", type = "string" },
-
+        {
+            name = "price",
+            type = "string"
+        },
     },
     adminOnly = true,
     privilege = "manageDoors",
@@ -286,9 +287,10 @@ lia.command.add("doorsetprice", {
 lia.command.add("doorsettitle", {
     desc = "doorsettitleDesc",
     arguments = {
-
-        { name = "title", type = "string" },
-
+        {
+            name = "title",
+            type = "string"
+        },
     },
     adminOnly = true,
     privilege = "manageDoors",
@@ -369,6 +371,7 @@ lia.command.add("doorinfo", {
                 local info = lia.class.list[idx]
                 if info then table.insert(classNames, info.name) end
             end
+
             local hidden = door:getNetVar("hidden", false)
             local locked = door:getNetVar("locked", false)
             local doorData = {
@@ -611,4 +614,3 @@ lia.command.add("togglealldoors", {
         MODULE:SaveData()
     end
 })
-

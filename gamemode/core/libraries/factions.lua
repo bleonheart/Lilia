@@ -1,4 +1,4 @@
---[[
+﻿--[[
 # Factions Library
 
 This page documents the functions for working with faction management and team systems.

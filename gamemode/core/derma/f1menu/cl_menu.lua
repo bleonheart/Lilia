@@ -71,6 +71,7 @@ function PANEL:Init()
         for _, btn in ipairs(btns) do
             totalW = totalW + (btn.calcW or baseBtnW) + spacing
         end
+
         local overflow = totalW - w
         if overflow > 0 then
             leftArrow:SetVisible(true)
@@ -120,6 +121,7 @@ function PANEL:Init()
         local aName, bName = tostring(L(a)):lower(), tostring(L(b)):lower()
         return aName < bName
     end)
+
     self.tabList = {}
     for _, key in ipairs(tabKeys) do
         local cb = btnDefs[key]

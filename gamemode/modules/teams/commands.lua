@@ -1,10 +1,13 @@
-lia.command.add("plytransfer", {
+﻿lia.command.add("plytransfer", {
     adminOnly = true,
     privilege = "manageTransfers",
     desc = "plyTransferDesc",
     alias = {"charsetfaction"},
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "faction",
             type = "table",
@@ -44,13 +47,7 @@ lia.command.add("plytransfer", {
         if faction.OnTransferred then faction:OnTransferred(targetPlayer, oldFaction) end
         hook.Run("PlayerLoadout", targetPlayer)
         client:notifyLocalized("transferSuccess", targetPlayer:Name(), L(faction.name, client))
-        if client ~= targetPlayer then
-            targetPlayer:notifyLocalized(
-                "transferNotification",
-                L(faction.name, targetPlayer),
-                client:Name()
-            )
-        end
+        if client ~= targetPlayer then targetPlayer:notifyLocalized("transferNotification", L(faction.name, targetPlayer), client:Name()) end
         lia.log.add(client, "plyTransfer", targetPlayer:Name(), oldFactionName, faction.name)
     end
 })
@@ -61,7 +58,10 @@ lia.command.add("plywhitelist", {
     desc = "plyWhitelistDesc",
     alias = {"factionwhitelist"},
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "faction",
             type = "table",
@@ -98,7 +98,10 @@ lia.command.add("plyunwhitelist", {
     desc = "plyUnwhitelistDesc",
     alias = {"factionunwhitelist"},
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "faction",
             type = "table",
@@ -175,7 +178,10 @@ lia.command.add("setclass", {
     privilege = "manageClasses",
     desc = "setClassDesc",
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "class",
             type = "table",
@@ -219,7 +225,10 @@ lia.command.add("classwhitelist", {
     privilege = "manageWhitelists",
     desc = "classWhitelistDesc",
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "class",
             type = "table",
@@ -262,7 +271,10 @@ lia.command.add("classunwhitelist", {
     privilege = "manageClasses",
     desc = "classUnwhitelistDesc",
     arguments = {
-        {name = "name", type = "player"},
+        {
+            name = "name",
+            type = "player"
+        },
         {
             name = "class",
             type = "table",

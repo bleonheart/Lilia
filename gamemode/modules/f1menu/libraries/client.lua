@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 MODULE.CharacterInformation = {}
 function MODULE:LoadCharInformation()
     hook.Run("AddSection", L("generalInfo"), Color(0, 0, 0), 1, 1)
@@ -154,7 +154,6 @@ function MODULE:CreateMenuButtons(tabs)
                 panel:Dock(FILL)
                 panel.Paint = function() end
                 local sheetData = sheet:AddSheet(page.name, panel, page.icon)
-
                 if page.drawFunc then
                     sheetData.Tab.liaPagePanel = panel
                     sheetData.Tab.liaOnSelect = page.drawFunc
@@ -162,15 +161,11 @@ function MODULE:CreateMenuButtons(tabs)
             end
 
             function sheet:OnActiveTabChanged(_, newTab)
-                if IsValid(newTab) and newTab.liaOnSelect then
-                    newTab.liaOnSelect(newTab.liaPagePanel)
-                end
+                if IsValid(newTab) and newTab.liaOnSelect then newTab.liaOnSelect(newTab.liaPagePanel) end
             end
 
             local initial = sheet:GetActiveTab()
-            if IsValid(initial) and initial.liaOnSelect then
-                initial.liaOnSelect(initial.liaPagePanel)
-            end
+            if IsValid(initial) and initial.liaOnSelect then initial.liaOnSelect(initial.liaPagePanel) end
         end
     end
 end

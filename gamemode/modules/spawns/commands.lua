@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 lia.command.add("spawnadd", {
     privilege = "manageSpawns",
     adminOnly = true,
@@ -48,9 +48,11 @@ lia.command.add("spawnremoveinradius", {
     adminOnly = true,
     desc = "spawnRemoveInRadiusDesc",
     arguments = {
-
-        { name = "radius", type = "string", optional = true },
-
+        {
+            name = "radius",
+            type = "string",
+            optional = true
+        },
     },
     onRun = function(client, arguments)
         local position = client:GetPos()
@@ -138,9 +140,10 @@ lia.command.add("returnitems", {
     privilege = "returnItems",
     desc = "returnItemsDesc",
     arguments = {
-
-        { name = "name", type = "player" },
-
+        {
+            name = "name",
+            type = "player"
+        },
     },
     AdminStick = {
         Name = "returnItems",
@@ -178,4 +181,3 @@ lia.command.add("returnitems", {
         end
     end
 })
-

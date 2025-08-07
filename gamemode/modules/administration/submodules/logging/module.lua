@@ -1,4 +1,4 @@
-MODULE.name = "moduleLoggerName"
+﻿MODULE.name = "moduleLoggerName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleLoggerDesc"

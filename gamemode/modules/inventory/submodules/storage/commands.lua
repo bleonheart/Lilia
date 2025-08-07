@@ -1,12 +1,14 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 lia.command.add("storagelock", {
     privilege = "lockStorage",
     adminOnly = true,
     desc = "storagelockDesc",
     arguments = {
-
-        { name = "password", type = "string", optional = true },
-
+        {
+            name = "password",
+            type = "string",
+            optional = true
+        },
     },
     onRun = function(client, arguments)
         local entity = client:getTracedEntity()

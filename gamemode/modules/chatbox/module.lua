@@ -1,4 +1,4 @@
-MODULE.name = "moduleChatboxName"
+﻿MODULE.name = "moduleChatboxName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleChatboxDesc"

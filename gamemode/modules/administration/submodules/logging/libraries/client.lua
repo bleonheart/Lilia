@@ -1,4 +1,4 @@
-local receivedPanel
+﻿local receivedPanel
 local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     local sheet = panel:Add("DPropertySheet")
@@ -47,7 +47,6 @@ local function OpenLogsUI(panel, categorizedLogs)
             local menu = DermaMenu()
             if data.steamID and data.steamID ~= "" then menu:AddOption(L("copySteamID"), function() SetClipboardText(data.steamID) end) end
             menu:AddOption(L("copyLogMessage"), function() SetClipboardText(data.message or "") end)
-
             menu:Open()
         end
 

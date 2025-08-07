@@ -177,7 +177,6 @@ local DefaultFunctions = {
 
 lia.meta.item.width = 1
 lia.meta.item.height = 1
-
 --[[
     lia.item.get
 
@@ -454,7 +453,6 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     end
 
     if not luaGenerated and path then lia.include(path, "shared") end
-
     for funcName, funcTable in pairs(ITEM.functions) do
         if isstring(funcTable.name) then
             funcTable.name = L(funcTable.name)
@@ -467,7 +465,6 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 
     if isstring(ITEM.name) then ITEM.name = L(ITEM.name) end
     if isstring(ITEM.desc) then ITEM.desc = L(ITEM.desc) end
-
     ITEM:onRegistered()
     local itemType = ITEM.uniqueID
     targetTable[itemType] = ITEM

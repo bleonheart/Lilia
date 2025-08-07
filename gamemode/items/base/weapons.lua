@@ -135,9 +135,7 @@ end
 if CLIENT then
     function ITEM:getName()
         local weapon = weapons.GetStored(self.class)
-        if weapon and weapon.PrintName then
-            return language.GetPhrase(weapon.PrintName)
-        end
+        if weapon and weapon.PrintName then return language.GetPhrase(weapon.PrintName) end
         return self.name
     end
 
