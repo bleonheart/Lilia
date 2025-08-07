@@ -1,10 +1,9 @@
 ﻿local PANEL = {}
 function PANEL:Init()
-    self:SetTall(500) -- Set minimum height for the roster panel
+    self:SetTall(500)
     self.sheet = self:Add("liaSheet")
     self.sheet:Dock(FILL)
     self.sheet:SetPlaceholderText(L("search"))
-    -- Ensure proper sizing after initialization
     timer.Simple(0.1, function()
         if IsValid(self) then
             self:InvalidateLayout(true)
@@ -20,7 +19,6 @@ end
 
 function PANEL:SetRosterType(t)
     self.rosterType = t
-    -- Request data when roster type is set
     if t == "faction" then
         net.Start("RequestFactionRoster")
         net.SendToServer()
@@ -31,7 +29,6 @@ function PANEL:Populate(data, canKick)
     if not IsValid(self.sheet) then return end
     self.sheet.search:SetValue("")
     self.sheet:Clear()
-    -- Handle empty data
     if not data or #data == 0 then
         self.sheet:AddTextRow({
             title = L("none"),
@@ -43,40 +40,33 @@ function PANEL:Populate(data, canKick)
         return
     end
 
-    -- Format faction roster like commands
     for _, v in ipairs(data) do
         local title = v.name or L("unnamed")
         local desc = string.format("%s | %s | %s", v.steamID or L("na"), v.class or L("none"), v.playTime or L("na"))
         local right = v.lastOnline or L("na")
-        -- Check if class has a logo
         local classData = v.classID and lia.class.list[v.classID]
         local hasLogo = classData and classData.logo and classData.logo ~= ""
         local row
         if hasLogo then
-            -- Create custom row with logo
             row = self.sheet:AddRow(function(p, row)
                 local logoSize = 64
                 local margin = 8
                 local rowHeight = logoSize + self.sheet.padding * 2
-                -- Create logo image
                 local logo = vgui.Create("DImage", p)
                 logo:SetSize(logoSize, logoSize)
                 logo:SetMaterial(Material(classData.logo))
                 logo:SetPos(margin, margin)
-                -- Create title label
                 local t = vgui.Create("DLabel", p)
                 t:SetFont("liaMediumFont")
                 t:SetText(title)
                 t:SizeToContents()
                 t:SetPos(margin + logoSize + margin, margin)
-                -- Create description label
                 local d = vgui.Create("DLabel", p)
                 d:SetFont("liaSmallFont")
                 d:SetWrap(true)
                 d:SetAutoStretchVertical(true)
                 d:SetText(desc)
                 d:SetPos(margin + logoSize + margin, margin + t:GetTall() + 5)
-                -- Create right label
                 local r = vgui.Create("DLabel", p)
                 r:SetFont("liaSmallFont")
                 r:SetText(right)
@@ -101,7 +91,6 @@ function PANEL:Populate(data, canKick)
                 row.filterText = (title .. " " .. desc .. " " .. right):lower()
             end)
         else
-            -- Use standard text row
             row = self.sheet:AddTextRow({
                 title = title,
                 desc = desc,
@@ -110,10 +99,8 @@ function PANEL:Populate(data, canKick)
             })
         end
 
-        -- Store original data for context menu
         row.rowData = v
         row.filterText = (title .. " " .. desc .. " " .. right):lower()
-        -- Add right-click context menu
         row.OnRightClick = function()
             if not IsValid(row) or not row.rowData then return end
             local rowData = row.rowData

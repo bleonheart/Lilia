@@ -390,7 +390,6 @@ local function OpenRoster(panel, data)
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
         
-        -- Use liaSheet instead of DListView for better logo support
         local rosterSheet = page:Add("liaSheet")
         rosterSheet:Dock(FILL)
         rosterSheet:SetPlaceholderText(L("search"))
@@ -399,39 +398,34 @@ local function OpenRoster(panel, data)
             rosterSheet:Clear()
             for _, member in ipairs(membersData) do
                 local title = member.name or L("unnamed")
-                local desc = string.format("%s | %s | %s", 
-                    member.steamID or L("na"), 
-                    member.class or L("none"), 
+                local desc = string.format("%s | %s | %s",
+                    member.steamID or L("na"),
+                    member.class or L("none"),
                     member.playTime or L("na")
                 )
                 local right = member.lastOnline or L("na")
                 
-                -- Check if class has a logo
                 local classData = member.classID and lia.class.list[member.classID]
                 local hasLogo = classData and classData.logo and classData.logo ~= ""
                 local row
                 
                 if hasLogo then
-                    -- Create custom row with logo
                     row = rosterSheet:AddRow(function(p, row)
                         local logoSize = 64
                         local margin = 8
                         local rowHeight = logoSize + rosterSheet.padding * 2
 
-                        -- Create logo image
                         local logo = vgui.Create("DImage", p)
                         logo:SetSize(logoSize, logoSize)
                         logo:SetMaterial(Material(classData.logo))
                         logo:SetPos(margin, margin)
                         
-                        -- Create title label
                         local t = vgui.Create("DLabel", p)
                         t:SetFont("liaMediumFont")
                         t:SetText(title)
                         t:SizeToContents()
                         t:SetPos(margin + logoSize + margin, margin)
                         
-                        -- Create description label
                         local d = vgui.Create("DLabel", p)
                         d:SetFont("liaSmallFont")
                         d:SetWrap(true)
@@ -439,7 +433,6 @@ local function OpenRoster(panel, data)
                         d:SetText(desc)
                         d:SetPos(margin + logoSize + margin, margin + t:GetTall() + 5)
                         
-                        -- Create right label
                         local r = vgui.Create("DLabel", p)
                         r:SetFont("liaSmallFont")
                         r:SetText(right)
@@ -467,7 +460,6 @@ local function OpenRoster(panel, data)
                         row.filterText = (title .. " " .. desc .. " " .. right):lower()
                     end)
                 else
-                    -- Use standard text row
                     row = rosterSheet:AddTextRow({
                         title = title,
                         desc = desc,
@@ -476,11 +468,9 @@ local function OpenRoster(panel, data)
                     })
                 end
                 
-                -- Store original data for context menu
                 row.rowData = member
                 row.filterText = (title .. " " .. desc .. " " .. right):lower()
                 
-                -- Add right-click context menu
                 row.OnRightClick = function()
                     if not IsValid(row) or not row.rowData then return end
                     local rowData = row.rowData
@@ -496,10 +486,10 @@ local function OpenRoster(panel, data)
                             end, L("no"))
                         end):SetIcon("icon16/user_delete.png")
 
-                        if lia.command.hasAccess(LocalPlayer(), "charlist") then 
-                            menu:AddOption(L("viewCharacterList"), function() 
-                                LocalPlayer():ConCommand("say /charlist " .. steamID) 
-                            end):SetIcon("icon16/page_copy.png") 
+                        if lia.command.hasAccess(LocalPlayer(), "charlist") then
+                            menu:AddOption(L("viewCharacterList"), function()
+                                LocalPlayer():ConCommand("say /charlist " .. steamID)
+                            end):SetIcon("icon16/page_copy.png")
                         end
                     end
 
@@ -519,11 +509,11 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/page_copy.png")
 
                     if steamID and steamID ~= "" then
-                        menu:AddOption(L("copySteamID"), function() 
-                            SetClipboardText(steamID) 
+                        menu:AddOption(L("copySteamID"), function()
+                            SetClipboardText(steamID)
                         end):SetIcon("icon16/page_copy.png")
-                        menu:AddOption(L("openSteamProfile"), function() 
-                            gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) 
+                        menu:AddOption(L("openSteamProfile"), function()
+                            gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID))
                         end):SetIcon("icon16/world.png")
                     end
                     
