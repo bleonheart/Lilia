@@ -48,7 +48,7 @@ function PANEL:Populate(data, canKick)
         local hasLogo = classData and classData.logo and classData.logo ~= ""
         local row
         if hasLogo then
-            row = self.sheet:AddRow(function(p, row)
+            row = self.sheet:AddRow(function(p, rowPanel)
                 local logoSize = 64
                 local margin = 8
                 local rowHeight = logoSize + self.sheet.padding * 2
@@ -88,7 +88,7 @@ function PANEL:Populate(data, canKick)
                     p:SetTall(math.max(rowHeight, textH))
                 end
 
-                row.filterText = (title .. " " .. desc .. " " .. right):lower()
+                rowPanel.filterText = (title .. " " .. desc .. " " .. right):lower()
             end)
         else
             row = self.sheet:AddTextRow({
