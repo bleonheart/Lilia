@@ -73,7 +73,7 @@ function PANEL:AddTextRow(data)
     local desc = data.desc or ""
     local right = data.right or ""
     local compact = data.compact
-    local minHeight = data.minHeight or (compact and 30 or 40)
+    local minHeight = data.minHeight or compact and 30 or 40
     local row = self:AddRow(function(p, row)
         local titleFont = compact and "liaSmallFont" or "liaMediumFont"
         local descFont = compact and "liaMiniFont" or "liaSmallFont"
