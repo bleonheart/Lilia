@@ -63,5 +63,3 @@ net.Receive("RequestFactionRoster", function(_, client)
         net.Send(client)
     end)
 end)
-
-
