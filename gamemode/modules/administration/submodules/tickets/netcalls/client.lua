@@ -103,7 +103,7 @@ net.Receive("liaTicketsCount", function()
     end
 end)
 
-function MODULE:PopulateAdminTabs(pages)
+function MODULE:PopulateAdminTabs()
     if not IsValid(LocalPlayer()) or not (LocalPlayer():hasPrivilege(L("alwaysSeeTickets")) or LocalPlayer():isStaffOnDuty()) then return end
     -- Request the count first to determine if we should add the tab
     net.Start("liaRequestTicketsCount")

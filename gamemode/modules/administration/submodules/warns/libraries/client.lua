@@ -84,7 +84,7 @@ net.Receive("liaWarningsCount", function()
     end
 end)
 
-function MODULE:PopulateAdminTabs(pages)
+function MODULE:PopulateAdminTabs()
     if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege(L("viewPlayerWarnings")) then return end
     -- Request the count first to determine if we should add the tab
     net.Start("liaRequestWarningsCount")
