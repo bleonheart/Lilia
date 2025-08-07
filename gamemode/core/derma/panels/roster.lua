@@ -24,9 +24,6 @@ function PANEL:SetRosterType(t)
     if t == "faction" then
         net.Start("RequestFactionRoster")
         net.SendToServer()
-    elseif t == "class" then
-        net.Start("RequestClassRoster")
-        net.SendToServer()
     end
 end
 
@@ -46,35 +43,79 @@ function PANEL:Populate(data, canKick)
         return
     end
 
-    local rows = {}
-    local originals = {}
+    -- Format faction roster like commands
     for _, v in ipairs(data) do
-        rows[#rows + 1] = {v.name, v.steamID, v.class or L("none"), v.playTime, v.lastOnline}
-        originals[#originals + 1] = v
-    end
+        local title = v.name or L("unnamed")
+        local desc = string.format("%s | %s | %s", v.steamID or L("na"), v.class or L("none"), v.playTime or L("na"))
+        local right = v.lastOnline or L("na")
+        -- Check if class has a logo
+        local classData = v.classID and lia.class.list[v.classID]
+        local hasLogo = classData and classData.logo and classData.logo ~= ""
+        local row
+        if hasLogo then
+            -- Create custom row with logo
+            row = self.sheet:AddRow(function(p, row)
+                local logoSize = 64
+                local margin = 8
+                -- Create logo image
+                local logo = vgui.Create("DImage", p)
+                logo:SetSize(logoSize, logoSize)
+                logo:SetMaterial(Material(classData.logo))
+                logo:SetPos(margin, margin)
+                -- Create title label
+                local t = vgui.Create("DLabel", p)
+                t:SetFont("liaMediumFont")
+                t:SetText(title)
+                t:SizeToContents()
+                t:SetPos(margin + logoSize + margin, margin)
+                -- Create description label
+                local d = vgui.Create("DLabel", p)
+                d:SetFont("liaSmallFont")
+                d:SetWrap(true)
+                d:SetAutoStretchVertical(true)
+                d:SetText(desc)
+                d:SetPos(margin + logoSize + margin, margin + t:GetTall() + 5)
+                -- Create right label
+                local r = vgui.Create("DLabel", p)
+                r:SetFont("liaSmallFont")
+                r:SetText(right)
+                r:SizeToContents()
+                p.PerformLayout = function()
+                    local pad = self.sheet.padding
+                    local spacing = 5
+                    logo:SetPos(pad, pad)
+                    t:SetPos(pad + logoSize + pad, pad)
+                    d:SetPos(pad + logoSize + pad, pad + t:GetTall() + spacing)
+                    d:SetWide(p:GetWide() - (pad + logoSize + pad) - pad - (r:GetWide() + 10))
+                    d:SizeToContentsY()
+                    if r then
+                        local y = d and pad + t:GetTall() + spacing + d:GetTall() - r:GetTall() or p:GetTall() * 0.5 - r:GetTall() * 0.5
+                        r:SetPos(p:GetWide() - r:GetWide() - pad, math.max(pad, y))
+                    end
 
-    local row = self.sheet:AddListViewRow({
-        columns = {L("name"), L("steamID"), L("class"), L("playtime"), L("lastOnline")},
-        data = rows,
-        height = 400, -- Increased height for better visibility
-        getLineText = function(line)
-            local s = ""
-            for i = 1, 5 do
-                local v = line:GetValue(i)
-                if v then s = s .. " " .. tostring(v) end
-            end
-            return s
+                    local baseMin = 300
+                    local h = d and pad + t:GetTall() + spacing + d:GetTall() + pad or math.max(baseMin, pad + t:GetTall() + pad)
+                    p:SetTall(h)
+                end
+
+                row.filterText = (title .. " " .. desc .. " " .. right):lower()
+            end)
+        else
+            -- Use standard text row
+            row = self.sheet:AddTextRow({
+                title = title,
+                desc = desc,
+                right = right
+            })
         end
-    })
 
-    if row and row.widget then
-        for i, line in ipairs(row.widget:GetLines() or {}) do
-            line.rowData = originals[i]
-        end
-
-        row.widget.OnRowRightClick = function(_, _, line)
-            if not IsValid(line) or not line.rowData then return end
-            local rowData = line.rowData
+        -- Store original data for context menu
+        row.rowData = v
+        row.filterText = (title .. " " .. desc .. " " .. right):lower()
+        -- Add right-click context menu
+        row.OnRightClick = function()
+            if not IsValid(row) or not row.rowData then return end
+            local rowData = row.rowData
             local menu = DermaMenu()
             if canKick and rowData.steamID ~= LocalPlayer():SteamID() then
                 menu:AddOption(L("kick"), function()
@@ -104,7 +145,6 @@ function PANEL:Populate(data, canKick)
     end
 
     self.sheet:Refresh()
-    -- Ensure proper sizing after populating data
     timer.Simple(0.1, function()
         if IsValid(self) then
             self:InvalidateLayout(true)

@@ -211,7 +211,7 @@ LANGUAGE = {
     globalAccess = "Global",
     meters = "%s Meters",
     factionRoster = "Faction Roster",
-    classRoster = "Class Roster",
+
     classes = "Classes",
     searchFlags = "Search Flags…",
     searchCommands = "Search Commands…",
@@ -447,7 +447,7 @@ LANGUAGE = {
     flagPac3 = "Gives Access to PAC3.",
     flagFactionRoster = "Gives Access to manage your faction roster.",
     flagFactionKick = "Gives Access to kick members from your faction roster.",
-    flagClassRoster = "Gives Access to manage your class roster.",
+
     classNoInfo = "Class information not found.",
     classWrongTeam = "You are not in the correct team to join this class.",
     classFull = "This class is currently full.",

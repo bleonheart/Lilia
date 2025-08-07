@@ -186,7 +186,6 @@ function characterMeta:hasFlags(flagStr)
     local flags = self:getFlags()
     local ply = self:getPlayer()
     local playerFlags = ply and ply:getPlayerFlags() or ""
-    
     for i = 1, #flagStr do
         local flag = flagStr:sub(i, i)
         if flags:find(flag, 1, true) or playerFlags:find(flag, 1, true) then return true end

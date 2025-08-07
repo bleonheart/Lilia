@@ -128,6 +128,7 @@ net.Receive("liaRequestFactionRoster", function(_, client)
                         id = charID,
                         steamID = v.steamID,
                         class = classData and classData.name or L("none"),
+                        classID = classID,
                         playTime = lia.time.formatDHM(playTime),
                         lastOnline = lastOnlineText
                     })
