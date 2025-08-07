@@ -1,6 +1,6 @@
 ﻿lia.command.add("banooc", {
     adminOnly = true,
-    privilege = L("banOOC"),
+    privilege = "banOOC",
     desc = "banOOCCommandDesc",
     syntax = L("[player Name]"),
     AdminStick = {
@@ -24,7 +24,7 @@
 
 lia.command.add("unbanooc", {
     adminOnly = true,
-    privilege = L("unbanOOC"),
+    privilege = "unbanOOC",
     desc = "unbanOOCCommandDesc",
     syntax = L("[player Name]"),
     AdminStick = {
@@ -48,7 +48,7 @@ lia.command.add("unbanooc", {
 
 lia.command.add("blockooc", {
     superAdminOnly = true,
-    privilege = L("blockOOC"),
+    privilege = "blockOOC",
     desc = "blockOOCCommandDesc",
     onRun = function(client)
         local blocked = GetGlobalBool("oocblocked", false)
@@ -60,7 +60,7 @@ lia.command.add("blockooc", {
 
 lia.command.add("clearchat", {
     adminOnly = true,
-    privilege = L("clearChat"),
+    privilege = "clearChat",
     desc = "clearChatCommandDesc",
     onRun = function(client)
         net.Start("RegenChat")
