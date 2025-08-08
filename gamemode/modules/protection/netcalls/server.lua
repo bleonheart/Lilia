@@ -502,7 +502,6 @@ local KnownExploits = {
     ["VoteKickNO"] = true,
     ["shopguild_buyitem"] = true,
     ["MG2.Request.GangRankings"] = true,
-    ["RequestMAPSize"] = true,
     ["gMining.sellMineral"] = true,
     ["ItemStoreDrop"] = true,
     ["optarrest"] = true,
