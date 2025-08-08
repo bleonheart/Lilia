@@ -84,7 +84,22 @@ Registers a CAMI privilege for use with permission checks.
 
 **Parameters**
 
-* `privilege` (*table*): Table containing the privilege definition.
+* `privilege` (*table*): Table containing the privilege definition with fields:
+  * `Name` (*string*): Localized name shown in privilege lists.
+  * `ID` (*string*): Unique identifier used when checking permissions.
+  * `MinAccess` (*string*, optional): Minimum usergroup required to have this privilege.
+  * `Category` (*string*, optional): Category for organizational purposes.
+
+**Example**
+
+```lua
+lia.administrator.registerPrivilege({
+    Name = L("useDisallowedTools"),
+    ID = "useDisallowedTools",
+    MinAccess = "superadmin",
+    Category = "categoryStaffTools"
+})
+```
 
 **Realm**
 

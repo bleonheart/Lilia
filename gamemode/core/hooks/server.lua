@@ -1003,13 +1003,14 @@ concommand.Add("plysetgroup", function(ply, _, args)
 end)
 
 lia.administrator.registerPrivilege({
-    Name = "stopSoundForEveryone",
+    Name = L("stopSoundForEveryone"),
+    ID = "stopSoundForEveryone",
     MinAccess = "superadmin",
     Category = "categoryServer"
 })
 
 concommand.Add("stopsoundall", function(client)
-    if client:hasPrivilege(L("stopSoundForEveryone")) then
+    if client:hasPrivilege("stopSoundForEveryone") then
         for _, v in player.Iterator() do
             v:ConCommand("stopsound")
         end
