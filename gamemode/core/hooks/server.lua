@@ -1003,7 +1003,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
 end)
 
 lia.administrator.registerPrivilege({
-    Name = L("stopSoundForEveryone"),
+    Name = "stopSoundForEveryone",
     ID = "stopSoundForEveryone",
     MinAccess = "superadmin",
     Category = "categoryServer"

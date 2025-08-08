@@ -1,6 +1,6 @@
 ﻿local GM = GM or GAMEMODE
 lia.administrator.registerPrivilege({
-    Name = L("useDisallowedTools"),
+    Name = "useDisallowedTools",
     ID = "useDisallowedTools",
     MinAccess = "superadmin",
     Category = "categoryStaffTools"

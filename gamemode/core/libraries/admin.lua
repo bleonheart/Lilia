@@ -209,7 +209,7 @@ end
     Example Usage:
         -- Register a new privilege "canFly" for admins and above
         lia.administrator.registerPrivilege({
-            Name = L("canFly"),
+            Name = "canFly",
             ID = "canFly",
             MinAccess = "admin",
             Category = "Fun"

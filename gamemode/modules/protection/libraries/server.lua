@@ -1,6 +1,6 @@
 ﻿local MODULE = MODULE
 lia.administrator.registerPrivilege({
-    Name = L("receiveCheaterNotifications"),
+    Name = "receiveCheaterNotifications",
     ID = "receiveCheaterNotifications",
     MinAccess = "admin",
     Category = "protection"
