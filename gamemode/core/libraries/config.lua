@@ -39,10 +39,11 @@ lia.config.stored = lia.config.stored or {}
 
     Parameters:
         key (string)        - The unique key for the config variable.
-        name (string)       - The display name for the config variable.
+        name (string)       - The display name for the config variable (localized automatically).
         value (any)         - The default value for the config variable.
         callback (function) - (Optional) Function to call when the config value changes.
-        data (table)        - Table containing additional config properties (type, desc, category, etc).
+        data (table)        - Table containing additional config properties (type, desc, category, etc). String values such as
+                              `desc`, `category`, and entries in an `options` table are localized automatically.
 
     Returns:
         None.
@@ -70,15 +71,25 @@ function lia.config.add(key, name, value, callback, data)
     data.type = data.type or configType
     local oldConfig = lia.config.stored[key]
     local savedValue = oldConfig and oldConfig.value or value
-    local category = data.category
-    local desc = data.desc
+
+    if istable(data.options) then
+        for k, v in pairs(data.options) do
+            if isstring(v) then
+                data.options[k] = L(v)
+            end
+        end
+    end
+
+    data.desc = isstring(data.desc) and L(data.desc) or data.desc
+    data.category = isstring(data.category) and L(data.category) or data.category
+
     lia.config.stored[key] = {
-        name = name or key,
+        name = isstring(name) and L(name) or name or key,
         data = data,
         value = savedValue,
         default = value,
-        desc = desc,
-        category = category or L("character"),
+        desc = data.desc,
+        category = data.category or L("character"),
         noNetworking = data.noNetworking or false,
         callback = callback
     }

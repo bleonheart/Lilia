@@ -20,13 +20,13 @@ Registers a new config option with the given key, display name, default value, a
 
 * `key` (*string*): Unique identifier for the option.
 
-* `name` (*string*): Display name shown in menus.
+* `name` (*string*): Display name shown in menus. Localized automatically with `L`.
 
 * `value` (*any*): Default stored value.
 
 * `callback` (*function*): Function run when the value changes. *Optional*.
 
-* `data` (*table*): Table describing the option. Common fields include `desc`, `category`, `type`, `min`, `max`, `decimals`, `options`, and `noNetworking`.
+* `data` (*table*): Table describing the option. Common fields include `desc`, `category`, `type`, `min`, `max`, `decimals`, `options`, and `noNetworking`. Any string values for `desc`, `category`, or within `options` are localized automatically.
 
 **Realm**
 
@@ -42,7 +42,7 @@ Registers a new config option with the given key, display name, default value, a
 -- Register a walk-speed option with limits and a callback
 lia.config.add(
     "walkSpeed",
-    "Walk Speed",
+    "walkSpeed",
     130,
     function(_, newValue)
         for _, ply in player.Iterator() do
@@ -50,8 +50,8 @@ lia.config.add(
         end
     end,
     {
-        desc = "Base walking speed for all players.",
-        category = "Movement",
+        desc = "walkSpeedDesc",
+        category = "movement",
         type = "Int",
         min = 50,
         max = 300

@@ -44,15 +44,15 @@ Registers a configurable option that can be networked.
 
 * `key` (*string*): Unique option key.
 
-* `name` (*string*): Display name.
+* `name` (*string*): Display name. Localized automatically with `L`.
 
-* `desc` (*string*): Brief description.
+* `desc` (*string*): Brief description. Localized automatically with `L`.
 
 * `default` (*any*): Default value.
 
 * `callback` (*function | nil*): Runs on change. Optional.
 
-* `data` (*table*): Extra option data. Set `isQuick = true` to also list this option in the quick settings panel.
+* `data` (*table*): Extra option data. Set `isQuick = true` to also list this option in the quick settings panel. String values like `category` or entries within an `options` table are localized automatically.
 
 **Realm**
 
@@ -67,13 +67,13 @@ Registers a configurable option that can be networked.
 ```lua
 lia.option.add(
     "thirdPersonEnabled",
-    "Third Person Enabled",
-    "Toggle third-person view.",
+    "thirdPersonEnabled",
+    "thirdPersonEnabledDesc",
     false,
     function(_, newValue)
         hook.Run("thirdPersonToggled", newValue)
     end,
-    { category = "Third Person" }
+    { category = "thirdPerson" }
 )
 ```
 
