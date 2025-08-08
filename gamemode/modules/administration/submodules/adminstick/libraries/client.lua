@@ -41,8 +41,8 @@ local function GetSubMenuIcon(name)
     if subMenuIcons[L(name)] then return subMenuIcons[L(name)] end
     local setFactionLocalized = L("setFactionTitle"):match("^([^%(]+)") or L("setFactionTitle")
     setFactionLocalized = setFactionLocalized:gsub("^%s*(.-)%s*$", "%1") -- Trim whitespace
-    if name:match("^" .. setFactionLocalized) then return subMenuIcons["setFactionTitle"] end
-    if name:match("Set Faction") then return subMenuIcons["setFactionTitle"] end
+    if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
+    if name:find("Set Faction", 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
     return nil
 end
 
