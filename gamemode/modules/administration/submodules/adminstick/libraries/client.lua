@@ -401,18 +401,16 @@ local function IncludeCharacterManagement(tgt, menu, stores)
                 if classes and #classes > 0 then
                     local cw, cu = {}, {}
                     for _, c in ipairs(classes) do
-                        if lia.class.hasWhitelist(c.index) then
-                            if not tgt:hasClassWhitelist(c.index) then
-                                table.insert(cw, {
-                                    name = c.name,
-                                    cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                                })
-                            else
-                                table.insert(cu, {
-                                    name = c.name,
-                                    cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                                })
-                            end
+                        if not tgt:hasClassWhitelist(c.index) then
+                            table.insert(cw, {
+                                name = c.name,
+                                cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                            })
+                        else
+                            table.insert(cu, {
+                                name = c.name,
+                                cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                            })
                         end
                     end
 
