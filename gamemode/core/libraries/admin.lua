@@ -173,10 +173,16 @@ function lia.administrator.hasAccess(ply, privilege)
     end
 
     local name = lia.administrator.privIDs and lia.administrator.privIDs[privilege] or privilege
+    if not (lia.administrator.privileges and lia.administrator.privileges[name]) then
+        lia.information(L("privilegeNotExist", name))
+        if IsValid(ply) and ply.notifyLocalized then ply:notifyLocalized("privilegeNotExist", name) end
+        return getGroupLevel(grp) >= (lia.administrator.DefaultGroups.superadmin or 3)
+    end
+
     if getGroupLevel(grp) >= (lia.administrator.DefaultGroups.superadmin or 3) then return true end
     local g = lia.administrator.groups and lia.administrator.groups[grp] or nil
     if g and g[name] == true then return true end
-    local min = lia.administrator.privileges and lia.administrator.privileges[name] or "user"
+    local min = lia.administrator.privileges[name]
     return shouldGrant(grp, min)
 end
 
