@@ -230,9 +230,9 @@ lia.command.add("pacdisable", {
     end
 })
 
-lia.config.add("BlockPackURLoad", L("blockPackUrlLoad"), true, nil, {
-    desc = L("blockPackUrlLoadDesc"),
-    category = L("categoryPAC3"),
+lia.config.add("BlockPackURLoad", "blockPackUrlLoad", true, nil, {
+    desc = "blockPackUrlLoadDesc",
+    category = "categoryPAC3",
     noNetworking = false,
     schemaOnly = false,
     type = "Boolean"

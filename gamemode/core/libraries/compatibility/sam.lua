@@ -186,15 +186,15 @@ lia.administrator.registerPrivilege({
     Category = "categorySAM"
 })
 
-lia.config.add("AdminOnlyNotification", L("adminOnlyNotifications"), true, nil, {
-    desc = L("adminOnlyNotificationsDesc"),
-    category = L("categorySAM"),
+lia.config.add("AdminOnlyNotification", "adminOnlyNotifications", true, nil, {
+    desc = "adminOnlyNotificationsDesc",
+    category = "categorySAM",
     type = "Boolean"
 })
 
-lia.config.add("SAMEnforceStaff", L("samEnforceStaff"), true, nil, {
-    desc = L("samEnforceStaffDesc"),
-    category = L("categorySAM"),
+lia.config.add("SAMEnforceStaff", "samEnforceStaff", true, nil, {
+    desc = "samEnforceStaffDesc",
+    category = "categorySAM",
     type = "Boolean"
 })
 
