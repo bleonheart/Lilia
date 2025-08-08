@@ -28,6 +28,7 @@ lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.privMeta = lia.administrator.privMeta or {}
 lia.administrator.privIDs = lia.administrator.privIDs or {}
+lia.administrator.missingGroups = lia.administrator.missingGroups or {}
 lia.administrator.DefaultGroups = {
     user = 1,
     admin = 2,
@@ -493,6 +494,7 @@ function lia.administrator.createGroup(groupName, info)
     }
 
     lia.administrator.groups[groupName] = info
+    lia.administrator.missingGroups[groupName] = nil
     lia.administrator.applyInheritance(groupName)
     camiRegisterUsergroup(groupName, info._info.inheritance or "user")
     hook.Run("OnUsergroupCreated", groupName, lia.administrator.groups[groupName])
@@ -525,7 +527,7 @@ function lia.administrator.removeGroup(groupName)
     end
 
     if not lia.administrator.groups[groupName] then
-        lia.error(L("usergroupDoesntExist"))
+        lia.error(L("usergroupDoesntExist", groupName))
         return
     end
 
@@ -562,7 +564,7 @@ function lia.administrator.renameGroup(oldName, newName)
     end
 
     if not lia.administrator.groups[oldName] then
-        lia.error(L("usergroupDoesntExist"))
+        lia.error(L("usergroupDoesntExist", oldName))
         return
     end
 
@@ -573,6 +575,8 @@ function lia.administrator.renameGroup(oldName, newName)
 
     lia.administrator.groups[newName] = lia.administrator.groups[oldName]
     lia.administrator.groups[oldName] = nil
+    lia.administrator.missingGroups[oldName] = nil
+    lia.administrator.missingGroups[newName] = nil
     lia.administrator.applyInheritance(newName)
     camiUnregisterUsergroup(oldName)
     local inh = lia.administrator.groups[newName]._info and lia.administrator.groups[newName]._info.inheritance or "user"
@@ -606,7 +610,10 @@ if SERVER then
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             if lia.administrator._loading then return end
-            lia.error(L("usergroupDoesntExist"))
+            if not lia.administrator.missingGroups[groupName] then
+                lia.administrator.missingGroups[groupName] = true
+                lia.error(L("usergroupDoesntExist", groupName))
+            end
             return
         end
 
@@ -640,7 +647,10 @@ if SERVER then
     function lia.administrator.removePermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             if lia.administrator._loading then return end
-            lia.error(L("usergroupDoesntExist"))
+            if not lia.administrator.missingGroups[groupName] then
+                lia.administrator.missingGroups[groupName] = true
+                lia.error(L("usergroupDoesntExist", groupName))
+            end
             return
         end
 
