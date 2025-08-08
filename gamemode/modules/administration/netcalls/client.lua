@@ -402,7 +402,7 @@ local function OpenRoster(panel, data)
                 local hasLogo = classData and classData.logo and classData.logo ~= ""
                 local row
                 if hasLogo then
-                    row = rosterSheet:AddRow(function(p, row)
+                    row = rosterSheet:AddRow(function(p, rowPanel)
                         local logoSize = 64
                         local margin = 8
                         local rowHeight = logoSize + rosterSheet.padding * 2
@@ -442,7 +442,7 @@ local function OpenRoster(panel, data)
                             p:SetTall(math.max(rowHeight, textH))
                         end
 
-                        row.filterText = (title .. " " .. desc .. " " .. right):lower()
+                        rowPanel.filterText = (title .. " " .. desc .. " " .. right):lower()
                     end)
                 else
                     row = rosterSheet:AddTextRow({
