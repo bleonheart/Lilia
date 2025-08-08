@@ -21,11 +21,12 @@ lia.option.stored = lia.option.stored or {}
 
     Parameters:
         key (string)         - Unique identifier for the option.
-        name (string)        - Display name for the option (should be localized).
-        desc (string)        - Description for the option (should be localized).
+        name (string)        - Display name for the option (localized automatically).
+        desc (string)        - Description for the option (localized automatically).
         default (any)        - Default value for the option.
         callback (function)  - (Optional) Function to call when the option value changes. Receives (oldValue, newValue).
-        data (table)         - Table containing additional option data (category, min, max, decimals, type, visible, etc).
+        data (table)         - Table containing additional option data (category, min, max, decimals, type, visible, etc). String
+                              fields such as `category` and entries in an `options` table are localized automatically.
 
     Returns:
         None.
@@ -35,10 +36,10 @@ lia.option.stored = lia.option.stored or {}
 
     Example Usage:
         -- Add a boolean option for enabling a HUD element
-        lia.option.add("showHUD", L("showHUD"), L("showHUDDesc"), true, function(old, new)
+        lia.option.add("showHUD", "showHUD", "showHUDDesc", true, function(old, new)
             print("HUD option changed from", old, "to", new)
         end, {
-            category = L("categoryHUD"),
+            category = "categoryHUD",
             isQuick = true,
             shouldNetwork = true
         })
@@ -57,9 +58,20 @@ function lia.option.add(key, name, desc, default, callback, data)
     if data.type then optionType = data.type end
     local old = lia.option.stored[key]
     local value = old and old.value or default
+
+    if istable(data.options) then
+        for k, v in pairs(data.options) do
+            if isstring(v) then
+                data.options[k] = L(v)
+            end
+        end
+    end
+
+    data.category = isstring(data.category) and L(data.category) or data.category
+
     lia.option.stored[key] = {
-        name = name,
-        desc = desc,
+        name = isstring(name) and L(name) or name,
+        desc = isstring(desc) and L(desc) or desc,
         data = data,
         value = value,
         default = default,
