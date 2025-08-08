@@ -587,27 +587,27 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     }
 end)
 
-lia.option.add("descriptionWidth", L("descriptionWidth"), L("descriptionWidthDesc"), 0.5, nil, {
-    category = L("categoryHUD"),
+lia.option.add("descriptionWidth", "descriptionWidth", "descriptionWidthDesc", 0.5, nil, {
+    category = "categoryHUD",
     min = 0.1,
     max = 1,
     decimals = 2
 })
 
-lia.option.add("invertWeaponScroll", L("invertWeaponScroll"), L("invertWeaponScrollDesc"), false, nil, {
-    category = L("categoryWeaponSelector"),
+lia.option.add("invertWeaponScroll", "invertWeaponScroll", "invertWeaponScrollDesc", false, nil, {
+    category = "categoryWeaponSelector",
     isQuick = true,
 })
 
-lia.option.add("autoDownloadWorkshop", L("autoDownloadWorkshop"), L("autoDownloadWorkshopDesc"), nil, nil, {
-    category = L("categoryWorkshop"),
+lia.option.add("autoDownloadWorkshop", "autoDownloadWorkshop", "autoDownloadWorkshopDesc", nil, nil, {
+    category = "categoryWorkshop",
     type = "Boolean",
     isQuick = true,
     shouldNetwork = true
 })
 
-lia.option.add("espEnabled", L("espEnabled"), L("espEnabledDesc"), false, nil, {
-    category = L("categoryESP"),
+lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
+    category = "categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -616,8 +616,8 @@ lia.option.add("espEnabled", L("espEnabled"), L("espEnabledDesc"), false, nil, {
     end
 })
 
-lia.option.add("espPlayers", L("espPlayers"), L("espPlayersDesc"), false, nil, {
-    category = L("categoryESP"),
+lia.option.add("espPlayers", "espPlayers", "espPlayersDesc", false, nil, {
+    category = "categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -626,8 +626,8 @@ lia.option.add("espPlayers", L("espPlayers"), L("espPlayersDesc"), false, nil, {
     end
 })
 
-lia.option.add("espItems", L("espItems"), L("espItemsDesc"), false, nil, {
-    category = L("categoryESP"),
+lia.option.add("espItems", "espItems", "espItemsDesc", false, nil, {
+    category = "categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -636,8 +636,8 @@ lia.option.add("espItems", L("espItems"), L("espItemsDesc"), false, nil, {
     end
 })
 
-lia.option.add("espEntities", L("espEntities"), L("espEntitiesDesc"), false, nil, {
-    category = L("categoryESP"),
+lia.option.add("espEntities", "espEntities", "espEntitiesDesc", false, nil, {
+    category = "categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -646,8 +646,8 @@ lia.option.add("espEntities", L("espEntities"), L("espEntitiesDesc"), false, nil
     end
 })
 
-lia.option.add("espUnconfiguredDoors", L("espUnconfiguredDoors"), L("espUnconfiguredDoorsDesc"), false, nil, {
-    category = L("categoryESP"),
+lia.option.add("espUnconfiguredDoors", "espUnconfiguredDoors", "espUnconfiguredDoorsDesc", false, nil, {
+    category = "categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -656,13 +656,13 @@ lia.option.add("espUnconfiguredDoors", L("espUnconfiguredDoors"), L("espUnconfig
     end
 })
 
-lia.option.add("espItemsColor", L("espItemsColor"), L("espItemsColorDesc"), {
+lia.option.add("espItemsColor", "espItemsColor", "espItemsColorDesc", {
     r = 0,
     g = 255,
     b = 0,
     a = 255
 }, nil, {
-    category = L("categoryESP"),
+    category = "categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -670,13 +670,13 @@ lia.option.add("espItemsColor", L("espItemsColor"), L("espItemsColorDesc"), {
     end
 })
 
-lia.option.add("espEntitiesColor", L("espEntitiesColor"), L("espEntitiesColorDesc"), {
+lia.option.add("espEntitiesColor", "espEntitiesColor", "espEntitiesColorDesc", {
     r = 255,
     g = 255,
     b = 0,
     a = 255
 }, nil, {
-    category = L("categoryESP"),
+    category = "categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -684,13 +684,13 @@ lia.option.add("espEntitiesColor", L("espEntitiesColor"), L("espEntitiesColorDes
     end
 })
 
-lia.option.add("espUnconfiguredDoorsColor", L("espUnconfiguredDoorsColor"), L("espUnconfiguredDoorsColorDesc"), {
+lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnconfiguredDoorsColorDesc", {
     r = 255,
     g = 0,
     b = 255,
     a = 255
 }, nil, {
-    category = L("categoryESP"),
+    category = "categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -698,13 +698,13 @@ lia.option.add("espUnconfiguredDoorsColor", L("espUnconfiguredDoorsColor"), L("e
     end
 })
 
-lia.option.add("espPlayersColor", L("espPlayersColor"), L("espPlayersColorDesc"), {
+lia.option.add("espPlayersColor", "espPlayersColor", "espPlayersColorDesc", {
     r = 0,
     g = 0,
     b = 255,
     a = 255
 }, nil, {
-    category = L("categoryESP"),
+    category = "categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -712,56 +712,56 @@ lia.option.add("espPlayersColor", L("espPlayersColor"), L("espPlayersColorDesc")
     end
 })
 
-lia.option.add("BarsAlwaysVisible", L("barsAlwaysVisible"), L("barsAlwaysVisibleDesc"), false, nil, {
-    category = L("categoryGeneral"),
+lia.option.add("BarsAlwaysVisible", "barsAlwaysVisible", "barsAlwaysVisibleDesc", false, nil, {
+    category = "categoryGeneral",
     isQuick = true,
 })
 
-lia.option.add("descriptionWidth", L("descriptionWidth"), L("descriptionWidthDesc"), 0.5, nil, {
-    category = L("categoryHUD"),
+lia.option.add("descriptionWidth", "descriptionWidth", "descriptionWidthDesc", 0.5, nil, {
+    category = "categoryHUD",
     min = 0.1,
     max = 1,
     decimals = 2
 })
 
-lia.option.add("thirdPersonEnabled", L("thirdPersonEnabled"), L("thirdPersonEnabledDesc"), false, function(_, newValue) hook.Run("thirdPersonToggled", newValue) end, {
-    category = L("categoryThirdPerson"),
+lia.option.add("thirdPersonEnabled", "thirdPersonEnabled", "thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("thirdPersonToggled", newValue) end, {
+    category = "categoryThirdPerson",
     isQuick = true,
 })
 
-lia.option.add("thirdPersonClassicMode", L("thirdPersonClassicMode"), L("thirdPersonClassicModeDesc"), false, nil, {
-    category = L("categoryThirdPerson"),
+lia.option.add("thirdPersonClassicMode", "thirdPersonClassicMode", "thirdPersonClassicModeDesc", false, nil, {
+    category = "categoryThirdPerson",
     isQuick = true,
 })
 
-lia.option.add("thirdPersonHeight", L("thirdPersonHeight"), L("thirdPersonHeightDesc"), 10, nil, {
-    category = L("categoryThirdPerson"),
+lia.option.add("thirdPersonHeight", "thirdPersonHeight", "thirdPersonHeightDesc", 10, nil, {
+    category = "categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHeight", 30),
 })
 
-lia.option.add("thirdPersonHorizontal", L("thirdPersonHorizontal"), L("thirdPersonHorizontalDesc"), 10, nil, {
-    category = L("categoryThirdPerson"),
+lia.option.add("thirdPersonHorizontal", "thirdPersonHorizontal", "thirdPersonHorizontalDesc", 10, nil, {
+    category = "categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHorizontal", 30),
 })
 
-lia.option.add("thirdPersonDistance", L("thirdPersonDistance"), L("thirdPersonDistanceDesc"), 50, nil, {
-    category = L("categoryThirdPerson"),
+lia.option.add("thirdPersonDistance", "thirdPersonDistance", "thirdPersonDistanceDesc", 50, nil, {
+    category = "categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonDistance", 100),
 })
 
-lia.option.add("ChatShowTime", L("chatShowTime"), L("chatShowTimeDesc"), false, nil, {
-    category = L("categoryChat"),
+lia.option.add("ChatShowTime", "chatShowTime", "chatShowTimeDesc", false, nil, {
+    category = "categoryChat",
     type = "Boolean"
 })
 
-lia.option.add("voiceRange", L("voiceRange"), L("voiceRangeDesc"), false, nil, {
-    category = L("categoryHUD"),
+lia.option.add("voiceRange", "voiceRange", "voiceRangeDesc", false, nil, {
+    category = "categoryHUD",
     isQuick = true,
     type = "Boolean"
 })

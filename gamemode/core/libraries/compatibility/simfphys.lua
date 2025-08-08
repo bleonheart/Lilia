@@ -49,21 +49,21 @@ hook.Add("CheckValidSit", "liaSimfphys", function(client)
     if IsValid(vehicle) and vehicle:isSimfphysCar() then return false end
 end)
 
-lia.config.add("DamageInCars", L("takeDamageInCars"), true, nil, {
-    desc = L("takeDamageInCarsDesc"),
-    category = L("simfphysVehicles"),
+lia.config.add("DamageInCars", "takeDamageInCars", true, nil, {
+    desc = "takeDamageInCarsDesc",
+    category = "simfphysVehicles",
     type = "Boolean"
 })
 
-lia.config.add("CarEntryDelayEnabled", L("carEntryDelayEnabled"), true, nil, {
-    desc = L("carEntryDelayEnabledDesc"),
-    category = L("simfphysVehicles"),
+lia.config.add("CarEntryDelayEnabled", "carEntryDelayEnabled", true, nil, {
+    desc = "carEntryDelayEnabledDesc",
+    category = "simfphysVehicles",
     type = "Boolean"
 })
 
-lia.config.add("TimeToEnterVehicle", L("timeToEnterVehicle"), 4, nil, {
-    desc = L("timeToEnterVehicleDesc"),
-    category = L("simfphysVehicles"),
+lia.config.add("TimeToEnterVehicle", "timeToEnterVehicle", 4, nil, {
+    desc = "timeToEnterVehicleDesc",
+    category = "simfphysVehicles",
     type = "Int",
     min = 1,
     max = 20
