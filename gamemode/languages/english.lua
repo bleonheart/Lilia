@@ -217,6 +217,7 @@ LANGUAGE = {
     lookToUseAt = "You need to be looking at someone to use '@'",
     itemNoExist = "Sorry, the item that you requested does not exist.",
     cmdNoExist = "Sorry, that command does not exist.",
+    privilegeNoExist = "The privilege '%s' does not exist.",
     plyNoExist = "Sorry, a matching player could not be found.",
     itemCreated = "Item successfully created.",
     inv = "Inventory",

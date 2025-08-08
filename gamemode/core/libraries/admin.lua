@@ -176,7 +176,11 @@ function lia.administrator.hasAccess(ply, privilege)
     if getGroupLevel(grp) >= (lia.administrator.DefaultGroups.superadmin or 3) then return true end
     local g = lia.administrator.groups and lia.administrator.groups[grp] or nil
     if g and g[name] == true then return true end
-    local min = lia.administrator.privileges and lia.administrator.privileges[name] or "user"
+    local min = lia.administrator.privileges and lia.administrator.privileges[name]
+    if not min then
+        lia.information(L("privilegeNoExist", name))
+        min = "user"
+    end
     return shouldGrant(grp, min)
 end
 
