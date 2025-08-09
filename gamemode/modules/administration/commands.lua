@@ -82,7 +82,7 @@ lia.command.add("adminmode", {
                     end
                 end
 
-                if client:hasPrivilege("createStaffChar") then
+                if client:hasPrivilege("createStaffCharacter") then
                     local staffCharData = {
                         steamID = steamID,
                         name = client:steamName(), 

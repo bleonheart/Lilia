@@ -187,7 +187,7 @@ end
 
 local function IncludeAdminMenu(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not (cl:hasPrivilege("useAdminStick") or cl:isStaffOnDuty()) then return end
+    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
     local mod = GetOrCreateSubMenu(menu, "moderationTools", stores)
     local tp = {
         {
