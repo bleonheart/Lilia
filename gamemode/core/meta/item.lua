@@ -1049,4 +1049,23 @@ else
     end
 end
 
+--[[
+    getCategory
+
+    Purpose:
+        Returns the category of the item with automatic localization.
+
+    Returns:
+        string - The localized category of the item.
+
+    Realm:
+        Shared.
+
+    Example Usage:
+        print("Item category: " .. item:getCategory())
+]]
+function ITEM:getCategory()
+    return self.category and L(self.category) or L("misc")
+end
+
 lia.meta.item = ITEM

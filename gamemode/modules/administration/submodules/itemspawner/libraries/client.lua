@@ -67,18 +67,12 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
     }
 
     for uniqueID, itemData in pairs(allItems) do
-        if itemData.category then
-            categorized[itemData.category] = categorized[itemData.category] or {}
-            table.insert(categorized[itemData.category], {
-                id = uniqueID,
-                name = itemData.name
-            })
-        else
-            table.insert(categorized.Unsorted, {
-                id = uniqueID,
-                name = itemData.name
-            })
-        end
+        local category = itemData:getCategory()
+        categorized[category] = categorized[category] or {}
+        table.insert(categorized[category], {
+            id = uniqueID,
+            name = itemData.name
+        })
     end
 
     for category, itemList in SortedPairs(categorized) do
