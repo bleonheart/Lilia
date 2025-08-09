@@ -340,6 +340,22 @@ end
             Category = "Fun"
         })
 ]]
+local registeredPriv = {}
+-- Temporary function to add registered privileges to the table and warn of duplicates
+function lia.administrator._addRegisteredPrivilegeTemp(id)
+    id = tostring(id or "")
+    if id == "" then
+        print("[Lilia] [WARN] Attempted to register privilege with empty ID")
+        return
+    end
+
+    if registeredPriv[id] then
+        print("[Lilia] [WARN] Duplicate privilege registration detected: " .. id)
+    else
+        registeredPriv[id] = true
+    end
+end
+
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.ID then
         lia.error("Privilege registration requires an ID field")
@@ -348,9 +364,12 @@ function lia.administrator.registerPrivilege(priv)
 
     local id = tostring(priv.ID)
     if id == "" then return end
+    -- Add to registeredPriv and warn if duplicate
+    lia.administrator._addRegisteredPrivilegeTemp(id)
     if lia.administrator.privileges[id] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[id] = min
+    print("Added Privilege: " .. id)
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
@@ -366,6 +385,37 @@ function lia.administrator.registerPrivilege(priv)
     })
 
     if SERVER then lia.administrator.save() end
+end
+
+if SERVER then
+    concommand.Add("lia_dump_privileges", function(ply)
+        if IsValid(ply) and not ply:IsSuperAdmin() then return end
+        local src = lia and lia.administrator and lia.administrator.privileges
+        if not istable(src) then src = {} end
+        local data = {}
+        for id, _ in pairs(src) do
+            data[#data + 1] = {
+                id = id
+            }
+        end
+
+        local json = util.TableToJSON(data, true)
+        if not json then
+            if IsValid(ply) then
+                ply:ChatPrint("Failed to encode JSON")
+            else
+                print("[Lilia] Failed to encode JSON")
+            end
+            return
+        end
+
+        file.Write("lilia_registered_privileges.json", json)
+        if IsValid(ply) and ply:getChar() then
+            ply:ChatPrint("Saved registered privileges to data/lilia_registered_privileges.json")
+        else
+            print("[Lilia] Saved registered privileges to data/lilia_registered_privileges.json")
+        end
+    end)
 end
 
 --[[
@@ -691,7 +741,6 @@ function lia.administrator.renameGroup(oldName, newName)
     hook.Run("OnUsergroupRenamed", oldName, newName)
     if SERVER then lia.administrator.save() end
 end
-
 
 lia.administrator.registerPrivilege({
     ID = "createStaffCharacter",

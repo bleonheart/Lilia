@@ -1,0 +1,908 @@
+[
+	{
+		"id": "property_lia_func_rotating_reverse"
+	},
+	{
+		"id": "canSeeLogs"
+	},
+	{
+		"id": "property_lia_scanner_disable_spotlight"
+	},
+	{
+		"id": "property_lia_antlion_hear"
+	},
+	{
+		"id": "respawnPlayer"
+	},
+	{
+		"id": "property_lia_vehicle_exit"
+	},
+	{
+		"id": "property_remove"
+	},
+	{
+		"id": "canGrabPlayers"
+	},
+	{
+		"id": "property_lia_func_platrot_up"
+	},
+	{
+		"id": "manageSitRooms"
+	},
+	{
+		"id": "property_lia_citizen_wep_pick_on"
+	},
+	{
+		"id": "noClipESPOffsetStaff"
+	},
+	{
+		"id": "alwaysSeeTickets"
+	},
+	{
+		"id": "property_lia_make_friendly"
+	},
+	{
+		"id": "adminChat"
+	},
+	{
+		"id": "tool_nocollide"
+	},
+	{
+		"id": "ignitePlayer"
+	},
+	{
+		"id": "noOOCCooldown"
+	},
+	{
+		"id": "property_lia_vehicle_add_gun"
+	},
+	{
+		"id": "property_lia_helicopter_gun_on"
+	},
+	{
+		"id": "freezePlayer"
+	},
+	{
+		"id": "tool_emitter"
+	},
+	{
+		"id": "property_npc_smaller"
+	},
+	{
+		"id": "teleportToEntityTab"
+	},
+	{
+		"id": "property_lia_vehicle_enter"
+	},
+	{
+		"id": "property_lia_npc_weapon_strip"
+	},
+	{
+		"id": "manageCharacters"
+	},
+	{
+		"id": "property_extinguish"
+	},
+	{
+		"id": "property_skin"
+	},
+	{
+		"id": "property_lia_helicopter_gun_off"
+	},
+	{
+		"id": "accessHelpChat"
+	},
+	{
+		"id": "usergroupStaff"
+	},
+	{
+		"id": "godPlayer"
+	},
+	{
+		"id": "viewStaffManagement"
+	},
+	{
+		"id": "property_copytoclipboard"
+	},
+	{
+		"id": "property_lia_antlion_disable"
+	},
+	{
+		"id": "property_keepupright"
+	},
+	{
+		"id": "tool_axis"
+	},
+	{
+		"id": "tool_colour"
+	},
+	{
+		"id": "createStaffCharacter"
+	},
+	{
+		"id": "property_lia_func_rotating_backward"
+	},
+	{
+		"id": "property_lia_manhack_jam"
+	},
+	{
+		"id": "manageAttributes"
+	},
+	{
+		"id": "gagPlayer"
+	},
+	{
+		"id": "blindFadePlayer"
+	},
+	{
+		"id": "property_lia_rollermine_selfdestruct"
+	},
+	{
+		"id": "property_lia_gunship_omniscienton"
+	},
+	{
+		"id": "canSpawnBlacklistedProps"
+	},
+	{
+		"id": "property_togglecarblacklist"
+	},
+	{
+		"id": "killPlayer"
+	},
+	{
+		"id": "property_collision_off"
+	},
+	{
+		"id": "property_motioncontrol_ragdoll"
+	},
+	{
+		"id": "noCarSpawnDelay"
+	},
+	{
+		"id": "property_lia_helicopter_deadly_on"
+	},
+	{
+		"id": "property_lia_zombine_sprint"
+	},
+	{
+		"id": "cleanEntities"
+	},
+	{
+		"id": "property_lia_func_train_start"
+	},
+	{
+		"id": "listCharacters"
+	},
+	{
+		"id": "property_lia_turret_make_hostile"
+	},
+	{
+		"id": "property_lia_strider_aggressive_d"
+	},
+	{
+		"id": "property_lia_citizen_panic_off"
+	},
+	{
+		"id": "property_bodygroups"
+	},
+	{
+		"id": "property_lia_alyx_holsteranddestroyweapon"
+	},
+	{
+		"id": "property_lia_vehicle_radar"
+	},
+	{
+		"id": "property_lia_dog_fetch_off"
+	},
+	{
+		"id": "manageBodygroups"
+	},
+	{
+		"id": "property_lia_antlionguard_bark_on"
+	},
+	{
+		"id": "canSpawnSWEPs"
+	},
+	{
+		"id": "property_lia_pickupitem"
+	},
+	{
+		"id": "property_lia_func_train_toggle"
+	},
+	{
+		"id": "manageSpawns"
+	},
+	{
+		"id": "ungagPlayer"
+	},
+	{
+		"id": "lockStorage"
+	},
+	{
+		"id": "property_lia_item_suit"
+	},
+	{
+		"id": "property_lia_rollermine_turnon"
+	},
+	{
+		"id": "property_lia_turret_toggle"
+	},
+	{
+		"id": "tool_weld"
+	},
+	{
+		"id": "unbanOffline"
+	},
+	{
+		"id": "property_lia_door_close"
+	},
+	{
+		"id": "property_lia_turret_make_friendly"
+	},
+	{
+		"id": "property_persist_end"
+	},
+	{
+		"id": "kickPlayer"
+	},
+	{
+		"id": "manageTransfers"
+	},
+	{
+		"id": "canSeeSAMNotificationsOutsideStaff"
+	},
+	{
+		"id": "tool_lamp"
+	},
+	{
+		"id": "property_lia_suitcharger_recharge"
+	},
+	{
+		"id": "manageDoors"
+	},
+	{
+		"id": "canSpawnEffects"
+	},
+	{
+		"id": "tool_example"
+	},
+	{
+		"id": "property_lia_func_tracktrain_stop"
+	},
+	{
+		"id": "viewPlaytime"
+	},
+	{
+		"id": "property_lia_antlion_ignore"
+	},
+	{
+		"id": "property_lia_vortigaunt_disable"
+	},
+	{
+		"id": "getCharacterInfo"
+	},
+	{
+		"id": "canEditVendors"
+	},
+	{
+		"id": "tool_light"
+	},
+	{
+		"id": "bringPlayer"
+	},
+	{
+		"id": "property_lia_turret_ammo_remove"
+	},
+	{
+		"id": "property_lia_func_movelinear_open"
+	},
+	{
+		"id": "physgunPickupRestrictedEntities"
+	},
+	{
+		"id": "unbanPlayer"
+	},
+	{
+		"id": "tool_ballsocket"
+	},
+	{
+		"id": "property_lia_vortigaunt_enable"
+	},
+	{
+		"id": "accessEditConfigurationMenu"
+	},
+	{
+		"id": "property_lia_func_tracktrain_startforward"
+	},
+	{
+		"id": "canGrabWorldProps"
+	},
+	{
+		"id": "property_lia_thumper_disable"
+	},
+	{
+		"id": "property_lia_helicopter_long_shoot"
+	},
+	{
+		"id": "property_lia_light_on"
+	},
+	{
+		"id": "property_lia_func_movelinear_close"
+	},
+	{
+		"id": "mutePlayer"
+	},
+	{
+		"id": "forceSay"
+	},
+	{
+		"id": "tool_faceposer"
+	},
+	{
+		"id": "canAccessScoreboardAdminOptions"
+	},
+	{
+		"id": "property_lia_breakable_break"
+	},
+	{
+		"id": "receiveCheaterNotifications"
+	},
+	{
+		"id": "property_bone_manipulate_end"
+	},
+	{
+		"id": "property_statue"
+	},
+	{
+		"id": "property_lia_citizen_panic"
+	},
+	{
+		"id": "tool_motor"
+	},
+	{
+		"id": "canSeeAltingNotifications"
+	},
+	{
+		"id": "property_lia_healthcharger_recharge"
+	},
+	{
+		"id": "gotoPlayer"
+	},
+	{
+		"id": "property_bone_manipulate"
+	},
+	{
+		"id": "property_gravity"
+	},
+	{
+		"id": "property_lia_strider_break"
+	},
+	{
+		"id": "property_lia_helicopter_deadly_off"
+	},
+	{
+		"id": "toggleVoiceBanCharacter"
+	},
+	{
+		"id": "tool_permaprops"
+	},
+	{
+		"id": "physgunPickupVehicles"
+	},
+	{
+		"id": "property_lia_antlion_grub_squash"
+	},
+	{
+		"id": "slayPlayer"
+	},
+	{
+		"id": "property_lia_func_platrot_down"
+	},
+	{
+		"id": "canAccessItemInformations"
+	},
+	{
+		"id": "manageUsergroups"
+	},
+	{
+		"id": "tool_material"
+	},
+	{
+		"id": "tool_rope"
+	},
+	{
+		"id": "ungodPlayer"
+	},
+	{
+		"id": "viewPlayerWarnings"
+	},
+	{
+		"id": "tool_slider"
+	},
+	{
+		"id": "managePropBlacklist"
+	},
+	{
+		"id": "extinguishPlayer"
+	},
+	{
+		"id": "accessEntityList"
+	},
+	{
+		"id": "property_lia_scanner_mineadd"
+	},
+	{
+		"id": "canSpawnRagdolls"
+	},
+	{
+		"id": "property_editentity"
+	},
+	{
+		"id": "listEntities"
+	},
+	{
+		"id": "property_lia_strider_stand"
+	},
+	{
+		"id": "cantBeGrabbedPhysgun"
+	},
+	{
+		"id": "stripPlayer"
+	},
+	{
+		"id": "property_lia_func_rotating_stop"
+	},
+	{
+		"id": "canRemoveWorldEntities"
+	},
+	{
+		"id": "canSpawnCars"
+	},
+	{
+		"id": "useDisallowedTools"
+	},
+	{
+		"id": "property_lia_dissolve"
+	},
+	{
+		"id": "canAccessScoreboardInfoOutOfStaff"
+	},
+	{
+		"id": "property_lia_barnacle_free"
+	},
+	{
+		"id": "property_lia_rollermine_turnoff"
+	},
+	{
+		"id": "manageCharacterStats"
+	},
+	{
+		"id": "canAccessPlayerList"
+	},
+	{
+		"id": "property_lia_turret_ammo_restore"
+	},
+	{
+		"id": "property_lia_gunship_blindfireon"
+	},
+	{
+		"id": "property_lia_emitter_on"
+	},
+	{
+		"id": "property_lia_door_unlock"
+	},
+	{
+		"id": "property_lia_gunship_omniscientoff"
+	},
+	{
+		"id": "property_lia_patrol_off"
+	},
+	{
+		"id": "property_lia_func_tracktrain_startbackward"
+	},
+	{
+		"id": "tool_button"
+	},
+	{
+		"id": "canRemoveWarns"
+	},
+	{
+		"id": "property_lia_strider_aggressive_e"
+	},
+	{
+		"id": "property_lia_alyx_unholsterweapon"
+	},
+	{
+		"id": "toggleCharacterLock"
+	},
+	{
+		"id": "manageVendors"
+	},
+	{
+		"id": "tool_pulley"
+	},
+	{
+		"id": "property_statue_stop"
+	},
+	{
+		"id": "checkInventories"
+	},
+	{
+		"id": "tool_thruster"
+	},
+	{
+		"id": "unfreezePlayer"
+	},
+	{
+		"id": "tool_duplicator"
+	},
+	{
+		"id": "returnItems"
+	},
+	{
+		"id": "blindPlayer"
+	},
+	{
+		"id": "tool_winch"
+	},
+	{
+		"id": "viewClaims"
+	},
+	{
+		"id": "property_lia_light_off"
+	},
+	{
+		"id": "blockOOC"
+	},
+	{
+		"id": "tool_balloon"
+	},
+	{
+		"id": "property_togglepropblacklist"
+	},
+	{
+		"id": "tool_trails"
+	},
+	{
+		"id": "property_npc_bigger"
+	},
+	{
+		"id": "tool_paint"
+	},
+	{
+		"id": "manageWhitelists"
+	},
+	{
+		"id": "tool_hydraulic"
+	},
+	{
+		"id": "tool_dynamite"
+	},
+	{
+		"id": "property_lia_dynamite_activate"
+	},
+	{
+		"id": "tool_muscle"
+	},
+	{
+		"id": "tool_elastic"
+	},
+	{
+		"id": "manageFlags"
+	},
+	{
+		"id": "manageVehicleBlacklist"
+	},
+	{
+		"id": "property_lia_baloon_break"
+	},
+	{
+		"id": "tool_creator"
+	},
+	{
+		"id": "tool_inflator"
+	},
+	{
+		"id": "manageEntityBlacklist"
+	},
+	{
+		"id": "clearDecals"
+	},
+	{
+		"id": "property_lia_camera_angry"
+	},
+	{
+		"id": "property_lia_door_lock"
+	},
+	{
+		"id": "tool_leafblower"
+	},
+	{
+		"id": "tool_wheel"
+	},
+	{
+		"id": "viewDBTables"
+	},
+	{
+		"id": "property_lia_soldier_look_off"
+	},
+	{
+		"id": "property_lia_func_platrot_toggle"
+	},
+	{
+		"id": "localEventChat"
+	},
+	{
+		"id": "tool_eyeposer"
+	},
+	{
+		"id": "property_lia_func_train_stop"
+	},
+	{
+		"id": "property_lia_patrol_on"
+	},
+	{
+		"id": "canRemoveBlockedEntities"
+	},
+	{
+		"id": "returnPlayer"
+	},
+	{
+		"id": "canManageFactions"
+	},
+	{
+		"id": "canPropertyWorldEntities"
+	},
+	{
+		"id": "canSpawnNPCs"
+	},
+	{
+		"id": "jailPlayer"
+	},
+	{
+		"id": "property_lia_lamp_off"
+	},
+	{
+		"id": "property_lia_scanner_minedeploy"
+	},
+	{
+		"id": "property_lia_vehicle_radar_off"
+	},
+	{
+		"id": "property_lia_thumper_enable"
+	},
+	{
+		"id": "playSounds"
+	},
+	{
+		"id": "canSpawnSENTs"
+	},
+	{
+		"id": "property_lia_headcrab_burrow"
+	},
+	{
+		"id": "property_lia_alyx_holsterweapon"
+	},
+	{
+		"id": "physgunPickup"
+	},
+	{
+		"id": "toggleCheaterStatus"
+	},
+	{
+		"id": "canUseItemSpawner"
+	},
+	{
+		"id": "property_collision_on"
+	},
+	{
+		"id": "unbanOOC"
+	},
+	{
+		"id": "canAccessFlagManagement"
+	},
+	{
+		"id": "returnPlayers"
+	},
+	{
+		"id": "canBypassSAMFactionWhitelist"
+	},
+	{
+		"id": "property_lia_func_tracktrain_resume"
+	},
+	{
+		"id": "noSpawnDelay"
+	},
+	{
+		"id": "manageRecognition"
+	},
+	{
+		"id": "property_lia_antlion_enable"
+	},
+	{
+		"id": "tool_physprop"
+	},
+	{
+		"id": "property_ignite"
+	},
+	{
+		"id": "unmutePlayer"
+	},
+	{
+		"id": "alwaysSpawnAdminStick"
+	},
+	{
+		"id": "manageItems"
+	},
+	{
+		"id": "noClipOutsideStaff"
+	},
+	{
+		"id": "canSpawnBlacklistedCars"
+	},
+	{
+		"id": "canPhysgunReload"
+	},
+	{
+		"id": "clearChat"
+	},
+	{
+		"id": "cloakPlayer"
+	},
+	{
+		"id": "togglePermakill"
+	},
+	{
+		"id": "property_lia_npc_weapon"
+	},
+	{
+		"id": "property_lia_self_destruct"
+	},
+	{
+		"id": "unjailPlayer"
+	},
+	{
+		"id": "eventChat"
+	},
+	{
+		"id": "property_lia_helicopter_dropbomb"
+	},
+	{
+		"id": "property_lia_door_open"
+	},
+	{
+		"id": "kickCharacters"
+	},
+	{
+		"id": "property_lia_soldier_look_on"
+	},
+	{
+		"id": "property_lia_hunter_disable"
+	},
+	{
+		"id": "accessConfigurationMenu"
+	},
+	{
+		"id": "setInventorySize"
+	},
+	{
+		"id": "banOOC"
+	},
+	{
+		"id": "botSay"
+	},
+	{
+		"id": "forceFallover"
+	},
+	{
+		"id": "unblindPlayer"
+	},
+	{
+		"id": "manageCharacterInformation"
+	},
+	{
+		"id": "property_lia_hunter_enable"
+	},
+	{
+		"id": "canSpawnStorage"
+	},
+	{
+		"id": "tool_hoverball"
+	},
+	{
+		"id": "property_lia_antlion_burrow"
+	},
+	{
+		"id": "property_lia_gunship_blindfireoff"
+	},
+	{
+		"id": "property_lia_make_hostile"
+	},
+	{
+		"id": "usergroupVIP"
+	},
+	{
+		"id": "teleportToEntity"
+	},
+	{
+		"id": "banOffline"
+	},
+	{
+		"id": "forceGetUp"
+	},
+	{
+		"id": "tool_editentity"
+	},
+	{
+		"id": "property_lia_emitter_off"
+	},
+	{
+		"id": "tool_remover"
+	},
+	{
+		"id": "property_lia_combine_mine_disarm"
+	},
+	{
+		"id": "property_lia_func_rotating_forward"
+	},
+	{
+		"id": "banPlayer"
+	},
+	{
+		"id": "canSpawnProps"
+	},
+	{
+		"id": "manageFactionRoster"
+	},
+	{
+		"id": "manageClasses"
+	},
+	{
+		"id": "property_keepupright_stop"
+	},
+	{
+		"id": "blindFadeAll"
+	},
+	{
+		"id": "property_lia_zombine_suicide"
+	},
+	{
+		"id": "property_lia_antlionguard_bark_off"
+	},
+	{
+		"id": "tool_camera"
+	},
+	{
+		"id": "tool_finger"
+	},
+	{
+		"id": "property_lia_citizen_wep_pick_off"
+	},
+	{
+		"id": "property_lia_dog_fetch_on"
+	},
+	{
+		"id": "property_lia_lamp_on"
+	},
+	{
+		"id": "viewEntityTab"
+	},
+	{
+		"id": "property_lia_strider_crouch"
+	},
+	{
+		"id": "uncloakPlayer"
+	},
+	{
+		"id": "canBypassCharacterLock"
+	},
+	{
+		"id": "stopSoundForEveryone"
+	},
+	{
+		"id": "property_lia_helicopter_norm_shoot"
+	},
+	{
+		"id": "issueWarnings"
+	}
+]
