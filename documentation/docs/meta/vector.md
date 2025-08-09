@@ -10,7 +10,7 @@ This document describes additional operations for 3D vectors.
 
 Vector meta functions provide calculations such as midpoints, distances and axis rotations to support movement, physics and placement tasks.
 
-`Center`, `Distance` and `RotateAroundAxis` return new vectors without changing their inputs. `Right` and `Up` modify the vector they are called on and also return it.
+`Center` and `RotateAroundAxis` return new vectors without changing their inputs, while `Distance` returns a number. `Right` and `Up` modify the vector they are called on (unless they early return) and also return it.
 
 ### Example Hook Usage
 
@@ -61,7 +61,7 @@ print(result)
 
 **Purpose**
 
-Calculates the distance between this vector and another vector.
+Calculates the Euclidean distance between this vector and another vector.
 
 **Parameters**
 
@@ -91,7 +91,7 @@ print(result)
 
 **Purpose**
 
-Rotates the vector around an axis by the specified degrees and returns the new vector.
+Returns a copy of this vector rotated around an axis by the specified degrees.
 
 **Parameters**
 
@@ -105,7 +105,7 @@ Rotates the vector around an axis by the specified degrees and returns the new v
 
 **Returns**
 
-* *Vector*: The rotated vector.
+* *Vector*: A rotated copy of the original vector.
 
 **Example Usage**
 
@@ -122,15 +122,11 @@ print(result)
 
 **Purpose**
 
-Calculates the cross product of this vector and the provided up reference to derive a right-direction vector.
+Calculates a right-direction vector perpendicular to this vector and the provided up reference.
 
-The vector is overwritten via `self:Cross(self, vUp)` and then normalized,
-
-yielding a direction perpendicular to both inputs. This means the method
-
-modifies the calling vector and returns it.
-
-If this vector has no horizontal component it defaults to `Vector(0, -1, 0)`.
+The function overwrites the vector with `self:Cross(self, vUp)` and normalizes it,
+so the calling vector is modified and returned. If both the X and Y components are
+zero, the function instead returns `Vector(0, -1, 0)` without changing the original vector.
 
 **Parameters**
 
@@ -142,7 +138,7 @@ If this vector has no horizontal component it defaults to `Vector(0, -1, 0)`.
 
 **Returns**
 
-* *Vector*: The calculated right vector.
+* *Vector*: The modified vector representing the right direction.
 
 **Example Usage**
 
@@ -161,9 +157,9 @@ print(result)
 
 Uses two cross products to determine an up-direction vector that is perpendicular to both this vector and the given up reference.
 
-First, the vector is overwritten with the cross product of itself and `vUp` using `self:Cross(self, vUp)`. This intermediate value, stored in `vRet`, is crossed with the original vector via `self:Cross(vRet, self)` to produce the final up direction. The method therefore modifies the calling vector before returning it.
-
-When this vector lacks a horizontal component the fallback value is `Vector(-self.z, 0, 0)`.
+The function performs `self:Cross(self, vUp)` followed by `self:Cross(vRet, self)` and normalizes the result,
+so the calling vector is overwritten and returned. When both the X and Y components are zero,
+it instead returns `Vector(-self.z, 0, 0)` without modifying the original vector.
 
 **Parameters**
 
@@ -175,7 +171,7 @@ When this vector lacks a horizontal component the fallback value is `Vector(-sel
 
 **Returns**
 
-* *Vector*: The calculated up vector.
+* *Vector*: The modified vector representing the up direction.
 
 **Example Usage**
 
