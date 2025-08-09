@@ -146,8 +146,6 @@ function PANEL:createStartButton()
     local discordURL = lia.config.get("DiscordURL")
     local workshopURL = lia.config.get("Workshop")
     local buttonsData = {}
-
-    
     local hasStaffChar = false
     if lia.characters and #lia.characters > 0 then
         for _, charID in pairs(lia.characters) do
@@ -159,43 +157,10 @@ function PANEL:createStartButton()
         end
     end
 
-    
-    if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
-        table.insert(buttonsData, {
-            id = "staff",
-            text = hasStaffChar and (L("load") .. " " .. L("factionStaffName")) or (L("create") .. " " .. L("factionStaffName")),
-            doClick = function()
-                for _, b in pairs(self.buttons) do
-                    if IsValid(b) then b:Remove() end
-                end
-
-                self:clickSound()
-                if hasStaffChar then
-                    
-                    for _, charID in pairs(lia.characters) do
-                        local character = lia.char.getCharacter(charID)
-                        if character and character:getFaction() == FACTION_STAFF then
-                            lia.module.list["mainmenu"]:chooseCharacter(character:getID()):next(function()
-                                self:Remove()
-                            end):catch(function(err)
-                                if err and err ~= "" then
-                                    LocalPlayer():notifyLocalized(err)
-                                end
-                            end)
-                            break
-                        end
-                    end
-                else
-                    
-                    self:createStaffCharacter()
-                end
-            end
-        })
-    end
     if hook.Run("CanPlayerCreateChar", client) ~= false then
         table.insert(buttonsData, {
             id = "create",
-            text = L("create") .. " " .. L("character"),
+            text = "Create Character",
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -212,7 +177,7 @@ function PANEL:createStartButton()
     if lia.characters and #lia.characters > 0 then
         table.insert(buttonsData, {
             id = "load",
-            text = L("loadCharacter"),
+            text = "Load Character",
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -226,10 +191,35 @@ function PANEL:createStartButton()
         })
     end
 
+    if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
+        table.insert(buttonsData, {
+            id = "staff",
+            text = hasStaffChar and "Load Staff Character" or "Create Staff Character",
+            doClick = function()
+                for _, b in pairs(self.buttons) do
+                    if IsValid(b) then b:Remove() end
+                end
+
+                self:clickSound()
+                if hasStaffChar then
+                    for _, charID in pairs(lia.characters) do
+                        local character = lia.char.getCharacter(charID)
+                        if character and character:getFaction() == FACTION_STAFF then
+                            lia.module.list["mainmenu"]:chooseCharacter(character:getID()):next(function() self:Remove() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
+                            break
+                        end
+                    end
+                else
+                    self:createStaffCharacter()
+                end
+            end
+        })
+    end
+
     if discordURL ~= "" then
         table.insert(buttonsData, {
             id = "discord",
-            text = L("discord"),
+            text = "Discord",
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(discordURL)
@@ -240,7 +230,7 @@ function PANEL:createStartButton()
     if workshopURL ~= "" then
         table.insert(buttonsData, {
             id = "workshop",
-            text = L("steamWorkshop"),
+            text = "Workshop",
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(workshopURL)
@@ -248,10 +238,11 @@ function PANEL:createStartButton()
         })
     end
 
+    -- 6. Mount Content
     if lia.workshop and lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
         table.insert(buttonsData, {
             id = "mount",
-            text = L("mountContent"),
+            text = "Mount Content",
             doClick = function()
                 self:clickSound()
                 if lia.workshop and lia.workshop.mountContent then
@@ -264,19 +255,21 @@ function PANEL:createStartButton()
         })
     end
 
+    -- 7. Disconnect
     table.insert(buttonsData, {
         id = "disconnect",
-        text = L("disconnect"),
+        text = "Disconnect",
         doClick = function()
             self:clickSound()
             RunConsoleCommand("disconnect")
         end
     })
 
+    -- 8. Return
     if clientChar then
         table.insert(buttonsData, {
             id = "return",
-            text = L("returnText"),
+            text = "Return",
             doClick = function() self:Remove() end
         })
     end
@@ -425,30 +418,16 @@ end
 function PANEL:createStaffCharacter()
     local client = LocalPlayer()
     local steamName = client:Nick()
-
-    
     local staffData = {
         name = steamName,
         faction = FACTION_STAFF,
-        model = 1, 
-        desc = "", 
+        model = 1,
+        desc = "",
         skin = 0,
         groups = {}
     }
 
-    lia.module.list["mainmenu"]:createCharacter(staffData):next(function(charID)
-        
-        lia.module.list["mainmenu"]:chooseCharacter(charID):next(function()
-            self:Remove()
-            
-        end):catch(function(err)
-            if err and err ~= "" then
-                LocalPlayer():notifyLocalized(err)
-            end
-        end)
-    end):catch(function(err)
-        LocalPlayer():notifyLocalized(err or "Failed to create staff character")
-    end)
+    lia.module.list["mainmenu"]:createCharacter(staffData):next(function(charID) lia.module.list["mainmenu"]:chooseCharacter(charID):next(function() self:Remove() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end) end):catch(function(err) LocalPlayer():notifyLocalized(err or "Failed to create staff character") end)
 end
 
 function PANEL:updateSelectedCharacter()
