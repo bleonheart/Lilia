@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
@@ -36,7 +36,7 @@ function PANEL:Init()
     self:loadBackground()
     if clientChar and lia.characters and #lia.characters > 0 then
         for i, charID in ipairs(lia.characters) do
-            local charObj = isnumber(charID) and lia.char.loaded[charID] or charID
+            local charObj = isnumber(charID) and lia.char.getCharacter(charID) or charID
             if charObj and charObj.getID and charObj:getID() == clientChar:getID() then
                 self.currentIndex = i
                 break
@@ -151,7 +151,7 @@ function PANEL:createStartButton()
     local hasStaffChar = false
     if lia.characters and #lia.characters > 0 then
         for _, charID in pairs(lia.characters) do
-            local character = lia.char.loaded[charID]
+            local character = lia.char.getCharacter(charID)
             if character and character:getFaction() == FACTION_STAFF then
                 hasStaffChar = true
                 break
@@ -173,7 +173,7 @@ function PANEL:createStartButton()
                 if hasStaffChar then
                     -- Load staff character
                     for _, charID in pairs(lia.characters) do
-                        local character = lia.char.loaded[charID]
+                        local character = lia.char.getCharacter(charID)
                         if character and character:getFaction() == FACTION_STAFF then
                             lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err)
                                 if err and err ~= "" then
@@ -456,7 +456,7 @@ function PANEL:updateSelectedCharacter()
     if #chars == 0 then return end
     self.currentIndex = self.currentIndex or 1
     local sel = chars[self.currentIndex] or chars[1]
-    local character = lia.char.loaded[sel]
+    local character = lia.char.getCharacter(sel)
     if IsValid(self.infoFrame) then self.infoFrame:Remove() end
     if IsValid(self.selectBtn) then self.selectBtn:Remove() end
     if IsValid(self.deleteBtn) then self.deleteBtn:Remove() end
@@ -470,7 +470,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local total = #chars
     local index = 1
     for i, cID in ipairs(chars) do
-        local cObj = isnumber(cID) and lia.char.loaded[cID] or cID
+        local cObj = isnumber(cID) and lia.char.getCharacter(cID) or cID
         if cObj and cObj.getID and cObj:getID() == character:getID() then
             index = i
             break

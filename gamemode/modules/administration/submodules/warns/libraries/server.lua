@@ -36,30 +36,31 @@ net.Receive("RequestRemoveWarning", function(_, client)
         return
     end
 
-    local targetChar = lia.char.loaded[charID]
-    if not targetChar then
-        client:notifyLocalized("characterNotFound")
-        return
-    end
-
-    local targetClient = targetChar:getPlayer()
-    if not IsValid(targetClient) then
-        client:notifyLocalized("playerNotFound")
-        return
-    end
-
-    MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
-        if not warn then
-            client:notifyLocalized("invalidWarningIndex")
+    lia.char.getCharacter(charID, client, function(targetChar)
+        if not targetChar then
+            client:notifyLocalized("characterNotFound")
             return
         end
 
-        targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
-        client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
-        hook.Run("WarningRemoved", client, targetClient, {
-            reason = warn.message,
-            admin = warn.warner
-        }, warnIndex)
+        local targetClient = targetChar:getPlayer()
+        if not IsValid(targetClient) then
+            client:notifyLocalized("playerNotFound")
+            return
+        end
+
+        MODULE:RemoveWarning(charID, warnIndex):next(function(warn)
+            if not warn then
+                client:notifyLocalized("invalidWarningIndex")
+                return
+            end
+
+            targetClient:notifyLocalized("warningRemovedNotify", client:Nick())
+            client:notifyLocalized("warningRemoved", warnIndex, targetClient:Nick())
+            hook.Run("WarningRemoved", client, targetClient, {
+                reason = warn.message,
+                admin = warn.warner
+            }, warnIndex)
+        end)
     end)
 end)
 

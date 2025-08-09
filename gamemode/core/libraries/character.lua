@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 # Character Library
 
 This page documents the functions for working with character data and management.
@@ -43,6 +43,76 @@ if SERVER and #lia.char.names < 1 then
         end
     end)
 end
+
+--[[
+    lia.char.getCharacter
+
+    Purpose:
+        Retrieves a character object by ID. If the character is not
+        currently loaded it will be loaded from the server first.
+
+    Parameters:
+        charID (number) - Identifier of the character to fetch.
+        client (Player) - Optional player who owns the character
+                          (used server side).
+        callback (function) - Optional function called once the
+                              character is available.
+
+    Returns:
+        character (table) - The character object if already loaded,
+                            otherwise nil. When nil is returned the
+                            callback will be invoked once loading is
+                            complete.
+]]
+if SERVER then
+    function lia.char.getCharacter(charID, client, callback)
+        local character = lia.char.loaded[charID]
+        if character then
+            if callback then callback(character) end
+            return character
+        end
+        lia.char.loadSingleCharacter(charID, client, callback)
+    end
+else
+    lia.char.pendingRequests = lia.char.pendingRequests or {}
+
+    function lia.char.getCharacter(charID, _, callback)
+        local character = lia.char.loaded[charID]
+        if character then
+            if callback then callback(character) end
+            return character
+        end
+
+        if callback then
+            lia.char.pendingRequests[charID] = callback
+        end
+
+        net.Start("liaCharRequest")
+        net.WriteUInt(charID, 32)
+        net.SendToServer()
+    end
+end
+
+function lia.char.isLoaded(charID)
+    return lia.char.loaded[charID] ~= nil
+end
+
+function lia.char.getAll()
+    return lia.char.loaded
+end
+
+function lia.char.addCharacter(id, character)
+    lia.char.loaded[id] = character
+    if lia.char.pendingRequests and lia.char.pendingRequests[id] then
+        lia.char.pendingRequests[id](character)
+        lia.char.pendingRequests[id] = nil
+    end
+end
+
+function lia.char.removeCharacter(id)
+    lia.char.loaded[id] = nil
+end
+
 
 --[[
     lia.char.new
