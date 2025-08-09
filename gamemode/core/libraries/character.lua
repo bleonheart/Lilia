@@ -1276,4 +1276,141 @@ if SERVER then
         if lia.char.loaded[charIDsafe] then lia.char.loaded[charIDsafe]:setBanned(value) end
         return true
     end
+
+    --[[
+        lia.char.unloadCharacter
+        
+        Purpose:
+            Unloads a single character from memory, saving it first and cleaning up its inventories.
+            
+        Parameters:
+            charID (number) - The character ID to unload.
+            
+        Returns:
+            boolean - True if unloaded successfully, false if character wasn't loaded.
+    ]]
+    function lia.char.unloadCharacter(charID)
+        local character = lia.char.loaded[charID]
+        if not character then return false end
+
+        -- Save character data before unloading
+        character:save()
+
+        -- Clean up inventories
+        lia.inventory.cleanUpForCharacter(character)
+
+        -- Remove from loaded table
+        lia.char.loaded[charID] = nil
+
+        -- Call cleanup hook
+        hook.Run("CharCleanUp", character)
+
+        return true
+    end
+    
+    --[[
+        lia.char.unloadUnusedCharacters
+        
+        Purpose:
+            Unloads all characters for a client except the specified active character.
+            
+        Parameters:
+            client (Player) - The player whose unused characters should be unloaded.
+            activeCharID (number) - The character ID to keep loaded.
+            
+        Returns:
+            number - Count of characters unloaded.
+    ]]
+    function lia.char.unloadUnusedCharacters(client, activeCharID)
+        local unloadedCount = 0
+
+        for _, charID in pairs(client.liaCharList or {}) do
+            if charID ~= activeCharID and lia.char.loaded[charID] and lia.char.unloadCharacter(charID) then
+                unloadedCount = unloadedCount + 1
+            end
+        end
+
+        return unloadedCount
+    end
+
+    --[[
+        lia.char.loadSingleCharacter
+        
+        Purpose:
+            Loads a single character by ID for a specific client if it's not already loaded.
+            
+        Parameters:
+            charID (number) - The character ID to load.
+            client (Player) - The player who owns the character.
+            callback (function) - Optional callback function called when loading is complete.
+            
+        Returns:
+            None.
+    ]]
+    function lia.char.loadSingleCharacter(charID, client, callback)
+        -- If character is already loaded, call callback immediately
+        if lia.char.loaded[charID] then
+            if callback then callback(lia.char.loaded[charID]) end
+            return
+        end
+
+        -- Check if character belongs to this client
+        if not table.HasValue(client.liaCharList or {}, charID) then
+            if callback then callback(nil) end
+            return
+        end
+
+        -- Load character from database
+        lia.db.selectOne("*", "characters", "id = " .. charID):next(function(result)
+            if not result then
+                if callback then callback(nil) end
+                return
+            end
+
+            local charData = {}
+            for k, v in pairs(lia.char.vars) do
+                if v.field and result[v.field] then
+                    local value = tostring(result[v.field])
+                    if isnumber(v.default) then
+                        value = tonumber(value) or v.default
+                    elseif isbool(v.default) then
+                        value = tobool(value)
+                    elseif istable(v.default) then
+                        value = util.JSONToTable(value)
+                    end
+                    charData[k] = value
+                end
+            end
+
+            -- Create character object
+            local character = lia.char.new(charData, charID, client)
+            hook.Run("CharRestored", character)
+
+            -- Load inventories
+            character.vars.inv = {}
+            lia.inventory.loadAllFromCharID(charID):next(function(inventories)
+                if #inventories == 0 then
+                    local promise = hook.Run("CreateDefaultInventory", character)
+                    if promise then
+                        promise:next(function(inventory)
+                            character.vars.inv = {inventory}
+                            lia.char.loaded[charID] = character
+                            if callback then callback(character) end
+                        end)
+                    else
+                        character.vars.inv = {}
+                        lia.char.loaded[charID] = character
+                        if callback then callback(character) end
+                    end
+                else
+                    character.vars.inv = inventories
+                    lia.char.loaded[charID] = character
+                    if callback then callback(character) end
+                end
+            end, function(err)
+                lia.information("Failed to load inventories for character " .. charID .. ": " .. tostring(err))
+                if callback then callback(nil) end
+            end)
+        end)
+    end
 end

@@ -636,6 +636,14 @@ function lia.administrator.renameGroup(oldName, newName)
     if SERVER then lia.administrator.save() end
 end
 
+-- Register the staff character creation privilege
+lia.administrator.registerPrivilege({
+    ID = "createStaffCharacter",
+    Name = "createStaffCharacter",
+    MinAccess = "admin",
+    Category = "categoryStaffManagement"
+})
+
 if SERVER then
     --[[
         lia.administrator.addPermission

@@ -82,7 +82,28 @@ lia.command.add("adminmode", {
                     end
                 end
 
-                client:notifyLocalized("noStaffChar")
+                if client:hasPrivilege("createStaffChar") then
+                    local staffCharData = {
+                        steamID = steamID,
+                        name = client:steamName(), -- Use Nick() to match main menu staff creation
+                        desc = "", -- Empty description to trigger Discord prompt hook (same as main menu)
+                        faction = "staff",
+                        model = lia.faction.indices["staff"] and lia.faction.indices["staff"].models[1] or "models/Humans/Group02/male_07.mdl"
+                    }
+
+                    lia.char.create(staffCharData, function(charID)
+                        if IsValid(client) and charID then
+                            client:setNetVar("OldCharID", client:getChar():getID())
+                            net.Start("AdminModeSwapCharacter")
+                            net.WriteInt(charID, 32)
+                            net.Send(client)
+                            lia.log.add(client, "adminMode", charID, L("adminModeLogStaff"))
+                            client:notifyLocalized("staffCharCreated")
+                        end
+                    end)
+                else
+                    client:notifyLocalized("noStaffChar")
+                end
             end)
         end
     end
@@ -2171,17 +2192,17 @@ lia.command.add("listbodygroups", {
         end
 
         if #bodygroups > 0 then
-            lia.util.CreateTableUI(client, L("uiBodygroupsFor", target:Nick()), {
+            lia.util.SendTableUI(client, L("uiBodygroupsFor", target:Nick()), {
                 {
-                    name = L("groupID"),
+                    name = "groupID",
                     field = "group"
                 },
                 {
-                    name = L("name"),
+                    name = "name",
                     field = "name"
                 },
                 {
-                    name = L("range"),
+                    name = "range",
                     field = "range"
                 }
             }, bodygroups)
