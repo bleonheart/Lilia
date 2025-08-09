@@ -3,22 +3,19 @@ import os
 import re
 from datetime import datetime
 
-REPO_ROOT = "E:/GMOD/Server/garrysmod/gamemodes/Lilia"
+REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 GAMEMODE_DIR = os.path.join(REPO_ROOT, "gamemode")
 LANG_FILE = os.path.join(GAMEMODE_DIR, "languages", "english.lua")
-DATA_DIR = os.path.join(REPO_ROOT, "data")
-REGISTERED_JSON_PATH = os.path.join(DATA_DIR, "lilia_registered_privileges.json")
+REGISTERED_JSON_PATH = os.path.join(REPO_ROOT, "lilia_registered_privileges.json")
 REPORT_MD_PATH = os.path.join(REPO_ROOT, "lilia_privilege_report.md")
 
 
 def extract_used_privileges() -> list[str]:
-    # Improved pattern to catch all hasPrivilege usage patterns
-    # This pattern matches:
-    # - hasPrivilege function calls with string literals
-    # - Handles various contexts like LocalPlayer():hasPrivilege, client:hasPrivilege, etc.
-    # - Captures both single and double quoted strings
-    # - Allows for any content within the quotes (including spaces, underscores, etc.)
-    pattern = re.compile(r'hasPrivilege\s*\(\s*(["\'])([^"\']*)\1\s*\)', re.IGNORECASE | re.DOTALL)
+    # Pattern matches calls to hasPrivilege/hasPrivileges with a string first argument
+    # Examples:
+    #   ply:hasPrivilege("foo")
+    #   LocalPlayer():hasPrivileges("foo", true)
+    pattern = re.compile(r'hasPrivileges?\s*\(\s*(["\'])(.*?)\1', re.IGNORECASE | re.DOTALL)
     
     privileges: set[str] = set()
     for root, _, files in os.walk(GAMEMODE_DIR):
@@ -29,9 +26,10 @@ def extract_used_privileges() -> list[str]:
             try:
                 with open(path, encoding="utf-8", errors="ignore") as fh:
                     content = fh.read()
-                for _, pid in pattern.findall(content):
-                    if pid.strip():  # Only add non-empty privilege names
-                        privileges.add(pid.strip())
+                for match in pattern.finditer(content):
+                    pid = match.group(2).strip()
+                    if pid:
+                        privileges.add(pid)
             except OSError:
                 continue
     return sorted(privileges)
