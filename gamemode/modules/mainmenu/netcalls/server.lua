@@ -1,4 +1,4 @@
-﻿net.Receive("liaCharChoose", function(_, client)
+net.Receive("liaCharChoose", function(_, client)
     local function response(message)
         net.Start("liaCharChoose")
         net.WriteString(L(message or "", client))
@@ -9,7 +9,7 @@
     local currentChar = client:getChar()
 
     -- Check if we need to load the character first
-    if not lia.char.loaded[id] then
+    if not lia.char.isLoaded(id) then
         -- Verify the character belongs to this client
         if not table.HasValue(client.liaCharList or {}, id) then
             return response(false, "invalidChar")
@@ -71,7 +71,7 @@
     end
 
     -- Character is already loaded, proceed normally
-    local character = lia.char.loaded[id]
+    local character = lia.char.getCharacter(id, client)
     if not character or character:getPlayer() ~= client then
         return response(false, "invalidChar")
     end
@@ -165,18 +165,21 @@ net.Receive("liaCharCreate", function(_, client)
     data.steamID = client:SteamID()
     lia.char.create(data, function(id)
         if IsValid(client) then
-            lia.char.loaded[id]:sync(client)
-            table.insert(client.liaCharList, id)
-            lia.module.list["mainmenu"]:syncCharList(client)
-            hook.Run("OnCharCreated", client, lia.char.loaded[id], originalData)
-            response(id)
+            lia.char.getCharacter(id, client, function(character)
+                if not character then return end
+                character:sync(client)
+                table.insert(client.liaCharList, id)
+                lia.module.list["mainmenu"]:syncCharList(client)
+                hook.Run("OnCharCreated", client, character, originalData)
+                response(id)
+            end)
         end
     end)
 end)
 
 net.Receive("liaCharDelete", function(_, client)
     local id = net.ReadUInt(32)
-    local character = lia.char.loaded[id]
+    local character = lia.char.getCharacter(id)
     local steamID = client:SteamID()
     if character and character.steamID == steamID then
         hook.Run("CharDeleted", client, character)

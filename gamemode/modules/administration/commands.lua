@@ -1,4 +1,4 @@
-﻿lia.command.add("playtime", {
+lia.command.add("playtime", {
     adminOnly = false,
     privilege = "viewOwnPlaytime",
     desc = "playtimeDesc",
@@ -340,7 +340,7 @@ lia.command.add("charlist", {
             local sendData = {}
             for _, row in ipairs(data) do
                 local charID = tonumber(row.id) or row.id
-                local stored = lia.char.loaded[charID]
+                local stored = lia.char.getCharacter(charID)
                 local info = stored and stored:getData() or {}
                 local allVars = {}
                 if stored then
@@ -1933,14 +1933,14 @@ lia.command.add("charunban", {
         local charFound
         local id = tonumber(queryArg)
         if id then
-            for _, v in pairs(lia.char.loaded) do
+            for _, v in pairs(lia.char.getAll()) do
                 if v:getID() == id then
                     charFound = v
                     break
                 end
             end
         else
-            for _, v in pairs(lia.char.loaded) do
+            for _, v in pairs(lia.char.getAll()) do
                 if lia.util.stringMatches(v:getName(), queryArg) then
                     charFound = v
                     break

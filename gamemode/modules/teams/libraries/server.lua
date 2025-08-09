@@ -1,4 +1,4 @@
-﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
+function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -155,7 +155,7 @@ end
 
 function MODULE:CanCharBeTransfered(character, faction)
     if faction.oneCharOnly then
-        for _, otherCharacter in next, lia.char.loaded do
+        for _, otherCharacter in next, lia.char.getAll() do
             if otherCharacter.steamID == character.steamID and faction.index == otherCharacter:getFaction() then return false, L("charAlreadyInFaction") end
         end
     end

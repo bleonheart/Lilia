@@ -1,4 +1,4 @@
-﻿MODULE.name = "mainMenu"
+MODULE.name = "mainMenu"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "moduleMainMenuDesc"
@@ -33,7 +33,9 @@ else
             local message = net.ReadString()
             if message == "" then
                 d:resolve()
-                hook.Run("CharLoaded", lia.char.loaded[id])
+                lia.char.getCharacter(id, nil, function(character)
+                    hook.Run("CharLoaded", character)
+                end)
             else
                 d:reject(message)
             end
@@ -155,7 +157,7 @@ function MODULE:GetMaxPlayerChar(client)
         -- Count staff characters to add them to the limit
         local staffCount = 0
         for _, charID in pairs(client.liaCharList or {}) do
-            local character = lia.char.loaded[charID]
+            local character = lia.char.getCharacter(charID)
             if character and character:getFaction() == FACTION_STAFF then
                 staffCount = staffCount + 1
             end

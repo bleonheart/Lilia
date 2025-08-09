@@ -1,4 +1,4 @@
-﻿net.Receive("cfgList", function()
+net.Receive("cfgList", function()
     local changed = net.ReadTable()
     for key, value in pairs(changed) do
         if lia.config.stored[key] then lia.config.stored[key].value = value end
@@ -221,7 +221,9 @@ net.Receive("AdminModeSwapCharacter", function()
         local message = net.ReadString()
         if message == "" then
             d:resolve()
-            hook.Run("CharLoaded", lia.char.loaded[id])
+            lia.char.getCharacter(id, nil, function(character)
+                hook.Run("CharLoaded", character)
+            end)
         else
             d:reject(message)
         end
