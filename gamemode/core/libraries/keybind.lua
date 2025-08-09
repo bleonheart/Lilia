@@ -425,7 +425,7 @@ hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
     end
 
     pages[#pages + 1] = {
-        name = L("keybinds"),
+        name = "keybinds",
         drawFunc = buildKeybinds
     }
 end)

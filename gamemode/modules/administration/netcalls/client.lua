@@ -29,19 +29,19 @@ end
 function openRowInfo(row)
     local columns = {
         {
-            name = L("field"),
+            name = "field",
             field = "field"
         },
         {
-            name = L("type"),
+            name = "type",
             field = "type"
         },
         {
-            name = L("coded"),
+            name = "coded",
             field = "coded"
         },
         {
-            name = L("decoded"),
+            name = "decoded",
             field = "decoded"
         }
     }
@@ -60,7 +60,7 @@ function openRowInfo(row)
         }
     end
 
-    lia.util.CreateTableUI(L("rowDetailsTitle"), columns, rows)
+    lia.util.CreateTableUI("rowDetailsTitle", columns, rows)
 end
 
 function openDecodedTable(tableName, columns, data)

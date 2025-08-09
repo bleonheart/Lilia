@@ -94,7 +94,7 @@ Registers a CAMI privilege for use with permission checks.
 
 ```lua
 lia.administrator.registerPrivilege({
-    Name = L("useDisallowedTools"),
+    Name = "useDisallowedTools",
     ID = "useDisallowedTools",
     MinAccess = "superadmin",
     Category = "categoryStaffTools"

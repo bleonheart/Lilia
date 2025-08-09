@@ -67,7 +67,7 @@ end)
 function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canSeeLogs") then
         table.insert(pages, {
-            name = L("logs"),
+            name = "logs",
             icon = "icon16/book_open.png",
             drawFunc = function(panel)
                 receivedPanel = panel

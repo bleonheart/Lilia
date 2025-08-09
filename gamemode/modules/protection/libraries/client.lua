@@ -1685,7 +1685,7 @@ function MODULE:PopulateAdminTabs(pages)
 
     if not table.IsEmpty(entitiesByCreator) then
         pages[#pages + 1] = {
-            name = L("entities"),
+            name = "entities",
             icon = "icon16/bricks.png",
             drawFunc = function(entPanel)
                 local sheetContainer = vgui.Create("DPropertySheet", entPanel)

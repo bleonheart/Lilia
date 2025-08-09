@@ -569,7 +569,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     end
 
     pages[#pages + 1] = {
-        name = L("options"),
+        name = "options",
         drawFunc = function(parent)
             parent:Clear()
             local sheet = parent:Add("liaSheet")

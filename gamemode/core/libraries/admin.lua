@@ -1448,7 +1448,7 @@ else
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege("manageUsergroups") then return end
         pages[#pages + 1] = {
-            name = L("userGroups"),
+            name = "userGroups",
             icon = "icon16/group.png",
             drawFunc = function(parent)
                 lia.gui.usergroups = parent

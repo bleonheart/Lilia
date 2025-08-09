@@ -637,7 +637,7 @@ end
 hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(pages)
     local client = LocalPlayer()
     table.insert(pages, {
-        name = L("commands"),
+        name = "commands",
         drawFunc = function(parent)
             local sheet = vgui.Create("liaSheet", parent)
             sheet:SetPlaceholderText(L("searchCommands"))

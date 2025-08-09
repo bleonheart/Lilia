@@ -321,7 +321,7 @@ end
 
 hook.Add("CreateInformationButtons", "liaInformationModulesUnified", function(pages)
     table.insert(pages, {
-        name = L("modules"),
+        name = "modules",
         drawFunc = function(parent)
             local sheet = vgui.Create("liaSheet", parent)
             sheet:SetPlaceholderText(L("searchModules"))

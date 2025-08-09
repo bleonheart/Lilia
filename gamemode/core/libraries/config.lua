@@ -1654,7 +1654,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
 
     if hook.Run("CanPlayerModifyConfig", LocalPlayer()) ~= false then
         pages[#pages + 1] = {
-            name = L("categoryConfiguration"),
+            name = "categoryConfiguration",
             drawFunc = function(parent) buildConfiguration(parent) end
         }
     end

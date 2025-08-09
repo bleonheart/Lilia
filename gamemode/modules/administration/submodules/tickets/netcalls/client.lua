@@ -90,7 +90,7 @@ net.Receive("liaTicketsCount", function()
         hook.Add("PopulateAdminTabs", "liaTicketsTab", function(pages)
             if not IsValid(LocalPlayer()) or not (LocalPlayer():hasPrivilege("alwaysSeeTickets") or LocalPlayer():isStaffOnDuty()) then return end
             table.insert(pages, {
-                name = L("tickets"),
+                name = "tickets",
                 icon = "icon16/report.png",
                 drawFunc = function(panel)
                     ticketPanel = panel

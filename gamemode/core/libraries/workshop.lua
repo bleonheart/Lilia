@@ -370,7 +370,7 @@ else
 
     hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
         table.insert(pages, {
-            name = L("workshopAddons"),
+            name = "workshopAddons",
             drawFunc = function(parent)
                 local ids = lia.workshop.serverIds or {}
                 local sheet = vgui.Create("liaSheet", parent)

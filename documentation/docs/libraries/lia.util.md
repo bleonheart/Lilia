@@ -454,11 +454,11 @@ local faction = lia.util.findFaction(client, "citizen")
 
 ---
 
-### lia.util.CreateTableUI
+### lia.util.SendTableUI
 
 **Purpose**
 
-Sends a net message instructing the client to build a table UI.
+Sends a table UI to a client for display using the big table transfer system.
 
 **Parameters**
 
@@ -485,7 +485,7 @@ Sends a net message instructing the client to build a table UI.
 **Example Usage**
 
 ```lua
-lia.util.CreateTableUI(ply, "Inventory", cols, rows, opts, charID)
+lia.util.SendTableUI(ply, "Inventory", cols, rows, opts, charID)
 ```
 
 ---

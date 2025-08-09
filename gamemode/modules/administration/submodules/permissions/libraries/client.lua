@@ -111,39 +111,39 @@ net.Receive("DisplayCharList", function()
 
     local columns = {
         {
-            name = L("name"),
+            name = "name",
             field = L("name")
         },
         {
-            name = L("description"),
+            name = "description",
             field = "Desc"
         },
         {
-            name = L("faction"),
+            name = "faction",
             field = L("faction")
         },
         {
-            name = L("banned"),
+            name = "banned",
             field = L("banned")
         },
         {
-            name = L("banningAdminName"),
+            name = "banningAdminName",
             field = "BanningAdminName"
         },
         {
-            name = L("banningAdminSteamID"),
+            name = "banningAdminSteamID",
             field = "BanningAdminSteamID"
         },
         {
-            name = L("banningAdminRank"),
+            name = "banningAdminRank",
             field = "BanningAdminRank"
         },
         {
-            name = L("charMoney"),
+            name = "charMoney",
             field = L("money")
         },
         {
-            name = L("lastUsed"),
+            name = "lastUsed",
             field = "LastUsed"
         }
     }

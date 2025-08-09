@@ -421,13 +421,13 @@ lia.command.add("doorinfo", {
                 }
             }
 
-            lia.util.CreateTableUI(client, L("door") .. " " .. L("information"), {
+            lia.util.SendTableUI(client, L("door") .. " " .. L("information"), {
                 {
-                    name = L("doorInfoProperty"),
+                    name = "doorInfoProperty",
                     field = "property"
                 },
                 {
-                    name = L("doorInfoValue"),
+                    name = "doorInfoValue",
                     field = "value"
                 }
             }, doorData)

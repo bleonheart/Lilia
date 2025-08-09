@@ -316,11 +316,7 @@ net.Receive("OpenInvMenu", function()
     myInventoryDerma:MoveLeftOf(inventoryDerma, 4)
 end)
 
-net.Receive("CreateTableUI", function()
-    local dataSize = net.ReadUInt(32)
-    local compressedData = net.ReadData(dataSize)
-    local jsonData = util.Decompress(compressedData)
-    local data = util.JSONToTable(jsonData)
+lia.net.readBigTable("SendTableUI", function(data)
     lia.util.CreateTableUI(data.title, data.columns, data.data, data.options, data.characterID)
 end)
 
