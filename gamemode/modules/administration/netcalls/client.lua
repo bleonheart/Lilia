@@ -460,7 +460,7 @@ local function OpenRoster(panel, data)
                     local rowData = row.rowData
                     local steamID = rowData.steamID
                     local menu = DermaMenu()
-                    if steamID and steamID ~= "" and LocalPlayer():hasPrivilege(L("canManageFactions")) and not isDefaultFaction then
+                    if steamID and steamID ~= "" and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
                         menu:AddOption(L("kick"), function()
                             Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                                 net.Start("KickCharacter")

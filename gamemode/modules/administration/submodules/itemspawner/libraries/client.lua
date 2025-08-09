@@ -1,6 +1,6 @@
 ﻿spawnmenu.AddContentType("inventoryitem", function(container, data)
     local client = LocalPlayer()
-    if not client:hasPrivilege(L("canUseItemSpawner")) then return end
+    if not client:hasPrivilege("canUseItemSpawner") then return end
     local icon = vgui.Create("ContentIcon", container)
     icon:SetContentType("inventoryitem")
     icon:SetSpawnName(data.id)
@@ -107,7 +107,7 @@ end
 
 spawnmenu.AddCreationTab(L("inventoryItems"), function()
     local client = LocalPlayer()
-    if not IsValid(client) or not client.hasPrivilege or not client:hasPrivilege(L("canUseItemSpawner")) then
+    if not IsValid(client) or not client.hasPrivilege or not client:hasPrivilege("canUseItemSpawner") then
         local pnl = vgui.Create("DPanel")
         pnl:Dock(FILL)
         pnl.Paint = function(_, w, h) draw.SimpleText(L("noItemSpawnerPermission"), "DermaDefault", w / 2, h / 2, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end

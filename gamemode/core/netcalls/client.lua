@@ -300,7 +300,7 @@ net.Receive("actBar", function()
 end)
 
 net.Receive("OpenInvMenu", function()
-    if not LocalPlayer():hasPrivilege(L("checkInventories")) then return end
+    if not LocalPlayer():hasPrivilege("checkInventories") then return end
     local target = net.ReadEntity()
     local index = net.ReadType()
     local targetInv = lia.inventory.instances[index]

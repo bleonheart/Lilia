@@ -1,7 +1,7 @@
 ﻿function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if not IsValid(client) or not IsValid(target) then return end
-    if not (client:hasPrivilege(L("canAccessScoreboardInfoOutOfStaff")) or client:hasPrivilege(L("canAccessScoreboardAdminOptions")) and client:isStaffOnDuty()) then return end
+    if not (client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty()) then return end
     local orderedOptions = {
         {
             name = L("nameCopyFormat", target:Name()),
@@ -114,7 +114,7 @@ end
 function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    if client:hasPrivilege(L("viewStaffManagement")) then
+    if client:hasPrivilege("viewStaffManagement") then
         table.insert(pages, {
             name = L("moduleStaffManagementName"),
             icon = "icon16/shield.png",
@@ -126,7 +126,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("canAccessPlayerList")) then
+    if client:hasPrivilege("canAccessPlayerList") then
         table.insert(pages, {
             name = L("players"),
             icon = "icon16/user.png",
@@ -138,7 +138,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("listCharacters")) then
+    if client:hasPrivilege("listCharacters") then
         table.insert(pages, {
             name = L("characterList"),
             icon = "icon16/book.png",
@@ -336,7 +336,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("viewDBTables")) then
+    if client:hasPrivilege("viewDBTables") then
         table.insert(pages, {
             name = L("databaseView"),
             icon = "icon16/database.png",
@@ -407,7 +407,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("canAccessFlagManagement")) then
+    if client:hasPrivilege("canAccessFlagManagement") then
         table.insert(pages, {
             name = L("flagsManagement"),
             icon = "icon16/flag_red.png",
@@ -424,7 +424,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("canManageFactions")) then
+    if client:hasPrivilege("canManageFactions") then
         table.insert(pages, {
             name = L("factionManagement"),
             icon = "icon16/chart_organisation.png",
@@ -436,7 +436,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege(L("manageCharacters")) then
+    if client:hasPrivilege("manageCharacters") then
         net.Start("liaRequestPKsCount")
         net.SendToServer()
     end
@@ -449,7 +449,7 @@ net.Receive("liaPKsCount", function()
         pksTabAdded = true
         hook.Add("PopulateAdminTabs", "liaPKsTab", function(pages)
             local client = LocalPlayer()
-            if not IsValid(client) or not client:hasPrivilege(L("manageCharacters")) then return end
+            if not IsValid(client) or not client:hasPrivilege("manageCharacters") then return end
             table.insert(pages, {
                 name = L("pkManager"),
                 icon = "icon16/lightning.png",

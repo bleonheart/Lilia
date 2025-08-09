@@ -187,7 +187,7 @@ end
 
 local function IncludeAdminMenu(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not (cl:hasPrivilege(L("useAdminStick")) or cl:isStaffOnDuty()) then return end
+    if not (cl:hasPrivilege("useAdminStick") or cl:isStaffOnDuty()) then return end
     local mod = GetOrCreateSubMenu(menu, "moderationTools", stores)
     local tp = {
         {
@@ -305,9 +305,9 @@ end
 
 local function IncludeCharacterManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    local canFaction = cl:hasPrivilege(L("manageTransfers"))
-    local canClass = cl:hasPrivilege(L("manageClasses"))
-    local canWhitelist = cl:hasPrivilege(L("manageWhitelists"))
+    local canFaction = cl:hasPrivilege("manageTransfers")
+    local canClass = cl:hasPrivilege("manageClasses")
+    local canWhitelist = cl:hasPrivilege("manageWhitelists")
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local char = tgt:getChar()
     if char then
@@ -436,7 +436,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
         end
     end
 
-    if cl:hasPrivilege(L("manageCharacterInformation")) then
+    if cl:hasPrivilege("manageCharacterInformation") then
         charMenu:AddOption(L("changePlayerModel"), function()
             OpenPlayerModelUI(tgt)
             AdminStickIsOpen = false
@@ -446,7 +446,7 @@ end
 
 local function IncludeFlagManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not cl:hasPrivilege(L("manageFlags")) then return end
+    if not cl:hasPrivilege("manageFlags") then return end
     local charMenu = GetOrCreateSubMenu(menu, "characterManagement", stores)
     local fm = GetOrCreateSubMenu(charMenu, "flagsManagement", stores)
     local cf = GetOrCreateSubMenu(fm, "charFlagsTitle", stores)

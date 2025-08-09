@@ -612,7 +612,7 @@ lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -622,7 +622,7 @@ lia.option.add("espPlayers", "espPlayers", "espPlayersDesc", false, nil, {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -632,7 +632,7 @@ lia.option.add("espItems", "espItems", "espItemsDesc", false, nil, {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -642,7 +642,7 @@ lia.option.add("espEntities", "espEntities", "espEntitiesDesc", false, nil, {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -652,7 +652,7 @@ lia.option.add("espUnconfiguredDoors", "espUnconfiguredDoors", "espUnconfiguredD
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -666,7 +666,7 @@ lia.option.add("espItemsColor", "espItemsColor", "espItemsColorDesc", {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -680,7 +680,7 @@ lia.option.add("espEntitiesColor", "espEntitiesColor", "espEntitiesColorDesc", {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -694,7 +694,7 @@ lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnc
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 
@@ -708,7 +708,7 @@ lia.option.add("espPlayersColor", "espPlayersColor", "espPlayersColorDesc", {
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
-        return ply:isStaffOnDuty() or ply:hasPrivilege(L("noClipOutsideStaff"))
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
     end
 })
 

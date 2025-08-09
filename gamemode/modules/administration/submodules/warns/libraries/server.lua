@@ -27,7 +27,7 @@ function MODULE:RemoveWarning(charID, index)
 end
 
 net.Receive("RequestRemoveWarning", function(_, client)
-    if not client:hasPrivilege(L("canRemoveWarns")) then return end
+    if not client:hasPrivilege("canRemoveWarns") then return end
     local charID = net.ReadInt(32)
     local rowData = net.ReadTable()
     local warnIndex = tonumber(rowData.ID or rowData.index)
@@ -64,7 +64,7 @@ net.Receive("RequestRemoveWarning", function(_, client)
 end)
 
 net.Receive("liaRequestAllWarnings", function(_, client)
-    if not client:hasPrivilege(L("viewPlayerWarnings")) then return end
+    if not client:hasPrivilege("viewPlayerWarnings") then return end
     lia.db.select({"timestamp", "warned", "warnedSteamID", "warner", "warnerSteamID", "message"}, "warnings"):next(function(res)
         net.Start("liaAllWarnings")
         net.WriteTable(res.results or {})
@@ -73,7 +73,7 @@ net.Receive("liaRequestAllWarnings", function(_, client)
 end)
 
 net.Receive("liaRequestWarningsCount", function(_, client)
-    if not client:hasPrivilege(L("viewPlayerWarnings")) then return end
+    if not client:hasPrivilege("viewPlayerWarnings") then return end
     lia.db.count("warnings"):next(function(count)
         net.Start("liaWarningsCount")
         net.WriteInt(count or 0, 32)
