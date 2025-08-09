@@ -77,6 +77,7 @@ else
     lia.char.pendingRequests = lia.char.pendingRequests or {}
 
     function lia.char.getCharacter(charID, _, callback)
+        if not charID then return end
         local character = lia.char.loaded[charID]
         if character then
             if callback then callback(character) end
@@ -361,10 +362,16 @@ lia.char.registerVar("model", {
     end,
     onGet = function(character, default) return character.vars.model or default end,
     index = 3,
-    onValidate = function(_, data)
+    onValidate = function(_, data, client)
         local faction = lia.faction.indices[data.faction]
         if faction then
-            if not data.model or not faction.models[data.model] then return false, "needModel" end
+            if not data.model or not faction.models[data.model] then
+                -- Staff characters with privilege can bypass model validation
+                if data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") then
+                    return true
+                end
+                return false, "needModel"
+            end
         else
             return false, "needModel"
         end
@@ -475,6 +482,8 @@ lia.char.registerVar("faction", {
     end,
     onValidate = function(value, _, client)
         if not lia.faction.indices[value] then return false, "invalid", "faction" end
+        -- Staff characters bypass whitelist check
+        if value == FACTION_STAFF and client:hasPrivilege("createStaffCharacter") then return true end
         if not client:hasWhitelist(value) then return false, "illegalAccess" end
         return true
     end,
@@ -582,7 +591,11 @@ lia.char.registerVar("attribs", {
     default = {},
     isLocal = true,
     index = 4,
-    onValidate = function(value, _, client)
+    onValidate = function(value, data, client)
+        -- Staff characters with privilege bypass attribute validation
+        if data and data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") then
+            return true
+        end
         if value ~= nil then
             if istable(value) then
                 local count = 0
@@ -1424,8 +1437,8 @@ if SERVER then
             return
         end
 
-        -- Check if character belongs to this client
-        if not table.HasValue(client.liaCharList or {}, charID) then
+        -- Check if character belongs to this client (only if client is provided)
+        if client and not table.HasValue(client.liaCharList or {}, charID) then
             if callback then callback(nil) end
             return
         end

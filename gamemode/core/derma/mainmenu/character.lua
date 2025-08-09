@@ -159,8 +159,8 @@ function PANEL:createStartButton()
         end
     end
 
-    -- Staff Character button (Create or Load)
-    if client:hasPrivilege("createStaffCharacter") then
+    -- Staff Character button (Create or Load) - Don't show if already on duty
+    if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         table.insert(buttonsData, {
             id = "staff",
             text = hasStaffChar and (L("load") .. " " .. L("factionStaffName")) or (L("create") .. " " .. L("factionStaffName")),
@@ -175,12 +175,13 @@ function PANEL:createStartButton()
                     for _, charID in pairs(lia.characters) do
                         local character = lia.char.getCharacter(charID)
                         if character and character:getFaction() == FACTION_STAFF then
-                            lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err)
+                            lia.module.list["mainmenu"]:chooseCharacter(character:getID()):next(function()
+                                self:Remove()
+                            end):catch(function(err)
                                 if err and err ~= "" then
                                     LocalPlayer():notifyLocalized(err)
                                 end
                             end)
-                            self:Remove()
                             break
                         end
                     end

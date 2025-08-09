@@ -111,7 +111,7 @@ else
             vgui.Create("liaCharacter")
         end
     end
-    
+
     -- Handle Discord prompt for staff characters
     net.Receive("liaStaffDiscordPrompt", function()
         Derma_StringRequest(
@@ -167,8 +167,9 @@ function MODULE:GetMaxPlayerChar(client)
     else
         -- Count staff characters on client side
         local staffCount = 0
-        for _, character in pairs(lia.characters or {}) do
-            if character.faction == FACTION_STAFF then
+        for _, charID in pairs(lia.characters or {}) do
+            local character = lia.char.getCharacter(charID)
+            if character and character:getFaction() == FACTION_STAFF then
                 staffCount = staffCount + 1
             end
         end

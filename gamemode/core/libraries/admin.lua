@@ -87,7 +87,7 @@ local function getPrivilegeCategory(privilegeName)
     }
 
     if not privilegeName then return L("unassigned") end
-    if lia.command.list[privilegeName] then return L("commands") end
+    if lia.command and lia.command.list and lia.command.list[privilegeName] then return L("commands") end
     if lia.module and lia.module.list then
         for _, module in pairs(lia.module.list) do
             if module.Privileges and istable(module.Privileges) then
@@ -255,6 +255,62 @@ function lia.administrator.hasAccess(ply, privilege)
     if g and g[privilege] == true then return true end
     local min = lia.administrator.privileges[privilege]
     return shouldGrant(grp, min)
+end
+
+--[[
+        lia.administrator.save
+
+        Purpose:
+            Saves all usergroups and privileges to the database and optionally synchronizes with clients.
+
+        Parameters:
+            noNetwork (boolean) - (Optional) If true, does not sync to clients after saving.
+
+        Returns:
+            None.
+
+        Realm:
+            Server.
+
+        Example Usage:
+            -- Save admin data and sync to clients
+            lia.administrator.save()
+
+            -- Save admin data without syncing to clients
+            lia.administrator.save(true)
+    ]]
+function lia.administrator.save(noNetwork)
+    rebuildPrivileges()
+    local rows = {}
+    for name, data in pairs(lia.administrator.groups) do
+        local info = istable(data._info) and data._info or {}
+        local privs = table.Copy(data)
+        privs._info = nil
+        rows[#rows + 1] = {
+            usergroup = name,
+            privileges = util.TableToJSON(privs),
+            inheritance = info.inheritance or "user",
+            types = util.TableToJSON(info.types or {})
+        }
+    end
+
+    lia.db.query("DELETE FROM lia_admin")
+    lia.db.bulkInsert("admin", rows)
+    if noNetwork or lia.administrator._loading then return end
+    lia.net.ready = lia.net.ready or setmetatable({}, {
+        __mode = "k"
+    })
+
+    local hasReady = false
+    for ply in pairs(lia.net.ready) do
+        if IsValid(ply) and lia.net.ready[ply] then
+            hasReady = true
+            break
+        end
+    end
+
+    if not hasReady then return end
+    lia.administrator.sync()
 end
 
 --[[
@@ -762,62 +818,6 @@ if SERVER then
         for _, p in ipairs(t) do
             push(p)
         end
-    end
-
-    --[[
-        lia.administrator.save
-
-        Purpose:
-            Saves all usergroups and privileges to the database and optionally synchronizes with clients.
-
-        Parameters:
-            noNetwork (boolean) - (Optional) If true, does not sync to clients after saving.
-
-        Returns:
-            None.
-
-        Realm:
-            Server.
-
-        Example Usage:
-            -- Save admin data and sync to clients
-            lia.administrator.save()
-
-            -- Save admin data without syncing to clients
-            lia.administrator.save(true)
-    ]]
-    function lia.administrator.save(noNetwork)
-        rebuildPrivileges()
-        local rows = {}
-        for name, data in pairs(lia.administrator.groups) do
-            local info = istable(data._info) and data._info or {}
-            local privs = table.Copy(data)
-            privs._info = nil
-            rows[#rows + 1] = {
-                usergroup = name,
-                privileges = util.TableToJSON(privs),
-                inheritance = info.inheritance or "user",
-                types = util.TableToJSON(info.types or {})
-            }
-        end
-
-        lia.db.query("DELETE FROM lia_admin")
-        lia.db.bulkInsert("admin", rows)
-        if noNetwork or lia.administrator._loading then return end
-        lia.net.ready = lia.net.ready or setmetatable({}, {
-            __mode = "k"
-        })
-
-        local hasReady = false
-        for ply in pairs(lia.net.ready) do
-            if IsValid(ply) and lia.net.ready[ply] then
-                hasReady = true
-                break
-            end
-        end
-
-        if not hasReady then return end
-        lia.administrator.sync()
     end
 
     --[[

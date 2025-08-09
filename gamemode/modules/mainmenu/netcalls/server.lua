@@ -188,9 +188,7 @@ net.Receive("liaCharDelete", function(_, client)
     end
 end)
 
--- Network call for Discord prompt
-util.AddNetworkString("liaStaffDiscordPrompt")
-util.AddNetworkString("liaStaffDiscordResponse")
+-- Network strings are defined in gamemode/core/hooks/server.lua
 
 -- Hook to prompt for Discord on first staff character spawn
 hook.Add("PlayerLoadedChar", "StaffCharacterDiscordPrompt", function(client, character)
@@ -213,7 +211,7 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
 
     -- Build the description
     local steamID = client:SteamID()
-    local description = "A Staff Character, " .. discord .. " " .. steamID
+    local description = "A Staff Character, Discord: " .. discord .. ", SteamID: " .. steamID
 
     character:setDesc(description)
     client:notifyLocalized("Staff character description updated!")
