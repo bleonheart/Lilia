@@ -112,7 +112,7 @@ else
         end
     end
 
-    -- Handle Discord prompt for staff characters
+    
     net.Receive("liaStaffDiscordPrompt", function()
         Derma_StringRequest(
             "Staff Character Setup",
@@ -128,7 +128,7 @@ else
                 end
             end,
             function()
-                -- User cancelled, set a default
+                
                 net.Start("liaStaffDiscordResponse")
                 net.WriteString("Discord not provided")
                 net.SendToServer()
@@ -150,11 +150,11 @@ function MODULE:CanPlayerCreateChar(client)
     end
 end
 
--- Hook to exclude staff characters from character limit
+
 function MODULE:GetMaxPlayerChar(client)
     local maxChars = lia.config.get("MaxCharacters")
     if SERVER then
-        -- Count staff characters to add them to the limit
+        
         local staffCount = 0
         for _, charID in pairs(client.liaCharList or {}) do
             local character = lia.char.getCharacter(charID)
@@ -162,10 +162,10 @@ function MODULE:GetMaxPlayerChar(client)
                 staffCount = staffCount + 1
             end
         end
-        -- Effectively give unlimited slots for staff characters
+        
         return maxChars + staffCount
     else
-        -- Count staff characters on client side
+        
         local staffCount = 0
         for _, charID in pairs(lia.characters or {}) do
             local character = lia.char.getCharacter(charID)

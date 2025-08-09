@@ -366,7 +366,7 @@ lia.char.registerVar("model", {
         local faction = lia.faction.indices[data.faction]
         if faction then
             if not data.model or not faction.models[data.model] then
-                -- Staff characters with privilege can bypass model validation
+                
                 if data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") then
                     return true
                 end
@@ -482,7 +482,7 @@ lia.char.registerVar("faction", {
     end,
     onValidate = function(value, _, client)
         if not lia.faction.indices[value] then return false, "invalid", "faction" end
-        -- Staff characters bypass whitelist check
+        
         if value == FACTION_STAFF and client:hasPrivilege("createStaffCharacter") then return true end
         if not client:hasWhitelist(value) then return false, "illegalAccess" end
         return true
@@ -592,7 +592,7 @@ lia.char.registerVar("attribs", {
     isLocal = true,
     index = 4,
     onValidate = function(value, data, client)
-        -- Staff characters with privilege bypass attribute validation
+        
         if data and data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") then
             return true
         end
@@ -1376,16 +1376,16 @@ if SERVER then
         local character = lia.char.loaded[charID]
         if not character then return false end
 
-        -- Save character data before unloading
+        
         character:save()
 
-        -- Clean up inventories
+        
         lia.inventory.cleanUpForCharacter(character)
 
-        -- Remove from loaded table
+        
         lia.char.loaded[charID] = nil
 
-        -- Call cleanup hook
+        
         hook.Run("CharCleanUp", character)
 
         return true
@@ -1431,19 +1431,19 @@ if SERVER then
             None.
     ]]
     function lia.char.loadSingleCharacter(charID, client, callback)
-        -- If character is already loaded, call callback immediately
+        
         if lia.char.loaded[charID] then
             if callback then callback(lia.char.loaded[charID]) end
             return
         end
 
-        -- Check if character belongs to this client (only if client is provided)
+        
         if client and not table.HasValue(client.liaCharList or {}, charID) then
             if callback then callback(nil) end
             return
         end
 
-        -- Load character from database
+        
         lia.db.selectOne("*", "characters", "id = " .. charID):next(function(result)
             if not result then
                 if callback then callback(nil) end
@@ -1465,11 +1465,11 @@ if SERVER then
                 end
             end
 
-            -- Create character object
+            
             local character = lia.char.new(charData, charID, client)
             hook.Run("CharRestored", character)
 
-            -- Load inventories
+            
             character.vars.inv = {}
             lia.inventory.loadAllFromCharID(charID):next(function(inventories)
                 if #inventories == 0 then

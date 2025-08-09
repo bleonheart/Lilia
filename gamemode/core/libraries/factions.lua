@@ -568,10 +568,10 @@ if CLIENT then
         local data = lia.faction.indices[faction]
         if data then
             if data.isDefault then return true end
-            -- Special case for staff faction - check createStaffCharacter privilege
+            
             if faction == FACTION_STAFF then
                 local hasPriv = LocalPlayer():hasPrivilege("createStaffCharacter")
-                -- Follow same notification logic as admin.lua for non-existent privileges
+                
                 if not (lia.administrator.privileges and lia.administrator.privileges["createStaffCharacter"]) then
                     lia.information(L("privilegeNotExist", "createStaffCharacter"))
                     if IsValid(LocalPlayer()) and LocalPlayer().notifyLocalized then

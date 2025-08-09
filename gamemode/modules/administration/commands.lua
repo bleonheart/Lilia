@@ -85,8 +85,8 @@ lia.command.add("adminmode", {
                 if client:hasPrivilege("createStaffChar") then
                     local staffCharData = {
                         steamID = steamID,
-                        name = client:steamName(), -- Use Nick() to match main menu staff creation
-                        desc = "", -- Empty description to trigger Discord prompt hook (same as main menu)
+                        name = client:steamName(), 
+                        desc = "", 
                         faction = "staff",
                         model = lia.faction.indices["staff"] and lia.faction.indices["staff"].models[1] or "models/Humans/Group02/male_07.mdl"
                     }

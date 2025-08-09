@@ -14,7 +14,7 @@ function MODULE:GetDefaultCharName(client, faction, data)
         if name then return name, override ~= false end
     end
 
-    -- For staff characters, provide a default name and bypass validation
+    
     if faction == FACTION_STAFF then
         return "Staff - " .. client:SteamName(), true
     end
@@ -29,7 +29,7 @@ function MODULE:GetDefaultCharDesc(client, faction)
     local info = lia.faction.indices[faction]
     if info and info.GetDefaultDesc then return info:GetDefaultDesc(client) end
 
-    -- For staff characters, provide a default description and bypass validation
+    
     if faction == FACTION_STAFF then
         return "A Staff Character, Discord: (Not Set), SteamID: " .. client:SteamID(), true
     end
