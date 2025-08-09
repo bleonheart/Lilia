@@ -130,7 +130,7 @@ else
             function()
                 
                 net.Start("liaStaffDiscordResponse")
-                net.WriteString("Discord not provided")
+                net.WriteString("not provided")
                 net.SendToServer()
             end
         )

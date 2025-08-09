@@ -31,6 +31,6 @@ function MODULE:GetDefaultCharDesc(client, faction)
 
     
     if faction == FACTION_STAFF then
-        return "A Staff Character, Discord: (Not Set), SteamID: " .. client:SteamID(), true
+        return "A Staff Character, Discord: not provided, SteamID: " .. client:SteamID(), true
     end
 end
