@@ -147,7 +147,7 @@ function PANEL:createStartButton()
     local workshopURL = lia.config.get("Workshop")
     local buttonsData = {}
 
-    -- Check for staff character existence
+    
     local hasStaffChar = false
     if lia.characters and #lia.characters > 0 then
         for _, charID in pairs(lia.characters) do
@@ -159,7 +159,7 @@ function PANEL:createStartButton()
         end
     end
 
-    -- Staff Character button (Create or Load) - Don't show if already on duty
+    
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         table.insert(buttonsData, {
             id = "staff",
@@ -171,7 +171,7 @@ function PANEL:createStartButton()
 
                 self:clickSound()
                 if hasStaffChar then
-                    -- Load staff character
+                    
                     for _, charID in pairs(lia.characters) do
                         local character = lia.char.getCharacter(charID)
                         if character and character:getFaction() == FACTION_STAFF then
@@ -186,7 +186,7 @@ function PANEL:createStartButton()
                         end
                     end
                 else
-                    -- Create staff character
+                    
                     self:createStaffCharacter()
                 end
             end
@@ -426,21 +426,21 @@ function PANEL:createStaffCharacter()
     local client = LocalPlayer()
     local steamName = client:Nick()
 
-    -- Create staff character with Steam name
+    
     local staffData = {
         name = steamName,
         faction = FACTION_STAFF,
-        model = 1, -- Use first model from staff faction
-        desc = "", -- We'll update this after spawn with Discord info
+        model = 1, 
+        desc = "", 
         skin = 0,
         groups = {}
     }
 
     lia.module.list["mainmenu"]:createCharacter(staffData):next(function(charID)
-        -- Character created successfully, now load it
+        
         lia.module.list["mainmenu"]:chooseCharacter(charID):next(function()
             self:Remove()
-            -- The Discord prompt will be handled by the spawn hook
+            
         end):catch(function(err)
             if err and err ~= "" then
                 LocalPlayer():notifyLocalized(err)

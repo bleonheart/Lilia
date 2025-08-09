@@ -289,10 +289,10 @@ if SERVER then
             end)
     ]]
     function lia.inventory.loadAllFromCharID(charID)
-        -- Store original value for error reporting
+        
         local originalCharID = charID
 
-        -- Convert charID to number if it isn't already
+        
         charID = tonumber(charID)
         if not charID then
             lia.error(L("charIDMustBeNumber") .. " (received: " .. tostring(originalCharID) .. ", type: " .. type(originalCharID) .. ")")
