@@ -71,11 +71,95 @@ tool:CreateConVars()
 
 ---
 
+### UpdateData
+
+**Purpose**
+
+Placeholder for updating tool-specific data.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `None`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+function TOOL:UpdateData()
+    self.Data = fetchToolData()
+end
+```
+
+---
+
+### FreezeMovement
+
+**Purpose**
+
+Stub for disabling player movement while using the tool.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `None`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+function TOOL:FreezeMovement()
+    return true
+end
+```
+
+---
+
+### DrawHUD
+
+**Purpose**
+
+Stub for drawing client-side HUD elements.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+* `None`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+function TOOL:DrawHUD()
+    draw.SimpleText("Tool HUD", "DermaDefault", 8, 8, color_white)
+end
+```
+
+---
+
 ### GetServerInfo
 
 **Purpose**
 
-Returns the server ConVar for the given property.
+Returns the server ConVar for the given property, using the name `<mode>_<property>`.
 
 **Parameters**
 
@@ -102,7 +186,7 @@ local allow = tool:GetServerInfo("allow_use"):GetBool()
 
 **Purpose**
 
-Returns a table of client ConVars prefixed by the tool mode.
+Returns a table mapping mode-prefixed client ConVar names to their default values.
 
 **Parameters**
 
@@ -162,7 +246,7 @@ Retrieves a numeric client ConVar value.
 
 * `property` (*string*): ConVar name without mode prefix.
 
-* `default` (*number*): Value returned if the ConVar doesn't exist.
+* `default` (*number*): Value returned if the ConVar doesn't exist. Converted to a number and defaults to `0`.
 
 **Realm**
 
@@ -185,7 +269,7 @@ local power = tool:GetClientNumber("power", 10)
 
 **Purpose**
 
-Determines whether this tool is allowed to be used.
+Determines whether this tool is allowed to be used. On the client it always returns `true`; on the server it checks `self.AllowedCVar`.
 
 **Parameters**
 
@@ -429,10 +513,7 @@ Clears stored objects when the tool reloads.
 **Example Usage**
 
 ```lua
-function TOOL:Reload()
-    self:ClearObjects()
-    self:ReleaseGhostEntity()
-end
+tool:Reload()
 ```
 
 ---
@@ -441,7 +522,7 @@ end
 
 **Purpose**
 
-Called when the tool is equipped. Releases ghost entity.
+Called when the tool is equipped. Releases the ghost entity.
 
 **Parameters**
 
@@ -458,10 +539,7 @@ Called when the tool is equipped. Releases ghost entity.
 **Example Usage**
 
 ```lua
-function TOOL:Deploy()
-    self:ReleaseGhostEntity()
-    self:CreateConVars()
-end
+tool:Deploy()
 ```
 
 ---
@@ -470,7 +548,7 @@ end
 
 **Purpose**
 
-Called when the tool is holstered. Releases ghost entity.
+Called when the tool is holstered. Releases the ghost entity.
 
 **Parameters**
 
@@ -487,10 +565,7 @@ Called when the tool is holstered. Releases ghost entity.
 **Example Usage**
 
 ```lua
-function TOOL:Holster()
-    self:ReleaseGhostEntity()
-    self:ClearObjects()
-end
+tool:Holster()
 ```
 
 ---
@@ -499,7 +574,7 @@ end
 
 **Purpose**
 
-Called every tick; releases ghost entities by default.
+Called every frame; releases ghost entities by default.
 
 **Parameters**
 
@@ -546,7 +621,7 @@ Validates stored objects and clears them if invalid.
 
 ```lua
 -- Validate all stored objects each tick
-local result = tool:CheckObjects()
+tool:CheckObjects()
 ```
 
 ---
@@ -573,7 +648,7 @@ Removes all stored objects from the tool.
 
 ```lua
 -- Remove any objects the tool is storing
-local result = tool:ClearObjects()
+tool:ClearObjects()
 ```
 
 ---
@@ -600,7 +675,7 @@ Removes the ghost entity used for previewing placements.
 
 ```lua
 -- Remove the placement preview entity
-local result = tool:ReleaseGhostEntity()
+tool:ReleaseGhostEntity()
 ```
 
 ---
