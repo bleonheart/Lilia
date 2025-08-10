@@ -6,7 +6,13 @@ This page documents the functions for working with character attributes.
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When `lia.attribs.loadFromDir` is called the file is included **shared**, default values are filled in, and the definition is stored in `lia.attribs.list` using the file name (without extension or the `sh_` prefix) as the key. The loader is invoked automatically when a module is initialized, so most schemas simply place their attribute files in `schema/attributes/`.
+The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper
+methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When
+`lia.attribs.loadFromDir` is called, each file is included in the shared realm, the attribute's name and description are
+localized (defaulting to `L("unknown")` and `L("noDesc")` when absent), and the definition is stored in `lia.attribs.list`
+using the file name without extension as the key. Files beginning with `sh_` have the prefix removed and the key
+lowercased. The loader is invoked automatically when a module is initialized, so most schemas simply place their
+attribute files in `schema/attributes/`.
 
 For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](../definitions/attribute.md).
 
@@ -14,7 +20,7 @@ For details on each `ATTRIBUTE` field, see the [Attribute Fields documentation](
 
 **Purpose**
 
-Loads attribute definitions from every Lua file in the given directory and registers them in `lia.attribs.list`.
+Loads attribute definitions from each Lua file in the given directory, localizes their `name` and `desc` fields, and registers them in `lia.attribs.list`. Filenames supply the list key—if a file begins with `sh_`, the prefix is stripped and the key is lowercased. Missing `name` or `desc` fields default to `L("unknown")` and `L("noDesc")`.
 
 **Parameters**
 
@@ -51,7 +57,7 @@ lia.attribs.loadFromDir("schema/attributes")
 
 **Purpose**
 
-Initializes and refreshes attribute data for a player's character, invoking any `OnSetup` callbacks defined by individual attributes.
+Initializes and refreshes attribute data for a player's character by looping through `lia.attribs.list`. For each attribute it retrieves the character's value (defaulting to 0) and calls the attribute's `OnSetup` callback if present. If the client has no character, the function returns without doing anything.
 
 **Parameters**
 
