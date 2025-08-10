@@ -207,7 +207,8 @@ end
 
 **Purpose**
 
-Checks this inventory **and all nested bags** to see if the item could be placed somewhere.
+Checks this inventory and any bag items directly stored inside it to see if the
+item could be placed somewhere. Bags inside those bags are not searched.
 
 **Parameters**
 
@@ -253,8 +254,8 @@ Determines if `testItem` can be placed at `(x, y)` without overlapping existing 
 
 * `boolean`: True when placement is valid.
 
-* `Item|nil`: Conflicting item if placement fails, or `nil` when a reserved
-  slot blocks placement.
+* `Item|nil`: Conflicting item if placement fails, or `nil` when placement is
+  blocked by a reserved slot or by the grid boundaries.
 
 **Example Usage**
 
