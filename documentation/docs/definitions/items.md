@@ -1139,6 +1139,99 @@ end)
 ```
 
 ---
+## Base Item Functions
+
+### Aid
+
+- `ITEM.functions.use.onRun(item)`
+  - Heals the item owner by the amount in `ITEM.health`.
+- `ITEM.functions.target.onRun(item)`
+  - Heals the traced player when valid.
+  - `ITEM.functions.target.onCanRun(item)`
+    - Only allows the action when the target is a living player.
+
+### Ammo
+
+- `ITEM:getDesc()` → `string`
+  - Returns a localized description including the current stack quantity.
+- `ITEM:paintOver(item)`
+  - Draws the remaining quantity on the item icon.
+
+### Stackable
+
+- `ITEM:getDesc()` → `string`
+  - Returns a localized description including the current stack quantity.
+- `ITEM:paintOver(item)`
+  - Displays the stack quantity on the item icon.
+- `ITEM:onCombine(other)` → `boolean`
+  - Merges another stack of the same item. Removes the other stack if fully combined and returns `true`.
+
+### Weapons
+
+- `ITEM.postHooks:drop()`
+  - Strips the weapon from the player if they still carry it after dropping the item.
+- `ITEM:OnCanBeTransfered(_, newInventory)` → `boolean`
+  - Blocks transferring the item while it is equipped.
+- `ITEM:onLoadout()`
+  - Gives the weapon and restores its ammo when the player spawns with the item equipped.
+- `ITEM:OnSave()`
+  - Stores the weapon's current clip in the item data.
+- `ITEM:getName()` *(client)* → `string`
+  - Uses the weapon's `PrintName` if available.
+- `ITEM:paintOver(item, w, h)` *(client)*
+  - Marks the item as equipped.
+
+### Outfit
+
+- `ITEM:removeOutfit(client)`
+  - Reverts the player's model, skin, bodygroups, armor, PAC parts, and attribute boosts. Triggers `onTakeOff`.
+- `ITEM:wearOutfit(client, isForLoadout)`
+  - Applies armor, PAC parts, and attribute boosts. Triggers `onWear`.
+- `ITEM:OnCanBeTransfered(_, newInventory)` → `boolean`
+  - Blocks transferring the item while it is equipped.
+- `ITEM:onLoadout()`
+  - Reapplies the outfit on spawn if equipped.
+- `ITEM:onRemoved()`
+  - Automatically unequips the outfit when the item is removed.
+- `ITEM:paintOver(item, w, h)` *(client)*
+  - Shows an equipped indicator.
+
+### PAC Outfit
+
+- `ITEM:removePart(client)`
+  - Removes the PAC part and any attribute boosts.
+- `ITEM:onCanBeTransfered(_, newInventory)` → `boolean`
+  - Blocks transferring the item while it is equipped.
+- `ITEM:onLoadout()`
+  - Reapplies the PAC part on spawn if equipped.
+- `ITEM:onRemoved()`
+  - Automatically unequips the part when the item is removed.
+- `ITEM:paintOver(item, w, h)` *(client)*
+  - Shows an equipped indicator.
+
+### Book
+
+- `ITEM.functions.Read.onClick(item)`
+  - Opens a window displaying `ITEM.contents`.
+- `ITEM.functions.Read.onRun()` → `boolean`
+  - Always returns `false` to prevent the item from being consumed.
+
+### Entity Spawner
+
+- `ITEM.functions.Place.onRun(item)` → `boolean`
+  - Spawns `ITEM.entityid` at the player's aim position and returns `true` on success.
+
+### Grenade
+
+- `ITEM.functions.Use.onRun(item)` → `boolean`
+  - Gives the grenade weapon specified by `ITEM.class` if the player doesn't already have it. Returns `true` when granted.
+
+### URL Item
+
+- `ITEM.functions.use.onRun()` → `boolean`
+  - Opens `ITEM.url` in the player's browser on the client and returns `false`.
+
+---
 ## Item Type Examples
 
 Minimal definitions for each built-in item type are shown below.
@@ -1171,6 +1264,22 @@ ITEM.model = "models/items/357ammo.mdl"
 ITEM.ammo = "pistol"
 
 ITEM.maxQuantity = 30
+
+```
+
+### Stackable
+
+```lua
+
+ITEM.name = "Stack of Metal"
+
+ITEM.model = "models/props_junk/cardboard_box001a.mdl"
+
+ITEM.isStackable = true
+
+ITEM.maxQuantity = 10
+
+ITEM.canSplit = true
 
 ```
 
@@ -1253,21 +1362,5 @@ ITEM.name = "Grenade"
 ITEM.class = "weapon_frag"
 
 ITEM.DropOnDeath = true
-
-```
-
-### Bag
-
-```lua
-
-ITEM.name = "Small Bag"
-
-ITEM.isBag = true
-
-ITEM.invWidth = 2
-
-ITEM.invHeight = 2
-
-ITEM.BagSound = {"physics/cardboard/cardboard_box_impact_soft2.wav", 50}
 
 ```
