@@ -16,6 +16,47 @@ The helpers below let you find factions and iterate over their data. See [Factio
 
 ---
 
+### lia.faction.register
+
+**Purpose**
+
+Registers a new faction, localises its fields, precaches its models and assigns it a team.
+
+**Parameters**
+
+* `uniqueID` (*string*): Unique identifier for the faction.
+* `data` (*table*): Faction properties. Missing fields default to:
+  * `isDefault` → `true`
+  * `color` → `Color(150, 150, 150)`
+  * `models` → citizen model set
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `number`: Index assigned to the faction.
+* `table`: The registered faction table.
+
+**Notes**
+
+* Defines global constant `FACTION_<UNIQUEID>` with the faction's index.
+
+**Example Usage**
+
+```lua
+local index, faction = lia.faction.register("citizen", {
+    name = "Citizen",
+    desc = "Common populace",
+    isDefault = true,
+    color = Color(100, 150, 200),
+    models = {"models/player/group01/male_01.mdl"}
+})
+```
+
+---
+
 ### lia.faction.loadFromDir
 
 **Purpose**
@@ -102,7 +143,7 @@ Returns a list of class tables that belong to the specified faction.
 
 **Parameters**
 
-* `faction` (*number*): Faction index.
+* `faction` (*number | string*): Faction index or unique ID.
 
 **Realm**
 
@@ -128,7 +169,7 @@ Retrieves all player entities whose characters are in the given faction.
 
 **Parameters**
 
-* `faction` (*number*): Faction index.
+* `faction` (*number | string*): Faction index or unique ID.
 
 **Realm**
 
@@ -154,7 +195,7 @@ Counts how many players belong to the specified faction.
 
 **Parameters**
 
-* `faction` (*number*): Faction index.
+* `faction` (*number | string*): Faction index or unique ID.
 
 **Realm**
 
@@ -180,9 +221,8 @@ Checks whether a faction belongs to a category defined by a list of faction IDs.
 
 **Parameters**
 
-* `faction` (*string*): Faction unique ID.
-
-* `categoryFactions` (*table*): Array of faction IDs in the category.
+* `faction` (*number | string*): Faction index or unique ID.
+* `categoryFactions` (*table*): Array of faction indices or unique IDs in the category.
 
 **Realm**
 
@@ -216,7 +256,7 @@ Dynamically creates and registers a new faction (job) with the team system, prec
 
 * `default` (*boolean*): Whether this faction is default.
 
-* `models` (*table*): Array of model paths or model data.
+* `models` (*table | nil*): Optional array of model paths or model data.
 
 **Realm**
 
@@ -328,7 +368,7 @@ Finds the first class marked as default for the given faction.
 
 **Parameters**
 
-* `id` (*number*): Faction index.
+* `id` (*number | string*): Faction index or unique ID.
 
 **Realm**
 
@@ -350,11 +390,11 @@ local defaultClass = lia.faction.getDefaultClass(FACTION_CITIZEN)
 
 **Purpose**
 
-Client-side check whether the local player is whitelisted for a faction.
+Client-side check whether the local player is whitelisted for a faction. Default factions always return `true`. For the `FACTION_STAFF` faction, the `createStaffCharacter` privilege is required.
 
 **Parameters**
 
-* `faction` (*number*): Faction index.
+* `faction` (*number | string*): Faction index or unique ID.
 
 **Realm**
 
@@ -362,12 +402,10 @@ Client-side check whether the local player is whitelisted for a faction.
 
 **Returns**
 
-* *boolean*: `true` if the player is whitelisted.
+* *boolean*: `true` if the faction is default or the player has a whitelist.
 
 **Example Usage**
 
 ```lua
 local whitelisted = lia.faction.hasWhitelist(FACTION_CITIZEN)
 ```
-
----
