@@ -1,12 +1,12 @@
 # Markup Library
 
-This page covers markup parsing helpers.
+This page covers helpers for parsing and drawing lightweight markup.
 
 ---
 
 ## Overview
 
-The markup library parses a subset of HTML-like tags for drawing rich text in chat panels. It handles basic colour, size, and font formatting.
+The markup library parses a small set of HTML-like tags for drawing rich text in chat panels. It handles basic colour, font and image formatting.
 
 ---
 
@@ -19,7 +19,7 @@ Parses markup text and returns a markup object that handles wrapping and drawing
 **Parameters**
 
 * `ml` (*string*): Markup string to parse.
-* `maxwidth` (*number | nil*): Maximum width for wrapping. *Optional*.
+* `maxwidth` (*number | nil*): Maximum width in pixels for wrapping; `nil` disables wrapping.
 
 **Realm**
 
@@ -36,7 +36,7 @@ local object = lia.markup.parse("<color=255,0,0>Hello world!</color>", 200)
 print(object:getWidth(), object:getHeight())
 ```
 
-*Supports `<color>`/`<colour>`, `<font>`/`<face>`, and `<img=path,widthxheight>` tags. Named colours such as `red` or `ltgrey` are recognised. When `maxwidth` is provided the text wraps automatically; images default to `16x16` pixels if no size is specified.*
+*Supports `<color>`/`<colour>`, `<font>`/`<face>`, and `<img=path,widthxheight>` tags. Named colours such as `red` or `ltgrey` are recognised via an internal table. Text defaults to white (`255,255,255,255`) in the `DermaDefault` font. HTML entities `&lt;`, `&gt;`, and `&amp;` are automatically decoded. When `maxwidth` is provided the text wraps automatically; images default to `16x16` pixels if no size is specified.*
 
 ---
 
@@ -69,8 +69,8 @@ local obj = lia.markup.parse("")
 
 ### MarkupObject fields
 
-* `totalWidth` (*number*) – Total width in pixels of all text blocks.
-* `totalHeight` (*number*) – Overall height in pixels.
+* `totalWidth` (*number*) – Total width in pixels of all text blocks, defaults to `0`.
+* `totalHeight` (*number*) – Overall height in pixels, defaults to `0`.
 * `blocks` (*table*) – Internal table describing each parsed block.
 * `onDrawText` (*function | nil*) – Callback used by `:draw` when set.
 
@@ -169,9 +169,9 @@ Draws the markup object at the specified screen position.
 
 * `xOffset` (*number*): X position.
 * `yOffset` (*number*): Y position.
-* `halign` (*number | nil*): Horizontal alignment (`1` centre, `2` right). *Optional*.
-* `valign` (*number | nil*): Vertical alignment (`1` centre, `3` bottom). *Optional*.
-* `alphaoverride` (*number | nil*): Overrides the alpha channel. *Optional*.
+* `halign` (*number | nil*): Horizontal alignment (`1` centre, `2` right). Defaults to left.
+* `valign` (*number | nil*): Vertical alignment (`1` centre, `3` bottom). Defaults to top.
+* `alphaoverride` (*number | nil*): Override the alpha channel. *Optional*.
 
 **Realm**
 
@@ -218,6 +218,8 @@ Configures a `liaMarkupPanel` to display markup text with an optional custom dra
 
 * *nil*: This function does not return a value.
 
+The panel's width is used as the wrapping width and its height is automatically resized to fit the content.
+
 **Example Usage**
 
 ```lua
@@ -226,7 +228,7 @@ panel:SetWide(300)
 
 panel:setMarkup(
     "<font=liaMediumFont>Hi there!</font>",
-    function(text, font, x, y, colour, halign, valign, alpha, block)
+    function(text, font, x, y, colour, halign, valign, alphaoverride, block)
         draw.SimpleText(text, font, x, y, colour)
     end
 )

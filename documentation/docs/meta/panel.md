@@ -16,11 +16,7 @@ Panel meta functions support scaled positioning, listen for inventory changes, a
 
 **Purpose**
 
-Sets up hooks so this panel reacts to activity on an `Inventory`. Any existing
-hooks for the same inventory are removed first. When inventory events fire the
-panel calls its own method with the same name (or `InventoryItemDataChanged` for
-`ItemDataChanged`) and appends the inventory as the final argument. Hooks are
-automatically removed if the inventory is deleted.
+Sets up hooks so this panel reacts to activity on an `Inventory`. Any existing hooks for the same inventory are removed first. When inventory events fire the panel calls its own method with the same name (or `InventoryItemDataChanged` for `ItemDataChanged`) and appends the inventory as the final argument. Each hook confirms the panel still exists and implements the handler before invoking it. Hooks are automatically removed if the inventory is deleted.
 
 The following events are forwarded:
 
@@ -29,12 +25,11 @@ The following events are forwarded:
 * `InventoryDataChanged`
 * `InventoryItemAdded`
 * `InventoryItemRemoved`
-* `ItemDataChanged` → `InventoryItemDataChanged`
+* `ItemDataChanged` → `InventoryItemDataChanged` (only if the item belongs to the inventory)
 
 **Parameters**
 
-* `inventory` (*Inventory*): Required. Inventory to listen to. An error is
-  thrown if `nil`.
+* `inventory` (*Inventory*): Required inventory to listen to. An error is thrown if `nil`.
 
 **Realm**
 
@@ -67,14 +62,11 @@ end
 
 **Purpose**
 
-Removes hooks created by `liaListenForInventoryChanges`. Useful for cleaning up
-when the panel is removed or no longer needs updates. Calling this on an
-inventory that has no hooks has no effect.
+Removes hooks created by `liaListenForInventoryChanges`. Useful for cleaning up when the panel is removed or no longer needs updates. Calling this on an inventory that has no hooks has no effect. If called with `nil`, all tracked inventories are cleared.
 
 **Parameters**
 
-* `id` (*number|nil*): Inventory ID to stop listening to. Defaults to `nil`,
-  which removes hooks for all tracked inventories.
+* `id` (*number|nil*): Inventory ID to stop listening to. Defaults to `nil`, which removes hooks for all tracked inventories.
 
 **Realm**
 

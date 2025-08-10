@@ -35,7 +35,7 @@ Registers a named color for later lookup by string name.
 ```lua
 -- Register a custom purple shade and fetch it later
 lia.color.register("myPurple", {128, 0, 180})
-local c = lia.color.stored.mypurple
+local c = Color("mypurple")
 ```
 
 ---
@@ -48,7 +48,7 @@ Creates a new `Color` based on the input color with the given channel offsets. `
 
 **Parameters**
 
-* `color` (*Color | table*): Base color to modify.
+* `color` (*Color*): Base color to modify. Must provide `r`, `g`, `b`, and optional `a` fields.
 
 * `rOffset` (*number*): Red channel delta.
 
@@ -56,7 +56,7 @@ Creates a new `Color` based on the input color with the given channel offsets. `
 
 * `bOffset` (*number*): Blue channel delta.
 
-* `aOffset` (*number | nil*): Alpha channel delta. *Optional*.
+* `aOffset` (*number | nil*): Alpha channel delta. Defaults to `0`.
 
 **Realm**
 
@@ -70,10 +70,10 @@ Creates a new `Color` based on the input color with the given channel offsets. `
 
 ```lua
 -- Darken the default red by 30 points
-local darkRed = lia.color.Adjust(lia.color.stored.red, -30, 0, 0)
+local darkRed = lia.color.Adjust(Color("red"), -30, 0, 0)
 
 -- Raise the alpha of a blue color
-local moreOpaque = lia.color.Adjust(lia.color.stored.blue, 0, 0, 0, 50)
+local moreOpaque = lia.color.Adjust(Color("blue"), 0, 0, 0, 50)
 ```
 
 ---
@@ -94,7 +94,14 @@ Builds and returns a UI palette derived from the config’s base color obtained 
 
 **Returns**
 
-* *table*: Contains `background`, `sidebar`, `accent`, `text`, `hover`, `border`, and `highlight` colors.
+* *table*: Contains the following `Color` values derived from the base color returned by `lia.config.get("Color")`:
+  * `background`: `lia.color.Adjust(base, -20, -10, -50, 0)`
+  * `sidebar`: `lia.color.Adjust(base, -30, -15, -60, -55)`
+  * `accent`: `base`
+  * `text`: `Color(245, 245, 220, 255)`
+  * `hover`: `lia.color.Adjust(base, -40, -25, -70, -35)`
+  * `border`: `Color(255, 255, 255, 255)`
+  * `highlight`: `Color(255, 255, 255, 30)`
 
 **Example Usage**
 

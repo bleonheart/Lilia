@@ -6,31 +6,22 @@ This page details the client/server option system.
 
 ## Overview
 
-The option library stores user- and server-side options with default values. It provides getters and setters that automatically network changes between client and server.
+The option library stores configurable values with defaults and provides helpers to manage them. Changes can optionally be networked to the server through the `liaOptionReceived` hook.
 
 Options are kept inside `lia.option.stored`; each entry contains:
 
-* `name` (*string*) – Display name for configuration menus.
-
-* `desc` (*string*) – Description text.
-
+* `name` (*string*) – Display name for configuration menus. String values are localized automatically.
+* `desc` (*string*) – Description text. String values are localized automatically.
 * `data` (*table*) – Extra data (limits, category, etc.).
-
 * `value` (*any*) – Current value.
-
 * `default` (*any*) – Fallback value.
-
-* `callback` (*function | nil*) – Runs as `callback(oldValue, newValue)` on change.
-
+* `callback` (*function | nil*) – Runs as `callback(oldValue, newValue)` when the option changes.
 * `type` (*string*) – Control type (`Boolean`, `Int`, `Float`, `Color`, or `Generic`).
-
 * `visible` (*boolean | function | nil*) – Whether the option appears in the config UI.
-
-* `shouldNetwork` (*boolean | nil*) – When `true`, the server fires `liaOptionReceived` upon change.
-
+* `shouldNetwork` (*boolean | nil*) – When `true`, calling `lia.option.set` on the server fires the `liaOptionReceived` hook.
 * `isQuick` (*boolean | nil*) – Display this option inside the quick settings panel.
 
-Whenever `lia.option.set` updates a value, the `liaOptionChanged` hook is fired on both realms.
+Whenever `lia.option.set` updates a value, the `liaOptionChanged` hook is fired.
 
 ---
 
@@ -46,19 +37,19 @@ Registers a configurable option.
 
 * `name` (*string*): Display name. Localized automatically with `L`.
 
-* `desc` (*string*): Brief description. Localized automatically with `L`.
+* `desc` (*string | nil*): Brief description. Localized automatically with `L` when provided.
 
 * `default` (*any*): Default value.
 
-* `callback` (*function | nil*): Runs on change. Optional.
-* `data` (*table*): Additional option data. Required. Fields may include:
-  * `category` (*string*): Grouping for configuration menus.
+* `callback` (*function | nil*): Runs on change. Optional. Receives the old value and the new value.
+* `data` (*table*): Additional option data. This table is required even if empty. Fields may include:
+  * `category` (*string*): Grouping for configuration menus. Localized automatically.
   * `min` (*number*): Minimum numeric value. Defaults to half of `default` for numeric types.
   * `max` (*number*): Maximum numeric value. Defaults to double `default` for numeric types.
   * `options` (*table*): Discrete choices; string entries are localized automatically.
   * `type` (*string*): Overrides automatic type detection (`Boolean`, `Int`, `Float`, `Color`, `Generic`).
   * `visible` (*boolean | function*): Whether the option is shown in the configuration UI.
-  * `shouldNetwork` (*boolean*): When `true`, `lia.option.set` triggers `liaOptionReceived` on the server.
+  * `shouldNetwork` (*boolean*): When `true`, calling `lia.option.set` on the server triggers `liaOptionReceived`.
   * `isQuick` (*boolean*): Include this option in the quick settings panel.
 
 **Realm**
@@ -100,7 +91,7 @@ Changes the value of an option, runs its callback, saves it, and networks if `sh
 
 **Realm**
 
-`Client` (also usable on the server)
+`Shared`
 
 **Returns**
 
@@ -130,7 +121,7 @@ Retrieves an option value or returns a fallback. Checks the current value first,
 
 **Realm**
 
-`Client`
+`Shared`
 
 **Returns**
 

@@ -6,7 +6,7 @@ This page covers money and currency related helpers.
 
 ## Overview
 
-The currency library formats money amounts, spawns physical money entities, and exposes the configured currency names. The symbol and name values come from the configuration options `CurrencySymbol`, `CurrencySingularName`, and `CurrencyPluralName` defined in `gamemode/core/libraries/config.lua`.
+The currency library formats money amounts, spawns physical money entities, and exposes the configured currency names. The values are pulled from the configuration options `CurrencySymbol`, `CurrencySingularName`, and `CurrencyPluralName` defined in `gamemode/core/libraries/config.lua` (defaults: `""`, `"currencySingular"`, `"currencyPlural"`).
 
 ---
 
@@ -68,11 +68,11 @@ print(lia.currency.plural)
 
 **Purpose**
 
-Formats a numeric amount into a currency string using `lia.currency.symbol`, `lia.currency.singular`, and `lia.currency.plural`. Uses the singular name only when the amount is exactly `1`; all other values use the plural name.
+Formats a numeric amount into a currency string using `lia.currency.symbol`, `lia.currency.singular`, and `lia.currency.plural`. The singular name is used only when the amount is exactly `1` (the output always shows `1` in this case); any other value, including negatives and fractions, uses the plural name.
 
 **Parameters**
 
-* `amount` (*number*): Amount to format. No rounding or validation is performed.
+* `amount` (*number*): Amount to format. No rounding or validation is performed; the value is concatenated as-is.
 
 **Realm**
 
@@ -92,6 +92,8 @@ lia.currency.plural = "dollars"
 print(lia.currency.get(1))  -- "$1 dollar"
 print(lia.currency.get(10)) -- "$10 dollars"
 print(lia.currency.get(0))  -- "$0 dollars"
+print(lia.currency.get(1.5)) -- "$1.5 dollars"
+print(lia.currency.get(-5)) -- "$-5 dollars"
 ```
 
 ---
@@ -106,7 +108,7 @@ Spawns a `lia_money` entity at the specified position with the given amount and 
 
 * `pos` (*Vector*): Spawn position for the currency entity.
 
-* `amount` (*number*): Non-negative monetary value. Rounded to the nearest whole number before assignment.
+* `amount` (*number*): Non-negative monetary value. The absolute value is rounded to the nearest whole number before assignment.
 
 * `angle` (*Angle*): Orientation of the entity. Defaults to `angle_zero` (`Angle(0, 0, 0)`). *Optional*.
 
@@ -126,6 +128,9 @@ local money = lia.currency.spawn(pos, 50) -- default angle
 
 local ang = Angle(0, client:EyeAngles().y, 0)
 local money2 = lia.currency.spawn(pos, 100, ang)
+-- Invalid spawns: print errors and return nil
+local failedAmount = lia.currency.spawn(pos, -25)
+local failedPos = lia.currency.spawn(nil, 50)
 ```
 
 ---
