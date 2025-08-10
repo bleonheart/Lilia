@@ -11,6 +11,9 @@ This reference describes utility functions added to entity metatables for easier
 The entity-meta library extends Garry's Mod entities with helpers for detection, door access, persistence, and networked variables.
 Using these functions ensures consistent behavior when handling game objects across Lilia.
 
+> **Note**
+> Every helper verifies that the entity is valid before proceeding. If the entity is invalid, the function returns a default value or performs no action.
+
 ---
 
 ### isProp
@@ -137,7 +140,7 @@ Checks if the entity should persist across sessions in Lilia.
 
 **Returns**
 
-* `boolean`: `true` if the entity has persistence flags or `GetPersistent()` returns `true`.
+* `boolean`: `true` if `GetPersistent()` returns `true` or the entity has `IsLeonNPC` or `IsPersistent` flags.
 
 **Realm**
 
@@ -157,7 +160,7 @@ end
 
 **Purpose**
 
-Checks if a player has a given access level on a door.
+Checks whether `client` has at least the given access level on the door. The hook `CanPlayerAccessDoor` is consulted first, then the door's `liaAccess` table.
 
 **Parameters**
 
@@ -186,7 +189,7 @@ end
 
 **Purpose**
 
-Assigns ownership of a vehicle entity to the provided player using CPPI and network variables.
+If the entity is a vehicle, assigns ownership to the provided player using CPPI and sets the `owner` and `ownerName` network variables.
 
 **Parameters**
 
@@ -212,7 +215,7 @@ car:keysOwn(client)
 
 **Purpose**
 
-Locks a vehicle by firing the `lock` input.
+If the entity is a vehicle, locks it by firing the `lock` input.
 
 **Parameters**
 
@@ -238,7 +241,7 @@ car:keysLock()
 
 **Purpose**
 
-Unlocks a vehicle by firing the `unlock` input.
+If the entity is a vehicle, unlocks it by firing the `unlock` input.
 
 **Parameters**
 
@@ -264,7 +267,7 @@ car:keysUnLock()
 
 **Purpose**
 
-Retrieves the CPPI owner of a vehicle, if available.
+Returns the result of `CPPIGetOwner()` when the entity is a vehicle that supports CPPI.
 
 **Parameters**
 
@@ -293,7 +296,7 @@ end
 
 **Purpose**
 
-Checks the networked `locked` state of the entity.
+Checks the `locked` network variable and returns its boolean state.
 
 **Parameters**
 
@@ -321,7 +324,7 @@ end
 
 **Purpose**
 
-Checks the internal `m_bLocked` flag for door entities.
+Checks `GetInternalVariable("m_bLocked")` or the fallback `locked` field for door entities.
 
 **Parameters**
 
@@ -357,7 +360,7 @@ Calculates a safe drop position in front of the entity's eyes.
 
 **Returns**
 
-* `Vector`, `Angle`: The drop position and surface normal angle.
+* `Vector`, `Angle`: The drop position and surface normal angle. Returns `(0, 0, 0)` and `Angle(0, 0, 0)` if the entity is invalid.
 
 **Realm**
 
@@ -385,7 +388,7 @@ Checks for another entity within a radius. If `otherEntity` is supplied, only th
 
 **Returns**
 
-* `boolean`: `true` if a matching entity is nearby.
+* `boolean`: `true` if a matching entity is nearby. Always `true` when `otherEntity` is the entity itself.
 
 **Realm**
 
@@ -405,7 +408,7 @@ end
 
 **Purpose**
 
-Returns the stored creator of the entity.
+Returns the player stored in the `creator` network variable.
 
 **Parameters**
 
@@ -434,7 +437,7 @@ end
 
 **Purpose**
 
-Stores the creator player on the entity for later retrieval.
+Stores the creator player in the entity's `creator` network variable for later retrieval.
 
 **Parameters**
 
@@ -460,7 +463,7 @@ ent:SetCreator(client)
 
 **Purpose**
 
-Sends a networked variable to a specific player or broadcasts it to all clients.
+Serializes the value stored in `lia.net[self][key]` and sends it to a specific player or broadcasts it to all clients.
 
 **Parameters**
 
@@ -487,7 +490,7 @@ ent:sendNetVar("doorState")
 
 **Purpose**
 
-Clears all network variables on this entity and notifies clients to remove them.
+Removes all entries from `lia.net[self]` and sends an `nDel` message to clients to clear their copies.
 
 **Parameters**
 
@@ -513,7 +516,7 @@ ent:clearNetVars(client)
 
 **Purpose**
 
-Removes all stored door access information and informs connected players.
+Clears the door's access data, notifies each affected player, and resets `liaAccess` and `DTEntity(0)`.
 
 **Parameters**
 
@@ -539,7 +542,7 @@ ent:removeDoorAccessData()
 
 **Purpose**
 
-Sets the networked `locked` state of the entity.
+Sets the networked `locked` state of the entity using `setNetVar`.
 
 **Parameters**
 
@@ -565,7 +568,7 @@ door:setLocked(true)
 
 **Purpose**
 
-Marks the entity as non-ownable, preventing players from purchasing it.
+Marks the entity as non-ownable by setting the `noSell` network variable, preventing players from purchasing it.
 
 **Parameters**
 
@@ -591,7 +594,7 @@ ent:setKeysNonOwnable(true)
 
 **Purpose**
 
-Checks if the entity's class name begins with a known door prefix.
+Checks if the entity's class name begins with one of the prefixes `prop_door`, `func_door`, `func_door_rotating`, or `door_`.
 
 **Parameters**
 
@@ -619,7 +622,7 @@ end
 
 **Purpose**
 
-Returns the door entity linked as this one's partner via `liaPartner`.
+Returns the door entity linked as this one's partner via `liaPartner`. This function simply returns the stored value and does not perform a search.
 
 **Parameters**
 
@@ -648,7 +651,7 @@ end
 
 **Purpose**
 
-Updates a networked variable and notifies recipients. Triggers the `NetVarChanged` hook when the value changes.
+Updates a networked variable and notifies recipients. Unsupported types are ignored via `checkBadType`. Triggers the `NetVarChanged` hook when the value changes.
 
 **Parameters**
 
@@ -676,7 +679,7 @@ ent:setNetVar("locked", true)
 
 **Purpose**
 
-Retrieves a stored networked variable or a default value.
+Retrieves a stored networked variable from `lia.net[self]` or returns the provided default.
 
 **Parameters**
 
@@ -697,13 +700,11 @@ Retrieves a stored networked variable or a default value.
 local locked = ent:getNetVar("locked", false)
 ```
 
----
-
 ### isDoor *(Client)*
 
 **Purpose**
 
-Client-side check if the entity's class name contains "door".
+Client-side check using `self:GetClass():find("door")` to see if the entity's class name contains "door".
 
 **Parameters**
 
@@ -731,7 +732,7 @@ end
 
 **Purpose**
 
-Attempts to find and cache the partner door for this entity.
+Returns `GetOwner()` or a cached `liaDoorOwner` if it is a valid door; otherwise searches for a `prop_door_rotating` owned by this entity and caches the result.
 
 **Parameters**
 
@@ -760,7 +761,7 @@ end
 
 **Purpose**
 
-Retrieves a networked variable for this entity on the client.
+Retrieves a networked variable for this entity from `lia.net[self:EntIndex()]` on the client.
 
 **Parameters**
 
@@ -780,5 +781,3 @@ Retrieves a networked variable for this entity on the client.
 ```lua
 local locked = ent:getNetVar("locked", false)
 ```
-
----
