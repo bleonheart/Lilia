@@ -99,11 +99,12 @@ local json = lia.data.serialize({pos = Vector(1, 2, 3)})
 
 **Purpose**
 
-Parses JSON or PON strings (or tables) and decodes any vectors or angles.
+Attempts to parse JSON or PON strings (or tables) and decodes any vectors or
+angles contained within. Non-string/table values are returned as-is.
 
 **Parameters**
 
-* `raw` (*string|table*): Serialised data.
+* `raw` (*any*): Serialised data to decode.
 
 **Realm**
 
@@ -111,7 +112,8 @@ Parses JSON or PON strings (or tables) and decodes any vectors or angles.
 
 **Returns**
 
-* *any | nil*: Decoded value or `nil` if the input cannot be parsed.
+* *any | nil*: Decoded value, or `nil` if the input is `nil` or cannot be
+  parsed.
 
 **Example Usage**
 
@@ -125,8 +127,9 @@ local data = lia.data.deserialize(json)
 
 **Purpose**
 
-Converts a table or string in common vector formats (including JSON and PON)
-into a `Vector`.
+Converts a `Vector`, table or string in common vector formats (including JSON,
+PON and pattern-based representations like `[x y z]` or `Vector(x, y, z)`) into
+a `Vector`.
 
 **Parameters**
 
@@ -138,7 +141,8 @@ into a `Vector`.
 
 **Returns**
 
-* *Vector | nil*: Resulting vector, or `nil` if the value cannot be converted.
+* *Vector | nil*: Resulting vector, or `nil` if `raw` is `nil` or cannot be
+  converted.
 
 **Example Usage**
 
@@ -152,8 +156,9 @@ local pos = lia.data.decodeVector("[1, 2, 3]")
 
 **Purpose**
 
-Converts a table or string in common angle formats (including JSON and PON)
-into an `Angle`.
+Converts an `Angle`, table or string in common angle formats (including JSON,
+PON and pattern-based representations like `{p y r}` or `Angle(p, y, r)`) into
+an `Angle`.
 
 **Parameters**
 
@@ -165,7 +170,8 @@ into an `Angle`.
 
 **Returns**
 
-* *Angle | nil*: Resulting angle, or `nil` if the value cannot be converted.
+* *Angle | nil*: Resulting angle, or `nil` if `raw` is `nil` or cannot be
+  converted.
 
 **Example Usage**
 
@@ -186,8 +192,9 @@ table. Data can be scoped to a specific gamemode and map.
 
 * `key` (*string*): Storage key.
 * `value` (*any*): Value to store.
-* `global` (*boolean*): Ignore gamemode and map.
-* `ignoreMap` (*boolean*): Ignore the map but still use the gamemode.
+* `global` (*boolean*, default = `false`): If `true`, ignore gamemode and map.
+* `ignoreMap` (*boolean*, default = `false`): Ignore the map but still use the
+  gamemode.
 
 **Realm**
 
@@ -195,7 +202,8 @@ table. Data can be scoped to a specific gamemode and map.
 
 **Returns**
 
-* *string*: Path used to identify where the data was saved.
+* *string*: Path such as `lilia/<gamemode>/<map>/` indicating where the data was
+  saved.
 
 **Example Usage**
 
@@ -214,8 +222,9 @@ Removes a key from the cache and updates the `lia_data` table.
 **Parameters**
 
 * `key` (*string*): Key to remove.
-* `global` (*boolean*): Ignore gamemode and map.
-* `ignoreMap` (*boolean*): Ignore the map but still use the gamemode.
+* `global` (*boolean*, default = `false`): If `true`, ignore gamemode and map.
+* `ignoreMap` (*boolean*, default = `false`): Ignore the map but still use the
+  gamemode.
 
 **Realm**
 
@@ -242,7 +251,7 @@ Retrieves a stored value, deserialising it if required.
 **Parameters**
 
 * `key` (*string*): Key to fetch.
-* `default` (*any*): Value returned when the key does not exist.
+* `default` (*any*, optional): Value returned when the key does not exist.
 
 **Realm**
 
@@ -250,7 +259,7 @@ Retrieves a stored value, deserialising it if required.
 
 **Returns**
 
-* *any*: Stored value or the provided default.
+* *any*: Stored value or the provided default (which defaults to `nil`).
 
 **Example Usage**
 
@@ -350,11 +359,13 @@ lia.data.savePersistence({
 **Purpose**
 
 Fetches persisted entities for the current gamemode and map, decodes all fields
-and stores the result in `lia.data.persistCache`.
+and stores the result in `lia.data.persistCache`. The optional callback is
+invoked with the decoded entities once loading completes.
 
 **Parameters**
 
-* `callback` (*function*): Receives the loaded entities.
+* `callback` (*function*, optional): Receives the loaded entities once loading
+  completes.
 
 **Realm**
 
