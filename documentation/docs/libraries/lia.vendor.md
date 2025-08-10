@@ -29,6 +29,10 @@ Registers a new rarity colour that can be referenced by name.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Name matching is case-sensitive.
+
 **Example Usage**
 
 ```lua
@@ -46,7 +50,7 @@ Defines a reusable vendor preset of items.
 **Parameters**
 
 * `name` (*string*): Preset name.
-* `items` (*table*): Map of item unique IDs to price/stock tables.
+* `items` (*table*): Map of item unique IDs to property tables (`price`, `stock`, `maxStock`, `mode`).
 
 **Realm**
 
@@ -56,11 +60,16 @@ Defines a reusable vendor preset of items.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Preset names are stored in lowercase for case-insensitive lookup.
+* Item tables may specify `price`, `stock`, `maxStock` and `mode` fields.
+
 **Example Usage**
 
 ```lua
 lia.vendor.addPreset("medical", {
-    medkit = {price = 100, stock = 5},
+    medkit = {price = 100, stock = 5, maxStock = 10, mode = VENDOR_SELLANDBUY},
     bandage = {price = 20, stock = 20}
 })
 ```
@@ -84,6 +93,10 @@ Fetches a preset by name.
 **Returns**
 
 * *table | nil*: The preset table or `nil` if not found.
+
+**Notes**
+
+* Lookup is case-insensitive.
 
 **Example Usage**
 
@@ -139,6 +152,11 @@ Changes how the vendor handles a specific item.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Has no effect while a preset is active.
+* Valid modes are `VENDOR_SELLANDBUY`, `VENDOR_SELLONLY`, and `VENDOR_BUYONLY`. Passing `nil` or an invalid mode removes the item.
+
 **Example Usage**
 
 ```lua
@@ -165,6 +183,11 @@ Sets the buy or sell price for an item.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Has no effect while a preset is active.
+* Passing `nil` or a negative number clears the custom price.
+
 **Example Usage**
 
 ```lua
@@ -190,6 +213,10 @@ Restricts vendor access to characters with a flag.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Use an empty string to remove the flag requirement.
+
 **Example Usage**
 
 ```lua
@@ -214,6 +241,10 @@ Removes the stock limit for an item.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Notes**
+
+* Has no effect while a preset is active.
 
 **Example Usage**
 
@@ -266,6 +297,11 @@ Sets the maximum stock for an item.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Has no effect while a preset is active.
+* The value is clamped to at least 1.
+
 **Example Usage**
 
 ```lua
@@ -291,6 +327,11 @@ Manually sets the current stock for an item.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Notes**
+
+* Has no effect while a preset is active.
+* Stock is clamped between 0 and the maximum stock.
 
 **Example Usage**
 
@@ -369,6 +410,10 @@ Updates the vendor's model.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* The model path is converted to lowercase before being applied.
+
 **Example Usage**
 
 ```lua
@@ -393,6 +438,10 @@ Changes the vendor's skin index.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Notes**
+
+* Value is clamped between `0` and `255`.
 
 **Example Usage**
 
@@ -420,6 +469,10 @@ Sets a bodygroup on the vendor model.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Missing values default to `0`.
+
 **Example Usage**
 
 ```lua
@@ -445,6 +498,11 @@ Toggles whether the vendor uses a money pool.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Enabling sets the vendor's funds to `lia.config.get("vendorDefaultMoney", 500)`.
+* Disabling clears the money pool, giving the vendor unlimited funds.
+
 **Example Usage**
 
 ```lua
@@ -469,6 +527,11 @@ Sets the vendor's available money.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Notes**
+
+* Values are rounded to whole numbers.
+* Negative or non-numeric values clear the money pool (unlimited funds).
 
 **Example Usage**
 
@@ -520,10 +583,17 @@ Applies a saved item preset to the vendor.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* Use `"none"` to clear the current preset and restore manual editing.
+* While a preset is active, item-specific functions such as `mode`, `price` and `stock` are ignored.
+
 **Example Usage**
 
 ```lua
 lia.vendor.editor.preset("medical")
+-- Clear the preset
+lia.vendor.editor.preset("none")
 ```
 
 ---
