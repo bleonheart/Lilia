@@ -224,7 +224,7 @@ Returns the model path associated with this item.
 
 **Returns**
 
-* `string`: Model path.
+* `string|nil`: Model path, if set.
 
 **Example Usage**
 
@@ -253,7 +253,7 @@ Retrieves the skin index this item uses.
 
 **Returns**
 
-* `number`: Skin ID applied to the model.
+* `number|nil`: Skin ID applied to the model.
 
 **Example Usage**
 
@@ -268,7 +268,7 @@ model:SetSkin(item:getSkin())
 
 **Purpose**
 
-Returns the calculated purchase price for the item.
+Returns the purchase price for the item. If the item defines `calcPrice`, that function is used to derive the final value.
 
 **Parameters**
 
@@ -280,7 +280,7 @@ Returns the calculated purchase price for the item.
 
 **Returns**
 
-* `number`: The price value.
+* `number`: Price value (defaults to `0` when unset).
 
 **Example Usage**
 
@@ -363,7 +363,7 @@ end
 
 **Purpose**
 
-Retrieves a piece of persistent data stored on the item.
+Retrieves a piece of persistent data stored on the item, falling back to networked entity data if present.
 
 **Parameters**
 
@@ -477,7 +477,7 @@ item:postHook("pickup", function(ply) ply:Give("weapon_pistol") end)
 
 **Purpose**
 
-Called when the item table is first registered.
+Called when the item table is first registered. If a model is defined, it is precached for later use.
 
 **Parameters**
 
@@ -591,7 +591,7 @@ player:notifyLocalized("item_added", item.name, 5)
 
 **Purpose**
 
-Sets the current stack quantity and replicates the change.
+Sets the current stack quantity, updating the world entity, notifying receivers, and saving to the database.
 
 **Parameters**
 
@@ -622,9 +622,7 @@ item:setQuantity(1, nil, true)
 
 **Purpose**
 
-Returns the display name of this item.
-
-On the client this value is localized.
+Returns the display name of this item. The value is taken directly from the item's definition and is not localized automatically.
 
 **Parameters**
 
@@ -651,7 +649,7 @@ client:ChatPrint(string.format("Picked up: %s", item:getName()))
 
 **Purpose**
 
-Retrieves the description text for this item.
+Retrieves the description text for this item as defined in its base data.
 
 **Parameters**
 
@@ -1070,7 +1068,7 @@ end
 
 **Purpose**
 
-Sends this item's data to a player or list of players, or broadcasts to all.
+Sends this item's data to a player or list of players, or broadcasts to all, then calls `onSync`.
 
 **Parameters**
 
@@ -1097,7 +1095,7 @@ item:sync(player)
 
 **Purpose**
 
-Sets a data field on the item and optionally networks and saves it.
+Sets a data field on the item and optionally networks and saves it. Keys `"x"` and `"y"` are stored numerically for position tracking.
 
 **Parameters**
 
