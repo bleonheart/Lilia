@@ -16,7 +16,7 @@ Modules placed in a schema's `preload` directory are loaded **before** any frame
 
 **Purpose**
 
-Loads a module at a given path, processing dependencies, permissions, and any sub-modules.
+Loads a module at a given path, setting up its environment and processing permissions, dependencies, extras, and optional sub-modules. Existing hooks are removed when reloading a module, and a message is printed if the core file is missing or the module is disabled.
 
 **Parameters**
 
@@ -56,7 +56,7 @@ lia.module.load("example", "lilia/gamemode/modules/example", false, nil, true)
 
 **Purpose**
 
-Loads the active schema and every discovered module, then fires initialisation hooks.
+Loads the active schema and every discovered module, then fires initialisation hooks. Modules in the `preload` directory are loaded before core and schema modules, and overrides produce a suggestion to move them to `preload` for efficiency. Disabled modules are removed from the module list after loading.
 
 **Parameters**
 
@@ -140,5 +140,5 @@ if main then
     print("Loaded module:", main.name)
 end
 ```
-
 ---
+
