@@ -19,7 +19,7 @@ Parses markup text and returns a markup object that handles wrapping and drawing
 **Parameters**
 
 * `ml` (*string*): Markup string to parse.
-* `maxwidth` (*number | nil*): Maximum width for wrapping. *Optional*.
+* `maxwidth` (*number | nil*): Maximum width for wrapping. When omitted no automatic wrapping occurs.
 
 **Realm**
 
@@ -36,7 +36,13 @@ local object = lia.markup.parse("<color=255,0,0>Hello world!</color>", 200)
 print(object:getWidth(), object:getHeight())
 ```
 
-*Supports `<color>`/`<colour>`, `<font>`/`<face>`, and `<img=path,widthxheight>` tags. Named colours such as `red` or `ltgrey` are recognised. When `maxwidth` is provided the text wraps automatically; images default to `16x16` pixels if no size is specified.*
+*Supports `<color>`/`<colour>`, `<font>`/`<face>`, and `<img=path,widthxheight>` tags. Tags must be lowercase. Named colours such as `red` or `ltgrey` are recognised. When `maxwidth` is provided the text wraps automatically; images default to `16x16` pixels if no size is specified.*
+
+**Edge Cases and Defaults**
+
+* Text defaults to the `DermaDefault` font and pure white (`255,255,255,255`).
+* `\n` inserts a new line and `\t` advances to the next 50‑pixel tab stop.
+* The entities `&lt;`, `&gt;`, and `&amp;` are converted to `<`, `>` and `&` inside text.
 
 ---
 
@@ -72,9 +78,9 @@ local obj = lia.markup.parse("")
 * `totalWidth` (*number*) – Total width in pixels of all text blocks.
 * `totalHeight` (*number*) – Overall height in pixels.
 * `blocks` (*table*) – Internal table describing each parsed block.
-* `onDrawText` (*function | nil*) – Callback used by `:draw` when set.
+* `onDrawText` (*function | nil*) – Callback used by `:draw` when set, replacing the default text drawing.
 
-The `onDrawText` callback receives `(text, font, x, y, colour, halign, valign, alphaoverride, block)`.
+The `onDrawText` callback receives `(text, font, x, y, colour, halign, valign, alphaoverride, block)` and is responsible for drawing the text.
 
 ---
 
@@ -169,8 +175,8 @@ Draws the markup object at the specified screen position.
 
 * `xOffset` (*number*): X position.
 * `yOffset` (*number*): Y position.
-* `halign` (*number | nil*): Horizontal alignment (`1` centre, `2` right). *Optional*.
-* `valign` (*number | nil*): Vertical alignment (`1` centre, `3` bottom). *Optional*.
+* `halign` (*number | nil*): Horizontal alignment (`1` centre, `2` right). Defaults to left. *Optional*.
+* `valign` (*number | nil*): Vertical alignment (`1` centre, `3` bottom). Defaults to top. *Optional*.
 * `alphaoverride` (*number | nil*): Overrides the alpha channel. *Optional*.
 
 **Realm**
@@ -197,6 +203,8 @@ hook.Add("HUDPaint", "DrawWelcome", function()
 end)
 ```
 
+*When `onDrawText` is set on the markup object, it is called with the block information instead of the default rendering logic.*
+
 ---
 
 ### liaMarkupPanel:setMarkup
@@ -208,7 +216,7 @@ Configures a `liaMarkupPanel` to display markup text with an optional custom dra
 **Parameters**
 
 * `text` (*string*): Markup to render.
-* `onDrawText` (*function | nil*): Callback executed before each block is drawn. *Optional*.
+* `onDrawText` (*function | nil*): Callback used instead of default text drawing. *Optional*.
 
 **Realm**
 
@@ -231,5 +239,7 @@ panel:setMarkup(
     end
 )
 ```
+
+This method parses the markup using the panel's width for wrapping, resizes the panel height to fit, and assigns a `Paint` function that draws the markup each frame.
 
 ---
