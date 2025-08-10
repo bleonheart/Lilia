@@ -29,6 +29,7 @@ Registers a new faction, localises its fields, precaches its models and assigns 
   * `isDefault` → `true`
   * `color` → `Color(150, 150, 150)`
   * `models` → citizen model set
+  * `index` → next free index if omitted
 
 **Realm**
 
@@ -41,7 +42,10 @@ Registers a new faction, localises its fields, precaches its models and assigns 
 
 **Notes**
 
+* Uses `data.index` or an existing `FACTION_<UNIQUEID>` constant if provided; otherwise the next free index is used.
+* Registers the faction in `lia.faction.indices` and `lia.faction.teams`.
 * Defines global constant `FACTION_<UNIQUEID>` with the faction's index.
+* Name, description and model lists are localised and may be overridden by hooks.
 
 **Example Usage**
 
@@ -61,7 +65,12 @@ local index, faction = lia.faction.register("citizen", {
 
 **Purpose**
 
-Loads all Lua faction files from a directory, includes them **shared**, and registers the resulting `FACTION` tables. Models are precached and factions are stored in both lookup tables.
+Loads all Lua faction files from a directory, includes them **shared**, and registers the resulting `FACTION` tables.
+Each file should define a global `FACTION` table describing the faction.
+The filename (minus any leading `sh_`) becomes the faction's unique ID.
+Missing `name`, `desc`, or `color` fields are replaced with defaults and an error is logged.  
+`isDefault` defaults to `true` and a new index is assigned if not provided.  
+Models default to the citizen set. Factions are stored in both lookup tables and `team.SetUp` is called for each.
 
 **Parameters**
 
@@ -244,7 +253,7 @@ local isMember = lia.faction.isFactionCategory("citizen", { "citizen", "veteran"
 
 **Purpose**
 
-Dynamically creates and registers a new faction (job) with the team system, precaching its models.
+Dynamically creates and registers a new faction (job) with the team system, precaching its models and storing it in the lookup tables.
 
 **Parameters**
 
@@ -256,7 +265,7 @@ Dynamically creates and registers a new faction (job) with the team system, prec
 
 * `default` (*boolean*): Whether this faction is default.
 
-* `models` (*table | nil*): Optional array of model paths or model data.
+* `models` (*table | nil*): Optional array of model paths or model data. Defaults to the citizen model set.
 
 **Realm**
 
@@ -264,7 +273,7 @@ Dynamically creates and registers a new faction (job) with the team system, prec
 
 **Returns**
 
-* *table*: The generated faction table.
+* *table*: The generated faction table. The `desc` field is empty and `uniqueID` defaults to `name`.
 
 **Example Usage**
 
@@ -284,7 +293,7 @@ local police = lia.faction.jobGenerate(
 
 **Purpose**
 
-Normalises model tables for every registered faction, ensuring grouped categories are consistent.
+Processes all faction model entries and expands any bodygroup data so each model has numeric group indices. Useful for bodygroup customisation.
 
 **Parameters**
 
@@ -350,7 +359,7 @@ Returns the models that belong to a specific category for a faction.
 
 **Returns**
 
-* *table*: Array of model paths.
+* *table*: Table of model entries (strings or `{path, skin, bodygroups}`).
 
 **Example Usage**
 
