@@ -33,10 +33,10 @@ print(icClass.format)
 
 **Purpose**
 
-Returns a `"(hour)"` timestamp when `lia.option.ChatShowTime` is enabled.
-For OOC messages a leading space is added and no trailing space is used; IC
-messages get a trailing space. When timestamps are disabled an empty string is
-returned.
+Returns a `"(hour)"` timestamp from `lia.time.GetHour()` when
+`lia.option.ChatShowTime` is enabled. For OOC messages a leading space is added
+and no trailing space is used; IC messages get a trailing space. When timestamps
+are disabled an empty string is returned.
 
 **Parameters**
 
@@ -80,18 +80,24 @@ Registers a new chat class and sets up its command aliases.
   * `radius` (number | function) – Hearing range or custom range logic. Used to
     generate `onCanHear` when that callback is not supplied.
 
-  * `onCanHear` (function | number) – Determines if a listener can see the
-    message. Supplying a number is treated as a radius in units.
+  * `onCanHear` (function | number) – `onCanHear(speaker, listener)` determines if
+    a listener can see the message. Supplying a number is treated as a radius in
+    units.
 
-  * `onCanSay` (function) – Called before sending to verify the speaker may talk.
-    The default blocks dead players unless `deadCanChat` is `true`.
+  * `onCanSay` (function) – `onCanSay(speaker, text)` runs before sending to
+    verify the speaker may talk. The default blocks dead players, calling
+    `speaker:notifyLocalized("noPerm")`, unless `deadCanChat` is `true`.
 
-  * `onChatAdd` (function) – Client-side handler for displaying the text.
+  * `onChatAdd` (function) – `onChatAdd(speaker, text, anonymous)` runs on the
+    client to display text. The default uses `chat.AddText` with
+    `lia.chat.timestamp(false)`, the chat color, and
+    `L(data.format, displayedName, text)`.
 
   * `color` (Color) – Default colour for the fallback `onChatAdd`. Defaults to
     `Color(242, 230, 160)`.
 
-  * `format` (string) – Format string used by the fallback `onChatAdd`.
+  * `format` (string) – Format string used by the fallback `onChatAdd`. Defaults
+    to `"chatFormat"`.
 
   * `filter` (string) – Chat filter category used by the chat UI. Defaults to
     `"ic"`.
@@ -100,7 +106,8 @@ Registers a new chat class and sets up its command aliases.
 
   * `deadCanChat` (boolean) – Permits dead players to use the chat type.
 
-  * `syntax` (string) – Automatically generated from `arguments` using `lia.command.buildSyntaxFromArguments` and localised with `L`.
+  * `syntax` (string) – Automatically generated from `arguments` using
+    `lia.command.buildSyntaxFromArguments` and localised with `L`.
 
 On the client, any defined prefixes are registered as command aliases via `lia.command.add` so they can be typed directly into chat.
 
@@ -133,9 +140,12 @@ lia.chat.register("wave", {
 **Purpose**
 
 Parses chat text, determines the appropriate chat type, and optionally sends it.
-Results are passed through the `ChatParsed` hook, allowing modification of the
-chat type, text, or anonymity. When run on the server and `noSend` is `false`,
-the message is forwarded to `lia.chat.send` after the `PlayerMessageSend` hook.
+The function starts with the default chat type `"ic"` and searches registered
+prefixes case-insensitively. If the chosen class has `noSpaceAfter` and the
+remaining message begins with whitespace, that whitespace is trimmed. Results are
+passed through the `ChatParsed` hook, allowing modification of the chat type,
+text, or anonymity. When run on the server and `noSend` is `false`, the message
+is forwarded to `lia.chat.send` after the `PlayerMessageSend` hook.
 
 **Parameters**
 
@@ -176,11 +186,13 @@ end)
 
 **Purpose**
 
-Broadcasts a chat message to all eligible receivers.
-It respects the chat class's `onCanSay` and `onCanHear` logic and passes text
-through the `PlayerMessageSend` hook before networking. If `receivers` is not
-provided, a recipient list is built from players that satisfy `onCanHear`. If
-that list ends up empty, the message is discarded.
+Broadcasts a chat message to all eligible receivers. It respects the chat
+class's `onCanSay` and `onCanHear` logic and passes text through the
+`PlayerMessageSend` hook before networking. If `receivers` is not provided, a
+recipient list is built from players with characters that satisfy `onCanHear`.
+If that list ends up empty, the message is discarded. When a receiver list is
+provided, it is sent only to those players; otherwise it is broadcast to
+everyone.
 
 **Parameters**
 
@@ -210,4 +222,5 @@ if IsValid(target) then
     lia.chat.send(client, "ic", "Hello", false, { target })
 end
 ```
+
 
