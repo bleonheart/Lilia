@@ -303,7 +303,7 @@ Invokes an item method with the given player and entity context.
 
 * `method` (string): Method name to run.
 
-* `client` (Player): The player performing the action.
+* `client` (Player|nil): The player performing the action.
 
 * `entity` (Entity|nil): Entity representing this item or `nil` when none.
 
@@ -565,9 +565,9 @@ Increases the stored quantity for this item instance.
 
 * `quantity` (number): Amount to add.
 
-* `receivers` (Player|nil): Who to network the change to.
+* `receivers` (Player|table|nil): Who to network the change to (defaults to the owner).
 
-* `noCheckEntity` (boolean): Skip entity network update.
+* `noCheckEntity` (boolean): Skip entity network update (default `false`).
 
 **Realm**
 
@@ -597,9 +597,9 @@ Sets the current stack quantity and replicates the change.
 
 * `quantity` (number): New amount to store.
 
-* `receivers` (Player|nil): Recipients to send updates to.
+* `receivers` (Player|table|nil): Recipients to send updates to (defaults to the owner).
 
-* `noCheckEntity` (boolean): Skip entity updates when true.
+* `noCheckEntity` (boolean): Skip entity updates when `true` (default `false`).
 
 **Realm**
 
@@ -674,6 +674,34 @@ tooltip:AddRowAfter("name", "desc"):SetText(item:getDesc())
 
 ---
 
+### getCategory
+
+**Purpose**
+
+Returns the item's category, localized when available.
+
+If no category is defined, it defaults to the localized string for `"misc"`.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `string`: Localized category name.
+
+**Example Usage**
+
+```lua
+print("Category:", item:getCategory())
+```
+
+---
+
 ### removeFromInventory
 
 **Purpose**
@@ -682,7 +710,7 @@ Removes this item from its inventory without deleting it when `preserveItem` is 
 
 **Parameters**
 
-* `preserveItem` (boolean): Keep the item saved in the database.
+* `preserveItem` (boolean): Keep the item saved in the database (default `false`).
 
 **Realm**
 
@@ -856,9 +884,9 @@ If no angle is provided it will spawn upright using `angle_zero`.
 
 **Parameters**
 
-* `position` (Vector|Player): Drop position or player dropping the item.
+* `position` (Vector|table|Player): Drop position, player, or table convertible to a vector.
 
-* `angles` (Angle|nil): Orientation for the entity.
+* `angles` (Angle|table|nil): Orientation for the entity (default `angle_zero`).
 
 **Realm**
 
@@ -959,7 +987,7 @@ Runs after this item is networked to `recipient`.
 
 **Parameters**
 
-* `recipient` (Player|nil): Player who received the data, or `nil` when broadcast.
+* `recipient` (Player|table|nil): Player or list who received the data, or `nil` when broadcast.
 
 **Realm**
 
@@ -972,8 +1000,8 @@ Runs after this item is networked to `recipient`.
 **Example Usage**
 
 ```lua
-function ITEM:onSync(ply)
-    print("Sent item to", IsValid(ply) and ply:Name() or "all clients")
+function ITEM:onSync(recipient)
+    print("Sent item to", recipient or "all clients")
 end
 ```
 
@@ -1042,11 +1070,11 @@ end
 
 **Purpose**
 
-Sends this item's data to a player or broadcasts to all.
+Sends this item's data to a player or list of players, or broadcasts to all.
 
 **Parameters**
 
-* `recipient` (Player|nil): Target player or `nil` for broadcast.
+* `recipient` (Player|table|nil): Target player(s) or `nil` for broadcast (default).
 
 **Realm**
 
@@ -1077,11 +1105,11 @@ Sets a data field on the item and optionally networks and saves it.
 
 * `value` (any): New value to store.
 
-* `receivers` (Player|nil): Who to send the update to.
+* `receivers` (Player|table|nil): Who to send the update to (defaults to the owner).
 
-* `noSave` (boolean): Avoid saving to the database.
+* `noSave` (boolean): Avoid saving to the database (default `false`).
 
-* `noCheckEntity` (boolean): Skip updating the world entity.
+* `noCheckEntity` (boolean): Skip updating the world entity (default `false`).
 
 **Realm**
 
