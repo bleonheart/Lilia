@@ -6,14 +6,14 @@ This page lists utilities for creating fonts.
 
 ## Overview
 
-The fonts library wraps `surface.CreateFont` for commonly used fonts. It registers each font once, stores the definition in `lia.font.stored`, and then re-creates those fonts automatically when the screen resolution or relevant config values change.
+The fonts library wraps and overrides `surface.CreateFont` to cache each definition in `lia.font.stored`. Fonts are automatically re-created when the screen resolution changes or when relevant config values update.
 
 Registered fonts rely on two config options:
 
-* `Font` – Core UI font family.
-* `GenericFont` – Secondary UI font family.
+* `Font` – Core UI font family. Default: `PoppinsMedium`.
+* `GenericFont` – Secondary UI font family. Default: `PoppinsMedium`.
 
-Changing either option triggers `lia.font.refresh` to rebuild every stored font.
+Changing either option emits the `RefreshFonts` hook, which runs `lia.font.refresh` to rebuild every stored font.
 
 Fonts are refreshed whenever `lia.font.refresh` runs; afterward, the `PostLoadFonts` hook fires with the current UI and generic font names. Register custom fonts inside that hook so they persist across refreshes.
 
@@ -23,12 +23,11 @@ Fonts are refreshed whenever `lia.font.refresh` runs; afterward, the `PostLoadFo
 
 **Purpose**
 
-Creates and stores a font via `surface.CreateFont`. The definition is kept in an internal list so the font can be regenerated later.
+Creates and stores a font via `surface.CreateFont`. Arguments must be a string name and a table of font properties; otherwise an error is raised. Each call caches the definition so the font can be regenerated later.
 
 **Parameters**
 
 * `fontName` (*string*): Font identifier.
-
 * `fontData` (*table*): Font properties table (family, size, weight, etc.).
 
 **Realm**
@@ -124,7 +123,7 @@ The base gamemode registers the following fonts for use in menus and panels:
 
 **Purpose**
 
-Returns an alphabetically sorted list of all font identifiers that have been registered.
+Returns an alphabetically sorted list of all cached font identifiers. If no fonts have been registered, an empty table is returned.
 
 **Parameters**
 
@@ -153,7 +152,7 @@ end
 
 **Purpose**
 
-Recreates every stored font definition. This function runs automatically when screen resolution changes or when the `Font` / `GenericFont` configs update. After recreating the fonts, it triggers the `PostLoadFonts` hook with the active `currentFont` and `genericFont`.
+Clears and re-creates every stored font definition. The library hooks this function to both `OnScreenSizeChanged` and the custom `RefreshFonts` event, so it runs when the resolution changes or when the `Font`/`GenericFont` configs update. After recreating the fonts, it triggers the `PostLoadFonts` hook with the active `currentFont` and `genericFont`.
 
 **Parameters**
 
