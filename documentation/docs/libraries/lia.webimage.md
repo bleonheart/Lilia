@@ -8,9 +8,13 @@ This page explains how web images are downloaded and cached.
 
 The web-image library downloads remote images and caches them as materials. Cached files are stored under
 
-`data/lilia/<IP>/<Gamemode>/`, so each server keeps its own image collection. The library also extends
+`data/lilia/<IP>/<Gamemode>/`, so each server keeps its own image collection. The library overrides
 
-`Material()` and `DImage:SetImage()` so you can pass HTTP(S) URLs directly—the image is downloaded, cached, and used automatically. Images retrieved later using the same URL will return the previously cached file, and you may reference the saved name anywhere an image path is expected.
+`Material()` and `DImage:SetImage()` so HTTP(S) URLs can be used directly. When given a URL, a unique file
+name based on the URL's CRC is generated, the image is downloaded and saved, and the material is returned or
+applied. Subsequent calls reuse the cached file, and the saved name can be referenced anywhere an image path is
+expected. `DImage:SetImage` continues to support its optional `backup` argument, which is used if the download
+fails or the material errors.
 
 ---
 
@@ -18,7 +22,10 @@ The web-image library downloads remote images and caches them as materials. Cach
 
 **Purpose**
 
-Downloads an image from the given URL and saves it inside the web-image cache. If the file already exists it will be replaced with the new download. Should the request fail the previous cached file is used and passed to the callback. When a new file is successfully downloaded the `WebImageDownloaded` hook is triggered with the saved name and path.
+Downloads an image from the given URL and saves it inside the web-image cache. If the file already exists it
+will be replaced with the new download. Should the request fail the previous cached file is used when available.
+If no cached copy exists, the callback receives `nil`, `false`, and the error message. When a new file is
+successfully downloaded the `WebImageDownloaded` hook is triggered with the saved name and path.
 
 **Parameters**
 
@@ -91,6 +98,9 @@ local direct = Material("https://example.com/icon.png")
 
 -- Apply to a DImage
 button:SetImage("https://example.com/icon.png")
+
+-- Provide a fallback image if the download fails
+button:SetImage("https://example.com/does_not_exist.png", "icon16/error.png")
 
 -- Registered names and URLs are interchangeable
 lia.webimage.register("logo_axis.png", "https://example.com/logo.png")
