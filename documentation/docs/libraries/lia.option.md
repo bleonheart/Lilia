@@ -22,7 +22,7 @@ Options are kept inside `lia.option.stored`; each entry contains:
 
 * `callback` (*function | nil*) – Runs as `callback(oldValue, newValue)` on change.
 
-* `type` (*string*) – Control type (`Boolean`, `Int`, …).
+* `type` (*string*) – Control type (`Boolean`, `Int`, `Float`, `Color`, or `Generic`).
 
 * `visible` (*boolean | function | nil*) – Whether the option appears in the config UI.
 
@@ -38,7 +38,7 @@ Whenever `lia.option.set` updates a value, the `liaOptionChanged` hook is fired 
 
 **Purpose**
 
-Registers a configurable option that can be networked.
+Registers a configurable option.
 
 **Parameters**
 
@@ -51,8 +51,15 @@ Registers a configurable option that can be networked.
 * `default` (*any*): Default value.
 
 * `callback` (*function | nil*): Runs on change. Optional.
-
-* `data` (*table*): Extra option data. Set `isQuick = true` to also list this option in the quick settings panel. String values like `category` or entries within an `options` table are localized automatically.
+* `data` (*table*): Additional option data. Required. Fields may include:
+  * `category` (*string*): Grouping for configuration menus.
+  * `min` (*number*): Minimum numeric value. Defaults to half of `default` for numeric types.
+  * `max` (*number*): Maximum numeric value. Defaults to double `default` for numeric types.
+  * `options` (*table*): Discrete choices; string entries are localized automatically.
+  * `type` (*string*): Overrides automatic type detection (`Boolean`, `Int`, `Float`, `Color`, `Generic`).
+  * `visible` (*boolean | function*): Whether the option is shown in the configuration UI.
+  * `shouldNetwork` (*boolean*): When `true`, `lia.option.set` triggers `liaOptionReceived` on the server.
+  * `isQuick` (*boolean*): Include this option in the quick settings panel.
 
 **Realm**
 
@@ -83,7 +90,7 @@ lia.option.add(
 
 **Purpose**
 
-Changes the value of an option, runs its callback, saves it, and networks if `shouldNetwork` is `true`.
+Changes the value of an option, runs its callback, saves it, and networks if `shouldNetwork` is `true`. If the option key is unregistered, the call is ignored.
 
 **Parameters**
 
@@ -93,7 +100,7 @@ Changes the value of an option, runs its callback, saves it, and networks if `sh
 
 **Realm**
 
-`Client`
+`Client` (also usable on the server)
 
 **Returns**
 
@@ -113,7 +120,7 @@ lia.option.set("thirdPersonEnabled", not enabled)
 
 **Purpose**
 
-Retrieves an option value or returns a fallback.
+Retrieves an option value or returns a fallback. Checks the current value first, then the option's default, then the provided fallback.
 
 **Parameters**
 
@@ -141,7 +148,7 @@ local dist = lia.option.get("thirdPersonDistance", 50)
 
 **Purpose**
 
-Writes all current option values to disk (file is keyed by server IP).
+Writes all current option values to `data/lilia/options/<gamemode>/<serverip>.txt` in JSON format. Only options with non-`nil` values are written.
 
 **Parameters**
 
@@ -167,7 +174,7 @@ lia.option.save()
 
 **Purpose**
 
-Loads saved option values from disk, applies them to `lia.option.stored`, and fires `InitializedOptions`.
+Loads saved option values from `data/lilia/options/<gamemode>/<serverip>.txt`, applies them to `lia.option.stored`, and fires `InitializedOptions`.
 
 **Parameters**
 
