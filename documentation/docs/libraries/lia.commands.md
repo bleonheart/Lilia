@@ -10,17 +10,54 @@ The commands library registers console and chat commands. It parses arguments, c
 
 ---
 
+### lia.command.buildSyntaxFromArguments
+
+**Purpose**
+
+Generates a human-readable syntax string from a command's argument definitions.
+
+**Parameters**
+
+* `args` (*table*): Ordered argument definition list.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `string`: Concatenated syntax tokens.
+
+**Example Usage**
+
+```lua
+local syntax = lia.command.buildSyntaxFromArguments({
+    {name = "target", type = "player"},
+    {name = "reason", type = "string", optional = true}
+})
+-- syntax = "[player target] [string reason optional]"
+```
+
+---
+
 ### lia.command.add
 
 **Purpose**
 
-Registers a new command with its associated data. See [Command Fields](../definitions/command.md) for available keys in the `data` table.
+Registers a new command and wraps its callback with automatic permission checks. The arguments table is also used to generate a syntax string for help displays.
 
 **Parameters**
 
-* `command` (*string*): Command name.
+* `command` (*string*): Name of the command.
 
-* `data` (*table*): Table containing command properties.
+* `data` (*table*): Command definition containing:
+    * `arguments` (*table*, optional): Ordered argument definitions. Each entry supports `name`, `type` (`"string"`, `"player"`, `"table"`, `"bool"`), `optional` (default `false`), and may include `description`, `options`, or `filter` for prompts.
+    * `desc` (*string*, default `""`): Description of the command.
+    * `privilege` (*string*, optional): CAMI privilege identifier.
+    * `superAdminOnly` (*boolean*, default `false`): Restrict to superadmins.
+    * `adminOnly` (*boolean*, default `false`): Restrict to admins.
+    * `alias` (*string | table*, optional): Alternative names for the command.
+    * `onRun` (*function*): Callback executed when the command runs.
 
 **Realm**
 
@@ -67,7 +104,7 @@ Determines if a player may run the specified command. Before checking CAMI privi
 
 * `command` (*string*): Command name.
 
-* `data` (*table*): Command data table.
+* `data` (*table*, optional): Command data table. Looked up automatically if omitted.
 
 **Realm**
 
@@ -75,9 +112,9 @@ Determines if a player may run the specified command. Before checking CAMI privi
 
 **Returns**
 
-* *boolean*: Whether access is granted.
+* `boolean`: Whether access is granted.
 
-* *string*: Privilege checked.
+* `string`: Localized privilege or access level name. Returns `"unknown"` if the command is unregistered.
 
 **Example Usage**
 
@@ -101,7 +138,7 @@ end)
 
 **Purpose**
 
-Splits the provided text into arguments, respecting quotes. Sections wrapped in either single (`'`) or double (`"`) quotes are treated as single arguments.
+Splits the provided text into arguments, respecting quotes. Sections wrapped in single (`'`) or double (`"`) quotes are treated as single arguments. Unmatched quotes are included in the result.
 
 **Parameters**
 
@@ -118,20 +155,19 @@ Splits the provided text into arguments, respecting quotes. Sections wrapped in 
 **Example Usage**
 
 ```lua
-local args = lia.command.extractArgs('/mycommand "quoted arg" anotherArg')
+local args = lia.command.extractArgs('"quoted arg" anotherArg')
 -- args = { "quoted arg", "anotherArg" }
 
-local args2 = lia.command.extractArgs("/mycommand 'other arg' another")
+local args2 = lia.command.extractArgs("'other arg' another")
 -- args2 = { "other arg", "another" }
 ```
 
 ---
-
 ### lia.command.run
 
 **Purpose**
 
-Executes a command by its name, passing the provided arguments. If the command returns a string, it notifies the client (if valid).
+Executes a registered command by name. Results that are strings are sent to the caller as notifications—strings beginning with `@` use localization via `notifyLocalized`; other strings are shown verbatim or printed to the server console when no player is present.
 
 **Parameters**
 
@@ -139,7 +175,7 @@ Executes a command by its name, passing the provided arguments. If the command r
 
 * `command` (*string*): Name of the command to run.
 
-* `arguments` (*table*): List of arguments for the command.
+* `arguments` (*table*, optional): Argument list passed to the command (default `{}`).
 
 **Realm**
 
@@ -168,7 +204,7 @@ end)
 
 **Purpose**
 
-Attempts to parse the input text as a command, optionally using `realCommand` and `arguments` if provided. If parsed successfully, the command is executed.
+Attempts to parse the input text as a slash command. When `realCommand` and `arguments` are supplied they override parsing. Missing required arguments trigger [`lia.command.openArgumentPrompt`](#liacommandopenargumentprompt), otherwise the command is executed and logged. If the command does not exist the caller is notified.
 
 **Parameters**
 
@@ -176,9 +212,9 @@ Attempts to parse the input text as a command, optionally using `realCommand` an
 
 * `text` (*string*): Raw text that may contain the command and arguments.
 
-* `realCommand` (*string*): Command name override (optional).
+* `realCommand` (*string*, optional): Command name override.
 
-* `arguments` (*table*): Argument list override (optional).
+* `arguments` (*table*, optional): Pre-parsed argument list.
 
 **Realm**
 
@@ -228,7 +264,7 @@ lia.command.send("mycommand", "arg1", "arg2")
 
 **Purpose**
 
-Opens a window asking the player to fill in missing arguments for the given command. Arguments marked `optional` may be left blank; all others must be filled before **Submit** is enabled.
+Opens a GUI asking the player to fill in missing arguments for the specified command. Controls are created based on each argument's `type` (`player`, `table`, `bool`, or `string`). Arguments marked `optional` may be left blank; all others must be completed before **Submit** is enabled. On submission the command is sent via chat with the collected arguments.
 
 **Parameters**
 
@@ -236,7 +272,7 @@ Opens a window asking the player to fill in missing arguments for the given comm
 
 * `missing` (*table*): Array of argument names that still need values.
 
-* `prefix` (*table*): Arguments already supplied (optional).
+* `prefix` (*table*, optional): Arguments already provided.
 
 **Realm**
 
