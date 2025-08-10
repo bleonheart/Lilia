@@ -70,11 +70,11 @@ Registers a new chat class and sets up its command aliases.
 
 * `data` (*table*): Table of chat class properties.
 
-  * `arguments` (table) – Ordered argument definitions for the associated command.
+  * `arguments` (table) – Ordered argument definitions for the associated command. Defaults to an empty table.
 
-  * `desc` (string) – Description of the command shown in menus.
+  * `desc` (string) – Description of the command shown in menus. Defaults to an empty string.
 
-  * `prefix` (string | table) – Command prefixes that trigger this chat type. Slashless
+  * `prefix` (string | table) – Command prefixes that trigger this chat type. Duplicate prefixes are ignored and slashless
     variants are automatically added.
 
   * `radius` (number | function) – Hearing range or custom range logic. Used to
@@ -99,6 +99,10 @@ Registers a new chat class and sets up its command aliases.
   * `noSpaceAfter` (boolean) – Allows prefixes without a trailing space.
 
   * `deadCanChat` (boolean) – Permits dead players to use the chat type.
+
+  * `syntax` (string) – Automatically generated from `arguments` using `lia.command.buildSyntaxFromArguments` and localised with `L`.
+
+On the client, any defined prefixes are registered as command aliases via `lia.command.add` so they can be typed directly into chat.
 
 **Realm**
 
@@ -174,7 +178,9 @@ end)
 
 Broadcasts a chat message to all eligible receivers.
 It respects the chat class's `onCanSay` and `onCanHear` logic and passes text
-through the `PlayerMessageSend` hook before networking.
+through the `PlayerMessageSend` hook before networking. If `receivers` is not
+provided, a recipient list is built from players that satisfy `onCanHear`. If
+that list ends up empty, the message is discarded.
 
 **Parameters**
 

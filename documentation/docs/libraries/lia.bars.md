@@ -57,7 +57,7 @@ If the identifier matches an existing bar, the old bar is removed first. Bars ar
 
 * `getValue` (*function*): Callback returning the bar's current value between 0 and 1.
 
-* `color` (*Color*): Fill colour for the bar. Defaults to a random pastel colour.
+* `color` (*Color*): Fill colour for the bar. Defaults to a random bright colour with each channel between 150 and 255.
 
 * `priority` (*number*): Draw order; lower values draw first. Defaults to end of list.
 
@@ -124,9 +124,9 @@ Draws a single horizontal bar at the specified screen coordinates, filling it pr
 
 * `y` (*number*): The y-coordinate of the bar’s top-left corner.
 
-* `w` (*number*): Width of the bar's fill area (padding of 3px is added on each side).
+* `w` (*number*): Usable width of the bar. The background panel is drawn six pixels wider to include a 3px border on each side.
 
-* `h` (*number*): Total height of the bar.
+* `h` (*number*): Total height of the bar, including the 3px border at the top and bottom.
 
 * `pos` (*number*): Current value to display (clamped to `max`).
 
