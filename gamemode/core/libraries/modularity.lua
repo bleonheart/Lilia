@@ -16,7 +16,7 @@ local ModuleFiles = {"pim.lua", "client.lua", "server.lua", "config.lua", "comma
 local function loadPermissions(Privileges)
     if not Privileges or not istable(Privileges) then return end
     for _, privilegeData in ipairs(Privileges) do
-        local privilegeName = privilegeData.Name
+        local privilegeName = L(privilegeData.Name or privilegeData.ID)
         local privilegeCategory = privilegeData.Category or MODULE.name
         lia.administrator.registerPrivilege({
             Name = privilegeName,
