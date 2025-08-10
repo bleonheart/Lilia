@@ -14,13 +14,13 @@ The `darkrp` library bridges functionality with the DarkRP gamemode. It mirrors 
 
 **Purpose**
 
-Checks whether a position is free of world geometry, players, NPCs, and props within a 35-unit sphere.
+Checks whether a position is free of solid contents, players, NPCs, and props within a 35-unit sphere.
 
 **Parameters**
 
 * `position` (*Vector*): World position to test.
 
-* `entitiesToIgnore` (*table*): Entities ignored during the check. *Optional*.
+* `entitiesToIgnore` (*table*): Entities ignored during the check. Defaults to an empty table.
 
 **Realm**
 
@@ -65,7 +65,7 @@ Searches around a start position for a spot free of world geometry and blocking 
 
 **Returns**
 
-* *Vector*: A position considered safe for spawning.
+* *Vector*: A safe position. Returns the original `startPos` if none found within `maxDistance`.
 
 **Example Usage**
 
@@ -79,7 +79,7 @@ local spawn = lia.darkrp.findEmptyPos(ply:GetPos(), { ply }, 128, 16, Vector(0, 
 
 **Purpose**
 
-Sends a notification to the specified client. The second and third parameters mirror the DarkRP API but are ignored by this implementation.
+Sends a localized notification to the specified client. The second and third parameters mirror the DarkRP API but are ignored by this implementation.
 
 **Parameters**
 
@@ -89,7 +89,7 @@ Sends a notification to the specified client. The second and third parameters mi
 
 * `length` (*number*): Display time in seconds. *Ignored.*
 
-* `message` (*string*): Text of the notification.
+* `message` (*string*): Localization key or message text to send.
 
 **Realm**
 
@@ -102,7 +102,7 @@ Sends a notification to the specified client. The second and third parameters mi
 **Example Usage**
 
 ```lua
-lia.darkrp.notify(ply, nil, nil, "Purchase complete")
+lia.darkrp.notify(ply, nil, nil, "jobChanged")
 ```
 
 ---
@@ -111,7 +111,7 @@ lia.darkrp.notify(ply, nil, nil, "Purchase complete")
 
 **Purpose**
 
-Client-side helper that wraps a string so it fits within a given pixel width using the provided font.
+Client-side helper that wraps a string so it fits within a given pixel width using the provided font. Long words are wrapped character-by-character if necessary.
 
 **Parameters**
 
@@ -142,7 +142,7 @@ chat.AddText(wrapped)
 
 **Purpose**
 
-Formats the given amount using `lia.currency.get` so other DarkRP addons receive familiar strings.
+Formats the given amount using `lia.currency.get` so other DarkRP addons receive familiar currency strings.
 
 **Parameters**
 
@@ -174,7 +174,13 @@ Registers a new DarkRP entity as an item so that it can be spawned through lia's
 
 * `name` (*string*): Display name of the entity.
 
-* `data` (*table*): Table containing fields such as `model`, `desc`, `category`, `ent`, `price`, and optional `cmd`.
+* `data` (*table*): Table of fields:
+  * `cmd` (*string*): Console command used for spawning. Defaults to `name` in lowercase.
+  * `model` (*string*): Model path. Defaults to `""`.
+  * `desc` (*string*): Description of the entity. Defaults to `""`.
+  * `category` (*string*): Item category. Defaults to `L("entities")`.
+  * `ent` (*string*): Entity class to spawn. Defaults to `""`.
+  * `price` (*number*): Cost of the entity. Defaults to `0`.
 
 **Realm**
 
