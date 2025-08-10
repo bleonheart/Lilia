@@ -1,7 +1,7 @@
 function MODULE:PlayerLiliaDataLoaded(client)
     lia.char.restore(client, function(charList)
         if not IsValid(client) then return end
-        MsgN(L("loadedCharacters", table.concat(charList, ", "), client:Name()))
+        lia.information(L("loadedCharacters", table.concat(charList, ", "), client:Name()))
         for _, v in ipairs(charList) do
             lia.char.getCharacter(v, client, function(character)
                 if character then character:sync(client) end
