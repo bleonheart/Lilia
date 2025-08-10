@@ -155,7 +155,7 @@ Changes how the vendor handles a specific item.
 **Notes**
 
 * Has no effect while a preset is active.
-* Valid modes are `VENDOR_SELLANDBUY`, `VENDOR_SELLONLY`, and `VENDOR_BUYONLY`. Passing `nil` or an invalid mode removes the item.
+* Valid modes are `VENDOR_SELLANDBUY`, `VENDOR_SELLONLY`, and `VENDOR_BUYONLY`. Passing `nil` or an invalid mode clears the item's trade mode.
 
 **Example Usage**
 
@@ -245,6 +245,7 @@ Removes the stock limit for an item.
 **Notes**
 
 * Has no effect while a preset is active.
+* Sets the maximum stock to unlimited until changed again.
 
 **Example Usage**
 
@@ -332,6 +333,7 @@ Manually sets the current stock for an item.
 
 * Has no effect while a preset is active.
 * Stock is clamped between 0 and the maximum stock.
+* If no maximum stock exists, calling this also sets the maximum to the same value.
 
 **Example Usage**
 
@@ -530,8 +532,8 @@ Sets the vendor's available money.
 
 **Notes**
 
-* Values are rounded to whole numbers.
-* Negative or non-numeric values clear the money pool (unlimited funds).
+* Values are rounded to whole numbers and clamped to at least `0`.
+* To remove the money limit, call `lia.vendor.editor.useMoney(false)`.
 
 **Example Usage**
 
@@ -558,6 +560,11 @@ Adjusts the price multiplier for selling items.
 
 * *nil*: This function does not return a value.
 
+**Notes**
+
+* The default multiplier is `0.5`.
+* No bounds checking is performed.
+
 **Example Usage**
 
 ```lua
@@ -573,7 +580,7 @@ Applies a saved item preset to the vendor.
 
 **Parameters**
 
-* `name` (*string*): Preset name.
+* `preset` (*string*): Preset name.
 
 **Realm**
 
@@ -587,6 +594,7 @@ Applies a saved item preset to the vendor.
 
 * Use `"none"` to clear the current preset and restore manual editing.
 * While a preset is active, item-specific functions such as `mode`, `price` and `stock` are ignored.
+* Preset names are matched case-insensitively.
 
 **Example Usage**
 
