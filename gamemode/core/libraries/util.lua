@@ -1,14 +1,3 @@
-﻿--[[
-# Utility Library
-
-This page documents the utility functions for common operations in Lilia.
-
----
-
-## Overview
-
-The utility library provides a collection of helper functions for common operations such as finding players, working with SteamIDs, and other utility functions that are used throughout the Lilia framework. These functions are designed to be shared between client and server realms where appropriate.
-]]
 --[[
     lia.util.FindPlayersInBox
 

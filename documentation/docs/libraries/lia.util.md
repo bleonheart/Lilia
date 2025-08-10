@@ -42,6 +42,35 @@ end
 
 ---
 
+### lia.util.getBySteamID
+
+**Purpose**
+
+Finds a player by their SteamID or SteamID64, returning only those who currently have a character loaded.
+
+**Parameters**
+
+* `steamID` (*string*): SteamID or SteamID64.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *Player | nil*: Matching player or `nil`.
+
+**Example Usage**
+
+```lua
+local ply = lia.util.getBySteamID("STEAM_0:1:123456")
+if ply then
+    print("Found:", ply:Name())
+end
+```
+
+---
+
 ### lia.util.FindPlayersInSphere
 
 **Purpose**
@@ -286,11 +315,11 @@ end
 
 **Purpose**
 
-Alias for `findPlayerBySteamID64`.
+Finds a player by SteamID.
 
 **Parameters**
 
-* `steamID64` (*string*): SteamID64.
+* `SteamID` (*string*): SteamID string (e.g., `"STEAM_0:1:123456"`).
 
 **Realm**
 
@@ -303,7 +332,7 @@ Alias for `findPlayerBySteamID64`.
 **Example Usage**
 
 ```lua
-local ply = lia.util.findPlayerBySteamID("76561198000000000")
+local ply = lia.util.findPlayerBySteamID("STEAM_0:1:123456")
 ```
 
 ---
@@ -410,7 +439,7 @@ Caches and returns a `Material` to avoid repeated creation.
 
 **Realm**
 
-`Shared`
+`Client`
 
 **Returns**
 
@@ -521,7 +550,10 @@ Generates empty-space positions around an entity using a grid-based search.
 **Example Usage**
 
 ```lua
-local spots = lia.util.findEmptySpace(ent, ent, 32, 3, 36, 5)
+local spots = lia.util.findEmptySpace(ent)
+for _, pos in ipairs(spots) do
+    print(pos)
+end
 ```
 
 ---
@@ -554,7 +586,7 @@ Draws text with a shadow offset.
 
 **Returns**
 
-* *nil*
+ * *nil*
 
 **Example Usage**
 
@@ -593,7 +625,7 @@ Draws outlined text.
 
 **Returns**
 
-* *nil*
+* *number*: Width of the drawn text.
 
 **Example Usage**
 
@@ -651,13 +683,13 @@ Draws text with a subtle shadow.
 
 * `x`, `y` (*number*): Position.
 
-* `color` (*Color*): Text colour.
+* `color` (*Color*): Text colour (default `color_white`).
 
 * `alignX`, `alignY` (*number*): Align constants.
 
 * `font` (*string*): Font (default `"liaGenericFont"`).
 
-* `alpha` (*number*): Shadow alpha multiplier.
+* `alpha` (*number*): Shadow alpha multiplier (default `color.a * 0.575`).
 
 **Realm**
 
@@ -665,7 +697,7 @@ Draws text with a subtle shadow.
 
 **Returns**
 
-* *nil*
+* *number*: Width of the drawn text.
 
 **Example Usage**
 
@@ -684,9 +716,9 @@ Draws a textured rectangle.
 
 **Parameters**
 
-* `material` (*string | IMaterial*): Path or material object.
+* `material` (*string*): Material path.
 
-* `color` (*Color*): Draw colour.
+* `color` (*Color*): Draw colour (default `color_white`).
 
 * `x`, `y`, `w`, `h` (*number*): Rectangle geometry.
 
@@ -810,9 +842,9 @@ Draws blur over a rectangle on screen.
 
 * `x`, `y`, `w`, `h` (*number*): Rectangle.
 
-* `amount` (*number*): Blur strength.
+* `amount` (*number*): Blur strength (default 5).
 
-* `passes` (*number*): Iteration multiplier.
+* `passes` (*number*): Iteration multiplier (default 0.2).
 
 * `alpha` (*number*): Optional alpha transparency (default 255).
 
@@ -868,7 +900,7 @@ lia.util.requestArguments("User Info",
 
 ---
 
-### lia.util.CreateTableUI - client implementation
+### lia.util.CreateTableUI
 
 **Purpose**
 
@@ -892,7 +924,7 @@ Creates and displays a table UI from supplied column/row data.
 
 **Returns**
 
-* *nil*
+* *Panel*, *DListView*: Created frame and list view.
 
 **Example Usage**
 
