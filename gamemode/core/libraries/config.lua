@@ -461,7 +461,7 @@ lia.config.add("WalkRatio", "walkRatio", 0.5, nil, {
     category = "character",
     type = "Float",
     min = 0.1,
-    max = 1.0,
+    max = 1.0
     decimals = 2
 })
 
@@ -1139,10 +1139,16 @@ lia.config.add("StaffHasGodMode", "staffGodMode", true, nil, {
 lia.config.add("ClassDisplay", "displayClassesOnCharacters", true, nil, {
     desc = "displayClassesOnCharactersDesc",
     category = "character",
-    type = "Boolean"
+    type = "Boolean",
 })
 
-lia.config.add("sbWidth", "sbWidth", 0.35, nil, {
+local function refreshScoreboard()
+    if CLIENT and lia.gui and IsValid(lia.gui.score) and lia.gui.score.ApplyConfig then
+        lia.gui.score:ApplyConfig()
+    end
+end
+
+lia.config.add("sbWidth", "sbWidth", 0.35, refreshScoreboard, {
     desc = "sbWidthDesc",
     category = "scoreboard",
     type = "Float",
@@ -1150,7 +1156,7 @@ lia.config.add("sbWidth", "sbWidth", 0.35, nil, {
     max = 1.0
 })
 
-lia.config.add("sbHeight", "sbHeight", 0.65, nil, {
+lia.config.add("sbHeight", "sbHeight", 0.65, refreshScoreboard, {
     desc = "sbHeightDesc",
     category = "scoreboard",
     type = "Float",
@@ -1158,10 +1164,10 @@ lia.config.add("sbHeight", "sbHeight", 0.65, nil, {
     max = 1.0
 })
 
-lia.config.add("sbDock", "sbDock", "center", nil, {
+lia.config.add("sbDock", "sbDock", "center", refreshScoreboard, {
     desc = "sbDockDesc",
     category = "scoreboard",
-    type = "Table",
+    type = "String",
     options = {"left", "center", "right"}
 })
 
