@@ -46,11 +46,11 @@ end
 
 **Purpose**
 
-Finds a connected player by SteamID or SteamID64, but only returns them if they currently have a character.
+Finds a player by their SteamID or SteamID64, returning only those who currently have a character loaded.
 
 **Parameters**
 
-* `steamID` (*string*): SteamID or SteamID64 to search for.
+* `steamID` (*string*): SteamID or SteamID64.
 
 **Realm**
 
@@ -315,11 +315,11 @@ end
 
 **Purpose**
 
-Alias for `findPlayerBySteamID64`.
+Finds a player by SteamID.
 
 **Parameters**
 
-* `steamID64` (*string*): SteamID64.
+* `SteamID` (*string*): SteamID string (e.g., `"STEAM_0:1:123456"`).
 
 **Realm**
 
@@ -332,7 +332,7 @@ Alias for `findPlayerBySteamID64`.
 **Example Usage**
 
 ```lua
-local ply = lia.util.findPlayerBySteamID("76561198000000000")
+local ply = lia.util.findPlayerBySteamID("STEAM_0:1:123456")
 ```
 
 ---
@@ -439,7 +439,7 @@ Caches and returns a `Material` to avoid repeated creation.
 
 **Realm**
 
-`Shared`
+`Client`
 
 **Returns**
 
@@ -550,7 +550,10 @@ Generates empty-space positions around an entity using a grid-based search.
 **Example Usage**
 
 ```lua
-local spots = lia.util.findEmptySpace(ent, ent, 32, 3, 36, 5)
+local spots = lia.util.findEmptySpace(ent)
+for _, pos in ipairs(spots) do
+    print(pos)
+end
 ```
 
 ---
@@ -583,7 +586,7 @@ Draws text with a shadow offset.
 
 **Returns**
 
-* *nil*
+ * *nil*
 
 **Example Usage**
 
@@ -897,7 +900,7 @@ lia.util.requestArguments("User Info",
 
 ---
 
-### lia.util.CreateTableUI - client implementation
+### lia.util.CreateTableUI
 
 **Purpose**
 
@@ -921,7 +924,7 @@ Creates and displays a table UI from supplied column/row data.
 
 **Returns**
 
-* *Panel*, *DListView*: The created frame and list view.
+* *Panel*, *DListView*: Created frame and list view.
 
 **Example Usage**
 
