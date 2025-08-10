@@ -466,9 +466,9 @@ non-stackable item simply spawns one instance.
 
 * `itemTypeOrItem` (`Item|string`): Item instance or unique ID to add.
 
-* `xOrQuantity` (`number`): X slot or stack quantity (optional, defaults to `1`).
+* `xOrQuantity` (`number`): X slot or stack quantity. When used as a quantity this defaults to `1` (optional).
 
-* `yOrData` (`number|table`): Y slot or data table (optional).
+* `yOrData` (`number|table`): Y slot or data table. Supplying a table treats the second argument as a quantity.
 
 * `noReplicate` (`boolean`): Skip networking new items to clients (defaults to `false`).
 
