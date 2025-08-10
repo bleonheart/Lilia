@@ -1080,11 +1080,9 @@ if SERVER then
     ]]
     function lia.char.cleanUpForPlayer(client)
         for _, charID in pairs(client.liaCharList or {}) do
-            local character = lia.char.loaded[charID]
-            if not character then return end
-            lia.inventory.cleanUpForCharacter(character)
-            lia.char.loaded[charID] = nil
-            hook.Run("CharCleanUp", character)
+            if lia.char.loaded[charID] then
+                lia.char.unloadCharacter(charID)
+            end
         end
     end
 
@@ -1376,16 +1374,32 @@ if SERVER then
         local character = lia.char.loaded[charID]
         if not character then return false end
 
-        
+
         character:save()
 
-        
+
+        if character.dataVars then
+            local client = character:getPlayer()
+            local keys = table.GetKeys(character.dataVars)
+            if IsValid(client) and #keys > 0 then
+                net.Start("liaCharacterData")
+                net.WriteUInt(charID, 32)
+                net.WriteUInt(#keys, 32)
+                for _, key in ipairs(keys) do
+                    net.WriteString(key)
+                    net.WriteType(nil)
+                end
+                net.Send(client)
+            end
+            character.dataVars = nil
+        end
+
         lia.inventory.cleanUpForCharacter(character)
 
-        
+
         lia.char.loaded[charID] = nil
 
-        
+
         hook.Run("CharCleanUp", character)
 
         return true
