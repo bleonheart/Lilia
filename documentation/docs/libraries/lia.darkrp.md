@@ -227,3 +227,34 @@ lia.darkrp.createCategory()
 ```
 
 ---
+
+### Map KeyValue Compatibility
+
+**Purpose**
+
+Processes select DarkRP-specific key-values on door entities so maps configured for DarkRP behave as expected.
+
+**Handled KeyValues**
+
+* `DarkRPNonOwnable`: marks the door as unsellable by setting the `noSell` network variable.
+* `DarkRPTitle`: sets the door's display name.
+* `DarkRPCanLockpick`: when set to a truthy value, prevents lockpicking by setting the `noPick` flag.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* *nil*: This hook runs automatically and does not return a value.
+
+**Example Usage**
+
+Add the key-values below to a door entity in Hammer:
+
+```text
+"DarkRPTitle" "Police Armory"
+"DarkRPNonOwnable" "1"
+```
+
+---
