@@ -122,9 +122,9 @@ print(result)
 
 **Purpose**
 
-Calculates the cross product of this vector and the provided up reference to derive a right-direction vector. The vector is overwritten via `self:Cross(self, vUp)` and then normalized, yielding a direction perpendicular to both inputs. This means the method modifies the calling vector and returns it.
+Derives a right-direction vector relative to an optional up reference. Internally it performs `self:Cross(self, vUp)` and normalizes the result, overwriting the vector in the process.
 
-If this vector has no horizontal component it defaults to `Vector(0, -1, 0)`.
+If this vector has no horizontal component it returns `Vector(0, -1, 0)` and leaves the original vector unchanged.
 
 **Parameters**
 
@@ -145,6 +145,9 @@ If this vector has no horizontal component it defaults to `Vector(0, -1, 0)`.
 local forward = Vector(1, 0, 0)
 local rightVec = forward:Right() -- forward is now the right vector
 print(rightVec)
+
+local vertical = Vector(0, 0, 1)
+print(vertical:Right()) -- falls back to Vector(0, -1, 0); vertical is unchanged
 ```
 
 ---
@@ -153,9 +156,9 @@ print(rightVec)
 
 **Purpose**
 
-Uses two cross products to determine an up-direction vector that is perpendicular to both this vector and the given up reference. First, the vector is overwritten with the cross product of itself and `vUp` using `self:Cross(self, vUp)`. This intermediate value, stored in `vRet`, is crossed with the original vector via `self:Cross(vRet, self)` to produce the final up direction. The method therefore modifies the calling vector before returning it.
+Generates an up-direction vector perpendicular to this vector and an optional up reference. The function first computes `self:Cross(self, vUp)` then `self:Cross(vRet, self)`, normalizing the result and overwriting the vector each time.
 
-When this vector lacks a horizontal component the fallback value is `Vector(-self.z, 0, 0)`.
+When this vector lacks a horizontal component the function returns `Vector(-self.z, 0, 0)` and does not modify the original vector.
 
 **Parameters**
 
@@ -176,6 +179,9 @@ When this vector lacks a horizontal component the fallback value is `Vector(-sel
 local forward = Vector(1, 0, 0)
 local upVec = forward:Up() -- forward is now the up vector
 print(upVec)
+
+local vertical = Vector(0, 0, 1)
+print(vertical:Up()) -- returns Vector(-1, 0, 0); vertical is unchanged
 ```
 
 ---
