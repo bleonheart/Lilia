@@ -42,6 +42,35 @@ end
 
 ---
 
+### lia.util.getBySteamID
+
+**Purpose**
+
+Finds a connected player by SteamID or SteamID64, but only returns them if they currently have a character.
+
+**Parameters**
+
+* `steamID` (*string*): SteamID or SteamID64 to search for.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *Player | nil*: Matching player or `nil`.
+
+**Example Usage**
+
+```lua
+local ply = lia.util.getBySteamID("STEAM_0:1:123456")
+if ply then
+    print("Found:", ply:Name())
+end
+```
+
+---
+
 ### lia.util.FindPlayersInSphere
 
 **Purpose**
@@ -500,7 +529,7 @@ Generates empty-space positions around an entity using a grid-based search.
 
 * `entity` (*Entity*): Centre entity.
 
-* `filter` (*table | function | Entity*): Trace filter.
+* `filter` (*Entity | table | function*): Trace filter (default `entity`).
 
 * `spacing` (*number*): Grid spacing (default 32).
 
@@ -593,7 +622,7 @@ Draws outlined text.
 
 **Returns**
 
-* *nil*
+* *number*: Width of the drawn text.
 
 **Example Usage**
 
@@ -651,13 +680,13 @@ Draws text with a subtle shadow.
 
 * `x`, `y` (*number*): Position.
 
-* `color` (*Color*): Text colour.
+* `color` (*Color*): Text colour (default `color_white`).
 
 * `alignX`, `alignY` (*number*): Align constants.
 
 * `font` (*string*): Font (default `"liaGenericFont"`).
 
-* `alpha` (*number*): Shadow alpha multiplier.
+* `alpha` (*number*): Shadow alpha multiplier (default `color.a * 0.575`).
 
 **Realm**
 
@@ -665,7 +694,7 @@ Draws text with a subtle shadow.
 
 **Returns**
 
-* *nil*
+* *number*: Width of the drawn text.
 
 **Example Usage**
 
@@ -684,9 +713,9 @@ Draws a textured rectangle.
 
 **Parameters**
 
-* `material` (*string | IMaterial*): Path or material object.
+* `material` (*string*): Material path.
 
-* `color` (*Color*): Draw colour.
+* `color` (*Color*): Draw colour (default `color_white`).
 
 * `x`, `y`, `w`, `h` (*number*): Rectangle geometry.
 
@@ -810,9 +839,9 @@ Draws blur over a rectangle on screen.
 
 * `x`, `y`, `w`, `h` (*number*): Rectangle.
 
-* `amount` (*number*): Blur strength.
+* `amount` (*number*): Blur strength (default 5).
 
-* `passes` (*number*): Iteration multiplier.
+* `passes` (*number*): Iteration multiplier (default 0.2).
 
 * `alpha` (*number*): Optional alpha transparency (default 255).
 
@@ -892,7 +921,7 @@ Creates and displays a table UI from supplied column/row data.
 
 **Returns**
 
-* *nil*
+* *Panel*, *DListView*: The created frame and list view.
 
 **Example Usage**
 
