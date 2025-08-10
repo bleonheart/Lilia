@@ -268,7 +268,9 @@ model:SetSkin(item:getSkin())
 
 **Purpose**
 
-Returns the calculated purchase price for the item.
+Returns the calculated purchase price for the item. If `calcPrice` is defined on
+the item, its result is used. Falls back to the stored `price` and defaults to
+`0` when undefined.
 
 **Parameters**
 
@@ -280,7 +282,7 @@ Returns the calculated purchase price for the item.
 
 **Returns**
 
-* `number`: The price value.
+* `number`: Final price value.
 
 **Example Usage**
 
@@ -315,7 +317,8 @@ Invokes an item method with the given player and entity context.
 
 **Returns**
 
-* `any`: Results returned by the called function.
+* `any|nil`: Return values from the called method or `nil` if it doesn't
+  exist.
 
 **Example Usage**
 
@@ -624,7 +627,7 @@ item:setQuantity(1, nil, true)
 
 Returns the display name of this item.
 
-On the client this value is localized.
+The same value is available on both the server and client.
 
 **Parameters**
 
