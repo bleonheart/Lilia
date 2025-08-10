@@ -110,6 +110,7 @@ if SERVER then
         if not IsValid(self) then return end
         self:setNetVar("creator", client)
     end
+
     function entityMeta:sendNetVar(key, receiver)
         if not IsValid(self) then return end
         net.Start("nVar")
@@ -122,6 +123,7 @@ if SERVER then
             net.Broadcast()
         end
     end
+
     function entityMeta:clearNetVars(receiver)
         if not IsValid(self) then return end
         lia.net[self] = nil
@@ -133,6 +135,7 @@ if SERVER then
             net.Broadcast()
         end
     end
+
     function entityMeta:removeDoorAccessData()
         if IsValid(self) then
             for k, _ in pairs(self.liaAccess or {}) do
@@ -144,14 +147,17 @@ if SERVER then
             self:SetDTEntity(0, nil)
         end
     end
+
     function entityMeta:setLocked(state)
         if not IsValid(self) then return end
         self:setNetVar("locked", state)
     end
+
     function entityMeta:setKeysNonOwnable(state)
         if not IsValid(self) then return end
         self:setNetVar("noSell", state)
     end
+
     function entityMeta:isDoor()
         if not IsValid(self) then return false end
         local class = self:GetClass():lower()
@@ -161,9 +167,11 @@ if SERVER then
         end
         return false
     end
+
     function entityMeta:getDoorPartner()
         return self.liaPartner
     end
+
     function entityMeta:setNetVar(key, value, receiver)
         if not IsValid(self) then return end
         if checkBadType(key, value) then return end
@@ -173,6 +181,7 @@ if SERVER then
         self:sendNetVar(key, receiver)
         hook.Run("NetVarChanged", self, key, oldValue, value)
     end
+
     function entityMeta:getNetVar(key, default)
         if not IsValid(self) then return default end
         if lia.net[self] and lia.net[self][key] ~= nil then return lia.net[self][key] end
@@ -185,6 +194,7 @@ else
         if not IsValid(self) then return false end
         return self:GetClass():find("door")
     end
+
     function entityMeta:getDoorPartner()
         if not IsValid(self) then return nil end
         local owner = self:GetOwner() or self.liaDoorOwner
@@ -196,6 +206,7 @@ else
             end
         end
     end
+
     function entityMeta:getNetVar(key, default)
         if not IsValid(self) then return default end
         local index = self:EntIndex()

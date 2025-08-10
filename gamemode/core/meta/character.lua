@@ -198,7 +198,7 @@ function characterMeta:isBanned()
 end
 
 if SERVER then
-        function characterMeta:recognize(character, name)
+    function characterMeta:recognize(character, name)
         local id
         if isnumber(character) then
             id = character
@@ -217,36 +217,36 @@ if SERVER then
         return true
     end
 
-        function characterMeta:WhitelistAllClasses()
+    function characterMeta:WhitelistAllClasses()
         for class, _ in pairs(lia.class.list) do
             self:classWhitelist(class)
         end
     end
 
-        function characterMeta:WhitelistAllFactions()
+    function characterMeta:WhitelistAllFactions()
         for faction, _ in pairs(lia.faction.indices) do
             self:setWhitelisted(faction, true)
         end
     end
 
-        function characterMeta:WhitelistEverything()
+    function characterMeta:WhitelistEverything()
         self:WhitelistAllFactions()
         self:WhitelistAllClasses()
     end
 
-        function characterMeta:classWhitelist(class)
+    function characterMeta:classWhitelist(class)
         local wl = self:getClasswhitelists() or {}
         wl[class] = true
         self:setClasswhitelists(wl)
     end
 
-        function characterMeta:classUnWhitelist(class)
+    function characterMeta:classUnWhitelist(class)
         local wl = self:getClasswhitelists() or {}
         wl[class] = nil
         self:setClasswhitelists(wl)
     end
 
-        function characterMeta:joinClass(class, isForced)
+    function characterMeta:joinClass(class, isForced)
         if not class then
             self:kickClass()
             return false
@@ -274,7 +274,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:kickClass()
+    function characterMeta:kickClass()
         local client = self:getPlayer()
         if not client then return end
         local validDefaultClass
@@ -293,7 +293,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:updateAttrib(key, value)
+    function characterMeta:updateAttrib(key, value)
         local client = self:getPlayer()
         local attribute = lia.attribs.list[key]
         if not attribute then return end
@@ -311,7 +311,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:setAttrib(key, value)
+    function characterMeta:setAttrib(key, value)
         local client = self:getPlayer()
         local attribute = lia.attribs.list[key]
         if attribute then
@@ -328,7 +328,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:addBoost(boostID, attribID, boostAmount)
+    function characterMeta:addBoost(boostID, attribID, boostAmount)
         local boosts = self:getVar("boosts", {})
         boosts[attribID] = boosts[attribID] or {}
         boosts[attribID][boostID] = boostAmount
@@ -336,7 +336,7 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
-        function characterMeta:removeBoost(boostID, attribID)
+    function characterMeta:removeBoost(boostID, attribID)
         local boosts = self:getVar("boosts", {})
         boosts[attribID] = boosts[attribID] or {}
         boosts[attribID][boostID] = nil
@@ -344,7 +344,7 @@ if SERVER then
         return self:setVar("boosts", boosts, nil, self:getPlayer())
     end
 
-        function characterMeta:setFlags(flags)
+    function characterMeta:setFlags(flags)
         local oldFlags = self:getFlags()
         self.vars.flags = flags
         net.Start("charSet")
@@ -372,7 +372,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:giveFlags(flags)
+    function characterMeta:giveFlags(flags)
         local addedFlags = ""
         local ply = self:getPlayer()
         for i = 1, #flags do
@@ -387,7 +387,7 @@ if SERVER then
         if addedFlags ~= "" then self:setFlags(self:getFlags() .. addedFlags) end
     end
 
-        function characterMeta:takeFlags(flags)
+    function characterMeta:takeFlags(flags)
         local oldFlags = self:getFlags()
         local newFlags = oldFlags
         local ply = self:getPlayer()
@@ -405,7 +405,7 @@ if SERVER then
         if newFlags ~= oldFlags then self:setFlags(newFlags) end
     end
 
-        function characterMeta:save(callback)
+    function characterMeta:save(callback)
         if self.isBot then return end
         local data = {}
         for k, v in pairs(lia.char.vars) do
@@ -421,7 +421,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:sync(receiver)
+    function characterMeta:sync(receiver)
         if receiver == nil then
             for _, v in player.Iterator() do
                 self:sync(v)
@@ -456,7 +456,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:setup(noNetworking)
+    function characterMeta:setup(noNetworking)
         local client = self:getPlayer()
         if IsValid(client) then
             local model = self:getModel()
@@ -490,7 +490,7 @@ if SERVER then
         end
     end
 
-        function characterMeta:kick()
+    function characterMeta:kick()
         local client = self:getPlayer()
         client:KillSilent()
         local curChar, steamID = client:getChar(), client:SteamID()
@@ -509,7 +509,7 @@ if SERVER then
         hook.Run("OnCharKick", self, client)
     end
 
-        function characterMeta:ban(time)
+    function characterMeta:ban(time)
         time = tonumber(time)
         local value
         if time then
@@ -524,22 +524,22 @@ if SERVER then
         hook.Run("OnCharPermakilled", self, time or nil)
     end
 
-        function characterMeta:delete()
+    function characterMeta:delete()
         lia.char.delete(self:getID(), self:getPlayer())
     end
 
-        function characterMeta:destroy()
+    function characterMeta:destroy()
         local id = self:getID()
         lia.char.removeCharacter(id)
     end
 
-        function characterMeta:giveMoney(amount)
+    function characterMeta:giveMoney(amount)
         local client = self:getPlayer()
         if not IsValid(client) then return false end
         return client:addMoney(amount)
     end
 
-        function characterMeta:takeMoney(amount)
+    function characterMeta:takeMoney(amount)
         amount = math.abs(amount)
         self:giveMoney(-amount)
         lia.log.add(self:getPlayer(), "money", -amount)
