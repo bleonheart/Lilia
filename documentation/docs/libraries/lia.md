@@ -14,17 +14,16 @@ The core library exposes shared helper functions used across multiple modules. I
 
 **Purpose**
 
-Includes a Lua file on the appropriate realm, sending it to clients when required.
+Includes a Lua file in the correct realm and, on the server, sends client files to players.
 
 **Parameters**
 
-* `path` (*string*): Path to the Lua file.
-
-* `realm` (*string*): Realm state (`"server"`, `"client"`, `"shared"`, etc.).
+* `path` (*string*): Path to the Lua file. Required.
+* `realm` (*string*): Realm override (`"server"`, `"client"`, or `"shared"`). *Optional.* Inferred from the filename when omitted.
 
 **Realm**
 
-Depends on the file realm.
+`Shared`
 
 **Returns**
 
@@ -42,21 +41,18 @@ lia.include("lilia/gamemode/core/libraries/util.lua")
 
 **Purpose**
 
-Includes every Lua file in a directory, with optional recursion and realm override.
+Includes all Lua files in a directory, optionally traversing subfolders and forcing a realm.
 
 **Parameters**
 
 * `dir` (*string*): Directory path.
-
-* `raw` (*boolean*): Treat `dir` as a raw Lua path.
-
-* `deep` (*boolean*): Include sub-folders when `true`.
-
-* `realm` (*string*): Realm state override.
+* `raw` (*boolean*): Treat `dir` as a raw path. *Optional.* Defaults to `false`.
+* `deep` (*boolean*): Include subfolders when `true`. *Optional.* Defaults to `false`.
+* `realm` (*string*): Realm override. *Optional.*
 
 **Realm**
 
-Depends on included files.
+`Shared`
 
 **Returns**
 
@@ -74,17 +70,14 @@ lia.includeDir("lilia/gamemode/modules/administration", true, true, "server")
 
 **Purpose**
 
-Recursively includes Lua files while preserving alphabetical order.
+Includes Lua files grouped by folder, optionally recursing into subdirectories and forcing a realm for all files.
 
 **Parameters**
 
 * `dir` (*string*): Directory path.
-
-* `raw` (*boolean*): Treat `dir` as a raw filesystem path.
-
-* `recursive` (*boolean*): Traverse sub-directories.
-
-* `forceRealm` (*string*): Realm override for all files.
+* `raw` (*boolean*): Treat `dir` as a raw filesystem path. *Optional.* Defaults to `false`.
+* `recursive` (*boolean*): Traverse subdirectories when `true`. *Optional.* Defaults to `false`.
+* `forceRealm` (*string*): Realm override for all files. *Optional.*
 
 **Realm**
 
@@ -210,6 +203,32 @@ lia.information("Server started successfully")
 
 ---
 
+### lia.admin
+
+**Purpose**
+
+Prints an admin-level message with the Lilia prefix.
+
+**Parameters**
+
+* `msg` (*string*): Text to display.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.admin("Player JohnDoe has been promoted to admin.")
+```
+
+---
+
 ### lia.bootstrap
 
 **Purpose**
@@ -242,7 +261,7 @@ lia.bootstrap("Database", "Connection established")
 
 **Purpose**
 
-Broadcasts a chat message to all staff members permitted to view alt-account notifications.
+Broadcasts a chat message to all players with the `canSeeAltingNotifications` privilege.
 
 **Parameters**
 
@@ -250,7 +269,7 @@ Broadcasts a chat message to all staff members permitted to view alt-account not
 
 **Realm**
 
-`Shared`
+`Server`
 
 **Returns**
 
@@ -308,15 +327,15 @@ Applies standardised kick/ban commands for a player infraction.
 
 * `ban` (*boolean*): Ban the player.
 
-* `time` (*number*): Ban duration (minutes).
+* `time` (*number*): Ban duration in minutes. *Optional.* Defaults to `0` (permanent).
 
-* `kickKey` (*string*): Localisation key for kick reason.
+* `kickKey` (*string*): Localisation key for the kick reason. *Optional.* Defaults to `"kickedForInfraction"`.
 
-* `banKey` (*string*): Localisation key for ban reason.
+* `banKey` (*string*): Localisation key for the ban reason. *Optional.* Defaults to `"bannedForInfraction"`.
 
 **Realm**
 
-`Shared`
+`Server`
 
 **Returns**
 
@@ -334,11 +353,11 @@ lia.applyPunishment(ply, "Cheating", true, true, 0)
 
 **Purpose**
 
-Recursively loads entity-related files from a directory.
+Loads and registers entities, weapons, tools, and effects from a directory.
 
 **Parameters**
 
-* `path` (*string*): Directory path containing entity files.
+* `path` (*string*): Base directory containing `entities`, `weapons`, `tools`, or `effects` subfolders.
 
 **Realm**
 
