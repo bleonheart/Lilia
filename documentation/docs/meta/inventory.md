@@ -182,7 +182,7 @@ end
 
 **Purpose**
 
-Registers this inventory type with the `lia.inventory` system.
+Registers this inventory type with the `lia.inventory` system and prepares its configuration. The table's `configure` method is invoked, and on the server `persistent` storage and an empty `accessRules` list are set up.
 
 **Parameters**
 
@@ -210,7 +210,7 @@ local chestInv = WeaponInv:new()
 
 **Purpose**
 
-Creates a new inventory of this type.
+Creates a new unsaved inventory of this type. The returned instance has an ID of `-1` until it is persisted with `instance` or `initializeStorage`.
 
 **Parameters**
 
@@ -471,7 +471,7 @@ print("Ammo remaining:", ammoTotal)
 
 **Purpose**
 
-Returns the unique database ID of this inventory.
+Returns the unique database ID of this inventory. Unsaved inventories use `-1`.
 
 **Parameters**
 
@@ -483,7 +483,7 @@ Returns the unique database ID of this inventory.
 
 **Returns**
 
-* `number`: Inventory identifier.
+* `number`: Inventory identifier, or `-1` if the inventory has not been stored yet.
 
 **Example Usage**
 
@@ -725,7 +725,7 @@ end)
 
 **Purpose**
 
-Sets a data field on the inventory and replicates the change to clients.
+Sets a data field on the inventory and replicates the change to clients. After updating, `onDataChanged` and any registered data proxies are triggered.
 
 **Parameters**
 
@@ -923,7 +923,7 @@ end
 
 **Purpose**
 
-Loads all items belonging to this inventory from storage.
+Loads all items belonging to this inventory from storage and merges each record's saved data into a new item instance.
 
 **Parameters**
 
@@ -984,7 +984,7 @@ Creates and stores a new inventory instance of this type.
 
 **Parameters**
 
-* `initialData` (`table|nil`): Data to populate the inventory with.
+* `initialData` (`table|nil`): Data to populate the inventory with. Defaults to an empty table.
 
 **Realm**
 
