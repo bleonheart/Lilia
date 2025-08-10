@@ -22,7 +22,7 @@ Returns a localized string describing how long ago a given time occurred (for ex
 
   * Numbers are UNIX timestamps.
 
-  * Strings are parsed with `lia.time.ParseTime` and must yield `year`, `month`, and `day`. Only the date portion is used.
+  * Strings are parsed with `lia.time.ParseTime` and must yield `year`, `month`, and `day`. The time-of-day is ignored (set to midnight).
 
 **Realm**
 
@@ -30,7 +30,7 @@ Returns a localized string describing how long ago a given time occurred (for ex
 
 **Returns**
 
-* *string*: Localized "time since" string.
+* *string*: Localized "time since" string. The difference is truncated to seconds, minutes, hours or days (`<60`, `<3600`, `<86400`, `>=86400`).
 
 **Example Usage**
 
@@ -54,6 +54,7 @@ end)
 
 * Returns `L("invalidDate")` if the string cannot be parsed.
 * Returns `L("invalidInput")` for non-number, non-string inputs.
+* Future dates produce negative values in the returned string.
 
 ---
 
@@ -61,7 +62,7 @@ end)
 
 **Purpose**
 
-Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. If no argument is given, uses the current time.
+Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. If no argument is given, uses the current time via `os.date("%Y-%m-%d %H:%M:%S", os.time())`.
 
 **Parameters**
 
@@ -73,7 +74,7 @@ Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. I
 
 **Returns**
 
-* *table*: `{ year, month, day, hour, min, sec }` — keys are numbers. No validation is performed on the input string.
+* *table*: `{ year, month, day, hour, min, sec }` — keys are numbers. No validation is performed on the input string; malformed strings yield `nil` fields.
 
 **Example Usage**
 
@@ -96,9 +97,9 @@ end
 
 **Purpose**
 
-Returns the full current date/time using the `AmericanTimeStamps` config:
+Returns the full current date/time using the `AmericanTimeStamps` config (defaults to `false`):
 
-* **Enabled**: `"Weekday, Month DD, YYYY, HH:MM:SSam/pm"` (12-hour clock)
+* **Enabled**: `"Weekday, Month DD, YYYY, HH:MM:SSam/pm"` (12-hour clock, localized `am`/`pm` suffix)
 
 * **Disabled**: `"Weekday, DD Month YYYY, HH:MM:SS"` (24-hour clock)
 
@@ -112,7 +113,7 @@ Returns the full current date/time using the `AmericanTimeStamps` config:
 
 **Returns**
 
-* *string*: Formatted current date/time.
+* *string*: Formatted current date/time with localized weekday and month names.
 
 **Example Usage**
 
@@ -144,7 +145,7 @@ Formats a number of seconds into a localized string describing days, hours, and 
 
 **Returns**
 
-* *string*: Localized "X days Y hours Z minutes" string.
+* *string*: Localized "X days Y hours Z minutes" string. Remaining seconds are discarded.
 
 **Example Usage**
 
@@ -161,7 +162,7 @@ print(lia.time.formatDHM(90061)) -- "1 days 1 hours 1 minutes"
 
 Returns the current hour formatted by `AmericanTimeStamps`:
 
-* **Enabled** → string in the format `"Ham"`/`"Hpm"` (e.g. `"3pm"`)
+* **Enabled** → string in the format `"Ham"`/`"Hpm"` (e.g. `"3pm"`, midnight is `"12am"`)
 
 * **Disabled** → integer `0–23` (24-hour clock)
 
@@ -182,10 +183,32 @@ Returns the current hour formatted by `AmericanTimeStamps`:
 ```lua
 -- Toggle an NPC shop by hour
 timer.Create("CheckShopHours", 60, 0, function()
-    local hour = lia.time.GetHour()      -- could be "3pm" or 15
-    local hNum = tonumber(hour) or tonumber(hour:sub(1, -3)) % 12  -- convert if am/pm
+    local hour = lia.time.GetHour() -- could be "3pm" or 15
+    local hNum = tonumber(hour)
+        or tonumber(hour:sub(1, -3)) % 12 + (hour:sub(-2) == "pm" and 12 or 0) -- convert if am/pm
     npc:SetNWBool("ShopOpen", hNum >= 9 and hNum < 17)
 end)
 ```
+
+---
+
+### CurTime Synchronisation
+
+**Purpose**
+
+Keeps `CurTime()` on clients aligned with the server's `CurTime()`.
+
+**Server Behaviour**
+
+* A timer `CurTimeSync` runs every 30 seconds and broadcasts the current `CurTime()` via the network message `"CurTimeSync"`.
+
+**Client Behaviour**
+
+* On `InitPostEntity`, a net receiver for `"CurTime-Sync"` stores the difference between the client's `CurTime()` and the server's value.
+* The global `CurTime()` function is overridden to subtract this offset, effectively returning server time.
+
+**Edge Cases**
+
+* The server sends `"CurTimeSync"` but the client listens for `"CurTime-Sync"`; without matching identifiers the synchronisation will not occur.
 
 ---
