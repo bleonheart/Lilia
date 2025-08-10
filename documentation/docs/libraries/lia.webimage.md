@@ -18,17 +18,17 @@ The web-image library downloads remote images and caches them as materials. Cach
 
 **Purpose**
 
-Downloads an image from the given URL and saves it inside the web-image cache. If the file already exists it will be replaced with the new download. Should the request fail the previous cached file is used and passed to the callback.
+Downloads an image from the given URL and saves it inside the web-image cache. If the file already exists it will be replaced with the new download. Should the request fail the previous cached file is used and passed to the callback. When a new file is successfully downloaded the `WebImageDownloaded` hook is triggered with the saved name and path.
 
 **Parameters**
 
-* `name` (*string*): Unique file name including extension.
+* `n` (*string*): Unique file name including extension.
 
-* `url` (*string*): HTTP address of the image.
+* `u` (*string*): HTTP address of the image.
 
-* `callback` (*function | nil*): Called as `callback(mat, fromCache, err)` where `mat` is a `Material`, `fromCache` is `true` if loaded from disk, and `err` is an error string on failure.
+* `cb` (*function | nil*): Called as `cb(mat, fromCache[, err])` where `mat` is a `Material`, `fromCache` is `true` if loaded from disk, and `err` is an error string on failure.
 
-* `flags` (*string | nil*): Optional material flags passed to `Material()`.
+* `flags` (*string | nil*): Optional material flags passed to `Material()`. Defaults to `"noclamp smooth"` when omitted.
 
 **Realm**
 
@@ -64,9 +64,9 @@ Returns the material cached with `lia.webimage.register`. If the file is missing
 
 **Parameters**
 
-* `name` (*string*): File name used during registration.
+* `n` (*string*): Registered file name or URL.
 
-* `flags` (*string | nil*): Optional material flags.
+* `flags` (*string | nil*): Optional material flags. Defaults to `"noclamp smooth"` when omitted.
 
 **Realm**
 
@@ -100,7 +100,18 @@ local byURL = Material("https://example.com/logo.png")
 
 ---
 
+### Viewing Saved Images
+
+Run the `lia_saved_images` console command on the client to open a panel that lists all cached web images.
+
+---
+
 ### Clearing the Cache
 
-Use the `lia_wipewebimages` console command on the client to delete all cached web
-images from disk. New requests will download the images again.
+Use the `lia_wipewebimages` console command on the client to delete all cached web images from disk. New requests will download the images again.
+
+---
+
+### Test Menu
+
+The `test_webimage_menu` console command opens a simple interface for loading and previewing images from arbitrary URLs.
