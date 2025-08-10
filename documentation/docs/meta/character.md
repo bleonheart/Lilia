@@ -569,6 +569,92 @@ end
 
 ---
 
+### setData
+
+**Purpose**
+
+Sets custom data on this character, optionally syncing it to clients and saving it in the database.
+
+**Parameters**
+
+* `k` (`string|table`): Key to set or table of key-value pairs.
+* `v` (`any`): Value to store when `k` is a string.
+* `noReplication` (`boolean`): If `true`, do not network the change.
+* `receiver` (`Player|nil`): Specific player to receive the update.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `nil`: This function does not return a value.
+
+**Example Usage**
+
+```lua
+-- Store character-specific state and sync it to the owner
+char:setData("mission", {step = 2}, false)
+```
+
+---
+
+### getData
+
+**Purpose**
+
+Fetches custom data stored on the character.
+
+**Parameters**
+
+* `key` (`string|nil`): Data key to retrieve. Omitting returns all entries.
+* `default` (`any`): Fallback value when the key is missing.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `any`: Stored value, entire data table, or the provided default.
+
+**Example Usage**
+
+```lua
+-- Read a saved mission step
+local mission = char:getData("mission", {})
+```
+
+---
+
+### isBanned
+
+**Purpose**
+
+Checks whether this character is currently banned.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `boolean`: `true` if the character is banned or permanently banned.
+
+**Example Usage**
+
+```lua
+if char:isBanned() then
+    print("Access denied")
+end
+```
+
+---
+
 ### recognize
 
 **Purpose**
@@ -1678,10 +1764,11 @@ char:setMoney(1000)
 **Purpose**
 
 Retrieves the timestamp of when the player logged into this character.
+This value is local to the character's owner and is not broadcast to other players.
 
 **Parameters**
 
-* `default` (`any`): Value returned if no time is stored.
+* `default` (`number`): Value returned if no time is stored. Defaults to `0`.
 
 **Realm**
 
@@ -1689,7 +1776,7 @@ Retrieves the timestamp of when the player logged into this character.
 
 **Returns**
 
-* `number`: Unix timestamp or the fallback value.
+* `number`: Unix timestamp or the provided fallback.
 
 **Example Usage**
 
@@ -1704,10 +1791,11 @@ local logged = char:getLoginTime(0)
 **Purpose**
 
 Stores the timestamp for when the player logged into this character.
+The stored time is kept local to the owner and not sent to other players.
 
 **Parameters**
 
-* `value` (`number`): Unix timestamp.
+* `value` (`number`): Unix timestamp to store. Defaults to `0`.
 
 **Realm**
 
@@ -1730,10 +1818,11 @@ char:setLoginTime(os.time())
 **Purpose**
 
 Gets the total accumulated playtime in seconds for this character.
+This value is maintained locally for the owning player only.
 
 **Parameters**
 
-* `default` (`any`): Value returned when no playtime is recorded.
+* `default` (`number`): Value returned when no playtime is recorded. Defaults to `0`.
 
 **Realm**
 
@@ -1756,6 +1845,7 @@ local seconds = char:getPlayTime(0)
 **Purpose**
 
 Sets the total accumulated playtime for this character.
+The updated value remains local to the owning player.
 
 **Parameters**
 
@@ -1773,66 +1863,6 @@ Sets the total accumulated playtime for this character.
 
 ```lua
 char:setPlayTime(3600)
-```
-
----
-
-### getData
-
-**Purpose**
-
-Returns arbitrary data previously stored on the character.
-
-**Parameters**
-
-* `key` (`string`): Data key.
-
-* `default` (`any`): Value to return if the entry is missing.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-* `any`: Stored value or default.
-
-**Example Usage**
-
-```lua
-local rank = char:getData("rank", "rookie")
-```
-
----
-
-### setData
-
-**Purpose**
-
-Writes a data entry on the character and optionally syncs it.
-
-**Parameters**
-
-* `key` (`string`): Data key to modify.
-
-* `value` (`any`): New value to store.
-
-* `noReplication` (`boolean`): Suppress network updates.
-
-* `receiver` (`Player`): Optional specific client to send the update to.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* `nil`: This function does not return a value.
-
-**Example Usage**
-
-```lua
-char:setData("rank", "veteran")
 ```
 
 ---
