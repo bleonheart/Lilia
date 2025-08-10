@@ -6,7 +6,7 @@ This page lists time- and date-utilities.
 
 ## Overview
 
-The time library formats dates and converts relative times using Lua's built-in `os.date` and `os.time` functions. It provides helpers for phrases such as "time since."
+The time library formats dates and converts relative times using Lua's built-in `os.date` and `os.time` functions. It also periodically synchronizes the client's `CurTime` with the server to reduce clock drift. Helpers are provided for phrases such as "time since" and for formatting dates.
 
 ---
 
@@ -20,9 +20,9 @@ Returns a localized string describing how long ago a given time occurred (for ex
 
 * `strTime` (*number | string*): Time to measure from.
 
-  * Numbers are UNIX timestamps.
+  * Numbers are UNIX timestamps in seconds.
 
-  * Strings are parsed with `lia.time.ParseTime` and must yield `year`, `month`, and `day`. Only the date portion is used.
+  * Strings are parsed with `lia.time.ParseTime` and must return `year`, `month`, and `day`; hours, minutes, and seconds default to `00:00:00`.
 
 **Realm**
 
@@ -54,6 +54,7 @@ end)
 
 * Returns `L("invalidDate")` if the string cannot be parsed.
 * Returns `L("invalidInput")` for non-number, non-string inputs.
+* Times in the future will yield negative values (e.g. "-5 seconds ago").
 
 ---
 
@@ -61,7 +62,7 @@ end)
 
 **Purpose**
 
-Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. If no argument is given, uses the current time.
+Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into a table of numeric date parts. If no argument is given, the current time is used.
 
 **Parameters**
 
@@ -73,7 +74,7 @@ Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. I
 
 **Returns**
 
-* *table*: `{ year, month, day, hour, min, sec }` — keys are numbers. No validation is performed on the input string.
+* *table*: `{ year, month, day, hour, min, sec }` — numeric fields suitable for `os.time`. No validation is performed on the input string.
 
 **Example Usage**
 
@@ -96,7 +97,7 @@ end
 
 **Purpose**
 
-Returns the full current date/time using the `AmericanTimeStamps` config:
+Returns the full current date/time using the `AmericanTimeStamps` config (default `false`). Weekday and month names are localized:
 
 * **Enabled**: `"Weekday, Month DD, YYYY, HH:MM:SSam/pm"` (12-hour clock)
 
