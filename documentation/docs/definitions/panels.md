@@ -37,7 +37,9 @@ Panels provide the building blocks for Lilia's user interface. Most derive from 
 | `SemiTransparentDFrame` | `DFrame` | Frame drawn with partial transparency. |
 | `SemiTransparentDPanel` | `DPanel` | Panel drawn with partial transparency. |
 | `liaDoorMenu` | `DFrame` | Door permissions and ownership menu. |
+| `liaRoster` | `EditablePanel` | Lists members of a faction or class. |
 | `liaScoreboard` | `EditablePanel` | Replacement scoreboard. |
+| `liaSheet` | `DPanel` | Filterable sheet used for building lists. |
 | `liaCharacter` | `EditablePanel` | Main screen for character management. |
 | `liaCharBGMusic` | `DPanel` | Handles menu background music playback. |
 | `liaCharacterCreation` | `EditablePanel` | Multi-step character creation window. |
@@ -351,6 +353,23 @@ Interface for property doors showing ownership and faction access. Owners can lo
 
 ---
 
+### `liaRoster`
+
+**Base Panel:**
+
+`EditablePanel`
+
+**Description:**
+
+Lists players in a faction or class roster and supports context actions such as kicking members.
+
+**Functions:**
+
+- `SetRosterType(type)` – chooses which roster to display. Passing `"faction"` requests faction data from the server.
+- `Populate(data, canKick)` – fills the sheet with `data` rows and enables kick options when `canKick` is true.
+
+---
+
 ### `liaScoreboard`
 
 **Base Panel:**
@@ -360,6 +379,34 @@ Interface for property doors showing ownership and faction access. Owners can lo
 **Description:**
 
 Replacement scoreboard that groups players by team or faction and displays additional stats like ping and play time.
+
+---
+
+### `liaSheet`
+
+**Base Panel:**
+
+`DPanel`
+
+**Description:**
+
+Scrollable sheet used to build filterable lists with rows of arbitrary content.
+
+**Functions:**
+
+- `SetPlaceholderText(text)` – sets the search box placeholder.
+- `SetSpacing(y)` – vertical spacing between rows (default `8`).
+- `SetPadding(p)` – padding around row contents (default `10`).
+- `Clear()` – removes all rows.
+- `AddRow(builder)` – adds a custom row using `builder(panel, row)`; returns the row table.
+- `AddPanelRow(widget, opts)` – inserts an existing panel as a row.
+- `AddTextRow(data)` – creates a text row from `title`, `desc`, and `right` fields.
+- `AddSubsheetRow(cfg)` – adds a collapsible subsheet for grouped entries.
+- `AddPreviewRow(data)` – displays an HTML preview thumbnail.
+- `AddListViewRow(cfg)` – embeds a `DListView` into a row.
+- `AddIconLayoutRow(cfg)` – embeds a `DIconLayout` into a row.
+- `RegisterCustomFilter(row, fn)` – registers an extra filter function for `Refresh`.
+- `Refresh()` – re-applies the search filter to all rows.
 
 ---
 
@@ -655,6 +702,16 @@ Text-only button that still shows the underline animation.
 
 Quick settings menu that lists options flagged with `isQuick`.
 
+**Functions:**
+
+- `addCategory(text)` – inserts a non-interactive section label.
+- `addButton(text, cb)` – adds a clickable button that triggers `cb` when pressed.
+- `addSpacer()` – draws a thin divider line.
+- `addSlider(text, cb, val, min, max, dec)` – slider control that calls `cb(panel, value)`; default range `0–100`.
+- `addCheck(text, cb, checked)` – checkbox row; invokes `cb(panel, state)` when toggled.
+- `setIcon(char)` – sets the icon character displayed on the expand button.
+- `populateOptions()` – fills the panel using registered quick options.
+
 **Example Usage:**
 
 ```lua
@@ -672,6 +729,11 @@ vgui.Create("liaQuick")
 **Description:**
 
 Checkbox that paints the same checkmark icons used in the configuration menu.
+
+**Functions:**
+
+- `SetChecked(state)` – toggles the checkmark and fires `OnChange`.
+- `GetChecked()` – returns whether the box is checked.
 
 **Example Usage:**
 
