@@ -1158,6 +1158,13 @@ lia.config.add("sbHeight", "sbHeight", 0.65, nil, {
     max = 1.0
 })
 
+lia.config.add("sbDock", "sbDock", "center", nil, {
+    desc = "sbDockDesc",
+    category = "scoreboard",
+    type = "Table",
+    options = {"left", "center", "right"}
+})
+
 lia.config.add("ClassHeaders", "classHeaders", true, nil, {
     desc = "classHeadersDesc",
     category = "scoreboard",
