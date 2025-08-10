@@ -26,6 +26,7 @@ The library serves as the foundation for all administrative functionality within
 lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
+lia.administrator.privilegeCategories = lia.administrator.privilegeCategories or {}
 lia.administrator.missingGroups = lia.administrator.missingGroups or {}
 lia.administrator.DefaultGroups = {
     user = 1,
@@ -87,6 +88,9 @@ local function getPrivilegeCategory(privilegeName)
     }
 
     if not privilegeName then return L("unassigned") end
+    if lia.administrator and lia.administrator.privilegeCategories and lia.administrator.privilegeCategories[privilegeName] then
+        return L(lia.administrator.privilegeCategories[privilegeName])
+    end
     if lia.command and lia.command.list and lia.command.list[privilegeName] then return L("commands") end
     if lia.module and lia.module.list then
         for _, module in pairs(lia.module.list) do
@@ -351,6 +355,9 @@ function lia.administrator.registerPrivilege(priv)
     if lia.administrator.privileges[id] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[id] = min
+    if priv.Category then
+        lia.administrator.privilegeCategories[id] = priv.Category
+    end
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
@@ -359,11 +366,12 @@ function lia.administrator.registerPrivilege(priv)
 
     local name = L(priv.Name or priv.ID)
     if CAMI then camiRegisterPrivilege(priv.ID, min) end
+    local category = getPrivilegeCategory(id)
     hook.Run("OnPrivilegeRegistered", {
         Name = name,
         ID = priv.ID,
         MinAccess = min,
-        Category = getPrivilegeCategory(id)
+        Category = category
     })
 
     if SERVER then lia.administrator.save() end
@@ -392,6 +400,7 @@ function lia.administrator.unregisterPrivilege(id)
     id = tostring(id or "")
     if id == "" or lia.administrator.privileges[id] == nil then return end
     lia.administrator.privileges[id] = nil
+    lia.administrator.privilegeCategories[id] = nil
     for _, perms in pairs(lia.administrator.groups or {}) do
         perms[id] = nil
     end
