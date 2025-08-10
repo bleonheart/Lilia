@@ -115,6 +115,7 @@ lia.command.add("doorbuy", {
     onRun = function(client)
         if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
             lia.log.add(client, "cheaterAction", L("buyDoor"):lower())
+            client:notify("Maybe you shouldn't have cheated")
             return
         end
 
