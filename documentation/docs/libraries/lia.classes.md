@@ -6,9 +6,44 @@ This page details the class system functions.
 
 ## Overview
 
-The classes library loads Lua definitions that describe player classes. Classes act like temporary jobs within a faction. The library stores available classes, registers default attributes, and provides lookup functions by name or index.
+The classes library loads Lua definitions that describe player classes. Classes act like temporary jobs within a faction. The library stores available classes, registers default attributes, and provides lookup functions by index or by searching text.
 
 See [Class Fields](../definitions/class.md) for configurable `CLASS` properties and [Class Hooks](../hooks/class_hooks.md) for customization callbacks.
+
+---
+
+### lia.class.register
+
+**Purpose**
+
+Registers a new class or updates an existing one with matching `uniqueID`.  
+Sets default values for missing fields and validates the faction.
+
+**Parameters**
+
+* `uniqueID` (*string*): Unique identifier for the class.
+* `data` (*table*): Properties such as `name`, `desc`, `faction`, `limit`, etc.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *table | nil*: The registered class table, or `nil` if the faction is invalid.
+
+**Example Usage**
+
+```lua
+-- Register a class for the Combine faction
+local class = lia.class.register("overwatch", {
+    name = "Overwatch Soldier",
+    desc = "Transhuman soldier of the Combine.",
+    faction = FACTION_COMBINE,
+    limit = 4,
+    isWhitelisted = true
+})
+```
 
 ---
 
@@ -16,7 +51,9 @@ See [Class Fields](../definitions/class.md) for configurable `CLASS` properties 
 
 **Purpose**
 
-Loads all Lua files within the supplied directory. Each file should define a `CLASS` table inserted into `lia.class.list` with an automatic index.
+Loads all Lua files within the supplied directory. Each file should define a `CLASS` table inserted into `lia.class.list` with an automatic index.  
+Skips files whose `uniqueID` already exists and requires each class to have a valid `faction`.  
+Defaults `name` to `L("unknown")`, `desc` to `L("noDesc")`, `limit` to `0`, and `OnCanBe` to a function returning `true`.
 
 **Parameters**
 
@@ -57,7 +94,7 @@ Checks faction and limit rules. It also runs the `CanPlayerJoinClass` gamemode h
 
 **Returns**
 
-* *boolean*, *string?*: `false` and a reason when denied; on success, returns the class’s `isDefault` flag.
+* *boolean*, *string?*: `false` and a reason when denied; on success, returns the class’s `isDefault` flag (defaults to `false`).
 
 **Example Usage**
 
@@ -156,7 +193,7 @@ print("Players in class:", count)
 
 **Purpose**
 
-Finds a class whose `uniqueID` or `name` matches the given text (case-insensitive).
+Finds a class whose `uniqueID` or `name` matches the given text (case-insensitive, partial matches allowed).
 
 **Parameters**
 
@@ -203,6 +240,35 @@ Checks if the class requires a whitelist. Default classes and invalid class indi
 -- Check whether the class is whitelisted
 if lia.class.hasWhitelist(classID) then
     print("Whitelist required")
+end
+```
+
+---
+
+### lia.class.retrieveJoinable
+
+**Purpose**
+
+Returns all classes the specified client is eligible to join by calling `lia.class.canBe` on each registered class.
+
+**Parameters**
+
+* `client` (*Player?*): Player to check. Defaults to `LocalPlayer()` when called on the client.  
+  If invalid or omitted on the server, an empty table is returned.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *table*: List of class tables the client can join.
+
+**Example Usage**
+
+```lua
+for _, class in ipairs(lia.class.retrieveJoinable(client)) do
+    print("Can join:", class.name)
 end
 ```
 
