@@ -20,9 +20,9 @@ Registers a flag in `lia.flag.list`, storing its description and an optional cal
 
 * `flag` (*string*): Unique single-character identifier.
 
-* `desc` (*string*): Human-readable description of the flag’s effect. If it matches a localization phrase, the translated text is stored. *Optional*.
+* `desc` (*string*, default `nil`): Human-readable description of the flag’s effect. If it matches a localization phrase, the translated text is stored.
 
-* `callback` (*function*): Called as `callback(client, isGiven)` where `isGiven` is `true` when granting or re-applying on spawn, and `false` on removal. Also run with `isGiven = true` on spawn if the player already has the flag. *Optional*.
+* `callback` (*function*, default `nil`): Called as `callback(client, isGiven)` where `isGiven` is `true` when granting or re-applying on spawn, and `false` on removal. Also run with `isGiven = true` on spawn if the player already has the flag.
 
 **Realm**
 
