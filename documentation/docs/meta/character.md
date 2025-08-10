@@ -168,6 +168,7 @@ client:ChatPrint(string.format("You see %s", char:getDisplayedName(client)))
 **Purpose**
 
 Checks if the character has at least the given amount of money.
+Negative values always return `false`.
 
 **Parameters**
 
@@ -226,10 +227,11 @@ end
 **Purpose**
 
 Checks if the character possesses any of the specified flags.
+Both the character's own flags and the controlling player's flags are considered.
 
 **Parameters**
 
-* `flags` (`string`): String of flag characters to check.
+* `flagStr` (`string`): String of flag characters to check.
 
 **Realm**
 
@@ -256,7 +258,7 @@ end
 
 Returns **true** only when the player's active weapon matches an item in their inventory and that item is equipped.
 
-The argument defaults to `true` and the method currently only checks for equipped items.
+The argument defaults to `true` and the method currently only checks for equipped items. Passing `false` currently still returns `false`.
 
 **Parameters**
 
@@ -313,6 +315,7 @@ local pct = char:getStamina() / char:getMaxStamina()
 **Purpose**
 
 Retrieves the character's current stamina value.
+Defaults to `DefaultStamina` (100) when no value is set.
 
 **Parameters**
 
@@ -1211,7 +1214,7 @@ Adds the specified amount to the character's wallet by calling the owning player
 
 **Returns**
 
-* `boolean`: `false` if the owner is missing, otherwise `true`.
+* `any`: Result of the player's `addMoney` call, or `false` if no player is present.
 
 **Example Usage**
 
@@ -1782,11 +1785,11 @@ char:setPlayTime(3600)
 **Purpose**
 
 Returns arbitrary data previously stored on the character.
+When no `key` is provided, returns the entire data table.
 
 **Parameters**
 
-* `key` (`string`): Data key.
-
+* `key` (`string|nil`): Data key.
 * `default` (`any`): Value to return if the entry is missing.
 
 **Realm**
@@ -1795,7 +1798,7 @@ Returns arbitrary data previously stored on the character.
 
 **Returns**
 
-* `any`: Stored value or default.
+* `any|table`: Stored value, default, or full data table.
 
 **Example Usage**
 
@@ -1805,20 +1808,45 @@ local rank = char:getData("rank", "rookie")
 
 ---
 
+### isBanned
+
+**Purpose**
+
+Checks if the character is currently banned.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `boolean`: `true` if the character is banned.
+
+**Example Usage**
+
+```lua
+if char:isBanned() then
+    print("Character is banned")
+end
+```
+
+---
+
 ### setData
 
 **Purpose**
 
-Writes a data entry on the character and optionally syncs it.
+Writes arbitrary data on the character and optionally syncs it to clients and the database.
 
 **Parameters**
 
-* `key` (`string`): Data key to modify.
-
-* `value` (`any`): New value to store.
-
+* `key` (`string|table`): Data key to modify or table of key/value pairs.
+* `value` (`any`): New value to store when `key` is a string.
 * `noReplication` (`boolean`): Suppress network updates.
-
 * `receiver` (`Player`): Optional specific client to send the update to.
 
 **Realm**
