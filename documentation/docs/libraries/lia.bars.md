@@ -128,11 +128,11 @@ Draws a single horizontal bar at the specified screen coordinates, filling it pr
 
 * `h` (*number*): Total height of the bar, including the 3px border at the top and bottom.
 
-* `pos` (*number*): Current value to display (clamped to `max`).
+* `pos` (*number*): Current value to display. Values above `max` are clamped and negative widths are treated as zero.
 
-* `max` (*number*): Maximum possible value for the bar; should be greater than 0.
+* `max` (*number*): Maximum possible value for the bar. Supplying `0` or a negative value results in a division error.
 
-* `color` (*Color*): Colour used to fill the bar.
+* `color` (*Color*): Colour used to fill the bar. The alpha channel is ignored and assumed fully opaque.
 
 **Realm**
 
@@ -155,7 +155,7 @@ lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(255, 0, 0))
 
 **Purpose**
 
-Displays a temporary action progress bar with accompanying text for the specified duration on the HUD. The bar shrinks over time and repeated calls replace any existing action bar.
+Displays a temporary action progress bar with accompanying text for the specified duration on the HUD. The bar shrinks over time, is filled using `lia.config.get("Color")`, and repeated calls remove the previous `HUDPaint` hook before adding a new one so only one action bar is visible at a time.
 
 **Parameters**
 
@@ -184,7 +184,7 @@ lia.bar.drawAction("Reloading", 2)
 
 **Purpose**
 
-Iterates through all registered bars, applies smoothing to their values, and draws them on the HUD according to priority and visibility rules. Bars fade after five seconds without changes unless `BarsAlwaysVisible` is enabled or `bar.visible` is true. The hooks `ShouldHideBars` and `ShouldBarDraw` are consulted to decide whether a bar is rendered. By default, this function is bound to the `HUDPaintBackground` hook as `liaBarDraw`.
+Iterates through all registered bars, sorts them by priority and insertion order, smooths their values with `math.Approach` using a step of `FrameTime() * 0.6`, and draws them with a width of `ScrW() * 0.35` and a height of `14` starting at screen position `(4, 4)` with `2` pixels of vertical spacing. Bars remain for five seconds after their value changes or while smoothing toward a new target unless `BarsAlwaysVisible` is enabled or `bar.visible` is true. The hooks `ShouldHideBars` and `ShouldBarDraw` are consulted to decide whether a bar is rendered. By default, this function is bound to the `HUDPaintBackground` hook as `liaBarDraw`.
 
 **Parameters**
 
