@@ -36,7 +36,7 @@ The global `CLASS` table defines per-class settings such as display name, lore, 
 | `jumpPowerMultiplier` | `boolean` | `false` | Multiply base jump power instead of replacing it. |
 | `bloodcolor` | `number` | `0` | Blood color enumeration constant. |
 | `bodyGroups` | `table` | `nil` | Bodygroup name → index mapping applied on spawn. |
-| `logo` | `string` | `""` | Material path for the class logo. |
+| `logo` | `string` | `nil` | Material path for the class logo. |
 | `scoreboardHidden` | `boolean` | `false` | Hide class headers and logos in the scoreboard. |
 | `skin` | `number` | `0` | Player model skin index. |
 | `subMaterials` | `table` | `nil` | Sub-material overrides for the model. |
@@ -47,6 +47,7 @@ The global `CLASS` table defines per-class settings such as display name, lore, 
 | `commands` | `table` | `nil` | Command names members may always use. |
 | `canInviteToFaction` | `boolean` | `false` | Allows members of this class to invite players to their faction. |
 | `canInviteToClass` | `boolean` | `false` | Allows members of this class to invite others to their class. |
+| `OnCanBe(client)` | `function` | `function(self, client) return true end` | Custom join check; return `false` to deny the client. |
 
 ---
 
@@ -515,7 +516,7 @@ CLASS.bodyGroups = {
 
 **Description:**
 
-Path to the material used as this class's logo. Displayed in the scoreboard and F1 menu.
+Path to the material used as this class's logo. When `nil`, no logo is displayed in the scoreboard or F1 menu.
 
 **Example Usage:**
 
@@ -677,6 +678,26 @@ CLASS.canInviteToClass = true
 
 ---
 
+#### `OnCanBe(client)`
+
+**Type:**
+
+`function`
+
+**Description:**
+
+Optional callback executed when a player attempts to join the class. `self` is the class table. Return `false` to block the player from joining.
+
+**Example Usage:**
+
+```lua
+function CLASS:OnCanBe(client)
+    return client:IsAdmin()
+end
+```
+
+---
+
 ## Complete Example
 
 ```lua
@@ -725,4 +746,7 @@ CLASS.commands = {
 }
 CLASS.canInviteToFaction = true
 CLASS.canInviteToClass = true
+function CLASS:OnCanBe(client)
+    return client:IsAdmin()
+end
 ```
