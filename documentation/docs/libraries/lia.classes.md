@@ -121,11 +121,11 @@ end
 
 **Purpose**
 
-Retrieves the class table associated with the given identifier.
+Retrieves the class table associated with the given index.
 
 **Parameters**
 
-* `identifier` (*number*): Class index to look up.
+* `index` (*number*): Class index to look up.
 
 **Realm**
 
@@ -138,7 +138,7 @@ Retrieves the class table associated with the given identifier.
 **Example Usage**
 
 ```lua
--- Retrieve the class table for the engineer class by index
+-- Retrieve the class table for the engineer class
 local classData = lia.class.get(CLASS_ENGINEER)
 ```
 
