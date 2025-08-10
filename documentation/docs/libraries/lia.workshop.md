@@ -12,7 +12,7 @@ Workshop IDs added via `lia.workshop.AddWorkshop` are stored in `lia.workshop.id
 
 Clients store the list received from the server in `lia.workshop.serverIds`, which drives the in-game display and download queue.
 
-The server sends this list a short time after each player spawns. When the client opts to download the addons—either automatically or via the prompt—it requests them and `lia.workshop.send` transmits the IDs. Clients may run `workshop_force_redownload` in the console to forcibly re-download all configured addons.
+The server sends this list a short time after each player spawns. When the client opts to download the addons—either automatically or via the prompt—it requests them and `lia.workshop.send` transmits the IDs. Clients may run `workshop_force_redownload` in the console to forcibly re-download all configured addons. Lilia's own content (Workshop ID `3527535922`) is registered automatically and is ignored when checking for missing downloads.
 
 ---
 
@@ -20,7 +20,7 @@ The server sends this list a short time after each player spawns. When the clien
 
 **Purpose**
 
-Registers a Steam Workshop addon ID so clients will download it. When a new ID is added, a bootstrap message informs users and a second message indicates the download has started.
+Registers a Steam Workshop addon ID so clients will download it. The `id` is internally coerced to a string. If the ID was not previously registered, a bootstrap `workshopAdded` message is shown once. A `workshopDownloading` message is always displayed to indicate the download has started.
 
 **Parameters**
 
@@ -47,7 +47,7 @@ lia.workshop.AddWorkshop("1234567890")
 
 **Purpose**
 
-Collects Workshop IDs from every registered source, including mounted addons and each module's `WorkshopContent` field. Each discovered ID is recorded so duplicate notifications are avoided.
+Collects Workshop IDs from every registered source, including mounted addons and each module's `WorkshopContent` field. Newly discovered IDs are added to `lia.workshop.known` and trigger a one-time `workshopAdded` notification so duplicates are avoided.
 
 **Parameters**
 
@@ -105,7 +105,7 @@ end)
 
 **Purpose**
 
-Checks whether the client is missing any Workshop content required by the server. The internally required Lilia package is ignored.
+Checks whether the client is missing any Workshop content required by the server. The Lilia base package (`3527535922`) is ignored. Mounted addons and cached `.gma` files in the data folder are considered before deciding content is missing.
 
 **Parameters**
 
@@ -133,7 +133,7 @@ end
 
 **Purpose**
 
-Prompts the user to download and mount all missing Workshop content. Before downloading, it totals the sizes of the missing addons and displays a confirmation dialog.
+Prompts the user to download and mount all missing Workshop content. IDs already mounted or cached locally are skipped; the built-in Lilia ID is ignored. If no addons are missing, a `workshopAllInstalled` message is shown. Otherwise, `steamworks.FileInfo` gathers total size and a confirmation dialog appears. On acceptance, the client requests downloads via `WorkshopDownloader_Request`, mounting each addon with a short delay (3 seconds by default).
 
 **Parameters**
 
