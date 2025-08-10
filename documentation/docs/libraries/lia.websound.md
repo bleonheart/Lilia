@@ -36,11 +36,9 @@ Downloads a sound from the given URL and saves it in the web-sound cache. Any ex
 
 * `url` (*string*): HTTP address of the sound file.
 
-* `callback` (*function | nil*): Called as `callback(path, fromCache, err)` where
-
-  `path` is the local file path relative to `DATA/`, `fromCache` is `true` if
-
-  loaded from disk and `err` is an error string on failure.
+* `cb` (*function | nil*): Called as `cb(path, fromCache)` on success or
+  `cb(nil, false, err)` on failure. `path` is the local data path and
+  `fromCache` is `true` when loaded from disk.
 
 **Realm**
 
@@ -54,9 +52,11 @@ Downloads a sound from the given URL and saves it in the web-sound cache. Any ex
 
 ```lua
 -- Download a sound and play it when ready
-lia.websound.register("alert.mp3", "https://example.com/alert.mp3", function(path)
+lia.websound.register("alert.mp3", "https://example.com/alert.mp3", function(path, fromCache, err)
     if path then
         sound.PlayFile(path, "", function(chan) if chan then chan:Play() end end)
+    else
+        print(err)
     end
 end)
 ```
@@ -67,15 +67,14 @@ end)
 
 **Purpose**
 
-Returns the file path cached with `lia.websound.register`. If the file is
-
-missing `nil` is returned. Both `sound.PlayFile` and `sound.PlayURL` call this
-
-internally when a cached name or matching URL is supplied.
+Returns the file path cached with `lia.websound.register`. The `name` can be
+either the registered file name or the original URL. If the file is missing
+`nil` is returned. Both `sound.PlayFile` and `sound.PlayURL` call this internally
+when a cached name or matching URL is supplied.
 
 **Parameters**
 
-* `name` (*string*): File name used during registration.
+* `name` (*string*): File name or URL used during registration.
 
 **Realm**
 
@@ -103,6 +102,12 @@ end)
 local ply = LocalPlayer()
 ply:EmitSound("https://example.com/alert.mp3")
 ```
+
+---
+
+### Viewing Saved Sounds
+
+Use the `lia_saved_sounds` console command on the client to open a menu listing all cached web sounds for preview and playback.
 
 ---
 
