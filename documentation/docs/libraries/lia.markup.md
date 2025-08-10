@@ -18,8 +18,7 @@ Parses markup text and returns a markup object that handles wrapping and drawing
 
 **Parameters**
 
-* `text` (*string*): Markup string to parse.
-
+* `ml` (*string*): Markup string to parse.
 * `maxwidth` (*number | nil*): Maximum width for wrapping. *Optional*.
 
 **Realm**
@@ -37,9 +36,11 @@ local object = lia.markup.parse("<color=255,0,0>Hello world!</color>", 200)
 print(object:getWidth(), object:getHeight())
 ```
 
+*Supports `<color>`/`<colour>`, `<font>`/`<face>`, and `<img=path,widthxheight>` tags. Named colours such as `red` or `ltgrey` are recognised. When `maxwidth` is provided the text wraps automatically; images default to `16x16` pixels if no size is specified.*
+
 ---
 
-### MarkupObject\:create
+### MarkupObject:create
 
 **Purpose**
 
@@ -69,16 +70,15 @@ local obj = lia.markup.parse("")
 ### MarkupObject fields
 
 * `totalWidth` (*number*) – Total width in pixels of all text blocks.
-
 * `totalHeight` (*number*) – Overall height in pixels.
-
 * `blocks` (*table*) – Internal table describing each parsed block.
-
 * `onDrawText` (*function | nil*) – Callback used by `:draw` when set.
+
+The `onDrawText` callback receives `(text, font, x, y, colour, halign, valign, alphaoverride, block)`.
 
 ---
 
-### MarkupObject\:getWidth
+### MarkupObject:getWidth
 
 **Purpose**
 
@@ -105,7 +105,7 @@ print(obj:getWidth())
 
 ---
 
-### MarkupObject\:getHeight
+### MarkupObject:getHeight
 
 **Purpose**
 
@@ -132,7 +132,7 @@ print(obj:getHeight())
 
 ---
 
-### MarkupObject\:size
+### MarkupObject:size
 
 **Purpose**
 
@@ -159,7 +159,7 @@ local w, h = obj:size()
 
 ---
 
-### MarkupObject\:draw
+### MarkupObject:draw
 
 **Purpose**
 
@@ -167,15 +167,11 @@ Draws the markup object at the specified screen position.
 
 **Parameters**
 
-* `x` (*number*): X position.
-
-* `y` (*number*): Y position.
-
-* `halign` (*number | nil*): Horizontal alignment. *Optional*.
-
-* `valign` (*number | nil*): Vertical alignment. *Optional*.
-
-* `alphaoverride` (*number | nil*): Alpha override. *Optional*.
+* `xOffset` (*number*): X position.
+* `yOffset` (*number*): Y position.
+* `halign` (*number | nil*): Horizontal alignment (`1` centre, `2` right). *Optional*.
+* `valign` (*number | nil*): Vertical alignment (`1` centre, `3` bottom). *Optional*.
+* `alphaoverride` (*number | nil*): Overrides the alpha channel. *Optional*.
 
 **Realm**
 
@@ -203,7 +199,7 @@ end)
 
 ---
 
-### liaMarkupPanel\:setMarkup
+### liaMarkupPanel:setMarkup
 
 **Purpose**
 
@@ -212,7 +208,6 @@ Configures a `liaMarkupPanel` to display markup text with an optional custom dra
 **Parameters**
 
 * `text` (*string*): Markup to render.
-
 * `onDrawText` (*function | nil*): Callback executed before each block is drawn. *Optional*.
 
 **Realm**
@@ -231,7 +226,7 @@ panel:SetWide(300)
 
 panel:setMarkup(
     "<font=liaMediumFont>Hi there!</font>",
-    function(text, font, x, y, colour)
+    function(text, font, x, y, colour, halign, valign, alpha, block)
         draw.SimpleText(text, font, x, y, colour)
     end
 )
