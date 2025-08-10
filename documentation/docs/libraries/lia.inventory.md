@@ -6,7 +6,7 @@ This page documents inventory handling functions.
 
 ## Overview
 
-The inventory library manages item containers and grid inventories. It supports registering new inventory types and handles item transfers between them.
+The inventory library manages item containers and grid inventories. It maintains a registry of inventory types in `lia.inventory.types` and caches loaded inventories in `lia.inventory.instances`. New inventory types can be registered and item transfers between inventories are handled automatically.
 
 ---
 
@@ -21,7 +21,7 @@ Registers a new inventory type and validates that the structure matches
 
 * `typeID` (*string*): Unique identifier. Must not already be registered.
 
-* `invTypeStruct` (*table*): Definition matching `InvTypeStructType`.
+* `invTypeStruct` (*table*): Definition matching `InvTypeStructType`. Must include `__index`, `typeID`, and `className`; server-side definitions may also provide `add`, `remove`, and `sync` functions.
 
 **Realm**
 
@@ -77,15 +77,13 @@ local inv = lia.inventory.new("bag")
 
 **Purpose**
 
-Loads an inventory by ID, using a cached instance when available or falling
-back to any custom loader defined by the inventory type.
+Loads an inventory by ID, using a cached instance when available or falling back to any custom loader defined by the inventory type.
 
 **Parameters**
 
-* `id` (*number*): Non-negative inventory ID.
+* `id` (*number*): Non-negative inventory ID. Throws an error if invalid.
 
-* `noCache` (*boolean*): Optional. When `true`, bypasses the cache. Defaults to
-  `false`.
+* `noCache` (*boolean*): Optional. When `true`, bypasses the cache. Defaults to `false`.
 
 **Realm**
 
@@ -113,16 +111,13 @@ end)
 
 **Purpose**
 
-Default SQL loader used by `lia.inventory.loadByID` when no custom loader is
-provided. Populates inventory data and items from the database and caches the
-result.
+Default SQL loader used by `lia.inventory.loadByID` when no custom loader is provided. Populates inventory data and items from the database, caches the result, and returns any cached instance unless `noCache` is `true`.
 
 **Parameters**
 
 * `id` (*number*): Non-negative inventory ID.
 
-* `noCache` (*boolean*): Optional. When `true`, bypasses the cache. Defaults to
-  `false`.
+* `noCache` (*boolean*): Optional. When `true`, bypasses the cache. Defaults to `false`.
 
 **Realm**
 
@@ -130,7 +125,7 @@ result.
 
 **Returns**
 
-* *deferred*: Resolves to the inventory or `nil` if not found.
+* *deferred*: Resolves to the inventory or `nil` if not found. Returns `nil` if the inventory type is missing.
 
 **Example Usage**
 
@@ -155,10 +150,9 @@ the result.
 
 **Parameters**
 
-* `typeID` (*string*): Inventory type identifier.
+* `typeID` (*string*): Inventory type identifier. Must refer to a registered type.
 
-* `initialData` (*table*): Optional initial data. Defaults to an empty table and
-  must be a table if provided.
+* `initialData` (*table*): Optional initial data. Defaults to an empty table and must be a table if provided.
 
 **Realm**
 
@@ -182,8 +176,7 @@ end)
 
 **Purpose**
 
-Loads every inventory that belongs to a character. If `charID` cannot be
-converted to a number the returned deferred is rejected.
+Loads every inventory that belongs to a character. If `charID` cannot be converted to a number the returned deferred is rejected and an error is logged.
 
 **Parameters**
 
@@ -294,3 +287,4 @@ if inv then
     local panel = lia.inventory.show(inv)
 end
 ```
+
