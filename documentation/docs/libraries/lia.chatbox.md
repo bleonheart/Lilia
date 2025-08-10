@@ -33,7 +33,10 @@ print(icClass.format)
 
 **Purpose**
 
-Returns a formatted timestamp if chat timestamps are enabled; otherwise returns an empty string.
+Returns a `"(hour)"` timestamp when `lia.option.ChatShowTime` is enabled.
+For OOC messages a leading space is added and no trailing space is used; IC
+messages get a trailing space. When timestamps are disabled an empty string is
+returned.
 
 **Parameters**
 
@@ -71,25 +74,27 @@ Registers a new chat class and sets up its command aliases.
 
   * `desc` (string) – Description of the command shown in menus.
 
-  * `prefix` (string | table) – Command prefixes that trigger this chat type.
+  * `prefix` (string | table) – Command prefixes that trigger this chat type. Slashless
+    variants are automatically added.
 
-  * `radius` (number | function) – Hearing range or custom range logic.
+  * `radius` (number | function) – Hearing range or custom range logic. Used to
+    generate `onCanHear` when that callback is not supplied.
 
-  * `onCanHear` (function | number) – Determines if a listener can see the message.
+  * `onCanHear` (function | number) – Determines if a listener can see the
+    message. Supplying a number is treated as a radius in units.
 
   * `onCanSay` (function) – Called before sending to verify the speaker may talk.
+    The default blocks dead players unless `deadCanChat` is `true`.
 
   * `onChatAdd` (function) – Client-side handler for displaying the text.
 
-  * `onGetColor` (function) – Returns a `Color` for the message.
-
-  * `color` (Color) – Default colour for the fallback `onChatAdd`.
+  * `color` (Color) – Default colour for the fallback `onChatAdd`. Defaults to
+    `Color(242, 230, 160)`.
 
   * `format` (string) – Format string used by the fallback `onChatAdd`.
 
-  * `filter` (string) – Chat filter category used by the chat UI.
-
-  * `font` (string) – Font name used when rendering the message.
+  * `filter` (string) – Chat filter category used by the chat UI. Defaults to
+    `"ic"`.
 
   * `noSpaceAfter` (boolean) – Allows prefixes without a trailing space.
 
@@ -112,7 +117,6 @@ lia.chat.register("wave", {
     arguments = {{name = "text", type = "string", optional = true}},
     format = "* %s waves",
     prefix = {"/wave", "/greet"},
-    font = "liaChatFontItalics",
     filter = "actions",
     radius = lia.config.get("ChatRange", 280)
 })
@@ -125,6 +129,9 @@ lia.chat.register("wave", {
 **Purpose**
 
 Parses chat text, determines the appropriate chat type, and optionally sends it.
+Results are passed through the `ChatParsed` hook, allowing modification of the
+chat type, text, or anonymity. When run on the server and `noSend` is `false`,
+the message is forwarded to `lia.chat.send` after the `PlayerMessageSend` hook.
 
 **Parameters**
 
@@ -146,6 +153,8 @@ Parses chat text, determines the appropriate chat type, and optionally sends it.
 
 * *boolean*: Whether the speaker is anonymous.
 
+Returns `nil` if the message contains only whitespace.
+
 **Example Usage**
 
 ```lua
@@ -164,6 +173,8 @@ end)
 **Purpose**
 
 Broadcasts a chat message to all eligible receivers.
+It respects the chat class's `onCanSay` and `onCanHear` logic and passes text
+through the `PlayerMessageSend` hook before networking.
 
 **Parameters**
 
@@ -193,3 +204,4 @@ if IsValid(target) then
     lia.chat.send(client, "ic", "Hello", false, { target })
 end
 ```
+
