@@ -14,7 +14,7 @@ The networking library synchronises data between the server and clients. It wrap
 
 **Purpose**
 
-Registers a handler that rebuilds large tables sent over the network in multiple compressed chunks.
+Registers a handler that rebuilds large tables sent over the network in multiple compressed chunks. Clients acknowledge each chunk so the sender can throttle transmission.
 
 **Parameters**
 
@@ -51,17 +51,17 @@ end)
 
 **Purpose**
 
-Splits a table into compressed chunks and streams it to one or more players. Used in conjunction with `lia.net.readBigTable`.
+Splits a table into compressed chunks and streams it to one or more players. Used in conjunction with `lia.net.readBigTable`. Aborts if the table is not serialisable or cannot be compressed.
 
 **Parameters**
 
-* `targets` (*Player | Player[] | nil*): Recipient(s); `nil` sends to all players.
+* `targets` (*Player | Player[] | nil*): Recipient(s); `nil` streams to all human players.
 
 * `netStr` (*string*): Network message identifier.
 
 * `tbl` (*table*): Data to send. Must be JSON-serialisable (no functions).
 
-* `chunkSize` (*number | nil*): Optional bytes per chunk (default `2048`, clamped `256`–`4096`).
+* `chunkSize` (*number | nil*): Optional bytes per chunk (default `2048`, clamped to the range `256`–`4096`).
 
 **Realm**
 
@@ -89,7 +89,7 @@ lia.net.writeBigTable(player, "MyData", data, 1024)
 
 **Purpose**
 
-Recursively validates a value before it is networked, ensuring neither it nor any nested key or value is a function.
+Recursively validates a value before it is networked, ensuring neither it nor any nested key or value is a function. Any disallowed value triggers `lia.error` with a translated message.
 
 **Parameters**
 
@@ -119,7 +119,7 @@ end
 
 **Purpose**
 
-Stores a value in `lia.net.globals` and broadcasts the change, optionally restricting it to a receiver. Disallowed types are rejected.
+Stores a value in `lia.net.globals` and broadcasts the change, optionally restricting it to a receiver. Disallowed types are rejected, and no network message is sent if the value has not changed. The `NetVarChanged` hook is fired after successful updates.
 
 **Parameters**
 
