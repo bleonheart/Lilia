@@ -6,7 +6,7 @@ This page lists time- and date-utilities.
 
 ## Overview
 
-The time library formats dates and converts relative times using Lua's built‑in `os.date` and `os.time` functions. It provides helpers for phrases such as “time since.”
+The time library formats dates and converts relative times using Lua's built-in `os.date` and `os.time` functions. It provides helpers for phrases such as "time since."
 
 ---
 
@@ -14,15 +14,15 @@ The time library formats dates and converts relative times using Lua's built‑i
 
 **Purpose**
 
-Returns a human-readable string describing how long ago a given time occurred (e.g. “5 minutes ago”).
+Returns a localized string describing how long ago a given time occurred (for example, "5 minutes ago").
 
 **Parameters**
 
-* `strTime` (*string | number*): Timestamp to measure from.
+* `strTime` (*number | string*): Time to measure from.
 
-  * Strings must use `YYYY-MM-DD` (or `YYYY-MM-DD HH:MM:SS`).
+  * Numbers are UNIX timestamps.
 
-  * Numbers are standard UNIX timestamps.
+  * Strings are parsed with `lia.time.ParseTime` and must yield `year`, `month`, and `day`. Only the date portion is used.
 
 **Realm**
 
@@ -30,7 +30,7 @@ Returns a human-readable string describing how long ago a given time occurred (e
 
 **Returns**
 
-* *string*: Readable “time since” string.
+* *string*: Localized "time since" string.
 
 **Example Usage**
 
@@ -50,13 +50,18 @@ hook.Add("PlayerInitialSpawn", "welcomeLastSeen", function(ply)
 end)
 ```
 
+**Edge Cases**
+
+* Returns `L("invalidDate")` if the string cannot be parsed.
+* Returns `L("invalidInput")` for non-number, non-string inputs.
+
 ---
 
 ### lia.time.toNumber
 
 **Purpose**
 
-Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. If no argument is given, returns the current time table.
+Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. If no argument is given, uses the current time.
 
 **Parameters**
 
@@ -68,7 +73,7 @@ Parses a timestamp string (`YYYY-MM-DD HH:MM:SS`) into its numeric components. I
 
 **Returns**
 
-* *table*: `{ year, month, day, hour, min, sec }`.
+* *table*: `{ year, month, day, hour, min, sec }` — keys are numbers. No validation is performed on the input string.
 
 **Example Usage**
 
@@ -93,9 +98,9 @@ end
 
 Returns the full current date/time using the `AmericanTimeStamps` config:
 
-* **Enabled**: `"Weekday, Month DD, YYYY, HH:MM:SSam/pm"`
+* **Enabled**: `"Weekday, Month DD, YYYY, HH:MM:SSam/pm"` (12-hour clock)
 
-* **Disabled**: `"Weekday, DD Month YYYY, HH:MM:SS"`
+* **Disabled**: `"Weekday, DD Month YYYY, HH:MM:SS"` (24-hour clock)
 
 **Parameters**
 
@@ -123,15 +128,42 @@ end)
 
 ---
 
+### lia.time.formatDHM
+
+**Purpose**
+
+Formats a number of seconds into a localized string describing days, hours, and minutes.
+
+**Parameters**
+
+* `seconds` (*number*): Seconds to convert. Negative or `nil` values are treated as `0`.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* *string*: Localized "X days Y hours Z minutes" string.
+
+**Example Usage**
+
+```lua
+-- Display a ban length
+print(lia.time.formatDHM(90061)) -- "1 days 1 hours 1 minutes"
+```
+
+---
+
 ### lia.time.GetHour
 
 **Purpose**
 
 Returns the current hour formatted by `AmericanTimeStamps`:
 
-* **Enabled** → `"Ham"` / `"Hpm"` (12-hour clock)
+* **Enabled** → string in the format `"Ham"`/`"Hpm"` (e.g. `"3pm"`)
 
-* **Disabled** → `H` (0 – 23, 24-hour clock)
+* **Disabled** → integer `0–23` (24-hour clock)
 
 **Parameters**
 
@@ -143,7 +175,7 @@ Returns the current hour formatted by `AmericanTimeStamps`:
 
 **Returns**
 
-* *string | number*: Hour with suffix (am/pm) or 24-hour integer.
+* *string | number*: Hour with suffix (`"am"`/`"pm"`) or 24-hour integer.
 
 **Example Usage**
 
