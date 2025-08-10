@@ -6,8 +6,7 @@ This page documents the functions for working with character attributes.
 
 ## Overview
 
-The attributes library loads attribute definitions from Lua files, keeps track of character values, and provides helper
-methods for modifying them. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When
+The attributes library loads attribute definitions from Lua files and provides helpers for initializing them on a character. Each attribute is defined on a global `ATTRIBUTE` table inside its own file. When
 `lia.attribs.loadFromDir` is called, each file is included in the shared realm, the attribute's name and description are
 localized (defaulting to `L("unknown")` and `L("noDesc")` when absent), and the definition is stored in `lia.attribs.list`
 using the file name without extension as the key. Files beginning with `sh_` have the prefix removed and the key

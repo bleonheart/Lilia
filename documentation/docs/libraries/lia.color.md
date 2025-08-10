@@ -44,7 +44,7 @@ local c = lia.color.stored.myPurple
 
 **Purpose**
 
-Creates a new `Color` based on the input color with the given channel offsets. Each component is clamped between 0 and 255. If the base color lacks an alpha channel, `255` is assumed. `aOffset` defaults to `0`.
+Creates a new `Color` based on the input color with the given channel offsets. `rOffset`, `gOffset`, and `bOffset` must be numbers. Each component is clamped between 0 and 255. If the base color lacks an alpha channel, `255` is assumed. `aOffset` defaults to `0`.
 
 **Parameters**
 
@@ -82,7 +82,7 @@ local moreOpaque = lia.color.Adjust(lia.color.stored.blue, 0, 0, 0, 50)
 
 **Purpose**
 
-Builds and returns a UI palette derived from the config’s base color.
+Builds and returns a UI palette derived from the config’s base color obtained via `lia.config.get("Color")`.
 
 **Parameters**
 
