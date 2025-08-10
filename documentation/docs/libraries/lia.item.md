@@ -354,7 +354,7 @@ Returns an inventory table by its ID from `lia.inventory.instances`.
 
 **Parameters**
 
-* `id` (*number*): Inventory ID.
+* `invID` (*number*): Inventory ID.
 
 **Realm**
 
@@ -510,7 +510,7 @@ Asynchronously creates a new inventory of a given type for a character owner and
 
 **Realm**
 
-`Shared`
+`Server`
 
 **Returns**
 
@@ -666,7 +666,8 @@ Sets a key/value pair in an item’s `data` table by ID, optionally saving, noti
 
 **Returns**
 
-* *boolean, string?*: `true` on success, otherwise `false` and error.
+* *boolean*: `true` on success, `false` otherwise.
+* `string | nil`: Error message when unsuccessful.
 
 **Example Usage**
 
@@ -781,7 +782,7 @@ Creates a new item instance and spawns a matching entity at a position/angle in 
 
 * `position` (*Vector*): World position.
 
-* `callback` (*function*): Receives `(item, ent)`. *Optional*.
+* `callback` (*function*): Receives the spawned item. *Optional*.
 
 * `angles` (*Angle*): Spawn angles. *Optional*.
 
@@ -798,8 +799,8 @@ Creates a new item instance and spawns a matching entity at a position/angle in 
 **Example Usage**
 
 ```lua
-lia.item.spawn("testItem", vector_origin, function(item, ent)
-    print("Spawned", item.uniqueID, "at", ent:GetPos())
+lia.item.spawn("testItem", vector_origin, function(item)
+    print("Spawned", item.uniqueID, "at", item.entity:GetPos())
 end)
 ```
 
