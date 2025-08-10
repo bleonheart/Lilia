@@ -21,6 +21,8 @@ Panels provide the building blocks for Lilia's user interface. Most derive from 
 | `liaModelPanel` | `DModelPanel` | Model viewer with custom lighting. |
 | `FacingModelPanel` | `DModelPanel` | Model viewer locked to the head angle. |
 | `DProgressBar` | `DPanel` | Generic progress bar for timed actions. |
+| `DTooltip` | `DLabel` | Tooltip that positions itself near a target panel. |
+| `DProperties` | `Panel` | Lightweight property grid with categories. |
 | `liaNotice` | `DLabel` | Small blur-backed notification label. |
 | `noticePanel` | `DPanel` | Larger notification with optional buttons. |
 | `liaChatBox` | `DPanel` | Custom chat box with commands and tabs. |
@@ -152,7 +154,57 @@ Variant of `liaModelPanel` that locks the camera to the model's head bone, ideal
 
 **Description:**
 
-Simple progress bar panel. Update its fraction each frame to visually represent timed actions.
+Simple progress bar widget. It draws a coloured bar and overlay text, filling based on a `Fraction` value.
+
+**Functions:**
+
+- `SetFraction(f)` – sets the completion from `0` to `1` (default `0`).
+- `SetProgress(startTime, endTime)` – stores a time range; helper for external update logic.
+- `SetText(text)` – caption displayed over the bar (default `"actionInProgress"`).
+- `SetBarColor(col)` – overrides the bar colour (defaults to the config colour).
+
+**Example Usage:**
+
+```lua
+local bar = vgui.Create("DProgressBar")
+bar:SetFraction(0.5)
+```
+
+---
+
+### `DTooltip`
+
+**Base Panel:**
+
+`DLabel`
+
+**Description:**
+
+Tooltip that anchors to a target panel and can host custom content.
+
+**Functions:**
+
+- `SetContents(panel, delete)` – embeds `panel` inside the tooltip; remove it when closed if `delete` is true.
+- `OpenForPanel(panel)` – positions and shows the tooltip near `panel`.
+- `Close()` – hides the tooltip and releases any child panel.
+
+---
+
+### `DProperties`
+
+**Base Panel:**
+
+`Panel`
+
+**Description:**
+
+Lightweight property grid made of expandable categories and rows.
+
+**Functions:**
+
+- `GetCategory(name, create)` – fetches or optionally creates a category panel.
+- `CreateRow(category, name)` – adds a property row to `category` and returns it.
+- `Clear()` – removes all categories and rows.
 
 ---
 
@@ -198,7 +250,20 @@ In-game chat window supporting multiple tabs, command prefix detection and color
 
 **Description:**
 
-Improved spawn icon built on `DModelPanel`. It centers models and applies good lighting for use in inventories or lists.
+Improved spawn icon built on `DModelPanel`. It recenters models, adjusts lighting and FOV and supports hiding via a helper.
+
+**Functions:**
+
+- `SetModel(model, skin)` – positions the camera using `PositionSpawnIcon` and optionally applies a skin.
+- `setHidden(state)` – toggles ambient light and colour to hide or reveal the model.
+- `OnMousePressed()` – forwards clicks to `DoClick` if present.
+
+**Example Usage:**
+
+```lua
+local icon = vgui.Create("liaSpawnIcon")
+icon:SetModel("models/props_junk/watermelon01.mdl")
+```
 
 ---
 
@@ -222,7 +287,15 @@ HUD element that lists players using voice chat. Each entry fades out after a pl
 
 **Description:**
 
-Container that arranges child panels in a single row. Often paired with a custom scrollbar when content overflows.
+Container that arranges child panels in a single row and scrolls horizontally when content exceeds the width.
+
+**Functions:**
+
+- `AddItem(panel)` – parents `panel` to the internal canvas.
+- `GetHBar()` – returns the companion scrollbar panel.
+- `ScrollToChild(child)` – animates the bar to centre on `child`.
+- `Clear()` – removes all child panels.
+- `SetPadding(p)` – sets outer padding around the canvas (default `0`).
 
 ---
 
@@ -234,7 +307,11 @@ Container that arranges child panels in a single row. Often paired with a custom
 
 **Description:**
 
-Custom scrollbar paired with `liaHorizontalScroll`. It moves the canvas horizontally when items overflow.
+Custom horizontal scrollbar used by `liaHorizontalScroll`.
+
+**Functions:**
+
+- `SetScroll(offset)` – manually position the scroll offset.
 
 ---
 
@@ -254,6 +331,12 @@ if IsValid(liaItemMenuInstance) then liaItemMenuInstance:Remove() end
 liaItemMenuInstance = vgui.Create("liaItemMenu")
 liaItemMenuInstance:SetEntity(entity)
 ```
+
+**Functions:**
+
+- `SetEntity(ent)` – associates the menu with an item entity and populates its buttons.
+- `addBtn(text, cb)` – helper to insert an action button that runs `cb` when clicked.
+- `openInspect()` – opens a separate model viewer for the item.
 
 ---
 
@@ -302,6 +385,12 @@ Represents a single attribute with its description and current points, including
 **Description:**
 
 Spawn icon specialised for Lilia item tables. Displays custom tooltips and supports right-click menus.
+
+**Functions:**
+
+- `setItemType(idOrUniqueID)` – loads item data and sets the icon's model or texture.
+- `openActionMenu()` – builds and shows the item interaction menu.
+- `getItem()` – returns the associated item table for the icon.
 
 ---
 
