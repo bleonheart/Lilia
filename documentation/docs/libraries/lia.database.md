@@ -162,7 +162,7 @@ Inserts a row into a table using key-value pairs.
 
 * `callback` (*function*): Function called after the insert.
 
-* `dbTable` (*string*): Table name **without** the `lia_` prefix.
+* `dbTable` (*string*): Table name **without** the `lia_` prefix. Defaults to `"characters"`.
 
 **Realm**
 
@@ -194,7 +194,7 @@ Updates one or more rows according to a condition.
 
 * `callback` (*function*): Function called after update.
 
-* `dbTable` (*string*): Table name **without** `lia_`.
+* `dbTable` (*string*): Table name **without** `lia_`. Defaults to `"characters"`.
 
 * `condition` (*string*): SQL `WHERE` clause.
 
@@ -226,7 +226,7 @@ Selects rows, optionally filtered and limited, returning a deferred.
 
 * `fields` (*table | string*): Columns to select.
 
-* `dbTable` (*string*): Table name without `lia_`.
+* `dbTable` (*string*): Table name without `lia_`. Defaults to `"characters"`.
 
 * `condition` (*string*): SQL condition (`WHERE`).
 
@@ -260,7 +260,7 @@ Inserts or updates a row depending on unique-key conflict. Returns a deferred.
 
 * `value` (*table*): Columns and values.
 
-* `dbTable` (*string*): Table name without `lia_`.
+* `dbTable` (*string*): Table name without `lia_`. Defaults to `"characters"`.
 
 **Realm**
 
@@ -286,7 +286,7 @@ Deletes rows matching a condition; deletes all rows if no condition.
 
 **Parameters**
 
-* `dbTable` (*string*): Table name without `lia_`.
+* `dbTable` (*string*): Table name without `lia_`. Defaults to `"character"`.
 
 * `condition` (*string*): SQL condition.
 
@@ -533,7 +533,7 @@ Attempts to insert a row; silently ignores unique-key violation.
 
 * `value` (*table*): Row data.
 
-* `dbTable` (*string*): Table name without `lia_`.
+* `dbTable` (*string*): Table name without `lia_`. Defaults to `"characters"`.
 
 **Realm**
 
@@ -548,6 +548,34 @@ Attempts to insert a row; silently ignores unique-key violation.
 ```lua
 lia.db.insertOrIgnore({ id = 1, name = "Bob" }, "characters"):next(function(r)
     print("Insert ID:", r.lastID)
+end)
+```
+
+---
+
+### lia.db.getTables
+
+**Purpose**
+
+Lists all tables in the database that start with `lia_`.
+
+**Parameters**
+
+* *None*
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+* *deferred*: Resolves with an array of table names.
+
+**Example Usage**
+
+```lua
+lia.db.getTables():next(function(tables)
+    PrintTable(tables)
 end)
 ```
 
