@@ -88,9 +88,7 @@ local function getPrivilegeCategory(privilegeName)
     }
 
     if not privilegeName then return L("unassigned") end
-    if lia.administrator and lia.administrator.privilegeCategories and lia.administrator.privilegeCategories[privilegeName] then
-        return L(lia.administrator.privilegeCategories[privilegeName])
-    end
+    if lia.administrator and lia.administrator.privilegeCategories and lia.administrator.privilegeCategories[privilegeName] then return L(lia.administrator.privilegeCategories[privilegeName]) end
     if lia.command and lia.command.list and lia.command.list[privilegeName] then return L("commands") end
     if lia.module and lia.module.list then
         for _, module in pairs(lia.module.list) do
@@ -355,9 +353,7 @@ function lia.administrator.registerPrivilege(priv)
     if lia.administrator.privileges[id] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[id] = min
-    if priv.Category then
-        lia.administrator.privilegeCategories[id] = priv.Category
-    end
+    if priv.Category then lia.administrator.privilegeCategories[id] = priv.Category end
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms

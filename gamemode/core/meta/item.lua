@@ -975,9 +975,8 @@ if SERVER then
         hook.Run("PrePlayerInteractItem", client, action, self)
         local result
         if isfunction(self.hooks[action]) then result = self.hooks[action](self, data) end
-
         if result == nil then
-            local isMulti = callback.isMulti or (callback.multiOptions and istable(callback.multiOptions))
+            local isMulti = callback.isMulti or callback.multiOptions and istable(callback.multiOptions)
             if isMulti and isstring(data) and callback.multiOptions then
                 local optionFunc = callback.multiOptions[data]
                 if optionFunc then
@@ -985,9 +984,7 @@ if SERVER then
                         result = optionFunc(self)
                     elseif istable(optionFunc) then
                         local runFunc = optionFunc[1] or optionFunc.onRun
-                        if isfunction(runFunc) then
-                            result = runFunc(self)
-                        end
+                        if isfunction(runFunc) then result = runFunc(self) end
                     end
                 end
             elseif isfunction(callback.onRun) then

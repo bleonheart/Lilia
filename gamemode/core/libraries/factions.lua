@@ -568,18 +568,15 @@ if CLIENT then
         local data = lia.faction.indices[faction]
         if data then
             if data.isDefault then return true end
-            
             if faction == FACTION_STAFF then
                 local hasPriv = LocalPlayer():hasPrivilege("createStaffCharacter")
-                
                 if not (lia.administrator.privileges and lia.administrator.privileges["createStaffCharacter"]) then
                     lia.information(L("privilegeNotExist", "createStaffCharacter"))
-                    if IsValid(LocalPlayer()) and LocalPlayer().notifyLocalized then
-                        LocalPlayer():notifyLocalized("privilegeNotExist", "createStaffCharacter")
-                    end
+                    if IsValid(LocalPlayer()) and LocalPlayer().notifyLocalized then LocalPlayer():notifyLocalized("privilegeNotExist", "createStaffCharacter") end
                 end
                 return hasPriv
             end
+
             local liaData = lia.localData and lia.localData.whitelists or {}
             return liaData[SCHEMA.folder] and liaData[SCHEMA.folder][data.uniqueID] or false
         end
