@@ -812,7 +812,7 @@ Sends a plain notification message to the player.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -842,7 +842,7 @@ Sends a localized notification to the player.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -870,7 +870,7 @@ Determines whether the player can edit the given vendor.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -882,33 +882,6 @@ Determines whether the player can edit the given vendor.
 if player:CanEditVendor(vendor) then
     vendor:OpenEditor(player)
 end
-```
-
----
-
-### isUser
-
-**Purpose**
-
-Convenience wrapper to check if the player is in the `"user"` group.
-
-**Parameters**
-
-* None
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-* `boolean`: Whether usergroup is `"user"`.
-
-**Example Usage**
-
-```lua
--- Check if the player belongs to the default user group
-local result = player:isUser()
 ```
 
 ---
@@ -1002,7 +975,7 @@ Checks if the player's character belongs to the given faction.
 
 **Parameters**
 
-* `faction` (`number`): Faction index to compare.
+* `faction` (`string`): Faction name to compare.
 
 **Realm**
 
@@ -1029,7 +1002,7 @@ Returns `true` if the player's character is of the given class.
 
 **Parameters**
 
-* `class` (`number`): Class index to compare.
+* `class` (`string`): Class name to compare.
 
 **Realm**
 
@@ -1056,7 +1029,7 @@ Determines if the player has whitelist access for a faction.
 
 **Parameters**
 
-* `faction` (`number`): Faction index.
+* `faction` (`string`): Faction name.
 
 **Realm**
 
@@ -1079,7 +1052,7 @@ local result = player:hasWhitelist(faction)
 
 **Purpose**
 
-Retrieves the class index of the player's character.
+Retrieves the class name of the player's character.
 
 **Parameters**
 
@@ -1091,7 +1064,7 @@ Retrieves the class index of the player's character.
 
 **Returns**
 
-* `number|nil`: Class index or nil.
+* `string|nil`: Class name or nil.
 
 **Example Usage**
 
@@ -1110,7 +1083,7 @@ Checks if the player's character is whitelisted for a class.
 
 **Parameters**
 
-* `class` (`number`): Class index.
+* `class` (`string`): Class name.
 
 **Realm**
 
@@ -1365,7 +1338,7 @@ Increases the player's stamina value.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -1392,7 +1365,7 @@ Reduces the player's stamina value.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -1419,7 +1392,7 @@ Adds funds to the player's character, clamping to limits.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -1804,7 +1777,7 @@ Retrieves a stored value from the player's data table.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -1832,7 +1805,7 @@ Alias of `getLiliaData`.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -1858,7 +1831,7 @@ Returns the entire table of persistent data for the player.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -2251,7 +2224,7 @@ Calculates how long the player has been on the server.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -2261,6 +2234,32 @@ Calculates how long the player has been on the server.
 
 ```lua
 print(player:getPlayTime())
+```
+
+---
+
+### getSessionTime
+
+**Purpose**
+
+Returns the player's current session time.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `number`: Seconds elapsed since joining this session.
+
+**Example Usage**
+
+```lua
+local sessionTime = player:getSessionTime()
 ```
 
 ---
@@ -2277,7 +2276,7 @@ Returns the player's total online time across all sessions.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -2303,7 +2302,7 @@ Returns how long ago the player was last seen online.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -2329,7 +2328,7 @@ Provides the timestamp of the player's last connection.
 
 **Realm**
 
-`Server`
+`Shared`
 
 **Returns**
 
@@ -2339,6 +2338,34 @@ Provides the timestamp of the player's last connection.
 
 ```lua
 local ts = player:getLastOnlineTime()
+```
+
+---
+
+### playTimeGreaterThan
+
+**Purpose**
+
+Checks if the player's accumulated play time exceeds a given threshold.
+
+**Parameters**
+
+* `time` (`number`): Time in seconds to compare against.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `boolean`: `true` if total play time is greater than `time`.
+
+**Example Usage**
+
+```lua
+if player:playTimeGreaterThan(3600) then
+    print("Player has more than an hour of playtime")
+end
 ```
 
 ---
@@ -2511,6 +2538,32 @@ print(LocalPlayer():getPlayTime())
 
 ---
 
+### getSessionTime
+
+**Purpose**
+
+Returns the current session duration on the client.
+
+**Parameters**
+
+* None
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+* `number`: Seconds since the client joined.
+
+**Example Usage**
+
+```lua
+print(LocalPlayer():getSessionTime())
+```
+
+---
+
 ### getTotalOnlineTime
 
 **Purpose**
@@ -2585,6 +2638,34 @@ Gives the Unix timestamp of the player's last session end.
 
 ```lua
 local last = LocalPlayer():getLastOnlineTime()
+```
+
+---
+
+### playTimeGreaterThan
+
+**Purpose**
+
+Checks if the client's total play time exceeds a duration.
+
+**Parameters**
+
+* `time` (`number`): Time threshold in seconds.
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+* `boolean`: `true` if play time is greater than `time`.
+
+**Example Usage**
+
+```lua
+if LocalPlayer():playTimeGreaterThan(3600) then
+    print("More than an hour played")
+end
 ```
 
 ---
@@ -2793,134 +2874,3 @@ LocalPlayer():NetworkAnimation(true, {
 
 ---
 
-### getParts
-
-**Purpose**
-
-Returns the table of PAC3 part IDs currently attached to the player.
-
-**Parameters**
-
-* None
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-* `table`: Mapping of active part IDs.
-
-**Example Usage**
-
-```lua
-for id in pairs(player:getParts()) do
-    print("equipped part", id)
-end
-```
-
----
-
-### syncParts
-
-**Purpose**
-
-Sends the player's PAC3 part data to their client.
-
-**Parameters**
-
-* None
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* `nil`: This function does not return a value.
-
-**Example Usage**
-
-```lua
-player:syncParts()
-```
-
----
-
-### addPart
-
-**Purpose**
-
-Adds the given PAC3 part to the player and broadcasts it.
-
-**Parameters**
-
-* `partID` (`string`): Identifier of the part to attach.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* `nil`: This function does not return a value.
-
-**Example Usage**
-
-```lua
-player:addPart("hat_01")
-```
-
----
-
-### removePart
-
-**Purpose**
-
-Removes a previously added PAC3 part from the player.
-
-**Parameters**
-
-* `partID` (`string`): Identifier of the part to remove.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* `nil`: This function does not return a value.
-
-**Example Usage**
-
-```lua
-player:removePart("hat_01")
-```
-
----
-
-### resetParts
-
-**Purpose**
-
-Clears all PAC3 parts that are currently attached to the player.
-
-**Parameters**
-
-* None
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* `nil`: This function does not return a value.
-
-**Example Usage**
-
-```lua
-player:resetParts()
-```
-
----
