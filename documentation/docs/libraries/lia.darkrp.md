@@ -14,7 +14,7 @@ The `darkrp` library bridges functionality with the DarkRP gamemode. It mirrors 
 
 **Purpose**
 
-Checks whether a position is free of solid contents, players, NPCs, and props within a 35-unit sphere.
+Checks whether a position is free of solid contents, players, NPCs, props, and entities flagged with `NotEmptyPos` within a 35-unit sphere.
 
 **Parameters**
 
@@ -45,7 +45,7 @@ end
 
 **Purpose**
 
-Searches around a start position for a spot free of world geometry and blocking entities.
+Searches around a start position for a spot free of world geometry and blocking entities. Both the starting position and the position offset by `checkArea` must be clear. The search steps outward along the positive and negative X, Y, and Z axes.
 
 **Parameters**
 
@@ -111,7 +111,7 @@ lia.darkrp.notify(ply, nil, nil, "jobChanged")
 
 **Purpose**
 
-Client-side helper that wraps a string so it fits within a given pixel width using the provided font. Long words are wrapped character-by-character if necessary.
+Client-side helper that wraps a string so it fits within a given pixel width using the provided font. Long words are wrapped character-by-character if necessary. Existing newline or tab characters reset the line width calculation.
 
 **Parameters**
 
