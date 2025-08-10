@@ -6,7 +6,7 @@ This page lists helper functions for working with colors.
 
 ## Overview
 
-The color library centralizes color utilities used throughout the UI. It provides helpers for registering reusable colors, adjusting their channels to create variants, and fetching the main palette from the configuration. Many common color names are pre-registered and stored in `lia.color.stored`.
+The color library centralizes color utilities used throughout the UI. It provides helpers for registering reusable colors, adjusting their channels to create variants, and fetching the main palette from the configuration. Many common color names are pre-registered and stored in `lia.color.stored`. Registered names can also be passed to the client-side global `Color` function to retrieve the corresponding color (unknown names return pure white).
 
 ---
 
@@ -34,8 +34,8 @@ Registers a named color for later lookup by string name.
 
 ```lua
 -- Register a custom purple shade and fetch it later
-lia.color.register("myPurple", { 128, 0, 180 })
-local c = lia.color.stored.myPurple
+lia.color.register("myPurple", {128, 0, 180})
+local c = lia.color.stored.mypurple
 ```
 
 ---
