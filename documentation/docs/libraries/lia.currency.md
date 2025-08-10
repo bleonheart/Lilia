@@ -6,7 +6,7 @@ This page covers money and currency related helpers.
 
 ## Overview
 
-The currency library formats money amounts, spawns physical money entities, and exposes the configured currency names. The symbol and name values come from the configuration options defined in `gamemode/core/libraries/config.lua`.
+The currency library formats money amounts, spawns physical money entities, and exposes the configured currency names. The symbol and name values come from the configuration options `CurrencySymbol`, `CurrencySingularName`, and `CurrencyPluralName` defined in `gamemode/core/libraries/config.lua`.
 
 ---
 
@@ -32,7 +32,7 @@ print(lia.currency.symbol)
 
 **Purpose**
 
-Localized singular currency name from the `CurrencySingularName` config (`currencySingular` by default).
+Localized singular currency name from the `CurrencySingularName` config (defaults to localization key `currencySingular`).
 
 **Realm**
 
@@ -50,7 +50,7 @@ print(lia.currency.singular)
 
 **Purpose**
 
-Localized plural currency name from the `CurrencyPluralName` config (`currencyPlural` by default).
+Localized plural currency name from the `CurrencyPluralName` config (defaults to localization key `currencyPlural`).
 
 **Realm**
 
@@ -68,11 +68,11 @@ print(lia.currency.plural)
 
 **Purpose**
 
-Formats a numeric amount into a currency string using `lia.currency.symbol`, `lia.currency.singular`, and `lia.currency.plural`. Automatically chooses the singular or plural name based on the amount.
+Formats a numeric amount into a currency string using `lia.currency.symbol`, `lia.currency.singular`, and `lia.currency.plural`. Uses the singular name only when the amount is exactly `1`; all other values use the plural name.
 
 **Parameters**
 
-* `amount` (*number*): Amount to format.
+* `amount` (*number*): Amount to format. No rounding or validation is performed.
 
 **Realm**
 
@@ -91,6 +91,7 @@ lia.currency.plural = "dollars"
 
 print(lia.currency.get(1))  -- "$1 dollar"
 print(lia.currency.get(10)) -- "$10 dollars"
+print(lia.currency.get(0))  -- "$0 dollars"
 ```
 
 ---
@@ -99,7 +100,7 @@ print(lia.currency.get(10)) -- "$10 dollars"
 
 **Purpose**
 
-Spawns a `lia_money` entity at the specified position with the given amount and optional angle. If the position or amount is invalid, `lia.information` is called with a localized error and no entity is created.
+Spawns a `lia_money` entity at the specified position with the given amount and optional angle. If `pos` is missing or `amount` is `nil` or negative, `lia.information` is called with a localized error and no entity is created.
 
 **Parameters**
 
@@ -107,7 +108,7 @@ Spawns a `lia_money` entity at the specified position with the given amount and 
 
 * `amount` (*number*): Non-negative monetary value. Rounded to the nearest whole number before assignment.
 
-* `angle` (*Angle*): Orientation of the entity. Defaults to `Angle(0, 0, 0)`. *Optional*.
+* `angle` (*Angle*): Orientation of the entity. Defaults to `angle_zero` (`Angle(0, 0, 0)`). *Optional*.
 
 **Realm**
 
