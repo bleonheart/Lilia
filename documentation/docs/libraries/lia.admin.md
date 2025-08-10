@@ -31,6 +31,8 @@ Checks if a player or usergroup has access to a specific privilege. Unregistered
 
 * `boolean`: `true` when access is granted.
 
+Superadmins always receive access. If the privilege is unregistered, a warning is emitted and only superadmins will pass the check.
+
 **Example Usage**
 
 ```lua
@@ -49,7 +51,7 @@ Saves all usergroups and privileges to the database and optionally synchronizes 
 
 **Parameters**
 
-* `noNetwork` (*boolean*, optional): When `true`, skips the client synchronization step.
+* `noNetwork` (*boolean*, optional): When `true`, skips the client synchronization step. Defaults to `false`.
 
 **Realm**
 
@@ -58,6 +60,14 @@ Saves all usergroups and privileges to the database and optionally synchronizes 
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.unregisterPrivilege("canFly")
+```
+
+Client data is only synchronized if at least one player has completed network initialization (`lia.net.ready`).
 
 **Example Usage**
 
@@ -90,6 +100,8 @@ Registers a new privilege and assigns it to all usergroups that meet the minimum
 
 * *nil*: This function does not return a value.
 
+If `ID` is missing, empty, or already registered, the function does nothing. Eligible groups automatically receive the privilege and CAMI is notified when available.
+
 **Example Usage**
 
 ```lua
@@ -120,6 +132,12 @@ Removes a previously registered privilege from all usergroups.
 
 * *nil*: This function does not return a value.
 
+**Example Usage**
+
+```lua
+lia.administrator.unregisterPrivilege("canFly")
+```
+
 ---
 
 ### lia.administrator.applyInheritance
@@ -139,6 +157,12 @@ Applies inheritance for a usergroup, copying privileges from parent groups and g
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.applyInheritance("moderator")
+```
 
 ---
 
@@ -160,6 +184,12 @@ Loads usergroups and privileges from the database, ensures default groups exist,
 
 * *nil*: This function does not return a value.
 
+**Example Usage**
+
+```lua
+lia.administrator.load()
+```
+
 ---
 
 ### lia.administrator.createGroup
@@ -170,8 +200,10 @@ Creates a new usergroup with optional information and registers it with CAMI.
 
 **Parameters**
 
-* `groupName` (*string*): Name of the group.
-* `info` (*table*, optional): Table containing `_info` field with `inheritance` and `types`.
+* `groupName` (*string*): Name of the group. Must not already exist.
+* `info` (*table*, optional): Optional configuration table.
+  * `_info.inheritance` (*string*, optional): Group to inherit from. Defaults to `"user"`.
+  * `_info.types` (*table*, optional): Array of classification strings. Defaults to an empty table.
 
 **Realm**
 
@@ -199,7 +231,7 @@ Deletes a usergroup and unregisters it from CAMI. The groups `user`, `admin`, an
 
 **Parameters**
 
-* `groupName` (*string*): Group to remove.
+* `groupName` (*string*): Group to remove. Must exist and cannot be one of the base groups.
 
 **Realm**
 
@@ -208,6 +240,12 @@ Deletes a usergroup and unregisters it from CAMI. The groups `user`, `admin`, an
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.removeGroup("moderator")
+```
 
 ---
 
@@ -219,8 +257,8 @@ Renames an existing usergroup and updates CAMI information.
 
 **Parameters**
 
-* `oldName` (*string*): Current name of the group.
-* `newName` (*string*): New name for the group.
+* `oldName` (*string*): Current name of the group. Base groups cannot be renamed.
+* `newName` (*string*): New name for the group. Must not already exist.
 
 **Realm**
 
@@ -229,6 +267,12 @@ Renames an existing usergroup and updates CAMI information.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.renameGroup("moderator", "helper")
+```
 
 ---
 
@@ -240,9 +284,9 @@ Grants a privilege to a usergroup.
 
 **Parameters**
 
-* `groupName` (*string*): Target usergroup.
+* `groupName` (*string*): Target usergroup. Base groups cannot be modified.
 * `permission` (*string*): Privilege identifier.
-* `silent` (*boolean*, optional): When `true`, suppresses network updates.
+* `silent` (*boolean*, optional): When `true`, suppresses network updates. Defaults to `false`.
 
 **Realm**
 
@@ -251,6 +295,12 @@ Grants a privilege to a usergroup.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.addPermission("moderator", "kick")
+```
 
 ---
 
@@ -262,9 +312,9 @@ Revokes a privilege from a usergroup.
 
 **Parameters**
 
-* `groupName` (*string*): Target usergroup.
+* `groupName` (*string*): Target usergroup. Base groups cannot be modified.
 * `permission` (*string*): Privilege to remove.
-* `silent` (*boolean*, optional): When `true`, suppresses network updates.
+* `silent` (*boolean*, optional): When `true`, suppresses network updates. Defaults to `false`.
 
 **Realm**
 
@@ -273,6 +323,12 @@ Revokes a privilege from a usergroup.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.removePermission("moderator", "ban")
+```
 
 ---
 
@@ -294,6 +350,15 @@ Synchronizes admin privileges and groups to a specific client or all clients.
 
 * *nil*: This function does not return a value.
 
+Only players flagged as network-ready are updated.
+
+**Example Usage**
+
+```lua
+lia.administrator.sync() -- Sync all players
+lia.administrator.sync(somePlayer) -- Sync a single player
+```
+
 ---
 
 ### lia.administrator.setPlayerUsergroup
@@ -305,8 +370,8 @@ Sets a player's usergroup and notifies CAMI of the change.
 **Parameters**
 
 * `ply` (*Player*): Player whose usergroup to set.
-* `newGroup` (*string*): New usergroup name.
-* `source` (*string*, optional): Source identifier for CAMI.
+* `newGroup` (*string*): New usergroup name. Defaults to `"user"`.
+* `source` (*string*, optional): Source identifier for CAMI. Defaults to `"Lilia"`.
 
 **Realm**
 
@@ -315,6 +380,12 @@ Sets a player's usergroup and notifies CAMI of the change.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.setPlayerUsergroup(targetPlayer, "admin", "Console")
+```
 
 ---
 
@@ -327,8 +398,8 @@ Assigns a usergroup to a player by SteamID and notifies CAMI.
 **Parameters**
 
 * `steamId` (*string*): Player's SteamID.
-* `newGroup` (*string*): New usergroup name.
-* `source` (*string*, optional): Source identifier for CAMI.
+* `newGroup` (*string*): New usergroup name. Defaults to `"user"`.
+* `source` (*string*, optional): Source identifier for CAMI. Defaults to `"Lilia"`.
 
 **Realm**
 
@@ -337,6 +408,12 @@ Assigns a usergroup to a player by SteamID and notifies CAMI.
 **Returns**
 
 * *nil*: This function does not return a value.
+
+**Example Usage**
+
+```lua
+lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "vip", "Admin Panel")
+```
 
 ---
 
@@ -350,7 +427,7 @@ Executes an administrative chat command such as kick or ban. Supported commands 
 
 * `cmd` (*string*): Command name (e.g., `"kick"`, `"ban"`, `"goto"`).
 * `victim` (*Player|string*): Target player entity or SteamID.
-* `dur` (*number*, optional): Duration for timed commands.
+* `dur` (*number*, optional): Duration for timed commands. Defaults to `0`.
 * `reason` (*string*, optional): Reason text.
 
 **Realm**
