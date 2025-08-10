@@ -35,29 +35,26 @@ end
 function MODULE:PlayerLoadedChar(client, character)
     local charID = character:getID()
     lia.db.query("SELECT key, value FROM lia_chardata WHERE charID = " .. charID, function(data)
-        if data then
-            if not character.dataVars then character.dataVars = {} end
-            for _, row in ipairs(data) do
-                local decodedValue = pon.decode(row.value)
-                character.dataVars[row.key] = decodedValue[1]
-                character:setData(row.key, decodedValue[1])
-            end
-
-            local characterData = character:getData()
-            local keysToNetwork = table.GetKeys(characterData)
-            net.Start("liaCharacterData")
-            net.WriteUInt(charID, 32)
-            net.WriteUInt(#keysToNetwork, 32)
-            for _, key in ipairs(keysToNetwork) do
-                local value = characterData[key]
-                net.WriteString(key)
-                net.WriteType(value)
-            end
-
-            net.Send(client)
-        else
-            lia.error(L("noDataCharID", charID))
+        data = data or {}
+        if not character.dataVars then character.dataVars = {} end
+        for _, row in ipairs(data) do
+            local decodedValue = pon.decode(row.value)
+            character.dataVars[row.key] = decodedValue[1]
+            character:setData(row.key, decodedValue[1])
         end
+
+        local characterData = character:getData()
+        local keysToNetwork = table.GetKeys(characterData)
+        net.Start("liaCharacterData")
+        net.WriteUInt(charID, 32)
+        net.WriteUInt(#keysToNetwork, 32)
+        for _, key in ipairs(keysToNetwork) do
+            local value = characterData[key]
+            net.WriteString(key)
+            net.WriteType(value)
+        end
+
+        net.Send(client)
     end)
 
     client:Spawn()
