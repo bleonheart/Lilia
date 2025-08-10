@@ -14,7 +14,7 @@ The commands library registers console and chat commands. It parses arguments, c
 
 **Purpose**
 
-Generates a human-readable syntax string from a command's argument definitions.
+Generates a human-readable syntax string from a command's argument definitions. Each argument's `type` is normalized to `string`, `player`, `table`, or `bool` (`boolean` maps to `bool`).
 
 **Parameters**
 
@@ -222,7 +222,7 @@ Attempts to parse the input text as a slash command. When `realCommand` and `arg
 
 **Returns**
 
-* *boolean*: `true` if the text was parsed as a valid command, `false` otherwise.
+* *boolean*: `true` if the text was treated as a command (even if unknown), `false` otherwise.
 
 **Example Usage**
 
