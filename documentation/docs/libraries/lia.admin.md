@@ -16,7 +16,7 @@ The base user groups `user`, `admin`, and `superadmin` exist by default and cann
 
 **Purpose**
 
-Checks if a player or usergroup has access to a specific privilege. Unregistered privileges log a warning and default to superadmin access.
+Checks if a player or usergroup has access to a specific privilege. Unregistered privileges log a warning and only superadmins pass the check. Members of the `superadmin` group automatically have all privileges.
 
 **Parameters**
 
@@ -29,7 +29,7 @@ Checks if a player or usergroup has access to a specific privilege. Unregistered
 
 **Returns**
 
-* `boolean`: `true` when access is granted.
+* `boolean`: `true` if access is granted, `false` otherwise.
 
 **Example Usage**
 
@@ -45,11 +45,11 @@ end
 
 **Purpose**
 
-Saves all usergroups and privileges to the database and optionally synchronizes them to clients.
+Rebuilds privilege data, saves all usergroups and privileges to the database, and optionally synchronizes them to clients.
 
 **Parameters**
 
-* `noNetwork` (*boolean*, optional): When `true`, skips the client synchronization step.
+* `noNetwork` (*boolean*, optional): When `true`, skips the client synchronization step. Defaults to `false`.
 
 **Realm**
 
@@ -96,7 +96,7 @@ Registers a new privilege and assigns it to all usergroups that meet the minimum
 lia.administrator.registerPrivilege({
     ID = "canFly",
     MinAccess = "admin",
-    Category = "Fun"
+    Category = "Fun",
 })
 ```
 
@@ -146,7 +146,7 @@ Applies inheritance for a usergroup, copying privileges from parent groups and g
 
 **Purpose**
 
-Loads usergroups and privileges from the database, ensures default groups exist, applies inheritance, and synchronizes with CAMI if available.
+Loads usergroups and privileges from the database, ensures default groups exist, applies inheritance, and synchronizes with CAMI if available. Triggers `OnAdminSystemLoaded` after initialization.
 
 **Parameters**
 
@@ -166,12 +166,12 @@ Loads usergroups and privileges from the database, ensures default groups exist,
 
 **Purpose**
 
-Creates a new usergroup with optional information and registers it with CAMI.
+Creates a new usergroup with optional information and registers it with CAMI. Fails if the group already exists.
 
 **Parameters**
 
 * `groupName` (*string*): Name of the group.
-* `info` (*table*, optional): Table containing `_info` field with `inheritance` and `types`.
+* `info` (*table*, optional): Table containing `_info` field with `inheritance` and `types`. Defaults to `{_info = {inheritance = "user", types = {}}}`.
 
 **Realm**
 
@@ -199,7 +199,7 @@ Deletes a usergroup and unregisters it from CAMI. The groups `user`, `admin`, an
 
 **Parameters**
 
-* `groupName` (*string*): Group to remove.
+* `groupName` (*string*): Group to remove. Must exist.
 
 **Realm**
 
@@ -215,12 +215,12 @@ Deletes a usergroup and unregisters it from CAMI. The groups `user`, `admin`, an
 
 **Purpose**
 
-Renames an existing usergroup and updates CAMI information.
+Renames an existing usergroup and updates CAMI information. The groups `user`, `admin`, and `superadmin` cannot be renamed.
 
 **Parameters**
 
 * `oldName` (*string*): Current name of the group.
-* `newName` (*string*): New name for the group.
+* `newName` (*string*): New name for the group. Must not already exist.
 
 **Realm**
 
@@ -236,13 +236,13 @@ Renames an existing usergroup and updates CAMI information.
 
 **Purpose**
 
-Grants a privilege to a usergroup.
+Grants a privilege to a usergroup. Default groups (`user`, `admin`, `superadmin`) cannot be modified.
 
 **Parameters**
 
-* `groupName` (*string*): Target usergroup.
+* `groupName` (*string*): Target usergroup. Must exist and not be a default group.
 * `permission` (*string*): Privilege identifier.
-* `silent` (*boolean*, optional): When `true`, suppresses network updates.
+* `silent` (*boolean*, optional): When `true`, suppresses network updates. Defaults to `false`.
 
 **Realm**
 
@@ -258,13 +258,13 @@ Grants a privilege to a usergroup.
 
 **Purpose**
 
-Revokes a privilege from a usergroup.
+Revokes a privilege from a usergroup. Default groups (`user`, `admin`, `superadmin`) cannot be modified.
 
 **Parameters**
 
-* `groupName` (*string*): Target usergroup.
+* `groupName` (*string*): Target usergroup. Must exist and not be a default group.
 * `permission` (*string*): Privilege to remove.
-* `silent` (*boolean*, optional): When `true`, suppresses network updates.
+* `silent` (*boolean*, optional): When `true`, suppresses network updates. Defaults to `false`.
 
 **Realm**
 
@@ -280,7 +280,7 @@ Revokes a privilege from a usergroup.
 
 **Purpose**
 
-Synchronizes admin privileges and groups to a specific client or all clients.
+Synchronizes admin privileges and groups to a specific client or all clients. Only players marked as ready receive the data.
 
 **Parameters**
 
@@ -300,13 +300,13 @@ Synchronizes admin privileges and groups to a specific client or all clients.
 
 **Purpose**
 
-Sets a player's usergroup and notifies CAMI of the change.
+Sets a player's usergroup and notifies CAMI of the change. Does nothing if the player already has the target group.
 
 **Parameters**
 
 * `ply` (*Player*): Player whose usergroup to set.
 * `newGroup` (*string*): New usergroup name.
-* `source` (*string*, optional): Source identifier for CAMI.
+* `source` (*string*, optional): Source identifier for CAMI. Defaults to `"Lilia"`.
 
 **Realm**
 
@@ -322,13 +322,13 @@ Sets a player's usergroup and notifies CAMI of the change.
 
 **Purpose**
 
-Assigns a usergroup to a player by SteamID and notifies CAMI.
+Assigns a usergroup to a player by SteamID and notifies CAMI. Updates the player in-game if they are online.
 
 **Parameters**
 
-* `steamId` (*string*): Player's SteamID.
+* `steamId` (*string*): Player's SteamID. Must not be empty.
 * `newGroup` (*string*): New usergroup name.
-* `source` (*string*, optional): Source identifier for CAMI.
+* `source` (*string*, optional): Source identifier for CAMI. Defaults to `"Lilia"`.
 
 **Realm**
 
@@ -350,7 +350,7 @@ Executes an administrative chat command such as kick or ban. Supported commands 
 
 * `cmd` (*string*): Command name (e.g., `"kick"`, `"ban"`, `"goto"`).
 * `victim` (*Player|string*): Target player entity or SteamID.
-* `dur` (*number*, optional): Duration for timed commands.
+* `dur` (*number*, optional): Duration for timed commands. Defaults to `0`.
 * `reason` (*string*, optional): Reason text.
 
 **Realm**
