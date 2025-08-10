@@ -195,7 +195,6 @@ function MODULE:KeyLock(client, door, time)
     if not IsValid(door) or not IsValid(client) then return end
     if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
         lia.log.add(client, "cheaterAction", L("cheaterActionLockDoor"))
-        client:notify("Maybe you shouldn't have cheated")
         return
     end
     if hook.Run("CanPlayerLock", client, door) == false then return end
@@ -212,7 +211,6 @@ function MODULE:KeyUnlock(client, door, time)
     if not IsValid(door) or not IsValid(client) then return end
     if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
         lia.log.add(client, "cheaterAction", L("cheaterActionUnlockDoor"))
-        client:notify("Maybe you shouldn't have cheated")
         return
     end
     if hook.Run("CanPlayerUnlock", client, door) == false then return end
@@ -229,7 +227,6 @@ function MODULE:ToggleLock(client, door, state)
     if not IsValid(door) then return end
     if lia.config.get("DisableCheaterActions", true) and IsValid(client) and client:getNetVar("cheater", false) then
         lia.log.add(client, "cheaterAction", state and L("cheaterActionLockDoor") or L("cheaterActionUnlockDoor"))
-        client:notify("Maybe you shouldn't have cheated")
         return
     end
     if door:isDoor() then
