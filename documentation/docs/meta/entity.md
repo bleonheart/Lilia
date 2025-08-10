@@ -212,7 +212,7 @@ car:keysOwn(client)
 
 **Purpose**
 
-Locks a vehicle by firing the `lock` input.
+Locks the entity if it is a vehicle by firing the `lock` input. Does nothing for non-vehicles.
 
 **Parameters**
 
@@ -238,7 +238,7 @@ car:keysLock()
 
 **Purpose**
 
-Unlocks a vehicle by firing the `unlock` input.
+Unlocks the entity if it is a vehicle by firing the `unlock` input. Does nothing for non-vehicles.
 
 **Parameters**
 
@@ -264,7 +264,7 @@ car:keysUnLock()
 
 **Purpose**
 
-Retrieves the CPPI owner of a vehicle, if available.
+Retrieves the CPPI owner of a vehicle, if available. Returns `nil` for non-vehicles or when no CPPI owner exists.
 
 **Parameters**
 
@@ -272,7 +272,7 @@ Retrieves the CPPI owner of a vehicle, if available.
 
 **Returns**
 
-* `Player|nil`: The owner of the vehicle, or `nil` if unavailable.
+* `Player|nil`: The owner of the vehicle. Returns `nil` if the entity is not a vehicle or owner information is unavailable.
 
 **Realm**
 
@@ -321,7 +321,7 @@ end
 
 **Purpose**
 
-Checks the internal `m_bLocked` flag for door entities.
+Checks the internal `m_bLocked` flag for door entities, falling back to the `locked` field if necessary.
 
 **Parameters**
 
@@ -329,7 +329,7 @@ Checks the internal `m_bLocked` flag for door entities.
 
 **Returns**
 
-* `boolean`: `true` if the door reports itself as locked.
+* `boolean`: `true` if the door reports itself as locked; otherwise `false`.
 
 **Realm**
 
@@ -357,7 +357,7 @@ Calculates a safe drop position in front of the entity's eyes.
 
 **Returns**
 
-* `Vector`, `Angle`: The drop position and surface normal angle.
+* `Vector`, `Angle`: The drop position and surface normal angle. Returns `Vector(0, 0, 0)` and `Angle(0, 0, 0)` if the entity is invalid.
 
 **Realm**
 
@@ -376,7 +376,7 @@ lia.item.spawn("item_water", pos, ang)
 
 **Purpose**
 
-Checks for another entity within a radius. If `otherEntity` is supplied, only that entity will satisfy the check; otherwise any entity of the same class will.
+Checks for nearby entities within a radius. If `otherEntity` is supplied, the function returns `true` when that entity **or any entity of the same class** is within range. Without `otherEntity`, any entity of the same class satisfies the check.
 
 **Parameters**
 
@@ -591,7 +591,7 @@ ent:setKeysNonOwnable(true)
 
 **Purpose**
 
-Checks if the entity's class name begins with a known door prefix.
+Checks if the entity's class name begins with a known door prefix such as `prop_door`, `func_door`, `func_door_rotating`, or `door_` (case-insensitive).
 
 **Parameters**
 
@@ -703,7 +703,7 @@ local locked = ent:getNetVar("locked", false)
 
 **Purpose**
 
-Client-side check if the entity's class name contains "door".
+Client-side check if the entity's class name contains the substring `"door"` (case-sensitive).
 
 **Parameters**
 
