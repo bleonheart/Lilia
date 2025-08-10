@@ -357,9 +357,10 @@ function lia.administrator.registerPrivilege(priv)
         if shouldGrant(groupName, min) then perms[id] = true end
     end
 
+    local name = L(priv.Name or priv.ID)
     if CAMI then camiRegisterPrivilege(priv.ID, min) end
     hook.Run("OnPrivilegeRegistered", {
-        Name = priv.Name or priv.ID,
+        Name = name,
         ID = priv.ID,
         MinAccess = min,
         Category = getPrivilegeCategory(id)
