@@ -1,6 +1,6 @@
 # Workshop Library
 
-This page documents Workshop-addon helpers.
+This page documents helpers for managing Steam Workshop addons.
 
 ---
 
@@ -20,7 +20,7 @@ The server sends this list a short time after each player spawns. When the clien
 
 **Purpose**
 
-Registers a Steam Workshop addon ID so clients will download it.
+Registers a Steam Workshop addon ID so clients will download it. When a new ID is added, a bootstrap message informs users and a second message indicates the download has started.
 
 **Parameters**
 
@@ -47,7 +47,7 @@ lia.workshop.AddWorkshop("1234567890")
 
 **Purpose**
 
-Collects Workshop IDs from every registered source.
+Collects Workshop IDs from every registered source, including mounted addons and each module's `WorkshopContent` field. Each discovered ID is recorded so duplicate notifications are avoided.
 
 **Parameters**
 
@@ -76,7 +76,7 @@ end
 
 **Purpose**
 
-Sends the cached Workshop-ID list to a player.
+Sends the cached Workshop-ID list to a player using the `WorkshopDownloader_Start` net message.
 
 **Parameters**
 
@@ -100,11 +100,40 @@ end)
 
 ---
 
-### lia.workshop.checkPrompt
+
+### lia.workshop.hasContentToDownload
 
 **Purpose**
 
-Displays the Workshop download prompt or automatically requests the addons based on the client's `autoDownloadWorkshop` option.
+Checks whether the client is missing any Workshop content required by the server. The internally required Lilia package is ignored.
+
+**Parameters**
+
+* *None*
+
+**Realm**
+
+`Client`
+
+**Returns**
+
+* `boolean`: `true` if there is content to download, `false` otherwise.
+
+**Example Usage**
+
+```lua
+if lia.workshop.hasContentToDownload() then
+    print("You need to download additional Workshop content!")
+end
+```
+
+---
+
+### lia.workshop.mountContent
+
+**Purpose**
+
+Prompts the user to download and mount all missing Workshop content. Before downloading, it totals the sizes of the missing addons and displays a confirmation dialog.
 
 **Parameters**
 
@@ -121,8 +150,9 @@ Displays the Workshop download prompt or automatically requests the addons based
 **Example Usage**
 
 ```lua
-hook.Add("InitializedOptions", "WorkshopCheck", function()
-    lia.workshop.checkPrompt()
+-- Mount all missing Workshop content when a button is pressed
+concommand.Add("lia_mount_workshop", function()
+    lia.workshop.mountContent()
 end)
 ```
 
