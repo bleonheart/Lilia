@@ -14,7 +14,6 @@ The configuration library provides a centralized system for managing settings ac
 * **Client-server synchronization** so changes propagate to connected players.
 * **Category organization** and description text for use in UI.
 * **Default value management** with persistence to the database.
-* **Access control** and support for hot reloading and cross-module sharing.
 
 ---
 
@@ -22,7 +21,7 @@ The configuration library provides a centralized system for managing settings ac
 
 **Purpose**
 
-Registers a new config option with the given key, display name, default value, and optional callback. A data table describing the option is **required**.
+Registers a new config option with the given key, display name, default value, and optional callback. A data table describing the option is **required**. If an option with the same key already exists, its current value is kept.
 
 **Parameters**
 
@@ -34,7 +33,7 @@ Registers a new config option with the given key, display name, default value, a
 
 * `callback` (*function*): Function run when the value changes. Receives `(oldValue, newValue)`. *Optional*.
 
-* `data` (*table*): Table describing the option. Common fields include `desc`, `category`, `type`, `min`, `max`, `decimals`, `options`, and `noNetworking`. Any string values for `desc`, `category`, or within `options` are localized automatically. If `type` is omitted, it is inferred from `value`.
+* `data` (*table*): Table describing the option. Common fields include `desc`, `category`, `type`, `min`, `max`, `decimals`, `options`, and `noNetworking`. `category` defaults to `L("character")` and `noNetworking` defaults to `false`. Additional fields are accepted and stored. Any string values for `desc`, `category`, or within `options` are localized automatically. If `type` is omitted, it is inferred from `value`.
 
 **Realm**
 
@@ -73,7 +72,7 @@ lia.config.add(
 
 **Purpose**
 
-Changes the stored default for an existing config option without affecting its current value or notifying clients.
+Changes the stored default for an existing config option without affecting its current value or notifying clients. This does not automatically persist the new default; call `lia.config.save()` to commit it.
 
 **Parameters**
 
@@ -102,7 +101,7 @@ lia.config.setDefault("maxPlayers", 32)
 
 **Purpose**
 
-Sets a config value directly without running callbacks or networking the update. The value is saved unless `noSave` is `true`.
+Sets a config value directly without running callbacks or networking the update. The value is saved unless `noSave` is `true`. If the key does not exist, the call has no effect.
 
 **Parameters**
 
@@ -132,7 +131,7 @@ lia.config.forceSet("someSetting", true, true)
 
 **Purpose**
 
-Sets a config value and updates `lia.config.stored`. On the server it broadcasts a `cfgSet` net message to clients (unless the option is marked `noNetworking`), runs the change callback with `(oldValue, newValue)`, and saves the result.
+Sets a config value and updates `lia.config.stored`. On the server it broadcasts a `cfgSet` net message to clients (unless the option is marked `noNetworking`), runs the change callback with `(oldValue, newValue)`, and saves the result. On the client it only updates the local value. If the key does not exist, nothing happens.
 
 **Parameters**
 
@@ -188,7 +187,7 @@ local players = lia.config.get("maxPlayers", 64)
 
 **Purpose**
 
-On the server, loads config values from the database for the current schema and inserts any missing entries with their defaults. On the client, requests the config list from the server.
+On the server, loads config values from the database for the current schema and inserts any missing entries with their defaults. After loading, the `InitializedConfig` hook is fired. On the client, `lia.config.load` requests the config list from the server.
 
 **Parameters**
 
@@ -244,7 +243,7 @@ Sends all changed config values to a client. If no client is provided, the value
 
 **Parameters**
 
-* `client` (*Player* | nil*): Player to receive the config data. If omitted, all clients receive it.
+* `client` (*Player | nil*): Player to receive the config data. If omitted, all clients receive it.
 
 **Realm**
 
@@ -267,7 +266,7 @@ lia.config.send()
 
 **Purpose**
 
-Writes all changed config values to the database so they persist across restarts.
+Writes all changed config values to the database so they persist across restarts. Existing rows for the current schema are replaced.
 
 **Parameters**
 
