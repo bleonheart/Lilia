@@ -1144,14 +1144,18 @@ end)
 ### Aid
 
 - `ITEM.functions.use.onRun(item)`
-  - Heals the item owner by the amount in `ITEM.health`.
+  - Heals the item owner up to their maximum health using `ITEM.health`.
 - `ITEM.functions.target.onRun(item)`
-  - Heals the traced player when valid.
+  - Heals the player's traced entity when it is a living player; otherwise notifies of an invalid target.
   - `ITEM.functions.target.onCanRun(item)`
-    - Only allows the action when the target is a living player.
+    - Shows the option only when the player is looking at a valid entity.
 
 ### Ammo
 
+- `ITEM.functions.use.onRun(item)`
+  - Loads ammunition into the player and plays `ITEM.useSound`.
+  - Provides multi-options to load all or fixed amounts (5, 10, or 30 rounds) when enough quantity is available.
+  - Returns `true` when the stack is depleted.
 - `ITEM:getDesc()` → `string`
   - Returns a localized description including the current stack quantity.
 - `ITEM:paintOver(item)`
@@ -1168,6 +1172,16 @@ end)
 
 ### Weapons
 
+- `ITEM:hook("drop", function(item))`
+  - When dropped, saves ammo, strips the weapon, and clears equipped data if necessary.
+- `ITEM.functions.Unequip.onRun(item)`
+  - Strips the weapon, stores remaining ammo, plays `ITEM.unequipSound`, and clears the equip state.
+  - `ITEM.functions.Unequip.onCanRun(item)`
+    - Available only when the weapon is equipped and not placed in the world.
+- `ITEM.functions.Equip.onRun(item)`
+  - Gives the weapon to the player if the slot is free, restores saved ammo, marks it equipped, and plays `ITEM.equipSound`.
+  - `ITEM.functions.Equip.onCanRun(item)`
+    - Blocks equipping if already equipped, the slot is occupied, or the player is ragdolled.
 - `ITEM.postHooks:drop()`
   - Strips the weapon from the player if they still carry it after dropping the item.
 - `ITEM:OnCanBeTransfered(_, newInventory)` → `boolean`
@@ -1183,6 +1197,16 @@ end)
 
 ### Outfit
 
+- `ITEM:hook("drop", function(item))`
+  - Automatically calls `removeOutfit` if the item is dropped while equipped.
+- `ITEM.functions.Unequip.onRun(item)`
+  - Calls `removeOutfit` to revert model, skin, armor, PAC parts, and boosts.
+  - `ITEM.functions.Unequip.onCanRun(item)`
+    - Available only when the outfit is equipped and not in the world.
+- `ITEM.functions.Equip.onRun(item)`
+  - Equips the outfit after ensuring the category slot is free and applies model, skin, bodygroups, armor, PAC parts, and boosts.
+  - `ITEM.functions.Equip.onCanRun(item)`
+    - Disabled when already equipped or the item exists as an entity.
 - `ITEM:removeOutfit(client)`
   - Reverts the player's model, skin, bodygroups, armor, PAC parts, and attribute boosts. Triggers `onTakeOff`.
 - `ITEM:wearOutfit(client, isForLoadout)`
@@ -1198,6 +1222,16 @@ end)
 
 ### PAC Outfit
 
+- `ITEM:hook("drop", function(item))`
+  - Removes the PAC part if the item is dropped while equipped.
+- `ITEM.functions.Unequip.onRun(item)`
+  - Calls `removePart` to detach the PAC part and remove boosts.
+  - `ITEM.functions.Unequip.onCanRun(item)`
+    - Available only when the item is equipped and not placed in the world.
+- `ITEM.functions.Equip.onRun(item)`
+  - Attaches the PAC part after verifying no conflicting outfit is equipped and applies attribute boosts.
+  - `ITEM.functions.Equip.onCanRun(item)`
+    - Blocks equipping when already equipped or the item exists in the world.
 - `ITEM:removePart(client)`
   - Removes the PAC part and any attribute boosts.
 - `ITEM:onCanBeTransfered(_, newInventory)` → `boolean`
@@ -1220,6 +1254,8 @@ end)
 
 - `ITEM.functions.Place.onRun(item)` → `boolean`
   - Spawns `ITEM.entityid` at the player's aim position and returns `true` on success.
+- `ITEM.functions.Place.onCanRun(item)` → `boolean`
+  - Only allows placement when the item is not already spawned into the world.
 
 ### Grenade
 
