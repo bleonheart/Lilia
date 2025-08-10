@@ -48,14 +48,15 @@ The global `ITEM` table defines per-item settings such as sounds, inventory dime
 | `isBag` | `boolean` | `false` | Marks the item as a bag providing extra inventory. |
 | `isBase` | `boolean` | `false` | Indicates the table is a base item. |
 | `isOutfit` | `boolean` | `false` | Marks the item as an outfit. |
-| `isStackable` | `boolean` | `false` | Allows stacking multiple quantities. |
+| `isStackable` | `boolean` | `false` | Enables stacking and merging of item quantities. |
 | `isWeapon` | `boolean` | `false` | Marks the item as a weapon. |
-| `maxQuantity` | `number` | `1` | Maximum stack size. |
+| `maxQuantity` | `number` | `1` | Maximum stack size for stackable items. |
 | `model` | `string` | `""` | 3D model path for the item. |
 | `name` | `string` | `"INVALID NAME"` | Displayed name of the item. |
 | `newSkin` | `number` | `0` | Skin index applied to the player model. |
 | `outfitCategory` | `string` | `""` | Slot or category for the outfit. |
 | `pacData` | `table` | `{}` | PAC3 customization information. |
+| `visualData` | `table` | `{}` | Model, skin, and bodygroup overrides for outfits. |
 | `bodyGroups` | `table` | `nil` | Bodygroup values applied when equipped. |
 | `hooks` | `table` | `{}` | Table of hook callbacks. |
 | `postHooks` | `table` | `{}` | Table of post-hook callbacks. |
@@ -393,12 +394,12 @@ ITEM.canSplit = true
 
 **Description:**
 
-Allows stacking multiple quantities.
+Enables stacking of the item. Combine with `maxQuantity` to cap the stack size and `canSplit` to allow dividing stacks.
 
 **Example Usage:**
 
 ```lua
-ITEM.isStackable = false
+ITEM.isStackable = true
 ```
 
 ---
@@ -411,7 +412,7 @@ ITEM.isStackable = false
 
 **Description:**
 
-Maximum stack size.
+Maximum stack size for stackable items.
 
 **Example Usage:**
 
@@ -429,7 +430,7 @@ ITEM.maxQuantity = 10
 
 **Description:**
 
-Current amount in the item stack.
+Current amount in the item stack; managed with `item:getQuantity()` and `item:setQuantity()`.
 
 **Example Usage:**
 
@@ -730,6 +731,28 @@ ITEM.pacData = {
 	},
 }
 ```
+
+#### `visualData`
+
+**Type:**
+
+`table`
+
+**Description:**
+
+Model, skin, and bodygroup overrides applied when an outfit is equipped. The table is populated automatically and normally does not need manual editing.
+
+**Example Usage:**
+
+```lua
+ITEM.visualData = {
+    model = {},
+    skin = {},
+    bodygroups = {}
+}
+```
+
+---
 
 #### `bodyGroups`
 
@@ -1161,7 +1184,26 @@ end)
 - `ITEM:paintOver(item)`
   - Draws the remaining quantity on the item icon.
 
+### Bag
+
+- `ITEM:onInstanced()`
+  - Creates the bag's internal inventory and applies access rules.
+- `ITEM:onRestored()`
+  - Reloads the bag's internal inventory after server restarts.
+- `ITEM:onRemoved()`
+  - Deletes the bag's inventory when the item is removed.
+- `ITEM:getInv()`
+  - Returns the bag's internal inventory instance.
+- `ITEM:onSync(recipient)`
+  - Sends the internal inventory to the given player.
+- `ITEM.postHooks:drop()`
+  - Clears the bag inventory data when dropped.
+- `ITEM:onCombine(other)`
+  - Attempts to transfer the other item into the bag's inventory.
+
 ### Stackable
+
+Items that track quantity and can merge with other stacks of the same type. Setting `isStackable` to `true` enables this behavior and allows stacks to combine or split as needed.
 
 - `ITEM:getDesc()` → `string`
   - Returns a localized description including the current stack quantity.
@@ -1305,6 +1347,8 @@ ITEM.maxQuantity = 30
 
 ### Stackable
 
+A minimal definition for an item that can be stacked and split.
+
 ```lua
 
 ITEM.name = "Stack of Metal"
@@ -1317,6 +1361,17 @@ ITEM.maxQuantity = 10
 
 ITEM.canSplit = true
 
+```
+
+### Bag
+
+```lua
+ITEM.name = "Suitcase"
+ITEM.model = "models/props_c17/suitcase001a.mdl"
+ITEM.isBag = true
+ITEM.invWidth = 2
+ITEM.invHeight = 2
+ITEM.BagSound = {"physics/cardboard/cardboard_box_impact_soft2.wav", 50}
 ```
 
 ### Outfit
