@@ -19,8 +19,8 @@ Retrieves a character object by ID. If the character is not loaded, it is loaded
 **Parameters**
 
 * `charID` (*number*): Character identifier.
-* `client` (*Player*): Owning player (server only).
-* `callback` (*function*): Function executed once the character is available.
+* `client` (*Player*): Owning player (server only, optional).
+* `callback` (*function*): Function executed once the character is available (optional).
 
 **Realm**
 
@@ -306,7 +306,7 @@ local ply = lia.char.getOwnerByID(1)
 
 **Purpose**
 
-Retrieves a character object by SteamID or SteamID64.
+Retrieves a character object by SteamID or SteamID64 from currently connected players.
 
 **Parameters**
 
@@ -390,9 +390,9 @@ Inserts a new character into the database, creates a default inventory, and fire
 
 **Parameters**
 
-* `data` (*table*): Character creation data.
+* `data` (*table*): Character creation data. Requires `name`, `model`, and `steamID`. `money` defaults to `lia.config.get("DefaultMoney")`, and `faction` defaults to `L("unknown")` when omitted.
 
-* `callback` (*function*): Callback receiving the new character ID.
+* `callback` (*function*): Optional function receiving the new character ID.
 
 **Realm**
 
@@ -478,13 +478,13 @@ lia.char.cleanUpForPlayer(client)
 
 **Purpose**
 
-Deletes a character by ID, cleans up, and notifies players via hooks.
+Deletes a character by ID, cleans up, and notifies players via hooks. If no `client` is provided, any player using the character is removed from it.
 
 **Parameters**
 
 * `id` (*number*): Character ID to delete.
 
-* `client` (*Player*): Player entity reference.
+* `client` (*Player*): Player entity to remove from the character (optional).
 
 **Realm**
 
@@ -727,3 +727,4 @@ end)
 ```
 
 ---
+
