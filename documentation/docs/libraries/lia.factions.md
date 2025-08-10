@@ -12,6 +12,8 @@ The factions library loads faction definitions and stores them for later lookup.
 
 * `lia.faction.indices` — indexed by team number.
 
+By default a staff faction is registered and exposed as the global constant `FACTION_STAFF`.
+
 The helpers below let you find factions and iterate over their data. See [Faction Fields](../definitions/faction.md) for the keys stored in each `FACTION` table.
 
 ---
@@ -26,6 +28,8 @@ Registers a new faction, localises its fields, precaches its models and assigns 
 
 * `uniqueID` (*string*): Unique identifier for the faction.
 * `data` (*table*): Faction properties. Missing fields default to:
+  * `name` → `"unknown"`
+  * `desc` → `"noDesc"`
   * `isDefault` → `true`
   * `color` → `Color(150, 150, 150)`
   * `models` → citizen model set
@@ -45,7 +49,7 @@ Registers a new faction, localises its fields, precaches its models and assigns 
 * Uses `data.index` or an existing `FACTION_<UNIQUEID>` constant if provided; otherwise the next free index is used.
 * Registers the faction in `lia.faction.indices` and `lia.faction.teams`.
 * Defines global constant `FACTION_<UNIQUEID>` with the faction's index.
-* Name, description and model lists are localised and may be overridden by hooks.
+* Name, description and model lists are localized via `L()` and may be overridden by the hooks `OverrideFactionName`, `OverrideFactionDesc` and `OverrideFactionModels`.
 
 **Example Usage**
 
@@ -67,10 +71,11 @@ local index, faction = lia.faction.register("citizen", {
 
 Loads all Lua faction files from a directory, includes them **shared**, and registers the resulting `FACTION` tables.
 Each file should define a global `FACTION` table describing the faction.
-The filename (minus any leading `sh_`) becomes the faction's unique ID.
-Missing `name`, `desc`, or `color` fields are replaced with defaults and an error is logged.  
-`isDefault` defaults to `true` and a new index is assigned if not provided.  
-Models default to the citizen set. Factions are stored in both lookup tables and `team.SetUp` is called for each.
+The filename (minus any leading `sh_`) becomes the faction's unique ID unless `FACTION.uniqueID` is set.
+Missing `name`, `desc`, or `color` fields are replaced with defaults and an error is logged.
+`isDefault` defaults to `true` and a new index is assigned if not provided.
+Models default to the citizen set and are precached. Names, descriptions and models are localized via `L()` and can be overridden via the hooks `OverrideFactionName`, `OverrideFactionDesc` and `OverrideFactionModels`.
+Factions are stored in both lookup tables and `team.SetUp` is called for each.
 
 **Parameters**
 
@@ -174,7 +179,7 @@ local classes = lia.faction.getClasses(FACTION_CITIZEN)
 
 **Purpose**
 
-Retrieves all player entities whose characters are in the given faction.
+Retrieves all player entities whose characters are in the given faction. Players without a character are ignored.
 
 **Parameters**
 
@@ -200,7 +205,7 @@ local players = lia.faction.getPlayers(FACTION_CITIZEN)
 
 **Purpose**
 
-Counts how many players belong to the specified faction.
+Counts how many players belong to the specified faction. Players without a character are not counted.
 
 **Parameters**
 
@@ -331,7 +336,7 @@ Returns a list of model category names for the given faction.
 
 **Returns**
 
-* *table*: Array of category names.
+* *table*: Array of category names (empty if none or the faction doesn't exist).
 
 **Example Usage**
 
@@ -359,7 +364,7 @@ Returns the models that belong to a specific category for a faction.
 
 **Returns**
 
-* *table*: Table of model entries (strings or `{path, skin, bodygroups}`).
+* *table*: Table of model entries (strings or `{path, skin, bodygroups}`) — empty if the faction or category is missing.
 
 **Example Usage**
 
@@ -399,7 +404,7 @@ local defaultClass = lia.faction.getDefaultClass(FACTION_CITIZEN)
 
 **Purpose**
 
-Client-side check whether the local player is whitelisted for a faction. Default factions always return `true`. For the `FACTION_STAFF` faction, the `createStaffCharacter` privilege is required.
+Client-side check whether the local player is whitelisted for a faction. Default factions always return `true`. For the `FACTION_STAFF` faction the `createStaffCharacter` privilege is required and the player is notified if the privilege is missing. Other factions check `lia.localData.whitelists`.
 
 **Parameters**
 
