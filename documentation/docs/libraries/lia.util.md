@@ -106,13 +106,12 @@ end
 
 **Purpose**
 
-Attempts to find a player by SteamID, SteamID64, caret (“^” = caller), at-symbol (“@” = caller’s target), or partial name.
+Attempts to find a player by SteamID, SteamID64, caret (`"^"` = requester), at‑symbol (`"@"` = the requester's traced target), or a partial name match. Identifiers are compared case-insensitively using `lia.util.stringMatches`. If the identifier is missing or no player is found, the requester is notified via `notifyLocalized`.
 
 **Parameters**
 
-* `client` (*Player*): Requesting player.
-
-* `identifier` (*string*): Search string.
+* `client` (*Player | nil*): Player performing the search for notification purposes. May be `nil`.
+* `identifier` (*string*): Identifier to search for.
 
 **Realm**
 
@@ -120,14 +119,14 @@ Attempts to find a player by SteamID, SteamID64, caret (“^” = caller), at-sy
 
 **Returns**
 
-* *Player | nil*: Found player or `nil`.
+* *Player | nil*: Matching player entity, or `nil` if not found.
 
 **Example Usage**
 
 ```lua
-local target = lia.util.findPlayer(admin, "Bob")
+local target = lia.util.findPlayer(admin, "@")
 if target then
-    admin:ChatPrint("Found: " .. target:Name())
+    admin:ChatPrint("Looking at " .. target:Name())
 end
 ```
 
@@ -197,13 +196,12 @@ end
 
 **Purpose**
 
-Finds all entities created by/associated with a player, optionally filtered by class.
+Finds every entity the player spawned or owns (entities whose `GetCreator()` or `.client` matches the player), optionally filtered by class.
 
 **Parameters**
 
-* `client` (*Player*): Player to check.
-
-* `class` (*string | nil*): Class filter.
+* `client` (*Player*): Player whose entities to gather.
+* `class` (*string | nil*): Optional class name to filter.
 
 **Realm**
 
@@ -286,7 +284,7 @@ end
 
 **Purpose**
 
-Finds a player by SteamID64.
+Converts a SteamID64 string to a SteamID and finds the matching player.
 
 **Parameters**
 
@@ -333,6 +331,9 @@ Finds a player by SteamID.
 
 ```lua
 local ply = lia.util.findPlayerBySteamID("STEAM_0:1:123456")
+if ply then
+    print("Found player:", ply:Name())
+end
 ```
 
 ---
@@ -459,13 +460,12 @@ surface.DrawTexturedRect(0, 0, 100, 100)
 
 **Purpose**
 
-Finds a faction by name or uniqueID; includes partial-match fallback.
+Finds a faction by name or uniqueID with a partial-match fallback. If no faction is found, the player is notified with `invalidFaction`.
 
 **Parameters**
 
-* `client` (*Player*): Requesting player.
-
-* `name` (*string*): Faction identifier.
+* `client` (*Player*): Player to notify on failure.
+* `name` (*string*): Faction name or uniqueID.
 
 **Realm**
 
@@ -479,6 +479,9 @@ Finds a faction by name or uniqueID; includes partial-match fallback.
 
 ```lua
 local faction = lia.util.findFaction(client, "citizen")
+if faction then
+    print("Faction found:", faction.name)
+end
 ```
 
 ---
@@ -777,10 +780,8 @@ Wraps text to a maximum width.
 **Parameters**
 
 * `text` (*string*): Text.
-
 * `width` (*number*): Max width.
-
-* `font` (*string*): Font used for measurement.
+* `font` (*string*): Font used for measurement (default `"liaChatFont"`).
 
 **Realm**
 
@@ -870,14 +871,12 @@ end)
 
 **Purpose**
 
-Prompts the local player for typed input and returns the result to a callback.
+Prompts the local player for typed input and returns the result to a callback. Supported field types include `"string"`, `"number"`/`"int"`, `"boolean"`, and `"table"` (dropdown choices).
 
 **Parameters**
 
 * `title` (*string*): Window title.
-
-* `argTypes` (*table*): Definition table (label → field type or `{ type, data }`).
-
+* `argTypes` (*table*): Table of field definitions where each key is the label and the value is either a field type or `{ type, data }` for dropdown options.
 * `onSubmit` (*function*): Called with the collected values.
 
 **Realm**
