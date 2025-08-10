@@ -18,9 +18,9 @@ Establishes a connection to the configured database module. If the database is n
 
 **Parameters**
 
-* `callback` (*function*): Function called when the connection is established.
+* `callback` (*function*): Optional function called when the connection is established.
 
-* `reconnect` (*boolean*): Reconnect using an existing database object.
+* `reconnect` (*boolean*): Reconnect using an existing database object. Defaults to `false`.
 
 **Realm**
 
@@ -48,7 +48,7 @@ Drops all Lilia tables from the database. **Irreversible** – all stored data i
 
 **Parameters**
 
-* `callback` (*function*): Function called when the wipe completes.
+* `callback` (*function*): Optional function called when the wipe completes.
 
 **Realm**
 
@@ -98,7 +98,7 @@ lia.db.loadTables()
 
 **Purpose**
 
-Returns a deferred that resolves once tables are fully created. Useful for awaiting setup in async code.
+Returns a deferred that resolves once tables are fully created. If tables are already loaded, it resolves immediately. Useful for awaiting setup in async code.
 
 **Parameters**
 
@@ -354,7 +354,7 @@ Counts rows in a table, optionally filtered.
 
 **Returns**
 
-* *deferred*: Resolves to the row count.
+* *deferred*: Resolves to the row count (0 when no rows match).
 
 **Example Usage**
 
@@ -465,7 +465,7 @@ end)
 
 **Purpose**
 
-Inserts multiple rows in a single query.
+Inserts multiple rows in a single query. Resolves immediately when `rows` is empty.
 
 **Parameters**
 
@@ -496,7 +496,7 @@ lia.db.bulkInsert("items", {
 
 **Purpose**
 
-Inserts multiple rows and updates them if they already exist.
+Inserts multiple rows and updates them if they already exist. Resolves immediately when `rows` is empty.
 
 **Parameters**
 
@@ -527,7 +527,7 @@ lia.db.bulkUpsert("items", {
 
 **Purpose**
 
-Attempts to insert a row; silently ignores unique-key violation.
+Attempts to insert a row; silently ignores unique-key violation. Uses `INSERT IGNORE` (MySQLOO) or `INSERT OR IGNORE` (SQLite).
 
 **Parameters**
 
@@ -649,9 +649,9 @@ Registers a prepared statement (MySQLOO only).
 
 * `key` (*string*): Statement identifier.
 
-* `query` (*string*): SQL with placeholders.
+* `str` (*string*): SQL with placeholders.
 
-* `types` (*table*): Array of MySQLOO type constants.
+* `values` (*table*): Array of MySQLOO type constants.
 
 **Realm**
 
@@ -677,7 +677,7 @@ lia.db.prepare(
 
 **Purpose**
 
-Executes a prepared statement registered with `lia.db.prepare`. *(MySQLOO only)*
+Executes a prepared statement registered with `lia.db.prepare`. The number of provided arguments must match the prepared type list. *(MySQLOO only)*
 
 **Parameters**
 
