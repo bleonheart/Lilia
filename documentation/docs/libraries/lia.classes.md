@@ -6,7 +6,7 @@ This page details the class system functions.
 
 ## Overview
 
-The classes library loads Lua definitions that describe player classes. Classes act like temporary jobs within a faction. The library stores available classes, registers default attributes, and provides lookup functions by index or by searching text.
+The classes library loads Lua definitions that describe player classes. Classes act like temporary jobs within a faction. The library stores available classes, applies default values, and provides lookup functions by index or text search.
 
 See [Class Fields](../definitions/class.md) for configurable `CLASS` properties and [Class Hooks](../hooks/class_hooks.md) for customization callbacks.
 
@@ -123,7 +123,7 @@ Retrieves the class table associated with the given numeric index.
 
 **Returns**
 
-* *table | nil*: Class table if found.
+* *table | nil*: Class table if found, or `nil` for an invalid index.
 
 **Example Usage**
 
