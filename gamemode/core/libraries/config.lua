@@ -471,7 +471,9 @@ lia.config.add("ThirdPersonEnabled", "thirdPersonEnabled", true, nil, {
 lia.config.add("MaxThirdPersonDistance", "maxThirdPersonDistance", 100, nil, {
     desc = "maxThirdPersonDistanceDesc",
     category = "categoryThirdPerson",
-    type = "Int"
+    type = "Int",
+    min = 50,
+    max = 200
 })
 
 lia.config.add("WallPeek", "wallPeek", true, nil, {
@@ -483,13 +485,17 @@ lia.config.add("WallPeek", "wallPeek", true, nil, {
 lia.config.add("MaxThirdPersonHorizontal", "maxThirdPersonHorizontal", 30, nil, {
     desc = "maxThirdPersonHorizontalDesc",
     category = "categoryThirdPerson",
-    type = "Int"
+    type = "Int",
+    min = 10,
+    max = 100
 })
 
 lia.config.add("MaxThirdPersonHeight", "maxThirdPersonHeight", 30, nil, {
     desc = "maxThirdPersonHeightDesc",
     category = "categoryThirdPerson",
-    type = "Int"
+    type = "Int",
+    min = 10,
+    max = 100
 })
 
 lia.config.add("MaxViewDistance", "maxViewDistance", 32768, nil, {
@@ -1004,7 +1010,9 @@ lia.config.add("FakeNamesEnabled", "fakeNamesEnabled", false, nil, {
 lia.config.add("vendorDefaultMoney", "vendorDefaultMoney", 500, nil, {
     desc = "vendorDefaultMoneyDesc",
     category = "vendor",
-    type = "Int"
+    type = "Int",
+    min = 100,
+    max = 10000
 })
 
 local function getMenuTabNames()
