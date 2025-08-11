@@ -39,7 +39,7 @@ local function GetSubMenuIcon(name)
     baseKey = baseKey:gsub("^%s*(.-)%s*$", "%1")
     if subMenuIcons[baseKey] then return subMenuIcons[baseKey] end
     if subMenuIcons[L(name)] then return subMenuIcons[L(name)] end
-    local setFactionLocalized = L("setFactionTitle"):match("^([^%(]+)") or L("setFactionTitle")
+    local setFactionLocalized = L("setFactionTitle", ""):match("^([^%(]+)") or L("setFactionTitle", "")
     setFactionLocalized = setFactionLocalized:gsub("^%s*(.-)%s*$", "%1")
     if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
     if name:find("Set Faction", 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
