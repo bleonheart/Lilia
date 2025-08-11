@@ -1401,9 +1401,10 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 local opt = lia.config.stored[k]
                 local n = opt.name or ""
                 local d = opt.desc or ""
+                local cat = opt.category or L("misc")
                 local ln, ld = n:lower(), d:lower()
-                if filter == "" or ln:find(filter, 1, true) or ld:find(filter, 1, true) then
-                    local cat = opt.category or L("misc")
+                local lk, lc = k:lower(), cat:lower()
+                if filter == "" or ln:find(filter, 1, true) or ld:find(filter, 1, true) or lk:find(filter, 1, true) or lc:find(filter, 1, true) then
                     categories[cat] = categories[cat] or {}
                     categories[cat][#categories[cat] + 1] = {
                         key = k,
