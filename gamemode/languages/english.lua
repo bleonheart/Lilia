@@ -267,6 +267,7 @@ LANGUAGE = {
     areYouSure = "Are you sure?",
     descChangedTarget = "%s has changed %s's character description.",
     staffDescUpdated = "Staff character description updated!",
+    staffdiscordDesc = "Sets your staff Discord username.",
     disconnect = "Disconnect",
     noPerm = "You are not allowed to do this.",
     chgName = "Change Name",

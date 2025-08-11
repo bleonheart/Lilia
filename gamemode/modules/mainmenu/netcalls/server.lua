@@ -158,7 +158,15 @@ net.Receive("liaCharDelete", function(_, client)
 end)
 
 hook.Add("PlayerLoadedChar", "StaffCharacterDiscordPrompt", function(client, character)
-    if character:getFaction() == FACTION_STAFF and (character:getDesc() == "" or character:getDesc():find("^A Staff Character")) then
+    if character:getFaction() ~= FACTION_STAFF then return end
+    local storedDiscord = client:getLiliaData("staffDiscord")
+    if storedDiscord and storedDiscord ~= "" then
+        local description = "A Staff Character, Discord: " .. storedDiscord .. ", SteamID: " .. client:SteamID()
+        character:setDesc(description)
+        return
+    end
+
+    if character:getDesc() == "" or character:getDesc():find("^A Staff Character") then
         timer.Simple(2, function()
             if IsValid(client) and client:getChar() == character then
                 net.Start("liaStaffDiscordPrompt")
@@ -172,6 +180,7 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     local discord = net.ReadString()
     local character = client:getChar()
     if not character or character:getFaction() ~= FACTION_STAFF then return end
+    client:setLiliaData("staffDiscord", discord)
     local steamID = client:SteamID()
     local description = "A Staff Character, Discord: " .. discord .. ", SteamID: " .. steamID
     character:setDesc(description)
