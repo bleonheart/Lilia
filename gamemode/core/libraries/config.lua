@@ -4,11 +4,7 @@ function lia.config.add(key, name, value, callback, data)
     assert(isstring(key), L("configKeyString", type(key)))
     assert(istable(data), L("configDataTable", type(data)))
     local t = type(value)
-    local configType = t == "boolean" and "Boolean" or
-        t == "number" and (math.floor(value) == value and "Int" or "Float") or
-        t == "string" and "String" or
-        t == "table" and (value.r and value.g and value.b and "Color" or "Table") or
-        "Generic"
+    local configType = t == "boolean" and "Boolean" or t == "number" and (math.floor(value) == value and "Int" or "Float") or t == "string" and "String" or t == "table" and (value.r and value.g and value.b and "Color" or "Table") or "Generic"
     local validTypes = {
         Boolean = true,
         Int = true,
@@ -18,14 +14,17 @@ function lia.config.add(key, name, value, callback, data)
         Table = true,
         Generic = true
     }
+
     if not data.type or not validTypes[data.type] then
         lia.error(L("configMissingType", key, configType))
         data.type = configType
     end
+
     if (data.type == "Int" or data.type == "Float") and (data.min == nil or data.max == nil) then
-        local missing = (data.min == nil and data.max == nil) and "min and max" or (data.min == nil and "min" or "max")
+        local missing = data.min == nil and data.max == nil and "min and max" or data.min == nil and "min" or "max"
         lia.error(L("configNeedsMinMax", key, data.type, missing))
     end
+
     local oldConfig = lia.config.stored[key]
     local savedValue = oldConfig and oldConfig.value or value
     if istable(data.options) then
