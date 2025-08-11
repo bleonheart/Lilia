@@ -21,6 +21,7 @@ local function ensureDefaults(groups)
                     types = {},
                 }
             }
+
             groups[grp] = data
             created = true
         end
@@ -55,7 +56,6 @@ local function ensureDefaults(groups)
 end
 
 ensureDefaults(lia.administrator.groups)
-
 local function getPrivilegeCategory(privilegeName)
     local categoryChecks = {
         {
@@ -230,7 +230,7 @@ function lia.administrator.hasAccess(ply, privilege)
 
     if not (lia.administrator.privileges and lia.administrator.privileges[privilege]) then
         lia.information(L("privilegeNotExist", privilege))
-        if IsValid(ply) and ply.notifyLocalized then ply:notifyLocalized("privilegeNotExist", privilege) end
+        if IsValid(ply) then ply:notifyLocalized("privilegeNotExist", privilege) end
         return getGroupLevel(grp) >= (lia.administrator.DefaultGroups.superadmin or 3)
     end
 
@@ -519,11 +519,8 @@ if SERVER then
                 privileges = lia.administrator.privileges or {},
                 names = lia.administrator.privilegeNames or {}
             })
-            timer.Simple(0.05, function()
-                if IsValid(ply) and lia.net.ready[ply] then
-                    lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {})
-                end
-            end)
+
+            timer.Simple(0.05, function() if IsValid(ply) and lia.net.ready[ply] then lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {}) end end)
         end
 
         if c and IsValid(c) then
@@ -1090,6 +1087,7 @@ else
             lia.administrator.privileges = tbl
         end
     end)
+
     net.Receive("liaGroupPermChanged", function()
         local group = net.ReadString()
         local privilege = net.ReadString()
