@@ -790,6 +790,24 @@ function PANEL:Think()
         self.logo:MoveToFront()
         self:UpdateLogoPosition()
     end
+
+    if self.isLoadMode and IsValid(self.modelEntity) then
+        local ang = self.modelEntity:GetAngles()
+        local rotate = 0
+
+        if input.IsKeyDown(KEY_A) then
+            rotate = rotate + FrameTime() * 120
+        end
+
+        if input.IsKeyDown(KEY_D) then
+            rotate = rotate - FrameTime() * 120
+        end
+
+        if rotate ~= 0 then
+            ang.y = ang.y + rotate
+            self.modelEntity:SetAngles(ang)
+        end
+    end
 end
 
 vgui.Register("liaCharacter", PANEL, "EditablePanel")
