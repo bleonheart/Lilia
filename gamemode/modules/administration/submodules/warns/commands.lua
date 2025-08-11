@@ -46,6 +46,7 @@ lia.command.add("warn", {
     end
 })
 
+
 lia.command.add("viewwarns", {
     adminOnly = true,
     privilege = "viewPlayerWarnings",
@@ -110,6 +111,70 @@ lia.command.add("viewwarns", {
             }, target:getChar():getID())
 
             lia.log.add(client, "viewWarns", target)
+        end)
+    end
+})
+
+lia.command.add("viewwarnsissued", {
+    adminOnly = true,
+    privilege = "viewPlayerWarnings",
+    desc = "viewWarnsIssuedDesc",
+    arguments = {
+        {
+            name = "staff",
+            type = "string"
+        },
+    },
+    onRun = function(client, arguments)
+        local targetName = arguments[1]
+        if not targetName then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        local target = lia.util.findPlayer(client, targetName)
+        local steamID, displayName = targetName, targetName
+        if IsValid(target) then
+            steamID = target:SteamID()
+            displayName = target:Nick()
+        end
+
+        MODULE:GetWarningsByIssuer(steamID):next(function(warns)
+            if #warns == 0 then
+                client:notifyLocalized("noWarnings", displayName)
+                return
+            end
+
+            local warningList = {}
+            for index, warn in ipairs(warns) do
+                warningList[#warningList + 1] = {
+                    index = index,
+                    timestamp = warn.timestamp or L("na"),
+                    player = string.format("%s (%s)", warn.warned or L("na"), warn.warnedSteamID or L("na")),
+                    warningMessage = warn.message or L("na")
+                }
+            end
+
+            lia.util.SendTableUI(client, L("warningsIssuedTitle", displayName), {
+                {
+                    name = "id",
+                    field = "index"
+                },
+                {
+                    name = "timestamp",
+                    field = "timestamp"
+                },
+                {
+                    name = "player",
+                    field = "player"
+                },
+                {
+                    name = "warningMessage",
+                    field = "warningMessage"
+                }
+            }, warningList)
+
+            lia.log.add(client, "viewWarnsIssued", target or steamID)
         end)
     end
 })
