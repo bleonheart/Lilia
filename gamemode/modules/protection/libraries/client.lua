@@ -1757,6 +1757,7 @@ function MODULE:PopulateAdminTabs(pages)
                         searchSheet:AddPanelRow(itemPanel, {
                             height = 100,
                             filterText = className:lower()
+                            filterText = displayName:lower()
                         })
                     end
 
