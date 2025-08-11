@@ -1,4 +1,4 @@
--- luacheck: globals lia file LANGUAGE NAME hook table.Merge L LN istable
+-- luacheck: globals lia file LANGUAGE NAME hook table.Merge L istable
 lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
 lia.lang.stored = lia.lang.stored or {}
@@ -48,11 +48,11 @@ function lia.lang.getLanguages()
     return languages
 end
 
-local function translate(key, ...)
-    local stored = lia.lang.stored or {}
+function L(key, ...)
     local lang = lia.config and lia.config.get("Language", "english") or "english"
-    local template = (stored[lang:lower()] or {})[key]
-    if not template then return nil end
+    local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
+    local template = langTable and langTable[key]
+    if not template then return tostring(key) end
     if template:find("%%d") then
         lia.error("String formatting with %d is not allowed in localization strings: " .. tostring(key))
     end
@@ -60,7 +60,7 @@ local function translate(key, ...)
     local args = {}
     for i = 1, count do
         local arg = select(i, ...)
-        if istable(arg) == "table" then
+        if istable(arg) then
             args[i] = table.concat(arg, ", ")
         else
             args[i] = tostring(arg or "")
@@ -72,14 +72,6 @@ local function translate(key, ...)
         args[i] = ""
     end
     return string.format(template, unpack(args))
-end
-
-function L(key, ...)
-    return translate(key, ...) or tostring(key)
-end
-
-function LN(key, ...)
-    return translate(key, ...)
 end
 
 lia.lang.loadFromDir("lilia/gamemode/languages")
