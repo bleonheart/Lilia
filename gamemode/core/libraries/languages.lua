@@ -58,11 +58,7 @@ function L(key, ...)
         args[i] = tostring(select(i, ...) or "")
     end
 
-    local needed = 0
-    for _ in template:gmatch("%%s") do
-        needed = needed + 1
-    end
-
+    local needed = select(2, template:gsub("%%[^%%]", ""))
     for i = count + 1, needed do
         args[i] = ""
     end

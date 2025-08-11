@@ -174,5 +174,5 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     local steamID = client:SteamID()
     local description = "A Staff Character, Discord: " .. discord .. ", SteamID: " .. steamID
     character:setDesc(description)
-    client:notifyLocalized("Staff character description updated!")
+    client:notifyLocalized("staffDescUpdated")
 end)
