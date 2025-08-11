@@ -568,10 +568,14 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         if character:isBanned() then
             local characterName = character:getName()
             Derma_Query(L("pkDialogMessage", characterName), L("permaKillTitle"), L("iAcknowledge"), function() end)
-        else
-            lia.module.list["mainmenu"]:chooseCharacter(character:getID()):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
-            self:Remove()
+            return
         end
+
+        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):next(function()
+            if IsValid(self) then self:Remove() end
+        end):catch(function(err)
+            if err and err ~= "" then LocalPlayer():notifyLocalized(err) end
+        end)
     end
 
     self.deleteBtn = self:Add("liaSmallButton")
