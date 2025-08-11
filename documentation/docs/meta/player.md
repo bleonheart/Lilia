@@ -382,25 +382,21 @@ end
 
 **Purpose**
 
-Determines whether the player's position is stuck in the world.
+Checks if the player is stuck in geometry.
 
-**Parameters**
+**Returns**
 
-* None
+* `boolean`: True if the player is stuck, false otherwise.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `boolean`: `true` if the trace detects a stuck state.
-
 **Example Usage**
 
 ```lua
 if player:isStuck() then
-    player:SetPos(player:GetPos() + Vector(0, 0, 16))
+    print("Player is stuck in geometry")
 end
 ```
 
@@ -410,27 +406,26 @@ end
 
 **Purpose**
 
-Checks if an entity is within the given radius of the player.
+Checks if the player is near another entity within the specified radius.
 
 **Parameters**
 
-* `radius` (`number`): Distance in units.
+* `radius` (`number`): The radius to check within.
+* `entity` (`Entity`): The entity to check distance to.
 
-* `entity` (`Entity`): Entity to compare.
+**Returns**
+
+* `boolean`: True if the player is within the radius, false otherwise.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `boolean`: `true` if the entity is close enough.
-
 **Example Usage**
 
 ```lua
-if player:isNearPlayer(128, target) then
-    print("Target is nearby")
+if player:isNearPlayer(100, otherPlayer) then
+    print("Player is nearby")
 end
 ```
 
@@ -440,32 +435,26 @@ end
 
 **Purpose**
 
-Returns a table of entities within radius of the player.
+Returns all entities near the player within the specified radius.
 
 **Parameters**
 
-* `radius` (`number`): Search distance in units.
+* `radius` (`number`): The radius to search within.
+* `playerOnly` (`boolean`): If true, only return player entities.
 
-* `playerOnly` (`boolean|nil`): Only include players when `true`.
+**Returns**
+
+* `table`: Array of nearby entities.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `table`: List of nearby entities.
-
 **Example Usage**
 
 ```lua
-for _, ent in ipairs(player:entitiesNearPlayer(256)) do
-    if ent:IsPlayer() then
-        ent:ChatPrint("Someone is close to you!")
-    else
-        DebugDrawBox(ent:GetPos(), ent:OBBMins(), ent:OBBMaxs(), 0, 255, 0, 0, 5)
-    end
-end
+local nearby = player:entitiesNearPlayer(200, true)
+print("Found " .. #nearby .. " players nearby")
 ```
 
 ---
@@ -474,26 +463,23 @@ end
 
 **Purpose**
 
-Returns the active weapon entity and associated item if equipped.
+Returns the player's currently equipped weapon and its corresponding inventory item.
 
-**Parameters**
+**Returns**
 
-* None
+* `Weapon|Item|nil`: The weapon and item, or `nil` if not found.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `Entity|nil`: Weapon entity when matched.
-
-* `Item|nil`: Inventory item associated with the weapon.
-
 **Example Usage**
 
 ```lua
 local weapon, item = player:getItemWeapon()
+if weapon then
+    print("Equipped weapon: " .. weapon:GetClass())
+end
 ```
 
 ---
@@ -502,25 +488,21 @@ local weapon, item = player:getItemWeapon()
 
 **Purpose**
 
-Checks whether the player is moving faster than walking speed.
+Checks if the player is currently running.
 
-**Parameters**
+**Returns**
 
-* None
+* `boolean`: True if the player is running, false otherwise.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `boolean`: `true` if the player is running.
-
 **Example Usage**
 
 ```lua
 if player:isRunning() then
-    -- player is sprinting
+    print("Player is running")
 end
 ```
 
@@ -530,25 +512,21 @@ end
 
 **Purpose**
 
-Returns `true` if the player's model is considered female.
+Checks if the player's model is female.
 
-**Parameters**
+**Returns**
 
-* None
+* `boolean`: True if the player's model is female, false otherwise.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `boolean`: Whether a female model is detected.
-
 **Example Usage**
 
 ```lua
 if player:isFemale() then
-    print("Female model detected")
+    print("Player is female")
 end
 ```
 
@@ -558,25 +536,21 @@ end
 
 **Purpose**
 
-Checks if the player is using a Steam Family Share account.
+Checks if the player's Steam account is family shared.
 
-**Parameters**
+**Returns**
 
-* None
+* `boolean`: True if the account is family shared, false otherwise.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `boolean`: `true` when the account is shared.
-
 **Example Usage**
 
 ```lua
 if player:IsFamilySharedAccount() then
-    print("Using a shared account")
+    print("Player has family shared account")
 end
 ```
 
@@ -586,24 +560,21 @@ end
 
 **Purpose**
 
-Finds a safe position in front of the player to drop items.
+Calculates the position where items should be dropped in front of the player.
 
-**Parameters**
+**Returns**
 
-* None
+* `Vector`: The calculated drop position.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `Vector`: World position for dropping items.
-
 **Example Usage**
 
 ```lua
-local pos = player:getItemDropPos()
+local dropPos = player:getItemDropPos()
+print("Item will be dropped at: " .. tostring(dropPos))
 ```
 
 ---
@@ -612,28 +583,22 @@ local pos = player:getItemDropPos()
 
 **Purpose**
 
-Returns the player's inventory item list if a character is loaded.
+Returns all items in the player's inventory.
 
-**Parameters**
+**Returns**
 
-* None
+* `table|nil`: Array of inventory items, or `nil` if no character or inventory exists.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `table|nil`: Table of items or `nil` if absent.
-
 **Example Usage**
 
 ```lua
--- Iterate player's items to calculate total weight
-local total = 0
-
-for _, it in pairs(player:getItems() or {}) do
-    total = total + it.weight
+local items = player:getItems()
+if items then
+    print("Player has " .. #items .. " items")
 end
 ```
 
@@ -643,25 +608,27 @@ end
 
 **Purpose**
 
-Performs a simple trace from the player's shoot position.
+Returns the entity that the player is looking at within a specified distance.
 
 **Parameters**
 
-* `distance` (`number|nil`): Trace length in units. Default is `96`.
+* `distance` (`number`): The maximum distance to trace. Defaults to `96`.
+
+**Returns**
+
+* `Entity|nil`: The traced entity, or `nil` if no entity is found.
 
 **Realm**
 
 `Shared`
 
-**Returns**
-
-* `Entity|nil`: The entity hit or `nil`.
-
 **Example Usage**
 
 ```lua
--- Grab the entity the player is pointing at
-local entity = player:getTracedEntity(96)
+local entity = player:getTracedEntity(150)
+if entity then
+    print("Player is looking at: " .. entity:GetClass())
+end
 ```
 
 ---
