@@ -1,9 +1,13 @@
-local MODULE = MODULE
-
 lia.command.add("staffdiscord", {
     desc = "staffdiscordDesc",
-    arguments = {lia.type.string},
-    onRun = function(client, discord)
+    arguments = {
+        {
+            name = "discord",
+            type = "string"
+        }
+    },
+    onRun = function(client, arguments)
+        local discord = arguments[1]
         local character = client:getChar()
         if not character or character:getFaction() ~= FACTION_STAFF then
             client:notifyLocalized("noStaffChar")
@@ -16,4 +20,3 @@ lia.command.add("staffdiscord", {
         client:notifyLocalized("staffDescUpdated")
     end
 })
-
