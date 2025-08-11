@@ -52,10 +52,16 @@ function L(key, ...)
     local stored = lia.lang.stored or {}
     local lang = lia.config and lia.config.get("Language", "english") or "english"
     local template = (stored[lang:lower()] or {})[key] or tostring(key)
+    if template:find("%%d") then lia.error("String formatting with %d is not allowed in localization strings: " .. tostring(key)) end
     local count = select("#", ...)
     local args = {}
     for i = 1, count do
-        args[i] = tostring(select(i, ...) or "")
+        local arg = select(i, ...)
+        if istable(arg) == "table" then
+            args[i] = table.concat(arg, ", ")
+        else
+            args[i] = tostring(arg or "")
+        end
     end
 
     local needed = select(2, template:gsub("%%[^%%]", ""))
