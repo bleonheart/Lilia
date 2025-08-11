@@ -16,13 +16,13 @@ function lia.config.add(key, name, value, callback, data)
     }
 
     if not data.type or not validTypes[data.type] then
-        lia.error(L("configMissingType", key, configType))
+        print(L("configMissingType", key, configType))
         data.type = configType
     end
 
     if (data.type == "Int" or data.type == "Float") and (data.min == nil or data.max == nil) then
         local missing = data.min == nil and data.max == nil and "min and max" or data.min == nil and "min" or "max"
-        lia.error(L("configNeedsMinMax", key, data.type, missing))
+        print(L("configNeedsMinMax", key, data.type, missing))
     end
 
     local oldConfig = lia.config.stored[key]
