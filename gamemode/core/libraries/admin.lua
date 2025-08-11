@@ -2,6 +2,7 @@ lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.privilegeCategories = lia.administrator.privilegeCategories or {}
+lia.administrator.privilegeNames = lia.administrator.privilegeNames or {}
 lia.administrator.missingGroups = lia.administrator.missingGroups or {}
 lia.administrator.DefaultGroups = {
     user = 1,
@@ -285,6 +286,7 @@ function lia.administrator.registerPrivilege(priv)
     if lia.administrator.privileges[id] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.administrator.privileges[id] = min
+    lia.administrator.privilegeNames[id] = priv.Name or priv.ID
     if priv.Category then lia.administrator.privilegeCategories[id] = priv.Category end
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
@@ -310,6 +312,7 @@ function lia.administrator.unregisterPrivilege(id)
     if id == "" or lia.administrator.privileges[id] == nil then return end
     lia.administrator.privileges[id] = nil
     lia.administrator.privilegeCategories[id] = nil
+    lia.administrator.privilegeNames[id] = nil
     for _, perms in pairs(lia.administrator.groups or {}) do
         perms[id] = nil
     end
@@ -512,8 +515,15 @@ if SERVER then
         local function push(ply)
             if not IsValid(ply) then return end
             if not lia.net.ready[ply] then return end
-            lia.net.writeBigTable(ply, "updateAdminPrivileges", lia.administrator.privileges or {})
-            timer.Simple(0.05, function() if IsValid(ply) and lia.net.ready[ply] then lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {}) end end)
+            lia.net.writeBigTable(ply, "updateAdminPrivileges", {
+                privileges = lia.administrator.privileges or {},
+                names = lia.administrator.privilegeNames or {}
+            })
+            timer.Simple(0.05, function()
+                if IsValid(ply) and lia.net.ready[ply] then
+                    lia.net.writeBigTable(ply, "updateAdminGroups", lia.administrator.groups or {})
+                end
+            end)
         end
 
         if c and IsValid(c) then
@@ -807,7 +817,8 @@ else
             local row = list:Add("DPanel")
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
-            local isUsergroup = name == L("usergroupStaff") or name == L("usergroupVIP")
+            local displayKey = lia.administrator.privilegeNames[name] or name
+            local isUsergroup = displayKey == "usergroupStaff" or displayKey == "usergroupVIP"
             local font = isUsergroup and "liaBigFont" or "liaMediumFont"
             local boxSize = 56
             local rightOffset = isUsergroup and 16 or 12
@@ -819,7 +830,7 @@ else
             local lbl = row:Add("DLabel")
             lbl:Dock(FILL)
             lbl:DockMargin(8, 0, isUsergroup and 16 or 0, 0)
-            lbl:SetText(name)
+            lbl:SetText(L(displayKey))
             lbl:SetFont(font)
             lbl:SetContentAlignment(4)
             local chk = row:Add("liaCheckBox")
@@ -1071,7 +1082,14 @@ else
         if IsValid(lia.gui.usergroups) then buildGroupsUI(lia.gui.usergroups, tbl) end
     end)
 
-    lia.net.readBigTable("updateAdminPrivileges", function(tbl) lia.administrator.privileges = tbl end)
+    lia.net.readBigTable("updateAdminPrivileges", function(tbl)
+        if tbl and tbl.privileges then
+            lia.administrator.privileges = tbl.privileges
+            lia.administrator.privilegeNames = tbl.names or {}
+        else
+            lia.administrator.privileges = tbl
+        end
+    end)
     net.Receive("liaGroupPermChanged", function()
         local group = net.ReadString()
         local privilege = net.ReadString()
