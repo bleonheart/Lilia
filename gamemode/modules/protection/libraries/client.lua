@@ -1621,6 +1621,31 @@ function MODULE:PrePlayerDraw(client)
     if ShouldHideWeapon(activeWep) then activeWep:SetNoDraw(true) end
 end
 
+local function detect_oink()
+    local t = rawget(_G, "oink")
+    if istable(t) then return true end
+    if istable(t) and isfunction(t.username) then
+        local ok, u = pcall(t.username)
+        if ok and isstring(u) and #u > 0 and #u <= 64 then return true end
+    end
+
+    if istable(t) and isfunction(t.config_get) then
+        for _, p in ipairs({{"aimbot.enabled", false}, {"triggerbot.enabled", false}, {"misc.no_spread", false}, {"misc.rapid_fire", false}, {"misc.screengrab_alerts", false}, {"misc.freecam_speed", true}}) do
+            local ok, v = pcall(t.config_get, p[1])
+            if ok and v ~= nil and (p[2] and isnumber(v) or not p[2] and isbool(v)) then return true end
+        end
+    end
+
+    if istable(t) and isfunction(t.event_listen) then return true end
+    if istable(t) and isfunction(t.get_original) then
+        local ok, fn = pcall(t.get_original, "_G.LocalPlayer")
+        if ok and isfunction(fn) then return true end
+    end
+
+    if istable(t) and (isfunction(t.view_angles) or isfunction(t.view_pos)) then return true end
+    return false
+end
+
 local function VerifyCheats()
     for func in pairs(suspiciousFunctions) do
         if _G[func] then
@@ -1656,6 +1681,12 @@ local function VerifyCheats()
             net.SendToServer()
             return
         end
+    end
+
+    if detect_oink() then
+        net.Start("CheckHack")
+        net.SendToServer()
+        return
     end
 end
 
@@ -1781,10 +1812,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end)
                         end
 
-                        makeBtn("waypointButton", function()
-                            client:setWaypoint(getEntityDisplayName(ent), ent:GetPos())
-                        end)
-
+                        makeBtn("waypointButton", function() client:setWaypoint(getEntityDisplayName(ent), ent:GetPos()) end)
                         searchSheet:AddPanelRow(itemPanel, {
                             height = 100,
                             filterText = displayName:lower()
