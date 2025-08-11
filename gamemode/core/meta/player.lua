@@ -53,24 +53,6 @@ function playerMeta:getRagdoll()
     if not self:hasRagdoll() then return end
     return self.liaRagdoll
 end
-
---[[
-    isStuck
-
-    Purpose:
-        Checks if the player is stuck in geometry.
-
-    Returns:
-        boolean - True if the player is stuck, false otherwise.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        if player:isStuck() then
-            print("Player is stuck in geometry")
-        end
-]]
 function playerMeta:isStuck()
     return util.TraceEntity({
         start = self:GetPos(),
@@ -78,54 +60,11 @@ function playerMeta:isStuck()
         filter = self
     }, self).StartSolid
 end
-
---[[
-    isNearPlayer
-
-    Purpose:
-        Checks if the player is near another entity within the specified radius.
-
-    Parameters:
-        radius (number) - The radius to check within.
-        entity (Entity) - The entity to check distance to.
-
-    Returns:
-        boolean - True if the player is within the radius, false otherwise.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        if player:isNearPlayer(100, otherPlayer) then
-            print("Player is nearby")
-        end
-]]
 function playerMeta:isNearPlayer(radius, entity)
     local squaredRadius = radius * radius
     local squaredDistance = self:GetPos():DistToSqr(entity:GetPos())
     return squaredDistance <= squaredRadius
 end
-
---[[
-    entitiesNearPlayer
-
-    Purpose:
-        Returns all entities near the player within the specified radius.
-
-    Parameters:
-        radius (number) - The radius to search within.
-        playerOnly (boolean) - If true, only return player entities.
-
-    Returns:
-        table - Array of nearby entities.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        local nearby = player:entitiesNearPlayer(200, true)
-        print("Found " .. #nearby .. " players nearby")
-]]
 function playerMeta:entitiesNearPlayer(radius, playerOnly)
     local nearbyEntities = {}
     for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
@@ -133,25 +72,6 @@ function playerMeta:entitiesNearPlayer(radius, playerOnly)
     end
     return nearbyEntities
 end
-
---[[
-    getItemWeapon
-
-    Purpose:
-        Returns the player's currently equipped weapon and its corresponding inventory item.
-
-    Returns:
-        Weapon, Item or nil - The weapon and item, or nil if not found.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        local weapon, item = player:getItemWeapon()
-        if weapon then
-            print("Equipped weapon: " .. weapon:GetClass())
-        end
-]]
 function playerMeta:getItemWeapon()
     local character = self:getChar()
     local inv = character:getInv()
@@ -168,87 +88,16 @@ function playerMeta:getItemWeapon()
         end
     end
 end
-
---[[
-    isRunning
-
-    Purpose:
-        Checks if the player is currently running.
-
-    Returns:
-        boolean - True if the player is running, false otherwise.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        if player:isRunning() then
-            print("Player is running")
-        end
-]]
 function playerMeta:isRunning()
     return vectorMeta.Length2D(self:GetVelocity()) > self:GetWalkSpeed() + 10
 end
-
---[[
-    isFemale
-
-    Purpose:
-        Checks if the player's model is female.
-
-    Returns:
-        boolean - True if the player's model is female, false otherwise.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        if player:isFemale() then
-            print("Player is female")
-        end
-]]
 function playerMeta:isFemale()
     local model = self:GetModel():lower()
     return model:find("female") or model:find("alyx") or model:find("mossman")
 end
-
---[[
-    IsFamilySharedAccount
-
-    Purpose:
-        Checks if the player's Steam account is family shared.
-
-    Returns:
-        boolean - True if the account is family shared, false otherwise.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        if player:IsFamilySharedAccount() then
-            print("Player has family shared account")
-        end
-]]
 function playerMeta:IsFamilySharedAccount()
     return util.SteamIDFrom64(self:OwnerSteamID64()) ~= self:SteamID()
 end
-
---[[
-    getItemDropPos
-
-    Purpose:
-        Calculates the position where items should be dropped in front of the player.
-
-    Returns:
-        Vector - The calculated drop position.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        local dropPos = player:getItemDropPos()
-        print("Item will be dropped at: " .. tostring(dropPos))
-]]
 function playerMeta:getItemDropPos()
     local data = {}
     data.start = self:GetShootPos()
@@ -261,25 +110,6 @@ function playerMeta:getItemDropPos()
     trace = util.TraceLine(data)
     return trace.HitPos
 end
-
---[[
-    getItems
-
-    Purpose:
-        Returns all items in the player's inventory.
-
-    Returns:
-        table or nil - Array of inventory items, or nil if no character or inventory exists.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        local items = player:getItems()
-        if items then
-            print("Player has " .. #items .. " items")
-        end
-]]
 function playerMeta:getItems()
     local character = self:getChar()
     if character then
@@ -287,28 +117,6 @@ function playerMeta:getItems()
         if inv then return inv:getItems() end
     end
 end
-
---[[
-    getTracedEntity
-
-    Purpose:
-        Returns the entity that the player is looking at within a specified distance.
-
-    Parameters:
-        distance (number) - The maximum distance to trace. Defaults to 96.
-
-    Returns:
-        Entity or nil - The traced entity, or nil if no entity is found.
-
-    Realm:
-        Shared.
-
-    Example Usage:
-        local entity = player:getTracedEntity(150)
-        if entity then
-            print("Player is looking at: " .. entity:GetClass())
-        end
-]]
 function playerMeta:getTracedEntity(distance)
     if not distance then distance = 96 end
     local data = {}
