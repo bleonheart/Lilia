@@ -1,7 +1,7 @@
-﻿MODULE.name = "Teams and Factions"
+﻿MODULE.name = "moduleTeamsName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Provides faction and team management systems"
+MODULE.desc = "moduleTeamsDesc"
 MODULE.Privileges = {
     {
         Name = "canManageFactions",
