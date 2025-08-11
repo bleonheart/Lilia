@@ -1568,6 +1568,39 @@ local hideWeaponSet = {
     ["gmod_tool"] = true
 }
 
+local function getEntityDisplayName(ent)
+    if not IsValid(ent) then return "Unknown Entity" end
+    if ent:GetClass() == "lia_item" and ent.getItemTable then
+        local item = ent:getItemTable()
+        if item and item.getName then
+            return item:getName()
+        elseif item and item.name then
+            return item.name
+        end
+    end
+
+    if ent:GetClass() == "lia_vendor" then
+        local vendorName = ent:getNetVar("name")
+        if vendorName and vendorName ~= "" then return vendorName end
+    end
+
+    if ent:GetClass() == "lia_storage" then
+        local storageInfo = ent:getStorageInfo()
+        if storageInfo and storageInfo.name then return storageInfo.name end
+    end
+
+    if ent:IsPlayer() and ent:getChar() then return ent:getChar():getName() end
+    if ent:IsVehicle() then
+        local vehicleName = ent:GetVehicleClass()
+        if vehicleName and vehicleName ~= "" then return vehicleName end
+    end
+
+    if ent.PrintName and ent.PrintName ~= "" then return ent.PrintName end
+    local className = ent:GetClass()
+    if className:StartWith("lia_") then return className:sub(5):gsub("_", " "):gsub("^%l", string.upper) end
+    return className
+end
+
 function MODULE:CanDeleteChar(_, character)
     if IsValid(character) and character:getMoney() < lia.config.get("DefaultMoney") then return false end
 end
@@ -1699,17 +1732,12 @@ function MODULE:PopulateAdminTabs(pages)
                     searchSheet:Dock(FILL)
                     searchSheet:SetPlaceholderText(L("searchEntities"))
                     for _, ent in ipairs(list) do
-                        local className = ent:GetClass()
-                        if className == "lia_item" and ent.getItemTable then
-                            local item = ent:getItemTable()
-                            if item and item.name then className = item.name end
-                        end
-
+                        local displayName = getEntityDisplayName(ent)
                         local itemPanel = vgui.Create("DPanel")
                         itemPanel:SetTall(100)
                         itemPanel.Paint = function(pnl, w, h)
                             derma.SkinHook("Paint", "Panel", pnl, w, h)
-                            draw.SimpleText(className, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(displayName, "liaMediumFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                         end
 
                         local icon = vgui.Create("liaSpawnIcon", itemPanel)
@@ -1753,10 +1781,13 @@ function MODULE:PopulateAdminTabs(pages)
                             end)
                         end
 
-                        makeBtn("waypointButton", function() client:setWaypoint(className, ent:GetPos()) end)
+                        makeBtn("waypointButton", function()
+                            local displayName = getEntityDisplayName(ent)
+                            client:setWaypoint(displayName, ent:GetPos())
+                        end)
+
                         searchSheet:AddPanelRow(itemPanel, {
                             height = 100,
-                            filterText = className:lower()
                             filterText = displayName:lower()
                         })
                     end
@@ -1774,3 +1805,302 @@ net.Receive("VerifyCheats", function()
     net.Start("VerifyCheatsResponse")
     net.SendToServer()
 end)
+
+local function open_mantle_showcase()
+    local classes = {"MantleBtn", "MantleCategory", "MantleCheckBox", "MantleComboBox", "MantleDermaMenu", "MantleEntry", "MantleFrame", "MantleRadialPanel", "MantleScrollPanel", "MantleSlideBox", "MantleTable", "MantleTabs"}
+    local heights = {
+        MantleBtn = 80,
+        MantleCategory = 120,
+        MantleCheckBox = 60,
+        MantleComboBox = 80,
+        MantleDermaMenu = 48,
+        MantleEntry = 80,
+        MantleFrame = 48,
+        MantleRadialPanel = 280,
+        MantleScrollPanel = 200,
+        MantleSlideBox = 100,
+        MantleTable = 220,
+        MantleTabs = 200
+    }
+
+    local popups = {
+        MantleDermaMenu = true,
+        MantleFrame = true
+    }
+
+    local f = vgui.Create("DFrame")
+    f:SetTitle("Mantle UI Framework Showcase - Interactive Examples")
+    f:SetSize(1200, 800)
+    f:Center()
+    f:MakePopup()
+    
+    -- Add a description panel at the top
+    local descPanel = vgui.Create("DPanel", f)
+    descPanel:Dock(TOP)
+    descPanel:SetTall(60)
+    descPanel:DockMargin(8, 8, 8, 0)
+    descPanel.Paint = function(self, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(50, 50, 50, 200))
+        draw.SimpleText("Mantle UI Framework - A modern VGUI replacement with enhanced styling and functionality", "DermaLarge", w/2, h/2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+    
+    local sp = vgui.Create("DScrollPanel", f)
+    sp:Dock(FILL)
+    sp:DockMargin(8, 8, 8, 8)
+    
+    -- Enhanced populate function with more examples
+    local function populate(p, name)
+        if p.SetText then 
+            p:SetText("Example " .. name .. " Component")
+            -- Add tooltip if supported
+            if p.SetTooltip then
+                p:SetTooltip("This is a " .. name .. " component with enhanced functionality")
+            end
+        end
+        
+        if p.AddChoice then
+            p:AddChoice("Option 1 - Primary")
+            p:AddChoice("Option 2 - Secondary") 
+            p:AddChoice("Option 3 - Tertiary")
+            p:AddChoice("Option 4 - Quaternary")
+            -- Set default selection
+            if p.SetValue then p:SetValue(1) end
+        end
+
+        if p.AddTab then
+            local tab1 = vgui.Create("DPanel")
+            tab1:Dock(FILL)
+            tab1.Paint = function(self, w, h)
+                draw.RoundedBox(4, 0, 0, w, h, Color(60, 60, 60, 255))
+                draw.SimpleText("Tab 1 Content", "DermaLarge", w/2, h/2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+            
+            local tab2 = vgui.Create("DPanel")
+            tab2:Dock(FILL)
+            tab2.Paint = function(self, w, h)
+                draw.RoundedBox(4, 0, 0, w, h, Color(80, 80, 80, 255))
+                draw.SimpleText("Tab 2 Content", "DermaLarge", w/2, h/2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+            
+            local tab3 = vgui.Create("DPanel")
+            tab3:Dock(FILL)
+            tab3.Paint = function(self, w, h)
+                draw.RoundedBox(4, 0, 0, w, h, Color(100, 100, 100, 255))
+                draw.SimpleText("Tab 3 Content", "DermaLarge", w/2, h/2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+            
+            p:AddTab("Primary Tab", tab1)
+            p:AddTab("Secondary Tab", tab2)
+            p:AddTab("Tertiary Tab", tab3)
+        end
+
+        if p.AddRow then
+            p:AddRow({"Header A", "Header B", "Header C", "Header D"})
+            p:AddRow({"Data 1A", "Data 1B", "Data 1C", "Data 1D"})
+            p:AddRow({"Data 2A", "Data 2B", "Data 2C", "Data 2D"})
+            p:AddRow({"Data 3A", "Data 3B", "Data 3C", "Data 3D"})
+        end
+
+        if p.AddItem then
+            -- Add multiple items with different types
+            local item1 = vgui.Create("DButton")
+            item1:SetText("Button Item")
+            item1:SetTall(30)
+            item1.DoClick = function() chat.AddText(Color(0, 255, 0), "Button item clicked!") end
+            
+            local item2 = vgui.Create("DLabel")
+            item2:SetText("Label Item")
+            item2:SetTall(30)
+            item2:SetContentAlignment(5)
+            
+            local item3 = vgui.Create("DCheckBox")
+            item3:SetValue(true)
+            item3:SetTall(30)
+            
+            p:AddItem(item1)
+            p:AddItem(item2)
+            p:AddItem(item3)
+        end
+
+        if p.SetValue then 
+            -- Set different values based on component type
+            if name == "MantleCheckBox" then
+                p:SetValue(true)
+            elseif name == "MantleSlideBox" then
+                p:SetValue(0.75) -- 75%
+            end
+        end
+        
+        if p.AddPanel then
+            -- Add multiple panels with different content
+            for i = 1, 3 do
+                local inner = vgui.Create("DPanel")
+                inner:SetTall(40)
+                inner:DockMargin(0, 0, 0, 4)
+                inner.Paint = function(self, w, h)
+                    draw.RoundedBox(4, 0, 0, w, h, Color(40 + i * 20, 40 + i * 20, 40 + i * 20, 255))
+                    draw.SimpleText("Panel " .. i, "DermaDefault", w/2, h/2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                end
+                p:AddPanel(inner)
+            end
+        end
+
+        if p.GetCanvas then
+            -- Create a more interesting canvas layout
+            for i = 1, 6 do
+                local row = vgui.Create("DPanel", p)
+                row:SetTall(32)
+                row:Dock(TOP)
+                row:DockMargin(0, 0, 0, 6)
+                row.Paint = function(self, w, h)
+                    local color = HSVToColor(i * 60, 0.7, 0.8)
+                    draw.RoundedBox(4, 0, 0, w, h, color)
+                    draw.SimpleText("Canvas Row " .. i, "DermaDefault", 10, h/2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                end
+            end
+        end
+        
+        -- Add specific functionality for certain components
+        if name == "MantleEntry" then
+            if p.SetPlaceholderText then
+                p:SetPlaceholderText("Enter text here...")
+            end
+            if p.SetValue then
+                p:SetValue("Sample text value")
+            end
+        elseif name == "MantleSlideBox" then
+            if p.SetMin then p:SetMin(0) end
+            if p.SetMax then p:SetMax(100) end
+            if p.SetDecimals then p:SetDecimals(2) end
+        elseif name == "MantleTable" then
+            if p.SetSortable then p:SetSortable(true) end
+            if p.SetMultiSelect then p:SetMultiSelect(true) end
+        end
+    end
+
+    for _, name in ipairs(classes) do
+        local row = vgui.Create("DPanel", sp)
+        row:Dock(TOP)
+        row:DockMargin(0, 0, 0, 12)
+        row:SetTall(heights[name] or 140)
+        row.Paint = function(self, w, h)
+            draw.RoundedBox(6, 0, 0, w, h, Color(40, 40, 40, 200))
+        end
+        
+        local header = vgui.Create("DLabel", row)
+        header:SetText(name)
+        header:SetFont("DermaLarge")
+        header:Dock(TOP)
+        header:DockMargin(12, 12, 12, 6)
+        header:SizeToContents()
+        header:SetTextColor(Color(255, 255, 255, 255))
+        
+        -- Add description for each component
+        local desc = vgui.Create("DLabel", row)
+        desc:SetText("Interactive " .. name .. " component with enhanced examples")
+        desc:SetFont("DermaDefault")
+        desc:Dock(TOP)
+        desc:DockMargin(12, 0, 12, 8)
+        desc:SizeToContents()
+        desc:SetTextColor(Color(200, 200, 200, 255))
+        
+        local container = vgui.Create("DPanel", row)
+        container:Dock(FILL)
+        container:DockMargin(12, 0, 12, 12)
+        container.Paint = function() end
+        
+        if popups[name] then
+            local b = vgui.Create("DButton", container)
+            b:Dock(FILL)
+            b:SetText("Open " .. name .. " Example")
+            b:SetTextColor(Color(255, 255, 255, 255))
+            b.Paint = function(self, w, h)
+                draw.RoundedBox(4, 0, 0, w, h, Color(70, 130, 180, 255))
+                if self:IsHovered() then
+                    draw.RoundedBox(4, 0, 0, w, h, Color(100, 150, 200, 255))
+                end
+            end
+            b.DoClick = function()
+                if name == "MantleDermaMenu" then
+                    local m = vgui.Create("MantleDermaMenu")
+                    if m.AddOption then
+                        m:AddOption("Primary Action", function() chat.AddText(Color(0, 255, 0), "Primary action selected!") end)
+                        m:AddOption("Secondary Action", function() chat.AddText(Color(255, 255, 0), "Secondary action selected!") end)
+                        m:AddOption("Dangerous Action", function() chat.AddText(Color(255, 0, 0), "Dangerous action selected!") end)
+                        m:AddSpacer()
+                        m:AddOption("Settings", function() chat.AddText(Color(0, 255, 255), "Settings opened!") end)
+                    end
+
+                    if m.Open then
+                        local x, y = gui.MousePos()
+                        m:Open(x, y)
+                    else
+                        m:MakePopup()
+                        m:Center()
+                        m:SetVisible(true)
+                    end
+                elseif name == "MantleFrame" then
+                    local mf = vgui.Create("MantleFrame")
+                    if mf.SetTitle then mf:SetTitle("Enhanced " .. name .. " Example") end
+                    mf:SetSize(600, 400)
+                    mf:Center()
+                    if mf.MakePopup then mf:MakePopup() end
+                    
+                    -- Add content to the frame
+                    local content = vgui.Create("DPanel", mf)
+                    content:Dock(FILL)
+                    content:DockMargin(16, 16, 16, 16)
+                    content.Paint = function(self, w, h)
+                        draw.RoundedBox(6, 0, 0, w, h, Color(50, 50, 50, 255))
+                        draw.SimpleText("This is an enhanced " .. name .. " example", "DermaLarge", w/2, h/2 - 20, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        draw.SimpleText("with multiple interactive elements", "DermaDefault", w/2, h/2 + 20, Color(200, 200, 200, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end
+                    
+                    -- Add some interactive elements
+                    local btnContainer = vgui.Create("DPanel", content)
+                    btnContainer:Dock(BOTTOM)
+                    btnContainer:SetTall(60)
+                    btnContainer:DockMargin(0, 16, 0, 0)
+                    btnContainer.Paint = function() end
+                    
+                    local btn1 = vgui.Create("DButton", btnContainer)
+                    btn1:SetText("Action 1")
+                    btn1:SetWide(120)
+                    btn1:Dock(LEFT)
+                    btn1:DockMargin(0, 0, 8, 0)
+                    btn1.DoClick = function() chat.AddText(Color(0, 255, 0), "Action 1 executed!") end
+                    
+                    local btn2 = vgui.Create("DButton", btnContainer)
+                    btn2:SetText("Action 2")
+                    btn2:SetWide(120)
+                    btn2:Dock(LEFT)
+                    btn2:DockMargin(0, 0, 8, 0)
+                    btn2.DoClick = function() chat.AddText(Color(255, 255, 0), "Action 2 executed!") end
+                    
+                    local btn3 = vgui.Create("DButton", btnContainer)
+                    btn3:SetText("Close")
+                    btn3:SetWide(120)
+                    btn3:Dock(RIGHT)
+                    btn3.DoClick = function() mf:Remove() end
+                end
+            end
+        else
+            local p = vgui.Create(name, container)
+            p:Dock(FILL)
+            p:DockMargin(0, 0, 0, 0)
+            populate(p, name)
+        end
+    end
+    
+    -- Add a footer with usage information
+    local footer = vgui.Create("DPanel", f)
+    footer:Dock(BOTTOM)
+    footer:SetTall(40)
+    footer:DockMargin(8, 0, 8, 8)
+    footer.Paint = function(self, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 200))
+        draw.SimpleText("Use console command 'mantle_showcase' to reopen this showcase", "DermaDefault", w/2, h/2, Color(200, 200, 200, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+end
+
+concommand.Add("mantle_showcase", open_mantle_showcase)
