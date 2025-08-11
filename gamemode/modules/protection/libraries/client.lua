@@ -1782,8 +1782,7 @@ function MODULE:PopulateAdminTabs(pages)
                         end
 
                         makeBtn("waypointButton", function()
-                            local displayName = getEntityDisplayName(ent)
-                            client:setWaypoint(displayName, ent:GetPos())
+                            client:setWaypoint(getEntityDisplayName(ent), ent:GetPos())
                         end)
 
                         searchSheet:AddPanelRow(itemPanel, {
