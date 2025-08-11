@@ -4,12 +4,11 @@ function lia.config.add(key, name, value, callback, data)
     assert(isstring(key), L("configKeyString", type(key)))
     assert(istable(data), L("configDataTable", type(data)))
     local t = type(value)
-    local configType = t == "boolean" and "Boolean" or t == "number" and (math.floor(value) == value and "Int" or "Float") or t == "string" and "String" or t == "table" and (value.r and value.g and value.b and "Color" or "Table") or "Generic"
+    local configType = t == "boolean" and "Boolean" or t == "number" and (math.floor(value) == value and "Int" or "Float") or t == "table" and (value.r and value.g and value.b and "Color" or "Table") or "Generic"
     local validTypes = {
         Boolean = true,
         Int = true,
         Float = true,
-        String = true,
         Color = true,
         Table = true,
         Generic = true
@@ -956,7 +955,7 @@ lia.config.add("sbHeight", "sbHeight", 0.65, refreshScoreboard, {
 lia.config.add("sbDock", "sbDock", "center", refreshScoreboard, {
     desc = "sbDockDesc",
     category = "scoreboard",
-    type = "String",
+    type = "Table",
     options = {"left", "center", "right"}
 })
 
