@@ -12,8 +12,9 @@ lia.config.add("invW", "invWidth", 6, function(_, newW)
         local w, h = inv:getSize()
         if w ~= dw or h ~= dh then
             inv:setSize(dw, dh)
-            inv:sync(client)
         end
+        local removed = lia.inventory.checkOverflow(inv, char, w, h)
+        if w ~= dw or h ~= dh or removed then inv:sync(client) end
     end
 
     local json = util.TableToJSON({newW})
@@ -40,8 +41,9 @@ lia.config.add("invH", "invHeight", 4, function(_, newH)
         local w, h = inv:getSize()
         if w ~= dw or h ~= dh then
             inv:setSize(dw, dh)
-            inv:sync(client)
         end
+        local removed = lia.inventory.checkOverflow(inv, char, w, h)
+        if w ~= dw or h ~= dh or removed then inv:sync(client) end
     end
 
     local json = util.TableToJSON({newH})
