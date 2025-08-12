@@ -96,7 +96,13 @@ function lia.command.hasAccess(client, command, data)
     local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
     local privilegeName = data.privilege and L(data.privilege) or accessLevels == "user" and L("globalAccess") or L("accessTo", command)
     local hasAccess = true
-    if accessLevels ~= "user" then hasAccess = client:hasPrivilege(privilegeID) end
+    if accessLevels ~= "user" then
+        if not isstring(privilegeID) then
+            lia.error("Command '" .. tostring(command) .. "' has invalid privilege ID type: " .. tostring(privilegeID))
+            return false, privilegeName
+        end
+        hasAccess = client:hasPrivilege(privilegeID)
+    end
     local hookResult = hook.Run("CanPlayerUseCommand", client, command)
     if hookResult ~= nil then return hookResult, privilegeName end
     local char = IsValid(client) and client.getChar and client:getChar()
