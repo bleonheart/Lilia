@@ -152,24 +152,6 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
         lia.module.list[uniqueID] = MODULE
         if not skipSubmodules then loadSubmodules(path) end
         if MODULE.ModuleLoaded then MODULE:ModuleLoaded() end
-        if MODULE.Public then
-            lia.module.versionChecks = lia.module.versionChecks or {}
-            table.insert(lia.module.versionChecks, {
-                uniqueID = MODULE.uniqueID,
-                name = MODULE.name,
-                localVersion = MODULE.version,
-            })
-        end
-
-        if MODULE.Private then
-            lia.module.privateVersionChecks = lia.module.privateVersionChecks or {}
-            table.insert(lia.module.privateVersionChecks, {
-                uniqueID = MODULE.uniqueID,
-                name = MODULE.name,
-                localVersion = MODULE.version,
-            })
-        end
-
         if string.StartsWith(path, engine.ActiveGamemode() .. "/modules") then lia.bootstrap(L("module"), L("moduleFinishedLoading", MODULE.name)) end
         _G[variable] = prev
     end
