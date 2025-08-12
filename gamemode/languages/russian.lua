@@ -687,6 +687,7 @@ LANGUAGE = {
     adminStickGetCharInventoryName = "Получить инвентарь персонажа",
     adminStickGetAllInfosName = "Получить всю информацию",
     adminStickExecutedCommand = "Выполнение команды: %s",
+    noAdminStickOptions = "Нет доступных опций админ-палки для этой цели.",
     sendToSitRoom = "Отправить в комнату администрации",
     setSitroomDesc = "Установить комнату администрации",
     enterNamePrompt = "Введите имя",

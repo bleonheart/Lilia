@@ -687,6 +687,7 @@ LANGUAGE = {
     adminStickGetCharInventoryName = "Obtenir inventaire personnage",
     adminStickGetAllInfosName = "Obtenir toutes les infos",
     adminStickExecutedCommand = "Exécution de la commande : %s",
+    noAdminStickOptions = "Aucune option de bâton d'administration disponible pour cette cible.",
     sendToSitRoom = "Envoyer en salle d'administration",
     setSitroomDesc = "Définir la salle d'administration",
     enterNamePrompt = "Entrer le nom",

@@ -687,6 +687,7 @@ LANGUAGE = {
     adminStickGetCharInventoryName = "Charakterinventar abrufen",
     adminStickGetAllInfosName = "Alle Informationen abrufen",
     adminStickExecutedCommand = "Befehl wird ausgeführt: %s",
+    noAdminStickOptions = "Keine Admin-Stick-Optionen für dieses Ziel verfügbar.",
     sendToSitRoom = "In den Adminraum schicken",
     setSitroomDesc = "Adminraum setzen",
     enterNamePrompt = "Name eingeben",
