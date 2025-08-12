@@ -18,8 +18,6 @@ do
 end
 
 function playerMeta:hasPrivilege(privilegeName)
-    local override = hook.Run("PlayerHasPrivilege", self, privilegeName)
-    if override ~= nil then return override end
     return lia.administrator.hasAccess(self, privilegeName)
 end
 
