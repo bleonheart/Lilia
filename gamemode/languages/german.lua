@@ -66,6 +66,7 @@ LANGUAGE = {
     mePossessiveFormat = "**%ss %s",
     setInventorySizeDesc = "Setzt die benutzerdefinierte Inventargröße eines Charakters.",
     updateInventorySizeDesc = "Aktualisiert die Inventargröße eines Spielers basierend auf den Standardeinstellungen.",
+    setInventorySizeOverrideDesc = "Legt die Inventargröße eines Charakters fest und speichert die Überschreibung",
     targetNotFound = "Ziel nicht gefunden",
     invalidWidthHeight = "Ungültige Breite oder Höhe",
     widthHeightOutOfRange = "Breite muss %s–%s und Höhe muss %s–%s sein",

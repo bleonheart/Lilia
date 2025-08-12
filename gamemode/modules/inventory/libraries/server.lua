@@ -48,21 +48,31 @@ function MODULE:ItemDraggedOutOfInventory(client, item)
     item:interact("drop", client)
 end
 
-function MODULE:PlayerLoadedChar(client, character)
+local function applyInventorySize(client, character)
     local inv = character:getInv()
-    if inv then
-        local w, h = inv:getSize()
-        local baseW, baseH = lia.config.get("invW"), lia.config.get("invH")
-        if w ~= baseW or h ~= baseH then return w, h end
-        local dw, dh = hook.Run("GetDefaultInventorySize", client)
-        dw = dw or baseW
-        dh = dh or baseH
-        w, h = inv:getSize()
-        if w ~= dw or h ~= dh then
-            inv:setSize(dw, dh)
-            inv:sync(client)
-        end
+    if not inv then return end
+    local override = character:getData("invSizeOverride")
+    local dw, dh
+    if istable(override) then
+        dw, dh = override[1], override[2]
+    else
+        dw, dh = hook.Run("GetDefaultInventorySize", client, character)
+        dw = dw or lia.config.get("invW")
+        dh = dh or lia.config.get("invH")
     end
+    local w, h = inv:getSize()
+    if w ~= dw or h ~= dh then
+        inv:setSize(dw, dh)
+        inv:sync(client)
+    end
+end
+
+function MODULE:PlayerLoadedChar(client, character)
+    applyInventorySize(client, character)
+end
+
+function MODULE:OnCharCreated(client, character)
+    applyInventorySize(client, character)
 end
 
 function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID)
