@@ -301,7 +301,7 @@ lia.command.add("charlist", {
     },
     AdminStick = {
         Name = "adminStickOpenCharListName",
-        Category = "player information",
+        Category = "characterManagement",
         Icon = "icon16/user_gray.png"
     },
     onRun = function(client, arguments)
