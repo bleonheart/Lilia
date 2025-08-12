@@ -66,6 +66,7 @@ LANGUAGE = {
     mePossessiveFormat = "**%s de %s",
     setInventorySizeDesc = "Force la taille d'inventaire personnalisée d'un personnage",
     updateInventorySizeDesc = "Met à jour la taille d'inventaire d'un joueur selon les paramètres par défaut",
+    setInventorySizeOverrideDesc = "Définit la taille d'inventaire d'un personnage et enregistre le remplacement",
     targetNotFound = "Cible non trouvée",
     invalidWidthHeight = "Largeur ou hauteur invalide",
     widthHeightOutOfRange = "La largeur doit être comprise entre %s–%s et la hauteur entre %s–%s",

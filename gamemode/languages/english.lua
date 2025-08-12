@@ -66,6 +66,7 @@ LANGUAGE = {
     mePossessiveFormat = "**%s's %s",
     setInventorySizeDesc = "Force set a characters's custom inventory size",
     updateInventorySizeDesc = "Update a player's inventory size based on default settings",
+    setInventorySizeOverrideDesc = "Set a character's inventory size and save override",
     targetNotFound = "Target not found",
     invalidWidthHeight = "Invalid width or height",
     widthHeightOutOfRange = "Width must be %s–%s and height must be %s–%s",
