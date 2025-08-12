@@ -143,9 +143,19 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
             return true
         end
     else
+
+	function MODULE:setData(value, global, ignoreMap)
+		lia.data.set(uniqueID, value, global, ignoreMap)
+	end
+
+	function MODULE:getData(default)
+		return lia.data.get(uniqueID, default) or {}
+	end
+
         lia.module.list[uniqueID] = MODULE
         if not skipSubmodules then loadSubmodules(path) end
         if MODULE.ModuleLoaded then MODULE:ModuleLoaded() end
+        
         if MODULE.Public then
             lia.module.versionChecks = lia.module.versionChecks or {}
             table.insert(lia.module.versionChecks, {
