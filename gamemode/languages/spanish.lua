@@ -66,6 +66,7 @@ LANGUAGE = {
     mePossessiveFormat = "**%s de %s",
     setInventorySizeDesc = "Forzar el tamaño de inventario personalizado de un personaje",
     updateInventorySizeDesc = "Actualiza el tamaño de inventario de un jugador según la configuración predeterminada",
+    setInventorySizeOverrideDesc = "Establece el tamaño de inventario de un personaje y guarda la anulación",
     targetNotFound = "Objetivo no encontrado",
     invalidWidthHeight = "Ancho o alto inválido",
     widthHeightOutOfRange = "El ancho debe ser %s–%s y el alto debe ser %s–%s",

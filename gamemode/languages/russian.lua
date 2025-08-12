@@ -66,6 +66,7 @@ LANGUAGE = {
     mePossessiveFormat = "**%s: %s",
     setInventorySizeDesc = "Принудительно установить размер инвентаря персонажа",
     updateInventorySizeDesc = "Обновить размер инвентаря игрока по умолчанию",
+    setInventorySizeOverrideDesc = "Установить размер инвентаря персонажа и сохранить переопределение",
     targetNotFound = "Цель не найдена",
     invalidWidthHeight = "Недопустимая ширина или высота",
     widthHeightOutOfRange = "Ширина должна быть %s–%s, высота — %s–%s",
