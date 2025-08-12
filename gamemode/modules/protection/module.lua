@@ -1,7 +1,8 @@
-﻿MODULE.name = "protection"
+﻿MODULE.name = "Protection"
+
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "moduleProtectionDesc"
+MODULE.desc = "Provides anti-cheat and anti-exploit protections."
 MODULE.Privileges = {
     {
         Name = "canSeeAltingNotifications",

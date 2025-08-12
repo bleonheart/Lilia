@@ -1,7 +1,8 @@
-﻿MODULE.name = "moduleAdministrationName"
+﻿MODULE.name = "Administration"
+
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "moduleAdministrationDesc"
+MODULE.desc = "Provides comprehensive administration tools and staff management features."
 MODULE.Privileges = {
     {
         Name = "managePropBlacklist",
