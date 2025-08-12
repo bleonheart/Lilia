@@ -1,7 +1,7 @@
 local PANEL = {}
 function PANEL:Init()
     self:SetTitle("")
-    self:SetSize(800, 720)
+    self:SetSize(1024, 820)
     self:Center()
     self:MakePopup()
     self:ShowCloseButton(true)
@@ -11,25 +11,27 @@ function PANEL:Init()
     self.sortColumn = 1
     self.sortDesc = false
     self.visibleCount = 0
+    self.headerHeight = 64
+    self:DockPadding(12, self.headerHeight, 12, 8)
     self.Paint = function(_, w, h)
         surface.SetDrawColor(45, 45, 45, 250)
         surface.DrawRect(0, 0, w, h)
-        draw.SimpleText(self.windowTitle, "liaMediumFont", w / 2, 8, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.windowTitle, "liaMediumFont", w / 2, self.headerHeight / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     self.topBar = vgui.Create("DPanel", self)
     self.topBar:Dock(TOP)
-    self.topBar:SetTall(40)
+    self.topBar:SetTall(44)
     self.topBar.Paint = nil
     self.searchBox = vgui.Create("DTextEntry", self.topBar)
     self.searchBox:Dock(FILL)
-    self.searchBox:SetTall(30)
+    self.searchBox:SetTall(32)
     self.searchBox:SetPlaceholderText("")
     self.searchBox:SetText("")
     self.searchBox.OnTextChanged = function() self:Populate() end
     self.refreshButton = vgui.Create("DButton", self.topBar)
     self.refreshButton:Dock(RIGHT)
-    self.refreshButton:SetWide(90)
+    self.refreshButton:SetWide(100)
     self.refreshButton:SetText(L and L("refresh") or "Refresh")
     self.refreshButton.DoClick = function()
         self:Populate()
@@ -69,8 +71,8 @@ function PANEL:Init()
 
     self.statusBar = vgui.Create("DPanel", self)
     self.statusBar:Dock(BOTTOM)
-    self.statusBar:SetTall(20)
-    self.statusBar.Paint = function(_, w, _) draw.SimpleText("Total: " .. tostring(self.visibleCount or 0), "liaSmallFont", 5, 2, Color(200, 200, 200, 255), TEXT_ALIGN_LEFT) end
+    self.statusBar:SetTall(24)
+    self.statusBar.Paint = function(_, w, _) draw.SimpleText("Total: " .. tostring(self.visibleCount or 0), "liaSmallFont", 5, 4, Color(200, 200, 200, 255), TEXT_ALIGN_LEFT) end
 end
 
 function PANEL:SetWindowTitle(t)

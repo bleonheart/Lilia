@@ -233,7 +233,6 @@ function lia.administrator.hasAccess(ply, privilege)
         end
     end
 
-    print("Checking privilege:", privilege, "for group:", grp)
     if not lia.administrator.privileges[privilege] then
         lia.information(L("privilegeNotExist", privilege))
         if IsValid(ply) then ply:notifyLocalized("privilegeNotExist", privilege) end
