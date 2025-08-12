@@ -217,6 +217,11 @@ local function camiBootstrapFromExisting()
 end
 
 function lia.administrator.hasAccess(ply, privilege)
+    if not isstring(privilege) then
+        lia.error("hasAccess expected a string privilege, got " .. tostring(privilege))
+        return false
+    end
+
     local grp = "user"
     if isstring(ply) then
         grp = ply
