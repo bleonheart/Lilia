@@ -816,6 +816,16 @@ local publicURL = "https://raw.githubusercontent.com/LiliaFramework/Modules/refs
 local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/modules.json"
 local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/version.json"
 local function checkPublicModules()
+    local hasPublic = false
+    for uniqueID in pairs(lia.module.list) do
+        if string.StartsWith(uniqueID, "public_") then
+            hasPublic = true
+            break
+        end
+    end
+
+    if not hasPublic then return end
+
     fetchURL(publicURL, function(body, code)
         if code ~= 200 then
             lia.updater(L("moduleListHTTPError", code))
@@ -828,27 +838,39 @@ local function checkPublicModules()
             return
         end
 
-        for _, info in ipairs(lia.module.versionChecks) do
-            local match
-            for _, m in ipairs(remote) do
-                if m.public_uniqueID == info.uniqueID then
-                    match = m
-                    break
+        for uniqueID, mod in pairs(lia.module.list) do
+            if string.StartsWith(uniqueID, "public_") then
+                local match
+                for _, m in ipairs(remote) do
+                    if m.public_uniqueID == uniqueID then
+                        match = m
+                        break
+                    end
                 end
-            end
 
-            if not match then
-                lia.updater(L("moduleUniqueIDNotFound", info.uniqueID))
-            elseif not match.version then
-                lia.updater(L("moduleNoRemoteVersion", info.name))
-            elseif info.version and versionCompare(info.version, match.version) < 0 then
-                lia.updater(L("moduleOutdated", info.name, match.version))
+                if not match then
+                    lia.updater(L("moduleUniqueIDNotFound", uniqueID))
+                elseif not match.version then
+                    lia.updater(L("moduleNoRemoteVersion", mod.name))
+                elseif mod.version and versionCompare(mod.version, match.version) < 0 then
+                    lia.updater(L("moduleOutdated", mod.name, match.version))
+                end
             end
         end
     end, function(err) lia.updater(L("moduleListError", err)) end)
 end
 
 local function checkPrivateModules()
+    local hasPrivate = false
+    for uniqueID in pairs(lia.module.list) do
+        if string.StartsWith(uniqueID, "private_") then
+            hasPrivate = true
+            break
+        end
+    end
+
+    if not hasPrivate then return end
+
     fetchURL(privateURL, function(body, code)
         if code ~= 200 then
             lia.updater(L("privateModuleListHTTPError", code))
@@ -861,11 +883,13 @@ local function checkPrivateModules()
             return
         end
 
-        for _, info in ipairs(lia.module.privateVersionChecks) do
-            for _, m in ipairs(remote) do
-                if m.private_uniqueID == info.uniqueID and m.version and info.version and versionCompare(info.version, m.version) < 0 then
-                    lia.updater(L("privateModuleOutdated", info.name))
-                    break
+        for uniqueID, mod in pairs(lia.module.list) do
+            if string.StartsWith(uniqueID, "private_") then
+                for _, m in ipairs(remote) do
+                    if m.private_uniqueID == uniqueID and m.version and mod.version and versionCompare(mod.version, m.version) < 0 then
+                        lia.updater(L("privateModuleOutdated", mod.name))
+                        break
+                    end
                 end
             end
         end
@@ -907,8 +931,8 @@ end
 function GM:InitializedModules()
     if self.UpdateCheckDone then return end
     timer.Simple(0, function()
-        if lia.module.versionChecks then checkPublicModules() end
-        if lia.module.privateVersionChecks then checkPrivateModules() end
+        checkPublicModules()
+        checkPrivateModules()
         checkFrameworkVersion()
     end)
 
