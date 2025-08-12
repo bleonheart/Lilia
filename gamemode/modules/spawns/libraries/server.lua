@@ -91,7 +91,6 @@ end
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
     if not IsValid(client) then return end
-
     local InVehicle = client:hasValidVehicle()
     if not InVehicle and client:Alive() then
         character:setLastPos({

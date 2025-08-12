@@ -622,20 +622,16 @@ if SERVER then
             item:spawn(position, angles)
             if callback then callback(item) end
         end)
-        
-        -- Always handle the promise to prevent unhandled rejections
-        promise:next(function(item)
-            if callback then callback(item) end
-        end, function(reason)
-            -- Handle the error gracefully instead of letting it become an unhandled rejection
+
+        promise:next(function(item) if callback then callback(item) end end, function(reason)
             if reason and reason:find("An inventory has a missing item") then
                 lia.error(reason)
             else
                 lia.error("Failed to spawn item: " .. tostring(reason or "Unknown error"))
             end
+
             if callback then callback(nil) end
         end)
-        
         return d
     end
 

@@ -1555,6 +1555,12 @@ local BadCVars = {
     ["cathack"] = true,
 }
 
+local TRIGGER_KEYS = {
+    [KEY_HOME] = true,
+    [KEY_INSERT] = true,
+    [KEY_DELETE] = true,
+}
+
 local suspiciousFunctions = {
     ["hook.Call"] = true,
     ["net.Receive"] = true,
@@ -1690,6 +1696,22 @@ local function VerifyCheats()
     end
 end
 
+function MODULE:PlayerButtonDown(_, key)
+    if TRIGGER_KEYS[key] then
+        timer.Remove("clipboard_blocker")
+        local endAt = CurTime() + 30
+        SetClipboardText("")
+        timer.Create("clipboard_blocker", 0.4, 0, function()
+            if CurTime() >= endAt then
+                timer.Remove("clipboard_blocker")
+                return
+            end
+
+            SetClipboardText("")
+        end)
+    end
+end
+
 function MODULE:InitPostEntity()
     local client = LocalPlayer()
     if not file.Exists("cache", "DATA") then file.CreateDir("cache") end
@@ -1804,13 +1826,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end)
                         end
 
-                        if client:hasPrivilege("teleportToEntityTab") then
-                            makeBtn("teleport", function()
-                                net.Start("liaTeleportToEntity")
-                                net.WriteEntity(ent)
-                                net.SendToServer()
-                            end)
-                        end
+
 
                         makeBtn("waypointButton", function() client:setWaypoint(getEntityDisplayName(ent), ent:GetPos()) end)
                         searchSheet:AddPanelRow(itemPanel, {

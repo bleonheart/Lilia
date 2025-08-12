@@ -1,7 +1,6 @@
 ﻿local MODULE = MODULE
 lia.command.add("warn", {
     adminOnly = true,
-    privilege = "issueWarnings",
     desc = "warnDesc",
     arguments = {
         {
@@ -46,10 +45,8 @@ lia.command.add("warn", {
     end
 })
 
-
 lia.command.add("viewwarns", {
     adminOnly = true,
-    privilege = "viewPlayerWarnings",
     desc = "viewWarnsDesc",
     arguments = {
         {
@@ -117,7 +114,6 @@ lia.command.add("viewwarns", {
 
 lia.command.add("viewwarnsissued", {
     adminOnly = true,
-    privilege = "viewPlayerWarnings",
     desc = "viewWarnsIssuedDesc",
     arguments = {
         {

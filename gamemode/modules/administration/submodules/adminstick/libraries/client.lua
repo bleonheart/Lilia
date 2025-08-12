@@ -636,7 +636,7 @@ function MODULE:OpenAdminStickUI(tgt)
         if v.AdminStick and istable(v.AdminStick) then
             local tc = v.AdminStick.TargetClass
             if tc then
-                if tc == L("door") and tgt:isDoor() or tc == tgtClass then
+                if tc == "door" and tgt:isDoor() or tc == tgtClass then
                     table.insert(cmds, {
                         name = v.AdminStick.Name or k,
                         data = v,

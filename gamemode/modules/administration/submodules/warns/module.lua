@@ -9,4 +9,10 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "warning",
     },
+    {
+        Name = "viewPlayerWarnings",
+        ID = "viewPlayerWarnings",
+        MinAccess = "admin",
+        Category = "warning",
+    },
 }

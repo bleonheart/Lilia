@@ -228,7 +228,7 @@ function lia.administrator.hasAccess(ply, privilege)
         end
     end
 
-    if not (lia.administrator.privileges and lia.administrator.privileges[privilege]) then
+    if not lia.administrator.privileges[privilege] then
         lia.information(L("privilegeNotExist", privilege))
         if IsValid(ply) then ply:notifyLocalized("privilegeNotExist", privilege) end
         return getGroupLevel(grp) >= (lia.administrator.DefaultGroups.superadmin or 3)
@@ -466,13 +466,6 @@ function lia.administrator.renameGroup(oldName, newName)
     hook.Run("OnUsergroupRenamed", oldName, newName)
     if SERVER then lia.administrator.save() end
 end
-
-lia.administrator.registerPrivilege({
-    ID = "createStaffCharacter",
-    Name = "createStaffCharacter",
-    MinAccess = "admin",
-    Category = "categoryStaffManagement"
-})
 
 if SERVER then
     function lia.administrator.addPermission(groupName, permission, silent)
@@ -815,7 +808,7 @@ else
             row:Dock(TOP)
             row:DockMargin(0, 0, 0, 8)
             local displayKey = lia.administrator.privilegeNames[name] or name
-            local isUsergroup = displayKey == "usergroupStaff" or displayKey == "usergroupVIP"
+            local isUsergroup = false
             local font = isUsergroup and "liaBigFont" or "liaMediumFont"
             local boxSize = 56
             local rightOffset = isUsergroup and 16 or 12

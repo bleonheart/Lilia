@@ -1,4 +1,3 @@
--- luacheck: globals lia file LANGUAGE NAME hook table.Merge L istable
 lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
 lia.lang.stored = lia.lang.stored or {}
@@ -53,9 +52,7 @@ function L(key, ...)
     local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
     local template = langTable and langTable[key]
     if not template then return tostring(key) end
-    if template:find("%%d") then
-        lia.error("String formatting with %d is not allowed in localization strings: " .. tostring(key))
-    end
+    if template:find("%%d") then lia.error("String formatting with %d is not allowed in localization strings: " .. tostring(key)) end
     local count = select("#", ...)
     local args = {}
     for i = 1, count do

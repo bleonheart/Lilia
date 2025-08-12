@@ -6,7 +6,6 @@ local function runCommand(client, args, range)
 end
 
 lia.command.add("recogwhisper", {
-    privilege = "manageRecognition",
     adminOnly = true,
     arguments = {
         {
@@ -25,7 +24,6 @@ lia.command.add("recogwhisper", {
 })
 
 lia.command.add("recognormal", {
-    privilege = "manageRecognition",
     adminOnly = true,
     arguments = {
         {
@@ -44,7 +42,6 @@ lia.command.add("recognormal", {
 })
 
 lia.command.add("recogyell", {
-    privilege = "manageRecognition",
     adminOnly = true,
     arguments = {
         {
@@ -63,7 +60,6 @@ lia.command.add("recogyell", {
 })
 
 lia.command.add("recogbots", {
-    privilege = "manageRecognition",
     superAdminOnly = true,
     arguments = {
         {

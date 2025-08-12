@@ -81,12 +81,7 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "categoryStaffBlacklisting",
     },
-    {
-        Name = "manageEntityBlacklist",
-        ID = "manageEntityBlacklist",
-        MinAccess = "superadmin",
-        Category = "categoryStaffBlacklisting",
-    },
+
     {
         Name = "canSpawnRagdolls",
         ID = "canSpawnRagdolls",
@@ -129,12 +124,7 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "categorySpawnVehicles",
     },
-    {
-        Name = "noSpawnDelay",
-        ID = "noSpawnDelay",
-        MinAccess = "admin",
-        Category = "categorySpawnGeneral",
-    },
+
     {
         Name = "canSpawnCars",
         ID = "canSpawnCars",
@@ -153,24 +143,8 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "categorySpawnSENTs",
     },
-    {
-        Name = "usergroupStaff",
-        ID = "usergroupStaff",
-        MinAccess = "admin",
-        Category = "categoryStaffUsergroups",
-    },
-    {
-        Name = "usergroupVIP",
-        ID = "usergroupVIP",
-        MinAccess = "superadmin",
-        Category = "categoryStaffUsergroups",
-    },
-    {
-        Name = "listEntities",
-        ID = "listEntities",
-        MinAccess = "superadmin",
-        Category = "categoryStaffTools",
-    },
+
+
     {
         Name = "canRemoveBlockedEntities",
         ID = "canRemoveBlockedEntities",

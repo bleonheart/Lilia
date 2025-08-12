@@ -104,7 +104,6 @@ net.Receive("liaCharCreate", function(_, client)
     end
 
     if hook.Run("CanPlayerCreateChar", client, data) == false then return response(nil, "maxCharactersReached") end
-
     local originalData = table.Copy(data)
     local newData = {}
     for key in pairs(data) do

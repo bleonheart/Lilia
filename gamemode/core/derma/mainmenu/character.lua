@@ -238,7 +238,6 @@ function PANEL:createStartButton()
         })
     end
 
-    -- 6. Mount Content
     if lia.workshop and lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
         table.insert(buttonsData, {
             id = "mount",
@@ -255,7 +254,6 @@ function PANEL:createStartButton()
         })
     end
 
-    -- 7. Disconnect
     table.insert(buttonsData, {
         id = "disconnect",
         text = "Disconnect",
@@ -265,7 +263,6 @@ function PANEL:createStartButton()
         end
     })
 
-    -- 8. Return
     if clientChar then
         table.insert(buttonsData, {
             id = "return",
@@ -571,11 +568,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             return
         end
 
-        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):next(function()
-            if IsValid(self) then self:Remove() end
-        end):catch(function(err)
-            if err and err ~= "" then LocalPlayer():notifyLocalized(err) end
-        end)
+        lia.module.list["mainmenu"]:chooseCharacter(character:getID()):next(function() if IsValid(self) then self:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyLocalized(err) end end)
     end
 
     self.deleteBtn = self:Add("liaSmallButton")
@@ -794,15 +787,8 @@ function PANEL:Think()
     if self.isLoadMode and IsValid(self.modelEntity) then
         local ang = self.modelEntity:GetAngles()
         local rotate = 0
-
-        if input.IsKeyDown(KEY_A) then
-            rotate = rotate + FrameTime() * 120
-        end
-
-        if input.IsKeyDown(KEY_D) then
-            rotate = rotate - FrameTime() * 120
-        end
-
+        if input.IsKeyDown(KEY_A) then rotate = rotate + FrameTime() * 120 end
+        if input.IsKeyDown(KEY_D) then rotate = rotate - FrameTime() * 120 end
         if rotate ~= 0 then
             ang.y = ang.y + rotate
             self.modelEntity:SetAngles(ang)

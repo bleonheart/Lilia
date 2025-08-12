@@ -1,11 +1,4 @@
 ﻿local MODULE = MODULE
-lia.administrator.registerPrivilege({
-    Name = "receiveCheaterNotifications",
-    ID = "receiveCheaterNotifications",
-    MinAccess = "admin",
-    Category = "protection"
-})
-
 local function IsCheater(client)
     return lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false)
 end

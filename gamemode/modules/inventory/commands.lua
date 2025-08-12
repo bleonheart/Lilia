@@ -1,6 +1,5 @@
 ﻿lia.command.add("updateinvsize", {
     adminOnly = true,
-    privilege = "setInventorySize",
     desc = "updateInventorySizeDesc",
     arguments = {
         {
@@ -45,7 +44,6 @@
 
 lia.command.add("setinventorysize", {
     adminOnly = true,
-    privilege = "setInventorySize",
     desc = "setInventorySizeDesc",
     arguments = {
         {

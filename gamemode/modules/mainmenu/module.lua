@@ -128,10 +128,8 @@ else
 end
 
 function MODULE:CanPlayerCreateChar(client, data)
-    -- allow staff characters to bypass the max character limit
     local isStaffCharacter = istable(data) and data.faction == FACTION_STAFF
     if isStaffCharacter then return true end
-
     if SERVER then
         local count = #client.liaCharList or 0
         local maxChars = hook.Run("GetMaxPlayerChar", client) or lia.config.get("MaxCharacters")

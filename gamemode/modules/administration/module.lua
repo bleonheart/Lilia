@@ -15,18 +15,7 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "categoryBlacklisting",
     },
-    {
-        Name = "manageEntityBlacklist",
-        ID = "manageEntityBlacklist",
-        MinAccess = "superadmin",
-        Category = "categoryBlacklisting",
-    },
-    {
-        Name = "accessConfigurationMenu",
-        ID = "accessConfigurationMenu",
-        MinAccess = "superadmin",
-        Category = "categoryConfiguration",
-    },
+
     {
         Name = "accessEditConfigurationMenu",
         ID = "accessEditConfigurationMenu",

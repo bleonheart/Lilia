@@ -15,10 +15,5 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "categoryFactionManagement",
     },
-    {
-        Name = "manageFactionRoster",
-        ID = "manageFactionRoster",
-        MinAccess = "admin",
-        Category = "categoryFactionManagement",
-    },
+
 }

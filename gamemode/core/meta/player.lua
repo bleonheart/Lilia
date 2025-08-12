@@ -53,6 +53,7 @@ function playerMeta:getRagdoll()
     if not self:hasRagdoll() then return end
     return self.liaRagdoll
 end
+
 function playerMeta:isStuck()
     return util.TraceEntity({
         start = self:GetPos(),
@@ -60,11 +61,13 @@ function playerMeta:isStuck()
         filter = self
     }, self).StartSolid
 end
+
 function playerMeta:isNearPlayer(radius, entity)
     local squaredRadius = radius * radius
     local squaredDistance = self:GetPos():DistToSqr(entity:GetPos())
     return squaredDistance <= squaredRadius
 end
+
 function playerMeta:entitiesNearPlayer(radius, playerOnly)
     local nearbyEntities = {}
     for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
@@ -72,6 +75,7 @@ function playerMeta:entitiesNearPlayer(radius, playerOnly)
     end
     return nearbyEntities
 end
+
 function playerMeta:getItemWeapon()
     local character = self:getChar()
     local inv = character:getInv()
@@ -88,16 +92,20 @@ function playerMeta:getItemWeapon()
         end
     end
 end
+
 function playerMeta:isRunning()
     return vectorMeta.Length2D(self:GetVelocity()) > self:GetWalkSpeed() + 10
 end
+
 function playerMeta:isFemale()
     local model = self:GetModel():lower()
     return model:find("female") or model:find("alyx") or model:find("mossman")
 end
+
 function playerMeta:IsFamilySharedAccount()
     return util.SteamIDFrom64(self:OwnerSteamID64()) ~= self:SteamID()
 end
+
 function playerMeta:getItemDropPos()
     local data = {}
     data.start = self:GetShootPos()
@@ -110,6 +118,7 @@ function playerMeta:getItemDropPos()
     trace = util.TraceLine(data)
     return trace.HitPos
 end
+
 function playerMeta:getItems()
     local character = self:getChar()
     if character then
@@ -117,6 +126,7 @@ function playerMeta:getItems()
         if inv then return inv:getItems() end
     end
 end
+
 function playerMeta:getTracedEntity(distance)
     if not distance then distance = 96 end
     local data = {}

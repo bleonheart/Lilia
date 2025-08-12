@@ -816,92 +816,132 @@ local publicURL = "https://raw.githubusercontent.com/LiliaFramework/Modules/refs
 local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/modules.json"
 local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/version.json"
 local function checkPublicModules()
+    print("[TEST] checkPublicModules called")
     fetchURL(publicURL, function(body, code)
+        print("[TEST] checkPublicModules fetchURL success, code:", code)
         if code ~= 200 then
+            print("[TEST] checkPublicModules HTTP error:", code)
             lia.updater(L("moduleListHTTPError", code))
             return
         end
 
         local remote = util.JSONToTable(body)
         if not remote then
+            print("[TEST] checkPublicModules failed to parse JSON")
             lia.updater(L("moduleDataParseError"))
             return
         end
 
         for _, info in ipairs(lia.module.versionChecks) do
+            print("[TEST] Checking module:", info.uniqueID, info.name, info.version)
             local match
             for _, m in ipairs(remote) do
                 if m.public_uniqueID == info.uniqueID then
                     match = m
+                    print("[TEST] Found match for", info.uniqueID, "remote version:", m.version)
                     break
                 end
             end
 
             if not match then
+                print("[TEST] No match found for", info.uniqueID)
                 lia.updater(L("moduleUniqueIDNotFound", info.uniqueID))
             elseif not match.version then
+                print("[TEST] No remote version for", info.name)
                 lia.updater(L("moduleNoRemoteVersion", info.name))
             elseif info.version and versionCompare(info.version, match.version) < 0 then
+                print("[TEST] Module outdated:", info.name, "local:", info.version, "remote:", match.version)
                 lia.updater(L("moduleOutdated", info.name, match.version))
+            else
+                print("[TEST] Module up to date:", info.name)
             end
         end
-    end, function(err) lia.updater(L("moduleListError", err)) end)
+    end, function(err)
+        print("[TEST] checkPublicModules fetchURL error:", err)
+        lia.updater(L("moduleListError", err))
+    end)
 end
 
 local function checkPrivateModules()
+    print("[TEST] checkPrivateModules called")
     fetchURL(privateURL, function(body, code)
+        print("[TEST] checkPrivateModules fetchURL success, code:", code)
         if code ~= 200 then
+            print("[TEST] checkPrivateModules HTTP error:", code)
             lia.updater(L("privateModuleListHTTPError", code))
             return
         end
 
         local remote = util.JSONToTable(body)
         if not remote then
+            print("[TEST] checkPrivateModules failed to parse JSON")
             lia.updater(L("privateModuleDataParseError"))
             return
         end
 
         for _, info in ipairs(lia.module.privateVersionChecks) do
+            print("[TEST] Checking private module:", info.uniqueID, info.name, info.version)
             for _, m in ipairs(remote) do
                 if m.private_uniqueID == info.uniqueID and m.version and info.version and versionCompare(info.version, m.version) < 0 then
+                    print("[TEST] Private module outdated:", info.name, "local:", info.version, "remote:", m.version)
                     lia.updater(L("privateModuleOutdated", info.name))
                     break
+                else
+                    if m.private_uniqueID == info.uniqueID then print("[TEST] Private module up to date:", info.name) end
                 end
             end
         end
-    end, function(err) lia.updater(L("privateModuleListError", err)) end)
+    end, function(err)
+        print("[TEST] checkPrivateModules fetchURL error:", err)
+        lia.updater(L("privateModuleListError", err))
+    end)
 end
 
 local function checkFrameworkVersion()
+    print("[TEST] checkFrameworkVersion called")
     fetchURL(versionURL, function(body, code)
+        print("[TEST] checkFrameworkVersion fetchURL success, code:", code)
         if code ~= 200 then
+            print("[TEST] checkFrameworkVersion HTTP error:", code)
             lia.updater(L("frameworkVersionHTTPError", code))
             return
         end
 
         local remote = util.JSONToTable(body)
         if not remote or not remote.version then
+            print("[TEST] checkFrameworkVersion failed to parse JSON or missing version")
             lia.updater(L("frameworkVersionDataParseError"))
             return
         end
 
         local localVersion = GM.version
+        print("[TEST] Local framework version:", localVersion, "Remote version:", remote.version)
         if not localVersion then
+            print("[TEST] Local framework version missing")
             lia.updater(L("localFrameworkVersionError"))
             return
         end
 
         if versionCompare(localVersion, remote.version) < 0 then
+            print("[TEST] Framework is outdated. Local:", localVersion, "Remote:", remote.version)
             local localNum, remoteNum = tonumber(localVersion), tonumber(remote.version)
             if localNum and remoteNum then
                 local diff = remoteNum - localNum
                 diff = math.Round(diff, 3)
-                if diff > 0 then lia.updater(L("frameworkBehindCount", diff)) end
+                if diff > 0 then
+                    print("[TEST] Framework behind by", diff)
+                    lia.updater(L("frameworkBehindCount", diff))
+                end
             end
 
             lia.updater(L("frameworkOutdated"))
+        else
+            print("[TEST] Framework is up to date.")
         end
-    end, function(err) lia.updater(L("frameworkVersionError", err)) end)
+    end, function(err)
+        print("[TEST] checkFrameworkVersion fetchURL error:", err)
+        lia.updater(L("frameworkVersionError", err))
+    end)
 end
 
 function GM:InitializedModules()
@@ -1000,13 +1040,6 @@ concommand.Add("plysetgroup", function(ply, _, args)
         end
     end
 end)
-
-lia.administrator.registerPrivilege({
-    Name = "stopSoundForEveryone",
-    ID = "stopSoundForEveryone",
-    MinAccess = "superadmin",
-    Category = "categoryServer"
-})
 
 concommand.Add("stopsoundall", function(client)
     if client:hasPrivilege("stopSoundForEveryone") then
