@@ -3,8 +3,6 @@
     net.Send(client)
 end
 
-
-
 function MODULE:ShowHelp()
     return false
 end

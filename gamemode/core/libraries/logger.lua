@@ -633,7 +633,6 @@ lia.log.types = {
         func = function(client, requester, count) return L("logTicketClosed", client:Name(), requester, count or 0) end,
         category = L("admin")
     },
-
     ["plyBring"] = {
         func = function(client, targetName) return L("logPlyBring", client:Name(), targetName) end,
         category = L("admin")

@@ -860,7 +860,6 @@ LANGUAGE = {
     spawnAddDesc = "Добавить точку спавна на вашей позиции для выбранной фракции.",
     spawnRemoveInRadiusDesc = "Удалить все точки спавна в радиусе от вашей позиции (по умолчанию 120).",
     spawnRemoveByNameDesc = "Удалить все точки спавна для выбранной фракции.",
-
     returnItems = "Вернуть предметы",
     returnItemsDesc = "Возвращает предметы, потерянные при смерти, выбранному игроку (если есть).",
     returnItemsTargetNoItems = "У цели нет потерянных предметов или они уже возвращены.",
@@ -1450,9 +1449,7 @@ LANGUAGE = {
     canSpawnStorage = "Может спавнить хранилища",
     managePropBlacklist = "Управлять чёрным списком пропов",
     manageVehicleBlacklist = "Управлять чёрным списком машин",
-
     manageUsergroups = "Управлять группами пользователей",
-
     accessEditConfigurationMenu = "Доступ к редактированию меню конфигурации",
     alwaysSpawnAdminStick = "Всегда спавниться с админ-палкой",
     canAccessFlagManagement = "Доступ к управлению флагами",
@@ -1493,16 +1490,12 @@ LANGUAGE = {
     canSpawnBlacklistedProps = "Может спавнить запрещённые пропы",
     canSpawnNPCs = "Может спавнить NPC",
     noCarSpawnDelay = "Нет задержки спавна машин",
-
     canSpawnCars = "Может спавнить машины",
     canSpawnBlacklistedCars = "Может спавнить запрещённые машины",
     canEditSimfphysCars = "Может редактировать машины Simfphys",
     canSpawnSENTs = "Может спавнить SENT",
-
-
     canRemoveBlockedEntities = "Может удалять заблокированные сущности",
     canRemoveWorldEntities = "Может удалять сущности мира",
-
     viewEntityTab = "Права персонала — просмотр сущности (вкладка сущностей)",
     accessPropertyPrivilege = "Доступ к свойству %s",
     accessToolPrivilege = "Доступ к инструменту %s",
@@ -2020,7 +2013,6 @@ LANGUAGE = {
     logViewPlayerTickets = "Админ '%s' просмотрел тикеты игрока %s.",
     logTicketClaimed = "Админ '%s' взял тикет игрока %s. Всего тикетов: %s.",
     logTicketClosed = "Админ '%s' закрыл тикет игрока %s. Всего тикетов: %s.",
-
     logPlyBring = "Админ '%s' телепортировал игрока '%s' к себе.",
     logPlyGoto = "Админ '%s' телепортировался к игроку '%s'.",
     logPlyReturn = "Админ '%s' вернул игрока '%s' на прежнюю позицию.",

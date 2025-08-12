@@ -101,8 +101,10 @@ function lia.command.hasAccess(client, command, data)
             lia.error("Command '" .. tostring(command) .. "' has invalid privilege ID type: " .. tostring(privilegeID))
             return false, privilegeName
         end
+
         hasAccess = client:hasPrivilege(privilegeID)
     end
+
     local hookResult = hook.Run("CanPlayerUseCommand", client, command)
     if hookResult ~= nil then return hookResult, privilegeName end
     local char = IsValid(client) and client.getChar and client:getChar()

@@ -860,7 +860,6 @@ LANGUAGE = {
     spawnAddDesc = "Adds a spawn point at your current position for the specified faction.",
     spawnRemoveInRadiusDesc = "Removes all spawn points within the given radius of your position (default 120).",
     spawnRemoveByNameDesc = "Removes all spawn points for the specified faction.",
-
     returnItems = "Return Items",
     returnItemsDesc = "Returns items lost on death to the specified player, if any.",
     returnItemsTargetNoItems = "The target hasn't lost any items or they've already been returned.",
@@ -1450,9 +1449,7 @@ Reload: Drop]],
     canSpawnStorage = "Can Spawn Storage",
     managePropBlacklist = "Manage Prop Blacklist",
     manageVehicleBlacklist = "Manage Vehicle Blacklist",
-
     manageUsergroups = "Manage Usergroups",
-
     accessEditConfigurationMenu = "Access Edit Configuration Menu",
     alwaysSpawnAdminStick = "Always Spawn w/ Admin Stick",
     canAccessFlagManagement = "Can Access Flag Management",
@@ -1493,16 +1490,12 @@ Reload: Drop]],
     canSpawnBlacklistedProps = "Can Spawn Blacklisted Props",
     canSpawnNPCs = "Can Spawn NPCs",
     noCarSpawnDelay = "No Car Spawn Delay",
-
     canSpawnCars = "Can Spawn Cars",
     canSpawnBlacklistedCars = "Can Spawn Blacklisted Cars",
     canEditSimfphysCars = "Can Edit Simfphys Cars",
     canSpawnSENTs = "Can Spawn SENTs",
-
-
     canRemoveBlockedEntities = "Can Remove Blocked Entities",
     canRemoveWorldEntities = "Can Remove World Entities",
-
     viewEntityTab = "Staff Permission — View Entity (Entity Tab)",
     accessPropertyPrivilege = "Access to %s property",
     accessToolPrivilege = "Access Tool %s",
@@ -2020,7 +2013,6 @@ Reload: Drop]],
     logViewPlayerTickets = "Admin '%s' viewed tickets for %s.",
     logTicketClaimed = "Admin '%s' claimed a ticket for %s. Total claims: %s.",
     logTicketClosed = "Admin '%s' closed a ticket for %s. Total claims: %s.",
-
     logPlyBring = "Admin '%s' brought player '%s'.",
     logPlyGoto = "Admin '%s' teleported to player '%s'.",
     logPlyReturn = "Admin '%s' returned player '%s' to their previous position.",

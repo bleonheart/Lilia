@@ -860,7 +860,6 @@ LANGUAGE = {
     spawnAddDesc = "Fügt an deiner aktuellen Position einen Spawnpunkt für die angegebene Fraktion hinzu.",
     spawnRemoveInRadiusDesc = "Entfernt alle Spawnpunkte im angegebenen Radius um deine Position (Standard 120).",
     spawnRemoveByNameDesc = "Entfernt alle Spawnpunkte für die angegebene Fraktion.",
-
     returnItems = "Gegenstände zurückgeben",
     returnItemsDesc = "Gibt beim Tod verlorene Gegenstände an den angegebenen Spieler zurück, falls vorhanden.",
     returnItemsTargetNoItems = "Das Ziel hat keine Gegenstände verloren oder sie wurden bereits zurückgegeben.",
@@ -1450,9 +1449,7 @@ Nachladen: Fallenlassen]],
     canSpawnStorage = "Lager spawnen",
     managePropBlacklist = "Prop-Blacklist verwalten",
     manageVehicleBlacklist = "Fahrzeug-Blacklist verwalten",
-
     manageUsergroups = "Benutzergruppen verwalten",
-
     accessEditConfigurationMenu = "Konfigurationsmenü bearbeiten",
     alwaysSpawnAdminStick = "Immer mit Admin-Stick spawnen",
     canAccessFlagManagement = "Flag-Verwaltung zugreifen",
@@ -1493,16 +1490,12 @@ Nachladen: Fallenlassen]],
     canSpawnBlacklistedProps = "Gesperrte Props spawnen",
     canSpawnNPCs = "NPCs spawnen",
     noCarSpawnDelay = "Kein Fahrzeug-Spawn-Delay",
-
     canSpawnCars = "Fahrzeuge spawnen",
     canSpawnBlacklistedCars = "Gesperrte Fahrzeuge spawnen",
     canEditSimfphysCars = "Simfphys-Fahrzeuge bearbeiten",
     canSpawnSENTs = "SENTs spawnen",
-
-
     canRemoveBlockedEntities = "Blockierte Entitäten entfernen",
     canRemoveWorldEntities = "Welt-Entitäten entfernen",
-
     viewEntityTab = "Staff-Berechtigung — Entität anzeigen (Entitäten-Tab)",
     accessPropertyPrivilege = "Zugriff auf Eigenschaft %s",
     accessToolPrivilege = "Zugriff auf Tool %s",
@@ -2020,7 +2013,6 @@ Nachladen: Fallenlassen]],
     logViewPlayerTickets = "Admin '%s' hat Tickets für %s angesehen.",
     logTicketClaimed = "Admin '%s' hat ein Ticket für %s beansprucht. Gesamtansprüche: %s.",
     logTicketClosed = "Admin '%s' hat ein Ticket für %s geschlossen. Gesamtansprüche: %s.",
-
     logPlyBring = "Admin '%s' hat Spieler '%s' hergeholt.",
     logPlyGoto = "Admin '%s' hat sich zu Spieler '%s' teleportiert.",
     logPlyReturn = "Admin '%s' hat Spieler '%s' an die vorherige Position zurückgebracht.",

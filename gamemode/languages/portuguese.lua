@@ -860,7 +860,6 @@ LANGUAGE = {
     spawnAddDesc = "Adiciona um ponto de spawn na tua posição atual para a facção especificada.",
     spawnRemoveInRadiusDesc = "Remove todos os pontos de spawn num raio da tua posição (padrão 120).",
     spawnRemoveByNameDesc = "Remove todos os pontos de spawn para a facção especificada.",
-
     returnItems = "Devolver Itens",
     returnItemsDesc = "Devolve itens perdidos na morte ao jogador especificado, se existirem.",
     returnItemsTargetNoItems = "O alvo não perdeu itens ou já foram devolvidos.",
@@ -1450,9 +1449,7 @@ Recarregar: Largar]],
     canSpawnStorage = "Pode Criar Armazenamento",
     managePropBlacklist = "Gerir Lista Negra de Props",
     manageVehicleBlacklist = "Gerir Lista Negra de Veículos",
-
     manageUsergroups = "Gerir Grupos de Utilizadores",
-
     accessEditConfigurationMenu = "Aceder ao Menu de Edição de Configuração",
     alwaysSpawnAdminStick = "Aparecer Sempre com Bastão de Admin",
     canAccessFlagManagement = "Pode Aceder à Gestão de Flags",
@@ -1493,16 +1490,12 @@ Recarregar: Largar]],
     canSpawnBlacklistedProps = "Pode Criar Props na Lista Negra",
     canSpawnNPCs = "Pode Criar NPCs",
     noCarSpawnDelay = "Sem Atraso de Spawn de Carros",
-
     canSpawnCars = "Pode Criar Carros",
     canSpawnBlacklistedCars = "Pode Criar Carros na Lista Negra",
     canEditSimfphysCars = "Pode Editar Carros Simfphys",
     canSpawnSENTs = "Pode Criar SENTs",
-
-
     canRemoveBlockedEntities = "Pode Remover Entidades Bloqueadas",
     canRemoveWorldEntities = "Pode Remover Entidades do Mundo",
-
     viewEntityTab = "Permissão Staff — Ver Entidade (Separador Entidade)",
     accessPropertyPrivilege = "Acesso à propriedade %s",
     accessToolPrivilege = "Acesso à Ferramenta %s",
@@ -2020,7 +2013,6 @@ Recarregar: Largar]],
     logViewPlayerTickets = "O admin '%s' viu os tickets de %s.",
     logTicketClaimed = "O admin '%s' reclamou um ticket para %s. Total de reclamações: %s.",
     logTicketClosed = "O admin '%s' fechou um ticket para %s. Total de reclamações: %s.",
-
     logPlyBring = "O admin '%s' trouxe o jogador '%s'.",
     logPlyGoto = "O admin '%s' teleportou-se para o jogador '%s'.",
     logPlyReturn = "O admin '%s' devolveu o jogador '%s' à sua posição anterior.",

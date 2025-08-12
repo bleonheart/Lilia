@@ -860,7 +860,6 @@ LANGUAGE = {
     spawnAddDesc = "Ajoute un point d'apparition à votre position actuelle pour la faction spécifiée.",
     spawnRemoveInRadiusDesc = "Supprime tous les points d'apparition dans le rayon donné autour de vous (par défaut 120).",
     spawnRemoveByNameDesc = "Supprime tous les points d'apparition pour la faction spécifiée.",
-
     returnItems = "Rendre les objets",
     returnItemsDesc = "Rend les objets perdus à la mort au joueur spécifié, si possible.",
     returnItemsTargetNoItems = "La cible n'a rien perdu ou les objets ont déjà été rendus.",
@@ -1450,9 +1449,7 @@ Recharger : Lâcher]],
     canSpawnStorage = "Peut faire apparaître du stockage",
     managePropBlacklist = "Gérer la blacklist des props",
     manageVehicleBlacklist = "Gérer la blacklist des véhicules",
-
     manageUsergroups = "Gérer les groupes d'utilisateurs",
-
     accessEditConfigurationMenu = "Accéder à l'édition du menu de configuration",
     alwaysSpawnAdminStick = "Toujours apparaître avec le bâton d'admin",
     canAccessFlagManagement = "Peut accéder à la gestion des drapeaux",
@@ -1493,16 +1490,12 @@ Recharger : Lâcher]],
     canSpawnBlacklistedProps = "Peut faire apparaître des props blacklistés",
     canSpawnNPCs = "Peut faire apparaître des PNJs",
     noCarSpawnDelay = "Pas de délai d'apparition de véhicule",
-
     canSpawnCars = "Peut faire apparaître des véhicules",
     canSpawnBlacklistedCars = "Peut faire apparaître des véhicules blacklistés",
     canEditSimfphysCars = "Peut modifier les véhicules Simfphys",
     canSpawnSENTs = "Peut faire apparaître des SENTs",
-
-
     canRemoveBlockedEntities = "Peut retirer les entités bloquées",
     canRemoveWorldEntities = "Peut retirer les entités du monde",
-
     viewEntityTab = "Permission staff — Voir l'entité (onglet entité)",
     accessPropertyPrivilege = "Accès à la propriété %s",
     accessToolPrivilege = "Accès à l'outil %s",
@@ -2020,7 +2013,6 @@ Recharger : Lâcher]],
     logViewPlayerTickets = "L'admin '%s' a consulté les tickets de %s.",
     logTicketClaimed = "L'admin '%s' a réclamé un ticket pour %s. Total de réclamations : %s.",
     logTicketClosed = "L'admin '%s' a fermé un ticket pour %s. Total de réclamations : %s.",
-
     logPlyBring = "L'admin '%s' a amené le joueur '%s'.",
     logPlyGoto = "L'admin '%s' s'est téléporté au joueur '%s'.",
     logPlyReturn = "L'admin '%s' a renvoyé le joueur '%s' à sa position précédente.",

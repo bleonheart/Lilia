@@ -173,8 +173,6 @@ lia.command.add("cleardecals", {
     end
 })
 
--- Privileges registered in admin.lua
-
 lia.config.add("AdminOnlyNotification", "adminOnlyNotifications", true, nil, {
     desc = "adminOnlyNotificationsDesc",
     category = "categorySAM",

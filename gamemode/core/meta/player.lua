@@ -22,7 +22,6 @@ function playerMeta:hasPrivilege(privilegeName)
         lia.error("hasPrivilege expected a string, got " .. tostring(privilegeName))
         return false
     end
-
     return lia.administrator.hasAccess(self, privilegeName)
 end
 
