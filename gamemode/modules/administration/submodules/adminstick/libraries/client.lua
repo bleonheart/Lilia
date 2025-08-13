@@ -3,7 +3,8 @@ AdminStickIsOpen = false
 local playerInfoLabel = L("player") .. " " .. L("information")
 local giveFlagsLabel = L("give") .. " " .. L("flags")
 local takeFlagsLabel = L("take") .. " " .. L("flags")
-local adminStickCategories = {
+
+MODULE.adminStickCategories = MODULE.adminStickCategories or {
     moderation = {
         name = L("adminStickCategoryModeration"),
         icon = "icon16/shield.png",
@@ -108,6 +109,35 @@ local adminStickCategories = {
     }
 }
 
+MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {
+    "playerInformation",
+    "moderation",
+    "characterManagement",
+    "flagManagement",
+    "doorManagement",
+    "teleportation",
+    "utility"
+}
+
+function MODULE:addAdminStickCategory(key, data, index)
+    self.adminStickCategories = self.adminStickCategories or {}
+    self.adminStickCategories[key] = data
+    self.adminStickCategoryOrder = self.adminStickCategoryOrder or {}
+    if index then
+        table.insert(self.adminStickCategoryOrder, index, key)
+    else
+        table.insert(self.adminStickCategoryOrder, key)
+    end
+end
+
+function MODULE:addAdminStickSubCategory(catKey, subKey, data)
+    self.adminStickCategories = self.adminStickCategories or {}
+    local category = self.adminStickCategories[catKey]
+    if not category then return end
+    category.subcategories = category.subcategories or {}
+    category.subcategories[subKey] = data
+end
+
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
     warnings = "icon16/error.png",
@@ -177,7 +207,7 @@ local function GetOrCreateSubMenu(parent, name, store, category, subcategory)
 end
 
 local function GetOrCreateCategoryMenu(parent, categoryKey, store)
-    local category = adminStickCategories[categoryKey]
+    local category = MODULE.adminStickCategories[categoryKey]
     if not category then return parent end
     if not store[categoryKey] then
         local menu, panel = parent:AddSubMenu(category.name)
@@ -188,7 +218,7 @@ local function GetOrCreateCategoryMenu(parent, categoryKey, store)
 end
 
 local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, store)
-    local category = adminStickCategories[categoryKey]
+    local category = MODULE.adminStickCategories[categoryKey]
     if not category or not category.subcategories or not category.subcategories[subcategoryKey] then return parent end
 
     local count = 0
@@ -213,10 +243,10 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
     local menu = DermaMenu()
     local cl = LocalPlayer()
     
-    local categoryOrder = {"playerInformation", "moderation", "characterManagement", "flagManagement", "doorManagement", "teleportation", "utility"}
-    
+    local categoryOrder = MODULE.adminStickCategoryOrder or {}
+
     for _, categoryKey in ipairs(categoryOrder) do
-        local category = adminStickCategories[categoryKey]
+        local category = MODULE.adminStickCategories[categoryKey]
         if category then
             
             local hasContent = false

@@ -195,6 +195,9 @@ All keys are optional; if omitted the command simply will not appear in the Admi
 
 * `TargetClass` (string) – Limit the command to a specific entity class when using the Admin Stick.
 
+Custom categories and subcategories can be added through the Administration module using
+`addAdminStickCategory(key, data)` and `addAdminStickSubCategory(category, key, data)`.
+
 **Example Usage:**
 
 ```lua
