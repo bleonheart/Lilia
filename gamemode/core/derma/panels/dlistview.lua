@@ -72,7 +72,7 @@ function PANEL:Init()
     self.statusBar = vgui.Create("DPanel", self)
     self.statusBar:Dock(BOTTOM)
     self.statusBar:SetTall(24)
-    self.statusBar.Paint = function(_, w, _) draw.SimpleText("Total: " .. tostring(self.visibleCount or 0), "liaSmallFont", 5, 4, Color(200, 200, 200, 255), TEXT_ALIGN_LEFT) end
+    self.statusBar.Paint = function() draw.SimpleText("Total: " .. tostring(self.visibleCount or 0), "liaSmallFont", 5, 4, Color(200, 200, 200, 255), TEXT_ALIGN_LEFT) end
 end
 
 function PANEL:SetWindowTitle(t)

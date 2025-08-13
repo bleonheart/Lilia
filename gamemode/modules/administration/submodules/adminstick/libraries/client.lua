@@ -579,7 +579,6 @@ local function IncludeCharacterManagement(tgt, menu, stores)
     local canClass = cl:hasPrivilege("manageClasses")
     local canWhitelist = cl:hasPrivilege("manageWhitelists")
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
-    local charMenu = charCategory
     local char = tgt:getChar()
     if char then
         local facID = char:getFaction()
@@ -1136,7 +1135,7 @@ function MODULE:OpenAdminStickUI(tgt)
         end
     end
 
-    for category, commands in pairs(categorizedCommands) do
+    for _, commands in pairs(categorizedCommands) do
         for _, c in ipairs(commands) do
             AddCommandToMenu(menu, c.data, c.key, tgt, c.name, stores)
         end
