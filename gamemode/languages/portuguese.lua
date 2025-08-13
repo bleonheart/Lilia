@@ -2205,4 +2205,5 @@ Recarregar: Largar]],
     viewCharacterList = "Ver Lista de Personagens",
     privileges = "Privilégios",
     refresh = "Atualizar",
+    configReset = "Todos os valores de configuração foram redefinidos para os padrões.",
 }

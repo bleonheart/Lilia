@@ -2209,4 +2209,5 @@ Recargar: Soltar]],
     exportprivilegesDesc = "Exportar todos los privilegios actuales a un archivo de datos",
     privileges = "Privilegios",
     refresh = "Actualizar",
+    configReset = "Todos los valores de configuración han sido restablecidos a los predeterminados.",
 }

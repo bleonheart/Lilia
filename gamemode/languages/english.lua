@@ -2245,4 +2245,5 @@ Reload: Drop]],
     adminStickCategoryTeleportationDesc = "Player teleportation tools",
     adminStickCategoryUtilityDesc = "General utility commands and tools",
     adminStickCategoryAdministrationDesc = "Advanced administration tools",
+    configReset = "All configuration values have been reset to defaults.",
 }

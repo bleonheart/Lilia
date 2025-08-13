@@ -2205,4 +2205,5 @@ Recharger : Lâcher]],
     viewCharacterList = "Voir la liste des personnages",
     privileges = "Privilèges",
     refresh = "Actualiser",
+    configReset = "Toutes les valeurs de configuration ont été réinitialisées aux valeurs par défaut.",
 }

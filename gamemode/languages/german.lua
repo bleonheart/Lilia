@@ -2205,4 +2205,5 @@ Nachladen: Fallenlassen]],
     viewCharacterList = "Charakterliste anzeigen",
     privileges = "Berechtigungen",
     refresh = "Aktualisieren",
+    configReset = "Alle Konfigurationswerte wurden auf die Standardwerte zurückgesetzt.",
 }

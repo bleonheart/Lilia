@@ -1062,6 +1062,16 @@ concommand.Add("lia_wipedb", function(client)
     end
 end)
 
+concommand.Add("lia_resetconfig", function(client)
+    if IsValid(client) then
+        client:notifyLocalized("commandConsoleOnly")
+        return
+    end
+
+    lia.config.reset()
+    MsgC(Color(255, 0, 0), "[Lilia] " .. L("configReset") .. "\n")
+end)
+
 concommand.Add("list_entities", function(client)
     local entityCount = {}
     local totalEntities = 0
@@ -1088,13 +1098,13 @@ end)
 
 local oldRunConsole = RunConsoleCommand
 RunConsoleCommand = function(cmd, ...)
-    if cmd == "lia_wipedb" then return end
+    if cmd == "lia_wipedb" or cmd == "lia_resetconfig" then return end
     return oldRunConsole(cmd, ...)
 end
 
 local oldGameConsoleCommand = game.ConsoleCommand
 game.ConsoleCommand = function(cmd)
-    if cmd:sub(1, #"lia_wipedb") == "lia_wipedb" then return end
+    if cmd:sub(1, #"lia_wipedb") == "lia_wipedb" or cmd:sub(1, #"lia_resetconfig") == "lia_resetconfig" then return end
     return oldGameConsoleCommand(cmd)
 end
 
