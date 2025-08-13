@@ -70,11 +70,11 @@ function lia.command.add(command, data)
     if alias then
         if istable(alias) then
             for _, v in ipairs(alias) do
-                -- Create a copy of the data for the alias to avoid modifying the original
+                
                 local aliasData = table.Copy(data)
-                aliasData.realCommand = command -- Track the real command name
+                aliasData.realCommand = command 
                 lia.command.list[v:lower()] = aliasData
-                -- Register privilege for alias if command requires privileges
+                
                 if superAdminOnly or adminOnly then
                     local aliasPrivilegeID = data.privilege or string.lower("command_" .. v)
                     lia.administrator.registerPrivilege({
@@ -86,11 +86,11 @@ function lia.command.add(command, data)
                 end
             end
         elseif isstring(alias) then
-            -- Create a copy of the data for the alias to avoid modifying the original
+            
             local aliasData = table.Copy(data)
-            aliasData.realCommand = command -- Track the real command name
+            aliasData.realCommand = command 
             lia.command.list[alias:lower()] = aliasData
-            -- Register privilege for alias if command requires privileges
+            
             if superAdminOnly or adminOnly then
                 local aliasPrivilegeID = data.privilege or string.lower("command_" .. alias)
                 lia.administrator.registerPrivilege({

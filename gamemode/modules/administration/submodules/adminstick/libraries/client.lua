@@ -149,14 +149,14 @@ local function GetSubMenuIcon(name)
     if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
     if name:find("Set Faction", 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
     
-    -- Handle common subcategory names
+    
     if name:lower() == "misc" or name:lower() == "miscellaneous" then return "icon16/application_view_tile.png" end
     if name:lower() == "items" then return "icon16/box.png" end
     if name:lower() == "ooc" or name:lower():find("out of character") then return "icon16/comment.png" end
     if name:lower() == "warnings" then return "icon16/error.png" end
     if name:lower() == "commands" then return "icon16/page.png" end
     
-    return "icon16/page.png" -- Default fallback icon
+    return "icon16/page.png" 
 end
 
 local function GetOrCreateSubMenu(parent, name, store, category, subcategory)
@@ -200,19 +200,19 @@ local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, s
     return store[fullKey]
 end
 
--- Function to create a well-organized admin stick menu
+
 local function CreateOrganizedAdminStickMenu(tgt, stores)
     local menu = DermaMenu()
     local cl = LocalPlayer()
-    -- Define the order of categories
+    
     local categoryOrder = {"playerInformation", "moderation", "characterManagement", "flagManagement", "doorManagement", "teleportation", "utility"}
-    -- Create categories in the specified order
+    
     for _, categoryKey in ipairs(categoryOrder) do
         local category = adminStickCategories[categoryKey]
         if category then
-            -- Only create category if it will have content
+            
             local hasContent = false
-            -- Check if this category should be shown for the target
+            
             if categoryKey == "playerInformation" and tgt:IsPlayer() then
                 hasContent = true
             elseif categoryKey == "moderation" and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
@@ -226,7 +226,7 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
             elseif categoryKey == "teleportation" and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
             elseif categoryKey == "utility" then
-                hasContent = true -- Utility always has content (commands)
+                hasContent = true 
             end
 
             if hasContent then GetOrCreateCategoryMenu(menu, categoryKey, stores) end
@@ -492,7 +492,7 @@ local function IncludeUtility(tgt, menu, stores)
     local cl = LocalPlayer()
     local utilityCategory = GetOrCreateCategoryMenu(menu, "utility", stores)
     local commandsSubCategory = GetOrCreateSubCategoryMenu(utilityCategory, "utility", "commands", stores)
-    -- Add some common utility commands that might not be categorized elsewhere
+    
     local utilityCommands = {
         {
             name = L("noclip"),
@@ -525,7 +525,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
     local canFaction = cl:hasPrivilege("manageTransfers")
     local canClass = cl:hasPrivilege("manageClasses")
     local canWhitelist = cl:hasPrivilege("manageWhitelists")
-    -- Create character management category
+    
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
     local charMenu = charCategory
     local char = tgt:getChar()
@@ -670,7 +670,7 @@ end
 local function IncludeFlagManagement(tgt, menu, stores)
     local cl = LocalPlayer()
     if not cl:hasPrivilege("manageFlags") then return end
-    -- Create flag management category
+    
     local flagCategory = GetOrCreateCategoryMenu(menu, "flagManagement", stores)
     local cf = GetOrCreateSubCategoryMenu(flagCategory, "flagManagement", "characterFlags", stores)
     local cGive = GetOrCreateSubMenu(cf, giveFlagsLabel, stores)
@@ -723,7 +723,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_orange.png")
     
-    -- Give All Character Flags
+    
     cf:AddOption(L("giveAllCharFlags"), function()
         local allFlags = ""
         for fl in pairs(lia.flag.list) do
@@ -739,7 +739,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_blue.png")
     
-    -- Take All Character Flags
+    
     cf:AddOption(L("takeAllCharFlags"), function()
         net.Start("liaModifyFlags")
         net.WriteString(tgt:SteamID())
@@ -749,7 +749,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_red.png")
     
-    -- List Character Flags
+    
     cf:AddOption(L("listCharFlags"), function()
         local currentFlags = charObj and charObj:getFlags() or ""
         local flagList = ""
@@ -813,7 +813,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_orange.png")
     
-    -- Give All Player Flags
+    
     pf:AddOption(L("giveAllPlayerFlags"), function()
         local allFlags = ""
         for fl in pairs(lia.flag.list) do
@@ -829,7 +829,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_blue.png")
     
-    -- Take All Player Flags
+    
     pf:AddOption(L("takeAllPlayerFlags"), function()
         net.Start("liaModifyFlags")
         net.WriteString(tgt:SteamID())
@@ -839,7 +839,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
         AdminStickIsOpen = false
     end):SetIcon("icon16/flag_red.png")
     
-    -- List Player Flags
+    
     pf:AddOption(L("listPlayerFlags"), function()
         local currentFlags = tgt:getPlayerFlags()
         local flagList = ""
@@ -862,10 +862,10 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
     local cat = data.AdminStick.Category
     local sub = data.AdminStick.SubCategory
     local m = menu
-    -- Try to map to our predefined categories
+    
     local categoryKey = nil
     local subcategoryKey = nil
-    -- Map common category names to our predefined categories
+    
     if cat == "characterManagement" then
         categoryKey = "characterManagement"
         if sub == "attributes" then
@@ -902,12 +902,12 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
         end
     end
 
-    -- Create category and subcategory menus if they exist
+    
     if categoryKey then
         m = GetOrCreateCategoryMenu(menu, categoryKey, stores)
         if subcategoryKey then m = GetOrCreateSubCategoryMenu(m, categoryKey, subcategoryKey, stores) end
     else
-        -- Fallback to old system for unknown categories
+        
         if cat then m = GetOrCreateSubMenu(menu, cat, stores) end
         if sub then m = GetOrCreateSubMenu(m, sub, stores) end
     end
@@ -987,11 +987,11 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     if #cmds > 0 then hasOptions = true end
-    -- Run the PopulateAdminStick hook to add custom options
+    
     hook.Run("PopulateAdminStick", tempMenu, tgt)
-    -- Check if any options were added by hooks by checking if the menu has any children
-    -- DermaMenu doesn't have a .Child property, so we'll assume hooks added options if they exist
-    -- The hasOptions flag will be set to true if any commands exist, which covers most cases
+    
+    
+    
     tempMenu:Remove()
     if not hasOptions then
         cl:notifyLocalized("adminStickNoOptions")
@@ -1051,7 +1051,7 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     table.sort(cmds, function(a, b) return a.name < b.name end)
-    -- Group commands by category for better organization
+    
     local categorizedCommands = {}
     local uncategorizedCommands = {}
     for _, c in ipairs(cmds) do
@@ -1063,14 +1063,14 @@ function MODULE:OpenAdminStickUI(tgt)
         end
     end
 
-    -- Add categorized commands
+    
     for category, commands in pairs(categorizedCommands) do
         for _, c in ipairs(commands) do
             AddCommandToMenu(menu, c.data, c.key, tgt, c.name, stores)
         end
     end
 
-    -- Add uncategorized commands to utility category
+    
     if #uncategorizedCommands > 0 then
         local utilityCategory = GetOrCreateCategoryMenu(menu, "utility", stores)
         local commandsSubCategory = GetOrCreateSubCategoryMenu(utilityCategory, "utility", "commands", stores)
