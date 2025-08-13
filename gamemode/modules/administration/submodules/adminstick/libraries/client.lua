@@ -190,6 +190,14 @@ end
 local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, store)
     local category = adminStickCategories[categoryKey]
     if not category or not category.subcategories or not category.subcategories[subcategoryKey] then return parent end
+
+    local count = 0
+    for _ in pairs(category.subcategories) do
+        count = count + 1
+        if count > 1 then break end
+    end
+    if count <= 1 then return parent end
+
     local subcategory = category.subcategories[subcategoryKey]
     local fullKey = categoryKey .. "_" .. subcategoryKey
     if not store[fullKey] then
