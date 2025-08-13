@@ -223,7 +223,7 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
             
             if categoryKey == "playerInformation" and tgt:IsPlayer() then
                 hasContent = true
-            elseif categoryKey == "moderation" and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+            elseif categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
             elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation")) then
                 hasContent = true
@@ -231,10 +231,10 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
                 hasContent = true
             elseif categoryKey == "doorManagement" and tgt:isDoor() then
                 hasContent = true
-            elseif categoryKey == "teleportation" and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+            elseif categoryKey == "teleportation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
-            elseif categoryKey == "utility" then
-                hasContent = true 
+            elseif categoryKey == "utility" and tgt:IsPlayer() then
+                hasContent = true
             end
 
             if hasContent then GetOrCreateCategoryMenu(menu, categoryKey, stores) end
