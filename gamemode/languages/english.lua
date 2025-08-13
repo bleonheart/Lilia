@@ -1011,7 +1011,6 @@ LANGUAGE = {
     modifyFlagsDesc = "Set the flags for this player.",
     category = "Category",
     change = "Change",
-    invalidEntity = "Invalid entity!",
     noEntityInFront = "No valid entity found in front of you.",
     itemNoFit = "This item can't fit in your inventory. (%sx%s)",
     cantUseThisOnSameChar = "Can't use this on the same character.",
