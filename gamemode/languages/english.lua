@@ -670,6 +670,7 @@ LANGUAGE = {
     adminStickGiveAllFlagsName = "Give All Flags",
     adminStickCheckMoneyName = "Check Money",
     adminStickGetCharFlagsName = "Get Character Flags",
+    adminStickGetPlayerFlagsName = "Get Player Flags",
     adminStickFactionWhitelistName = "Faction Whitelist",
     adminStickUnwhitelistName = "Unwhitelist Player",
     adminStickClassWhitelistName = "Class Whitelist",
