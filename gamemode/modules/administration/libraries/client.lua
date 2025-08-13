@@ -161,11 +161,46 @@ function MODULE:PopulateAdminTabs(pages)
                         local pnl = self.sheet:Add("DPanel")
                         pnl:Dock(FILL)
                         pnl.Paint = function() end
-                        local listView = pnl:Add("liaDListView")
+                        local headers = {"ID", "Name", "Min Access", "Description"}
+                        local listView = pnl:Add("DListView")
                         listView:Dock(FILL)
-                        listView:SetColumns({"ID", "Name", "Min Access", "Description"})
-                        listView:SetData(rows)
-                        listView:SetSort(1, false)
+                        listView:SetMultiSelect(false)
+                        for _, header in ipairs(headers) do
+                            listView:AddColumn(header)
+                        end
+
+                        for _, row in ipairs(rows) do
+                            listView:AddLine(unpack(row))
+                        end
+
+                        listView:SortByColumn(1, false)
+                        listView.OnRowRightClick = function(_, _, line)
+                            local m = DermaMenu()
+                            for i, header in ipairs(headers) do
+                                m:AddOption("Copy " .. header, function()
+                                    SetClipboardText(line:GetColumnText(i) or "")
+                                    notification.AddLegacy(L and L("copied") or "Copied", NOTIFY_GENERIC, 2)
+                                end)
+                            end
+
+                            m:AddSpacer()
+                            m:AddOption("Copy All", function()
+                                local t = {}
+                                for i, header in ipairs(headers) do
+                                    t[#t + 1] = header .. ": " .. (line:GetColumnText(i) or "")
+                                end
+
+                                SetClipboardText(table.concat(t, "\n"))
+                                notification.AddLegacy(L and L("allPrivilegeInfo") or "All info copied", NOTIFY_GENERIC, 2)
+                            end)
+
+                            m:Open()
+                        end
+
+                        listView.OnRowDoubleClick = function(_, _, line)
+                            SetClipboardText(line:GetColumnText(1) or "")
+                            notification.AddLegacy(L and L("privilegeIdCopied") or "ID copied", NOTIFY_GENERIC, 2)
+                        end
                         self.sheet:AddSheet(L(category), pnl)
                     end
                 end
