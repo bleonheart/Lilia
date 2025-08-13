@@ -22,7 +22,10 @@ function MODULE:isCharRecognized(character, id)
         if factionID == otherFactionID and otherFaction.MemberToMemberAutoRecognition then return true end
     end
 
-    if client:isStaffOnDuty() or otherClient:isStaffOnDuty() then return true end
+    if (IsValid(client) and client.isStaffOnDuty and client:isStaffOnDuty()) or
+        (IsValid(otherClient) and otherClient.isStaffOnDuty and otherClient:isStaffOnDuty()) then
+        return true
+    end
     local recognized = character:getRecognition() or ""
     if recognized:find("," .. id .. ",", 1, true) then return true end
     return false
