@@ -142,34 +142,40 @@ function MODULE:PopulateAdminTabs(pages)
                     if string.find(id, "privilege_viewer", 1, true) then return "Access to view all privileges" end
                     return "General privilege"
                 end
-
-                local function buildRows()
-                    local t = {}
+                function panel:buildSheets()
+                    if IsValid(self.sheet) then self.sheet:Remove() end
+                    self.sheet = self:Add("DPropertySheet")
+                    self.sheet:Dock(FILL)
                     local privileges = lia.administrator.privileges or {}
                     local names = lia.administrator.privilegeNames or {}
                     local cats = lia.administrator.privilegeCategories or {}
+                    local categories = {}
                     for id, minAccess in pairs(privileges) do
                         local name = names[id] or id
                         local category = cats[id] or "Unassigned"
-                        t[#t + 1] = {id, name, category, minAccess, describe(id)}
+                        categories[category] = categories[category] or {}
+                        categories[category][#categories[category] + 1] = {id, name, minAccess, describe(id)}
                     end
-
-                    table.SortByMember(t, 1, true)
-                    return t
+                    for category, rows in SortedPairs(categories) do
+                        table.sort(rows, function(a, b) return a[1] < b[1] end)
+                        local pnl = self.sheet:Add("DPanel")
+                        pnl:Dock(FILL)
+                        pnl.Paint = function() end
+                        local listView = pnl:Add("liaDListView")
+                        listView:Dock(FILL)
+                        listView:SetColumns({"ID", "Name", "Min Access", "Description"})
+                        listView:SetData(rows)
+                        listView:SetSort(1, false)
+                        self.sheet:AddSheet(L(category), pnl)
+                    end
                 end
-
-                local listView = vgui.Create("liaDListView", panel)
-                listView:Dock(FILL)
-                listView:SetColumns({"ID", "Name", "Category", "Min Access", "Description"})
-                listView:SetData(buildRows())
-                listView:SetSort(1, false)
-                -- Add refresh button
                 local refreshButton = vgui.Create("DButton", panel)
                 refreshButton:Dock(TOP)
                 refreshButton:DockMargin(0, 0, 0, 10)
                 refreshButton:SetText(L("refresh"))
                 refreshButton:SetTall(30)
-                refreshButton.DoClick = function() listView:SetData(buildRows()) end
+                refreshButton.DoClick = function() panel:buildSheets() end
+                panel:buildSheets()
             end
         })
     end
