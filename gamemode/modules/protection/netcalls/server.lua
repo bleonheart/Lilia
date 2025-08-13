@@ -634,7 +634,6 @@ net.Receive("liaTeleportToEntity", function(_, client)
 
     -- Store the player's current position for potential return
     client.previousPosition = client:GetPos()
-    
     -- Teleport the player to the entity
     local entityPos = entity:GetPos()
     local trace = util.TraceLine({
@@ -642,13 +641,13 @@ net.Receive("liaTeleportToEntity", function(_, client)
         endpos = entityPos + Vector(0, 0, 100),
         mask = MASK_SOLID
     })
-    
+
     if trace.Hit then
         client:SetPos(trace.HitPos + Vector(0, 0, 10))
     else
         client:SetPos(entityPos + Vector(0, 0, 50))
     end
-    
+
     client:notifyLocalized("teleportedToEntity", getEntityDisplayName(entity))
     lia.log.add(client, "entityTeleport", client:Name(), getEntityDisplayName(entity), tostring(entity:GetPos()))
 end)
@@ -662,7 +661,6 @@ net.Receive("liaReturnFromEntity", function(_, client)
     local returnPos = client.previousPosition
     client:SetPos(returnPos)
     client.previousPosition = nil
-    
     client:notifyLocalized("returnedFromEntity")
     lia.log.add(client, "entityReturn", client:Name(), tostring(returnPos))
 end)
