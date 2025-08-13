@@ -67,10 +67,6 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
             characterFlags = {
                 name = L("adminStickSubCategoryCharacterFlags"),
                 icon = "icon16/flag_green.png"
-            },
-            playerFlags = {
-                name = L("adminStickSubCategoryPlayerFlags"),
-                icon = "icon16/flag_orange.png"
             }
         }
     },
@@ -814,98 +810,6 @@ local function IncludeFlagManagement(tgt, menu, stores)
         Derma_Message(L("currentCharFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("charFlags"), L("ok"))
         AdminStickIsOpen = false
     end):SetIcon("icon16/information.png")
-
-    local pf = GetOrCreateSubCategoryMenu(flagCategory, "flagManagement", "playerFlags", stores)
-    local pGive = GetOrCreateSubMenu(pf, giveFlagsLabel, stores, "flagManagement", "playerFlags")
-    local pTake = GetOrCreateSubMenu(pf, takeFlagsLabel, stores, "flagManagement", "playerFlags")
-    local toGiveP, toTakeP = {}, {}
-    for fl in pairs(lia.flag.list) do
-        if not tgt:hasPlayerFlags(fl) then
-            table.insert(toGiveP, {
-                name = L("giveFlagFormat", fl),
-                cmd = 'say /pflaggive ' .. QuoteArgs(GetIdentifier(tgt), fl),
-                icon = "icon16/flag_blue.png"
-            })
-        else
-            table.insert(toTakeP, {
-                name = L("takeFlagFormat", fl),
-                cmd = 'say /pflagtake ' .. QuoteArgs(GetIdentifier(tgt), fl),
-                icon = "icon16/flag_red.png"
-            })
-        end
-    end
-
-    table.sort(toGiveP, function(a, b) return a.name < b.name end)
-    table.sort(toTakeP, function(a, b) return a.name < b.name end)
-    for _, f in ipairs(toGiveP) do
-        pGive:AddOption(L(f.name), function()
-            cl:ConCommand(f.cmd)
-            AdminStickIsOpen = false
-        end):SetIcon(f.icon)
-    end
-
-    for _, f in ipairs(toTakeP) do
-        pTake:AddOption(L(f.name), function()
-            cl:ConCommand(f.cmd)
-            AdminStickIsOpen = false
-        end):SetIcon(f.icon)
-    end
-
-    pf:AddOption(L("modifyPlayerFlags"), function()
-        local currentFlags = tgt:getPlayerFlags()
-        Derma_StringRequest(L("modifyPlayerFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
-            text = string.gsub(text or "", "%s", "")
-            net.Start("liaModifyFlags")
-            net.WriteString(tgt:SteamID())
-            net.WriteString(text)
-            net.WriteBool(true)
-            net.SendToServer()
-        end)
-
-        AdminStickIsOpen = false
-    end):SetIcon("icon16/flag_orange.png")
-
-    pf:AddOption(L("giveAllPlayerFlags"), function()
-        local allFlags = ""
-        for fl in pairs(lia.flag.list) do
-            allFlags = allFlags .. fl
-        end
-
-        if allFlags ~= "" then
-            net.Start("liaModifyFlags")
-            net.WriteString(tgt:SteamID())
-            net.WriteString(allFlags)
-            net.WriteBool(true)
-            net.SendToServer()
-        end
-
-        AdminStickIsOpen = false
-    end):SetIcon("icon16/flag_blue.png")
-
-    pf:AddOption(L("takeAllPlayerFlags"), function()
-        net.Start("liaModifyFlags")
-        net.WriteString(tgt:SteamID())
-        net.WriteString("")
-        net.WriteBool(true)
-        net.SendToServer()
-        AdminStickIsOpen = false
-    end):SetIcon("icon16/flag_red.png")
-
-    pf:AddOption(L("listPlayerFlags"), function()
-        local currentFlags = tgt:getPlayerFlags()
-        local flagList = ""
-        if currentFlags ~= "" then
-            for i = 1, #currentFlags do
-                local flag = currentFlags:sub(i, i)
-                flagList = flagList .. flag .. " "
-            end
-
-            flagList = flagList:trim()
-        end
-
-        Derma_Message(L("currentPlayerFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("playerFlags"), L("ok"))
-        AdminStickIsOpen = false
-    end):SetIcon("icon16/information.png")
 end
 
 local function AddCommandToMenu(menu, data, key, tgt, name, stores)
@@ -938,11 +842,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
         end
     elseif cat == "flagManagement" then
         categoryKey = "flagManagement"
-        if sub == "characterFlags" then
-            subcategoryKey = "characterFlags"
-        elseif sub == "playerFlags" then
-            subcategoryKey = "playerFlags"
-        end
+        if sub == "characterFlags" then subcategoryKey = "characterFlags" end
     elseif cat == "doorManagement" then
         categoryKey = "doorManagement"
         if sub == "doorActions" then
