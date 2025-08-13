@@ -9,7 +9,7 @@
     },
     AdminStick = {
         Name = "banOOCStickName",
-        Category = "moderationTools",
+        Category = "utility",
         SubCategory = "ooc",
         Icon = "icon16/sound_mute.png"
     },
@@ -37,7 +37,7 @@ lia.command.add("unbanooc", {
     },
     AdminStick = {
         Name = "unbanOOCStickName",
-        Category = "moderationTools",
+        Category = "utility",
         SubCategory = "ooc",
         Icon = "icon16/sound.png"
     },

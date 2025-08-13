@@ -14,7 +14,7 @@ lia.command.add("warn", {
     },
     AdminStick = {
         Name = "warnPlayer",
-        Category = "moderationTools",
+        Category = "moderation",
         SubCategory = "warnings",
         Icon = "icon16/error.png"
     },
@@ -56,7 +56,7 @@ lia.command.add("viewwarns", {
     },
     AdminStick = {
         Name = "viewPlayerWarnings",
-        Category = "moderationTools",
+        Category = "moderation",
         SubCategory = "warnings",
         Icon = "icon16/eye.png"
     },

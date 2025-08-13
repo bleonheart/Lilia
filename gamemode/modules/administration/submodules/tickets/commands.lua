@@ -71,7 +71,7 @@ lia.command.add("plyviewclaims", {
     },
     AdminStick = {
         Name = "viewTicketClaims",
-        Category = "moderationTools",
+        Category = "moderation",
         SubCategory = "misc",
         Icon = "icon16/page_white_text.png"
     },

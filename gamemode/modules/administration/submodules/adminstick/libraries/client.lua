@@ -42,6 +42,22 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
             whitelists = {
                 name = L("adminStickSubCategoryWhitelists"),
                 icon = "icon16/group_add.png"
+            },
+            items = {
+                name = L("items"),
+                icon = "icon16/box.png"
+            },
+            adminStickSubCategoryBans = {
+                name = L("adminStickSubCategoryBans"),
+                icon = "icon16/lock.png"
+            },
+            adminStickSubCategorySetInfos = {
+                name = L("adminStickSubCategorySetInfos"),
+                icon = "icon16/pencil.png"
+            },
+            adminStickSubCategoryGetInfos = {
+                name = L("adminStickSubCategoryGetInfos"),
+                icon = "icon16/magnifier.png"
             }
         }
     },
@@ -106,6 +122,20 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
                 icon = "icon16/comment.png"
             }
         }
+    },
+    administration = {
+        name = L("adminStickCategoryAdministration"),
+        icon = "icon16/lock.png",
+        subcategories = {
+            server = {
+                name = "Server",
+                icon = "icon16/cog.png"
+            },
+            permissions = {
+                name = "Permissions",
+                icon = "icon16/key.png"
+            }
+        }
     }
 }
 
@@ -116,7 +146,8 @@ MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {
     "flagManagement",
     "doorManagement",
     "teleportation",
-    "utility"
+    "utility",
+    "administration"
 }
 
 function MODULE:addAdminStickCategory(key, data, index)
@@ -144,8 +175,8 @@ local subMenuIcons = {
     misc = "icon16/application_view_tile.png",
     [playerInfoLabel] = "icon16/information.png",
     characterManagement = "icon16/user_gray.png",
+    flagManagement = "icon16/flag_blue.png",
     attributes = "icon16/chart_line.png",
-    flagsManagement = "icon16/flag_blue.png",
     charFlagsTitle = "icon16/flag_green.png",
     playerFlagsTitle = "icon16/flag_orange.png",
     [giveFlagsLabel] = "icon16/flag_blue.png",
@@ -155,6 +186,7 @@ local subMenuIcons = {
     doorSettings = "icon16/cog.png",
     doorMaintenance = "icon16/wrench.png",
     doorInformation = "icon16/information.png",
+    administration = "icon16/lock.png",
     items = "icon16/box.png",
     ooc = "icon16/comment.png",
     adminStickSubCategoryBans = "icon16/lock.png",
@@ -166,6 +198,8 @@ local subMenuIcons = {
     adminStickUnwhitelistName = "icon16/group_delete.png",
     adminStickClassWhitelistName = "icon16/user_add.png",
     adminStickClassUnwhitelistName = "icon16/user_delete.png",
+    server = "icon16/cog.png",
+    permissions = "icon16/key.png",
 }
 
 local function GetSubMenuIcon(name)
@@ -262,6 +296,8 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
             elseif categoryKey == "doorManagement" and tgt:isDoor() then
                 hasContent = true
             elseif categoryKey == "teleportation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+                hasContent = true
+            elseif categoryKey == "administration" and tgt:IsPlayer() then
                 hasContent = true
             elseif categoryKey == "utility" and tgt:IsPlayer() then
                 hasContent = true
@@ -914,6 +950,21 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
             subcategoryKey = "classes"
         elseif sub == "whitelists" then
             subcategoryKey = "whitelists"
+        elseif sub == "items" then
+            subcategoryKey = "items"
+        elseif sub == "adminStickSubCategoryBans" then
+            subcategoryKey = "adminStickSubCategoryBans"
+        elseif sub == "adminStickSubCategorySetInfos" then
+            subcategoryKey = "adminStickSubCategorySetInfos"
+        elseif sub == "adminStickSubCategoryGetInfos" then
+            subcategoryKey = "adminStickSubCategoryGetInfos"
+        end
+    elseif cat == "flagManagement" then
+        categoryKey = "flagManagement"
+        if sub == "characterFlags" then
+            subcategoryKey = "characterFlags"
+        elseif sub == "playerFlags" then
+            subcategoryKey = "playerFlags"
         end
     elseif cat == "doorManagement" then
         categoryKey = "doorManagement"
@@ -937,6 +988,13 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
         if sub == "commands" then subcategoryKey = "commands"
         elseif sub == "items" then subcategoryKey = "items"
         elseif sub == "ooc" then subcategoryKey = "ooc"
+        end
+    elseif cat == "administration" then
+        categoryKey = "administration"
+        if sub == "server" then
+            subcategoryKey = "server"
+        elseif sub == "permissions" then
+            subcategoryKey = "permissions"
         end
     end
 

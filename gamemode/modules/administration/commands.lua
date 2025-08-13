@@ -25,7 +25,7 @@ lia.command.add("plygetplaytime", {
     },
     AdminStick = {
         Name = "adminStickGetPlayTimeName",
-        Category = "moderationTools",
+        Category = "moderation",
         SubCategory = "misc",
         Icon = "icon16/time.png"
     },
@@ -149,8 +149,8 @@ lia.command.add("sendtositroom", {
     },
     AdminStick = {
         Name = "sendToSitRoom",
-        Category = "moderationTools",
-        SubCategory = "misc",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/arrow_down.png"
     },
     onRun = function(client, arguments)
@@ -197,8 +197,8 @@ lia.command.add("returnsitroom", {
     },
     AdminStick = {
         Name = "returnFromSitroom",
-        Category = "moderationTools",
-        SubCategory = "misc",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/arrow_up.png"
     },
     onRun = function(client, arguments)
@@ -302,6 +302,7 @@ lia.command.add("charlist", {
     AdminStick = {
         Name = "adminStickOpenCharListName",
         Category = "characterManagement",
+        SubCategory = "adminStickSubCategoryGetInfos",
         Icon = "icon16/user_gray.png"
     },
     onRun = function(client, arguments)
@@ -1543,8 +1544,8 @@ lia.command.add("flaggiveall", {
     },
     AdminStick = {
         Name = "adminStickGiveAllFlagsName",
-        Category = "characterManagement",
-        SubCategory = "flagsManagement",
+        Category = "flagManagement",
+        SubCategory = "characterFlags",
         Icon = "icon16/flag_blue.png"
     },
     onRun = function(client, arguments)
@@ -1574,8 +1575,8 @@ lia.command.add("flagtakeall", {
     },
     AdminStick = {
         Name = "adminStickTakeAllFlagsName",
-        Category = "characterManagement",
-        SubCategory = "flagsManagement",
+        Category = "flagManagement",
+        SubCategory = "characterFlags",
         Icon = "icon16/flag_green.png"
     },
     onRun = function(client, arguments)
@@ -1683,6 +1684,12 @@ lia.command.add("pflaggiveall", {
             type = "player"
         },
     },
+    AdminStick = {
+        Name = "adminStickGiveAllPlayerFlagsName",
+        Category = "flagManagement",
+        SubCategory = "playerFlags",
+        Icon = "icon16/flag_orange.png"
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1707,6 +1714,12 @@ lia.command.add("pflagtakeall", {
             name = "name",
             type = "player"
         },
+    },
+    AdminStick = {
+        Name = "adminStickTakeAllPlayerFlagsName",
+        Category = "flagManagement",
+        SubCategory = "playerFlags",
+        Icon = "icon16/flag_red.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -1778,8 +1791,8 @@ lia.command.add("charvoicetoggle", {
     },
     AdminStick = {
         Name = "toggleVoice",
-        Category = "moderationTools",
-        SubCategory = "misc",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/sound_mute.png"
     },
     onRun = function(client, arguments)
@@ -2620,8 +2633,8 @@ lia.command.add("forcesay", {
     },
     AdminStick = {
         Name = "adminStickForceSayName",
-        Category = "moderationTools",
-        SubCategory = "misc",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/comments.png"
     },
     onRun = function(client, arguments)
@@ -2981,8 +2994,8 @@ lia.command.add("exportprivileges", {
     },
     AdminStick = {
         Name = "Export Privileges",
-        Category = "moderationTools",
-        SubCategory = "misc",
+        Category = "administration",
+        SubCategory = "permissions",
         Icon = "icon16/table_save.png"
     },
     onRun = function(client, arguments)
