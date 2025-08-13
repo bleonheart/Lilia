@@ -586,7 +586,6 @@ net.Receive("VerifyCheatsResponse", function(_, client)
     end
 end)
 
--- Helper function to get entity display name
 local function getEntityDisplayName(ent)
     if not IsValid(ent) then return "Unknown Entity" end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
@@ -632,9 +631,7 @@ net.Receive("liaTeleportToEntity", function(_, client)
         return
     end
 
-    -- Store the player's current position for potential return
     client.previousPosition = client:GetPos()
-    -- Teleport the player to the entity
     local entityPos = entity:GetPos()
     local trace = util.TraceLine({
         start = entityPos,
