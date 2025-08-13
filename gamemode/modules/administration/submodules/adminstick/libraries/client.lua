@@ -723,8 +723,8 @@ local function IncludeFlagManagement(tgt, menu, stores)
     if not cl:hasPrivilege("manageFlags") then return end
     local flagCategory = GetOrCreateCategoryMenu(menu, "flagManagement", stores)
     local cf = GetOrCreateSubCategoryMenu(flagCategory, "flagManagement", "characterFlags", stores)
-    local cGive = GetOrCreateSubMenu(cf, giveFlagsLabel, stores)
-    local cTake = GetOrCreateSubMenu(cf, takeFlagsLabel, stores)
+    local cGive = GetOrCreateSubMenu(cf, giveFlagsLabel, stores, "flagManagement", "characterFlags")
+    local cTake = GetOrCreateSubMenu(cf, takeFlagsLabel, stores, "flagManagement", "characterFlags")
     local charObj = tgt:getChar()
     local toGive, toTake = {}, {}
     for fl in pairs(lia.flag.list) do
@@ -816,8 +816,8 @@ local function IncludeFlagManagement(tgt, menu, stores)
     end):SetIcon("icon16/information.png")
 
     local pf = GetOrCreateSubCategoryMenu(flagCategory, "flagManagement", "playerFlags", stores)
-    local pGive = GetOrCreateSubMenu(pf, giveFlagsLabel, stores)
-    local pTake = GetOrCreateSubMenu(pf, takeFlagsLabel, stores)
+    local pGive = GetOrCreateSubMenu(pf, giveFlagsLabel, stores, "flagManagement", "playerFlags")
+    local pTake = GetOrCreateSubMenu(pf, takeFlagsLabel, stores, "flagManagement", "playerFlags")
     local toGiveP, toTakeP = {}, {}
     for fl in pairs(lia.flag.list) do
         if not tgt:hasPlayerFlags(fl) then
