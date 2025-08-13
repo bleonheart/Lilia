@@ -1501,6 +1501,7 @@ LANGUAGE = {
     viewEntityTab = "Права персонала — просмотр сущности (вкладка сущностей)",
     accessPropertyPrivilege = "Доступ к свойству %s",
     accessToolPrivilege = "Доступ к инструменту %s",
+    privilegeViewer = "Доступ для просмотра всех привилегий",
     categoryBlacklisting = "Чёрный список",
     categoryStaffBlacklisting = "Персонал: Чёрный список",
     categoryStaffItems = "Персонал: Предметы",
@@ -2193,4 +2194,6 @@ LANGUAGE = {
     genericFont = "Обычный шрифт",
     genericFontDesc = "Описание обычного шрифта",
     viewCharacterList = "Просмотр списка персонажей",
+    privileges = "Привилегии",
+    refresh = "Обновить",
 }

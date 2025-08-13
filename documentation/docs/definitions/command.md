@@ -63,6 +63,8 @@ alias = "chargiveflag"
 alias = {"chargiveflag", "giveflag"}
 ```
 
+**Note:** When using aliases with `adminOnly` or `superAdminOnly`, privileges are automatically registered for each alias. For example, if a command has `adminOnly = true` and alias `"testcmd"`, the privilege `command_testcmd` will be registered and required to use that alias.
+
 ---
 
 #### `adminOnly`

@@ -157,12 +157,20 @@ function playerMeta:getEyeEnt(distance)
     return e:GetPos():Distance(self:GetPos()) <= distance and e or nil
 end
 
-function playerMeta:notify(message)
-    lia.notices.notify(message, self)
+function playerMeta:notify(message, ...)
+    if SERVER then
+        lia.notices.notify(message, self, ...)
+    else
+        lia.notices.notify(message, ...)
+    end
 end
 
 function playerMeta:notifyLocalized(message, ...)
-    lia.notices.notifyLocalized(message, self, ...)
+    if SERVER then
+        lia.notices.notifyLocalized(message, self, ...)
+    else
+        lia.notices.notifyLocalized(message, ...)
+    end
 end
 
 function playerMeta:CanEditVendor(vendor)

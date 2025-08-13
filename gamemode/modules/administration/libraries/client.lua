@@ -126,6 +126,54 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
+    if client:hasPrivilege("privilegeViewer") then
+        table.insert(pages, {
+            name = "privileges",
+            icon = "icon16/key.png",
+            drawFunc = function(panel)
+                panelRef = panel
+                panel:Clear()
+                panel:DockPadding(10, 10, 10, 10)
+                panel.Paint = function() end
+                local function describe(id)
+                    if string.find(id, "command_", 1, true) then return "Command access privilege" end
+                    if string.find(id, "tool_", 1, true) then return "Tool access privilege" end
+                    if string.find(id, "property_", 1, true) then return "Property access privilege" end
+                    if string.find(id, "privilege_viewer", 1, true) then return "Access to view all privileges" end
+                    return "General privilege"
+                end
+
+                local function buildRows()
+                    local t = {}
+                    local privileges = lia.administrator.privileges or {}
+                    local names = lia.administrator.privilegeNames or {}
+                    local cats = lia.administrator.privilegeCategories or {}
+                    for id, minAccess in pairs(privileges) do
+                        local name = names[id] or id
+                        local category = cats[id] or "Unassigned"
+                        t[#t + 1] = {id, name, category, minAccess, describe(id)}
+                    end
+
+                    table.SortByMember(t, 1, true)
+                    return t
+                end
+
+                local listView = vgui.Create("liaDListView", panel)
+                listView:Dock(FILL)
+                listView:SetColumns({"ID", "Name", "Category", "Min Access", "Description"})
+                listView:SetData(buildRows())
+                listView:SetSort(1, false)
+                -- Add refresh button
+                local refreshButton = vgui.Create("DButton", panel)
+                refreshButton:Dock(TOP)
+                refreshButton:DockMargin(0, 0, 0, 10)
+                refreshButton:SetText(L("refresh"))
+                refreshButton:SetTall(30)
+                refreshButton.DoClick = function() listView:SetData(buildRows()) end
+            end
+        })
+    end
+
     if client:hasPrivilege("canAccessPlayerList") then
         table.insert(pages, {
             name = "players",

@@ -159,4 +159,10 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "warning",
     },
+    {
+        ID = "privilegeViewer",
+        Name = "privilegeViewer",
+        MinAccess = "admin",
+        Category = "categoryStaffManagement",
+    },
 }

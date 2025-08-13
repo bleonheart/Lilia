@@ -667,24 +667,29 @@ Shared.
 
 **Purpose**
 
-Sends a notification message to the player.
+Sends a notification message to the player. On the server, the notification is sent specifically to this player. On the client, it's sent to the local player.
 
 **Parameters**
 
-* message (string) - The message to display to the player.
+* `message` (`string`): The message to display to the player.
+* `...` (`any`): Additional arguments to pass to the notification system.
 
 **Returns**
 
-None.
+* `nil`: This function does not return a value.
 
 **Realm**
 
-Shared.
+`Shared`
 
 **Example Usage**
 
 ```lua
-    player:notify("Welcome to the server!")
+-- Server-side: Send notification to specific player
+player:notify("Welcome to the server!")
+
+-- Client-side: Send notification to local player
+LocalPlayer():notify("Action completed!")
 ```
 
 ---
@@ -693,25 +698,32 @@ Shared.
 
 **Purpose**
 
-Sends a localized notification message to the player.
+Sends a localized notification message to the player. On the server, the notification is sent specifically to this player. On the client, it's sent to the local player. The message is automatically translated using the player's language settings.
 
 **Parameters**
 
-* message (string) - The localization key for the message.
-* ... (any) - Additional arguments to format the localized message.
+* `message` (`string`): The localization key for the message.
+* `...` (`any`): Additional arguments to format the localized message.
 
 **Returns**
 
-None.
+* `nil`: This function does not return a value.
 
 **Realm**
 
-Shared.
+`Shared`
 
 **Example Usage**
 
 ```lua
-    player:notifyLocalized("welcome_message", player:Name())
+-- Server-side: Send localized notification to specific player
+player:notifyLocalized("welcome_message", player:Name())
+
+-- Client-side: Send localized notification to local player
+LocalPlayer():notifyLocalized("action_completed", "Item pickup")
+
+-- With multiple format arguments
+player:notifyLocalized("item_given", "Health Kit", 100)
 ```
 
 ---
