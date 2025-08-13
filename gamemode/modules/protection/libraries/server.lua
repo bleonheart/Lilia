@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local function IsCheater(client)
     return lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false)
 end
@@ -11,7 +11,8 @@ end
 function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
     if not client:isStaffOnDuty() then
         local switchingToStaff = newCharacter and newCharacter:getFaction() == FACTION_STAFF
-        if not switchingToStaff then
+        local switchingFromStaff = character and character:getFaction() == FACTION_STAFF
+        if not switchingToStaff and not switchingFromStaff then
             local damageCooldown = lia.config.get("OnDamageCharacterSwitchCooldownTimer", 15)
             local switchCooldown = lia.config.get("CharacterSwitchCooldownTimer", 5)
             if damageCooldown > 0 and client.LastDamaged and client.LastDamaged > CurTime() - damageCooldown then
