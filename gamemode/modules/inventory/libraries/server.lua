@@ -60,6 +60,7 @@ local function storeOverflowItems(inv, character, oldW, oldH)
                 quantity = item:getQuantity(),
                 data = data
             }
+
             toRemove[#toRemove + 1] = item
         end
     end
@@ -93,10 +94,9 @@ local function applyInventorySize(client, character)
         dw = dw or lia.config.get("invW")
         dh = dh or lia.config.get("invH")
     end
+
     local w, h = inv:getSize()
-    if w ~= dw or h ~= dh then
-        inv:setSize(dw, dh)
-    end
+    if w ~= dw or h ~= dh then inv:setSize(dw, dh) end
     local removed = lia.inventory.checkOverflow(inv, character, w, h)
     if w ~= dw or h ~= dh or removed then inv:sync(client) end
 end
@@ -190,13 +190,8 @@ net.Receive("liaRestoreOverflowItems", function(_, client)
     for _, itemInfo in ipairs(data.items) do
         local itemData = table.Copy(itemInfo.data or {})
         itemData.x, itemData.y = nil, nil
-        inv:add(itemInfo.uniqueID, 1, itemData):next(function(item)
-            if itemInfo.quantity and itemInfo.quantity > 1 then item:setQuantity(itemInfo.quantity) end
-        end):catch(function()
-            lia.item.spawn(itemInfo.uniqueID, dropPos, function(spawned)
-                if spawned and itemInfo.quantity and itemInfo.quantity > 1 then spawned:setQuantity(itemInfo.quantity) end
-            end, nil, itemInfo.data or {})
-        end)
+        inv:add(itemInfo.uniqueID, 1, itemData):next(function(item) if itemInfo.quantity and itemInfo.quantity > 1 then item:setQuantity(itemInfo.quantity) end end):catch(function() lia.item.spawn(itemInfo.uniqueID, dropPos, function(spawned) if spawned and itemInfo.quantity and itemInfo.quantity > 1 then spawned:setQuantity(itemInfo.quantity) end end, nil, itemInfo.data or {}) end)
     end
+
     char:setData("overflowItems", nil)
 end)

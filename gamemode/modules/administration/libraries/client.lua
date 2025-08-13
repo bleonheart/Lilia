@@ -142,6 +142,7 @@ function MODULE:PopulateAdminTabs(pages)
                     if string.find(id, "privilege_viewer", 1, true) then return "Access to view all privileges" end
                     return "General privilege"
                 end
+
                 function panel:buildSheets()
                     if IsValid(self.sheet) then self.sheet:Remove() end
                     self.sheet = self:Add("DPropertySheet")
@@ -156,6 +157,7 @@ function MODULE:PopulateAdminTabs(pages)
                         categories[category] = categories[category] or {}
                         categories[category][#categories[category] + 1] = {id, name, minAccess, describe(id)}
                     end
+
                     for category, rows in SortedPairs(categories) do
                         table.sort(rows, function(a, b) return a[1] < b[1] end)
                         local pnl = self.sheet:Add("DPanel")
@@ -201,9 +203,11 @@ function MODULE:PopulateAdminTabs(pages)
                             SetClipboardText(line:GetColumnText(1) or "")
                             notification.AddLegacy(L and L("privilegeIdCopied") or "ID copied", NOTIFY_GENERIC, 2)
                         end
+
                         self.sheet:AddSheet(L(category), pnl)
                     end
                 end
+
                 local refreshButton = vgui.Create("DButton", panel)
                 refreshButton:Dock(TOP)
                 refreshButton:DockMargin(0, 0, 0, 10)

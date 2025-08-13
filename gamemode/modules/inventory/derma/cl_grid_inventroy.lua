@@ -51,6 +51,7 @@ function PANEL:Init()
         net.Start("liaRestoreOverflowItems")
         net.SendToServer()
     end
+
     self:SetTitle("")
 end
 

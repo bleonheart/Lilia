@@ -134,10 +134,7 @@ lia.command.add("setinventorysizeoverride", {
             inv:sync(target)
         end
 
-        if char then
-            char:setData("invSizeOverride", {w, h})
-        end
-
+        if char then char:setData("invSizeOverride", {w, h}) end
         lia.log.add(client, "invSetSize", target:Name(), w, h)
         client:notifyLocalized("setInventorySizeNotify", target:Name(), w, h)
     end,

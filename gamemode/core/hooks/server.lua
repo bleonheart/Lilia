@@ -825,7 +825,6 @@ local function checkPublicModules()
     end
 
     if not hasPublic then return end
-
     fetchURL(publicURL, function(body, code)
         if code ~= 200 then
             lia.updater(L("moduleListHTTPError", code))
@@ -870,7 +869,6 @@ local function checkPrivateModules()
     end
 
     if not hasPrivate then return end
-
     fetchURL(privateURL, function(body, code)
         if code ~= 200 then
             lia.updater(L("privateModuleListHTTPError", code))

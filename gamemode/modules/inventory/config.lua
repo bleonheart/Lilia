@@ -10,9 +10,7 @@ lia.config.add("invW", "invWidth", 6, function(_, newW)
         dw = dw or lia.config.get("invW")
         dh = dh or lia.config.get("invH")
         local w, h = inv:getSize()
-        if w ~= dw or h ~= dh then
-            inv:setSize(dw, dh)
-        end
+        if w ~= dw or h ~= dh then inv:setSize(dw, dh) end
         local removed = lia.inventory.checkOverflow(inv, char, w, h)
         if w ~= dw or h ~= dh or removed then inv:sync(client) end
     end
@@ -39,9 +37,7 @@ lia.config.add("invH", "invHeight", 4, function(_, newH)
         dw = dw or lia.config.get("invW")
         dh = dh or lia.config.get("invH")
         local w, h = inv:getSize()
-        if w ~= dw or h ~= dh then
-            inv:setSize(dw, dh)
-        end
+        if w ~= dw or h ~= dh then inv:setSize(dw, dh) end
         local removed = lia.inventory.checkOverflow(inv, char, w, h)
         if w ~= dw or h ~= dh or removed then inv:sync(client) end
     end
@@ -55,4 +51,3 @@ end, {
     min = 1,
     max = 10
 })
-
