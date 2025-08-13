@@ -1728,53 +1728,30 @@ local function detect_oink()
 end
 
 local function VerifyCheats()
+    local function flag()
+        net.Start("CheckHack")
+        net.SendToServer()
+    end
+
     for func in pairs(suspiciousFunctions) do
-        if _G[func] then
-            local info = debug.getinfo(_G[func], "S")
-            if info and info.what ~= "C" then
-                net.Start("CheckHack")
-                net.SendToServer()
-                return
-            end
-        end
+        local f = _G[func]
+        if f and (debug.getinfo(f, "S") or {}).what ~= "C" then return flag() end
     end
 
     local hackCommands = concommand.GetTable()
     for command in pairs(HackCommands) do
-        if hackCommands[command] then
-            net.Start("CheckHack")
-            net.SendToServer()
-            return
-        end
+        if hackCommands[command] then return flag() end
     end
 
     for cvar in pairs(BadCVars) do
-        if ConVarExists(cvar) then
-            net.Start("CheckHack")
-            net.SendToServer()
-            return
-        end
+        if ConVarExists(cvar) then return flag() end
     end
 
     for globalName in pairs(HackGlobals) do
-        if _G[globalName] then
-            net.Start("CheckHack")
-            net.SendToServer()
-            return
-        end
+        if _G[globalName] then return flag() end
     end
 
-    if detect_oink() then
-        net.Start("CheckHack")
-        net.SendToServer()
-        return
-    end
-
-    if detect_cheadleware() then
-        net.Start("CheckHack")
-        net.SendToServer()
-        return
-    end
+    if detect_oink() or detect_cheadleware() then return flag() end
 end
 
 function MODULE:PlayerButtonDown(_, key)
