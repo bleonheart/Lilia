@@ -15,4 +15,10 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "protection",
     },
+    {
+        Name = "Teleport to Entity",
+        ID = "teleportToEntity",
+        MinAccess = "admin",
+        Category = "protection",
+    },
 }

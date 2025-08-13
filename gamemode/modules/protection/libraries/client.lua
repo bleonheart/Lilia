@@ -1739,6 +1739,7 @@ function MODULE:PopulateAdminTabs(pages)
     local function startSpectateView(ent, originalThirdPerson)
         local yaw = client:EyeAngles().yaw
         local camZOffset = 50
+        client.IsInAdminEntityView = true
         hook.Add("CalcView", "EntityViewCalcView", function()
             return {
                 origin = ent:GetPos() + Angle(0, yaw, 0):Forward() * 100 + Vector(0, 0, camZOffset),
@@ -1759,6 +1760,7 @@ function MODULE:PopulateAdminTabs(pages)
                 hook.Remove("Think", "EntityViewRotate")
                 hook.Remove("CreateMove", "EntitySpectateCreateMove")
                 lia.option.set("thirdPersonEnabled", originalThirdPerson)
+                client.IsInAdminEntityView = false
             end
         end)
 
@@ -1823,6 +1825,23 @@ function MODULE:PopulateAdminTabs(pages)
                                 local prevTP = lia.option.get("thirdPersonEnabled", false)
                                 lia.option.set("thirdPersonEnabled", false)
                                 startSpectateView(ent, prevTP)
+                            end)
+                        end
+
+                        if client:hasPrivilege("teleportToEntity") then
+                            makeBtn("teleport", function()
+                                if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
+                                net.Start("liaTeleportToEntity")
+                                net.WriteEntity(ent)
+                                net.SendToServer()
+                            end)
+                        end
+
+                        if client.previousPosition then
+                            makeBtn("return", function()
+                                if IsValid(lia.gui.menu) then lia.gui.menu:remove() end
+                                net.Start("liaReturnFromEntity")
+                                net.SendToServer()
                             end)
                         end
 

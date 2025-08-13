@@ -1684,12 +1684,6 @@ lia.command.add("pflaggiveall", {
             type = "player"
         },
     },
-    AdminStick = {
-        Name = "adminStickGiveAllPlayerFlagsName",
-        Category = "flagManagement",
-        SubCategory = "playerFlags",
-        Icon = "icon16/flag_orange.png"
-    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1714,12 +1708,6 @@ lia.command.add("pflagtakeall", {
             name = "name",
             type = "player"
         },
-    },
-    AdminStick = {
-        Name = "adminStickTakeAllPlayerFlagsName",
-        Category = "flagManagement",
-        SubCategory = "playerFlags",
-        Icon = "icon16/flag_red.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -2985,23 +2973,9 @@ lia.command.add("dropmoney", {
 lia.command.add("exportprivileges", {
     adminOnly = true,
     desc = "exportprivilegesDesc",
-    arguments = {
-        {
-            name = "filename",
-            type = "string",
-            optional = true
-        }
-    },
-    AdminStick = {
-        Name = "Export Privileges",
-        Category = "administration",
-        SubCategory = "permissions",
-        Icon = "icon16/table_save.png"
-    },
-    onRun = function(client, arguments)
+    onRun = function(client)
+        local filename = "lilia_registered_privileges.json"
         if not SERVER then return end
-        local filename = arguments[1] or "lilia_registered_privileges.json"
-        if not filename:match("%.json$") then filename = filename .. ".json" end
         local seen = {}
         local list = {}
         local function add(id, name)
