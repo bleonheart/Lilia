@@ -162,7 +162,7 @@ if SERVER then
         for k, v in pairs(changed) do
             rows[#rows + 1] = {
                 key = k,
-                value = {v}
+                value = {v},
             }
         end
 
@@ -173,6 +173,19 @@ if SERVER then
         end
 
         lia.db.transaction(queries)
+    end
+
+    function lia.config.reset()
+        for _, cfg in pairs(lia.config.stored) do
+            local oldValue = cfg.value
+            cfg.value = cfg.default
+            if cfg.callback then
+                cfg.callback(oldValue, cfg.default)
+            end
+        end
+
+        lia.config.save()
+        lia.config.send()
     end
 end
 
