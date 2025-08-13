@@ -260,8 +260,8 @@ FACTION_STAFF = lia.faction.register("staff", {
     desc = "factionStaffDesc",
     color = Color(255, 56, 252),
     isDefault = false,
-    models = {"models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl", "models/Humans/Group02/male_07.mdl"},
-    weapons = {"weapon_physgun", "gmod_tool"}
+    models = {"models/player/police.mdl",},
+    weapons = {"weapon_physgun", "gmod_tool", "weapon_physcannon"}
 })
 
 if CLIENT then
