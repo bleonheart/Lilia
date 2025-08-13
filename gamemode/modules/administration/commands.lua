@@ -2760,6 +2760,41 @@ lia.command.add("checkflags", {
     end
 })
 
+lia.command.add("checkpflags", {
+    adminOnly = true,
+    desc = "checkPlayerFlagsDesc",
+    arguments = {
+        {
+            name = "name",
+            type = "player"
+        },
+    },
+    AdminStick = {
+        Name = "adminStickGetPlayerFlagsName",
+        Category = "flagManagement",
+        SubCategory = "playerFlags",
+        Icon = "icon16/flag_orange.png",
+    },
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
+            client:notifyLocalized("targetNotFound")
+            return
+        end
+
+        local flags = target:getPlayerFlags()
+        if flags and #flags > 0 then
+            local list = {}
+            for i = 1, #flags do
+                list[#list + 1] = flags:sub(i, i)
+            end
+            client:ChatPrint(L("playerFlags", target:Name(), table.concat(list, ", ")))
+        else
+            client:notifyLocalized("noFlags", target:Name())
+        end
+    end
+})
+
 lia.command.add("chargetname", {
     adminOnly = true,
     desc = "getCharNameDesc",

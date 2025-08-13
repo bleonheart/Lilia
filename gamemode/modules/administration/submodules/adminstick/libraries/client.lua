@@ -67,6 +67,10 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
             characterFlags = {
                 name = L("adminStickSubCategoryCharacterFlags"),
                 icon = "icon16/flag_green.png"
+            },
+            playerFlags = {
+                name = L("adminStickSubCategoryPlayerFlags"),
+                icon = "icon16/flag_orange.png"
             }
         }
     },
