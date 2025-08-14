@@ -1542,12 +1542,6 @@ lia.command.add("flaggiveall", {
             type = "player"
         },
     },
-    AdminStick = {
-        Name = "adminStickGiveAllFlagsName",
-        Category = "flagManagement",
-        SubCategory = "characterFlags",
-        Icon = "icon16/flag_blue.png"
-    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -1683,12 +1677,6 @@ lia.command.add("pflaggiveall", {
             name = "name",
             type = "player"
         },
-    },
-    AdminStick = {
-        Name = "adminStickGiveAllFlagsName",
-        Category = "flagManagement",
-        SubCategory = "playerFlags",
-        Icon = "icon16/flag_blue.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
