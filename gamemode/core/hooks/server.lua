@@ -843,7 +843,7 @@ local function checkPublicModules()
             if string.StartsWith(uniqueID, "public_") then
                 local match
                 for _, m in ipairs(remote) do
-                    if m.public_uniqueID == uniqueID then
+                    if m.uniqueID == uniqueID then
                         match = m
                         break
                     end
