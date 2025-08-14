@@ -5571,6 +5571,65 @@ end)
 
 ---
 
+### GetRagdollTime
+
+**Purpose**
+
+Determines how long a player remains ragdolled when ragdolling starts. Return a duration in seconds to override the default/base value.
+
+**Parameters**
+
+- `client` (`Player`): The player being ragdolled.
+
+- `baseTime` (`number|nil`): Suggested/base duration in seconds. May be nil; the gamemode defaults to 10 seconds if not overridden.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- `number|nil`: Duration in seconds. Return nil to keep the base/default time.
+
+**Example Usage**
+
+```lua
+-- Make low-health players stay ragdolled longer
+hook.Add("GetRagdollTime", "ScaleByHealth", function(client, baseTime)
+    if client:Health() <= 20 then
+        return math.max(15, baseTime or 10)
+    end
+end)
+```
+
+### GetHandsAttackSpeed
+
+**Purpose**
+
+Allow modules to modify the primary attack delay of the hands SWEP (`lia_hands`). Returning a number replaces the default delay used when setting next primary fire.
+
+**Parameters**
+
+- `client` (Player): The attacking player
+- `defaultDelay` (number): The base primary delay from the SWEP
+
+**Return**
+
+- `number?`: If returned, this value will be used as the attack delay; if nil, the default is used.
+
+**Example**
+
+```lua
+-- Increase melee speed by 40% (reduce delay)
+hook.Add("GetHandsAttackSpeed", "Example_MeleeSpeed", function(client, defaultDelay)
+    if client:IsValid() and client:IsPlayer() then
+        return defaultDelay / 1.4
+    end
+end)
+```
+
+---
+
 ### OnCreateStoragePanel
 
 **Purpose**
