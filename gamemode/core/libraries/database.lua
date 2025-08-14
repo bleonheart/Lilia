@@ -295,12 +295,11 @@ end
 
 function lia.db.loadTables()
     local function done()
-        lia.db.addDatabaseFields()
-        lia.db.tablesLoaded = true
-        hook.Run("LiliaTablesLoaded")
-        -- Signal that the database schema is ready for modules to perform any post-load queries
-        hook.Run("OnDatabaseLoaded")
-    end
+    lia.db.addDatabaseFields()
+    lia.db.tablesLoaded = true
+    hook.Run("LiliaTablesLoaded")
+    hook.Run("OnDatabaseLoaded")
+end
 
     if lia.db.module == "sqlite" then
         lia.db.query([[
