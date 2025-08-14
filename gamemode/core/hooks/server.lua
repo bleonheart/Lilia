@@ -886,7 +886,7 @@ local function checkPrivateModules()
         for uniqueID, mod in pairs(lia.module.list) do
             if string.StartsWith(uniqueID, "private_") then
                 for _, m in ipairs(remote) do
-                    if m.private_uniqueID == uniqueID and m.version and mod.version and versionCompare(mod.version, m.version) < 0 then
+                    if m.uniqueID == uniqueID and m.version and mod.version and versionCompare(mod.version, m.version) < 0 then
                         lia.updater(L("privateModuleOutdated", mod.name))
                         break
                     end
