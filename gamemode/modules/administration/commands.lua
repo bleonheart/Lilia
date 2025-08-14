@@ -2788,6 +2788,7 @@ lia.command.add("pcheckflags", {
             for i = 1, #flags do
                 flagTable[#flagTable + 1] = flags:sub(i, i)
             end
+
             client:ChatPrint(L("playerFlags", target:Name(), table.concat(flagTable, ", ")))
         else
             client:notifyLocalized("noFlags", target:Name())

@@ -135,8 +135,6 @@ function MODULE:PopulateAdminTabs(pages)
                 panel:Clear()
                 panel:DockPadding(10, 10, 10, 10)
                 panel.Paint = function() end
-
-
                 function panel:buildSheet()
                     if IsValid(self.sheet) then self.sheet:Remove() end
                     self.sheet = self:Add("DPanel")
