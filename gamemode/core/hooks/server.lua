@@ -816,7 +816,7 @@ end
 
 local publicURL = "https://raw.githubusercontent.com/LiliaFramework/Modules/refs/heads/gh-pages/modules.json"
 local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/modules.json"
-local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/version.json"
+local versionURL = "https://raw.githubusercontent.com/LiliaFramework/LiliaFramework.github.io/main/docs/versioning/modules.json"
 local function checkPublicModules()
     local hasPublic = false
     for uniqueID in pairs(lia.module.list) do

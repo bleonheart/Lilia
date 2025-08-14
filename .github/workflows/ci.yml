@@ -254,7 +254,8 @@ jobs:
       - run: |
           curl -L -o site/modules.json https://raw.githubusercontent.com/LiliaFramework/Modules/gh-pages/modules.json
       - run: |
-          echo "{\"version\":\"${VERSION}\"}" > site/version.json
+          mkdir -p site/docs/versioning
+          echo "{\"version\":\"${VERSION}\"}" > site/docs/versioning/modules.json
       - run: |
           cd site
           git config user.name github-actions
