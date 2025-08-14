@@ -52,9 +52,7 @@ function MODULE:CanPlayerSpawnStorage(client, _, info)
     if not info.invType or not lia.inventory.types[info.invType] then return false end
 end
 
-function MODULE:CanSaveData()
-    return self.SaveData
-end
+-- Implemented via GetEntitySaveData gate; see below.
 
 function MODULE:StorageItemRemoved()
     self:SaveData()
@@ -102,6 +100,11 @@ end
 
 function MODULE:GetEntitySaveData(ent)
     if ent:GetClass() ~= "lia_storage" then return end
+    -- Allow external control over saving storage-specific data
+    -- Returning false from the hook will skip saving storage data (id/password)
+    local inventory = ent:getInv()
+    local canSave = hook.Run("CanSaveData", ent, inventory)
+    if canSave == false then return end
     return {
         id = ent:getNetVar("id"),
         password = ent.password
@@ -127,5 +130,16 @@ function MODULE:OnEntityLoaded(ent, data)
             end
         end)
     end
+end
+
+-- Provide a SaveData implementation to persist storage entities immediately
+function MODULE:SaveData()
+    for _, ent in ipairs(ents.FindByClass("lia_storage")) do
+        hook.Run("UpdateEntityPersistence", ent)
+    end
+end
+
+function MODULE:OnDatabaseLoaded()
+    self.loadedData = true
 end
 return RULES

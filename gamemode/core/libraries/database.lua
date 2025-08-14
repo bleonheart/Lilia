@@ -298,6 +298,8 @@ function lia.db.loadTables()
         lia.db.addDatabaseFields()
         lia.db.tablesLoaded = true
         hook.Run("LiliaTablesLoaded")
+        -- Signal that the database schema is ready for modules to perform any post-load queries
+        hook.Run("OnDatabaseLoaded")
     end
 
     if lia.db.module == "sqlite" then
