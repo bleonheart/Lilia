@@ -42,21 +42,11 @@ function MODULE:StoreSpawns(spawns)
 end
 
 local function SpawnPlayer(client)
-    print("[TEST] SpawnPlayer called for client:", client)
-    if not IsValid(client) then
-        print("[TEST] Client is not valid!")
-        return
-    end
-
+    if not IsValid(client) then return end
     local character = client:getChar()
-    if not character then
-        print("[TEST] No character found for client!")
-        return
-    end
-
+    if not character then return end
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
-        print("[TEST] Using last position for spawn:", posData.pos, posData.ang)
         client:SetPos(posData.pos and posData.pos.x and posData.pos or client:GetPos())
         client:SetEyeAngles(posData.ang and posData.ang.p and posData.ang or angle_zero)
         character:setLastPos(nil)
@@ -67,64 +57,42 @@ local function SpawnPlayer(client)
     for _, info in ipairs(lia.faction.indices) do
         if info.index == client:Team() then
             factionID = info.uniqueID
-            print("[TEST] Found factionID:", factionID)
             break
         end
     end
 
     if factionID then
-        print("[TEST] Fetching spawns for factionID:", factionID)
         MODULE:FetchSpawns():next(function(spawns)
             local factionSpawns = spawns and spawns[factionID]
-            print("[TEST] factionSpawns:", factionSpawns)
             if factionSpawns and #factionSpawns > 0 then
                 local valid = {}
                 local curMap = game.GetMap():lower()
                 for _, v in ipairs(factionSpawns) do
-                    if not v.map or v.map:lower() == curMap then
-                        print("[TEST] Valid spawn found for map:", curMap, v)
-                        valid[#valid + 1] = v
-                    end
+                    if not v.map or v.map:lower() == curMap then valid[#valid + 1] = v end
                 end
 
                 if #valid > 0 then
                     local data = table.Random(valid)
-                    print("[TEST] Randomly selected spawn data:", data)
                     local basePos = data.pos or data
                     if not isvector(basePos) then
-                        print("[TEST] Decoding basePos from:", basePos, "type:", type(basePos))
                         local parsedPos = lia.data.decodeVector(basePos)
-                        print("[TEST] decodeVector returned:", parsedPos, "isvector:", isvector(parsedPos), "type:", type(parsedPos))
                         basePos = parsedPos
                     end
 
-                    if not isvector(basePos) then
-                        print("[TEST] basePos is not a vector, using Vector(0,0,0)")
-                        basePos = Vector(0, 0, 0)
-                    end
-
+                    if not isvector(basePos) then basePos = Vector(0, 0, 0) end
                     local pos = basePos + Vector(0, 0, 16)
                     local ang = data.ang
                     if not isangle(ang) then
-                        print("[TEST] Decoding angle from:", ang, "type:", type(ang))
                         local parsedAng = lia.data.decodeAngle(ang) or angle_zero
-                        print("[TEST] decodeAngle returned:", parsedAng, "isangle:", isangle(parsedAng), "type:", type(parsedAng))
                         ang = parsedAng
                     end
 
-                    print("[TEST] Setting client position to:", pos, "and angle to:", ang)
                     client:SetPos(pos)
                     client:SetEyeAngles(ang)
                     hook.Run("PlayerSpawnPointSelected", client, pos, ang)
-                else
-                    print("[TEST] No valid spawns found for faction on this map.")
                 end
-            else
-                print("[TEST] No spawns found for factionID:", factionID)
             end
         end)
-    else
-        print("[TEST] No factionID found for client team:", client:Team())
     end
 end
 
