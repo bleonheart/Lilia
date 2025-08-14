@@ -27,9 +27,8 @@ local function _decodeVector(data)
         local x, y, z = data:match("%[([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%]")
         if not x then x, y, z = data:match("%[([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%]") end
         if not x then x, y, z = data:match("Vector%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)") end
-        -- Support plain whitespace-separated triplets like "-8905.438 -2962.981 868.776"
         if not x then x, y, z = data:match("^%s*([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%s*$") end
-        -- Extremely tolerant fallback: extract first three numeric tokens from the string
+        
         if not x then
             local nums = {}
             for num in string.gmatch(data, "[-%d%.]+") do
@@ -42,7 +41,6 @@ local function _decodeVector(data)
         local tbl = util.JSONToTable(data)
         if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then return Vector(tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])) end
     else
-        -- Some values may not be native strings but still stringify to a vector-like triplet
         local s = tostring(data)
         if s and s ~= "" then
             local x, y, z = s:match("%[([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%]")
@@ -72,9 +70,8 @@ local function _decodeAngle(data)
         local p, y, r = data:match("%{([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%}")
         if not p then p, y, r = data:match("%{([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%}") end
         if not p then p, y, r = data:match("Angle%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)") end
-        -- Support plain whitespace-separated triplets like "13.464 -62.784 0.000"
         if not p then p, y, r = data:match("^%s*([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%s*$") end
-        -- Extremely tolerant fallback: extract first three numeric tokens from the string
+        
         if not p then
             local nums = {}
             for num in string.gmatch(data, "[-%d%.]+") do
@@ -90,7 +87,6 @@ local function _decodeAngle(data)
 
         if p then return Angle(tonumber(p), tonumber(y), tonumber(r)) end
     else
-        -- Stringify non-string values and attempt to parse
         local s = tostring(data)
         if s and s ~= "" then
             local p, y, r = s:match("%{([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%}")
@@ -155,11 +151,9 @@ end
 
 function lia.data.decodeVector(raw)
     if not raw then return nil end
-    -- Try direct parse first (handles Vectors, tables, and plain strings)
     local direct = _decodeVector(raw)
     if isvector(direct) then return direct end
 
-    -- Fallback: attempt JSON/PON decode, then parse again
     local decoded
     if isstring(raw) then
         decoded = util.JSONToTable(raw)
@@ -177,11 +171,9 @@ end
 
 function lia.data.decodeAngle(raw)
     if not raw then return nil end
-    -- Try direct parse first
     local direct = _decodeAngle(raw)
     if isangle(direct) then return direct end
 
-    -- Fallback: attempt JSON/PON decode, then parse again
     local decoded
     if isstring(raw) then
         decoded = util.JSONToTable(raw)
