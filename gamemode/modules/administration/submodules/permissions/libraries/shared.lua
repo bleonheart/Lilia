@@ -25,7 +25,7 @@ local function registerDynamicPrivileges()
                     Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
                     ID = id,
                     MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
-                    Category = "tools"
+                    Category = "categoryStaffTools"
                 })
             end
         end
