@@ -7,6 +7,7 @@ function MODULE:FetchSpawns()
     local result = {}
     for fac, spawns in pairs(factions or {}) do
         local t = {}
+        spawns = istable(spawns) and spawns or {spawns}
         for i = 1, #spawns do
             local spawnData = lia.data.deserialize(spawns[i])
             if isvector(spawnData) then
