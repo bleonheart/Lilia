@@ -1,4 +1,4 @@
-﻿-- Helper function to safely send network messages to receivers
+﻿
 local function safeSendToReceivers(entity, netName)
     if entity.receivers and #entity.receivers > 0 then
         net.Send(entity.receivers)
@@ -24,7 +24,6 @@ function ENT:Use(activator)
     end
 
     lia.log.add(activator, "vendorAccess", self:getNetVar("name"))
-    -- Ensure receivers is initialized
     self.receivers = self.receivers or {}
     self.receivers[#self.receivers + 1] = activator
     activator.liaVendor = self
@@ -307,7 +306,6 @@ function ENT:sync(client)
 end
 
 function ENT:addReceiver(client, noSync)
-    -- Ensure receivers is initialized
     self.receivers = self.receivers or {}
     if not table.HasValue(self.receivers, client) then self.receivers[#self.receivers + 1] = client end
     if noSync then return end
