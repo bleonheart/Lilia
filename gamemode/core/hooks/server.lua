@@ -666,11 +666,10 @@ function GM:LoadData()
                             decodedAng = angle_zero
                         end
                     end
-                    
-                    if isangle(decodedAng) then
-                        createdEnt:SetAngles(decodedAng)
-                    end
+
+                    if isangle(decodedAng) then createdEnt:SetAngles(decodedAng) end
                 end
+
                 if ent.model then createdEnt:SetModel(ent.model) end
                 createdEnt:Spawn()
                 if ent.skin then createdEnt:SetSkin(tonumber(ent.skin) or 0) end
@@ -733,10 +732,8 @@ function GM:LoadData()
                                         ang = angle_zero
                                     end
                                 end
-                                
-                                if not isangle(ang) then
-                                    ang = angle_zero
-                                end
+
+                                if not isangle(ang) then ang = angle_zero end
                                 local itemCreated = lia.item.new(uniqueID, itemID)
                                 itemCreated.data = itemData or {}
                                 itemCreated:spawn(position, ang).liaItemID = itemID

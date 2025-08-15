@@ -1,8 +1,5 @@
-﻿
-local function safeSendToReceivers(entity, netName)
-    if entity.receivers and #entity.receivers > 0 then
-        net.Send(entity.receivers)
-    end
+﻿local function safeSendToReceivers(entity, netName)
+    if entity.receivers and #entity.receivers > 0 then net.Send(entity.receivers) end
 end
 
 function ENT:SpawnFunction(client, trace)
@@ -36,9 +33,7 @@ function ENT:setMoney(value)
     self.money = value
     net.Start("VendorMoney")
     net.WriteInt(value or -1, 32)
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:giveMoney(value)
@@ -81,9 +76,7 @@ function ENT:setMaxStock(itemType, value)
     net.Start("VendorMaxStock")
     net.WriteString(itemType)
     net.WriteUInt(value, 32)
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setFactionAllowed(factionID, isAllowed)
@@ -96,9 +89,7 @@ function ENT:setFactionAllowed(factionID, isAllowed)
     net.Start("VendorAllowFaction")
     net.WriteUInt(factionID, 8)
     net.WriteBool(self.factions[factionID])
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
     if self.receivers then
         for _, client in ipairs(self.receivers) do
             if not hook.Run("CanPlayerAccessVendor", client, self) then self:removeReceiver(client) end
@@ -116,15 +107,11 @@ function ENT:setClassAllowed(classID, isAllowed)
     net.Start("VendorAllowClass")
     net.WriteUInt(classID, 8)
     net.WriteBool(self.classes[classID])
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:removeReceiver(client, requestedByPlayer)
-    if self.receivers then
-        table.RemoveByValue(self.receivers, client)
-    end
+    if self.receivers then table.RemoveByValue(self.receivers, client) end
     if client.liaVendor == self then client.liaVendor = nil end
     if requestedByPlayer then return end
     net.Start("VendorExit")
@@ -142,9 +129,7 @@ function ENT:setName(name)
     self:setNetVar("name", name)
     net.Start("VendorEdit")
     net.WriteString("name")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setTradeMode(itemType, mode)
@@ -154,9 +139,7 @@ function ENT:setTradeMode(itemType, mode)
     net.Start("VendorMode")
     net.WriteString(itemType)
     net.WriteInt(mode or -1, 8)
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setItemPrice(itemType, value)
@@ -166,9 +149,7 @@ function ENT:setItemPrice(itemType, value)
     net.Start("VendorPrice")
     net.WriteString(itemType)
     net.WriteInt(value or -1, 32)
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setItemStock(itemType, value)
@@ -178,9 +159,7 @@ function ENT:setItemStock(itemType, value)
     net.Start("VendorStock")
     net.WriteString(itemType)
     net.WriteInt(value, 32)
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setItemMaxStock(itemType, value)
@@ -190,17 +169,13 @@ function ENT:setItemMaxStock(itemType, value)
     net.Start("VendorMaxStock")
     net.WriteString(itemType)
     net.WriteInt(value, 32)
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:OnRemove()
     LiliaVendors[self:EntIndex()] = nil
     net.Start("VendorExit")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
     if lia.shuttingDown or self.liaIsSafe then return end
 end
 
@@ -211,9 +186,7 @@ function ENT:setModel(model)
     if self:isReadyForAnim() then self:setAnim() end
     net.Start("VendorEdit")
     net.WriteString("model")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setSkin(skin)
@@ -221,9 +194,7 @@ function ENT:setSkin(skin)
     self:SetSkin(skin)
     net.Start("VendorEdit")
     net.WriteString("skin")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setBodyGroup(id, value)
@@ -232,9 +203,7 @@ function ENT:setBodyGroup(id, value)
     self:SetBodygroup(id, value)
     net.Start("VendorEdit")
     net.WriteString("bodygroup")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:setSellScale(scale)
@@ -242,9 +211,7 @@ function ENT:setSellScale(scale)
     self:setNetVar("scale", scale)
     net.Start("VendorEdit")
     net.WriteString("scale")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:applyPreset(name)
@@ -260,9 +227,7 @@ function ENT:applyPreset(name)
 
         net.Start("VendorEdit")
         net.WriteString("preset")
-        if self.receivers and #self.receivers > 0 then
-            net.Send(self.receivers)
-        end
+        if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
         return
     end
 
@@ -284,9 +249,7 @@ function ENT:applyPreset(name)
 
     net.Start("VendorEdit")
     net.WriteString("preset")
-    if self.receivers and #self.receivers > 0 then
-        net.Send(self.receivers)
-    end
+    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
 
 function ENT:sync(client)

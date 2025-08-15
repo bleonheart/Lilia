@@ -259,6 +259,7 @@ function lia.administrator.hasAccess(ply, privilege)
                         MinAccess = defaultUserTools[string.lower(toolName)] and "user" or "admin",
                         Category = "categoryStaffTools",
                     })
+
                     break
                 end
             end

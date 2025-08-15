@@ -37,7 +37,6 @@ function ENT:Initialize()
     end
 
     self.receivers = self.receivers or {}
-    
     self:SetModel("models/mossman.mdl")
     self:SetUseType(SIMPLE_USE)
     self:SetMoveType(MOVETYPE_NONE)
