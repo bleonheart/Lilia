@@ -9,7 +9,7 @@ function MODULE:InitializedModules()
                 Name = L("accessPropertyPrivilege", prop.MenuLabel),
                 ID = "property_" .. tostring(name),
                 MinAccess = "admin",
-                Category = "properties"
+                Category = "categoryStaffManagement"
             })
         end
     end
@@ -21,7 +21,7 @@ function MODULE:InitializedModules()
                     Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
                     ID = "tool_" .. tostring(tool),
                     MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
-                    Category = "tools"
+                    Category = "categoryStaffTools"
                 })
             end
         end
