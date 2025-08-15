@@ -3,9 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - '**'
     tags-ignore:
       - release
+  pull_request:
 
 permissions:
   actions: write
@@ -18,7 +19,7 @@ permissions:
   packages: write
   pages: write
   pull-requests: write
-  repository-projects: write
+  projects: write
   security-events: write
   statuses: write
 
@@ -57,25 +58,41 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          curl -sSfL https://raw.githubusercontent.com/bleonheart/Useful-Python-Scripts/refs/heads/main/files/remove_lua_comments.py -o remove_lua_comments.py || curl -sSfL https://raw.githubusercontent.com/bleonheart/Useful-Python-Scripts/main/files/remove_lua_comments.py -o remove_lua_comments.py
+          curl -sSfL https://raw.githubusercontent.com/bleonheart/Useful-Python-Scripts/main/files/remove_lua_comments.py -o remove_lua_comments.py
           python3 remove_lua_comments.py gamemode
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stripped-gamemode
+          path: gamemode
 
   format-glua:
     needs: strip-comments
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: sudo apt-get update && sudo apt-get install -y jq
+      - uses: actions/download-artifact@v4
+        with:
+          name: stripped-gamemode
+          path: .
       - run: |
-          curl -L https://github.com/FPtje/GLuaFixer/releases/latest/download/glualint-linux -o glualint
+          rm -rf gamemode.bak
+          if [ -d gamemode ]; then mv gamemode gamemode.bak; fi
+          mv -f stripped-gamemode gamemode || true
+      - name: Download glualint (linux x86_64)
+        run: |
+          set -euo pipefail
+          url="$(curl -fsSL https://api.github.com/repos/FPtje/GLuaFixer/releases/latest | jq -r '.assets[] | select(.name | test("x86_64-linux$")) | .browser_download_url')"
+          curl -fsSL "$url" -o glualint
           chmod +x glualint
-      - run: |
-          ./glualint --pretty-print-files gamemode
+          ./glualint --version
+      - run: ./glualint --pretty-print-files gamemode
       - run: |
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add .
-            git commit -m "chore: auto-format GLua files"
+            git commit -m "chore: auto-strip comments and format GLua files"
             git push
           fi
 
@@ -92,7 +109,7 @@ jobs:
           fetch-depth: 0
       - id: calc_version
         run: |
-          VALID_COUNT=$(git log --no-merges --pretty=format:'%ae' | grep -v '^github-actions@github.com$' | wc -l)
+          VALID_COUNT=$(git log --no-merges --pretty=format:'%ae' | grep -v '^41898282+github-actions\[bot\]@users\.noreply\.github\.com$' | wc -l)
           if (( VALID_COUNT < 100 )); then
             MAJOR=0; MINOR=0; PATCH=$VALID_COUNT
           elif (( VALID_COUNT < 1000 )); then
@@ -102,7 +119,7 @@ jobs:
             MINOR=$(((VALID_COUNT % 1000) / 100))
             PATCH=$((VALID_COUNT % 100))
           fi
-          VERSION_FLOAT=$(echo "$MAJOR.$MINOR$PATCH" | sed 's/^0*//' | sed 's/\.$/.0/')
+          VERSION_FLOAT=$(printf "%d.%d%02d" "$MAJOR" "$MINOR" "$PATCH")
           echo "version=$VERSION_FLOAT" >> "$GITHUB_OUTPUT"
           echo "valid_count=$VALID_COUNT" >> "$GITHUB_OUTPUT"
 
@@ -141,7 +158,7 @@ jobs:
           echo "{\"version\":\"${VERSION}\"}" > documentation/docs/versioning/lilia.json
       - run: |
           git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
+          git config user.email github-actions[bot]@github.com
           git add gamemode/shared.lua documentation/docs/versioning/lilia.json
           git diff-index --quiet HEAD || git commit -m "Successfully updated workshop Lilia to ${VERSION}"
           git push origin HEAD:main
@@ -184,23 +201,19 @@ jobs:
           sudo apt-get install -y jq
       - run: |
           for rid in $(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases" | jq -r '.[].id'); do
-            curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/${{ github.repository }}/releases/$rid"
+            curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/releases/$rid"
           done
       - run: |
-          for tag in $(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/git/refs/tags" \
-            | jq -r '.[].ref' | sed 's#refs/tags/##'); do
+          for tag in $(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/git/refs/tags" | jq -r '.[].ref' | sed 's#refs/tags/##'); do
             if [[ "$tag" != "$VERSION" ]]; then
-              curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-                "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$tag"
+              curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$tag"
             fi
           done
       - id: create_release
         uses: actions/create-release@v1
         with:
           tag_name: release
-          release_name: Lilia ${{ env.VERSION }}
+          release_name: "Lilia ${{ env.VERSION }}"
           draft: false
           prerelease: false
         env:
@@ -214,7 +227,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.LiliaGitSecret }}
       - run: |
-          cat > /tmp/addon.json <<EOF
+          cat > /tmp/addon.json <<'EOF'
           {
             "title": "Lilia",
             "description": "Lilia ${VERSION}",
@@ -233,8 +246,7 @@ jobs:
       - run: |
           cd addon
           lua5.3 ../gmacreator.lua ../3527535922.gma addon.json
-      - run: |
-          echo "Created workshop addon: 3527535922.gma"
+      - run: echo "Created workshop addon: 3527535922.gma"
       - run: |
           cat > changelog.txt <<EOF
           Lilia ${VERSION}
@@ -248,7 +260,7 @@ jobs:
           }
           EOF
       - run: |
-          ~/Steam/steamcmd.sh +login $STEAM_USERNAME $STEAM_PASSWORD +workshop_build_item $(pwd -P)/workshop.vdf +quit
+          ~/Steam/steamcmd.sh +login "$STEAM_USERNAME" "$STEAM_PASSWORD" +workshop_build_item "$(pwd -P)/workshop.vdf" +quit
       - if: failure()
         run: |
           echo ~/Steam/logs/stderr.txt
