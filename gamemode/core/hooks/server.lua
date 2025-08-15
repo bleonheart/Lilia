@@ -650,7 +650,6 @@ function GM:LoadData()
 
                 createdEnt:SetPos(decodedPos)
                 if decodedAng then
-                    -- Ensure decodedAng is a valid Angle object
                     if not isangle(decodedAng) then
                         if isvector(decodedAng) then
                             decodedAng = Angle(decodedAng.x, decodedAng.y, decodedAng.z)
@@ -668,7 +667,6 @@ function GM:LoadData()
                         end
                     end
                     
-                    -- Final safety check before setting angles
                     if isangle(decodedAng) then
                         createdEnt:SetAngles(decodedAng)
                     end
@@ -719,7 +717,6 @@ function GM:LoadData()
                             local position = positions[itemID]
                             local ang = angles[itemID]
                             if itemTable and itemID and position then
-                                -- Ensure ang is a valid Angle object before spawning
                                 if ang and not isangle(ang) then
                                     if isvector(ang) then
                                         ang = Angle(ang.x, ang.y, ang.z)
@@ -737,7 +734,6 @@ function GM:LoadData()
                                     end
                                 end
                                 
-                                -- Final safety check before spawning
                                 if not isangle(ang) then
                                     ang = angle_zero
                                 end

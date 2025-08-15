@@ -33,19 +33,15 @@ local function registerDynamicPrivileges()
 end
 
 function MODULE:InitializedModules()
-    -- Initial pass right after modules load
     registerDynamicPrivileges()
-    -- Schedule a delayed pass to catch late-registered properties/tools
     timer.Simple(1, registerDynamicPrivileges)
 end
 
 function MODULE:OnAdminSystemLoaded()
-    -- Ensure privileges exist after admin system fully loads from DB/CAMI
     registerDynamicPrivileges()
 end
 
 function MODULE:OnReloaded()
-    -- Hot-reload safety
     registerDynamicPrivileges()
 end
 

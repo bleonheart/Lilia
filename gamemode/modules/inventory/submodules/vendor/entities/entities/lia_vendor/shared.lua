@@ -36,7 +36,6 @@ function ENT:Initialize()
         return
     end
 
-    -- Ensure receivers is always initialized
     self.receivers = self.receivers or {}
     
     self:SetModel("models/mossman.mdl")
