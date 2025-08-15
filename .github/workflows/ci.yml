@@ -236,7 +236,7 @@ jobs:
       - run: |
           cd addon
           lua5.3 ../gmacreator.lua ../3527535922.gma addon.json
-      - run: echo "Created workshop addon: 3527535922.gma"
+      - run: echo "Created workshop addon 3527535922.gma"
       - run: |
           cat > changelog.txt <<EOF
           Lilia ${VERSION}
