@@ -666,6 +666,34 @@ else
     end
 end
 
+if properties and properties.List then
+    for name, prop in pairs(properties.List) do
+        if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
+            local id = "property_" .. tostring(name)
+            lia.administrator.registerPrivilege({
+                Name = L("accessPropertyPrivilege", prop.MenuLabel or name),
+                ID = id,
+                MinAccess = "admin",
+                Category = "properties"
+            })
+        end
+    end
+end
+
+for _, wep in ipairs(weapons.GetList()) do
+    if wep.ClassName == "gmod_tool" and wep.Tool then
+        for tool in pairs(wep.Tool) do
+            local id = "tool_" .. tostring(tool)
+            lia.administrator.registerPrivilege({
+                Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
+                ID = id,
+                MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
+                Category = "categoryStaffTools"
+            })
+        end
+    end
+end
+
 if SERVER then
     local function ensureStructures()
         lia.administrator.groups = lia.administrator.groups or {}
