@@ -649,7 +649,30 @@ function GM:LoadData()
                 end
 
                 createdEnt:SetPos(decodedPos)
-                if decodedAng then createdEnt:SetAngles(decodedAng) end
+                if decodedAng then
+                    -- Ensure decodedAng is a valid Angle object
+                    if not isangle(decodedAng) then
+                        if isvector(decodedAng) then
+                            decodedAng = Angle(decodedAng.x, decodedAng.y, decodedAng.z)
+                        elseif istable(decodedAng) then
+                            local p = tonumber(decodedAng.p or decodedAng[1])
+                            local yaw = tonumber(decodedAng.y or decodedAng[2])
+                            local r = tonumber(decodedAng.r or decodedAng[3])
+                            if p and yaw and r then
+                                decodedAng = Angle(p, yaw, r)
+                            else
+                                decodedAng = angle_zero
+                            end
+                        else
+                            decodedAng = angle_zero
+                        end
+                    end
+                    
+                    -- Final safety check before setting angles
+                    if isangle(decodedAng) then
+                        createdEnt:SetAngles(decodedAng)
+                    end
+                end
                 if ent.model then createdEnt:SetModel(ent.model) end
                 createdEnt:Spawn()
                 if ent.skin then createdEnt:SetSkin(tonumber(ent.skin) or 0) end
@@ -696,6 +719,28 @@ function GM:LoadData()
                             local position = positions[itemID]
                             local ang = angles[itemID]
                             if itemTable and itemID and position then
+                                -- Ensure ang is a valid Angle object before spawning
+                                if ang and not isangle(ang) then
+                                    if isvector(ang) then
+                                        ang = Angle(ang.x, ang.y, ang.z)
+                                    elseif istable(ang) then
+                                        local p = tonumber(ang.p or ang[1])
+                                        local yaw = tonumber(ang.y or ang[2])
+                                        local r = tonumber(ang.r or ang[3])
+                                        if p and yaw and r then
+                                            ang = Angle(p, yaw, r)
+                                        else
+                                            ang = angle_zero
+                                        end
+                                    else
+                                        ang = angle_zero
+                                    end
+                                end
+                                
+                                -- Final safety check before spawning
+                                if not isangle(ang) then
+                                    ang = angle_zero
+                                end
                                 local itemCreated = lia.item.new(uniqueID, itemID)
                                 itemCreated.data = itemData or {}
                                 itemCreated:spawn(position, ang).liaItemID = itemID

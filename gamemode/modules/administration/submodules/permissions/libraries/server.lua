@@ -49,7 +49,7 @@ function GM:CanProperty(client, property, entity)
         print(string.format("[CanProperty] Allowed: Client %s (%s) is creator of entity and property is '%s'.", tostring(client), client and client.SteamID and client:SteamID() or "N/A", tostring(property)))
         return true
     end
-
+    print("property_" .. property)
     if client:hasPrivilege("property_" .. property) and client:isStaffOnDuty() then
         print(string.format("[CanProperty] Allowed: Client %s (%s) has 'property_%s' privilege and is staff on duty.", tostring(client), client and client.SteamID and client:SteamID() or "N/A", tostring(property)))
         return true
