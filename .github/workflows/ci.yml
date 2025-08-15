@@ -21,7 +21,7 @@ permissions:
   packages: write
   pages: write
   pull-requests: write
-  repository-projects: write
+  projects: write
   security-events: write
   statuses: write
 
@@ -62,10 +62,6 @@ jobs:
       - run: |
           curl -sSfL https://raw.githubusercontent.com/bleonheart/Useful-Python-Scripts/main/files/remove_lua_comments.py -o remove_lua_comments.py
           python3 remove_lua_comments.py gamemode
-      - uses: actions/upload-artifact@v4
-        with:
-          name: stripped-gamemode
-          path: gamemode
 
   format-glua:
     needs: strip-comments
@@ -73,13 +69,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update && sudo apt-get install -y jq
-      - uses: actions/download-artifact@v4
-        with:
-          name: stripped-gamemode
-          path: .
-      - run: |
-          if [ -d gamemode ]; then rm -rf gamemode.bak && mv gamemode gamemode.bak; fi
-          if [ -d stripped-gamemode ]; then mv stripped-gamemode gamemode; fi
       - name: Download glualint (linux x86_64)
         run: |
           set -euo pipefail
@@ -93,7 +82,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add .
-            git commit -m "chore: auto-strip comments and format GLua files"
+            git commit -m "chore: auto-format GLua files"
             git push
           fi
 
