@@ -667,7 +667,16 @@ function GM:LoadData()
                         end
                     end
 
-                    if isangle(decodedAng) then createdEnt:SetAngles(decodedAng) end
+                    if isangle(decodedAng) then
+                        local ok, err = pcall(createdEnt.SetAngles, createdEnt, decodedAng)
+                        if not ok then
+                            lia.error(string.format("Failed to SetAngles for entity '%s' at %s. Angle: %s (%s) - %s", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng), err))
+                            lia.error(debug.traceback())
+                        end
+                    else
+                        lia.error(string.format("Invalid angle for entity '%s' at %s: %s (%s)", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
+                        lia.error(debug.traceback())
+                    end
                 end
 
                 if ent.model then createdEnt:SetModel(ent.model) end
