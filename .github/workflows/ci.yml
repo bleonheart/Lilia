@@ -66,15 +66,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download glualint binary
+        env:
+          GLUALINT_VERSION: "1.29.0"
         run: |
           set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y unzip file
           arch="$(uname -m)"
           case "$arch" in
-            x86_64) asset="glualint-x86_64-linux" ;;
-            aarch64|arm64) asset="glualint-aarch64-linux" ;;
+            x86_64) asset="glualint-${GLUALINT_VERSION}-x86_64-linux.zip" ;;
+            aarch64|arm64) asset="glualint-${GLUALINT_VERSION}-aarch64-linux.zip" ;;
             *) echo "Unsupported architecture: $arch" >&2; exit 1 ;;
           esac
-          curl -fsSL "https://github.com/FPtje/GLuaFixer/releases/latest/download/${asset}" -o glualint
+          url="https://github.com/FPtje/GLuaFixer/releases/download/${GLUALINT_VERSION}/${asset}"
+          curl -fLsS "$url" -o glualint.zip
+          unzip -o glualint.zip
           chmod +x glualint
           file glualint | grep -q ELF
           ./glualint --version
@@ -153,7 +159,7 @@ jobs:
           echo "{\"version\":\"${VERSION}\"}" > documentation/docs/versioning/lilia.json
       - run: |
           git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
+          git config user.email github-actions[bot]@github.com
           git add gamemode/shared.lua documentation/docs/versioning/lilia.json
           git diff-index --quiet HEAD || git commit -m "Successfully updated workshop Lilia to ${VERSION}"
           git push origin HEAD:main
