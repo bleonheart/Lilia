@@ -55,11 +55,18 @@ end
 function characterMeta:hasFlags(flagStr)
     local flags = self:getFlags()
     local ply = self:getPlayer()
-    local playerFlags = ply and ply:getPlayerFlags() or ""
+    local playerFlags = ""
+    if ply and isfunction(ply.getPlayerFlags) then
+        playerFlags = ply:getPlayerFlags() or ""
+    end
+
     for i = 1, #flagStr do
         local flag = flagStr:sub(i, i)
-        if flags:find(flag, 1, true) or playerFlags:find(flag, 1, true) then return true end
+        if flags:find(flag, 1, true) or playerFlags:find(flag, 1, true) then
+            return true
+        end
     end
+
     return false
 end
 
@@ -358,9 +365,13 @@ if SERVER then
         hook.Run("OnCharVarChanged", self, "flags", oldFlags, flags)
         local ply = self:getPlayer()
         if not IsValid(ply) then return end
+        local playerFlags = ""
+        if isfunction(ply.getPlayerFlags) then
+            playerFlags = ply:getPlayerFlags() or ""
+        end
         for i = 1, #oldFlags do
             local flag = oldFlags:sub(i, i)
-            if not flags:find(flag, 1, true) and not ply:getPlayerFlags():find(flag, 1, true) then
+            if not flags:find(flag, 1, true) and not playerFlags:find(flag, 1, true) then
                 local info = lia.flag.list[flag]
                 if info and info.callback then info.callback(ply, false) end
             end
@@ -394,11 +405,15 @@ if SERVER then
         local oldFlags = self:getFlags()
         local newFlags = oldFlags
         local ply = self:getPlayer()
+        local playerFlags = ""
+        if IsValid(ply) and isfunction(ply.getPlayerFlags) then
+            playerFlags = ply:getPlayerFlags() or ""
+        end
         for i = 1, #flags do
             local flag = flags:sub(i, i)
             local info = lia.flag.list[flag]
             if info and info.callback and IsValid(ply) then
-                local hasOther = ply:getPlayerFlags():find(flag, 1, true)
+                local hasOther = playerFlags:find(flag, 1, true)
                 if not hasOther then info.callback(ply, false) end
             end
 

@@ -852,7 +852,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
     end
 
     pf:AddOption(L("modifyPlayerFlags"), function()
-        local currentFlags = tgt:getPlayerFlags()
+        local currentFlags = (isfunction(tgt.getPlayerFlags) and tgt:getPlayerFlags()) or ""
         Derma_StringRequest(L("modifyPlayerFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
             text = string.gsub(text or "", "%s", "")
             net.Start("liaModifyFlags")
@@ -892,7 +892,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
     end):SetIcon("icon16/flag_red.png")
 
     pf:AddOption(L("listPlayerFlags"), function()
-        local currentFlags = tgt:getPlayerFlags() or ""
+        local currentFlags = (isfunction(tgt.getPlayerFlags) and tgt:getPlayerFlags()) or ""
         local flagList = ""
         if currentFlags ~= "" then
             for i = 1, #currentFlags do
