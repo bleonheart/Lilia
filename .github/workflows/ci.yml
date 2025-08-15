@@ -84,16 +84,16 @@ jobs:
           chmod +x glualint
           file glualint | grep -q ELF
           ./glualint --version
-      - name: Pretty-print GLua
+      - name: Pretty-print all Lua files
         run: |
-          ./glualint --pretty-print-files gamemode
+          find . -type f -name "*.lua" -print0 | xargs -0 ./glualint --pretty-print-files
       - name: Commit changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add .
-            git commit -m "chore: auto-format GLua files"
+            git commit -m "chore: auto-format all GLua files"
             git push
           fi
 
@@ -159,7 +159,7 @@ jobs:
           echo "{\"version\":\"${VERSION}\"}" > documentation/docs/versioning/lilia.json
       - run: |
           git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@github.com
+          git config user.email github-actions[bot]@users.noreply.github.com
           git add gamemode/shared.lua documentation/docs/versioning/lilia.json
           git diff-index --quiet HEAD || git commit -m "Successfully updated workshop Lilia to ${VERSION}"
           git push origin HEAD:main
