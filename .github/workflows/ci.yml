@@ -65,12 +65,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          curl -L https://github.com/FPtje/GLuaFixer/releases/latest/download/glualint-linux -o glualint
+      - name: Download glualint binary
+        run: |
+          set -euo pipefail
+          arch="$(uname -m)"
+          case "$arch" in
+            x86_64) asset="glualint-x86_64-linux" ;;
+            aarch64|arm64) asset="glualint-aarch64-linux" ;;
+            *) echo "Unsupported architecture: $arch" >&2; exit 1 ;;
+          esac
+          curl -fsSL "https://github.com/FPtje/GLuaFixer/releases/latest/download/${asset}" -o glualint
           chmod +x glualint
-      - run: |
+          file glualint | grep -q ELF
+          ./glualint --version
+      - name: Pretty-print GLua
+        run: |
           ./glualint --pretty-print-files gamemode
-      - run: |
+      - name: Commit changes
+        run: |
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
