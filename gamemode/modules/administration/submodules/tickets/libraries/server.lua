@@ -101,6 +101,10 @@ function MODULE:SendPopup(noob, message)
             message = message
         }
 
+        -- Run hook for ticket creation with detailed information
+        hook.Run("TicketSystemCreated", noob, message)
+        hook.Run("OnTicketCreated", noob, message)
+
         timer.Remove("ticketsystem-" .. requesterSteamID)
         timer.Create("ticketsystem-" .. requesterSteamID, 60, 1, function()
             if IsValid(noob) and noob:IsPlayer() then noob.CaseClaimed = nil end

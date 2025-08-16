@@ -10537,17 +10537,16 @@ end)
 
 ---
 
-### TicketSystemClaim
+### TicketSystemCreated
 
 **Purpose**
 
-Fired when a staff member claims a help ticket.
+Fired when a new help ticket is created by a player.
 
 **Parameters**
 
-- `admin` (`Player`): Staff member claiming the ticket.
-
-- `requester` (`Player`): Player who opened the ticket.
+- `requester` (`Player`): Player who created the ticket.
+- `message` (`string`): The ticket message content.
 
 **Realm**
 
@@ -10560,9 +10559,42 @@ Fired when a staff member claims a help ticket.
 **Example Usage**
 
 ```lua
--- Prints a message when TicketSystemClaim is triggered
-hook.Add("TicketSystemClaim", "NotifyClaim", function(staff, ply)
-    staff:ChatPrint(string.format("Claimed ticket from %s", ply:Name()))
+-- Log when a new ticket is created
+hook.Add("TicketSystemCreated", "LogTicketCreation", function(requester, message)
+    print(string.format("New ticket created by %s (%s) - Message: %s", 
+        requester:Nick(), requester:SteamID(), message))
+end)
+```
+
+---
+
+### TicketSystemClaim
+
+**Purpose**
+
+Fired when a staff member claims a help ticket.
+
+**Parameters**
+
+- `admin` (`Player`): Staff member claiming the ticket.
+- `requester` (`Player`): Player who opened the ticket.
+- `message` (`string`): The ticket message content.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+-- Log when a ticket is claimed with detailed information
+hook.Add("TicketSystemClaim", "LogTicketClaim", function(admin, requester, message)
+    print(string.format("Ticket claimed by %s (%s) from %s (%s) - Message: %s", 
+        admin:Nick(), admin:SteamID(), requester:Nick(), requester:SteamID(), message))
 end)
 ```
 
@@ -10577,8 +10609,8 @@ Fired when a staff member closes a help ticket.
 **Parameters**
 
 - `admin` (`Player`): Staff member closing the ticket.
-
 - `requester` (`Player`): Player who opened the ticket.
+- `message` (`string`): The ticket message content.
 
 **Realm**
 
@@ -10591,9 +10623,10 @@ Fired when a staff member closes a help ticket.
 **Example Usage**
 
 ```lua
--- Notify the player that staff closed their ticket
-hook.Add("TicketSystemClose", "AlertRequester", function(admin, requester)
-    requester:ChatPrint(admin:Nick() .. " closed your help ticket.")
+-- Log when a ticket is closed with detailed information
+hook.Add("TicketSystemClose", "LogTicketClose", function(admin, requester, message)
+    print(string.format("Ticket closed by %s (%s) for %s (%s) - Message: %s", 
+        admin:Nick(), admin:SteamID(), requester:Nick(), requester:SteamID(), message))
 end)
 ```
 
@@ -10648,6 +10681,10 @@ Fired when an administrator issues a warning to a player.
 
 - `index` (`number`): Current warning count on the player.
 
+- `adminSteamID` (`string`): Steam ID of the staff member giving the warning.
+
+- `targetSteamID` (`string`): Steam ID of the player receiving the warning.
+
 **Realm**
 
 `Server`
@@ -10659,8 +10696,8 @@ Fired when an administrator issues a warning to a player.
 **Example Usage**
 
 ```lua
-hook.Add("WarningIssued", "NotifyWarning", function(admin, ply, reason)
-    ply:ChatPrint(admin:Name() .. " warned you: " .. reason)
+hook.Add("WarningIssued", "NotifyWarning", function(admin, ply, reason, count, adminSteamID, targetSteamID)
+    print(admin:Name() .. " (" .. adminSteamID .. ") warned " .. ply:Name() .. " (" .. targetSteamID .. ") for: " .. reason)
 end)
 ```
 
@@ -10679,6 +10716,10 @@ Fired when an administrator removes one of a player's warnings.
 - `target` (`Player`): Player that had the warning.
 
 - `warning` (`table`): Table containing the warning data.
+  - `reason` (`string`): The reason for the warning that was removed.
+  - `admin` (`string`): Name of the admin who originally issued the warning.
+  - `adminSteamID` (`string`): Steam ID of the admin who originally issued the warning.
+  - `targetSteamID` (`string`): Steam ID of the player who received the warning.
 
 - `index` (`number`): Index of the removed warning.
 
@@ -10695,6 +10736,7 @@ Fired when an administrator removes one of a player's warnings.
 ```lua
 hook.Add("WarningRemoved", "LogRemoval", function(admin, ply, warn, index)
     print(admin:Name() .. " removed warning #" .. index .. " from " .. ply:Name())
+    print("Original warning was issued by " .. warn.admin .. " (" .. warn.adminSteamID .. ") to " .. ply:Name() .. " (" .. warn.targetSteamID .. ") for: " .. warn.reason)
 end)
 ```
 

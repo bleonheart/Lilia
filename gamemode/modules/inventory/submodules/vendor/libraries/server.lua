@@ -222,6 +222,7 @@ net.Receive("VendorEdit", function(_, client)
     local vendor = client.liaVendor
     if not IsValid(vendor) or not lia.vendor.editor[key] then return end
     lia.log.add(client, "vendorEdit", vendor, key)
+    hook.Run("OnVendorEdited", client, vendor, key)
     lia.vendor.editor[key](vendor, client, key)
     hook.Run("UpdateEntityPersistence", vendor)
 end)
