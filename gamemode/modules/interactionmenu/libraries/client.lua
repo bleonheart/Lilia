@@ -110,7 +110,10 @@ local function openMenu(options, isInteraction, titleText, closeKey, netMsg)
         btn.DoClick = function()
             frame:AlphaTo(0, fadeSpeed, 0, function() if IsValid(frame) then frame:Close() end end)
             if isInteraction then
-                entry.opt.onRun(client, ent)
+                -- If target is a bot, run the interaction on self instead
+                -- This allows interactions that would work on self to function when targeting bots
+                local target = ent:IsBot() and client or ent
+                entry.opt.onRun(client, target)
             else
                 entry.opt.onRun(client)
             end
@@ -118,7 +121,10 @@ local function openMenu(options, isInteraction, titleText, closeKey, netMsg)
             if entry.opt.runServer then
                 net.Start(netMsg)
                 net.WriteString(entry.name)
-                if isInteraction then net.WriteEntity(ent) end
+                if isInteraction then 
+                    -- Send the actual target entity for server-side validation
+                    net.WriteEntity(ent) 
+                end
                 net.SendToServer()
             end
         end

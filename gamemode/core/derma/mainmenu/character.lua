@@ -82,7 +82,8 @@ function PANEL:loadBackground()
             local ent = self.modelEntity
             if not IsValid(ent) then return end
             local center = ent:GetPos() + Vector(0, 0, 60)
-            local desired = center + ent:GetForward() * 70
+            -- Use a fixed offset instead of ent:GetForward() so camera doesn't rotate with model
+            local desired = center + Vector(0, -70, 0)
             self.currentCamPos = self.currentCamPos and LerpVector(FrameTime() * 5, self.currentCamPos, desired) or desired
             return {
                 origin = self.currentCamPos,
@@ -618,6 +619,9 @@ function PANEL:updateModelEntity(character)
     end
 
     ang.pitch, ang.roll = 0, 0
+    -- Ensure model faces the camera (which is at Vector(0, -70, 0) relative to model)
+    -- Since camera is behind model, model needs to face backward (180 degrees) to face camera
+    ang.yaw = 265
     self.modelEntity:SetPos(pos)
     self.modelEntity:SetAngles(ang)
     for _, seq in ipairs(self.modelEntity:GetSequenceList()) do
