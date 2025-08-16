@@ -360,6 +360,11 @@ function lia.error(msg)
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
+function lia.warning(msg)
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[Warning] ")
+    MsgC(Color(255, 255, 0), tostring(msg), "\n")
+end
+
 function lia.deprecated(methodName, callback)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[Deprecated] ")
     MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n")

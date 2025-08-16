@@ -13,7 +13,10 @@
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    options[L(v.name)] = k
+                    -- Prevent staff faction from appearing in transfer options
+                    if k ~= "staff" then
+                        options[L(v.name)] = k
+                    end
                 end
                 return options
             end
@@ -30,6 +33,12 @@
         local faction = lia.faction.teams[factionName] or lia.util.findFaction(client, factionName)
         if not faction then
             client:notifyLocalized("invalidFaction")
+            return
+        end
+
+        -- Prevent transfer to staff faction
+        if faction.uniqueID == "staff" then
+            client:notify("You cannot transfer a player to the staff faction through commands. Staff characters must be created through the menu system.")
             return
         end
 
@@ -66,7 +75,10 @@ lia.command.add("plywhitelist", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    options[L(v.name)] = k
+                    -- Prevent staff faction from appearing in whitelist options
+                    if k ~= "staff" then
+                        options[L(v.name)] = k
+                    end
                 end
                 return options
             end
@@ -80,7 +92,18 @@ lia.command.add("plywhitelist", {
         end
 
         local faction = lia.util.findFaction(client, arguments[2])
-        if faction and target:setWhitelisted(faction.index, true) then
+        if not faction then
+            client:notifyLocalized("invalidFaction")
+            return
+        end
+
+        -- Prevent whitelisting to staff faction
+        if faction.uniqueID == "staff" then
+            client:notify("You cannot whitelist a player to the staff faction through commands. Staff characters must be created through the menu system.")
+            return
+        end
+
+        if target:setWhitelisted(faction.index, true) then
             for _, v in player.Iterator() do
                 v:notifyLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
             end
@@ -105,7 +128,10 @@ lia.command.add("plyunwhitelist", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    options[L(v.name)] = k
+                    -- Prevent staff faction from appearing in unwhitelist options
+                    if k ~= "staff" then
+                        options[L(v.name)] = k
+                    end
                 end
                 return options
             end
@@ -119,6 +145,17 @@ lia.command.add("plyunwhitelist", {
         end
 
         local faction = lia.util.findFaction(client, arguments[2])
+        if not faction then
+            client:notifyLocalized("invalidFaction")
+            return
+        end
+
+        -- Prevent unwhitelisting from staff faction
+        if faction.uniqueID == "staff" then
+            client:notify("You cannot unwhitelist a player from the staff faction through commands. Staff character management must be done through the menu system.")
+            return
+        end
+
         if faction and not faction.isDefault and target:setWhitelisted(faction.index, false) then
             for _, v in player.Iterator() do
                 v:notifyLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))

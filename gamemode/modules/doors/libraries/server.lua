@@ -23,35 +23,92 @@ function MODULE:LoadData()
     local query = "SELECT * FROM lia_doors WHERE " .. condition
     lia.db.query(query):next(function(res)
         local rows = res.results or {}
+        local loadedCount = 0
         for _, row in ipairs(rows) do
             local id = tonumber(row.id)
+            if not id then continue end
             local ent = ents.GetMapCreatedEntity(id)
-            if IsValid(ent) and ent:isDoor() then
-                local factions = lia.data.deserialize(row.factions) or {}
-                if istable(factions) and not table.IsEmpty(factions) then
-                    ent.liaFactions = factions
-                    ent:setNetVar("factions", util.TableToJSON(factions))
-                end
+            if not IsValid(ent) then continue end
+            if not ent:isDoor() then continue end
+            local factions = {}
+            if row.factions and row.factions ~= "NULL" and row.factions ~= "" then
+                local success, result = pcall(lia.data.deserialize, row.factions)
+                if success and istable(result) then
+                    local isEmpty = false
+                    if table.IsEmpty then
+                        isEmpty = table.IsEmpty(result)
+                    else
+                        isEmpty = next(result) == nil
+                    end
 
-                local classes = lia.data.deserialize(row.classes) or {}
-                if istable(classes) and not table.IsEmpty(classes) then
-                    ent.liaClasses = classes
-                    ent:setNetVar("classes", util.TableToJSON(classes))
+                    if not isEmpty then
+                        factions = result
+                        ent.liaFactions = factions
+                        ent:setNetVar("factions", util.TableToJSON(factions))
+                        lia.information("Door " .. id .. " factions loaded: " .. util.TableToJSON(factions))
+                    else
+                        factions = result
+                        ent.liaFactions = factions
+                        ent:setNetVar("factions", util.TableToJSON(factions))
+                        lia.information("Door " .. id .. " factions loaded: empty table")
+                    end
+                else
+                    lia.warning("Failed to deserialize factions for door " .. id .. ": " .. tostring(result))
                 end
-
-                if row.name and row.name ~= "NULL" then ent:setNetVar("name", row.name) end
-                local price = tonumber(row.price) or 0
-                ent:setNetVar("price", price)
-                local locked = tonumber(row.locked) == 1
-                ent:setNetVar("locked", locked)
-                local disabled = tonumber(row.disabled) == 1
-                ent:setNetVar("disabled", disabled)
-                local hidden = tonumber(row.hidden) == 1
-                ent:setNetVar("hidden", hidden)
-                local noSell = tonumber(row.ownable) == 0
-                ent:setNetVar("noSell", noSell)
             end
+
+            local classes = {}
+            if row.classes and row.classes ~= "NULL" and row.classes ~= "" then
+                lia.information("Door " .. id .. " raw classes data: " .. tostring(row.classes))
+                local success, result = pcall(lia.data.deserialize, row.classes)
+                lia.information("Door " .. id .. " classes deserialize - success: " .. tostring(success) .. ", result type: " .. type(result) .. ", result: " .. tostring(result))
+                if success and istable(result) then
+                    local isEmpty = false
+                    if table.IsEmpty then
+                        isEmpty = table.IsEmpty(result)
+                    else
+                        isEmpty = next(result) == nil
+                    end
+
+                    if not isEmpty then
+                        classes = result
+                        ent.liaClasses = classes
+                        ent:setNetVar("classes", util.TableToJSON(classes))
+                        lia.information("Door " .. id .. " classes loaded: " .. util.TableToJSON(classes))
+                    else
+                        classes = result
+                        ent.liaClasses = classes
+                        ent:setNetVar("classes", util.TableToJSON(classes))
+                        lia.information("Door " .. id .. " classes loaded: empty table")
+                    end
+                else
+                    lia.warning("Failed to deserialize classes for door " .. id .. ": " .. tostring(result))
+                end
+            end
+
+            if row.name and row.name ~= "NULL" and row.name ~= "" then ent:setNetVar("name", tostring(row.name)) end
+            local price = tonumber(row.price)
+            if price and price >= 0 then
+                ent:setNetVar("price", price)
+            else
+                ent:setNetVar("price", 0)
+            end
+
+            local locked = tonumber(row.locked) == 1
+            ent:setNetVar("locked", locked)
+            local disabled = tonumber(row.disabled) == 1
+            ent:setNetVar("disabled", disabled)
+            local hidden = tonumber(row.hidden) == 1
+            ent:setNetVar("hidden", hidden)
+            local noSell = tonumber(row.ownable) == 0
+            ent:setNetVar("noSell", noSell)
+            loadedCount = loadedCount + 1
         end
+
+        lia.information("Successfully loaded " .. loadedCount .. " doors from database")
+    end):catch(function(err)
+        lia.error("Failed to load door data: " .. tostring(err))
+        lia.error("This may indicate a database connection issue or missing table")
     end)
 end
 
@@ -60,25 +117,87 @@ function MODULE:SaveData()
     local map = game.GetMap()
     local condition = buildCondition(gamemode, map)
     local rows = {}
+    local doorCount = 0
+    lia.information("Starting door data save process...")
     for _, door in ents.Iterator() do
         if door:isDoor() then
+            local mapID = door:MapCreationID()
+            if not mapID or mapID <= 0 then
+                lia.warning("Door has invalid MapCreationID, skipping: " .. tostring(door))
+                continue
+            end
+
+            -- Get factions and classes from netvars (which are JSON strings) or fall back to liaFactions/liaClasses
+            local factions = door:getNetVar("factions")
+            local classes = door:getNetVar("classes")
+            -- Convert JSON strings to tables for serialization
+            local factionsTable = {}
+            local classesTable = {}
+            if factions and factions ~= "[]" then
+                local success, result = pcall(util.JSONToTable, factions)
+                if success and istable(result) then
+                    factionsTable = result
+                else
+                    lia.warning("Failed to parse factions JSON for door " .. mapID .. ", using empty table")
+                end
+            elseif door.liaFactions then
+                factionsTable = door.liaFactions
+            end
+
+            if classes and classes ~= "[]" then
+                local success, result = pcall(util.JSONToTable, classes)
+                if success and istable(result) then
+                    classesTable = result
+                else
+                    lia.warning("Failed to parse classes JSON for door " .. mapID .. ", using empty table")
+                end
+            elseif door.liaClasses then
+                classesTable = door.liaClasses
+            end
+
+            -- Validate and sanitize data before saving
+            local name = door:getNetVar("name")
+            if name and name ~= "" then
+                name = tostring(name):sub(1, 255) -- Limit name length
+            else
+                name = ""
+            end
+
+            local price = tonumber(door:getNetVar("price")) or 0
+            if price < 0 then price = 0 end
+            if price > 999999999 then -- Reasonable upper limit
+                price = 999999999
+            end
+
             rows[#rows + 1] = {
                 gamemode = gamemode,
                 map = map,
-                id = door:MapCreationID(),
-                factions = lia.data.serialize(door.liaFactions or {}),
-                classes = lia.data.serialize(door.liaClasses or {}),
+                id = mapID,
+                factions = lia.data.serialize(factionsTable),
+                classes = lia.data.serialize(classesTable),
                 disabled = door:getNetVar("disabled") and 1 or 0,
                 hidden = door:getNetVar("hidden") and 1 or 0,
                 ownable = door:getNetVar("noSell") and 0 or 1,
-                name = door:getNetVar("name"),
-                price = door:getNetVar("price"),
+                name = name,
+                price = price,
                 locked = door:getNetVar("locked") and 1 or 0
             }
+
+            doorCount = doorCount + 1
         end
     end
 
-    lia.db.delete("doors", condition):next(function() if #rows > 0 then return lia.db.bulkInsert("doors", rows) end end)
+    lia.information("Prepared " .. doorCount .. " doors for saving")
+    -- Use upsert instead of delete + insert to prevent data loss
+    if #rows > 0 then
+        lia.information("Executing database upsert for " .. #rows .. " door records...")
+        lia.db.bulkUpsert("doors", rows):next(function() lia.information("Door data saved successfully (" .. doorCount .. " doors)") end):catch(function(err)
+            lia.error("Failed to save door data: " .. tostring(err))
+            lia.error("This may indicate a database connection issue or schema problem")
+        end)
+    else
+        lia.information("No doors to save")
+    end
 end
 
 function MODULE:InitPostEntity()

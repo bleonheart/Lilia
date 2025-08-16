@@ -246,6 +246,11 @@ AddInteraction("inviteToFaction", {
             return
         end
 
+        if faction.uniqueID == "staff" then
+            client:notify("You cannot invite players to the staff faction through the interaction menu. Staff characters must be created through the menu system.")
+            return
+        end
+
         target:binaryQuestion(L("joinFactionPrompt"), L("yes"), L("no"), false, function(choice)
             if choice ~= 0 then
                 client:notifyLocalized("inviteDeclined")

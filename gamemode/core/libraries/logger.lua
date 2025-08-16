@@ -249,6 +249,10 @@ lia.log.types = {
         func = function(client, door) return L("logDoorRemoveClass", client:Name(), door:GetClass()) end,
         category = L("categoryWorld")
     },
+    ["doorRemoveClassSpecific"] = {
+        func = function(client, door, className) return L("logDoorRemoveClassSpecific", client:Name(), className, door:GetClass()) end,
+        category = L("categoryWorld")
+    },
     ["doorSaveData"] = {
         func = function(client) return L("logDoorSaveData", client:Nick(), client:Name()) end,
         category = L("categoryWorld")

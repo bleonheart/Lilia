@@ -200,6 +200,7 @@ LANGUAGE = {
     wakingUp = "A acordar",
     unknownError = "Ocorreu um erro desconhecido",
     illegalAccess = "Não estás na whitelist desta facção.",
+    staffFactionRestricted = "Não podes mudar para a facção de staff por este método. Personagens de staff devem ser criados através do sistema de menu.",
     settings = "Definições",
     misc = "Diversos",
     flags = "Flags",

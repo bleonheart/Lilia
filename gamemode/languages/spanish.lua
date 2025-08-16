@@ -200,6 +200,7 @@ LANGUAGE = {
     wakingUp = "Despertando",
     unknownError = "Ha ocurrido un error desconocido",
     illegalAccess = "No tienes acceso a esta facción.",
+    staffFactionRestricted = "No puedes cambiar a la facción de staff por este método. Los personajes de staff deben ser creados a través del sistema de menú.",
     settings = "Configuración",
     misc = "Misceláneo",
     flags = "Banderas",

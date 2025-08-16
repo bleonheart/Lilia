@@ -200,6 +200,7 @@ LANGUAGE = {
     wakingUp = "Aufwachen",
     unknownError = "Ein unbekannter Fehler ist aufgetreten",
     illegalAccess = "Du bist für diese Fraktion nicht freigeschaltet.",
+    staffFactionRestricted = "Du kannst nicht über diese Methode zur Staff-Fraktion wechseln. Staff-Charaktere müssen über das Menüsystem erstellt werden.",
     settings = "Einstellungen",
     misc = "Verschiedenes",
     flags = "Flags",
