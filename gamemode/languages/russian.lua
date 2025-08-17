@@ -1568,7 +1568,6 @@ LANGUAGE = {
     mainMenuCenterLogoDesc = "Путь или URL логотипа по центру экрана",
     mainMenuDiscordURL = "URL Discord сервера",
     mainMenuDiscordURLDesc = "URL Discord сервера",
-    discordRelayTitle = "Discord Релей",
     discordRelayLilia = "Lilia",
     discordRelayLiliaLogger = "Lilia Логгер",
     discordRelayLiliaDiscordRelay = "Lilia Discord Релей",
@@ -2248,6 +2247,5 @@ LANGUAGE = {
     logAdmin = "Админ",
     logBootstrap = "Загрузка",
     logCategory = "Категория",
-    logMessage = "Сообщение",
     deprecatedMessage = "Метод '%s' устарел и будет удален в будущей версии.",
 }
