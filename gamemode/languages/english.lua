@@ -1013,6 +1013,7 @@ LANGUAGE = {
     staffTransferBlocked = "You cannot transfer a player to the staff faction through commands. Staff characters must be created through the menu system.",
     staffWhitelistBlocked = "You cannot whitelist a player to the staff faction through commands. Staff characters must be created through the menu system.",
     staffUnwhitelistBlocked = "You cannot unwhitelist a player from the staff faction through commands. Staff character management must be done through the menu system.",
+    staffInviteBlocked = "You cannot invite players to the staff faction through the interaction menu. Staff characters must be created through the menu system.",
     copiedToClipboard = "Copied %s's %s to Clipboard",
     copiedCharID = "Copied CharID: %s to Clipboard",
     items = "Items",

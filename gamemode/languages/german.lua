@@ -1004,6 +1004,7 @@ LANGUAGE = {
     staffTransferBlocked = "Du kannst einen Spieler nicht über Befehle zur Staff-Fraktion transferieren. Staff-Charaktere müssen über das Menüsystem erstellt werden.",
     staffWhitelistBlocked = "Du kannst einen Spieler nicht über Befehle für die Staff-Fraktion auf die Whitelist setzen. Staff-Charaktere müssen über das Menüsystem erstellt werden.",
     staffUnwhitelistBlocked = "Du kannst einen Spieler nicht über Befehle von der Staff-Fraktion-Whitelist entfernen. Staff-Charakterverwaltung muss über das Menüsystem erfolgen.",
+    staffInviteBlocked = "Du kannst Spieler nicht über das Interaktionsmenü zur Staff-Fraktion einladen. Staff-Charaktere müssen über das Menüsystem erstellt werden.",
     copiedToClipboard = "%ss %s in die Zwischenablage kopiert",
     copiedCharID = "CharID: %s in die Zwischenablage kopiert",
     items = "Gegenstände",

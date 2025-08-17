@@ -1003,6 +1003,7 @@ LANGUAGE = {
     staffTransferBlocked = "Não podes transferir um jogador para a facção staff através de comandos. Os personagens staff devem ser criados através do sistema de menu.",
     staffWhitelistBlocked = "Não podes colocar um jogador na whitelist da facção staff através de comandos. Os personagens staff devem ser criados através do sistema de menu.",
     staffUnwhitelistBlocked = "Não podes remover um jogador da whitelist da facção staff através de comandos. A gestão de personagens staff deve ser feita através do sistema de menu.",
+    staffInviteBlocked = "Não podes convidar jogadores para a facção staff através do menu de interação. Os personagens staff devem ser criados através do sistema de menu.",
     copiedToClipboard = "Copiado %s de %s para a Área de Transferência",
     copiedCharID = "CharID copiado: %s para a Área de Transferência",
     items = "Itens",

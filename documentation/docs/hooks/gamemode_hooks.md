@@ -3120,7 +3120,7 @@ Gives factions a chance to modify player loadouts. Runs before weapons are equip
 -- Give police players a radio on spawn
 hook.Add("FactionOnLoadout", "GiveRadio", function(ply)
     if ply:getChar():getFaction() == "police" then
-        ply:Give("weapon_radio")
+        ply:Give("radio")
     end
 end)
 ```

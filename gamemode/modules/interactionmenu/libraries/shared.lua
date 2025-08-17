@@ -247,7 +247,7 @@ AddInteraction("inviteToFaction", {
         end
 
         if faction.uniqueID == "staff" then
-            client:notify("You cannot invite players to the staff faction through the interaction menu. Staff characters must be created through the menu system.")
+            client:notifyLocalized("staffInviteBlocked")
             return
         end
 

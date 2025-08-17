@@ -294,7 +294,7 @@ local ConditionalFiles = {
 }
 
 function lia.include(path, realm)
-    if not path then error("[Lilia] " .. L("missingFilePath")) end
+    if not path then lia.error(L("missingFilePath")) end
     local resolved = realm or RealmIDs[path:match("/([^/]+)%.lua$")] or path:find("sv_") and "server" or path:find("sh_") and "shared" or path:find("cl_") and "client" or "shared"
     if resolved == "server" then
         if SERVER then include(path) end

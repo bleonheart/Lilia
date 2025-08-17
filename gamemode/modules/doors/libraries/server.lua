@@ -342,8 +342,6 @@ function MODULE:CleanupCorruptedData()
 
         if corruptedCount > 0 then
             lia.information("Found and fixed " .. corruptedCount .. " corrupted door records")
-        else
-            lia.information("No corrupted door data found")
         end
     end):catch(function(err) lia.error("Failed to check for corrupted door data: " .. tostring(err)) end)
 end
