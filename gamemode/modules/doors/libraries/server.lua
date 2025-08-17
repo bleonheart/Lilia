@@ -26,63 +26,83 @@ function MODULE:LoadData()
         local loadedCount = 0
         for _, row in ipairs(rows) do
             local id = tonumber(row.id)
-            if not id then continue end
+            if not id then
+                lia.warning("Skipping door record with invalid ID: " .. tostring(row.id))
+                continue
+            end
+
             local ent = ents.GetMapCreatedEntity(id)
-            if not IsValid(ent) then continue end
-            if not ent:isDoor() then continue end
+            if not IsValid(ent) then
+                lia.warning("Door entity " .. id .. " not found in map, skipping")
+                continue
+            end
+
+            if not ent:isDoor() then
+                lia.warning("Entity " .. id .. " is not a door, skipping")
+                continue
+            end
+
             local factions = {}
             if row.factions and row.factions ~= "NULL" and row.factions ~= "" then
-                local success, result = pcall(lia.data.deserialize, row.factions)
-                if success and istable(result) then
-                    local isEmpty = false
-                    if table.IsEmpty then
-                        isEmpty = table.IsEmpty(result)
-                    else
-                        isEmpty = next(result) == nil
-                    end
-
-                    if not isEmpty then
-                        factions = result
-                        ent.liaFactions = factions
-                        ent:setNetVar("factions", util.TableToJSON(factions))
-                        lia.information("Door " .. id .. " factions loaded: " .. util.TableToJSON(factions))
-                    else
-                        factions = result
-                        ent.liaFactions = factions
-                        ent:setNetVar("factions", util.TableToJSON(factions))
-                        lia.information("Door " .. id .. " factions loaded: empty table")
-                    end
+                if tostring(row.factions):match("^[%d%.%-%s]+$") and not tostring(row.factions):match("[{}%[%]]") then
+                    lia.warning("Door " .. id .. " has coordinate-like data in factions column: " .. tostring(row.factions))
+                    lia.warning("This suggests data corruption. Clearing factions data.")
+                    row.factions = ""
                 else
-                    lia.warning("Failed to deserialize factions for door " .. id .. ": " .. tostring(result))
+                    local success, result = pcall(lia.data.deserialize, row.factions)
+                    if success and istable(result) then
+                        local isEmpty = false
+                        if table.IsEmpty then
+                            isEmpty = table.IsEmpty(result)
+                        else
+                            isEmpty = next(result) == nil
+                        end
+
+                        if not isEmpty then
+                            factions = result
+                            ent.liaFactions = factions
+                            ent:setNetVar("factions", util.TableToJSON(factions))
+                        else
+                            factions = result
+                            ent.liaFactions = factions
+                            ent:setNetVar("factions", util.TableToJSON(factions))
+                        end
+                    else
+                        lia.warning("Failed to deserialize factions for door " .. id .. ": " .. tostring(result))
+                        lia.warning("Raw factions data: " .. tostring(row.factions))
+                    end
                 end
             end
 
             local classes = {}
             if row.classes and row.classes ~= "NULL" and row.classes ~= "" then
-                lia.information("Door " .. id .. " raw classes data: " .. tostring(row.classes))
-                local success, result = pcall(lia.data.deserialize, row.classes)
-                lia.information("Door " .. id .. " classes deserialize - success: " .. tostring(success) .. ", result type: " .. type(result) .. ", result: " .. tostring(result))
-                if success and istable(result) then
-                    local isEmpty = false
-                    if table.IsEmpty then
-                        isEmpty = table.IsEmpty(result)
-                    else
-                        isEmpty = next(result) == nil
-                    end
-
-                    if not isEmpty then
-                        classes = result
-                        ent.liaClasses = classes
-                        ent:setNetVar("classes", util.TableToJSON(classes))
-                        lia.information("Door " .. id .. " classes loaded: " .. util.TableToJSON(classes))
-                    else
-                        classes = result
-                        ent.liaClasses = classes
-                        ent:setNetVar("classes", util.TableToJSON(classes))
-                        lia.information("Door " .. id .. " classes loaded: empty table")
-                    end
+                if tostring(row.classes):match("^[%d%.%-%s]+$") and not tostring(row.classes):match("[{}%[%]]") then
+                    lia.warning("Door " .. id .. " has coordinate-like data in classes column: " .. tostring(row.classes))
+                    lia.warning("This suggests data corruption. Clearing classes data.")
+                    row.classes = ""
                 else
-                    lia.warning("Failed to deserialize classes for door " .. id .. ": " .. tostring(result))
+                    local success, result = pcall(lia.data.deserialize, row.classes)
+                    if success and istable(result) then
+                        local isEmpty = false
+                        if table.IsEmpty then
+                            isEmpty = table.IsEmpty(result)
+                        else
+                            isEmpty = next(result) == nil
+                        end
+
+                        if not isEmpty then
+                            classes = result
+                            ent.liaClasses = classes
+                            ent:setNetVar("classes", util.TableToJSON(classes))
+                        else
+                            classes = result
+                            ent.liaClasses = classes
+                            ent:setNetVar("classes", util.TableToJSON(classes))
+                        end
+                    else
+                        lia.warning("Failed to deserialize classes for door " .. id .. ": " .. tostring(result))
+                        lia.warning("Raw classes data: " .. tostring(row.classes))
+                    end
                 end
             end
 
@@ -104,8 +124,6 @@ function MODULE:LoadData()
             ent:setNetVar("noSell", noSell)
             loadedCount = loadedCount + 1
         end
-
-        lia.information("Successfully loaded " .. loadedCount .. " doors from database")
     end):catch(function(err)
         lia.error("Failed to load door data: " .. tostring(err))
         lia.error("This may indicate a database connection issue or missing table")
@@ -118,19 +136,12 @@ function MODULE:SaveData()
     local condition = buildCondition(gamemode, map)
     local rows = {}
     local doorCount = 0
-    lia.information("Starting door data save process...")
     for _, door in ents.Iterator() do
         if door:isDoor() then
             local mapID = door:MapCreationID()
-            if not mapID or mapID <= 0 then
-                lia.warning("Door has invalid MapCreationID, skipping: " .. tostring(door))
-                continue
-            end
-
-            -- Get factions and classes from netvars (which are JSON strings) or fall back to liaFactions/liaClasses
+            if not mapID or mapID <= 0 then continue end
             local factions = door:getNetVar("factions")
             local classes = door:getNetVar("classes")
-            -- Convert JSON strings to tables for serialization
             local factionsTable = {}
             local classesTable = {}
             if factions and factions ~= "[]" then
@@ -155,26 +166,46 @@ function MODULE:SaveData()
                 classesTable = door.liaClasses
             end
 
-            -- Validate and sanitize data before saving
+            if not istable(factionsTable) or type(factionsTable) ~= "table" then
+                lia.warning("Door " .. mapID .. " has invalid factions data type: " .. type(factionsTable) .. ", resetting to empty table")
+                factionsTable = {}
+            end
+
+            if not istable(classesTable) or type(classesTable) ~= "table" then
+                lia.warning("Door " .. mapID .. " has invalid classes data type: " .. type(classesTable) .. ", resetting to empty table")
+                classesTable = {}
+            end
+
+            local factionsSerialized = lia.data.serialize(factionsTable)
+            local classesSerialized = lia.data.serialize(classesTable)
+            if factionsSerialized and factionsSerialized:match("^[%d%.%-%s]+$") and not factionsSerialized:match("[{}%[%]]") then
+                lia.warning("Door " .. mapID .. " factions would serialize to coordinate-like data, resetting to empty")
+                factionsTable = {}
+                factionsSerialized = lia.data.serialize(factionsTable)
+            end
+
+            if classesSerialized and classesSerialized:match("^[%d%.%-%s]+$") and not classesSerialized:match("[{}%[%]]") then
+                lia.warning("Door " .. mapID .. " classes would serialize to coordinate-like data, resetting to empty")
+                classesTable = {}
+                classesSerialized = lia.data.serialize(classesTable)
+            end
+
             local name = door:getNetVar("name")
             if name and name ~= "" then
-                name = tostring(name):sub(1, 255) -- Limit name length
+                name = tostring(name):sub(1, 255)
             else
                 name = ""
             end
 
             local price = tonumber(door:getNetVar("price")) or 0
             if price < 0 then price = 0 end
-            if price > 999999999 then -- Reasonable upper limit
-                price = 999999999
-            end
-
+            if price > 999999999 then price = 999999999 end
             rows[#rows + 1] = {
                 gamemode = gamemode,
                 map = map,
                 id = mapID,
-                factions = lia.data.serialize(factionsTable),
-                classes = lia.data.serialize(classesTable),
+                factions = factionsSerialized,
+                classes = classesSerialized,
                 disabled = door:getNetVar("disabled") and 1 or 0,
                 hidden = door:getNetVar("hidden") and 1 or 0,
                 ownable = door:getNetVar("noSell") and 0 or 1,
@@ -187,17 +218,134 @@ function MODULE:SaveData()
         end
     end
 
-    lia.information("Prepared " .. doorCount .. " doors for saving")
-    -- Use upsert instead of delete + insert to prevent data loss
     if #rows > 0 then
-        lia.information("Executing database upsert for " .. #rows .. " door records...")
-        lia.db.bulkUpsert("doors", rows):next(function() lia.information("Door data saved successfully (" .. doorCount .. " doors)") end):catch(function(err)
+        lia.db.bulkUpsert("doors", rows):next(function() end):catch(function(err)
             lia.error("Failed to save door data: " .. tostring(err))
             lia.error("This may indicate a database connection issue or schema problem")
         end)
     else
-        lia.information("No doors to save")
     end
+end
+
+function MODULE:VerifyDatabaseSchema()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    if lia.db.module == "sqlite" then
+        lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
+            if not res or not res.results then
+                lia.error("Failed to get table info for lia_doors")
+                return
+            end
+
+            local columns = {}
+            for _, row in ipairs(res.results) do
+                columns[row.name] = row.type
+            end
+
+            local expectedColumns = {
+                gamemode = "text",
+                map = "text",
+                id = "integer",
+                factions = "text",
+                classes = "text",
+                disabled = "integer",
+                hidden = "integer",
+                ownable = "integer",
+                name = "text",
+                price = "integer",
+                locked = "integer"
+            }
+
+            for colName, expectedType in pairs(expectedColumns) do
+                if not columns[colName] then
+                    lia.error("Missing expected column: " .. colName)
+                elseif columns[colName] ~= expectedType then
+                    lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
+                end
+            end
+        end):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
+    else
+        lia.db.query("DESCRIBE lia_doors"):next(function(res)
+            if not res or not res.results then
+                lia.error("Failed to get table info for lia_doors")
+                return
+            end
+
+            local columns = {}
+            for _, row in ipairs(res.results) do
+                columns[row.Field] = row.Type
+            end
+
+            lia.information("lia_doors table columns: " .. table.concat(table.GetKeys(columns), ", "))
+            local expectedColumns = {
+                gamemode = "text",
+                map = "text",
+                id = "int",
+                factions = "text",
+                classes = "text",
+                disabled = "tinyint",
+                hidden = "tinyint",
+                ownable = "tinyint",
+                name = "text",
+                price = "int",
+                locked = "tinyint"
+            }
+
+            for colName, expectedType in pairs(expectedColumns) do
+                if not columns[colName] then
+                    lia.error("Missing expected column: " .. colName)
+                elseif not columns[colName]:match(expectedType) then
+                    lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
+                end
+            end
+        end):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
+    end
+end
+
+function MODULE:CleanupCorruptedData()
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local map = game.GetMap()
+    local condition = buildCondition(gamemode, map)
+    local query = "SELECT id, factions, classes FROM lia_doors WHERE " .. condition
+    lia.db.query(query):next(function(res)
+        local rows = res.results or {}
+        local corruptedCount = 0
+        for _, row in ipairs(rows) do
+            local id = tonumber(row.id)
+            if not id then continue end
+            local needsUpdate = false
+            local newFactions = row.factions
+            local newClasses = row.classes
+            if row.factions and row.factions ~= "NULL" and row.factions ~= "" then
+                if tostring(row.factions):match("^[%d%.%-%s]+$") and not tostring(row.factions):match("[{}%[%]]") then
+                    lia.warning("Found corrupted factions data for door " .. id .. ": " .. tostring(row.factions))
+                    newFactions = ""
+                    needsUpdate = true
+                    corruptedCount = corruptedCount + 1
+                end
+            end
+
+            if row.classes and row.classes ~= "NULL" and row.classes ~= "" then
+                if tostring(row.classes):match("^[%d%.%-%s]+$") and not tostring(row.classes):match("[{}%[%]]") then
+                    lia.warning("Found corrupted classes data for door " .. id .. ": " .. tostring(row.classes))
+                    newClasses = ""
+                    needsUpdate = true
+                    corruptedCount = corruptedCount + 1
+                end
+            end
+
+            if needsUpdate then
+                local updateQuery = "UPDATE lia_doors SET factions = " .. lia.db.convertDataType(newFactions) .. ", classes = " .. lia.db.convertDataType(newClasses) .. " WHERE " .. condition .. " AND id = " .. id
+                lia.db.query(updateQuery):next(function() lia.information("Fixed corrupted data for door " .. id) end):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end)
+            end
+        end
+
+        if corruptedCount > 0 then
+            lia.information("Found and fixed " .. corruptedCount .. " corrupted door records")
+        else
+            lia.information("No corrupted door data found")
+        end
+    end):catch(function(err) lia.error("Failed to check for corrupted door data: " .. tostring(err)) end)
 end
 
 function MODULE:InitPostEntity()
@@ -217,6 +365,9 @@ function MODULE:InitPostEntity()
             end
         end
     end
+
+    timer.Simple(1, function() self:CleanupCorruptedData() end)
+    timer.Simple(3, function() self:VerifyDatabaseSchema() end)
 end
 
 function MODULE:PlayerUse(client, door)

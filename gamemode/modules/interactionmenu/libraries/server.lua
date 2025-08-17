@@ -40,8 +40,6 @@ net.Receive("RunOption", function(_, ply)
     local opt = MODULE.Interactions[name]
     local tracedEntity = net.ReadEntity()
     if opt and opt.runServer and IsValid(tracedEntity) and tracedEntity:IsPlayer() and isWithinRange(ply, tracedEntity) then
-        -- If target is a bot, run the interaction on self instead
-        -- This allows interactions that would work on self to function when targeting bots
         local target = tracedEntity:IsBot() and ply or tracedEntity
         opt.onRun(ply, target)
     end

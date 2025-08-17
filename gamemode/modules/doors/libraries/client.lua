@@ -98,26 +98,22 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
 
         local setClassMenu, setClassPanel = AdminMenu:AddSubMenu(L("set") .. " " .. L("door") .. " " .. L("class"))
         setClassPanel:SetIcon("icon16/tag_blue.png")
-        
         local existingClasses = target:getNetVar("classes")
         local classesTable = existingClasses and existingClasses ~= "[]" and util.JSONToTable(existingClasses) or {}
-        
         for classID, classData in pairs(lia.class.list) do
-            -- Only show classes that are already assigned to the door
-            local isAssigned = false
+            local isAlreadyAssigned = false
             for _, classUID in ipairs(classesTable) do
                 if lia.class.retrieveClass(classUID) == classID then
-                    isAssigned = true
+                    isAlreadyAssigned = true
                     break
                 end
             end
-            
-            if isAssigned then
+
+            if not isAlreadyAssigned then
                 setClassMenu:AddOption(classData.name, function()
                     LocalPlayer():ConCommand("say /doorsetclass '" .. classID .. "'")
                     AdminStickIsOpen = false
                 end):SetIcon("icon16/tag_blue.png")
-                end
             end
         end
 
@@ -125,7 +121,6 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
         if existingClasses and existingClasses ~= "[]" then
             local removeClassMenu, removeClassPanel = AdminMenu:AddSubMenu(L("remove") .. " " .. L("door") .. " " .. L("class"))
             removeClassPanel:SetIcon("icon16/delete.png")
-            
             local classesTable = util.JSONToTable(existingClasses) or {}
             for _, classUID in ipairs(classesTable) do
                 local classIndex = lia.class.retrieveClass(classUID)
@@ -137,8 +132,7 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
                     end):SetIcon("icon16/delete.png")
                 end
             end
-            
-            -- Option to remove all classes
+
             removeClassMenu:AddOption(L("remove") .. " " .. L("all") .. " " .. L("classes"), function()
                 LocalPlayer():ConCommand("say /doorremoveclass ''")
                 AdminStickIsOpen = false

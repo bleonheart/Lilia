@@ -13,10 +13,7 @@
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    -- Prevent staff faction from appearing in transfer options
-                    if k ~= "staff" then
-                        options[L(v.name)] = k
-                    end
+                    if k ~= "staff" then options[L(v.name)] = k end
                 end
                 return options
             end
@@ -36,9 +33,8 @@
             return
         end
 
-        -- Prevent transfer to staff faction
         if faction.uniqueID == "staff" then
-            client:notify("You cannot transfer a player to the staff faction through commands. Staff characters must be created through the menu system.")
+            client:notifyLocalized("staffTransferBlocked")
             return
         end
 
@@ -75,10 +71,7 @@ lia.command.add("plywhitelist", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    -- Prevent staff faction from appearing in whitelist options
-                    if k ~= "staff" then
-                        options[L(v.name)] = k
-                    end
+                    if k ~= "staff" then options[L(v.name)] = k end
                 end
                 return options
             end
@@ -97,9 +90,8 @@ lia.command.add("plywhitelist", {
             return
         end
 
-        -- Prevent whitelisting to staff faction
         if faction.uniqueID == "staff" then
-            client:notify("You cannot whitelist a player to the staff faction through commands. Staff characters must be created through the menu system.")
+            client:notifyLocalized("staffWhitelistBlocked")
             return
         end
 
@@ -128,10 +120,7 @@ lia.command.add("plyunwhitelist", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    -- Prevent staff faction from appearing in unwhitelist options
-                    if k ~= "staff" then
-                        options[L(v.name)] = k
-                    end
+                    if k ~= "staff" then options[L(v.name)] = k end
                 end
                 return options
             end
@@ -150,9 +139,8 @@ lia.command.add("plyunwhitelist", {
             return
         end
 
-        -- Prevent unwhitelisting from staff faction
         if faction.uniqueID == "staff" then
-            client:notify("You cannot unwhitelist a player from the staff faction through commands. Staff character management must be done through the menu system.")
+            client:notifyLocalized("staffUnwhitelistBlocked")
             return
         end
 

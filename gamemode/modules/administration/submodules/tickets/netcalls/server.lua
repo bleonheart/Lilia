@@ -26,7 +26,6 @@ net.Receive("TicketSystemClaim", function(_, client)
             end
         end
 
-        -- Get ticket message for the hook
         local ticketMessage = ""
         local t = MODULE.ActiveTickets[requester:SteamID()]
         if t then
@@ -34,7 +33,6 @@ net.Receive("TicketSystemClaim", function(_, client)
             t.admin = client:SteamID()
         end
 
-        -- Run hook with detailed information
         hook.Run("TicketSystemClaim", client, requester, ticketMessage)
         hook.Run("OnTicketClaimed", client, requester, ticketMessage)
         requester.CaseClaimed = client
@@ -58,14 +56,9 @@ net.Receive("TicketSystemClose", function(_, client)
         end
     end
 
-    -- Get ticket message for the hook
     local ticketMessage = ""
     local t = MODULE.ActiveTickets[requester:SteamID()]
-    if t then
-        ticketMessage = t.message or ""
-    end
-
-    -- Run hook with detailed information
+    if t then ticketMessage = t.message or "" end
     hook.Run("TicketSystemClose", client, requester, ticketMessage)
     hook.Run("OnTicketClosed", client, requester, ticketMessage)
     requester.CaseClaimed = nil

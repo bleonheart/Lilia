@@ -226,7 +226,6 @@ net.Receive("KickCharacter", function(_, client)
     end
 
     if not defaultFaction then
-        -- Find any non-staff faction as fallback
         for _, fac in pairs(lia.faction.teams) do
             if fac.uniqueID ~= "staff" then
                 defaultFaction = fac

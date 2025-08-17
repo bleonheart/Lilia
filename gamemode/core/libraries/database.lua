@@ -240,14 +240,17 @@ function lia.db.connect(callback, reconnect)
 end
 
 function lia.db.wipeTables(callback)
+    local wipedTables = {}
     local function realCallback()
         if lia.db.module == "mysqloo" then
             lia.db.query("SET FOREIGN_KEY_CHECKS = 1;", function()
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("dataWiped") .. "\n")
+                if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
                 if isfunction(callback) then callback() end
             end)
         else
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("dataWiped") .. "\n")
+            if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
             if isfunction(callback) then callback() end
         end
     end
@@ -264,6 +267,7 @@ function lia.db.wipeTables(callback)
 
                 for _, row in ipairs(data) do
                     local tableName = row[1] or row[next(row)]
+                    table.insert(wipedTables, tableName)
                     lia.db.query("DROP TABLE IF EXISTS `" .. tableName .. "`;", function()
                         remaining = remaining - 1
                         if remaining <= 0 then realCallback() end
@@ -284,6 +288,7 @@ function lia.db.wipeTables(callback)
 
             for _, row in ipairs(data) do
                 local tableName = row.name or row[1]
+                table.insert(wipedTables, tableName)
                 lia.db.query("DROP TABLE IF EXISTS " .. tableName .. ";", function()
                     remaining = remaining - 1
                     if remaining <= 0 then realCallback() end

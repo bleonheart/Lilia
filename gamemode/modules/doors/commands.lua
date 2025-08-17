@@ -643,7 +643,6 @@ lia.command.add("doorremoveclass", {
             elseif arguments[1] then
                 client:notifyLocalized("invalidClass")
             else
-                -- Remove all classes if no specific class provided
                 door.liaClasses = nil
                 door:setNetVar("classes", nil)
                 lia.log.add(client, "doorRemoveClass", door)

@@ -709,6 +709,90 @@ end)
 
 ---
 
+### DiscordRelaySend
+
+**Purpose**
+
+Called just before an embed is posted to the configured Discord webhook. Return values are ignored; the embed cannot be modified from this hook.
+
+**Parameters**
+
+- `embed` (`table`): The embed object that will be sent to Discord.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("DiscordRelaySend", "PrintLog", function(embed)
+    print("Sending to Discord:", embed.title or "Untitled")
+end)
+```
+
+---
+
+### DiscordRelayed
+
+**Purpose**
+
+Runs after an embed has been successfully sent through the webhook.
+
+**Parameters**
+
+- `embed` (`table`): The embed object that was sent to Discord.
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("DiscordRelayed", "PrintRelayed", function(embed)
+    print("Relayed to Discord:", embed.title or "Untitled")
+end)
+```
+
+---
+
+### DiscordRelayUnavailable
+
+**Purpose**
+
+Fires when the CHTTP binary module is missing and relaying cannot be performed.
+
+**Parameters**
+
+- None
+
+**Realm**
+
+`Server`
+
+**Returns**
+
+- None
+
+**Example Usage**
+
+```lua
+hook.Add("DiscordRelayUnavailable", "NotifyMissing", function()
+    print("Discord relay module unavailable.")
+end)
+```
+
+---
+
 ### CreateMenuButtons
 
 **Purpose**

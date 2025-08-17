@@ -77,9 +77,7 @@ function ENT:Use(activator)
             net.Send(activator)
         end
     else
-        if inventory and storage then
-            self:openInv(activator)
-        end
+        if inventory and storage then self:openInv(activator) end
     end
 
     activator.liaNextOpen = CurTime() + 0.7 * 1.5

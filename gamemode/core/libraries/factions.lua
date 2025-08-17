@@ -291,12 +291,7 @@ else
         local data = lia.faction.indices[faction]
         if data then
             if data.isDefault then return true end
-            if faction == FACTION_STAFF then
-                return false -- Staff faction cannot be whitelisted on server side
-            end
-
-            -- Server-side whitelist checking would go here if needed
-            -- For now, return false for non-default factions on server
+            if faction == FACTION_STAFF then return false end
             return false
         end
         return false
