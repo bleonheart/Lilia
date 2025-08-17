@@ -120,8 +120,8 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
         if existingClasses and existingClasses ~= "[]" then
             local removeClassMenu, removeClassPanel = AdminMenu:AddSubMenu(L("remove") .. " " .. L("door") .. " " .. L("class"))
             removeClassPanel:SetIcon("icon16/delete.png")
-            local classesTable = util.JSONToTable(existingClasses) or {}
-            for _, classUID in ipairs(classesTable) do
+            local removeClassesTable = util.JSONToTable(existingClasses) or {}
+            for _, classUID in ipairs(removeClassesTable) do
                 local classIndex = lia.class.retrieveClass(classUID)
                 local classInfo = lia.class.list[classIndex]
                 if classInfo then

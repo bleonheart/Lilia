@@ -1209,7 +1209,6 @@ LANGUAGE = {
     baseUsergroupCannotBeRemoved = "[Lilia Administration] Базовые группы пользователей нельзя удалить!",
     usergroupDoesntExist = "[Lilia Administration] Группа пользователей '%s' не существует!",
     baseUsergroupCannotBeRenamed = "[Lilia Administration] Базовые группы пользователей нельзя переименовать!",
-    deprecatedMessage = "%s устарел. Пожалуйста, используйте новые методы для оптимизации.",
     compatibilityLoadedSingle = "Загружена совместимость для следующих аддонов: %s",
     compatibilityLoadedMultiple = "Загружены совместимости для следующих аддонов: %s",
     workshopAdded = "Добавлен воркшоп %s в список загрузки",
@@ -1569,18 +1568,15 @@ LANGUAGE = {
     mainMenuCenterLogoDesc = "Путь или URL логотипа по центру экрана",
     mainMenuDiscordURL = "URL Discord сервера",
     mainMenuDiscordURLDesc = "URL Discord сервера",
-    -- Discord Relay System
     discordRelayTitle = "Discord Релей",
     discordRelayLilia = "Lilia",
     discordRelayLiliaLogger = "Lilia Логгер",
     discordRelayLiliaDiscordRelay = "Lilia Discord Релей",
-    -- Anti-Cheat System
     discordAntiCheatTitle = "Анти-чит Система",
     discordAntiCheatDescription = "Игрок подтверждён как читер",
     discordAntiCheatPlayer = "Игрок",
     discordAntiCheatStatus = "Статус",
     discordAntiCheatConfirmedCheater = "Подтверждённый Читер",
-    -- Ticket System
     discordTicketSystemTitle = "Система Тикетов",
     discordTicketSystemClaimedDescription = "Тикет помощи был взят персоналом",
     discordTicketSystemCreatedDescription = "Создан новый тикет помощи",
@@ -1590,7 +1586,6 @@ LANGUAGE = {
     discordTicketSystemOriginalMessage = "Оригинальное Сообщение",
     discordTicketSystemMessage = "Сообщение",
     discordTicketSystemNoMessageProvided = "Сообщение не предоставлено",
-    -- Warning System
     discordWarningSystemTitle = "Система Предупреждений",
     discordWarningSystemIssuedDescription = "Игроку выдано предупреждение",
     discordWarningSystemRemovedDescription = "Предупреждение снято с игрока",
@@ -2245,7 +2240,6 @@ LANGUAGE = {
     privilegeIdCopied = "ID привилегии скопирован.",
     propProtection = "Prop Protection",
     propProtectionDesc = "Enables prop crash prevention behaviors (physgun pickup/drop collision safety and freeze pass-through).",
-    -- Logging system localization
     logError = "Ошибка",
     logWarning = "Предупреждение",
     logDeprecated = "Устарело",
