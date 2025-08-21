@@ -482,7 +482,8 @@ function GM:PlayerLoadout(client)
         return
     end
 
-
+    client:SetNoDraw(character and true or false)
+    if not character then return end
     client:SetWeaponColor(Vector(0.30, 0.80, 0.10))
     client:StripWeapons()
     client:setLocalVar("blur", nil)
@@ -1154,7 +1155,7 @@ end
 gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
-            lia.admin(L("banLogFormat", data.name, data.networkid, data.ban_length, data.ban_reason))
+    lia.admin(L("banLogFormat", data.name, data.networkid, data.ban_length, data.ban_reason))
     lia.db.insertTable({
         player = data.name or "",
         playerSteamID = data.networkid,
