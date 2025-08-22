@@ -20,12 +20,12 @@ function MODULE:ScoreboardHide()
 end
 
 function MODULE:ScoreboardShow()
+    local client = LocalPlayer()
     if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
-    local interactions = lia.playerinteract.getInteractions()
-    local actions = lia.playerinteract.getActions()
+    local interactions = lia.playerinteract.getInteractions(client)
+    local actions = lia.playerinteract.getActions(client)
     local hasInteractions = not table.IsEmpty(interactions)
-    local hasActions = not table.IsEmpty(actions)
-    if not hasInteractions and not hasActions then
+    if not hasInteractions then
         if IsValid(lia.gui.score) then
             if not lia.gui.score:IsVisible() then
                 lia.gui.score:SetVisible(true)

@@ -11,6 +11,10 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/keybind.lua",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/playerinteract.lua",
         realm = "shared"
     },
@@ -24,10 +28,6 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/fonts.lua",
-        realm = "shared"
-    },
-    {
-        path = "lilia/gamemode/core/libraries/keybind.lua",
         realm = "shared"
     },
     {
@@ -571,6 +571,7 @@ function GM:OnReloaded()
     if SERVER then
         lia.config.send()
         lia.administrator.sync()
+        lia.playerinteract.syncToClients()
     else
         lia.option.load()
         lia.keybind.load()

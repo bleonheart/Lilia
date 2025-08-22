@@ -1,17 +1,18 @@
-# Networking Library
+# Networking Library (lia.net)
 
-This page documents the networking library functions that handle communication between server and clients, including network variables, message passing, and large data transfers.
+This page documents the `lia.net` library functions that handle communication between server and clients, including network variables, message passing, and large data transfers.
 
 ---
 
 ## Overview
 
-The networking library provides a comprehensive system for synchronizing data between the server and clients. It includes:
+The `lia.net` library provides a comprehensive system for synchronizing data between the server and clients. It includes:
 
 - **Network Variables**: Global variables stored in `lia.net.globals` that are automatically synchronized across all clients
 - **Message System**: Custom network message registration and sending with automatic serialization
 - **Big Table Transfer**: Chunked transfer of large tables with compression and flow control
 - **Type Safety**: Automatic validation to prevent sending invalid data types (functions, etc.)
+- **Internal State Management**: Queues, buffers, and registries for managing network operations
 
 All networked data is automatically re-sent to players when they spawn via `PlayerInitialSpawn`. Values **must not** contain functions or tables that contain functions, as they cannot be serialized.
 
@@ -23,7 +24,7 @@ All networked data is automatically re-sent to players when they spawn via `Play
 
 **Purpose**
 
-Registers a network message handler that will be called when a message with the specified name is received.
+Registers a network message handler that will be called when a message with the specified name is received. The handler is stored in `lia.net.registry[name]`.
 
 **Parameters**
 
@@ -58,7 +59,7 @@ end)
 
 **Purpose**
 
-Sends a network message to specified targets with automatic serialization of arguments.
+Sends a network message to specified targets with automatic serialization of arguments. Uses the "liaNetMessage" net message internally.
 
 **Parameters**
 
@@ -97,7 +98,7 @@ lia.net.send("MyCustomMessage", nil, "Message from client")
 
 **Purpose**
 
-Registers a handler that rebuilds large tables sent over the network in multiple compressed chunks. Clients acknowledge each chunk so the sender can throttle transmission.
+Registers a handler that rebuilds large tables sent over the network in multiple compressed chunks. Clients acknowledge each chunk so the sender can throttle transmission. Uses internal buffers in `lia.net.buffers[netStr]`.
 
 **Parameters**
 
@@ -134,7 +135,7 @@ end)
 
 **Purpose**
 
-Splits a table into compressed chunks and streams it to one or more players. Used in conjunction with `lia.net.readBigTable`. Aborts if the table is not serializable or cannot be compressed.
+Splits a table into compressed chunks and streams it to one or more players. Used in conjunction with `lia.net.readBigTable`. Aborts if the table is not serializable or cannot be compressed. Uses internal send queues in `lia.net.sendq[ply]`.
 
 **Parameters**
 
@@ -255,6 +256,92 @@ local score = getNetVar("team_score", 0) + 10
 
 ---
 
+## Internal State
+
+### lia.net.globals
+
+**Purpose**
+
+Table containing all network variables that are synchronized across clients.
+
+**Realm**
+
+`Shared`
+
+**Example Usage**
+
+```lua
+-- Access directly (not recommended, use getNetVar instead)
+local value = lia.net.globals["my_key"]
+
+-- Set directly (not recommended, use setNetVar instead)
+lia.net.globals["my_key"] = "my_value"
+```
+
+### lia.net.registry
+
+**Purpose**
+
+Table containing all registered network message handlers.
+
+**Realm**
+
+`Shared`
+
+**Example Usage**
+
+```lua
+-- Check if a message is registered
+if lia.net.registry["MyMessage"] then
+    print("MyMessage is registered")
+end
+
+-- List all registered messages
+for name, callback in pairs(lia.net.registry) do
+    print("Registered:", name)
+end
+```
+
+### lia.net.sendq
+
+**Purpose**
+
+Table containing send queues for each player, used by the big table transfer system.
+
+**Realm**
+
+`Server`
+
+**Example Usage**
+
+```lua
+-- Check if a player has pending transfers
+if lia.net.sendq[player] then
+    print("Player has pending transfers")
+end
+```
+
+### lia.net.buffers
+
+**Purpose**
+
+Table containing receive buffers for each network string, used by the big table transfer system.
+
+**Realm**
+
+`Shared`
+
+**Example Usage**
+
+```lua
+-- Check buffer state for a specific message
+if lia.net.buffers["MyData"] then
+    print("MyData has active buffers")
+end
+```
+
+---
+
 ## Hooks
 
 ### NetVarChanged
@@ -288,3 +375,31 @@ end)
 ```
 
 ---
+
+## Technical Details
+
+### Network Message Flow
+
+1. **Registration**: `lia.net.register()` stores callbacks in `lia.net.registry`
+2. **Sending**: `lia.net.send()` uses the "liaNetMessage" net message
+3. **Receiving**: Netcalls receive "liaNetMessage" and call registered callbacks
+4. **Error Handling**: Invalid messages and callback errors are logged
+
+### Big Table Transfer Flow
+
+1. **Server**: `lia.net.writeBigTable()` compresses and chunks data
+2. **Streaming**: Chunks are sent with flow control (0.05s delay between chunks)
+3. **Client**: `lia.net.readBigTable()` receives and buffers chunks
+4. **Acknowledgment**: Client sends "LIA_BigTable_Ack" for each chunk
+5. **Assembly**: Complete table is reconstructed and callback is invoked
+
+### Type Validation
+
+The `checkBadType()` function recursively checks for functions in tables and rejects them to prevent serialization errors.
+
+### Performance Considerations
+
+- Big table transfers use compression and chunking to handle large datasets
+- Flow control prevents network flooding
+- Automatic cleanup of completed transfers
+- Buffers are cleared when players disconnect

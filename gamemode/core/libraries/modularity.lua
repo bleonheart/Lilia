@@ -54,12 +54,9 @@ local function loadExtras(path)
     lia.faction.loadFromDir(path .. "/factions")
     lia.class.loadFromDir(path .. "/classes")
     lia.attribs.loadFromDir(path .. "/attributes")
-    for _, fileName in ipairs(ModuleFiles) do
-        local filePath = path .. "/" .. fileName
-        if file.Exists(filePath, "LUA") then
-            local realm = ModuleFiles[fileName]
-            lia.include(filePath, realm)
-        end
+    for fileName, realm in pairs(ModuleFiles) do
+        local filePath = path .. "/" .. fileName .. ".lua"
+        if file.Exists(filePath, "LUA") then lia.include(filePath, realm) end
     end
 
     for _, folder in ipairs(ModuleFolders) do

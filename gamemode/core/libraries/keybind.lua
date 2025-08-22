@@ -127,7 +127,7 @@ function lia.keybind.add(k, d, cb)
     lia.keybind.stored[d].callback = cb.onPress
     lia.keybind.stored[d].release = cb.onRelease
     lia.keybind.stored[d].shouldRun = cb.shouldRun
-    lia.keybind.stored[d].serverOnly = cb.serverOnly
+    lia.keybind.stored[d].serverOnly = cb.serverOnly or false
     lia.keybind.stored[c] = d
 end
 
@@ -142,7 +142,7 @@ hook.Add("PlayerButtonDown", "liaKeybindPress", function(p, b)
                 net.WriteString(action)
                 net.WriteEntity(p)
                 net.SendToServer()
-            else
+            elseif CLIENT then
                 data.callback(p)
             end
         end
@@ -160,7 +160,7 @@ hook.Add("PlayerButtonUp", "liaKeybindRelease", function(p, b)
                 net.WriteString(action .. "_release")
                 net.WriteEntity(p)
                 net.SendToServer()
-            else
+            elseif CLIENT then
                 data.release(p)
             end
         end
@@ -420,33 +420,6 @@ lia.keybind.add(KEY_NONE, "adminMode", {
                 end
             end)
         end
-    end
-})
-
-lia.keybind.add(KEY_TAB, "interactionMenu", {
-    onPress = function(client)
-        if not client:getChar() then return end
-        if IsValid(lia.gui.InteractionMenu) then
-            lia.gui.InteractionMenu:Close()
-            lia.gui.InteractionMenu = nil
-        end
-
-        local interactions = lia.playerinteract.getInteractions()
-        if table.IsEmpty(interactions) then return end
-        lia.playerinteract.openMenu(interactions, true, "playerInteractions", lia.keybind.get(L("interactionMenu"), KEY_TAB), "RunInteraction")
-    end
-})
-
-lia.keybind.add(KEY_G, "personalActions", {
-    onPress = function()
-        if IsValid(lia.gui.InteractionMenu) then
-            lia.gui.InteractionMenu:Close()
-            lia.gui.InteractionMenu = nil
-        end
-
-        local actions = lia.playerinteract.getActions()
-        if table.IsEmpty(actions) then return end
-        lia.playerinteract.openMenu(actions, false, "actionsMenu", lia.keybind.get(L("personalActions"), KEY_G), "RunInteraction")
     end
 })
 

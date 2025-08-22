@@ -49,7 +49,6 @@ Register a keybind action with callbacks and optional validation. The default ke
 
 * *nil*: This function does not return a value.
 
-
 **Example Usage**
 
 ```lua
@@ -205,7 +204,7 @@ When `serverOnly` is set to true in a keybind callback, the action is executed s
 2. The server receives the message and executes the callback function
 3. The same process occurs for release actions with `_release` suffix
 
-The server-side execution now includes improved error handling with `pcall` to prevent crashes from invalid callbacks.
+The server-side execution includes improved error handling with `pcall` to prevent crashes from invalid callbacks.
 
 This allows server-side validation and execution while maintaining the responsive feel of client-side keybinds.
 
@@ -253,3 +252,25 @@ data/lilia/keybinds/<gamemode>/<server-ip>.json
 ```
 
 Where `<server-ip>` has dots replaced with underscores (e.g., `192_168_1_1.json`).
+
+---
+
+## Implementation Details
+
+### Data Structure
+
+The library uses a dual-indexing system:
+- Action names as keys pointing to data tables
+- Key codes as keys pointing to action names for reverse lookup
+
+### Validation
+
+The `shouldRun` function is called before executing any keybind callback, allowing for conditional execution based on player state, permissions, or other game logic.
+
+### Error Handling
+
+Server-side keybinds use `pcall` to prevent crashes from invalid callbacks, with error messages printed to the console.
+
+### Performance
+
+The library rebuilds reverse lookup mappings after loading to ensure efficient key-to-action resolution during gameplay.

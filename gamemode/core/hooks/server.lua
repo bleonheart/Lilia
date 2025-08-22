@@ -438,7 +438,6 @@ end
 
 function GM:InitializedConfig()
     timer.Simple(0.2, function() lia.config.send() end)
-    timer.Simple(0.3, function() lia.playerinteract.syncToClients() end)
 end
 
 function GM:PlayerInitialSpawn(client)

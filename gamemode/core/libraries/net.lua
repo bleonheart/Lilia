@@ -184,8 +184,18 @@ if SERVER then
         end
 
         if istable(targets) then
+            local validTargets = 0
             for i = #targets, 1, -1 do
-                schedule(targets[i])
+                if IsValid(targets[i]) then
+                    schedule(targets[i])
+                    validTargets = validTargets + 1
+                end
+            end
+
+            if validTargets == 0 then
+                for _, ply in ipairs(player.GetHumans()) do
+                    schedule(ply)
+                end
             end
         elseif IsValid(targets) then
             schedule(targets)
