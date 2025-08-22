@@ -5,22 +5,9 @@
     notices = {}
 }
 
-local RealmIDs = {
-    client = "client",
-    server = "server",
-    shared = "shared",
-    config = "shared",
-    module = "shared",
-    schema = "shared",
-    permissions = "shared",
-    commands = "shared",
-    networking = "shared",
-    pim = "shared"
-}
-
 local FilesToLoad = {
     {
-        path = "lilia/gamemode/core/libraries/networking.lua",
+        path = "lilia/gamemode/core/libraries/net.lua",
         realm = "shared"
     },
     {
@@ -296,7 +283,23 @@ local ConditionalFiles = {
 
 function lia.include(path, realm)
     if not path then lia.error(L("missingFilePath")) end
-    local resolved = realm or RealmIDs[path:match("/([^/]+)%.lua$")] or path:find("sv_") and "server" or path:find("sh_") and "shared" or path:find("cl_") and "client" or "shared"
+    local resolved = realm
+    if not resolved then
+        local filename = path:match("([^/\\]+)%.lua$")
+        if filename then
+            local prefix = filename:sub(1, 3)
+            if prefix == "sv_" or filename == "server" then
+                resolved = "server"
+            elseif prefix == "cl_" or filename == "client" then
+                resolved = "client"
+            elseif prefix == "sh_" or filename == "shared" then
+                resolved = "shared"
+            end
+        end
+
+        resolved = resolved or "shared"
+    end
+
     if resolved == "server" then
         if SERVER then include(path) end
     elseif resolved == "client" then

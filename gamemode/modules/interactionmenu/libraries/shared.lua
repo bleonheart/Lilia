@@ -56,7 +56,7 @@ AddInteraction("giveMoney", {
 })
 
 AddInteraction("inviteToClass", {
-    runServer = true,
+    serverOnly = true,
     shouldShow = function(client, target)
         local cChar = client:getChar()
         local tChar = target:getChar()
@@ -101,7 +101,7 @@ AddAction("changeToWhisper", {
         client:setNetVar("VoiceType", L("whispering"))
         client:notifyLocalized("voiceModeSet", L("whispering"))
     end,
-    runServer = true
+    serverOnly = true
 })
 
 AddAction("changeToTalk", {
@@ -111,7 +111,7 @@ AddAction("changeToTalk", {
         client:setNetVar("VoiceType", L("talking"))
         client:notifyLocalized("voiceModeSet", L("talking"))
     end,
-    runServer = true
+    serverOnly = true
 })
 
 AddAction("changeToYell", {
@@ -121,7 +121,7 @@ AddAction("changeToYell", {
         client:setNetVar("VoiceType", L("yelling"))
         client:notifyLocalized("voiceModeSet", L("yelling"))
     end,
-    runServer = true
+    serverOnly = true
 })
 
 local function canRecog(ply)
@@ -177,7 +177,7 @@ AddAction("recognizeInWhisperRange", {
         if CLIENT then return end
         doRange(ply, 1)
     end,
-    runServer = true
+    serverOnly = true
 })
 
 AddAction("recognizeInTalkRange", {
@@ -186,7 +186,7 @@ AddAction("recognizeInTalkRange", {
         if CLIENT then return end
         doRange(ply, 3)
     end,
-    runServer = true
+    serverOnly = true
 })
 
 AddAction("recognizeInYellRange", {
@@ -195,11 +195,11 @@ AddAction("recognizeInYellRange", {
         if CLIENT then return end
         doRange(ply, 4)
     end,
-    runServer = true
+    serverOnly = true
 })
 
 AddInteraction("recognizeOption", {
-    runServer = true,
+    serverOnly = true,
     shouldShow = function(ply, tgt)
         if not canRecog(ply) then return false end
         local a, b = ply:getChar(), tgt:getChar()
@@ -221,7 +221,7 @@ AddInteraction("recognizeOption", {
 })
 
 AddInteraction("inviteToFaction", {
-    runServer = true,
+    serverOnly = true,
     shouldShow = function(client, target)
         local cChar = client:getChar()
         local tChar = target:getChar()
