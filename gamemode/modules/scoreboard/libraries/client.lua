@@ -23,7 +23,6 @@ function MODULE:ScoreboardShow()
     local client = LocalPlayer()
     if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
     local interactions = lia.playerinteract.getInteractions(client)
-    local actions = lia.playerinteract.getActions(client)
     local hasInteractions = not table.IsEmpty(interactions)
     if not hasInteractions then
         if IsValid(lia.gui.score) then
