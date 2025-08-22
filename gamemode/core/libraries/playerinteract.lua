@@ -1,23 +1,4 @@
-﻿--[[
-    Player Interaction System
-    
-    New Arguments for addInteraction and addAction:
-    - timeToComplete: Time in seconds to complete the action (nil by default)
-    - actionText: Text to display during the action (nil by default)  
-    
-    If both timeToComplete and actionText are provided, setAction() will automatically be used.
-    
-    Example usage:
-    lia.playerinteract.addInteraction("example", {
-        timeToComplete = 5,
-        actionText = "Performing action...",
-        onRun = function(client, target)
-            -- This will now show "Performing action..." for 5 seconds
-            -- before executing the actual function
-        end
-    })
-]]
-lia.playerinteract = lia.playerinteract or {}
+﻿lia.playerinteract = lia.playerinteract or {}
 lia.playerinteract.stored = lia.playerinteract.stored or {}
 lia.playerinteract.categories = lia.playerinteract.categories or {}
 function lia.playerinteract.isWithinRange(client, entity, customRange)
