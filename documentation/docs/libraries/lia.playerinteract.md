@@ -97,9 +97,15 @@ Registers a new interaction option that can be performed on entities or players.
     categoryColor = Color(255, 255, 255, 255), -- Category color
     shouldShow = function(client, target) return true end, -- Visibility condition
     onRun = function(client, target) end, -- Interaction execution
-    serverOnly = false -- Whether interaction runs server-side only
+    serverOnly = false, -- Whether interaction runs server-side only
+    timeToComplete = nil, -- Time in seconds to complete the action (optional)
+    actionText = nil -- Text to display during the action (optional)
 }
 ```
+
+**New Fields:**
+- **`timeToComplete`**: When provided along with `actionText`, automatically wraps the `onRun` function with `client:setAction()` to show a progress bar
+- **`actionText`**: Text displayed during the action execution when `timeToComplete` is set
 
 **Example:**
 ```lua
@@ -111,6 +117,32 @@ lia.playerinteract.addInteraction("giveMoney", {
     end,
     onRun = function(client, target)
         -- Handle money transfer
+    end
+})
+```
+
+**Example with Time-Based Execution:**
+```lua
+lia.playerinteract.addInteraction("healPlayer", {
+    category = "Medical",
+    categoryColor = Color(0, 255, 0, 255),
+    range = 150,
+    timeToComplete = 5,
+    actionText = "Healing player...",
+    shouldShow = function(client, target)
+        return IsValid(target) and target:IsPlayer() and 
+               client:getChar():hasMoney(50) and
+               target:Health() < target:GetMaxHealth()
+    end,
+    onRun = function(client, target)
+        -- This will automatically show "Healing player..." for 5 seconds
+        -- before executing the actual healing logic
+        if client:getChar():hasMoney(50) then
+            client:getChar():takeMoney(50)
+            target:SetHealth(math.min(target:Health() + 50, target:GetMaxHealth()))
+            client:notify("Player healed for $50")
+            target:notify("You have been healed")
+        end
     end
 })
 ```
@@ -132,9 +164,15 @@ Registers a new personal action that players can perform on themselves.
     categoryColor = Color(255, 255, 255, 255), -- Category color
     shouldShow = function(client) return true end, -- Visibility condition
     onRun = function(client) end, -- Action execution
-    serverOnly = false -- Whether action runs server-side only
+    serverOnly = false, -- Whether action runs server-side only
+    timeToComplete = nil, -- Time in seconds to complete the action (optional)
+    actionText = nil -- Text to display during the action (optional)
 }
 ```
+
+**New Fields:**
+- **`timeToComplete`**: When provided along with `actionText`, automatically wraps the `onRun` function with `client:setAction()` to show a progress bar
+- **`actionText`**: Text displayed during the action execution when `timeToComplete` is set
 
 **Example:**
 ```lua
@@ -146,6 +184,23 @@ lia.playerinteract.addAction("changeVoiceMode", {
     end,
     onRun = function(client)
         client:setNetVar("VoiceType", "whispering")
+    end
+})
+```
+
+**Example with Time-Based Execution:**
+```lua
+lia.playerinteract.addAction("meditate", {
+    category = "Personal",
+    categoryColor = Color(100, 100, 255, 255),
+    timeToComplete = 10,
+    actionText = "Meditating...",
+    shouldShow = function(client)
+        return client:getChar() and client:Alive() and not client:InVehicle()
+    end,
+    onRun = function(client)
+        client:notify("You feel refreshed after meditation")
+        -- Add any meditation effects here
     end
 })
 ```
@@ -211,7 +266,7 @@ The library automatically sets up key bindings for easy access:
 
 The system uses Lilia's networking system to synchronize interaction data between server and clients:
 
-- **liaPlayerInteractSync**: Syncs interaction definitions
+- **liaPlayerInteractSync**: Syncs interaction definitions including new fields
 - **liaPlayerInteractCategories**: Syncs category information
 - **RunInteraction**: Executes server-side interactions
 
