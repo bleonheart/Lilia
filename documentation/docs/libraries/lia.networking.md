@@ -1,14 +1,97 @@
 # Networking Library
 
-This page documents network-variable and message helpers.
+This page documents the networking library functions that handle communication between server and clients, including network variables, message passing, and large data transfers.
 
 ---
 
 ## Overview
 
-The networking library synchronises data between the server and clients. It wraps helpers so global variables can be stored in `lia.net.globals` and automatically replicated. It also supports chunked transfer of large tables between server and clients. Any value sent through this system is re-sent to players on spawn via `PlayerInitialSpawn` and **must not** contain functions (or tables that contain functions), as they cannot be serialised.
+The networking library provides a comprehensive system for synchronizing data between the server and clients. It includes:
+
+- **Network Variables**: Global variables stored in `lia.net.globals` that are automatically synchronized across all clients
+- **Message System**: Custom network message registration and sending with automatic serialization
+- **Big Table Transfer**: Chunked transfer of large tables with compression and flow control
+- **Type Safety**: Automatic validation to prevent sending invalid data types (functions, etc.)
+
+All networked data is automatically re-sent to players when they spawn via `PlayerInitialSpawn`. Values **must not** contain functions or tables that contain functions, as they cannot be serialized.
 
 ---
+
+## Core Functions
+
+### lia.net.register
+
+**Purpose**
+
+Registers a network message handler that will be called when a message with the specified name is received.
+
+**Parameters**
+
+* `name` (*string*): Network message identifier to register.
+
+* `callback` (*function*): Function to call when the message is received. Server signature: `callback(client, ...)`, Client signature: `callback(...)`.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `boolean`: `true` if registration was successful, `false` if the arguments were invalid.
+
+**Example Usage**
+
+```lua
+-- Register a simple message handler
+lia.net.register("MyCustomMessage", function(client, data)
+    if SERVER then
+        print("Server received message from", client:Name(), "with data:", data)
+    else
+        print("Client received message with data:", data)
+    end
+end)
+```
+
+---
+
+### lia.net.send
+
+**Purpose**
+
+Sends a network message to specified targets with automatic serialization of arguments.
+
+**Parameters**
+
+* `name` (*string*): Network message identifier to send.
+
+* `target` (*Player | Player[] | nil*): Recipient(s). `nil` broadcasts to all players (server only), sends to server (client only).
+
+* `...` (*any*): Variable number of arguments to send. Must be serializable.
+
+**Realm**
+
+`Shared`
+
+**Returns**
+
+* `boolean`: `true` if the message was sent successfully, `false` if there was an error.
+
+**Example Usage**
+
+```lua
+-- Server: Send to specific player
+lia.net.send("MyCustomMessage", player, "Hello", {key = "value"})
+
+-- Server: Broadcast to all players
+lia.net.send("MyCustomMessage", nil, "Broadcast message")
+
+-- Client: Send to server
+lia.net.send("MyCustomMessage", nil, "Message from client")
+```
+
+---
+
+## Big Table Functions
 
 ### lia.net.readBigTable
 
@@ -20,7 +103,7 @@ Registers a handler that rebuilds large tables sent over the network in multiple
 
 * `netStr` (*string*): Network message identifier to listen for.
 
-* `callback` (*function*): Function invoked when the table is fully received. On the server the signature is `callback(ply, tbl)`, on the client it is `callback(tbl)`.
+* `callback` (*function*): Function invoked when the table is fully received. Server signature: `callback(ply, tbl)`, Client signature: `callback(tbl)`.
 
 **Realm**
 
@@ -51,7 +134,7 @@ end)
 
 **Purpose**
 
-Splits a table into compressed chunks and streams it to one or more players. Used in conjunction with `lia.net.readBigTable`. Aborts if the table is not serialisable or cannot be compressed.
+Splits a table into compressed chunks and streams it to one or more players. Used in conjunction with `lia.net.readBigTable`. Aborts if the table is not serializable or cannot be compressed.
 
 **Parameters**
 
@@ -59,7 +142,7 @@ Splits a table into compressed chunks and streams it to one or more players. Use
 
 * `netStr` (*string*): Network message identifier.
 
-* `tbl` (*table*): Data to send. Must be JSON-serialisable (no functions).
+* `tbl` (*table*): Data to send. Must be JSON-serializable (no functions, userdata, etc.).
 
 * `chunkSize` (*number | nil*): Optional bytes per chunk (default `2048`, clamped to the range `256`–`4096`).
 
@@ -81,51 +164,26 @@ lia.net.writeBigTable(nil, "MyData", data)
 
 -- Send to one player with smaller chunks
 lia.net.writeBigTable(player, "MyData", data, 1024)
+
+-- Send to multiple players
+lia.net.writeBigTable({player1, player2}, "MyData", data)
 ```
 
 ---
 
-### checkBadType
-
-**Purpose**
-
-Recursively validates a value before it is networked, ensuring neither it nor any nested key or value is a function. Any disallowed value triggers `lia.error` with a translated message.
-
-**Parameters**
-
-* `name` (*string*): Identifier for error reporting.
-
-* `object` (*any*): Value to inspect.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* `boolean | nil`: `true` if a disallowed type was found; otherwise `nil`.
-
-**Example Usage**
-
-```lua
-if checkBadType("roundData", someTable) then
-    return
-end
-```
-
----
+## Network Variables
 
 ### setNetVar
 
 **Purpose**
 
-Stores a value in `lia.net.globals` and broadcasts the change, optionally restricting it to a receiver. Disallowed types are rejected, and no network message is sent if the value has not changed. The `NetVarChanged` hook is fired after successful updates.
+Stores a value in `lia.net.globals` and broadcasts the change, optionally restricting it to specific receivers. Disallowed types are rejected, and no network message is sent if the value has not changed. The `NetVarChanged` hook is fired after successful updates.
 
 **Parameters**
 
 * `key` (*string*): Name of the variable.
 
-* `value` (*any*): Value to store.
+* `value` (*any*): Value to store. Must be serializable (no functions).
 
 * `receiver` (*Player | Player[] | nil*): Target player(s). `nil` broadcasts to everyone.
 
@@ -148,6 +206,9 @@ local champion = DetermineWinner()
 
 -- Only the winner receives this variable
 setNetVar("last_winner", champion, champion)
+
+-- Send to multiple players
+setNetVar("team_score", 100, {player1, player2})
 
 hook.Run("RoundStarted", nextRound)
 ```
@@ -185,6 +246,43 @@ hook.Add("PlayerInitialSpawn", "ShowRound", function(ply)
     local lastWinner = getNetVar("last_winner")
     if IsValid(lastWinner) then
         ply:ChatPrint(("Last round won by %s"):format(lastWinner:Name()))
+    end
+end)
+
+-- Use in calculations
+local score = getNetVar("team_score", 0) + 10
+```
+
+---
+
+## Hooks
+
+### NetVarChanged
+
+**Purpose**
+
+Called when a network variable is changed via `setNetVar`.
+
+**Parameters**
+
+* `entity` (*Entity | nil*): The entity whose netvar was changed (always `nil` for global netvars).
+
+* `key` (*string*): The name of the changed variable.
+
+* `oldValue` (*any*): The previous value.
+
+* `newValue` (*any*): The new value.
+
+**Realm**
+
+`Shared`
+
+**Example Usage**
+
+```lua
+hook.Add("NetVarChanged", "OnNetVarChanged", function(entity, key, oldValue, newValue)
+    if not entity then
+        print("Global netvar '" .. key .. "' changed from", oldValue, "to", newValue)
     end
 end)
 ```

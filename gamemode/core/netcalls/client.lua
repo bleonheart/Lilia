@@ -786,3 +786,14 @@ net.Receive("liaCharacterData", function()
         character.dataVars[key] = value
     end
 end)
+
+net.Receive("liaNetMessage", function()
+    local name = net.ReadString()
+    local args = net.ReadTable()
+    if lia.net.registry[name] then
+        local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
+        if not success then lia.error("Error in net message callback '" .. name .. "': " .. tostring(err)) end
+    else
+        lia.error("Received unregistered net message: " .. name)
+    end
+end)

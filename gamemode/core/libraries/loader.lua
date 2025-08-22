@@ -11,6 +11,10 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/playerinteract.lua",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/admin.lua",
         realm = "shared"
     },

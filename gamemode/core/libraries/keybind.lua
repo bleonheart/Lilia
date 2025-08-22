@@ -185,11 +185,7 @@ function lia.keybind.save()
     end
 
     local j = util.TableToJSON(d, true)
-    if j then
-        file.Write(s, j)
-        local legacy = dp .. "/" .. f .. ".txt"
-        if file.Exists(legacy, "DATA") then file.Delete(legacy) end
-    end
+    if j then file.Write(s, j) end
 end
 
 function lia.keybind.load()
@@ -198,16 +194,7 @@ function lia.keybind.load()
     local ip = string.Explode(":", game.GetIPAddress())[1]
     local f = ip:gsub("%.", "_")
     local jsonPath = dp .. "/" .. f .. ".json"
-    local legacyPath = dp .. "/" .. f .. ".txt"
     local d = file.Read(jsonPath, "DATA")
-    if not d and file.Exists(legacyPath, "DATA") then
-        d = file.Read(legacyPath, "DATA")
-        if d then
-            file.Write(jsonPath, d)
-            file.Delete(legacyPath)
-        end
-    end
-
     if d then
         local s = util.JSONToTable(d)
         for k, v in pairs(s) do
@@ -433,6 +420,33 @@ lia.keybind.add(KEY_NONE, "adminMode", {
                 end
             end)
         end
+    end
+})
+
+lia.keybind.add(KEY_TAB, "interactionMenu", {
+    onPress = function(client)
+        if not client:getChar() then return end
+        if IsValid(lia.gui.InteractionMenu) then
+            lia.gui.InteractionMenu:Close()
+            lia.gui.InteractionMenu = nil
+        end
+
+        local interactions = lia.playerinteract.getInteractions()
+        if table.IsEmpty(interactions) then return end
+        lia.playerinteract.openMenu(interactions, true, "playerInteractions", lia.keybind.get(L("interactionMenu"), KEY_TAB), "RunInteraction")
+    end
+})
+
+lia.keybind.add(KEY_G, "personalActions", {
+    onPress = function()
+        if IsValid(lia.gui.InteractionMenu) then
+            lia.gui.InteractionMenu:Close()
+            lia.gui.InteractionMenu = nil
+        end
+
+        local actions = lia.playerinteract.getActions()
+        if table.IsEmpty(actions) then return end
+        lia.playerinteract.openMenu(actions, false, "actionsMenu", lia.keybind.get(L("personalActions"), KEY_G), "RunInteraction")
     end
 })
 

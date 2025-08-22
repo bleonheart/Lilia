@@ -438,6 +438,7 @@ end
 
 function GM:InitializedConfig()
     timer.Simple(0.2, function() lia.config.send() end)
+    timer.Simple(0.3, function() lia.playerinteract.syncToClients() end)
 end
 
 function GM:PlayerInitialSpawn(client)
@@ -466,6 +467,7 @@ function GM:PlayerInitialSpawn(client)
             if v.entity and v.invID == 0 then v:sync(client) end
         end
 
+        timer.Simple(1, function() lia.playerinteract.syncToClients(client) end)
         hook.Run("PlayerLiliaDataLoaded", client)
     end)
 

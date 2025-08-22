@@ -21,7 +21,7 @@
 }
 
 function MODULE:PlayerSpawnedProp(client, model, entity)
-    local data = self.StorageDefinitions[model:lower()]
+    local data = lia.inventory.getStorage(model:lower())
     if not data then return end
     if hook.Run("CanPlayerSpawnStorage", client, entity, data) == false then return end
     local storage = ents.Create("lia_storage")
