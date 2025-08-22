@@ -288,7 +288,7 @@ else
             end
 
             -- Add options for this category
-            for name, entry in pairs(categoryOptions) do
+            for name, _ in pairs(categoryOptions) do
                 local btn = layout:Add("DButton")
                 btn:Dock(TOP)
                 btn:SetTall(entryH)
@@ -373,20 +373,3 @@ lia.keybind.add(KEY_G, "personalActions", {
         lia.playerinteract.openMenu(actions, false, "actionsMenu", lia.keybind.get(L("personalActions"), KEY_G), "RunInteraction")
     end,
 })
-
-concommand.Add("printplayerinteract", function(ply, cmd, args)
-    if SERVER then
-        if IsValid(ply) and not ply:IsAdmin() then
-            ply:PrintMessage(HUD_PRINTCONSOLE, "[Lilia] Access denied")
-            return
-        end
-
-        print("[Lilia] Dumping lia.playerinteract.stored")
-        PrintTable(lia.playerinteract.stored or {})
-    end
-
-    if CLIENT then
-        print("[Lilia] Dumping lia.playerinteract.stored")
-        PrintTable(lia.playerinteract.stored or {})
-    end
-end, nil, "Prints lia.playerinteract.stored contents to console")
