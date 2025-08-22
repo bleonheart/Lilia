@@ -2250,4 +2250,5 @@ Recharger : Lâcher]],
     logBootstrap = "Démarrage",
     logCategory = "Catégorie",
     deprecatedMessage = "La méthode '%s' est dépréciée et sera supprimée dans une version future.",
+    maybeYouShouldntHaveCheated = "Peut-être que tu n'aurais pas dû tricher",
 }

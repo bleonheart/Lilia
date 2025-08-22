@@ -2244,4 +2244,5 @@ Recarregar: Largar]],
     logBootstrap = "Inicialização",
     logCategory = "Categoria",
     deprecatedMessage = "O método '%s' está obsoleto e será removido numa versão futura.",
+    maybeYouShouldntHaveCheated = "Talvez não devesses ter feito batota",
 }

@@ -2245,4 +2245,5 @@ Nachladen: Fallenlassen]],
     logBootstrap = "Bootstrap",
     logCategory = "Kategorie",
     deprecatedMessage = "Methode '%s' ist veraltet und wird in einer zukünftigen Version entfernt.",
+    maybeYouShouldntHaveCheated = "Vielleicht hättest du nicht schummeln sollen",
 }

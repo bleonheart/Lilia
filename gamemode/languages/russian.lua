@@ -2244,4 +2244,5 @@ LANGUAGE = {
     logBootstrap = "Загрузка",
     logCategory = "Категория",
     deprecatedMessage = "Метод '%s' устарел и будет удален в будущей версии.",
+    maybeYouShouldntHaveCheated = "Может быть, тебе не стоило читерить",
 }
