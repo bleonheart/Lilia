@@ -103,10 +103,6 @@ Registers a new interaction option that can be performed on entities or players.
 }
 ```
 
-**New Fields:**
-- **`timeToComplete`**: When provided along with `actionText`, automatically wraps the `onRun` function with `client:setAction()` to show a progress bar
-- **`actionText`**: Text displayed during the action execution when `timeToComplete` is set
-
 **Example:**
 ```lua
 lia.playerinteract.addInteraction("giveMoney", {
@@ -296,15 +292,19 @@ printplayerinteract
 3. **Validation**: Implement proper `shouldShow` functions to control visibility
 4. **Server-Side Execution**: Use `serverOnly = true` for actions that require server validation
 5. **Error Handling**: Implement proper error handling in `onRun` functions
+6. **Time-Based Actions**: Use `timeToComplete` and `actionText` for actions that require time investment
+7. **Progress Feedback**: Provide clear feedback to users during longer actions
 
 ## Example Implementation
 
 ```lua
--- Server-side: Add a custom interaction
+-- Server-side: Add a custom interaction with time-based execution
 lia.playerinteract.addInteraction("healPlayer", {
     category = "Medical",
     categoryColor = Color(0, 255, 0, 255),
     range = 150,
+    timeToComplete = 5,
+    actionText = "Healing player...",
     shouldShow = function(client, target)
         return IsValid(target) and target:IsPlayer() and 
                client:getChar():hasMoney(50) and
@@ -317,6 +317,21 @@ lia.playerinteract.addInteraction("healPlayer", {
             client:notify("Player healed for $50")
             target:notify("You have been healed")
         end
+    end
+})
+
+-- Server-side: Add a personal action with time-based execution
+lia.playerinteract.addAction("meditate", {
+    category = "Personal",
+    categoryColor = Color(100, 100, 255, 255),
+    timeToComplete = 10,
+    actionText = "Meditating...",
+    shouldShow = function(client)
+        return client:getChar() and client:Alive() and not client:InVehicle()
+    end,
+    onRun = function(client)
+        client:notify("You feel refreshed after meditation")
+        -- Add any meditation effects here
     end
 })
 
@@ -334,3 +349,14 @@ end)
 - **Category Management**: Automatic category creation and color assignment
 - **Memory Management**: Proper cleanup of UI elements and timers
 - **Network Optimization**: Efficient data synchronization using big table networking
+- **Action System Integration**: Automatic integration with Lilia's action system for time-based interactions
+- **Progress Indicators**: Built-in support for showing progress bars during time-consuming actions
+
+## Migration Notes
+
+If you're updating from an older version of the library:
+
+1. **New Fields**: The `timeToComplete` and `actionText` fields are optional and won't break existing code
+2. **Automatic Wrapping**: When both fields are provided, the `onRun` function is automatically wrapped with `client:setAction()`
+3. **Backward Compatibility**: All existing interactions and actions will continue to work without modification
+4. **Enhanced UX**: New fields provide better user experience for time-consuming actions
