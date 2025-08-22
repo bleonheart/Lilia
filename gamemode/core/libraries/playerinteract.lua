@@ -288,7 +288,7 @@ else
             end
 
             -- Add options for this category
-            for name, _ in pairs(categoryOptions) do
+            for _, entry in pairs(categoryOptions) do
                 local btn = layout:Add("DButton")
                 btn:Dock(TOP)
                 btn:SetTall(entryH)
