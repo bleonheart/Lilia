@@ -1,4 +1,23 @@
-﻿lia.playerinteract = lia.playerinteract or {}
+﻿--[[
+    Player Interaction System
+    
+    New Arguments for addInteraction and addAction:
+    - timeToComplete: Time in seconds to complete the action (nil by default)
+    - actionText: Text to display during the action (nil by default)  
+    
+    If both timeToComplete and actionText are provided, setAction() will automatically be used.
+    
+    Example usage:
+    lia.playerinteract.addInteraction("example", {
+        timeToComplete = 5,
+        actionText = "Performing action...",
+        onRun = function(client, target)
+            -- This will now show "Performing action..." for 5 seconds
+            -- before executing the actual function
+        end
+    })
+]]
+lia.playerinteract = lia.playerinteract or {}
 lia.playerinteract.stored = lia.playerinteract.stored or {}
 lia.playerinteract.categories = lia.playerinteract.categories or {}
 function lia.playerinteract.isWithinRange(client, entity, customRange)
@@ -49,6 +68,13 @@ if SERVER then
         data.type = "interaction"
         data.range = data.range or 250
         data.category = data.category or L("categoryUnsorted")
+        data.timeToComplete = data.timeToComplete or nil
+        data.actionText = data.actionText or nil
+        if data.onRun and data.timeToComplete and data.actionText then
+            local originalOnRun = data.onRun
+            data.onRun = function(client, target) client:setAction(data.actionText, data.timeToComplete, function() originalOnRun(client, target) end) end
+        end
+
         lia.playerinteract.stored[name] = data
         if not lia.playerinteract.categories[data.category] then
             lia.playerinteract.categories[data.category] = {
@@ -62,6 +88,13 @@ if SERVER then
         data.type = "action"
         data.range = data.range or 250
         data.category = data.category or L("categoryUnsorted")
+        data.timeToComplete = data.timeToComplete or nil
+        data.actionText = data.actionText or nil
+        if data.onRun and data.timeToComplete and data.actionText then
+            local originalOnRun = data.onRun
+            data.onRun = function(client) client:setAction(data.actionText, data.timeToComplete, function() originalOnRun(client) end) end
+        end
+
         lia.playerinteract.stored[name] = data
         if not lia.playerinteract.categories[data.category] then
             lia.playerinteract.categories[data.category] = {
@@ -79,7 +112,9 @@ if SERVER then
                 serverOnly = data.serverOnly and true or false,
                 name = name,
                 range = data.range,
-                category = data.category or L("categoryUnsorted")
+                category = data.category or L("categoryUnsorted"),
+                timeToComplete = data.timeToComplete,
+                actionText = data.actionText
             }
         end
 
@@ -338,6 +373,8 @@ else
             merged.name = name
             merged.category = incoming.category or localEntry.category or L("categoryUnsorted")
             if incoming.range ~= nil then merged.range = incoming.range end
+            if incoming.timeToComplete ~= nil then merged.timeToComplete = incoming.timeToComplete end
+            if incoming.actionText ~= nil then merged.actionText = incoming.actionText end
             merged.shouldShow = localEntry.shouldShow
             merged.onRun = localEntry.onRun
             newStored[name] = merged
