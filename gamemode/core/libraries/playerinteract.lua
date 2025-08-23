@@ -51,9 +51,14 @@ if SERVER then
         data.category = data.category or L("categoryUnsorted")
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
-        if data.onRun and data.timeToComplete and data.actionText then
+        data.targetActionText = data.targetActionText or nil
+        if data.onRun and data.timeToComplete and (data.actionText or data.targetActionText) then
             local originalOnRun = data.onRun
-            data.onRun = function(client, target) client:setAction(data.actionText, data.timeToComplete, function() originalOnRun(client, target) end) end
+            data.onRun = function(client, target)
+                if data.actionText then client:setAction(data.actionText, data.timeToComplete, function() originalOnRun(client, target) end) end
+                if data.targetActionText and IsValid(target) and target:IsPlayer() then target:setAction(data.targetActionText, data.timeToComplete) end
+                if not data.actionText then originalOnRun(client, target) end
+            end
         end
 
         lia.playerinteract.stored[name] = data
@@ -71,9 +76,14 @@ if SERVER then
         data.category = data.category or L("categoryUnsorted")
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
-        if data.onRun and data.timeToComplete and data.actionText then
+        data.targetActionText = data.targetActionText or nil
+        if data.onRun and data.timeToComplete and (data.actionText or data.targetActionText) then
             local originalOnRun = data.onRun
-            data.onRun = function(client) client:setAction(data.actionText, data.timeToComplete, function() originalOnRun(client) end) end
+            data.onRun = function(client, target)
+                if data.actionText then client:setAction(data.actionText, data.timeToComplete, function() originalOnRun(client, target) end) end
+                if data.targetActionText and IsValid(target) and target:IsPlayer() then target:setAction(data.targetActionText, data.timeToComplete) end
+                if not data.actionText then originalOnRun(client, target) end
+            end
         end
 
         lia.playerinteract.stored[name] = data
@@ -95,7 +105,8 @@ if SERVER then
                 range = data.range,
                 category = data.category or L("categoryUnsorted"),
                 timeToComplete = data.timeToComplete,
-                actionText = data.actionText
+                actionText = data.actionText,
+                targetActionText = data.targetActionText
             }
         end
 
@@ -253,13 +264,19 @@ else
         local scroll = frame:Add("DScrollPanel")
         scroll:SetPos(0, titleH + titleY + gap)
         scroll:SetSize(frameW, frameH - titleH - titleY - gap)
-        local layout = scroll:Add("DIconLayout")
+        local layout = vgui.Create("DListLayout", scroll)
         layout:Dock(FILL)
-        layout:SetSpaceY(8)
+        local function preserveScroll(f)
+            local bar = scroll:GetVBar()
+            local pos = bar and bar:GetScroll() or 0
+            f()
+            if bar then bar:SetScroll(pos) end
+        end
+
         for categoryName, categoryOptions in pairs(categorized) do
-            local categoryHeader = layout:Add("DPanel")
-            categoryHeader:Dock(TOP)
+            local categoryHeader = vgui.Create("DPanel", layout)
             categoryHeader:SetTall(categoryH)
+            categoryHeader:Dock(TOP)
             categoryHeader:DockMargin(15, 0, 15, 0)
             function categoryHeader:Paint(w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(40, 40, 40, 180))
@@ -288,24 +305,27 @@ else
             end
 
             collapseBtn.DoClick = function()
-                isCollapsed = not isCollapsed
-                for _, content in pairs(categoryContent) do
-                    content:SetVisible(not isCollapsed)
-                end
+                preserveScroll(function()
+                    isCollapsed = not isCollapsed
+                    for _, p in pairs(categoryContent) do
+                        p:SetVisible(not isCollapsed)
+                    end
 
-                layout:InvalidateLayout()
+                    layout:InvalidateLayout(true)
+                    layout:PerformLayout()
+                end)
             end
 
+            layout:Add(categoryHeader)
             for _, entry in pairs(categoryOptions) do
-                local btn = layout:Add("DButton")
-                btn:Dock(TOP)
+                local btn = vgui.Create("DButton", layout)
                 btn:SetTall(entryH)
-                btn:DockMargin(15, 0, 15, 0)
+                btn:Dock(TOP)
+                btn:DockMargin(15, 8, 15, 0)
                 btn:SetText(L(entry.name))
                 btn:SetFont("liaSmallFont")
                 btn:SetTextColor(color_white)
                 btn:SetContentAlignment(5)
-                table.insert(categoryContent, btn)
                 function btn:Paint(w, h)
                     if self:IsHovered() then
                         draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 160))
@@ -325,7 +345,7 @@ else
                                 entry.opt.onRun(client, ent)
                             end
                         else
-                            entry.opt.onRun(client)
+                            entry.opt.onRun(client, ent)
                         end
                     end
 
@@ -333,11 +353,24 @@ else
                         net.Start(netMsg)
                         net.WriteString(entry.name)
                         net.WriteBool(isInteraction)
-                        if isInteraction then net.WriteEntity(ent) end
+                        net.WriteEntity(ent)
                         net.SendToServer()
                     end
                 end
+
+                layout:Add(btn)
+                table.insert(categoryContent, btn)
             end
+
+            local spacer = vgui.Create("DPanel", layout)
+            spacer:SetTall(10)
+            spacer:Dock(TOP)
+            spacer:DockMargin(0, 0, 0, 0)
+            function spacer:Paint()
+            end
+
+            layout:Add(spacer)
+            table.insert(categoryContent, spacer)
         end
 
         lia.gui.InteractionMenu = frame
@@ -356,6 +389,7 @@ else
             if incoming.range ~= nil then merged.range = incoming.range end
             if incoming.timeToComplete ~= nil then merged.timeToComplete = incoming.timeToComplete end
             if incoming.actionText ~= nil then merged.actionText = incoming.actionText end
+            if incoming.targetActionText ~= nil then merged.targetActionText = incoming.targetActionText end
             merged.shouldShow = localEntry.shouldShow
             merged.onRun = localEntry.onRun
             newStored[name] = merged

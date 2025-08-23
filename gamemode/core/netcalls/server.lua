@@ -140,7 +140,13 @@ net.Receive("RunInteraction", function(_, ply)
         return
     end
 
-    if opt and opt.type == "action" and opt.serverOnly then opt.onRun(ply) end
+    if opt and opt.type == "action" and opt.serverOnly then 
+        if hasEntity and IsValid(tracedEntity) then
+            opt.onRun(ply, tracedEntity)
+        else
+            opt.onRun(ply)
+        end
+    end
 end)
 
 net.Receive("cmd", function(_, client)
