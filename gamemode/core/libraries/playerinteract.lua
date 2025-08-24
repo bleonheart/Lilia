@@ -12,13 +12,12 @@ function lia.playerinteract.getInteractions(client)
     local ent = client:getTracedEntity()
     if not IsValid(ent) then return {} end
     local interactions = {}
-    if ent:IsPlayer() then
-        for name, opt in pairs(lia.playerinteract.stored) do
-            if opt.type == "interaction" and (not opt.shouldShow or opt.shouldShow(client, ent)) then interactions[name] = opt end
-        end
-    else
-        for name, opt in pairs(lia.playerinteract.stored) do
-            if opt.type == "interaction" and (not opt.shouldShow or opt.shouldShow(client, ent)) then interactions[name] = opt end
+    local isPlayerTarget = ent:IsPlayer()
+    for name, opt in pairs(lia.playerinteract.stored) do
+        if opt.type == "interaction" then
+            local targetType = opt.target or "player"
+            local targetMatches = targetType == "any" or targetType == "player" and isPlayerTarget or targetType == "entity" and not isPlayerTarget
+            if targetMatches and (not opt.shouldShow or opt.shouldShow(client, ent)) then interactions[name] = opt end
         end
     end
     return interactions
@@ -49,9 +48,11 @@ if SERVER then
         data.type = "interaction"
         data.range = data.range or 250
         data.category = data.category or L("categoryUnsorted")
+        data.target = data.target or "player"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
         data.targetActionText = data.targetActionText or nil
+        if data.shouldShow then data.shouldShowName = name end
         if data.onRun and data.timeToComplete and (data.actionText or data.targetActionText) then
             local originalOnRun = data.onRun
             data.onRun = function(client, target)
@@ -77,6 +78,7 @@ if SERVER then
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
         data.targetActionText = data.targetActionText or nil
+        if data.shouldShow then data.shouldShowName = name end
         if data.onRun and data.timeToComplete and (data.actionText or data.targetActionText) then
             local originalOnRun = data.onRun
             data.onRun = function(client, target)
@@ -104,6 +106,7 @@ if SERVER then
                 name = name,
                 range = data.range,
                 category = data.category or L("categoryUnsorted"),
+                target = data.target,
                 timeToComplete = data.timeToComplete,
                 actionText = data.actionText,
                 targetActionText = data.targetActionText
@@ -183,27 +186,41 @@ if SERVER then
         serverOnly = true
     })
 else
-    function lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg)
+    function lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg, preFiltered)
         local client, ent = LocalPlayer(), LocalPlayer():getTracedEntity()
         local visible = {}
-        for name, opt in pairs(options) do
-            if isInteraction then
-                if opt.type == "interaction" and IsValid(ent) and lia.playerinteract.isWithinRange(client, ent, opt.range) then
-                    local shouldShow = true
-                    if opt.shouldShow then shouldShow = opt.shouldShow(client, ent) end
-                    if shouldShow then
+        if preFiltered then
+            for name, opt in pairs(options) do
+                visible[#visible + 1] = {
+                    name = name,
+                    opt = opt
+                }
+            end
+        else
+            for name, opt in pairs(options) do
+                if isInteraction then
+                    if opt.type == "interaction" and IsValid(ent) and lia.playerinteract.isWithinRange(client, ent, opt.range) then
+                        local targetType = opt.target or "player"
+                        local isPlayerTarget = ent:IsPlayer()
+                        local targetMatches = targetType == "any" or targetType == "player" and isPlayerTarget or targetType == "entity" and not isPlayerTarget
+                        if targetMatches then
+                            local shouldShow = true
+                            if opt.shouldShow then shouldShow = opt.shouldShow(client, ent) end
+                            if shouldShow then
+                                visible[#visible + 1] = {
+                                    name = name,
+                                    opt = opt
+                                }
+                            end
+                        end
+                    end
+                else
+                    if opt.type == "action" and (not opt.shouldShow or opt.shouldShow(client)) then
                         visible[#visible + 1] = {
                             name = name,
                             opt = opt
                         }
                     end
-                end
-            else
-                if opt.type == "action" and (not opt.shouldShow or opt.shouldShow(client)) then
-                    visible[#visible + 1] = {
-                        name = name,
-                        opt = opt
-                    }
                 end
             end
         end
@@ -339,7 +356,8 @@ else
                     if not entry.opt.serverOnly and entry.opt.onRun then
                         if isInteraction then
                             if ent:IsPlayer() then
-                                local target = ent:IsBot() and client or ent
+                                local target = ent
+                                if ent:IsBot() then if client:Team() == FACTION_STAFF then target = client end end
                                 entry.opt.onRun(client, target)
                             else
                                 entry.opt.onRun(client, ent)
@@ -387,10 +405,10 @@ else
             merged.name = name
             merged.category = incoming.category or localEntry.category or L("categoryUnsorted")
             if incoming.range ~= nil then merged.range = incoming.range end
+            merged.target = incoming.target or localEntry.target or "player"
             if incoming.timeToComplete ~= nil then merged.timeToComplete = incoming.timeToComplete end
             if incoming.actionText ~= nil then merged.actionText = incoming.actionText end
             if incoming.targetActionText ~= nil then merged.targetActionText = incoming.targetActionText end
-            merged.shouldShow = localEntry.shouldShow
             merged.onRun = localEntry.onRun
             newStored[name] = merged
         end
@@ -403,16 +421,16 @@ end
 
 lia.keybind.add(KEY_TAB, "interactionMenu", {
     onPress = function(client)
-        local interactions = lia.playerinteract.getInteractions(client)
-        if table.IsEmpty(interactions) then return end
-        lia.playerinteract.openMenu(interactions, true, "playerInteractions", lia.keybind.get(L("interactionMenu"), KEY_TAB), "RunInteraction")
+        net.Start("liaRequestInteractOptions")
+        net.WriteString("interaction")
+        net.SendToServer()
     end,
 })
 
 lia.keybind.add(KEY_G, "personalActions", {
     onPress = function(client)
-        local actions = lia.playerinteract.getActions(client)
-        if table.IsEmpty(actions) then return end
-        lia.playerinteract.openMenu(actions, false, "actionsMenu", lia.keybind.get(L("personalActions"), KEY_G), "RunInteraction")
+        net.Start("liaRequestInteractOptions")
+        net.WriteString("action")
+        net.SendToServer()
     end,
 })
