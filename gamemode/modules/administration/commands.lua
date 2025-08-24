@@ -1082,8 +1082,8 @@ lia.command.add("charunbanoffline", {
         if not charID then return client:notifyLocalized("invalidCharID") end
         local banned = lia.char.getCharBanned(charID)
         if banned == nil then return client:notifyLocalized("characterNotFound") end
-        lia.char.setCharBanned(charID, 0)
-        lia.char.setCharData(charID, "charBanInfo", nil)
+        lia.char.setCharDatabase(charID, "banned", 0)
+        lia.char.setCharDatabase(charID, "charBanInfo", nil)
         client:notifyLocalized("offlineCharUnbanned", charID)
         lia.log.add(client, "charUnbanOffline", charID)
     end
@@ -1103,8 +1103,8 @@ lia.command.add("charbanoffline", {
         if not charID then return client:notifyLocalized("invalidCharID") end
         local banned = lia.char.getCharBanned(charID)
         if banned == nil then return client:notifyLocalized("characterNotFound") end
-        lia.char.setCharBanned(charID, -1)
-        lia.char.setCharData(charID, "charBanInfo", {
+        lia.char.setCharDatabase(charID, "banned", -1)
+        lia.char.setCharDatabase(charID, "charBanInfo", {
             name = client:Nick(),
             steamID = client:SteamID(),
             rank = client:GetUserGroup()
@@ -1857,8 +1857,8 @@ lia.command.add("charunban", {
                     return
                 end
 
-                lia.char.setCharBanned(charID, 0)
-                lia.char.setCharData(charID, "charBanInfo", nil)
+                lia.char.setCharDatabase(charID, "banned", 0)
+                lia.char.setCharDatabase(charID, "charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), data[1].name)
                 lia.log.add(client, "charUnban", data[1].name, charID)
             end
