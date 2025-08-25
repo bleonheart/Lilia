@@ -819,7 +819,13 @@ if SERVER then
                 local updateData = {}
                 local fieldName = varData.field
                 -- Handle different field types
-                if varData.fieldType == "text" or varData.fieldType == "string" then
+                if varData.fieldType == "text" then
+                    if istable(value) then
+                        updateData[fieldName] = util.TableToJSON(value)
+                    else
+                        updateData[fieldName] = tostring(value)
+                    end
+                elseif varData.fieldType == "string" then
                     updateData[fieldName] = tostring(value)
                 elseif varData.fieldType == "integer" then
                     updateData[fieldName] = tonumber(value) or varData.default or 0
