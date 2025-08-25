@@ -1,10 +1,8 @@
 ﻿local pon = {}
 _G.pon = pon
-local type, count = type, table.Count
-local tonumber = tonumber
-local format = string.format
 do
-    local type, count = type, table.Count
+
+    local type = type
     local tonumber = tonumber
     local format = string.format
     local encode = {}
@@ -144,7 +142,10 @@ do
     decode['{'] = function(self, index, str, cache)
         local cur = {}
         cache[#cache + 1] = cur
-        local k, v, tk, tv = 1, nil, nil, nil
+        local k = 1
+        local v
+        local tk
+        local tv
         while true do
             tv = sub(str, index, index)
             if not tv or tv == '~' then
@@ -179,7 +180,10 @@ do
     decode['['] = function(self, index, str, cache)
         local cur = {}
         cache[#cache + 1] = cur
-        local k, v, tk, tv = 1, nil, nil, nil
+        local k = 1
+        local v
+        local tk
+        local tv
         while true do
             tk = sub(str, index, index)
             if not tk or tk == '}' then
@@ -300,7 +304,7 @@ do
     end
 end
 
-local type, error, pcall, pairs, _player = type, error, pcall, pairs, player
+local type, pcall, pairs, _player = type, pcall, pairs, player
 netstream = netstream or {}
 netstream.stored = netstream.stored or {}
 function netstream.Split(data)
@@ -391,7 +395,6 @@ if SERVER then
             end
         end
 
-        NS_DS_NAME, NS_DS_DATA, NS_DS_LENGTH = nil, nil, nil
     end)
 else
     function netstream.Start(name, ...)
@@ -419,6 +422,5 @@ else
             end
         end
 
-        NS_DS_NAME, NS_DS_DATA, NS_DS_LENGTH = nil, nil, nil
     end)
 end
