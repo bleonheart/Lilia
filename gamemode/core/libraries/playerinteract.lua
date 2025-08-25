@@ -420,7 +420,7 @@ else
 end
 
 lia.keybind.add(KEY_TAB, "interactionMenu", {
-    onPress = function(client)
+    onPress = function()
         net.Start("liaRequestInteractOptions")
         net.WriteString("interaction")
         net.SendToServer()
@@ -428,7 +428,7 @@ lia.keybind.add(KEY_TAB, "interactionMenu", {
 })
 
 lia.keybind.add(KEY_G, "personalActions", {
-    onPress = function(client)
+    onPress = function()
         net.Start("liaRequestInteractOptions")
         net.WriteString("action")
         net.SendToServer()
