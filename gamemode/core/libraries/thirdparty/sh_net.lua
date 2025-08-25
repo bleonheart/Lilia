@@ -180,7 +180,7 @@ do
     decode['['] = function(self, index, str, cache)
         local cur = {}
         cache[#cache + 1] = cur
-        local k = 1
+        local k
         local v
         local tk
         local tv
