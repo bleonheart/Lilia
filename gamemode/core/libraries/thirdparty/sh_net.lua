@@ -189,12 +189,13 @@ do
 
             index = index + 1
             index, k = self[tk](self, index, str, cache)
-            if not k then continue end
-            tv = sub(str, index, index)
-            index = index + 1
-            if not self[tv] then lia.error(L("netDidNotFindType", tv)) end
-            index, v = self[tv](self, index, str, cache)
-            cur[k] = v
+            if k then
+                tv = sub(str, index, index)
+                index = index + 1
+                if not self[tv] then lia.error(L("netDidNotFindType", tv)) end
+                index, v = self[tv](self, index, str, cache)
+                cur[k] = v
+            end
         end
         return index, cur
     end

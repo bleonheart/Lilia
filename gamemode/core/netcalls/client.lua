@@ -389,7 +389,7 @@ net.Receive("liaProvideInteractOptions", function()
     local kind = net.ReadString()
     local count = net.ReadUInt(16)
     local temp = {}
-    for i = 1, count do
+    for _ = 1, count do
         local name = net.ReadString()
         local typ = net.ReadString()
         local serverOnly = net.ReadBool()
@@ -416,14 +416,14 @@ net.Receive("liaProvideInteractOptions", function()
     end
 
     local optionsMap = {}
-    local count = 0
+    local optionCount = 0
     for name, opt in pairs(temp) do
         optionsMap[name] = opt
-        count = count + 1
+        optionCount = optionCount + 1
     end
 
     local isInteraction = kind == "interaction"
-    if count == 0 then return end
+    if optionCount == 0 then return end
     lia.playerinteract.openMenu(optionsMap, isInteraction, isInteraction and "playerInteractions" or "actionsMenu", isInteraction and lia.keybind.get(L("interactionMenu"), KEY_TAB) or lia.keybind.get(L("personalActions"), KEY_G), "RunInteraction", true)
 end)
 
