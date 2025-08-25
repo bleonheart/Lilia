@@ -1,5 +1,4 @@
-﻿local NetworkStringToIDCache = {}
-local pon = {}
+﻿local pon = {}
 _G.pon = pon
 local type, count = type, table.Count
 local tonumber = tonumber
@@ -9,7 +8,6 @@ do
     local tonumber = tonumber
     local format = string.format
     local encode = {}
-    local tryCache
     local cacheSize = 0
     encode['table'] = function(self, tbl, output, cache)
         if cache[tbl] then
@@ -22,7 +20,6 @@ do
 
         local first = next(tbl, nil)
         local predictedNumeric = 1
-        local lastKey = nil
         if first == 1 then
             output[#output + 1] = '{'
             for k, v in next, tbl do
@@ -128,7 +125,7 @@ do
     end
 
     do
-        local empty, concat = table.Empty, table.concat
+        local _, concat = table.Empty, table.concat
         function pon.encode(tbl)
             local output = {}
             cacheSize = 0
