@@ -537,7 +537,7 @@ function GM:SetupBotPlayer(client)
         table.insert(itemKeys, k)
     end
 
-    for i = 1, math.min(itemCount, #itemKeys) do
+    for _ = 1, math.min(itemCount, #itemKeys) do
         local randomIndex = math.random(1, #itemKeys)
         local randomItemID = itemKeys[randomIndex]
         inventory:add(randomItemID)
