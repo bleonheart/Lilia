@@ -565,7 +565,7 @@ function GM:Initialize()
 end
 
 function GM:OnReloaded()
-    lia.module.initialize()
+    lia.module.reloadEdited()
     lia.config.load()
     lia.faction.formatModelData()
     if SERVER then
