@@ -119,6 +119,10 @@ local FilesToLoad = {
         realm = "client"
     },
     {
+        path = "lilia/gamemode/core/libraries/websound.lua",
+        realm = "client"
+    },
+    {
         path = "lilia/gamemode/core/libraries/attributes.lua",
         realm = "shared"
     },
