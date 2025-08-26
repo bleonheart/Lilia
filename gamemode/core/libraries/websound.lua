@@ -29,7 +29,7 @@ function lia.websound.register(name, url, cb)
     end
 
     http.Fetch(url, function(body)
-        ensureDir(baseDir)
+        ensureDir(savePath:match("(.+)/[^/]+$") or baseDir)
         file.Write(savePath, body)
         finalize(false)
     end, function(err)
