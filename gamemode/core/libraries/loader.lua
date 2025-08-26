@@ -1,11 +1,9 @@
-lia = lia or {
+﻿lia = lia or {
     util = {},
     gui = {},
     meta = {},
     notices = {}
 }
-
-lia.hotReload = lia.hotReload or {}
 
 local FilesToLoad = {
     {
@@ -318,15 +316,6 @@ function lia.include(path, realm)
         if SERVER then AddCSLuaFile(path) end
         include(path)
     end
-
-    local lastModified = file.Time(path, "LUA") or os.time()
-    local tracked = lia.hotReload[path]
-    if tracked then
-        tracked.time = lastModified
-        tracked.realm = resolved
-    else
-        lia.hotReload[path] = {time = lastModified, realm = resolved}
-    end
 end
 
 function lia.includeDir(dir, raw, deep, realm)
@@ -368,16 +357,6 @@ function lia.includeGroupedDir(dir, raw, recursive, forceRealm)
             for _, subfolder in ipairs(folders) do
                 table.insert(stack, path .. "/" .. subfolder)
             end
-        end
-    end
-end
-
-function lia.hotReload.check()
-    for path, info in pairs(lia.hotReload) do
-        local modified = file.Time(path, "LUA")
-        if modified and modified > info.time then
-            lia.include(path, info.realm)
-            info.time = modified
         end
     end
 end
@@ -586,7 +565,7 @@ function GM:Initialize()
 end
 
 function GM:OnReloaded()
-    lia.hotReload.check()
+    lia.module.initialize()
     lia.config.load()
     lia.faction.formatModelData()
     if SERVER then
