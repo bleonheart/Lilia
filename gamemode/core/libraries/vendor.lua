@@ -1,4 +1,4 @@
-lia.vendor = lia.vendor or {}
+﻿lia.vendor = lia.vendor or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.rarities = lia.vendor.rarities or {}
@@ -133,6 +133,7 @@ function lia.vendor.addPreset(name, items)
         if lia.item.list[itemType] then
             validItems[itemType] = itemData
         else
+            print("[Vendor] Warning: Item '" .. itemType .. "' in preset '" .. name .. "' does not exist and will be skipped.")
         end
     end
 

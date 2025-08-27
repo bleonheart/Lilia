@@ -1,4 +1,4 @@
-local function utf8charbytes(s, i)
+﻿local function utf8charbytes(s, i)
     i = i or 1
     if not isstring(s) then error(L("utf8CharbytesStringExpected", type(s))) end
     if not isnumber(i) then error(L("utf8CharbytesNumberExpected", type(i))) end
@@ -15,8 +15,11 @@ local function utf8charbytes(s, i)
         local c3 = s:byte(i + 2)
         if not c2 or not c3 then error(L("utf8StringTerminatedEarly")) end
         if c == 224 and (c2 < 160 or c2 > 191) then
+            error(L("utf8InvalidCharacter"))
         elseif c == 237 and (c2 < 128 or c2 > 159) then
+            error(L("utf8InvalidCharacter"))
         elseif c2 < 128 or c2 > 191 then
+            error(L("utf8InvalidCharacter"))
         end
 
         if c3 < 128 or c3 > 191 then error(L("utf8InvalidCharacter")) end
@@ -27,14 +30,18 @@ local function utf8charbytes(s, i)
         local c4 = s:byte(i + 3)
         if not c2 or not c3 or not c4 then error(L("utf8StringTerminatedEarly")) end
         if c == 240 and (c2 < 144 or c2 > 191) then
+            error(L("utf8InvalidCharacter"))
         elseif c == 244 and (c2 < 128 or c2 > 143) then
+            error(L("utf8InvalidCharacter"))
         elseif c2 < 128 or c2 > 191 then
+            error(L("utf8InvalidCharacter"))
         end
 
         if c3 < 128 or c3 > 191 then error(L("utf8InvalidCharacter")) end
         if c4 < 128 or c4 > 191 then error(L("utf8InvalidCharacter")) end
         return 4
     else
+        error(L("utf8InvalidCharacter"))
     end
 end
 

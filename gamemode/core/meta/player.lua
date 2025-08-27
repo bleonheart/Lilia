@@ -1,4 +1,4 @@
-local playerMeta = FindMetaTable("Player")
+﻿local playerMeta = FindMetaTable("Player")
 local vectorMeta = FindMetaTable("Vector")
 do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
@@ -19,6 +19,7 @@ end
 
 function playerMeta:hasPrivilege(privilegeName)
     if not isstring(privilegeName) then
+        lia.error("hasPrivilege expected a string, got " .. tostring(privilegeName))
         return false
     end
     return lia.administrator.hasAccess(self, privilegeName)

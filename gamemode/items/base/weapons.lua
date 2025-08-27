@@ -1,4 +1,4 @@
-ITEM.name = "weaponsName"
+﻿ITEM.name = "weaponsName"
 ITEM.desc = "weaponsDesc"
 ITEM.category = "weapons"
 ITEM.model = "models/weapons/w_pistol.mdl"
@@ -55,6 +55,7 @@ ITEM.functions.Unequip = {
             item:setData("ammo", weapon:Clip1())
             client:StripWeapon(item.class)
         else
+            lia.error(L("weaponDoesNotExist", item.class))
         end
 
         client:EmitSound(item.unequipSound or "items/ammo_pickup.wav", 80)
@@ -98,6 +99,7 @@ ITEM.functions.Equip = {
             weapon:SetClip1(item:getData("ammo", 0))
             if item.onEquipWeapon then item:onEquipWeapon(client, weapon) end
         else
+            lia.error(L("weaponDoesNotExist", item.class))
         end
         return false
     end,
@@ -119,6 +121,7 @@ function ITEM:onLoadout()
             client.carryWeapons[self.weaponCategory] = weapon
             weapon:SetClip1(self:getData("ammo", 0))
         else
+            lia.error(L("weaponDoesNotExist", self.class))
         end
     end
 end

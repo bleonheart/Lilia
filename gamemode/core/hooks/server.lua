@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     local loginTime = character:getLoginTime()
@@ -634,21 +634,25 @@ function GM:LoadData()
             repeat
                 local cls = ent.class
                 if not isstring(cls) or cls == "" then
+                    lia.error(L("invalidEntityClass"))
                     break
                 end
 
                 local decodedPos = lia.data.decode(ent.pos)
                 local decodedAng = lia.data.decode(ent.angles)
                 if not decodedPos then
+                    lia.error(L("invalidEntityPosition", cls))
                     break
                 end
 
                 if IsEntityNearby(decodedPos, cls) then
+                    lia.error(L("entityCreationAborted", cls, decodedPos.x, decodedPos.y, decodedPos.z))
                     break
                 end
 
                 local createdEnt = ents.Create(cls)
                 if not IsValid(createdEnt) then
+                    lia.error(L("failedEntityCreation", cls))
                     break
                 end
 
@@ -674,8 +678,12 @@ function GM:LoadData()
                     if isangle(decodedAng) then
                         local ok, err = pcall(createdEnt.SetAngles, createdEnt, decodedAng)
                         if not ok then
+                            lia.error(string.format("Failed to SetAngles for entity '%s' at %s. Angle: %s (%s) - %s", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng), err))
+                            lia.error(debug.traceback())
                         end
                     else
+                        lia.error(string.format("Invalid angle for entity '%s' at %s: %s (%s)", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
+                        lia.error(debug.traceback())
                     end
                 end
 
@@ -1001,6 +1009,7 @@ end
 
 function ClientAddText(client, ...)
     if not client or not IsValid(client) then
+        lia.error(L("invalidClientChatAddText"))
         return
     end
 
@@ -1063,8 +1072,10 @@ concommand.Add("plysetgroup", function(ply, _, args)
                 target:SetUserGroup(usergroup)
                 lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), lia.db.convertDataType(target:SteamID())))
             else
+                MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consoleUsergroupNotFound") .. "\n")
             end
         else
+            MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consolePlayerNotFound") .. "\n")
         end
     end
 end)
@@ -1098,114 +1109,13 @@ concommand.Add("lia_wipedb", function(client)
 
     if resetCalled < RealTime() then
         resetCalled = RealTime() + 3
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeConfirm", "lia_wipedb") .. "\n")
     else
         resetCalled = 0
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeProgress") .. "\n")
         hook.Run("OnWipeTables")
         lia.db.wipeTables(lia.db.loadTables)
         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-    end
-end)
-
-local characterWipeCalled = 0
-concommand.Add("lia_wipecharacters", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if characterWipeCalled < RealTime() then
-        characterWipeCalled = RealTime() + 3
-    else
-        characterWipeCalled = 0
-
-        hook.Run("OnWipeCharacterData")
-
-        local characterTables = {
-            "lia_characters",
-            "lia_chardata",
-            "lia_inventories",
-            "lia_items",
-            "lia_invdata"
-        }
-
-        local wipedTables = {}
-
-        local function wipeNextTable(index)
-            if index > #characterTables then
-                if #wipedTables > 0 then
-                end
-                game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-                return
-            end
-
-            local tableName = characterTables[index]
-            lia.db.query("DROP TABLE IF EXISTS " .. tableName .. ";", function()
-                table.insert(wipedTables, tableName)
-                wipeNextTable(index + 1)
-            end)
-        end
-
-        wipeNextTable(1)
-    end
-end)
-
-local doorWipeCalled = 0
-concommand.Add("lia_wipedoors", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if doorWipeCalled < RealTime() then
-        doorWipeCalled = RealTime() + 3
-    else
-        doorWipeCalled = 0
-
-        hook.Run("OnWipeDoorData")
-
-        lia.db.query("DROP TABLE IF EXISTS lia_doors;", function()
-            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-        end)
-    end
-end)
-
-local savedEntWipeCalled = 0
-concommand.Add("lia_wipesavedents", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if savedEntWipeCalled < RealTime() then
-        savedEntWipeCalled = RealTime() + 3
-    else
-        savedEntWipeCalled = 0
-
-        hook.Run("OnWipeSavedEntities")
-
-        local savedEntTables = {
-            "lia_persistence",
-            "lia_saveditems"
-        }
-
-        local wipedTables = {}
-
-        local function wipeNextSavedEntTable(index)
-            if index > #savedEntTables then
-                if #wipedTables > 0 then
-                end
-                game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-                return
-            end
-
-            local tableName = savedEntTables[index]
-            lia.db.query("DROP TABLE IF EXISTS " .. tableName .. ";", function()
-                table.insert(wipedTables, tableName)
-                wipeNextSavedEntTable(index + 1)
-            end)
-        end
-
-        wipeNextSavedEntTable(1)
     end
 end)
 
@@ -1216,6 +1126,7 @@ concommand.Add("lia_resetconfig", function(client)
     end
 
     lia.config.reset()
+    MsgC(Color(255, 0, 0), "[Lilia] " .. L("configReset") .. "\n")
 end)
 
 concommand.Add("list_entities", function(client)
@@ -1272,54 +1183,4 @@ end)
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin(L("unbanLogFormat", data.networkid))
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
-end)
-
-hook.Add("OnPlayerSwitchChar", "StopActionsOnCharSwitch", function(client, oldChar, newChar)
-    if not IsValid(client) then return end
-
-    local steamID64 = client:SteamID64()
-    local entIndex = client:EntIndex()
-
-    timer.Remove("liaAct" .. steamID64)
-
-    timer.Remove("liaStare" .. steamID64)
-
-    timer.Remove("liaSeq" .. entIndex)
-
-    timer.Remove("liaUnRagdoll" .. steamID64)
-
-    timer.Remove("DropDelay." .. steamID64)
-    timer.Remove("TakeDelay." .. steamID64)
-    timer.Remove("EquipDelay." .. steamID64)
-    timer.Remove("UnequipDelay." .. steamID64)
-
-    timer.Remove("liaStamBreathCheck" .. steamID64)
-
-    timer.Remove("BleedDamage_" .. steamID64)
-    timer.Remove("PTSDEffect_" .. steamID64)
-
-    for _, weapon in ipairs(client:GetWeapons()) do
-        timer.Remove("radio_animstop_" .. weapon:EntIndex())
-    end
-
-    timer.Remove("pCasino:ChairLeave:" .. steamID64)
-
-    client.dropDelay = nil
-    client.takeDelay = nil
-    client.equipDelay = nil
-    client.unequipDelay = nil
-
-    client:leaveSequence() -- Stop any active sequences
-    client:removeRagdoll() -- Remove any active ragdolls
-    client:stopAction() -- Stop any action bars
-
-    client:setNetVar("blur", nil)
-    client:setLocalVar("ragdoll", nil)
-
-    client:SetMoveType(MOVETYPE_WALK)
-    client:Freeze(false)
-    client:SetNoDraw(false)
-    client:SetNotSolid(false)
-
-    lia.information("Stopped all actions for " .. client:Name() .. " during character switch")
 end)

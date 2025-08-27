@@ -1,4 +1,4 @@
-if SERVER then
+﻿if SERVER then
     function lia.notices.notify(message, recipient)
         net.Start("liaNotify")
         net.WriteString(message)
@@ -48,6 +48,7 @@ else
         notice.start = CurTime() + 0.25
         notice.endTime = CurTime() + 7.75
         OrganizeNotices()
+        MsgC(Color(0, 255, 255), message .. "\n")
         timer.Simple(0.15, function() LocalPlayer():EmitSound(unpack({"garrysmod/content_downloaded.wav", 50, 250})) end)
         timer.Simple(7.75, function()
             if IsValid(notice) then
@@ -62,6 +63,7 @@ else
             end
         end)
 
+        MsgN(message)
     end
 
     function lia.notices.notifyLocalized(key, ...)

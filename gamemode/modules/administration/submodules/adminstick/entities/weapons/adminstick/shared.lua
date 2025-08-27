@@ -1,4 +1,4 @@
-SWEP.Author = "Samael"
+﻿SWEP.Author = "Samael"
 SWEP.PrintName = L("adminStick")
 SWEP.Purpose = L("adminStickPurpose")
 SWEP.ViewModelFOV = 50

@@ -1,4 +1,4 @@
-lia.db = lia.db or {}
+﻿lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}
 lia.db.prepared = lia.db.prepared or {}
 MYSQLOO_QUEUE = MYSQLOO_QUEUE or {}
@@ -9,9 +9,13 @@ MYSQLOO_BOOL = 2
 local modules = {}
 local function ThrowQueryFault(query, fault)
     if string.find(fault, "duplicate column name:") or string.find(fault, "UNIQUE constraint failed: lia_config") then return end
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " * " .. query .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. fault .. "\n")
 end
 
 local function ThrowConnectionFault(fault)
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. L("dbConnectionFail") .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. fault .. "\n")
     setNetVar("dbError", fault)
 end
 
@@ -122,6 +126,9 @@ modules.mysqloo = {
     connect = function(callback)
         if not pcall(require, "mysqloo") then return setNetVar("dbError", system.IsWindows() and L("missingVcRedistributables") or L("missingMysqlooBinaries")) end
         if mysqloo.VERSION ~= "9" or not mysqloo.MINOR_VERSION or tonumber(mysqloo.MINOR_VERSION) < 1 then
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. L("mysqlooOutdated") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. L("mysqlooDownload") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. L("mysqlooDownloadURL") .. "\n")
             return
         end
 
@@ -203,6 +210,7 @@ modules.mysqloo = {
 
             prepObj:start()
         else
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("invalidPreparedStatement", key) .. "\n")
         end
     end
 }
@@ -227,6 +235,7 @@ function lia.db.connect(callback, reconnect)
         lia.db.escape = dbModule.escape
         lia.db.query = dbModule.query
     else
+        lia.error(L("invalidStorageModule", lia.db.module or "Unavailable"))
     end
 end
 
@@ -235,10 +244,12 @@ function lia.db.wipeTables(callback)
     local function realCallback()
         if lia.db.module == "mysqloo" then
             lia.db.query("SET FOREIGN_KEY_CHECKS = 1;", function()
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("dataWiped") .. "\n")
                 if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
                 if isfunction(callback) then callback() end
             end)
         else
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("dataWiped") .. "\n")
             if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
             if isfunction(callback) then callback() end
         end
@@ -1025,6 +1036,7 @@ concommand.Add("database_list", function(ply)
     if IsValid(ply) then return end
     lia.db.GetCharacterTable(function(columns)
         if #columns == 0 then
+            lia.error(L("dbColumnsNone"))
         else
             lia.information(L("dbColumnsList", table.concat(columns, ", ")))
         end

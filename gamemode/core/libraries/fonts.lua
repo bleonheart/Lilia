@@ -1,7 +1,8 @@
-lia.font = lia.font or {}
+﻿lia.font = lia.font or {}
 lia.font.stored = lia.font.stored or {}
 if CLIENT then
     function lia.font.register(fontName, fontData)
+        if not (isstring(fontName) and istable(fontData)) then return lia.error(L("invalidFont")) end
         surface.CreateFont(fontName, fontData)
     end
 

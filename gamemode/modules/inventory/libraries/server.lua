@@ -1,4 +1,4 @@
-local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
+﻿local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
     local bagItemID = inventory:getData("item")
     if not bagItemID then return end
     local bagItem = lia.item.instances[bagItemID]
@@ -151,6 +151,7 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID)
     local function fail(err)
         client.invTransferTransaction = nil
         if err then
+            lia.error(err)
             debug.Trace()
         end
 

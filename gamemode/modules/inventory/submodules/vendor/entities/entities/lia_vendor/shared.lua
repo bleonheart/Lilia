@@ -1,4 +1,4 @@
-LiliaVendors = LiliaVendors or {}
+﻿LiliaVendors = LiliaVendors or {}
 ENT.Type = "anim"
 ENT.PrintName = L("entityVendorName")
 ENT.Category = "Lilia"
@@ -129,10 +129,14 @@ end
 
 function ENT:setAnim()
     if not self:isReadyForAnim() then return end
-    local sequenceList = self:GetSequenceList()
-    for k, v in ipairs(sequenceList) do
-        if v:lower():find("idle") and v ~= "idlenoise" then return self:ResetSequence(k) end
-    end
+    local success, err = pcall(function()
+        local sequenceList = self:GetSequenceList()
+        for k, v in ipairs(sequenceList) do
+            if v:lower():find("idle") and v ~= "idlenoise" then return self:ResetSequence(k) end
+        end
 
-    if self:GetSequenceCount() > 1 then self:ResetSequence(4) end
+        if self:GetSequenceCount() > 1 then self:ResetSequence(4) end
+    end)
+
+    if not success then print("[Lilia Vendor] Error in setAnim: " .. tostring(err)) end
 end

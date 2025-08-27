@@ -1,4 +1,4 @@
-lia.command = lia.command or {}
+﻿lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
 function lia.command.buildSyntaxFromArguments(args)
     local tokens = {}
@@ -30,6 +30,7 @@ function lia.command.add(command, data)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     if not data.onRun then
+        lia.error(L("commandNoCallback", command))
         return
     end
 
@@ -119,6 +120,7 @@ function lia.command.hasAccess(client, command, data)
     local hasAccess = true
     if accessLevels ~= "user" then
         if not isstring(privilegeID) then
+            lia.error("Command '" .. tostring(command) .. "' has invalid privilege ID type: " .. tostring(privilegeID))
             return false, privilegeName
         end
 
@@ -210,6 +212,7 @@ if SERVER then
                         client:notify(result)
                     end
                 else
+                    print(result)
                 end
             end
         end

@@ -1,4 +1,4 @@
-lia.class = lia.class or {}
+﻿lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
 function lia.class.register(uniqueID, data)
     assert(isstring(uniqueID), L("classUniqueIDString"))
@@ -26,6 +26,7 @@ function lia.class.register(uniqueID, data)
     class.desc = class.desc or L("noDesc")
     class.limit = class.limit or 0
     if not class.faction or not team.Valid(class.faction) then
+        lia.error(L("classNoValidFaction", uniqueID))
         return
     end
 
@@ -60,6 +61,7 @@ function lia.class.loadFromDir(directory)
         CLASS.limit = 0
         lia.include(directory .. "/" .. v, "shared")
         if not CLASS.faction or not team.Valid(CLASS.faction) then
+            lia.error(L("classNoValidFaction", niceName))
             CLASS = nil
             continue
         end

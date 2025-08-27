@@ -1,4 +1,4 @@
-local RULES = {
+﻿local RULES = {
     AccessIfStorageReceiver = function(inventory, _, context)
         local client = context.client
         if not IsValid(client) then return end
@@ -39,6 +39,7 @@ function MODULE:PlayerSpawnedProp(client, model, entity)
             if isfunction(data.OnSpawn) then data.OnSpawn(storage) end
         end
     end, function(err)
+        lia.error(L("unableCreateStorageEntity", client:Name(), err))
         if IsValid(storage) then SafeRemoveEntity(storage) end
     end)
 

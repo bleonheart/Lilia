@@ -1,4 +1,4 @@
-net.Receive("StringRequest", function(_, client)
+﻿net.Receive("StringRequest", function(_, client)
     local id = net.ReadUInt(32)
     local value = net.ReadString()
     if client.liaStrReqs and client.liaStrReqs[id] then
@@ -32,10 +32,12 @@ net.Receive("liaKeybindServer", function(_, ply)
     if isRelease then
         if data.release and data.serverOnly then
             local success, err = pcall(data.release, player)
+            if not success then print("Keybind release error for " .. tostring(player) .. ": " .. tostring(err)) end
         end
     else
         if data.callback and data.serverOnly then
             local success, err = pcall(data.callback, player)
+            if not success then print("Keybind press error for " .. tostring(player) .. ": " .. tostring(err)) end
         end
     end
 end)
@@ -278,6 +280,8 @@ net.Receive("liaNetMessage", function(_, client)
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], client, unpack(args))
+        if not success then lia.error("Error in net message callback '" .. name .. "': " .. tostring(err)) end
     else
+        lia.error("Received unregistered net message: " .. name)
     end
 end)

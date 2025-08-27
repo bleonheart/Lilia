@@ -1,10 +1,11 @@
-lia.net = lia.net or {}
+﻿lia.net = lia.net or {}
 lia.net.sendq = lia.net.sendq or {}
 lia.net.globals = lia.net.globals or {}
 lia.net.buffers = lia.net.buffers or {}
 lia.net.registry = lia.net.registry or {}
 function lia.net.register(name, callback)
     if not isstring(name) or not isfunction(callback) then
+        lia.error("Invalid arguments for lia.net.register")
         return false
     end
 
@@ -14,6 +15,7 @@ end
 
 function lia.net.send(name, target, ...)
     if not isstring(name) then
+        lia.error("Invalid net message name")
         return false
     end
 
@@ -31,6 +33,7 @@ function lia.net.send(name, target, ...)
         elseif IsValid(target) then
             net.Send(target)
         else
+            lia.error("Invalid target for lia.net.send")
             return false
         end
     else
@@ -207,6 +210,7 @@ end
 if SERVER then
     function checkBadType(name, object)
         if isfunction(object) then
+            lia.error(L("netVarBadType", name))
             return true
         elseif istable(object) then
             for k, v in pairs(object) do

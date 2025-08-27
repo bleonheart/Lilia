@@ -1,4 +1,4 @@
-lia.module = lia.module or {}
+﻿lia.module = lia.module or {}
 lia.module.list = lia.module.list or {}
 lia.module.fileTimes = lia.module.fileTimes or {}
 local function getLastModified(path)
@@ -89,12 +89,6 @@ local function loadExtras(path)
     if CLIENT and MODULE.WebIcons and istable(MODULE.WebIcons) then
         for name, url in pairs(MODULE.WebIcons) do
             if isstring(name) and isstring(url) then lia.webimage.register(name, url) end
-        end
-    end
-
-    if CLIENT and MODULE.WebSounds and istable(MODULE.WebSounds) then
-        for name, url in pairs(MODULE.WebSounds) do
-            if isstring(name) and isstring(url) then lia.websound.register(name, url) end
         end
     end
 

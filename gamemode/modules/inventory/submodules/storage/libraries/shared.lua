@@ -1,4 +1,4 @@
-function MODULE:isSuitableForTrunk(entity)
+﻿function MODULE:isSuitableForTrunk(entity)
     return IsValid(entity) and entity:IsVehicle() and entity:getNetVar("hasStorage", false)
 end
 

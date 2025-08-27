@@ -1,4 +1,4 @@
-local characterMeta = lia.meta.character or {}
+﻿local characterMeta = lia.meta.character or {}
 lia.char = lia.char or {}
 lia.char.loaded = lia.char.loaded or {}
 lia.char.names = lia.char.names or {}
@@ -672,6 +672,7 @@ if SERVER then
             for _, v in ipairs(results) do
                 local charId = tonumber(v.id)
                 if not charId then
+                    lia.error(L("invalidCharacterID", data.name or "nil"))
                     continue
                 end
 

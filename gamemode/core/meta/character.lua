@@ -1,4 +1,4 @@
-local characterMeta = lia.meta.character or {}
+﻿local characterMeta = lia.meta.character or {}
 characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
@@ -171,6 +171,7 @@ function characterMeta:setData(k, v, noReplication, receiver)
                         charID = self:getID(),
                         key = nk,
                         value = encoded
+                    }, "chardata", function(success, err) if not success then lia.error(L("failedInsertCharData", err)) end end)
                 end
             end
         else
@@ -182,6 +183,7 @@ function characterMeta:setData(k, v, noReplication, receiver)
                     charID = self:getID(),
                     key = k,
                     value = encoded
+                }, "chardata", function(success, err) if not success then lia.error(L("failedInsertCharData", err)) end end)
             end
         end
     end

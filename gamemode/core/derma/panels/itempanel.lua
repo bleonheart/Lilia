@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     local sw, sh = ScrW(), ScrH()
     self:SetSize(sw * 0.6, sh * 0.8)
@@ -33,7 +33,7 @@ local function drawLine(parent, title, val)
     v:SetFont("liaBigText")
     v:SetTextColor(color_white)
     v:SetWrap(true)
-    v:SetText(val ~= "" and val or "�")
+    v:SetText(val ~= "" and val or "—")
     timer.Simple(0, function()
         if IsValid(v) then
             v:SetWide(parent:GetWide() - 20)

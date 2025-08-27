@@ -1,4 +1,4 @@
-function MODULE:PostLoadData()
+﻿function MODULE:PostLoadData()
     if self.DoorsAlwaysDisabled then
         local count = 0
         for _, door in ents.Iterator() do
@@ -125,6 +125,8 @@ function MODULE:LoadData()
             loadedCount = loadedCount + 1
         end
     end):catch(function(err)
+        lia.error("Failed to load door data: " .. tostring(err))
+        lia.error("This may indicate a database connection issue or missing table")
     end)
 end
 
@@ -217,6 +219,8 @@ function MODULE:SaveData()
 
     if #rows > 0 then
         lia.db.bulkUpsert("doors", rows):next(function() end):catch(function(err)
+            lia.error("Failed to save door data: " .. tostring(err))
+            lia.error("This may indicate a database connection issue or schema problem")
         end)
     end
 end
@@ -225,6 +229,7 @@ function MODULE:VerifyDatabaseSchema()
     if lia.db.module == "sqlite" then
         lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
             if not res or not res.results then
+                lia.error("Failed to get table info for lia_doors")
                 return
             end
 
@@ -249,13 +254,16 @@ function MODULE:VerifyDatabaseSchema()
 
             for colName, expectedType in pairs(expectedColumns) do
                 if not columns[colName] then
+                    lia.error("Missing expected column: " .. colName)
                 elseif columns[colName] ~= expectedType then
                     lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
                 end
             end
+        end):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
     else
         lia.db.query("DESCRIBE lia_doors"):next(function(res)
             if not res or not res.results then
+                lia.error("Failed to get table info for lia_doors")
                 return
             end
 
@@ -281,10 +289,12 @@ function MODULE:VerifyDatabaseSchema()
 
             for colName, expectedType in pairs(expectedColumns) do
                 if not columns[colName] then
+                    lia.error("Missing expected column: " .. colName)
                 elseif not columns[colName]:match(expectedType) then
                     lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
                 end
             end
+        end):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
     end
 end
 
@@ -322,10 +332,12 @@ function MODULE:CleanupCorruptedData()
 
             if needsUpdate then
                 local updateQuery = "UPDATE lia_doors SET factions = " .. lia.db.convertDataType(newFactions) .. ", classes = " .. lia.db.convertDataType(newClasses) .. " WHERE " .. condition .. " AND id = " .. id
+                lia.db.query(updateQuery):next(function() lia.information("Fixed corrupted data for door " .. id) end):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end)
             end
         end
 
         if corruptedCount > 0 then lia.information("Found and fixed " .. corruptedCount .. " corrupted door records") end
+    end):catch(function(err) lia.error("Failed to check for corrupted door data: " .. tostring(err)) end)
 end
 
 function MODULE:InitPostEntity()

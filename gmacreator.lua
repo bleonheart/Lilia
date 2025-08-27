@@ -1,4 +1,4 @@
-local OUTPUT_FILE = assert(arg[1], "Missing argument #1 (output file)")
+﻿local OUTPUT_FILE = assert(arg[1], "Missing argument #1 (output file)")
 local ADDON_JSON = assert(arg[2], "Missing argument #2 (path to addon.json)")
 local PATH_SEP = package.config:sub(1, 1)
 local function read(path)
@@ -91,6 +91,7 @@ do
             if normalized:match(allow_pattern) then
                 for _, block_pattern in ipairs(blocklist) do
                     if normalized:match(block_pattern) then
+                        print("Blocked ", normalized)
                         goto cont
                     end
                 end
@@ -104,6 +105,7 @@ do
             end
         end
 
+        print("Warning: File " .. normalized .. " not whitelisted. Skipping..")
         ::cont::
     end
 

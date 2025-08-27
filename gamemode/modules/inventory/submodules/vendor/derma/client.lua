@@ -1,4 +1,4 @@
-local sw, sh = ScrW(), ScrH()
+﻿local sw, sh = ScrW(), ScrH()
 local COLS_MODE = 2
 local COLS_PRICE = 3
 local COLS_STOCK = 4
@@ -68,7 +68,7 @@ function PANEL:Init()
     self.left.Paint = function()
         if not IsValid(liaVendorEnt) then return end
         local scale = liaVendorEnt:getNetVar("scale", 0.5)
-        local money = liaVendorEnt:getMoney() and lia.currency.get(liaVendorEnt:getMoney()) or "8"
+        local money = liaVendorEnt:getMoney() and lia.currency.get(liaVendorEnt:getMoney()) or "∞"
         local count = table.Count(self.items.vendor)
         surface.SetDrawColor(30, 30, 30, 190)
         surface.DrawRect(0, 0, sw, ScreenScaleH(215))
@@ -809,7 +809,7 @@ function PANEL:updateMoney()
     if money then
         self.money:SetText(money)
     else
-        self.money:SetText("8")
+        self.money:SetText("∞")
     end
 
     self.money:SetDisabled(not useMoney)

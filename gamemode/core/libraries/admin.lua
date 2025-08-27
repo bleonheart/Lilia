@@ -1,4 +1,4 @@
-lia.administrator = lia.administrator or {}
+﻿lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.privilegeCategories = lia.administrator.privilegeCategories or {}
@@ -222,6 +222,7 @@ end
 
 function lia.administrator.hasAccess(ply, privilege)
     if not isstring(privilege) then
+        lia.error("hasAccess expected a string privilege, got " .. tostring(privilege))
         return false
     end
 
@@ -316,6 +317,7 @@ end
 
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.ID then
+        lia.error("Privilege registration requires an ID field")
         return
     end
 
@@ -442,6 +444,7 @@ end
 
 function lia.administrator.createGroup(groupName, info)
     if lia.administrator.groups[groupName] then
+        lia.error(L("usergroupExists"))
         return
     end
 
@@ -461,10 +464,12 @@ end
 
 function lia.administrator.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
+        lia.error(L("baseUsergroupCannotBeRemoved"))
         return
     end
 
     if not lia.administrator.groups[groupName] then
+        lia.error(L("usergroupDoesntExist", groupName))
         return
     end
 
@@ -476,14 +481,17 @@ end
 
 function lia.administrator.renameGroup(oldName, newName)
     if lia.administrator.DefaultGroups[oldName] then
+        lia.error(L("baseUsergroupCannotBeRenamed"))
         return
     end
 
     if not lia.administrator.groups[oldName] then
+        lia.error(L("usergroupDoesntExist", oldName))
         return
     end
 
     if lia.administrator.groups[newName] then
+        lia.error(L("usergroupExists"))
         return
     end
 
@@ -505,6 +513,7 @@ if SERVER then
             if lia.administrator._loading then return end
             if not lia.administrator.missingGroups[groupName] then
                 lia.administrator.missingGroups[groupName] = true
+                lia.error(L("usergroupDoesntExist", groupName))
             end
             return
         end
@@ -520,6 +529,7 @@ if SERVER then
             if lia.administrator._loading then return end
             if not lia.administrator.missingGroups[groupName] then
                 lia.administrator.missingGroups[groupName] = true
+                lia.error(L("usergroupDoesntExist", groupName))
             end
             return
         end

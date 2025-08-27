@@ -1,4 +1,4 @@
-local ITEM = lia.meta.item or {}
+﻿local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
 ITEM.name = "invalidName"
@@ -115,7 +115,21 @@ function ITEM:onRegistered()
     if self.model and isstring(self.model) then util.PrecacheModel(self.model) end
 end
 
+function ITEM:print(detail)
+    if detail then
+        print(Format("%s[%s]: >> [%s](%s,%s)", self.uniqueID, self.id, self.owner, self.gridX, self.gridY))
+    else
+        print(Format("%s[%s]", self.uniqueID, self.id))
+    end
+end
 
+function ITEM:printData()
+    self:print(true)
+    lia.information(L("itemData") .. ":")
+    for k, v in pairs(self.data) do
+        lia.information(L("itemDataEntry", k, v))
+    end
+end
 
 if SERVER then
     function ITEM:getName()
