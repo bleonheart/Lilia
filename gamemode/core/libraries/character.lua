@@ -387,7 +387,6 @@ lia.char.registerVar("playTime", {
     field = "playtime",
     fieldType = "integer",
     default = 0,
-    isLocal = true,
     noDisplay = true
 })
 
@@ -491,7 +490,6 @@ lia.char.registerVar("recognition", {
     field = "recognition",
     fieldType = "text",
     default = "",
-    isLocal = true,
     noDisplay = true
 })
 
@@ -506,7 +504,6 @@ lia.char.registerVar("lastPos", {
     field = "lastpos",
     fieldType = "text",
     default = {},
-    isLocal = true,
     noDisplay = true
 })
 
@@ -514,7 +511,6 @@ lia.char.registerVar("ammo", {
     field = "ammo",
     fieldType = "text",
     default = {},
-    isLocal = true,
     noDisplay = true
 })
 
