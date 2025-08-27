@@ -479,7 +479,12 @@ lia.char.registerVar("attribs", {
             end
         end
     end,
-    shouldDisplay = function() return table.Count(lia.attribs.list) > 0 end
+    shouldDisplay = function()
+        for _, attrib in pairs(lia.attribs.list) do
+            if not attrib.noStartBonus then return true end
+        end
+        return false
+    end
 })
 
 lia.char.registerVar("recognition", {
