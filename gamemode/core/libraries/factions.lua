@@ -1,4 +1,4 @@
-﻿lia.faction = lia.faction or {}
+lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
@@ -67,12 +67,10 @@ function lia.faction.loadFromDir(directory)
         lia.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
             FACTION.name = "unknown"
-            lia.error(L("factionMissingName", niceName))
         end
 
         if not FACTION.desc then
             FACTION.desc = "noDesc"
-            lia.error(L("factionMissingDesc", niceName))
         end
 
         FACTION.name = L(FACTION.name)
@@ -85,7 +83,6 @@ function lia.faction.loadFromDir(directory)
         if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then
             FACTION.color = Color(150, 150, 150)
-            lia.error(L("factionMissingColor", niceName))
         end
 
         team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))

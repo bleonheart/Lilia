@@ -1,4 +1,4 @@
-﻿local pon = {}
+local pon = {}
 _G.pon = pon
 do
 
@@ -118,7 +118,6 @@ do
     encode['PhysObj'] = encode['Entity']
     encode['nil'] = function() output[#output + 1] = '?' end
     encode.__index = function(key)
-        lia.error(L('netTypeCannotEncode', key))
         return encode['nil']
     end
 
@@ -196,7 +195,6 @@ do
             if k then
                 tv = sub(str, index, index)
                 index = index + 1
-                if not self[tv] then lia.error(L("netDidNotFindType", tv)) end
                 index, v = self[tv](self, index, str, cache)
                 cur[k] = v
             end
@@ -386,7 +384,6 @@ if SERVER then
                     if bStatus then
                         netstream.stored[player.nsDataStreamName](player, unpack(value))
                     else
-                        lia.error(L("netstreamError", NS_DS_NAME, value))
                     end
                 end
 
@@ -418,7 +415,6 @@ else
             if bStatus then
                 netstream.stored[NS_DS_NAME](unpack(value))
             else
-                lia.error(L("netstreamError", NS_DS_NAME, value))
             end
         end
 

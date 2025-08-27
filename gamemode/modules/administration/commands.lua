@@ -1,4 +1,4 @@
-﻿lia.command.add("playtime", {
+lia.command.add("playtime", {
     adminOnly = false,
     desc = "playtimeDesc",
     onRun = function(client)
@@ -3068,7 +3068,6 @@ lia.command.add("exportprivileges", {
             lia.log.add(client, "privilegesExported", filename)
         else
             client:notifyLocalized("privilegesExportFailed")
-            lia.error("Failed to export privileges to expected locations")
         end
     end
 })
@@ -3082,9 +3081,9 @@ lia.command.add("serverpassword", {
             local cvar = GetConVar("sv_password")
             local pw = cvar and cvar:GetString() or ""
             if pw == "" then
-                print("[Lilia] Server password is not set.")
+
             else
-                print("[Lilia] Server password: " .. pw)
+
             end
             return
         end

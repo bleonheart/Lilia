@@ -1,4 +1,4 @@
-﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
+hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
 hook.Add("RunAdminSystemCommand", "liaSam", function(cmd, _, victim, dur, reason)
     local id = isstring(victim) and victim or IsValid(victim) and victim:SteamID()
     if not id then return end
@@ -133,7 +133,6 @@ function sam.player.send_message(client, msg, tbl)
     if SERVER then
         if sam.isconsole(client) then
             local result = sam.format_message(msg, tbl)
-            sam.print(unpack(result, 1, result.__cnt))
         else
             return sam.netstream.Start(client, "send_message", msg, tbl)
         end

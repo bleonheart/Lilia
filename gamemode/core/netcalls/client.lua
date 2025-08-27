@@ -1,4 +1,4 @@
-﻿net.Receive("liaNotifyL", function()
+net.Receive("liaNotifyL", function()
     local message = net.ReadString()
     local length = net.ReadUInt(8)
     if length == 0 then return lia.notices.notifyLocalized(message) end
@@ -55,7 +55,6 @@ net.Receive("liaInventoryData", function()
     local value = net.ReadType()
     local instance = lia.inventory.instances[id]
     if not instance then
-        lia.error(L("invDataNoInstance", key, id))
         return
     end
 
@@ -796,7 +795,7 @@ net.Receive("liaItemInspect", function()
         v:SetFont("liaBigText")
         v:SetTextColor(color_white)
         v:SetWrap(true)
-        v:SetText(val ~= "" and val or "—")
+        v:SetText(val ~= "" and val or "�")
         timer.Simple(0, function()
             if IsValid(v) then
                 v:SetWide(parent:GetWide() - 20)
@@ -834,8 +833,6 @@ net.Receive("liaNetMessage", function()
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
-        if not success then lia.error("Error in net message callback '" .. name .. "': " .. tostring(err)) end
     else
-        lia.error("Received unregistered net message: " .. name)
     end
 end)

@@ -1,4 +1,4 @@
-﻿lia = lia or {
+lia = lia or {
     util = {},
     gui = {},
     meta = {},
@@ -84,6 +84,14 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/chatbox.lua",
+        realm = "shared"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/chatbox/chat_debug.lua",
+        realm = "shared"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/chatbox/chat_fixes.lua",
         realm = "shared"
     },
     {
@@ -286,7 +294,6 @@ local ConditionalFiles = {
 }
 
 function lia.include(path, realm)
-    if not path then lia.error(L("missingFilePath")) end
     local resolved = realm
     if not resolved then
         local filename = path:match("([^/\\]+)%.lua$")
@@ -367,41 +374,25 @@ lia.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.include("lilia/gamemode/core/libraries/database.lua", "server")
 lia.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.include("lilia/gamemode/core/libraries/data.lua", "server")
-function lia.error(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
-    MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
 function lia.warning(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
-    MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
 function lia.deprecated(methodName, callback)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logDeprecated") .. "] ")
-    MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n")
     if callback and isfunction(callback) then callback() end
 end
 
 function lia.updater(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
-    MsgC(Color(0, 255, 255), tostring(msg), "\n")
 end
 
 function lia.information(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
-    MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
 function lia.admin(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
-    MsgC(Color(255, 153, 0), tostring(msg), "\n")
 end
 
 function lia.bootstrap(section, msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
-    MsgC(Color(0, 255, 0), "[" .. section .. "] ")
-    MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
 
 function lia.notifyAdmin(notification)
@@ -411,9 +402,6 @@ function lia.notifyAdmin(notification)
 end
 
 function lia.printLog(category, logString)
-    MsgC(Color(83, 143, 239), "[LOG] ")
-    MsgC(Color(0, 255, 0), "[" .. L("logCategory") .. ": " .. tostring(category) .. "] ")
-    MsgC(Color(255, 255, 255), tostring(logString) .. "\n")
 end
 
 function lia.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)
@@ -552,7 +540,6 @@ end
 
 local hasInitializedModules = false
 function GM:Initialize()
-    if engine.ActiveGamemode() == "lilia" then lia.error(L("noSchemaLoaded")) end
     if not hasInitializedModules then
         lia.module.initialize()
         hasInitializedModules = true
@@ -586,7 +573,6 @@ for _, file in ipairs(ConditionalFiles) do
         if ok then
             shouldLoad = result
         else
-            lia.error(L("compatibilityConditionError", tostring(result)))
         end
     elseif file.global then
         shouldLoad = _G[file.global] ~= nil

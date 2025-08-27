@@ -1,4 +1,4 @@
-﻿ITEM.name = "entitiesName"
+ITEM.name = "entitiesName"
 ITEM.model = ""
 ITEM.desc = "entitiesDesc"
 ITEM.category = "entities"

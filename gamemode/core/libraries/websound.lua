@@ -1,4 +1,4 @@
-﻿lia.websound = lia.websound or {}
+lia.websound = lia.websound or {}
 local ip = string.Replace(string.Replace(game.GetIPAddress() or "unknown", ":", "_"), "%.", "_")
 local gamemode = engine.ActiveGamemode() or "unknown"
 local baseDir = "lilia/sounds/" .. ip .. "/" .. gamemode .. "/"
@@ -131,7 +131,6 @@ concommand.Add("lia_wipe_sounds", function()
 
     cache = {}
     urlMap = {}
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[WebSound]", Color(255, 255, 255), " " .. L("webSoundCacheCleared") .. "\n")
 end)
 
 ensureDir(baseDir)

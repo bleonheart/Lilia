@@ -1,4 +1,4 @@
-﻿local function CreateSalaryTimer(client)
+local function CreateSalaryTimer(client)
     if not (IsValid(client) and client:getChar()) then return end
     local char = client:getChar()
     local timerID = "liaSalary" .. client:SteamID64()

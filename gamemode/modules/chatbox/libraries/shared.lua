@@ -1,4 +1,4 @@
-﻿lia.chat.register("meclose", {
+lia.chat.register("meclose", {
     arguments = {
         {
             name = "action",
@@ -441,4 +441,46 @@ lia.chat.register("help", {
         return false
     end,
     onChatAdd = function(speaker, text) chat.AddText(Color(200, 50, 50), "[" .. L("help") .. "] " .. speaker:GetName(), color_white, ": " .. text) end
+})
+
+lia.chat.register("narrator", {
+    desc = "narratorDesc",
+    onCanSay = function(speaker, text)
+        if not speaker:hasPrivilege("eventChat") then
+            speaker:notifyLocalized("notAdminForTicket")
+            return false
+        end
+
+        local spacePos = text:find(" ")
+        if not spacePos then
+            speaker:notify("Usage: /narrator <range> <message>")
+            return false
+        end
+
+        local rangeStr = text:sub(1, spacePos - 1)
+        local range = tonumber(rangeStr)
+        if not range or range <= 0 then
+            speaker:notify("Please specify a valid range (number greater than 0)")
+            return false
+        end
+
+        speaker:SetNWInt("narrator_range", range)
+        return true
+    end,
+    onCanHear = function(speaker, listener)
+        if speaker == listener then return true end
+        local range = speaker:GetNWInt("narrator_range", lia.config.get("ChatRange", 280))
+        if speaker:EyePos():Distance(listener:EyePos()) <= range then return true end
+        return false
+    end,
+    onChatAdd = function(_, text)
+        local spacePos = text:find(" ")
+        if spacePos then
+            local message = text:sub(spacePos + 1)
+            chat.AddText(Color(255, 150, 0), L("narratorFormat", message))
+        end
+    end,
+    prefix = {"/narrator", "/narrate", "/nar"},
+    font = "liaMediumFont",
+    filter = "actions"
 })

@@ -1,4 +1,4 @@
-﻿lia.config = lia.config or {}
+lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 function lia.config.add(key, name, value, callback, data)
     assert(isstring(key), L("configKeyString", type(key)))
@@ -15,13 +15,13 @@ function lia.config.add(key, name, value, callback, data)
     }
 
     if not data.type or not validTypes[data.type] then
-        print(L("configMissingType", key, configType))
+
         data.type = configType
     end
 
     if (data.type == "Int" or data.type == "Float") and (data.min == nil or data.max == nil) then
         local missing = data.min == nil and data.max == nil and "min and max" or data.min == nil and "min" or "max"
-        print(L("configNeedsMinMax", key, data.type, missing))
+
     end
 
     local oldConfig = lia.config.stored[key]
@@ -60,7 +60,7 @@ function lia.config.getOptions(key)
             end
             return result
         else
-            print("Warning: Config options function for '" .. key .. "' failed or returned invalid result")
+
             return {}
         end
     elseif istable(config.data.options) then

@@ -1,4 +1,4 @@
-﻿local Inventory = lia.Inventory or {}
+local Inventory = lia.Inventory or {}
 Inventory.__index = Inventory
 lia.Inventory = Inventory
 Inventory.data = {}
@@ -281,7 +281,6 @@ if SERVER then
                 local uniqueID = result.uniqueID
                 local itemTable = lia.item.list[uniqueID]
                 if not itemTable then
-                    lia.error(L("inventoryInvalidItem", self.id, uniqueID, itemID))
                     continue
                 end
 

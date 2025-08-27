@@ -1,4 +1,4 @@
-﻿lia.item = lia.item or {}
+lia.item = lia.item or {}
 lia.item.base = lia.item.base or {}
 lia.item.list = lia.item.list or {}
 lia.item.instances = lia.item.instances or {}
@@ -219,9 +219,7 @@ function lia.item.load(path, baseID, isBaseItem)
         lia.item.register(uniqueID, baseID, isBaseItem, path)
     elseif path:find("%.txt$") then
         local formatted = path:gsub("\\", "/"):lower()
-        if not formatted:find("^lilia/") then lia.error("[Lilia] " .. L("textFileLuaRequired", path) .. "\n") end
     else
-        lia.error("[Lilia] " .. L("invalidItemNaming", path) .. "\n")
     end
 end
 
@@ -339,7 +337,6 @@ function lia.item.new(uniqueID, id)
         lia.item.instances[id] = item
         return item
     else
-        error("[Lilia] " .. L("unknownItem", tostring(uniqueID)) .. "\n")
     end
 end
 
@@ -652,9 +649,7 @@ if SERVER then
 
         promise:next(function(item) if callback then callback(item) end end, function(reason)
             if reason and reason:find("An inventory has a missing item") then
-                lia.error(reason)
             else
-                lia.error("Failed to spawn item: " .. tostring(reason or "Unknown error"))
             end
 
             if callback then callback(nil) end

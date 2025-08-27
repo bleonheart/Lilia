@@ -1,4 +1,4 @@
-﻿lia.webimage = lia.webimage or {}
+lia.webimage = lia.webimage or {}
 local ip = string.Replace(string.Replace(game.GetIPAddress() or "unknown", ":", "_"), "%.", "_")
 local gamemode = engine.ActiveGamemode() or "unknown"
 local baseDir = "lilia/" .. ip .. "/" .. gamemode .. "/"

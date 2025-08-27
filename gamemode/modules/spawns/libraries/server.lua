@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 function MODULE:FetchSpawns()
     local d = deferred.new()
     local stored = lia.data.get("spawns", {})
@@ -48,7 +48,7 @@ local function SpawnPlayer(client)
     if not character then return end
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
-        print("[SpawnPlayer] Used last position spawn")
+
         if posData.pos and isvector(posData.pos) then client:SetPos(posData.pos) end
         if posData.ang and isangle(posData.ang) then client:SetEyeAngles(posData.ang) end
         character:setLastPos(nil)
@@ -74,7 +74,7 @@ local function SpawnPlayer(client)
                 end
 
                 if #valid > 0 then
-                    print("[SpawnPlayer] Used faction spawn")
+
                     local data = table.Random(valid)
                     local basePos = data.pos or data
                     if not isvector(basePos) then
@@ -98,14 +98,14 @@ local function SpawnPlayer(client)
                     client:SetEyeAngles(ang)
                     hook.Run("PlayerSpawnPointSelected", client, pos, ang)
                 else
-                    print("[SpawnPlayer] Used default spawn")
+
                 end
             else
-                print("[SpawnPlayer] Used default spawn")
+
             end
         end)
     else
-        print("[SpawnPlayer] Used default spawn")
+
     end
 end
 

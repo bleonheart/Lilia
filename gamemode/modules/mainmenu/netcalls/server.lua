@@ -1,4 +1,4 @@
-﻿net.Receive("liaCharChoose", function(_, client)
+net.Receive("liaCharChoose", function(_, client)
     local function response(message)
         net.Start("liaCharChoose")
         net.WriteString(L(message or "", client))
@@ -24,6 +24,7 @@
                     return response(result)
                 end
 
+                hook.Run("OnPlayerSwitchChar", client, currentChar, character)
                 currentChar:save()
             end
 

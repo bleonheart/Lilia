@@ -1,4 +1,4 @@
-﻿lia.inventory = lia.inventory or {}
+lia.inventory = lia.inventory or {}
 lia.inventory.types = lia.inventory.types or {}
 lia.inventory.storage = lia.inventory.storage or {}
 lia.inventory.instances = lia.inventory.instances or {}
@@ -77,7 +77,6 @@ if SERVER then
             local typeID = results._invType
             local invType = lia.inventory.types[typeID]
             if not invType then
-                lia.error(L("inventoryInvalidType", id, typeID))
                 return
             end
 
@@ -118,7 +117,6 @@ if SERVER then
         local originalCharID = charID
         charID = tonumber(charID)
         if not charID then
-            lia.error(L("charIDMustBeNumber") .. " (received: " .. tostring(originalCharID) .. ", type: " .. type(originalCharID) .. ")")
             return deferred.reject(L("charIDMustBeNumber"))
         end
         return lia.db.select({"invID"}, INV_TABLE, "charID = " .. charID):next(function(res) return deferred.map(res.results or {}, function(result) return lia.inventory.loadByID(tonumber(result.invID)) end) end)
