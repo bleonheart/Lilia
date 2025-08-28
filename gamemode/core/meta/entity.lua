@@ -1,11 +1,29 @@
 ﻿local playerMeta = FindMetaTable("Player")
 local entityMeta = FindMetaTable("Entity")
+local baseEmitSound = entityMeta.EmitSound
 local validClasses = {
     ["lvs_base"] = true,
     ["gmod_sent_vehicle_fphysics_base"] = true,
     ["gmod_sent_vehicle_fphysics_wheel"] = true,
     ["prop_vehicle_prisoner_pod"] = true,
 }
+
+function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
+    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^data/lilia/websounds/")) then
+        if SERVER then
+            net.Start("EmitURLSound")
+            net.WriteEntity(self)
+            net.WriteString(soundName)
+            net.WriteFloat(volume or 1)
+            net.Broadcast()
+            return true
+        else
+            self:PlayFollowingSound(soundName, volume or 1, true)
+            return true
+        end
+    end
+    return baseEmitSound(self, soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
+end
 
 function entityMeta:isProp()
     if not IsValid(self) then return false end
@@ -213,6 +231,64 @@ else
         local index = self:EntIndex()
         if lia.net[index] and lia.net[index][key] ~= nil then return lia.net[index][key] end
         return default
+    end
+
+    function entityMeta:PlayFollowingSound(soundPath, volume, shouldFollow)
+        if not IsValid(self) then return end
+        local localPath = soundPath
+        if isstring(soundPath) and soundPath:find("^https?://") then localPath = lia.websound.get(soundPath) or soundPath end
+        if localPath:find("^data/") then
+            local relativePath = localPath:gsub("^data/", "")
+            local fileExists = file.Exists(relativePath, "DATA")
+            local fileSize = fileExists and file.Size(relativePath, "DATA") or 0
+            if not fileExists then
+                local searchFiles = file.Find("lilia/websounds/**", "DATA")
+                for _, fileName in ipairs(searchFiles) do
+                    if fileName:find("dogeatdog") then
+                        local alternativePath = "data/lilia/websounds/" .. fileName
+                        local altExists = file.Exists("lilia/websounds/" .. fileName, "DATA")
+                        if altExists then
+                            localPath = alternativePath
+                            break
+                        end
+                    end
+                end
+
+                if not fileExists then return end
+            end
+
+            if fileSize == 0 then return end
+        end
+
+        sound.PlayFile(localPath, "3d", function(channel)
+            if not IsValid(channel) then
+                sound.PlayFile(localPath, "", function(fallbackChannel)
+                    if not IsValid(fallbackChannel) then return end
+                    fallbackChannel:SetPos(self:GetPos())
+                    fallbackChannel:SetVolume(volume or 1)
+                    fallbackChannel:Play()
+                end)
+                return
+            end
+
+            channel:SetPos(self:GetPos())
+            channel:SetVolume(volume or 1)
+            channel:Play()
+            if shouldFollow then
+                self._followingSoundChannel = channel
+                self.followingSoundTimer = "sound_follow_" .. self:EntIndex()
+                timer.Create(self.followingSoundTimer, 0.1, 0, function()
+                    if not IsValid(self) or not IsValid(channel) then
+                        if IsValid(channel) then channel:Stop() end
+                        if self.followingSoundTimer then timer.Remove(self.followingSoundTimer) end
+                        return
+                    end
+
+                    local newPos = self:GetPos()
+                    channel:SetPos(newPos)
+                end)
+            end
+        end)
     end
 
     playerMeta.getLocalVar = entityMeta.getNetVar

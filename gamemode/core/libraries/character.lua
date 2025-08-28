@@ -112,11 +112,14 @@ function lia.char.registerVar(key, data)
                 if curChar and curChar == self then sendID = false end
                 local oldVar = self.vars[key]
                 self.vars[key] = value
-                net.Start("charSet")
-                net.WriteString(key)
-                net.WriteType(value)
-                net.WriteType(sendID and self:getID() or nil)
-                net.Send(self.player)
+                local player = self:getPlayer()
+                if player and IsValid(player) and player:IsPlayer() then
+                    net.Start("charSet")
+                    net.WriteString(key)
+                    net.WriteType(value)
+                    net.WriteType(sendID and self:getID() or nil)
+                    net.Send(player)
+                end
                 hook.Run("OnCharVarChanged", self, key, oldVar, value)
             end
         else
