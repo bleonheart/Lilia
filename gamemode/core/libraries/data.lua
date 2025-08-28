@@ -53,8 +53,8 @@ local function _decodeVector(data)
         if x then return Vector(tonumber(x), tonumber(y), tonumber(z)) end
         local tbl = util.JSONToTable(data)
         if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
-            local x, y, z = tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])
-            if x and y and z then return Vector(x, y, z) end
+            local tx, ty, tz = tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])
+            if tx and ty and tz then return Vector(tx, ty, tz) end
         end
     else
         local s = tostring(data)
