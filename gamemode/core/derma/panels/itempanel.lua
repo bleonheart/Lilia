@@ -81,7 +81,23 @@ function PANEL:openInspect()
     view:SetTall(fh * 0.5)
     local model = vgui.Create("DModelPanel", view)
     model:Dock(FILL)
-    model:SetModel(self.item.model or "models/props_junk/cardboard_box002b.mdl")
+    
+    -- Check if item has an icon, use it if available, otherwise fall back to model
+    if self.item.icon then
+        -- Hide the model and use custom icon drawing
+        model:SetVisible(false)
+        view.ExtraPaint = function(pnl, w, h)
+            local mat = isstring(self.item.icon) and Material(self.item.icon) or self.item.icon
+            surface.SetDrawColor(color_white)
+            surface.SetMaterial(mat)
+            surface.DrawTexturedRect(0, 0, w, h)
+        end
+    else
+        -- Show the model and use default rendering
+        model:SetVisible(true)
+        model:SetModel(self.item.model or "models/props_junk/cardboard_box002b.mdl")
+        view.ExtraPaint = function() end
+    end
     model.LayoutEntity = function() end
     timer.Simple(0, function()
         if not IsValid(model) then return end

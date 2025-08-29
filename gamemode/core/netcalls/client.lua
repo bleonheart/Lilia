@@ -734,7 +734,24 @@ net.Receive("liaItemInspect", function()
 
     local model = vgui.Create("DModelPanel", view)
     model:Dock(FILL)
-    model:SetModel(item.model or "models/props_junk/cardboard_box002b.mdl")
+    
+    -- Check if item has an icon, use it if available, otherwise fall back to model
+    if item.icon then
+        -- Hide the model and use custom icon drawing
+        model:SetVisible(false)
+        view.ExtraPaint = function(pnl, w, h)
+            local mat = isstring(item.icon) and Material(item.icon) or item.icon
+            surface.SetDrawColor(color_white)
+            surface.SetMaterial(mat)
+            surface.DrawTexturedRect(0, 0, w, h)
+        end
+    else
+        -- Show the model and use default rendering
+        model:SetVisible(true)
+        model:SetModel(item.model or "models/props_junk/cardboard_box002b.mdl")
+        view.ExtraPaint = function() end
+    end
+    
     model.LayoutEntity = function() end
     timer.Simple(0, function()
         if not IsValid(model) then return end
