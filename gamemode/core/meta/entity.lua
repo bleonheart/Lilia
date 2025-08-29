@@ -15,10 +15,14 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
             net.WriteEntity(self)
             net.WriteString(soundName)
             net.WriteFloat(volume or 1)
+            net.WriteFloat(soundLevel or 75)
+            net.WriteBool(true)
+            net.WriteFloat(0.05)
             net.Broadcast()
             return true
         else
-            self:PlayFollowingSound(soundName, volume or 1, true)
+            local maxDistance = soundLevel and soundLevel * 13.33 or 1000
+            self:PlayFollowingSound(soundName, volume or 1, true, maxDistance)
             return true
         end
     end
@@ -233,62 +237,59 @@ else
         return default
     end
 
-    function entityMeta:PlayFollowingSound(soundPath, volume, shouldFollow)
-        if not IsValid(self) then return end
-        local localPath = soundPath
-        if isstring(soundPath) and soundPath:find("^https?://") then localPath = lia.websound.get(soundPath) or soundPath end
-        if localPath:find("^data/") then
-            local relativePath = localPath:gsub("^data/", "")
-            local fileExists = file.Exists(relativePath, "DATA")
-            local fileSize = fileExists and file.Size(relativePath, "DATA") or 0
-            if not fileExists then
-                local searchFiles = file.Find("lilia/websounds/**", "DATA")
-                for _, fileName in ipairs(searchFiles) do
-                    if fileName:find("dogeatdog") then
-                        local alternativePath = "data/lilia/websounds/" .. fileName
-                        local altExists = file.Exists("lilia/websounds/" .. fileName, "DATA")
-                        if altExists then
-                            localPath = alternativePath
-                            break
-                        end
-                    end
+    function entityMeta:PlayFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance)
+        print(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance)
+        local v = math.Clamp(tonumber(volume) or 1, 0, 1)
+        local follow = shouldFollow ~= false
+        local fmin, fmax = tonumber(minDistance) or 100, tonumber(maxDistance) or 1200
+        local function play(p)
+            sound.PlayFile(p, "3d", function(ch)
+                if not IsValid(ch) then return end
+                ch:Set3DEnabled(true)
+                ch:Set3DFadeDistance(fmin, fmax)
+                ch:SetVolume(v)
+                ch:SetPos(self:GetPos())
+                if startDelay and startDelay > 0 then
+                    timer.Simple(startDelay, function() if IsValid(ch) then ch:Play() end end)
+                else
+                    ch:Play()
                 end
 
-                if not fileExists then return end
-            end
+                if follow then
+                    local id = "lia_ws_follow_" .. self:EntIndex() .. "_" .. tostring(ch)
+                    hook.Add("Think", id, function()
+                        if not IsValid(ch) or not IsValid(self) then
+                            hook.Remove("Think", id)
+                            return
+                        end
 
-            if fileSize == 0 then return end
+                        ch:SetPos(self:GetPos())
+                    end)
+                end
+            end)
         end
 
-        sound.PlayFile(localPath, "3d", function(channel)
-            if not IsValid(channel) then
-                sound.PlayFile(localPath, "", function(fallbackChannel)
-                    if not IsValid(fallbackChannel) then return end
-                    fallbackChannel:SetPos(self:GetPos())
-                    fallbackChannel:SetVolume(volume or 1)
-                    fallbackChannel:Play()
-                end)
-                return
-            end
+        if not isstring(soundPath) then return end
+        if soundPath:find("^https?://") then
+            local ext = soundPath:match("%.([%w]+)$") or "mp3"
+            local name = util.CRC(soundPath) .. "." .. ext
+            lia.websound.register(name, soundPath, function(localPath) if localPath then play(localPath) end end)
+            return
+        end
 
-            channel:SetPos(self:GetPos())
-            channel:SetVolume(volume or 1)
-            channel:Play()
-            if shouldFollow then
-                self._followingSoundChannel = channel
-                self.followingSoundTimer = "sound_follow_" .. self:EntIndex()
-                timer.Create(self.followingSoundTimer, 0.1, 0, function()
-                    if not IsValid(self) or not IsValid(channel) then
-                        if IsValid(channel) then channel:Stop() end
-                        if self.followingSoundTimer then timer.Remove(self.followingSoundTimer) end
-                        return
-                    end
+        if soundPath:find("^data/") then
+            play(soundPath)
+            return
+        end
 
-                    local newPos = self:GetPos()
-                    channel:SetPos(newPos)
-                end)
-            end
-        end)
+        local p = lia.websound.get(soundPath)
+        if p then
+            play(p)
+            return
+        end
+
+        local sp = "lilia/websounds/" .. soundPath
+        if file.Exists(sp, "DATA") then play("data/" .. sp) end
     end
 
     playerMeta.getLocalVar = entityMeta.getNetVar

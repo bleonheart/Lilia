@@ -1187,3 +1187,19 @@ hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin(L("unbanLogFormat", data.networkid))
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
+
+-- Utility test command to emit a 3D-following web sound from player entities
+concommand.Add("playbotmusic", function(client)
+    local audioURL = "https://github.com/bleonheart/Samael-Assets/raw/refs/heads/main/lockpicking/sounds/cylindersqueak_4.wav"
+    local bots = {}
+    for _, ply in player.Iterator() do
+        if IsValid(ply) and ply:IsBot() then table.insert(bots, ply) end
+    end
+
+    local targets = (#bots > 0) and bots or player.GetAll()
+    for _, ent in ipairs(targets) do
+        if IsValid(ent) then ent:EmitSound(audioURL) end
+    end
+
+    MsgC(Color(0, 255, 0), string.format("[Lilia] Emitting URL sound on %d entity(ies)\n", #targets))
+end)

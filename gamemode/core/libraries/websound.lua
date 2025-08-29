@@ -131,19 +131,30 @@ function sound.PlayFile(path, mode, cb)
         else
             if path:find("^data/lilia/websounds/") then
                 if path:match("%.wav$") then
-                    origPlayFile(path, mode or "", function(channel, errorCode, errorString)
+                    local reqMode = mode or ""
+                    local want3d = reqMode:find("3d", 1, true) ~= nil
+                    local function ensure3d(m)
+                        if not want3d then return m end
+                        if m == "" then return "3d" end
+                        if not m:find("3d", 1, true) then return m .. " 3d" end
+                        return m
+                    end
+
+                    origPlayFile(path, reqMode, function(channel, errorCode, errorString)
                         if IsValid(channel) then
                             if cb then cb(channel, errorCode, errorString) end
                             return
                         end
 
-                        origPlayFile(path, "", function(channel2, errorCode2, errorString2)
+                        -- Fallback 1: keep 3D if originally requested
+                        origPlayFile(path, ensure3d(""), function(channel2, errorCode2, errorString2)
                             if IsValid(channel2) then
                                 if cb then cb(channel2, errorCode2, errorString2) end
                                 return
                             end
 
-                            origPlayFile(path, "mono", function(channel3, errorCode3, errorString3)
+                            -- Fallback 2: try mono, preserving 3D if requested
+                            origPlayFile(path, ensure3d("mono"), function(channel3, errorCode3, errorString3)
                                 if IsValid(channel3) then
                                     if cb then cb(channel3, errorCode3, errorString3) end
                                 else

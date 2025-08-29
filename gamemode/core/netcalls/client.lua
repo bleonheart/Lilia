@@ -809,8 +809,12 @@ net.Receive("EmitURLSound", function()
     local ent = net.ReadEntity()
     local url = net.ReadString()
     local volume = net.ReadFloat()
+    local soundLevel = net.ReadFloat()
+    local hasDelay = net.ReadBool()
+    local startDelay = hasDelay and net.ReadFloat() or nil
     if not IsValid(ent) then return end
-    ent:PlayFollowingSound(url, volume, true)
+    local maxDistance = soundLevel * 13.33
+    ent:PlayFollowingSound(url, volume, true, maxDistance, startDelay)
 end)
 
 net.Receive("liaNetMessage", function()
