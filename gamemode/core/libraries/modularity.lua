@@ -72,6 +72,18 @@ local function loadExtras(path)
                 if isstring(netString) then util.AddNetworkString(netString) end
             end
         end
+    else
+        if MODULE.WebIcons and istable(MODULE.WebIcons) then
+            for name, url in pairs(MODULE.WebIcons) do
+                if isstring(name) and isstring(url) then lia.webimage.register(name, url) end
+            end
+        end
+
+        if MODULE.WebSounds and istable(MODULE.WebSounds) then
+            for name, url in pairs(MODULE.WebSounds) do
+                if isstring(name) and isstring(url) then lia.websound.register(name, url) end
+            end
+        end
     end
 
     hook.Run("DoModuleIncludes", path, MODULE)

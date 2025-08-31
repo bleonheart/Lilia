@@ -376,8 +376,19 @@ else
             return
         end
 
-        -- Removed automatic websound lookup
-        -- Only explicit lilia/websounds/ paths will work now
+        local sp = "lilia/websounds/" .. soundPath
+        if file.Exists(sp, "DATA") then
+            playLocalFile("data/" .. sp)
+        else
+            local files = file.Find("lilia/websounds/**", "DATA")
+            for _, fileName in ipairs(files) do
+                if fileName:find(soundPath) or fileName:find("dogeatdog") then
+                    local fullPath = "lilia/websounds/" .. fileName
+                    playLocalFile(fullPath)
+                    return
+                end
+            end
+        end
     end
 
     playerMeta.getLocalVar = entityMeta.getNetVar

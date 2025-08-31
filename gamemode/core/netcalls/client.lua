@@ -984,8 +984,28 @@ net.Receive("EmitURLSound", function()
         local maxDistance = soundLevel * 13.33
         ent:PlayFollowingSound(soundPath, volume, true, maxDistance, startDelay)
     else
-        -- Removed automatic websound lookup
-        -- Only explicit lilia/websounds/ paths will work now
+        local function normalizeName(name)
+            if not isstring(name) then return name end
+            name = name:gsub("\\", "/")
+            if string.StartWith(name, "/") then name = name:sub(2) end
+            if string.StartWith(name, "sound/") then name = name:sub(7) end
+            return name
+        end
+
+        local key = normalizeName(soundPath)
+        local maxDistance = soundLevel * 13.33
+        local cachedPath = lia.websound.get(key)
+        if cachedPath then
+            ent:PlayFollowingSound(cachedPath, volume, true, maxDistance, startDelay)
+            return
+        end
+
+        local url = lia.websound.stored[key]
+        if isstring(url) and url ~= "" then
+            lia.websound.register(key, url, function(localPath) if localPath then ent:PlayFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
+            return
+        end
+
         ent:EmitSound(soundPath, soundLevel, nil, volume, nil, nil, nil)
     end
 end)
