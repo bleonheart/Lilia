@@ -22,7 +22,7 @@
 
     hook.Add("simfphysUse", "liaSimfphys", function(entity, client)
         local enabled = lia.config.get("CarEntryDelayEnabled", true)
-        if not damageInCars then return end
+        if not enabled then return end
         if entity.IsBeingEntered then
             client:notifyLocalized("carOccupiedNotice")
             return true
