@@ -542,7 +542,6 @@ local function IncludeTeleportation(tgt, menu, stores)
 end
 
 local function IncludeUtility(tgt, menu, stores)
-    local cl = LocalPlayer()
     local utilityCategory = GetOrCreateCategoryMenu(menu, "utility", stores)
     local commandsSubCategory = GetOrCreateSubCategoryMenu(utilityCategory, "utility", "commands", stores)
     local utilityCommands = {

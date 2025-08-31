@@ -568,7 +568,7 @@ function PANEL:setItemType(itemType)
     self.item = item
     if item.icon then
         self.icon:SetVisible(false)
-        self.ExtraPaint = function(pnl, w, h)
+        self.ExtraPaint = function(_, w, h)
             local mat = isstring(item.icon) and Material(item.icon) or item.icon
             surface.SetDrawColor(color_white)
             surface.SetMaterial(mat)

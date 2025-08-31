@@ -83,7 +83,7 @@ function PANEL:openInspect()
     model:Dock(FILL)
     if self.item.icon then
         model:SetVisible(false)
-        view.ExtraPaint = function(pnl, w, h)
+        view.ExtraPaint = function(_, w, h)
             local mat = isstring(self.item.icon) and Material(self.item.icon) or self.item.icon
             surface.SetDrawColor(color_white)
             surface.SetMaterial(mat)

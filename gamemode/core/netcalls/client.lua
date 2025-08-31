@@ -869,7 +869,7 @@ net.Receive("liaItemInspect", function()
     model:Dock(FILL)
     if item.icon then
         model:SetVisible(false)
-        view.ExtraPaint = function(pnl, w, h)
+        view.ExtraPaint = function(_, w, h)
             local mat = isstring(item.icon) and Material(item.icon) or item.icon
             surface.SetDrawColor(color_white)
             surface.SetMaterial(mat)
