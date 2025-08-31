@@ -79,11 +79,7 @@ function lia.option.get(key, default)
 end
 
 function lia.option.save()
-    local dir = "lilia/options/" .. engine.ActiveGamemode()
-    file.CreateDir(dir)
-    local ip = string.Explode(":", game.GetIPAddress())[1]
-    local name = ip:gsub("%.", "_")
-    local path = dir .. "/" .. name .. ".json"
+    local path = "lilia/options.json"
     local out = {}
     for k, v in pairs(lia.option.stored) do
         if v.value ~= nil then out[k] = v.value end
@@ -94,16 +90,28 @@ function lia.option.save()
 end
 
 function lia.option.load()
-    local dir = "lilia/options/" .. engine.ActiveGamemode()
-    file.CreateDir(dir)
-    local ip = string.Explode(":", game.GetIPAddress())[1]
-    local name = ip:gsub("%.", "_")
-    local path = dir .. "/" .. name .. ".json"
+    local path = "lilia/options.json"
     local data = file.Read(path, "DATA")
     if data then
         local saved = util.JSONToTable(data)
-        for k, v in pairs(saved) do
-            if lia.option.stored[k] then lia.option.stored[k].value = v end
+        if saved then
+            for k, v in pairs(saved) do
+                if lia.option.stored[k] then lia.option.stored[k].value = v end
+            end
+        end
+    else
+        for _, option in pairs(lia.option.stored) do
+            if option.default ~= nil then option.value = option.default end
+        end
+
+        local out = {}
+        for k, v in pairs(lia.option.stored) do
+            if v.value ~= nil then out[k] = v.value end
+        end
+
+        local json = util.TableToJSON(out, true)
+        if json then
+            file.Write(path, json)
         end
     end
 

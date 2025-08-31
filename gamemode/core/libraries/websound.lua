@@ -1,7 +1,17 @@
 ﻿lia.websound = lia.websound or {}
-local baseDir = "lilia/websounds/"
+lia.websound.stored = lia.websound.stored or {}
+local baseDir = "lilia/websounds/cachedpath/"
 local cache = {}
 local urlMap = {}
+local function normalizeName(name)
+    if not isstring(name) then return name end
+    name = name:gsub("\\", "/")
+    name = name:gsub("^%s+", ""):gsub("%s+$", "")
+    if string.StartWith(name, "/") then name = name:sub(2) end
+    if string.StartWith(name, "sound/") then name = name:sub(7) end
+    return name
+end
+
 local function ensureDir(p)
     local parts = string.Explode("/", p)
     local cur = ""
@@ -16,44 +26,33 @@ local function buildPath(p)
 end
 
 local function validateSoundFile(filePath, fileData)
-    if not fileData or #fileData == 0 then
-        print("[ERROR] WebSound: File data is empty")
-        return false, "empty file"
-    end
-
+    if not fileData or #fileData == 0 then return false, "empty file" end
     local fileSize = #fileData
-    if fileSize < 44 then
-        print("[ERROR] WebSound: File too small to be a valid sound file:", fileSize, "bytes")
-        return false, "file too small"
-    end
-
-    if fileSize > 50 * 1024 * 1024 then
-        print("[ERROR] WebSound: File too large:", fileSize, "bytes")
-        return false, "file too large"
-    end
-
-    local ext = filePath:match("%.([^%.]+)$"):lower()
+    if fileSize < 44 then return false, "file too small" end
+    if fileSize > 50 * 1024 * 1024 then return false, "file too large" end
+    local extMatch = filePath:match("%.([^%.]+)$")
+    if not extMatch then return false, "no file extension" end
+    local ext = extMatch:lower()
     if ext == "wav" then
-        if not fileData:find("^RIFF") or not fileData:find("WAVE") then
-            print("[ERROR] WebSound: Invalid WAV file header")
-            return false, "invalid wav header"
-        end
+        if not fileData:find("^RIFF") or not fileData:find("WAVE") then return false, "invalid wav header" end
     elseif ext == "mp3" then
-        if not fileData:find("^ID3") and not fileData:find("\255\251") and not fileData:find("\255\250") then
-            print("[ERROR] WebSound: File doesn't appear to be a valid MP3")
-            return false, "invalid mp3 format"
-        end
+        if not fileData:find("^ID3") and not fileData:find("\255\251") and not fileData:find("\255\250") then return false, "invalid mp3 format" end
     elseif ext == "ogg" then
-        if not fileData:find("^OggS") then
-            print("[ERROR] WebSound: Invalid OGG file header")
-            return false, "invalid ogg header"
-        end
+        if not fileData:find("^OggS") then return false, "invalid ogg header" end
     end
     return true
 end
 
-function lia.websound.register(name, url, cb)
-    if isstring(url) then urlMap[url] = name end
+function lia.websound.download(name, url, cb)
+    if not isstring(name) then return end
+    name = normalizeName(name)
+    local u = url or lia.websound.stored[name]
+    if not u or u == "" then
+        if cb then cb(nil, false, "no url") end
+        return
+    end
+
+    if isstring(u) then urlMap[u] = name end
     cache[name] = nil
     local savePath = baseDir .. name
     local function finalize(fromCache)
@@ -63,10 +62,9 @@ function lia.websound.register(name, url, cb)
         if not fromCache then hook.Run("WebSoundDownloaded", name, path) end
     end
 
-    http.Fetch(url, function(body)
+    http.Fetch(u, function(body)
         local isValid, validationError = validateSoundFile(name, body)
         if not isValid then
-            print("[ERROR] WebSound: Downloaded file failed validation:", validationError)
             if cb then cb(nil, false, "File validation failed: " .. validationError) end
             return
         end
@@ -75,7 +73,6 @@ function lia.websound.register(name, url, cb)
         file.Write(savePath, body)
         finalize(false)
     end, function(err)
-        print("[ERROR] WebSound: Failed to download", url, "- error:", err)
         if file.Exists(savePath, "DATA") then
             local existingFileData = file.Read(savePath, "DATA")
             if existingFileData then
@@ -83,12 +80,10 @@ function lia.websound.register(name, url, cb)
                 if isValid then
                     finalize(true)
                 else
-                    print("[ERROR] WebSound: Cached file is also invalid:", validationError)
                     file.Delete(savePath)
                     if cb then cb(nil, false, "Cached file invalid: " .. validationError) end
                 end
             else
-                print("[ERROR] WebSound: Could not read cached file")
                 if cb then cb(nil, false, "Could not read cached file") end
             end
         elseif cb then
@@ -97,7 +92,14 @@ function lia.websound.register(name, url, cb)
     end)
 end
 
+function lia.websound.register(name, url, cb)
+    name = normalizeName(name)
+    lia.websound.stored[name] = url
+    return lia.websound.download(name, url, cb)
+end
+
 function lia.websound.get(name)
+    name = normalizeName(name)
     local key = urlMap[name] or name
     if cache[key] then return cache[key] end
     local savePath = baseDir .. key
@@ -112,12 +114,19 @@ end
 local origPlayFile = sound.PlayFile
 function sound.PlayFile(path, mode, cb)
     if isstring(path) then
+        path = normalizeName(path)
         if path:find("^https?://") then
             local name = urlMap[path]
             if not name then
                 local ext = path:match("%.([%w]+)$") or "mp3"
                 name = util.CRC(path) .. "." .. ext
                 urlMap[path] = name
+            end
+
+            local cachedPath = lia.websound.get(name)
+            if cachedPath then
+                origPlayFile(cachedPath, mode or "", cb)
+                return
             end
 
             lia.websound.register(name, path, function(localPath)
@@ -129,64 +138,62 @@ function sound.PlayFile(path, mode, cb)
             end)
             return
         else
-            if path:find("^data/lilia/websounds/") then
+            if path:find("^lilia/websounds/") then
                 if path:match("%.wav$") then
                     local reqMode = mode or ""
-                    local want3d = reqMode:find("3d", 1, true) ~= nil
-                    local function ensure3d(m)
-                        if not want3d then return m end
-                        if m == "" then return "3d" end
-                        if not m:find("3d", 1, true) then return m .. " 3d" end
-                        return m
+                    local wants3d = reqMode:find("3d", 1, true) ~= nil
+                    local attempts = {}
+                    local seen = {}
+                    local function add(m)
+                        if m and m ~= "" and not seen[m] then
+                            seen[m] = true
+                            table.insert(attempts, m)
+                        end
                     end
 
-                    origPlayFile(path, reqMode, function(channel, errorCode, errorString)
-                        if IsValid(channel) then
-                            if cb then cb(channel, errorCode, errorString) end
+                    if wants3d then
+                        add(reqMode)
+                        add("mono 3d")
+                        add("3d")
+                    else
+                        add(reqMode)
+                        table.insert(attempts, "")
+                        add("mono")
+                    end
+
+                    local function tryNext(i, lastErrCode, lastErrStr)
+                        local m = attempts[i]
+                        if not m then
+                            if cb then cb(nil, lastErrCode, lastErrStr or "failed") end
                             return
                         end
 
-                        -- Fallback 1: keep 3D if originally requested
-                        origPlayFile(path, ensure3d(""), function(channel2, errorCode2, errorString2)
-                            if IsValid(channel2) then
-                                if cb then cb(channel2, errorCode2, errorString2) end
-                                return
+                        origPlayFile(path, m, function(ch, errCode, errStr)
+                            if IsValid(ch) then
+                                if cb then cb(ch, errCode, errStr) end
+                            else
+                                tryNext(i + 1, errCode, errStr)
                             end
-
-                            -- Fallback 2: try mono, preserving 3D if requested
-                            origPlayFile(path, ensure3d("mono"), function(channel3, errorCode3, errorString3)
-                                if IsValid(channel3) then
-                                    if cb then cb(channel3, errorCode3, errorString3) end
-                                else
-                                    print("[ERROR] WebSound: All WAV playback methods failed")
-                                    print("[ERROR] WebSound: Error codes:", errorCode, errorCode2, errorCode3)
-                                    print("[ERROR] WebSound: Error strings:", errorString, errorString2, errorString3)
-                                    if cb then cb(channel3, errorCode3, errorString3) end
-                                end
-                            end)
                         end)
-                    end)
+                    end
+
+                    tryNext(1)
                 else
                     return origPlayFile(path, mode or "", cb)
                 end
                 return
             end
 
-            local localPath = lia.websound.get(path)
-            if localPath then
-                return origPlayFile(localPath, mode or "", cb)
-            else
-                local searchName = path:match("([^/]+)$") or path
-                local files = file.Find(baseDir .. "**", "DATA")
-                for _, fileName in ipairs(files) do
-                    if fileName:find(searchName) or fileName:find("dogeatdog") then
-                        local fullPath = buildPath(baseDir .. fileName)
-                        return origPlayFile(fullPath, mode or "", cb)
-                    end
+            -- Only handle explicit lilia/websounds/ paths
+            if path:find("^lilia/websounds/") then
+                local webPath = path:gsub("^lilia/websounds/", "")
+                local localPath = lia.websound.get(webPath)
+                if localPath then
+                    return origPlayFile(localPath, mode or "", cb)
+                else
+                    if cb then cb(nil, nil, "file not found") end
+                    return
                 end
-
-                if cb then cb(nil, nil, "file not found") end
-                return
             end
         end
     end
@@ -196,11 +203,31 @@ end
 local origPlayURL = sound.PlayURL
 function sound.PlayURL(url, mode, cb)
     if isstring(url) and url:find("^https?://") then
+        local reqMode = mode or ""
+        if reqMode:find("3d", 1, true) ~= nil then
+            origPlayURL(url, reqMode, cb)
+            local name = urlMap[url]
+            if not name then
+                local ext = url:match("%.([%w]+)$") or "mp3"
+                name = util.CRC(url) .. "." .. ext
+                urlMap[url] = name
+            end
+
+            lia.websound.register(name, url)
+            return
+        end
+
         local name = urlMap[url]
         if not name then
             local ext = url:match("%.([%w]+)$") or "mp3"
             name = util.CRC(url) .. "." .. ext
             urlMap[url] = name
+        end
+
+        local cachedPath = lia.websound.get(name)
+        if cachedPath then
+            origPlayFile(cachedPath, mode or "", cb)
+            return
         end
 
         lia.websound.register(name, url, function(localPath)

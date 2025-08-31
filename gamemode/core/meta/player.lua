@@ -685,22 +685,35 @@ if SERVER then
     end
 
     function playerMeta:requestDropdown(title, subTitle, options, callback)
+        self.liaDropdownReqs = self.liaDropdownReqs or {}
+        local id = table.insert(self.liaDropdownReqs, {
+            callback = callback,
+            allowed = options or {}
+        })
+
         net.Start("RequestDropdown")
+        net.WriteUInt(id, 32)
         net.WriteString(title)
         net.WriteString(subTitle)
-        net.WriteTable(options)
+        net.WriteTable(options or {})
         net.Send(self)
-        self.dropdownCallback = callback
     end
 
     function playerMeta:requestOptions(title, subTitle, options, limit, callback)
+        self.liaOptionsReqs = self.liaOptionsReqs or {}
+        local id = table.insert(self.liaOptionsReqs, {
+            callback = callback,
+            allowed = options or {},
+            limit = tonumber(limit) or 1
+        })
+
         net.Start("OptionsRequest")
+        net.WriteUInt(id, 32)
         net.WriteString(title)
         net.WriteString(subTitle)
-        net.WriteTable(options)
-        net.WriteUInt(limit, 32)
+        net.WriteTable(options or {})
+        net.WriteUInt(tonumber(limit) or 1, 32)
         net.Send(self)
-        self.optionsCallback = callback
     end
 
     function playerMeta:requestString(title, subTitle, callback, default)
@@ -730,23 +743,29 @@ if SERVER then
         end
 
         self.liaArgReqs = self.liaArgReqs or {}
-        local id = table.insert(self.liaArgReqs, callback)
+        local id = table.insert(self.liaArgReqs, {
+            callback = callback,
+            spec = argTypes or {}
+        })
+
         net.Start("ArgumentsRequest")
         net.WriteUInt(id, 32)
         net.WriteString(title or "")
-        net.WriteTable(argTypes)
+        net.WriteTable(argTypes or {})
         net.Send(self)
         return d
     end
 
     function playerMeta:binaryQuestion(question, option1, option2, manualDismiss, callback)
+        self.liaBinaryReqs = self.liaBinaryReqs or {}
+        local id = table.insert(self.liaBinaryReqs, callback)
         net.Start("BinaryQuestionRequest")
+        net.WriteUInt(id, 32)
         net.WriteString(question)
         net.WriteString(option1)
         net.WriteString(option2)
         net.WriteBool(manualDismiss)
         net.Send(self)
-        self.binaryQuestionCallback = callback
     end
 
     function playerMeta:requestButtons(title, buttons)
@@ -815,6 +834,7 @@ if SERVER then
 
         entity:SetCollisionGroup(COLLISION_GROUP_WEAPON)
         entity:Activate()
+        if self:IsOnFire() then entity:Ignite(8) end
         if isDead then self.liaRagdoll = entity end
         hook.Run("OnCreatePlayerRagdoll", self, entity, isDead)
         local velocity = self:GetVelocity()

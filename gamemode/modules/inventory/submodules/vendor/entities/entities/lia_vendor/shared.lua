@@ -43,6 +43,7 @@ function ENT:Initialize()
     self:DrawShadow(true)
     self:SetSolid(SOLID_BBOX)
     self:PhysicsInit(SOLID_BBOX)
+    self:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
     self:setupVars()
     local physObj = self:GetPhysicsObject()
     if IsValid(physObj) then

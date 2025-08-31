@@ -37,20 +37,25 @@ function GM:PlayerLoadedChar(client, character)
     character:setLoginTime(os.time())
     hook.Run("PlayerLoadout", client)
     local ammoTable = character:getAmmo()
-    if table.IsEmpty(ammoTable) then return end
-    timer.Simple(0.25, function()
-        if not IsValid(ammoTable) then return end
-        for ammoType, ammoCount in pairs(ammoTable) do
-            if IsValid(ammoCount) or IsValid(ammoCount) then client:GiveAmmo(ammoCount, ammoType, true) end
-        end
+    if not table.IsEmpty(ammoTable) then
+        timer.Simple(0.25, function()
+            if not IsValid(ammoTable) then return end
+            for ammoType, ammoCount in pairs(ammoTable) do
+                if IsValid(ammoCount) or IsValid(ammoCount) then client:GiveAmmo(ammoCount, ammoType, true) end
+            end
 
-        character:setAmmo(nil)
-    end)
+            character:setAmmo(nil)
+        end)
+    end
+
+    net.Start("liaAssureClientSideAssets")
+    net.Send(client)
 end
 
 function GM:PlayerDeath(client, inflictor, attacker)
     local character = client:getChar()
     if not character then return end
+    if IsValid(client:GetRagdollEntity()) then client:GetRagdollEntity():Remove() end
     local inventory = character:getInv()
     if inventory then
         for _, item in pairs(inventory:getItems()) do
@@ -987,7 +992,7 @@ local function checkFrameworkVersion()
 end
 
 function GM:InitializedModules()
-    if self.UpdateCheckDone then return end
+    if lia.UpdateCheckDone then return end
     timer.Simple(0, function()
         checkPublicModules()
         checkPrivateModules()
@@ -995,7 +1000,7 @@ function GM:InitializedModules()
     end)
 
     timer.Simple(5, lia.db.addDatabaseFields)
-    self.UpdateCheckDone = true
+    lia.UpdateCheckDone = true
 end
 
 function GM:LiliaTablesLoaded()
@@ -1144,16 +1149,12 @@ concommand.Add("lia_wipecharacters", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all characters...\n")
-        -- Disconnect all players to prevent data corruption
         for _, ply in ipairs(player.GetAll()) do
             if IsValid(ply) then ply:Kick("Server is wiping character data. Please reconnect after the wipe is complete.") end
         end
 
-        -- Wipe all character-related data in proper order
-        -- 1. Delete character data
         lia.db.query("DELETE FROM lia_chardata", function()
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character data wiped...\n")
-            -- 2. Get all inventory IDs for characters and delete related data
             lia.db.query("SELECT invID FROM lia_inventories WHERE charID IS NOT NULL", function(invData)
                 if invData and #invData > 0 then
                     local invIDs = {}
@@ -1163,15 +1164,12 @@ concommand.Add("lia_wipecharacters", function(client)
 
                     if #invIDs > 0 then
                         local invIDList = table.concat(invIDs, ",")
-                        -- Delete inventory data and items
                         lia.db.query("DELETE FROM lia_invdata WHERE invID IN (" .. invIDList .. ")", function()
                             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Inventory data wiped...\n")
                             lia.db.query("DELETE FROM lia_items WHERE invID IN (" .. invIDList .. ")", function()
                                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character items wiped...\n")
-                                -- Delete inventories
                                 lia.db.query("DELETE FROM lia_inventories WHERE charID IS NOT NULL", function()
                                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character inventories wiped...\n")
-                                    -- Finally delete characters
                                     lia.db.query("DELETE FROM lia_characters", function()
                                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
@@ -1180,14 +1178,12 @@ concommand.Add("lia_wipecharacters", function(client)
                             end)
                         end)
                     else
-                        -- No character inventories found, just delete characters
                         lia.db.query("DELETE FROM lia_characters", function()
                             MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                         end)
                     end
                 else
-                    -- No inventories found, just delete characters
                     lia.db.query("DELETE FROM lia_characters", function()
                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
@@ -1210,7 +1206,6 @@ concommand.Add("lia_wipelogs", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all logs...\n")
-        -- Wipe the logs table
         lia.db.query("DELETE FROM lia_logs", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All logs have been wiped!\n") end)
     end
 end)
@@ -1227,7 +1222,6 @@ concommand.Add("lia_wipebans", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all bans...\n")
-        -- Wipe the bans table
         lia.db.query("DELETE FROM lia_bans", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All bans have been wiped!\n") end)
     end
 end)
@@ -1244,7 +1238,6 @@ concommand.Add("lia_wipepersistence", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all persistence data...\n")
-        -- Wipe the persistence table
         lia.db.query("DELETE FROM lia_persistence", function()
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All persistence data has been wiped!\n")
             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
@@ -1300,6 +1293,13 @@ local function ProcessSalaries()
                 end
             end
         end
+    end
+end
+
+function GM:OnConfigUpdated(key, newValue)
+    if key == "SalaryInterval" then
+        timer.Remove("liaSalaryGlobal")
+        timer.Create("liaSalaryGlobal", newValue, 0, ProcessSalaries)
     end
 end
 

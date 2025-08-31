@@ -161,8 +161,10 @@ net.Receive("cfgSet", function()
     local value = net.ReadType()
     local config = lia.config.stored[key]
     if config then
-        if config.callback then config.callback(config.value, value) end
+        local oldValue = config.value
+        if config.callback then config.callback(oldValue, value) end
         config.value = value
+        hook.Run("OnConfigUpdated", key, oldValue, value)
         local properties = lia.gui.properties
         if IsValid(properties) then
             local row = properties:GetCategory(L(config.data and config.data.category or "misc")):GetRow(key)

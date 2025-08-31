@@ -174,27 +174,19 @@ function lia.keybind.get(a, df)
 end
 
 function lia.keybind.save()
-    local dp = "lilia/keybinds/" .. engine.ActiveGamemode()
-    file.CreateDir(dp)
-    local ip = string.Explode(":", game.GetIPAddress())[1]
-    local f = ip:gsub("%.", "_")
-    local s = dp .. "/" .. f .. ".json"
+    local path = "lilia/keybinds.json"
     local d = {}
     for k, v in pairs(lia.keybind.stored) do
         if istable(v) and v.value then d[k] = v.value end
     end
 
     local j = util.TableToJSON(d, true)
-    if j then file.Write(s, j) end
+    if j then file.Write(path, j) end
 end
 
 function lia.keybind.load()
-    local dp = "lilia/keybinds/" .. engine.ActiveGamemode()
-    file.CreateDir(dp)
-    local ip = string.Explode(":", game.GetIPAddress())[1]
-    local f = ip:gsub("%.", "_")
-    local jsonPath = dp .. "/" .. f .. ".json"
-    local d = file.Read(jsonPath, "DATA")
+    local path = "lilia/keybinds.json"
+    local d = file.Read(path, "DATA")
     if d then
         local s = util.JSONToTable(d)
         for k, v in pairs(s) do
@@ -205,7 +197,13 @@ function lia.keybind.load()
             if istable(v) and v.default then v.value = v.default end
         end
 
-        lia.keybind.save()
+        local out = {}
+        for k, v in pairs(lia.keybind.stored) do
+            if istable(v) and v.value then out[k] = v.value end
+        end
+
+        local json = util.TableToJSON(out, true)
+        if json then file.Write(path, json) end
     end
 
     for k in pairs(lia.keybind.stored) do

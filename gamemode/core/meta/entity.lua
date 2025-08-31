@@ -9,15 +9,14 @@ local validClasses = {
 }
 
 function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
-    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^data/lilia/websounds/")) then
+    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^lilia/websounds/")) then
         if SERVER then
             net.Start("EmitURLSound")
             net.WriteEntity(self)
             net.WriteString(soundName)
             net.WriteFloat(volume or 1)
-            net.WriteFloat(soundLevel or 75)
-            net.WriteBool(true)
-            net.WriteFloat(0.05)
+            net.WriteFloat(soundLevel or 100)
+            net.WriteBool(false)
             net.Broadcast()
             return true
         else
@@ -237,59 +236,148 @@ else
         return default
     end
 
-    function entityMeta:PlayFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance)
-        print(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance)
+    function entityMeta:PlayFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, _, dsp)
         local v = math.Clamp(tonumber(volume) or 1, 0, 1)
         local follow = shouldFollow ~= false
-        local fmin, fmax = tonumber(minDistance) or 100, tonumber(maxDistance) or 1200
-        local function play(p)
-            sound.PlayFile(p, "3d", function(ch)
-                if not IsValid(ch) then return end
-                ch:Set3DEnabled(true)
-                ch:Set3DFadeDistance(fmin, fmax)
-                ch:SetVolume(v)
-                ch:SetPos(self:GetPos())
-                if startDelay and startDelay > 0 then
-                    timer.Simple(startDelay, function() if IsValid(ch) then ch:Play() end end)
-                else
-                    ch:Play()
-                end
-
-                if follow then
-                    local id = "lia_ws_follow_" .. self:EntIndex() .. "_" .. tostring(ch)
-                    hook.Add("Think", id, function()
-                        if not IsValid(ch) or not IsValid(self) then
-                            hook.Remove("Think", id)
-                            return
-                        end
-
-                        ch:SetPos(self:GetPos())
-                    end)
-                end
-            end)
+        local fmin, fmax = tonumber(minDistance) or 0, tonumber(maxDistance) or 1200
+        local function getAnchor()
+            if IsValid(self) and self:IsVehicle() and IsValid(self:GetParent()) then return self:GetParent() end
+            return self
         end
 
         if not isstring(soundPath) then return end
+        local function currentDistance()
+            local anchor = getAnchor()
+            local pos = anchor.WorldSpaceCenter and anchor:WorldSpaceCenter() or anchor:GetPos()
+            local lp = LocalPlayer and LocalPlayer() or nil
+            if not IsValid(lp) then return 0 end
+            return lp:GetPos():Distance(pos)
+        end
+
+        local function computeFadeFactor(dist)
+            if fmax <= 0 then return 1 end
+            if dist >= fmax then return 0 end
+            if fmax > fmin then
+                local fadeStart = fmax * 0.8
+                if dist >= fadeStart then
+                    local t = math.Clamp((dist - fadeStart) / (fmax - fadeStart), 0, 1)
+                    return 1 - t * t
+                end
+            end
+            return 1
+        end
+
+        local function attachAndPlay(ch, manualAttenuation)
+            if not IsValid(ch) then return end
+            played = true
+            local anchor = getAnchor()
+            if manualAttenuation then
+                ch:Set3DEnabled(false)
+            else
+                ch:Set3DEnabled(true)
+                ch:Set3DFadeDistance(fmin, fmax)
+            end
+
+            ch:SetPos(anchor.WorldSpaceCenter and anchor:WorldSpaceCenter() or anchor:GetPos())
+            local initDist = currentDistance()
+            local fade = computeFadeFactor(initDist)
+            if manualAttenuation or fade < 1 then
+                ch:SetVolume(v * math.Clamp(fade, 0, 1))
+            else
+                ch:SetVolume(v)
+            end
+
+            -- Apply pitch if provided
+            if pitch and pitch ~= 1 then
+                ch:SetPlaybackRate(pitch)
+            end
+
+            -- Apply DSP effect if provided
+            if dsp and dsp > 0 then
+                ch:SetDSP(dsp)
+            end
+
+            if startDelay and startDelay > 0 then
+                timer.Simple(startDelay, function() if IsValid(ch) then ch:Play() end end)
+            else
+                ch:Play()
+            end
+
+            if follow then
+                local id = "lia_ws_follow_" .. self:EntIndex() .. "_" .. tostring(ch)
+                hook.Add("Think", id, function()
+                    if not IsValid(ch) or not IsValid(self) then
+                        if IsValid(ch) then ch:Stop() end
+                        hook.Remove("Think", id)
+                        return
+                    end
+
+                    local anchor2 = getAnchor()
+                    if IsValid(ch) then ch:SetPos(anchor2.WorldSpaceCenter and anchor2:WorldSpaceCenter() or anchor2:GetPos()) end
+                    local lp = LocalPlayer and LocalPlayer() or nil
+                    if not IsValid(lp) then return end
+                    local pos = anchor2.WorldSpaceCenter and anchor2:WorldSpaceCenter() or anchor2:GetPos()
+                    local dist = lp:GetPos():Distance(pos)
+                    local fadeFactor = computeFadeFactor(dist)
+                    if IsValid(ch) then
+                        if manualAttenuation or fadeFactor < 1 then
+                            ch:SetVolume(v * math.Clamp(fadeFactor, 0, 1))
+                        else
+                            ch:SetVolume(v)
+                        end
+                    end
+                end)
+            end
+        end
+
+        local function playLocalFile(path)
+            sound.PlayFile(path, "mono 3d", function(ch)
+                if IsValid(ch) then
+                    attachAndPlay(ch, false)
+                    return
+                end
+
+                local isWav = string.EndsWith(string.lower(path), ".wav")
+                if isWav then
+                    sound.PlayFile(path, "", function(ch3) if IsValid(ch3) then attachAndPlay(ch3, true) end end)
+                    return
+                end
+
+                sound.PlayFile(path, "3d", function(ch2)
+                    if IsValid(ch2) then
+                        attachAndPlay(ch2, false)
+                        return
+                    end
+
+                    sound.PlayFile(path, "", function(ch3) if IsValid(ch3) then attachAndPlay(ch3, true) end end)
+                end)
+            end)
+        end
+
         if soundPath:find("^https?://") then
-            local ext = soundPath:match("%.([%w]+)$") or "mp3"
-            local name = util.CRC(soundPath) .. "." .. ext
-            lia.websound.register(name, soundPath, function(localPath) if localPath then play(localPath) end end)
+            sound.PlayURL(soundPath, "mono 3d", function(ch)
+                if IsValid(ch) then
+                    attachAndPlay(ch)
+                    return
+                end
+
+                sound.PlayURL(soundPath, "3d", function(ch2)
+                    if IsValid(ch2) then
+                        attachAndPlay(ch2)
+                        return
+                    end
+                end)
+            end)
             return
         end
 
         if soundPath:find("^data/") then
-            play(soundPath)
+            playLocalFile(soundPath)
             return
         end
 
-        local p = lia.websound.get(soundPath)
-        if p then
-            play(p)
-            return
-        end
-
-        local sp = "lilia/websounds/" .. soundPath
-        if file.Exists(sp, "DATA") then play("data/" .. sp) end
+        -- Removed automatic websound lookup
+        -- Only explicit lilia/websounds/ paths will work now
     end
 
     playerMeta.getLocalVar = entityMeta.getNetVar

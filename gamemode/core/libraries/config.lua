@@ -76,7 +76,12 @@ end
 
 function lia.config.forceSet(key, value, noSave)
     local config = lia.config.stored[key]
-    if config then config.value = value end
+    if config then
+        local oldValue = config.value
+        config.value = value
+        hook.Run("OnConfigUpdated", key, oldValue, value)
+    end
+
     if not noSave then lia.config.save() end
 end
 
@@ -85,6 +90,7 @@ function lia.config.set(key, value)
     if config then
         local oldValue = config.value
         config.value = value
+        hook.Run("OnConfigUpdated", key, oldValue, value)
         if SERVER then
             if not config.noNetworking then
                 net.Start("cfgSet")
