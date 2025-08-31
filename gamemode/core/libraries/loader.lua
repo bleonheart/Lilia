@@ -549,7 +549,6 @@ else
     timer.Remove("HintSystem_Annoy2")
 end
 
-local hasInitializedModules = false
 function GM:Initialize()
     if engine.ActiveGamemode() == "lilia" then lia.error(L("noSchemaLoaded")) end
     if not hasInitializedModules then
