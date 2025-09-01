@@ -952,24 +952,13 @@ net.Receive("liaCharacterData", function()
 end)
 
 net.Receive("EmitURLSound", function()
-    print("[TEST] EmitURLSound received")
     local ent = net.ReadEntity()
-    print("[TEST] Entity:", ent)
     local soundPath = net.ReadString()
-    print("[TEST] SoundPath:", soundPath)
     local volume = net.ReadFloat()
-    print("[TEST] Volume:", volume)
     local soundLevel = net.ReadFloat()
-    print("[TEST] SoundLevel:", soundLevel)
     local hasDelay = net.ReadBool()
-    print("[TEST] HasDelay:", hasDelay)
     local startDelay = hasDelay and net.ReadFloat() or nil
-    print("[TEST] StartDelay:", startDelay)
-    if not IsValid(ent) then
-        print("[TEST] Invalid entity, aborting")
-        return
-    end
-
+    if not IsValid(ent) then return end
     if soundPath:find("^https?://") then
         local maxDistance = soundLevel * 13.33
         local ext = soundPath:match("%.([%w]+)$") or "mp3"
@@ -980,32 +969,10 @@ net.Receive("EmitURLSound", function()
         else
             lia.websound.register(name, soundPath, function(localPath) if localPath then ent:PlayFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
         end
-    elseif soundPath:find("^lilia/websounds/") then
+    elseif soundPath:find("^lilia/websounds/") or soundPath:find("^websounds/") then
         local maxDistance = soundLevel * 13.33
         ent:PlayFollowingSound(soundPath, volume, true, maxDistance, startDelay)
     else
-        local function normalizeName(name)
-            if not isstring(name) then return name end
-            name = name:gsub("\\", "/")
-            if string.StartWith(name, "/") then name = name:sub(2) end
-            if string.StartWith(name, "sound/") then name = name:sub(7) end
-            return name
-        end
-
-        local key = normalizeName(soundPath)
-        local maxDistance = soundLevel * 13.33
-        local cachedPath = lia.websound.get(key)
-        if cachedPath then
-            ent:PlayFollowingSound(cachedPath, volume, true, maxDistance, startDelay)
-            return
-        end
-
-        local url = lia.websound.stored[key]
-        if isstring(url) and url ~= "" then
-            lia.websound.register(key, url, function(localPath) if localPath then ent:PlayFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
-            return
-        end
-
         ent:EmitSound(soundPath, soundLevel, nil, volume, nil, nil, nil)
     end
 end)
@@ -1025,15 +992,98 @@ net.Receive("liaAssureClientSideAssets", function()
     lia.webimage.allowDownloads = true
     local webimages = lia.webimage.stored
     local websounds = lia.websound.stored
+    print("=== STARTING CLIENT-SIDE ASSET DOWNLOAD ===")
+    print("WebImages to download:", table.Count(webimages))
+    print("WebSounds to download:", table.Count(websounds))
+    print("===========================================")
+    local downloadQueue = {}
+    local activeDownloads = 0
+    local maxConcurrent = 5
+    local totalImages = table.Count(webimages)
+    local totalSounds = table.Count(websounds)
+    local completedImages = 0
+    local completedSounds = 0
+    local failedImages = 0
+    local failedSounds = 0
     for name, data in pairs(webimages) do
-        lia.webimage.download(name, data.url, nil, data.flags)
+        table.insert(downloadQueue, {
+            type = "image",
+            name = name,
+            url = data.url,
+            flags = data.flags
+        })
     end
 
     for name, url in pairs(websounds) do
-        lia.websound.download(name, url, nil)
+        table.insert(downloadQueue, {
+            type = "sound",
+            name = name,
+            url = url
+        })
     end
 
-    lia.option.load()
-    lia.keybind.load()
-    lia.webimage.allowDownloads = false
+    print("Download queue size:", #downloadQueue)
+    print("Processing with max concurrent downloads:", maxConcurrent)
+    local function processNextDownload()
+        if #downloadQueue == 0 then return end
+        local download = table.remove(downloadQueue, 1)
+        activeDownloads = activeDownloads + 1
+        if download.type == "image" then
+            lia.webimage.download(download.name, download.url, function(material, fromCache, errorMsg)
+                activeDownloads = activeDownloads - 1
+                if material then
+                    completedImages = completedImages + 1
+                    if not fromCache then print(string.format("[✓] Image downloaded: %s", download.name)) end
+                else
+                    failedImages = failedImages + 1
+                    print(string.format("[✗] Image failed: %s - %s", download.name, errorMsg or "Unknown error"))
+                end
+
+                processNextDownload()
+            end, download.flags)
+        elseif download.type == "sound" then
+            lia.websound.download(download.name, download.url, function(path, fromCache, errorMsg)
+                activeDownloads = activeDownloads - 1
+                if path then
+                    completedSounds = completedSounds + 1
+                    if not fromCache then print(string.format("[✓] Sound downloaded: %s", download.name)) end
+                else
+                    failedSounds = failedSounds + 1
+                    print(string.format("[✗] Sound failed: %s - %s", download.name, errorMsg or "Unknown error"))
+                end
+
+                processNextDownload()
+            end)
+        end
+    end
+
+    for i = 1, math.min(maxConcurrent, #downloadQueue) do
+        processNextDownload()
+    end
+
+    local progressTimer = timer.Create("AssetDownloadProgress", 2, 0, function()
+        if activeDownloads == 0 and #downloadQueue == 0 then
+            timer.Remove("AssetDownloadProgress")
+            lia.option.load()
+            lia.keybind.load()
+            lia.webimage.allowDownloads = false
+            timer.Simple(1.0, function()
+                local imageStats = lia.webimage.getStats()
+                local soundStats = lia.websound.getStats()
+                print("===========================================")
+                print("=== CLIENT-SIDE ASSETS DOWNLOAD COMPLETE ===")
+                print("--- Download Summary ---")
+                print(string.format("Images: %d/%d completed (%d failed)", completedImages, totalImages, failedImages))
+                print(string.format("Sounds: %d/%d completed (%d failed)", completedSounds, totalSounds, failedSounds))
+                print("--- Current Statistics ---")
+                print(string.format("Images: %d downloaded | %d stored", imageStats.downloaded, imageStats.stored))
+                print(string.format("Sounds: %d downloaded | %d stored", soundStats.downloaded, soundStats.stored))
+                print(string.format("Combined: %d downloaded | %d stored", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
+                print("===========================================")
+                if failedImages > 0 or failedSounds > 0 then print("WARNING: Some assets failed to download. Check console output above for details.") end
+            end)
+        else
+            print(string.format("Download progress: %d active, %d queued, %d/%d images, %d/%d sounds", activeDownloads, #downloadQueue, completedImages, totalImages, completedSounds, totalSounds))
+        end
+    end)
 end)

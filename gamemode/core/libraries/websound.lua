@@ -1,8 +1,14 @@
 ﻿lia.websound = lia.websound or {}
 lia.websound.stored = lia.websound.stored or {}
-local baseDir = "lilia/websounds/cachedpath/"
+local baseDir = "lilia/websounds/"
 local cache = {}
 local urlMap = {}
+local stats = {
+    downloaded = 0,
+    lastReset = os.time(),
+    downloadedSounds = {}
+}
+
 local function normalizeName(name)
     if not isstring(name) then return name end
     name = name:gsub("\\", "/")
@@ -10,6 +16,17 @@ local function normalizeName(name)
     if string.StartWith(name, "/") then name = name:sub(2) end
     if string.StartWith(name, "sound/") then name = name:sub(7) end
     return name
+end
+
+
+
+
+local function deriveUrlSaveName(url)
+    local filename = url:match("([^/]+)$") or util.CRC(url) .. ".mp3"
+    if file.Exists(baseDir .. filename, "DATA") then return filename end
+    local path = url:match("^https?://[^/]+/(.+)$") or filename
+    if path:find("/") then path = path:gsub("^[^/]+/", "", 1) end
+    return "urlsounds/" .. path
 end
 
 local function ensureDir(p)
@@ -43,12 +60,55 @@ local function validateSoundFile(filePath, fileData)
     return true
 end
 
+local function validateURL(url)
+    if not url or type(url) ~= "string" then return false, "URL is not a valid string" end
+    
+    if not url:find("^https?://") then return false, "URL must start with http:// or https://" end
+    
+    local domain = url:match("^https?://([^/]+)")
+    if not domain then return false, "URL has no valid domain" end
+    
+    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, "localhost URLs are not allowed" end
+    
+    local ipPattern = "^%d+%.%d+%.%d+%.%d+$"
+    if domain:match(ipPattern) then
+        
+        local parts = string.Explode(".", domain)
+        if #parts ~= 4 then return false, "invalid IP address format" end
+        
+        for _, part in ipairs(parts) do
+            local num = tonumber(part)
+            if not num or num < 0 or num > 255 then return false, "invalid IP address octet" end
+        end
+    else
+        
+        if not domain:find("%.") then return false, "domain name must contain at least one dot" end
+        
+        if domain:find("%.%.") then return false, "domain contains consecutive dots" end
+    end
+
+    
+    if url:find("[<>\"\\|]") then return false, "URL contains invalid characters" end
+    
+    if #url > 2048 then return false, "URL is too long (max 2048 characters)" end
+    return true
+end
+
 function lia.websound.download(name, url, cb)
     if not isstring(name) then return end
     name = normalizeName(name)
     local u = url or lia.websound.stored[name]
     if not u or u == "" then
+        print("[WebSound] ERROR: Invalid sound '" .. name .. "' - no URL provided")
         if cb then cb(nil, false, "no url") end
+        return
+    end
+
+    
+    local isValidURL, validationError = validateURL(u)
+    if not isValidURL then
+        print("[WebSound] ERROR: Invalid URL for sound '" .. name .. "' - " .. validationError .. " (URL: " .. u .. ")")
+        if cb then cb(nil, false, "invalid url: " .. validationError) end
         return
     end
 
@@ -59,7 +119,11 @@ function lia.websound.download(name, url, cb)
         local path = buildPath(savePath)
         cache[name] = path
         if cb then cb(path, fromCache) end
-        if not fromCache then hook.Run("WebSoundDownloaded", name, path) end
+        if not fromCache and not stats.downloadedSounds[name] then
+            stats.downloadedSounds[name] = true
+            stats.downloaded = stats.downloaded + 1
+            hook.Run("WebSoundDownloaded", name, path)
+        end
     end
 
     http.Fetch(u, function(body)
@@ -73,6 +137,7 @@ function lia.websound.download(name, url, cb)
         file.Write(savePath, body)
         finalize(false)
     end, function(err)
+        print("[WebSound] HTTP fetch failed for '" .. u .. "': " .. tostring(err))
         if file.Exists(savePath, "DATA") then
             local existingFileData = file.Read(savePath, "DATA")
             if existingFileData then
@@ -118,8 +183,7 @@ function sound.PlayFile(path, mode, cb)
         if path:find("^https?://") then
             local name = urlMap[path]
             if not name then
-                local ext = path:match("%.([%w]+)$") or "mp3"
-                name = util.CRC(path) .. "." .. ext
+                name = deriveUrlSaveName(path)
                 urlMap[path] = name
             end
 
@@ -138,8 +202,20 @@ function sound.PlayFile(path, mode, cb)
             end)
             return
         else
+            
+            local webPath
             if path:find("^lilia/websounds/") then
-                if path:match("%.wav$") then
+                webPath = path:gsub("^lilia/websounds/", "")
+            elseif path:find("^websounds/") then
+                webPath = path:gsub("^websounds/", "")
+            else
+                
+                webPath = path
+            end
+
+            local localPath = lia.websound.get(webPath)
+            if localPath then
+                if webPath:match("%.wav$") then
                     local reqMode = mode or ""
                     local wants3d = reqMode:find("3d", 1, true) ~= nil
                     local attempts = {}
@@ -168,7 +244,7 @@ function sound.PlayFile(path, mode, cb)
                             return
                         end
 
-                        origPlayFile(path, m, function(ch, errCode, errStr)
+                        origPlayFile(localPath, m, function(ch, errCode, errStr)
                             if IsValid(ch) then
                                 if cb then cb(ch, errCode, errStr) end
                             else
@@ -178,21 +254,9 @@ function sound.PlayFile(path, mode, cb)
                     end
 
                     tryNext(1)
-                else
-                    return origPlayFile(path, mode or "", cb)
-                end
-                return
-            end
-
-            -- Only handle explicit lilia/websounds/ paths
-            if path:find("^lilia/websounds/") then
-                local webPath = path:gsub("^lilia/websounds/", "")
-                local localPath = lia.websound.get(webPath)
-                if localPath then
-                    return origPlayFile(localPath, mode or "", cb)
-                else
-                    if cb then cb(nil, nil, "file not found") end
                     return
+                else
+                    return origPlayFile(localPath, mode or "", cb)
                 end
             end
         end
@@ -208,8 +272,7 @@ function sound.PlayURL(url, mode, cb)
             origPlayURL(url, reqMode, cb)
             local name = urlMap[url]
             if not name then
-                local ext = url:match("%.([%w]+)$") or "mp3"
-                name = util.CRC(url) .. "." .. ext
+                name = deriveUrlSaveName(url)
                 urlMap[url] = name
             end
 
@@ -219,8 +282,7 @@ function sound.PlayURL(url, mode, cb)
 
         local name = urlMap[url]
         if not name then
-            local ext = url:match("%.([%w]+)$") or "mp3"
-            name = util.CRC(url) .. "." .. ext
+            name = deriveUrlSaveName(url)
             urlMap[url] = name
         end
 
@@ -356,5 +418,17 @@ concommand.Add("lia_list_sounds", function()
         print(string.format("[WebSound] %s (%d bytes)", fileName, fileSize))
     end
 end)
+
+function lia.websound.getStats()
+    local totalStored = 0
+    for _ in pairs(lia.websound.stored) do
+        totalStored = totalStored + 1
+    end
+    return {
+        downloaded = stats.downloaded,
+        stored = totalStored,
+        lastReset = stats.lastReset
+    }
+end
 
 ensureDir(baseDir)

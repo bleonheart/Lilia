@@ -444,6 +444,8 @@ end
 
 function GM:InitializedConfig()
     timer.Simple(0.2, function() lia.config.send() end)
+    timer.Remove("liaSalaryGlobal")
+    timer.Create("liaSalaryGlobal", lia.config.get("SalaryInterval", 3600), 0, self:ProcessSalaries())
 end
 
 function GM:PlayerInitialSpawn(client)
@@ -1269,7 +1271,7 @@ concommand.Add("list_entities", function(client)
     end
 end)
 
-local function ProcessSalaries()
+function GM:ProcessSalaries()
     for _, client in player.Iterator() do
         if IsValid(client) and client:getChar() and hook.Run("CanPlayerEarnSalary", client, faction, class) ~= false then
             local char = client:getChar()
@@ -1299,7 +1301,7 @@ end
 function GM:OnConfigUpdated(key, newValue)
     if key == "SalaryInterval" then
         timer.Remove("liaSalaryGlobal")
-        timer.Create("liaSalaryGlobal", newValue, 0, ProcessSalaries)
+        timer.Create("liaSalaryGlobal", newValue, 0, self:ProcessSalaries())
     end
 end
 
@@ -1314,12 +1316,6 @@ game.ConsoleCommand = function(cmd)
     if cmd:sub(1, #"lia_wipedb") == "lia_wipedb" or cmd:sub(1, #"lia_resetconfig") == "lia_resetconfig" or cmd:sub(1, #"lia_wipe_sounds") == "lia_wipe_sounds" or cmd:sub(1, #"lia_wipewebimages") == "lia_wipewebimages" or cmd:sub(1, #"lia_wipecharacters") == "lia_wipecharacters" or cmd:sub(1, #"lia_wipelogs") == "lia_wipelogs" or cmd:sub(1, #"lia_wipebans") == "lia_wipebans" or cmd:sub(1, #"lia_wipepersistence") == "lia_wipepersistence" then return end
     return oldGameConsoleCommand(cmd)
 end
-
-hook.Add("OnReloaded", "liaSalaryOnReloaded", function()
-    timer.Remove("liaSalaryGlobal")
-    local delay = lia.config.get("SalaryInterval", 3600)
-    timer.Create("liaSalaryGlobal", delay, 0, ProcessSalaries)
-end)
 
 gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")

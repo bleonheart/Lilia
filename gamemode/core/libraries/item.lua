@@ -2,6 +2,7 @@
 lia.item.base = lia.item.base or {}
 lia.item.list = lia.item.list or {}
 lia.item.instances = lia.item.instances or {}
+lia.item.itemEntities = lia.item.itemEntities or {}
 lia.item.inventories = lia.inventory.instances or {}
 lia.item.inventoryTypes = lia.item.inventoryTypes or {}
 lia.item.WeaponOverrides = lia.item.WeaponOverrides or {}
@@ -523,7 +524,7 @@ function lia.item.generateAmmo()
         local entityID = className
         local ITEM = lia.item.register(className, baseType, nil, nil, true)
         ITEM.name = override.name or isArc9Ammo and "ARC9 " .. className:gsub("^arc9_ammo_", ""):gsub("_", " "):upper() or isArccwAmmo and "ARCCW " .. className:gsub("^arccw_ammo_", ""):gsub("_", " "):upper() or className
-        ITEM.desc = override.desc or L("ammoDesc", "Unknown")
+        ITEM.desc = override.desc or L("ammoBoxDesc")
         ITEM.category = override.category or L("itemCatAmmunition")
         ITEM.model = override.model or "models/props_c17/suitcase001a.mdl"
         ITEM.entityid = override.entityid or entityID
@@ -673,7 +674,43 @@ if SERVER then
 end
 
 lia.item.loadFromDir("lilia/gamemode/items")
-hook.Add("InitializedModules", "liaWeapons", function()
+hook.Add("InitializedModules", "liaItems", function()
     if lia.config.get("AutoWeaponItemGeneration", true) then lia.item.generateWeapons() end
     if lia.config.get("AutoAmmoItemGeneration", true) then lia.item.generateAmmo() end
+    lia.item.itemEntities = {}
+    for _, item in pairs(lia.item.list) do
+        if item.base == "base_entities" then lia.item.itemEntities[item.uniqueID] = {item.entityid, item.data} end
+    end
 end)
+
+-- Function to extract only essential entity data for items
+local function extractEntityData(entity)
+    if not IsValid(entity) then return {} end
+    local data = {
+        -- Basic visual properties
+        model = entity:GetModel(),
+        material = entity:GetMaterial(),
+        color = entity:GetColor(),
+        skin = entity:GetSkin(),
+        angles = entity:GetAngles(),
+        health = entity:Health(),
+        maxHealth = entity:GetMaxHealth()
+    }
+
+    -- Bodygroups
+    if entity:GetNumBodyGroups() > 0 then
+        data.bodygroups = {}
+        for i = 0, entity:GetNumBodyGroups() - 1 do
+            data.bodygroups[i] = entity:GetBodygroup(i)
+        end
+    end
+
+    -- Save any existing netvars on the entity
+    if SERVER and lia.net and lia.net[entity] then
+        data.netvars = {}
+        for key, value in pairs(lia.net[entity]) do
+            data.netvars[key] = value
+        end
+    end
+    return data
+end

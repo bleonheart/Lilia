@@ -2,7 +2,12 @@
 local stmBlurAmount = 0
 local stmBlurAlpha = 0
 function MODULE:ConfigureCharacterCreationSteps(panel)
-    if table.Count(lia.attribs.list) > 0 then panel:addStep(vgui.Create("liaCharacterAttribs"), 98) end
+    for _, attrib in pairs(lia.attribs.list) do
+        if not attrib.noStartBonus then
+            panel:addStep(vgui.Create("liaCharacterAttribs"), 98)
+            break
+        end
+    end
 end
 
 function MODULE:PlayerBindPress(client, bind, pressed)

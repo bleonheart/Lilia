@@ -100,8 +100,7 @@ function playerMeta:isRunning()
 end
 
 function playerMeta:isFemale()
-    local model = self:GetModel():lower()
-    return model:find("female") or model:find("alyx") or model:find("mossman")
+    return hook.Run("GetModelGender", self, self:GetModel()) == "female"
 end
 
 function playerMeta:IsFamilySharedAccount()

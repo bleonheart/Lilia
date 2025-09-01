@@ -9,21 +9,31 @@ local validClasses = {
 }
 
 function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
-    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^lilia/websounds/")) then
+    print("[EmitSound] Called with soundName:", soundName, "soundLevel:", soundLevel, "pitchPercent:", pitchPercent, "volume:", volume, "channel:", channel, "flags:", flags, "dsp:", dsp)
+    if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^lilia/websounds/") or soundName:find("^websounds/")) then
+        print("[EmitSound] Detected URL or websound:", soundName)
         if SERVER then
+            print("[EmitSound] SERVER: Sending EmitURLSound net message for", soundName)
             net.Start("EmitURLSound")
             net.WriteEntity(self)
             net.WriteString(soundName)
-            net.WriteFloat(volume or 1)
+            net.WriteFloat(volume or 100)
             net.WriteFloat(soundLevel or 100)
             net.WriteBool(false)
             net.Broadcast()
             return true
         else
+            print("[EmitSound] CLIENT: Playing following sound for", soundName)
             local maxDistance = soundLevel and soundLevel * 13.33 or 1000
-            self:PlayFollowingSound(soundName, volume or 1, true, maxDistance)
+            self:PlayFollowingSound(soundName, volume or 100, true, maxDistance)
             return true
         end
+    end
+
+    if CLIENT and isstring(soundName) and lia.websound.get(soundName) then
+        local maxDistance = soundLevel and soundLevel * 13.33 or 1000
+        self:PlayFollowingSound(soundName, volume or 100, true, maxDistance)
+        return true
     end
     return baseEmitSound(self, soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
 end
@@ -287,16 +297,8 @@ else
                 ch:SetVolume(v)
             end
 
-            -- Apply pitch if provided
-            if pitch and pitch ~= 1 then
-                ch:SetPlaybackRate(pitch)
-            end
-
-            -- Apply DSP effect if provided
-            if dsp and dsp > 0 then
-                ch:SetDSP(dsp)
-            end
-
+            if pitch and pitch ~= 1 then ch:SetPlaybackRate(pitch) end
+            if dsp and dsp > 0 then ch:SetDSP(dsp) end
             if startDelay and startDelay > 0 then
                 timer.Simple(startDelay, function() if IsValid(ch) then ch:Play() end end)
             else
@@ -371,23 +373,14 @@ else
             return
         end
 
-        if soundPath:find("^data/") then
+        if soundPath:find("^lilia/websounds/") or soundPath:find("^websounds/") or soundPath:find("^data/lilia/websounds/") or soundPath:find("^data/websounds/") then
             playLocalFile(soundPath)
             return
         end
 
-        local sp = "lilia/websounds/" .. soundPath
-        if file.Exists(sp, "DATA") then
-            playLocalFile("data/" .. sp)
-        else
-            local files = file.Find("lilia/websounds/**", "DATA")
-            for _, fileName in ipairs(files) do
-                if fileName:find(soundPath) or fileName:find("dogeatdog") then
-                    local fullPath = "lilia/websounds/" .. fileName
-                    playLocalFile(fullPath)
-                    return
-                end
-            end
+        if lia.websound.get(soundPath) then
+            playLocalFile(soundPath)
+            return
         end
     end
 

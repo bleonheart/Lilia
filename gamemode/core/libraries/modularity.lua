@@ -73,8 +73,8 @@ local function loadExtras(path)
             end
         end
     else
-        if MODULE.WebIcons and istable(MODULE.WebIcons) then
-            for name, url in pairs(MODULE.WebIcons) do
+        if MODULE.WebImages and istable(MODULE.WebImages) then
+            for name, url in pairs(MODULE.WebImages) do
                 if isstring(name) and isstring(url) then lia.webimage.register(name, url) end
             end
         end

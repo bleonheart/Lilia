@@ -201,14 +201,14 @@ lia.char.registerVar("desc", {
     default = L("descMinLen", lia.config.get("MinDescLen", 16)),
     index = 2,
     onValidate = function(value, data, client)
-        local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction)
+        local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction, data)
         local minLength = lia.config.get("MinDescLen", 16)
         if isstring(desc) and override then return true end
         if not value or #value:gsub("%s", "") < minLength then return false, "descMinLen", minLength end
         return true
     end,
     onAdjust = function(client, data, value, newData)
-        local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction)
+        local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction, data)
         if isstring(desc) and override then
             newData.desc = desc
         else
@@ -483,9 +483,7 @@ lia.char.registerVar("attribs", {
         end
     end,
     shouldDisplay = function()
-        for _, attrib in pairs(lia.attribs.list) do
-            if not attrib.noStartBonus then return true end
-        end
+        if table.Count(lia.attribs.list) > 1 then return true end
         return false
     end
 })

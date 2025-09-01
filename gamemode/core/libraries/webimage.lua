@@ -4,6 +4,12 @@ lia.webimage.allowDownloads = false
 local baseDir = "lilia/webimages/"
 local cache = {}
 local urlMap = {}
+local stats = {
+    downloaded = 0,
+    lastReset = os.time(),
+    downloadedImages = {}
+}
+
 local function ensureDir(p)
     local parts = string.Explode("/", p)
     local cur = ""
@@ -15,8 +21,40 @@ local function ensureDir(p)
     end
 end
 
+local function deriveUrlSaveName(url)
+    local filename = url:match("([^/]+)$") or util.CRC(url) .. ".png"
+    if file.Exists(baseDir .. filename, "DATA") then return filename end
+    local path = url:match("^https?://[^/]+/(.+)$") or filename
+    if path:find("/") then path = path:gsub("^[^/]+/", "", 1) end
+    return "urlimages/" .. path
+end
+
 local function buildMaterial(p, flags)
     return Material("data/" .. p, flags or "noclamp smooth")
+end
+
+local function validateURL(url)
+    if not url or type(url) ~= "string" then return false, "URL is not a valid string" end
+    if not url:find("^https?://") then return false, "URL must start with http:// or https://" end
+    local domain = url:match("^https?://([^/]+)")
+    if not domain then return false, "URL has no valid domain" end
+    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, "localhost URLs are not allowed" end
+    local ipPattern = "^%d+%.%d+%.%d+%.%d+$"
+    if domain:match(ipPattern) then
+        local parts = string.Explode(".", domain)
+        if #parts ~= 4 then return false, "invalid IP address format" end
+        for _, part in ipairs(parts) do
+            local num = tonumber(part)
+            if not num or num < 0 or num > 255 then return false, "invalid IP address octet" end
+        end
+    else
+        if not domain:find("%.") then return false, "domain name must contain at least one dot" end
+        if domain:find("%.%.") then return false, "domain contains consecutive dots" end
+    end
+
+    if url:find("[<>\"\\|]") then return false, "URL contains invalid characters" end
+    if #url > 2048 then return false, "URL is too long (max 2048 characters)" end
+    return true
 end
 
 function lia.webimage.download(n, u, cb, flags)
@@ -29,7 +67,15 @@ function lia.webimage.download(n, u, cb, flags)
     local url = u or lia.webimage.stored[n] and lia.webimage.stored[n].url
     local flg = flags or lia.webimage.stored[n] and lia.webimage.stored[n].flags
     if not url or url == "" then
+        print("[WebImage] ERROR: Invalid image '" .. n .. "' - no URL provided")
         if cb then cb(nil, false, "no url") end
+        return
+    end
+
+    local isValidURL, validationError = validateURL(url)
+    if not isValidURL then
+        print("[WebImage] ERROR: Invalid URL for image '" .. n .. "' - " .. validationError .. " (URL: " .. url .. ")")
+        if cb then cb(nil, false, "invalid url: " .. validationError) end
         return
     end
 
@@ -40,7 +86,11 @@ function lia.webimage.download(n, u, cb, flags)
         local m = buildMaterial(savePath, flg)
         cache[n] = m
         if cb then cb(m, fromCache) end
-        if not fromCache then hook.Run("WebImageDownloaded", n, "data/" .. savePath) end
+        if not fromCache and not stats.downloadedImages[n] then
+            stats.downloadedImages[n] = true
+            stats.downloaded = stats.downloaded + 1
+            hook.Run("WebImageDownloaded", n, "data/" .. savePath)
+        end
     end
 
     http.Fetch(url, function(b)
@@ -54,6 +104,7 @@ function lia.webimage.download(n, u, cb, flags)
         file.Write(savePath, b)
         finalize(false)
     end, function(e)
+        print("[WebImage] HTTP fetch failed for '" .. url .. "': " .. tostring(e))
         if file.Exists(savePath, "DATA") then
             finalize(true)
         elseif cb then
@@ -67,7 +118,8 @@ function lia.webimage.register(n, u, cb, flags)
         url = u,
         flags = flags
     }
-    return lia.webimage.download(n, u, cb, flags)
+
+    lia.webimage.download(n, u, cb, flags)
 end
 
 function lia.webimage.get(n, flags)
@@ -88,17 +140,24 @@ function Material(p, ...)
         if p:find("^https?://") then
             local n = urlMap[p]
             if not n then
-                local ext = p:match("%.([%w]+)$") or "png"
-                n = util.CRC(p) .. "." .. ext
+                n = deriveUrlSaveName(p)
                 urlMap[p] = n
             end
 
             lia.webimage.register(n, p)
             return origMaterial("data/" .. baseDir .. n, flags)
         elseif p:find("^lilia/webimages/") then
-            -- Handle paths that already start with lilia/webimages/
             local webPath = p:gsub("^lilia/webimages/", "")
             local mat = lia.webimage.get(webPath, flags)
+            if mat then return mat end
+            return origMaterial("data/" .. baseDir .. webPath, flags)
+        elseif p:find("^webimages/") then
+            local webPath = p:gsub("^webimages/", "")
+            local mat = lia.webimage.get(webPath, flags)
+            if mat then return mat end
+            return origMaterial("data/" .. baseDir .. webPath, flags)
+        else
+            local mat = lia.webimage.get(p, flags)
             if mat then return mat end
         end
     end
@@ -106,40 +165,49 @@ function Material(p, ...)
 end
 
 local dimage = vgui.GetControlTable("DImage")
-if dimage and dimage.SetImage then
-    local origSetImage = dimage.SetImage
-    function dimage:SetImage(src, backup)
-        if isstring(src) then
-            if src:find("^https?://") then
-                local n = urlMap[src]
-                if not n then
-                    local ext = src:match("%.([%w]+)$") or "png"
-                    n = util.CRC(src) .. "." .. ext
-                    urlMap[src] = n
-                end
+local origSetImage = dimage.SetImage
+function dimage:SetImage(src, backup)
+    if isstring(src) then
+        if src:find("^https?://") then
+            local n = urlMap[src]
+            if not n then
+                n = deriveUrlSaveName(src)
+                urlMap[src] = n
+            end
 
-                local savePath = baseDir .. n
-                lia.webimage.register(n, src, function(m)
-                    if m and not m:IsError() then
-                        origSetImage(self, "data/" .. savePath, backup)
-                    elseif backup then
-                        origSetImage(self, backup)
-                    end
-                end)
-                return
-            elseif src:find("^lilia/webimages/") then
-                -- Handle paths that already start with lilia/webimages/
-                local webPath = src:gsub("^lilia/webimages/", "")
-                local m = lia.webimage.get(webPath)
+            local savePath = baseDir .. n
+            lia.webimage.register(n, src, function(m)
                 if m and not m:IsError() then
-                    origSetImage(self, "data/" .. baseDir .. webPath, backup)
-                    return
+                    origSetImage(self, "data/" .. savePath, backup)
+                elseif backup then
+                    origSetImage(self, backup)
                 end
+            end)
+            return
+        elseif src:find("^lilia/webimages/") then
+            local webPath = src:gsub("^lilia/webimages/", "")
+            local m = lia.webimage.get(webPath)
+            if m and not m:IsError() then
+                origSetImage(self, "data/" .. baseDir .. webPath, backup)
+                return
+            end
+        elseif src:find("^webimages/") then
+            local webPath = src:gsub("^webimages/", "")
+            local m = lia.webimage.get(webPath)
+            if m and not m:IsError() then
+                origSetImage(self, "data/" .. baseDir .. webPath, backup)
+                return
+            end
+        else
+            local m = lia.webimage.get(src)
+            if m and not m:IsError() then
+                origSetImage(self, "data/" .. baseDir .. src, backup)
+                return
             end
         end
-
-        origSetImage(self, src, backup)
     end
+
+    origSetImage(self, src, backup)
 end
 
 local function findImagesRecursive(dir, result)
@@ -236,18 +304,30 @@ concommand.Add("test_webimage_menu", function()
     end
 end)
 
+function lia.webimage.getStats()
+    local totalStored = 0
+    for _ in pairs(lia.webimage.stored) do
+        totalStored = totalStored + 1
+    end
+    return {
+        downloaded = stats.downloaded,
+        stored = totalStored,
+        lastReset = stats.lastReset
+    }
+end
+
 lia.webimage.register("lilia.png", "https://bleonheart.github.io/Samael-Assets/lilia.png")
-lia.webimage.register("lilia/locked.png", "https://bleonheart.github.io/Samael-Assets/misc/locked.png")
-lia.webimage.register("lilia/unlocked.png", "https://bleonheart.github.io/Samael-Assets/misc/unlocked.png")
-lia.webimage.register("lilia/checkbox.png", "https://bleonheart.github.io/Samael-Assets/misc/checkbox.png")
-lia.webimage.register("lilia/unchecked.png", "https://bleonheart.github.io/Samael-Assets/misc/unchecked.png")
-lia.webimage.register("lilia/normaltalk.png", "https://bleonheart.github.io/Samael-Assets/misc/normaltalk.png")
-lia.webimage.register("lilia/yelltalk.png", "https://bleonheart.github.io/Samael-Assets/misc/yelltalk.png")
-lia.webimage.register("lilia/whispertalk.png", "https://bleonheart.github.io/Samael-Assets/misc/whispertalk.png")
-lia.webimage.register("lilia/notalk.png", "https://bleonheart.github.io/Samael-Assets/misc/notalk.png")
-lia.webimage.register("lilia/invslotfree.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotfree.png")
-lia.webimage.register("lilia/vignette.png", "https://bleonheart.github.io/Samael-Assets/misc/vignette.png")
-lia.webimage.register("lilia/dark_vignette.png", "https://bleonheart.github.io/Samael-Assets/misc/dark_vignette.png")
-lia.webimage.register("lilia/invslotblocked.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotblocked.png")
-lia.webimage.register("lilia/settings.png", "https://bleonheart.github.io/Samael-Assets/misc/settings.png")
+lia.webimage.register("locked.png", "https://bleonheart.github.io/Samael-Assets/misc/locked.png")
+lia.webimage.register("unlocked.png", "https://bleonheart.github.io/Samael-Assets/misc/unlocked.png")
+lia.webimage.register("checkbox.png", "https://bleonheart.github.io/Samael-Assets/misc/checkbox.png")
+lia.webimage.register("unchecked.png", "https://bleonheart.github.io/Samael-Assets/misc/unchecked.png")
+lia.webimage.register("normaltalk.png", "https://bleonheart.github.io/Samael-Assets/misc/normaltalk.png")
+lia.webimage.register("yelltalk.png", "https://bleonheart.github.io/Samael-Assets/misc/yelltalk.png")
+lia.webimage.register("whispertalk.png", "https://bleonheart.github.io/Samael-Assets/misc/whispertalk.png")
+lia.webimage.register("notalk.png", "https://bleonheart.github.io/Samael-Assets/misc/notalk.png")
+lia.webimage.register("invslotfree.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotfree.png")
+lia.webimage.register("vignette.png", "https://bleonheart.github.io/Samael-Assets/misc/vignette.png")
+lia.webimage.register("dark_vignette.png", "https://bleonheart.github.io/Samael-Assets/misc/dark_vignette.png")
+lia.webimage.register("invslotblocked.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotblocked.png")
+lia.webimage.register("settings.png", "https://bleonheart.github.io/Samael-Assets/misc/settings.png")
 ensureDir(baseDir)

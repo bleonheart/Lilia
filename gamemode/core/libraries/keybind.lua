@@ -433,3 +433,83 @@ lia.keybind.add(KEY_NONE, "quickTakeItem", {
         end
     end
 })
+
+lia.keybind.add(KEY_NONE, "convertEntity", {
+    onPress = function(client)
+        if not IsValid(client) or not client:getChar() then return end
+        -- Find the entity the player is looking at
+        local trace = client:GetEyeTrace()
+        local targetEntity = trace.Entity
+        -- Check if we have a valid entity
+        if not IsValid(targetEntity) or targetEntity == client then return end
+        -- Check distance (within 200 units)
+        if trace.HitPos:Distance(client:GetPos()) > 200 then
+            client:notifyLocalized("entityTooFar")
+            return
+        end
+
+        -- Don't allow converting players, items, or certain protected entities
+        if targetEntity:IsPlayer() or targetEntity:isItem() or targetEntity:GetClass() == "lia_money" then
+            client:notifyLocalized("cannotConvertEntity")
+            return
+        end
+
+        -- Check if this entity type has a corresponding item definition
+        local hasItemDefinition = false
+        local itemUniqueID = ""
+        local targetEntityID = targetEntity:GetClass()
+        -- Search through itemEntities to find if this entity has an item
+        for uniqueID, entityData in pairs(lia.item.itemEntities or {}) do
+            if entityData[1] == targetEntityID then
+                hasItemDefinition = true
+                itemUniqueID = uniqueID
+                break
+            end
+        end
+
+        -- If no item definition exists for this entity type, don't allow conversion
+        if not hasItemDefinition then
+            client:notifyLocalized("entityNotConvertible")
+            return
+        end
+
+        -- Extract essential entity data
+        local entityData = extractEntityData(targetEntity)
+        -- Create the item instance
+        lia.item.instance(0, itemUniqueID, {}, 1, 1, function(item)
+            if not item then return end
+            -- Set the comprehensive entity data using setNetVar
+            if SERVER then
+                item:getEntity():setNetVar("entityData", entityData)
+                item:setData("entityClass", targetEntity:GetClass())
+                item:setData("entityModel", targetEntity:GetModel())
+            end
+
+            -- Try to add to player's inventory
+            local inventory = client:getChar():getInv()
+            if inventory then
+                inventory:add(item):next(function()
+                    -- Remove the original entity
+                    if IsValid(targetEntity) then SafeRemoveEntity(targetEntity) end
+                    client:notifyLocalized("entityConverted", item:getName())
+                end):catch(function(err)
+                    if err == "noFit" then
+                        -- If inventory is full, spawn the item on the ground
+                        item:spawn(client:getItemDropPos())
+                        if IsValid(targetEntity) then SafeRemoveEntity(targetEntity) end
+                        client:notifyLocalized("entityConvertedGround", item:getName())
+                    else
+                        client:notifyLocalized("inventoryError")
+                    end
+                end)
+            else
+                -- If no inventory, spawn on ground
+                item:spawn(client:getItemDropPos())
+                if IsValid(targetEntity) then SafeRemoveEntity(targetEntity) end
+                client:notifyLocalized("entityConvertedGround", item:getName())
+            end
+        end)
+    end,
+    shouldRun = function(client) return client:getChar() ~= nil end,
+    serverOnly = true
+})

@@ -7,6 +7,12 @@ function GM:OnCharVarChanged(character, varName, oldVar, newVar)
     end
 end
 
+function GM:GetModelGender(client, model)
+    model = model and model or client:GetModel():lower()
+    local isFemale = model:find("alyx") or model:find("mossman") and model:find("female")
+    return isFemale and "female" or "male"
+end
+
 local GamemodeFunctions = {
     server = {
         {

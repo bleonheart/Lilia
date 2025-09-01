@@ -407,6 +407,7 @@ LANGUAGE = {
     ammoLoadAll = "Зарядить всё",
     ammoLoadAmount = "Зарядить %s",
     ammoDesc = "Осталось: %s",
+    ammoBoxDesc = "Коробка патронов",
     useGrenade = "Использовать гранату",
     noRagdollAction = "Вы не можете сделать это в состоянии рагдолла.",
     sameOutfitCategory = "Вы уже носите что-то в этой категории одежды.",

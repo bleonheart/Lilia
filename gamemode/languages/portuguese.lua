@@ -407,6 +407,7 @@ LANGUAGE = {
     ammoLoadAll = "Carregar Tudo",
     ammoLoadAmount = "Carregar %s",
     ammoDesc = "Restante: %s",
+    ammoBoxDesc = "Uma caixa de munição",
     useGrenade = "Usar Granada",
     noRagdollAction = "Não podes fazer isso enquanto estás ragdoll.",
     sameOutfitCategory = "Já estás a usar algo nesta categoria de roupa.",
