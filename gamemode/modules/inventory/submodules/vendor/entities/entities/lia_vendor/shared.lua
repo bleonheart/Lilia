@@ -139,5 +139,7 @@ function ENT:setAnim()
         if self:GetSequenceCount() > 1 then self:ResetSequence(4) end
     end)
 
-    if not success then print("[Lilia Vendor] Error in setAnim: " .. tostring(err)) end
+    if not success then
+        -- Error in setAnim function
+    end
 end
