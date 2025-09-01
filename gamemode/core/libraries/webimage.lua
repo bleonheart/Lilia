@@ -67,14 +67,12 @@ function lia.webimage.download(n, u, cb, flags)
     local url = u or lia.webimage.stored[n] and lia.webimage.stored[n].url
     local flg = flags or lia.webimage.stored[n] and lia.webimage.stored[n].flags
     if not url or url == "" then
-        print("[WebImage] ERROR: Invalid image '" .. n .. "' - no URL provided")
         if cb then cb(nil, false, "no url") end
         return
     end
 
     local isValidURL, validationError = validateURL(url)
     if not isValidURL then
-        print("[WebImage] ERROR: Invalid URL for image '" .. n .. "' - " .. validationError .. " (URL: " .. url .. ")")
         if cb then cb(nil, false, "invalid url: " .. validationError) end
         return
     end
@@ -104,7 +102,6 @@ function lia.webimage.download(n, u, cb, flags)
         file.Write(savePath, b)
         finalize(false)
     end, function(e)
-        print("[WebImage] HTTP fetch failed for '" .. url .. "': " .. tostring(e))
         if file.Exists(savePath, "DATA") then
             finalize(true)
         elseif cb then
@@ -149,16 +146,22 @@ function Material(p, ...)
         elseif p:find("^lilia/webimages/") then
             local webPath = p:gsub("^lilia/webimages/", "")
             local mat = lia.webimage.get(webPath, flags)
-            if mat then return mat end
+            if mat then
+                return mat
+            end
             return origMaterial("data/" .. baseDir .. webPath, flags)
         elseif p:find("^webimages/") then
             local webPath = p:gsub("^webimages/", "")
             local mat = lia.webimage.get(webPath, flags)
-            if mat then return mat end
+            if mat then
+                return mat
+            end
             return origMaterial("data/" .. baseDir .. webPath, flags)
         else
             local mat = lia.webimage.get(p, flags)
-            if mat then return mat end
+            if mat then
+                return mat
+            end
         end
     end
     return origMaterial(p, flags)

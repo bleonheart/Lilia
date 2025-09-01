@@ -99,7 +99,6 @@ function lia.websound.download(name, url, cb)
     name = normalizeName(name)
     local u = url or lia.websound.stored[name]
     if not u or u == "" then
-        print("[WebSound] ERROR: Invalid sound '" .. name .. "' - no URL provided")
         if cb then cb(nil, false, "no url") end
         return
     end
@@ -107,7 +106,6 @@ function lia.websound.download(name, url, cb)
     
     local isValidURL, validationError = validateURL(u)
     if not isValidURL then
-        print("[WebSound] ERROR: Invalid URL for sound '" .. name .. "' - " .. validationError .. " (URL: " .. u .. ")")
         if cb then cb(nil, false, "invalid url: " .. validationError) end
         return
     end
@@ -137,7 +135,6 @@ function lia.websound.download(name, url, cb)
         file.Write(savePath, body)
         finalize(false)
     end, function(err)
-        print("[WebSound] HTTP fetch failed for '" .. u .. "': " .. tostring(err))
         if file.Exists(savePath, "DATA") then
             local existingFileData = file.Read(savePath, "DATA")
             if existingFileData then
@@ -338,7 +335,6 @@ concommand.Add("lia_wipe_sounds", function()
 end)
 
 concommand.Add("lia_validate_sounds", function()
-    print("[WebSound] Validating all cached sound files...")
     local files = file.Find(baseDir .. "**", "DATA")
     local validCount = 0
     local invalidCount = 0
@@ -364,17 +360,13 @@ concommand.Add("lia_validate_sounds", function()
 
     print(string.format("[WebSound] Validation complete: %d valid, %d invalid", validCount, invalidCount))
     if #corruptedFiles > 0 then
-        print("[WebSound] Corrupted files found:")
         for _, fileName in ipairs(corruptedFiles) do
             print(string.format("[WebSound]  - %s", fileName))
         end
-
-        print("[WebSound] Use 'lia_cleanup_sounds' to remove corrupted files")
     end
 end)
 
 concommand.Add("lia_cleanup_sounds", function()
-    print("[WebSound] Cleaning up corrupted sound files...")
     local files = file.Find(baseDir .. "**", "DATA")
     local removedCount = 0
     for _, fileName in ipairs(files) do
@@ -406,10 +398,8 @@ concommand.Add("lia_cleanup_sounds", function()
 end)
 
 concommand.Add("lia_list_sounds", function()
-    print("[WebSound] Listing all files in websounds directory:")
     local files = file.Find(baseDir .. "**", "DATA")
     if #files == 0 then
-        print("[WebSound] No files found in websounds directory")
         return
     end
 

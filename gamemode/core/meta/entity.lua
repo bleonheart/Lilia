@@ -9,11 +9,8 @@ local validClasses = {
 }
 
 function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
-    print("[EmitSound] Called with soundName:", soundName, "soundLevel:", soundLevel, "pitchPercent:", pitchPercent, "volume:", volume, "channel:", channel, "flags:", flags, "dsp:", dsp)
     if isstring(soundName) and (soundName:find("^https?://") or soundName:find("^lilia/websounds/") or soundName:find("^websounds/")) then
-        print("[EmitSound] Detected URL or websound:", soundName)
         if SERVER then
-            print("[EmitSound] SERVER: Sending EmitURLSound net message for", soundName)
             net.Start("EmitURLSound")
             net.WriteEntity(self)
             net.WriteString(soundName)
@@ -23,7 +20,6 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
             net.Broadcast()
             return true
         else
-            print("[EmitSound] CLIENT: Playing following sound for", soundName)
             local maxDistance = soundLevel and soundLevel * 13.33 or 1000
             self:PlayFollowingSound(soundName, volume or 100, true, maxDistance)
             return true

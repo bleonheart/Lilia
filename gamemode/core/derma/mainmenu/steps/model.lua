@@ -12,29 +12,79 @@ function PANEL:onDisplay()
     self.models:Clear()
     local faction = lia.faction.indices[self:getContext("faction")]
     if not faction then return end
-    local paintOver = function(icon, w, h) self:paintIcon(icon, w, h) end
+
+    -- Allow filtering of available models
+    hook.Run("FilterCharacterModels", LocalPlayer(), faction)
+
+    -- Separate models by gender
+    local maleModels = {}
+    local femaleModels = {}
+
     for idx, data in SortedPairs(faction.models) do
-        local icon = self.models:Add("SpawnIcon")
-        icon:SetSize(64, 128)
-        icon.index = idx
-        icon.PaintOver = paintOver
-        icon.DoClick = function() self:onModelSelected(icon) end
-        local model, skin, bodyGroups = data, 0, ""
-        if istable(data) then
-            skin = data[2] or 0
-            for i = 0, 8 do
-                bodyGroups = bodyGroups .. tostring((data[3] or {})[i] or 0)
-            end
+        local modelPath = istable(data) and data[1] or data
+        local gender = lia.identifications.GetModelGender(modelPath)
 
-            model = data[1]
+        if gender == "male" then
+            table.insert(maleModels, {idx = idx, data = data})
+        else
+            table.insert(femaleModels, {idx = idx, data = data})
         end
-
-        icon:SetModel(model, skin, bodyGroups)
-        icon.model, icon.skin, icon.bodyGroups = model, skin, bodyGroups
-        if self:getContext("model") == idx then self:onModelSelected(icon, true) end
     end
 
-    self.models:InvalidateLayout(true)
+    local paintOver = function(icon, w, h) self:paintIcon(icon, w, h) end
+
+    local function createModelSection(models, title)
+        if #models == 0 then return end
+
+        -- Add section header
+        local header = self:Add("DLabel")
+        header:SetFont("liaMediumFont")
+        header:SetText(title:upper())
+        header:SetTextColor(color_white)
+        header:SizeToContents()
+        header:Dock(TOP)
+        header:DockMargin(0, 8, 0, 4)
+
+        -- Create scroll panel for this section
+        local scrollPanel = self:Add("DScrollPanel")
+        scrollPanel:Dock(TOP)
+        scrollPanel:DockMargin(0, 4, 0, 8)
+        scrollPanel:SetTall(140)
+
+        local modelsLayout = scrollPanel:Add("DIconLayout")
+        modelsLayout:Dock(FILL)
+        modelsLayout:SetSpaceX(4)
+        modelsLayout:SetSpaceY(4)
+
+        for _, modelInfo in ipairs(models) do
+            local icon = modelsLayout:Add("SpawnIcon")
+            icon:SetSize(64, 128)
+            icon.index = modelInfo.idx
+            icon.PaintOver = paintOver
+            icon.DoClick = function() self:onModelSelected(icon) end
+
+            local data = modelInfo.data
+            local model, skin, bodyGroups = data, 0, ""
+            if istable(data) then
+                skin = data[2] or 0
+                for i = 0, 8 do
+                    bodyGroups = bodyGroups .. tostring((data[3] or {})[i] or 0)
+                end
+
+                model = data[1]
+            end
+
+            icon:SetModel(model, skin, bodyGroups)
+            icon.model, icon.skin, icon.bodyGroups = model, skin, bodyGroups
+            if self:getContext("model") == modelInfo.idx then self:onModelSelected(icon, true) end
+        end
+    end
+
+    -- Create sections for male and female models
+    createModelSection(maleModels, "Male Models")
+    createModelSection(femaleModels, "Female Models")
+
+    self:InvalidateLayout(true)
 end
 
 function PANEL:paintIcon(icon, w, h)
