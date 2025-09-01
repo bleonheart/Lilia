@@ -445,7 +445,7 @@ end
 function GM:InitializedConfig()
     timer.Simple(0.2, function() lia.config.send() end)
     timer.Remove("liaSalaryGlobal")
-    timer.Create("liaSalaryGlobal", lia.config.get("SalaryInterval", 3600), 0, self:ProcessSalaries())
+    timer.Create("liaSalaryGlobal", lia.config.get("SalaryInterval", 3600), 0, function() self:ProcessSalaries() end)
 end
 
 function GM:PlayerInitialSpawn(client)
@@ -1301,7 +1301,7 @@ end
 function GM:OnConfigUpdated(key, newValue)
     if key == "SalaryInterval" then
         timer.Remove("liaSalaryGlobal")
-        timer.Create("liaSalaryGlobal", newValue, 0, self:ProcessSalaries())
+        timer.Create("liaSalaryGlobal", newValue, 0, function() self:ProcessSalaries() end)
     end
 end
 

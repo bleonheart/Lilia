@@ -493,10 +493,10 @@ lia.config.add("IsVoiceEnabled", "voiceChatEnabled", true, function(_, newValue)
     type = "Boolean",
 })
 
-lia.config.add("SalaryInterval", "salaryInterval", 300, function()
-    for _, client in player.Iterator() do
-        hook.Run("CreateSalaryTimer", client)
-    end
+lia.config.add("SalaryInterval", "salaryInterval", 300, function(_, newValue)
+    local GM = GM or GAMEMODE
+    timer.Remove("liaSalaryGlobal")
+    timer.Create("liaSalaryGlobal", newValue, 0, function() GM:ProcessSalaries() end)
 end, {
     desc = "salaryIntervalDesc",
     category = "categorySalary",

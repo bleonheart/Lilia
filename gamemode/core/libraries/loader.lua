@@ -571,7 +571,7 @@ function GM:OnReloaded()
         lia.playerinteract.syncToClients()
         lia.bootstrap("HotReload", "Gamemode hotreloaded successfully!")
         timer.Remove("liaSalaryGlobal")
-        timer.Create("liaSalaryGlobal", lia.config.get("SalaryInterval", 3600), 0, self:ProcessSalaries())
+        timer.Create("liaSalaryGlobal", lia.config.get("SalaryInterval", 3600), 0, function() self:ProcessSalaries() end)
     else
         chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gamemode hotreloaded successfully!")
     end
