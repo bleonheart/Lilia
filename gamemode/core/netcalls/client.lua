@@ -1057,11 +1057,11 @@ net.Receive("liaAssureClientSideAssets", function()
         end
     end
 
-    for i = 1, math.min(maxConcurrent, #downloadQueue) do
+    for _ = 1, math.min(maxConcurrent, #downloadQueue) do
         processNextDownload()
     end
 
-    local progressTimer = timer.Create("AssetDownloadProgress", 2, 0, function()
+    timer.Create("AssetDownloadProgress", 2, 0, function()
         if activeDownloads == 0 and #downloadQueue == 0 then
             timer.Remove("AssetDownloadProgress")
             lia.option.load()

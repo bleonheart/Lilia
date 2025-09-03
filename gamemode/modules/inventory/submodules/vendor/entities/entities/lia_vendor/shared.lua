@@ -130,16 +130,12 @@ end
 
 function ENT:setAnim()
     if not self:isReadyForAnim() then return end
-    local success, err = pcall(function()
-        local sequenceList = self:GetSequenceList()
-        for k, v in ipairs(sequenceList) do
-            if v:lower():find("idle") and v ~= "idlenoise" then return self:ResetSequence(k) end
-        end
+    local sequenceList = self:GetSequenceList()
+    for k, v in ipairs(sequenceList) do
+        if v:lower():find("idle") and v ~= "idlenoise" then return self:ResetSequence(k) end
+    end
 
-        if self:GetSequenceCount() > 1 then self:ResetSequence(4) end
-    end)
-
-    if not success then
-
+    if self:GetSequenceCount() > 1 then 
+        self:ResetSequence(4) 
     end
 end
