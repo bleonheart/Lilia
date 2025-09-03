@@ -542,55 +542,10 @@ if SERVER then
         if char then char:takeFlags(flags) end
     end
 
-    function playerMeta:getPlayerFlags()
-        return self:getLiliaData("playerFlags", "")
-    end
-
-    function playerMeta:setPlayerFlags(flags)
-        self:setLiliaData("playerFlags", flags)
-    end
-
-    function playerMeta:hasPlayerFlags(flags)
-        local pFlags = self:getPlayerFlags()
-        for i = 1, #flags do
-            if pFlags:find(flags:sub(i, i), 1, true) then return true end
-        end
-        return false
-    end
-
-    function playerMeta:givePlayerFlags(flags)
-        local addedFlags = ""
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            if not self:hasPlayerFlags(flag) then
-                local info = lia.flag.list[flag]
-                if info and info.callback and not self:hasFlags(flag) then info.callback(self, true) end
-                addedFlags = addedFlags .. flag
-            end
-        end
-
-        if addedFlags ~= "" then self:setPlayerFlags(self:getPlayerFlags() .. addedFlags) end
-    end
-
-    function playerMeta:takePlayerFlags(flags)
-        local oldFlags = self:getPlayerFlags()
-        local newFlags = oldFlags
-        local char = self:getChar()
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            local info = lia.flag.list[flag]
-            newFlags = newFlags:gsub(flag, "")
-            local hasChar = char and char:hasFlags(flag)
-            if info and info.callback and not hasChar then info.callback(self, false) end
-        end
-
-        if newFlags ~= oldFlags then self:setPlayerFlags(newFlags) end
-    end
-
     function playerMeta:hasFlags(flags)
         for i = 1, #flags do
             local flag = flags:sub(i, i)
-            if self:getFlags():find(flag, 1, true) or self:getPlayerFlags():find(flag, 1, true) then return true end
+            if self:getFlags():find(flag, 1, true) or self:getFlags("player"):find(flag, 1, true) then return true end
         end
         return hook.Run("CharHasFlags", self, flags) or false
     end
@@ -1119,55 +1074,10 @@ else
         if char then char:takeFlags(flags) end
     end
 
-    function playerMeta:getPlayerFlags()
-        return self:getLiliaData("playerFlags", "")
-    end
-
-    function playerMeta:setPlayerFlags(flags)
-        self:setLiliaData("playerFlags", flags)
-    end
-
-    function playerMeta:hasPlayerFlags(flags)
-        local pFlags = self:getPlayerFlags()
-        for i = 1, #flags do
-            if pFlags:find(flags:sub(i, i), 1, true) then return true end
-        end
-        return false
-    end
-
-    function playerMeta:givePlayerFlags(flags)
-        local addedFlags = ""
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            if not self:hasPlayerFlags(flag) then
-                local info = lia.flag.list[flag]
-                if info and info.callback and not self:hasFlags(flag) then info.callback(self, true) end
-                addedFlags = addedFlags .. flag
-            end
-        end
-
-        if addedFlags ~= "" then self:setPlayerFlags(self:getPlayerFlags() .. addedFlags) end
-    end
-
-    function playerMeta:takePlayerFlags(flags)
-        local oldFlags = self:getPlayerFlags()
-        local newFlags = oldFlags
-        local char = self:getChar()
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            local info = lia.flag.list[flag]
-            newFlags = newFlags:gsub(flag, "")
-            local hasChar = char and char:hasFlags(flag)
-            if info and info.callback and not hasChar then info.callback(self, false) end
-        end
-
-        if newFlags ~= oldFlags then self:setPlayerFlags(newFlags) end
-    end
-
     function playerMeta:hasFlags(flags)
         for i = 1, #flags do
             local flag = flags:sub(i, i)
-            if self:getFlags():find(flag, 1, true) or self:getPlayerFlags():find(flag, 1, true) then return true end
+            if self:getFlags():find(flag, 1, true) or self:getFlags("player"):find(flag, 1, true) then return true end
         end
         return hook.Run("CharHasFlags", self, flags) or false
     end
