@@ -1,4 +1,5 @@
-﻿local staminaPlayers = {}
+﻿local MODULE = MODULE
+local staminaPlayers = {}
 function MODULE:PostPlayerLoadout(client)
     local char = client:getChar()
     if not char then return end
