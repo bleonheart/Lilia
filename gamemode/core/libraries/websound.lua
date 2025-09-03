@@ -113,7 +113,7 @@ function lia.websound.download(name, url, cb)
     if file.Exists(savePath, "DATA") then
         local existingFileData = file.Read(savePath, "DATA")
         if existingFileData then
-            local isValid, fileValidationError = validateSoundFile(savePath, existingFileData)
+            local isValid, _ = validateSoundFile(savePath, existingFileData)
             if isValid then
                 finalize(true)
                 return
