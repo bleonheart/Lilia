@@ -91,10 +91,8 @@ function lia.webimage.download(n, u, cb, flags)
         end
     end
 
-
     local cleanName = n:gsub("%.%w+$", "")
     local extension = nil
-
     for _, ext in ipairs({"png", "jpg", "jpeg"}) do
         local testPath = baseDir .. cleanName .. "." .. ext
         if file.Exists(testPath, "DATA") then
@@ -105,7 +103,6 @@ function lia.webimage.download(n, u, cb, flags)
     end
 
     http.Fetch(url, function(b)
-
         if string.lower(string.sub(b, 2, 4)) == "png" then
             extension = "png"
         elseif string.lower(string.sub(b, 7, 10)) == "jfif" or string.lower(string.sub(b, 7, 10)) == "exif" then
@@ -118,7 +115,6 @@ function lia.webimage.download(n, u, cb, flags)
         end
 
         savePath = baseDir .. cleanName .. "." .. extension
-
         if file.Exists(savePath, "DATA") then
             local existingSize = file.Size(savePath, "DATA")
             if existingSize == #b then
@@ -137,7 +133,6 @@ function lia.webimage.download(n, u, cb, flags)
         file.Write(savePath, b)
         finalize(false)
     end, function(e)
-
         for _, ext in ipairs({"png", "jpg", "jpeg"}) do
             local testPath = baseDir .. cleanName .. "." .. ext
             if file.Exists(testPath, "DATA") then
@@ -369,11 +364,3 @@ lia.webimage.register("dark_vignette.png", "https://bleonheart.github.io/Samael-
 lia.webimage.register("invslotblocked.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotblocked.png")
 lia.webimage.register("settings.png", "https://bleonheart.github.io/Samael-Assets/misc/settings.png")
 ensureDir(baseDir)
-concommand.Add("abc", function()
-    local ply = LocalPlayer()
-    if not IsValid(ply) then return end
-    local tr = ply:GetEyeTrace()
-    local ent = IsValid(tr.Entity) and tr.Entity or nil
-    if not IsValid(ent) then return end
-    ent:SetMaterial("https://bleonheart.github.io/Samael-Assets/music/metallica/kill_them_all/cover.png", 0, "cover")
-end)
