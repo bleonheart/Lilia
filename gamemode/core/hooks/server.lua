@@ -1143,7 +1143,7 @@ concommand.Add("lia_wipecharacters", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all characters...\n")
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if IsValid(ply) then ply:Kick("Server is wiping character data. Please reconnect after the wipe is complete.") end
         end
 
