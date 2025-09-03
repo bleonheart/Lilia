@@ -682,35 +682,3 @@ hook.Add("InitializedModules", "liaItems", function()
         if item.base == "base_entities" then lia.item.itemEntities[item.uniqueID] = {item.entityid, item.data} end
     end
 end)
-
--- Function to extract only essential entity data for items
-local function extractEntityData(entity)
-    if not IsValid(entity) then return {} end
-    local data = {
-        -- Basic visual properties
-        model = entity:GetModel(),
-        material = entity:GetMaterial(),
-        color = entity:GetColor(),
-        skin = entity:GetSkin(),
-        angles = entity:GetAngles(),
-        health = entity:Health(),
-        maxHealth = entity:GetMaxHealth()
-    }
-
-    -- Bodygroups
-    if entity:GetNumBodyGroups() > 0 then
-        data.bodygroups = {}
-        for i = 0, entity:GetNumBodyGroups() - 1 do
-            data.bodygroups[i] = entity:GetBodygroup(i)
-        end
-    end
-
-    -- Save any existing netvars on the entity
-    if SERVER and lia.net and lia.net[entity] then
-        data.netvars = {}
-        for key, value in pairs(lia.net[entity]) do
-            data.netvars[key] = value
-        end
-    end
-    return data
-end

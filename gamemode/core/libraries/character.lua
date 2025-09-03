@@ -801,6 +801,30 @@ if SERVER then
         end)
 
         hook.Run("OnCharDelete", client, id)
+
+
+        if IsValid(client) and client:getChar() and client:getChar():getID() == id then
+
+            net.Start("removeF1")
+            net.Send(client)
+
+
+            net.Start("charKick")
+            net.WriteUInt(id, 32)
+            net.WriteBool(true)
+            net.Send(client)
+
+
+            client:setNetVar("char", nil)
+            client:Spawn()
+        end
+
+        for _, ply in player.Iterator() do
+            if IsValid(ply) and ply:hasPrivilege("listCharacters") then
+                net.Start("liaCharDeleted")
+                net.Send(ply)
+            end
+        end
     end
 
     function lia.char.getCharBanned(charID)

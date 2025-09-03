@@ -116,6 +116,15 @@ function entityMeta:getEntItemDropPos(offset)
     return trResult.HitPos + trResult.HitNormal * 5, trResult.HitNormal:Angle()
 end
 
+function entityMeta:isFemale()
+    if not IsValid(self) then return false end
+    if self:IsPlayer() then
+        return hook.Run("GetPlayerGender", self, self:GetModel()) == "female"
+    else
+        return hook.Run("GetModelGender", self, self:GetModel()) == "female"
+    end
+end
+
 function entityMeta:isNearEntity(radius, otherEntity)
     if not IsValid(self) then return false end
     if otherEntity == self then return true end

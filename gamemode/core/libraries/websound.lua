@@ -62,34 +62,34 @@ end
 
 local function validateURL(url)
     if not url or type(url) ~= "string" then return false, "URL is not a valid string" end
-    
+
     if not url:find("^https?://") then return false, "URL must start with http:// or https://" end
-    
+
     local domain = url:match("^https?://([^/]+)")
     if not domain then return false, "URL has no valid domain" end
-    
+
     if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, "localhost URLs are not allowed" end
-    
+
     local ipPattern = "^%d+%.%d+%.%d+%.%d+$"
     if domain:match(ipPattern) then
-        
+
         local parts = string.Explode(".", domain)
         if #parts ~= 4 then return false, "invalid IP address format" end
-        
+
         for _, part in ipairs(parts) do
             local num = tonumber(part)
             if not num or num < 0 or num > 255 then return false, "invalid IP address octet" end
         end
     else
-        
+
         if not domain:find("%.") then return false, "domain name must contain at least one dot" end
-        
+
         if domain:find("%.%.") then return false, "domain contains consecutive dots" end
     end
 
-    
+
     if url:find("[<>\"\\|]") then return false, "URL contains invalid characters" end
-    
+
     if #url > 2048 then return false, "URL is too long (max 2048 characters)" end
     return true
 end
@@ -103,7 +103,7 @@ function lia.websound.download(name, url, cb)
         return
     end
 
-    
+
     local isValidURL, validationError = validateURL(u)
     if not isValidURL then
         if cb then cb(nil, false, "invalid url: " .. validationError) end
@@ -124,11 +124,35 @@ function lia.websound.download(name, url, cb)
         end
     end
 
+
+    if file.Exists(savePath, "DATA") then
+        local existingFileData = file.Read(savePath, "DATA")
+        if existingFileData then
+            local isValid, validationError = validateSoundFile(savePath, existingFileData)
+            if isValid then
+                finalize(true)
+                return
+            else
+
+                file.Delete(savePath)
+            end
+        end
+    end
+
     http.Fetch(u, function(body)
         local isValid, validationError = validateSoundFile(name, body)
         if not isValid then
             if cb then cb(nil, false, "File validation failed: " .. validationError) end
             return
+        end
+
+
+        if file.Exists(savePath, "DATA") then
+            local existingSize = file.Size(savePath, "DATA")
+            if existingSize == #body then
+                finalize(true)
+                return
+            end
         end
 
         ensureDir(savePath:match("(.+)/[^/]+$") or baseDir)
@@ -199,14 +223,13 @@ function sound.PlayFile(path, mode, cb)
             end)
             return
         else
-            
+
             local webPath
             if path:find("^lilia/websounds/") then
                 webPath = path:gsub("^lilia/websounds/", "")
             elseif path:find("^websounds/") then
                 webPath = path:gsub("^websounds/", "")
             else
-                
                 webPath = path
             end
 

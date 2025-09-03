@@ -354,9 +354,11 @@ net.Receive("liaAllPKs", function()
             local owner = line.steamID and lia.util.getBySteamID(line.steamID)
             if IsValid(owner) then
                 if lia.command.hasAccess(LocalPlayer(), "charban") then menu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand('say "/charban ' .. line.charID .. '"') end):SetIcon("icon16/cancel.png") end
+                if lia.command.hasAccess(LocalPlayer(), "charwipe") then menu:AddOption(L("wipeCharacter"), function() LocalPlayer():ConCommand('say "/charwipe ' .. line.charID .. '"') end):SetIcon("icon16/user_delete.png") end
                 if lia.command.hasAccess(LocalPlayer(), "charunban") then menu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand('say "/charunban ' .. line.charID .. '"') end):SetIcon("icon16/accept.png") end
             else
                 if lia.command.hasAccess(LocalPlayer(), "charbanoffline") then menu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand('say "/charbanoffline ' .. line.charID .. '"') end):SetIcon("icon16/cancel.png") end
+                if lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then menu:AddOption(L("wipeCharacterOffline"), function() LocalPlayer():ConCommand('say "/charwipeoffline ' .. line.charID .. '"') end):SetIcon("icon16/user_delete.png") end
                 if lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. line.charID .. '"') end):SetIcon("icon16/accept.png") end
             end
         end
@@ -789,4 +791,13 @@ end)
 lia.net.readBigTable("liaFullCharList", function(data)
     if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
     panelRef:buildSheets(data)
+end)
+
+
+net.Receive("liaCharDeleted", function()
+    if IsValid(panelRef) and isfunction(panelRef.buildSheets) then
+
+        net.Start("liaRequestFullCharList")
+        net.SendToServer()
+    end
 end)

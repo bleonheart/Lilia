@@ -110,9 +110,7 @@ function lia.option.load()
         end
 
         local json = util.TableToJSON(out, true)
-        if json then
-            file.Write(path, json)
-        end
+        if json then file.Write(path, json) end
     end
 
     hook.Run("InitializedOptions")
@@ -666,4 +664,10 @@ lia.option.add("voiceRange", "voiceRange", "voiceRangeDesc", false, nil, {
     category = "categoryHUD",
     isQuick = true,
     type = "Boolean"
+})
+
+lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelectorPositionDesc", "Left", nil, {
+    category = "categoryWeaponSelector",
+    type = "Table",
+    options = {"Left", "Right", "Center"}
 })

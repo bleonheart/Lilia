@@ -91,7 +91,42 @@ function lia.webimage.download(n, u, cb, flags)
         end
     end
 
+
+    local cleanName = n:gsub("%.%w+$", "")
+    local extension = nil
+
+    for _, ext in ipairs({"png", "jpg", "jpeg"}) do
+        local testPath = baseDir .. cleanName .. "." .. ext
+        if file.Exists(testPath, "DATA") then
+            savePath = testPath
+            finalize(true)
+            return
+        end
+    end
+
     http.Fetch(url, function(b)
+
+        if string.lower(string.sub(b, 2, 4)) == "png" then
+            extension = "png"
+        elseif string.lower(string.sub(b, 7, 10)) == "jfif" or string.lower(string.sub(b, 7, 10)) == "exif" then
+            extension = "jpg"
+        end
+
+        if not extension then
+            if cb then cb(nil, false, "Invalid file format - not PNG or JPEG") end
+            return
+        end
+
+        savePath = baseDir .. cleanName .. "." .. extension
+
+        if file.Exists(savePath, "DATA") then
+            local existingSize = file.Size(savePath, "DATA")
+            if existingSize == #b then
+                finalize(true)
+                return
+            end
+        end
+
         local dirPath = savePath:match("(.+)/[^/]+$")
         if dirPath then
             ensureDir(dirPath)
@@ -102,11 +137,17 @@ function lia.webimage.download(n, u, cb, flags)
         file.Write(savePath, b)
         finalize(false)
     end, function(e)
-        if file.Exists(savePath, "DATA") then
-            finalize(true)
-        elseif cb then
-            cb(nil, false, e)
+
+        for _, ext in ipairs({"png", "jpg", "jpeg"}) do
+            local testPath = baseDir .. cleanName .. "." .. ext
+            if file.Exists(testPath, "DATA") then
+                savePath = testPath
+                finalize(true)
+                return
+            end
         end
+
+        if cb then cb(nil, false, e) end
     end)
 end
 
@@ -146,22 +187,16 @@ function Material(p, ...)
         elseif p:find("^lilia/webimages/") then
             local webPath = p:gsub("^lilia/webimages/", "")
             local mat = lia.webimage.get(webPath, flags)
-            if mat then
-                return mat
-            end
+            if mat then return mat end
             return origMaterial("data/" .. baseDir .. webPath, flags)
         elseif p:find("^webimages/") then
             local webPath = p:gsub("^webimages/", "")
             local mat = lia.webimage.get(webPath, flags)
-            if mat then
-                return mat
-            end
+            if mat then return mat end
             return origMaterial("data/" .. baseDir .. webPath, flags)
         else
             local mat = lia.webimage.get(p, flags)
-            if mat then
-                return mat
-            end
+            if mat then return mat end
         end
     end
     return origMaterial(p, flags)
@@ -334,3 +369,11 @@ lia.webimage.register("dark_vignette.png", "https://bleonheart.github.io/Samael-
 lia.webimage.register("invslotblocked.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotblocked.png")
 lia.webimage.register("settings.png", "https://bleonheart.github.io/Samael-Assets/misc/settings.png")
 ensureDir(baseDir)
+concommand.Add("abc", function()
+    local ply = LocalPlayer()
+    if not IsValid(ply) then return end
+    local tr = ply:GetEyeTrace()
+    local ent = IsValid(tr.Entity) and tr.Entity or nil
+    if not IsValid(ent) then return end
+    ent:SetMaterial("https://bleonheart.github.io/Samael-Assets/music/metallica/kill_them_all/cover.png", 0, "cover")
+end)

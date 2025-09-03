@@ -47,9 +47,6 @@ function GM:PlayerLoadedChar(client, character)
             character:setAmmo(nil)
         end)
     end
-
-    net.Start("liaAssureClientSideAssets")
-    net.Send(client)
 end
 
 function GM:PlayerDeath(client, inflictor, attacker)
@@ -123,7 +120,7 @@ function GM:CanPlayerInteractItem(client, action, item)
     action = string.lower(action)
     if client:hasPrivilege("noItemCooldown") then return true end
     if not client:Alive() then return false, L("forbiddenActionStorage") end
-    if client:getLocalVar("ragdoll", false) then return false, L("forbiddenActionStorage") end
+    if IsValid(client:getRagdoll()) then return false, L("forbiddenActionStorage") end
     if action == "drop" then
         if hook.Run("CanPlayerDropItem", client, item) ~= false then
             if not client.dropDelay then
@@ -210,8 +207,7 @@ function GM:CanPlayerTakeItem(client, item)
         client:notifyLocalized("familySharedPickupDisabled")
         return false
     elseif IsValid(item.entity) then
-        local character = client:getChar()
-        if item.entity.SteamID == client:SteamID() and item.entity.liaCharID ~= character:getID() then
+        if item.entity.SteamID == client:SteamID() then
             client:notifyLocalized("playerCharBelonging")
             return false
         end
@@ -442,12 +438,6 @@ function GM:PlayerDisconnected(client)
     end
 end
 
-function GM:InitializedConfig()
-    timer.Simple(0.2, function() lia.config.send() end)
-    timer.Remove("liaSalaryGlobal")
-    timer.Create("liaSalaryGlobal", lia.config.get("SalaryInterval", 3600), 0, function() self:ProcessSalaries() end)
-end
-
 function GM:PlayerInitialSpawn(client)
     if client:IsBot() then
         hook.Run("SetupBotPlayer", client)
@@ -477,6 +467,8 @@ function GM:PlayerInitialSpawn(client)
 
         timer.Simple(1, function() lia.playerinteract.syncToClients(client) end)
         hook.Run("PlayerLiliaDataLoaded", client)
+        net.Start("liaAssureClientSideAssets")
+        net.Send(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)
@@ -1271,37 +1263,39 @@ concommand.Add("list_entities", function(client)
     end
 end)
 
-function GM:ProcessSalaries()
-    for _, client in player.Iterator() do
-        if IsValid(client) and client:getChar() and hook.Run("CanPlayerEarnSalary", client, faction, class) ~= false then
-            local char = client:getChar()
-            local faction = lia.faction.indices[char:getFaction()]
-            local class = lia.class.list[char:getClass()]
-            local pay = hook.Run("GetSalaryAmount", client, faction, class)
-            pay = isnumber(pay) and pay or class and class.pay or faction and faction.pay or 0
-            local limit = hook.Run("GetSalaryLimit", client, faction, class)
-            limit = isnumber(limit) and limit or class and class.payLimit or faction and faction.payLimit or lia.config.get("SalaryThreshold", 0)
-            if pay > 0 then
-                local money = char:getMoney()
-                if limit > 0 and money + pay > limit then
-                    client:notifyLocalized("salaryLimitReached")
-                    char:setMoney(limit)
-                else
-                    local handled = hook.Run("OnSalaryGive", client, char, pay, faction, class)
-                    if handled ~= true then
-                        char:giveMoney(pay)
-                        client:notifyLocalized("salary", lia.currency.get(pay))
+function GM:CreateSalaryTimers()
+    local salaryInterval = lia.config.get("SalaryInterval", 300)
+    local salaryTimer = function()
+        for _, client in player.Iterator() do
+            if IsValid(client) and client:getChar() and hook.Run("CanPlayerEarnSalary", client) ~= false then
+                local char = client:getChar()
+                local faction = lia.faction.indices[char:getFaction()]
+                local class = lia.class.list[char:getClass()]
+                local pay = hook.Run("GetSalaryAmount", client, faction, class)
+                pay = isnumber(pay) and pay or class and class.pay or faction and faction.pay or 0
+                local limit = hook.Run("GetSalaryLimit", client, faction, class)
+                limit = isnumber(limit) and limit or class and class.payLimit or faction and faction.payLimit or lia.config.get("SalaryThreshold", 0)
+                if pay > 0 then
+                    local money = char:getMoney()
+                    if limit > 0 and money + pay > limit then
+                        client:notifyLocalized("salaryLimitReached")
+                        char:setMoney(limit)
+                    else
+                        local handled = hook.Run("OnSalaryGive", client, char, pay, faction, class)
+                        if handled ~= true then
+                            char:giveMoney(pay)
+                            client:notifyLocalized("salary", lia.currency.get(pay))
+                        end
                     end
                 end
             end
         end
     end
-end
 
-function GM:OnConfigUpdated(key, newValue)
-    if key == "SalaryInterval" then
-        timer.Remove("liaSalaryGlobal")
-        timer.Create("liaSalaryGlobal", newValue, 0, function() self:ProcessSalaries() end)
+    if timer.Exists("liaSalaryGlobal") then
+        timer.Adjust("liaSalaryGlobal", salaryInterval, 0, salaryTimer)
+    else
+        timer.Create("liaSalaryGlobal", salaryInterval, 0, salaryTimer)
     end
 end
 

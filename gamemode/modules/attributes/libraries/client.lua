@@ -78,7 +78,7 @@ function MODULE:LoadCharInformation()
     for _, entry in ipairs(attrs) do
         local id, attr = entry.id, entry.attr
         local minVal = attr.min or 0
-        local maxVal = attr.max or 100
+        local maxVal = hook.Run("GetAttributeMax", client, id) or attr.max or 100
         hook.Run("AddBarField", L("attributes"), id, attr.name, function() return minVal end, function() return maxVal end, function() return char:getAttrib(id) end)
     end
 end

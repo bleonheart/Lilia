@@ -140,6 +140,6 @@ function ENT:setAnim()
     end)
 
     if not success then
-        -- Error in setAnim function
+
     end
 end

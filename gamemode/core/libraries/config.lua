@@ -495,14 +495,13 @@ lia.config.add("IsVoiceEnabled", "voiceChatEnabled", true, function(_, newValue)
 
 lia.config.add("SalaryInterval", "salaryInterval", 300, function(_, newValue)
     local GM = GM or GAMEMODE
-    timer.Remove("liaSalaryGlobal")
-    timer.Create("liaSalaryGlobal", newValue, 0, function() GM:ProcessSalaries() end)
+    timer.Simple(0.1, function() GM:CreateSalaryTimers() end)
 end, {
     desc = "salaryIntervalDesc",
     category = "categorySalary",
     type = "Float",
-    min = 60,
-    max = 3600
+    min = 5,
+    max = 36000
 })
 
 lia.config.add("SalaryThreshold", "salaryThreshold", 0, nil, {
