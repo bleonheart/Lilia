@@ -154,12 +154,6 @@ else
 
     hook.Add("PropBreak", "liaPerformancePropBreak", function(_, entity) if IsValid(entity) and IsValid(entity:GetPhysicsObject()) then constraint.RemoveAll(entity) end end)
     hook.Add("EntityRemoved", "liaPerformanceEntityRemoved", function(ent) if ent:IsPlayer() then remove_player(ent) end end)
-    hook.Add("EntityEmitSound", "liaPerformance", function(tab)
-        if IsValid(tab.Entity) and tab.Entity:IsPlayer() then
-            local wep = tab.Entity:GetActiveWeapon()
-            if IsValid(wep) and wep:GetClass() == "gmod_tool" and ToolGunSounds[tab.SoundName] then return false end
-        end
-    end)
 end
 
 function widgets.PlayerTick()
