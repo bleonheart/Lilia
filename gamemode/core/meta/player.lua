@@ -95,10 +95,6 @@ function playerMeta:isRunning()
     return vectorMeta.Length2D(self:GetVelocity()) > self:GetWalkSpeed() + 10
 end
 
-function playerMeta:isFemale()
-    return hook.Run("GetPlayerGender", self, self:GetModel()) == "female"
-end
-
 function playerMeta:IsFamilySharedAccount()
     return util.SteamIDFrom64(self:OwnerSteamID64()) ~= self:SteamID()
 end
