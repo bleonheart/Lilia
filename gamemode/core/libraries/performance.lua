@@ -32,11 +32,6 @@ local always_send = {
     prop_vehicle_jeep = false
 }
 
-local ToolGunSounds = {
-    ["weapons/airboat/airboat_gun_lastshot1.wav"] = true,
-    ["weapons/airboat/airboat_gun_lastshot2.wav"] = true
-}
-
 local function ExecuteCommands(isServer)
     if isServer then
         for _, cmd in ipairs(serverCommands) do
