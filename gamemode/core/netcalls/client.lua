@@ -831,7 +831,6 @@ net.Receive("nDel", function()
     lia.net[index] = nil
 end)
 
-
 net.Receive("liaCharacterData", function()
     local charID = net.ReadUInt(32)
     local character = lia.char.getCharacter(charID)
@@ -930,7 +929,10 @@ net.Receive("liaAssureClientSideAssets", function()
                     if not fromCache then print(string.format("[✓] Image downloaded: %s", download.name)) end
                 else
                     failedImages = failedImages + 1
-                    print(string.format("[✗] Image failed: %s - %s", download.name, errorMsg or "Unknown error"))
+                    local errorMessage = errorMsg or "Unknown error"
+                    print(string.format("[✗] Image failed: %s - %s", download.name, errorMessage))
+                    -- Add prominent chat notification for failed downloads
+                    chat.AddText(Color(255, 100, 100), "[Image Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -943,7 +945,10 @@ net.Receive("liaAssureClientSideAssets", function()
                     if not fromCache then print(string.format("[✓] Sound downloaded: %s", download.name)) end
                 else
                     failedSounds = failedSounds + 1
-                    print(string.format("[✗] Sound failed: %s - %s", download.name, errorMsg or "Unknown error"))
+                    local errorMessage = errorMsg or "Unknown error"
+                    print(string.format("[✗] Sound failed: %s - %s", download.name, errorMessage))
+                    -- Add prominent chat notification for failed downloads
+                    chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -974,7 +979,15 @@ net.Receive("liaAssureClientSideAssets", function()
                 print(string.format("Sounds: %d downloaded | %d stored", soundStats.downloaded, soundStats.stored))
                 print(string.format("Combined: %d downloaded | %d stored", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
                 print("===========================================")
-                if failedImages > 0 or failedSounds > 0 then print("WARNING: Some assets failed to download. Check console output above for details.") end
+                if failedImages > 0 or failedSounds > 0 then
+                    print("WARNING: Some assets failed to download. Check console output above for details.")
+                    -- Add prominent chat notification for download completion with failures
+                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %d image(s) failed to download. Check console for details.", failedImages)) end
+                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %d sound(s) failed to download. Check console for details.", failedSounds)) end
+                else
+                    -- Success notification when all downloads complete
+                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), "All assets downloaded successfully!")
+                end
             end)
         else
             print(string.format("Download progress: %d active, %d queued, %d/%d images, %d/%d sounds", activeDownloads, #downloadQueue, completedImages, totalImages, completedSounds, totalSounds))
