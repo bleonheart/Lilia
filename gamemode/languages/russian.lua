@@ -1,4 +1,4 @@
-﻿NAME = "Russian"
+NAME = "Russian"
 LANGUAGE = {
     mustProvideString = "Необходимо указать строку",
     use = "Использовать",
@@ -1194,9 +1194,6 @@ LANGUAGE = {
     preparedStatementsAdded = "ДОБАВЛЕНО 5 ПОДГОТОВЛЕННЫХ ЗАПРОСОВ.",
     databaseConnected = "Lilia подключилась к базе данных. Используется %s!",
     dbConnectionFail = "Lilia не удалось подключиться к базе данных.",
-    mysqlooOutdated = "Вы используете устаревшую версию mysqloo.",
-    mysqlooDownload = "Скачайте последнюю mysqloo9 отсюда.",
-    mysqlooDownloadURL = "https://github.com/syl0r/MySQLOO/releases.",
     dbPoolFail = "не удалось найти базу данных в пуле",
     invalidStorageModule = "'%s' — недопустимый способ хранения данных!",
     dataWiped = "ВСЕ ДАННЫЕ LILIA УДАЛЕНЫ",
@@ -1371,7 +1368,6 @@ LANGUAGE = {
     factionMissingColor = "У фракции '%s' отсутствует цвет. Необходимо добавить FACTION.color = Color(1, 2, 3)",
     storageInventoryMissing = "Вызван storage setInventory без инвентаря!",
     missingVcRedistributables = "На сервере отсутствуют VC++ redistributables!",
-    missingMysqlooBinaries = "На сервере отсутствуют бинарные файлы mysqloo!",
     factionMissingName = "У фракции '%s' отсутствует имя. Необходимо добавить FACTION.name",
     factionMissingDesc = "У фракции '%s' отсутствует описание. Необходимо добавить FACTION.desc",
     permaPropSavedLog = "%s сделал перма-проп %s (%s) в %s",

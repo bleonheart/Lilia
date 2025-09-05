@@ -1,4 +1,4 @@
-﻿NAME = "Spanish"
+NAME = "Spanish"
 LANGUAGE = {
     mustProvideString = "Debes proporcionar una cadena",
     use = "Usar",
@@ -1194,9 +1194,6 @@ Recargar: Soltar]],
     preparedStatementsAdded = "AÑADIDAS 5 SENTENCIAS PREPARADAS.",
     databaseConnected = "Lilia se ha conectado a la base de datos. ¡Estamos usando %s!",
     dbConnectionFail = "Lilia no pudo conectarse a la base de datos.",
-    mysqlooOutdated = "Estás usando una versión desactualizada de mysqloo.",
-    mysqlooDownload = "Descarga la última versión de mysqloo9 desde aquí.",
-    mysqlooDownloadURL = "https://github.com/syl0r/MySQLOO/releases.",
     dbPoolFail = "no se pudo encontrar la base de datos en el pool",
     invalidStorageModule = "'%s' no es un método de almacenamiento de datos válido!",
     dataWiped = "TODOS LOS DATOS DE LILIA HAN SIDO ELIMINADOS",
@@ -1371,7 +1368,6 @@ Recargar: Soltar]],
     factionMissingColor = "A la facción '%s' le falta un color. Debes añadir FACTION.color = Color(1, 2, 3)",
     storageInventoryMissing = "¡Storage setInventory llamado sin un inventario!",
     missingVcRedistributables = "¡Al servidor le faltan los redistribuibles de VC++!",
-    missingMysqlooBinaries = "¡Al servidor le faltan los binarios de mysqloo!",
     factionMissingName = "A la facción '%s' le falta un nombre. Debes añadir FACTION.name",
     factionMissingDesc = "A la facción '%s' le falta una descripción. Debes añadir FACTION.desc",
     permaPropSavedLog = "%s perma-propeó %s (%s) en %s",
