@@ -1,4 +1,4 @@
-﻿function MODULE:PlayerLiliaDataLoaded(client)
+function MODULE:PlayerLiliaDataLoaded(client)
     lia.char.restore(client, function(charList)
         if not IsValid(client) then return end
         lia.information(L("loadedCharacters", table.concat(charList, ", "), client:Name()))
@@ -32,10 +32,10 @@ end
 
 function MODULE:PlayerLoadedChar(client, character)
     local charID = character:getID()
-    lia.db.query("SELECT key, value FROM lia_chardata WHERE charID = " .. charID, function(data)
-        data = data or {}
+    lia.db.select({"key", "value"}, "chardata", "charID = " .. charID):next(function(result)
+        result = result.results or {}
         if not character.dataVars then character.dataVars = {} end
-        for _, row in ipairs(data) do
+        for _, row in ipairs(result) do
             local decodedValue = pon.decode(row.value)
             character.dataVars[row.key] = decodedValue[1]
             character:setData(row.key, decodedValue[1])

@@ -1,4 +1,4 @@
-﻿net.Receive("cfgSet", function(_, client)
+net.Receive("cfgSet", function(_, client)
     local key = net.ReadString()
     local name = net.ReadString()
     local value = net.ReadType()
@@ -27,10 +27,10 @@ net.Receive("liaRequestTableData", function(_, client)
     if not client:hasPrivilege("viewDBTables") then return end
     local tbl = net.ReadString()
     if not tbl or tbl == "" then return end
-    lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res)
+    lia.db.select("*", tbl):next(function(result)
         net.Start("liaDBTableData")
         net.WriteString(tbl)
-        net.WriteTable(res or {})
+        net.WriteTable(result.results or {})
         net.Send(client)
     end)
 end)
@@ -69,9 +69,9 @@ end)
 
 net.Receive("liaRequestAllPKs", function(_, client)
     if not client:hasPrivilege("manageCharacters") then return end
-    lia.db.query("SELECT * FROM lia_permakills", function(data)
+    lia.db.select("*", "permakills"):next(function(result)
         net.Start("liaAllPKs")
-        net.WriteTable(data or {})
+        net.WriteTable(result.results or {})
         net.Send(client)
     end)
 end)
@@ -246,8 +246,8 @@ net.Receive("liaRequestDatabaseView", function(_, client)
         end
 
         for _, tbl in ipairs(tables) do
-            lia.db.query("SELECT * FROM " .. lia.db.escapeIdentifier(tbl), function(res)
-                data[tbl] = res or {}
+            lia.db.select("*", tbl):next(function(result)
+                data[tbl] = result.results or {}
                 remaining = remaining - 1
                 if remaining == 0 then lia.net.writeBigTable(client, "liaDatabaseViewData", data) end
             end)
@@ -320,8 +320,9 @@ local function buildSummary()
                     end
                 end
 
-                lia.db.query([[SELECT steamName AS name, steamID, userGroup FROM lia_players]], function(playerRows)
-                    for _, row in ipairs(playerRows or {}) do
+                lia.db.select({"steamName AS name", "steamID", "userGroup"}, "players"):next(function(result)
+                    local playerRows = result.results or {}
+                    for _, row in ipairs(playerRows) do
                         local steamID = row.steamID
                         if steamID and steamID ~= "" then
                             local entry = ensureEntry(steamID, row.name)
