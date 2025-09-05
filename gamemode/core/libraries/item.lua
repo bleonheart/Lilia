@@ -562,7 +562,7 @@ if SERVER then
         if lia.item.instances[id] then
             lia.item.instances[id]:delete()
         else
-            lia.db.delete("items", "itemID = " .. id)
+            lia.db.delete("items", "_itemID = " .. id)
         end
     end
 
@@ -576,10 +576,10 @@ if SERVER then
             return
         end
 
-        lia.db.select("itemID, uniqueID, data, x, y, quantity", "items", "itemID IN " .. range):next(function(results)
+        lia.db.query("SELECT _itemID, uniqueID, data, x, y, quantity FROM lia_items WHERE _itemID IN " .. range, function(results)
             if not results then return end
             for _, row in ipairs(results) do
-                local id = tonumber(row.itemID)
+                local id = tonumber(row._itemID)
                 local itemDef = lia.item.list[row.uniqueID]
                 if id and itemDef then
                     local item = lia.item.new(row.uniqueID, id)

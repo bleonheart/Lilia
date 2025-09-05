@@ -20,7 +20,7 @@ function ENT:Use(activator)
         return
     end
 
-    lia.log.add(activator, "vendorAccess", self, "access")
+    lia.log.add(activator, "vendorAccess", self:getNetVar("name"))
     self.receivers = self.receivers or {}
     self.receivers[#self.receivers + 1] = activator
     activator.liaVendor = self
@@ -137,7 +137,7 @@ function ENT:removeReceiver(client, requestedByPlayer)
     if not lia.shuttingDown then
         net.Start("VendorExit")
         net.Send(client)
-        lia.log.add(client, "vendorAccess", self, "exit")
+        lia.log.add(client, "vendorExit", self:getNetVar("name"))
     end
 end
 

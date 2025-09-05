@@ -296,7 +296,7 @@ function lia.administrator.save(noNetwork)
         }
     end
 
-    lia.db.delete("admin")
+    lia.db.query("DELETE FROM lia_admin")
     lia.db.bulkInsert("admin", rows)
     if noNetwork or lia.administrator._loading then return end
     lia.net.ready = lia.net.ready or setmetatable({}, {
@@ -628,7 +628,7 @@ if SERVER then
         elseif cmd == "unban" then
             local steamid = IsValid(target) and target:SteamID() or tostring(victim)
             if steamid and steamid ~= "" then
-                lia.db.delete("bans", "playerSteamID = " .. lia.db.convertDataType(steamid))
+                lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid))
                 admin:notifyLocalized("playerUnbanned")
                 lia.log.add(admin, "plyUnban", steamid)
                 return true
@@ -637,7 +637,7 @@ if SERVER then
             if target:getChar() then
                 target:setLiliaData("VoiceBan", true)
                 admin:notifyLocalized("plyMuted")
-                lia.log.add(admin, "plyState", target:Name(), true, "mute")
+                lia.log.add(admin, "plyMute", target:Name())
                 lia.db.insertTable({
                     player = target:Name(),
                     playerSteamID = target:SteamID(),
@@ -655,31 +655,31 @@ if SERVER then
             if target:getChar() then
                 target:setLiliaData("VoiceBan", false)
                 admin:notifyLocalized("plyUnmuted")
-                lia.log.add(admin, "plyState", target:Name(), false, "mute")
+                lia.log.add(admin, "plyUnmute", target:Name())
                 hook.Run("PlayerUnmuted", target, admin)
                 return true
             end
         elseif cmd == "gag" then
             target:setNetVar("liaGagged", true)
             admin:notifyLocalized("plyGagged")
-            lia.log.add(admin, "plyState", target:Name(), true, "gag")
+            lia.log.add(admin, "plyGag", target:Name())
             hook.Run("PlayerGagged", target, admin)
             return true
         elseif cmd == "ungag" then
             target:setNetVar("liaGagged", false)
             admin:notifyLocalized("plyUngagged")
-            lia.log.add(admin, "plyState", target:Name(), false, "gag")
+            lia.log.add(admin, "plyUngag", target:Name())
             hook.Run("PlayerUngagged", target, admin)
             return true
         elseif cmd == "freeze" then
             target:Freeze(true)
             local duration = dur or 0
             if duration > 0 then timer.Simple(duration, function() if IsValid(target) then target:Freeze(false) end end) end
-            lia.log.add(admin, "plyState", target:Name(), true, "freeze", duration)
+            lia.log.add(admin, "plyFreeze", target:Name(), duration)
             return true
         elseif cmd == "unfreeze" then
             target:Freeze(false)
-            lia.log.add(admin, "plyState", target:Name(), false, "freeze")
+            lia.log.add(admin, "plyUnfreeze", target:Name())
             return true
         elseif cmd == "slay" then
             target:Kill()
@@ -743,19 +743,19 @@ if SERVER then
             return true
         elseif cmd == "cloak" then
             target:SetNoDraw(true)
-            lia.log.add(admin, "plyState", target:Name(), true, "cloak")
+            lia.log.add(admin, "plyCloak", target:Name())
             return true
         elseif cmd == "uncloak" then
             target:SetNoDraw(false)
-            lia.log.add(admin, "plyState", target:Name(), false, "cloak")
+            lia.log.add(admin, "plyUncloak", target:Name())
             return true
         elseif cmd == "god" then
             target:GodEnable()
-            lia.log.add(admin, "plyState", target:Name(), true, "god")
+            lia.log.add(admin, "plyGod", target:Name())
             return true
         elseif cmd == "ungod" then
             target:GodDisable()
-            lia.log.add(admin, "plyState", target:Name(), false, "god")
+            lia.log.add(admin, "plyUngod", target:Name())
             return true
         elseif cmd == "ignite" then
             local duration = dur or 5
@@ -807,7 +807,7 @@ if SERVER then
                 end)
             end
 
-            lia.log.add(admin, "plyState", target:Name(), true, "blind", duration)
+            lia.log.add(admin, "plyBlind", target:Name(), duration)
             lia.db.insertTable({
                 player = target:Name(),
                 playerSteamID = target:SteamID(),

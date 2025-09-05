@@ -75,21 +75,31 @@ function MODULE:OnPlayerInteractItem(client, action, item, result)
     if not item then return end
     local name = item.name
     if result == false then
-        lia.log.add(client, "itemAction", {
-            name = name
-        }, false, nil, nil)
+        lia.log.add(client, "itemInteractionFailed", action, name)
         return
     end
 
-    lia.log.add(client, "itemAction", item, true, nil, nil)
+    if action == "use" then
+        lia.log.add(client, "use", name)
+    elseif action == "drop" then
+        lia.log.add(client, "itemDrop", name)
+    elseif action == "take" then
+        lia.log.add(client, "itemTake", name)
+    elseif action == "unequip" then
+        lia.log.add(client, "itemUnequip", name)
+    elseif action == "equip" then
+        lia.log.add(client, "itemEquip", name)
+    else
+        lia.log.add(client, "itemInteraction", action, item)
+    end
 end
 
 function MODULE:PlayerConnect(name, ip)
-    lia.log.add(nil, "playerConnected", name, ip)
+    lia.log.add(nil, "playerConnect", name, ip)
 end
 
 function MODULE:PlayerInitialSpawn(client)
-    lia.log.add(client, "playerSpawn")
+    lia.log.add(client, "playerInitialSpawn")
 end
 
 function MODULE:PlayerDisconnect(client)
@@ -113,27 +123,31 @@ function MODULE:PostPlayerLoadedChar(client, character)
 end
 
 function MODULE:PlayerSpawnedProp(client, model)
-    lia.log.add(client, "entitySpawned", "prop", "prop", model)
+    lia.log.add(client, "spawned_prop", model)
 end
 
 function MODULE:PlayerSpawnedRagdoll(client, model)
-    lia.log.add(client, "entitySpawned", "ragdoll", "prop", model)
+    lia.log.add(client, "spawned_ragdoll", model)
 end
 
 function MODULE:PlayerSpawnedEffect(client, model)
-    lia.log.add(client, "entitySpawned", "effect", "effect", model)
+    lia.log.add(client, "spawned_effect", model)
 end
 
 function MODULE:PlayerSpawnedVehicle(client, vehicle)
-    lia.log.add(client, "entitySpawned", "vehicle", vehicle:GetClass(), vehicle:GetModel())
+    lia.log.add(client, "spawned_vehicle", vehicle:GetClass(), vehicle:GetModel())
 end
 
 function MODULE:PlayerSpawnedNPC(client, npc)
-    lia.log.add(client, "entitySpawned", "npc", npc:GetClass(), npc:GetModel())
+    lia.log.add(client, "spawned_npc", npc:GetClass(), npc:GetModel())
 end
 
 function MODULE:PlayerSpawnedSENT(client, sent)
-    lia.log.add(client, "entitySpawned", "sent", sent:GetClass(), sent:GetModel())
+    lia.log.add(client, "spawned_sent", sent:GetClass(), sent:GetModel())
+end
+
+function MODULE:PlayerGiveSWEP(client, swep)
+    lia.log.add(client, "swep_spawning", swep)
 end
 
 function MODULE:PlayerSpawnSWEP(client, swep)
@@ -238,7 +252,7 @@ function MODULE:WarningIssued(admin, target, reason, index)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
-    lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(warningCount) lia.log.add(admin, "warningRemoved", target, warning, warningCount, index) end)
+    lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
     lia.discord.relayMessage({
         title = L("discordWarningSystemTitle"),
         description = L("discordWarningSystemRemovedDescription"),
@@ -279,7 +293,7 @@ function MODULE:ItemTransfered(context)
     if not (IsValid(client) and item) then return end
     local fromID = context.from and context.from:getID() or 0
     local toID = context.to and context.to:getID() or 0
-    lia.log.add(client, "itemAction", item:getName(), true, fromID, toID)
+    lia.log.add(client, "itemTransfer", item:getName(), fromID, toID)
 end
 
 function MODULE:OnItemAdded(owner, item)

@@ -100,7 +100,7 @@ function GM:OnPickupMoney(client, moneyEntity)
     if moneyEntity and IsValid(moneyEntity) then
         local amount = moneyEntity:getAmount()
         client:notifyLocalized("moneyTaken", lia.currency.get(amount))
-        lia.log.add(client, "moneyTransfer", "picked up", amount)
+        lia.log.add(client, "moneyPickedUp", amount)
     end
 end
 
@@ -234,8 +234,8 @@ function GM:CanPlayerDropItem(client, item)
 end
 
 local logTypeMap = {
-    ooc = "chat",
-    looc = "chat"
+    ooc = "chatOOC",
+    looc = "chatLOOC"
 }
 
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
@@ -413,7 +413,7 @@ function GM:PlayerAuthed(client, steamid)
         local group = data and data.userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.updateTable({userGroup = group}, nil, "players", "steamID = " .. lia.db.convertDataType(steamid))
+            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), lia.db.convertDataType(steamid)))
         end
 
         client:SetUserGroup(group)
@@ -709,28 +709,28 @@ function GM:LoadData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = "schema = " .. lia.db.convertDataType(gamemode) .. " AND map = " .. lia.db.convertDataType(map)
-    lia.db.select({"itemID", "pos", "angles"}, "saveditems", condition):next(function(res)
+    lia.db.select({"_itemID", "_pos", "_angles"}, "saveditems", condition):next(function(res)
         local items = res.results or {}
         if #items > 0 then
             local idRange, positions, angles = {}, {}, {}
             for _, row in ipairs(items) do
-                local id = tonumber(row.itemID)
+                local id = tonumber(row._itemID)
                 idRange[#idRange + 1] = id
-                positions[id] = lia.data.decodeVector(row.pos)
-                angles[id] = lia.data.decodeAngle(row.angles)
+                positions[id] = lia.data.decodeVector(row._pos)
+                angles[id] = lia.data.decodeAngle(row._angles)
             end
 
             if #idRange > 0 then
                 local range = "(" .. table.concat(idRange, ", ") .. ")"
                 if hook.Run("ShouldDeleteSavedItems") == true then
-                    lia.db.delete("items", "itemID IN " .. range)
+                    lia.db.query("DELETE FROM lia_items WHERE _itemID IN " .. range)
                     lia.information(L("serverDeletedItems"))
                 else
-                    lia.db.select("itemID, uniqueID, data", "items", "itemID IN " .. range):next(function(data)
+                    lia.db.query("SELECT _itemID, uniqueID, data FROM lia_items WHERE _itemID IN " .. range, function(data)
                         if not data then return end
                         local loadedItems = {}
                         for _, row in ipairs(data) do
-                            local itemID = tonumber(row.itemID)
+                            local itemID = tonumber(row._itemID)
                             local itemData = util.JSONToTable(row.data or "[]")
                             local uniqueID = row.uniqueID
                             local itemTable = lia.item.list[uniqueID]
@@ -1074,7 +1074,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.administrator.groups[usergroup] then
                 target:SetUserGroup(usergroup)
-                lia.db.updateTable({userGroup = usergroup}, nil, "players", "steamID = " .. lia.db.convertDataType(target:SteamID()))
+                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), lia.db.convertDataType(target:SteamID())))
             else
                 MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consoleUsergroupNotFound") .. "\n")
             end
@@ -1149,9 +1149,9 @@ concommand.Add("lia_wipecharacters", function(client)
             if IsValid(ply) then ply:Kick("Server is wiping character data. Please reconnect after the wipe is complete.") end
         end
 
-        lia.db.delete("chardata"):next(function()
+        lia.db.query("DELETE FROM lia_chardata", function()
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character data wiped...\n")
-            lia.db.select("invID", "inventories", "charID IS NOT NULL"):next(function(invData)
+            lia.db.query("SELECT invID FROM lia_inventories WHERE charID IS NOT NULL", function(invData)
                 if invData and #invData > 0 then
                     local invIDs = {}
                     for _, row in ipairs(invData) do
@@ -1160,13 +1160,13 @@ concommand.Add("lia_wipecharacters", function(client)
 
                     if #invIDs > 0 then
                         local invIDList = table.concat(invIDs, ",")
-                        lia.db.delete("invdata", "invID IN (" .. invIDList .. ")"):next(function()
+                        lia.db.query("DELETE FROM lia_invdata WHERE invID IN (" .. invIDList .. ")", function()
                             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Inventory data wiped...\n")
-                            lia.db.delete("items", "invID IN (" .. invIDList .. ")"):next(function()
+                            lia.db.query("DELETE FROM lia_items WHERE invID IN (" .. invIDList .. ")", function()
                                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character items wiped...\n")
-                                lia.db.delete("inventories", "charID IS NOT NULL"):next(function()
+                                lia.db.query("DELETE FROM lia_inventories WHERE charID IS NOT NULL", function()
                                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character inventories wiped...\n")
-                                    lia.db.delete("characters"):next(function()
+                                    lia.db.query("DELETE FROM lia_characters", function()
                                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                                     end)
@@ -1174,13 +1174,13 @@ concommand.Add("lia_wipecharacters", function(client)
                             end)
                         end)
                     else
-                        lia.db.delete("characters"):next(function()
+                        lia.db.query("DELETE FROM lia_characters", function()
                             MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                         end)
                     end
                 else
-                    lia.db.delete("characters"):next(function()
+                    lia.db.query("DELETE FROM lia_characters", function()
                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                     end)
@@ -1202,7 +1202,7 @@ concommand.Add("lia_wipelogs", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all logs...\n")
-        lia.db.delete("logs"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All logs have been wiped!\n") end)
+        lia.db.query("DELETE FROM lia_logs", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All logs have been wiped!\n") end)
     end
 end)
 
@@ -1218,7 +1218,7 @@ concommand.Add("lia_wipebans", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all bans...\n")
-        lia.db.delete("bans"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All bans have been wiped!\n") end)
+        lia.db.query("DELETE FROM lia_bans", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All bans have been wiped!\n") end)
     end
 end)
 
@@ -1234,7 +1234,7 @@ concommand.Add("lia_wipepersistence", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] Wiping all persistence data...\n")
-        lia.db.delete("persistence"):next(function()
+        lia.db.query("DELETE FROM lia_persistence", function()
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All persistence data has been wiped!\n")
             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
         end)
@@ -1330,7 +1330,7 @@ end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin(L("unbanLogFormat", data.networkid))
-    lia.db.delete("bans", "playerSteamID = " .. lia.db.convertDataType(data.networkid))
+    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
 
 concommand.Add("database_list", function(ply)

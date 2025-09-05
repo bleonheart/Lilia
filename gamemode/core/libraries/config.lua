@@ -196,17 +196,12 @@ if SERVER then
         end
 
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local queries = {}
+        local queries = {"DELETE FROM lia_config WHERE schema = " .. lia.db.convertDataType(gamemode)}
+        for _, row in ipairs(rows) do
+            queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(gamemode) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
+        end
 
-        lia.db.delete("config", "schema = " .. lia.db.convertDataType(gamemode)):next(function()
-            for _, row in ipairs(rows) do
-                queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(gamemode) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
-            end
-
-            if #queries > 0 then
-                lia.db.transaction(queries)
-            end
-        end)
+        lia.db.transaction(queries)
     end
 
     function lia.config.reset()
