@@ -1,4 +1,4 @@
-﻿lia.item = lia.item or {}
+lia.item = lia.item or {}
 lia.item.base = lia.item.base or {}
 lia.item.list = lia.item.list or {}
 lia.item.instances = lia.item.instances or {}
@@ -576,9 +576,9 @@ if SERVER then
             return
         end
 
-        lia.db.query("SELECT itemID, uniqueID, data, x, y, quantity FROM lia_items WHERE itemID IN " .. range, function(results)
-            if not results then return end
-            for _, row in ipairs(results) do
+        lia.db.select({"itemID", "uniqueID", "data", "x", "y", "quantity"}, "items", "itemID IN " .. range):next(function(data)
+            if not data or not data.results then return end
+            for _, row in ipairs(data.results) do
                 local id = tonumber(row.itemID)
                 local itemDef = lia.item.list[row.uniqueID]
                 if id and itemDef then

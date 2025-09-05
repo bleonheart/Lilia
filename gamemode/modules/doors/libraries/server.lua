@@ -1,4 +1,4 @@
-﻿function MODULE:PostLoadData()
+function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled", false) then
         local count = 0
         for _, door in ents.Iterator() do
@@ -22,8 +22,7 @@ function MODULE:LoadData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local mapName = game.GetMap()
     local condition = buildCondition(gamemode, mapName)
-    local query = "SELECT * FROM lia_doors WHERE " .. condition
-    lia.db.query(query):next(function(res)
+    lia.db.select("*", "doors", condition):next(function(res)
         local rows = res.results or {}
         local loadedCount = 0
         local presetData = lia.doors.GetPreset(mapName)
@@ -354,8 +353,7 @@ function lia.doors.CleanupCorruptedData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(gamemode, map)
-    local query = "SELECT id, factions, classes FROM lia_doors WHERE " .. condition
-    lia.db.query(query):next(function(res)
+    lia.db.select({"id", "factions", "classes"}, "doors", condition):next(function(res)
         local rows = res.results or {}
         local corruptedCount = 0
         for _, row in ipairs(rows) do
@@ -379,8 +377,10 @@ function lia.doors.CleanupCorruptedData()
             end
 
             if needsUpdate then
-                local updateQuery = "UPDATE lia_doors SET factions = " .. lia.db.convertDataType(newFactions) .. ", classes = " .. lia.db.convertDataType(newClasses) .. " WHERE " .. condition .. " AND id = " .. id
-                lia.db.query(updateQuery):next(function() lia.information("Fixed corrupted data for door " .. id) end):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end)
+                lia.db.updateTable({
+                    factions = newFactions,
+                    classes = newClasses
+                }, function() lia.information("Fixed corrupted data for door " .. id) end, "doors", condition .. " AND id = " .. id)
             end
         end
 

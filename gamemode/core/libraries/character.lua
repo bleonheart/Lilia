@@ -1,4 +1,4 @@
-﻿local characterMeta = lia.meta.character or {}
+local characterMeta = lia.meta.character or {}
 lia.char = lia.char or {}
 lia.char.loaded = lia.char.loaded or {}
 lia.char.names = lia.char.names or {}
@@ -8,9 +8,9 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 if SERVER and #lia.char.names < 1 then
-    lia.db.query("SELECT id, name FROM lia_characters", function(data)
-        if data and #data > 0 then
-            for _, v in pairs(data) do
+    lia.db.select({"id", "name"}, "characters"):next(function(data)
+        if data and data.results and #data.results > 0 then
+            for _, v in pairs(data.results) do
                 lia.char.names[v.id] = v.name
             end
         end
@@ -658,14 +658,12 @@ if SERVER then
             if var.field then fields[#fields + 1] = var.field end
         end
 
-        fields = table.concat(fields, ", ")
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. lia.db.convertDataType(steamID)
         if id then condition = condition .. " AND id = " .. id end
-        local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
-        lia.db.query(query, function(data)
+        lia.db.select(fields, "characters", condition):next(function(data)
             local characters = {}
-            local results = data or {}
+            local results = data.results or {}
             local done = 0
             if #results == 0 then
                 if callback then callback(characters) end
@@ -790,11 +788,11 @@ if SERVER then
         end
 
         lia.char.loaded[id] = nil
-        lia.db.query("DELETE FROM lia_characters WHERE id = " .. id)
+        lia.db.delete("characters", "id = " .. id)
         lia.db.delete("chardata", "charID = " .. id)
-        lia.db.query("SELECT invID FROM lia_inventories WHERE charID = " .. id, function(data)
-            if data then
-                for _, inventory in ipairs(data) do
+        lia.db.select({"invID"}, "inventories", "charID = " .. id):next(function(data)
+            if data and data.results then
+                for _, inventory in ipairs(data.results) do
                     lia.inventory.deleteByID(tonumber(inventory.invID))
                 end
             end

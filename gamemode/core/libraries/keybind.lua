@@ -1,4 +1,4 @@
-﻿lia.keybind = lia.keybind or {}
+lia.keybind = lia.keybind or {}
 lia.keybind.stored = lia.keybind.stored or {}
 local KeybindKeys = {
     ["first"] = KEY_FIRST,
@@ -164,16 +164,18 @@ lia.keybind.add(KEY_NONE, "adminMode", {
         else
             local currentChar = client:getChar()
             if currentChar and currentChar:getFaction() ~= "staff" then client:setNetVar("OriginalPosition", client:GetPos()) end
-            lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
-                for _, row in ipairs(data) do
-                    local id = tonumber(row.id)
-                    if row.faction == "staff" then
-                        client:setNetVar("OldCharID", client:getChar():getID())
-                        net.Start("AdminModeSwapCharacter")
-                        net.WriteInt(id, 32)
-                        net.Send(client)
-                        lia.log.add(client, "adminMode", id, L("adminModeLogStaff"))
-                        return
+            lia.db.select("*", "characters", "steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
+                if data and data.results then
+                    for _, row in ipairs(data.results) do
+                        local id = tonumber(row.id)
+                        if row.faction == "staff" then
+                            client:setNetVar("OldCharID", client:getChar():getID())
+                            net.Start("AdminModeSwapCharacter")
+                            net.WriteInt(id, 32)
+                            net.Send(client)
+                            lia.log.add(client, "adminMode", id, L("adminModeLogStaff"))
+                            return
+                        end
                     end
                 end
 
