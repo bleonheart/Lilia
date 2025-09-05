@@ -1,4 +1,4 @@
-﻿lia.administrator = lia.administrator or {}
+lia.administrator = lia.administrator or {}
 lia.administrator.groups = lia.administrator.groups or {}
 lia.administrator.privileges = lia.administrator.privileges or {}
 lia.administrator.privilegeCategories = lia.administrator.privilegeCategories or {}
@@ -296,7 +296,7 @@ function lia.administrator.save(noNetwork)
         }
     end
 
-    lia.db.query("DELETE FROM lia_admin")
+    lia.db.delete("admin")
     lia.db.bulkInsert("admin", rows)
     if noNetwork or lia.administrator._loading then return end
     lia.net.ready = lia.net.ready or setmetatable({}, {
@@ -628,7 +628,7 @@ if SERVER then
         elseif cmd == "unban" then
             local steamid = IsValid(target) and target:SteamID() or tostring(victim)
             if steamid and steamid ~= "" then
-                lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid))
+                lia.db.delete("bans", "playerSteamID = " .. lia.db.convertDataType(steamid))
                 admin:notifyLocalized("playerUnbanned")
                 lia.log.add(admin, "plyUnban", steamid)
                 return true
