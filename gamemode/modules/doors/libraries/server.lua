@@ -115,7 +115,6 @@ function MODULE:LoadData()
                 end
             end
 
-            -- Create doorData table with all door properties
             local doorData = {
                 name = row.name and row.name ~= "NULL" and row.name ~= "" and tostring(row.name) or nil,
                 price = tonumber(row.price) and tonumber(row.price) >= 0 and tonumber(row.price) or 0,
@@ -136,7 +135,6 @@ function MODULE:LoadData()
                 if not doorsWithData[doorID] then
                     local ent = ents.GetMapCreatedEntity(doorID)
                     if IsValid(ent) and ent:isDoor() then
-                        -- Create doorData table from preset data
                         local doorData = {
                             name = doorVars.name and tostring(doorVars.name) or nil,
                             price = doorVars.price and doorVars.price >= 0 and doorVars.price or 0,
@@ -149,7 +147,6 @@ function MODULE:LoadData()
                         }
 
                         ent:setNetVar("doorData", doorData)
-                        -- Keep legacy properties for compatibility
                         if doorVars.factions and istable(doorVars.factions) then ent.liaFactions = doorVars.factions end
                         if doorVars.classes and istable(doorVars.classes) then ent.liaClasses = doorVars.classes end
                         lia.information("Applied preset to door ID " .. doorID)
@@ -178,7 +175,6 @@ function MODULE:SaveData()
             local doorData = door:getNetVar("doorData", {})
             local factionsTable = doorData.factions or {}
             local classesTable = doorData.classes or {}
-            -- Fallback to legacy properties if doorData doesn't have them
             if not doorData.factions then
                 local factions = door:getNetVar("factions")
                 if factions and factions ~= "[]" then
