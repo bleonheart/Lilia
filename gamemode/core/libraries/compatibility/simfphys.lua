@@ -2,6 +2,7 @@
     hook.Add("EntityTakeDamage", "liaSimfphys", function(seat, dmgInfo)
         local damageInCars = lia.config.get("DamageInCars", true)
         if not damageInCars then return end
+        if player:isStaff() and lia.config.get("StaffHasGodMode", true) then return true end
         if seat:IsVehicle() and seat:GetClass() == "gmod_sent_vehicle_fphysics_base" then
             local player = seat:GetDriver()
             if IsValid(player) then

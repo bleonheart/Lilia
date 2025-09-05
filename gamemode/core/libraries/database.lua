@@ -343,10 +343,10 @@ CREATE TABLE IF NOT EXISTS lia_characters (
 CREATE TABLE IF NOT EXISTS lia_inventories (
     invID integer primary key autoincrement,
     charID integer,
-    _invType varchar
+    invType varchar
 );
 CREATE TABLE IF NOT EXISTS lia_items (
-    _itemID integer primary key autoincrement,
+    itemID integer primary key autoincrement,
     invID integer,
     uniqueID varchar,
     data varchar,
@@ -453,9 +453,9 @@ CREATE TABLE IF NOT EXISTS lia_saveditems (
     id integer primary key autoincrement,
     schema text,
     map text,
-    _itemID integer,
-    _pos text,
-    _angles text
+    itemID integer,
+    pos text,
+    angles text
 );
 CREATE TABLE IF NOT EXISTS lia_admin (
     usergroup text PRIMARY KEY,
@@ -509,18 +509,18 @@ CREATE TABLE IF NOT EXISTS `lia_characters` (
 CREATE TABLE IF NOT EXISTS `lia_inventories` (
     `invID` int not null auto_increment,
     `charID` int default null,
-    `_invType` varchar(24) default null collate 'utf8mb4_general_ci',
+    `invType` varchar(24) default null collate 'utf8mb4_general_ci',
     primary key (`invID`)
 );
 CREATE TABLE IF NOT EXISTS `lia_items` (
-    `_itemID` int not null auto_increment,
+    `itemID` int not null auto_increment,
     `invID` int default null,
     `uniqueID` varchar(60) not null collate 'utf8mb4_general_ci',
     `data` varchar(512) default null collate 'utf8mb4_general_ci',
     `quantity` int,
     `x` int,
     `y` int,
-    primary key (`_itemID`)
+    primary key (`itemID`)
 );
 CREATE TABLE IF NOT EXISTS `lia_invdata` (
     `invID` int not null,
@@ -633,9 +633,9 @@ CREATE TABLE IF NOT EXISTS `lia_saveditems` (
     `id` int not null auto_increment,
     `schema` text default null,
     `map` text default null,
-    `_itemID` int not null,
-    `_pos` text default null,
-    `_angles` text default null,
+    `itemID` int not null,
+    `pos` text default null,
+    `angles` text default null,
     primary key (`id`)
 );
 CREATE TABLE IF NOT EXISTS `lia_admin` (
@@ -1203,10 +1203,10 @@ end
 
 function GM:RegisterPreparedStatements()
     lia.bootstrap(L("database"), L("preparedStatementsAdded"))
-    lia.db.prepare("itemData", "UPDATE lia_items SET data = ? WHERE _itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
-    lia.db.prepare("itemx", "UPDATE lia_items SET x = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-    lia.db.prepare("itemy", "UPDATE lia_items SET y = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-    lia.db.prepare("itemq", "UPDATE lia_items SET quantity = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
+    lia.db.prepare("itemData", "UPDATE lia_items SET data = ? WHERE itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
+    lia.db.prepare("itemx", "UPDATE lia_items SET x = ? WHERE itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
+    lia.db.prepare("itemy", "UPDATE lia_items SET y = ? WHERE itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
+    lia.db.prepare("itemq", "UPDATE lia_items SET quantity = ? WHERE itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
     lia.db.prepare("itemInstance", "INSERT INTO lia_items (invID, uniqueID, data, x, y, quantity) VALUES (?, ?, ?, ?, ?, ?)", {MYSQLOO_INTEGER, MYSQLOO_STRING, MYSQLOO_STRING, MYSQLOO_INTEGER, MYSQLOO_INTEGER, MYSQLOO_INTEGER})
 end
 
