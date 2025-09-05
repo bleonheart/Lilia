@@ -90,12 +90,12 @@ lia.command.add("doortogglelock", {
                     door:Fire("lock")
                     door:EmitSound("doors/door_latch3.wav")
                     client:notifyLocalized("doorToggleLocked", L("locked"):lower())
-                    lia.log.add(client, "toggleLock", door, L("locked"))
+                    lia.log.add(client, "doorLock", door, L("locked"))
                 else
                     door:Fire("unlock")
                     door:EmitSound("doors/door_latch1.wav")
                     client:notifyLocalized("doorToggleLocked", L("unlocked"))
-                    lia.log.add(client, "toggleLock", door, L("unlocked"))
+                    lia.log.add(client, "doorLock", door, L("unlocked"))
                 end
 
                 local partner = door:getDoorPartner()
@@ -186,7 +186,7 @@ lia.command.add("doortoggleownable", {
                 local newState = not isUnownable
                 doorData.noSell = newState and true or nil
                 door:setNetVar("doorData", doorData)
-                lia.log.add(client, "doorToggleOwnable", door, newState)
+                lia.log.add(client, "doorToggle", door, newState, "ownable")
                 hook.Run("DoorOwnableToggled", client, door, newState)
                 client:notifyLocalized(newState and "doorMadeUnownable" or "doorMadeOwnable")
                 MODULE:SaveData()
@@ -251,7 +251,7 @@ lia.command.add("doortoggleenabled", {
             local newState = not isDisabled
             doorData.disabled = newState and true or nil
             door:setNetVar("doorData", doorData)
-            lia.log.add(client, newState and "doorDisable" or "doorEnable", door)
+                            lia.log.add(client, "doorState", door, newState and "disable" or "enable")
             hook.Run("DoorEnabledToggled", client, door, newState)
             client:notifyLocalized(newState and "doorSetDisabled" or "doorSetNotDisabled")
             MODULE:SaveData()
@@ -279,7 +279,7 @@ lia.command.add("doortogglehidden", {
             local newState = not currentState
             doorData.hidden = newState
             entity:setNetVar("doorData", doorData)
-            lia.log.add(client, "doorSetHidden", entity, newState)
+            lia.log.add(client, "doorToggle", entity, newState, "hidden")
             hook.Run("DoorHiddenToggled", client, entity, newState)
             client:notifyLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
             MODULE:SaveData()
@@ -514,7 +514,7 @@ lia.command.add("dooraddfaction", {
                     doorData.factions = facs
                     door.liaFactions = facs
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorSetFaction", door, faction.name)
+                    lia.log.add(client, "doorFaction", door, faction.name, "set")
                     client:notifyLocalized("doorSetFaction", faction.name)
                 elseif arguments[1] then
                     client:notifyLocalized("invalidFaction")
@@ -522,7 +522,7 @@ lia.command.add("dooraddfaction", {
                     doorData.factions = {}
                     door.liaFactions = nil
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorRemoveFaction", door, "all")
+                    lia.log.add(client, "doorFaction", door, "all", "remove")
                     client:notifyLocalized("doorRemoveFaction")
                 end
 
@@ -576,7 +576,7 @@ lia.command.add("doorremovefaction", {
                     doorData.factions = facs
                     door.liaFactions = facs
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorRemoveFaction", door, faction.name)
+                    lia.log.add(client, "doorFaction", door, faction.name, "remove")
                     client:notifyLocalized("doorRemoveFactionSpecific", faction.name)
                 elseif arguments[1] then
                     client:notifyLocalized("invalidFaction")
@@ -584,7 +584,7 @@ lia.command.add("doorremovefaction", {
                     doorData.factions = {}
                     door.liaFactions = nil
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorRemoveFaction", door, "all")
+                    lia.log.add(client, "doorFaction", door, "all", "remove")
                     client:notifyLocalized("doorRemoveFaction")
                 end
 
@@ -645,7 +645,7 @@ lia.command.add("doorsetclass", {
                     doorData.classes = classes
                     door.liaClasses = classes
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorSetClass", door, classData.name)
+                    lia.log.add(client, "doorClass", door, classData.name, "set")
                     client:notifyLocalized("doorSetClass", classData.name)
                 elseif arguments[1] then
                     client:notifyLocalized("invalidClass")
@@ -653,7 +653,7 @@ lia.command.add("doorsetclass", {
                     doorData.classes = {}
                     door.liaClasses = nil
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorRemoveClass", door)
+                    lia.log.add(client, "doorClass", door, nil, "remove")
                     client:notifyLocalized("doorRemoveClass")
                 end
 
@@ -723,7 +723,7 @@ lia.command.add("doorremoveclass", {
                         doorData.classes = classes
                         door.liaClasses = classes
                         door:setNetVar("doorData", doorData)
-                        lia.log.add(client, "doorRemoveClassSpecific", door, classData.name)
+                        lia.log.add(client, "doorClass", door, classData.name, "remove")
                         client:notifyLocalized("doorRemoveClassSpecific", classData.name)
                     else
                         client:notifyLocalized("doorClassNotAssigned", classData.name)
@@ -734,7 +734,7 @@ lia.command.add("doorremoveclass", {
                     doorData.classes = {}
                     door.liaClasses = nil
                     door:setNetVar("doorData", doorData)
-                    lia.log.add(client, "doorRemoveClass", door)
+                    lia.log.add(client, "doorClass", door, nil, "remove")
                     client:notifyLocalized("doorRemoveClass")
                 end
 
@@ -775,7 +775,7 @@ lia.command.add("togglealldoors", {
         end
 
         client:notifyLocalized(toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
-        lia.log.add(client, toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
+        lia.log.add(client, "doorState", nil, toggleToDisable and "disable" or "enable", count)
         MODULE:SaveData()
     end
 })

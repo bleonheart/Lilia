@@ -255,7 +255,7 @@ net.Receive("KickCharacter", function(_, client)
     end
 
     if not isOnline then
-        lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID, function(data)
+        lia.db.selectOne("faction", "characters", "id = " .. characterID):next(function(data)
             if not data or not data[1] then return end
             local oldFactionID = data[1].faction
             local oldFactionData = lia.faction.teams[oldFactionID]

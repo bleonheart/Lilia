@@ -19,7 +19,7 @@
             end
 
             client:notifyLocalized("vendorRestocked")
-            lia.log.add(client, "restockvendor", target)
+            lia.log.add(client, "vendorRestock", target, "restock")
         else
             client:notifyLocalized("notLookingAtValidVendor")
         end
@@ -37,11 +37,11 @@ lia.command.add("restockallvendors", {
             end
 
             count = count + 1
-            lia.log.add(client, "restockvendor", vendor)
+            lia.log.add(client, "vendorRestock", vendor, "restock")
         end
 
         client:notifyLocalized("vendorAllVendorsRestocked", count)
-        lia.log.add(client, "restockallvendors", count)
+        lia.log.add(client, "vendorRestock", nil, "restockall", count)
     end
 })
 
@@ -67,12 +67,12 @@ lia.command.add("resetallvendormoney", {
             if vendor.money ~= nil then
                 vendor.money = amount
                 count = count + 1
-                lia.log.add(client, "resetvendormoney", vendor, amount)
+                lia.log.add(client, "vendorRestock", vendor, "resetmoney", nil, amount)
             end
         end
 
         client:notifyLocalized("vendorAllMoneyReset", lia.currency.get(amount), count)
-        lia.log.add(client, "resetallvendormoney", amount, count)
+        lia.log.add(client, "vendorRestock", nil, "resetmoneyall", count, amount)
     end
 })
 
@@ -103,7 +103,7 @@ lia.command.add("restockvendormoney", {
             if target.money ~= nil then
                 target.money = amount
                 client:notifyLocalized("vendorMoneyRestocked", lia.currency.get(amount))
-                lia.log.add(client, "restockvendormoney", target, amount)
+                lia.log.add(client, "vendorRestock", target, "restockmoney", nil, amount)
             else
                 client:notifyLocalized("vendorNoMoneyVariable")
             end

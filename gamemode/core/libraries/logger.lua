@@ -31,28 +31,8 @@ lia.log.types = {
         func = function(client) return L("logPlayerSpawned", client:Name()) end,
         category = L("character")
     },
-    ["spawned_prop"] = {
-        func = function(client, model) return L("logPlayerSpawnedProp", client:Name(), model) end,
-        category = L("categoryWorld")
-    },
-    ["spawned_ragdoll"] = {
-        func = function(client, model) return L("logPlayerSpawnedRagdoll", client:Name(), model) end,
-        category = L("categoryWorld")
-    },
-    ["spawned_effect"] = {
-        func = function(client, effect) return L("logPlayerSpawnedEffect", client:Name(), effect) end,
-        category = L("categoryWorld")
-    },
-    ["spawned_vehicle"] = {
-        func = function(client, vehicle, model) return L("logPlayerSpawnedVehicle", client:Name(), vehicle, model) end,
-        category = L("categoryWorld")
-    },
-    ["spawned_npc"] = {
-        func = function(client, npc, model) return L("logPlayerSpawnedNPC", client:Name(), npc, model) end,
-        category = L("categoryWorld")
-    },
-    ["spawned_sent"] = {
-        func = function(client, class, model) return L("logPlayerSpawnedEntity", client:Name(), class, model) end,
+    ["entitySpawned"] = {
+        func = function(client, entityType, class, model) return L("logPlayerSpawnedEntity", client:Name(), entityType, class, model or "") end,
         category = L("categoryWorld")
     },
     ["swep_spawning"] = {
@@ -83,24 +63,12 @@ lia.log.types = {
         func = function(client, chatType, message) return L("logChatMessage", chatType, client:Name(), message) end,
         category = L("categoryChat")
     },
-    ["chatOOC"] = {
-        func = function(client, msg) return L("logChatOOC", client:Name(), msg) end,
-        category = L("categoryChat")
-    },
-    ["chatLOOC"] = {
-        func = function(client, msg) return L("logChatLOOC", client:Name(), msg) end,
-        category = L("categoryChat")
-    },
     ["command"] = {
         func = function(client, text) return L("logCommand", client:Name(), text) end,
         category = L("commands")
     },
-    ["money"] = {
-        func = function(client, amount) return L("logMoneyChange", client:Name(), amount) end,
-        category = L("money")
-    },
-    ["moneyPickedUp"] = {
-        func = function(client, amount) return L("logMoneyPickedUp", client:Name(), lia.currency.get(amount), amount > 1 and lia.currency.plural or lia.currency.singular) end,
+    ["moneyTransfer"] = {
+        func = function(client, action, amount) return L("logMoneyTransfer", client:Name(), action, lia.currency.get(amount)) end,
         category = L("money")
     },
     ["charSetMoney"] = {
@@ -111,44 +79,22 @@ lia.log.types = {
         func = function(client, targetName, amount, total) return L("logCharAddMoney", client:Name(), targetName, lia.currency.get(amount), lia.currency.get(total)) end,
         category = L("money")
     },
-    ["moneyDropped"] = {
-        func = function(client, amount) return L("logMoneyDropped", client:Name(), lia.currency.get(amount)) end,
-        category = L("money")
-    },
-    ["itemTake"] = {
-        func = function(client, item) return L("logItemTake", client:Name(), item) end,
-        category = L("items")
-    },
-    ["use"] = {
-        func = function(client, item) return L("logItemUse", client:Name(), item) end,
-        category = L("items")
-    },
-    ["itemDrop"] = {
-        func = function(client, item) return L("logItemDrop", client:Name(), item) end,
-        category = L("items")
-    },
-    ["itemInteractionFailed"] = {
-        func = function(client, action, itemName) return L("logItemInteractionFailed", client:Name(), action, itemName) end,
-        category = L("items")
-    },
-    ["itemInteraction"] = {
-        func = function(client, action, item) return L("logItemInteraction", client:Name(), action, item.name) end,
-        category = L("items")
-    },
-    ["itemEquip"] = {
-        func = function(client, item) return L("logItemEquip", client:Name(), item) end,
-        category = L("items")
-    },
-    ["itemUnequip"] = {
-        func = function(client, item) return L("logItemUnequip", client:Name(), item) end,
-        category = L("items")
-    },
-    ["itemTransfer"] = {
-        func = function(client, itemName, fromID, toID) return L("logItemTransfer", client:Name(), itemName, tostring(fromID), tostring(toID)) end,
-        category = L("items")
-    },
-    ["itemTransferFailed"] = {
-        func = function(client, itemName, fromID, toID) return L("logItemTransferFailed", client:Name(), itemName, tostring(fromID), tostring(toID)) end,
+    ["itemAction"] = {
+        func = function(client, actionType, item, success, fromID, toID)
+            if actionType == "interact" then
+                if success then
+                    return L("logItemInteraction", client:Name(), action, item.name or item)
+                else
+                    return L("logItemInteractionFailed", client:Name(), action, item.name or item)
+                end
+            elseif actionType == "transfer" then
+                if success then
+                    return L("logItemTransfer", client:Name(), item.name or item, tostring(fromID), tostring(toID))
+                else
+                    return L("logItemTransferFailed", client:Name(), item.name or item, tostring(fromID), tostring(toID))
+                end
+            end
+        end,
         category = L("items")
     },
     ["itemCombine"] = {
@@ -165,10 +111,6 @@ lia.log.types = {
     },
     ["itemCreated"] = {
         func = function(_, itemName) return L("logItemCreated", itemName) end,
-        category = L("items")
-    },
-    ["itemSpawned"] = {
-        func = function(_, itemName) return L("logItemSpawned", itemName) end,
         category = L("items")
     },
     ["itemDraggedOut"] = {
@@ -194,10 +136,6 @@ lia.log.types = {
     ["observeToggle"] = {
         func = function(client, state) return L("logObserveToggle", client:Name(), state) end,
         category = L("admin")
-    },
-    ["playerConnect"] = {
-        func = function(_, name, ip) return L("logPlayerConnecting", name, ip) end,
-        category = L("categoryConnections"),
     },
     ["playerConnected"] = {
         func = function(client) return L("logPlayerConnected", client:Name()) end,
@@ -241,12 +179,8 @@ lia.log.types = {
         func = function(client) return L("logVerifyCheatsOK", client:Name()) end,
         category = L("categoryCheating")
     },
-    ["doorSetClass"] = {
-        func = function(client, door, className) return L("logDoorSetClass", client:Name(), className, door:GetClass()) end,
-        category = L("categoryWorld")
-    },
-    ["doorRemoveClass"] = {
-        func = function(client, door) return L("logDoorRemoveClass", client:Name(), door:GetClass()) end,
+    ["doorClass"] = {
+        func = function(client, door, className, operation) return operation == "set" and L("logDoorSetClass", client:Name(), className, door:GetClass()) or L("logDoorRemoveClass", client:Name(), door:GetClass()) end,
         category = L("categoryWorld")
     },
     ["doorRemoveClassSpecific"] = {
@@ -257,20 +191,12 @@ lia.log.types = {
         func = function(client) return L("logDoorSaveData", client:Nick(), client:Name()) end,
         category = L("categoryWorld")
     },
-    ["doorToggleOwnable"] = {
-        func = function(client, door, state) return L("logDoorToggleOwnable", client:Name(), door:GetClass(), state and L("unownable") or L("ownable")) end,
+    ["doorToggle"] = {
+        func = function(client, door, state, toggleType) return toggleType == "ownable" and L("logDoorToggleOwnable", client:Name(), door:GetClass(), state and L("unownable") or L("ownable")) or L("logDoorSetHidden", client:Name(), door:GetClass(), state and L("hidden") or L("visible")) end,
         category = L("categoryWorld")
     },
-    ["doorSetFaction"] = {
-        func = function(client, door, factionName) return L("logDoorSetFaction", client:Name(), factionName, door:GetClass()) end,
-        category = L("categoryWorld")
-    },
-    ["doorRemoveFaction"] = {
-        func = function(client, door, factionName) return L("logDoorRemoveFaction", client:Name(), factionName, door:GetClass()) end,
-        category = L("categoryWorld")
-    },
-    ["doorSetHidden"] = {
-        func = function(client, door, state) return L("logDoorSetHidden", client:Name(), door:GetClass(), state and L("hidden") or L("visible")) end,
+    ["doorFaction"] = {
+        func = function(client, door, factionName, operation) return operation == "set" and L("logDoorSetFaction", client:Name(), factionName, door:GetClass()) or L("logDoorRemoveFaction", client:Name(), factionName, door:GetClass()) end,
         category = L("categoryWorld")
     },
     ["doorSetTitle"] = {
@@ -281,6 +207,16 @@ lia.log.types = {
         func = function(client, door) return L("logDoorResetData", client:Name(), door:GetClass()) end,
         category = L("categoryWorld")
     },
+    ["doorState"] = {
+        func = function(client, door, operation, count)
+            if count then
+                return L("logDoor" .. (operation == "disable" and "DisableAll" or "EnableAll"), client:Name(), count)
+            else
+                return L("logDoor" .. (operation == "disable" and "Disable" or "Enable"), client:Name(), door:GetClass())
+            end
+        end,
+        category = L("categoryWorld")
+    },
     ["doorDisable"] = {
         func = function(client, door) return L("logDoorDisable", client:Name(), door:GetClass()) end,
         category = L("categoryWorld")
@@ -289,24 +225,20 @@ lia.log.types = {
         func = function(client, door) return L("logDoorEnable", client:Name(), door:GetClass()) end,
         category = L("categoryWorld")
     },
-    ["doorDisableAll"] = {
-        func = function(client, count) return L("logDoorDisableAll", client:Name(), count) end,
+    ["doorID"] = {
+        func = function(client, door, mapID) return L("logDoorID", client:Name(), door:GetClass(), mapID) end,
         category = L("categoryWorld")
     },
-    ["doorEnableAll"] = {
-        func = function(client, count) return L("logDoorEnableAll", client:Name(), count) end,
-        category = L("categoryWorld")
-    },
-    ["lockDoor"] = {
-        func = function(client, door) return L("logDoorLock", client:Name(), door:GetClass()) end,
-        category = L("categoryWorld")
-    },
-    ["unlockDoor"] = {
-        func = function(client, door) return L("logDoorUnlock", client:Name(), door:GetClass()) end,
-        category = L("categoryWorld")
-    },
-    ["toggleLock"] = {
-        func = function(client, door, state) return L("logDoorToggleLock", client:Name(), door:GetClass(), state) end,
+    ["doorLock"] = {
+        func = function(client, door, operation)
+            if operation == "lock" then
+                return L("logDoorLock", client:Name(), door:GetClass())
+            elseif operation == "unlock" then
+                return L("logDoorUnlock", client:Name(), door:GetClass())
+            else
+                return L("logDoorToggleLock", client:Name(), door:GetClass(), operation)
+            end
+        end,
         category = L("categoryWorld")
     },
     ["doorsell"] = {
@@ -334,11 +266,7 @@ lia.log.types = {
         category = L("items")
     },
     ["vendorAccess"] = {
-        func = function(client, vendor) return L("logVendorAccess", client:Name(), vendor:getNetVar("name") or L("unknown")) end,
-        category = L("items")
-    },
-    ["vendorExit"] = {
-        func = function(client, vendor) return L("logVendorExit", client:Name(), vendor:getNetVar("name") or L("unknown")) end,
+        func = function(client, vendor, operation) return operation == "access" and L("logVendorAccess", client:Name(), vendor:getNetVar("name") or L("unknown")) or L("logVendorExit", client:Name(), vendor:getNetVar("name") or L("unknown")) end,
         category = L("items")
     },
     ["vendorSell"] = {
@@ -359,24 +287,20 @@ lia.log.types = {
         end,
         category = L("items")
     },
-    ["restockvendor"] = {
-        func = function(client, vendor) return L("logVendorRestock", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown")) end,
-        category = L("items")
-    },
-    ["restockallvendors"] = {
-        func = function(client, count) return L("logVendorsRestockAll", client:Name(), count) end,
-        category = L("items")
-    },
-    ["resetvendormoney"] = {
-        func = function(client, vendor, amount) return L("logVendorMoneyReset", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"), lia.currency.get(amount)) end,
-        category = L("items")
-    },
-    ["resetallvendormoney"] = {
-        func = function(client, amount, count) return L("logVendorMoneyResetAll", client:Name(), lia.currency.get(amount), count) end,
-        category = L("items")
-    },
-    ["restockvendormoney"] = {
-        func = function(client, vendor, amount) return L("logVendorMoneyRestock", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"), lia.currency.get(amount)) end,
+    ["vendorRestock"] = {
+        func = function(client, vendor, operation, count, amount)
+            if operation == "restockall" then
+                return L("logVendorsRestockAll", client:Name(), count)
+            elseif operation == "resetmoneyall" then
+                return L("logVendorMoneyResetAll", client:Name(), lia.currency.get(amount), count)
+            elseif operation == "restockmoney" then
+                return L("logVendorMoneyRestock", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"), lia.currency.get(amount))
+            elseif operation == "resetmoney" then
+                return L("logVendorMoneyReset", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"), lia.currency.get(amount))
+            else
+                return L("logVendorRestock", client:Name(), IsValid(vendor) and (vendor:getNetVar("name") or L("unknown")) or L("unknown"))
+            end
+        end,
         category = L("items")
     },
     ["savevendors"] = {
@@ -443,48 +367,36 @@ lia.log.types = {
         func = function(client, targetName, className) return L("logClassUnwhitelist", client:Name(), targetName, className) end,
         category = L("factions")
     },
-    ["flagGive"] = {
-        func = function(client, targetName, flags) return L("logFlagGive", client:Name(), targetName, flags) end,
+    ["flagManage"] = {
+        func = function(client, targetName, flags, operation, isAll, flagType)
+            if flagType == "player" then
+                if operation == "give" then
+                    return isAll and L("logPlayerFlagGiveAll", client:Name(), targetName) or L("logPlayerFlagGive", client:Name(), targetName, flags)
+                elseif operation == "take" then
+                    return isAll and L("logPlayerFlagTakeAll", client:Name(), targetName) or L("logPlayerFlagTake", client:Name(), targetName, flags)
+                end
+            else
+                if operation == "give" then
+                    return isAll and L("logFlagGiveAll", client:Name(), targetName) or L("logFlagGive", client:Name(), targetName, flags)
+                elseif operation == "take" then
+                    return isAll and L("logFlagTakeAll", client:Name(), targetName) or L("logFlagTake", client:Name(), targetName, flags)
+                end
+            end
+        end,
         category = L("admin")
-    },
-    ["flagGiveAll"] = {
-        func = function(client, targetName) return L("logFlagGiveAll", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["flagTake"] = {
-        func = function(client, targetName, flags) return L("logFlagTake", client:Name(), targetName, flags) end,
-        category = L("admin")
-    },
-    ["flagTakeAll"] = {
-        func = function(client, targetName) return L("logFlagTakeAll", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["playerFlagGive"] = {
-        func = function(client, targetName, flags) return L("logPlayerFlagGive", client:Name(), targetName, flags) end,
-        category = L("admin"),
-    },
-    ["playerFlagGiveAll"] = {
-        func = function(client, targetName) return L("logPlayerFlagGiveAll", client:Name(), targetName) end,
-        category = L("admin"),
-    },
-    ["playerFlagTake"] = {
-        func = function(client, targetName, flags) return L("logPlayerFlagTake", client:Name(), targetName, flags) end,
-        category = L("admin"),
-    },
-    ["playerFlagTakeAll"] = {
-        func = function(client, targetName) return L("logPlayerFlagTakeAll", client:Name(), targetName) end,
-        category = L("admin"),
     },
     ["voiceToggle"] = {
         func = function(client, targetName, state) return L("logVoiceToggle", client:Name(), targetName, state) end,
         category = L("admin")
     },
     ["charBan"] = {
-        func = function(client, targetName) return L("logCharBan", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["charUnban"] = {
-        func = function(client, targetName) return L("logCharUnban", client:Name(), targetName) end,
+        func = function(client, targetName, charID, isBan, isOffline)
+            if isOffline then
+                return isBan and L("logCharBanOffline", client:Name(), tostring(charID)) or L("logCharUnbanOffline", client:Name(), tostring(charID))
+            else
+                return isBan and L("logCharBan", client:Name(), targetName) or L("logCharUnban", client:Name(), targetName)
+            end
+        end,
         category = L("admin")
     },
     ["charKick"] = {
@@ -517,16 +429,16 @@ lia.log.types = {
         end,
         category = L("admin"),
     },
-    ["attribSet"] = {
-        func = function(client, targetName, attrib, value) return L("logAttribSet", client:Name(), targetName, attrib, value) end,
-        category = L("character")
-    },
-    ["attribAdd"] = {
-        func = function(client, targetName, attrib, value) return L("logAttribAdd", client:Name(), value, targetName, attrib) end,
-        category = L("character")
-    },
-    ["attribCheck"] = {
-        func = function(client, targetName) return L("logAttribCheck", client:Name(), targetName) end,
+    ["attribManage"] = {
+        func = function(client, targetName, operation, attrib, value)
+            if operation == "set" then
+                return L("logAttribSet", client:Name(), targetName, attrib, value)
+            elseif operation == "add" then
+                return L("logAttribAdd", client:Name(), value, targetName, attrib)
+            elseif operation == "check" then
+                return L("logAttribCheck", client:Name(), targetName)
+            end
+        end,
         category = L("character")
     },
     ["invUpdateSize"] = {
@@ -539,10 +451,6 @@ lia.log.types = {
     },
     ["storageLock"] = {
         func = function(client, entClass, state) return L("logStorageLock", client:Name(), state and L("locked") or L("unlocked"), entClass) end,
-        category = L("inv")
-    },
-    ["storageUnlock"] = {
-        func = function(client, entClass) return L("logStorageUnlock", client:Name(), entClass) end,
         category = L("inv")
     },
     ["storageUnlockFailed"] = {
@@ -595,7 +503,7 @@ lia.log.types = {
     },
     ["cheaterAction"] = {
         func = function(client, action) return L("logCheaterAction", client:Name(), action) end,
-        category = L("categoryCheaterActions")
+        category = L("categoryCheating")
     },
     ["altKicked"] = {
         func = function(_, name, steamID) return L("logAltKicked", name, steamID) end,
@@ -669,16 +577,22 @@ lia.log.types = {
         func = function(client, targetName) return L("logPlyRespawn", client:Name(), targetName) end,
         category = L("admin")
     },
-    ["plyFreeze"] = {
-        func = function(client, targetName, duration) return L("logPlyFreeze", client:Name(), targetName, tostring(duration)) end,
-        category = L("admin")
-    },
-    ["plyUnfreeze"] = {
-        func = function(client, targetName) return L("logPlyUnfreeze", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyBlind"] = {
-        func = function(client, targetName, duration) return L("logPlyBlind", client:Name(), targetName, tostring(duration)) end,
+    ["plyState"] = {
+        func = function(client, targetName, state, stateType, duration)
+            if stateType == "freeze" then
+                return state and L("logPlyFreeze", client:Name(), targetName, tostring(duration or "")) or L("logPlyUnfreeze", client:Name(), targetName)
+            elseif stateType == "blind" then
+                return L("logPlyBlind", client:Name(), targetName, tostring(duration))
+            elseif stateType == "gag" then
+                return state and L("logPlyGag", client:Name(), targetName) or L("logPlyUngag", client:Name(), targetName)
+            elseif stateType == "mute" then
+                return state and L("logPlyMute", client:Name(), targetName) or L("logPlyUnmute", client:Name(), targetName)
+            elseif stateType == "cloak" then
+                return state and L("logPlyCloak", client:Name(), targetName) or L("logPlyUncloak", client:Name(), targetName)
+            elseif stateType == "god" then
+                return state and L("logPlyGod", client:Name(), targetName) or L("logPlyUngod", client:Name(), targetName)
+            end
+        end,
         category = L("admin")
     },
     ["plyUnblind"] = {
@@ -693,38 +607,6 @@ lia.log.types = {
         func = function(_, duration, color) return L("logBlindFadeAll", tostring(duration), color) end,
         category = L("admin")
     },
-    ["plyGag"] = {
-        func = function(client, targetName) return L("logPlyGag", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyUngag"] = {
-        func = function(client, targetName) return L("logPlyUngag", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyMute"] = {
-        func = function(client, targetName) return L("logPlyMute", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyUnmute"] = {
-        func = function(client, targetName) return L("logPlyUnmute", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyCloak"] = {
-        func = function(client, targetName) return L("logPlyCloak", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyUncloak"] = {
-        func = function(client, targetName) return L("logPlyUncloak", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyGod"] = {
-        func = function(client, targetName) return L("logPlyGod", client:Name(), targetName) end,
-        category = L("admin")
-    },
-    ["plyUngod"] = {
-        func = function(client, targetName) return L("logPlyUngod", client:Name(), targetName) end,
-        category = L("admin")
-    },
     ["plyIgnite"] = {
         func = function(client, targetName, duration) return L("logPlyIgnite", client:Name(), targetName, tostring(duration)) end,
         category = L("admin")
@@ -737,20 +619,12 @@ lia.log.types = {
         func = function(client, targetName) return L("logPlyStrip", client:Name(), targetName) end,
         category = L("admin")
     },
-    ["charBanOffline"] = {
-        func = function(client, charID) return L("logCharBanOffline", client:Name(), tostring(charID)) end,
-        category = L("admin")
-    },
     ["charWipe"] = {
         func = function(client, targetName, charID) return L("logCharWipe", client:Name(), targetName, charID) end,
         category = L("admin")
     },
     ["charWipeOffline"] = {
         func = function(client, targetName, charID) return L("logCharWipeOffline", client:Name(), targetName, charID) end,
-        category = L("admin")
-    },
-    ["charUnbanOffline"] = {
-        func = function(client, charID) return L("logCharUnbanOffline", client:Name(), tostring(charID)) end,
         category = L("admin")
     },
     ["missingPrivilege"] = {
@@ -761,6 +635,14 @@ lia.log.types = {
                 return L("logMissingPrivilegeNoClient", privilege, playerInfo or "Unknown", groupInfo or "Unknown")
             end
         end,
+        category = L("admin")
+    },
+    ["unauthorizedCommand"] = {
+        func = function(client, cmd) return L("logUnauthorizedCommand", client:Name(), cmd) end,
+        category = L("admin")
+    },
+    ["privilegesExported"] = {
+        func = function(client, filename) return L("logPrivilegesExported", client:Name(), filename) end,
         category = L("admin")
     },
 }

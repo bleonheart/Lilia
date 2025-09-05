@@ -2562,7 +2562,7 @@ Determines if a player can view a specific log category in the admin console.
 
 ```lua
 hook.Add("CanPlayerSeeLogCategory", "HideChatLogs", function(ply, category)
-    if category == "chatOOC" and not ply:IsAdmin() then
+    if category == "chat" and not ply:IsAdmin() then
         return false
     end
 end)

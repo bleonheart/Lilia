@@ -424,7 +424,7 @@ if SERVER then
         local name = self:steamName()
         local steamID = self:SteamID()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
+        lia.db.selectOne("data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime", "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
             if IsValid(self) and data and data[1] and data[1].data then
                 lia.db.updateTable({
                     lastJoin = timeStamp,

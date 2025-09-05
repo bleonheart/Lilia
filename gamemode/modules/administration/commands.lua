@@ -271,14 +271,16 @@ lia.command.add("charlist", {
             steamID = client:SteamID()
         end
 
-        local query = [[SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = ]] .. lia.db.convertDataType(steamID)
-        lia.db.query(query, function(data)
+        local charCondition = "steamID = " .. lia.db.convertDataType(steamID)
+        lia.db.select("*", "characters", charCondition):next(function(data)
             if not data or #data == 0 then
                 client:notifyLocalized("noCharactersForPlayer")
                 return
             end
 
             local sendData = {}
+            local processedCount = 0
+            local totalCharacters = #data
             for _, row in ipairs(data) do
                 local charID = tonumber(row.id) or row.id
                 local stored = lia.char.getCharacter(charID)
@@ -304,43 +306,77 @@ lia.command.add("charlist", {
                     end
                 end
 
-                local banInfo = info.charBanInfo
-                if not banInfo and row.charBanInfo and row.charBanInfo ~= "" then
-                    local ok, decoded = pcall(pon.decode, row.charBanInfo)
-                    if ok then
-                        banInfo = decoded and decoded[1] or {}
-                    else
-                        banInfo = util.JSONToTable(row.charBanInfo) or {}
-                    end
-                end
-
                 local bannedVal = stored and stored:getBanned() or tonumber(row.banned) or 0
                 local isBanned = bannedVal ~= 0 and (bannedVal == -1 or bannedVal > os.time())
-                local entry = {
-                    ID = charID,
-                    Name = stored and stored:getName() or row.name,
-                    Desc = row.desc,
-                    Faction = row.faction,
-                    Banned = isBanned and L("yes") or L("no"),
-                    BanningAdminName = banInfo and banInfo.name or "",
-                    BanningAdminSteamID = banInfo and banInfo.steamID or "",
-                    BanningAdminRank = banInfo and banInfo.rank or "",
-                    Money = row.money,
-                    LastUsed = stored and L("onlineNow") or row.lastJoinTime,
-                    allVars = allVars
-                }
+                if isBanned then
+                    local banCondition = "charID = " .. lia.db.convertDataType(charID) .. " AND `key` = " .. lia.db.convertDataType("charBanInfo")
+                    lia.db.selectOne("value", "chardata", banCondition):next(function(banData)
+                        local banInfo = info.charBanInfo
+                        if not banInfo and banData and banData.value and banData.value ~= "" then
+                            local ok, decoded = pcall(pon.decode, banData.value)
+                            if ok then
+                                banInfo = decoded and decoded[1] or {}
+                            else
+                                banInfo = util.JSONToTable(banData.value) or {}
+                            end
+                        end
 
-                entry.extraDetails = {}
-                hook.Run("CharListExtraDetails", client, entry, stored)
-                entry = sanitizeForNet(entry)
-                table.insert(sendData, entry)
+                        local entry = {
+                            ID = charID,
+                            Name = stored and stored:getName() or row.name,
+                            Desc = row.desc,
+                            Faction = row.faction,
+                            Banned = isBanned and L("yes") or L("no"),
+                            BanningAdminName = banInfo and banInfo.name or "",
+                            BanningAdminSteamID = banInfo and banInfo.steamID or "",
+                            BanningAdminRank = banInfo and banInfo.rank or "",
+                            Money = row.money,
+                            LastUsed = stored and L("onlineNow") or row.lastJoinTime,
+                            allVars = allVars
+                        }
+
+                        entry.extraDetails = {}
+                        hook.Run("CharListExtraDetails", client, entry, stored)
+                        entry = sanitizeForNet(entry)
+                        table.insert(sendData, entry)
+                        processedCount = processedCount + 1
+                        if processedCount >= totalCharacters then
+                            sendData = sanitizeForNet(sendData)
+                            net.Start("DisplayCharList")
+                            net.WriteTable(sendData)
+                            net.WriteString(steamID)
+                            net.Send(client)
+                        end
+                    end)
+                else
+                    local entry = {
+                        ID = charID,
+                        Name = stored and stored:getName() or row.name,
+                        Desc = row.desc,
+                        Faction = row.faction,
+                        Banned = isBanned and L("yes") or L("no"),
+                        BanningAdminName = "",
+                        BanningAdminSteamID = "",
+                        BanningAdminRank = "",
+                        Money = row.money,
+                        LastUsed = stored and L("onlineNow") or row.lastJoinTime,
+                        allVars = allVars
+                    }
+
+                    entry.extraDetails = {}
+                    hook.Run("CharListExtraDetails", client, entry, stored)
+                    entry = sanitizeForNet(entry)
+                    table.insert(sendData, entry)
+                    processedCount = processedCount + 1
+                    if processedCount >= totalCharacters then
+                        sendData = sanitizeForNet(sendData)
+                        net.Start("DisplayCharList")
+                        net.WriteTable(sendData)
+                        net.WriteString(steamID)
+                        net.Send(client)
+                    end
+                end
             end
-
-            sendData = sanitizeForNet(sendData)
-            net.Start("DisplayCharList")
-            net.WriteTable(sendData)
-            net.WriteString(steamID)
-            net.Send(client)
         end)
     end
 })
@@ -407,7 +443,7 @@ lia.command.add("plyunban", {
     onRun = function(client, arguments)
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
-            lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steamid)
+            lia.db.delete("bans", "playerSteamID = " .. steamid)
             client:notifyLocalized("playerUnbanned")
             lia.log.add(client, "plyUnban", steamid)
         end
@@ -843,7 +879,7 @@ lia.command.add("charunbanoffline", {
         lia.char.setCharDatabase(charID, "banned", 0)
         lia.char.setCharDatabase(charID, "charBanInfo", nil)
         client:notifyLocalized("offlineCharUnbanned", charID)
-        lia.log.add(client, "charUnbanOffline", charID)
+        lia.log.add(client, "charBan", nil, charID, false, true)
     end
 })
 
@@ -876,7 +912,7 @@ lia.command.add("charbanoffline", {
         end
 
         client:notifyLocalized("offlineCharBanned", charID)
-        lia.log.add(client, "charBanOffline", charID)
+        lia.log.add(client, "charBan", nil, charID, true, true)
     end
 })
 
@@ -1229,7 +1265,7 @@ lia.command.add("flaggive", {
 
         target:giveFlags(flags)
         client:notifyLocalized("flagGive", client:Name(), flags, target:Name())
-        lia.log.add(client, "flagGive", target:Name(), flags)
+        lia.log.add(client, "flagManage", target:Name(), flags, "give", false, "general")
     end,
     alias = {"giveflag", "chargiveflag"}
 })
@@ -1255,7 +1291,7 @@ lia.command.add("flaggiveall", {
         end
 
         client:notifyLocalized("gaveAllFlags")
-        lia.log.add(client, "flagGiveAll", target:Name())
+        lia.log.add(client, "flagManage", target:Name(), nil, "give", true, "general")
     end
 })
 
@@ -1291,7 +1327,7 @@ lia.command.add("flagtakeall", {
         end
 
         client:notifyLocalized("tookAllFlags")
-        lia.log.add(client, "flagTakeAll", target:Name())
+        lia.log.add(client, "flagManage", target:Name(), nil, "take", true, "general")
     end
 })
 
@@ -1323,7 +1359,7 @@ lia.command.add("flagtake", {
 
         target:takeFlags(flags)
         client:notifyLocalized("flagTake", client:Name(), flags, target:Name())
-        lia.log.add(client, "flagTake", target:Name(), flags)
+        lia.log.add(client, "flagManage", target:Name(), flags, "take", false, "general")
     end,
     alias = {"takeflag"}
 })
@@ -1365,7 +1401,7 @@ lia.command.add("pflaggive", {
 
         target:giveFlags(flags, "player")
         client:notifyLocalized("playerFlagGive", client:Name(), flags, target:Name())
-        lia.log.add(client, "playerFlagGive", target:Name(), flags)
+        lia.log.add(client, "flagManage", target:Name(), flags, "give", false, "player")
     end,
     alias = {"givepflag", "playerflaggive"}
 })
@@ -1391,7 +1427,7 @@ lia.command.add("pflaggiveall", {
         end
 
         client:notifyLocalized("gaveAllFlags")
-        lia.log.add(client, "playerFlagGiveAll", target:Name())
+        lia.log.add(client, "flagManage", target:Name(), nil, "give", true, "player")
     end
 })
 
@@ -1422,7 +1458,7 @@ lia.command.add("pflagtakeall", {
         end
 
         client:notifyLocalized("tookAllFlags")
-        lia.log.add(client, "playerFlagTakeAll", target:Name())
+        lia.log.add(client, "flagManage", target:Name(), nil, "take", true, "player")
     end
 })
 
@@ -1454,7 +1490,7 @@ lia.command.add("pflagtake", {
 
         target:takeFlags(flags, "player")
         client:notifyLocalized("playerFlagTake", client:Name(), flags, target:Name())
-        lia.log.add(client, "playerFlagTake", target:Name(), flags)
+        lia.log.add(client, "flagManage", target:Name(), flags, "take", false, "player")
     end,
     alias = {"takepflag", "playerflagtake"}
 })
@@ -1597,7 +1633,7 @@ lia.command.add("charunban", {
                 charFound:setData("charBanInfo", nil)
                 charFound:save()
                 client:notifyLocalized("charUnBan", client:Name(), charFound:getName())
-                lia.log.add(client, "charUnban", charFound:getName(), charFound:getID())
+                lia.log.add(client, "charBan", charFound:getName(), charFound:getID(), false, false)
             else
                 return L("charNotBanned")
             end
@@ -1605,7 +1641,7 @@ lia.command.add("charunban", {
 
         client.liaNextSearch = CurTime() + 15
         local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT id, name FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
+        lia.db.selectOne("id, name", "characters", sqlCondition):next(function(data)
             if data and data[1] then
                 local charID = tonumber(data[1].id)
                 local banned = lia.char.getCharBanned(charID)
@@ -1618,7 +1654,7 @@ lia.command.add("charunban", {
                 lia.char.setCharDatabase(charID, "banned", 0)
                 lia.char.setCharDatabase(charID, "charBanInfo", nil)
                 client:notifyLocalized("charUnBan", client:Name(), data[1].name)
-                lia.log.add(client, "charUnban", data[1].name, charID)
+                lia.log.add(client, "charBan", data[1].name, charID, false, false)
             end
         end)
     end
@@ -1766,7 +1802,7 @@ lia.command.add("charban", {
             character:save()
             character:kick()
             client:notifyLocalized("charBan", client:Name(), target:Name())
-            lia.log.add(client, "charBan", target:Name(), character:getID())
+            lia.log.add(client, "charBan", target:Name(), character:getID(), true, false)
         else
             client:notifyLocalized("noChar")
         end
@@ -1812,9 +1848,7 @@ lia.command.add("charwipe", {
         if character then
             local charID = character:getID()
             local charName = character:getName()
-
             character:kick()
-
             lia.char.delete(charID, target)
             client:notifyLocalized("charWipe", client:Name(), charName)
             lia.log.add(client, "charWipe", charName, charID)
@@ -1836,7 +1870,7 @@ lia.command.add("charwipeoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyLocalized("invalidCharID") end
-        lia.db.query("SELECT name FROM lia_characters WHERE id = " .. charID, function(data)
+        lia.db.selectOne("name", "characters", "id = " .. charID):next(function(data)
             if not data or #data == 0 then
                 client:notifyLocalized("characterNotFound")
                 return
@@ -2785,7 +2819,7 @@ lia.command.add("dropmoney", {
             money.client = client
             money.charID = character:getID()
             client:notifyLocalized("moneyDropped", lia.currency.get(amount))
-            lia.log.add(client, "moneyDropped", amount)
+            lia.log.add(client, "moneyTransfer", "dropped", amount)
             client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
         end
     end
@@ -2941,3 +2975,344 @@ lia.command.add("serverpassword", {
         return "Server password sent to you."
     end
 })
+
+concommand.Add("db_test_insert", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database insert functionality...")
+    -- Test inserting into logs table
+    lia.db.insertTable({
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        gamemode = "Lilia",
+        category = "test",
+        message = "Database insert test",
+        charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+        steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+    }, function(result, lastID) print("[DB_TEST] Database insert test successful! Inserted log entry with ID: " .. (lastID or "unknown")) end, "logs")
+end)
+
+concommand.Add("db_test_update", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        ply:ChatPrint("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database update functionality...")
+    -- First insert a test record, then update it
+    lia.db.insertTable({
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        gamemode = "Lilia",
+        category = "test",
+        message = "Database update test - original",
+        charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+        steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+    }, function(insertResult, insertLastID)
+        -- Now update the inserted record
+        lia.db.updateTable({
+            message = "Database update test - updated"
+        }, function(updateResult, updateLastID) print("[DB_TEST] Database update test successful! Updated log entry with ID: " .. (insertLastID or "unknown")) end, "logs", "id = " .. (insertLastID or 0))
+    end, "logs")
+end)
+
+concommand.Add("db_test_select", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database select functionality...")
+    -- Select recent test logs
+    lia.db.select({"id", "message", "timestamp"}, "logs", "category = 'test'"):next(function(result)
+        local results = result.results or {}
+        print("[DB_TEST] Database select test successful! Found " .. #results .. " test log entries.")
+        for i, row in ipairs(results) do
+            print("[DB_TEST] Record " .. i .. ": " .. (row.message or "No message"))
+        end
+    end):catch(function(err) print("[DB_TEST] Database select test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_selectone", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database selectOne functionality...")
+    -- Select one recent test log
+    lia.db.selectOne({"id", "message", "timestamp"}, "logs", "category = 'test'"):next(function(result)
+        if result then
+            print("[DB_TEST] Database selectOne test successful! Found record with ID: " .. result.id)
+        else
+            print("[DB_TEST] Database selectOne test: No records found")
+        end
+    end):catch(function(err) print("[DB_TEST] Database selectOne test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_count", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database count functionality...")
+    -- Count test log entries
+    lia.db.count("logs", "category = 'test'"):next(function(count) print("[DB_TEST] Database count test successful! Found " .. count .. " test log entries.") end):catch(function(err) print("[DB_TEST] Database count test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_exists", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database exists functionality...")
+    -- Check if test log entries exist
+    lia.db.exists("logs", "category = 'test'"):next(function(exists)
+        if exists then
+            print("[DB_TEST] Database exists test successful! Test log entries exist.")
+        else
+            print("[DB_TEST] Database exists test: No test log entries found.")
+        end
+    end):catch(function(err) print("[DB_TEST] Database exists test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_delete", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database delete functionality...")
+    -- First insert a test record, then delete it
+    lia.db.insertTable({
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        gamemode = "Lilia",
+        category = "test_delete",
+        message = "Database delete test",
+        charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+        steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+    }, function(insertResult, insertLastID)
+        -- Now delete the inserted record
+        lia.db.delete("logs", "id = " .. (insertLastID or 0)):next(function(deleteResult) print("[DB_TEST] Database delete test successful! Deleted log entry with ID: " .. (insertLastID or "unknown")) end):catch(function(err) print("[DB_TEST] Database delete test failed: " .. tostring(err)) end)
+    end, "logs")
+end)
+
+concommand.Add("db_test_upsert", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database upsert functionality...")
+    -- Test upsert (insert or update if exists)
+    local testData = {
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        gamemode = "Lilia",
+        category = "test_upsert",
+        message = "Database upsert test - " .. os.time(),
+        charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+        steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+    }
+
+    lia.db.upsert(testData, "logs"):next(function(result) print("[DB_TEST] Database upsert test successful! Record inserted/updated with ID: " .. result.lastID) end):catch(function(err) print("[DB_TEST] Database upsert test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_bulkinsert", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database bulk insert functionality...")
+    -- Test bulk insert multiple records
+    local bulkData = {}
+    for i = 1, 5 do
+        table.insert(bulkData, {
+            timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+            gamemode = "Lilia",
+            category = "test_bulk",
+            message = "Database bulk insert test #" .. i,
+            charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+            steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+        })
+    end
+
+    lia.db.bulkInsert("logs", bulkData):next(function() print("[DB_TEST] Database bulk insert test successful! Inserted 5 records.") end):catch(function(err) print("[DB_TEST] Database bulk insert test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_bulkupsert", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database bulk upsert functionality...")
+    -- Test bulk upsert multiple records
+    local bulkData = {}
+    for i = 1, 3 do
+        table.insert(bulkData, {
+            timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+            gamemode = "Lilia",
+            category = "test_bulkupsert",
+            message = "Database bulk upsert test #" .. i,
+            charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+            steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+        })
+    end
+
+    lia.db.bulkUpsert("logs", bulkData):next(function() print("[DB_TEST] Database bulk upsert test successful! Inserted/updated 3 records.") end):catch(function(err) print("[DB_TEST] Database bulk upsert test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_insertignore", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database insert ignore functionality...")
+    -- Test insert or ignore (skip if duplicate key)
+    local testData = {
+        timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+        gamemode = "Lilia",
+        category = "test_ignore",
+        message = "Database insert ignore test",
+        charID = IsValid(ply) and ply:getChar() and ply:getChar():getID() or nil,
+        steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+    }
+
+    lia.db.insertOrIgnore(testData, "logs"):next(function(result) print("[DB_TEST] Database insert ignore test successful! Record inserted or ignored.") end):catch(function(err) print("[DB_TEST] Database insert ignore test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_tableexists", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database table exists functionality...")
+    -- Test if logs table exists
+    lia.db.tableExists("lia_logs"):next(function(exists)
+        if exists then
+            print("[DB_TEST] Database table exists test successful! lia_logs table exists.")
+        else
+            print("[DB_TEST] Database table exists test: lia_logs table not found.")
+        end
+    end):catch(function(err) print("[DB_TEST] Database table exists test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_fieldexists", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database field exists functionality...")
+    -- Test if 'message' field exists in logs table
+    lia.db.fieldExists("lia_logs", "message"):next(function(exists)
+        if exists then
+            print("[DB_TEST] Database field exists test successful! 'message' field exists in lia_logs.")
+        else
+            print("[DB_TEST] Database field exists test: 'message' field not found in lia_logs.")
+        end
+    end):catch(function(err) print("[DB_TEST] Database field exists test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_gettables", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database get tables functionality...")
+    -- Get all Lilia tables
+    lia.db.getTables():next(function(tables)
+        print("[DB_TEST] Database get tables test successful! Found " .. #tables .. " Lilia tables.")
+        for i, tableName in ipairs(tables) do
+            print("[DB_TEST] Table " .. i .. ": " .. tableName)
+        end
+    end):catch(function(err) print("[DB_TEST] Database get tables test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_transaction", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Testing database transaction functionality...")
+    -- Test transaction with multiple operations
+    local steamID = IsValid(ply) and ply:SteamID() or "CONSOLE"
+    local queries = {"INSERT INTO lia_logs (timestamp, gamemode, category, message, steamID) VALUES ('" .. os.date("%Y-%m-%d %H:%M:%S") .. "', 'Lilia', 'test_transaction', 'Transaction test 1', '" .. steamID .. "')", "INSERT INTO lia_logs (timestamp, gamemode, category, message, steamID) VALUES ('" .. os.date("%Y-%m-%d %H:%M:%S") .. "', 'Lilia', 'test_transaction', 'Transaction test 2', '" .. steamID .. "')", "INSERT INTO lia_logs (timestamp, gamemode, category, message, steamID) VALUES ('" .. os.date("%Y-%m-%d %H:%M:%S") .. "', 'Lilia', 'test_transaction', 'Transaction test 3', '" .. steamID .. "')"}
+    lia.db.transaction(queries):next(function() print("[DB_TEST] Database transaction test successful! All queries executed in transaction.") end):catch(function(err) print("[DB_TEST] Database transaction test failed: " .. tostring(err)) end)
+end)
+
+concommand.Add("db_test_all", function(ply, cmd, args)
+    if IsValid(ply) and not ply:IsSuperAdmin() then
+        print("[DB_TEST] Access denied: Super admin required")
+        return
+    end
+
+    print("[DB_TEST] Starting comprehensive database test suite...")
+    print("[DB_TEST] Testing Database Type: " .. string.upper(lia.db.module or "UNKNOWN"))
+    print("------------------------")
+    local testCommands = {"db_test_insert", "db_test_update", "db_test_select", "db_test_selectone", "db_test_count", "db_test_exists", "db_test_delete", "db_test_upsert", "db_test_bulkinsert", "db_test_bulkupsert", "db_test_insertignore", "db_test_tableexists", "db_test_fieldexists", "db_test_gettables", "db_test_transaction"}
+    -- Track test results
+    local testResults = {}
+    local passedTests = {}
+    local failedTests = {}
+    for i, command in ipairs(testCommands) do
+        timer.Simple((i - 1) * 3, function()
+            print("------------------------")
+            print("[DB_TEST] Running test " .. i .. "/" .. #testCommands .. ": " .. command)
+            print("------------------------")
+            -- Execute the command and track result
+            local success, err = pcall(function() RunConsoleCommand(command) end)
+            if success then
+                table.insert(passedTests, command)
+                testResults[command] = true
+            else
+                table.insert(failedTests, command)
+                testResults[command] = false
+                print("[DB_TEST] Error executing " .. command .. ": " .. tostring(err))
+            end
+
+            -- Print completion message and report for the last test
+            if i == #testCommands then
+                timer.Simple(2, function()
+                    print("------------------------")
+                    print("[DB_TEST] Database test suite completed!")
+                    print("------------------------")
+                    print("[DB_TEST] FINAL REPORT:")
+                    print("[DB_TEST] ==============")
+                    print("[DB_TEST] Total Tests: " .. #testCommands)
+                    print("[DB_TEST] Passed: " .. #passedTests)
+                    print("[DB_TEST] Failed: " .. #failedTests)
+                    print("[DB_TEST] Success Rate: " .. math.Round((#passedTests / #testCommands) * 100, 1) .. "%")
+                    print("")
+                    if #passedTests > 0 then
+                        print("[DB_TEST] PASSED TESTS:")
+                        for _, test in ipairs(passedTests) do
+                            print("[DB_TEST] ✓ " .. test)
+                        end
+
+                        print("")
+                    end
+
+                    if #failedTests > 0 then
+                        print("[DB_TEST] FAILED TESTS:")
+                        for _, test in ipairs(failedTests) do
+                            print("[DB_TEST] ✗ " .. test)
+                        end
+
+                        print("")
+                    end
+
+                    print("------------------------")
+                end)
+            end
+        end)
+    end
+end)

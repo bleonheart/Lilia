@@ -8,7 +8,7 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 if SERVER and #lia.char.names < 1 then
-    lia.db.query("SELECT id, name FROM lia_characters", function(data)
+    lia.db.select("id, name", "characters"):next(function(data)
         if data and #data > 0 then
             for _, v in pairs(data) do
                 lia.char.names[v.id] = v.name
@@ -538,41 +538,70 @@ lia.char.registerVar("banned", {
     noDisplay = true
 })
 
-function lia.char.getCharData(charID, key)
+lia.char.registerVar("timestamp", {
+    field = "timestamp",
+    fieldType = "datetime",
+})
+
+function lia.char.getCharData(charID, key, callback)
     local charIDsafe = tonumber(charID)
-    if not charIDsafe then return end
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
-    local data = {}
-    if istable(results) then
-        for _, row in ipairs(results) do
-            local decoded = pon.decode(row.value)
-            data[row.key] = decoded[1]
-        end
+    if not charIDsafe then
+        if callback then callback(nil) end
+        return
     end
 
-    if key then return data[key] end
-    return data
+    lia.db.select("key, value", "chardata", "charID = " .. charIDsafe):next(function(result)
+        local data = {}
+        local results = result.results or {}
+        if istable(results) then
+            for _, row in ipairs(results) do
+                local decoded = pon.decode(row.value)
+                data[row.key] = decoded[1]
+            end
+        end
+
+        if callback then
+            if key then
+                callback(data[key])
+            else
+                callback(data)
+            end
+        end
+    end)
 end
 
-function lia.char.getCharDataRaw(charID, key)
+function lia.char.getCharDataRaw(charID, key, callback)
     local charIDsafe = tonumber(charID)
-    if not charIDsafe then return end
-    if key then
-        local row = sql.Query("SELECT value FROM lia_chardata WHERE charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'")
-        if not row or not row[1] then return false end
-        local decoded = pon.decode(row[1].value)
-        return decoded[1]
+    if not charIDsafe then
+        if callback then callback(nil) end
+        return
     end
 
-    local results = sql.Query("SELECT key, value FROM lia_chardata WHERE charID = " .. charIDsafe)
-    local data = {}
-    if istable(results) then
-        for _, r in ipairs(results) do
-            local decoded = pon.decode(r.value)
-            data[r.key] = decoded[1]
-        end
+    if key then
+        lia.db.select("value", "chardata", "charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(key) .. "'"):next(function(result)
+            local results = result.results or {}
+            if not results or not results[1] then
+                if callback then callback(false) end
+                return
+            end
+
+            local decoded = pon.decode(results[1].value)
+            if callback then callback(decoded[1]) end
+        end)
+    else
+        lia.db.select("key, value", "chardata", "charID = " .. charIDsafe):next(function(result)
+            local data = {}
+            local results = result.results or {}
+            if istable(results) then
+                for _, r in ipairs(results) do
+                    local decoded = pon.decode(r.value)
+                    data[r.key] = decoded[1]
+                end
+            end
+
+            if callback then callback(data) end
+        end)
     end
-    return data
 end
 
 function lia.char.getOwnerByID(ID)
@@ -662,8 +691,7 @@ if SERVER then
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. lia.db.convertDataType(steamID)
         if id then condition = condition .. " AND id = " .. id end
-        local query = "SELECT " .. fields .. " FROM lia_characters WHERE " .. condition
-        lia.db.query(query, function(data)
+        lia.db.select(fields, "characters", condition):next(function(data)
             local characters = {}
             local results = data or {}
             local done = 0
@@ -790,9 +818,9 @@ if SERVER then
         end
 
         lia.char.loaded[id] = nil
-        lia.db.query("DELETE FROM lia_characters WHERE id = " .. id)
+        lia.db.delete("characters", "id = " .. id)
         lia.db.delete("chardata", "charID = " .. id)
-        lia.db.query("SELECT invID FROM lia_inventories WHERE charID = " .. id, function(data)
+        lia.db.select("invID", "inventories", "charID = " .. id):next(function(data)
             if data then
                 for _, inventory in ipairs(data) do
                     lia.inventory.deleteByID(tonumber(inventory.invID))
@@ -801,20 +829,13 @@ if SERVER then
         end)
 
         hook.Run("OnCharDelete", client, id)
-
-
         if IsValid(client) and client:getChar() and client:getChar():getID() == id then
-
             net.Start("removeF1")
             net.Send(client)
-
-
             net.Start("charKick")
             net.WriteUInt(id, 32)
             net.WriteBool(true)
             net.Send(client)
-
-
             client:setNetVar("char", nil)
             client:Spawn()
         end
@@ -827,11 +848,21 @@ if SERVER then
         end
     end
 
-    function lia.char.getCharBanned(charID)
+    function lia.char.getCharBanned(charID, callback)
         local charIDsafe = tonumber(charID)
-        if not charIDsafe then return end
-        local result = sql.Query("SELECT banned FROM lia_characters WHERE id = " .. charIDsafe .. " LIMIT 1")
-        if istable(result) and result[1] then return tonumber(result[1].banned) or 0 end
+        if not charIDsafe then
+            if callback then callback(nil) end
+            return
+        end
+
+        lia.db.selectOne("banned", "characters", "id = " .. charIDsafe):next(function(result)
+            if result then
+                local banned = tonumber(result.banned) or 0
+                if callback then callback(banned) end
+            else
+                if callback then callback(0) end
+            end
+        end)
     end
 
     function lia.char.setCharDatabase(charID, field, value)
