@@ -1,4 +1,4 @@
-﻿NAME = "German"
+NAME = "German"
 LANGUAGE = {
     mustProvideString = "Es muss ein String angegeben werden",
     use = "Benutzen",
@@ -1195,9 +1195,6 @@ Nachladen: Fallenlassen]],
     preparedStatementsAdded = "5 PREPARED STATEMENTS HINZUGEFÜGT.",
     databaseConnected = "Lilia hat sich mit der Datenbank verbunden. Wir nutzen %s!",
     dbConnectionFail = "Lilia konnte keine Verbindung zur Datenbank herstellen.",
-    mysqlooOutdated = "Du benutzt eine veraltete mysqloo-Version.",
-    mysqlooDownload = "Lade die neueste mysqloo9 hier herunter.",
-    mysqlooDownloadURL = "https://github.com/syl0r/MySQLOO/releases.",
     dbPoolFail = "Konnte Datenbank im Pool nicht finden",
     invalidStorageModule = "'%s' ist keine gültige Datenspeichermethode!",
     dataWiped = "ALLE LILIA-DATEN WURDEN GELÖSCHT",
@@ -1372,7 +1369,6 @@ Nachladen: Fallenlassen]],
     factionMissingColor = "Fraktion '%s' fehlt eine Farbe. Füge FACTION.color = Color(1, 2, 3) hinzu",
     storageInventoryMissing = "Storage setInventory ohne Inventar aufgerufen!",
     missingVcRedistributables = "Server fehlen VC++ Redistributables!",
-    missingMysqlooBinaries = "Server fehlen mysqloo-Binärdateien!",
     factionMissingName = "Fraktion '%s' fehlt ein Name. Füge FACTION.name hinzu",
     factionMissingDesc = "Fraktion '%s' fehlt eine Beschreibung. Füge FACTION.desc hinzu",
     permaPropSavedLog = "%s hat %s (%s) bei %s perma-geproppt",

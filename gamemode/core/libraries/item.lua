@@ -1,4 +1,4 @@
-﻿lia.item = lia.item or {}
+lia.item = lia.item or {}
 lia.item.base = lia.item.base or {}
 lia.item.list = lia.item.list or {}
 lia.item.instances = lia.item.instances or {}
@@ -543,18 +543,14 @@ if SERVER then
         end
 
         if not isnumber(index) then index = NULL end
-        if MYSQLOO_PREPARED and isnumber(index) then
-            lia.db.preparedCall("itemInstance", onItemCreated, index, uniqueID, itemData, x, y, itemTable.maxQuantity or 1)
-        else
-            lia.db.insertTable({
-                invID = index,
-                uniqueID = uniqueID,
-                data = itemData,
-                x = x,
-                y = y,
-                quantity = itemTable.maxQuantity or 1
-            }, onItemCreated, "items")
-        end
+        lia.db.insertTable({
+            invID = index,
+            uniqueID = uniqueID,
+            data = itemData,
+            x = x,
+            y = y,
+            quantity = itemTable.maxQuantity or 1
+        }, onItemCreated, "items")
         return d
     end
 
