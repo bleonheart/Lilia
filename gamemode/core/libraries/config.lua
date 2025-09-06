@@ -1,4 +1,5 @@
-﻿lia.config = lia.config or {}
+﻿local GM = GM or GAMEMODE
+lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 function lia.config.add(key, name, value, callback, data)
     assert(isstring(key), L("configKeyString", type(key)))
@@ -493,10 +494,7 @@ lia.config.add("IsVoiceEnabled", "voiceChatEnabled", true, function(_, newValue)
     type = "Boolean",
 })
 
-lia.config.add("SalaryInterval", "salaryInterval", 300, function()
-    local GM = GM or GAMEMODE
-    timer.Simple(0.1, function() GM:CreateSalaryTimers() end)
-end, {
+lia.config.add("SalaryInterval", "salaryInterval", 300, function() timer.Simple(0.1, function() GM:CreateSalaryTimers() end) end, {
     desc = "salaryIntervalDesc",
     category = "categorySalary",
     type = "Float",
@@ -1453,24 +1451,24 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 keys[#keys + 1] = k
             end
 
-            table.sort(keys, function(a, b) 
+            table.sort(keys, function(a, b)
                 local configA = lia.config.stored[a]
                 local configB = lia.config.stored[b]
-                
                 if not configA then
                     lia.error("Config with key '" .. tostring(a) .. "' not found in stored configs")
                     return false
                 end
+
                 if not configB then
                     lia.error("Config with key '" .. tostring(b) .. "' not found in stored configs")
                     return true
                 end
-                
+
                 local nameA = tostring(configA.name or a)
                 local nameB = tostring(configB.name or b)
-                
                 return nameA < nameB
             end)
+
             for _, k in ipairs(keys) do
                 local opt = lia.config.stored[k]
                 if not opt then
