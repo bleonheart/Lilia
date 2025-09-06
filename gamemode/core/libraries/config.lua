@@ -494,7 +494,10 @@ lia.config.add("IsVoiceEnabled", "voiceChatEnabled", true, function(_, newValue)
     type = "Boolean",
 })
 
-lia.config.add("SalaryInterval", "salaryInterval", 300, function() timer.Simple(0.1, function() GM:CreateSalaryTimers() end) end, {
+lia.config.add("SalaryInterval", "salaryInterval", 300, function()
+    if not SERVER then return end
+    timer.Simple(0.1, function() GM:CreateSalaryTimers() end)
+end, {
     desc = "salaryIntervalDesc",
     category = "categorySalary",
     type = "Float",

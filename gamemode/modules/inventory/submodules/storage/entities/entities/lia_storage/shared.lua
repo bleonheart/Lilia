@@ -1,5 +1,7 @@
 ENT.Type = "anim"
 ENT.PrintName = L("storage")
+ENT.Author = "Samael"
+ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"
 ENT.Spawnable = false
 ENT.isStorageEntity = true

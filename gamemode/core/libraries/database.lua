@@ -370,7 +370,6 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
     local tableName = "lia_" .. (dbTable or "characters")
     local query = "SELECT " .. from .. " FROM " .. tableName
     
-    -- Build WHERE clause from conditions table
     if conditions and istable(conditions) and next(conditions) then
         local whereParts = {}
         for field, value in pairs(conditions) do
@@ -378,7 +377,6 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
                 local operator = "="
                 local conditionValue = value
                 
-                -- Handle special operators
                 if istable(value) and value.operator and value.value ~= nil then
                     operator = value.operator
                     conditionValue = value.value
@@ -394,16 +392,13 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
             query = query .. " WHERE " .. table.concat(whereParts, " AND ")
         end
     elseif isstring(conditions) then
-        -- Fallback to string condition for backward compatibility
         query = query .. " WHERE " .. tostring(conditions)
     end
     
-    -- Add ORDER BY clause
     if orderBy then
         query = query .. " ORDER BY " .. tostring(orderBy)
     end
     
-    -- Add LIMIT clause
     if limit then
         query = query .. " LIMIT " .. tostring(limit)
     end
