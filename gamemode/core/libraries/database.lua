@@ -9,11 +9,6 @@ local function ThrowQueryFault(query, fault)
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. fault .. "\n")
 end
 
-local function ThrowConnectionFault(fault)
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. L("dbConnectionFail") .. "\n")
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. fault .. "\n")
-    setNetVar("dbError", fault)
-end
 
 local function promisifyIfNoCallback(queryHandler)
     return function(query, callback)

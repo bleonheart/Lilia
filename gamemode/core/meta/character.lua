@@ -359,8 +359,7 @@ if SERVER then
         hook.Run("OnCharVarChanged", self, "flags", oldFlags, flags)
         local ply = self:getPlayer()
         if not IsValid(ply) then return end
-        local plyFlags = ""
-        plyFlags = ply:getFlags("player")
+        local plyFlags = ply:getFlags("player")
         for i = 1, #oldFlags do
             local flag = oldFlags:sub(i, i)
             if not flags:find(flag, 1, true) and not plyFlags:find(flag, 1, true) then

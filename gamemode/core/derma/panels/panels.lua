@@ -400,11 +400,11 @@ classes.FadeHover = function(pnl, col, speed, rad)
     speed = speed or 6
     pnl:SetupTransition("FadeHover", speed, function(s) return s:IsHovered() end)
     pnl:On("Paint", function(s, w, h)
-        local col = ColorAlpha(col, col.a * s.FadeHover)
+        local colAlpha = ColorAlpha(col, col.a * s.FadeHover)
         if rad and rad > 0 then
-            draw.RoundedBox(rad, 0, 0, w, h, col)
+            draw.RoundedBox(rad, 0, 0, w, h, colAlpha)
         else
-            surface.SetDrawColor(col)
+            surface.SetDrawColor(colAlpha)
             surface.DrawRect(0, 0, w, h)
         end
     end)
@@ -452,7 +452,7 @@ classes.FillHover = function(pnl, col, dir, speed, mat)
 end
 
 classes.Background = function(pnl, col, rad, rtl, rtr, rbl, rbr)
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         if rad and rad > 0 then
             if rtl ~= nil then
                 draw.RoundedBoxEx(rad, 0, 0, w, h, col, rtl, rtr, rbl, rbr)
@@ -468,7 +468,7 @@ end
 
 classes.Material = function(pnl, mat, col)
     col = col or Color(255, 255, 255)
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         surface.SetDrawColor(col)
         surface.SetMaterial(mat)
         surface.DrawTexturedRect(0, 0, w, h)
@@ -477,7 +477,7 @@ end
 
 classes.TiledMaterial = function(pnl, mat, tw, th, col)
     col = col or Color(255, 255, 255, 255)
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         surface.SetMaterial(mat)
         surface.SetDrawColor(col)
         surface.DrawTexturedRectUV(0, 0, w, h, 0, 0, w / tw, h / th)
@@ -487,7 +487,7 @@ end
 classes.Outline = function(pnl, col, width)
     col = col or Color(255, 255, 255, 255)
     width = width or 1
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         surface.SetDrawColor(col)
         for i = 0, width - 1 do
             surface.DrawOutlinedRect(0 + i, 0 + i, w - i * 2, h - i * 2)
@@ -495,15 +495,15 @@ classes.Outline = function(pnl, col, width)
     end)
 end
 
-classes.LinedCorners = function(pnl, col, len)
+classes.LinedCorners = function(pnl, col, cornerLen)
     col = col or Color(255, 255, 255, 255)
-    len = len or 15
-    pnl:On("Paint", function(s, w, h)
+    cornerLen = cornerLen or 15
+    pnl:On("Paint", function(_, w, h)
         surface.SetDrawColor(col)
-        surface.DrawRect(0, 0, len, 1)
-        surface.DrawRect(0, 1, 1, len - 1)
-        surface.DrawRect(w - len, h - 1, len, 1)
-        surface.DrawRect(w - 1, h - len, 1, len - 1)
+        surface.DrawRect(0, 0, cornerLen, 1)
+        surface.DrawRect(0, 1, 1, cornerLen - 1)
+        surface.DrawRect(w - cornerLen, h - 1, cornerLen, 1)
+        surface.DrawRect(w - 1, h - cornerLen, 1, cornerLen - 1)
     end)
 end
 
@@ -511,7 +511,7 @@ classes.SideBlock = function(pnl, col, size, side)
     col = col or Color(255, 255, 255, 255)
     size = size or 3
     side = side or LEFT
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         surface.SetDrawColor(col)
         if side == LEFT then
             surface.DrawRect(0, 0, size, h)
@@ -536,7 +536,7 @@ classes.Text = function(pnl, text, font, col, alignment, ox, oy, paint)
         pnl:SetFont(font)
         pnl:SetTextColor(col)
     else
-        pnl:On("Paint", function(s, w, h)
+        pnl:On("Paint", function(_, w, h)
             local x = 0
             if alignment == TEXT_ALIGN_CENTER then
                 x = w / 2
@@ -556,11 +556,11 @@ classes.DualText = function(pnl, toptext, topfont, topcol, bottomtext, bottomfon
     bottomcol = bottomcol or Color(255, 255, 255, 255)
     alignment = alignment or TEXT_ALIGN_CENTER
     centerSpacing = centerSpacing or 0
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         surface.SetFont(topfont)
-        local tw, th = surface.GetTextSize(toptext)
+        local _, th = surface.GetTextSize(toptext)
         surface.SetFont(bottomfont)
-        local bw, bh = surface.GetTextSize(bottomtext)
+        local _, bh = surface.GetTextSize(bottomtext)
         local y1, y2 = h / 2 - bh / 2, h / 2 + th / 2
         local x
         if alignment == TEXT_ALIGN_LEFT then
@@ -577,7 +577,7 @@ classes.DualText = function(pnl, toptext, topfont, topcol, bottomtext, bottomfon
 end
 
 classes.Blur = function(pnl, amount)
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(s, _, _)
         local x, y = s:LocalToScreen(0, 0)
         local scrW, scrH = ScrW(), ScrH()
         surface.SetDrawColor(255, 255, 255)
@@ -595,7 +595,7 @@ classes.CircleClick = function(pnl, col, speed, trad)
     col = col or Color(255, 255, 255, 50)
     speed = speed or 5
     pnl.Rad, pnl.Alpha, pnl.ClickX, pnl.ClickY = 0, 0, 0, 0
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(s, w, _)
         if s.Alpha >= 1 then
             surface.SetDrawColor(ColorAlpha(col, s.Alpha))
             draw.NoTexture()
@@ -618,7 +618,7 @@ classes.CircleHover = function(pnl, col, speed, trad)
     pnl.LastX, pnl.LastY = 0, 0
     pnl:SetupTransition("CircleHover", speed, function(s) return s:IsHovered() end)
     pnl:On("Think", function(s) if s:IsHovered() then s.LastX, s.LastY = s:CursorPos() end end)
-    pnl:On("PaintOver", function(s, w, h)
+    pnl:On("PaintOver", function(s, w, _)
         draw.NoTexture()
         surface.SetDrawColor(ColorAlpha(col, col.a * s.CircleHover))
         drawCircle(s.LastX, s.LastY, s.CircleHover * (trad or w))
@@ -691,7 +691,7 @@ end
 classes.CircleAvatar = function(pnl) pnl:Class("AvatarMask", function(s, w, h) drawCircle(w / 2, h / 2, w / 2) end) end
 classes.Circle = function(pnl, col)
     col = col or Color(255, 255, 255, 255)
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         draw.NoTexture()
         surface.SetDrawColor(col)
         drawCircle(w / 2, h / 2, math.min(w, h) / 2)
@@ -724,7 +724,7 @@ end
 classes.Gradient = function(pnl, col, dir, frac, op)
     dir = dir or BOTTOM
     frac = frac or 1
-    pnl:On("Paint", function(s, w, h)
+    pnl:On("Paint", function(_, w, h)
         surface.SetDrawColor(col)
         local x, y, gw, gh
         if dir == LEFT then
@@ -816,6 +816,6 @@ function meta:Class(name, ...)
     return self
 end
 
-for k, v in pairs(classes) do
+for k, _ in pairs(classes) do
     meta[k] = function(s, ...) return s:Class(k, ...) end
 end
