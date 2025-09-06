@@ -1,4 +1,4 @@
-﻿net.Receive("liaNotifyL", function()
+net.Receive("liaNotifyL", function()
     local message = net.ReadString()
     local length = net.ReadUInt(8)
     if length == 0 then return lia.notices.notifyLocalized(message) end
@@ -926,11 +926,11 @@ net.Receive("liaAssureClientSideAssets", function()
                 activeDownloads = activeDownloads - 1
                 if material then
                     completedImages = completedImages + 1
-                    if not fromCache then print(string.format("[✓] Image downloaded: %s", download.name)) end
+                    if not fromCache then print(string.format("[?] Image downloaded: %s", download.name)) end
                 else
                     failedImages = failedImages + 1
                     local errorMessage = errorMsg or "Unknown error"
-                    print(string.format("[✗] Image failed: %s - %s", download.name, errorMessage))
+                    print(string.format("[?] Image failed: %s - %s", download.name, errorMessage))
                     chat.AddText(Color(255, 100, 100), "[Image Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end
 
@@ -941,11 +941,11 @@ net.Receive("liaAssureClientSideAssets", function()
                 activeDownloads = activeDownloads - 1
                 if path then
                     completedSounds = completedSounds + 1
-                    if not fromCache then print(string.format("[✓] Sound downloaded: %s", download.name)) end
+                    if not fromCache then print(string.format("[?] Sound downloaded: %s", download.name)) end
                 else
                     failedSounds = failedSounds + 1
                     local errorMessage = errorMsg or "Unknown error"
-                    print(string.format("[✗] Sound failed: %s - %s", download.name, errorMessage))
+                    print(string.format("[?] Sound failed: %s - %s", download.name, errorMessage))
                     chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end
 

@@ -1,4 +1,4 @@
-﻿ITEM.name = "bagName"
+ITEM.name = "bagName"
 ITEM.desc = "bagDesc"
 ITEM.model = "models/props_c17/suitcase001a.mdl"
 ITEM.category = "storage"
@@ -34,7 +34,6 @@ function ITEM:onRestored()
     end
 end
 
--- Ensure all bag items have the Open function
 function ITEM:onRegistered()
     if not self.functions.Open then
         self.functions.Open = ITEM.functions.Open

@@ -1,4 +1,4 @@
-﻿ITEM.name = "entitiesName"
+ITEM.name = "entitiesName"
 ITEM.model = ""
 ITEM.desc = "entitiesDesc"
 ITEM.category = "entities"
@@ -57,7 +57,6 @@ ITEM.functions.Place = {
                 end
             end
 
-
             if itemData.health and itemData.health > 0 then
                 entity:SetHealth(itemData.health)
                 if itemData.maxHealth and itemData.maxHealth > 0 then entity:SetMaxHealth(itemData.maxHealth) end
@@ -69,7 +68,6 @@ ITEM.functions.Place = {
                 physObj:Wake()
             end
         end
-
 
         item:remove()
         return true

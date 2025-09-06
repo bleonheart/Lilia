@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local restrictedProperties = {
     persist = true,
     drive = true,
@@ -134,7 +134,6 @@ function GM:PlayerNoClip(ply, enabled)
         ply:notifyLocalized("noNoclip")
         return false
     end
-
 
     if not ply:Alive() then
         lia.log.add(ply, "permissionDenied", L("noclipWhileDead"))

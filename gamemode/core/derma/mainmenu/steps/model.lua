@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 
 function PANEL:filterCharacterModels(faction)
     if not faction or not faction.models then return {} end

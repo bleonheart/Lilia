@@ -1,4 +1,4 @@
-﻿LiliaVendors = LiliaVendors or {}
+LiliaVendors = LiliaVendors or {}
 ENT.Type = "anim"
 ENT.PrintName = L("entityVendorName")
 ENT.Category = "Lilia"

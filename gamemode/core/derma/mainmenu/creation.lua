@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterFaction"))
     self:addStep(vgui.Create("liaCharacterBiography"))
