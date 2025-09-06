@@ -688,7 +688,7 @@ classes.AvatarMask = function(pnl, mask)
     pnl.SetSteamID = function(s, id, size) s.Avatar:SetSteamID(id, size) end
 end
 
-classes.CircleAvatar = function(pnl) pnl:Class("AvatarMask", function(s, w, h) drawCircle(w / 2, h / 2, w / 2) end) end
+classes.CircleAvatar = function(pnl) pnl:Class("AvatarMask", function(_, w, h) drawCircle(w / 2, h / 2, w / 2) end) end
 classes.Circle = function(pnl, col)
     col = col or Color(255, 255, 255, 255)
     pnl:On("Paint", function(_, w, h)
