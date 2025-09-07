@@ -218,7 +218,11 @@ function ENT:OnRemove()
     LiliaVendors[self:EntIndex()] = nil
     if not lia.shuttingDown then
         net.Start("VendorExit")
-        if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+        if self.receivers and #self.receivers > 0 then
+            net.Send(self.receivers)
+        else
+            net.Broadcast()
+        end
     end
 
     if lia.shuttingDown or self.liaIsSafe then return end

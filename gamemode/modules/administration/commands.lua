@@ -271,8 +271,7 @@ lia.command.add("charlist", {
             steamID = client:SteamID()
         end
 
-        local query = [[SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = ]] .. lia.db.convertDataType(steamID)
-        lia.db.query(query, function(data)
+        lia.db.query("SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = " .. lia.db.convertDataType(steamID), function(data)
             if not data or #data == 0 then
                 client:notifyLocalized("noCharactersForPlayer")
                 return
@@ -1812,9 +1811,7 @@ lia.command.add("charwipe", {
         if character then
             local charID = character:getID()
             local charName = character:getName()
-
             character:kick()
-
             lia.char.delete(charID, target)
             client:notifyLocalized("charWipe", client:Name(), charName)
             lia.log.add(client, "charWipe", charName, charID)

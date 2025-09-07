@@ -111,6 +111,21 @@ function GM:CanItemBeTransfered(item, curInv, inventory)
         return false
     end
 
+    local itemSteamID = item:getData("steamID")
+    if itemSteamID then
+        local targetCharID = inventory:getData("char")
+        if targetCharID then
+            local client = inventory:getRecipients()[1]
+            if IsValid(client) and client:getChar() then
+                local currentCharID = client:getChar():getID()
+                if currentCharID == targetCharID and itemSteamID == client:SteamID() then
+                    client:notifyLocalized("playerCharBelonging")
+                    return false
+                end
+            end
+        end
+    end
+
     if item.OnCanBeTransfered then
         local itemHook = item:OnCanBeTransfered(curInv, inventory)
         return itemHook ~= false
@@ -208,7 +223,8 @@ function GM:CanPlayerTakeItem(client, item)
         client:notifyLocalized("familySharedPickupDisabled")
         return false
     elseif IsValid(item.entity) then
-        if item.entity.SteamID == client:SteamID() then
+        local itemSteamID = item.entity.liaSteamID or item:getData("steamID")
+        if itemSteamID and itemSteamID ~= client:SteamID() then
             client:notifyLocalized("playerCharBelonging")
             return false
         end
@@ -412,7 +428,7 @@ function GM:PlayerAuthed(client, steamid)
         local group = data and data.userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(group), lia.db.convertDataType(steamid)))
+            lia.db.query("UPDATE lia_players SET userGroup = '" .. lia.db.escape(group) .. "' WHERE steamID = " .. lia.db.convertDataType(steamid))
         end
 
         client:SetUserGroup(group)
@@ -1073,7 +1089,7 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.administrator.groups[usergroup] then
                 target:SetUserGroup(usergroup)
-                lia.db.query(Format("UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s", lia.db.escape(usergroup), lia.db.convertDataType(target:SteamID())))
+                lia.db.query("UPDATE lia_players SET userGroup = '" .. lia.db.escape(usergroup) .. "' WHERE steamID = " .. lia.db.convertDataType(target:SteamID()))
             else
                 MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consoleUsergroupNotFound") .. "\n")
             end

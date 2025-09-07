@@ -517,6 +517,7 @@ if SERVER then
         hook.Run("SetupDatabase")
         lia.db.connect(function()
             lia.db.loadTables()
+            lia.bootstrap(L("database"), L("databaseConnected", "SQLite"))
             hook.Run("DatabaseConnected")
         end)
     end

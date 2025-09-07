@@ -160,13 +160,17 @@ if SERVER then
         if not IsValid(self) then return end
         lia.net[self] = nil
         if lia.shuttingDown then return end
-        net.Start("nDel")
-        net.WriteUInt(self:EntIndex(), 16)
-        if receiver then
-            net.Send(receiver)
-        else
-            net.Broadcast()
-        end
+
+        timer.Simple(0, function()
+            if not IsValid(self) then return end
+            net.Start("nDel")
+            net.WriteUInt(self:EntIndex(), 16)
+            if receiver then
+                net.Send(receiver)
+            else
+                net.Broadcast()
+            end
+        end)
     end
 
     function entityMeta:removeDoorAccessData()

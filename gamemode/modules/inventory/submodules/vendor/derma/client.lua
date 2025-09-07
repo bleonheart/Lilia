@@ -452,6 +452,16 @@ end
 
 vgui.Register("Vendor", PANEL, "EditablePanel")
 PANEL = {}
+
+local function drawIcon(mat, pnl, x, y)
+    surface.SetDrawColor(color_white)
+    if isstring(mat) then
+        mat = Material(mat)
+    end
+    surface.SetMaterial(mat)
+    surface.DrawTexturedRect(0, 0, x, y)
+end
+
 function PANEL:Init()
     self:SetSize(600, 200)
     self:Dock(TOP)
@@ -464,6 +474,10 @@ function PANEL:Init()
     self.iconFrame:SetSize(96, 96)
     self.iconFrame:Dock(LEFT)
     self.iconFrame:DockMargin(10, 10, 10, 10)
+    self.iconFrame.ExtraPaint = function() end
+    self.iconFrame.Paint = function(pnl, w, h)
+        self.iconFrame:ExtraPaint(w, h)
+    end
     self.icon = self.iconFrame:Add("liaItemIcon")
     self.icon:SetSize(96, 96)
     self.icon:Dock(FILL)
@@ -566,18 +580,19 @@ function PANEL:setItemType(itemType)
     local item = lia.item.list[itemType]
     assert(item, L("invalidItemTypeOrID", tostring(itemType)))
     self.item = item
-    if item.icon then
+
+    local itemIcon = item.icon
+    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then
+        itemIcon = item.functions.use.icon
+    end
+
+    if itemIcon then
         self.icon:SetVisible(false)
-        self.ExtraPaint = function(_, w, h)
-            local mat = isstring(item.icon) and Material(item.icon) or item.icon
-            surface.SetDrawColor(color_white)
-            surface.SetMaterial(mat)
-            surface.DrawTexturedRect(0, 0, w, h)
-        end
+        self.iconFrame.ExtraPaint = function(pnl, w, h) drawIcon(itemIcon, pnl, w, h) end
     else
         self.icon:SetVisible(true)
         self.icon:SetModel(item.model, item.skin or 0)
-        self.ExtraPaint = function() end
+        self.iconFrame.ExtraPaint = function() end
     end
 
     self:updateLabel()
