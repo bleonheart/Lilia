@@ -1,4 +1,4 @@
-local friendliedNPCs = {}
+﻿local friendliedNPCs = {}
 local hostaliziedNPCs = {}
 local passive = {"npc_seagull", "npc_crow", "npc_piegon", "monster_cockroach", "npc_dog", "npc_gman", "npc_antlion_grub", "npc_turret_floor"}
 local friendly = {"npc_monk", "npc_alyx", "npc_barney", "npc_citizen", "npc_turret_floor", "npc_dog", "npc_vortigaunt", "npc_kleiner", "npc_eli", "npc_magnusson", "npc_breen", "npc_mossman", "npc_fisherman", "monster_barney", "monster_scientist", "player"}
@@ -133,7 +133,6 @@ local function GiveWeapon(ply, ent, args)
 end
 
 duplicator.RegisterEntityModifier("npc_weapon", GiveWeapon)
-
 local nowep = {"cycler", "npc_furniture", "monster_generic", "npc_seagull", "npc_crow", "npc_piegon", "npc_rollermine", "npc_turret_floor", "npc_stalker", "npc_turret_ground", "npc_combine_camera", "npc_turret_ceiling", "npc_cscanner", "npc_clawscanner", "npc_manhack", "npc_sniper", "npc_combinegunship", "npc_combinedropship", "npc_helicopter", "npc_antlion_worker", "npc_headcrab_black", "npc_hunter", "npc_vortigaunt", "npc_antlion", "npc_antlionguard", "npc_barnacle", "npc_headcrab", "npc_dog", "npc_gman", "npc_antlion_grub", "npc_strider", "npc_fastzombie", "npc_fastzombie_torso", "npc_headcrab_poison", "npc_headcrab_fast", "npc_poisonzombie", "npc_zombie", "npc_zombie_torso", "npc_zombine", "monster_scientist", "monster_zombie", "monster_headcrab", "class C_AI_BaseNPC", "monster_tentacle", "monster_alien_grunt", "monster_alien_slave", "monster_human_assassin", "monster_babycrab", "monster_bullchicken", "monster_cockroach", "monster_alien_controller", "monster_gargantua", "monster_bigmomma", "monster_human_grunt", "monster_houndeye", "monster_nihilanth", "monster_barney", "monster_snark", "monster_turret", "monster_miniturret", "monster_sentry"}
 AddEntFunctionProperty("npc_weapon_strip", L("stripWeapon"), 651, function(ent)
     if ent:IsNPC() and IsValid(ent:GetActiveWeapon()) and not table.HasValue(nowep, ent:GetClass()) then return true end

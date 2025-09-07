@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local renderedIcons = {}
 local function renderNewIcon(panel, itemTable)
     if itemTable.iconCam and (not renderedIcons[string.lower(itemTable.model)] or itemTable.forceRender) then
@@ -17,9 +17,7 @@ end
 
 local function drawIcon(mat, _, x, y)
     surface.SetDrawColor(color_white)
-    if isstring(mat) then
-        mat = Material(mat)
-    end
+    if isstring(mat) then mat = Material(mat) end
     surface.SetMaterial(mat)
     surface.DrawTexturedRect(0, 0, x, y)
 end
@@ -163,12 +161,8 @@ function PANEL:setItemType(itemTypeOrID)
     end
 
     self:updateTooltip()
-
     local itemIcon = item.icon
-    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then
-        itemIcon = item.functions.use.icon
-    end
-
+    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then itemIcon = item.functions.use.icon end
     if itemIcon then
         self.Icon:SetVisible(false)
         self.ExtraPaint = function(pnl, w, h) drawIcon(itemIcon, pnl, w, h) end

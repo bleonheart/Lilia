@@ -1,4 +1,4 @@
-local ITEM = lia.meta.item or {}
+﻿local ITEM = lia.meta.item or {}
 debug.getregistry().Item = lia.meta.item
 ITEM.__index = ITEM
 ITEM.name = "invalidName"
@@ -238,9 +238,8 @@ if SERVER then
                     entity.liaSteamID = storedSteamID
                     entity.SteamID = storedSteamID
                 end
-                if storedCharID then
-                    entity.liaCharID = storedCharID
-                end
+
+                if storedCharID then entity.liaCharID = storedCharID end
             end
             return entity
         end

@@ -1,4 +1,4 @@
-local playerMeta = FindMetaTable("Player")
+﻿local playerMeta = FindMetaTable("Player")
 local entityMeta = FindMetaTable("Entity")
 local baseEmitSound = entityMeta.EmitSound
 local validClasses = {
@@ -160,7 +160,6 @@ if SERVER then
         if not IsValid(self) then return end
         lia.net[self] = nil
         if lia.shuttingDown then return end
-
         timer.Simple(0, function()
             if not IsValid(self) then return end
             net.Start("nDel")

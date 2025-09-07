@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local renderedIcons = {}
 local function renderNewIcon(panel, itemTable)
     if itemTable.iconCam and (not renderedIcons[string.lower(itemTable.model)] or itemTable.forceRender) then
@@ -69,12 +69,8 @@ function PANEL:setItemType(itemTypeOrID)
     end
 
     self:updateTooltip()
-
     local itemIcon = item.icon
-    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then
-        itemIcon = item.functions.use.icon
-    end
-
+    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then itemIcon = item.functions.use.icon end
     if itemIcon then
         self.Icon:SetVisible(false)
         self.ExtraPaint = function(_, w, h) drawIcon(itemIcon, self, w, h) end
