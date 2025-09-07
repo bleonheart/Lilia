@@ -2982,7 +2982,7 @@ lia.command.add("definefactiongroup", {
             L("selectFactionsForGroup", groupName),
             L("selectFactionsDesc"),
             factionOptions,
-            0
+            0,
             function(selections)
                 if not selections or #selections == 0 then
                     client:notifyLocalized("noFactionsSelected")

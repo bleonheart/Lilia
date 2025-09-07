@@ -6,20 +6,31 @@ if SERVER then
     lia.workshop.ids = lia.workshop.ids or {}
     lia.workshop.known = lia.workshop.known or {}
     lia.workshop.cache = lia.workshop.cache or {}
+    lia.workshop.newAddonsCount = 0
+    local function printConsolidatedMessage()
+        if lia.workshop.newAddonsCount > 0 then
+            lia.bootstrap(L("workshopDownloader"), L("workshopAddedMultiple", lia.workshop.newAddonsCount))
+            lia.workshop.newAddonsCount = 0
+        end
+    end
+
     function lia.workshop.AddWorkshop(id)
         id = tostring(id)
         if not lia.workshop.ids[id] then
-            lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id))
-            lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
+            lia.workshop.newAddonsCount = lia.workshop.newAddonsCount + 1
             lia.workshop.ids[id] = true
         end
+    end
+
+    function lia.workshop.flushMessages()
+        printConsolidatedMessage()
     end
 
     local function addKnown(id)
         id = tostring(id)
         if not lia.workshop.known[id] then
             lia.workshop.known[id] = true
-            lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id))
+            lia.workshop.newAddonsCount = lia.workshop.newAddonsCount + 1
         end
     end
 
@@ -45,6 +56,8 @@ if SERVER then
         for id in pairs(ids) do
             addKnown(id)
         end
+
+        printConsolidatedMessage()
         return ids
     end
 
@@ -67,6 +80,7 @@ if SERVER then
 
     net.Receive("WorkshopDownloader_Request", function(_, client) lia.workshop.send(client) end)
     lia.workshop.AddWorkshop("3527535922")
+    lia.workshop.flushMessages()
     resource.AddWorkshop = lia.workshop.AddWorkshop
 else
     local FORCE_ID = "3527535922"
