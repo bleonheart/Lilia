@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 lia.command.add("doorsell", {
     desc = "doorsellDesc",
     adminOnly = false,
@@ -423,6 +423,7 @@ lia.command.add("doorinfo", {
 
             local hidden = doorData.hidden or false
             local locked = doorData.locked or false
+            local group = doorData.group or ""
             local infoData = {
                 {
                     property = L("doorInfoDisabled"),
@@ -447,6 +448,10 @@ lia.command.add("doorinfo", {
                 {
                     property = L("classes"),
                     value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
+                },
+                {
+                    property = L("group") or "Faction Group",
+                    value = tostring(group ~= "" and group or L("none"))
                 },
                 {
                     property = L("doorInfoHidden"),
@@ -796,6 +801,167 @@ lia.command.add("doorid", {
             end
         else
             client:notifyLocalized("You must be looking at a door")
+        end
+    end
+})
+
+lia.command.add("doorsetgroup", {
+    desc = "doorsetgroupDesc",
+    arguments = {
+        {
+            name = "group",
+            type = "string"
+        }
+    },
+    adminOnly = true,
+    AdminStick = {
+        Name = "adminStickSetDoorGroupName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
+        TargetClass = "door",
+        Icon = "icon16/group.png"
+    },
+    onRun = function(client, arguments)
+        local door = client:getTracedEntity()
+        if IsValid(door) and door:isDoor() then
+            local doorData = door:getNetVar("doorData", {})
+            if not doorData.disabled then
+                local input = arguments[1]
+                local groupName
+                if input then
+                    if lia.faction.groups[input] then
+                        groupName = input
+                    else
+                        for existingGroup, _ in pairs(lia.faction.groups) do
+                            if lia.util.stringMatches(existingGroup, input) then
+                                groupName = existingGroup
+                                break
+                            end
+                        end
+                    end
+                end
+
+                if groupName then
+                    doorData.group = groupName
+                    door:setNetVar("doorData", doorData)
+                    lia.log.add(client, "doorSetGroup", door, groupName)
+                    client:notifyLocalized("doorSetGroup", groupName)
+                elseif arguments[1] then
+                    client:notifyLocalized("invalidGroup")
+                else
+                    doorData.group = nil
+                    door:setNetVar("doorData", doorData)
+                    lia.log.add(client, "doorRemoveGroup", door)
+                    client:notifyLocalized("doorRemoveGroup")
+                end
+
+                MODULE:SaveData()
+            else
+                client:notifyLocalized("doorNotValid")
+            end
+        else
+            client:notifyLocalized("doorNotValid")
+        end
+    end
+})
+
+lia.command.add("dooraddgroup", {
+    desc = "dooraddgroupDesc",
+    arguments = {
+        {
+            name = "group",
+            type = "string"
+        }
+    },
+    adminOnly = true,
+    AdminStick = {
+        Name = "adminStickAddDoorGroupName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
+        TargetClass = "door",
+        Icon = "icon16/group_add.png"
+    },
+    onRun = function(client, arguments)
+        local door = client:getTracedEntity()
+        if IsValid(door) and door:isDoor() then
+            local doorData = door:getNetVar("doorData", {})
+            if not doorData.disabled then
+                local input = arguments[1]
+                local groupName
+                if input then
+                    if lia.faction.groups[input] then
+                        groupName = input
+                    else
+                        for existingGroup, _ in pairs(lia.faction.groups) do
+                            if lia.util.stringMatches(existingGroup, input) then
+                                groupName = existingGroup
+                                break
+                            end
+                        end
+                    end
+                end
+
+                if groupName then
+                    local groupFactions = lia.faction.getFactionsInGroup(groupName)
+                    if #groupFactions > 0 then
+                        local factions = doorData.factions or {}
+                        local addedCount = 0
+                        for _, factionID in ipairs(groupFactions) do
+                            if not table.HasValue(factions, factionID) then
+                                table.insert(factions, factionID)
+                                addedCount = addedCount + 1
+                            end
+                        end
+
+                        doorData.factions = factions
+                        door.liaFactions = factions
+                        door:setNetVar("doorData", doorData)
+                        lia.log.add(client, "doorAddGroup", door, groupName, addedCount)
+                        client:notifyLocalized("doorAddGroup", groupName, addedCount)
+                    else
+                        client:notifyLocalized("doorGroupEmpty", groupName)
+                    end
+                elseif arguments[1] then
+                    client:notifyLocalized("invalidGroup")
+                else
+                    client:notifyLocalized("missingGroupName")
+                end
+
+                MODULE:SaveData()
+            else
+                client:notifyLocalized("doorNotValid")
+            end
+        else
+            client:notifyLocalized("doorNotValid")
+        end
+    end
+})
+
+lia.command.add("doorremovegroup", {
+    desc = "doorremovegroupDesc",
+    adminOnly = true,
+    AdminStick = {
+        Name = "adminStickRemoveDoorGroupName",
+        Category = "doorManagement",
+        SubCategory = "doorSettings",
+        TargetClass = "door",
+        Icon = "icon16/group_delete.png"
+    },
+    onRun = function(client)
+        local door = client:getTracedEntity()
+        if IsValid(door) and door:isDoor() then
+            local doorData = door:getNetVar("doorData", {})
+            if not doorData.disabled then
+                doorData.group = nil
+                door:setNetVar("doorData", doorData)
+                lia.log.add(client, "doorRemoveGroup", door)
+                client:notifyLocalized("doorRemoveGroup")
+                MODULE:SaveData()
+            else
+                client:notifyLocalized("doorNotValid")
+            end
+        else
+            client:notifyLocalized("doorNotValid")
         end
     end
 })

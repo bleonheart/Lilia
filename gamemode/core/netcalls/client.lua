@@ -1,4 +1,4 @@
-net.Receive("liaNotifyL", function()
+﻿net.Receive("liaNotifyL", function()
     local message = net.ReadString()
     local length = net.ReadUInt(8)
     if length == 0 then return lia.notices.notifyLocalized(message) end
@@ -324,6 +324,12 @@ net.Receive("OpenInvMenu", function()
 end)
 
 lia.net.readBigTable("SendTableUI", function(data) lia.util.CreateTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
+lia.net.readBigTable("vendorPresets", function(data)
+    lia.vendor.presets = data or {}
+    if IsValid(lia.gui.vendorEditor) and IsValid(lia.gui.vendorEditor.preset) then lia.gui.vendorEditor:refreshPresetDropdown() end
+    print("[Lilia] Synced " .. table.Count(lia.vendor.presets) .. " vendor presets from server.")
+end)
+
 net.Receive("OptionsRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()

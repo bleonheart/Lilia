@@ -1,4 +1,4 @@
-SWEP.Author = "Samael"
+﻿SWEP.Author = "Samael"
 SWEP.Contact = "@liliaplayer"
 SWEP.PrintName = L("adminStick")
 SWEP.Purpose = L("adminStickPurpose")
@@ -19,7 +19,13 @@ SWEP.Secondary.Ammo = ""
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 function SWEP:DrawWorldModel()
-    if self:GetOwner():isNoClipping() then return end
+    local owner = self:GetOwner()
+    if not IsValid(owner) then
+        self:DrawModel()
+        return
+    end
+
+    if owner:IsNoClipping() then return end
     self:DrawModel()
 end
 

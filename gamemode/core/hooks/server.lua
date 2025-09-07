@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     local loginTime = character:getLoginTime()
@@ -1138,124 +1138,6 @@ concommand.Add("lia_wipedb", function(client)
     end
 end)
 
-concommand.Add("lia_resetconfig", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    lia.config.reset()
-    MsgC(Color(255, 0, 0), "[Lilia] " .. L("configReset") .. "\n")
-end)
-
-concommand.Add("lia_wipecharacters", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if resetCalled < RealTime() then
-        resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL characters? Run this command again within 3 seconds to confirm.\n")
-    else
-        resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all characters...\n")
-        for _, ply in player.Iterator() do
-            if IsValid(ply) then ply:Kick("Server is wiping character data. Please reconnect after the wipe is complete.") end
-        end
-
-        lia.db.query("DELETE FROM lia_chardata", function()
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character data wiped...\n")
-            lia.db.query("SELECT invID FROM lia_inventories WHERE charID IS NOT NULL", function(invData)
-                if invData and #invData > 0 then
-                    local invIDs = {}
-                    for _, row in ipairs(invData) do
-                        table.insert(invIDs, tostring(row.invID))
-                    end
-
-                    if #invIDs > 0 then
-                        local invIDList = table.concat(invIDs, ",")
-                        lia.db.query("DELETE FROM lia_invdata WHERE invID IN (" .. invIDList .. ")", function()
-                            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Inventory data wiped...\n")
-                            lia.db.query("DELETE FROM lia_items WHERE invID IN (" .. invIDList .. ")", function()
-                                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character items wiped...\n")
-                                lia.db.query("DELETE FROM lia_inventories WHERE charID IS NOT NULL", function()
-                                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character inventories wiped...\n")
-                                    lia.db.query("DELETE FROM lia_characters", function()
-                                        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
-                                        game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-                                    end)
-                                end)
-                            end)
-                        end)
-                    else
-                        lia.db.query("DELETE FROM lia_characters", function()
-                            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
-                            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-                        end)
-                    end
-                else
-                    lia.db.query("DELETE FROM lia_characters", function()
-                        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
-                        game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-                    end)
-                end
-            end)
-        end)
-    end
-end)
-
-concommand.Add("lia_wipelogs", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if resetCalled < RealTime() then
-        resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL logs? This cannot be undone.\n")
-    else
-        resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all logs...\n")
-        lia.db.query("DELETE FROM lia_logs", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All logs have been wiped!\n") end)
-    end
-end)
-
-concommand.Add("lia_wipebans", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if resetCalled < RealTime() then
-        resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL bans? This cannot be undone.\n")
-    else
-        resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all bans...\n")
-        lia.db.query("DELETE FROM lia_bans", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All bans have been wiped!\n") end)
-    end
-end)
-
-concommand.Add("lia_wipepersistence", function(client)
-    if IsValid(client) then
-        client:notifyLocalized("commandConsoleOnly")
-        return
-    end
-
-    if resetCalled < RealTime() then
-        resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL persistence data? This will remove all saved entities.\n")
-    else
-        resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all persistence data...\n")
-        lia.db.query("DELETE FROM lia_persistence", function()
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All persistence data has been wiped!\n")
-            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-        end)
-    end
-end)
-
 concommand.Add("list_entities", function(client)
     local entityCount = {}
     local totalEntities = 0
@@ -1318,13 +1200,13 @@ end
 
 local oldRunConsole = RunConsoleCommand
 RunConsoleCommand = function(cmd, ...)
-    if cmd == "lia_wipedb" or cmd == "lia_resetconfig" or cmd == "lia_wipe_sounds" or cmd == "lia_wipewebimages" or cmd == "lia_wipecharacters" or cmd == "lia_wipelogs" or cmd == "lia_wipebans" or cmd == "lia_wipepersistence" then return end
+    if string.match(cmd, "^lia_") then return end
     return oldRunConsole(cmd, ...)
 end
 
 local oldGameConsoleCommand = game.ConsoleCommand
 game.ConsoleCommand = function(cmd)
-    if cmd:sub(1, #"lia_wipedb") == "lia_wipedb" or cmd:sub(1, #"lia_resetconfig") == "lia_resetconfig" or cmd:sub(1, #"lia_wipe_sounds") == "lia_wipe_sounds" or cmd:sub(1, #"lia_wipewebimages") == "lia_wipewebimages" or cmd:sub(1, #"lia_wipecharacters") == "lia_wipecharacters" or cmd:sub(1, #"lia_wipelogs") == "lia_wipelogs" or cmd:sub(1, #"lia_wipebans") == "lia_wipebans" or cmd:sub(1, #"lia_wipepersistence") == "lia_wipepersistence" then return end
+    if string.match(cmd, "^lia_") then return end
     return oldGameConsoleCommand(cmd)
 end
 
@@ -1346,15 +1228,4 @@ end)
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin(L("unbanLogFormat", data.networkid))
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
-end)
-
-concommand.Add("database_list", function(ply)
-    if IsValid(ply) then return end
-    lia.db.GetCharacterTable(function(columns)
-        if #columns == 0 then
-            lia.error(L("dbColumnsNone"))
-        else
-            lia.information(L("dbColumnsList", table.concat(columns, ", ")))
-        end
-    end)
 end)

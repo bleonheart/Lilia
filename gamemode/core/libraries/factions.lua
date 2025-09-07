@@ -1,6 +1,7 @@
-lia.faction = lia.faction or {}
+﻿lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
+lia.faction.groups = lia.faction.groups or {}
 local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
 function lia.faction.register(uniqueID, data)
     assert(isstring(uniqueID), L("factionUniqueIDString"))
@@ -256,6 +257,46 @@ function lia.faction.getDefaultClass(id)
         end
     end
     return defaultClass
+end
+
+function lia.faction.registerGroup(groupName, factionIDs)
+    assert(isstring(groupName), "groupName must be a string")
+    assert(istable(factionIDs), "factionIDs must be a table")
+    if not lia.faction.groups[groupName] then lia.faction.groups[groupName] = {} end
+    lia.faction.groups[groupName] = {}
+    for _, factionID in ipairs(factionIDs) do
+        if isstring(factionID) then
+            table.insert(lia.faction.groups[groupName], factionID)
+        elseif isnumber(factionID) then
+            local faction = lia.faction.indices[factionID]
+            if faction then table.insert(lia.faction.groups[groupName], faction.uniqueID) end
+        end
+    end
+end
+
+function lia.faction.getGroup(factionID)
+    local factionUniqueID
+    if isnumber(factionID) then
+        local faction = lia.faction.indices[factionID]
+        if not faction then return nil end
+        factionUniqueID = faction.uniqueID
+    elseif isstring(factionID) then
+        factionUniqueID = factionID
+    else
+        return nil
+    end
+
+    for groupName, factions in pairs(lia.faction.groups) do
+        for _, factionInGroup in ipairs(factions) do
+            if factionInGroup == factionUniqueID then return groupName end
+        end
+    end
+    return nil
+end
+
+function lia.faction.getFactionsInGroup(groupName)
+    if not isstring(groupName) then return {} end
+    return lia.faction.groups[groupName] or {}
 end
 
 FACTION_STAFF = lia.faction.register("staff", {

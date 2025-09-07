@@ -452,12 +452,9 @@ end
 
 vgui.Register("Vendor", PANEL, "EditablePanel")
 PANEL = {}
-
 local function drawIcon(mat, pnl, x, y)
     surface.SetDrawColor(color_white)
-    if isstring(mat) then
-        mat = Material(mat)
-    end
+    if isstring(mat) then mat = Material(mat) end
     surface.SetMaterial(mat)
     surface.DrawTexturedRect(0, 0, x, y)
 end
@@ -475,9 +472,7 @@ function PANEL:Init()
     self.iconFrame:Dock(LEFT)
     self.iconFrame:DockMargin(10, 10, 10, 10)
     self.iconFrame.ExtraPaint = function() end
-    self.iconFrame.Paint = function(pnl, w, h)
-        self.iconFrame:ExtraPaint(w, h)
-    end
+    self.iconFrame.Paint = function(pnl, w, h) self.iconFrame:ExtraPaint(w, h) end
     self.icon = self.iconFrame:Add("liaItemIcon")
     self.icon:SetSize(96, 96)
     self.icon:Dock(FILL)
@@ -580,12 +575,8 @@ function PANEL:setItemType(itemType)
     local item = lia.item.list[itemType]
     assert(item, L("invalidItemTypeOrID", tostring(itemType)))
     self.item = item
-
     local itemIcon = item.icon
-    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then
-        itemIcon = item.functions.use.icon
-    end
-
+    if not itemIcon and item.functions and item.functions.use and item.functions.use.icon then itemIcon = item.functions.use.icon end
     if itemIcon then
         self.icon:SetVisible(false)
         self.iconFrame.ExtraPaint = function(pnl, w, h) drawIcon(itemIcon, pnl, w, h) end
@@ -755,17 +746,34 @@ function PANEL:Init()
     self.preset:Dock(TOP)
     self.preset:SetSortItems(false)
     self.preset:DockMargin(0, 4, 0, 0)
-    self.preset:AddChoice(L("none"))
-    for name in pairs(lia.vendor.presets or {}) do
-        self.preset:AddChoice(name)
-    end
-
+    self:refreshPresetDropdown()
     local currentPreset = entity:getNetVar("preset", "none")
     self.preset:SetValue(currentPreset == "none" and L("none") or currentPreset)
     self.preset:ChooseOption(currentPreset == "none" and L("none") or currentPreset)
     self.preset.OnSelect = function(_, _, value)
         if value == L("none") then value = "none" end
         lia.vendor.editor.preset(value)
+    end
+
+    self.savePreset = self:Add("DButton")
+    self.savePreset:Dock(TOP)
+    self.savePreset:SetText(L("vendorSavePreset"))
+    self.savePreset:SetTextColor(color_white)
+    self.savePreset:DockMargin(0, 4, 0, 0)
+    self.savePreset.DoClick = function()
+        Derma_StringRequest(L("vendorPresetName"), L("vendorPresetNameDesc"), "", function(text)
+            if text:Trim() == "" then
+                LocalPlayer():notify(L("vendorPresetNameRequired"))
+                return
+            end
+
+            local presetName = text:Trim():lower()
+            if lia.vendor.presets[presetName] then
+                Derma_Query(L("vendorPresetOverwrite", text), L("vendorPresetOverwriteTitle"), L("yes"), function() self:saveVendorPreset(presetName, text) end, L("no"))
+            else
+                self:saveVendorPreset(presetName, text)
+            end
+        end, function() end, L("vendorSavePreset"), L("cancel"))
     end
 
     self.items = self:Add("DListView")
@@ -789,6 +797,8 @@ function PANEL:Init()
     self:listenForUpdates()
     self:updateMoney()
     self:updateSellScale()
+    self.refreshTimer = "VendorPresetRefresh_" .. tostring(self)
+    timer.Create(self.refreshTimer, 2, 1, function() if IsValid(self) and IsValid(self.preset) then self:refreshPresetDropdown() end end)
 end
 
 local VendorText = {
@@ -803,6 +813,7 @@ end
 
 function PANEL:OnRemove()
     if IsValid(lia.gui.editorFaction) then lia.gui.editorFaction:Remove() end
+    if self.refreshTimer then timer.Remove(self.refreshTimer) end
 end
 
 function PANEL:updateVendor(key, value)
@@ -847,6 +858,36 @@ end
 
 function PANEL:updateSellScale()
     self.sellScale:SetValue(liaVendorEnt:getSellScale())
+end
+
+function PANEL:saveVendorPreset(presetName, displayName)
+    local entity = liaVendorEnt
+    local presetData = {}
+    for itemType, itemData in pairs(entity.items or {}) do
+        if lia.item.list[itemType] then
+            presetData[itemType] = {
+                mode = itemData[VENDOR_MODE],
+                price = itemData[VENDOR_PRICE],
+                stock = itemData[VENDOR_STOCK],
+                maxStock = itemData[VENDOR_MAXSTOCK]
+            }
+        end
+    end
+
+    lia.vendor.addPreset(displayName, presetData)
+    self:refreshPresetDropdown()
+    LocalPlayer():notify(L("vendorPresetSaved", displayName))
+end
+
+function PANEL:refreshPresetDropdown()
+    self.preset:Clear()
+    self.preset:AddChoice(L("none"))
+    for name in pairs(lia.vendor.presets or {}) do
+        self.preset:AddChoice(name)
+    end
+
+    local currentPreset = liaVendorEnt:getNetVar("preset", "none")
+    self.preset:SetValue(currentPreset == "none" and L("none") or currentPreset)
 end
 
 function PANEL:onNameDescChanged(key)

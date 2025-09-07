@@ -1,13 +1,18 @@
-lia.workshop = lia.workshop or {}
+﻿lia.workshop = lia.workshop or {}
 if SERVER then
+    util.AddNetworkString("WorkshopDownloader_Start")
+    util.AddNetworkString("WorkshopDownloader_Info")
+    util.AddNetworkString("WorkshopDownloader_Request")
     lia.workshop.ids = lia.workshop.ids or {}
     lia.workshop.known = lia.workshop.known or {}
     lia.workshop.cache = lia.workshop.cache or {}
     function lia.workshop.AddWorkshop(id)
         id = tostring(id)
-        if not lia.workshop.ids[id] then lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id)) end
-        lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
-        lia.workshop.ids[id] = true
+        if not lia.workshop.ids[id] then
+            lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id))
+            lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
+            lia.workshop.ids[id] = true
+        end
     end
 
     local function addKnown(id)
@@ -141,6 +146,28 @@ else
         panel.bar:SetText(totalDownloads - remainingDownloads .. "/" .. totalDownloads)
     end
 
+    local function writeLargeFile(srcPath, destRel)
+        local src = file.Open(srcPath, "rb", "GAME")
+        if not src then return false end
+        local dest = file.Open(destRel, "wb", "DATA")
+        if not dest then
+            src:Close()
+            return false
+        end
+
+        local chunk = 1048576
+        while not src:EndOfFile() do
+            local left = src:Size() - src:Tell()
+            local data = src:Read(left > chunk and chunk or left)
+            if not data then break end
+            dest:Write(data)
+        end
+
+        dest:Close()
+        src:Close()
+        return true
+    end
+
     local function start()
         for id in pairs(queue) do
             if mounted(id) or mountLocal(id) then queue[id] = nil end
@@ -176,13 +203,11 @@ else
                 lia.bootstrap(L("workshopDownloader"), L("workshopDownloadComplete", id))
                 if path then
                     local rel = gmaPath(id)
-                    local data = file.Read(path, "GAME")
-                    if data then
-                        file.Write(rel, data)
-                        path = "data/" .. rel
+                    if writeLargeFile(path, rel) then
+                        game.MountGMA("data/" .. rel)
+                    else
+                        game.MountGMA(path)
                     end
-
-                    game.MountGMA(path)
                 end
 
                 uiUpdate()
@@ -214,7 +239,11 @@ else
         start()
     end)
 
-    net.Receive("WorkshopDownloader_Info", function() refresh(net.ReadTable()) end)
+    net.Receive("WorkshopDownloader_Info", function()
+        refresh(net.ReadTable())
+        if lia.workshop.hasContentToDownload() then lia.workshop.mountContent() end
+    end)
+
     function lia.workshop.mountContent()
         local ids = lia.workshop.serverIds or {}
         local needed = {}
@@ -242,7 +271,7 @@ else
         end
     end
 
-    concommand.Add("workshop_force_redownload", function()
+    concommand.Add("lia_workshop_force_redownload", function()
         table.Empty(queue)
         buildQueue(true)
         start()

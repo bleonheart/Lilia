@@ -1,4 +1,4 @@
-function MODULE:PostLoadData()
+﻿function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled", false) then
         local count = 0
         for _, door in ents.Iterator() do
@@ -122,7 +122,8 @@ function MODULE:LoadData()
                 hidden = tonumber(row.hidden) == 1,
                 noSell = tonumber(row.ownable) == 0,
                 factions = factions,
-                classes = classes
+                classes = classes,
+                group = row.door_group and row.door_group ~= "NULL" and row.door_group ~= "" and tostring(row.door_group) or nil
             }
 
             ent:setNetVar("doorData", doorData)
@@ -142,7 +143,8 @@ function MODULE:LoadData()
                             hidden = doorVars.hidden and true or nil,
                             noSell = doorVars.noSell and true or nil,
                             factions = doorVars.factions and istable(doorVars.factions) and doorVars.factions or nil,
-                            classes = doorVars.classes and istable(doorVars.classes) and doorVars.classes or nil
+                            classes = doorVars.classes and istable(doorVars.classes) and doorVars.classes or nil,
+                            group = doorVars.group and tostring(doorVars.group) or nil
                         }
 
                         ent:setNetVar("doorData", doorData)
@@ -233,6 +235,13 @@ function MODULE:SaveData()
                 name = ""
             end
 
+            local group = doorData.group or ""
+            if group and group ~= "" then
+                group = tostring(group):sub(1, 255)
+            else
+                group = ""
+            end
+
             local price = tonumber(doorData.price) or 0
             if price < 0 then price = 0 end
             if price > 999999999 then price = 999999999 end
@@ -247,7 +256,8 @@ function MODULE:SaveData()
                 ownable = doorData.noSell and 0 or 1,
                 name = name,
                 price = price,
-                locked = doorData.locked and 1 or 0
+                locked = doorData.locked and 1 or 0,
+                door_group = group
             }
 
             doorCount = doorCount + 1
@@ -277,7 +287,6 @@ function lia.doors.GetPreset(mapName)
 end
 
 function lia.doors.VerifyDatabaseSchema()
-    -- Direct SQLITE usage (no module check needed)
     lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
         if not res or not res.results then
             lia.error("Failed to get table info for lia_doors")
@@ -286,7 +295,7 @@ function lia.doors.VerifyDatabaseSchema()
 
         local columns = {}
         for _, row in ipairs(res.results) do
-            columns[row.name] = row.type
+            columns[row.name] = string.lower(row.type)
         end
 
         local expectedColumns = {
@@ -300,7 +309,8 @@ function lia.doors.VerifyDatabaseSchema()
             ownable = "integer",
             name = "text",
             price = "integer",
-            locked = "integer"
+            locked = "integer",
+            door_group = "text"
         }
 
         for colName, expectedType in pairs(expectedColumns) do
@@ -347,6 +357,30 @@ function lia.doors.CleanupCorruptedData()
     end):catch(function(err) lia.error("Failed to check for corrupted door data: " .. tostring(err)) end)
 end
 
+function lia.doors.AddDoorGroupColumn()
+    lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
+        if not res or not res.results then
+            lia.error("Failed to get table info for lia_doors during column addition")
+            return
+        end
+
+        local hasDoorGroupColumn = false
+        for _, row in ipairs(res.results) do
+            if row.name == "door_group" then
+                hasDoorGroupColumn = true
+                break
+            end
+        end
+
+        if not hasDoorGroupColumn then
+            lia.information("Adding door_group column to lia_doors table...")
+            lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT"):next(function() lia.information("Successfully added door_group column to lia_doors table") end):catch(function(err) lia.error("Failed to add door_group column: " .. tostring(err)) end)
+        else
+            lia.information("door_group column already exists in lia_doors table")
+        end
+    end):catch(function(err) lia.error("Failed to check for door_group column: " .. tostring(err)) end)
+end
+
 function MODULE:InitPostEntity()
     local doors = ents.FindByClass("prop_door_rotating")
     for _, v in ipairs(doors) do
@@ -367,6 +401,7 @@ function MODULE:InitPostEntity()
 
     timer.Simple(1, function() lia.doors.CleanupCorruptedData() end)
     timer.Simple(3, function() lia.doors.VerifyDatabaseSchema() end)
+    timer.Simple(4, function() lia.doors.AddDoorGroupColumn() end)
 end
 
 function MODULE:PlayerUse(client, door)
@@ -397,6 +432,21 @@ function MODULE:CanPlayerAccessDoor(client, door)
         for _, id in ipairs(factions) do
             if id == unique or lia.faction.getIndex(id) == playerFaction then return true end
         end
+    end
+
+    local group = doorData.group
+    if group then
+        local playerFaction = client:getChar():getFaction()
+        local factionData = lia.faction.indices[playerFaction]
+        local unique = factionData and factionData.uniqueID
+        if unique then
+            local groupFactions = lia.faction.getFactionsInGroup(group)
+            for _, factionID in ipairs(groupFactions) do
+                if factionID == unique or lia.faction.getIndex(factionID) == playerFaction then return true end
+            end
+        end
+
+        if factions and #factions == 0 then return false end
     end
 
     local classes = doorData.classes

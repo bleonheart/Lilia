@@ -1,4 +1,4 @@
-lia.webimage = lia.webimage or {}
+﻿lia.webimage = lia.webimage or {}
 lia.webimage.stored = lia.webimage.stored or {}
 lia.webimage.allowDownloads = false
 local baseDir = "lilia/webimages/"
@@ -306,7 +306,7 @@ concommand.Add("lia_wipewebimages", function()
     ensureDir(baseDir)
 end)
 
-concommand.Add("test_webimage_menu", function()
+concommand.Add("lia_webimage_menu", function()
     local frame = vgui.Create("DFrame")
     frame:SetTitle(L("webImageTesterTitle"))
     frame:SetSize(500, 400)

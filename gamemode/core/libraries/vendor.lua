@@ -1,4 +1,4 @@
-lia.vendor = lia.vendor or {}
+﻿lia.vendor = lia.vendor or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.rarities = lia.vendor.rarities or {}
@@ -54,6 +54,26 @@ if SERVER then
     addEditor("money", function() return net.ReadUInt(32) end, function(vendor, money) vendor:setMoney(money) end)
     addEditor("scale", function() return net.ReadFloat() end, function(vendor, scale) vendor:setSellScale(scale) end)
     addEditor("preset", function() return net.ReadString() end, function(vendor, preset) vendor:applyPreset(preset) end)
+    function lia.vendor.loadPresets()
+        lia.db.query("SELECT * FROM lia_vendor_presets", function(data)
+            if data then
+                for _, row in ipairs(data) do
+                    local presetName = row.name
+                    local presetData = util.JSONToTable(row.data or "{}")
+                    if presetData and next(presetData) then lia.vendor.presets[string.lower(presetName)] = presetData end
+                end
+
+                lia.log.add("Loaded " .. #data .. " vendor presets from database.")
+            end
+        end)
+    end
+
+    function lia.vendor.savePresetToDatabase(name, data)
+        local presetData = util.TableToJSON(data)
+        lia.db.query("INSERT OR REPLACE INTO lia_vendor_presets (name, data) VALUES (?, ?)", {name, presetData})
+    end
+
+    hook.Add("LiliaTablesLoaded", "liaVendorPresetLoading", function() lia.vendor.loadPresets() end)
 else
     local function addEditor(name, writer)
         lia.vendor.editor[name] = function(...)
@@ -138,6 +158,7 @@ function lia.vendor.addPreset(name, items)
     end
 
     lia.vendor.presets[string.lower(name)] = validItems
+    if SERVER then lia.vendor.savePresetToDatabase(name, validItems) end
 end
 
 function lia.vendor.getPreset(name)

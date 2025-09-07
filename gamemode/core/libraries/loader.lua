@@ -1,4 +1,5 @@
-local hasInitializedModules = false
+﻿local hasInitializedModules = false
+local hasInitializedCompatibility = false
 lia = lia or {
     util = {},
     gui = {},
@@ -517,7 +518,9 @@ if SERVER then
         hook.Run("SetupDatabase")
         lia.db.connect(function()
             lia.db.loadTables()
-            lia.bootstrap(L("database"), L("databaseConnected", "SQLite"))
+            local dbLabel = (L and L("database")) or "Database"
+            local connMsg = (L and L("databaseConnected")) or "Database connected to"
+            lia.bootstrap(dbLabel, string.format(connMsg, "SQLite"))
             hook.Run("DatabaseConnected")
         end)
     end
@@ -570,31 +573,32 @@ function GM:OnReloaded()
         lia.config.send()
         lia.administrator.sync()
         lia.playerinteract.syncToClients()
-        lia.bootstrap("HotReload", "Gamemode hotreloaded successfully!")
-    else
-        chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gamemode hotreloaded successfully!")
     end
 end
 
 local loadedCompatibility = {}
-for _, file in ipairs(ConditionalFiles) do
+for _, compatFile in ipairs(ConditionalFiles) do
     local shouldLoad = false
-    if isfunction(file.condition) then
-        local ok, result = pcall(file.condition)
+    if isfunction(compatFile.condition) then
+        local ok, result = pcall(compatFile.condition)
         if ok then
             shouldLoad = result
         else
             lia.error(L("compatibilityConditionError", tostring(result)))
         end
-    elseif file.global then
-        shouldLoad = _G[file.global] ~= nil
+    elseif compatFile.global then
+        shouldLoad = _G[compatFile.global] ~= nil
     end
 
     if shouldLoad then
-        lia.include(file.path, file.realm or "shared")
-        loadedCompatibility[#loadedCompatibility + 1] = file.name
+        lia.include(compatFile.path, compatFile.realm or "shared")
+        loadedCompatibility[#loadedCompatibility + 1] = compatFile.name
     end
 end
 
-if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
+if hasInitializedCompatibility and #loadedCompatibility > 0 then
+    lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", ")))
+    hasInitializedCompatibility = true
+end
+
 if game.IsDedicated() then concommand.Remove("gm_save") end
