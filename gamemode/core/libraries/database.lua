@@ -227,7 +227,7 @@ function lia.db.loadTables()
             name = "totalOnlineTime",
             type = "float"
         }
-    }):next(function(result)
+    }):next(function()
         return lia.db.createTable("chardata", {"charID", "key"}, {
             {
                 name = "charID",
@@ -732,7 +732,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result) done() end):catch(function(err) done() end)
+    end):next(function() done() end):catch(function() done() end)
 
     hook.Run("OnLoadTables")
 end
@@ -1371,7 +1371,7 @@ function lia.db.migrateDatabaseSchemas()
                             not_null = colInfo.def.not_null,
                             auto_increment = colInfo.def.auto_increment,
                             default = colInfo.def.default
-                        }):next(function(result)
+                        }):next(function()
                             if result and result.success then
                                 MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Added column '" .. colInfo.name .. "' to '" .. fullTableName .. "'\n")
                             else
@@ -1425,7 +1425,7 @@ function lia.db.addDatabaseFields()
                     lia.db.createColumn("characters", v.field, schemaType, {
                         default = v.default,
                         not_null = false
-                    }):next(function(success) end):catch(ignore)
+                    }):next(function() end):catch(ignore)
                 end
             end)
         end
@@ -1949,7 +1949,7 @@ function lia.db.removeTable(tableName)
         end
 
         lia.db.query("PRAGMA table_info(" .. fullTableName .. ")", function(columns)
-            local columnCount = columns and #columns or 0
+            local _ = columns and #columns or 0
             lia.db.query("DROP TABLE " .. fullTableName, function()
                 if lia.db.cacheClear then lia.db.cacheClear() end
                 d:resolve(true)
@@ -2043,7 +2043,7 @@ function lia.db.GetCharacterTable(callback)
     end)
 end
 
-concommand.Add("lia_load_snapshot", function(ply, cmd, args)
+concommand.Add("lia_load_snapshot", function(ply, _, args)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
         return
@@ -2059,7 +2059,7 @@ concommand.Add("lia_load_snapshot", function(ply, cmd, args)
 
     local tableName = args[1]
     local timestamp = args[2]
-    local function sendFeedback(msg, color)
+    local function sendFeedback(msg)
         print("[DB Load] " .. msg)
     end
 
@@ -2129,7 +2129,7 @@ concommand.Add("lia_load_snapshot", function(ply, cmd, args)
     lia.db.bulkInsert(tableName, rows):next(function() sendFeedback("✓ Successfully loaded " .. #rows .. " rows into lia_" .. tableName, Color(0, 255, 0)) end):catch(function(err) sendFeedback("✗ Failed to load snapshot: " .. err, Color(255, 0, 0)) end)
 end)
 
-concommand.Add("lia_clear_table", function(ply, cmd, args)
+concommand.Add("lia_clear_table", function(ply, _, args)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
         return
@@ -2172,14 +2172,14 @@ concommand.Add("lia_clear_table", function(ply, cmd, args)
     lia.db.delete(tableName):next(function() sendFeedback("✓ Successfully cleared all data from lia_" .. tableName, Color(0, 255, 0)) end):catch(function(err) sendFeedback("✗ Failed to clear table: " .. err, Color(255, 0, 0)) end)
 end)
 
-concommand.Add("lia_list_snapshots", function(ply, cmd, args)
+concommand.Add("lia_list_snapshots", function(ply, _, args)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
         return
     end
 
     local tableFilter = args[1]
-    local function sendFeedback(msg, color)
+    local function sendFeedback(msg)
         print("[DB Snapshots] " .. msg)
     end
 
@@ -2213,13 +2213,13 @@ concommand.Add("lia_list_snapshots", function(ply, cmd, args)
     sendFeedback("Use 'lia_load_snapshot <table> [timestamp]' to load a specific snapshot", Color(255, 255, 255))
 end)
 
-concommand.Add("lia_snapshot", function(ply, cmd, args)
+concommand.Add("lia_snapshot", function(ply)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
         return
     end
 
-    local function sendFeedback(msg, color)
+    local function sendFeedback(msg)
         print("[DB Snapshot] " .. msg)
     end
 
@@ -2276,7 +2276,7 @@ concommand.Add("lia_snapshot", function(ply, cmd, args)
     end):catch(function(err) sendFeedback("✗ Failed to get table list: " .. err, Color(255, 0, 0)) end)
 end)
 
-concommand.Add("lia_snapshot_table", function(ply, cmd, args)
+concommand.Add("lia_snapshot_table", function(ply, _, args)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
         return
@@ -2287,7 +2287,7 @@ concommand.Add("lia_snapshot_table", function(ply, cmd, args)
         return
     end
 
-    local function sendFeedback(msg, color)
+    local function sendFeedback(msg)
         print("[DB Snapshot] " .. msg)
     end
 
@@ -2345,7 +2345,7 @@ concommand.Add("lia_snapshot_table", function(ply, cmd, args)
     end
 end)
 
-concommand.Add("lia_test_database", function(ply, cmd, args)
+concommand.Add("lia_test_database", function(ply)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         if SERVER and IsValid(ply) then ply:ChatPrint("This command requires super admin privileges.") end
         return
@@ -2515,7 +2515,7 @@ concommand.Add("lia_test_database", function(ply, cmd, args)
             lia.db.count(testTable):next(function(count) addTest("COUNT query on " .. testTable, type(count) == "number", "Invalid count result: " .. tostring(count)) end):catch(function(err) addTest("COUNT query on " .. testTable, false, err) end)
             lia.db.selectWithCondition("*", testTable, {
                 ["1"] = 1
-            }):next(function(result) addTest("SELECT with conditions on " .. testTable, result ~= nil, result == nil and "Query failed" or nil) end):catch(function(err) addTest("SELECT with conditions on " .. testTable, false, err) end)
+            }):next(function() addTest("SELECT with conditions on " .. testTable, result ~= nil, result == nil and "Query failed" or nil) end):catch(function(err) addTest("SELECT with conditions on " .. testTable, false, err) end)
 
             lia.db.selectOne("*", testTable):next(function(result) addTest("SELECT one record on " .. testTable, result ~= nil, result == nil and "Query failed" or nil) end):catch(function(err) addTest("SELECT one record on " .. testTable, false, err) end)
         end
@@ -2556,7 +2556,7 @@ concommand.Add("lia_test_database", function(ply, cmd, args)
             name = "test_name",
             type = "string"
         }
-    }):next(function(result)
+    }):next(function()
         addTest("Table creation", result.success, result.success and nil or "Table creation failed")
         lia.db.bulkInsert("test_bulk", testData):next(function()
             addTest("Bulk insert operation", true)
@@ -2612,7 +2612,7 @@ concommand.Add("lia_test_database", function(ply, cmd, args)
     timer.Simple(3, function() printComprehensiveReport() end)
 end)
 
-concommand.Add("lia_db_performance", function(ply, cmd, args)
+concommand.Add("lia_db_performance", function(ply, _, args)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         if SERVER and IsValid(ply) then ply:ChatPrint("This command requires super admin privileges.") end
         return
@@ -2632,7 +2632,7 @@ concommand.Add("lia_db_performance", function(ply, cmd, args)
         return
     end
 
-    local function sendFeedback(msg, color)
+    local function sendFeedback(msg)
         print("[DB Performance] " .. msg)
         if SERVER and IsValid(ply) then ply:ChatPrint(msg) end
     end
@@ -2659,7 +2659,7 @@ concommand.Add("lia_db_performance", function(ply, cmd, args)
         lia.db.setCacheEnabled(cacheEnabled)
         lia.db.setCacheTTL(cacheEnabled and 300 or 0)
         local completed = 0
-        for i = 1, iterations do
+        for _ = 1, iterations do
             local queryStart = SysTime()
             local queryPromise
             if queryType == "count" then
@@ -2670,7 +2670,7 @@ concommand.Add("lia_db_performance", function(ply, cmd, args)
                 queryPromise = lia.db.select("*", tableName, nil, 10)
             end
 
-            queryPromise:next(function(result)
+            queryPromise:next(function()
                 local queryTime = SysTime() - queryStart
                 local key = cacheEnabled and "cached" or "uncached"
                 table.insert(results[key].times, queryTime * 1000)
@@ -2755,13 +2755,13 @@ concommand.Add("lia_db_performance", function(ply, cmd, args)
     end)
 end)
 
-concommand.Add("lia_migrate_schema", function(ply, cmd, args)
+concommand.Add("lia_migrate_schema", function(ply)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
         return
     end
 
-    local function sendFeedback(msg, color)
+    local function sendFeedback(msg)
         print("[DB Migration] " .. msg)
         if SERVER and IsValid(ply) then ply:ChatPrint(msg) end
     end
