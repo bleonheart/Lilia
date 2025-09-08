@@ -801,8 +801,6 @@ function lia.db.insertTable(value, callback, dbTable)
         if callback then callback(...) end
         lia.db.invalidateTable("lia_" .. (dbTable or "characters"))
     end
-
-    -- Use sqliteQuery directly for reliability
     return sqliteQuery(query):next(function(result)
         cb(result.results, result.lastID)
         return result
@@ -815,8 +813,6 @@ function lia.db.updateTable(value, callback, dbTable, condition)
         if callback then callback(...) end
         lia.db.invalidateTable("lia_" .. (dbTable or "characters"))
     end
-
-    -- Use sqliteQuery directly for reliability
     return sqliteQuery(query):next(function(result)
         cb(result.results, result.lastID)
         return result
@@ -837,12 +833,12 @@ function lia.db.select(fields, dbTable, condition, limit)
         return d
     end
 
-    -- Use sqliteQuery directly for reliability
     sqliteQuery(query):next(function(result)
         local payload = {
             results = result.results,
             lastID = result.lastID
         }
+
         lia.db.cacheSet(tableName, cacheKey, payload)
         d:resolve(payload)
     end)
@@ -908,7 +904,6 @@ function lia.db.count(dbTable, condition)
         return c
     end
 
-    -- Use sqliteQuery directly for reliability
     sqliteQuery(q):next(function(result)
         if istable(result.results) then
             local num = tonumber(result.results[1].cnt)
@@ -922,9 +917,7 @@ function lia.db.count(dbTable, condition)
 end
 
 function lia.db.exists(dbTable, condition)
-    return lia.db.count(dbTable, condition):next(function(count)
-        return count > 0
-    end)
+    return lia.db.count(dbTable, condition):next(function(count) return count > 0 end)
 end
 
 lia.db.expectedSchemas = {
@@ -1357,8 +1350,8 @@ function lia.db.migrateDatabaseSchemas()
                 for colName, colType in pairs(columnTypes) do
                     existingColumns[colName] = {
                         type = colType,
-                        notnull = false, -- getTableColumns doesn't provide this info
-                        pk = false -- getTableColumns doesn't provide this info
+                        notnull = false,
+                        pk = false
                     }
                 end
 
@@ -1379,16 +1372,11 @@ function lia.db.migrateDatabaseSchemas()
                             not_null = colInfo.def.not_null,
                             auto_increment = colInfo.def.auto_increment,
                             default = colInfo.def.default
-                        }):next(function()
-                            -- Column creation result handling (can be extended if needed)
-                        end):catch(function()
-                            -- Column creation error handling (can be extended if needed)
-                        end)
+                        }):next(function() end):catch(function() end)
 
                         table.insert(columnPromises, colPromise)
                     end
                     return deferred.all(columnPromises)
-                    -- No missing columns found, schema migration complete
                 end
             end)
         end):catch(function() end)
@@ -1566,9 +1554,7 @@ end
 
 function lia.db.tableExists(tbl)
     local qt = "'" .. tbl:gsub("'", "''") .. "'"
-    return sqliteQuery("SELECT name FROM sqlite_master WHERE type='table' AND name=" .. qt):next(function(result)
-        return result.results and #result.results > 0
-    end)
+    return sqliteQuery("SELECT name FROM sqlite_master WHERE type='table' AND name=" .. qt):next(function(result) return result.results and #result.results > 0 end)
 end
 
 function lia.db.fieldExists(tbl, field)
@@ -1656,8 +1642,6 @@ function lia.db.delete(dbTable, condition)
     else
         query = "DELETE FROM " .. dbTable
     end
-
-    -- Use sqliteQuery directly for reliability
     return sqliteQuery(query):next(function(result)
         lia.db.invalidateTable(dbTable)
         return {
@@ -1976,7 +1960,6 @@ function lia.db.removeTable(tableName)
 
         lia.db.getTableColumns(fullTableName):next(function(columns)
             local _ = columns and table.Count(columns) or 0
-            -- DROP TABLE query remains as raw SQL since we're already in removeTable function
             lia.db.query("DROP TABLE " .. fullTableName, function()
                 if lia.db.cacheClear then lia.db.cacheClear() end
                 d:resolve(true)
@@ -2047,9 +2030,7 @@ function lia.db.GetCharacterTable(callback)
         end
 
         callback(columns)
-    end):catch(function(err)
-        callback({})
-    end)
+    end):catch(function(err) callback({}) end)
 end
 
 concommand.Add("lia_load_snapshot", function(ply, _, args)
@@ -2362,7 +2343,6 @@ concommand.Add("lia_snapshot_table", function(ply, _, args)
     end
 end)
 
--- Database Test Command
 concommand.Add("lia_dbtest", function(ply)
     if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
         ply:ChatPrint("This command requires super admin privileges.")
@@ -2401,44 +2381,35 @@ concommand.Add("lia_dbtest", function(ply)
         MsgC(Color(255, 255, 0), "\n=== ", sectionName, " ===\n")
     end
 
-    -- Test 1: Cache Functions
     logSection("CACHE FUNCTIONS")
     local startTime = SysTime()
-    -- Test cache enable/disable
     lia.db.setCacheEnabled(true)
     logTest("Cache Enable", lia.db.cache.enabled == true, "Cache enabled successfully")
     lia.db.setCacheEnabled(false)
     logTest("Cache Disable", lia.db.cache.enabled == false, "Cache disabled successfully")
     lia.db.setCacheEnabled(true)
-    -- Test cache TTL
     lia.db.setCacheTTL(30)
     logTest("Cache TTL Set", lia.db.cache.ttl == 30, "TTL set to 30 seconds")
-    -- Test cache operations
     lia.db.cacheSet("test_table", "test_key", {
         data = "test_value"
     })
 
     local cached = lia.db.cacheGet("test_key")
     logTest("Cache Set/Get", cached and cached.data == "test_value", "Cache set and retrieved successfully")
-    -- Test cache clear
     lia.db.cacheClear()
     cached = lia.db.cacheGet("test_key")
     logTest("Cache Clear", cached == nil, "Cache cleared successfully")
-    -- Test table invalidation
     lia.db.cacheSet("test_table", "table_key", "table_value")
     lia.db.invalidateTable("test_table")
     cached = lia.db.cacheGet("table_key")
     logTest("Table Invalidation", cached == nil, "Table cache invalidated successfully")
     logTest("Cache Functions", true, string.format("Completed in %.3fs", SysTime() - startTime))
-    -- Test 2: Utility Functions
     logSection("UTILITY FUNCTIONS")
     startTime = SysTime()
-    -- Test escape functions
     local escaped = lia.db.escape("test'value")
     logTest("SQL Escape", escaped == "test''value", "SQL escaping works correctly")
     local ident = lia.db.escapeIdentifier("test_field")
     logTest("Identifier Escape", ident == "`test_field`", "Identifier escaping works correctly")
-    -- Test data type conversion
     local converted = lia.db.convertDataType("test")
     logTest("String Conversion", converted == "'test'", "String conversion works")
     converted = lia.db.convertDataType(123)
@@ -2451,56 +2422,50 @@ concommand.Add("lia_dbtest", function(ply)
 
     logTest("Table Conversion", converted == "'{\"key\":\"value\"}'", "Table conversion works")
     logTest("Utility Functions", true, string.format("Completed in %.3fs", SysTime() - startTime))
-    -- Test 3: Table Operations
     logSection("TABLE OPERATIONS")
     startTime = SysTime()
-    -- Wait for tables to be loaded before testing
     lia.db.waitForTablesToLoad():next(function()
         if not lia.db.connected then
             logTest("Database Connection", false, "Database not connected")
             return
         end
-        -- Test table existence
+
         lia.db.tableExists("lia_characters"):next(function(exists) logTest("Table Exists Check", exists, "lia_characters table exists") end):catch(function(err) logTest("Table Exists Check", false, "Error: " .. err) end)
-    -- Test get tables
-    lia.db.getTables():next(function(tables)
-        local hasLiaTables = false
-        for _, table in ipairs(tables) do
-            if string.StartWith(table, "lia_") then
-                hasLiaTables = true
-                break
+        lia.db.getTables():next(function(tables)
+            local hasLiaTables = false
+            for _, table in ipairs(tables) do
+                if string.StartWith(table, "lia_") then
+                    hasLiaTables = true
+                    break
+                end
             end
-        end
 
-        logTest("Get Tables", hasLiaTables and #tables > 0, "Found " .. #tables .. " tables including lia_ tables")
-    end):catch(function(err) logTest("Get Tables", false, "Error: " .. err) end)
+            logTest("Get Tables", hasLiaTables and #tables > 0, "Found " .. #tables .. " tables including lia_ tables")
+        end):catch(function(err) logTest("Get Tables", false, "Error: " .. err) end)
 
-    -- Test creating a test table
-    local testTableSchema = {
-        {
-            name = "id",
-            type = "integer",
-            auto_increment = true
-        },
-        {
-            name = "name",
-            type = "string"
-        },
-        {
-            name = "value",
-            type = "integer"
+        local testTableSchema = {
+            {
+                name = "id",
+                type = "integer",
+                auto_increment = true
+            },
+            {
+                name = "name",
+                type = "string"
+            },
+            {
+                name = "value",
+                type = "integer"
+            }
         }
-    }
 
         lia.db.createTable("dbtest_temp", "id", testTableSchema):next(function(result) logTest("Create Table", result.success, "Test table created successfully") end):catch(function(err) logTest("Create Table", false, "Error creating table: " .. err) end)
-        -- Test table removal
         timer.Simple(0.1, function() lia.db.removeTable("dbtest_temp"):next(function(success) logTest("Remove Table", success, "Test table removed successfully") end):catch(function(err) logTest("Remove Table", false, "Error removing table: " .. err) end) end)
         logTest("Table Operations", true, string.format("Completed in %.3fs", SysTime() - startTime))
     end):catch(function(err) logTest("Table Operations", false, "Error waiting for tables to load: " .. err) end)
-    -- Test 4: Column Operations
+
     logSection("COLUMN OPERATIONS")
     startTime = SysTime()
-    -- Create a test table for column operations
     lia.db.createTable("dbtest_columns", "id", {
         {
             name = "id",
@@ -2513,23 +2478,16 @@ concommand.Add("lia_dbtest", function(ply)
         }
     }):next(function()
         logTest("Column Test Table", true, "Column test table created")
-        -- Test field exists
         lia.db.fieldExists("lia_dbtest_columns", "name"):next(function(exists) logTest("Field Exists", exists, "Field existence check works") end):catch(function(err) logTest("Field Exists", false, "Error: " .. err) end)
-        -- Test create column
         lia.db.createColumn("dbtest_columns", "test_column", "string"):next(function(result) logTest("Create Column", result and result.success, "Column created successfully") end):catch(function(err) logTest("Create Column", false, "Error: " .. err) end)
-        -- Test get table columns
         lia.db.getTableColumns("lia_dbtest_columns"):next(function(columns) logTest("Get Table Columns", columns and type(columns) == "table", "Retrieved " .. table.Count(columns) .. " columns") end):catch(function(err) logTest("Get Table Columns", false, "Error: " .. err) end)
-        -- Test remove column
         timer.Simple(0.2, function() lia.db.removeColumn("dbtest_columns", "test_column"):next(function(success) logTest("Remove Column", success, "Column removed successfully") end):catch(function(err) logTest("Remove Column", false, "Error: " .. err) end) end)
     end):catch(function(err) logTest("Column Test Table", false, "Error creating column test table: " .. err) end)
 
-    -- Clean up column test table
     timer.Simple(0.5, function() lia.db.removeTable("dbtest_columns"):next(function() logTest("Column Test Cleanup", true, "Column test table cleaned up") end):catch(function(err) logTest("Column Test Cleanup", false, "Error cleaning up: " .. err) end) end)
     logTest("Column Operations", true, string.format("Completed in %.3fs", SysTime() - startTime))
-    -- Test 5: Data Operations
     logSection("DATA OPERATIONS")
     startTime = SysTime()
-    -- Create test table for data operations
     lia.db.createTable("dbtest_data", "id", {
         {
             name = "id",
@@ -2546,65 +2504,52 @@ concommand.Add("lia_dbtest", function(ply)
         }
     }):next(function()
         logTest("Data Test Table", true, "Data test table created")
-        -- Clear any existing data first
         lia.db.delete("dbtest_data"):next(function()
-            -- Test insert
-        lia.db.insertTable({
-            name = "test_item",
-            value = 42
-        }, nil, "dbtest_data"):next(function() logTest("Insert Data", true, "Data inserted successfully") end):catch(function(err) logTest("Insert Data", false, "Error: " .. err) end)
+            lia.db.insertTable({
+                name = "test_item",
+                value = 42
+            }, nil, "dbtest_data"):next(function() logTest("Insert Data", true, "Data inserted successfully") end):catch(function(err) logTest("Insert Data", false, "Error: " .. err) end)
 
-        -- Test select
-        lia.db.select("*", "dbtest_data"):next(function(result) logTest("Select Data", result.results and #result.results > 0, "Data selected successfully") end):catch(function(err) logTest("Select Data", false, "Error: " .. err) end)
-        -- Test select one
-        lia.db.selectOne("*", "dbtest_data"):next(function(row) logTest("Select One", row and row.name == "test_item", "Single row selected successfully") end):catch(function(err) logTest("Select One", false, "Error: " .. err) end)
-        -- Test count
-        lia.db.count("dbtest_data"):next(function(count) logTest("Count Records", count > 0, "Counted " .. count .. " records") end):catch(function(err) logTest("Count Records", false, "Error: " .. err) end)
-        -- Test exists
-        lia.db.exists("dbtest_data", "name = 'test_item'"):next(function(exists) logTest("Exists Check", exists, "Record existence check works") end):catch(function(err) logTest("Exists Check", false, "Error: " .. err) end)
-        -- Test update
-        lia.db.updateTable({
-            value = 100
-        }, nil, "dbtest_data", "name = 'test_item'"):next(function() logTest("Update Data", true, "Data updated successfully") end):catch(function(err) logTest("Update Data", false, "Error: " .. err) end)
+            lia.db.select("*", "dbtest_data"):next(function(result) logTest("Select Data", result.results and #result.results > 0, "Data selected successfully") end):catch(function(err) logTest("Select Data", false, "Error: " .. err) end)
+            lia.db.selectOne("*", "dbtest_data"):next(function(row) logTest("Select One", row and row.name == "test_item", "Single row selected successfully") end):catch(function(err) logTest("Select One", false, "Error: " .. err) end)
+            lia.db.count("dbtest_data"):next(function(count) logTest("Count Records", count > 0, "Counted " .. count .. " records") end):catch(function(err) logTest("Count Records", false, "Error: " .. err) end)
+            lia.db.exists("dbtest_data", "name = 'test_item'"):next(function(exists) logTest("Exists Check", exists, "Record existence check works") end):catch(function(err) logTest("Exists Check", false, "Error: " .. err) end)
+            lia.db.updateTable({
+                value = 100
+            }, nil, "dbtest_data", "name = 'test_item'"):next(function() logTest("Update Data", true, "Data updated successfully") end):catch(function(err) logTest("Update Data", false, "Error: " .. err) end)
 
-        -- Test bulk insert
-        local bulkData = {
-            {
-                name = "bulk1",
-                value = 1
-            },
-            {
-                name = "bulk2",
-                value = 2
-            },
-            {
-                name = "bulk3",
-                value = 3
+            local bulkData = {
+                {
+                    name = "bulk1",
+                    value = 1
+                },
+                {
+                    name = "bulk2",
+                    value = 2
+                },
+                {
+                    name = "bulk3",
+                    value = 3
+                }
             }
-        }
 
-        lia.db.bulkInsert("dbtest_data", bulkData):next(function() logTest("Bulk Insert", true, "Bulk insert completed successfully") end):catch(function(err) logTest("Bulk Insert", false, "Error: " .. err) end)
-        -- Test upsert
-        lia.db.upsert({
-            name = "upsert_test",
-            value = 999
-        }, "dbtest_data"):next(function() logTest("Upsert", true, "Upsert completed successfully") end):catch(function(err) logTest("Upsert", false, "Error: " .. err) end)
+            lia.db.bulkInsert("dbtest_data", bulkData):next(function() logTest("Bulk Insert", true, "Bulk insert completed successfully") end):catch(function(err) logTest("Bulk Insert", false, "Error: " .. err) end)
+            lia.db.upsert({
+                name = "upsert_test",
+                value = 999
+            }, "dbtest_data"):next(function() logTest("Upsert", true, "Upsert completed successfully") end):catch(function(err) logTest("Upsert", false, "Error: " .. err) end)
 
-        -- Test insert or ignore
-        lia.db.insertOrIgnore({
-            name = "upsert_test",
-            value = 888
-        }, "dbtest_data"):next(function() logTest("Insert or Ignore", true, "Insert or ignore completed successfully") end):catch(function(err) logTest("Insert or Ignore", false, "Error: " .. err) end)
+            lia.db.insertOrIgnore({
+                name = "upsert_test",
+                value = 888
+            }, "dbtest_data"):next(function() logTest("Insert or Ignore", true, "Insert or ignore completed successfully") end):catch(function(err) logTest("Insert or Ignore", false, "Error: " .. err) end)
 
-            -- Test delete
             lia.db.delete("dbtest_data", "name = 'test_item'"):next(function() logTest("Delete Data", true, "Data deleted successfully") end):catch(function(err) logTest("Delete Data", false, "Error: " .. err) end)
         end):catch(function(err) logTest("Data Clear", false, "Error clearing data: " .. err) end)
     end):catch(function(err) logTest("Data Test Table", false, "Error creating data test table: " .. err) end)
 
-    -- Clean up data test table
     timer.Simple(1.0, function() lia.db.removeTable("dbtest_data"):next(function() logTest("Data Test Cleanup", true, "Data test table cleaned up") end):catch(function(err) logTest("Data Test Cleanup", false, "Error cleaning up: " .. err) end) end)
     logTest("Data Operations", true, string.format("Completed in %.3fs", SysTime() - startTime))
-    -- Test 6: Transaction Test
     logSection("TRANSACTION OPERATIONS")
     startTime = SysTime()
     lia.db.createTable("dbtest_transaction", "id", {
@@ -2619,24 +2564,19 @@ concommand.Add("lia_dbtest", function(ply)
         }
     }):next(function()
         logTest("Transaction Table", true, "Transaction test table created")
-        -- Clear any existing data first
         lia.db.delete("dbtest_transaction"):next(function()
             local transactionQueries = {"INSERT INTO lia_dbtest_transaction (name) VALUES ('transaction1')", "INSERT INTO lia_dbtest_transaction (name) VALUES ('transaction2')", "INSERT INTO lia_dbtest_transaction (name) VALUES ('transaction3')"}
             lia.db.transaction(transactionQueries):next(function()
                 logTest("Transaction", true, "Transaction completed successfully")
-                -- Verify transaction worked
                 lia.db.count("dbtest_transaction"):next(function(count) logTest("Transaction Verification", count == 3, "Transaction inserted " .. count .. " records") end):catch(function(err) logTest("Transaction Verification", false, "Error: " .. err) end)
             end):catch(function(err) logTest("Transaction", false, "Error: " .. err) end)
         end):catch(function(err) logTest("Transaction Clear", false, "Error clearing table: " .. err) end)
     end):catch(function(err) logTest("Transaction Table", false, "Error creating transaction table: " .. err) end)
 
-    -- Clean up transaction test table
     timer.Simple(1.5, function() lia.db.removeTable("dbtest_transaction"):next(function() logTest("Transaction Cleanup", true, "Transaction test table cleaned up") end):catch(function(err) logTest("Transaction Cleanup", false, "Error cleaning up: " .. err) end) end)
     logTest("Transaction Operations", true, string.format("Completed in %.3fs", SysTime() - startTime))
-    -- Test 7: Migration and Schema Functions
     logSection("SCHEMA & MIGRATION")
     startTime = SysTime()
-    -- Test expected schema functions
     lia.db.addExpectedSchema("test_schema", {
         id = {
             type = "integer",
@@ -2648,10 +2588,8 @@ concommand.Add("lia_dbtest", function(ply)
     })
 
     logTest("Add Expected Schema", lia.db.expectedSchemas and lia.db.expectedSchemas.test_schema, "Schema added successfully")
-    -- Note: migrateDatabaseSchemas would normally run, but we skip it in test to avoid modifying actual tables
     logTest("Migration Functions", true, "Migration functions are available (skipped execution to avoid table modifications)")
     logTest("Schema & Migration", true, string.format("Completed in %.3fs", SysTime() - startTime))
-    -- Final Results
     timer.Simple(2.0, function()
         logSection("TEST SUMMARY")
         MsgC(Color(255, 255, 255), "Total Tests: ", Color(0, 255, 0), testResults.total, "\n")

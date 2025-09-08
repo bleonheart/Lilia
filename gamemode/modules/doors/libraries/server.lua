@@ -293,8 +293,6 @@ function lia.doors.VerifyDatabaseSchema()
             return
         end
 
-        -- columns is already in the correct format from getTableColumns
-
         local expectedColumns = {
             gamemode = "text",
             map = "text",
@@ -347,10 +345,12 @@ function lia.doors.CleanupCorruptedData()
                 corruptedCount = corruptedCount + 1
             end
 
-            if needsUpdate then lia.db.updateTable({
-                factions = newFactions,
-                classes = newClasses
-            }, function() lia.information("Fixed corrupted data for door " .. id) end, "doors", condition .. " AND id = " .. id):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end) end
+            if needsUpdate then
+                lia.db.updateTable({
+                    factions = newFactions,
+                    classes = newClasses
+                }, function() lia.information("Fixed corrupted data for door " .. id) end, "doors", condition .. " AND id = " .. id):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end)
+            end
         end
 
         if corruptedCount > 0 then lia.information("Found and fixed " .. corruptedCount .. " corrupted door records") end

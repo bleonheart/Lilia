@@ -622,7 +622,6 @@ function PANEL:Init()
     self:MakePopup()
     self:Center()
     self:SetTitle(L("vendorEditor"))
-    -- Text Entries
     self.name = self:Add("DTextEntry")
     self.name:Dock(TOP)
     self.name:SetTooltip(L("name"))
@@ -638,7 +637,6 @@ function PANEL:Init()
         if entity:GetModel():lower() ~= modelText then lia.vendor.editor.model(modelText) end
     end
 
-
     self.welcome = self:Add("DTextEntry")
     self.welcome:Dock(TOP)
     self.welcome:DockMargin(0, 4, 0, 0)
@@ -649,14 +647,12 @@ function PANEL:Init()
         if msg ~= entity:getWelcomeMessage() then lia.vendor.editor.welcome(msg) end
     end
 
-
     self.searchBar = self:Add("DTextEntry")
     self.searchBar:Dock(TOP)
     self.searchBar:DockMargin(0, 4, 0, 0)
     self.searchBar:SetUpdateOnType(true)
     self.searchBar:SetPlaceholderText(L("search"))
     self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
-    -- Buttons
     local hasBodygroups = false
     for i = 0, entity:GetNumBodyGroups() - 1 do
         if entity:GetBodygroupCount(i) > 1 then
@@ -706,7 +702,6 @@ function PANEL:Init()
         end, function() end, L("vendorSavePreset"), L("cancel"))
     end
 
-    -- Dropdowns
     self.preset = self:Add("DComboBox")
     self.preset:Dock(TOP)
     self.preset:SetSortItems(false)
@@ -735,7 +730,6 @@ function PANEL:Init()
         lia.vendor.editor.animation(value)
     end
 
-    -- Sliders
     if entity:SkinCount() > 1 then
         self.skin = self:Add("DNumSlider")
         self.skin:Dock(TOP)
@@ -750,7 +744,6 @@ function PANEL:Init()
             if entity:GetSkin() ~= value then lia.vendor.editor.skin(value) end
         end
     end
-
 
     self.items = self:Add("DListView")
     self.items:Dock(FILL)
@@ -809,8 +802,6 @@ function PANEL:OnFocusChanged(gained)
         end)
     end
 end
-
-
 
 function PANEL:saveVendorPreset(_, displayName)
     if not LocalPlayer():hasPrivilege("canCreateVendorPresets") then

@@ -57,11 +57,9 @@ function ENT:Initialize()
     LiliaVendors[self:EntIndex()] = self
 end
 
-
 function ENT:getWelcomeMessage()
     return self:getNetVar("welcomeMessage", L("vendorWelcomeMessage"))
 end
-
 
 function ENT:getStock(uniqueID)
     if self.items[uniqueID] and self.items[uniqueID][VENDOR_MAXSTOCK] then return self.items[uniqueID][VENDOR_STOCK] or 0, self.items[uniqueID][VENDOR_MAXSTOCK] end
@@ -110,16 +108,11 @@ end
 function ENT:getSellScale()
     local scale = lia.config.get("vendorSaleScale", 0.5)
     local hookScale = hook.Run("GetVendorSaleScale", self)
-
-    -- Validate hook return value
     if hookScale ~= nil and hookScale ~= false then
         local numHookScale = tonumber(hookScale)
-        if numHookScale then
-            return math.Clamp(numHookScale, 0.1, 2.0)
-        end
+        if numHookScale then return math.Clamp(numHookScale, 0.1, 2.0) end
     end
 
-    -- Use config value as fallback
     local finalScale = tonumber(scale) or 0.5
     return math.Clamp(finalScale, 0.1, 2.0)
 end
@@ -144,8 +137,8 @@ function ENT:setAnim()
         for k, v in ipairs(sequenceList) do
             if v:lower() == customAnim:lower() then
                 self:ResetSequence(k)
-                self:SetCycle(1) -- Set to the end of the animation
-                self:SetPlaybackRate(0) -- Stop animation playback
+                self:SetCycle(1)
+                self:SetPlaybackRate(0)
                 return
             end
         end
@@ -155,15 +148,15 @@ function ENT:setAnim()
     for k, v in ipairs(sequenceList) do
         if v:lower():find("idle") and v ~= "idlenoise" then
             self:ResetSequence(k)
-            self:SetCycle(1) -- Set to the end of the animation
-            self:SetPlaybackRate(0) -- Stop animation playback
+            self:SetCycle(1)
+            self:SetPlaybackRate(0)
             return
         end
     end
 
     if self:GetSequenceCount() > 1 then
         self:ResetSequence(4)
-        self:SetCycle(1) -- Set to the end of the animation
-        self:SetPlaybackRate(0) -- Stop animation playback
+        self:SetCycle(1)
+        self:SetPlaybackRate(0)
     end
 end
