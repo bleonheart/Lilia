@@ -368,13 +368,6 @@ function GM:PostPlayerLoadout(client)
     client:setNetVar("VoiceType", L("talking"))
 end
 
-function GM:ShouldSpawnClientRagdoll(client)
-    if client:IsBot() then
-        client:Spawn()
-        return false
-    end
-end
-
 function GM:DoPlayerDeath(client, attacker)
     client:AddDeaths(1)
     if hook.Run("ShouldSpawnClientRagdoll", client) ~= false then client:createRagdoll(false, true) end
