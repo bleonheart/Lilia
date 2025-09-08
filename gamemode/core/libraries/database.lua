@@ -244,7 +244,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("characters", "id", {
             {
                 name = "id",
@@ -268,7 +268,7 @@ function lia.db.loadTables()
                 type = "datetime"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("inventories", "invID", {
             {
                 name = "invID",
@@ -284,7 +284,7 @@ function lia.db.loadTables()
                 type = "string"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("items", "itemID", {
             {
                 name = "itemID",
@@ -316,7 +316,7 @@ function lia.db.loadTables()
                 type = "integer"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("invdata", {"invID", "key"}, {
             {
                 name = "invID",
@@ -333,7 +333,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("config", {"schema", "key"}, {
             {
                 name = "schema",
@@ -350,7 +350,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("logs", "id", {
             {
                 name = "id",
@@ -382,7 +382,7 @@ function lia.db.loadTables()
                 type = "string"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("ticketclaims", nil, {
             {
                 name = "timestamp",
@@ -409,7 +409,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("warnings", "id", {
             {
                 name = "id",
@@ -445,7 +445,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("permakills", "id", {
             {
                 name = "id",
@@ -486,7 +486,7 @@ function lia.db.loadTables()
                 type = "string"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("bans", "id", {
             {
                 name = "id",
@@ -523,7 +523,7 @@ function lia.db.loadTables()
                 type = "string"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("staffactions", "id", {
             {
                 name = "id",
@@ -560,7 +560,7 @@ function lia.db.loadTables()
                 type = "integer"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("doors", {"gamemode", "map", "id"}, {
             {
                 name = "gamemode",
@@ -618,7 +618,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("persistence", "id", {
             {
                 name = "id",
@@ -650,7 +650,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("saveditems", "id", {
             {
                 name = "id",
@@ -678,7 +678,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("admin", "usergroup", {
             {
                 name = "usergroup",
@@ -698,7 +698,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("data", {"gamemode", "map"}, {
             {
                 name = "gamemode",
@@ -715,7 +715,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function(result)
+    end):next(function()
         return lia.db.createTable("vendor_presets", "id", {
             {
                 name = "id",
