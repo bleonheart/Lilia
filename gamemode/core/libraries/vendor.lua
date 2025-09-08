@@ -45,22 +45,24 @@ if SERVER then
     addEditor("preset", function() return net.ReadString() end, function(vendor, preset) vendor:applyPreset(preset) end)
     addEditor("animation", function() return net.ReadString() end, function(vendor, animation) vendor:setAnimation(animation) end)
     function lia.vendor.loadPresets()
-        lia.db.query("SELECT * FROM lia_vendor_presets", function(data)
-            if data then
-                for _, row in ipairs(data) do
-                    local presetName = row.name
-                    local presetData = util.JSONToTable(row.data or "{}")
-                    if presetData and next(presetData) then lia.vendor.presets[string.lower(presetName)] = presetData end
-                end
-
-                lia.log.add("Loaded " .. #data .. " vendor presets from database.")
+        lia.db.select("*", "vendor_presets"):next(function(data)
+            local results = data.results or {}
+            for _, row in ipairs(results) do
+                local presetName = row.name
+                local presetData = util.JSONToTable(row.data or "{}")
+                if presetData and next(presetData) then lia.vendor.presets[string.lower(presetName)] = presetData end
             end
+
+            lia.log.add("Loaded " .. #results .. " vendor presets from database.")
         end)
     end
 
     function lia.vendor.savePresetToDatabase(name, data)
         local presetData = util.TableToJSON(data)
-        lia.db.query("INSERT OR REPLACE INTO lia_vendor_presets (name, data) VALUES (?, ?)", {name, presetData})
+        lia.db.upsert({
+            name = name,
+            data = presetData
+        }, "vendor_presets")
     end
 
     hook.Add("LiliaTablesLoaded", "liaVendorPresetLoading", function() lia.vendor.loadPresets() end)

@@ -424,21 +424,21 @@ if SERVER then
         local name = self:steamName()
         local steamID = self:SteamID()
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        lia.db.query("SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = " .. lia.db.convertDataType(steamID), function(data)
-            if IsValid(self) and data and data[1] and data[1].data then
+        lia.db.selectOne({"data", "firstJoin", "lastJoin", "lastIP", "lastOnline", "totalOnlineTime"}, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
+            if IsValid(self) and data and data.data then
                 lia.db.updateTable({
                     lastJoin = timeStamp,
                 }, nil, "players", "steamID = " .. lia.db.convertDataType(steamID))
 
-                self.firstJoin = data[1].firstJoin or timeStamp
-                self.lastJoin = data[1].lastJoin or timeStamp
-                self.liaData = util.JSONToTable(data[1].data)
+                self.firstJoin = data.firstJoin or timeStamp
+                self.lastJoin = data.lastJoin or timeStamp
+                self.liaData = util.JSONToTable(data.data)
                 local isCheater = self:getLiliaData("cheater", false)
                 self:setNetVar("cheater", isCheater and true or nil)
-                self.totalOnlineTime = tonumber(data[1].totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
+                self.totalOnlineTime = tonumber(data.totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
                 local default = os.time(lia.time.toNumber(self.lastJoin))
-                self.lastOnline = tonumber(data[1].lastOnline) or self:getLiliaData("lastOnline", default)
-                self.lastIP = data[1].lastIP or self:getLiliaData("lastIP")
+                self.lastOnline = tonumber(data.lastOnline) or self:getLiliaData("lastOnline", default)
+                self.lastIP = data.lastIP or self:getLiliaData("lastIP")
                 if callback then callback(self.liaData) end
             else
                 lia.db.insertTable({

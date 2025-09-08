@@ -271,14 +271,14 @@ lia.command.add("charlist", {
             steamID = client:SteamID()
         end
 
-        lia.db.query("SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = " .. lia.db.convertDataType(steamID), function(data)
-            if not data or #data == 0 then
+        lia.db.selectWithCondition({"c.*", "d.value AS charBanInfo"}, "characters", "AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
+            if not data or not data.results or #data.results == 0 then
                 client:notifyLocalized("noCharactersForPlayer")
                 return
             end
 
             local sendData = {}
-            for _, row in ipairs(data) do
+            for _, row in ipairs(data.results) do
                 local charID = tonumber(row.id) or row.id
                 local stored = lia.char.getCharacter(charID)
                 local info = stored and stored:getData() or {}
@@ -406,7 +406,7 @@ lia.command.add("plyunban", {
     onRun = function(client, arguments)
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
-            lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steamid)
+            lia.db.delete("bans", "playerSteamID = " .. steamid)
             client:notifyLocalized("playerUnbanned")
             lia.log.add(client, "plyUnban", steamid)
         end
@@ -1604,9 +1604,9 @@ lia.command.add("charunban", {
 
         client.liaNextSearch = CurTime() + 15
         local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT id, name FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
-            if data and data[1] then
-                local charID = tonumber(data[1].id)
+        lia.db.selectOne({"id", "name"}, "characters", sqlCondition):next(function(data)
+            if data then
+                local charID = tonumber(data.id)
                 local banned = lia.char.getCharBanned(charID)
                 client.liaNextSearch = 0
                 if not banned or banned == 0 then
@@ -1616,8 +1616,8 @@ lia.command.add("charunban", {
 
                 lia.char.setCharDatabase(charID, "banned", 0)
                 lia.char.setCharDatabase(charID, "charBanInfo", nil)
-                client:notifyLocalized("charUnBan", client:Name(), data[1].name)
-                lia.log.add(client, "charUnban", data[1].name, charID)
+                client:notifyLocalized("charUnBan", client:Name(), data.name)
+                lia.log.add(client, "charUnban", data.name, charID)
             end
         end)
     end
@@ -1833,13 +1833,13 @@ lia.command.add("charwipeoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyLocalized("invalidCharID") end
-        lia.db.query("SELECT name FROM lia_characters WHERE id = " .. charID, function(data)
-            if not data or #data == 0 then
+        lia.db.selectOne({"name"}, "characters", "id = " .. charID):next(function(data)
+            if not data then
                 client:notifyLocalized("characterNotFound")
                 return
             end
 
-            local charName = data[1].name
+            local charName = data.name
             for _, ply in player.Iterator() do
                 if ply:getChar() and ply:getChar():getID() == charID then
                     ply:Kick(L("youHaveBeenWiped"))

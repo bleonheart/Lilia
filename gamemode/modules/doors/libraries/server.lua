@@ -22,7 +22,7 @@ function MODULE:LoadData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local mapName = game.GetMap()
     local condition = buildCondition(gamemode, mapName)
-    lia.db.query("SELECT * FROM lia_doors WHERE " .. condition):next(function(res)
+    lia.db.select("*", "doors", condition):next(function(res)
         local rows = res.results or {}
         local loadedCount = 0
         local presetData = lia.doors.GetPreset(mapName)
@@ -287,16 +287,13 @@ function lia.doors.GetPreset(mapName)
 end
 
 function lia.doors.VerifyDatabaseSchema()
-    lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
-        if not res or not res.results then
+    lia.db.getTableColumns("lia_doors"):next(function(columns)
+        if not columns then
             lia.error("Failed to get table info for lia_doors")
             return
         end
 
-        local columns = {}
-        for _, row in ipairs(res.results) do
-            columns[row.name] = string.lower(row.type)
-        end
+        -- columns is already in the correct format from getTableColumns
 
         local expectedColumns = {
             gamemode = "text",
@@ -327,7 +324,7 @@ function lia.doors.CleanupCorruptedData()
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local map = game.GetMap()
     local condition = buildCondition(gamemode, map)
-    lia.db.query("SELECT id, factions, classes FROM lia_doors WHERE " .. condition):next(function(res)
+    lia.db.select({"id", "factions", "classes"}, "doors", condition):next(function(res)
         local rows = res.results or {}
         local corruptedCount = 0
         for _, row in ipairs(rows) do
@@ -350,7 +347,10 @@ function lia.doors.CleanupCorruptedData()
                 corruptedCount = corruptedCount + 1
             end
 
-            if needsUpdate then lia.db.query("UPDATE lia_doors SET factions = " .. lia.db.convertDataType(newFactions) .. ", classes = " .. lia.db.convertDataType(newClasses) .. " WHERE " .. condition .. " AND id = " .. id):next(function() lia.information("Fixed corrupted data for door " .. id) end):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end) end
+            if needsUpdate then lia.db.updateTable({
+                factions = newFactions,
+                classes = newClasses
+            }, function() lia.information("Fixed corrupted data for door " .. id) end, "doors", condition .. " AND id = " .. id):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end) end
         end
 
         if corruptedCount > 0 then lia.information("Found and fixed " .. corruptedCount .. " corrupted door records") end
@@ -358,15 +358,15 @@ function lia.doors.CleanupCorruptedData()
 end
 
 function lia.doors.AddDoorGroupColumn()
-    lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
-        if not res or not res.results then
+    lia.db.getTableColumns("lia_doors"):next(function(columns)
+        if not columns then
             lia.error("Failed to get table info for lia_doors during column addition")
             return
         end
 
         local hasDoorGroupColumn = false
-        for _, row in ipairs(res.results) do
-            if row.name == "door_group" then
+        for columnName, _ in pairs(columns) do
+            if columnName == "door_group" then
                 hasDoorGroupColumn = true
                 break
             end
@@ -374,7 +374,13 @@ function lia.doors.AddDoorGroupColumn()
 
         if not hasDoorGroupColumn then
             lia.information("Adding door_group column to lia_doors table...")
-            lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT"):next(function() lia.information("Successfully added door_group column to lia_doors table") end):catch(function(err) lia.error("Failed to add door_group column: " .. tostring(err)) end)
+            lia.db.createColumn("doors", "door_group", "text"):next(function(result)
+                if result.success then
+                    lia.information("Successfully added door_group column to lia_doors table")
+                else
+                    lia.information("door_group column already exists or could not be added")
+                end
+            end):catch(function(err) lia.error("Failed to add door_group column: " .. tostring(err)) end)
         end
     end):catch(function(err) lia.error("Failed to check for door_group column: " .. tostring(err)) end)
 end

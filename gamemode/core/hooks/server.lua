@@ -428,7 +428,9 @@ function GM:PlayerAuthed(client, steamid)
         local group = data and data.userGroup
         if not group or group == "" then
             group = "user"
-            lia.db.query("UPDATE lia_players SET userGroup = '" .. lia.db.escape(group) .. "' WHERE steamID = " .. lia.db.convertDataType(steamid))
+            lia.db.updateTable({
+                userGroup = group
+            }, nil, "players", "steamID = " .. lia.db.convertDataType(steamid))
         end
 
         client:SetUserGroup(group)
@@ -738,13 +740,14 @@ function GM:LoadData()
             if #idRange > 0 then
                 local range = "(" .. table.concat(idRange, ", ") .. ")"
                 if hook.Run("ShouldDeleteSavedItems") == true then
-                    lia.db.query("DELETE FROM lia_items WHERE itemID IN " .. range)
+                    lia.db.delete("items", "itemID IN " .. range)
                     lia.information(L("serverDeletedItems"))
                 else
-                    lia.db.query("SELECT itemID, uniqueID, data FROM lia_items WHERE itemID IN " .. range, function(data)
-                        if not data then return end
+                    lia.db.select({"itemID", "uniqueID", "data"}, "items", "itemID IN " .. range):next(function(data)
+                        local results = data.results or {}
+                        if not results then return end
                         local loadedItems = {}
-                        for _, row in ipairs(data) do
+                        for _, row in ipairs(results) do
                             local itemID = tonumber(row.itemID)
                             local itemData = util.JSONToTable(row.data or "[]")
                             local uniqueID = row.uniqueID
@@ -1089,7 +1092,9 @@ concommand.Add("plysetgroup", function(ply, _, args)
         if IsValid(target) then
             if lia.administrator.groups[usergroup] then
                 target:SetUserGroup(usergroup)
-                lia.db.query("UPDATE lia_players SET userGroup = '" .. lia.db.escape(usergroup) .. "' WHERE steamID = " .. lia.db.convertDataType(target:SteamID()))
+                lia.db.updateTable({
+                    userGroup = usergroup
+                }, nil, "players", "steamID = " .. lia.db.convertDataType(target:SteamID()))
             else
                 MsgC(Color(200, 20, 20), "[" .. L("error") .. "] " .. L("consoleUsergroupNotFound") .. "\n")
             end
@@ -1227,5 +1232,5 @@ end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin(L("unbanLogFormat", data.networkid))
-    lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
+    lia.db.delete("bans", "playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
