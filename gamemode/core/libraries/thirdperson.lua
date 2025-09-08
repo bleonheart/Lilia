@@ -85,6 +85,7 @@ end
 local function SetRagdollHidden(ply, state)
     local rag = ply:getRagdoll() or ply:GetRagdollEntity()
     if IsValid(rag) then
+        if not ply:Alive() then state = false end
         rag:SetNoDraw(state)
         rag:DrawShadow(not state)
     end
