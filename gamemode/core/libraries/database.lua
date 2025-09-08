@@ -169,7 +169,7 @@ function lia.db.wipeTables(callback)
             lia.db.removeTable(tableName:gsub("lia_", "")):next(function()
                 remaining = remaining - 1
                 if remaining <= 0 then realCallback() end
-            end):catch(function(err)
+            end):catch(function()
                 remaining = remaining - 1
                 if remaining <= 0 then realCallback() end
             end)
@@ -184,7 +184,7 @@ function lia.db.loadTables()
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
             hook.Run("OnDatabaseLoaded")
-        end):catch(function(err)
+        end):catch(function()
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
             hook.Run("OnDatabaseLoaded")
@@ -1379,9 +1379,9 @@ function lia.db.migrateDatabaseSchemas()
                             not_null = colInfo.def.not_null,
                             auto_increment = colInfo.def.auto_increment,
                             default = colInfo.def.default
-                        }):next(function(colResult)
+                        }):next(function()
                             -- Column creation result handling (can be extended if needed)
-                        end):catch(function(err)
+                        end):catch(function()
                             -- Column creation error handling (can be extended if needed)
                         end)
 
@@ -1391,7 +1391,7 @@ function lia.db.migrateDatabaseSchemas()
                     -- No missing columns found, schema migration complete
                 end
             end)
-        end):catch(function(err) end)
+        end):catch(function() end)
 
         table.insert(migrationPromises, promise)
     end
@@ -2031,7 +2031,7 @@ function lia.db.removeColumn(tableName, columnName)
                 lia.db.transaction({createTempQuery, insertQuery, dropOldQuery, renameQuery}):next(function()
                     if lia.db.cacheClear then lia.db.cacheClear() end
                     d:resolve(true)
-                end):catch(function(err) d:reject(err) end)
+                end):catch(function() d:reject() end)
             end, function(err) d:reject(err) end)
         end):catch(function(err) d:reject(err) end)
     end):catch(function(err) d:reject(err) end)
@@ -2216,7 +2216,7 @@ concommand.Add("lia_list_snapshots", function(ply, _, args)
     end
 
     sendFeedback("Found " .. #files .. " snapshot files:", Color(255, 255, 255))
-    for tableName, fileList in pairs(tableGroups) do
+    for _, fileList in pairs(tableGroups) do
         table.sort(fileList, function(a, b) return a > b end)
         for _, filename in ipairs(fileList) do
             local timestamp = filename:match("_(%d+_%d+)%.txt$")
