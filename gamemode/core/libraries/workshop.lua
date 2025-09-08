@@ -79,7 +79,6 @@ else
     lia.workshop.mountCounts = lia.workshop.mountCounts or {}
     lia.workshop.queue = lia.workshop.queue or {}
     lia.workshop.active = lia.workshop.active or false
-    lia.workshop.persistRoot = "lilia/workshop"
     local function mountedByEngine(id)
         id = tostring(id)
         for _, a in pairs(engine.GetAddons() or {}) do
@@ -93,47 +92,37 @@ else
         id = tostring(id)
         if lia.workshop.mounted[id] then return true end
         if mountedByEngine(id) then return true end
-        local rel = lia.workshop.persistRoot .. "/" .. id .. ".gma"
-        if file.Exists(rel, "DATA") then
-            local ok = game.MountGMA("data/" .. rel)
-            if ok then lia.workshop.mounted[id] = true end
-            return ok and true or false
-        end
         return false
     end
 
     local function mountFromPath(id, path)
         local res = game.MountGMA(path)
+        local ok = res and true or false
         local c = istable(res) and #res or 0
-        if res and c > 0 then
+        if ok then
             lia.workshop.mounted[id] = true
             lia.workshop.mountCounts[id] = c
+            print("[lia.workshop] Mounted " .. c .. " files from addon " .. id)
             return true, c
         end
+
+        print("[lia.workshop] Mount failed for addon " .. id .. " - trying alternative methods")
+        print("[lia.workshop]   Path: " .. tostring(path))
+        if string.find(path, "gmpublisher%.gma$") then
+            local altPath = string.gsub(path, "/gmpublisher%.gma$", ".gma")
+            if altPath ~= path then
+                local res2 = game.MountGMA(altPath)
+                local ok2 = res2 and true or false
+                local c2 = istable(res2) and #res2 or 0
+                if ok2 then
+                    lia.workshop.mounted[id] = true
+                    lia.workshop.mountCounts[id] = c2
+                    print("[lia.workshop] Mounted " .. c2 .. " files from addon " .. id .. " via alternative path")
+                    return true, c2
+                end
+            end
+        end
         return false, 0
-    end
-
-    local function persistCopy(srcPath, destRel)
-        local src = file.Open(srcPath, "rb", "GAME")
-        if not src then return false end
-        file.CreateDir(lia.workshop.persistRoot)
-        local dest = file.Open(destRel, "wb", "DATA")
-        if not dest then
-            src:Close()
-            return false
-        end
-
-        local chunk = 1048576
-        while not src:EndOfFile() do
-            local left = src:Size() - src:Tell()
-            local data = src:Read(left > chunk and chunk or left)
-            if not data then break end
-            dest:Write(data)
-        end
-
-        dest:Close()
-        src:Close()
-        return true
     end
 
     function lia.workshop.Enqueue(id)
@@ -153,36 +142,29 @@ else
         lia.workshop.active = true
         local id = table.remove(lia.workshop.queue, 1)
         print("[lia.workshop] Starting mount process for addon " .. id)
-        local rel = lia.workshop.persistRoot .. "/" .. id .. ".gma"
-        if file.Exists(rel, "DATA") then
-            local ok = mountFromPath(id, "data/" .. rel)
-            if ok then
-                print("[lia.workshop] Successfully mounted addon " .. id .. " from cache")
-            else
-                print("[lia.workshop] Failed to mount addon " .. id .. " from cache")
-            end
-            lia.workshop.active = false
-            timer.Simple(0, lia.workshop.ProcessQueue)
-            return
-        end
-
         print("[lia.workshop] Downloading addon " .. id .. " from Steam Workshop")
         steamworks.DownloadUGC(id, function(path)
             if not path or path == "" then
-                print("[lia.workshop] Failed to download addon " .. id)
+                print("[lia.workshop] Failed to download addon " .. id .. " - no path returned")
                 lia.workshop.active = false
                 timer.Simple(0, lia.workshop.ProcessQueue)
                 return
             end
 
-            local persisted = persistCopy(path, rel)
-            local usePath = persisted and ("data/" .. rel) or path
-            local ok = mountFromPath(id, usePath)
+            print("[lia.workshop] Download completed for addon " .. id .. ", path: " .. path)
+            local ok = select(1, mountFromPath(id, path))
+            if not ok and string.find(path, "gmpublisher%.gma$") then
+                print("[lia.workshop] Attempting direct alternative path for GMPublisher addon")
+                local altPath = string.gsub(path, "/gmpublisher%.gma$", ".gma")
+                if altPath ~= path then ok = select(1, mountFromPath(id, altPath)) end
+            end
+
             if ok then
                 print("[lia.workshop] Successfully mounted addon " .. id)
             else
                 print("[lia.workshop] Failed to mount addon " .. id)
             end
+
             lia.workshop.active = false
             timer.Simple(0, lia.workshop.ProcessQueue)
         end)
@@ -240,13 +222,9 @@ else
 
     function lia.workshop.hasContentToDownload()
         if not lia.workshop.serverIds then return false end
-
         for id in pairs(lia.workshop.serverIds) do
-            if not lia.workshop.IsMounted(id) then
-                return true
-            end
+            if not lia.workshop.IsMounted(id) then return true end
         end
-
         return false
     end
 
@@ -256,12 +234,9 @@ else
             return
         end
 
-        -- Get missing addons
         local missingAddons = {}
         for id in pairs(lia.workshop.serverIds or {}) do
-            if not lia.workshop.IsMounted(id) then
-                table.insert(missingAddons, id)
-            end
+            if not lia.workshop.IsMounted(id) then table.insert(missingAddons, id) end
         end
 
         if #missingAddons == 0 then
@@ -269,9 +244,7 @@ else
             return
         end
 
-        -- Show confirmation dialog
         local function confirmMount()
-            -- Create progress dialog
             local progressFrame = vgui.Create("DFrame")
             progressFrame:SetSize(500, 300)
             progressFrame:Center()
@@ -279,106 +252,76 @@ else
             progressFrame:SetDraggable(false)
             progressFrame:SetDeleteOnClose(true)
             progressFrame:MakePopup()
-
             local statusLabel = vgui.Create("DLabel", progressFrame)
             statusLabel:SetPos(20, 40)
             statusLabel:SetSize(460, 30)
             statusLabel:SetText(L("workshopMounting"))
             statusLabel:SetFont("DermaDefault")
-
             local progressBar = vgui.Create("DProgressBar", progressFrame)
             progressBar:SetPos(20, 80)
             progressBar:SetSize(460, 20)
             progressBar:SetFraction(0)
-
             local addonList = vgui.Create("DListView", progressFrame)
             addonList:SetPos(20, 120)
             addonList:SetSize(460, 150)
             addonList:AddColumn("Addon ID")
             addonList:AddColumn("Status")
-
-            -- Add all addons to the list
             for _, id in ipairs(missingAddons) do
                 addonList:AddLine(id, "Pending")
             end
 
-            -- Track mounting progress
             local mountedCount = 0
             local totalCount = #missingAddons
-
             local function updateProgress()
                 mountedCount = mountedCount + 1
                 local progress = mountedCount / totalCount
-                progressBar:SetFraction(progress)
-                
+                if IsValid(progressBar) and progressBar.SetFraction then progressBar:SetFraction(progress) end
                 if mountedCount < totalCount then
-                    statusLabel:SetText(L("workshopMountingAddon", missingAddons[mountedCount + 1], mountedCount + 1, totalCount))
-                else
-                    statusLabel:SetText(L("workshopMountComplete"))
-                    timer.Simple(3, function()
-                        if IsValid(progressFrame) then
-                            progressFrame:Close()
-                        end
-                    end)
+                    if IsValid(statusLabel) and statusLabel.SetText then statusLabel:SetText(L("workshopMountingAddon", missingAddons[mountedCount + 1], mountedCount + 1, totalCount)) end
+                    return
                 end
+
+                if IsValid(statusLabel) and statusLabel.SetText then statusLabel:SetText(L("workshopMountComplete")) end
+                timer.Simple(3, function() if IsValid(progressFrame) then progressFrame:Close() end end)
             end
 
-            -- Hook into mounting process to track progress
-            local originalEnqueue = lia.workshop.Enqueue
-            lia.workshop.Enqueue = function(id)
-                -- Update the list item for this addon
+            local function updateAddonStatus(id, status)
+                if not IsValid(addonList) then return end
+                if not addonList.GetLineCount then return end
                 for i = 1, addonList:GetLineCount() do
                     local line = addonList:GetLine(i)
-                    if line:GetValue(1) == id then
-                        line:SetColumnText(2, "Mounting...")
+                    if line and line.GetValue and line:GetValue(1) == id then
+                        line:SetColumnText(2, status)
                         break
                     end
                 end
+            end
 
-                -- Call original function
+            local originalEnqueue = lia.workshop.Enqueue
+            lia.workshop.Enqueue = function(id)
+                updateAddonStatus(id, "Mounting...")
                 local result = originalEnqueue(id)
-
-                -- Check if mounting was successful after a delay
                 timer.Simple(2, function()
                     if lia.workshop.IsMounted(id) then
-                        for i = 1, addonList:GetLineCount() do
-                            local line = addonList:GetLine(i)
-                            if line:GetValue(1) == id then
-                                line:SetColumnText(2, "Mounted")
-                                break
-                            end
-                        end
+                        updateAddonStatus(id, "Mounted")
                         updateProgress()
-                    else
-                        for i = 1, addonList:GetLineCount() do
-                            local line = addonList:GetLine(i)
-                            if line:GetValue(1) == id then
-                                line:SetColumnText(2, "Failed")
-                                break
-                            end
-                        end
-                        LocalPlayer():notifyLocalized("workshopMountFailed", id)
-                        updateProgress()
+                        return
                     end
-                end)
 
+                    updateAddonStatus(id, "Failed")
+                    LocalPlayer():notifyLocalized("workshopMountFailed", id)
+                    updateProgress()
+                end)
                 return result
             end
 
-            -- Start mounting process for missing addons
             for i, id in ipairs(missingAddons) do
-                timer.Simple(i * 3, function()
-                    lia.workshop.Enqueue(id)
-                end)
+                timer.Simple(i * 3, function() lia.workshop.Enqueue(id) end)
             end
 
-            -- Restore original function after all addons are processed
-            timer.Simple(totalCount * 3 + 5, function()
-                lia.workshop.Enqueue = originalEnqueue
-            end)
+            timer.Simple(totalCount * 3 + 5, function() lia.workshop.Enqueue = originalEnqueue end)
         end
 
-        -- Create confirmation dialog
         local frame = vgui.Create("DFrame")
         frame:SetSize(400, 200)
         frame:Center()
@@ -386,13 +329,11 @@ else
         frame:SetDraggable(false)
         frame:SetDeleteOnClose(true)
         frame:MakePopup()
-
         local label = vgui.Create("DLabel", frame)
         label:SetPos(20, 40)
         label:SetSize(360, 60)
         label:SetText(L("workshopMountConfirm", #missingAddons))
         label:SetWrap(true)
-
         local yesBtn = vgui.Create("DButton", frame)
         yesBtn:SetPos(50, 120)
         yesBtn:SetSize(100, 30)
@@ -406,9 +347,7 @@ else
         noBtn:SetPos(250, 120)
         noBtn:SetSize(100, 30)
         noBtn:SetText("No")
-        noBtn.DoClick = function()
-            frame:Close()
-        end
+        noBtn.DoClick = function() frame:Close() end
     end
 
     hook.Add("CreateInformationButtons", "liaWorkshop_StatusRow", function(pages)

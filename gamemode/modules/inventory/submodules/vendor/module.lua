@@ -28,12 +28,16 @@ VENDOR_SELLANDBUY = 1
 VENDOR_SELLONLY = 2
 VENDOR_BUYONLY = 3
 
-lia.config.add("vendorSaleScale", 0.5, "The default sale scale for all vendors (multiplier for selling items to vendors)", function(value)
+lia.config.add("vendorSaleScale", "vendorSaleScale", 0.5, function(value)
     local num = tonumber(value)
     if not num then return false, "Value must be a number" end
     if num < 0.1 or num > 2.0 then return false, "Value must be between 0.1 and 2.0" end
     return true
 end, {
-    data = {min = 0.1, max = 2.0, decimals = 2},
-    category = "Vendors"
+    desc = "The default sale scale for all vendors (multiplier for selling items to vendors)",
+    category = "Vendors",
+    type = "Float",
+    min = 0.1,
+    max = 2.0,
+    decimals = 2
 })
