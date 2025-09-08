@@ -1,9 +1,6 @@
 ﻿lia = lia or {}
 lia.workshop = lia.workshop or {}
 if SERVER then
-    util.AddNetworkString("lia_ws_start")
-    util.AddNetworkString("lia_ws_ids")
-    util.AddNetworkString("lia_ws_request")
     lia.workshop.ids = lia.workshop.ids or {}
     lia.workshop.known = lia.workshop.known or {}
     lia.workshop.cache = lia.workshop.cache or {}
