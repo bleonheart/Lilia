@@ -1,6 +1,5 @@
 ﻿lia.webimage = lia.webimage or {}
 lia.webimage.stored = lia.webimage.stored or {}
-lia.webimage.allowDownloads = false
 local baseDir = "lilia/webimages/"
 local cache = {}
 local urlMap = {}
@@ -59,10 +58,6 @@ end
 
 function lia.webimage.download(n, u, cb, flags)
     if not isstring(n) then return end
-    if not lia.webimage.allowDownloads then
-        if cb then cb(nil, false, "downloads not allowed") end
-        return
-    end
 
     local url = u or lia.webimage.stored[n] and lia.webimage.stored[n].url
     local flg = flags or lia.webimage.stored[n] and lia.webimage.stored[n].flags

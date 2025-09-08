@@ -888,7 +888,6 @@ net.Receive("liaNetMessage", function()
 end)
 
 net.Receive("liaAssureClientSideAssets", function()
-    lia.webimage.allowDownloads = true
     local webimages = lia.webimage.stored
     local websounds = lia.websound.stored
     print("=== STARTING CLIENT-SIDE ASSET DOWNLOAD ===")
@@ -969,7 +968,6 @@ net.Receive("liaAssureClientSideAssets", function()
             timer.Remove("AssetDownloadProgress")
             lia.option.load()
             lia.keybind.load()
-            lia.webimage.allowDownloads = false
             timer.Simple(1.0, function()
                 local imageStats = lia.webimage.getStats()
                 local soundStats = lia.websound.getStats()

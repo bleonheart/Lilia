@@ -1383,7 +1383,7 @@ function lia.db.migrateDatabaseSchemas()
 
         table.insert(migrationPromises, promise)
     end
-    return deferred.all(migrationPromises):next(function() end):catch(function(err) end)
+    return deferred.all(migrationPromises):next(function() end):catch(function() end)
 end
 
 function lia.db.addDatabaseFields()
@@ -2030,7 +2030,7 @@ function lia.db.GetCharacterTable(callback)
         end
 
         callback(columns)
-    end):catch(function(err) callback({}) end)
+    end):catch(function() callback({}) end)
 end
 
 concommand.Add("lia_load_snapshot", function(ply, _, args)
