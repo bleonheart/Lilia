@@ -786,7 +786,7 @@ lia.command.add("togglealldoors", {
 })
 
 lia.command.add("doorid", {
-    desc = "Shows the door ID of the door you're looking at",
+    desc = "doorIDDesc",
     adminOnly = true,
     onRun = function(client)
         local door = client:getTracedEntity()
@@ -794,13 +794,13 @@ lia.command.add("doorid", {
             local mapID = door:MapCreationID()
             if mapID and mapID > 0 then
                 local pos = door:GetPos()
-                client:notifyLocalized("Door ID: " .. mapID .. " | Position: " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
+                client:notifyLocalized("doorID" .. mapID .. " | Position: " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
                 lia.log.add(client, "doorID", door, mapID)
             else
-                client:notifyLocalized("This door doesn't have a valid map ID")
+                client:notifyLocalized("doorNoValidMapID")
             end
         else
-            client:notifyLocalized("You must be looking at a door")
+            client:notifyLocalized("doorMustBeLookingAt")
         end
     end
 })
@@ -967,7 +967,7 @@ lia.command.add("doorremovegroup", {
 })
 
 lia.command.add("listdoorids", {
-    desc = "Lists all door IDs on the map for preset creation",
+    desc = "listDoorIDsDesc",
     adminOnly = true,
     onRun = function(client)
         local doorData = {}
@@ -979,14 +979,14 @@ lia.command.add("listdoorids", {
                     table.insert(doorData, {
                         id = mapID,
                         position = string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z),
-                        model = door:GetModel() or "unknown"
+                        model = door:GetModel() or L("unknown")
                     })
                 end
             end
         end
 
         if #doorData == 0 then
-            client:notifyLocalized("No doors found on this map")
+            client:notifyLocalized("doorNoDoorsFound")
             return
         end
 
@@ -994,22 +994,22 @@ lia.command.add("listdoorids", {
         local doorList = {}
         for _, data in ipairs(doorData) do
             table.insert(doorList, {
-                property = "Door ID: " .. data.id,
-                value = "Pos: " .. data.position .. " | Model: " .. data.model
+                property = L("doorIDProperty") .. data.id,
+                value = L("positionLabel") .. data.position .. L("modelLabel") .. data.model
             })
         end
 
-        lia.util.SendTableUI(client, "Door IDs on " .. game.GetMap(), {
+        lia.util.SendTableUI(client, L("doorIDsOnMap", game.GetMap()), {
             {
-                name = "Door ID",
+                name = L("doorIDColumn"),
                 field = "property"
             },
             {
-                name = "Details",
+                name = L("detailsColumn"),
                 field = "value"
             }
         }, doorList)
 
-        client:notifyLocalized("Found " .. #doorData .. " doors. Check your UI for details.")
+        client:notifyLocalized("doorFoundCount", #doorData)
     end
 })

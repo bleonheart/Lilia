@@ -67,8 +67,7 @@ function PANEL:Init()
     self.left:SetDraggable(false)
     self.left.Paint = function()
         if not IsValid(liaVendorEnt) then return end
-        local scale = liaVendorEnt:getNetVar("scale", 0.5)
-        local money = liaVendorEnt:getMoney() and lia.currency.get(liaVendorEnt:getMoney()) or "∞"
+        local scale = liaVendorEnt:getSellScale()
         local count = table.Count(self.items.vendor)
         surface.SetDrawColor(30, 30, 30, 190)
         surface.DrawRect(0, 0, sw, ScreenScaleH(215))
@@ -77,10 +76,8 @@ function PANEL:Init()
         surface.DrawRect(0, 0, sw * 0.26, sh * 0.033)
         surface.DrawOutlinedRect(0, 0, sw * 0.26, sh * 0.033)
         draw.DrawText(liaVendorEnt:getNetVar("name") or L("vendorDefaultName"), "liaMediumFont", sw * 0.005, sh * 0.003, color_white, TEXT_ALIGN_LEFT)
-        draw.DrawText(L("money"), "liaSmallFont", sw * 0.1, sh * 0.05, color_white, TEXT_ALIGN_LEFT)
-        draw.DrawText(money, "liaSmallFont", sw * 0.2, sh * 0.05, color_white, TEXT_ALIGN_RIGHT)
         draw.DrawText(L("vendorSellScale"), "liaSmallFont", sw * 0.1, sh * 0.07, color_white, TEXT_ALIGN_LEFT)
-        draw.DrawText(math.ceil(scale * 100) .. "%", "liaSmallFont", sw * 0.2, sh * 0.07, color_white, TEXT_ALIGN_RIGHT)
+        draw.DrawText(math.ceil((isnumber(scale) and scale or 0.5) * 100) .. "%", "liaSmallFont", sw * 0.2, sh * 0.07, color_white, TEXT_ALIGN_RIGHT)
         draw.DrawText(L("vendorItemCount"), "liaSmallFont", sw * 0.1, sh * 0.09, color_white, TEXT_ALIGN_LEFT)
         draw.DrawText(count == 0 and L("vendorNoItems") or count == 1 and L("vendorOneItem") or L("vendorItems", count), "liaSmallFont", sw * 0.2, sh * 0.09, color_white, TEXT_ALIGN_RIGHT)
     end
@@ -110,13 +107,9 @@ function PANEL:Init()
         if lia.class.list[class] then
             draw.DrawText(L("class"), "liaSmallFont", sw * 0.085, sh * 0.07, color_white, TEXT_ALIGN_LEFT)
             draw.DrawText(lia.class.list[class].name, "liaSmallFont", sw * 0.2, sh * 0.07, color_white, TEXT_ALIGN_RIGHT)
-            draw.DrawText(L("money"), "liaSmallFont", sw * 0.085, sh * 0.09, color_white, TEXT_ALIGN_LEFT)
-            draw.DrawText(lia.currency.get(char:getMoney()), "liaSmallFont", sw * 0.2, sh * 0.09, color_white, TEXT_ALIGN_RIGHT)
             draw.DrawText(L("vendorItemCount"), "liaSmallFont", sw * 0.085, sh * 0.11, color_white, TEXT_ALIGN_LEFT)
             draw.DrawText(invCount == 0 and L("vendorNoItems") or invCount == 1 and L("vendorOneItem") or L("vendorItems", invCount), "liaSmallFont", sw * 0.2, sh * 0.11, color_white, TEXT_ALIGN_RIGHT)
         else
-            draw.DrawText(L("money"), "liaSmallFont", sw * 0.085, sh * 0.07, color_white, TEXT_ALIGN_LEFT)
-            draw.DrawText(lia.currency.get(char:getMoney()), "liaSmallFont", sw * 0.2, sh * 0.07, color_white, TEXT_ALIGN_RIGHT)
             draw.DrawText(L("vendorItemCount"), "liaSmallFont", sw * 0.085, sh * 0.09, color_white, TEXT_ALIGN_LEFT)
             draw.DrawText(invCount == 0 and L("vendorNoItems") or invCount == 1 and L("vendorOneItem") or L("vendorItems", invCount), "liaSmallFont", sw * 0.2, sh * 0.09, color_white, TEXT_ALIGN_RIGHT)
         end
@@ -629,6 +622,7 @@ function PANEL:Init()
     self:MakePopup()
     self:Center()
     self:SetTitle(L("vendorEditor"))
+    -- Text Entries
     self.name = self:Add("DTextEntry")
     self.name:Dock(TOP)
     self.name:SetTooltip(L("name"))
@@ -644,21 +638,25 @@ function PANEL:Init()
         if entity:GetModel():lower() ~= modelText then lia.vendor.editor.model(modelText) end
     end
 
-    if entity:SkinCount() > 1 then
-        self.skin = self:Add("DNumSlider")
-        self.skin:Dock(TOP)
-        self.skin:DockMargin(0, 4, 0, 0)
-        self.skin:SetText(L("skin"))
-        self.skin.Label:SetTextColor(color_white)
-        self.skin:SetDecimals(0)
-        self.skin:SetMinMax(0, entity:SkinCount() - 1)
-        self.skin:SetValue(entity:GetSkin())
-        self.skin.OnValueChanged = function(_, value)
-            value = math.Round(value)
-            if entity:GetSkin() ~= value then lia.vendor.editor.skin(value) end
-        end
+
+    self.welcome = self:Add("DTextEntry")
+    self.welcome:Dock(TOP)
+    self.welcome:DockMargin(0, 4, 0, 0)
+    self.welcome:SetText(entity:getWelcomeMessage())
+    self.welcome:SetTooltip(L("vendorEditorWelcomeMessage"))
+    self.welcome.OnEnter = function(this)
+        local msg = this:GetText()
+        if msg ~= entity:getWelcomeMessage() then lia.vendor.editor.welcome(msg) end
     end
 
+
+    self.searchBar = self:Add("DTextEntry")
+    self.searchBar:Dock(TOP)
+    self.searchBar:DockMargin(0, 4, 0, 0)
+    self.searchBar:SetUpdateOnType(true)
+    self.searchBar:SetPlaceholderText(L("search"))
+    self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
+    -- Buttons
     local hasBodygroups = false
     for i = 0, entity:GetNumBodyGroups() - 1 do
         if entity:GetBodygroupCount(i) > 1 then
@@ -676,91 +674,23 @@ function PANEL:Init()
         self.bodygroups.DoClick = function() vgui.Create("VendorBodygroupEditor", self):MoveLeftOf(self, 4) end
     end
 
-    self.flag = self:Add("DTextEntry")
-    self.flag:Dock(TOP)
-    self.flag:DockMargin(0, 4, 0, 0)
-    self.flag:SetText(entity:getNetVar("flag") or L("flag"))
-    self.flag.OnEnter = function(this)
-        local value = this:GetText()
-        if value:match("^%a$") then
-            lia.vendor.editor.flag(value)
-        else
-            local correctedValue = value:sub(1, 1):match("^%a$") and value:sub(1, 1) or "F"
-            this:SetText(correctedValue)
-            lia.vendor.editor.flag(correctedValue)
-        end
-    end
-
-    self.welcome = self:Add("DTextEntry")
-    self.welcome:Dock(TOP)
-    self.welcome:DockMargin(0, 4, 0, 0)
-    self.welcome:SetText(entity:getWelcomeMessage())
-    self.welcome:SetTooltip(L("vendorEditorWelcomeMessage"))
-    self.welcome.OnEnter = function(this)
-        local msg = this:GetText()
-        if msg ~= entity:getWelcomeMessage() then lia.vendor.editor.welcome(msg) end
-    end
-
-    self.money = self:Add("DTextEntry")
-    self.money:Dock(TOP)
-    self.money:SetTooltip(lia.currency.plural)
-    self.money:DockMargin(0, 4, 0, 0)
-    self.money:SetNumeric(true)
-    self.money.OnEnter = function(this)
-        local value = tonumber(this:GetText()) or entity:getMoney()
-        value = math.Round(value)
-        value = math.max(value, 0)
-        if value ~= entity:getMoney() then lia.vendor.editor.money(value) end
-    end
-
-    self.useMoney = self:Add("DCheckBoxLabel")
-    self.useMoney:SetText(L("vendorUseMoney"))
-    self.useMoney:Dock(TOP)
-    self.useMoney:SetTextColor(Color(255, 255, 255))
-    self.useMoney:DockMargin(0, 4, 0, 0)
-    self.useMoney.OnChange = function(_, value) lia.vendor.editor.useMoney(value) end
-    self.sellScale = self:Add("DNumSlider")
-    self.sellScale:Dock(TOP)
-    self.sellScale:DockMargin(0, 4, 0, 0)
-    self.sellScale:SetText(L("vendorSellScale"))
-    self.sellScale.Label:SetTextColor(color_white)
-    self.sellScale.TextArea:SetTextColor(color_white)
-    self.sellScale:SetDecimals(2)
-    self.sellScale.OnValueChanged = function(_, value)
-        timer.Create("VendorScale", 0.5, 1, function()
-            if IsValid(self) and IsValid(self.sellScale) then
-                value = self.sellScale:GetValue()
-                local diff = math.abs(value - entity:getSellScale())
-                if diff > 0.05 then lia.vendor.editor.scale(value) end
-            end
-        end)
-    end
-
     self.faction = self:Add("DButton")
     self.faction:SetText(L("vendorFaction"))
     self.faction:Dock(TOP)
     self.faction:SetTextColor(color_white)
     self.faction:DockMargin(0, 4, 0, 0)
     self.faction.DoClick = function() vgui.Create("VendorFactionEditor", self):MoveLeftOf(self, 4) end
-    self.preset = self:Add("DComboBox")
-    self.preset:Dock(TOP)
-    self.preset:SetSortItems(false)
-    self.preset:DockMargin(0, 4, 0, 0)
-    self:refreshPresetDropdown()
-    local currentPreset = entity:getNetVar("preset", "none")
-    self.preset:SetValue(currentPreset == "none" and L("none") or currentPreset)
-    self.preset:ChooseOption(currentPreset == "none" and L("none") or currentPreset)
-    self.preset.OnSelect = function(_, _, value)
-        if value == L("none") then value = "none" end
-        lia.vendor.editor.preset(value)
-    end
-
     self.savePreset = self:Add("DButton")
     self.savePreset:Dock(TOP)
     self.savePreset:SetText(L("vendorSavePreset"))
     self.savePreset:SetTextColor(color_white)
     self.savePreset:DockMargin(0, 4, 0, 0)
     self.savePreset.DoClick = function()
+        if not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
+            LocalPlayer():notify(L("noPermission"))
+            return
+        end
+
         Derma_StringRequest(L("vendorPresetName"), L("vendorPresetNameDesc"), "", function(text)
             if text:Trim() == "" then
                 LocalPlayer():notify(L("vendorPresetNameRequired"))
@@ -776,6 +706,52 @@ function PANEL:Init()
         end, function() end, L("vendorSavePreset"), L("cancel"))
     end
 
+    -- Dropdowns
+    self.preset = self:Add("DComboBox")
+    self.preset:Dock(TOP)
+    self.preset:SetSortItems(false)
+    self.preset:DockMargin(0, 4, 0, 0)
+    self:refreshPresetDropdown()
+    local currentPreset = entity:getNetVar("preset", "none")
+    self.preset:SetValue(currentPreset == "none" and L("none") or currentPreset)
+    self.preset:ChooseOption(currentPreset == "none" and L("none") or currentPreset)
+    self.preset.OnSelect = function(_, _, value)
+        if value == L("none") then value = "none" end
+        lia.vendor.editor.preset(value)
+    end
+
+    self.animation = self:Add("DComboBox")
+    self.animation:Dock(TOP)
+    self.animation:SetSortItems(false)
+    self.animation:DockMargin(0, 4, 0, 0)
+    self.animation:SetText(L("animation"))
+    self.animation:SetTooltip(L("vendorAnimationTooltip"))
+    self:refreshAnimationDropdown()
+    local currentAnimation = entity:getNetVar("animation", "")
+    self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
+    self.animation:ChooseOption(currentAnimation == "" and L("none") or currentAnimation)
+    self.animation.OnSelect = function(_, _, value)
+        if value == L("none") then value = "" end
+        lia.vendor.editor.animation(value)
+    end
+
+    -- Sliders
+    if entity:SkinCount() > 1 then
+        self.skin = self:Add("DNumSlider")
+        self.skin:Dock(TOP)
+        self.skin:DockMargin(16, 4, 16, 0)
+        self.skin:SetText(L("skin"))
+        self.skin.Label:SetTextColor(color_white)
+        self.skin:SetDecimals(0)
+        self.skin:SetMinMax(0, entity:SkinCount() - 1)
+        self.skin:SetValue(entity:GetSkin())
+        self.skin.OnValueChanged = function(_, value)
+            value = math.Round(value)
+            if entity:GetSkin() ~= value then lia.vendor.editor.skin(value) end
+        end
+    end
+
+
     self.items = self:Add("DListView")
     self.items:Dock(FILL)
     self.items:DockMargin(0, 4, 0, 0)
@@ -786,17 +762,9 @@ function PANEL:Init()
     self.items:AddColumn(L("category")).Header:SetTextColor(color_white)
     self.items:SetMultiSelect(false)
     self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
-    self.searchBar = self:Add("DTextEntry")
-    self.searchBar:Dock(TOP)
-    self.searchBar:DockMargin(0, 4, 0, 0)
-    self.searchBar:SetUpdateOnType(true)
-    self.searchBar:SetPlaceholderText(L("search"))
-    self.searchBar.OnValueChange = function(_, value) self:ReloadItemList(value) end
     self.lines = {}
     self:ReloadItemList()
     self:listenForUpdates()
-    self:updateMoney()
-    self:updateSellScale()
     self.refreshTimer = "VendorPresetRefresh_" .. tostring(self)
     timer.Create(self.refreshTimer, 2, 1, function() if IsValid(self) and IsValid(self.preset) then self:refreshPresetDropdown() end end)
 end
@@ -842,25 +810,14 @@ function PANEL:OnFocusChanged(gained)
     end
 end
 
-function PANEL:updateMoney()
-    local money = liaVendorEnt:getMoney()
-    local useMoney = isnumber(money)
-    if money then
-        self.money:SetText(money)
-    else
-        self.money:SetText("∞")
-    end
 
-    self.money:SetDisabled(not useMoney)
-    self.money:SetEnabled(useMoney)
-    self.useMoney:SetChecked(useMoney)
-end
-
-function PANEL:updateSellScale()
-    self.sellScale:SetValue(liaVendorEnt:getSellScale())
-end
 
 function PANEL:saveVendorPreset(presetName, displayName)
+    if not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
+        LocalPlayer():notify(L("noPermission"))
+        return
+    end
+
     local entity = liaVendorEnt
     local presetData = {}
     for itemType, itemData in pairs(entity.items or {}) do
@@ -890,16 +847,36 @@ function PANEL:refreshPresetDropdown()
     self.preset:SetValue(currentPreset == "none" and L("none") or currentPreset)
 end
 
+function PANEL:refreshAnimationDropdown()
+    self.animation:Clear()
+    self.animation:AddChoice(L("none"))
+    if IsValid(liaVendorEnt) then
+        local sequenceList = liaVendorEnt:GetSequenceList()
+        if sequenceList then
+            for _, sequenceName in ipairs(sequenceList) do
+                self.animation:AddChoice(sequenceName)
+            end
+        end
+    end
+
+    local currentAnimation = liaVendorEnt:getNetVar("animation", "")
+    self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
+end
+
 function PANEL:onNameDescChanged(key)
     local entity = liaVendorEnt
     if key == "name" then
         self.name:SetText(entity:getName())
     elseif key == "model" then
         self.model:SetText(entity:GetModel())
+        self:refreshAnimationDropdown()
     elseif key == "scale" then
         self:updateSellScale()
     elseif key == "welcome" and entity.getWelcomeMessage then
         self.welcome:SetText(entity:getWelcomeMessage())
+    elseif key == "animation" then
+        local currentAnimation = entity:getNetVar("animation", "")
+        if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
     end
 end
 
@@ -924,7 +901,6 @@ end
 
 function PANEL:listenForUpdates()
     hook.Add("VendorEdited", self, self.onNameDescChanged)
-    hook.Add("VendorMoneyUpdated", self, self.updateMoney)
     hook.Add("VendorItemModeUpdated", self, self.onItemModeUpdated)
     hook.Add("VendorItemPriceUpdated", self, self.onItemPriceUpdated)
     hook.Add("VendorItemStockUpdated", self, self.onItemStockUpdated)

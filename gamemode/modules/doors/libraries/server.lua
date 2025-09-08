@@ -375,8 +375,6 @@ function lia.doors.AddDoorGroupColumn()
         if not hasDoorGroupColumn then
             lia.information("Adding door_group column to lia_doors table...")
             lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT"):next(function() lia.information("Successfully added door_group column to lia_doors table") end):catch(function(err) lia.error("Failed to add door_group column: " .. tostring(err)) end)
-        else
-            lia.information("door_group column already exists in lia_doors table")
         end
     end):catch(function(err) lia.error("Failed to check for door_group column: " .. tostring(err)) end)
 end

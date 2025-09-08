@@ -88,7 +88,7 @@ local function promisifyIfNoCallback(queryHandler)
             else
                 if not err or not isstring(err) then return end
                 if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then return end
-                local dbLabel = (L and L("database")) or "Database"
+                local dbLabel = L("database") or "Database"
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. dbLabel .. "]", Color(255, 255, 255), " * " .. (query or "Unknown query") .. "\n")
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. dbLabel .. "]", Color(255, 255, 255), " " .. err .. "\n")
             end
@@ -148,8 +148,8 @@ function lia.db.wipeTables(callback)
     local wipedTables = {}
     local function realCallback()
         if lia.db.cacheClear then lia.db.cacheClear() end
-        local dbLabel = (L and L("database")) or "Database"
-        local dataWipedMsg = (L and L("dataWiped")) or "Data wiped"
+        local dbLabel = L("database") or "Database"
+        local dataWipedMsg = L("dataWiped") or "Data wiped"
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. dbLabel .. "]", Color(255, 255, 255), dataWipedMsg .. "\n")
         if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
         if isfunction(callback) then callback() end

@@ -1133,7 +1133,7 @@ else
             lbl:SetText(L(displayKey))
             lbl:SetFont(font)
             lbl:SetContentAlignment(4)
-            local chk = row:Add("liaCheckBox")
+            local chk = row:Add("liaCheckbox")
             chk:SetSize(boxSize, boxSize)
             row.PerformLayout = function(_, w, h) chk:SetPos(w - boxSize - rightOffset, h - boxSize) end
             chk:SetChecked(current[name] and true or false)

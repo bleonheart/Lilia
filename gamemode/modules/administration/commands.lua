@@ -1,4 +1,4 @@
-lia.command.add("playtime", {
+﻿lia.command.add("playtime", {
     adminOnly = false,
     desc = "playtimeDesc",
     onRun = function(client)
@@ -2951,7 +2951,7 @@ lia.command.add("definefactiongroup", {
     onRun = function(client, arguments)
         local groupName = arguments[1]
         if not groupName or groupName == "" then
-            client:notifyLocalized("invalidArgument", "groupName")
+            client:notifyLocalized("invalidArgument")
             return
         end
 
@@ -2974,40 +2974,24 @@ lia.command.add("definefactiongroup", {
             return
         end
 
-        table.sort(factionOptions, function(a, b)
-            return a.text < b.text
-        end)
-
-        client:requestOptions(
-            L("selectFactionsForGroup", groupName),
-            L("selectFactionsDesc"),
-            factionOptions,
-            0,
-            function(selections)
-                if not selections or #selections == 0 then
-                    client:notifyLocalized("noFactionsSelected")
-                    return
-                end
-
-                lia.faction.registerGroup(groupName, selections)
-
-                lia.log.add(client, "defineFactionGroup", groupName, #selections)
-
-                client:notifyLocalized("factionGroupCreated", groupName, #selections)
-
-                local factionNames = {}
-                for _, uniqueID in ipairs(selections) do
-                    local faction = lia.faction.teams[uniqueID]
-                    if faction then
-                        table.insert(factionNames, faction.name)
-                    end
-                end
-
-                if #factionNames > 0 then
-                    client:notifyLocalized("factionGroupMembers", table.concat(factionNames, ", "))
-                end
+        table.sort(factionOptions, function(a, b) return a.text < b.text end)
+        client:requestOptions(L("selectFactionsForGroup", groupName), L("selectFactionsDesc"), factionOptions, 0, function(selections)
+            if not selections or #selections == 0 then
+                client:notifyLocalized("noFactionsSelected")
+                return
             end
-        )
+
+            lia.faction.registerGroup(groupName, selections)
+            lia.log.add(client, "defineFactionGroup", groupName, #selections)
+            client:notifyLocalized("factionGroupCreated", groupName, #selections)
+            local factionNames = {}
+            for _, uniqueID in ipairs(selections) do
+                local faction = lia.faction.teams[uniqueID]
+                if faction then table.insert(factionNames, faction.name) end
+            end
+
+            if #factionNames > 0 then client:notifyLocalized("factionGroupMembers", table.concat(factionNames, ", ")) end
+        end)
     end
 })
 
@@ -3017,7 +3001,6 @@ lia.command.add("listfactiongroups", {
     onRun = function(client)
         local groups = lia.faction.groups
         local groupCount = 0
-
         for groupName, _ in pairs(groups) do
             groupCount = groupCount + 1
         end
@@ -3028,17 +3011,15 @@ lia.command.add("listfactiongroups", {
         end
 
         client:notifyLocalized("factionGroupsHeader", groupCount)
-
         local sortedGroups = {}
         for groupName, _ in pairs(groups) do
             table.insert(sortedGroups, groupName)
         end
-        table.sort(sortedGroups)
 
+        table.sort(sortedGroups)
         for _, groupName in ipairs(sortedGroups) do
             local factionIDs = groups[groupName]
             local factionNames = {}
-
             for _, factionID in ipairs(factionIDs) do
                 local faction = lia.faction.teams[factionID]
                 if faction then
@@ -3065,7 +3046,7 @@ lia.command.add("removefactiongroup", {
     onRun = function(client, arguments)
         local groupName = arguments[1]
         if not groupName or groupName == "" then
-            client:notifyLocalized("invalidArgument", "groupName")
+            client:notifyLocalized("invalidArgument")
             return
         end
 
@@ -3075,9 +3056,7 @@ lia.command.add("removefactiongroup", {
         end
 
         lia.faction.groups[groupName] = nil
-
         lia.log.add(client, "removeFactionGroup", groupName)
-
         client:notifyLocalized("factionGroupRemoved", groupName)
     end
 })

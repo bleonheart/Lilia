@@ -68,7 +68,7 @@ local function loadExtras(path)
     end
 
     lia.includeEntities(path .. "/entities")
-    if MODULE.uniqueID ~= "schema" then lia.item.loadFromDir(path .. "/items") end
+    if MODULE.versionID ~= "schema" then lia.item.loadFromDir(path .. "/items") end
     if SERVER then
         if MODULE.NetworkStrings and istable(MODULE.NetworkStrings) then
             for _, netString in ipairs(MODULE.NetworkStrings) do

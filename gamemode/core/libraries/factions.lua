@@ -33,7 +33,7 @@ function lia.faction.register(uniqueID, data)
     if overrideDesc then faction.desc = overrideDesc end
     local overrideModels = hook.Run("OverrideFactionModels", uniqueID, faction.models)
     if overrideModels then faction.models = overrideModels end
-    team.SetUp(faction.index, faction.name or L and L("unknown") or "unknown", faction.color or Color(125, 125, 125))
+    team.SetUp(faction.index, faction.name or L("unknown") or "unknown", faction.color or Color(125, 125, 125))
     lia.faction.cacheModels(faction.models)
     lia.faction.indices[faction.index] = faction
     lia.faction.teams[uniqueID] = faction
