@@ -1,5 +1,4 @@
 ﻿local hasInitializedModules = false
-local hasInitializedCompatibility = false
 lia = lia or {
     util = {},
     gui = {},
@@ -596,9 +595,5 @@ for _, compatFile in ipairs(ConditionalFiles) do
     end
 end
 
-if hasInitializedCompatibility and #loadedCompatibility > 0 then
-    lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", ")))
-    hasInitializedCompatibility = true
-end
-
+if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
 if game.IsDedicated() then concommand.Remove("gm_save") end

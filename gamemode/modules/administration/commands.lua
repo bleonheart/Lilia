@@ -3000,11 +3000,7 @@ lia.command.add("listfactiongroups", {
     desc = "listfactiongroupsDesc",
     onRun = function(client)
         local groups = lia.faction.groups
-        local groupCount = 0
-        for groupName, _ in pairs(groups) do
-            groupCount = groupCount + 1
-        end
-
+        local groupCount = table.Count(groups)
         if groupCount == 0 then
             client:notifyLocalized("noFactionGroups")
             return
@@ -3012,7 +3008,7 @@ lia.command.add("listfactiongroups", {
 
         client:notifyLocalized("factionGroupsHeader", groupCount)
         local sortedGroups = {}
-        for groupName, _ in pairs(groups) do
+        for groupName in pairs(groups) do
             table.insert(sortedGroups, groupName)
         end
 

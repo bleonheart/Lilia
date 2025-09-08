@@ -445,7 +445,7 @@ end
 
 vgui.Register("Vendor", PANEL, "EditablePanel")
 PANEL = {}
-local function drawIcon(mat, pnl, x, y)
+local function drawIcon(mat, _, x, y)
     surface.SetDrawColor(color_white)
     if isstring(mat) then mat = Material(mat) end
     surface.SetMaterial(mat)
@@ -465,7 +465,7 @@ function PANEL:Init()
     self.iconFrame:Dock(LEFT)
     self.iconFrame:DockMargin(10, 10, 10, 10)
     self.iconFrame.ExtraPaint = function() end
-    self.iconFrame.Paint = function(pnl, w, h) self.iconFrame:ExtraPaint(w, h) end
+    self.iconFrame.Paint = function(_, w, h) self.iconFrame:ExtraPaint(w, h) end
     self.icon = self.iconFrame:Add("liaItemIcon")
     self.icon:SetSize(96, 96)
     self.icon:Dock(FILL)
@@ -812,7 +812,7 @@ end
 
 
 
-function PANEL:saveVendorPreset(presetName, displayName)
+function PANEL:saveVendorPreset(_, displayName)
     if not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
         LocalPlayer():notify(L("noPermission"))
         return

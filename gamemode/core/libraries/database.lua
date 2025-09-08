@@ -1789,16 +1789,6 @@ function lia.db.createTable(dbName, primaryKey, schema)
         if #indexPromises > 0 then
             deferred.all(indexPromises):next(function()
                 if lia.db.cacheClear then lia.db.cacheClear() end
-                local logData = {
-                    table = tableName,
-                    columns = #columns,
-                    indexes = #indexes,
-                    foreignKeys = #foreignKeys,
-                    primaryKey = primaryKey,
-                    schema = schema,
-                    query = createQuery
-                }
-
                 MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created table '" .. tableName .. "'\n")
                 d:resolve({
                     success = true,
@@ -1813,15 +1803,6 @@ function lia.db.createTable(dbName, primaryKey, schema)
             end)
         else
             if lia.db.cacheClear then lia.db.cacheClear() end
-            local logData = {
-                table = tableName,
-                columns = #columns,
-                foreignKeys = #foreignKeys,
-                primaryKey = primaryKey,
-                schema = schema,
-                query = createQuery
-            }
-
             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created table '" .. tableName .. "'\n")
             d:resolve({
                 success = true,
@@ -1921,18 +1902,6 @@ function lia.db.createColumn(tableName, columnName, columnType, options)
                     local indexQuery = "CREATE " .. indexType .. " IF NOT EXISTS " .. indexName .. " ON " .. fullTableName .. "(" .. lia.db.escapeIdentifier(columnName) .. ")"
                     lia.db.query(indexQuery, function()
                         if lia.db.cacheClear then lia.db.cacheClear() end
-                        local logData = {
-                            table = fullTableName,
-                            column = columnName,
-                            type = columnType,
-                            indexed = true,
-                            indexType = indexType,
-                            indexName = indexName,
-                            options = options,
-                            alterQuery = alterQuery,
-                            indexQuery = indexQuery
-                        }
-
                         d:resolve({
                             success = true,
                             table = fullTableName,
@@ -1942,19 +1911,6 @@ function lia.db.createColumn(tableName, columnName, columnType, options)
                         })
                     end, function(err)
                         if lia.db.cacheClear then lia.db.cacheClear() end
-                        local logData = {
-                            table = fullTableName,
-                            column = columnName,
-                            type = columnType,
-                            indexed = false,
-                            index_error = err,
-                            indexType = indexType,
-                            indexName = indexName,
-                            options = options,
-                            alterQuery = alterQuery,
-                            indexQuery = indexQuery
-                        }
-
                         d:resolve({
                             success = true,
                             table = fullTableName,
@@ -1966,15 +1922,6 @@ function lia.db.createColumn(tableName, columnName, columnType, options)
                     end)
                 else
                     if lia.db.cacheClear then lia.db.cacheClear() end
-                    local logData = {
-                        table = fullTableName,
-                        column = columnName,
-                        type = columnType,
-                        indexed = false,
-                        options = options,
-                        alterQuery = alterQuery
-                    }
-
                     d:resolve({
                         success = true,
                         table = fullTableName,
