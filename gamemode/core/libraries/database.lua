@@ -184,8 +184,6 @@ function lia.db.loadTables()
         end)
     end
 
-
-    logTableCreation("players")
     lia.db.createTable("players", nil, {
         {
             name = "steamID",
@@ -224,7 +222,6 @@ function lia.db.loadTables()
             type = "float"
         }
     }):next(function()
-        logTableCreation("chardata")
         return lia.db.createTable("chardata", {"charID", "key"}, {
             {
                 name = "charID",
@@ -242,7 +239,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("characters")
         return lia.db.createTable("characters", "id", {
             {
                 name = "id",
@@ -267,7 +263,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("inventories")
         return lia.db.createTable("inventories", "invID", {
             {
                 name = "invID",
@@ -284,7 +279,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("items")
         return lia.db.createTable("items", "itemID", {
             {
                 name = "itemID",
@@ -317,7 +311,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("invdata")
         return lia.db.createTable("invdata", {"invID", "key"}, {
             {
                 name = "invID",
@@ -335,7 +328,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("config")
         return lia.db.createTable("config", {"schema", "key"}, {
             {
                 name = "schema",
@@ -353,7 +345,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("logs")
         return lia.db.createTable("logs", "id", {
             {
                 name = "id",
@@ -386,7 +377,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("ticketclaims")
         return lia.db.createTable("ticketclaims", nil, {
             {
                 name = "timestamp",
@@ -414,7 +404,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("warnings")
         return lia.db.createTable("warnings", "id", {
             {
                 name = "id",
@@ -451,7 +440,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("permakills")
         return lia.db.createTable("permakills", "id", {
             {
                 name = "id",
@@ -493,7 +481,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("bans")
         return lia.db.createTable("bans", "id", {
             {
                 name = "id",
@@ -531,7 +518,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("staffactions")
         return lia.db.createTable("staffactions", "id", {
             {
                 name = "id",
@@ -569,7 +555,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("doors")
         return lia.db.createTable("doors", {"gamemode", "map", "id"}, {
             {
                 name = "gamemode",
@@ -628,7 +613,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("persistence")
         return lia.db.createTable("persistence", "id", {
             {
                 name = "id",
@@ -661,7 +645,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("saveditems")
         return lia.db.createTable("saveditems", "id", {
             {
                 name = "id",
@@ -690,7 +673,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("admin")
         return lia.db.createTable("admin", "usergroup", {
             {
                 name = "usergroup",
@@ -711,7 +693,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("data")
         return lia.db.createTable("data", {"gamemode", "map"}, {
             {
                 name = "gamemode",
@@ -729,7 +710,6 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        logTableCreation("vendor_presets")
         return lia.db.createTable("vendor_presets", "id", {
             {
                 name = "id",
