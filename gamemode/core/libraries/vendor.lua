@@ -120,7 +120,6 @@ else
         net.WriteUInt(value or 0, 8)
     end)
 
-
     addEditor("preset", function(preset) net.WriteString(preset) end)
     addEditor("animation", function(animation) net.WriteString(animation) end)
 end

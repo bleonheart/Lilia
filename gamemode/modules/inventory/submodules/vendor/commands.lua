@@ -118,10 +118,7 @@ lia.command.add("deletevendorpreset", {
         end
 
         lia.vendor.presets[presetName] = nil
-        if SERVER then
-            lia.db.delete("vendor_presets", "name = " .. lia.db.convertDataType(presetName))
-        end
-
+        if SERVER then lia.db.delete("vendor_presets", "name = " .. lia.db.convertDataType(presetName)) end
         client:notifyLocalized("vendorPresetDeleted", presetName)
         lia.log.add(client, "deletevendorpreset", presetName)
     end
@@ -149,4 +146,3 @@ lia.command.add("listvendorpresets", {
         end
     end
 })
-

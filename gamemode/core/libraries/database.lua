@@ -127,7 +127,6 @@ function lia.db.connect(connectCallback, reconnect)
     if reconnect or not lia.db.connected then
         lia.db.connected = true
         if lia.db.cacheClear then lia.db.cacheClear() end
-
         lia.db.query = function(query, queryCallback, onError)
             query = lia.db.normalizeSQLIdentifiers(query)
             return sqliteQuery(query, queryCallback, onError)
@@ -749,11 +748,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function()
-        done()
-    end):catch(function(err)
-        done()
-    end)
+    end):next(function() done() end):catch(function(err) done() end)
 
     hook.Run("OnLoadTables")
 end

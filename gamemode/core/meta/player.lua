@@ -3,9 +3,9 @@ local vectorMeta = FindMetaTable("Vector")
 do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
     playerMeta.SteamName = playerMeta.steamName
-function playerMeta:getChar()
-    return lia.char.getCharacter(self:getNetVar("char"), self)
-end
+    function playerMeta:getChar()
+        return lia.char.getCharacter(self:getNetVar("char"), self)
+    end
 
     function playerMeta:Name()
         local character = self:getChar()
@@ -546,10 +546,9 @@ if SERVER then
             local newFlags = currentFlags
             for i = 1, #flags do
                 local flag = flags:sub(i, i)
-                if not newFlags:find(flag, 1, true) then
-                    newFlags = newFlags .. flag
-                end
+                if not newFlags:find(flag, 1, true) then newFlags = newFlags .. flag end
             end
+
             self:setLiliaData("flags", newFlags)
         else
             local char = self:getChar()
@@ -563,10 +562,9 @@ if SERVER then
             local newFlags = ""
             for i = 1, #currentFlags do
                 local flag = currentFlags:sub(i, i)
-                if not flags:find(flag, 1, true) then
-                    newFlags = newFlags .. flag
-                end
+                if not flags:find(flag, 1, true) then newFlags = newFlags .. flag end
             end
+
             self:setLiliaData("flags", newFlags)
         else
             local char = self:getChar()
@@ -1110,10 +1108,9 @@ else
             local newFlags = currentFlags
             for i = 1, #flags do
                 local flag = flags:sub(i, i)
-                if not newFlags:find(flag, 1, true) then
-                    newFlags = newFlags .. flag
-                end
+                if not newFlags:find(flag, 1, true) then newFlags = newFlags .. flag end
             end
+
             self:setLiliaData("flags", newFlags)
         else
             local char = self:getChar()
@@ -1127,10 +1124,9 @@ else
             local newFlags = ""
             for i = 1, #currentFlags do
                 local flag = currentFlags:sub(i, i)
-                if not flags:find(flag, 1, true) then
-                    newFlags = newFlags .. flag
-                end
+                if not flags:find(flag, 1, true) then newFlags = newFlags .. flag end
             end
+
             self:setLiliaData("flags", newFlags)
         else
             local char = self:getChar()

@@ -60,7 +60,6 @@ net.Receive("VendorFaction", function()
     if IsValid(liaVendorEnt) then liaVendorEnt.factions[factionID] = true end
 end)
 
-
 net.Receive("VendorPrice", function()
     if not IsValid(liaVendorEnt) then return end
     local vendor = liaVendorEnt

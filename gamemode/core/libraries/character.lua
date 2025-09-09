@@ -566,7 +566,6 @@ function lia.char.getCharDataRaw(charID, key)
             return decoded[1]
         end)
     end
-
     return lia.db.select({"key", "value"}, "chardata", "charID = " .. charIDsafe):next(function(result)
         local data = {}
         if result and result.results then

@@ -27,7 +27,6 @@ VENDOR_MAXSTOCK = 4
 VENDOR_SELLANDBUY = 1
 VENDOR_SELLONLY = 2
 VENDOR_BUYONLY = 3
-
 lia.config.add("vendorSaleScale", "vendorSaleScale", 0.5, function(value)
     local num = tonumber(value)
     if not num then return false, "Value must be a number" end

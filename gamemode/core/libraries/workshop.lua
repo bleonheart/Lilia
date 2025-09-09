@@ -298,15 +298,11 @@ else
             lia.workshop.Enqueue = function(id)
                 updateAddonStatus(id, "Mounting...")
                 local result = originalEnqueue(id)
-
-                -- Use a polling approach with increasing intervals to check mount status
                 local checkCount = 0
-                local maxChecks = 30 -- Check for up to 30 seconds
-                local checkInterval = 1 -- Start with 1 second intervals
-
+                local maxChecks = 30
+                local checkInterval = 1
                 local function checkMountStatus()
                     checkCount = checkCount + 1
-
                     if lia.workshop.IsMounted(id) then
                         updateAddonStatus(id, "Mounted")
                         updateProgress()
@@ -320,16 +316,11 @@ else
                         return
                     end
 
-                    -- Increase interval slightly for later checks to avoid too much polling
                     local nextInterval = checkInterval
-                    if checkCount > 5 then
-                        nextInterval = checkInterval * 1.5
-                    end
-
+                    if checkCount > 5 then nextInterval = checkInterval * 1.5 end
                     timer.Simple(nextInterval, checkMountStatus)
                 end
 
-                -- Start checking after initial delay
                 timer.Simple(1, checkMountStatus)
                 return result
             end
@@ -369,19 +360,49 @@ else
         noBtn.DoClick = function() frame:Close() end
     end
 
-    hook.Add("CreateInformationButtons", "liaWorkshop_StatusRow", function(pages)
+    hook.Add("CreateInformationButtons", "liaWorkshopInfo", function(pages)
         table.insert(pages, {
-            name = "workshopStatus",
+            name = "workshopAddons",
             drawFunc = function(parent)
-                local list = vgui.Create("DListView", parent)
-                list:Dock(FILL)
-                list:AddColumn("ID")
-                list:AddColumn("State")
-                list:AddColumn("Files")
-                for id in pairs(lia.workshop.serverIds or {}) do
-                    local s = lia.workshop.IsMounted(id) and "mounted" or "not mounted"
-                    local c = lia.workshop.mountCounts[id] or 0
-                    list:AddLine(id, s, c)
+                local ids = lia.workshop.serverIds or {}
+                local sheet = vgui.Create("liaSheet", parent)
+                sheet:SetPlaceholderText(L("searchAddons"))
+                local info, totalSize = {}, 0
+                local pending = table.Count(ids)
+                if pending <= 0 then return end
+                local function populate()
+                    for id, fi in pairs(info) do
+                        if fi then
+                            local percent = "0%"
+                            if totalSize > 0 then percent = string.format("%.2f%%", (fi.size or 0) / totalSize * 100) end
+                            local url = fi.previewurl or ""
+                            if sheet.AddPreviewRow then
+                                sheet:AddPreviewRow({
+                                    title = fi.title or L("idPrefix", id),
+                                    desc = fi.size and L("addonSize", formatSize(fi.size), percent) or "",
+                                    url = url,
+                                    size = 64
+                                })
+                            elseif sheet.AddTextRow then
+                                sheet:AddTextRow({
+                                    title = fi.title or L("idPrefix", id),
+                                    desc = fi.size and L("addonSize", formatSize(fi.size), percent) or "",
+                                    compact = true
+                                })
+                            end
+                        end
+                    end
+
+                    if IsValid(sheet) and sheet.Refresh then sheet:Refresh() end
+                end
+
+                for id in pairs(ids) do
+                    steamworks.FileInfo(id, function(fi)
+                        info[id] = fi
+                        if fi and fi.size then totalSize = totalSize + fi.size end
+                        pending = pending - 1
+                        if pending <= 0 then populate() end
+                    end)
                 end
             end
         })

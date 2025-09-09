@@ -572,6 +572,7 @@ function GM:OnReloaded()
         lia.config.send()
         lia.administrator.sync()
         lia.playerinteract.syncToClients()
+        lia.db.connect(nil, true)
     end
 end
 

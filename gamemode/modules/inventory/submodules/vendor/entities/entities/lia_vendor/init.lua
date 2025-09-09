@@ -28,8 +28,6 @@ function ENT:Use(activator)
     hook.Run("PlayerAccessVendor", activator, self)
 end
 
-
-
 function ENT:setWelcomeMessage(value)
     self:setNetVar("welcomeMessage", value)
 end
@@ -239,7 +237,6 @@ function ENT:setBodyGroup(id, value)
     net.WriteString("bodygroup")
     if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
 end
-
 
 function ENT:setAnimation(animation)
     self:setNetVar("animation", animation or "")

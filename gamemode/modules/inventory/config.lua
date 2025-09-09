@@ -16,7 +16,9 @@
     end
 
     local json = util.TableToJSON({newW})
-    lia.db.updateTable({value = json}, nil, "invdata", "key = 'w' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
+    lia.db.updateTable({
+        value = json
+    }, nil, "invdata", "key = 'w' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
 end, {
     desc = "invWidthDesc",
     category = "character",
@@ -43,7 +45,9 @@ lia.config.add("invH", "invHeight", 4, function(_, newH)
     end
 
     local json = util.TableToJSON({newH})
-    lia.db.updateTable({value = json}, nil, "invdata", "key = 'h' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
+    lia.db.updateTable({
+        value = json
+    }, nil, "invdata", "key = 'h' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
 end, {
     desc = "invHeightDesc",
     category = "character",
