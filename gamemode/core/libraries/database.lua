@@ -177,15 +177,13 @@ function lia.db.loadTables()
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
             hook.Run("OnDatabaseLoaded")
-        end):catch(function(err)
+        end):catch(function()
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
             hook.Run("OnDatabaseLoaded")
         end)
     end
 
-    local function logTableCreation(tableName)
-    end
 
     logTableCreation("players")
     lia.db.createTable("players", nil, {
@@ -748,7 +746,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function() done() end):catch(function(err) done() end)
+    end):next(function() done() end):catch(function() done() end)
 
     hook.Run("OnLoadTables")
 end
