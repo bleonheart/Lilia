@@ -518,7 +518,7 @@ if SERVER then
         lia.db.connect(function()
             lia.db.loadTables()
             local dbLabel = L("database") or "Database"
-            local connMsg = L("databaseConnected") or "Database connected to SQLite"
+            local connMsg = L("databaseConnected", "SQLite") or "Database connected to SQLite"
             lia.bootstrap(dbLabel, connMsg)
             hook.Run("DatabaseConnected")
         end)

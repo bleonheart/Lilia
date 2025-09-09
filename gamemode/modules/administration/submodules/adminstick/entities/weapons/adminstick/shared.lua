@@ -25,7 +25,7 @@ function SWEP:DrawWorldModel()
         return
     end
 
-    if owner:IsNoClipping() then return end
+    if owner:isNoClipping() then return end
     self:DrawModel()
 end
 

@@ -1603,7 +1603,7 @@ lia.command.add("charunban", {
         end
 
         client.liaNextSearch = CurTime() + 15
-        local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
+        local sqlCondition = id and ("id = " .. id) or ("name LIKE " .. lia.db.convertDataType("%" .. queryArg .. "%"))
         lia.db.selectOne({"id", "name"}, "characters", sqlCondition):next(function(data)
             if data then
                 local charID = tonumber(data.id)

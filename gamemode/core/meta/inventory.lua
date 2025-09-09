@@ -229,7 +229,7 @@ if SERVER then
             }, nil, "inventories", "invID = " .. self:getID())
         elseif not keyData or not keyData.notPersistent then
             if value == nil then
-                lia.db.delete("invdata", "invID = " .. self.id .. " AND key = '" .. lia.db.escape(key) .. "'")
+                lia.db.delete("invdata", "invID = " .. self.id .. " AND key = " .. lia.db.convertDataType(key))
             else
                 lia.db.upsert({
                     invID = self.id,

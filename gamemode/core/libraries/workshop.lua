@@ -298,17 +298,39 @@ else
             lia.workshop.Enqueue = function(id)
                 updateAddonStatus(id, "Mounting...")
                 local result = originalEnqueue(id)
-                timer.Simple(2, function()
+
+                -- Use a polling approach with increasing intervals to check mount status
+                local checkCount = 0
+                local maxChecks = 30 -- Check for up to 30 seconds
+                local checkInterval = 1 -- Start with 1 second intervals
+
+                local function checkMountStatus()
+                    checkCount = checkCount + 1
+
                     if lia.workshop.IsMounted(id) then
                         updateAddonStatus(id, "Mounted")
                         updateProgress()
                         return
                     end
 
-                    updateAddonStatus(id, "Failed")
-                    LocalPlayer():notifyLocalized("workshopMountFailed", id)
-                    updateProgress()
-                end)
+                    if checkCount >= maxChecks then
+                        updateAddonStatus(id, "Failed")
+                        LocalPlayer():notifyLocalized("workshopMountFailed", id)
+                        updateProgress()
+                        return
+                    end
+
+                    -- Increase interval slightly for later checks to avoid too much polling
+                    local nextInterval = checkInterval
+                    if checkCount > 5 then
+                        nextInterval = checkInterval * 1.5
+                    end
+
+                    timer.Simple(nextInterval, checkMountStatus)
+                end
+
+                -- Start checking after initial delay
+                timer.Simple(1, checkMountStatus)
                 return result
             end
 

@@ -664,7 +664,7 @@ if SERVER then
 
         fields = table.concat(fields, ", ")
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local condition = "schema = '" .. lia.db.escape(gamemode) .. "' AND steamID = " .. lia.db.convertDataType(steamID)
+        local condition = "schema = " .. lia.db.convertDataType(gamemode) .. " AND steamID = " .. lia.db.convertDataType(steamID)
         if id then condition = condition .. " AND id = " .. id end
         lia.db.select(fields, "characters", condition):next(function(data)
             local characters = {}
@@ -903,7 +903,7 @@ if SERVER then
                 return true
             else
                 if val == nil then
-                    lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(field) .. "'")
+                    lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = " .. lia.db.convertDataType(field))
                 else
                     local encoded = pon.encode({value})
                     lia.db.upsert({
@@ -918,7 +918,7 @@ if SERVER then
             end
         else
             if val == nil then
-                lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = '" .. lia.db.escape(field) .. "'")
+                lia.db.delete("chardata", "charID = " .. charIDsafe .. " AND key = " .. lia.db.convertDataType(field))
             else
                 local encoded = pon.encode({value})
                 lia.db.upsert({

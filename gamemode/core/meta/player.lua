@@ -3,13 +3,13 @@ local vectorMeta = FindMetaTable("Vector")
 do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
     playerMeta.SteamName = playerMeta.steamName
-    function playerMeta:getChar()
-        return lia.char.getCharacter(self.getNetVar(self, "char"), self)
-    end
+function playerMeta:getChar()
+    return lia.char.getCharacter(self:getNetVar("char"), self)
+end
 
     function playerMeta:Name()
-        local character = self.getChar(self)
-        return character and character.getName(character) or self.steamName(self)
+        local character = self:getChar()
+        return character and character:getName() or self:steamName()
     end
 
     playerMeta.GetCharacter = playerMeta.getChar
@@ -522,24 +522,56 @@ if SERVER then
         return self.liaData
     end
 
-    function playerMeta:getFlags()
-        local char = self:getChar()
-        return char and char:getFlags() or ""
+    function playerMeta:getFlags(flagType)
+        if flagType == "player" then
+            return self:getLiliaData("flags", "")
+        else
+            local char = self:getChar()
+            return char and char:getFlags() or ""
+        end
     end
 
-    function playerMeta:setFlags(flags)
-        local char = self:getChar()
-        if char then char:setFlags(flags) end
+    function playerMeta:setFlags(flags, flagType)
+        if flagType == "player" then
+            self:setLiliaData("flags", flags)
+        else
+            local char = self:getChar()
+            if char then char:setFlags(flags) end
+        end
     end
 
-    function playerMeta:giveFlags(flags)
-        local char = self:getChar()
-        if char then char:giveFlags(flags) end
+    function playerMeta:giveFlags(flags, flagType)
+        if flagType == "player" then
+            local currentFlags = self:getLiliaData("flags", "")
+            local newFlags = currentFlags
+            for i = 1, #flags do
+                local flag = flags:sub(i, i)
+                if not newFlags:find(flag, 1, true) then
+                    newFlags = newFlags .. flag
+                end
+            end
+            self:setLiliaData("flags", newFlags)
+        else
+            local char = self:getChar()
+            if char then char:giveFlags(flags) end
+        end
     end
 
-    function playerMeta:takeFlags(flags)
-        local char = self:getChar()
-        if char then char:takeFlags(flags) end
+    function playerMeta:takeFlags(flags, flagType)
+        if flagType == "player" then
+            local currentFlags = self:getLiliaData("flags", "")
+            local newFlags = ""
+            for i = 1, #currentFlags do
+                local flag = currentFlags:sub(i, i)
+                if not flags:find(flag, 1, true) then
+                    newFlags = newFlags .. flag
+                end
+            end
+            self:setLiliaData("flags", newFlags)
+        else
+            local char = self:getChar()
+            if char then char:takeFlags(flags) end
+        end
     end
 
     function playerMeta:hasFlags(flags)
@@ -1054,24 +1086,56 @@ else
         return lia.localData
     end
 
-    function playerMeta:getFlags()
-        local char = self:getChar()
-        return char and char:getFlags() or ""
+    function playerMeta:getFlags(flagType)
+        if flagType == "player" then
+            return self:getLiliaData("flags", "")
+        else
+            local char = self:getChar()
+            return char and char:getFlags() or ""
+        end
     end
 
-    function playerMeta:setFlags(flags)
-        local char = self:getChar()
-        if char then char:setFlags(flags) end
+    function playerMeta:setFlags(flags, flagType)
+        if flagType == "player" then
+            self:setLiliaData("flags", flags)
+        else
+            local char = self:getChar()
+            if char then char:setFlags(flags) end
+        end
     end
 
-    function playerMeta:giveFlags(flags)
-        local char = self:getChar()
-        if char then char:giveFlags(flags) end
+    function playerMeta:giveFlags(flags, flagType)
+        if flagType == "player" then
+            local currentFlags = self:getLiliaData("flags", "")
+            local newFlags = currentFlags
+            for i = 1, #flags do
+                local flag = flags:sub(i, i)
+                if not newFlags:find(flag, 1, true) then
+                    newFlags = newFlags .. flag
+                end
+            end
+            self:setLiliaData("flags", newFlags)
+        else
+            local char = self:getChar()
+            if char then char:giveFlags(flags) end
+        end
     end
 
-    function playerMeta:takeFlags(flags)
-        local char = self:getChar()
-        if char then char:takeFlags(flags) end
+    function playerMeta:takeFlags(flags, flagType)
+        if flagType == "player" then
+            local currentFlags = self:getLiliaData("flags", "")
+            local newFlags = ""
+            for i = 1, #currentFlags do
+                local flag = currentFlags:sub(i, i)
+                if not flags:find(flag, 1, true) then
+                    newFlags = newFlags .. flag
+                end
+            end
+            self:setLiliaData("flags", newFlags)
+        else
+            local char = self:getChar()
+            if char then char:takeFlags(flags) end
+        end
     end
 
     function playerMeta:hasFlags(flags)

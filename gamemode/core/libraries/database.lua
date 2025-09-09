@@ -88,9 +88,6 @@ local function promisifyIfNoCallback(queryHandler)
             else
                 if not err or not isstring(err) then return end
                 if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then return end
-                local dbLabel = L("database") or "Database"
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. dbLabel .. "]", Color(255, 255, 255), " * " .. (query or "Unknown query") .. "\n")
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. dbLabel .. "]", Color(255, 255, 255), " " .. err .. "\n")
             end
         end
 
@@ -130,6 +127,12 @@ function lia.db.connect(connectCallback, reconnect)
     if reconnect or not lia.db.connected then
         lia.db.connected = true
         if lia.db.cacheClear then lia.db.cacheClear() end
+
+        lia.db.query = function(query, queryCallback, onError)
+            query = lia.db.normalizeSQLIdentifiers(query)
+            return sqliteQuery(query, queryCallback, onError)
+        end
+
         if isfunction(connectCallback) then connectCallback() end
         for i = 1, #lia.db.queryQueue do
             lia.db.query(unpack(lia.db.queryQueue[i]))
@@ -137,21 +140,12 @@ function lia.db.connect(connectCallback, reconnect)
 
         lia.db.queryQueue = {}
     end
-
-    lia.db.query = function(query, queryCallback, onError)
-        query = lia.db.normalizeSQLIdentifiers(query)
-        return sqliteQuery(query, queryCallback, onError)
-    end
 end
 
 function lia.db.wipeTables(callback)
     local wipedTables = {}
     local function realCallback()
         if lia.db.cacheClear then lia.db.cacheClear() end
-        local dbLabel = L("database") or "Database"
-        local dataWipedMsg = L("dataWiped") or "Data wiped"
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. dbLabel .. "]", Color(255, 255, 255), dataWipedMsg .. "\n")
-        if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
         if isfunction(callback) then callback() end
     end
 
@@ -184,13 +178,17 @@ function lia.db.loadTables()
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
             hook.Run("OnDatabaseLoaded")
-        end):catch(function()
+        end):catch(function(err)
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
             hook.Run("OnDatabaseLoaded")
         end)
     end
 
+    local function logTableCreation(tableName)
+    end
+
+    logTableCreation("players")
     lia.db.createTable("players", nil, {
         {
             name = "steamID",
@@ -229,6 +227,7 @@ function lia.db.loadTables()
             type = "float"
         }
     }):next(function()
+        logTableCreation("chardata")
         return lia.db.createTable("chardata", {"charID", "key"}, {
             {
                 name = "charID",
@@ -246,6 +245,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("characters")
         return lia.db.createTable("characters", "id", {
             {
                 name = "id",
@@ -270,6 +270,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("inventories")
         return lia.db.createTable("inventories", "invID", {
             {
                 name = "invID",
@@ -286,6 +287,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("items")
         return lia.db.createTable("items", "itemID", {
             {
                 name = "itemID",
@@ -318,6 +320,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("invdata")
         return lia.db.createTable("invdata", {"invID", "key"}, {
             {
                 name = "invID",
@@ -335,6 +338,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("config")
         return lia.db.createTable("config", {"schema", "key"}, {
             {
                 name = "schema",
@@ -352,6 +356,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("logs")
         return lia.db.createTable("logs", "id", {
             {
                 name = "id",
@@ -384,6 +389,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("ticketclaims")
         return lia.db.createTable("ticketclaims", nil, {
             {
                 name = "timestamp",
@@ -411,6 +417,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("warnings")
         return lia.db.createTable("warnings", "id", {
             {
                 name = "id",
@@ -447,6 +454,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("permakills")
         return lia.db.createTable("permakills", "id", {
             {
                 name = "id",
@@ -488,6 +496,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("bans")
         return lia.db.createTable("bans", "id", {
             {
                 name = "id",
@@ -525,6 +534,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("staffactions")
         return lia.db.createTable("staffactions", "id", {
             {
                 name = "id",
@@ -562,6 +572,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("doors")
         return lia.db.createTable("doors", {"gamemode", "map", "id"}, {
             {
                 name = "gamemode",
@@ -620,6 +631,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("persistence")
         return lia.db.createTable("persistence", "id", {
             {
                 name = "id",
@@ -652,6 +664,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("saveditems")
         return lia.db.createTable("saveditems", "id", {
             {
                 name = "id",
@@ -680,6 +693,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("admin")
         return lia.db.createTable("admin", "usergroup", {
             {
                 name = "usergroup",
@@ -700,6 +714,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("data")
         return lia.db.createTable("data", {"gamemode", "map"}, {
             {
                 name = "gamemode",
@@ -717,6 +732,7 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
+        logTableCreation("vendor_presets")
         return lia.db.createTable("vendor_presets", "id", {
             {
                 name = "id",
@@ -733,7 +749,11 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function() done() end):catch(function() done() end)
+    end):next(function()
+        done()
+    end):catch(function(err)
+        done()
+    end)
 
     hook.Run("OnLoadTables")
 end
@@ -819,12 +839,15 @@ function lia.db.updateTable(value, callback, dbTable, condition)
     end)
 end
 
-function lia.db.select(fields, dbTable, condition, limit)
+function lia.db.select(fields, dbTable, condition, limit, orderBy, maybeOrderBy)
     local d = deferred.new()
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
     local tableName = "lia_" .. (dbTable or "characters")
     local query = "SELECT " .. from .. " FROM " .. tableName
     if condition then query = query .. " WHERE " .. tostring(condition) end
+    local ob = orderBy
+    if (not ob) and isstring(maybeOrderBy) then ob = maybeOrderBy end
+    if ob and isstring(ob) and ob ~= "" then query = query .. " ORDER BY " .. ob end
     if limit then query = query .. " LIMIT " .. tostring(limit) end
     local cacheKey = "select:" .. query
     local cached = lia.db.cacheGet(cacheKey)
@@ -1496,7 +1519,7 @@ function lia.db.bulkInsert(dbTable, rows)
         vals[#vals + 1] = "(" .. table.concat(items, ",") .. ")"
     end
 
-    local q = "INSERT INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " .. table.concat(vals, ",")
+    local q = "INSERT OR IGNORE INTO " .. tbl .. " (" .. table.concat(keys, ",") .. ") VALUES " .. table.concat(vals, ",")
     lia.db.query(q, function()
         lia.db.invalidateTable(tbl)
         c:resolve()
@@ -1808,7 +1831,6 @@ function lia.db.createTable(dbName, primaryKey, schema)
         if #indexPromises > 0 then
             deferred.all(indexPromises):next(function()
                 if lia.db.cacheClear then lia.db.cacheClear() end
-                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created table '" .. tableName .. "'\n")
                 d:resolve({
                     success = true,
                     table = tableName,
@@ -1819,7 +1841,6 @@ function lia.db.createTable(dbName, primaryKey, schema)
             end):catch(function(err) d:reject("Table created but index creation failed: " .. err) end)
         else
             if lia.db.cacheClear then lia.db.cacheClear() end
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created table '" .. tableName .. "'\n")
             d:resolve({
                 success = true,
                 table = tableName,

@@ -119,7 +119,7 @@ lia.command.add("deletevendorpreset", {
 
         lia.vendor.presets[presetName] = nil
         if SERVER then
-            lia.db.delete("vendor_presets", "name = '" .. lia.db.escape(presetName) .. "'")
+            lia.db.delete("vendor_presets", "name = " .. lia.db.convertDataType(presetName))
         end
 
         client:notifyLocalized("vendorPresetDeleted", presetName)

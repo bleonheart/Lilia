@@ -172,7 +172,11 @@ function MODULE:SaveData()
     for _, door in ents.Iterator() do
         if door:isDoor() then
             local mapID = door:MapCreationID()
-            if not mapID or mapID <= 0 then continue end
+            if not mapID or mapID <= 0 then
+                lia.warning("Skipping door with invalid mapID: " .. tostring(mapID))
+                continue
+            end
+
             local doorData = door:getNetVar("doorData", {})
             local factionsTable = doorData.factions or {}
             local classesTable = doorData.classes or {}
@@ -228,7 +232,7 @@ function MODULE:SaveData()
                 classesSerialized = lia.data.serialize(classesTable)
             end
 
-            local name = doorData.name or ""
+            local name = doorData.title or doorData.name or ""
             if name and name ~= "" then
                 name = tostring(name):sub(1, 255)
             else

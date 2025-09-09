@@ -2,7 +2,7 @@
 function PANEL:Init()
     self:SetText("")
     self:SetToggle(true)
-    self:SetSize(16, 16)
+    self:SetSize(24, 24)
     self.checked = false
     self.text = ""
     self.textColor = color_white
@@ -37,12 +37,13 @@ end
 
 function PANEL:Paint()
     local icon = self.checked and "checkbox.png" or "unchecked.png"
-    lia.util.drawTexture(icon, color_white, 0, 0, 16, 16)
+    local w, h = self:GetSize()
+    lia.util.drawTexture(icon, color_white, 0, 0, w, h)
 
     if self.text and self.text ~= "" then
         surface.SetFont(self.textFont)
         surface.SetTextColor(self.textColor)
-        surface.SetTextPos(20, 2)
+        surface.SetTextPos(28, 2)
         surface.DrawText(self.text)
     end
 

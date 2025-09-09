@@ -118,7 +118,7 @@ function GM:CanItemBeTransfered(item, curInv, inventory)
             local client = inventory:getRecipients()[1]
             if IsValid(client) and client:getChar() then
                 local currentCharID = client:getChar():getID()
-                if currentCharID == targetCharID and itemSteamID == client:SteamID() then
+                if currentCharID ~= targetCharID and itemSteamID == client:SteamID() then
                     client:notifyLocalized("playerCharBelonging")
                     return false
                 end

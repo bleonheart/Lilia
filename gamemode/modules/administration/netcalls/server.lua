@@ -89,9 +89,9 @@ net.Receive("liaRequestFactionRoster", function(_, client)
     if not IsValid(client) or not client:hasPrivilege("canManageFactions") then return end
     local data = {}
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local fields = table.concat({"lia_characters.name", "lia_characters.id", "lia_characters.steamID", "lia_characters.playtime", "lia_characters.lastJoinTime", "lia_characters.class", "lia_characters.faction", "lia_players.lastOnline"}, ",")
-    local condition = "lia_characters.schema = '" .. lia.db.escape(gamemode) .. "'"
-    lia.db.select(fields, "characters", condition):next(function(result)
+    local fields = "lia_characters.name, lia_characters.id, lia_characters.steamID, lia_characters.playtime, lia_characters.lastJoinTime, lia_characters.class, lia_characters.faction, lia_players.lastOnline"
+    local condition = "lia_characters.schema = " .. lia.db.convertDataType(gamemode)
+    lia.db.selectWithJoin("SELECT " .. fields .. " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE " .. condition):next(function(result)
         if result and result.results then
             for _, v in ipairs(result.results) do
                 local charID = tonumber(v.id)
@@ -377,7 +377,7 @@ net.Receive("liaRequestPlayerCharacters", function(_, client)
     local steamID = net.ReadString()
     if not steamID or steamID == "" then return end
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    lia.db.select({"name"}, "characters", "steamID = " .. lia.db.convertDataType(steamID) .. " AND schema = '" .. lia.db.escape(gamemode) .. "'"):next(function(data)
+    lia.db.select({"name"}, "characters", "steamID = " .. lia.db.convertDataType(steamID) .. " AND schema = " .. lia.db.convertDataType(gamemode)):next(function(data)
         local chars = {}
         local results = data.results or {}
         for _, v in ipairs(results) do

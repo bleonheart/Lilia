@@ -350,16 +350,12 @@ lia.command.add("doorsettitle", {
             if not doorData.disabled then
                 local name = table.concat(arguments, " ")
                 if not name:find("%S") then return client:notifyLocalized("invalidClass") end
-                if door:checkDoorAccess(client, DOOR_TENANT) then
-                    doorData.title = name
-                    door:setNetVar("doorData", doorData)
-                    hook.Run("DoorTitleSet", client, door, name)
-                    lia.log.add(client, "doorSetTitle", door, name)
-                elseif client:isStaff() then
+                if door:checkDoorAccess(client, DOOR_TENANT) or client:isStaff() then
                     doorData.name = name
                     door:setNetVar("doorData", doorData)
                     hook.Run("DoorTitleSet", client, door, name)
                     lia.log.add(client, "doorSetTitle", door, name)
+                    client:notifyLocalized("doorTitleSet", name)
                 else
                     client:notifyLocalized("doorNotOwner")
                 end
@@ -431,7 +427,7 @@ lia.command.add("doorinfo", {
                 },
                 {
                     property = L("name"),
-                    value = tostring(doorData.title or doorData.name or L("doorTitle"))
+                    value = tostring(doorData.name or L("doorTitle"))
                 },
                 {
                     property = L("price"),
