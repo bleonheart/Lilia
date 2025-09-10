@@ -1,200 +1,648 @@
-# Config Library
+# Configuration Library
 
-## lia.config.add
+This page documents the functions for working with configuration management and settings.
 
-**Purpose:** Registers a new configuration variable with the Lilia config system. This function sets up the config's name, default value, type, description, category, and optional callback for when the value changes. The config is stored in `lia.config.stored`.
+---
 
-**Parameters:**
-- `key` (string) - The unique key for the config variable.
-- `name` (string) - The display name for the config variable (localized automatically).
-- `value` (any) - The default value for the config variable.
-- `callback` (function) - (Optional) Function to call when the config value changes.
-- `data` (table) - Table containing additional config properties (type, desc, category, etc). String values such as `desc`, `category`, and entries in an `options` table are localized automatically.
+## Overview
 
-**Returns:** None.
+The configuration library (`lia.config`) provides a comprehensive system for managing server and client configuration settings in the Lilia framework. It handles configuration registration, loading, saving, networking, and provides a GUI interface for configuration management. The library supports various data types including booleans, numbers, colors, tables, and generic values with validation and callbacks.
 
-**Realm:** Shared.
+---
 
-**Example Usage:**
+### lia.config.add
+
+**Purpose**
+
+Registers a new configuration option with specified properties and validation.
+
+**Parameters**
+
+* `key` (*string*): The unique configuration key.
+* `name` (*string*): The display name for the configuration.
+* `value` (*any*): The default value for the configuration.
+* `callback` (*function*): Optional callback function when the value changes.
+* `data` (*table*): Configuration data table with properties and validation.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Add a new integer config variable for maximum players
-lia.config.add("MaxPlayers", "Maximum Players", 32, function(old, new)
-    print("Max players changed from", old, "to", new)
-end, {
-    desc = "The maximum number of players allowed on the server.",
-    category = "server",
+-- Add a basic configuration option
+lia.config.add("MaxPlayers", "Maximum Players", 32, nil, {
+    desc = "Maximum number of players allowed on the server",
+    category = "Server Settings",
     type = "Int",
     min = 1,
     max = 128
 })
+
+-- Add a configuration with callback
+lia.config.add("WalkSpeed", "Walk Speed", 130, function(oldValue, newValue)
+    for _, ply in player.Iterator() do
+        ply:SetWalkSpeed(newValue)
+    end
+end, {
+    desc = "Default walking speed for players",
+    category = "Character Settings",
+    type = "Int",
+    min = 50,
+    max = 300
+})
+
+-- Add a color configuration
+lia.config.add("ThemeColor", "Theme Color", Color(100, 150, 200), nil, {
+    desc = "Main theme color for the interface",
+    category = "Visual Settings",
+    type = "Color"
+})
+
+-- Add a boolean configuration
+lia.config.add("EnableChat", "Enable Chat", true, function(oldValue, newValue)
+    if newValue then
+        print("Chat enabled")
+    else
+        print("Chat disabled")
+    end
+end, {
+    desc = "Enable or disable chat system",
+    category = "Chat Settings",
+    type = "Boolean"
+})
+
+-- Add a table configuration with options
+lia.config.add("Language", "Server Language", "English", nil, {
+    desc = "Server language setting",
+    category = "General Settings",
+    type = "Table",
+    options = {"English", "Spanish", "French", "German"}
+})
 ```
 
-## lia.config.getOptions
+---
 
-**Purpose:** Retrieves the available options for a configuration variable. This function returns either the static options defined in the config data or dynamically generated options from a function.
+### lia.config.getOptions
 
-**Parameters:**
-- `key` (string) - The config variable key.
+**Purpose**
 
-**Returns:** table - An array of available options for the config variable. If no options are defined or the config doesn't exist, returns an empty table.
+Gets the available options for a configuration that has a table type.
 
-**Realm:** Shared.
+**Parameters**
 
-**Example Usage:**
+* `key` (*string*): The configuration key to get options for.
+
+**Returns**
+
+* `options` (*table*): Table of available options for the configuration.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Get options for a dropdown config
-local options = lia.config.getOptions("PlayerModel")
--- Returns: {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", ...}
+-- Get options for a configuration
+local options = lia.config.getOptions("Language")
+for _, option in ipairs(options) do
+    print("Available option: " .. option)
+end
 
--- Get options from a dynamic function
-local timeOptions = lia.config.getOptions("TimeScale")
--- Returns: {"1x", "2x", "4x", "8x"} (if defined by optionsFunc)
+-- Use options in a dropdown
+local function createLanguageDropdown()
+    local options = lia.config.getOptions("Language")
+    local dropdown = vgui.Create("DComboBox")
+    
+    for _, option in ipairs(options) do
+        dropdown:AddChoice(option)
+    end
+    
+    return dropdown
+end
+
+-- Check if configuration has options
+local function hasConfigurationOptions(key)
+    local options = lia.config.getOptions(key)
+    return #options > 0
+end
+
+-- Get options with validation
+local function getValidatedOptions(key)
+    local options = lia.config.getOptions(key)
+    if not options or #options == 0 then
+        print("No options available for configuration: " .. key)
+        return {}
+    end
+    return options
+end
 ```
 
-**Notes:**
-- If the config has an `optionsFunc`, it calls that function to generate options dynamically
-- If the config has static `options` defined, it returns those directly
-- String values in the options are automatically localized
-- Returns an empty table if the config doesn't exist or has no options
+---
 
-## lia.config.setDefault
+### lia.config.setDefault
 
-**Purpose:** Sets the default value for a given config variable. This does not change the current value, only the default.
+**Purpose**
 
-**Parameters:**
-- `key` (string) - The config variable key.
-- `value` (any) - The new default value.
+Sets the default value for a configuration option.
 
-**Returns:** None.
+**Parameters**
 
-**Realm:** Shared.
+* `key` (*string*): The configuration key.
+* `value` (*any*): The new default value.
 
-**Example Usage:**
+**Returns**
+
+* None.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Change the default walk speed to 150
-lia.config.setDefault("WalkSpeed", 150)
+-- Set default value for a configuration
+lia.config.setDefault("MaxPlayers", 64)
+
+-- Set default value in module initialization
+hook.Add("Initialize", "SetModuleDefaults", function()
+    lia.config.setDefault("ModuleEnabled", true)
+    lia.config.setDefault("ModuleValue", 100)
+end)
+
+-- Set default value with validation
+local function setDefaultSafely(key, value)
+    local config = lia.config.stored[key]
+    if config then
+        lia.config.setDefault(key, value)
+        print("Default value set for " .. key)
+    else
+        print("Configuration not found: " .. key)
+    end
+end
+
+-- Reset configuration to default
+local function resetToDefault(key)
+    local config = lia.config.stored[key]
+    if config then
+        lia.config.setDefault(key, config.default)
+    end
+end
 ```
 
-## lia.config.forceSet
+---
 
-**Purpose:** Sets the value of a config variable, bypassing any callbacks or networking, and optionally skips saving to the database.
+### lia.config.forceSet
 
-**Parameters:**
-- `key` (string) - The config variable key.
-- `value` (any) - The value to set.
-- `noSave` (boolean) - If true, does not save the config to the database.
+**Purpose**
 
-**Returns:** None.
+Forces a configuration value without triggering callbacks or saving.
 
-**Realm:** Shared.
+**Parameters**
 
-**Example Usage:**
+* `key` (*string*): The configuration key.
+* `value` (*any*): The new value to set.
+* `noSave` (*boolean*): Optional parameter to skip saving.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Force the money limit to 10000 without saving to the database
-lia.config.forceSet("MoneyLimit", 10000, true)
+-- Force set a configuration value
+lia.config.forceSet("MaxPlayers", 64)
+
+-- Force set without saving
+lia.config.forceSet("TemporaryValue", 100, true)
+
+-- Force set in bulk
+local function forceSetMultiple(configs)
+    for key, value in pairs(configs) do
+        lia.config.forceSet(key, value, true)
+    end
+    lia.config.save() -- Save all at once
+end
+
+-- Force set with validation
+local function forceSetValidated(key, value)
+    local config = lia.config.stored[key]
+    if config and config.data then
+        if config.data.min and value < config.data.min then
+            value = config.data.min
+        elseif config.data.max and value > config.data.max then
+            value = config.data.max
+        end
+    end
+    
+    lia.config.forceSet(key, value)
+end
 ```
 
-## lia.config.set
+---
 
-**Purpose:** Sets the value of a config variable, triggers networking to clients (if applicable), calls the callback, and saves the config.
+### lia.config.set
 
-**Parameters:**
-- `key` (string) - The config variable key.
-- `value` (any) - The value to set.
+**Purpose**
 
-**Returns:** None.
+Sets a configuration value and triggers callbacks and networking.
 
-**Realm:** Shared (server triggers networking).
+**Parameters**
 
-**Example Usage:**
+* `key` (*string*): The configuration key.
+* `value` (*any*): The new value to set.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Set the walk speed to 140 and notify all clients
-lia.config.set("WalkSpeed", 140)
+-- Set a configuration value
+lia.config.set("MaxPlayers", 64)
+
+-- Set configuration in a command
+lia.command.add("setmaxplayers", {
+    desc = "Set maximum players",
+    arguments = {
+        {name = "amount", type = "number"}
+    },
+    adminOnly = true,
+    onRun = function(client, arguments)
+        local amount = tonumber(arguments[1])
+        if amount and amount > 0 and amount <= 128 then
+            lia.config.set("MaxPlayers", amount)
+            client:ChatPrint("Maximum players set to " .. amount)
+        else
+            client:ChatPrint("Invalid amount. Must be between 1 and 128.")
+        end
+    end
+})
+
+-- Set configuration with validation
+local function setConfigSafely(key, value)
+    local config = lia.config.stored[key]
+    if not config then
+        print("Configuration not found: " .. key)
+        return false
+    end
+    
+    -- Validate value based on type
+    if config.data and config.data.type == "Int" then
+        value = math.floor(tonumber(value) or 0)
+        if config.data.min and value < config.data.min then
+            value = config.data.min
+        elseif config.data.max and value > config.data.max then
+            value = config.data.max
+        end
+    end
+    
+    lia.config.set(key, value)
+    return true
+end
+
+-- Set multiple configurations
+local function setMultipleConfigs(configs)
+    for key, value in pairs(configs) do
+        lia.config.set(key, value)
+    end
+end
 ```
 
-## lia.config.get
+---
 
-**Purpose:** Retrieves the value of a config variable. If the value is not set, returns the default or a provided fallback.
+### lia.config.get
 
-**Parameters:**
-- `key` (string) - The config variable key.
-- `default` (any) - (Optional) Value to return if the config is not found.
+**Purpose**
 
-**Returns:** Any - The current value, the default, or the provided fallback.
+Gets the current value of a configuration option.
 
-**Realm:** Shared.
+**Parameters**
 
-**Example Usage:**
+* `key` (*string*): The configuration key to get.
+* `default` (*any*): Optional default value if configuration not found.
+
+**Returns**
+
+* `value` (*any*): The current configuration value.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Get the current money limit, or 5000 if not set
-local limit = lia.config.get("MoneyLimit", 5000)
+-- Get a configuration value
+local maxPlayers = lia.config.get("MaxPlayers")
+print("Maximum players: " .. maxPlayers)
+
+-- Get configuration with default
+local walkSpeed = lia.config.get("WalkSpeed", 130)
+
+-- Get configuration in a function
+local function getServerSettings()
+    return {
+        maxPlayers = lia.config.get("MaxPlayers"),
+        walkSpeed = lia.config.get("WalkSpeed"),
+        runSpeed = lia.config.get("RunSpeed"),
+        enableChat = lia.config.get("EnableChat")
+    }
+end
+
+-- Get configuration with validation
+local function getConfigSafely(key, default)
+    local value = lia.config.get(key, default)
+    if value == nil then
+        print("Configuration not found: " .. key)
+        return default
+    end
+    return value
+end
+
+-- Get all configuration values
+local function getAllConfigs()
+    local configs = {}
+    for key, _ in pairs(lia.config.stored) do
+        configs[key] = lia.config.get(key)
+    end
+    return configs
+end
 ```
 
-## lia.config.load
+---
 
-**Purpose:** Loads all config variables from the database for the current schema/gamemode. If a config is missing, it is inserted with its default value. On the client, requests the config list from the server.
+### lia.config.load
 
-**Parameters:** None.
+**Purpose**
 
-**Returns:** None.
+Loads configuration values from the database.
 
-**Realm:** Server (loads from DB), Client (requests from server).
+**Returns**
 
-**Example Usage:**
+* None.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Load all config variables at server startup
+-- Load configurations on server start
+hook.Add("Initialize", "LoadConfigurations", function()
+    lia.config.load()
+end)
+
+-- Load configurations with callback
 lia.config.load()
+hook.Add("InitializedConfig", "ConfigLoaded", function()
+    print("All configurations loaded successfully")
+end)
+
+-- Load configurations in module
+local function loadModuleConfigs()
+    lia.config.load()
+    print("Module configurations loaded")
+end
+
+-- Load configurations with error handling
+local function loadConfigsSafely()
+    local success, err = pcall(lia.config.load)
+    if not success then
+        print("Error loading configurations: " .. tostring(err))
+    end
+end
 ```
 
-## lia.config.getChangedValues
+---
 
-**Purpose:** Returns a table of all config variables whose value differs from their default.
+### lia.config.getChangedValues
 
-**Parameters:** None.
+**Purpose**
 
-**Returns:** table - A table of changed config key-value pairs.
+Gets all configuration values that differ from their defaults (server-side only).
 
-**Realm:** Server.
+**Returns**
 
-**Example Usage:**
+* `changedValues` (*table*): Table of changed configuration values.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Get all changed config values for saving
+-- Get changed configuration values
 local changed = lia.config.getChangedValues()
+print("Changed configurations: " .. table.Count(changed))
+
+-- Check if specific configuration changed
+local function hasConfigChanged(key)
+    local changed = lia.config.getChangedValues()
+    return changed[key] ~= nil
+end
+
+-- Get changed configurations for backup
+local function backupChangedConfigs()
+    local changed = lia.config.getChangedValues()
+    local backup = {}
+    
+    for key, value in pairs(changed) do
+        backup[key] = {
+            value = value,
+            timestamp = os.time()
+        }
+    end
+    
+    return backup
+end
+
+-- Display changed configurations
+local function displayChangedConfigs()
+    local changed = lia.config.getChangedValues()
+    for key, value in pairs(changed) do
+        print(key .. " = " .. tostring(value))
+    end
+end
 ```
 
-## lia.config.send
+---
 
-**Purpose:** Sends the current changed config values to a specific client or broadcasts to all clients.
+### lia.config.send
 
-**Parameters:**
-- `client` (Player) - (Optional) The client to send to. If nil, broadcasts to all.
+**Purpose**
 
-**Returns:** None.
+Sends configuration values to clients (server-side only).
 
-**Realm:** Server.
+**Parameters**
 
-**Example Usage:**
+* `client` (*Player*): Optional specific client to send to.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Send config to a specific client
-lia.config.send(somePlayer)
-
--- Broadcast config to all clients
+-- Send configurations to all clients
 lia.config.send()
+
+-- Send configurations to specific client
+lia.config.send(client)
+
+-- Send configurations to newly connected player
+hook.Add("PlayerInitialSpawn", "SendConfigs", function(ply)
+    lia.config.send(ply)
+end)
+
+-- Send configurations to admin players
+local function sendConfigsToAdmins()
+    for _, ply in player.Iterator() do
+        if ply:IsAdmin() then
+            lia.config.send(ply)
+        end
+    end
+end
+
+-- Send configurations with delay
+local function sendConfigsDelayed(client, delay)
+    timer.Simple(delay, function()
+        if IsValid(client) then
+            lia.config.send(client)
+        end
+    end)
+end
 ```
 
-## lia.config.save
+---
 
-**Purpose:** Saves all changed config values to the database for the current schema/gamemode.
+### lia.config.save
 
-**Parameters:** None.
+**Purpose**
 
-**Returns:** None.
+Saves configuration values to the database (server-side only).
 
-**Realm:** Server.
+**Returns**
 
-**Example Usage:**
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Save all config changes to the database
+-- Save configurations
 lia.config.save()
+
+-- Save configurations after changes
+local function setAndSave(key, value)
+    lia.config.set(key, value)
+    lia.config.save()
+end
+
+-- Save configurations with error handling
+local function saveConfigsSafely()
+    local success, err = pcall(lia.config.save)
+    if not success then
+        print("Error saving configurations: " .. tostring(err))
+    else
+        print("Configurations saved successfully")
+    end
+end
+
+-- Auto-save configurations
+timer.Create("AutoSaveConfigs", 300, 0, function()
+    lia.config.save()
+end)
+
+-- Save configurations on server shutdown
+hook.Add("ShutDown", "SaveConfigsOnShutdown", function()
+    lia.config.save()
+end)
 ```
 
+---
+
+### lia.config.reset
+
+**Purpose**
+
+Resets all configurations to their default values (server-side only).
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Reset all configurations
+lia.config.reset()
+
+-- Reset configurations in a command
+lia.command.add("resetconfigs", {
+    desc = "Reset all configurations to defaults",
+    adminOnly = true,
+    onRun = function(client)
+        lia.config.reset()
+        client:ChatPrint("All configurations reset to defaults")
+    end
+})
+
+-- Reset specific configuration category
+local function resetConfigCategory(category)
+    for key, config in pairs(lia.config.stored) do
+        if config.category == category then
+            config.value = config.default
+            if config.callback then
+                config.callback(config.value, config.default)
+            end
+        end
+    end
+    lia.config.save()
+    lia.config.send()
+end
+
+-- Reset configurations with confirmation
+local function resetConfigsWithConfirmation(client)
+    client:ChatPrint("Are you sure you want to reset all configurations? Type 'yes' to confirm.")
+    
+    hook.Add("PlayerSay", "ConfigResetConfirmation", function(ply, text)
+        if ply == client and text:lower() == "yes" then
+            lia.config.reset()
+            ply:ChatPrint("Configurations reset to defaults")
+            hook.Remove("PlayerSay", "ConfigResetConfirmation")
+        end
+    end)
+end
+```

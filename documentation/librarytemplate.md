@@ -1,6 +1,17 @@
 # Documentation Generation Instructions
 
-When asked to write documentation, always generate it in **Markdown** using the following format:
+When asked to write documentation, always generate it in **Markdown** using the following format.  
+Only document functions that belong to the **`lia.*` namespace**. Ignore and refuse requests for any functions outside of this namespace.  
+
+Each documentation file must be generated with the name format:
+
+lia.libraryname.md
+
+Where `libraryname` is the corresponding file/module name.  
+For example:  
+- Documenting `admin.lua` → `lia.admin.md`  
+- Documenting `inventory.lua` → `lia.inventory.md`  
+- Documenting `chat.lua` → `lia.chat.md`  
 
 ---
 
@@ -16,7 +27,7 @@ An extended, detailed explanation of the library, including its purpose, scope, 
 
 ---
 
-### functionName (Function Title)
+### lia.library.functionName (Function Title)
 
 **Purpose**
 
@@ -43,17 +54,22 @@ Provide extensive, practical Lua examples demonstrating usage. Always use clean 
 
 ## Rules
 
-- Always follow this structure exactly.  
+- Only document functions from the `lia.*` namespace.  
+- Always follow the structure exactly as shown.  
 - Always write in clear, concise English.  
 - Always generate **full Markdown pages** ready to be placed in documentation.  
 - Always provide **extensive usage examples** in GLua code fences.  
 - Always format code cleanly and consistently.  
+- Always save documentation files as `lia.libraryname.md`.  
 - Never omit any of the sections (Purpose, Parameters, Returns, Realm, Example Usage).  
 - Never include comments in code unless they clarify the example’s intent.  
+- Never document hooks, enums, or config variables unless they are explicitly part of the `lia.*` namespace.  
 
 ---
 
 ## Example Template
+
+_File: `lia.admin.md`_
 
 # Administrator Library
 

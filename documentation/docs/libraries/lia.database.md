@@ -1,647 +1,12 @@
 # Database Library
 
-This page documents functions for connecting to the database.
+This page documents the functions for working with database operations and SQLite queries.
 
 ---
 
 ## Overview
 
-The database library sets up the SQL connection used by the framework. It defines helpers for creating tables, performing queries, and waiting for asynchronous operations to finish.
-
----
-
-### lia.db.connect
-
-**Purpose**
-
-Establishes a connection to the configured database module. If the database is not already connected, or if `reconnect` is `true`, it creates or re-establishes a connection.
-
-**Parameters**
-
-* `callback` (*function*): Function called when the connection is established.
-
-* `reconnect` (*boolean*): Reconnect using an existing database object.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
-lia.db.connect(function()
-    print("Database connected")
-end)
-```
-
----
-
-### lia.db.wipeTables
-
-**Purpose**
-
-Drops all Lilia tables from the database. **Irreversible** – all stored data is removed.
-
-**Parameters**
-
-* `callback` (*function*): Function called when the wipe completes.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
-lia.db.wipeTables(function()
-    print("Tables wiped")
-end)
-```
-
----
-
-### lia.db.loadTables
-
-**Purpose**
-
-Creates required tables if they do not already exist. Ensures the schema is set up.
-
-**Parameters**
-
-* *None*
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
-lia.db.loadTables()
-```
-
----
-
-### lia.db.waitForTablesToLoad
-
-**Purpose**
-
-Returns a deferred that resolves once tables are fully created. If tables have already loaded, the deferred resolves immediately. Useful for awaiting setup in async code.
-
-**Parameters**
-
-* *None*
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves when tables are ready.
-
-**Example Usage**
-
-```lua
-lia.db.waitForTablesToLoad():next(function()
-    print("Tables loaded")
-end)
-```
-
----
-
-### lia.db.convertDataType
-
-**Purpose**
-
-Converts a Lua value into a SQL-safe representation. `nil` and `NULL` become `NULL`, booleans become `1` or `0`, tables are encoded as JSON, and strings are escaped unless `noEscape` is `true`.
-
-**Parameters**
-
-* `value` (*any*): Value to convert.
-
-* `noEscape` (*boolean*): Skip escaping the value when `true`.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-* *string | number*: SQL-ready representation.
-
-**Example Usage**
-
-```lua
-local str = lia.db.convertDataType({ name = "Lilia" })
-```
-
----
-
-### lia.db.insertTable
-
-**Purpose**
-
-Inserts a row into a table using key-value pairs.
-
-**Parameters**
-
-* `value` (*table*): Column/value pairs.
-
-* `callback` (*function*): Function called after the insert.
-
-* `dbTable` (*string*): Table name **without** the `lia_` prefix. Defaults to `"characters"`.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
-lia.db.insertTable({ name = "Test" }, function(_, lastID)
-    print("Inserted", lastID)
-end, "characters")
-```
-
----
-
-### lia.db.updateTable
-
-**Purpose**
-
-Updates one or more rows according to a condition.
-
-**Parameters**
-
-* `value` (*table*): Columns to update and new values.
-
-* `callback` (*function*): Function called after update.
-
-* `dbTable` (*string*): Table name **without** `lia_`. Defaults to `"characters"`.
-
-* `condition` (*string*): SQL `WHERE` clause.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
-lia.db.updateTable({ name = "Updated" }, function()
-    print("Row updated")
-end, "characters", "id = 1")
-```
-
----
-
-### lia.db.select
-
-**Purpose**
-
-Selects rows, optionally filtered and limited, returning a deferred.
-
-**Parameters**
-
-* `fields` (*table | string*): Columns to select.
-
-* `dbTable` (*string*): Table name without `lia_`. Defaults to `"characters"`.
-
-* `condition` (*string*): SQL condition (`WHERE`).
-
-* `limit` (*number*): Maximum number of rows.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves with a table containing `results` and `lastID`.
-
-**Example Usage**
-
-```lua
-lia.db.select("*", "characters", "id = 1"):next(function(data)
-    PrintTable(data.results)
-end)
-```
-
----
-
-### lia.db.upsert
-
-**Purpose**
-
-Inserts or updates a row depending on unique-key conflict.
-
-**Parameters**
-
-* `value` (*table*): Columns and values.
-
-* `dbTable` (*string*): Table name without `lia_`. Defaults to `"characters"`.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves with a table containing `results` and `lastID`.
-
-**Example Usage**
-
-```lua
-lia.db.upsert({ id = 1, name = "John" }, "characters"):next(function(res)
-    print("Last ID:", res.lastID)
-end)
-```
-
----
-
-### lia.db.delete
-
-**Purpose**
-
-Deletes rows matching a condition; deletes all rows if no condition.
-
-**Parameters**
-
-* `dbTable` (*string*): Table name without `lia_`. Defaults to `"character"`.
-
-* `condition` (*string*): SQL condition.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves with deletion result.
-
-**Example Usage**
-
-```lua
-lia.db.delete("characters", "id = 1"):next(function()
-    print("Row deleted")
-end)
-```
-
----
-
-### lia.db.GetCharacterTable
-
-**Purpose**
-
-Fetches the column names of `lia_characters` for debugging/maintenance.
-
-**Parameters**
-
-* `callback` (*function*): Receives the list of columns.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
-lia.db.GetCharacterTable(function(cols)
-    PrintTable(cols)
-end)
-```
-
----
-
-### lia.db.count
-
-**Purpose**
-
-Counts rows in a table, optionally filtered.
-
-**Parameters**
-
-* `dbTable` (*string*): Table name without `lia_`.
-
-* `condition` (*string*): Optional SQL condition.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves to the row count.
-
-**Example Usage**
-
-```lua
-lia.db.count("characters", "faction = 1"):next(function(n)
-    print("Character count:", n)
-end)
-```
-
----
-
-### lia.db.addDatabaseFields
-
-**Purpose**
-
-Ensures every registered character variable has a matching column in the
-
-`lia_characters` table, adding any that are missing. It can be invoked
-
-multiple times; existing columns will be ignored.
-
-**Parameters**
-
-* *None*
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *nil*: This function does not return a value.
-
-**Example Usage**
-
-```lua
--- After creating custom character variables
-lia.db.addDatabaseFields()
-```
-
----
-
-### lia.db.exists
-
-**Purpose**
-
-Checks if any row satisfies a condition.
-
-**Parameters**
-
-* `dbTable` (*string*): Table name without `lia_`.
-
-* `condition` (*string*): SQL condition.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves to `true` or `false`.
-
-**Example Usage**
-
-```lua
-lia.db.exists("characters", "id = 5"):next(function(found)
-    print("Character exists:", found)
-end)
-```
-
----
-
-### lia.db.selectOne
-
-**Purpose**
-
-Fetches the first row that matches a condition.
-
-**Parameters**
-
-* `fields` (*table | string*): Columns.
-
-* `dbTable` (*string*): Table name without `lia_`.
-
-* `condition` (*string*): SQL condition.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves with the row or `nil`.
-
-**Example Usage**
-
-```lua
-lia.db.selectOne("*", "characters", "id = 1"):next(function(row)
-    if row then
-        print("Found character:", row._name)
-    end
-end)
-```
-
----
-
-### lia.db.bulkInsert
-
-**Purpose**
-
-Inserts multiple rows in a single query.
-
-**Parameters**
-
-* `dbTable` (*string*): Table name without `lia_`.
-
-* `rows` (*table*): Array of row tables.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves when done. Resolves immediately if `rows` is empty.
-
-**Example Usage**
-
-```lua
-lia.db.bulkInsert("items", {
-    { _invID = 1, _uniqueID = "pistol", _x = 0, _y = 0, _quantity = 1 },
-    { _invID = 1, _uniqueID = "ammo",   _x = 1, _y = 0, _quantity = 30 },
-}):next(function()
-    print("Rows inserted")
-end)
-```
-
----
-
-### lia.db.bulkUpsert
-
-**Purpose**
-
-Inserts multiple rows and updates them if they already exist.
-
-**Parameters**
-
-* `dbTable` (*string*): Table name without `lia_`.
-
-* `rows` (*table*): Array of row tables.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves when done. Resolves immediately if `rows` is empty.
-
-**Example Usage**
-
-```lua
-lia.db.bulkUpsert("items", {
-    { _invID = 1, _uniqueID = "pistol", _x = 0, _y = 0, _quantity = 1 },
-    { _invID = 1, _uniqueID = "ammo",   _x = 1, _y = 0, _quantity = 30 },
-}):next(function()
-    print("Upsert complete")
-end)
-```
-
----
-
-### lia.db.insertOrIgnore
-
-**Purpose**
-
-Attempts to insert a row; silently ignores unique-key violation.
-
-**Parameters**
-
-* `value` (*table*): Row data.
-
-* `dbTable` (*string*): Table name without `lia_`. Defaults to `"characters"`.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves with results and last insert ID.
-
-**Example Usage**
-
-```lua
-lia.db.insertOrIgnore({ id = 1, name = "Bob" }, "characters"):next(function(r)
-    print("Insert ID:", r.lastID)
-end)
-```
-
----
-
-### lia.db.getTables
-
-**Purpose**
-
-Lists all tables in the database that start with `lia_`.
-
-**Parameters**
-
-* *None*
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves with an array of table names.
-
-**Example Usage**
-
-```lua
-lia.db.getTables():next(function(tables)
-    PrintTable(tables)
-end)
-```
-
----
-
-### lia.db.transaction
-
-**Purpose**
-
-Runs multiple queries inside a transaction, rolling back if any fail.
-
-**Parameters**
-
-* `queries` (*table*): Array of SQL strings.
-
-**Realm**
-
-`Server`
-
-**Returns**
-
-* *deferred*: Resolves when transaction completes.
-
-**Example Usage**
-
-```lua
-lia.db.transaction({
-    "INSERT INTO lia_logs (_message) VALUES ('start')",
-    "INSERT INTO lia_logs (_message) VALUES ('end')",
-}):next(function()
-    print("Transaction complete")
-end)
-```
-
----
-
-### lia.db.escapeIdentifier
-
-**Purpose**
-
-Escapes an identifier (column/table name) for SQL.
-
-**Parameters**
-
-* `id` (*string*): Identifier.
-
-**Realm**
-
-`Shared`
-
-**Returns**
-
-* *string*: Escaped identifier.
-
-**Example Usage**
-
-```lua
-local col = lia.db.escapeIdentifier("desc")
-print(col)
-```
+The database library (`lia.db`) provides a comprehensive system for database operations in the Lilia framework. It handles SQLite database connections, query execution, table management, data operations, caching, and provides extensive testing and maintenance utilities. The library supports both synchronous and asynchronous operations with promise-based callbacks.
 
 ---
 
@@ -649,190 +14,1026 @@ print(col)
 
 **Purpose**
 
-Executes a raw SQL string. If no callback is provided, returns a deferred.
+Executes a SQL query against the database with optional callback functions.
 
 **Parameters**
 
-* `query` (*string*): SQL query.
-
-* `callback` (*function*): Optional results callback.
-
-**Realm**
-
-`Server`
+* `query` (*string*): The SQL query to execute.
+* `callback` (*function*, optional): Success callback function.
+* `errorCallback` (*function*, optional): Error callback function.
 
 **Returns**
 
-* *deferred | nil*: Deferred when no callback.
+* `promise` (*Deferred*): A promise object for the query operation.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
-lia.db.query("SELECT 1"):next(function(res)
-    PrintTable(res.results)
+-- Execute a simple query
+lia.db.query("SELECT * FROM lia_characters", function(results)
+    print("Found " .. #results .. " characters")
+end)
+
+-- Execute with error handling
+lia.db.query("SELECT * FROM lia_characters", function(results)
+    print("Query successful")
+end, function(err)
+    print("Query failed: " .. err)
 end)
 ```
 
----
-
-### lia.db.escape
+### lia.db.select
 
 **Purpose**
 
-Escapes a string for safe inclusion in SQL queries.
+Selects data from a database table with optional conditions and limits.
 
 **Parameters**
 
-* `value` (*string*): Raw string.
-
-**Realm**
-
-`Shared`
+* `fields` (*string|table*): Fields to select (string or table of field names).
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `condition` (*string*, optional): WHERE condition for the query.
+* `limit` (*number*, optional): Maximum number of results to return.
 
 **Returns**
 
-* *string*: Escaped string.
+* `promise` (*Deferred*): A promise that resolves with query results.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
-local safe = lia.db.escape(userInput)
+-- Select all characters
+lia.db.select("*", "characters"):next(function(result)
+    print("Found " .. #result.results .. " characters")
+end)
+
+-- Select with condition
+lia.db.select("name, money", "characters", "money > 1000"):next(function(result)
+    for _, char in ipairs(result.results) do
+        print(char.name .. " has " .. char.money .. " money")
+    end
+end)
+
+-- Select with limit
+lia.db.select("*", "characters", nil, 10):next(function(result)
+    print("Top 10 characters loaded")
+end)
 ```
 
----
-
-### lia.db.queue
+### lia.db.selectOne
 
 **Purpose**
 
-Returns the number of queued SQL queries.
+Selects a single row from a database table with optional conditions.
 
 **Parameters**
 
-* *None*
-
-**Realm**
-
-`Server`
+* `fields` (*string|table*): Fields to select (string or table of field names).
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `condition` (*string*, optional): WHERE condition for the query.
 
 **Returns**
 
-* *number*: Count of queued queries.
+* `promise` (*Deferred*): A promise that resolves with a single row or nil.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
-print("Queue size:", lia.db.queue())
+-- Get a specific character
+lia.db.selectOne("*", "characters", "id = 1"):next(function(char)
+    if char then
+        print("Character found: " .. char.name)
+    else
+        print("Character not found")
+    end
+end)
+
+-- Get character by name
+lia.db.selectOne("id, name", "characters", "name = 'John'"):next(function(char)
+    if char then
+        print("Character ID: " .. char.id)
+    end
+end)
 ```
 
----
-
-### lia.db.abort
+### lia.db.insertTable
 
 **Purpose**
 
-Cancels all running queries on every connection.
+Inserts data into a database table.
 
 **Parameters**
 
-* *None*
-
-**Realm**
-
-`Server`
+* `value` (*table*): The data to insert (key-value pairs).
+* `callback` (*function*, optional): Success callback function.
+* `dbTable` (*string*): The database table name (without lia_ prefix).
 
 **Returns**
 
-* *nil*: This function does not return a value.
+* `promise` (*Deferred*): A promise that resolves with insert results.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
-lia.db.abort()
+-- Insert a new character
+lia.db.insertTable({
+    name = "John Doe",
+    money = 1000,
+    level = 1
+}, "characters"):next(function(result)
+    print("Character inserted with ID: " .. result.lastID)
+end)
+
+-- Insert with callback
+lia.db.insertTable({
+    name = "Jane Doe",
+    money = 500
+}, function(result)
+    print("Insert successful")
+end, "characters")
 ```
 
----
-
-### lia.db.getObject
+### lia.db.updateTable
 
 **Purpose**
 
-Returns the least busy database object and its pool index.
+Updates data in a database table based on conditions.
 
 **Parameters**
 
-* *None*
-
-**Realm**
-
-`Server`
+* `value` (*table*): The data to update (key-value pairs).
+* `callback` (*function*, optional): Success callback function.
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `condition` (*string*): WHERE condition for the update.
 
 **Returns**
 
-* *database*, *number*: Connection object and pool index.
+* `promise` (*Deferred*): A promise that resolves with update results.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
-local db, index = lia.db.getObject()
+-- Update character money
+lia.db.updateTable({
+    money = 2000
+}, nil, "characters", "id = 1"):next(function(result)
+    print("Character updated")
+end)
+
+-- Update multiple fields
+lia.db.updateTable({
+    money = 1500,
+    level = 2
+}, nil, "characters", "name = 'John'"):next(function(result)
+    print("Character updated successfully")
+end)
 ```
 
----
+### lia.db.delete
+
+**Purpose**
+
+Deletes data from a database table based on conditions.
+
+**Parameters**
+
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `condition` (*string*, optional): WHERE condition for the delete operation.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with delete results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Delete a specific character
+lia.db.delete("characters", "id = 1"):next(function(result)
+    print("Character deleted")
+end)
+
+-- Delete all characters with low money
+lia.db.delete("characters", "money < 100"):next(function(result)
+    print("Low money characters deleted")
+end)
+```
+
+### lia.db.count
+
+**Purpose**
+
+Counts the number of rows in a database table with optional conditions.
+
+**Parameters**
+
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `condition` (*string*, optional): WHERE condition for the count.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with the count number.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Count all characters
+lia.db.count("characters"):next(function(count)
+    print("Total characters: " .. count)
+end)
+
+-- Count characters with specific condition
+lia.db.count("characters", "money > 1000"):next(function(count)
+    print("Rich characters: " .. count)
+end)
+```
+
+### lia.db.exists
+
+**Purpose**
+
+Checks if any rows exist in a database table matching the given condition.
+
+**Parameters**
+
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `condition` (*string*): WHERE condition to check.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with true/false.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Check if character exists
+lia.db.exists("characters", "name = 'John'"):next(function(exists)
+    if exists then
+        print("Character exists")
+    else
+        print("Character not found")
+    end
+end)
+
+-- Check if any rich characters exist
+lia.db.exists("characters", "money > 10000"):next(function(exists)
+    if exists then
+        print("Rich characters found")
+    end
+end)
+```
+
+### lia.db.bulkInsert
+
+**Purpose**
+
+Performs bulk insert operations for multiple rows at once.
+
+**Parameters**
+
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `rows` (*table*): Array of row data to insert.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves when bulk insert is complete.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Bulk insert multiple characters
+local characters = {
+    {name = "John", money = 1000},
+    {name = "Jane", money = 1500},
+    {name = "Bob", money = 800}
+}
+
+lia.db.bulkInsert("characters", characters):next(function()
+    print("Bulk insert completed")
+end)
+```
+
+### lia.db.bulkUpsert
+
+**Purpose**
+
+Performs bulk upsert operations (insert or replace) for multiple rows.
+
+**Parameters**
+
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `rows` (*table*): Array of row data to upsert.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves when bulk upsert is complete.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Bulk upsert characters
+local characters = {
+    {id = 1, name = "John", money = 2000},
+    {id = 2, name = "Jane", money = 2500}
+}
+
+lia.db.bulkUpsert("characters", characters):next(function()
+    print("Bulk upsert completed")
+end)
+```
+
+### lia.db.upsert
+
+**Purpose**
+
+Inserts or updates a row in the database (insert or replace).
+
+**Parameters**
+
+* `value` (*table*): The data to upsert (key-value pairs).
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with upsert results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Upsert character data
+lia.db.upsert({
+    id = 1,
+    name = "John",
+    money = 3000
+}, "characters"):next(function(result)
+    print("Character upserted")
+end)
+```
+
+### lia.db.insertOrIgnore
+
+**Purpose**
+
+Inserts a row into the database, ignoring if it already exists.
+
+**Parameters**
+
+* `value` (*table*): The data to insert (key-value pairs).
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with insert results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Insert character if not exists
+lia.db.insertOrIgnore({
+    name = "John",
+    money = 1000
+}, "characters"):next(function(result)
+    print("Character inserted or ignored")
+end)
+```
+
+### lia.db.transaction
+
+**Purpose**
+
+Executes multiple queries within a database transaction.
+
+**Parameters**
+
+* `queries` (*table*): Array of SQL queries to execute in the transaction.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves when transaction is complete.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Execute multiple queries in transaction
+local queries = {
+    "INSERT INTO lia_characters (name, money) VALUES ('John', 1000)",
+    "INSERT INTO lia_characters (name, money) VALUES ('Jane', 1500)",
+    "UPDATE lia_characters SET money = money + 100 WHERE name = 'John'"
+}
+
+lia.db.transaction(queries):next(function()
+    print("Transaction completed successfully")
+end)
+```
+
+### lia.db.createTable
+
+**Purpose**
+
+Creates a new database table with specified schema.
+
+**Parameters**
+
+* `dbName` (*string*): The table name (without lia_ prefix).
+* `primaryKey` (*string|table*): Primary key column name or array of primary key columns.
+* `schema` (*table*): Array of column definitions.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with table creation results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Create a new table
+local schema = {
+    {name = "id", type = "integer", auto_increment = true},
+    {name = "name", type = "string", not_null = true},
+    {name = "value", type = "integer", default = 0}
+}
+
+lia.db.createTable("mytable", "id", schema):next(function(result)
+    print("Table created successfully")
+end)
+```
+
+### lia.db.createColumn
+
+**Purpose**
+
+Adds a new column to an existing database table.
+
+**Parameters**
+
+* `tableName` (*string*): The table name (without lia_ prefix).
+* `columnName` (*string*): The name of the new column.
+* `columnType` (*string*): The data type of the new column.
+* `options` (*table*, optional): Additional column options.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with column creation results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Add a new column
+lia.db.createColumn("characters", "level", "integer", {
+    default = 1,
+    not_null = true
+}):next(function(result)
+    print("Column added successfully")
+end)
+```
+
+### lia.db.removeTable
+
+**Purpose**
+
+Removes a database table.
+
+**Parameters**
+
+* `tableName` (*string*): The table name (without lia_ prefix).
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with removal results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Remove a table
+lia.db.removeTable("mytable"):next(function(success)
+    if success then
+        print("Table removed successfully")
+    end
+end)
+```
+
+### lia.db.removeColumn
+
+**Purpose**
+
+Removes a column from a database table.
+
+**Parameters**
+
+* `tableName` (*string*): The table name (without lia_ prefix).
+* `columnName` (*string*): The name of the column to remove.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with column removal results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Remove a column
+lia.db.removeColumn("characters", "old_field"):next(function(success)
+    if success then
+        print("Column removed successfully")
+    end
+end)
+```
 
 ### lia.db.tableExists
 
 **Purpose**
 
-Checks whether a table with the provided name exists in the connected database.
+Checks if a database table exists.
 
 **Parameters**
 
-* `tbl` (*string*): Full table name to check (e.g., `"lia_characters"`).
-
-**Realm**
-
-`Server`
+* `tbl` (*string*): The table name (with or without lia_ prefix).
 
 **Returns**
 
-* *deferred*: Resolves to `true` or `false`.
+* `promise` (*Deferred*): A promise that resolves with true/false.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
+-- Check if table exists
 lia.db.tableExists("lia_characters"):next(function(exists)
-    print("Characters table present:", exists)
+    if exists then
+        print("Table exists")
+    else
+        print("Table not found")
+    end
 end)
 ```
-
----
 
 ### lia.db.fieldExists
 
 **Purpose**
 
-Determines whether a specific column is present in a table.
+Checks if a column exists in a database table.
 
 **Parameters**
 
-* `tbl` (*string*): Full table name (e.g., `"lia_characters"`).
-
-* `field` (*string*): Column name to check.
-
-**Realm**
-
-`Server`
+* `tbl` (*string*): The table name (with or without lia_ prefix).
+* `field` (*string*): The column name to check.
 
 **Returns**
 
-* *deferred*: Resolves to `true` when the field exists.
+* `promise` (*Deferred*): A promise that resolves with true/false.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 
 ```lua
-lia.db.fieldExists("lia_characters", "name"):next(function(hasField)
-    print("Name column exists:", hasField)
+-- Check if column exists
+lia.db.fieldExists("lia_characters", "name"):next(function(exists)
+    if exists then
+        print("Column exists")
+    else
+        print("Column not found")
+    end
 end)
 ```
 
----
+### lia.db.getTables
+
+**Purpose**
+
+Gets a list of all lia_* tables in the database.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with an array of table names.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get all tables
+lia.db.getTables():next(function(tables)
+    print("Found " .. #tables .. " tables:")
+    for _, tableName in ipairs(tables) do
+        print("  - " .. tableName)
+    end
+end)
+```
+
+### lia.db.getTableColumns
+
+**Purpose**
+
+Gets information about columns in a database table.
+
+**Parameters**
+
+* `tbl` (*string*): The table name (with or without lia_ prefix).
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with column information.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get table columns
+lia.db.getTableColumns("lia_characters"):next(function(columns)
+    print("Table columns:")
+    for columnName, columnType in pairs(columns) do
+        print("  - " .. columnName .. " (" .. columnType .. ")")
+    end
+end)
+```
+
+### lia.db.escape
+
+**Purpose**
+
+Escapes a string value for safe use in SQL queries.
+
+**Parameters**
+
+* `value` (*string*): The string value to escape.
+
+**Returns**
+
+* `escapedValue` (*string*): The escaped string value.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Escape a string for SQL
+local escaped = lia.db.escape("test'value")
+print(escaped) -- Output: test''value
+```
+
+### lia.db.escapeIdentifier
+
+**Purpose**
+
+Escapes an identifier (column/table name) for safe use in SQL queries.
+
+**Parameters**
+
+* `id` (*string*): The identifier to escape.
+
+**Returns**
+
+* `escapedIdentifier` (*string*): The escaped identifier.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Escape an identifier
+local escaped = lia.db.escapeIdentifier("user_name")
+print(escaped) -- Output: `user_name`
+```
+
+### lia.db.convertDataType
+
+**Purpose**
+
+Converts a Lua value to its SQL representation.
+
+**Parameters**
+
+* `value` (*any*): The value to convert.
+
+**Returns**
+
+* `sqlValue` (*string*): The SQL representation of the value.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Convert different data types
+local str = lia.db.convertDataType("hello") -- "'hello'"
+local num = lia.db.convertDataType(123) -- "123"
+local nilVal = lia.db.convertDataType(nil) -- "NULL"
+```
+
+### lia.db.cacheSet
+
+**Purpose**
+
+Sets a value in the database cache.
+
+**Parameters**
+
+* `table` (*string*): The table name for cache key.
+* `key` (*string*): The cache key.
+* `value` (*any*): The value to cache.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Cache a value
+lia.db.cacheSet("characters", "char_1", {
+    name = "John",
+    money = 1000
+})
+```
+
+### lia.db.cacheGet
+
+**Purpose**
+
+Gets a value from the database cache.
+
+**Parameters**
+
+* `key` (*string*): The cache key to retrieve.
+
+**Returns**
+
+* `cachedValue` (*any*): The cached value or nil if not found.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get cached value
+local cached = lia.db.cacheGet("char_1")
+if cached then
+    print("Found cached character: " .. cached.name)
+end
+```
+
+### lia.db.cacheClear
+
+**Purpose**
+
+Clears all cached values.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Clear all cache
+lia.db.cacheClear()
+print("Cache cleared")
+```
+
+### lia.db.invalidateTable
+
+**Purpose**
+
+Invalidates all cached values for a specific table.
+
+**Parameters**
+
+* `table` (*string*): The table name to invalidate.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Invalidate table cache
+lia.db.invalidateTable("lia_characters")
+print("Character table cache invalidated")
+```
+
+### lia.db.setCacheEnabled
+
+**Purpose**
+
+Enables or disables the database cache.
+
+**Parameters**
+
+* `enabled` (*boolean*): Whether to enable caching.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Enable caching
+lia.db.setCacheEnabled(true)
+
+-- Disable caching
+lia.db.setCacheEnabled(false)
+```
+
+### lia.db.setCacheTTL
+
+**Purpose**
+
+Sets the cache time-to-live in seconds.
+
+**Parameters**
+
+* `ttl` (*number*): The TTL in seconds.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Set cache TTL to 30 seconds
+lia.db.setCacheTTL(30)
+```
+
+### lia.db.waitForTablesToLoad
+
+**Purpose**
+
+Waits for all database tables to finish loading.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves when tables are loaded.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Wait for tables to load
+lia.db.waitForTablesToLoad():next(function()
+    print("All tables loaded successfully")
+end)
+```
+
+### lia.db.autoRemoveUnderscoreColumns
+
+**Purpose**
+
+Automatically removes columns with leading underscores from all lia_* tables.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves when cleanup is complete.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Auto-remove underscore columns
+lia.db.autoRemoveUnderscoreColumns():next(function()
+    print("Underscore columns removed")
+end)
+```
+
+### lia.db.addExpectedSchema
+
+**Purpose**
+
+Adds an expected schema for database migration purposes.
+
+**Parameters**
+
+* `tableName` (*string*): The table name.
+* `schema` (*table*): The expected schema definition.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Add expected schema
+lia.db.addExpectedSchema("characters", {
+    id = {type = "integer", auto_increment = true},
+    name = {type = "string", not_null = true}
+})
+```
+
+### lia.db.GetCharacterTable
+
+**Purpose**
+
+Gets the character table structure for compatibility purposes.
+
+**Parameters**
+
+* `callback` (*function*): Callback function to receive column information.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get character table structure
+lia.db.GetCharacterTable(function(columns)
+    print("Character table columns:")
+    for _, column in ipairs(columns) do
+        print("  - " .. column)
+    end
+end)
+```
