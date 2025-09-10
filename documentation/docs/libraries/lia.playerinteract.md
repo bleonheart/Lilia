@@ -1,219 +1,317 @@
-# lia.playerinteract
+# Player Interact Library
+
+This page documents the functions for working with player interactions and interaction management.
+
+---
 
 ## Overview
-The `lia.playerinteract` library provides player interaction and action management for Lilia. It handles context menus, player actions, and interaction systems.
 
-## Functions
+The playerinteract library (`lia.playerinteract`) provides a comprehensive system for managing player interactions, interaction menus, and interaction handling in the Lilia framework. It includes interaction registration, menu management, and interaction processing functionality.
+
+---
 
 ### lia.playerinteract.isWithinRange
-**Purpose**: Checks if a player is within interaction range of an entity (Shared).
 
-**Parameters**:
-- `client` (Player): Player to check
-- `entity` (Entity): Entity to check distance to
-- `customRange` (number): Custom range to check (optional, default: 250)
+**Purpose**
 
-**Returns**: Boolean indicating if within range
+Checks if a player is within interaction range.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to check.
+* `target` (*Entity*): The target entity.
+
+**Returns**
+
+* `isWithinRange` (*boolean*): True if within range.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Check if player is within range
-local player = LocalPlayer()
-local entity = player:getTracedEntity()
-if lia.playerinteract.isWithinRange(player, entity) then
-    print("Player is within interaction range")
+-- Check if within interaction range
+local function isWithinRange(client, target)
+    return lia.playerinteract.isWithinRange(client, target)
 end
 
--- Check with custom range
-if lia.playerinteract.isWithinRange(player, entity, 500) then
-    print("Player is within 500 units")
-end
-
--- Use in interaction system
-local function canInteract(player, entity)
-    return lia.playerinteract.isWithinRange(player, entity, 200)
+-- Use in a function
+local function checkInteractionRange(client, target)
+    if lia.playerinteract.isWithinRange(client, target) then
+        print("Player is within interaction range")
+        return true
+    else
+        print("Player is not within interaction range")
+        return false
+    end
 end
 ```
+
+---
 
 ### lia.playerinteract.getInteractions
-**Purpose**: Gets available interactions for a player with the traced entity (Client only).
 
-**Parameters**:
-- `client` (Player): Player to get interactions for (optional, defaults to LocalPlayer)
+**Purpose**
 
-**Returns**: Table of available interactions
+Gets all interactions for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to get interactions for.
+
+**Returns**
+
+* `interactions` (*table*): Table of interactions.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Get interactions for current player
-local interactions = lia.playerinteract.getInteractions()
-for name, interaction in pairs(interactions) do
-    print("Available interaction:", name)
+-- Get interactions for client
+local function getInteractions(client)
+    return lia.playerinteract.getInteractions(client)
 end
 
--- Get interactions for specific player
-local interactions = lia.playerinteract.getInteractions(player)
-if table.Count(interactions) > 0 then
-    print("Player has", table.Count(interactions), "interactions available")
+-- Use in a function
+local function showInteractions(client)
+    local interactions = lia.playerinteract.getInteractions(client)
+    print("Available interactions for " .. client:Name() .. ":")
+    for _, interaction in ipairs(interactions) do
+        print("- " .. interaction.name)
+    end
 end
 ```
+
+---
 
 ### lia.playerinteract.getActions
-**Purpose**: Gets available actions for a player (Client only).
 
-**Parameters**:
-- `client` (Player): Player to get actions for (optional, defaults to LocalPlayer)
+**Purpose**
 
-**Returns**: Table of available actions
+Gets all actions for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to get actions for.
+
+**Returns**
+
+* `actions` (*table*): Table of actions.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Get actions for current player
-local actions = lia.playerinteract.getActions()
-for name, action in pairs(actions) do
-    print("Available action:", name)
+-- Get actions for client
+local function getActions(client)
+    return lia.playerinteract.getActions(client)
 end
 
--- Check if player has specific action
-local actions = lia.playerinteract.getActions()
-if actions["changeToWhisper"] then
-    print("Player can whisper")
+-- Use in a function
+local function showActions(client)
+    local actions = lia.playerinteract.getActions(client)
+    print("Available actions for " .. client:Name() .. ":")
+    for _, action in ipairs(actions) do
+        print("- " .. action.name)
+    end
 end
 ```
+
+---
 
 ### lia.playerinteract.getCategorizedOptions
-**Purpose**: Organizes options into categories (Client only).
 
-**Parameters**:
-- `options` (table): Table of options to categorize
+**Purpose**
 
-**Returns**: Table of categorized options
+Gets categorized interaction options for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to get options for.
+
+**Returns**
+
+* `options` (*table*): Table of categorized options.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Categorize interactions
-local interactions = lia.playerinteract.getInteractions()
-local categorized = lia.playerinteract.getCategorizedOptions(interactions)
+-- Get categorized options for client
+local function getCategorizedOptions(client)
+    return lia.playerinteract.getCategorizedOptions(client)
+end
 
-for category, options in pairs(categorized) do
-    print("Category:", category)
-    for name, option in pairs(options) do
-        print("  -", name)
+-- Use in a function
+local function showCategorizedOptions(client)
+    local options = lia.playerinteract.getCategorizedOptions(client)
+    print("Categorized options for " .. client:Name() .. ":")
+    for category, options in pairs(options) do
+        print("- " .. category .. ": " .. #options .. " options")
     end
 end
 ```
 
+---
+
 ### lia.playerinteract.addInteraction
-**Purpose**: Adds a new interaction option (Server only).
 
-**Parameters**:
-- `name` (string): Name of the interaction
-- `data` (table): Interaction data table
+**Purpose**
 
-**Returns**: None
+Adds a new interaction.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `interactionData` (*table*): The interaction data table.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Add a simple interaction
-lia.playerinteract.addInteraction("examine", {
-    category = "General",
-    target = "any",
-    onRun = function(client, target)
-        client:notify("You examine " .. target:GetClass())
-    end
-})
+-- Add interaction
+local function addInteraction(interactionData)
+    lia.playerinteract.addInteraction(interactionData)
+end
 
--- Add interaction with conditions
-lia.playerinteract.addInteraction("heal", {
-    category = "Medical",
-    target = "player",
-    shouldShow = function(client, target)
-        return target:Health() < target:GetMaxHealth()
-    end,
-    onRun = function(client, target)
-        target:SetHealth(target:GetMaxHealth())
-        client:notify("You healed " .. target:Name())
-    end
-})
-
--- Add interaction with action text
-lia.playerinteract.addInteraction("repair", {
-    category = "Repair",
-    target = "entity",
-    timeToComplete = 5,
-    actionText = "Repairing...",
-    onRun = function(client, target)
-        target:SetHealth(target:GetMaxHealth())
-        client:notify("Repaired successfully")
-    end
-})
+-- Use in a function
+local function createDoorInteraction()
+    lia.playerinteract.addInteraction({
+        name = "Open Door",
+        callback = function(client, door)
+            door:Fire("Open")
+            client:notify("Door opened")
+        end
+    })
+    print("Door interaction created")
+end
 ```
+
+---
 
 ### lia.playerinteract.addAction
-**Purpose**: Adds a new action option (Server only).
 
-**Parameters**:
-- `name` (string): Name of the action
-- `data` (table): Action data table
+**Purpose**
 
-**Returns**: None
+Adds a new action.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `actionData` (*table*): The action data table.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Add a simple action
-lia.playerinteract.addAction("sit", {
-    category = "General",
-    onRun = function(client)
-        client:SetAnimation(ACT_SIT)
-        client:notify("You sit down")
-    end
-})
+-- Add action
+local function addAction(actionData)
+    lia.playerinteract.addAction(actionData)
+end
 
--- Add action with conditions
-lia.playerinteract.addAction("meditate", {
-    category = "Mental",
-    shouldShow = function(client)
-        return client:getChar() and client:getChar():getAttrib("int", 0) > 10
-    end,
-    onRun = function(client)
-        client:setAction("Meditating...", 10, function()
-            client:notify("You feel more focused")
-        end)
-    end
-})
+-- Use in a function
+local function createUseAction()
+    lia.playerinteract.addAction({
+        name = "Use",
+        callback = function(client, target)
+            target:Use(client)
+            client:notify("Used " .. target:GetClass())
+        end
+    })
+    print("Use action created")
+end
 ```
 
+---
+
 ### lia.playerinteract.syncToClients
-**Purpose**: Syncs interaction data to clients (Server only).
 
-**Parameters**:
-- `client` (Player): Client to sync to (optional, syncs to all if nil)
+**Purpose**
 
-**Returns**: None
+Syncs interactions to all clients.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Sync to specific client
-lia.playerinteract.syncToClients(player)
+-- Sync interactions to clients
+local function syncInteractions()
+    lia.playerinteract.syncToClients()
+end
 
--- Sync to all clients
-lia.playerinteract.syncToClients()
+-- Use in a function
+local function syncAllInteractions()
+    lia.playerinteract.syncToClients()
+    print("Interactions synced to all clients")
+end
+```
 
--- Sync after adding new interactions
-lia.playerinteract.addInteraction("newInteraction", {...})
-lia.playerinteract.syncToClients()
+---
+
+### lia.playerinteract.openMenu
+
+**Purpose**
+
+Opens an interaction menu for a client.
+
+**Parameters**
+
+* `client` (*Player*): The client to open the menu for.
+* `target` (*Entity*): The target entity.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Open interaction menu
+local function openMenu(client, target)
+    lia.playerinteract.openMenu(client, target)
+end
+
+-- Use in a function
+local function openInteractionMenu(client, target)
+    lia.playerinteract.openMenu(client, target)
+    print("Interaction menu opened for " .. client:Name())
+end
 ```

@@ -1,132 +1,177 @@
-# lia.net
+# Net Library
+
+This page documents the functions for working with network communication and data transfer.
+
+---
 
 ## Overview
-The `lia.net` library provides networking functionality for Lilia, including custom network message handling, big table transmission, and global variable synchronization.
 
-## Functions
+The net library (`lia.net`) provides a comprehensive system for managing network communication, custom messages, and data transfer in the Lilia framework. It includes message registration, sending, and data serialization functionality.
+
+---
 
 ### lia.net.register
-**Purpose**: Registers a custom network message handler (Shared).
 
-**Parameters**:
-- `name` (string): Network message name
-- `callback` (function): Callback function to handle the message
+**Purpose**
 
-**Returns**: Boolean indicating success
+Registers a new network message.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+* `messageName` (*string*): The name of the message.
+* `callback` (*function*): The callback function for the message.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
 -- Register a network message
-lia.net.register("myMessage", function(data)
-    print("Received data:", data)
-end)
+local function registerMessage(messageName, callback)
+    lia.net.register(messageName, callback)
+end
 
--- Register with error handling
-local success = lia.net.register("playerData", function(data)
-    if data and data.name then
-        print("Player name:", data.name)
-    end
-end)
+-- Use in a function
+local function registerPlayerMessage()
+    lia.net.register("PlayerData", function(client, data)
+        client:notify("Received player data: " .. data.name)
+    end)
+    print("Player message registered")
+end
 
-if not success then
-    print("Failed to register network message")
+-- Use in a function
+local function registerInventoryMessage()
+    lia.net.register("InventoryUpdate", function(client, data)
+        local character = client:getChar()
+        if character then
+            character:getInventory():update(data)
+        end
+    end)
+    print("Inventory message registered")
 end
 ```
+
+---
 
 ### lia.net.send
-**Purpose**: Sends a custom network message (Shared).
 
-**Parameters**:
-- `name` (string): Network message name
-- `target` (Player|table|nil): Target player(s) or nil for broadcast
-- `...` (any): Arguments to send
+**Purpose**
 
-**Returns**: Boolean indicating success
+Sends a network message to a client.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to send the message to.
+* `messageName` (*string*): The name of the message.
+* `data` (*any*): The data to send.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Send to specific player
-lia.net.send("myMessage", player, "Hello", 123)
+-- Send network message
+local function sendMessage(client, messageName, data)
+    lia.net.send(client, messageName, data)
+end
 
--- Send to multiple players
-local players = {player1, player2, player3}
-lia.net.send("myMessage", players, "Group message")
+-- Use in a function
+local function sendPlayerData(client, data)
+    lia.net.send(client, "PlayerData", data)
+    print("Player data sent to " .. client:Name())
+end
 
--- Broadcast to all players
-lia.net.send("myMessage", nil, "Broadcast message")
-
--- Send with error handling
-local success = lia.net.send("playerData", player, {name = "John", level = 50})
-if not success then
-    print("Failed to send network message")
+-- Use in a function
+local function sendInventoryUpdate(client, data)
+    lia.net.send(client, "InventoryUpdate", data)
+    print("Inventory update sent to " .. client:Name())
 end
 ```
 
+---
+
 ### lia.net.readBigTable
-**Purpose**: Sets up a handler for receiving large tables over the network (Shared).
 
-**Parameters**:
-- `netStr` (string): Network string name
-- `callback` (function): Callback function for when table is received
+**Purpose**
 
-**Returns**: None
+Reads a big table from network data.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+* `table*): The read table.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Set up big table receiver
-lia.net.readBigTable("liaPlayerData", function(data)
-    if data then
-        print("Received big table with", table.Count(data), "entries")
-        -- Process the data
-    end
-end)
+-- Read big table from network
+local function readBigTable()
+    return lia.net.readBigTable()
+end
 
--- Use in module initialization
-lia.net.readBigTable("liaModuleData", function(data)
-    if data and data.modules then
-        for name, moduleData in pairs(data.modules) do
-            print("Module:", name, "Version:", moduleData.version)
-        end
+-- Use in a function
+local function receiveBigData()
+    local data = lia.net.readBigTable()
+    if data then
+        print("Big table received with " .. #data .. " entries")
+        return data
+    else
+        print("Failed to read big table")
+        return nil
     end
-end)
+end
 ```
 
+---
+
 ### lia.net.writeBigTable
-**Purpose**: Sends a large table over the network in chunks (Server only).
 
-**Parameters**:
-- `targets` (Player|table|nil): Target player(s) or nil for all players
-- `netStr` (string): Network string name
-- `tbl` (table): Table to send
-- `chunkSize` (number): Size of each chunk (optional)
+**Purpose**
 
-**Returns**: None
+Writes a big table to network data.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `table*): The table to write.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Send big table to specific player
-local bigData = {
-    players = {},
-    items = {},
-    -- ... lots of data
-}
-lia.net.writeBigTable(player, "liaPlayerData", bigData)
+-- Write big table to network
+local function writeBigTable(table)
+    lia.net.writeBigTable(table)
+end
 
--- Send to multiple players
-local players = {player1, player2, player3}
-lia.net.writeBigTable(players, "liaModuleData", moduleData)
-
--- Send to all players
-lia.net.writeBigTable(nil, "liaGlobalData", globalData)
-
--- Send with custom chunk size
-lia.net.writeBigTable(player, "liaLargeData", largeTable, 4096)
+-- Use in a function
+local function sendBigData(client, data)
+    lia.net.writeBigTable(data)
+    print("Big table sent to " .. client:Name())
+end
 ```

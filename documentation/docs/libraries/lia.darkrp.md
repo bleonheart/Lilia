@@ -1,23 +1,33 @@
-# lia.darkrp
+# DarkRP Library
+
+This page documents the functions for working with DarkRP compatibility and integration.
+
+---
 
 ## Overview
+
 The `lia.darkrp` library provides DarkRP compatibility functions for the Lilia framework. It includes utilities for position checking, text wrapping, money formatting, and entity creation that maintain compatibility with DarkRP addons.
 
-## Functions
+---
 
 ### lia.darkrp.isEmpty
-**Purpose**  
+
+**Purpose**
+
 Checks if a position is empty and suitable for spawning entities.
 
-**Parameters**  
-- `position` (Vector): The position to check
-- `entitiesToIgnore` (table): Optional table of entities to ignore during the check
+**Parameters**
 
-**Returns**  
-boolean: True if the position is empty, false otherwise
+* `position` (*Vector*): The position to check.
+* `entitiesToIgnore` (*table*): Optional table of entities to ignore during the check.
 
-**Realm**  
-Server
+**Returns**
+
+* `isEmpty` (*boolean*): True if the position is empty, false otherwise.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 ```lua
@@ -36,22 +46,29 @@ if lia.darkrp.isEmpty(pos, ignoreList) then
 end
 ```
 
+---
+
 ### lia.darkrp.findEmptyPos
-**Purpose**  
+
+**Purpose**
+
 Finds an empty position near a starting position by searching in expanding circles.
 
-**Parameters**  
-- `startPos` (Vector): The starting position to search from
-- `entitiesToIgnore` (table): Optional table of entities to ignore
-- `maxDistance` (number): Maximum distance to search
-- `searchStep` (number): Step size for the search
-- `checkArea` (Vector): Area to check around each position
+**Parameters**
 
-**Returns**  
-Vector: The first empty position found, or the original position if none found
+* `startPos` (*Vector*): The starting position to search from.
+* `entitiesToIgnore` (*table*): Optional table of entities to ignore.
+* `maxDistance` (*number*): Maximum distance to search.
+* `searchStep` (*number*): Step size for the search.
+* `checkArea` (*Vector*): Area to check around each position.
 
-**Realm**  
-Server
+**Returns**
+
+* `emptyPosition` (*Vector*): The first empty position found, or the original position if none found.
+
+**Realm**
+
+Server.
 
 **Example Usage**
 ```lua
@@ -61,21 +78,28 @@ local emptyPos = lia.darkrp.findEmptyPos(startPos, {}, 100, 10, Vector(32, 32, 6
 print("Empty position found at:", emptyPos)
 ```
 
+---
+
 ### lia.darkrp.notify
-**Purpose**  
+
+**Purpose**
+
 Sends a notification to a client using Lilia's notification system.
 
-**Parameters**  
-- `client` (Player): The client to notify
-- `_` (any): Unused parameter (for DarkRP compatibility)
-- `_` (any): Unused parameter (for DarkRP compatibility)
-- `message` (string): The message to send
+**Parameters**
 
-**Returns**  
-None
+* `client` (*Player*): The client to notify.
+* `_` (*any*): Unused parameter (for DarkRP compatibility).
+* `_` (*any*): Unused parameter (for DarkRP compatibility).
+* `message` (*string*): The message to send.
 
-**Realm**  
-Server
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
 
 **Example Usage**
 ```lua
@@ -83,20 +107,27 @@ Server
 lia.darkrp.notify(player.GetByID(1), nil, nil, "Hello, player!")
 ```
 
+---
+
 ### lia.darkrp.textWrap
-**Purpose**  
+
+**Purpose**
+
 Wraps text to fit within a specified maximum line width.
 
-**Parameters**  
-- `text` (string): The text to wrap
-- `fontName` (string): The font to use for measuring text width
-- `maxLineWidth` (number): The maximum width for each line
+**Parameters**
 
-**Returns**  
-string: The wrapped text with line breaks
+* `text` (*string*): The text to wrap.
+* `fontName` (*string*): The font to use for measuring text width.
+* `maxLineWidth` (*number*): The maximum width for each line.
 
-**Realm**  
-Client
+**Returns**
+
+* `wrappedText` (*string*): The wrapped text with line breaks.
+
+**Realm**
+
+Client.
 
 **Example Usage**
 ```lua
@@ -106,18 +137,25 @@ local wrappedText = lia.darkrp.textWrap(longText, "DermaDefault", 200)
 print(wrappedText)
 ```
 
+---
+
 ### lia.darkrp.formatMoney
-**Purpose**  
+
+**Purpose**
+
 Formats a money amount using Lilia's currency system.
 
-**Parameters**  
-- `amount` (number): The amount to format
+**Parameters**
 
-**Returns**  
-string: The formatted money string
+* `amount` (*number*): The amount to format.
 
-**Realm**  
-Shared
+**Returns**
+
+* `formattedMoney` (*string*): The formatted money string.
+
+**Realm**
+
+Shared.
 
 **Example Usage**
 ```lua
@@ -127,19 +165,26 @@ local formatted = lia.darkrp.formatMoney(amount)
 print("You have " .. formatted)
 ```
 
+---
+
 ### lia.darkrp.createEntity
-**Purpose**  
+
+**Purpose**
+
 Creates a DarkRP-compatible entity item using Lilia's item system.
 
-**Parameters**  
-- `name` (string): The name of the entity
-- `data` (table): The entity data including model, description, category, etc.
+**Parameters**
 
-**Returns**  
-None
+* `name` (*string*): The name of the entity.
+* `data` (*table*): The entity data including model, description, category, etc.
 
-**Realm**  
-Shared
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
 
 **Example Usage**
 ```lua
@@ -153,18 +198,25 @@ lia.darkrp.createEntity("Test Entity", {
 })
 ```
 
+---
+
 ### lia.darkrp.createCategory
-**Purpose**  
+
+**Purpose**
+
 Creates a DarkRP category (currently a placeholder function).
 
-**Parameters**  
-None
+**Parameters**
 
-**Returns**  
-None
+*None*
 
-**Realm**  
-Shared
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
 
 **Example Usage**
 ```lua

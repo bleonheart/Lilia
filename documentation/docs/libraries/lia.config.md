@@ -1,12 +1,12 @@
 # Config Library
 
-This page documents the functions for working with configuration system and settings management.
+This page documents the functions for working with configuration and settings.
 
 ---
 
 ## Overview
 
-The config library (`lia.config`) provides a comprehensive configuration management system for the Lilia framework. It handles configuration registration, loading, saving, and synchronization between client and server. The library supports various data types including booleans, numbers, colors, tables, and generic strings with validation, callbacks, and networking capabilities.
+The config library (`lia.config`) provides a comprehensive system for managing server configurations, settings, and options in the Lilia framework. It includes configuration registration, value management, networking, and persistence functionality.
 
 ---
 
@@ -14,22 +14,12 @@ The config library (`lia.config`) provides a comprehensive configuration managem
 
 **Purpose**
 
-Registers a new configuration option with specified properties and validation.
+Adds a new configuration option to the config system.
 
 **Parameters**
 
-* `key` (*string*): The unique key for the configuration option.
-* `name` (*string*): The display name for the configuration.
-* `value` (*any*): The default value for the configuration.
-* `callback` (*function*): Optional callback function to execute when value changes.
-* `data` (*table*): Configuration data table containing:
-  * `type` (*string*): Data type (Boolean, Int, Float, Color, Table, Generic).
-  * `desc` (*string*): Description of the configuration.
-  * `category` (*string*): Category for organizing configurations.
-  * `min` (*number*): Minimum value for numeric types.
-  * `max` (*number*): Maximum value for numeric types.
-  * `options` (*table*): Available options for Table type.
-  * `noNetworking` (*boolean*): Whether to skip network synchronization.
+* `key` (*string*): The configuration key.
+* `data` (*table*): The configuration data table containing type, default, etc.
 
 **Returns**
 
@@ -42,64 +32,37 @@ Shared.
 **Example Usage**
 
 ```lua
--- Add a basic boolean configuration
-lia.config.add("EnableFeature", "Enable Feature", true, nil, {
-    desc = "Enable or disable a feature",
-    category = "General",
-    type = "Boolean"
+-- Add a basic configuration option
+lia.config.add("ServerName", {
+    type = "string",
+    default = "My Server",
+    category = "General"
 })
 
--- Add a numeric configuration with validation
-lia.config.add("MaxPlayers", "Maximum Players", 32, nil, {
-    desc = "Maximum number of players allowed",
-    category = "Server",
-    type = "Int",
+-- Add a configuration with more options
+lia.config.add("MaxPlayers", {
+    type = "number",
+    default = 32,
     min = 1,
-    max = 64
+    max = 128,
+    category = "Server",
+    onChanged = function(oldValue, newValue)
+        print("Max players changed from " .. oldValue .. " to " .. newValue)
+    end
 })
 
--- Add a float configuration
-lia.config.add("WalkSpeed", "Walk Speed", 130.0, function(oldValue, newValue)
-    for _, ply in pairs(player.GetAll()) do
-        ply:SetWalkSpeed(newValue)
-    end
-end, {
-    desc = "Player walk speed",
-    category = "Character",
-    type = "Float",
-    min = 50,
-    max = 300
+-- Add a boolean configuration
+lia.config.add("EnablePVP", {
+    type = "boolean",
+    default = true,
+    category = "Gameplay"
 })
 
 -- Add a color configuration
-lia.config.add("ThemeColor", "Theme Color", Color(37, 116, 108), nil, {
-    desc = "Main theme color for the UI",
-    category = "Visuals",
-    type = "Color"
-})
-
--- Add a table configuration with options
-lia.config.add("Language", "Language", "English", nil, {
-    desc = "Server language",
-    category = "General",
-    type = "Table",
-    options = {"English", "Spanish", "French", "German"}
-})
-
--- Add a generic string configuration
-lia.config.add("ServerName", "Server Name", "My Server", nil, {
-    desc = "Name of the server",
-    category = "Server",
-    type = "Generic"
-})
-
--- Add configuration with callback
-lia.config.add("VoiceEnabled", "Voice Chat", true, function(oldValue, newValue)
-    hook.Run("VoiceToggled", newValue)
-end, {
-    desc = "Enable or disable voice chat",
-    category = "General",
-    type = "Boolean"
+lia.config.add("ThemeColor", {
+    type = "color",
+    default = Color(255, 0, 0),
+    category = "UI"
 })
 ```
 
@@ -109,15 +72,15 @@ end, {
 
 **Purpose**
 
-Gets the available options for a configuration with dynamic option generation.
+Gets all configuration options.
 
 **Parameters**
 
-* `key` (*string*): The configuration key to get options for.
+*None*
 
 **Returns**
 
-* `options` (*table*): Table of available options.
+* `options` (*table*): Table of all configuration options.
 
 **Realm**
 
@@ -126,34 +89,30 @@ Shared.
 **Example Usage**
 
 ```lua
--- Get options for a configuration
-local options = lia.config.getOptions("Language")
-print("Available languages: " .. table.concat(options, ", "))
-
--- Get options with validation
-local options = lia.config.getOptions("DermaSkin")
-if #options > 0 then
-    print("Available skins: " .. table.concat(options, ", "))
-else
-    print("No options available")
+-- Get all configuration options
+local function getAllOptions()
+    return lia.config.getOptions()
 end
 
--- Use in UI creation
-local function createLanguageSelector()
-    local options = lia.config.getOptions("Language")
-    local combo = vgui.Create("DComboBox")
+-- Use in a function
+local function showAllOptions()
+    local options = lia.config.getOptions()
+    for key, data in pairs(options) do
+        print("Option: " .. key .. " = " .. tostring(data.default))
+    end
+end
+
+-- Use in a configuration menu
+local function createConfigMenu()
+    local options = lia.config.getOptions()
+    local menu = vgui.Create("DFrame")
     
-    for _, option in ipairs(options) do
-        combo:AddChoice(option)
+    for key, data in pairs(options) do
+        local label = vgui.Create("DLabel", menu)
+        label:SetText(key .. ": " .. tostring(data.default))
     end
     
-    return combo
-end
-
--- Get options for dynamic configuration
-local function getDynamicOptions()
-    local options = lia.config.getOptions("DynamicConfig")
-    return options or {}
+    return menu
 end
 ```
 
@@ -167,8 +126,8 @@ Sets the default value for a configuration option.
 
 **Parameters**
 
-* `key` (*string*): The configuration key to set default for.
-* `value` (*any*): The new default value.
+* `key` (*string*): The configuration key.
+* `value` (*any*): The default value to set.
 
 **Returns**
 
@@ -182,22 +141,21 @@ Shared.
 
 ```lua
 -- Set default value for a configuration
-lia.config.setDefault("MaxPlayers", 64)
+lia.config.setDefault("ServerName", "My New Server")
 
--- Set default with validation
-if lia.config.stored["WalkSpeed"] then
-    lia.config.setDefault("WalkSpeed", 150)
+-- Set default value for multiple configurations
+local function setDefaults()
+    lia.config.setDefault("MaxPlayers", 64)
+    lia.config.setDefault("EnablePVP", false)
+    lia.config.setDefault("ThemeColor", Color(0, 255, 0))
 end
 
--- Set default for multiple configurations
-local defaults = {
-    MaxPlayers = 32,
-    WalkSpeed = 130,
-    RunSpeed = 275
-}
-
-for key, value in pairs(defaults) do
-    lia.config.setDefault(key, value)
+-- Use in a function
+local function resetToDefaults()
+    local options = lia.config.getOptions()
+    for key, data in pairs(options) do
+        lia.config.setDefault(key, data.default)
+    end
 end
 ```
 
@@ -207,13 +165,12 @@ end
 
 **Purpose**
 
-Forces a configuration value without triggering callbacks or saving.
+Forces a configuration value to be set without triggering callbacks.
 
 **Parameters**
 
-* `key` (*string*): The configuration key to set.
+* `key` (*string*): The configuration key.
 * `value` (*any*): The value to set.
-* `noSave` (*boolean*): Whether to skip saving to database.
 
 **Returns**
 
@@ -221,31 +178,24 @@ Forces a configuration value without triggering callbacks or saving.
 
 **Realm**
 
-Shared.
+Server.
 
 **Example Usage**
 
 ```lua
 -- Force set a configuration value
-lia.config.forceSet("MaxPlayers", 64)
-
--- Force set without saving
-lia.config.forceSet("TemporaryValue", "temp", true)
-
--- Force set with validation
-if lia.config.stored["WalkSpeed"] then
-    lia.config.forceSet("WalkSpeed", 150)
-end
+lia.config.forceSet("ServerName", "Forced Server Name")
 
 -- Force set multiple values
-local values = {
-    MaxPlayers = 32,
-    WalkSpeed = 130,
-    RunSpeed = 275
-}
+local function forceSetMultiple()
+    lia.config.forceSet("MaxPlayers", 100)
+    lia.config.forceSet("EnablePVP", true)
+end
 
-for key, value in pairs(values) do
+-- Use in a function
+local function updateConfigSilently(key, value)
     lia.config.forceSet(key, value)
+    print("Configuration updated silently: " .. key)
 end
 ```
 
@@ -255,11 +205,11 @@ end
 
 **Purpose**
 
-Sets a configuration value with proper validation, callbacks, and networking.
+Sets a configuration value and triggers callbacks.
 
 **Parameters**
 
-* `key` (*string*): The configuration key to set.
+* `key` (*string*): The configuration key.
 * `value` (*any*): The value to set.
 
 **Returns**
@@ -268,47 +218,31 @@ Sets a configuration value with proper validation, callbacks, and networking.
 
 **Realm**
 
-Shared.
+Server.
 
 **Example Usage**
 
 ```lua
 -- Set a configuration value
-lia.config.set("MaxPlayers", 32)
+lia.config.set("ServerName", "New Server Name")
 
--- Set with validation
-if isnumber(value) and value > 0 then
-    lia.config.set("WalkSpeed", value)
+-- Set multiple values
+local function updateConfigs()
+    lia.config.set("MaxPlayers", 64)
+    lia.config.set("EnablePVP", true)
+    lia.config.set("ThemeColor", Color(255, 0, 0))
 end
 
--- Set multiple configurations
-local configs = {
-    MaxPlayers = 32,
-    WalkSpeed = 130,
-    RunSpeed = 275,
-    VoiceEnabled = true
-}
-
-for key, value in pairs(configs) do
-    lia.config.set(key, value)
-end
-
--- Set in command
+-- Use in a command
 lia.command.add("setconfig", {
     arguments = {
         {name = "key", type = "string"},
         {name = "value", type = "string"}
     },
+    privilege = "Admin Access",
     onRun = function(client, arguments)
-        local key = arguments[1]
-        local value = arguments[2]
-        
-        if lia.config.stored[key] then
-            lia.config.set(key, value)
-            client:ChatPrint("Configuration updated: " .. key)
-        else
-            client:ChatPrint("Configuration not found: " .. key)
-        end
+        lia.config.set(arguments[1], arguments[2])
+        client:notify("Configuration updated: " .. arguments[1])
     end
 })
 ```
@@ -319,16 +253,15 @@ lia.command.add("setconfig", {
 
 **Purpose**
 
-Gets the current value of a configuration option.
+Gets a configuration value.
 
 **Parameters**
 
-* `key` (*string*): The configuration key to get.
-* `default` (*any*): Default value to return if configuration not found.
+* `key` (*string*): The configuration key.
 
 **Returns**
 
-* `value` (*any*): The configuration value or default.
+* `value` (*any*): The configuration value.
 
 **Realm**
 
@@ -338,40 +271,30 @@ Shared.
 
 ```lua
 -- Get a configuration value
-local maxPlayers = lia.config.get("MaxPlayers")
-print("Max players: " .. maxPlayers)
+local serverName = lia.config.get("ServerName")
+print("Server name:", serverName)
 
--- Get with default value
-local walkSpeed = lia.config.get("WalkSpeed", 130)
-print("Walk speed: " .. walkSpeed)
-
--- Get boolean configuration
-local voiceEnabled = lia.config.get("VoiceEnabled", false)
-if voiceEnabled then
-    print("Voice chat is enabled")
+-- Get multiple values
+local function getServerInfo()
+    local name = lia.config.get("ServerName")
+    local maxPlayers = lia.config.get("MaxPlayers")
+    local pvp = lia.config.get("EnablePVP")
+    
+    return {
+        name = name,
+        maxPlayers = maxPlayers,
+        pvp = pvp
+    }
 end
 
--- Get color configuration
-local themeColor = lia.config.get("ThemeColor", Color(255, 255, 255))
-print("Theme color: " .. tostring(themeColor))
-
--- Get configuration in hook
-hook.Add("PlayerSpawn", "ApplyConfig", function(ply)
-    local walkSpeed = lia.config.get("WalkSpeed", 130)
-    local runSpeed = lia.config.get("RunSpeed", 275)
-    
-    ply:SetWalkSpeed(walkSpeed)
-    ply:SetRunSpeed(runSpeed)
-end)
-
--- Get multiple configurations
-local function getServerSettings()
-    return {
-        maxPlayers = lia.config.get("MaxPlayers", 32),
-        walkSpeed = lia.config.get("WalkSpeed", 130),
-        runSpeed = lia.config.get("RunSpeed", 275),
-        voiceEnabled = lia.config.get("VoiceEnabled", true)
-    }
+-- Use in a function
+local function checkConfig(key)
+    local value = lia.config.get(key)
+    if value then
+        print("Configuration " .. key .. " = " .. tostring(value))
+    else
+        print("Configuration " .. key .. " not found")
+    end
 end
 ```
 
@@ -381,7 +304,7 @@ end
 
 **Purpose**
 
-Loads configuration values from the database.
+Loads configuration from the database.
 
 **Parameters**
 
@@ -393,24 +316,27 @@ Loads configuration values from the database.
 
 **Realm**
 
-Shared.
+Server.
 
 **Example Usage**
 
 ```lua
--- Load configurations on server start
-lia.config.load()
+-- Load configuration on server start
+local function initializeConfig()
+    lia.config.load()
+    print("Configuration loaded from database")
+end
 
--- Load with callback
-lia.config.load()
-hook.Add("InitializedConfig", "MyMod", function()
-    print("Configurations loaded successfully")
-end)
-
--- Load in gamemode initialization
+-- Use in a hook
 hook.Add("Initialize", "LoadConfig", function()
     lia.config.load()
 end)
+
+-- Use in a function
+local function reloadConfig()
+    lia.config.load()
+    print("Configuration reloaded")
+end
 ```
 
 ---
@@ -419,7 +345,7 @@ end)
 
 **Purpose**
 
-Gets all configuration values that differ from their defaults.
+Gets all configuration values that have been changed from their defaults.
 
 **Parameters**
 
@@ -436,24 +362,26 @@ Server.
 **Example Usage**
 
 ```lua
--- Get changed values
-local changed = lia.config.getChangedValues()
-print("Changed configurations: " .. table.Count(changed))
-
--- Get changed values for saving
-local changed = lia.config.getChangedValues()
-if table.Count(changed) > 0 then
-    print("Saving " .. table.Count(changed) .. " changed configurations")
+-- Get changed configuration values
+local function getChangedConfigs()
+    return lia.config.getChangedValues()
 end
 
--- Use in admin command
-lia.command.add("configstatus", {
-    onRun = function(client)
+-- Use in a function
+local function showChangedConfigs()
+    local changed = lia.config.getChangedValues()
+    for key, value in pairs(changed) do
+        print("Changed: " .. key .. " = " .. tostring(value))
+    end
+end
+
+-- Use in a command
+lia.command.add("showchanged", {
+    privilege = "Admin Access",
+    onRun = function(client, arguments)
         local changed = lia.config.getChangedValues()
-        client:ChatPrint("Changed configurations: " .. table.Count(changed))
-        
         for key, value in pairs(changed) do
-            client:ChatPrint(key .. " = " .. tostring(value))
+            client:notify(key .. " = " .. tostring(value))
         end
     end
 })
@@ -465,11 +393,11 @@ lia.command.add("configstatus", {
 
 **Purpose**
 
-Sends configuration values to clients.
+Sends configuration to a client.
 
 **Parameters**
 
-* `client` (*Player*): Optional specific client to send to (nil = all clients).
+* `client` (*Player*): The client to send configuration to.
 
 **Returns**
 
@@ -482,24 +410,20 @@ Server.
 **Example Usage**
 
 ```lua
--- Send to all clients
-lia.config.send()
+-- Send configuration to a client
+local function sendConfigToClient(client)
+    lia.config.send(client)
+end
 
--- Send to specific client
-lia.config.send(client)
-
--- Send after configuration change
-lia.config.set("MaxPlayers", 32)
-lia.config.send()
-
--- Send in hook
-hook.Add("PlayerInitialSpawn", "SendConfig", function(ply)
-    lia.config.send(ply)
+-- Use in a hook
+hook.Add("PlayerInitialSpawn", "SendConfig", function(client)
+    lia.config.send(client)
 end)
 
--- Send with validation
-if IsValid(client) then
+-- Use in a function
+local function updateClientConfig(client)
     lia.config.send(client)
+    client:notify("Configuration updated")
 end
 ```
 
@@ -509,7 +433,7 @@ end
 
 **Purpose**
 
-Saves configuration values to the database.
+Saves configuration to the database.
 
 **Parameters**
 
@@ -526,29 +450,76 @@ Server.
 **Example Usage**
 
 ```lua
--- Save configurations
-lia.config.save()
+-- Save configuration to database
+local function saveConfig()
+    lia.config.save()
+    print("Configuration saved to database")
+end
 
--- Save after changes
-lia.config.set("MaxPlayers", 32)
-lia.config.save()
-
--- Save in hook
-hook.Add("ShutDown", "SaveConfig", function()
+-- Use in a timer
+timer.Create("SaveConfig", 300, 0, function()
     lia.config.save()
 end)
 
--- Save with validation
-local changed = lia.config.getChangedValues()
-if table.Count(changed) > 0 then
-    lia.config.save()
-    print("Configurations saved")
-end
+-- Use in a command
+lia.command.add("saveconfig", {
+    privilege = "Admin Access",
+    onRun = function(client, arguments)
+        lia.config.save()
+        client:notify("Configuration saved")
+    end
+})
 ```
 
 ---
 
 ### lia.config.reset
+
+**Purpose**
+
+Resets a configuration value to its default.
+
+**Parameters**
+
+* `key` (*string*): The configuration key to reset.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Reset a configuration to default
+lia.config.reset("ServerName")
+
+-- Reset multiple configurations
+local function resetMultiple()
+    lia.config.reset("MaxPlayers")
+    lia.config.reset("EnablePVP")
+    lia.config.reset("ThemeColor")
+end
+
+-- Use in a command
+lia.command.add("resetconfig", {
+    arguments = {
+        {name = "key", type = "string"}
+    },
+    privilege = "Admin Access",
+    onRun = function(client, arguments)
+        lia.config.reset(arguments[1])
+        client:notify("Configuration reset: " .. arguments[1])
+    end
+})
+```
+
+---
+
+### lia.config.resetAll
 
 **Purpose**
 
@@ -569,25 +540,126 @@ Server.
 **Example Usage**
 
 ```lua
--- Reset all configurations
-lia.config.reset()
+-- Reset all configurations to defaults
+local function resetAllConfigs()
+    lia.config.resetAll()
+    print("All configurations reset to defaults")
+end
 
--- Reset in command
-lia.command.add("resetconfig", {
-    onRun = function(client)
-        lia.config.reset()
-        client:ChatPrint("All configurations reset to defaults")
+-- Use in a command
+lia.command.add("resetallconfigs", {
+    privilege = "Admin Access",
+    onRun = function(client, arguments)
+        lia.config.resetAll()
+        client:notify("All configurations reset")
     end
 })
 
--- Reset with confirmation
-lia.command.add("resetconfigconfirm", {
-    onRun = function(client)
-        Derma_Query("Reset all configurations to defaults?", "Confirm Reset", "Yes", function()
-            lia.config.reset()
-            client:ChatPrint("Configurations reset")
-        end, "No")
-    end
-})
+-- Use in a function
+local function factoryReset()
+    lia.config.resetAll()
+    print("Factory reset completed")
+end
 ```
+
+---
+
+### lia.config.getCategory
+
+**Purpose**
+
+Gets all configuration options in a specific category.
+
+**Parameters**
+
+* `category` (*string*): The category name.
+
+**Returns**
+
+* `options` (*table*): Table of configuration options in the category.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get configuration options in a category
+local function getCategoryOptions(category)
+    return lia.config.getCategory(category)
+end
+
+-- Use in a function
+local function showCategoryOptions(category)
+    local options = lia.config.getCategory(category)
+    for key, data in pairs(options) do
+        print("Category " .. category .. ": " .. key .. " = " .. tostring(data.default))
+    end
+end
+
+-- Use in a menu
+local function createCategoryMenu(category)
+    local options = lia.config.getCategory(category)
+    local menu = vgui.Create("DFrame")
+    
+    for key, data in pairs(options) do
+        local label = vgui.Create("DLabel", menu)
+        label:SetText(key .. ": " .. tostring(data.default))
+    end
+    
+    return menu
+end
+```
+
+---
+
+### lia.config.addCategory
+
+**Purpose**
+
+Adds a new configuration category.
+
+**Parameters**
+
+* `name` (*string*): The category name.
+* `data` (*table*): The category data table.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Add a new configuration category
+lia.config.addCategory("UI", {
+    name = "User Interface",
+    description = "UI-related settings"
+})
+
+-- Add multiple categories
+local function addCategories()
+    lia.config.addCategory("Gameplay", {
+        name = "Gameplay Settings",
+        description = "Gameplay-related settings"
+    })
+    
+    lia.config.addCategory("Server", {
+        name = "Server Settings",
+        description = "Server-related settings"
+    })
+end
+
+-- Use in a function
+local function createCustomCategory(name, displayName, description)
+    lia.config.addCategory(name, {
+        name = displayName,
+        description = description
+    })
+end
 ```

@@ -1,12 +1,12 @@
 # Attributes Library
 
-This page documents the functions for working with character attributes and attribute management.
+This page documents the functions for working with character attributes and their management.
 
 ---
 
 ## Overview
 
-The attributes library (`lia.attribs`) provides a system for managing character attributes in the Lilia framework. It handles loading attribute definitions from files, setting up attributes for characters, and managing attribute data. The library supports dynamic attribute loading and provides hooks for attribute setup and management.
+The attributes library (`lia.attribs`) provides a system for managing character attributes in the Lilia framework. It handles loading attribute definitions from files, setting up attributes for characters, and managing attribute data throughout the character's lifecycle.
 
 ---
 
@@ -18,7 +18,7 @@ Loads attribute definitions from a directory containing attribute files.
 
 **Parameters**
 
-* `directory` (*string*): The directory path to load attributes from.
+* `directory` (*string*): The directory path to load attribute files from.
 
 **Returns**
 
@@ -31,23 +31,14 @@ Shared.
 **Example Usage**
 
 ```lua
--- Load attributes from a specific directory
+-- Load attributes from a directory
 lia.attribs.loadFromDir("gamemode/attributes")
 
--- Load attributes from schema directory
+-- Load from a custom attributes folder
+lia.attribs.loadFromDir("addons/myaddon/attributes")
+
+-- Load from schema attributes
 lia.attribs.loadFromDir("schema/attributes")
-
--- Load attributes from addon directory
-lia.attribs.loadFromDir("addons/myaddon/lua/attributes")
-
--- Load attributes with error handling
-local success, err = pcall(function()
-    lia.attribs.loadFromDir("gamemode/attributes")
-end)
-
-if not success then
-    print("Failed to load attributes: " .. tostring(err))
-end
 ```
 
 ---
@@ -56,7 +47,7 @@ end
 
 **Purpose**
 
-Sets up attributes for a client's character, calling OnSetup hooks for each attribute.
+Sets up attributes for a client character, calling OnSetup callbacks for each attribute.
 
 **Parameters**
 
@@ -73,27 +64,22 @@ Server.
 **Example Usage**
 
 ```lua
--- Setup attributes for a player when they spawn
+-- Set up attributes for a character
+lia.attribs.setup(client)
+
+-- Set up attributes when character spawns
 hook.Add("PlayerSpawn", "SetupAttributes", function(ply)
-    if ply:getChar() then
+    local char = ply:getChar()
+    if char then
         lia.attribs.setup(ply)
     end
 end)
 
--- Setup attributes for a character when loaded
-hook.Add("CharacterLoaded", "SetupAttributes", function(char)
+-- Set up attributes after character creation
+hook.Add("OnCharCreated", "SetupNewCharAttributes", function(char)
     local client = char:getPlayer()
     if IsValid(client) then
         lia.attribs.setup(client)
     end
 end)
-
--- Setup attributes manually
-lia.attribs.setup(ply)
-
--- Setup attributes with validation
-if IsValid(ply) and ply:getChar() then
-    lia.attribs.setup(ply)
-    print("Attributes setup for " .. ply:Name())
-end
 ```

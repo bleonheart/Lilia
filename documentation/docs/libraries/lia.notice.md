@@ -1,62 +1,101 @@
-# lia.notice
+# Notices Library
+
+This page documents the functions for working with in-game notifications and notices.
+
+---
 
 ## Overview
-The `lia.notice` library provides a notification system for Lilia, allowing the gamemode to display messages to players. It supports both server-side and client-side notifications with automatic positioning and timing.
 
-## Functions
+The notices library (`lia.notices`) provides a comprehensive system for managing in-game notifications, notices, and message display in the Lilia framework. It includes notice creation, display, and management functionality.
+
+---
 
 ### lia.notices.notify
-**Purpose**: Displays a notification message to players.
 
-**Parameters**:
-- `message` (string): Message to display
-- `recipient` (Player): Target player (optional, broadcasts if nil)
+**Purpose**
 
-**Returns**: None
+Shows a notification to a client.
 
-**Realm**: Server/Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to show the notification to.
+* `message` (*string*): The notification message.
+* `type` (*string*): The notification type.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Server-side: Notify all players
-lia.notices.notify("Server restarting in 5 minutes!")
+-- Show notification
+local function notify(client, message, type)
+    lia.notices.notify(client, message, type)
+end
 
--- Server-side: Notify specific player
-lia.notices.notify("Welcome to the server!", player)
+-- Use in a function
+local function notifyPlayer(client, message)
+    lia.notices.notify(client, message, "info")
+    print("Notification sent to " .. client:Name())
+end
 
--- Client-side: Display notification
-lia.notices.notify("Item picked up!")
+-- Use in a function
+local function notifyError(client, message)
+    lia.notices.notify(client, message, "error")
+    print("Error notification sent to " .. client:Name())
+end
 
--- Server-side: Notify with formatted message
-lia.notices.notify("Player " .. player:Name() .. " joined the server!")
+-- Use in a function
+local function notifySuccess(client, message)
+    lia.notices.notify(client, message, "success")
+    print("Success notification sent to " .. client:Name())
+end
 ```
 
+---
+
 ### lia.notices.notifyLocalized
-**Purpose**: Displays a localized notification message to players.
 
-**Parameters**:
-- `key` (string): Localization key
-- `recipient` (Player): Target player (optional, broadcasts if nil)
-- `...` (any): Format arguments for the localized string
+**Purpose**
 
-**Returns**: None
+Shows a localized notification to a client.
 
-**Realm**: Server/Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to show the notification to.
+* `key` (*string*): The localization key.
+* `...` (*any*): Optional parameters for formatting.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Server-side: Notify with localization
-lia.notices.notifyLocalized("welcomeMessage", player)
+-- Show localized notification
+local function notifyLocalized(client, key, ...)
+    lia.notices.notifyLocalized(client, key, ...)
+end
 
--- Server-side: Notify with format arguments
-lia.notices.notifyLocalized("playerJoined", nil, player:Name())
+-- Use in a function
+local function notifyWelcome(client)
+    lia.notices.notifyLocalized(client, "welcome")
+    print("Welcome notification sent to " .. client:Name())
+end
 
--- Server-side: Notify specific player with arguments
-lia.notices.notifyLocalized("itemPickedUp", player, "Pistol", 1)
-
--- Client-side: Display localized notification
-lia.notices.notifyLocalized("inventoryFull")
-
--- Client-side: Display with format arguments
-lia.notices.notifyLocalized("moneyReceived", 1000)
+-- Use in a function
+local function notifyPlayerCount(client, count)
+    lia.notices.notifyLocalized(client, "player_count", count)
+    print("Player count notification sent to " .. client:Name())
+end
 ```

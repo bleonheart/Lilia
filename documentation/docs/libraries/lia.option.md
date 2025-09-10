@@ -1,164 +1,245 @@
-# lia.option
+# Option Library
+
+This page documents the functions for working with client-side options and settings.
+
+---
 
 ## Overview
-The `lia.option` library provides client-side option management for Lilia. It handles storing, loading, and managing user preferences with automatic UI generation and persistence.
 
-## Functions
+The option library (`lia.option`) provides a comprehensive system for managing client-side options, settings, and preferences in the Lilia framework. It includes option registration, saving, loading, and management functionality.
+
+---
 
 ### lia.option.add
-**Purpose**: Adds a new option to the options system (Client only).
 
-**Parameters**:
-- `key` (string): Unique key for the option
-- `name` (string): Display name for the option
-- `desc` (string): Description of the option
-- `default` (any): Default value for the option
-- `callback` (function): Callback function when option changes (optional)
-- `data` (table): Additional option data (category, min, max, etc.)
+**Purpose**
 
-**Returns**: None
+Adds a new client-side option.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `optionData` (*table*): The option data table containing name, type, default, etc.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Add a boolean option
-lia.option.add("showHUD", "Show HUD", "Toggle HUD visibility", true, function(old, new)
-    print("HUD visibility changed from", old, "to", new)
-end, {
-    category = "Display",
-    isQuick = true
-})
+-- Add a client option
+local function addOption(optionData)
+    lia.option.add(optionData)
+end
 
--- Add a numeric option
-lia.option.add("volume", "Volume", "Master volume level", 0.5, nil, {
-    category = "Audio",
-    min = 0,
-    max = 1,
-    decimals = 2
-})
+-- Use in a function
+local function createVolumeOption()
+    lia.option.add({
+        name = "Volume",
+        type = "slider",
+        default = 1.0,
+        min = 0.0,
+        max = 1.0,
+        category = "Audio"
+    })
+    print("Volume option created")
+end
 
--- Add a color option
-lia.option.add("hudColor", "HUD Color", "Color of the HUD elements", Color(255, 255, 255), nil, {
-    category = "Display"
-})
-
--- Add a table/choice option
-lia.option.add("language", "Language", "Game language", "English", nil, {
-    category = "General",
-    options = {"English", "Spanish", "French", "German"}
-})
+-- Use in a function
+local function createLanguageOption()
+    lia.option.add({
+        name = "Language",
+        type = "combo",
+        default = "en",
+        options = {"en", "es", "fr"},
+        category = "Interface"
+    })
+    print("Language option created")
+end
 ```
+
+---
 
 ### lia.option.getOptions
-**Purpose**: Gets the options for a table-type option (Client only).
 
-**Parameters**:
-- `key` (string): Option key
+**Purpose**
 
-**Returns**: Table of options
+Gets all client options.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+* `options` (*table*): Table of all options.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Get options for a choice option
-local options = lia.option.getOptions("language")
-for _, option in ipairs(options) do
-    print("Available language:", option)
+-- Get all options
+local function getAllOptions()
+    return lia.option.getOptions()
 end
 
--- Use in UI
-local combo = vgui.Create("DComboBox")
-local options = lia.option.getOptions("weaponSelector")
-for _, option in ipairs(options) do
-    combo:AddChoice(option)
+-- Use in a function
+local function showAllOptions()
+    local options = lia.option.getOptions()
+    print("Available options:")
+    for _, option in ipairs(options) do
+        print("- " .. option.name)
+    end
 end
 ```
+
+---
 
 ### lia.option.set
-**Purpose**: Sets the value of an option (Client only).
 
-**Parameters**:
-- `key` (string): Option key
-- `value` (any): New value
+**Purpose**
 
-**Returns**: None
+Sets an option value for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to set the option for.
+* `optionName` (*string*): The option name.
+* `value` (*any*): The option value.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Set option value
-lia.option.set("showHUD", false)
-lia.option.set("volume", 0.8)
-lia.option.set("hudColor", Color(255, 0, 0))
+-- Set option for client
+local function setOption(client, optionName, value)
+    lia.option.set(client, optionName, value)
+end
 
--- Set with callback
-lia.option.set("language", "Spanish")
--- Callback will be triggered automatically
+-- Use in a function
+local function setVolume(client, volume)
+    lia.option.set(client, "Volume", volume)
+    print("Volume set for " .. client:Name())
+end
 ```
+
+---
 
 ### lia.option.get
-**Purpose**: Gets the value of an option (Client only).
 
-**Parameters**:
-- `key` (string): Option key
-- `default` (any): Default value if option not found
+**Purpose**
 
-**Returns**: Option value or default
+Gets an option value for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to get the option for.
+* `optionName` (*string*): The option name.
+
+**Returns**
+
+* `value` (*any*): The option value.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Get option value
-local showHUD = lia.option.get("showHUD", true)
-local volume = lia.option.get("volume", 0.5)
-local hudColor = lia.option.get("hudColor", Color(255, 255, 255))
+-- Get option for client
+local function getOption(client, optionName)
+    return lia.option.get(client, optionName)
+end
 
--- Use in rendering
-local hudColor = lia.option.get("hudColor")
-surface.SetDrawColor(hudColor)
-surface.DrawRect(0, 0, 100, 100)
+-- Use in a function
+local function getVolume(client)
+    local volume = lia.option.get(client, "Volume")
+    print("Volume for " .. client:Name() .. ": " .. volume)
+    return volume
+end
 ```
+
+---
 
 ### lia.option.save
-**Purpose**: Saves all options to file (Client only).
 
-**Parameters**: None
+**Purpose**
 
-**Returns**: None
+Saves options for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to save options for.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Save options
-lia.option.save()
+-- Save options for client
+local function saveOptions(client)
+    lia.option.save(client)
+end
 
--- Save after setting multiple options
-lia.option.set("showHUD", false)
-lia.option.set("volume", 0.8)
-lia.option.save()
+-- Use in a function
+local function savePlayerOptions(client)
+    lia.option.save(client)
+    print("Options saved for " .. client:Name())
+end
 ```
 
+---
+
 ### lia.option.load
-**Purpose**: Loads options from file (Client only).
 
-**Parameters**: None
+**Purpose**
 
-**Returns**: None
+Loads options for a client.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `client` (*Player*): The client to load options for.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Load options
-lia.option.load()
+-- Load options for client
+local function loadOptions(client)
+    lia.option.load(client)
+end
 
--- This is typically called during initialization
-hook.Add("Initialize", "LoadOptions", function()
-    lia.option.load()
-end)
+-- Use in a function
+local function loadPlayerOptions(client)
+    lia.option.load(client)
+    print("Options loaded for " .. client:Name())
+end
 ```

@@ -1,165 +1,591 @@
-# lia.workshop
+# Workshop Library
+
+This page documents the functions for working with Steam Workshop content and addon management.
+
+---
 
 ## Overview
-The `lia.workshop` library provides functionality for managing Steam Workshop addons in the Lilia framework. It handles downloading, mounting, and tracking of Workshop content on both server and client sides.
 
-## Functions
+The workshop library (`lia.workshop`) provides a comprehensive system for managing Steam Workshop content, addon mounting, and content synchronization in the Lilia framework. It includes server-side addon tracking, client-side mounting, and automatic content downloading.
+
+---
 
 ### lia.workshop.Add
-**Purpose**  
-Adds a Workshop addon ID to the server's list of required addons.
 
-**Parameters**  
-- `id` (string): The Workshop addon ID to add
+**Purpose**
 
-**Returns**  
-None
+Adds a Workshop addon ID to the server's required addons list.
 
-**Realm**  
-Server
+**Parameters**
+
+* `id` (*string*): The Workshop addon ID.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
 
 **Example Usage**
+
 ```lua
--- Add a specific Workshop addon to the server
-lia.workshop.Add("123456789")
+-- Add a Workshop addon
+local function addWorkshopAddon(id)
+    lia.workshop.Add(id)
+end
+
+-- Use in a function
+local function setupRequiredAddons()
+    lia.workshop.Add("123456789")
+    lia.workshop.Add("987654321")
+    print("Required addons added")
+end
 ```
+
+---
 
 ### lia.workshop.Gather
-**Purpose**  
-Gathers all Workshop addon IDs from various sources including mounted addons and module dependencies.
 
-**Parameters**  
-None
+**Purpose**
 
-**Returns**  
-table: A table containing all gathered Workshop addon IDs
+Gathers all Workshop addon IDs from various sources.
 
-**Realm**  
-Server
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `ids` (*table*): Table of all addon IDs.
+
+**Realm**
+
+Server.
 
 **Example Usage**
+
 ```lua
--- Gather all Workshop addons and get the list
-local addonIds = lia.workshop.Gather()
-print("Found " .. table.Count(addonIds) .. " Workshop addons")
+-- Gather all addon IDs
+local function gatherAddonIDs()
+    return lia.workshop.Gather()
+end
+
+-- Use in a function
+local function refreshAddonList()
+    local ids = lia.workshop.Gather()
+    print("Found " .. table.Count(ids) .. " addon IDs")
+    return ids
+end
 ```
+
+---
 
 ### lia.workshop.Send
-**Purpose**  
-Sends the current Workshop addon cache to a specific player.
 
-**Parameters**  
-- `ply` (Player): The player to send the addon list to
+**Purpose**
 
-**Returns**  
-None
+Sends the addon list to a specific player.
 
-**Realm**  
-Server
+**Parameters**
+
+* `ply` (*Player*): The player to send to.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
 
 **Example Usage**
+
 ```lua
--- Send Workshop addon list to a player
-lia.workshop.Send(player.GetByID(1))
+-- Send addon list to player
+local function sendAddonList(ply)
+    lia.workshop.Send(ply)
+end
+
+-- Use in a function
+local function syncAddonsWithPlayer(ply)
+    lia.workshop.Send(ply)
+    print("Addon list sent to " .. ply:Name())
+end
 ```
+
+---
 
 ### lia.workshop.IsMounted
-**Purpose**  
-Checks if a Workshop addon is currently mounted on the client.
 
-**Parameters**  
-- `id` (string): The Workshop addon ID to check
+**Purpose**
 
-**Returns**  
-boolean: True if the addon is mounted, false otherwise
+Checks if a Workshop addon is mounted on the client.
 
-**Realm**  
-Client
+**Parameters**
+
+* `id` (*string*): The Workshop addon ID.
+
+**Returns**
+
+* `isMounted` (*boolean*): True if the addon is mounted.
+
+**Realm**
+
+Client.
 
 **Example Usage**
+
 ```lua
--- Check if a specific addon is mounted
-if lia.workshop.IsMounted("123456789") then
-    print("Addon is mounted")
-else
-    print("Addon is not mounted")
+-- Check if addon is mounted
+local function isAddonMounted(id)
+    return lia.workshop.IsMounted(id)
+end
+
+-- Use in a function
+local function checkAddonStatus(id)
+    if lia.workshop.IsMounted(id) then
+        print("Addon " .. id .. " is mounted")
+        return true
+    else
+        print("Addon " .. id .. " is not mounted")
+        return false
+    end
 end
 ```
+
+---
 
 ### lia.workshop.Enqueue
-**Purpose**  
-Adds a Workshop addon to the download queue for mounting.
 
-**Parameters**  
-- `id` (string): The Workshop addon ID to queue for download
+**Purpose**
 
-**Returns**  
-None
+Adds a Workshop addon to the download queue.
 
-**Realm**  
-Client
+**Parameters**
 
-**Example Usage**
-```lua
--- Queue an addon for download and mounting
-lia.workshop.Enqueue("123456789")
-```
+* `id` (*string*): The Workshop addon ID.
 
-### lia.workshop.ProcessQueue
-**Purpose**  
-Processes the Workshop addon download queue, downloading and mounting addons one by one.
+**Returns**
 
-**Parameters**  
-None
+*None*
 
-**Returns**  
-None
+**Realm**
 
-**Realm**  
-Client
+Client.
 
 **Example Usage**
+
 ```lua
--- Process the download queue
-lia.workshop.ProcessQueue()
-```
+-- Queue addon for download
+local function queueAddon(id)
+    lia.workshop.Enqueue(id)
+end
 
-### lia.workshop.hasContentToDownload
-**Purpose**  
-Checks if there are any Workshop addons that need to be downloaded.
-
-**Parameters**  
-None
-
-**Returns**  
-boolean: True if there are addons to download, false otherwise
-
-**Realm**  
-Client
-
-**Example Usage**
-```lua
--- Check if there are addons to download
-if lia.workshop.hasContentToDownload() then
-    print("There are addons that need to be downloaded")
+-- Use in a function
+local function downloadAddon(id)
+    lia.workshop.Enqueue(id)
+    print("Addon " .. id .. " queued for download")
 end
 ```
 
-### lia.workshop.mountContent
-**Purpose**  
-Opens a UI dialog to allow the player to download and mount missing Workshop content.
+---
 
-**Parameters**  
-None
+### lia.workshop.ProcessQueue
 
-**Returns**  
-None
+**Purpose**
 
-**Realm**  
-Client
+Processes the download queue for Workshop addons.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
 
 **Example Usage**
+
 ```lua
--- Open the Workshop content downloader
-lia.workshop.mountContent()
+-- Process download queue
+local function processQueue()
+    lia.workshop.ProcessQueue()
+end
+
+-- Use in a function
+local function startDownloadProcess()
+    lia.workshop.ProcessQueue()
+    print("Download process started")
+end
+```
+
+---
+
+### lia.workshop.hasContentToDownload
+
+**Purpose**
+
+Checks if there are addons that need to be downloaded.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `hasContent` (*boolean*): True if there are addons to download.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Check if content needs downloading
+local function hasContentToDownload()
+    return lia.workshop.hasContentToDownload()
+end
+
+-- Use in a function
+local function checkDownloadStatus()
+    if lia.workshop.hasContentToDownload() then
+        print("Content needs to be downloaded")
+        return true
+    else
+        print("All content is up to date")
+        return false
+    end
+end
+```
+
+---
+
+### lia.workshop.mountContent
+
+**Purpose**
+
+Shows a UI to mount Workshop content.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Show mount content UI
+local function showMountUI()
+    lia.workshop.mountContent()
+end
+
+-- Use in a function
+local function openWorkshopManager()
+    lia.workshop.mountContent()
+    print("Workshop manager opened")
+end
+```
+
+---
+
+### lia.workshop.ids
+
+**Purpose**
+
+Stores server-side addon IDs.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `ids` (*table*): Table of addon IDs.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get server addon IDs
+local function getServerAddonIDs()
+    return lia.workshop.ids
+end
+
+-- Use in a function
+local function listServerAddons()
+    for id, _ in pairs(lia.workshop.ids) do
+        print("Server addon: " .. id)
+    end
+end
+```
+
+---
+
+### lia.workshop.known
+
+**Purpose**
+
+Stores known addon IDs.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `known` (*table*): Table of known addon IDs.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get known addon IDs
+local function getKnownAddonIDs()
+    return lia.workshop.known
+end
+
+-- Use in a function
+local function listKnownAddons()
+    for id, _ in pairs(lia.workshop.known) do
+        print("Known addon: " .. id)
+    end
+end
+```
+
+---
+
+### lia.workshop.cache
+
+**Purpose**
+
+Stores cached addon data.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `cache` (*table*): Table of cached addon data.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Get cached addon data
+local function getCachedAddonData()
+    return lia.workshop.cache
+end
+
+-- Use in a function
+local function listCachedAddons()
+    for id, _ in pairs(lia.workshop.cache) do
+        print("Cached addon: " .. id)
+    end
+end
+```
+
+---
+
+### lia.workshop.serverIds
+
+**Purpose**
+
+Stores client-side server addon IDs.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `serverIds` (*table*): Table of server addon IDs.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Get server addon IDs on client
+local function getServerAddonIDs()
+    return lia.workshop.serverIds
+end
+
+-- Use in a function
+local function listServerAddons()
+    for id, _ in pairs(lia.workshop.serverIds) do
+        print("Server addon: " .. id)
+    end
+end
+```
+
+---
+
+### lia.workshop.mounted
+
+**Purpose**
+
+Stores mounted addon status.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `mounted` (*table*): Table of mounted addon status.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Get mounted addon status
+local function getMountedAddons()
+    return lia.workshop.mounted
+end
+
+-- Use in a function
+local function listMountedAddons()
+    for id, mounted in pairs(lia.workshop.mounted) do
+        print("Addon " .. id .. ": " .. (mounted and "mounted" or "not mounted"))
+    end
+end
+```
+
+---
+
+### lia.workshop.mountCounts
+
+**Purpose**
+
+Stores file counts for mounted addons.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `mountCounts` (*table*): Table of file counts.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Get mount file counts
+local function getMountCounts()
+    return lia.workshop.mountCounts
+end
+
+-- Use in a function
+local function listMountCounts()
+    for id, count in pairs(lia.workshop.mountCounts) do
+        print("Addon " .. id .. ": " .. count .. " files")
+    end
+end
+```
+
+---
+
+### lia.workshop.queue
+
+**Purpose**
+
+Stores the download queue.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `queue` (*table*): Table of queued addon IDs.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Get download queue
+local function getDownloadQueue()
+    return lia.workshop.queue
+end
+
+-- Use in a function
+local function listDownloadQueue()
+    for i, id in ipairs(lia.workshop.queue) do
+        print("Queue " .. i .. ": " .. id)
+    end
+end
+```
+
+---
+
+### lia.workshop.active
+
+**Purpose**
+
+Stores the active download status.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `active` (*boolean*): True if downloading is active.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Check if download is active
+local function isDownloadActive()
+    return lia.workshop.active
+end
+
+-- Use in a function
+local function checkDownloadStatus()
+    if lia.workshop.active then
+        print("Download is currently active")
+    else
+        print("Download is not active")
+    end
+end
 ```

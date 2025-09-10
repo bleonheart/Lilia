@@ -1,140 +1,230 @@
-# lia.time
+# Time Library
+
+This page documents the functions for working with time utilities and time management.
+
+---
 
 ## Overview
-The `lia.time` library provides time-related utility functions for Lilia, including time formatting, date parsing, and time calculations.
 
-## Functions
+The time library (`lia.time`) provides a comprehensive system for managing time, date formatting, and time-related utilities in the Lilia framework. It includes time calculations, date formatting, and time conversion functionality.
+
+---
 
 ### lia.time.TimeSince
-**Purpose**: Calculates the time elapsed since a given timestamp (Shared).
 
-**Parameters**:
-- `strTime` (string|number): Time string or timestamp
+**Purpose**
 
-**Returns**: String describing time elapsed
+Calculates the time since a given timestamp.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+* `timestamp` (*number*): The timestamp to calculate from.
+
+**Returns**
+
+* `timeSince` (*number*): The time since the timestamp in seconds.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
 -- Calculate time since timestamp
-local timeAgo = lia.time.TimeSince(1640995200) -- Unix timestamp
-print("Time since:", timeAgo) -- "2 hours ago"
-
--- Calculate time since date string
-local timeAgo = lia.time.TimeSince("2023-01-01")
-print("Time since:", timeAgo) -- "30 days ago"
-
--- Use in UI
-local lastLogin = player:getData("lastLogin", 0)
-local timeSince = lia.time.TimeSince(lastLogin)
-local label = vgui.Create("DLabel")
-label:SetText("Last login: " .. timeSince)
-```
-
-### lia.time.toNumber
-**Purpose**: Converts a time string to a table of time components (Shared).
-
-**Parameters**:
-- `str` (string): Time string in format "YYYY-MM-DD HH:MM:SS" (optional, defaults to current time)
-
-**Returns**: Table with year, month, day, hour, min, sec
-
-**Realm**: Shared
-
-**Example Usage**:
-```lua
--- Convert current time
-local timeData = lia.time.toNumber()
-print("Year:", timeData.year)
-print("Month:", timeData.month)
-print("Day:", timeData.day)
-
--- Convert specific time string
-local timeData = lia.time.toNumber("2023-12-25 15:30:45")
-print("Christmas 2023 at 3:30 PM")
-
--- Use in calculations
-local timeData = lia.time.toNumber("2023-01-01 00:00:00")
-local currentTime = lia.time.toNumber()
-local daysSince = currentTime.day - timeData.day
-print("Days since New Year:", daysSince)
-```
-
-### lia.time.GetDate
-**Purpose**: Gets a formatted date string (Shared).
-
-**Parameters**: None
-
-**Returns**: String with formatted date
-
-**Realm**: Shared
-
-**Example Usage**:
-```lua
--- Get current date
-local date = lia.time.GetDate()
-print("Current date:", date) -- "Monday, 25 December 2023, 15:30:45"
-
--- Use in UI
-local dateLabel = vgui.Create("DLabel")
-dateLabel:SetText(lia.time.GetDate())
-dateLabel:SetFont("liaMediumFont")
-
--- Use in logs
-lia.log.add("System", "info", "Server started at " .. lia.time.GetDate())
-```
-
-### lia.time.formatDHM
-**Purpose**: Formats seconds into days, hours, and minutes (Shared).
-
-**Parameters**:
-- `seconds` (number): Number of seconds to format
-
-**Returns**: String with formatted time
-
-**Realm**: Shared
-
-**Example Usage**:
-```lua
--- Format seconds
-local formatted = lia.time.formatDHM(90061) -- 1 day, 1 hour, 1 minute
-print("Formatted time:", formatted) -- "1 day, 1 hour, 1 minute"
-
--- Format different amounts
-local time1 = lia.time.formatDHM(3600) -- 1 hour
-local time2 = lia.time.formatDHM(86400) -- 1 day
-local time3 = lia.time.formatDHM(3661) -- 1 hour, 1 minute
-
--- Use in UI
-local cooldown = 7200 -- 2 hours
-local cooldownText = lia.time.formatDHM(cooldown)
-local label = vgui.Create("DLabel")
-label:SetText("Cooldown: " .. cooldownText)
-```
-
-### lia.time.GetHour
-**Purpose**: Gets the current hour in 12 or 24 hour format (Shared).
-
-**Parameters**: None
-
-**Returns**: String with current hour
-
-**Realm**: Shared
-
-**Example Usage**:
-```lua
--- Get current hour
-local hour = lia.time.GetHour()
-print("Current hour:", hour) -- "3 PM" or "15"
-
--- Use in time-based logic
-local hour = lia.time.GetHour()
-if tonumber(hour) >= 18 then
-    print("It's evening time")
+local function timeSince(timestamp)
+    return lia.time.TimeSince(timestamp)
 end
 
--- Use in UI
-local hourLabel = vgui.Create("DLabel")
-hourLabel:SetText("Current time: " .. lia.time.GetHour())
+-- Use in a function
+local function checkPlayerLastSeen(client)
+    local lastSeen = client:getChar():getLastSeen()
+    local timeSince = lia.time.TimeSince(lastSeen)
+    print("Player last seen " .. timeSince .. " seconds ago")
+    return timeSince
+end
+
+-- Use in a function
+local function checkItemAge(item)
+    local created = item:getCreatedTime()
+    local age = lia.time.TimeSince(created)
+    print("Item age: " .. age .. " seconds")
+    return age
+end
+```
+
+---
+
+### lia.time.toNumber
+
+**Purpose**
+
+Converts a time string to a number.
+
+**Parameters**
+
+* `timeString` (*string*): The time string to convert.
+
+**Returns**
+
+* `timeNumber` (*number*): The time as a number.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Convert time string to number
+local function timeToNumber(timeString)
+    return lia.time.toNumber(timeString)
+end
+
+-- Use in a function
+local function parseTimeString(timeString)
+    local timeNumber = lia.time.toNumber(timeString)
+    if timeNumber then
+        print("Time parsed: " .. timeNumber)
+        return timeNumber
+    else
+        print("Failed to parse time string")
+        return nil
+    end
+end
+```
+
+---
+
+### lia.time.GetDate
+
+**Purpose**
+
+Gets the current date as a formatted string.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `dateString` (*string*): The formatted date string.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get current date
+local function getCurrentDate()
+    return lia.time.GetDate()
+end
+
+-- Use in a function
+local function showCurrentDate()
+    local date = lia.time.GetDate()
+    print("Current date: " .. date)
+    return date
+end
+
+-- Use in a function
+local function logWithDate(message)
+    local date = lia.time.GetDate()
+    print("[" .. date .. "] " .. message)
+end
+```
+
+---
+
+### lia.time.formatDHM
+
+**Purpose**
+
+Formats time in days, hours, and minutes.
+
+**Parameters**
+
+* `seconds` (*number*): The time in seconds.
+
+**Returns**
+
+* `formattedTime` (*string*): The formatted time string.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Format time in DHM
+local function formatTime(seconds)
+    return lia.time.formatDHM(seconds)
+end
+
+-- Use in a function
+local function showPlaytime(client)
+    local playtime = client:getChar():getPlaytime()
+    local formatted = lia.time.formatDHM(playtime)
+    client:notify("Playtime: " .. formatted)
+end
+
+-- Use in a function
+local function showServerUptime()
+    local uptime = SysTime()
+    local formatted = lia.time.formatDHM(uptime)
+    print("Server uptime: " .. formatted)
+end
+```
+
+---
+
+### lia.time.GetHour
+
+**Purpose**
+
+Gets the current hour.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `hour` (*number*): The current hour (0-23).
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get current hour
+local function getCurrentHour()
+    return lia.time.GetHour()
+end
+
+-- Use in a function
+local function checkTimeOfDay()
+    local hour = lia.time.GetHour()
+    if hour >= 6 and hour < 12 then
+        print("Good morning!")
+    elseif hour >= 12 and hour < 18 then
+        print("Good afternoon!")
+    elseif hour >= 18 and hour < 22 then
+        print("Good evening!")
+    else
+        print("Good night!")
+    end
+    return hour
+end
+
+-- Use in a function
+local function isDayTime()
+    local hour = lia.time.GetHour()
+    return hour >= 6 and hour < 18
+end
 ```

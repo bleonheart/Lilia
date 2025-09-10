@@ -6,7 +6,7 @@ This page documents the functions for working with administrator privileges and 
 
 ## Overview
 
-The administrator library (`lia.administrator`) provides a comprehensive, hierarchical permission and user group management system for the Lilia framework. It serves as the core authorization system, handling everything from basic tool usage permissions to complex administrative operations. The library supports privilege inheritance, CAMI integration, and dynamic privilege registration for tools and properties.
+The administrator library (`lia.administrator`) provides a comprehensive, hierarchical permission and user group management system for the Lilia framework. It serves as the core authorization system, handling everything from basic tool usage permissions to complex administrative operations.
 
 ---
 
@@ -74,15 +74,11 @@ end
 
 **Purpose**
 
-Registers a new privilege in the administrator system with specified access requirements.
+Registers a new privilege with the administrator system.
 
 **Parameters**
 
-* `priv` (*table*): Privilege data table containing:
-  * `ID` (*string*): Unique identifier for the privilege.
-  * `Name` (*string*): Display name for the privilege.
-  * `MinAccess` (*string*): Minimum access level required (default: "user").
-  * `Category` (*string*): Category for organizing privileges.
+* `priv` (*table*): The privilege data table containing ID, Name, MinAccess, and Category.
 
 **Returns**
 
@@ -97,34 +93,34 @@ Shared.
 ```lua
 -- Register a basic privilege
 lia.administrator.registerPrivilege({
-    Name = "Access Admin Panel",
+    Name = "Access to Admin Panel",
     ID = "adminPanel",
     MinAccess = "admin",
-    Category = "administration"
+    Category = "Administration"
 })
 
 -- Register a tool privilege
 lia.administrator.registerPrivilege({
-    Name = "Use Spawner Tool",
-    ID = "tool_spawner",
+    Name = "Use Advanced Duplicator",
+    ID = "tool_adv_duplicator",
     MinAccess = "admin",
-    Category = "tools"
+    Category = "Tools"
+})
+
+-- Register a command privilege
+lia.administrator.registerPrivilege({
+    Name = "Access to Kick Command",
+    ID = "command_kick",
+    MinAccess = "admin",
+    Category = "Commands"
 })
 
 -- Register a custom module privilege
 lia.administrator.registerPrivilege({
-    Name = "Manage Economy",
-    ID = "economyManage",
+    Name = "Manage Custom Module",
+    ID = "customModule_manage",
     MinAccess = "superadmin",
-    Category = "economy"
-})
-
--- Register a property privilege
-lia.administrator.registerPrivilege({
-    Name = "Access Property Privilege",
-    ID = "property_remover",
-    MinAccess = "admin",
-    Category = "properties"
+    Category = "Custom Module"
 })
 ```
 
@@ -155,119 +151,10 @@ Shared.
 lia.administrator.unregisterPrivilege("oldPrivilege")
 
 -- Remove a tool privilege
-lia.administrator.unregisterPrivilege("tool_oldtool")
+lia.administrator.unregisterPrivilege("tool_old_tool")
 
--- Remove a property privilege
-lia.administrator.unregisterPrivilege("property_oldprop")
-```
-
----
-
-### lia.administrator.applyInheritance
-
-**Purpose**
-
-Applies privilege inheritance to a usergroup based on its inheritance settings.
-
-**Parameters**
-
-* `groupName` (*string*): The name of the usergroup to apply inheritance to.
-
-**Returns**
-
-*None*
-
-**Realm**
-
-Shared.
-
-**Example Usage**
-
-```lua
--- Apply inheritance to a custom group
-lia.administrator.applyInheritance("moderator")
-
--- Apply inheritance after creating a new group
-lia.administrator.createGroup("vip", {
-    _info = {
-        inheritance = "user",
-        types = {"VIP"}
-    }
-})
-lia.administrator.applyInheritance("vip")
-
--- Manually refresh inheritance for all groups
-for groupName, _ in pairs(lia.administrator.groups) do
-    lia.administrator.applyInheritance(groupName)
-end
-```
-
----
-
-### lia.administrator.load
-
-**Purpose**
-
-Loads administrator groups and privileges from the database.
-
-**Parameters**
-
-*None*
-
-**Returns**
-
-*None*
-
-**Realm**
-
-Server.
-
-**Example Usage**
-
-```lua
--- Load admin system on server start
-lia.administrator.load()
-
--- Load with callback
-lia.administrator.load()
-hook.Add("OnAdminSystemLoaded", "MyMod", function(groups, privileges)
-    print("Admin system loaded with " .. table.Count(groups) .. " groups")
-    print("Total privileges: " .. table.Count(privileges))
-end)
-```
-
----
-
-### lia.administrator.save
-
-**Purpose**
-
-Saves administrator groups and privileges to the database.
-
-**Parameters**
-
-* `noNetwork` (*boolean*): If true, skips network synchronization.
-
-**Returns**
-
-*None*
-
-**Realm**
-
-Server.
-
-**Example Usage**
-
-```lua
--- Save admin system
-lia.administrator.save()
-
--- Save without network sync
-lia.administrator.save(true)
-
--- Save after making changes
-lia.administrator.addPermission("moderator", "kick", true)
-lia.administrator.save()
+-- Remove a command privilege
+lia.administrator.unregisterPrivilege("command_oldCommand")
 ```
 
 ---
@@ -276,13 +163,12 @@ lia.administrator.save()
 
 **Purpose**
 
-Creates a new usergroup with specified information.
+Creates a new usergroup with specified inheritance and permissions.
 
 **Parameters**
 
 * `groupName` (*string*): The name of the group to create.
-* `info` (*table*): Group information table containing:
-  * `_info` (*table*): Group metadata with inheritance and types.
+* `info` (*table*): Optional table containing group information with _info field.
 
 **Returns**
 
@@ -295,7 +181,7 @@ Shared.
 **Example Usage**
 
 ```lua
--- Create a basic group
+-- Create a basic usergroup
 lia.administrator.createGroup("moderator", {
     _info = {
         inheritance = "user",
@@ -303,7 +189,7 @@ lia.administrator.createGroup("moderator", {
     }
 })
 
--- Create a VIP group
+-- Create a custom usergroup with specific settings
 lia.administrator.createGroup("vip", {
     _info = {
         inheritance = "user",
@@ -311,11 +197,11 @@ lia.administrator.createGroup("vip", {
     }
 })
 
--- Create a custom staff group
-lia.administrator.createGroup("helper", {
+-- Create a staff usergroup
+lia.administrator.createGroup("staff", {
     _info = {
-        inheritance = "user",
-        types = {"Staff", "Helper"}
+        inheritance = "admin",
+        types = {"Staff"}
     }
 })
 ```
@@ -343,13 +229,14 @@ Shared.
 **Example Usage**
 
 ```lua
--- Remove a custom group
-lia.administrator.removeGroup("oldgroup")
+-- Remove a custom usergroup
+lia.administrator.removeGroup("moderator")
 
--- Remove a group after checking it exists
-if lia.administrator.groups["temporary"] then
-    lia.administrator.removeGroup("temporary")
-end
+-- Remove a VIP group
+lia.administrator.removeGroup("vip")
+
+-- Note: Cannot remove base groups (user, admin, superadmin)
+lia.administrator.removeGroup("user") -- This will error
 ```
 
 ---
@@ -376,13 +263,106 @@ Shared.
 **Example Usage**
 
 ```lua
--- Rename a group
-lia.administrator.renameGroup("oldmoderator", "newmoderator")
+-- Rename a usergroup
+lia.administrator.renameGroup("moderator", "mod")
 
--- Rename with validation
-if lia.administrator.groups["tempgroup"] and not lia.administrator.groups["permanentgroup"] then
-    lia.administrator.renameGroup("tempgroup", "permanentgroup")
-end
+-- Rename a VIP group
+lia.administrator.renameGroup("vip", "premium")
+
+-- Note: Cannot rename base groups
+lia.administrator.renameGroup("user", "player") -- This will error
+```
+
+---
+
+### lia.administrator.applyInheritance
+
+**Purpose**
+
+Applies inheritance rules to a usergroup, copying permissions from parent groups.
+
+**Parameters**
+
+* `groupName` (*string*): The name of the group to apply inheritance to.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Apply inheritance to a group
+lia.administrator.applyInheritance("moderator")
+
+-- This will copy all permissions from the parent group
+-- as defined in the group's _info.inheritance field
+```
+
+---
+
+### lia.administrator.load
+
+**Purpose**
+
+Loads the administrator system from the database.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Load the administrator system
+lia.administrator.load()
+
+-- This is typically called during gamemode initialization
+-- to restore saved usergroups and privileges from the database
+```
+
+---
+
+### lia.administrator.save
+
+**Purpose**
+
+Saves the current administrator system state to the database.
+
+**Parameters**
+
+* `noNetwork` (*boolean*): Optional parameter to skip network synchronization.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Save administrator data
+lia.administrator.save()
+
+-- Save without network sync
+lia.administrator.save(true)
+
+-- This is called automatically when groups or privileges are modified
 ```
 
 ---
@@ -397,7 +377,7 @@ Adds a permission to a usergroup.
 
 * `groupName` (*string*): The name of the group to add permission to.
 * `permission` (*string*): The permission to add.
-* `silent` (*boolean*): If true, skips logging the change.
+* `silent` (*boolean*): Optional parameter to skip logging.
 
 **Returns**
 
@@ -410,17 +390,14 @@ Server.
 **Example Usage**
 
 ```lua
--- Add permission to a group
+-- Add a permission to a group
 lia.administrator.addPermission("moderator", "kick")
 
--- Add multiple permissions
-local permissions = {"mute", "gag", "freeze"}
-for _, perm in ipairs(permissions) do
-    lia.administrator.addPermission("moderator", perm)
-end
+-- Add a tool permission
+lia.administrator.addPermission("moderator", "tool_remover")
 
--- Add permission silently
-lia.administrator.addPermission("admin", "secretcommand", true)
+-- Add silently (no logging)
+lia.administrator.addPermission("moderator", "mute", true)
 ```
 
 ---
@@ -435,7 +412,7 @@ Removes a permission from a usergroup.
 
 * `groupName` (*string*): The name of the group to remove permission from.
 * `permission` (*string*): The permission to remove.
-* `silent` (*boolean*): If true, skips logging the change.
+* `silent` (*boolean*): Optional parameter to skip logging.
 
 **Returns**
 
@@ -448,17 +425,14 @@ Server.
 **Example Usage**
 
 ```lua
--- Remove permission from a group
+-- Remove a permission from a group
 lia.administrator.removePermission("moderator", "kick")
 
--- Remove multiple permissions
-local permissions = {"mute", "gag", "freeze"}
-for _, perm in ipairs(permissions) do
-    lia.administrator.removePermission("moderator", perm)
-end
+-- Remove a tool permission
+lia.administrator.removePermission("moderator", "tool_remover")
 
--- Remove permission silently
-lia.administrator.removePermission("admin", "oldcommand", true)
+-- Remove silently (no logging)
+lia.administrator.removePermission("moderator", "mute", true)
 ```
 
 ---
@@ -471,7 +445,7 @@ Synchronizes administrator data with connected clients.
 
 **Parameters**
 
-* `c` (*Player*): Optional specific client to sync with.
+* `client` (*Player*): Optional specific client to sync with.
 
 **Returns**
 
@@ -490,13 +464,7 @@ lia.administrator.sync()
 -- Sync with specific client
 lia.administrator.sync(ply)
 
--- Sync after privilege changes
-lia.administrator.registerPrivilege({
-    Name = "New Privilege",
-    ID = "newpriv",
-    MinAccess = "admin"
-})
-lia.administrator.sync()
+-- This is called automatically when data changes
 ```
 
 ---
@@ -505,13 +473,13 @@ lia.administrator.sync()
 
 **Purpose**
 
-Sets a player's usergroup and triggers CAMI events.
+Sets a player's usergroup.
 
 **Parameters**
 
 * `ply` (*Player*): The player to set usergroup for.
 * `newGroup` (*string*): The new usergroup name.
-* `source` (*string*): The source of the change (default: "Lilia").
+* `source` (*string*): Optional source identifier for logging.
 
 **Returns**
 
@@ -525,16 +493,13 @@ Server.
 
 ```lua
 -- Set player usergroup
-lia.administrator.setPlayerUsergroup(ply, "admin")
+lia.administrator.setPlayerUsergroup(ply, "moderator")
 
--- Set with custom source
-lia.administrator.setPlayerUsergroup(ply, "moderator", "MyMod")
+-- Set with source tracking
+lia.administrator.setPlayerUsergroup(ply, "admin", "console")
 
--- Set usergroup with validation
-if IsValid(ply) and ply:IsPlayer() then
-    lia.administrator.setPlayerUsergroup(ply, "vip")
-    ply:ChatPrint("You have been promoted to VIP!")
-end
+-- Set from command
+lia.administrator.setPlayerUsergroup(target, "vip", "adminCommand")
 ```
 
 ---
@@ -543,13 +508,13 @@ end
 
 **Purpose**
 
-Sets a SteamID's usergroup and triggers CAMI events.
+Sets a usergroup for a player by their SteamID.
 
 **Parameters**
 
-* `steamId` (*string*): The SteamID to set usergroup for.
+* `steamId` (*string*): The SteamID of the player.
 * `newGroup` (*string*): The new usergroup name.
-* `source` (*string*): The source of the change (default: "Lilia").
+* `source` (*string*): Optional source identifier for logging.
 
 **Returns**
 
@@ -562,16 +527,14 @@ Server.
 **Example Usage**
 
 ```lua
--- Set SteamID usergroup
-lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "admin")
+-- Set usergroup by SteamID
+lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "moderator")
 
--- Set with custom source
-lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "moderator", "MyMod")
+-- Set with source tracking
+lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456", "admin", "console")
 
--- Set usergroup for offline player
-local steamid = "STEAM_0:1:789012"
-lia.administrator.setSteamIDUsergroup(steamid, "vip")
-print("Set " .. steamid .. " to VIP group")
+-- Set from database operation
+lia.administrator.setSteamIDUsergroup(steamID, "vip", "database")
 ```
 
 ---
@@ -580,19 +543,19 @@ print("Set " .. steamid .. " to VIP group")
 
 **Purpose**
 
-Executes server-side administrative commands with privilege checking.
+Executes a server-side administrative command.
 
 **Parameters**
 
 * `cmd` (*string*): The command to execute.
 * `victim` (*Player|string*): The target player or SteamID.
-* `dur` (*number*): Duration for timed commands.
-* `reason` (*string*): Reason for the command.
+* `dur` (*number*): Optional duration for timed commands.
+* `reason` (*string*): Optional reason for the command.
 * `admin` (*Player*): The admin executing the command.
 
 **Returns**
 
-* `success` (*boolean*): True if command executed successfully.
+* `success` (*boolean*): True if command executed successfully, false otherwise.
 
 **Realm**
 
@@ -612,33 +575,6 @@ lia.administrator.serverExecCommand("mute", target, 60, "Spam", admin)
 
 -- Execute freeze command
 lia.administrator.serverExecCommand("freeze", target, 30, nil, admin)
-
--- Execute slay command
-lia.administrator.serverExecCommand("slay", target, nil, nil, admin)
-
--- Execute bring command
-lia.administrator.serverExecCommand("bring", target, nil, nil, admin)
-
--- Execute goto command
-lia.administrator.serverExecCommand("goto", target, nil, nil, admin)
-
--- Execute jail command
-lia.administrator.serverExecCommand("jail", target, 300, "Disruptive behavior", admin)
-
--- Execute cloak command
-lia.administrator.serverExecCommand("cloak", target, nil, nil, admin)
-
--- Execute god command
-lia.administrator.serverExecCommand("god", target, nil, nil, admin)
-
--- Execute strip command
-lia.administrator.serverExecCommand("strip", target, nil, "Weapon removal", admin)
-
--- Execute respawn command
-lia.administrator.serverExecCommand("respawn", target, nil, nil, admin)
-
--- Execute blind command with duration
-lia.administrator.serverExecCommand("blind", target, 10, "Punishment", admin)
 ```
 
 ---
@@ -647,18 +583,18 @@ lia.administrator.serverExecCommand("blind", target, 10, "Punishment", admin)
 
 **Purpose**
 
-Executes administrative commands on the client side by sending console commands.
+Executes an administrative command from the client side.
 
 **Parameters**
 
 * `cmd` (*string*): The command to execute.
 * `victim` (*Player|string*): The target player or SteamID.
-* `dur` (*number*): Duration for timed commands.
-* `reason` (*string*): Reason for the command.
+* `dur` (*number*): Optional duration for timed commands.
+* `reason` (*string*): Optional reason for the command.
 
 **Returns**
 
-* `success` (*boolean*): True if command was sent successfully.
+* `success` (*boolean*): True if command executed successfully, false otherwise.
 
 **Realm**
 
@@ -678,31 +614,4 @@ lia.administrator.execCommand("mute", target, 60, "Spam")
 
 -- Execute freeze command
 lia.administrator.execCommand("freeze", target, 30)
-
--- Execute slay command
-lia.administrator.execCommand("slay", target)
-
--- Execute bring command
-lia.administrator.execCommand("bring", target)
-
--- Execute goto command
-lia.administrator.execCommand("goto", target)
-
--- Execute jail command
-lia.administrator.execCommand("jail", target, 300, "Disruptive behavior")
-
--- Execute cloak command
-lia.administrator.execCommand("cloak", target)
-
--- Execute god command
-lia.administrator.execCommand("god", target)
-
--- Execute strip command
-lia.administrator.execCommand("strip", target)
-
--- Execute respawn command
-lia.administrator.execCommand("respawn", target)
-
--- Execute blind command
-lia.administrator.execCommand("blind", target)
 ```

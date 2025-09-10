@@ -1,188 +1,197 @@
-# lia.webimage
+# Web Image Library
+
+This page documents the functions for working with web images and image downloading.
+
+---
 
 ## Overview
-The `lia.webimage` library provides web image downloading and caching functionality for Lilia. It allows downloading images from URLs, caching them locally, and provides overrides for Material and DImage functions to automatically handle web images.
 
-## Functions
+The web image library (`lia.webimage`) provides a comprehensive system for downloading, caching, and managing web images in the Lilia framework. It includes URL validation, automatic caching, material creation, and VGUI integration for displaying web images.
+
+---
 
 ### lia.webimage.download
-**Purpose**: Downloads an image from a URL and caches it locally (Client only).
 
-**Parameters**:
-- `url` (string): Image URL to download
-- `callback` (function): Callback function called when download completes
-  - `callback` parameters: `path` (string) - local file path
+**Purpose**
 
-**Returns**: None
+Downloads an image from a URL and caches it locally.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `name` (*string*): The name to store the image under.
+* `url` (*string*): The URL to download from (optional if already registered).
+* `callback` (*function*): Callback function when download completes.
+* `flags` (*string*): Material flags for the image.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Download image with callback
-lia.webimage.download("https://example.com/image.png", function(path)
-    print("Image downloaded to:", path)
-    local mat = Material(path)
-    -- Use the material
-end)
+-- Download an image
+local function downloadImage(name, url, callback, flags)
+    lia.webimage.download(name, url, callback, flags)
+end
 
--- Download image for UI
-lia.webimage.download("https://example.com/avatar.jpg", function(path)
-    local avatar = vgui.Create("DImage")
-    avatar:SetImage(path)
-    avatar:SetSize(64, 64)
-end)
-
--- Download with error handling
-lia.webimage.download("https://example.com/logo.png", function(path)
-    if path then
-        print("Successfully downloaded:", path)
-    else
-        print("Failed to download image")
-    end
-end)
+-- Use in a function
+local function loadPlayerAvatar(playerID, callback)
+    local url = "https://example.com/avatars/" .. playerID .. ".png"
+    lia.webimage.download("avatar_" .. playerID, url, callback)
+end
 ```
+
+---
 
 ### lia.webimage.register
-**Purpose**: Registers a web image for automatic downloading (Client only).
 
-**Parameters**:
-- `url` (string): Image URL to register
+**Purpose**
 
-**Returns**: None
+Registers an image URL and downloads it.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `name` (*string*): The name to store the image under.
+* `url` (*string*): The URL to download from.
+* `callback` (*function*): Callback function when download completes.
+* `flags` (*string*): Material flags for the image.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Register web image
-lia.webimage.register("https://example.com/background.jpg")
-
--- Register multiple images
-local imageURLs = {
-    "https://example.com/logo.png",
-    "https://example.com/icon.jpg",
-    "https://example.com/banner.gif"
-}
-
-for _, url in ipairs(imageURLs) do
-    lia.webimage.register(url)
+-- Register an image
+local function registerImage(name, url, callback, flags)
+    lia.webimage.register(name, url, callback, flags)
 end
 
--- Register image for later use
-lia.webimage.register("https://example.com/player_avatar.png")
+-- Use in a function
+local function setupDefaultImages()
+    lia.webimage.register("logo", "https://example.com/logo.png")
+    lia.webimage.register("background", "https://example.com/bg.jpg", nil, "noclamp smooth")
+end
 ```
+
+---
 
 ### lia.webimage.get
-**Purpose**: Gets the local path of a registered web image (Client only).
 
-**Parameters**:
-- `url` (string): Image URL
+**Purpose**
 
-**Returns**: String - local file path, or nil if not downloaded
+Gets a cached image material by name.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `name` (*string*): The name of the image.
+* `flags` (*string*): Material flags for the image.
+
+**Returns**
+
+* `material` (*Material*): The material or nil.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Get local path
-local path = lia.webimage.get("https://example.com/image.png")
-if path then
-    print("Local path:", path)
-    local mat = Material(path)
-else
-    print("Image not downloaded yet")
+-- Get cached image
+local function getImage(name, flags)
+    return lia.webimage.get(name, flags)
 end
 
--- Use in UI
-local imageURL = "https://example.com/logo.png"
-lia.webimage.register(imageURL)
-
-local function createImage()
-    local path = lia.webimage.get(imageURL)
-    if path then
-        local img = vgui.Create("DImage")
-        img:SetImage(path)
-        return img
+-- Use in a function
+local function drawImage(name, x, y, width, height)
+    local material = lia.webimage.get(name)
+    if material then
+        surface.SetMaterial(material)
+        surface.DrawTexturedRect(x, y, width, height)
     end
-    return nil
 end
 ```
+
+---
 
 ### lia.webimage.getStats
-**Purpose**: Gets statistics about web image downloads (Client only).
 
-**Parameters**: None
+**Purpose**
 
-**Returns**: Table with download statistics
+Gets statistics about downloaded images.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+* `stats` (*table*): Table containing download statistics.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Get download stats
-local stats = lia.webimage.getStats()
-print("Total downloads:", stats.total)
-print("Successful downloads:", stats.successful)
-print("Failed downloads:", stats.failed)
+-- Get image statistics
+local function getImageStats()
+    return lia.webimage.getStats()
+end
 
--- Display stats in UI
-local stats = lia.webimage.getStats()
-local statsText = string.format("Downloads: %d/%d", stats.successful, stats.total)
-local label = vgui.Create("DLabel")
-label:SetText(statsText)
+-- Use in a function
+local function showImageStats()
+    local stats = lia.webimage.getStats()
+    print("Downloaded images: " .. stats.downloaded)
+    print("Stored images: " .. stats.stored)
+    print("Last reset: " .. os.date("%c", stats.lastReset))
+end
 ```
 
-## Overridden Functions
+---
 
-### Material
-**Purpose**: Overridden Material function that automatically handles web images (Client only).
+### lia.webimage.stored
 
-**Parameters**:
-- `path` (string): Material path or web image URL
+**Purpose**
 
-**Returns**: Material object
+Stores registered image data.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+* `stored` (*table*): Table of stored image data.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Use web image directly with Material
-local mat = Material("https://example.com/texture.png")
--- Automatically downloads and caches the image
+-- Get stored images
+local function getStoredImages()
+    return lia.webimage.stored
+end
 
--- Use in rendering
-local mat = Material("https://example.com/background.jpg")
-surface.SetMaterial(mat)
-surface.DrawTexturedRect(0, 0, 512, 512)
-
--- Use in UI
-local mat = Material("https://example.com/icon.png")
-local icon = vgui.Create("DImage")
-icon:SetMaterial(mat)
-```
-
-### DImage:SetImage
-**Purpose**: Overridden SetImage method that automatically handles web images (Client only).
-
-**Parameters**:
-- `path` (string): Image path or web image URL
-
-**Returns**: None
-
-**Realm**: Client
-
-**Example Usage**:
-```lua
--- Use web image directly with DImage
-local img = vgui.Create("DImage")
-img:SetImage("https://example.com/avatar.jpg")
-img:SetSize(64, 64)
-
--- Use in panel
-local panel = vgui.Create("DPanel")
-local img = vgui.Create("DImage", panel)
-img:SetImage("https://example.com/logo.png")
-img:SetPos(10, 10)
-img:SetSize(100, 50)
+-- Use in a function
+local function listStoredImages()
+    for name, data in pairs(lia.webimage.stored) do
+        print("Image: " .. name .. " - " .. data.url)
+    end
+end
 ```

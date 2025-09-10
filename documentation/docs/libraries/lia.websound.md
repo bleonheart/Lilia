@@ -1,195 +1,195 @@
-# lia.websound
+# Web Sound Library
+
+This page documents the functions for working with web sounds and sound downloading.
+
+---
 
 ## Overview
-The `lia.websound` library provides web sound downloading and caching functionality for Lilia. It allows downloading sound files from URLs, caching them locally, and provides overrides for sound functions to automatically handle web sounds.
 
-## Functions
+The web sound library (`lia.websound`) provides a comprehensive system for downloading, caching, and managing web sounds in the Lilia framework. It includes URL validation, automatic caching, sound file validation, and integration with the sound system.
+
+---
 
 ### lia.websound.download
-**Purpose**: Downloads a sound file from a URL and caches it locally (Client only).
 
-**Parameters**:
-- `url` (string): Sound URL to download
-- `callback` (function): Callback function called when download completes
-  - `callback` parameters: `path` (string) - local file path
+**Purpose**
 
-**Returns**: None
+Downloads a sound file from a URL and caches it locally.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `name` (*string*): The name to store the sound under.
+* `url` (*string*): The URL to download from (optional if already registered).
+* `callback` (*function*): Callback function when download completes.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Download sound with callback
-lia.websound.download("https://example.com/sound.mp3", function(path)
-    print("Sound downloaded to:", path)
-    surface.PlaySound(path)
-end)
+-- Download a sound file
+local function downloadSound(name, url, callback)
+    lia.websound.download(name, url, callback)
+end
 
--- Download sound for UI
-lia.websound.download("https://example.com/button_click.wav", function(path)
-    local button = vgui.Create("DButton")
-    button.DoClick = function()
-        surface.PlaySound(path)
-    end
-end)
-
--- Download with error handling
-lia.websound.download("https://example.com/notification.ogg", function(path)
-    if path then
-        print("Successfully downloaded:", path)
-        -- Play the sound
-        surface.PlaySound(path)
-    else
-        print("Failed to download sound")
-    end
-end)
+-- Use in a function
+local function loadNotificationSound(callback)
+    local url = "https://example.com/sounds/notification.mp3"
+    lia.websound.download("notification", url, callback)
+end
 ```
+
+---
 
 ### lia.websound.register
-**Purpose**: Registers a web sound for automatic downloading (Client only).
 
-**Parameters**:
-- `url` (string): Sound URL to register
+**Purpose**
 
-**Returns**: None
+Registers a sound URL and downloads it.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `name` (*string*): The name to store the sound under.
+* `url` (*string*): The URL to download from.
+* `callback` (*function*): Callback function when download completes.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Register web sound
-lia.websound.register("https://example.com/background_music.mp3")
-
--- Register multiple sounds
-local soundURLs = {
-    "https://example.com/click.wav",
-    "https://example.com/hover.ogg",
-    "https://example.com/error.mp3"
-}
-
-for _, url in ipairs(soundURLs) do
-    lia.websound.register(url)
+-- Register a sound
+local function registerSound(name, url, callback)
+    lia.websound.register(name, url, callback)
 end
 
--- Register sound for later use
-lia.websound.register("https://example.com/achievement.wav")
+-- Use in a function
+local function setupDefaultSounds()
+    lia.websound.register("click", "https://example.com/sounds/click.wav")
+    lia.websound.register("hover", "https://example.com/sounds/hover.mp3")
+end
 ```
+
+---
 
 ### lia.websound.get
-**Purpose**: Gets the local path of a registered web sound (Client only).
 
-**Parameters**:
-- `url` (string): Sound URL
+**Purpose**
 
-**Returns**: String - local file path, or nil if not downloaded
+Gets a cached sound file path by name.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+* `name` (*string*): The name of the sound.
+
+**Returns**
+
+* `path` (*string*): The sound file path or nil.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Get local path
-local path = lia.websound.get("https://example.com/sound.mp3")
-if path then
-    print("Local path:", path)
-    surface.PlaySound(path)
-else
-    print("Sound not downloaded yet")
+-- Get cached sound
+local function getSound(name)
+    return lia.websound.get(name)
 end
 
--- Use in UI
-local soundURL = "https://example.com/button_click.wav"
-lia.websound.register(soundURL)
-
-local function playButtonSound()
-    local path = lia.websound.get(soundURL)
+-- Use in a function
+local function playSound(name)
+    local path = lia.websound.get(name)
     if path then
-        surface.PlaySound(path)
+        sound.PlayFile(path, "", function(chan)
+            if chan then chan:Play() end
+        end)
     end
 end
 ```
+
+---
 
 ### lia.websound.getStats
-**Purpose**: Gets statistics about web sound downloads (Client only).
 
-**Parameters**: None
+**Purpose**
 
-**Returns**: Table with download statistics
+Gets statistics about downloaded sounds.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+* `stats` (*table*): Table containing download statistics.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Get download stats
-local stats = lia.websound.getStats()
-print("Total downloads:", stats.total)
-print("Successful downloads:", stats.successful)
-print("Failed downloads:", stats.failed)
+-- Get sound statistics
+local function getSoundStats()
+    return lia.websound.getStats()
+end
 
--- Display stats in UI
-local stats = lia.websound.getStats()
-local statsText = string.format("Downloads: %d/%d", stats.successful, stats.total)
-local label = vgui.Create("DLabel")
-label:SetText(statsText)
+-- Use in a function
+local function showSoundStats()
+    local stats = lia.websound.getStats()
+    print("Downloaded sounds: " .. stats.downloaded)
+    print("Stored sounds: " .. stats.stored)
+    print("Last reset: " .. os.date("%c", stats.lastReset))
+end
 ```
 
-## Overridden Functions
+---
 
-### sound.PlayFile
-**Purpose**: Overridden PlayFile function that automatically handles web sounds (Client only).
+### lia.websound.stored
 
-**Parameters**:
-- `path` (string): Sound file path or web sound URL
+**Purpose**
 
-**Returns**: None
+Stores registered sound data.
 
-**Realm**: Client
+**Parameters**
 
-**Example Usage**:
+*None*
+
+**Returns**
+
+* `stored` (*table*): Table of stored sound data.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
 ```lua
--- Use web sound directly with PlayFile
-sound.PlayFile("https://example.com/music.mp3", "noplay", function(sound, errorID, errorName)
-    if sound then
-        sound:Play()
-    else
-        print("Error playing sound:", errorName)
+-- Get stored sounds
+local function getStoredSounds()
+    return lia.websound.stored
+end
+
+-- Use in a function
+local function listStoredSounds()
+    for name, url in pairs(lia.websound.stored) do
+        print("Sound: " .. name .. " - " .. url)
     end
-end)
-
--- Play web sound with callback
-sound.PlayFile("https://example.com/notification.wav", "noplay", function(snd)
-    if snd then
-        snd:SetVolume(0.5)
-        snd:Play()
-    end
-end)
-```
-
-### sound.PlayURL
-**Purpose**: Overridden PlayURL function that automatically handles web sounds (Client only).
-
-**Parameters**:
-- `url` (string): Sound URL
-
-**Returns**: None
-
-**Realm**: Client
-
-**Example Usage**:
-```lua
--- Use web sound directly with PlayURL
-sound.PlayURL("https://example.com/stream.mp3", "noplay", function(sound, errorID, errorName)
-    if sound then
-        sound:Play()
-    else
-        print("Error playing URL:", errorName)
-    end
-end)
-
--- Play web sound with volume control
-sound.PlayURL("https://example.com/background.mp3", "noplay", function(snd)
-    if snd then
-        snd:SetVolume(0.3)
-        snd:Play()
-    end
-end)
+end
 ```

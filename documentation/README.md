@@ -14,8 +14,6 @@
 > 
 > Please do **not** open pull requests or push directly to this repo.
 
-
-
 ## 🚀 Local Development
 
 Want to contribute to the documentation or preview changes locally? Here's how to set up the documentation site:

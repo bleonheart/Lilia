@@ -1,401 +1,916 @@
-# lia.inventory
+# Inventory Library
+
+This page documents the functions for working with inventories and item storage.
+
+---
 
 ## Overview
-The `lia.inventory` library provides comprehensive inventory management for Lilia, including inventory types, storage systems, item management, and database integration. It supports different inventory types and provides a flexible system for managing player and entity inventories.
 
-## Functions
+The inventory library (`lia.inventory`) provides a comprehensive system for managing inventories, item storage, and container management in the Lilia framework. It includes inventory creation, item management, storage systems, and container functionality.
+
+---
 
 ### lia.inventory.newType
-**Purpose**: Registers a new inventory type with the specified structure.
 
-**Parameters**:
-- `typeID` (string): Unique identifier for the inventory type
-- `invTypeStruct` (table): Inventory type structure containing required methods and properties
+**Purpose**
 
-**Returns**: None
+Creates a new inventory type.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+* `typeName` (*string*): The name of the inventory type.
+* `inventoryData` (*table*): The inventory data table.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Register a new inventory type
-lia.inventory.newType("player", {
-    className = "PlayerInventory",
-    typeID = "player",
-    add = function(self, item) 
-        -- Add item logic
-        return true
-    end,
-    remove = function(self, item)
-        -- Remove item logic
-        return true
-    end,
-    sync = function(self, client)
-        -- Sync inventory to client
-    end
-})
+-- Create a new inventory type
+local function createInventoryType(typeName, inventoryData)
+    lia.inventory.newType(typeName, inventoryData)
+end
 
--- Register a storage inventory type
-lia.inventory.newType("storage", {
-    className = "StorageInventory",
-    typeID = "storage",
-    add = function(self, item)
-        -- Storage add logic
-        return true
-    end,
-    remove = function(self, item)
-        -- Storage remove logic
-        return true
-    end,
-    sync = function(self, client)
-        -- Storage sync logic
-    end
-})
+-- Use in a function
+local function createPlayerInventory()
+    lia.inventory.newType("player", {
+        name = "Player Inventory",
+        width = 10,
+        height = 6,
+        slots = 60
+    })
+    print("Player inventory type created")
+end
+
+-- Use in a function
+local function createStorageInventory()
+    lia.inventory.newType("storage", {
+        name = "Storage Container",
+        width = 8,
+        height = 8,
+        slots = 64
+    })
+    print("Storage inventory type created")
+end
+
+-- Use in a function
+local function createTrunkInventory()
+    lia.inventory.newType("trunk", {
+        name = "Vehicle Trunk",
+        width = 6,
+        height = 4,
+        slots = 24
+    })
+    print("Trunk inventory type created")
+end
 ```
+
+---
 
 ### lia.inventory.new
-**Purpose**: Creates a new inventory instance of the specified type.
 
-**Parameters**:
-- `typeID` (string): Inventory type identifier
+**Purpose**
 
-**Returns**: New inventory instance
+Creates a new inventory instance.
 
-**Realm**: Shared
+**Parameters**
 
-**Example Usage**:
+* `typeName` (*string*): The inventory type name.
+* `data` (*table*): The inventory data.
+
+**Returns**
+
+* `inventory` (*Inventory*): The created inventory instance.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Create a new player inventory
-local playerInv = lia.inventory.new("player")
+-- Create a new inventory
+local function createInventory(typeName, data)
+    return lia.inventory.new(typeName, data)
+end
 
--- Create a new storage inventory
-local storageInv = lia.inventory.new("storage")
+-- Use in a function
+local function createPlayerInventory(client)
+    local inventory = lia.inventory.new("player", {
+        owner = client:SteamID(),
+        character = client:getChar():getID()
+    })
+    print("Player inventory created for " .. client:Name())
+    return inventory
+end
 
--- Use the inventory
-if playerInv then
-    print("Created inventory with", #playerInv.items, "items")
+-- Use in a function
+local function createStorageInventory(position)
+    local inventory = lia.inventory.new("storage", {
+        position = position,
+        name = "Storage Container"
+    })
+    print("Storage inventory created at " .. tostring(position))
+    return inventory
+end
+
+-- Use in a function
+local function createTrunkInventory(vehicle)
+    local inventory = lia.inventory.new("trunk", {
+        vehicle = vehicle,
+        name = "Vehicle Trunk"
+    })
+    print("Trunk inventory created for vehicle")
+    return inventory
 end
 ```
+
+---
 
 ### lia.inventory.loadByID
-**Purpose**: Loads an inventory from the database by its ID.
 
-**Parameters**:
-- `id` (number): Inventory ID
-- `noCache` (boolean): Whether to bypass cache
+**Purpose**
 
-**Returns**: Promise that resolves to inventory instance
+Loads an inventory by its ID.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `inventoryID` (*string*): The inventory ID.
+
+**Returns**
+
+* `inventory` (*Inventory*): The loaded inventory or nil.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
 -- Load inventory by ID
-lia.inventory.loadByID(123):next(function(inventory)
-    if inventory then
-        print("Loaded inventory:", inventory.id)
-        print("Items:", #inventory.items)
-    else
-        print("Inventory not found")
-    end
-end):catch(function(err)
-    print("Failed to load inventory:", err)
-end)
+local function loadInventory(inventoryID)
+    return lia.inventory.loadByID(inventoryID)
+end
 
--- Load without cache
-lia.inventory.loadByID(123, true):next(function(inventory)
-    print("Fresh inventory loaded")
-end)
+-- Use in a function
+local function getPlayerInventory(client)
+    local character = client:getChar()
+    if character then
+        local inventory = lia.inventory.loadByID(character:getInventoryID())
+        if inventory then
+            print("Player inventory loaded for " .. client:Name())
+            return inventory
+        end
+    end
+    return nil
+end
+
+-- Use in a function
+local function loadStorageInventory(storageID)
+    local inventory = lia.inventory.loadByID(storageID)
+    if inventory then
+        print("Storage inventory loaded: " .. storageID)
+        return inventory
+    else
+        print("Failed to load storage inventory: " .. storageID)
+        return nil
+    end
+end
+
+-- Use in a function
+local function checkInventoryExists(inventoryID)
+    local inventory = lia.inventory.loadByID(inventoryID)
+    return inventory ~= nil
+end
 ```
+
+---
 
 ### lia.inventory.loadFromDefaultStorage
-**Purpose**: Loads an inventory from the default storage system.
 
-**Parameters**:
-- `id` (number): Inventory ID
-- `noCache` (boolean): Whether to bypass cache
+**Purpose**
 
-**Returns**: Promise that resolves to inventory instance
+Loads an inventory from default storage.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `storageType` (*string*): The storage type.
+
+**Returns**
+
+* `inventory` (*Inventory*): The loaded inventory or nil.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Load from default storage
-lia.inventory.loadFromDefaultStorage(456):next(function(inventory)
+-- Load inventory from default storage
+local function loadFromDefaultStorage(storageType)
+    return lia.inventory.loadFromDefaultStorage(storageType)
+end
+
+-- Use in a function
+local function loadPlayerDefaultInventory()
+    local inventory = lia.inventory.loadFromDefaultStorage("player")
     if inventory then
-        print("Loaded from default storage")
-        inventory:onLoaded()
+        print("Player default inventory loaded")
+        return inventory
+    else
+        print("Failed to load player default inventory")
+        return nil
     end
-end)
+end
+
+-- Use in a function
+local function loadStorageDefaultInventory()
+    local inventory = lia.inventory.loadFromDefaultStorage("storage")
+    if inventory then
+        print("Storage default inventory loaded")
+        return inventory
+    else
+        print("Failed to load storage default inventory")
+        return nil
+    end
+end
+
+-- Use in a function
+local function loadTrunkDefaultInventory()
+    local inventory = lia.inventory.loadFromDefaultStorage("trunk")
+    if inventory then
+        print("Trunk default inventory loaded")
+        return inventory
+    else
+        print("Failed to load trunk default inventory")
+        return nil
+    end
+end
 ```
+
+---
 
 ### lia.inventory.instance
-**Purpose**: Creates a new inventory instance with initial data.
 
-**Parameters**:
-- `typeID` (string): Inventory type identifier
-- `initialData` (table): Initial data for the inventory
+**Purpose**
 
-**Returns**: Promise that resolves to inventory instance
+Gets an inventory instance by ID.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `inventoryID` (*string*): The inventory ID.
+
+**Returns**
+
+* `inventory` (*Inventory*): The inventory instance or nil.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
 ```lua
--- Create new inventory instance
-lia.inventory.instance("player", {
-    char = 123,
-    maxWeight = 100
-}):next(function(inventory)
-    print("Created inventory with ID:", inventory.id)
-    inventory:onInstanced()
-end)
+-- Get inventory instance
+local function getInventoryInstance(inventoryID)
+    return lia.inventory.instance(inventoryID)
+end
+
+-- Use in a function
+local function checkInventoryAccess(client, inventoryID)
+    local inventory = lia.inventory.instance(inventoryID)
+    if inventory then
+        if inventory:canAccess(client) then
+            print("Player can access inventory")
+            return true
+        else
+            print("Player cannot access inventory")
+            return false
+        end
+    else
+        print("Inventory not found")
+        return false
+    end
+end
+
+-- Use in a function
+local function getInventoryInfo(inventoryID)
+    local inventory = lia.inventory.instance(inventoryID)
+    if inventory then
+        print("Inventory: " .. inventory:getName())
+        print("Slots: " .. inventory:getSlotCount())
+        print("Items: " .. inventory:getItemCount())
+        return inventory
+    else
+        print("Inventory not found")
+        return nil
+    end
+end
+
+-- Use in a function
+local function checkInventoryExists(inventoryID)
+    local inventory = lia.inventory.instance(inventoryID)
+    return inventory ~= nil
+end
 ```
+
+---
 
 ### lia.inventory.loadAllFromCharID
-**Purpose**: Loads all inventories for a specific character.
 
-**Parameters**:
-- `charID` (number): Character ID
+**Purpose**
 
-**Returns**: Promise that resolves to array of inventory instances
+Loads all inventories for a character.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `characterID` (*string*): The character ID.
+
+**Returns**
+
+* `inventories` (*table*): Table of character inventories.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
--- Load all inventories for character
-lia.inventory.loadAllFromCharID(123):next(function(inventories)
-    print("Loaded", #inventories, "inventories for character")
-    for _, inv in ipairs(inventories) do
-        print("- Inventory", inv.id, "Type:", inv.typeID)
+-- Load all character inventories
+local function loadCharacterInventories(characterID)
+    return lia.inventory.loadAllFromCharID(characterID)
+end
+
+-- Use in a function
+local function getPlayerInventories(client)
+    local character = client:getChar()
+    if character then
+        local inventories = lia.inventory.loadAllFromCharID(character:getID())
+        print("Loaded " .. #inventories .. " inventories for " .. client:Name())
+        return inventories
     end
-end)
+    return {}
+end
+
+-- Use in a function
+local function showCharacterInventories(characterID)
+    local inventories = lia.inventory.loadAllFromCharID(characterID)
+    print("Inventories for character " .. characterID .. ":")
+    for _, inventory in ipairs(inventories) do
+        print("- " .. inventory:getName() .. " (" .. inventory:getType() .. ")")
+    end
+    return inventories
+end
+
+-- Use in a function
+local function getCharacterInventoryCount(characterID)
+    local inventories = lia.inventory.loadAllFromCharID(characterID)
+    return #inventories
+end
 ```
+
+---
 
 ### lia.inventory.deleteByID
-**Purpose**: Deletes an inventory and all its data from the database.
 
-**Parameters**:
-- `id` (number): Inventory ID
+**Purpose**
 
-**Returns**: None
+Deletes an inventory by its ID.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `inventoryID` (*string*): The inventory ID.
+
+**Returns**
+
+* `success` (*boolean*): True if deletion was successful.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
 -- Delete inventory by ID
-lia.inventory.deleteByID(123)
-print("Inventory deleted")
-
--- Delete with cleanup
-local inventory = lia.inventory.instances[123]
-if inventory then
-    inventory:destroy()
+local function deleteInventory(inventoryID)
+    return lia.inventory.deleteByID(inventoryID)
 end
-lia.inventory.deleteByID(123)
+
+-- Use in a function
+local function deletePlayerInventory(client)
+    local character = client:getChar()
+    if character then
+        local success = lia.inventory.deleteByID(character:getInventoryID())
+        if success then
+            print("Player inventory deleted for " .. client:Name())
+        else
+            print("Failed to delete player inventory")
+        end
+        return success
+    end
+    return false
+end
+
+-- Use in a function
+local function deleteStorageInventory(storageID)
+    local success = lia.inventory.deleteByID(storageID)
+    if success then
+        print("Storage inventory deleted: " .. storageID)
+    else
+        print("Failed to delete storage inventory: " .. storageID)
+    end
+    return success
+end
+
+-- Use in a function
+local function cleanupOldInventories()
+    local oldInventories = {"old_inv_1", "old_inv_2", "old_inv_3"}
+    for _, inventoryID in ipairs(oldInventories) do
+        lia.inventory.deleteByID(inventoryID)
+    end
+    print("Old inventories cleaned up")
+end
 ```
+
+---
 
 ### lia.inventory.cleanUpForCharacter
-**Purpose**: Cleans up all inventories for a character.
 
-**Parameters**:
-- `character` (table): Character object
+**Purpose**
 
-**Returns**: None
+Cleans up inventories for a character.
 
-**Realm**: Server
+**Parameters**
 
-**Example Usage**:
+* `characterID` (*string*): The character ID.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
 ```lua
 -- Clean up character inventories
-local character = player:getChar()
-if character then
-    lia.inventory.cleanUpForCharacter(character)
-    print("Cleaned up inventories for character")
-end
-```
-
-### lia.inventory.registerStorage
-**Purpose**: Registers a storage entity with inventory data.
-
-**Parameters**:
-- `model` (string): Entity model path
-- `data` (table): Storage configuration data
-
-**Returns**: Storage data table
-
-**Realm**: Server
-
-**Example Usage**:
-```lua
--- Register a storage entity
-lia.inventory.registerStorage("models/props_c17/cashregister01a.mdl", {
-    name = "Cash Register",
-    invType = "storage",
-    invData = {
-        w = 5,
-        h = 3
-    }
-})
-
--- Register a safe
-lia.inventory.registerStorage("models/props_c17/suitcase_passenger_physics.mdl", {
-    name = "Safe",
-    invType = "storage",
-    invData = {
-        w = 4,
-        h = 4
-    }
-})
-```
-
-### lia.inventory.getStorage
-**Purpose**: Gets storage data for a specific model.
-
-**Parameters**:
-- `model` (string): Entity model path
-
-**Returns**: Storage data table or nil
-
-**Realm**: Server
-
-**Example Usage**:
-```lua
--- Get storage data for model
-local storageData = lia.inventory.getStorage("models/props_c17/cashregister01a.mdl")
-if storageData then
-    print("Storage name:", storageData.name)
-    print("Inventory type:", storageData.invType)
-    print("Size:", storageData.invData.w, "x", storageData.invData.h)
-end
-```
-
-### lia.inventory.registerTrunk
-**Purpose**: Registers a vehicle trunk with inventory data.
-
-**Parameters**:
-- `vehicleClass` (string): Vehicle class name
-- `data` (table): Trunk configuration data
-
-**Returns**: Trunk data table
-
-**Realm**: Server
-
-**Example Usage**:
-```lua
--- Register car trunk
-lia.inventory.registerTrunk("prop_vehicle_jeep", {
-    name = "Car Trunk",
-    invType = "vehicle",
-    invData = {
-        w = 6,
-        h = 4
-    }
-})
-
--- Register truck trunk
-lia.inventory.registerTrunk("prop_vehicle_airboat", {
-    name = "Truck Bed",
-    invType = "vehicle",
-    invData = {
-        w = 8,
-        h = 6
-    }
-})
-```
-
-### lia.inventory.getTrunk
-**Purpose**: Gets trunk data for a specific vehicle class.
-
-**Parameters**:
-- `vehicleClass` (string): Vehicle class name
-
-**Returns**: Trunk data table or nil
-
-**Realm**: Server
-
-**Example Usage**:
-```lua
--- Get trunk data for vehicle
-local trunkData = lia.inventory.getTrunk("prop_vehicle_jeep")
-if trunkData then
-    print("Trunk name:", trunkData.name)
-    print("Trunk size:", trunkData.invData.w, "x", trunkData.invData.h)
-end
-```
-
-### lia.inventory.getAllTrunks
-**Purpose**: Gets all registered vehicle trunks.
-
-**Parameters**: None
-
-**Returns**: Table of all trunk data
-
-**Realm**: Server
-
-**Example Usage**:
-```lua
--- Get all trunks
-local trunks = lia.inventory.getAllTrunks()
-print("Registered trunks:")
-for vehicleClass, data in pairs(trunks) do
-    print("- " .. vehicleClass .. ": " .. data.name)
-end
-```
-
-### lia.inventory.getAllStorage
-**Purpose**: Gets all registered storage entities.
-
-**Parameters**:
-- `includeTrunks` (boolean): Whether to include vehicle trunks
-
-**Returns**: Table of all storage data
-
-**Realm**: Server
-
-**Example Usage**:
-```lua
--- Get all storage (including trunks)
-local allStorage = lia.inventory.getAllStorage()
-print("All storage entities:")
-for model, data in pairs(allStorage) do
-    print("- " .. model .. ": " .. data.name)
+local function cleanUpCharacterInventories(characterID)
+    lia.inventory.cleanUpForCharacter(characterID)
 end
 
--- Get only non-trunk storage
-local storageOnly = lia.inventory.getAllStorage(false)
-print("Storage entities only:")
-for model, data in pairs(storageOnly) do
-    print("- " .. model .. ": " .. data.name)
-end
-```
-
-### lia.inventory.show
-**Purpose**: Shows an inventory panel to the client.
-
-**Parameters**:
-- `inventory` (table): Inventory instance
-- `parent` (Panel): Parent panel (optional)
-
-**Returns**: Inventory panel
-
-**Realm**: Client
-
-**Example Usage**:
-```lua
--- Show inventory panel
-local inventory = player:getChar():getInv()
-if inventory then
-    local panel = lia.inventory.show(inventory)
-    if panel then
-        print("Inventory panel shown")
+-- Use in a function
+local function cleanUpPlayerInventories(client)
+    local character = client:getChar()
+    if character then
+        lia.inventory.cleanUpForCharacter(character:getID())
+        print("Inventories cleaned up for " .. client:Name())
     end
 end
 
--- Show inventory with parent
-local parentPanel = vgui.Create("DPanel")
-local inventoryPanel = lia.inventory.show(inventory, parentPanel)
+-- Use in a function
+local function cleanUpDeletedCharacter(characterID)
+    lia.inventory.cleanUpForCharacter(characterID)
+    print("Inventories cleaned up for deleted character: " .. characterID)
+end
+
+-- Use in a function
+local function cleanUpAllCharacterInventories()
+    local characters = lia.char.getAll()
+    for _, character in ipairs(characters) do
+        lia.inventory.cleanUpForCharacter(character:getID())
+    end
+    print("All character inventories cleaned up")
+end
+```
+
+---
+
+### lia.inventory.registerStorage
+
+**Purpose**
+
+Registers a storage type.
+
+**Parameters**
+
+* `storageType` (*string*): The storage type name.
+* `storageData` (*table*): The storage data table.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Register storage type
+local function registerStorage(storageType, storageData)
+    lia.inventory.registerStorage(storageType, storageData)
+end
+
+-- Use in a function
+local function createCrateStorage()
+    lia.inventory.registerStorage("crate", {
+        name = "Crate",
+        width = 4,
+        height = 4,
+        slots = 16,
+        model = "models/props_c17/crate01.mdl"
+    })
+    print("Crate storage registered")
+end
+
+-- Use in a function
+local function createLockerStorage()
+    lia.inventory.registerStorage("locker", {
+        name = "Locker",
+        width = 6,
+        height = 8,
+        slots = 48,
+        model = "models/props_c17/lockers001a.mdl"
+    })
+    print("Locker storage registered")
+end
+
+-- Use in a function
+local function createSafeStorage()
+    lia.inventory.registerStorage("safe", {
+        name = "Safe",
+        width = 3,
+        height = 3,
+        slots = 9,
+        model = "models/props_c17/safe01.mdl",
+        locked = true
+    })
+    print("Safe storage registered")
+end
+```
+
+---
+
+### lia.inventory.getStorage
+
+**Purpose**
+
+Gets a storage type by name.
+
+**Parameters**
+
+* `storageType` (*string*): The storage type name.
+
+**Returns**
+
+* `storageData` (*table*): The storage data table or nil.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get storage type
+local function getStorage(storageType)
+    return lia.inventory.getStorage(storageType)
+end
+
+-- Use in a function
+local function showStorageInfo(storageType)
+    local storage = lia.inventory.getStorage(storageType)
+    if storage then
+        print("Storage: " .. storage.name)
+        print("Slots: " .. storage.slots)
+        print("Model: " .. storage.model)
+        return storage
+    else
+        print("Storage type not found: " .. storageType)
+        return nil
+    end
+end
+
+-- Use in a function
+local function checkStorageExists(storageType)
+    local storage = lia.inventory.getStorage(storageType)
+    return storage ~= nil
+end
+
+-- Use in a function
+local function getStorageSlots(storageType)
+    local storage = lia.inventory.getStorage(storageType)
+    return storage and storage.slots or 0
+end
+```
+
+---
+
+### lia.inventory.registerTrunk
+
+**Purpose**
+
+Registers a trunk type.
+
+**Parameters**
+
+* `trunkType` (*string*): The trunk type name.
+* `trunkData` (*table*): The trunk data table.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Register trunk type
+local function registerTrunk(trunkType, trunkData)
+    lia.inventory.registerTrunk(trunkType, trunkData)
+end
+
+-- Use in a function
+local function createCarTrunk()
+    lia.inventory.registerTrunk("car", {
+        name = "Car Trunk",
+        width = 6,
+        height = 4,
+        slots = 24,
+        model = "models/props_c17/car01.mdl"
+    })
+    print("Car trunk registered")
+end
+
+-- Use in a function
+local function createTruckTrunk()
+    lia.inventory.registerTrunk("truck", {
+        name = "Truck Bed",
+        width = 8,
+        height = 6,
+        slots = 48,
+        model = "models/props_c17/truck01.mdl"
+    })
+    print("Truck trunk registered")
+end
+
+-- Use in a function
+local function createMotorcycleTrunk()
+    lia.inventory.registerTrunk("motorcycle", {
+        name = "Motorcycle Storage",
+        width = 3,
+        height = 2,
+        slots = 6,
+        model = "models/props_c17/motorcycle01.mdl"
+    })
+    print("Motorcycle trunk registered")
+end
+```
+
+---
+
+### lia.inventory.getTrunk
+
+**Purpose**
+
+Gets a trunk type by name.
+
+**Parameters**
+
+* `trunkType` (*string*): The trunk type name.
+
+**Returns**
+
+* `trunkData` (*table*): The trunk data table or nil.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get trunk type
+local function getTrunk(trunkType)
+    return lia.inventory.getTrunk(trunkType)
+end
+
+-- Use in a function
+local function showTrunkInfo(trunkType)
+    local trunk = lia.inventory.getTrunk(trunkType)
+    if trunk then
+        print("Trunk: " .. trunk.name)
+        print("Slots: " .. trunk.slots)
+        print("Model: " .. trunk.model)
+        return trunk
+    else
+        print("Trunk type not found: " .. trunkType)
+        return nil
+    end
+end
+
+-- Use in a function
+local function checkTrunkExists(trunkType)
+    local trunk = lia.inventory.getTrunk(trunkType)
+    return trunk ~= nil
+end
+
+-- Use in a function
+local function getTrunkSlots(trunkType)
+    local trunk = lia.inventory.getTrunk(trunkType)
+    return trunk and trunk.slots or 0
+end
+```
+
+---
+
+### lia.inventory.getAllTrunks
+
+**Purpose**
+
+Gets all registered trunk types.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `trunks` (*table*): Table of all trunk types.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get all trunk types
+local function getAllTrunks()
+    return lia.inventory.getAllTrunks()
+end
+
+-- Use in a function
+local function showAllTrunks()
+    local trunks = lia.inventory.getAllTrunks()
+    print("Available trunk types:")
+    for _, trunk in ipairs(trunks) do
+        print("- " .. trunk.name .. " (" .. trunk.slots .. " slots)")
+    end
+end
+
+-- Use in a function
+local function getTrunkCount()
+    local trunks = lia.inventory.getAllTrunks()
+    return #trunks
+end
+
+-- Use in a function
+local function getLargestTrunk()
+    local trunks = lia.inventory.getAllTrunks()
+    local largest = nil
+    local maxSlots = 0
+    for _, trunk in ipairs(trunks) do
+        if trunk.slots > maxSlots then
+            maxSlots = trunk.slots
+            largest = trunk
+        end
+    end
+    return largest
+end
+```
+
+---
+
+### lia.inventory.getAllStorage
+
+**Purpose**
+
+Gets all registered storage types.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `storageTypes` (*table*): Table of all storage types.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get all storage types
+local function getAllStorage()
+    return lia.inventory.getAllStorage()
+end
+
+-- Use in a function
+local function showAllStorage()
+    local storageTypes = lia.inventory.getAllStorage()
+    print("Available storage types:")
+    for _, storage in ipairs(storageTypes) do
+        print("- " .. storage.name .. " (" .. storage.slots .. " slots)")
+    end
+end
+
+-- Use in a function
+local function getStorageCount()
+    local storageTypes = lia.inventory.getAllStorage()
+    return #storageTypes
+end
+
+-- Use in a function
+local function getLargestStorage()
+    local storageTypes = lia.inventory.getAllStorage()
+    local largest = nil
+    local maxSlots = 0
+    for _, storage in ipairs(storageTypes) do
+        if storage.slots > maxSlots then
+            maxSlots = storage.slots
+            largest = storage
+        end
+    end
+    return largest
+end
+```
+
+---
+
+### lia.inventory.show
+
+**Purpose**
+
+Shows an inventory to a player.
+
+**Parameters**
+
+* `client` (*Player*): The player to show the inventory to.
+* `inventory` (*Inventory*): The inventory to show.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Show inventory to player
+local function showInventory(client, inventory)
+    lia.inventory.show(client, inventory)
+end
+
+-- Use in a function
+local function openPlayerInventory(client)
+    local character = client:getChar()
+    if character then
+        local inventory = character:getInventory()
+        if inventory then
+            lia.inventory.show(client, inventory)
+        end
+    end
+end
+
+-- Use in a function
+local function openStorageInventory(client, storageID)
+    local inventory = lia.inventory.loadByID(storageID)
+    if inventory then
+        lia.inventory.show(client, inventory)
+    else
+        client:notify("Storage not found")
+    end
+end
+
+-- Use in a function
+local function openTrunkInventory(client, vehicle)
+    local inventory = vehicle:getTrunkInventory()
+    if inventory then
+        lia.inventory.show(client, inventory)
+    else
+        client:notify("Vehicle trunk not accessible")
+    end
+end
 ```
