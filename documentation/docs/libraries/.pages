@@ -1,5 +1,6 @@
 arrange:
   - lia.md
+  - lia.admin.md
   - lia.attributes.md
   - lia.bars.md
   - lia.character.md
@@ -30,6 +31,7 @@ arrange:
   - lia.playerinteract.md
   - lia.time.md
   - lia.util.md
+  - lia.vendor.md
   - lia.workshop.md
   - lia.webimage.md
   - lia.websound.md

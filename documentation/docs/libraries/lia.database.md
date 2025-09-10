@@ -1037,3 +1037,315 @@ lia.db.GetCharacterTable(function(columns)
     end
 end)
 ```
+
+---
+
+### lia.db.normalizeIdentifier
+
+**Purpose**
+
+Normalizes an identifier (column/table name) for safe use in SQL queries.
+
+**Parameters**
+
+* `name` (*string*): The identifier name to normalize.
+
+**Returns**
+
+* `normalized` (*string*): The normalized identifier.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Normalize table name
+local tableName = lia.db.normalizeIdentifier("user_data")
+print(tableName) -- "user_data"
+
+-- Normalize column name
+local columnName = lia.db.normalizeIdentifier("userName")
+print(columnName) -- "userName"
+```
+
+---
+
+### lia.db.normalizeSQLIdentifiers
+
+**Purpose**
+
+Normalizes all identifiers in an SQL query string.
+
+**Parameters**
+
+* `sql` (*string*): The SQL query string to normalize.
+
+**Returns**
+
+* `normalized` (*string*): The SQL query with normalized identifiers.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Normalize SQL query
+local query = "SELECT userName FROM user_data WHERE userID = ?"
+local normalized = lia.db.normalizeSQLIdentifiers(query)
+print(normalized) -- "SELECT userName FROM user_data WHERE userID = ?"
+```
+
+---
+
+### lia.db.connect
+
+**Purpose**
+
+Establishes a connection to the database.
+
+**Parameters**
+
+* `connectCallback` (*function*, *optional*): Callback function called when connection is established.
+* `reconnect` (*boolean*, *optional*): Whether this is a reconnection attempt.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Connect to database
+lia.db.connect(function()
+    print("Database connection established")
+end)
+
+-- Connect with error handling
+lia.db.connect(function()
+    print("Connected successfully")
+end, false)
+```
+
+---
+
+### lia.db.wipeTables
+
+**Purpose**
+
+Wipes all database tables (removes all data).
+
+**Parameters**
+
+* `callback` (*function*, *optional*): Callback function called when wipe is complete.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Wipe all tables (dangerous!)
+lia.db.wipeTables(function()
+    print("All tables wiped")
+end)
+
+-- Wipe tables with confirmation
+local function wipeDatabase()
+    print("WARNING: This will delete all data!")
+    lia.db.wipeTables(function()
+        print("Database wiped successfully")
+    end)
+end
+```
+
+---
+
+### lia.db.loadTables
+
+**Purpose**
+
+Loads all database tables and their schemas.
+
+**Parameters**
+
+* None.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Load database tables
+lia.db.loadTables()
+print("Database tables loaded")
+
+-- Load tables on server start
+hook.Add("Initialize", "LoadTables", function()
+    lia.db.loadTables()
+end)
+```
+
+---
+
+### lia.db.selectWithCondition
+
+**Purpose**
+
+Performs a select query with complex condition building.
+
+**Parameters**
+
+* `fields` (*string|table*): Fields to select.
+* `dbTable` (*string*): The database table name (without lia_ prefix).
+* `conditions` (*table*): Complex condition object.
+* `limit` (*number*, *optional*): Maximum number of results.
+* `orderBy` (*string*, *optional*): ORDER BY clause.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with query results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Select with complex conditions
+lia.db.selectWithCondition("*", "characters", {
+    name = "John%",
+    money = {">", 1000}
+}, 10, "name ASC"):next(function(result)
+    print("Found " .. #result.results .. " characters")
+end)
+
+-- Select with OR conditions
+lia.db.selectWithCondition("*", "characters", {
+    {"name", "LIKE", "John%"},
+    {"OR", "money", ">", 1000}
+}):next(function(result)
+    print("Complex query results: " .. #result.results)
+end)
+```
+
+---
+
+### lia.db.selectWithJoin
+
+**Purpose**
+
+Performs a select query with table joins.
+
+**Parameters**
+
+* `query` (*string*): The complete SQL query with joins.
+
+**Returns**
+
+* `promise` (*Deferred*): A promise that resolves with query results.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Select with join
+local query = [[
+    SELECT c.name, i.itemID
+    FROM lia_characters c
+    LEFT JOIN lia_inventories i ON c.id = i.charID
+    WHERE c.faction = ?
+]]
+
+lia.db.selectWithJoin(query):next(function(result)
+    print("Joined query results: " .. #result.results)
+end)
+```
+
+---
+
+### lia.db.migrateDatabaseSchemas
+
+**Purpose**
+
+Migrates database schemas to match expected structures.
+
+**Parameters**
+
+* None.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Migrate database schemas
+lia.db.migrateDatabaseSchemas()
+print("Database schemas migrated")
+
+-- Migrate on server update
+hook.Add("DatabaseConnected", "MigrateSchemas", function()
+    lia.db.migrateDatabaseSchemas()
+end)
+```
+
+---
+
+### lia.db.addDatabaseFields
+
+**Purpose**
+
+Adds missing database fields to existing tables.
+
+**Parameters**
+
+* None.
+
+**Returns**
+
+* None.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Add missing database fields
+lia.db.addDatabaseFields()
+print("Database fields added")
+
+-- Add fields during initialization
+hook.Add("Initialize", "AddDatabaseFields", function()
+    lia.db.addDatabaseFields()
+end)
+```
