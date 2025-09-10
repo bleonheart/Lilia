@@ -543,11 +543,15 @@ Gets the tool's owner (player).
 
 **Returns**
 
-* `owner` (*Player*): The tool's owner.
+* `owner` (*Player|nil*): The tool's owner, or nil if not found.
 
 **Realm**
 
 Shared.
+
+**Notes**
+
+This method first tries to get the owner from the tool's SWEP (self:GetSWEP().Owner), and falls back to the tool's internal Owner field if that fails.
 
 **Example Usage**
 
@@ -584,11 +588,15 @@ Gets the tool's weapon entity.
 
 **Returns**
 
-* `weapon` (*Entity*): The weapon entity.
+* `weapon` (*Entity|nil*): The weapon entity, or nil if not found.
 
 **Realm**
 
 Shared.
+
+**Notes**
+
+This method first tries to get the weapon from the tool's SWEP (self:GetSWEP().Weapon), and falls back to the tool's internal Weapon field if that fails.
 
 **Example Usage**
 
