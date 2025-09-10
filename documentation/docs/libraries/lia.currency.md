@@ -1,12 +1,12 @@
 # Currency Library
 
-This page documents the functions for working with currency and money management.
+This page documents the functions for working with currency system and money management.
 
 ---
 
 ## Overview
 
-The currency library (`lia.currency`) provides a system for managing in-game currency and money in the Lilia framework. It handles currency formatting, money entity spawning, and provides localized currency names and symbols. The library integrates with the configuration system to allow customizable currency symbols and names.
+The currency library (`lia.currency`) provides a simple currency system for the Lilia framework. It handles currency formatting, display, and money entity spawning. The library integrates with the configuration system to provide customizable currency symbols and names.
 
 ---
 
@@ -14,15 +14,15 @@ The currency library (`lia.currency`) provides a system for managing in-game cur
 
 **Purpose**
 
-Formats a currency amount with proper symbol and singular/plural names.
+Formats a currency amount with proper symbol and singular/plural naming.
 
 **Parameters**
 
-* `amount` (*number*): The amount of currency to format.
+* `amount` (*number*): The amount to format.
 
 **Returns**
 
-* `formattedString` (*string*): The formatted currency string.
+* `formatted` (*string*): The formatted currency string.
 
 **Realm**
 
@@ -33,41 +33,34 @@ Shared.
 ```lua
 -- Format currency amount
 local formatted = lia.currency.get(100)
-print(formatted) -- "$100 dollars" (example)
+print(formatted) -- "$100 dollars" (or configured symbol/name)
 
--- Format single currency unit
-local single = lia.currency.get(1)
-print(single) -- "$1 dollar" (example)
+-- Format single unit
+local formatted = lia.currency.get(1)
+print(formatted) -- "$1 dollar" (singular form)
+
+-- Format multiple units
+local formatted = lia.currency.get(500)
+print(formatted) -- "$500 dollars" (plural form)
 
 -- Use in UI display
-local function displayMoney(amount)
-    local moneyText = lia.currency.get(amount)
-    draw.SimpleText(moneyText, "DermaDefault", 100, 100, Color(255, 255, 255))
-end
-
--- Format currency in chat
-local function sendMoneyMessage(amount)
-    local message = "You have " .. lia.currency.get(amount)
-    chat.AddText(Color(255, 255, 0), message)
-end
-
--- Format currency with validation
-local function formatCurrencySafely(amount)
-    if not isnumber(amount) or amount < 0 then
-        return lia.currency.get(0)
-    end
-    return lia.currency.get(amount)
-end
-
--- Format currency for different contexts
-local function formatCurrencyForContext(amount, context)
+local function drawMoney(amount)
     local formatted = lia.currency.get(amount)
-    if context == "inventory" then
-        return "Amount: " .. formatted
-    elseif context == "transaction" then
-        return "Total: " .. formatted
+    draw.SimpleText(formatted, "DermaDefault", 10, 10, Color(255, 255, 255))
+end
+
+-- Use in chat messages
+local function sendMoneyMessage(amount)
+    local formatted = lia.currency.get(amount)
+    chat.AddText(Color(255, 255, 0), "You received " .. formatted)
+end
+
+-- Format with validation
+local function safeFormat(amount)
+    if isnumber(amount) and amount >= 0 then
+        return lia.currency.get(amount)
     else
-        return formatted
+        return lia.currency.get(0)
     end
 end
 ```
@@ -78,17 +71,17 @@ end
 
 **Purpose**
 
-Spawns a money entity at the specified position with the given amount (server-side only).
+Spawns a money entity at the specified position with the given amount.
 
 **Parameters**
 
 * `pos` (*Vector*): The position to spawn the money entity.
-* `amount` (*number*): The amount of money for the entity.
+* `amount` (*number*): The amount of money the entity should contain.
 * `angle` (*Angle*): Optional angle for the money entity.
 
 **Returns**
 
-* `moneyEntity` (*Entity|nil*): The spawned money entity or nil if failed.
+* `money` (*Entity|nil*): The spawned money entity or nil if failed.
 
 **Realm**
 
@@ -97,60 +90,52 @@ Server.
 **Example Usage**
 
 ```lua
--- Spawn money at a position
+-- Spawn money at position
 local money = lia.currency.spawn(Vector(0, 0, 0), 100)
-if money then
+if IsValid(money) then
     print("Money spawned successfully")
 end
 
 -- Spawn money with angle
-local money = lia.currency.spawn(Vector(100, 100, 0), 50, Angle(0, 90, 0))
-
--- Spawn money at player position
-local function spawnMoneyAtPlayer(ply, amount)
-    local pos = ply:GetPos() + ply:GetForward() * 50
-    return lia.currency.spawn(pos, amount)
+local money = lia.currency.spawn(Vector(100, 100, 0), 500, Angle(0, 45, 0))
+if IsValid(money) then
+    print("Money spawned with rotation")
 end
 
--- Spawn money in a command
-lia.command.add("givemoney", {
-    desc = "Give money to a player",
-    arguments = {
-        {name = "target", type = "player"},
-        {name = "amount", type = "number"}
-    },
-    adminOnly = true,
-    onRun = function(client, arguments)
-        local target = arguments[1]
-        local amount = tonumber(arguments[2])
-        
-        if amount and amount > 0 then
-            local pos = target:GetPos() + target:GetForward() * 50
-            local money = lia.currency.spawn(pos, amount)
-            if money then
-                client:ChatPrint("Spawned " .. lia.currency.get(amount) .. " for " .. target:Name())
-            end
-        end
+-- Spawn money at player position
+local function dropMoney(ply, amount)
+    local pos = ply:GetPos() + ply:GetForward() * 50
+    local money = lia.currency.spawn(pos, amount)
+    if IsValid(money) then
+        ply:ChatPrint("Dropped " .. lia.currency.get(amount))
     end
-})
+end
 
 -- Spawn money with validation
-local function spawnMoneySafely(pos, amount, angle)
-    if not pos or not amount or amount <= 0 then
-        print("Invalid parameters for money spawning")
+local function safeSpawnMoney(pos, amount)
+    if not pos or not amount or amount < 0 then
+        print("Invalid parameters for money spawn")
         return nil
     end
     
-    return lia.currency.spawn(pos, amount, angle)
-end
-
--- Spawn money in a random location
-local function spawnRandomMoney(amount, radius)
-    local pos = Vector(
-        math.random(-radius, radius),
-        math.random(-radius, radius),
-        0
-    )
     return lia.currency.spawn(pos, amount)
 end
+
+-- Spawn money in command
+lia.command.add("spawnmoney", {
+    arguments = {
+        {name = "amount", type = "number"}
+    },
+    onRun = function(client, arguments)
+        local amount = arguments[1]
+        local pos = client:GetPos() + client:GetForward() * 100
+        
+        local money = lia.currency.spawn(pos, amount)
+        if IsValid(money) then
+            client:ChatPrint("Spawned " .. lia.currency.get(amount))
+        else
+            client:ChatPrint("Failed to spawn money")
+        end
+    end
+})
 ```

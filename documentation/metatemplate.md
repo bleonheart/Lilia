@@ -27,7 +27,7 @@ An extended, detailed explanation of the meta table, including its purpose, scop
 
 ---
 
-### MetaType\:FunctionName (Function Title)
+### MetaType\:FunctionName
 
 **Purpose**
 

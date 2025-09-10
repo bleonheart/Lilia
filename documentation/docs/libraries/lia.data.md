@@ -6,7 +6,7 @@ This page documents the functions for working with data serialization, persisten
 
 ## Overview
 
-The data library (`lia.data`) provides a comprehensive system for data serialization, persistence, and storage in the Lilia framework. It handles encoding and decoding of complex data types like vectors, angles, and colors, provides database persistence for entities and configuration data, and manages data storage across different gamemodes and maps.
+The data library (`lia.data`) provides comprehensive data management for the Lilia framework. It handles data serialization, deserialization, persistence, and storage with support for various data types including vectors, angles, colors, and complex tables. The library includes automatic encoding/decoding of GLua-specific types and provides persistence functionality for entities and game state.
 
 ---
 
@@ -14,7 +14,7 @@ The data library (`lia.data`) provides a comprehensive system for data serializa
 
 **Purpose**
 
-Encodes a table value for serialization, converting special types to serializable formats.
+Encodes a table or value for safe serialization, handling GLua-specific types.
 
 **Parameters**
 
@@ -22,7 +22,7 @@ Encodes a table value for serialization, converting special types to serializabl
 
 **Returns**
 
-* `encodedValue` (*any*): The encoded value ready for serialization.
+* `encoded` (*any*): The encoded value safe for serialization.
 
 **Realm**
 
@@ -48,23 +48,20 @@ local data = {
     position = Vector(100, 200, 300),
     rotation = Angle(0, 90, 0),
     color = Color(255, 0, 0),
-    name = "Test"
+    name = "test"
 }
 local encoded = lia.data.encodetable(data)
 print(encoded.position) -- {100, 200, 300}
 
 -- Encode for database storage
-local function encodeForStorage(data)
-    return lia.data.encodetable(data)
-end
-
--- Encode multiple values
-local function encodeMultiple(values)
-    local encoded = {}
-    for key, value in pairs(values) do
-        encoded[key] = lia.data.encodetable(value)
-    end
-    return encoded
+local function savePlayerData(ply)
+    local data = {
+        pos = ply:GetPos(),
+        ang = ply:GetAngles(),
+        health = ply:Health()
+    }
+    local encoded = lia.data.encodetable(data)
+    -- Save encoded data to database
 end
 ```
 
@@ -74,7 +71,7 @@ end
 
 **Purpose**
 
-Decodes a serialized value back to its original format, handling vectors, angles, and nested tables.
+Decodes a serialized value back to its original GLua types.
 
 **Parameters**
 
@@ -82,7 +79,7 @@ Decodes a serialized value back to its original format, handling vectors, angles
 
 **Returns**
 
-* `decodedValue` (*any*): The decoded value in its original format.
+* `decoded` (*any*): The decoded value with proper GLua types.
 
 **Realm**
 
@@ -113,18 +110,13 @@ local decoded = lia.data.decode(encoded)
 print(decoded.position) -- Vector(100, 200, 300)
 
 -- Decode from database
-local function decodeFromDatabase(data)
-    return lia.data.decode(data)
-end
-
--- Decode with error handling
-local function decodeSafely(data)
-    local success, result = pcall(lia.data.decode, data)
-    if success then
-        return result
-    else
-        print("Error decoding data: " .. tostring(result))
-        return data
+local function loadPlayerData(ply, rawData)
+    local decoded = lia.data.decode(rawData)
+    if decoded.pos then
+        ply:SetPos(decoded.pos)
+    end
+    if decoded.ang then
+        ply:SetAngles(decoded.ang)
     end
 end
 ```
@@ -143,7 +135,7 @@ Serializes a value to a JSON string for storage or transmission.
 
 **Returns**
 
-* `jsonString` (*string*): The JSON serialized string.
+* `serialized` (*string*): The JSON serialized string.
 
 **Realm**
 
@@ -153,34 +145,30 @@ Shared.
 
 ```lua
 -- Serialize a simple value
-local serialized = lia.data.serialize("Hello World")
-print(serialized) -- "Hello World"
+local serialized = lia.data.serialize("hello world")
+print(serialized) -- "hello world"
 
 -- Serialize a table
-local data = {name = "Test", value = 100}
-local serialized = lia.data.serialize(data)
-print(serialized) -- {"name":"Test","value":100}
-
--- Serialize complex data
 local data = {
-    position = Vector(100, 200, 300),
-    rotation = Angle(0, 90, 0),
-    color = Color(255, 0, 0)
+    name = "test",
+    value = 123,
+    position = Vector(100, 200, 300)
 }
 local serialized = lia.data.serialize(data)
 print(serialized) -- JSON string
 
 -- Serialize for network transmission
-local function serializeForNetwork(data)
-    return lia.data.serialize(data)
+local function sendDataToClient(ply, data)
+    local serialized = lia.data.serialize(data)
+    net.Start("DataUpdate")
+    net.WriteString(serialized)
+    net.Send(ply)
 end
 
--- Serialize with validation
-local function serializeSafely(data)
-    if data == nil then
-        return "null"
-    end
-    return lia.data.serialize(data)
+-- Serialize for database storage
+local function saveToDatabase(key, data)
+    local serialized = lia.data.serialize(data)
+    lia.db.setData(key, serialized)
 end
 ```
 
@@ -198,7 +186,7 @@ Deserializes a JSON string back to its original value.
 
 **Returns**
 
-* `value` (*any*): The deserialized value.
+* `deserialized` (*any*): The deserialized value.
 
 **Realm**
 
@@ -207,42 +195,41 @@ Shared.
 **Example Usage**
 
 ```lua
--- Deserialize a simple value
-local deserialized = lia.data.deserialize('"Hello World"')
-print(deserialized) -- "Hello World"
+-- Deserialize a JSON string
+local deserialized = lia.data.deserialize('{"name":"test","value":123}')
+print(deserialized.name) -- "test"
 
--- Deserialize a table
-local json = '{"name":"Test","value":100}'
-local deserialized = lia.data.deserialize(json)
-print(deserialized.name) -- "Test"
-
--- Deserialize from database
-local function deserializeFromDatabase(jsonData)
-    return lia.data.deserialize(jsonData)
-end
-
--- Deserialize with error handling
-local function deserializeSafely(jsonData)
-    if not jsonData or jsonData == "" then
+-- Deserialize with validation
+local function safeDeserialize(raw)
+    if not raw or raw == "" then
         return nil
     end
     
-    local success, result = pcall(lia.data.deserialize, jsonData)
-    if success then
-        return result
+    local deserialized = lia.data.deserialize(raw)
+    if deserialized then
+        return deserialized
     else
-        print("Error deserializing data: " .. tostring(result))
+        print("Failed to deserialize data")
         return nil
     end
 end
 
--- Deserialize multiple values
-local function deserializeMultiple(jsonArray)
-    local results = {}
-    for i, json in ipairs(jsonArray) do
-        results[i] = lia.data.deserialize(json)
+-- Deserialize from network
+net.Receive("DataUpdate", function()
+    local raw = net.ReadString()
+    local data = lia.data.deserialize(raw)
+    if data then
+        print("Received data: " .. tostring(data))
     end
-    return results
+end)
+
+-- Deserialize from database
+local function loadFromDatabase(key)
+    local raw = lia.db.getData(key)
+    if raw then
+        return lia.data.deserialize(raw)
+    end
+    return nil
 end
 ```
 
@@ -252,15 +239,15 @@ end
 
 **Purpose**
 
-Decodes a raw value specifically as a Vector.
+Decodes a raw value specifically to a Vector.
 
 **Parameters**
 
-* `raw` (*any*): The raw value to decode as a vector.
+* `raw` (*any*): The raw value to decode.
 
 **Returns**
 
-* `vector` (*Vector|any*): The decoded vector or original value if not decodable.
+* `vector` (*Vector|any*): The decoded Vector or original value if not decodable.
 
 **Realm**
 
@@ -269,7 +256,7 @@ Shared.
 **Example Usage**
 
 ```lua
--- Decode vector from array
+-- Decode vector from table
 local vector = lia.data.decodeVector({100, 200, 300})
 print(vector) -- Vector(100, 200, 300)
 
@@ -277,28 +264,26 @@ print(vector) -- Vector(100, 200, 300)
 local vector = lia.data.decodeVector("[100 200 300]")
 print(vector) -- Vector(100, 200, 300)
 
--- Decode vector from JSON
-local vector = lia.data.decodeVector('{"x":100,"y":200,"z":300}')
-print(vector) -- Vector(100, 200, 300)
-
 -- Decode vector with validation
-local function decodeVectorSafely(raw)
+local function safeDecodeVector(raw)
     local vector = lia.data.decodeVector(raw)
     if isvector(vector) then
         return vector
     else
-        print("Failed to decode vector from: " .. tostring(raw))
+        print("Failed to decode vector")
         return Vector(0, 0, 0)
     end
 end
 
--- Decode multiple vectors
-local function decodeMultipleVectors(rawArray)
-    local vectors = {}
-    for i, raw in ipairs(rawArray) do
-        vectors[i] = lia.data.decodeVector(raw)
+-- Decode vector from database
+local function loadPlayerPosition(ply)
+    local raw = lia.db.getData("player_" .. ply:SteamID() .. "_pos")
+    if raw then
+        local pos = lia.data.decodeVector(raw)
+        if isvector(pos) then
+            ply:SetPos(pos)
+        end
     end
-    return vectors
 end
 ```
 
@@ -308,15 +293,15 @@ end
 
 **Purpose**
 
-Decodes a raw value specifically as an Angle.
+Decodes a raw value specifically to an Angle.
 
 **Parameters**
 
-* `raw` (*any*): The raw value to decode as an angle.
+* `raw` (*any*): The raw value to decode.
 
 **Returns**
 
-* `angle` (*Angle|any*): The decoded angle or original value if not decodable.
+* `angle` (*Angle|any*): The decoded Angle or original value if not decodable.
 
 **Realm**
 
@@ -325,7 +310,7 @@ Shared.
 **Example Usage**
 
 ```lua
--- Decode angle from array
+-- Decode angle from table
 local angle = lia.data.decodeAngle({0, 90, 0})
 print(angle) -- Angle(0, 90, 0)
 
@@ -333,28 +318,26 @@ print(angle) -- Angle(0, 90, 0)
 local angle = lia.data.decodeAngle("{0 90 0}")
 print(angle) -- Angle(0, 90, 0)
 
--- Decode angle from JSON
-local angle = lia.data.decodeAngle('{"p":0,"y":90,"r":0}')
-print(angle) -- Angle(0, 90, 0)
-
 -- Decode angle with validation
-local function decodeAngleSafely(raw)
+local function safeDecodeAngle(raw)
     local angle = lia.data.decodeAngle(raw)
     if isangle(angle) then
         return angle
     else
-        print("Failed to decode angle from: " .. tostring(raw))
+        print("Failed to decode angle")
         return Angle(0, 0, 0)
     end
 end
 
--- Decode angle for entity
-local function decodeEntityAngle(raw)
-    local angle = lia.data.decodeAngle(raw)
-    if isangle(angle) then
-        return angle
+-- Decode angle from database
+local function loadPlayerAngles(ply)
+    local raw = lia.db.getData("player_" .. ply:SteamID() .. "_ang")
+    if raw then
+        local ang = lia.data.decodeAngle(raw)
+        if isangle(ang) then
+            ply:SetAngles(ang)
+        end
     end
-    return Angle(0, 0, 0)
 end
 ```
 
@@ -364,18 +347,18 @@ end
 
 **Purpose**
 
-Sets a data value and saves it to the database with gamemode and map context.
+Sets a data value with automatic serialization and database storage.
 
 **Parameters**
 
-* `key` (*string*): The data key to set.
+* `key` (*string*): The key to store the data under.
 * `value` (*any*): The value to store.
 * `global` (*boolean*): Whether to store globally (not gamemode/map specific).
-* `ignoreMap` (*boolean*): Whether to ignore map context.
+* `ignoreMap` (*boolean*): Whether to ignore map-specific storage.
 
 **Returns**
 
-* `path` (*string*): The storage path for the data.
+* `path` (*string*): The storage path used.
 
 **Realm**
 
@@ -384,44 +367,38 @@ Shared.
 **Example Usage**
 
 ```lua
--- Set a simple data value
+-- Set a simple value
 lia.data.set("serverName", "My Server")
 
--- Set a complex data value
-local data = {
-    position = Vector(100, 200, 300),
-    rotation = Angle(0, 90, 0),
-    name = "Test Entity"
+-- Set a complex value
+local playerData = {
+    pos = Vector(100, 200, 300),
+    ang = Angle(0, 90, 0),
+    health = 100
 }
-lia.data.set("entityData", data)
+lia.data.set("playerData", playerData)
 
--- Set global data (not gamemode/map specific)
+-- Set global data
 lia.data.set("globalSetting", "value", true)
 
--- Set data for current map only
-lia.data.set("mapSpecificData", "value", false, true)
-
--- Set data with callback
-lia.data.set("importantData", "value")
-hook.Add("OnDataSet", "HandleDataChange", function(key, value, gamemode, map)
-    print("Data changed: " .. key .. " = " .. tostring(value))
+-- Set with callback
+lia.data.set("importantData", "value"):next(function()
+    print("Data saved successfully")
 end)
 
--- Set multiple data values
-local function setMultipleData(dataTable)
-    for key, value in pairs(dataTable) do
+-- Set in command
+lia.command.add("setdata", {
+    arguments = {
+        {name = "key", type = "string"},
+        {name = "value", type = "string"}
+    },
+    onRun = function(client, arguments)
+        local key = arguments[1]
+        local value = arguments[2]
         lia.data.set(key, value)
+        client:ChatPrint("Data set: " .. key .. " = " .. value)
     end
-end
-
--- Set data with validation
-local function setDataSafely(key, value)
-    if key and key ~= "" then
-        lia.data.set(key, value)
-        return true
-    end
-    return false
-end
+})
 ```
 
 ---
@@ -434,9 +411,9 @@ Deletes a data value from storage.
 
 **Parameters**
 
-* `key` (*string*): The data key to delete.
+* `key` (*string*): The key to delete.
 * `global` (*boolean*): Whether to delete from global storage.
-* `ignoreMap` (*boolean*): Whether to ignore map context.
+* `ignoreMap` (*boolean*): Whether to ignore map-specific deletion.
 
 **Returns**
 
@@ -449,106 +426,37 @@ Shared.
 **Example Usage**
 
 ```lua
--- Delete a data value
-lia.data.delete("serverName")
+-- Delete a value
+lia.data.delete("oldData")
 
 -- Delete global data
-lia.data.delete("globalSetting", true)
+lia.data.delete("globalData", true)
 
--- Delete map-specific data
-lia.data.delete("mapData", false, true)
-
--- Delete data with confirmation
-local function deleteDataWithConfirmation(key)
-    if lia.data.get(key) then
-        lia.data.delete(key)
-        print("Deleted data: " .. key)
-        return true
+-- Delete with validation
+local function safeDelete(key)
+    if key and key ~= "" then
+        return lia.data.delete(key)
     else
-        print("Data not found: " .. key)
+        print("Invalid key for deletion")
         return false
     end
 end
 
--- Delete multiple data values
-local function deleteMultipleData(keys)
-    for _, key in ipairs(keys) do
-        lia.data.delete(key)
-    end
-end
-
--- Delete data by pattern
-local function deleteDataByPattern(pattern)
-    for key, _ in pairs(lia.data.stored) do
-        if string.match(key, pattern) then
-            lia.data.delete(key)
+-- Delete in command
+lia.command.add("deletedata", {
+    arguments = {
+        {name = "key", type = "string"}
+    },
+    onRun = function(client, arguments)
+        local key = arguments[1]
+        local success = lia.data.delete(key)
+        if success then
+            client:ChatPrint("Data deleted: " .. key)
+        else
+            client:ChatPrint("Failed to delete: " .. key)
         end
     end
-end
-```
-
----
-
-### lia.data.get
-
-**Purpose**
-
-Gets a data value from storage.
-
-**Parameters**
-
-* `key` (*string*): The data key to retrieve.
-* `default` (*any*): Optional default value if key not found.
-
-**Returns**
-
-* `value` (*any*): The stored value or default.
-
-**Realm**
-
-Shared.
-
-**Example Usage**
-
-```lua
--- Get a data value
-local serverName = lia.data.get("serverName")
-print("Server name: " .. tostring(serverName))
-
--- Get data with default
-local value = lia.data.get("nonexistent", "defaultValue")
-
--- Get complex data
-local entityData = lia.data.get("entityData")
-if entityData then
-    print("Position: " .. tostring(entityData.position))
-end
-
--- Get all data
-local function getAllData()
-    return lia.data.stored
-end
-
--- Get data with validation
-local function getDataSafely(key, default)
-    local value = lia.data.get(key, default)
-    if value == nil then
-        print("Data not found: " .. key)
-        return default
-    end
-    return value
-end
-
--- Get data by type
-local function getDataByType(typeFilter)
-    local filtered = {}
-    for key, value in pairs(lia.data.stored) do
-        if type(value) == typeFilter then
-            filtered[key] = value
-        end
-    end
-    return filtered
-end
+})
 ```
 
 ---
@@ -557,11 +465,15 @@ end
 
 **Purpose**
 
-Loads data from the database for the current gamemode and map.
+Loads data tables from the database in order of specificity.
+
+**Parameters**
+
+*None*
 
 **Returns**
 
-* None.
+*None*
 
 **Realm**
 
@@ -570,30 +482,59 @@ Shared.
 **Example Usage**
 
 ```lua
--- Load data on server start
+-- Load data tables
+lia.data.loadTables()
+
+-- Load with callback
+lia.data.loadTables():next(function()
+    print("Data tables loaded successfully")
+end)
+
+-- Load in initialization
 hook.Add("Initialize", "LoadData", function()
     lia.data.loadTables()
 end)
+```
 
--- Load data with callback
-lia.data.loadTables()
-hook.Add("OnDataLoaded", "HandleDataLoaded", function()
-    print("Data loaded successfully")
+---
+
+### lia.data.loadPersistence
+
+**Purpose**
+
+Loads persistence data and ensures required database columns exist.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `promise` (*Promise*): Promise that resolves when persistence is loaded.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Load persistence
+lia.data.loadPersistence():next(function()
+    print("Persistence loaded")
 end)
 
--- Load data in module
-local function loadModuleData()
-    lia.data.loadTables()
-    print("Module data loaded")
-end
+-- Load with error handling
+lia.data.loadPersistence():next(function()
+    print("Persistence loaded successfully")
+end):catch(function(err)
+    print("Failed to load persistence: " .. tostring(err))
+end)
 
--- Load data with error handling
-local function loadDataSafely()
-    local success, err = pcall(lia.data.loadTables)
-    if not success then
-        print("Error loading data: " .. tostring(err))
-    end
-end
+-- Load in map initialization
+hook.Add("InitPostEntity", "LoadPersistence", function()
+    lia.data.loadPersistence()
+end)
 ```
 
 ---
@@ -602,19 +543,19 @@ end
 
 **Purpose**
 
-Saves entity persistence data to the database (server-side only).
+Saves entity persistence data to the database.
 
 **Parameters**
 
-* `entities` (*table*): Table of entities to save.
+* `entities` (*table*): Table of entity data to save.
 
 **Returns**
 
-* None.
+*None*
 
 **Realm**
 
-Server.
+Shared.
 
 **Example Usage**
 
@@ -633,7 +574,7 @@ lia.data.savePersistence(entities)
 -- Save all persistent entities
 local function saveAllPersistentEntities()
     local entities = {}
-    for _, ent in ipairs(ents.GetAll()) do
+    for _, ent in pairs(ents.GetAll()) do
         if ent:GetPersistent() then
             table.insert(entities, {
                 class = ent:GetClass(),
@@ -646,16 +587,11 @@ local function saveAllPersistentEntities()
     lia.data.savePersistence(entities)
 end
 
--- Save persistence with validation
-local function savePersistenceSafely(entities)
-    if not entities or #entities == 0 then
-        print("No entities to save")
-        return
-    end
-    
+-- Save in hook
+hook.Add("PersistenceSave", "SaveEntities", function()
+    local entities = lia.data.getPersistence()
     lia.data.savePersistence(entities)
-    print("Saved " .. #entities .. " entities")
-end
+end)
 ```
 
 ---
@@ -664,65 +600,15 @@ end
 
 **Purpose**
 
-Loads entity persistence data from the database (server-side only).
+Loads persistence data from the database and executes callback.
 
 **Parameters**
 
-* `callback` (*function*): Optional callback function when data is loaded.
+* `callback` (*function*): Callback function to execute with loaded entities.
 
 **Returns**
 
-* None.
-
-**Realm**
-
-Server.
-
-**Example Usage**
-
-```lua
--- Load persistence data
-lia.data.loadPersistenceData(function(entities)
-    print("Loaded " .. #entities .. " persistent entities")
-end)
-
--- Load persistence data with entity recreation
-lia.data.loadPersistenceData(function(entities)
-    for _, data in ipairs(entities) do
-        local ent = ents.Create(data.class)
-        if IsValid(ent) then
-            ent:SetPos(data.pos)
-            ent:SetAngles(data.angles)
-            ent:SetModel(data.model)
-            ent:Spawn()
-            ent:Activate()
-        end
-    end
-end)
-
--- Load persistence data with error handling
-local function loadPersistenceSafely()
-    lia.data.loadPersistenceData(function(entities)
-        if entities then
-            print("Successfully loaded " .. #entities .. " entities")
-        else
-            print("Failed to load persistence data")
-        end
-    end)
-end
-```
-
----
-
-### lia.data.getPersistence
-
-**Purpose**
-
-Gets the current persistence cache data.
-
-**Returns**
-
-* `entities` (*table*): Table of cached persistence entities.
+*None*
 
 **Realm**
 
@@ -731,45 +617,137 @@ Shared.
 **Example Usage**
 
 ```lua
--- Get persistence cache
+-- Load persistence data
+lia.data.loadPersistenceData(function(entities)
+    print("Loaded " .. #entities .. " persistent entities")
+    for _, ent in ipairs(entities) do
+        print("Entity: " .. ent.class .. " at " .. tostring(ent.pos))
+    end
+end)
+
+-- Load and spawn entities
+lia.data.loadPersistenceData(function(entities)
+    for _, entData in ipairs(entities) do
+        local ent = ents.Create(entData.class)
+        if IsValid(ent) then
+            ent:SetPos(entData.pos)
+            ent:SetAngles(entData.angles)
+            ent:SetModel(entData.model)
+            ent:Spawn()
+        end
+    end
+end)
+
+-- Load with error handling
+lia.data.loadPersistenceData(function(entities)
+    if entities and #entities > 0 then
+        print("Successfully loaded " .. #entities .. " entities")
+    else
+        print("No persistence data found")
+    end
+end)
+```
+
+---
+
+### lia.data.get
+
+**Purpose**
+
+Gets a stored data value with automatic deserialization.
+
+**Parameters**
+
+* `key` (*string*): The key to retrieve.
+* `default` (*any*): Default value to return if key not found.
+
+**Returns**
+
+* `value` (*any*): The stored value or default.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get a simple value
+local value = lia.data.get("serverName", "Default Server")
+print(value)
+
+-- Get a complex value
+local playerData = lia.data.get("playerData", {})
+if playerData.pos then
+    print("Player position: " .. tostring(playerData.pos))
+end
+
+-- Get with validation
+local function safeGet(key, default)
+    local value = lia.data.get(key, default)
+    if value ~= nil then
+        return value
+    else
+        print("Key not found: " .. key)
+        return default
+    end
+end
+
+-- Get in command
+lia.command.add("getdata", {
+    arguments = {
+        {name = "key", type = "string"}
+    },
+    onRun = function(client, arguments)
+        local key = arguments[1]
+        local value = lia.data.get(key, "Not found")
+        client:ChatPrint(key .. " = " .. tostring(value))
+    end
+})
+```
+
+---
+
+### lia.data.getPersistence
+
+**Purpose**
+
+Gets the current persistence cache.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `entities` (*table*): Table of persistent entity data.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get persistence data
 local entities = lia.data.getPersistence()
-print("Cached entities: " .. #entities)
+print("Persistent entities: " .. #entities)
 
--- Check if entity exists in cache
-local function isEntityCached(class, pos)
-    local entities = lia.data.getPersistence()
-    for _, ent in ipairs(entities) do
-        if ent.class == class and ent.pos == pos then
-            return true
-        end
-    end
-    return false
+-- Get and process persistence
+local entities = lia.data.getPersistence()
+for _, ent in ipairs(entities) do
+    print("Entity: " .. ent.class .. " at " .. tostring(ent.pos))
 end
 
--- Get entities by class
-local function getEntitiesByClass(class)
+-- Get persistence for saving
+local function saveCurrentPersistence()
     local entities = lia.data.getPersistence()
-    local filtered = {}
-    for _, ent in ipairs(entities) do
-        if ent.class == class then
-            table.insert(filtered, ent)
-        end
-    end
-    return filtered
+    lia.data.savePersistence(entities)
 end
 
--- Get persistence cache info
-local function getPersistenceInfo()
+-- Get persistence in hook
+hook.Add("PersistenceSave", "GetPersistence", function()
     local entities = lia.data.getPersistence()
-    local info = {
-        count = #entities,
-        classes = {}
-    }
-    
-    for _, ent in ipairs(entities) do
-        info.classes[ent.class] = (info.classes[ent.class] or 0) + 1
-    end
-    
-    return info
-end
+    print("Saving " .. #entities .. " persistent entities")
+end)
 ```

@@ -1,12 +1,12 @@
 # Attributes Library
 
-This page documents the functions for working with character attributes.
+This page documents the functions for working with character attributes and attribute management.
 
 ---
 
 ## Overview
 
-The attributes library (`lia.attribs`) provides a system for managing character attributes within the Lilia framework. It handles loading attribute definitions from files, managing attribute data, and setting up attributes for characters. Attributes are used to track various character statistics and properties that can affect gameplay.
+The attributes library (`lia.attribs`) provides a system for managing character attributes in the Lilia framework. It handles loading attribute definitions from files, setting up attributes for characters, and managing attribute data. The library supports dynamic attribute loading and provides hooks for attribute setup and management.
 
 ---
 
@@ -14,15 +14,15 @@ The attributes library (`lia.attribs`) provides a system for managing character 
 
 **Purpose**
 
-Loads attribute definitions from Lua files in a specified directory.
+Loads attribute definitions from a directory containing attribute files.
 
 **Parameters**
 
-* `directory` (*string*): The path to the directory containing attribute definition files.
+* `directory` (*string*): The directory path to load attributes from.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -31,14 +31,23 @@ Shared.
 **Example Usage**
 
 ```lua
--- Load attributes from the default attributes directory
+-- Load attributes from a specific directory
 lia.attribs.loadFromDir("gamemode/attributes")
 
--- Load attributes from a custom directory
-lia.attribs.loadFromDir("gamemode/custom_attributes")
+-- Load attributes from schema directory
+lia.attribs.loadFromDir("schema/attributes")
 
--- Load attributes from a module's attributes folder
-lia.attribs.loadFromDir("gamemode/modules/my_module/attributes")
+-- Load attributes from addon directory
+lia.attribs.loadFromDir("addons/myaddon/lua/attributes")
+
+-- Load attributes with error handling
+local success, err = pcall(function()
+    lia.attribs.loadFromDir("gamemode/attributes")
+end)
+
+if not success then
+    print("Failed to load attributes: " .. tostring(err))
+end
 ```
 
 ---
@@ -47,15 +56,15 @@ lia.attribs.loadFromDir("gamemode/modules/my_module/attributes")
 
 **Purpose**
 
-Sets up attributes for a specific character by calling the OnSetup function for each attribute.
+Sets up attributes for a client's character, calling OnSetup hooks for each attribute.
 
 **Parameters**
 
-* `client` (*Player*): The player whose character's attributes should be set up.
+* `client` (*Player*): The client to set up attributes for.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -64,23 +73,27 @@ Server.
 **Example Usage**
 
 ```lua
-if SERVER then
-    -- Set up attributes for a player when they spawn
-    hook.Add("PlayerSpawn", "SetupAttributes", function(ply)
-        if ply:getChar() then
-            lia.attribs.setup(ply)
-        end
-    end)
-
-    -- Set up attributes for a character when it's loaded
-    hook.Add("OnCharacterLoaded", "SetupAttributes", function(ply, char)
+-- Setup attributes for a player when they spawn
+hook.Add("PlayerSpawn", "SetupAttributes", function(ply)
+    if ply:getChar() then
         lia.attribs.setup(ply)
-    end)
-
-    -- Manually set up attributes for a specific player
-    local player = player.GetHumans()[1]
-    if IsValid(player) and player:getChar() then
-        lia.attribs.setup(player)
     end
+end)
+
+-- Setup attributes for a character when loaded
+hook.Add("CharacterLoaded", "SetupAttributes", function(char)
+    local client = char:getPlayer()
+    if IsValid(client) then
+        lia.attribs.setup(client)
+    end
+end)
+
+-- Setup attributes manually
+lia.attribs.setup(ply)
+
+-- Setup attributes with validation
+if IsValid(ply) and ply:getChar() then
+    lia.attribs.setup(ply)
+    print("Attributes setup for " .. ply:Name())
 end
 ```

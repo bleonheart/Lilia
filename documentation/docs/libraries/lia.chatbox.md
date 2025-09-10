@@ -1,12 +1,12 @@
 # Chatbox Library
 
-This page documents the functions for working with chat systems and message handling.
+This page documents the functions for working with chat system and message handling.
 
 ---
 
 ## Overview
 
-The chatbox library (`lia.chat`) provides a comprehensive system for managing in-game chat functionalities, including message parsing, type registration, and sending messages to players. It handles different chat types (IC, OOC, etc.), message formatting, and provides hooks for custom chat behavior. The library supports various chat features like radius-based chat, anonymous messaging, and custom chat commands.
+The chatbox library (`lia.chat`) provides a comprehensive chat system for the Lilia framework. It handles different chat types, message parsing, privilege checking, and custom chat formatting. The library supports various chat modes including in-character (IC), out-of-character (OOC), and custom chat types with configurable prefixes, ranges, and permissions.
 
 ---
 
@@ -14,36 +14,42 @@ The chatbox library (`lia.chat`) provides a comprehensive system for managing in
 
 **Purpose**
 
-Generates a timestamp string for chat messages based on the current time.
+Generates a timestamp string for chat messages based on configuration.
 
 **Parameters**
 
-* `ooc` (*boolean*, *optional*): Whether this is an OOC (Out of Character) message.
+* `ooc` (*boolean*): Whether this is for OOC chat (affects spacing).
 
 **Returns**
 
-* `timestamp` (*string*): The formatted timestamp string, or empty string if timestamps are disabled.
+* `timestamp` (*string*): Formatted timestamp string or empty string if disabled.
 
 **Realm**
 
-Shared.
+Client.
 
 **Example Usage**
 
 ```lua
--- Get timestamp for IC message
-local icTimestamp = lia.chat.timestamp(false)
-print("IC timestamp: " .. icTimestamp) -- Example: " (14:30) "
+-- Get timestamp for regular chat
+local timestamp = lia.chat.timestamp(false)
+print("Timestamp: " .. timestamp)
 
--- Get timestamp for OOC message
+-- Get timestamp for OOC chat
 local oocTimestamp = lia.chat.timestamp(true)
-print("OOC timestamp: " .. oocTimestamp) -- Example: " (14:30)"
+print("OOC Timestamp: " .. oocTimestamp)
 
 -- Use in custom chat formatting
 local function formatMessage(speaker, text, chatType)
     local timestamp = lia.chat.timestamp(chatType == "ooc")
     return timestamp .. speaker:Name() .. ": " .. text
 end
+
+-- Use in hook
+hook.Add("OnChatMessage", "AddTimestamp", function(speaker, text, chatType)
+    local timestamp = lia.chat.timestamp(chatType == "ooc")
+    -- Process message with timestamp
+end)
 ```
 
 ---
@@ -52,28 +58,27 @@ end
 
 **Purpose**
 
-Registers a new chat type with the system.
+Registers a new chat type with specified properties and behaviors.
 
 **Parameters**
 
 * `chatType` (*string*): The unique identifier for the chat type.
-* `data` (*table*): A table containing chat type configuration with fields:
-  * `prefix` (*string|table*, *optional*): The prefix(es) for this chat type.
-  * `arguments` (*table*, *optional*): Command arguments for this chat type.
-  * `desc` (*string*, *optional*): Description of the chat type.
-  * `radius` (*number|function*, *optional*): The radius for hearing this chat type.
-  * `onCanHear` (*function*, *optional*): Function to determine if a listener can hear the speaker.
-  * `onCanSay` (*function*, *optional*): Function to determine if a speaker can use this chat type.
-  * `color` (*Color*, *optional*): The color for this chat type.
-  * `format` (*string*, *optional*): The format string for this chat type.
-  * `onChatAdd` (*function*, *optional*): Function to handle adding the message to chat.
-  * `deadCanChat` (*boolean*, *optional*): Whether dead players can use this chat type.
-  * `noSpaceAfter` (*boolean*, *optional*): Whether to require a space after the prefix.
-  * `filter` (*string*, *optional*): The filter for this chat type.
+* `data` (*table*): Chat type configuration table containing:
+  * `prefix` (*string|table*): Chat prefix(es) for this type.
+  * `arguments` (*table*): Command arguments for this chat type.
+  * `desc` (*string*): Description of the chat type.
+  * `radius` (*number|function*): Range for hearing messages.
+  * `onCanHear` (*function*): Function to determine if listener can hear speaker.
+  * `onCanSay` (*function*): Function to determine if speaker can use this chat.
+  * `color` (*Color*): Color for this chat type.
+  * `format` (*string*): Format string for message display.
+  * `onChatAdd` (*function*): Function to handle message display.
+  * `deadCanChat` (*boolean*): Whether dead players can use this chat.
+  * `noSpaceAfter` (*boolean*): Whether to skip space after prefix.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -82,62 +87,83 @@ Shared.
 **Example Usage**
 
 ```lua
--- Register a basic IC chat type
-lia.chat.register("ic", {
-    prefix = "/",
-    radius = 256,
-    color = Color(242, 230, 160),
-    format = "chatFormat",
-    onCanSay = function(speaker)
-        if not speaker:Alive() then
-            speaker:notifyLocalized("noPerm")
-            return false
-        end
-        return true
-    end
+-- Register a basic chat type
+lia.chat.register("yell", {
+    prefix = "/y",
+    desc = "Yell to nearby players",
+    radius = 200,
+    color = Color(255, 100, 100),
+    format = "yellFormat"
 })
 
 -- Register a whisper chat type
 lia.chat.register("whisper", {
-    prefix = "//",
-    radius = 64,
-    color = Color(200, 200, 200),
+    prefix = "/w",
+    desc = "Whisper to very close players",
+    radius = 50,
+    color = Color(150, 150, 150),
     format = "whisperFormat",
+    deadCanChat = false
+})
+
+-- Register a radio chat type
+lia.chat.register("radio", {
+    prefix = "/r",
+    desc = "Radio communication",
+    radius = 1000,
+    color = Color(0, 255, 0),
+    format = "radioFormat",
     onCanSay = function(speaker)
-        if not speaker:Alive() then
-            speaker:notifyLocalized("noPerm")
-            return false
-        end
-        return true
+        local char = speaker:getChar()
+        return char and char:hasItem("radio")
     end
 })
 
--- Register a global OOC chat type
-lia.chat.register("ooc", {
-    prefix = "//",
-    color = Color(100, 100, 255),
-    format = "oocFormat",
-    onCanHear = function() return true end,
-    onCanSay = function(speaker)
-        if not speaker:Alive() then
-            speaker:notifyLocalized("noPerm")
-            return false
-        end
-        return true
+-- Register a faction chat type
+lia.chat.register("faction", {
+    prefix = "/f",
+    desc = "Faction communication",
+    color = Color(255, 255, 0),
+    format = "factionFormat",
+    onCanHear = function(speaker, listener)
+        local speakerChar = speaker:getChar()
+        local listenerChar = listener:getChar()
+        return speakerChar and listenerChar and 
+               speakerChar:getFaction() == listenerChar:getFaction()
     end
 })
 
 -- Register a staff chat type
 lia.chat.register("staff", {
-    prefix = "@",
-    color = Color(255, 100, 100),
+    prefix = "/s",
+    desc = "Staff communication",
+    color = Color(255, 0, 255),
     format = "staffFormat",
-    onCanHear = function(speaker, listener)
-        return listener:hasPrivilege("seeStaffChat")
-    end,
     onCanSay = function(speaker)
-        return speaker:hasPrivilege("useStaffChat")
+        return speaker:hasPrivilege("staffChat")
+    end,
+    onCanHear = function(speaker, listener)
+        return listener:hasPrivilege("staffChat")
     end
+})
+
+-- Register a global chat type
+lia.chat.register("global", {
+    prefix = "/g",
+    desc = "Global communication",
+    color = Color(100, 200, 255),
+    format = "globalFormat",
+    onCanHear = function() return true end
+})
+
+-- Register a custom chat with multiple prefixes
+lia.chat.register("custom", {
+    prefix = {"/custom", "/c"},
+    desc = "Custom chat type",
+    radius = 300,
+    color = Color(200, 200, 200),
+    format = "customFormat",
+    noSpaceAfter = true
 })
 ```
 
@@ -147,13 +173,13 @@ lia.chat.register("staff", {
 
 **Purpose**
 
-Parses a chat message to determine its type and extract the message content.
+Parses a chat message to determine the chat type and extract the message content.
 
 **Parameters**
 
 * `client` (*Player*): The client who sent the message.
-* `message` (*string*): The message to parse.
-* `noSend` (*boolean*, *optional*): If true, prevents sending the message.
+* `message` (*string*): The message text to parse.
+* `noSend` (*boolean*): Whether to skip sending the message.
 
 **Returns**
 
@@ -169,22 +195,29 @@ Shared.
 
 ```lua
 -- Parse a chat message
-local chatType, message, anonymous = lia.chat.parse(client, "/Hello world!")
-print("Chat type: " .. chatType) -- "ic"
-print("Message: " .. message) -- "Hello world!"
+local chatType, message, anonymous = lia.chat.parse(client, "/y Hello everyone!")
+
+-- Parse with validation
+if message and message:find("%S") then
+    local chatType, message, anonymous = lia.chat.parse(client, message)
+    print("Chat type: " .. chatType)
+    print("Message: " .. message)
+end
+
+-- Parse in PlayerSay hook
+hook.Add("PlayerSay", "ParseChat", function(ply, text)
+    local chatType, message, anonymous = lia.chat.parse(ply, text)
+    if chatType ~= "ic" then
+        print(ply:Name() .. " used " .. chatType .. " chat")
+    end
+    return false -- Prevent default chat
+end)
 
 -- Parse without sending
-local chatType, message, anonymous = lia.chat.parse(client, "//This is OOC", true)
-print("Parsed OOC message: " .. message)
-
--- Use in custom chat handling
-hook.Add("PlayerSay", "CustomChatHandler", function(ply, text)
-    local chatType, message, anonymous = lia.chat.parse(ply, text)
-    if chatType == "custom" then
-        -- Handle custom chat type
-        return ""
-    end
-end)
+local chatType, message, anonymous = lia.chat.parse(client, "/w secret message", true)
+if chatType == "whisper" then
+    -- Process whisper without sending
+end
 ```
 
 ---
@@ -193,19 +226,19 @@ end)
 
 **Purpose**
 
-Sends a chat message to appropriate receivers based on the chat type.
+Sends a chat message to appropriate recipients based on chat type rules.
 
 **Parameters**
 
 * `speaker` (*Player*): The player who sent the message.
 * `chatType` (*string*): The type of chat message.
 * `text` (*string*): The message text to send.
-* `anonymous` (*boolean*, *optional*): Whether the message is anonymous.
-* `receivers` (*table*, *optional*): Specific receivers for the message. If nil, uses chat type rules.
+* `anonymous` (*boolean*): Whether the message should be anonymous.
+* `receivers` (*table*): Optional specific list of receivers.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -214,27 +247,27 @@ Server.
 **Example Usage**
 
 ```lua
-if SERVER then
-    -- Send a regular chat message
-    lia.chat.send(speaker, "ic", "Hello everyone!")
+-- Send a regular chat message
+lia.chat.send(speaker, "ic", "Hello everyone!")
 
-    -- Send an anonymous message
-    lia.chat.send(speaker, "ic", "Someone whispers...", true)
+-- Send an OOC message
+lia.chat.send(speaker, "ooc", "This is OOC chat", false)
 
-    -- Send to specific receivers
-    local receivers = {player1, player2, player3}
-    lia.chat.send(speaker, "ic", "Private message", false, receivers)
+-- Send a whisper to specific players
+local receivers = {player1, player2, player3}
+lia.chat.send(speaker, "whisper", "Secret message", false, receivers)
 
-    -- Send OOC message
-    lia.chat.send(speaker, "ooc", "This is OOC chat")
+-- Send anonymous message
+lia.chat.send(speaker, "yell", "Someone yells!", true)
 
-    -- Use in custom commands
-    hook.Add("PlayerSay", "CustomCommand", function(ply, text)
-        if text:sub(1, 6) == "!shout" then
-            local message = text:sub(8)
-            lia.chat.send(ply, "ic", message:upper())
-            return ""
-        end
-    end)
+-- Send with custom formatting
+lia.chat.send(speaker, "radio", "Radio message", false)
+
+-- Send to all players in range
+lia.chat.send(speaker, "yell", "YELLING!", false)
+
+-- Send staff message
+if speaker:hasPrivilege("staffChat") then
+    lia.chat.send(speaker, "staff", "Staff communication", false)
 end
 ```

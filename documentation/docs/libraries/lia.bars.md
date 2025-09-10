@@ -6,7 +6,7 @@ This page documents the functions for working with HUD bars and progress indicat
 
 ## Overview
 
-The bars library (`lia.bar`) provides a system for creating and managing HUD bars that display various character statistics and progress indicators. It handles bar creation, removal, drawing, and animation with smooth transitions. The library is commonly used for health bars, armor bars, and other visual indicators that show character status.
+The bars library (`lia.bar`) provides a comprehensive system for creating and managing HUD bars in the Lilia framework. It handles health bars, armor bars, custom progress indicators, and action bars with smooth animations and customizable appearance. The library supports priority-based ordering, lifetime management, and automatic drawing with delta smoothing.
 
 ---
 
@@ -14,7 +14,7 @@ The bars library (`lia.bar`) provides a system for creating and managing HUD bar
 
 **Purpose**
 
-Retrieves a bar object by its identifier.
+Retrieves a bar by its identifier from the bar list.
 
 **Parameters**
 
@@ -22,7 +22,7 @@ Retrieves a bar object by its identifier.
 
 **Returns**
 
-* `bar` (*table*): The bar object if found, nil otherwise.
+* `bar` (*table|nil*): The bar table if found, nil otherwise.
 
 **Realm**
 
@@ -31,16 +31,22 @@ Client.
 **Example Usage**
 
 ```lua
--- Get a specific bar by identifier
+-- Get a specific bar
 local healthBar = lia.bar.get("health")
 if healthBar then
-    print("Health bar found with color: " .. tostring(healthBar.color))
+    print("Health bar found with priority: " .. healthBar.priority)
 end
 
--- Check if a bar exists before modifying it
+-- Get a custom bar
 local customBar = lia.bar.get("myCustomBar")
 if customBar then
-    customBar.visible = true
+    print("Custom bar color: " .. tostring(customBar.color))
+end
+
+-- Check if a bar exists before modifying
+local bar = lia.bar.get("stamina")
+if bar then
+    bar.visible = true
 end
 ```
 
@@ -50,18 +56,18 @@ end
 
 **Purpose**
 
-Adds a new bar to the HUD with specified properties.
+Adds a new bar to the bar system with specified properties.
 
 **Parameters**
 
-* `getValue` (*function*): A function that returns the current value (0-1) for the bar.
-* `color` (*Color*, *optional*): The color of the bar. If not provided, a random color is generated.
-* `priority` (*number*, *optional*): The drawing priority of the bar. Lower numbers draw first.
-* `identifier` (*string*, *optional*): A unique identifier for the bar. If provided and a bar with this ID exists, it will be replaced.
+* `getValue` (*function*): Function that returns the current value (0-1) for the bar.
+* `color` (*Color*): The color of the bar.
+* `priority` (*number*): Priority for bar ordering (lower numbers appear first).
+* `identifier` (*string*): Unique identifier for the bar.
 
 **Returns**
 
-* `priority` (*number*): The priority assigned to the bar.
+* `priority` (*number*): The assigned priority of the bar.
 
 **Realm**
 
@@ -70,31 +76,49 @@ Client.
 **Example Usage**
 
 ```lua
--- Add a simple health bar
+-- Add a health bar
 lia.bar.add(function()
     local client = LocalPlayer()
     return client:Health() / client:GetMaxHealth()
 end, Color(200, 50, 40), 1, "health")
 
+-- Add an armor bar
+lia.bar.add(function()
+    local client = LocalPlayer()
+    return client:Armor() / client:GetMaxArmor()
+end, Color(30, 70, 180), 3, "armor")
+
 -- Add a custom stamina bar
+local stamina = 100
 lia.bar.add(function()
-    local char = LocalPlayer():getChar()
-    if not char then return 0 end
-    return char:getAttrib("stamina", 0) / 100
-end, Color(50, 200, 50), 2, "stamina")
+    return stamina / 100
+end, Color(100, 200, 100), 2, "stamina")
 
--- Add a bar without identifier (will be auto-assigned)
+-- Add a hunger bar
+local hunger = 80
 lia.bar.add(function()
-    return 0.75 -- 75% full
-end, Color(255, 255, 0), 5)
+    return hunger / 100
+end, Color(255, 165, 0), 4, "hunger")
 
--- Add a bar with custom properties
-local barPriority = lia.bar.add(function()
-    local char = LocalPlayer():getChar()
-    if not char then return 0 end
-    return char:getAttrib("hunger", 0) / 100
-end, Color(255, 165, 0), 3, "hunger")
-print("Hunger bar added with priority: " .. barPriority)
+-- Add a thirst bar
+local thirst = 60
+lia.bar.add(function()
+    return thirst / 100
+end, Color(0, 150, 255), 5, "thirst")
+
+-- Add a custom progress bar
+local progress = 0
+lia.bar.add(function()
+    return progress
+end, Color(255, 255, 0), 10, "customProgress")
+
+-- Update progress
+timer.Create("UpdateProgress", 0.1, 0, function()
+    progress = math.min(progress + 0.01, 1)
+    if progress >= 1 then
+        timer.Remove("UpdateProgress")
+    end
+end)
 ```
 
 ---
@@ -103,7 +127,7 @@ print("Hunger bar added with priority: " .. barPriority)
 
 **Purpose**
 
-Removes a bar from the HUD by its identifier.
+Removes a bar from the bar system by its identifier.
 
 **Parameters**
 
@@ -111,7 +135,7 @@ Removes a bar from the HUD by its identifier.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -121,15 +145,24 @@ Client.
 
 ```lua
 -- Remove a specific bar
-lia.bar.remove("stamina")
+lia.bar.remove("customProgress")
 
--- Remove a custom bar
-lia.bar.remove("myCustomBar")
+-- Remove a bar after it's no longer needed
+local bar = lia.bar.get("temporaryBar")
+if bar then
+    lia.bar.remove("temporaryBar")
+end
 
--- Conditionally remove bars
-if not LocalPlayer():getChar() then
-    lia.bar.remove("hunger")
-    lia.bar.remove("thirst")
+-- Remove multiple bars
+local barsToRemove = {"temp1", "temp2", "temp3"}
+for _, id in ipairs(barsToRemove) do
+    lia.bar.remove(id)
+end
+
+-- Remove bar with validation
+if lia.bar.get("myBar") then
+    lia.bar.remove("myBar")
+    print("Bar removed successfully")
 end
 ```
 
@@ -143,17 +176,17 @@ Draws a single bar at the specified position with given properties.
 
 **Parameters**
 
-* `x` (*number*): The x-coordinate for the bar.
-* `y` (*number*): The y-coordinate for the bar.
-* `w` (*number*): The width of the bar.
-* `h` (*number*): The height of the bar.
-* `pos` (*number*): The current position/value of the bar (0-1).
-* `max` (*number*): The maximum value of the bar (usually 1).
-* `color` (*Color*): The color of the bar.
+* `x` (*number*): X position of the bar.
+* `y` (*number*): Y position of the bar.
+* `w` (*number*): Width of the bar.
+* `h` (*number*): Height of the bar.
+* `pos` (*number*): Current position value (0-1).
+* `max` (*number*): Maximum value (usually 1).
+* `color` (*Color*): Color of the bar.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -162,22 +195,29 @@ Client.
 **Example Usage**
 
 ```lua
--- Draw a custom bar manually
-local barX, barY = 100, 100
-local barW, barH = 200, 20
-local currentValue = 0.75
-local maxValue = 1
-local barColor = Color(255, 0, 0)
+-- Draw a health bar
+lia.bar.drawBar(10, 10, 200, 20, 0.75, 1, Color(200, 50, 40))
 
-lia.bar.drawBar(barX, barY, barW, barH, currentValue, maxValue, barColor)
+-- Draw a custom progress bar
+local progress = 0.5
+lia.bar.drawBar(50, 50, 300, 15, progress, 1, Color(100, 200, 100))
 
--- Draw a bar in a custom HUD element
-hook.Add("HUDPaint", "CustomBarDraw", function()
-    local char = LocalPlayer():getChar()
-    if char then
-        local hunger = char:getAttrib("hunger", 0) / 100
-        lia.bar.drawBar(10, 10, 150, 15, hunger, 1, Color(255, 165, 0))
-    end
+-- Draw multiple bars
+local bars = {
+    {x = 10, y = 10, w = 200, h = 20, pos = 0.8, color = Color(200, 50, 40)},
+    {x = 10, y = 35, w = 200, h = 20, pos = 0.6, color = Color(30, 70, 180)},
+    {x = 10, y = 60, w = 200, h = 20, pos = 0.9, color = Color(100, 200, 100)}
+}
+
+for _, bar in ipairs(bars) do
+    lia.bar.drawBar(bar.x, bar.y, bar.w, bar.h, bar.pos, 1, bar.color)
+end
+
+-- Draw animated bar
+local animValue = 0
+hook.Add("HUDPaint", "AnimatedBar", function()
+    animValue = math.Approach(animValue, 0.7, FrameTime() * 0.5)
+    lia.bar.drawBar(100, 100, 250, 25, animValue, 1, Color(255, 165, 0))
 end)
 ```
 
@@ -187,16 +227,16 @@ end)
 
 **Purpose**
 
-Draws a temporary action bar that shows progress for a specific action over time.
+Draws an action bar with countdown timer for actions like reloading or using items.
 
 **Parameters**
 
-* `text` (*string*): The text to display above the action bar.
-* `duration` (*number*): The duration in seconds for the action bar to complete.
+* `text` (*string*): Text to display above the action bar.
+* `duration` (*number*): Duration of the action in seconds.
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -205,21 +245,24 @@ Client.
 **Example Usage**
 
 ```lua
--- Show a progress bar for an action
-lia.bar.drawAction("Crafting item...", 5.0)
+-- Draw reload action
+lia.bar.drawAction("Reloading...", 2.5)
 
--- Show a progress bar for a skill check
-lia.bar.drawAction("Lockpicking...", 3.5)
+-- Draw item use action
+lia.bar.drawAction("Using Medkit", 3.0)
 
--- Show a progress bar for a medical action
-lia.bar.drawAction("Applying bandage...", 2.0)
+-- Draw crafting action
+lia.bar.drawAction("Crafting Item", 5.0)
 
--- Use in a hook for player actions
-hook.Add("PlayerStartAction", "ShowActionBar", function(ply, action, duration)
-    if ply == LocalPlayer() then
-        lia.bar.drawAction(action, duration)
-    end
-end)
+-- Draw with custom text
+local actionText = "Performing Action"
+local actionDuration = 4.0
+lia.bar.drawAction(actionText, actionDuration)
+
+-- Draw action with validation
+if IsValid(LocalPlayer()) and LocalPlayer():Alive() then
+    lia.bar.drawAction("Special Action", 2.0)
+end
 ```
 
 ---
@@ -228,15 +271,15 @@ end)
 
 **Purpose**
 
-Draws all registered bars in their priority order. This function is automatically called by the HUD system.
+Draws all registered bars in priority order with delta smoothing and visibility management.
 
 **Parameters**
 
-* `nil`
+*None*
 
 **Returns**
 
-* `nil`
+*None*
 
 **Realm**
 
@@ -245,23 +288,27 @@ Client.
 **Example Usage**
 
 ```lua
--- Manually draw all bars (usually not needed as it's automatic)
+-- Draw all bars (usually called automatically)
 lia.bar.drawAll()
 
--- Override the default bar drawing behavior
-hook.Add("HUDPaintBackground", "CustomBarDraw", function()
-    -- Custom logic before drawing bars
+-- Custom drawing with conditions
+hook.Add("HUDPaint", "CustomBarDrawing", function()
     if not hook.Run("ShouldHideBars") then
         lia.bar.drawAll()
     end
 end)
 
--- Add custom bar drawing conditions
-hook.Add("ShouldBarDraw", "CustomBarConditions", function(bar)
-    if bar.identifier == "stamina" then
-        local char = LocalPlayer():getChar()
-        return char and char:getAttrib("stamina", 0) < 100
+-- Draw bars with custom positioning
+hook.Add("HUDPaint", "CustomBarPosition", function()
+    local w, h = ScrW() * 0.4, 16
+    local x, y = ScrW() * 0.3, 20
+    
+    -- Custom positioning before drawing
+    for i, bar in ipairs(lia.bar.list) do
+        local value = bar.getValue()
+        if value > 0 then
+            lia.bar.drawBar(x, y + (i - 1) * (h + 2), w, h, value, 1, bar.color)
+        end
     end
-    return true
 end)
 ```
