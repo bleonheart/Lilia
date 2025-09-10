@@ -533,6 +533,47 @@ end
 
 ---
 
+### lia.administrator.execCommand
+
+**Purpose**
+
+Executes an administrative command on the client side by sending console commands to the server.
+
+**Parameters**
+
+* `cmd` (*string*): The command to execute.
+* `victim` (*Player|string*): The target player or SteamID.
+* `dur` (*number*, *optional*): Duration for timed commands.
+* `reason` (*string*, *optional*): Reason for the command.
+
+**Returns**
+
+* `success` (*boolean*): True if the command was executed successfully, false otherwise.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+if CLIENT then
+    -- Kick a player
+    local target = player.GetHumans()[1]
+    if IsValid(target) then
+        lia.administrator.execCommand("kick", target, nil, "Rule violation")
+    end
+
+    -- Ban a player for 24 hours
+    lia.administrator.execCommand("ban", target, 1440, "Cheating")
+
+    -- Mute a player for 10 minutes
+    lia.administrator.execCommand("mute", target, 600, "Spam")
+end
+```
+
+---
+
 ### lia.administrator.serverExecCommand
 
 **Purpose**
