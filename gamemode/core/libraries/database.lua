@@ -174,7 +174,7 @@ function lia.db.loadTables()
     local function done()
         lia.db.addDatabaseFields()
         lia.db.migrateDatabaseSchemas():next(function()
-            -- Automatically remove underscore-prefixed columns on database connection
+            
             lia.db.autoRemoveUnderscoreColumns():next(function()
                 lia.db.tablesLoaded = true
                 hook.Run("LiliaTablesLoaded")
@@ -2642,13 +2642,13 @@ concommand.Add("lia_list_tables", function(ply)
             end
 
             MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", #tables, " lia_* tables in the database:\n\n")
-            -- Sort tables alphabetically
+            
             table.sort(tables)
             local processedTables = 0
             local totalColumns = 0
             for i, tableName in ipairs(tables) do
                 local shortName = tableName:gsub("^lia_", "")
-                -- Get detailed column information for this table
+                
                 lia.db.getTableColumns(tableName):next(function(columns)
                     processedTables = processedTables + 1
                     local columnCount = 0
@@ -2665,14 +2665,14 @@ concommand.Add("lia_list_tables", function(ply)
 
                     local status = columnCount > 0 and "ACTIVE" or "EMPTY"
                     local statusColor = columnCount > 0 and Color(0, 255, 0) or Color(255, 255, 0)
-                    -- Table header
+                    
                     MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "┌─ ", tableName, " (", shortName, ") ─", string.rep("─", math.max(0, 50 - #tableName - #shortName)), "┐\n")
                     MsgC(Color(255, 255, 255), "[Lilia] ", Color(255, 255, 255), "│ Columns: ", columnCount, " | Status: ", "")
                     MsgC(statusColor, status, "")
                     MsgC(Color(255, 255, 255), " │\n")
                     if columnCount > 0 then
                         MsgC(Color(255, 255, 255), "[Lilia] ", Color(255, 255, 255), "├─ Column Names:", string.rep("─", 60), "┤\n")
-                        -- Display columns in rows of 4
+                        
                         for j = 1, #columnNames, 4 do
                             local rowColumns = {}
                             for k = j, math.min(j + 3, #columnNames) do
@@ -2685,7 +2685,7 @@ concommand.Add("lia_list_tables", function(ply)
                                 if k < #rowColumns then columnLine = columnLine .. " │ " end
                             end
 
-                            -- Pad the line to fill the box
+                            
                             local remainingSpace = 75 - #columnLine + 1
                             if remainingSpace > 0 then columnLine = columnLine .. string.rep(" ", remainingSpace) end
                             columnLine = columnLine .. "│"
@@ -2696,9 +2696,9 @@ concommand.Add("lia_list_tables", function(ply)
                     end
 
                     MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "└", string.rep("─", 75), "┘\n")
-                    -- Add separator between tables
+                    
                     if i < #tables then MsgC(Color(128, 128, 128), "[Lilia] ", Color(128, 128, 128), string.rep("─", 80), "\n") end
-                    -- Show summary when all tables are processed
+                    
                     if processedTables >= #tables then
                         MsgC(Color(255, 255, 0), "\n[Lilia] ", Color(255, 255, 255), "=== SUMMARY ===\n")
                         MsgC(Color(255, 255, 255), "[Lilia] ", Color(255, 255, 255), "Total Tables: ", #tables, "\n")
@@ -2736,7 +2736,7 @@ concommand.Add("lia_list_columns", function(ply, _, args)
 
     local tableName = args[1]
     local fullTableName = tableName
-    -- Add lia_ prefix if not present
+    
     if not tableName:StartWith("lia_") then fullTableName = "lia_" .. tableName end
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== Listing Columns for Table: ", fullTableName, " ===\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
@@ -2747,12 +2747,12 @@ concommand.Add("lia_list_columns", function(ply, _, args)
             return
         end
 
-        -- Check if table exists
+        
         lia.db.tableExists(fullTableName):next(function(exists)
             if not exists then
                 MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Table '", fullTableName, "' does not exist!\n")
                 MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Available lia_* tables:\n")
-                -- List available tables
+                
                 lia.db.getTables():next(function(tables)
                     if tables and #tables > 0 then
                         for _, tbl in ipairs(tables) do
@@ -2765,7 +2765,7 @@ concommand.Add("lia_list_columns", function(ply, _, args)
                 return
             end
 
-            -- Get table columns
+            
             lia.db.getTableColumns(fullTableName):next(function(columns)
                 if not columns then
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to get columns for table: ", fullTableName, "\n")
@@ -2778,7 +2778,7 @@ concommand.Add("lia_list_columns", function(ply, _, args)
                 end
 
                 MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", columnCount, " columns in table '", fullTableName, "':\n\n")
-                -- Get detailed column information
+                
                 lia.db.query("PRAGMA table_info(" .. fullTableName .. ")"):next(function(result)
                     if not result or not result.results then
                         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to get detailed column information\n")
@@ -2841,21 +2841,21 @@ concommand.Add("lia_remove_column_underscores", function(ply)
 
                     local columnsToRemove = {}
                     local columnsToRename = {}
-                    -- First, identify all underscore columns and check if target columns exist
+                    
                     for columnName, columnType in pairs(columns) do
                         if columnName:sub(1, 1) == "_" then
                             local newColumnName = columnName:gsub("^_+", "")
                             if newColumnName ~= columnName then
-                                -- Check if the target column already exists
+                                
                                 if columns[newColumnName] then
-                                    -- Target column exists, just remove the underscore column
+                                    
                                     table.insert(columnsToRemove, {
                                         oldName = columnName,
                                         newName = newColumnName,
                                         type = columnType
                                     })
                                 else
-                                    -- Target column doesn't exist, need to rename
+                                    
                                     table.insert(columnsToRename, {
                                         oldName = columnName,
                                         newName = newColumnName,
@@ -2874,7 +2874,7 @@ concommand.Add("lia_remove_column_underscores", function(ply)
                     local totalColumns = #columnsToRemove + #columnsToRename
                     MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Table ", tableName, ": Found ", totalColumns, " columns to process (", #columnsToRemove, " to remove, ", #columnsToRename, " to rename)\n")
                     local processPromises = {}
-                    -- Handle columns that need to be removed (target already exists)
+                    
                     for _, columnInfo in ipairs(columnsToRemove) do
                         local processPromise = deferred.new()
                         table.insert(processPromises, processPromise)
@@ -2894,7 +2894,7 @@ concommand.Add("lia_remove_column_underscores", function(ply)
                         end)
                     end
 
-                    -- Handle columns that need to be renamed (target doesn't exist)
+                    
                     for _, columnInfo in ipairs(columnsToRename) do
                         local processPromise = deferred.new()
                         table.insert(processPromises, processPromise)
@@ -2902,10 +2902,10 @@ concommand.Add("lia_remove_column_underscores", function(ply)
                         local createColumnPromise = lia.db.createColumn(shortTableName, columnInfo.newName, columnInfo.type:lower())
                         createColumnPromise:next(function(createResult)
                             if createResult and createResult.success then
-                                -- Copy data from old column to new column
+                                
                                 local updateQuery = "UPDATE " .. tableName .. " SET " .. lia.db.escapeIdentifier(columnInfo.newName) .. " = " .. lia.db.escapeIdentifier(columnInfo.oldName)
                                 lia.db.query(updateQuery):next(function()
-                                    -- Drop old column
+                                    
                                     lia.db.removeColumn(shortTableName, columnInfo.oldName):next(function(removeResult)
                                         if removeResult then
                                             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  ✓ Renamed ", columnInfo.oldName, " -> ", columnInfo.newName, " in ", tableName, "\n")
@@ -2937,7 +2937,7 @@ concommand.Add("lia_remove_column_underscores", function(ply)
                 end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to get columns for table ", tableName, ": ", err, "\n") end)
             end
 
-            -- Wait a bit and show summary
+            
             timer.Simple(2.0, function()
                 MsgC(Color(255, 255, 0), "\n[Lilia] ", Color(255, 255, 255), "=== Column Underscore Removal Summary ===\n")
                 MsgC(Color(255, 255, 255), "lia_* tables processed: ", totalTables, "\n")
@@ -2954,7 +2954,6 @@ concommand.Add("lia_remove_column_underscores", function(ply)
     end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
 end)
 
--- Automatic underscore column removal function (called on database connection)
 function lia.db.autoRemoveUnderscoreColumns()
     local d = deferred.new()
     if not lia.db.connected then
@@ -2981,21 +2980,21 @@ function lia.db.autoRemoveUnderscoreColumns()
 
                 local columnsToRemove = {}
                 local columnsToRename = {}
-                -- Identify all underscore columns and check if target columns exist
+                
                 for columnName, columnType in pairs(columns) do
                     if columnName:sub(1, 1) == "_" then
                         local newColumnName = columnName:gsub("^_+", "")
                         if newColumnName ~= columnName then
-                            -- Check if the target column already exists
+                            
                             if columns[newColumnName] then
-                                -- Target column exists, just remove the underscore column
+                                
                                 table.insert(columnsToRemove, {
                                     oldName = columnName,
                                     newName = newColumnName,
                                     type = columnType
                                 })
                             else
-                                -- Target column doesn't exist, need to rename
+                                
                                 table.insert(columnsToRename, {
                                     oldName = columnName,
                                     newName = newColumnName,
@@ -3013,7 +3012,7 @@ function lia.db.autoRemoveUnderscoreColumns()
 
                 local totalColumns = #columnsToRemove + #columnsToRename
                 local columnPromises = {}
-                -- Handle columns that need to be removed (target already exists)
+                
                 for _, columnInfo in ipairs(columnsToRemove) do
                     local columnPromise = deferred.new()
                     table.insert(columnPromises, columnPromise)
@@ -3028,7 +3027,7 @@ function lia.db.autoRemoveUnderscoreColumns()
                     end):catch(function(err) columnPromise:reject(err) end)
                 end
 
-                -- Handle columns that need to be renamed (target doesn't exist)
+                
                 for _, columnInfo in ipairs(columnsToRename) do
                     local columnPromise = deferred.new()
                     table.insert(columnPromises, columnPromise)
@@ -3036,10 +3035,10 @@ function lia.db.autoRemoveUnderscoreColumns()
                     local createColumnPromise = lia.db.createColumn(shortTableName, columnInfo.newName, columnInfo.type:lower())
                     createColumnPromise:next(function(createResult)
                         if createResult and createResult.success then
-                            -- Copy data from old column to new column
+                            
                             local updateQuery = "UPDATE " .. tableName .. " SET " .. lia.db.escapeIdentifier(columnInfo.newName) .. " = " .. lia.db.escapeIdentifier(columnInfo.oldName)
                             lia.db.query(updateQuery):next(function()
-                                -- Drop old column
+                                
                                 lia.db.removeColumn(shortTableName, columnInfo.oldName):next(function(removeResult)
                                     if removeResult then
                                         totalColumnsRemoved = totalColumnsRemoved + 1
@@ -3056,10 +3055,10 @@ function lia.db.autoRemoveUnderscoreColumns()
                 end
 
                 deferred.all(columnPromises):next(function() processPromise:resolve() end):catch(function(err)
-                    processPromise:resolve() -- Continue even if some columns fail
+                    processPromise:resolve() 
                 end)
             end):catch(function(err)
-                processPromise:resolve() -- Continue even if table fails
+                processPromise:resolve() 
             end)
         end
 
@@ -3067,10 +3066,10 @@ function lia.db.autoRemoveUnderscoreColumns()
             if totalColumnsRemoved > 0 then MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Auto-removed ", totalColumnsRemoved, " underscore-prefixed column(s) on database connection\n") end
             d:resolve()
         end):catch(function(err)
-            d:resolve() -- Don't fail the connection if cleanup fails
+            d:resolve() 
         end)
     end):catch(function(err)
-        d:resolve() -- Don't fail the connection if cleanup fails
+        d:resolve() 
     end)
     return d
 end
