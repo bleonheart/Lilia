@@ -2772,11 +2772,11 @@ concommand.Add("lia_list_columns", function(ply, _, args)
                         return
                     end
 
-                    local columns = result.results
-                    table.sort(columns, function(a, b) return a.cid < b.cid end)
+                    local columnData = result.results
+                    table.sort(columnData, function(a, b) return a.cid < b.cid end)
                     MsgC(Color(255, 255, 255), "[Lilia] ", Color(255, 255, 255), string.format("%-20s %-15s %-8s %-8s %-8s %-10s", "Column Name", "Type", "Not Null", "Default", "Primary Key", "Auto Inc"), "\n")
                     MsgC(Color(255, 255, 255), "[Lilia] ", Color(255, 255, 255), string.rep("-", 80), "\n")
-                    for _, col in ipairs(columns) do
+                    for _, col in ipairs(columnData) do
                         local notNull = col.notnull == 1 and "YES" or "NO"
                         local defaultValue = col.dflt_value or "NULL"
                         local primaryKey = col.pk == 1 and "YES" or "NO"
@@ -2984,7 +2984,6 @@ function lia.db.autoRemoveUnderscoreColumns()
                     return
                 end
 
-                local totalColumns = #columnsToRemove + #columnsToRename
                 local columnPromises = {}
                 for _, columnInfo in ipairs(columnsToRemove) do
                     local columnPromise = deferred.new()
@@ -3024,14 +3023,14 @@ function lia.db.autoRemoveUnderscoreColumns()
                     end):catch(function(err) columnPromise:reject(err) end)
                 end
 
-                deferred.all(columnPromises):next(function() processPromise:resolve() end):catch(function(err) processPromise:resolve() end)
-            end):catch(function(err) processPromise:resolve() end)
+                deferred.all(columnPromises):next(function() processPromise:resolve() end):catch(function() processPromise:resolve() end)
+            end):catch(function() processPromise:resolve() end)
         end
 
         deferred.all(processPromises):next(function()
             if totalColumnsRemoved > 0 then MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Auto-removed ", totalColumnsRemoved, " underscore-prefixed column(s) on database connection\n") end
             d:resolve()
-        end):catch(function(err) d:resolve() end)
-    end):catch(function(err) d:resolve() end)
+        end):catch(function() d:resolve() end)
+    end):catch(function() d:resolve() end)
     return d
 end
