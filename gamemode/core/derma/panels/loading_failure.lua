@@ -15,7 +15,7 @@ function PANEL:Init()
     self.container = self:Add("DPanel")
     self.container:SetSize(600, 300)
     self.container:SetPos((ScrW() - 600) / 2, (ScrH() - 300) / 2)
-    self.container.Paint = function(panel, w, h)
+    self.container.Paint = function(_, w, h)
         draw.RoundedBox(8, 0, 0, w, h, Color(40, 40, 40, 255))
         draw.RoundedBox(8, 4, 4, w - 8, h - 8, Color(20, 20, 20, 255))
     end
