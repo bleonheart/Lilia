@@ -186,7 +186,14 @@ function MODULE:OnEntityLoaded(ent, data)
     ent:setNetVar("welcomeMessage", data.welcomeMessage)
     ent:setNetVar("preset", data.preset or "none")
     ent:setNetVar("animation", data.animation or "")
-    ent.items = data.items or {}
+
+    -- Apply preset if one is set, otherwise load saved items
+    if data.preset and data.preset ~= "none" then
+        ent:applyPreset(data.preset)
+    else
+        ent.items = data.items or {}
+    end
+
     ent.factions = data.factions or {}
     ent.classes = data.classes or {}
     if data.model and data.model ~= "" and data.model ~= ent:GetModel() then
