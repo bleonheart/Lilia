@@ -174,15 +174,9 @@ function lia.db.loadTables()
     local function done()
         lia.db.addDatabaseFields()
         lia.db.migrateDatabaseSchemas():next(function()
-            lia.db.autoRemoveUnderscoreColumns():next(function()
-                lia.db.tablesLoaded = true
-                hook.Run("LiliaTablesLoaded")
-                hook.Run("OnDatabaseLoaded")
-            end):catch(function()
-                lia.db.tablesLoaded = true
-                hook.Run("LiliaTablesLoaded")
-                hook.Run("OnDatabaseLoaded")
-            end)
+            lia.db.tablesLoaded = true
+            hook.Run("LiliaTablesLoaded")
+            hook.Run("OnDatabaseLoaded")
         end):catch(function()
             lia.db.tablesLoaded = true
             hook.Run("LiliaTablesLoaded")
@@ -1341,10 +1335,13 @@ function lia.db.addExpectedSchema(tableName, schema)
 end
 
 function lia.db.migrateDatabaseSchemas()
-    local migrationPromises = {}
+    local d = deferred.new()
+    -- First phase: Check if there are any missing columns
+    local checkPromises = {}
+    local totalMissingColumns = 0
     for tableName, expectedColumns in pairs(lia.db.expectedSchemas) do
         local fullTableName = "lia_" .. tableName
-        local promise = lia.db.tableExists(fullTableName):next(function(tableExists)
+        local checkPromise = lia.db.tableExists(fullTableName):next(function(tableExists)
             if not tableExists then return end
             return lia.db.getTableColumns(fullTableName):next(function(columnTypes)
                 if not columnTypes then return end
@@ -1367,25 +1364,79 @@ function lia.db.migrateDatabaseSchemas()
                     end
                 end
 
-                if #missingColumns > 0 then
-                    local columnPromises = {}
-                    for _, colInfo in ipairs(missingColumns) do
-                        local colPromise = lia.db.createColumn(tableName, colInfo.name, colInfo.def.type, {
-                            not_null = colInfo.def.not_null,
-                            auto_increment = colInfo.def.auto_increment,
-                            default = colInfo.def.default
-                        }):next(function() end):catch(function() end)
-
-                        table.insert(columnPromises, colPromise)
-                    end
-                    return deferred.all(columnPromises)
-                end
+                totalMissingColumns = totalMissingColumns + #missingColumns
             end)
         end):catch(function() end)
 
-        table.insert(migrationPromises, promise)
+        table.insert(checkPromises, checkPromise)
     end
-    return deferred.all(migrationPromises):next(function() end):catch(function() end)
+
+    -- Only proceed with migration if missing columns were found
+    deferred.all(checkPromises):next(function()
+        if totalMissingColumns > 0 then
+            MsgC(Color(0, 255, 0), "[Lilia] Found ", totalMissingColumns, " missing database column(s), starting migration...\n")
+            -- Second phase: Actual migration
+            local migrationPromises = {}
+            for tableName, expectedColumns in pairs(lia.db.expectedSchemas) do
+                local fullTableName = "lia_" .. tableName
+                local promise = lia.db.tableExists(fullTableName):next(function(tableExists)
+                    if not tableExists then return end
+                    return lia.db.getTableColumns(fullTableName):next(function(columnTypes)
+                        if not columnTypes then return end
+                        local existingColumns = {}
+                        for colName, colType in pairs(columnTypes) do
+                            existingColumns[colName] = {
+                                type = colType,
+                                notnull = false,
+                                pk = false
+                            }
+                        end
+
+                        local missingColumns = {}
+                        for colName, colDef in pairs(expectedColumns) do
+                            if not existingColumns[colName] then
+                                table.insert(missingColumns, {
+                                    name = colName,
+                                    def = colDef
+                                })
+                            end
+                        end
+
+                        if #missingColumns > 0 then
+                            local columnPromises = {}
+                            for _, colInfo in ipairs(missingColumns) do
+                                local colPromise = lia.db.createColumn(tableName, colInfo.name, colInfo.def.type, {
+                                    not_null = colInfo.def.not_null,
+                                    auto_increment = colInfo.def.auto_increment,
+                                    default = colInfo.def.default
+                                }):next(function() end):catch(function() end)
+
+                                table.insert(columnPromises, colPromise)
+                            end
+                            return deferred.all(columnPromises)
+                        end
+                    end)
+                end):catch(function() end)
+
+                table.insert(migrationPromises, promise)
+            end
+
+            deferred.all(migrationPromises):next(function()
+                MsgC(Color(0, 255, 0), "[Lilia] Database migration completed successfully.\n")
+                d:resolve()
+            end):catch(function(err)
+                MsgC(Color(255, 0, 0), "[Lilia] Database migration failed: ", err, "\n")
+                d:reject(err)
+            end)
+        else
+            MsgC(Color(0, 255, 0), "[Lilia] No missing database columns found, skipping migration.\n")
+            d:resolve()
+        end
+    end):catch(function(err)
+        MsgC(Color(255, 0, 0), "[Lilia] Error checking for missing columns: ", err, "\n")
+        d:reject(err)
+    end)
+    return d
 end
 
 function lia.db.addDatabaseFields()

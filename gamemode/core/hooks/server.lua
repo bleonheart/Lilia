@@ -1239,6 +1239,20 @@ hook.Add("server_addban", "LiliaLogServerBan", function(data)
     }, nil, "bans")
 end)
 
+concommand.Add("lia_autoremove_underscore_columns", function(client)
+    if IsValid(client) then
+        client:notifyLocalized("commandConsoleOnly")
+        return
+    end
+
+    MsgC(Color(0, 255, 0), "[Lilia] Starting auto-remove underscore columns process...\n")
+    lia.db.autoRemoveUnderscoreColumns():next(function()
+        MsgC(Color(0, 255, 0), "[Lilia] Auto-remove underscore columns process completed.\n")
+    end):catch(function(err)
+        MsgC(Color(255, 0, 0), "[Lilia] Error during auto-remove process: ", err, "\n")
+    end)
+end)
+
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.admin(L("unbanLogFormat", data.networkid))
     lia.db.delete("bans", "playerSteamID = " .. lia.db.convertDataType(data.networkid))
