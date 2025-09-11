@@ -1,7 +1,6 @@
 ﻿local GM = GM or GAMEMODE
 
 -- Database loading state tracking
-local databaseLoadingComplete = false
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     local loginTime = character:getLoginTime()
@@ -108,7 +107,7 @@ function GM:OnPickupMoney(client, moneyEntity)
     end
 end
 
-function GM:CanItemBeTransfered(item, curInv, inventory, client)
+function GM:CanItemBeTransfered(item, curInv, inventory)
     if not inventory then
         return false
     end
