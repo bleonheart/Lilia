@@ -1,5 +1,6 @@
 ﻿function MODULE:IsSuitableForTrunk(entity)
     if IsValid(entity) and entity:IsVehicle() and entity:getNetVar("hasStorage", false) then return true end
+    return false
 end
 
 function MODULE:InitializeStorage(entity)

@@ -378,39 +378,39 @@ lia.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.include("lilia/gamemode/core/libraries/data.lua", "server")
 function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
-    MsgC(Color(255, 0, 0), tostring(msg), "\n\n")
+    MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
 function lia.warning(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
-    MsgC(Color(255, 255, 0), tostring(msg), "\n\n")
+    MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
 function lia.deprecated(methodName, callback)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logDeprecated") .. "] ")
-    MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n\n")
+    MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n")
     if callback and isfunction(callback) then callback() end
 end
 
 function lia.updater(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
-    MsgC(Color(0, 255, 255), tostring(msg), "\n\n")
+    MsgC(Color(0, 255, 255), tostring(msg), "\n")
 end
 
 function lia.information(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
-    MsgC(Color(83, 143, 239), tostring(msg), "\n\n")
+    MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
 function lia.admin(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
-    MsgC(Color(255, 153, 0), tostring(msg), "\n\n")
+    MsgC(Color(255, 153, 0), tostring(msg), "\n")
 end
 
 function lia.bootstrap(section, msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
     MsgC(Color(0, 255, 0), "[" .. section .. "] ")
-    MsgC(Color(255, 255, 255), tostring(msg), "\n\n")
+    MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
 
 function lia.notifyAdmin(notification)
