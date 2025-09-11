@@ -12,7 +12,7 @@ function PANEL:Init()
     self.background = self:Add("DPanel")
     self.background:SetSize(ScrW(), ScrH())
     self.background:SetPos(0, 0)
-    self.background.Paint = function(_, w, h)
+    self.background.Paint = function(w, h)
         draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 240))
     end
 
