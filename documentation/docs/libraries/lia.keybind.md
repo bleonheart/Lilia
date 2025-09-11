@@ -26,7 +26,7 @@ Adds a new keybind to the keybind system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -98,7 +98,7 @@ Gets a keybind by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -159,7 +159,7 @@ Saves keybind data to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -207,7 +207,7 @@ Loads keybind data from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -257,7 +257,7 @@ Sets a keybind for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -310,7 +310,7 @@ Gets the key for a keybind.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -364,7 +364,7 @@ Gets all registered keybinds.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -420,7 +420,7 @@ Removes a keybind from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -475,7 +475,7 @@ Clears all keybinds from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -529,7 +529,7 @@ Checks if a keybind is currently pressed.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -590,7 +590,7 @@ Checks if a keybind was just pressed.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -653,7 +653,7 @@ Checks if a keybind was just released.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -715,7 +715,7 @@ Gets all keybinds in a category.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -768,7 +768,7 @@ Gets all keybind categories.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

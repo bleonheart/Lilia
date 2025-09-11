@@ -28,7 +28,7 @@ Relays a message to Discord via webhook.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

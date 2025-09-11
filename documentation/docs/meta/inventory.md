@@ -10,7 +10,7 @@ The `Inventory` meta table provides comprehensive inventory management functiona
 
 ---
 
-### getData
+### *getData*
 
 **Purpose**
 
@@ -27,7 +27,7 @@ Retrieves data associated with the inventory by key.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -54,7 +54,7 @@ end)
 
 ---
 
-### extend
+### *extend*
 
 **Purpose**
 
@@ -70,7 +70,7 @@ Creates a new inventory class that extends the base inventory functionality.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -100,7 +100,7 @@ hook.Add("Initialize", "CreateCustomInventory", createCustomInventoryClass)
 
 ---
 
-### configure
+### *configure*
 
 **Purpose**
 
@@ -116,7 +116,7 @@ Configures the inventory with default settings and rules.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -133,7 +133,7 @@ end)
 
 ---
 
-### addDataProxy
+### *addDataProxy*
 
 **Purpose**
 
@@ -150,7 +150,7 @@ Adds a data change proxy to monitor specific data keys.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -168,7 +168,7 @@ end)
 
 ---
 
-### getItemsByUniqueID
+### *getItemsByUniqueID*
 
 **Purpose**
 
@@ -185,7 +185,7 @@ Retrieves all items in the inventory with a specific unique ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -214,7 +214,7 @@ end)
 
 ---
 
-### register
+### *register*
 
 **Purpose**
 
@@ -230,7 +230,7 @@ Registers the inventory class as a new inventory type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -252,7 +252,7 @@ hook.Add("Initialize", "RegisterCustomInventory", registerCustomInventoryType)
 
 ---
 
-### new
+### *new*
 
 **Purpose**
 
@@ -268,7 +268,7 @@ Creates a new instance of the inventory type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -291,7 +291,7 @@ end)
 
 ---
 
-### tostring
+### *tostring*
 
 **Purpose**
 
@@ -307,7 +307,7 @@ Returns a string representation of the inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -332,7 +332,7 @@ end)
 
 ---
 
-### getType
+### *getType*
 
 **Purpose**
 
@@ -348,7 +348,7 @@ Gets the inventory type definition.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -373,7 +373,7 @@ end)
 
 ---
 
-### onDataChanged
+### *onDataChanged*
 
 **Purpose**
 
@@ -391,7 +391,7 @@ Handles data changes and triggers associated proxies.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -411,7 +411,7 @@ end)
 
 ---
 
-### getItems
+### *getItems*
 
 **Purpose**
 
@@ -427,7 +427,7 @@ Retrieves all items in the inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -455,7 +455,7 @@ end)
 
 ---
 
-### getItemsOfType
+### *getItemsOfType*
 
 **Purpose**
 
@@ -471,7 +471,7 @@ Retrieves all items in the inventory with a specific unique ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -497,7 +497,7 @@ end)
 
 ---
 
-### getFirstItemOfType
+### *getFirstItemOfType*
 
 **Purpose**
 
@@ -513,7 +513,7 @@ Retrieves the first item in the inventory with a specific unique ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -546,7 +546,7 @@ end)
 
 ---
 
-### hasItem
+### *hasItem*
 
 **Purpose**
 
@@ -562,7 +562,7 @@ Checks if the inventory contains any items with a specific unique ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -595,7 +595,7 @@ end)
 
 ---
 
-### getItemCount
+### *getItemCount*
 
 **Purpose**
 
@@ -611,7 +611,7 @@ Gets the total quantity of items with a specific unique ID, or all items if no t
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -641,7 +641,7 @@ end)
 
 ---
 
-### getID
+### *getID*
 
 **Purpose**
 
@@ -657,7 +657,7 @@ Gets the unique identifier of the inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -682,7 +682,7 @@ end)
 
 ---
 
-### eq
+### *eq*
 
 **Purpose**
 
@@ -698,7 +698,7 @@ Checks if two inventories are equal by comparing their IDs.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -731,7 +731,7 @@ end)
 
 ---
 
-### addItem
+### *addItem*
 
 **Purpose**
 
@@ -748,7 +748,7 @@ Adds an item to the inventory and handles database persistence.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -775,7 +775,7 @@ end)
 
 ---
 
-### add
+### *add*
 
 **Purpose**
 
@@ -791,7 +791,7 @@ Alias for addItem method.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -818,7 +818,7 @@ end)
 
 ---
 
-### syncItemAdded
+### *syncItemAdded*
 
 **Purpose**
 
@@ -834,7 +834,7 @@ Synchronizes an added item with clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -862,7 +862,7 @@ end)
 
 ---
 
-### initializeStorage
+### *initializeStorage*
 
 **Purpose**
 
@@ -878,7 +878,7 @@ Initializes the inventory storage in the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -906,7 +906,7 @@ end)
 
 ---
 
-### restoreFromStorage
+### *restoreFromStorage*
 
 **Purpose**
 
@@ -922,7 +922,7 @@ Restores inventory data from storage (placeholder for custom implementations).
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -941,7 +941,7 @@ end)
 
 ---
 
-### removeItem
+### *removeItem*
 
 **Purpose**
 
@@ -958,7 +958,7 @@ Removes an item from the inventory by ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -985,7 +985,7 @@ end)
 
 ---
 
-### remove
+### *remove*
 
 **Purpose**
 
@@ -1001,7 +1001,7 @@ Alias for removeItem method.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1028,7 +1028,7 @@ end)
 
 ---
 
-### setData
+### *setData*
 
 **Purpose**
 
@@ -1045,7 +1045,7 @@ Sets data for the inventory and handles persistence.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1072,7 +1072,7 @@ end)
 
 ---
 
-### canAccess
+### *canAccess*
 
 **Purpose**
 
@@ -1090,7 +1090,7 @@ Checks if a client can perform a specific action on the inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1118,7 +1118,7 @@ end)
 
 ---
 
-### addAccessRule
+### *addAccessRule*
 
 **Purpose**
 
@@ -1135,7 +1135,7 @@ Adds an access rule to the inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1163,7 +1163,7 @@ end)
 
 ---
 
-### removeAccessRule
+### *removeAccessRule*
 
 **Purpose**
 
@@ -1179,7 +1179,7 @@ Removes an access rule from the inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1205,7 +1205,7 @@ end)
 
 ---
 
-### getRecipients
+### *getRecipients*
 
 **Purpose**
 
@@ -1221,7 +1221,7 @@ Gets all clients that should receive inventory updates.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1249,7 +1249,7 @@ end)
 
 ---
 
-### onInstanced
+### *onInstanced*
 
 **Purpose**
 
@@ -1265,7 +1265,7 @@ Called when the inventory is instantiated (placeholder for custom implementation
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1284,7 +1284,7 @@ end)
 
 ---
 
-### onLoaded
+### *onLoaded*
 
 **Purpose**
 
@@ -1300,7 +1300,7 @@ Called when the inventory is loaded from storage (placeholder for custom impleme
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1319,7 +1319,7 @@ end)
 
 ---
 
-### loadItems
+### *loadItems*
 
 **Purpose**
 
@@ -1335,7 +1335,7 @@ Loads items from the database for the inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1361,7 +1361,7 @@ end)
 
 ---
 
-### onItemsLoaded
+### *onItemsLoaded*
 
 **Purpose**
 
@@ -1377,7 +1377,7 @@ Called when items are loaded from the database (placeholder for custom implement
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1396,7 +1396,7 @@ end)
 
 ---
 
-### instance
+### *instance*
 
 **Purpose**
 
@@ -1412,7 +1412,7 @@ Creates a new instance of the inventory type with initial data.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1439,7 +1439,7 @@ end)
 
 ---
 
-### syncData
+### *syncData*
 
 **Purpose**
 
@@ -1456,7 +1456,7 @@ Synchronizes inventory data with clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1482,7 +1482,7 @@ end)
 
 ---
 
-### sync
+### *sync*
 
 **Purpose**
 
@@ -1498,7 +1498,7 @@ Synchronizes the entire inventory with clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1523,7 +1523,7 @@ end)
 
 ---
 
-### delete
+### *delete*
 
 **Purpose**
 
@@ -1539,7 +1539,7 @@ Deletes the inventory from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1564,7 +1564,7 @@ end)
 
 ---
 
-### destroy
+### *destroy*
 
 **Purpose**
 
@@ -1580,7 +1580,7 @@ Destroys the inventory instance and removes it from memory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1605,7 +1605,7 @@ end)
 
 ---
 
-### show
+### *show*
 
 **Purpose**
 
@@ -1621,7 +1621,7 @@ Shows the inventory interface to the client.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -1646,7 +1646,7 @@ end)
 
 ---
 
-### getWidth
+### *getWidth*
 
 **Purpose**
 
@@ -1662,7 +1662,7 @@ Gets the width of the grid inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1678,7 +1678,7 @@ end
 
 ---
 
-### getHeight
+### *getHeight*
 
 **Purpose**
 
@@ -1694,7 +1694,7 @@ Gets the height of the grid inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1713,7 +1713,7 @@ end
 
 ---
 
-### getSize
+### *getSize*
 
 **Purpose**
 
@@ -1730,7 +1730,7 @@ Gets both the width and height of the grid inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1745,7 +1745,7 @@ end
 
 ---
 
-### canAdd
+### *canAdd*
 
 **Purpose**
 
@@ -1761,7 +1761,7 @@ Checks if an item can be added to the grid inventory based on size constraints.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1780,7 +1780,7 @@ end
 
 ---
 
-### doesItemOverlapWithOther
+### *doesItemOverlapWithOther*
 
 **Purpose**
 
@@ -1799,7 +1799,7 @@ Checks if a test item would overlap with another item at the specified position.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1819,7 +1819,7 @@ end
 
 ---
 
-### doesFitInventory
+### *doesFitInventory*
 
 **Purpose**
 
@@ -1835,7 +1835,7 @@ Checks if an item can fit anywhere in the inventory, including in bag items.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1850,7 +1850,7 @@ end
 
 ---
 
-### canItemFitInInventory
+### *canItemFitInInventory*
 
 **Purpose**
 
@@ -1868,7 +1868,7 @@ Checks if an item can fit at a specific position within the inventory bounds.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1883,7 +1883,7 @@ end
 
 ---
 
-### doesItemFitAtPos
+### *doesItemFitAtPos*
 
 **Purpose**
 
@@ -1902,7 +1902,7 @@ Checks if an item can be placed at a specific position without overlapping other
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1921,7 +1921,7 @@ end
 
 ---
 
-### findFreePosition
+### *findFreePosition*
 
 **Purpose**
 
@@ -1938,7 +1938,7 @@ Finds the first available position for an item in the inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1960,7 +1960,7 @@ end
 
 ---
 
-### getItems
+### *getItems*
 
 **Purpose**
 
@@ -1976,7 +1976,7 @@ Gets all items in the inventory, optionally excluding recursive bag items.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1996,7 +1996,7 @@ end
 
 ---
 
-### setSize
+### *setSize*
 
 **Purpose**
 
@@ -2013,7 +2013,7 @@ Sets the size of the grid inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -2028,7 +2028,7 @@ end
 
 ---
 
-### wipeItems
+### *wipeItems*
 
 **Purpose**
 
@@ -2044,7 +2044,7 @@ Removes all items from the inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -2059,7 +2059,7 @@ end
 
 ---
 
-### setOwner
+### *setOwner*
 
 **Purpose**
 
@@ -2076,7 +2076,7 @@ Sets the owner of the inventory and optionally syncs to the owner.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -2091,7 +2091,7 @@ end
 
 ---
 
-### add
+### *add*
 
 **Purpose**
 
@@ -2110,7 +2110,7 @@ Adds an item to the grid inventory with advanced positioning and stacking suppor
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -2137,7 +2137,7 @@ end
 
 ---
 
-### remove
+### *remove*
 
 **Purpose**
 
@@ -2154,7 +2154,7 @@ Removes items from the grid inventory by type or ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -2172,7 +2172,7 @@ end
 
 ---
 
-### requestTransfer
+### *requestTransfer*
 
 **Purpose**
 
@@ -2191,7 +2191,7 @@ Requests a transfer of an item to another inventory at a specific position.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

@@ -27,7 +27,7 @@ Adds a rarity type with a specific color to the vendor system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -66,7 +66,7 @@ Adds a vendor preset with predefined items and their configurations.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -114,7 +114,7 @@ Gets a vendor preset by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -155,7 +155,7 @@ Loads vendor presets from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -191,7 +191,7 @@ Saves a vendor preset to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -227,7 +227,7 @@ Provides editor functions for vendor configuration.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -264,7 +264,7 @@ Stores all vendor presets.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -300,7 +300,7 @@ Stores all vendor rarities.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

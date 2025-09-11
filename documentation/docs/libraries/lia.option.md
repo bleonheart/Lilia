@@ -26,7 +26,7 @@ Adds a new client-side option.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -80,7 +80,7 @@ Gets all client options.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -120,7 +120,7 @@ Sets an option value for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -156,7 +156,7 @@ Gets an option value for a client.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -192,7 +192,7 @@ Saves options for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -227,7 +227,7 @@ Loads options for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

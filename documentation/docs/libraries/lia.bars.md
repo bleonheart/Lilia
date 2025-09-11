@@ -10,7 +10,7 @@ The bars library (`lia.bar`) provides a comprehensive system for creating and ma
 
 ---
 
-### get
+### *get*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Retrieves a bar by its identifier from the bar list.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -52,7 +52,7 @@ end
 
 ---
 
-### add
+### *add*
 
 **Purpose**
 
@@ -71,7 +71,7 @@ Adds a new bar to the bar system with specified properties.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -123,7 +123,7 @@ end)
 
 ---
 
-### remove
+### *remove*
 
 **Purpose**
 
@@ -139,7 +139,7 @@ Removes a bar from the bar system by its identifier.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -168,7 +168,7 @@ end
 
 ---
 
-### drawBar
+### *drawBar*
 
 **Purpose**
 
@@ -190,7 +190,7 @@ Draws a single bar at the specified position with given properties.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -223,7 +223,7 @@ end)
 
 ---
 
-### drawAction
+### *drawAction*
 
 **Purpose**
 
@@ -240,7 +240,7 @@ Draws an action bar with countdown timer for actions like reloading or using ite
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -267,7 +267,7 @@ end
 
 ---
 
-### drawAll
+### *drawAll*
 
 **Purpose**
 
@@ -283,7 +283,7 @@ Draws all registered bars in priority order with delta smoothing and visibility 
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

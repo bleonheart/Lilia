@@ -27,7 +27,7 @@ Adds a new log type to the logging system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -88,7 +88,7 @@ Gets a formatted log string.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -148,7 +148,7 @@ Adds a log entry to the logging system.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -213,7 +213,7 @@ Gets logs by type.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -281,7 +281,7 @@ Gets all logs.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -341,7 +341,7 @@ Gets a log by its ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -402,7 +402,7 @@ Deletes a log by its ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -463,7 +463,7 @@ Clears all logs.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -516,7 +516,7 @@ Gets all log types.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -571,7 +571,7 @@ Gets data for a log type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -628,7 +628,7 @@ Sets data for a log type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -679,7 +679,7 @@ Removes a log type from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -733,7 +733,7 @@ Clears all logs of a specific type.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -781,7 +781,7 @@ Exports logs to a file.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -837,7 +837,7 @@ Imports logs from a file.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

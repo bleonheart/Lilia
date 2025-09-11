@@ -10,7 +10,7 @@ The administrator library (`lia.administrator`) provides a comprehensive, hierar
 
 ---
 
-### hasAccess
+### *hasAccess*
 
 **Purpose**
 
@@ -27,7 +27,7 @@ Checks if a player or usergroup has access to a specific privilege.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -70,7 +70,7 @@ end
 
 ---
 
-### registerPrivilege
+### *registerPrivilege*
 
 **Purpose**
 
@@ -86,7 +86,7 @@ Registers a new privilege with the administrator system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -126,7 +126,7 @@ lia.administrator.registerPrivilege({
 
 ---
 
-### unregisterPrivilege
+### *unregisterPrivilege*
 
 **Purpose**
 
@@ -142,7 +142,7 @@ Removes a privilege from the administrator system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -159,7 +159,7 @@ lia.administrator.unregisterPrivilege("command_oldCommand")
 
 ---
 
-### createGroup
+### *createGroup*
 
 **Purpose**
 
@@ -176,7 +176,7 @@ Creates a new usergroup with specified inheritance and permissions.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -208,7 +208,7 @@ lia.administrator.createGroup("staff", {
 
 ---
 
-### removeGroup
+### *removeGroup*
 
 **Purpose**
 
@@ -224,7 +224,7 @@ Removes a usergroup from the administrator system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -241,7 +241,7 @@ lia.administrator.removeGroup("user") -- This will error
 
 ---
 
-### renameGroup
+### *renameGroup*
 
 **Purpose**
 
@@ -258,7 +258,7 @@ Renames an existing usergroup.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -275,7 +275,7 @@ lia.administrator.renameGroup("user", "player") -- This will error
 
 ---
 
-### applyInheritance
+### *applyInheritance*
 
 **Purpose**
 
@@ -291,7 +291,7 @@ Applies inheritance rules to a usergroup, copying permissions from parent groups
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -305,7 +305,7 @@ lia.administrator.applyInheritance("moderator")
 
 ---
 
-### load
+### *load*
 
 **Purpose**
 
@@ -321,7 +321,7 @@ Loads the administrator system from the database.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -335,7 +335,7 @@ lia.administrator.load()
 
 ---
 
-### save
+### *save*
 
 **Purpose**
 
@@ -351,7 +351,7 @@ Saves the current administrator system state to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -367,7 +367,7 @@ lia.administrator.save(true)
 
 ---
 
-### addPermission
+### *addPermission*
 
 **Purpose**
 
@@ -385,7 +385,7 @@ Adds a permission to a usergroup.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -402,7 +402,7 @@ lia.administrator.addPermission("moderator", "mute", true)
 
 ---
 
-### removePermission
+### *removePermission*
 
 **Purpose**
 
@@ -420,7 +420,7 @@ Removes a permission from a usergroup.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -437,7 +437,7 @@ lia.administrator.removePermission("moderator", "mute", true)
 
 ---
 
-### sync
+### *sync*
 
 **Purpose**
 
@@ -453,7 +453,7 @@ Synchronizes administrator data with connected clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -469,7 +469,7 @@ lia.administrator.sync(ply)
 
 ---
 
-### setPlayerUsergroup
+### *setPlayerUsergroup*
 
 **Purpose**
 
@@ -487,7 +487,7 @@ Sets a player's usergroup.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -504,7 +504,7 @@ lia.administrator.setPlayerUsergroup(target, "vip", "adminCommand")
 
 ---
 
-### setSteamIDUsergroup
+### *setSteamIDUsergroup*
 
 **Purpose**
 
@@ -522,7 +522,7 @@ Sets a usergroup for a player by their SteamID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -539,7 +539,7 @@ lia.administrator.setSteamIDUsergroup(steamID, "vip", "database")
 
 ---
 
-### serverExecCommand
+### *serverExecCommand*
 
 **Purpose**
 
@@ -559,7 +559,7 @@ Executes a server-side administrative command.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -579,7 +579,7 @@ lia.administrator.serverExecCommand("freeze", target, 30, nil, admin)
 
 ---
 
-### execCommand
+### *execCommand*
 
 **Purpose**
 
@@ -598,7 +598,7 @@ Executes an administrative command from the client side.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

@@ -27,7 +27,7 @@ Registers a new font with the font system.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -90,7 +90,7 @@ Gets a list of all available fonts.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -145,7 +145,7 @@ Refreshes the font system and reloads all fonts.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -195,7 +195,7 @@ Gets a font by name.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -256,7 +256,7 @@ Creates a new font with the given parameters.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -318,7 +318,7 @@ Removes a font from the font system.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -372,7 +372,7 @@ Clears all fonts from the font system.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -424,7 +424,7 @@ Checks if a font is loaded.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -486,7 +486,7 @@ Gets the size of a font.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -549,7 +549,7 @@ Gets the height of a font.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -601,7 +601,7 @@ Gets the width of text in a font.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -681,7 +681,7 @@ Draws text using a specific font.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

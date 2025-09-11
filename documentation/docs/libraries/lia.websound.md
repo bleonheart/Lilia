@@ -28,7 +28,7 @@ Downloads a sound file from a URL and caches it locally.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -65,7 +65,7 @@ Registers a sound URL and downloads it.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -100,7 +100,7 @@ Gets a cached sound file path by name.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -139,7 +139,7 @@ Gets statistics about downloaded sounds.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -176,7 +176,7 @@ Stores registered sound data.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

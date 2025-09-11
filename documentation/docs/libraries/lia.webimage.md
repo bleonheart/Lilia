@@ -29,7 +29,7 @@ Downloads an image from a URL and caches it locally.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -67,7 +67,7 @@ Registers an image URL and downloads it.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -103,7 +103,7 @@ Gets a cached image material by name.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -141,7 +141,7 @@ Gets statistics about downloaded images.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -178,7 +178,7 @@ Stores registered image data.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

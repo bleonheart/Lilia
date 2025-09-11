@@ -27,7 +27,7 @@ Checks if a player is within interaction range.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -67,7 +67,7 @@ Gets all interactions for a client.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -105,7 +105,7 @@ Gets all actions for a client.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -143,7 +143,7 @@ Gets categorized interaction options for a client.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -181,7 +181,7 @@ Adds a new interaction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -222,7 +222,7 @@ Adds a new action.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -263,7 +263,7 @@ Syncs interactions to all clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -299,7 +299,7 @@ Opens an interaction menu for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

@@ -10,7 +10,7 @@ The `Player` meta table extends Garry's Mod's base player functionality with Lil
 
 ---
 
-### getChar
+### *getChar*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Gets the player's current character.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -49,7 +49,7 @@ end)
 
 ---
 
-### Name
+### *Name*
 
 **Purpose**
 
@@ -65,7 +65,7 @@ Gets the player's display name, preferring character name over Steam name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -84,7 +84,7 @@ end)
 
 ---
 
-### hasPrivilegeVector
+### *hasPrivilegeVector*
 
 **Purpose**
 
@@ -100,7 +100,7 @@ Checks if the player has a specific privilege.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -125,7 +125,7 @@ end)
 
 ---
 
-### getCurrentVehicle
+### *getCurrentVehicle*
 
 **Purpose**
 
@@ -141,7 +141,7 @@ Gets the vehicle the player is currently in.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -164,7 +164,7 @@ end)
 
 ---
 
-### hasValidVehicle
+### *hasValidVehicle*
 
 **Purpose**
 
@@ -180,7 +180,7 @@ Checks if the player is in a valid vehicle.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -202,7 +202,7 @@ end)
 
 ---
 
-### isNoClipping
+### *isNoClipping*
 
 **Purpose**
 
@@ -218,7 +218,7 @@ Checks if the player is no-clipping and not in a vehicle.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -240,7 +240,7 @@ end)
 
 ---
 
-### removeRagdoll
+### *removeRagdoll*
 
 **Purpose**
 
@@ -256,7 +256,7 @@ Removes the player's ragdoll if it exists.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -273,7 +273,7 @@ end)
 
 ---
 
-### getRagdoll
+### *getRagdoll*
 
 **Purpose**
 
@@ -289,7 +289,7 @@ Gets the player's current ragdoll entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -312,7 +312,7 @@ end)
 
 ---
 
-### isStuck
+### *isStuck*
 
 **Purpose**
 
@@ -328,7 +328,7 @@ Checks if the player is stuck in a wall or object.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -351,7 +351,7 @@ end)
 
 ---
 
-### isNearPlayer
+### *isNearPlayer*
 
 **Purpose**
 
@@ -368,7 +368,7 @@ Checks if the player is near another entity within a specified radius.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -394,7 +394,7 @@ end)
 
 ---
 
-### entitiesNearPlayer
+### *entitiesNearPlayer*
 
 **Purpose**
 
@@ -411,7 +411,7 @@ Gets all entities near the player within a specified radius.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -433,7 +433,7 @@ end)
 
 ---
 
-### getItemWeapon
+### *getItemWeapon*
 
 **Purpose**
 
@@ -450,7 +450,7 @@ Gets the weapon and item associated with the player's active weapon.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -473,7 +473,7 @@ end)
 
 ---
 
-### isRunning
+### *isRunning*
 
 **Purpose**
 
@@ -489,7 +489,7 @@ Checks if the player is currently running.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -511,7 +511,7 @@ end)
 
 ---
 
-### IsFamilySharedAccount
+### *IsFamilySharedAccount*
 
 **Purpose**
 
@@ -527,7 +527,7 @@ Checks if the player is using a family shared Steam account.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -549,7 +549,7 @@ end)
 
 ---
 
-### getItemDropPos
+### *getItemDropPos*
 
 **Purpose**
 
@@ -565,7 +565,7 @@ Gets the position where items should be dropped from the player.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -583,7 +583,7 @@ end)
 
 ---
 
-### getItems
+### *getItems*
 
 **Purpose**
 
@@ -599,7 +599,7 @@ Gets all items in the player's character's inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -623,7 +623,7 @@ end)
 
 ---
 
-### getTracedEntity
+### *getTracedEntity*
 
 **Purpose**
 
@@ -639,7 +639,7 @@ Gets the entity the player is looking at within a specified distance.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -663,7 +663,7 @@ end)
 
 ---
 
-### getTrace
+### *getTrace*
 
 **Purpose**
 
@@ -679,7 +679,7 @@ Gets a trace result from the player's view with hull collision.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -703,7 +703,7 @@ end)
 
 ---
 
-### getEyeEnt
+### *getEyeEnt*
 
 **Purpose**
 
@@ -719,7 +719,7 @@ Gets the entity the player is looking at within a specified distance.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -743,7 +743,7 @@ end)
 
 ---
 
-### notify
+### *notify*
 
 **Purpose**
 
@@ -760,7 +760,7 @@ Sends a notification to the player.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -779,7 +779,7 @@ end)
 
 ---
 
-### notifyLocalized
+### *notifyLocalized*
 
 **Purpose**
 
@@ -796,7 +796,7 @@ Sends a localized notification to the player.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -819,7 +819,7 @@ end)
 
 ---
 
-### CanEditVendor
+### *CanEditVendor*
 
 **Purpose**
 
@@ -835,7 +835,7 @@ Checks if the player can edit vendors.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -860,7 +860,7 @@ end)
 
 ---
 
-### isStaff
+### *isStaff*
 
 **Purpose**
 
@@ -876,7 +876,7 @@ Checks if the player is a staff member.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -898,7 +898,7 @@ end)
 
 ---
 
-### isVIP
+### *isVIP*
 
 **Purpose**
 
@@ -914,7 +914,7 @@ Checks if the player is a VIP member.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -936,7 +936,7 @@ end)
 
 ---
 
-### isStaffOnDuty
+### *isStaffOnDuty*
 
 **Purpose**
 
@@ -952,7 +952,7 @@ Checks if the player is staff and on duty.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -974,7 +974,7 @@ end)
 
 ---
 
-### isFaction
+### *isFaction*
 
 **Purpose**
 
@@ -990,7 +990,7 @@ Checks if the player's character belongs to a specific faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1015,7 +1015,7 @@ end)
 
 ---
 
-### isClass
+### *isClass*
 
 **Purpose**
 
@@ -1031,7 +1031,7 @@ Checks if the player's character belongs to a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1056,7 +1056,7 @@ end)
 
 ---
 
-### hasWhitelist
+### *hasWhitelist*
 
 **Purpose**
 
@@ -1072,7 +1072,7 @@ Checks if the player has whitelist access to a specific faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1097,7 +1097,7 @@ end)
 
 ---
 
-### getClass
+### *getClass*
 
 **Purpose**
 
@@ -1113,7 +1113,7 @@ Gets the player's character's class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1136,7 +1136,7 @@ end)
 
 ---
 
-### hasClassWhitelist
+### *hasClassWhitelist*
 
 **Purpose**
 
@@ -1152,7 +1152,7 @@ Checks if the player's character has whitelist access to a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1177,7 +1177,7 @@ end)
 
 ---
 
-### getClassData
+### *getClassData*
 
 **Purpose**
 
@@ -1193,7 +1193,7 @@ Gets the data for the player's character's class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1219,7 +1219,7 @@ end)
 
 ---
 
-### getDarkRPVar
+### *getDarkRPVar*
 
 **Purpose**
 
@@ -1235,7 +1235,7 @@ Gets a DarkRP variable value for compatibility.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1255,7 +1255,7 @@ end)
 
 ---
 
-### getMoney
+### *getMoney*
 
 **Purpose**
 
@@ -1271,7 +1271,7 @@ Gets the player's character's money.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1289,7 +1289,7 @@ end)
 
 ---
 
-### canAfford
+### *canAfford*
 
 **Purpose**
 
@@ -1305,7 +1305,7 @@ Checks if the player's character can afford a specific amount.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1330,7 +1330,7 @@ end)
 
 ---
 
-### hasSkillLevel
+### *hasSkillLevel*
 
 **Purpose**
 
@@ -1347,7 +1347,7 @@ Checks if the player's character has a specific skill level.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1373,7 +1373,7 @@ end)
 
 ---
 
-### meetsRequiredSkills
+### *meetsRequiredSkills*
 
 **Purpose**
 
@@ -1389,7 +1389,7 @@ Checks if the player meets all required skill levels.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1415,7 +1415,7 @@ end)
 
 ---
 
-### restoreStamina
+### *restoreStamina*
 
 **Purpose**
 
@@ -1431,7 +1431,7 @@ Restores the player's stamina by a specified amount.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1449,7 +1449,7 @@ end)
 
 ---
 
-### consumeStamina
+### *consumeStamina*
 
 **Purpose**
 
@@ -1465,7 +1465,7 @@ Consumes the player's stamina by a specified amount.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1483,7 +1483,7 @@ end)
 
 ---
 
-### addMoney
+### *addMoney*
 
 **Purpose**
 
@@ -1499,7 +1499,7 @@ Adds money to the player's character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1524,7 +1524,7 @@ end)
 
 ---
 
-### takeMoney
+### *takeMoney*
 
 **Purpose**
 
@@ -1540,7 +1540,7 @@ Takes money from the player's character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1560,7 +1560,7 @@ end)
 
 ---
 
-### setLiliaData
+### *setLiliaData*
 
 **Purpose**
 
@@ -1579,7 +1579,7 @@ Sets persistent data for the player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1600,7 +1600,7 @@ end)
 
 ---
 
-### getLiliaData
+### *getLiliaData*
 
 **Purpose**
 
@@ -1617,7 +1617,7 @@ Gets persistent data for the player.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1638,7 +1638,7 @@ end)
 
 ---
 
-### getFlags
+### *getFlags*
 
 **Purpose**
 
@@ -1654,7 +1654,7 @@ Gets the player's flags for a specific type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1674,7 +1674,7 @@ end)
 
 ---
 
-### setFlags
+### *setFlags*
 
 **Purpose**
 
@@ -1691,7 +1691,7 @@ Sets the player's flags for a specific type.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1713,7 +1713,7 @@ end)
 
 ---
 
-### hasFlags
+### *hasFlags*
 
 **Purpose**
 
@@ -1729,7 +1729,7 @@ Checks if the player has any of the specified flags.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1754,7 +1754,7 @@ end)
 
 ---
 
-### getPlayTime
+### *getPlayTime*
 
 **Purpose**
 
@@ -1770,7 +1770,7 @@ Gets the player's total play time.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

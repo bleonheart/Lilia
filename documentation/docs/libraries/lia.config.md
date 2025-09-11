@@ -27,7 +27,7 @@ Adds a new configuration option to the config system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -84,7 +84,7 @@ Gets all configuration options.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -135,7 +135,7 @@ Sets the default value for a configuration option.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -178,7 +178,7 @@ Forces a configuration value to be set without triggering callbacks.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -218,7 +218,7 @@ Sets a configuration value and triggers callbacks.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -265,7 +265,7 @@ Gets a configuration value.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -316,7 +316,7 @@ Loads configuration from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -357,7 +357,7 @@ Gets all configuration values that have been changed from their defaults.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -405,7 +405,7 @@ Sends configuration to a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -445,7 +445,7 @@ Saves configuration to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -489,7 +489,7 @@ Resets a configuration value to its default.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -535,7 +535,7 @@ Resets all configuration values to their defaults.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -580,7 +580,7 @@ Gets all configuration options in a specific category.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -631,7 +631,7 @@ Adds a new configuration category.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

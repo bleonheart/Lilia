@@ -27,7 +27,7 @@ Registers a new network message.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -77,7 +77,7 @@ Sends a network message to a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -118,7 +118,7 @@ Reads a big table from network data.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -159,7 +159,7 @@ Writes a big table to network data.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

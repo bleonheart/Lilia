@@ -26,7 +26,7 @@ Calculates the time since a given timestamp.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -71,7 +71,7 @@ Converts a time string to a number.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -112,7 +112,7 @@ Gets the current date as a formatted string.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -154,7 +154,7 @@ Formats time in days, hours, and minutes.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -197,7 +197,7 @@ Gets the current hour.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

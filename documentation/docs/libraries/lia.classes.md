@@ -27,7 +27,7 @@ Registers a new character class with the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -108,7 +108,7 @@ Loads class definitions from a directory containing class files.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -147,7 +147,7 @@ Checks if a client can join a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -202,7 +202,7 @@ Retrieves a class by its identifier (index or uniqueID).
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -251,7 +251,7 @@ Gets all players currently in a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -297,7 +297,7 @@ Gets the number of players currently in a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -343,7 +343,7 @@ Retrieves a class by searching for a matching name or uniqueID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -394,7 +394,7 @@ Checks if a class requires whitelist access.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -439,7 +439,7 @@ Retrieves all classes that a client can join.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

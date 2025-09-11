@@ -10,7 +10,7 @@ The character library (`lia.char`) provides a comprehensive system for managing 
 
 ---
 
-### getCharacter
+### *getCharacter*
 
 **Purpose**
 
@@ -28,7 +28,7 @@ Retrieves a character by its ID, with optional callback support.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -66,7 +66,7 @@ lia.command.add("getchar", {
 
 ---
 
-### isLoaded
+### *isLoaded*
 
 **Purpose**
 
@@ -82,7 +82,7 @@ Checks if a character is currently loaded in memory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -109,7 +109,7 @@ end
 
 ---
 
-### getAll
+### *getAll*
 
 **Purpose**
 
@@ -125,7 +125,7 @@ Retrieves all currently loaded characters.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -151,7 +151,7 @@ end
 
 ---
 
-### addCharacter
+### *addCharacter*
 
 **Purpose**
 
@@ -168,7 +168,7 @@ Adds a character to the loaded characters table.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -182,7 +182,7 @@ lia.char.addCharacter(123, characterObject)
 
 ---
 
-### removeCharacter
+### *removeCharacter*
 
 **Purpose**
 
@@ -198,7 +198,7 @@ Removes a character from the loaded characters table.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -212,7 +212,7 @@ lia.char.removeCharacter(123)
 
 ---
 
-### new
+### *new*
 
 **Purpose**
 
@@ -231,7 +231,7 @@ Creates a new character object with the specified data.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -256,7 +256,7 @@ local character = lia.char.new(charData, 125, client)
 
 ---
 
-### hookVar
+### *hookVar*
 
 **Purpose**
 
@@ -274,7 +274,7 @@ Adds a hook to a character variable for custom behavior.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -297,7 +297,7 @@ end)
 
 ---
 
-### registerVar
+### *registerVar*
 
 **Purpose**
 
@@ -314,7 +314,7 @@ Registers a new character variable with the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -352,7 +352,7 @@ lia.char.registerVar("customData", {
 
 ---
 
-### getCharData
+### *getCharData*
 
 **Purpose**
 
@@ -369,7 +369,7 @@ Retrieves character data from the database by character ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -410,7 +410,7 @@ lia.command.add("chardata", {
 
 ---
 
-### getCharDataRaw
+### *getCharDataRaw*
 
 **Purpose**
 
@@ -427,7 +427,7 @@ Retrieves raw character data from the database without processing.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -449,7 +449,7 @@ end)
 
 ---
 
-### getOwnerByID
+### *getOwnerByID*
 
 **Purpose**
 
@@ -465,7 +465,7 @@ Finds the client who owns a character by character ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -491,7 +491,7 @@ end
 
 ---
 
-### getBySteamID
+### *getBySteamID*
 
 **Purpose**
 
@@ -507,7 +507,7 @@ Finds a character by the owner's SteamID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -538,7 +538,7 @@ lia.command.add("findchar", {
 
 ---
 
-### GetTeamColor
+### *GetTeamColor*
 
 **Purpose**
 
@@ -554,7 +554,7 @@ Gets the team color for a client based on their character's class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -580,7 +580,7 @@ end
 
 ---
 
-### create
+### *create*
 
 **Purpose**
 
@@ -597,7 +597,7 @@ Creates a new character in the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -628,7 +628,7 @@ end)
 
 ---
 
-### restore
+### *restore*
 
 **Purpose**
 
@@ -646,7 +646,7 @@ Restores a character from the database for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -673,7 +673,7 @@ end)
 
 ---
 
-### cleanUpForPlayer
+### *cleanUpForPlayer*
 
 **Purpose**
 
@@ -689,7 +689,7 @@ Cleans up all characters for a specific player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -716,7 +716,7 @@ lia.command.add("cleanupchar", {
 
 ---
 
-### delete
+### *delete*
 
 **Purpose**
 
@@ -733,7 +733,7 @@ Deletes a character from the database and memory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -758,7 +758,7 @@ lia.command.add("deletechar", {
 
 ---
 
-### getCharBanned
+### *getCharBanned*
 
 **Purpose**
 
@@ -774,7 +774,7 @@ Checks if a character is banned.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -800,7 +800,7 @@ end
 
 ---
 
-### setCharDatabase
+### *setCharDatabase*
 
 **Purpose**
 
@@ -818,7 +818,7 @@ Sets character data in the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -838,7 +838,7 @@ lia.char.setCharDatabase(123, "customData", {level = 5, xp = 1000})
 
 ---
 
-### unloadCharacter
+### *unloadCharacter*
 
 **Purpose**
 
@@ -854,7 +854,7 @@ Unloads a character from memory and saves it to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -876,7 +876,7 @@ end)
 
 ---
 
-### unloadUnusedCharacters
+### *unloadUnusedCharacters*
 
 **Purpose**
 
@@ -893,7 +893,7 @@ Unloads unused characters for a client, keeping only the active one.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -914,7 +914,7 @@ end
 
 ---
 
-### loadSingleCharacter
+### *loadSingleCharacter*
 
 **Purpose**
 
@@ -932,7 +932,7 @@ Loads a single character by ID for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

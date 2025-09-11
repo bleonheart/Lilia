@@ -28,7 +28,7 @@ Shows a notification to a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -77,7 +77,7 @@ Shows a localized notification to a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

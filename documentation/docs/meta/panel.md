@@ -10,7 +10,7 @@ The `Panel` meta table extends Garry's Mod's base panel functionality with Lilia
 
 ---
 
-### liaListenForInventoryChanges
+### *liaListenForInventoryChanges*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Sets up the panel to automatically listen for inventory changes and call appropr
 
 **Realm**
 
-Client.
+Client
 
 **Notes**
 
@@ -71,7 +71,7 @@ end)
 
 ---
 
-### liaDeleteInventoryHooks
+### *liaDeleteInventoryHooks*
 
 **Purpose**
 
@@ -87,7 +87,7 @@ Removes all inventory-related hooks from the panel.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -115,7 +115,7 @@ end)
 
 ---
 
-### SetScaledPos
+### *SetScaledPos*
 
 **Purpose**
 
@@ -132,7 +132,7 @@ Sets the panel's position using scaled coordinates for different screen resoluti
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -154,7 +154,7 @@ end)
 
 ---
 
-### SetScaledSize
+### *SetScaledSize*
 
 **Purpose**
 
@@ -171,7 +171,7 @@ Sets the panel's size using scaled dimensions for different screen resolutions.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

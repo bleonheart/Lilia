@@ -10,7 +10,7 @@ The `Character` meta table exposes properties and behaviors for character entiti
 
 ---
 
-### tostring
+### *tostring*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Returns a string representation of the character.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -42,7 +42,7 @@ end)
 
 ---
 
-### eq
+### *eq*
 
 **Purpose**
 
@@ -58,7 +58,7 @@ Checks if this character is equal to another character by comparing their IDs.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -76,7 +76,7 @@ end
 
 ---
 
-### getID
+### *getID*
 
 **Purpose**
 
@@ -92,7 +92,7 @@ Returns the character's unique identifier.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -109,7 +109,7 @@ end)
 
 ---
 
-### getPlayer
+### *getPlayer*
 
 **Purpose**
 
@@ -125,7 +125,7 @@ Returns the player entity associated with this character.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -150,7 +150,7 @@ end)
 
 ---
 
-### getDisplayedName
+### *getDisplayedName*
 
 **Purpose**
 
@@ -166,7 +166,7 @@ Returns the name that should be displayed for this character, considering recogn
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -191,7 +191,7 @@ end)
 
 ---
 
-### hasMoney
+### *hasMoney*
 
 **Purpose**
 
@@ -207,7 +207,7 @@ Checks if the character has at least the specified amount of money.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -230,7 +230,7 @@ end)
 
 ---
 
-### hasFlags
+### *hasFlags*
 
 **Purpose**
 
@@ -246,7 +246,7 @@ Checks if the character has any of the specified flags.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -271,7 +271,7 @@ end)
 
 ---
 
-### getItemWeapon
+### *getItemWeapon*
 
 **Purpose**
 
@@ -287,7 +287,7 @@ Checks if the character has a weapon item equipped and returns whether it's vali
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -311,7 +311,7 @@ end)
 
 ---
 
-### getMaxStamina
+### *getMaxStamina*
 
 **Purpose**
 
@@ -327,7 +327,7 @@ Returns the character's maximum stamina value.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -352,7 +352,7 @@ end)
 
 ---
 
-### getStamina
+### *getStamina*
 
 **Purpose**
 
@@ -368,7 +368,7 @@ Returns the character's current stamina value.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -394,7 +394,7 @@ end)
 
 ---
 
-### hasClassWhitelist
+### *hasClassWhitelist*
 
 **Purpose**
 
@@ -410,7 +410,7 @@ Checks if the character has whitelist access to a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -436,7 +436,7 @@ end)
 
 ---
 
-### isFaction
+### *isFaction*
 
 **Purpose**
 
@@ -452,7 +452,7 @@ Checks if the character belongs to a specific faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -477,7 +477,7 @@ end)
 
 ---
 
-### isClass
+### *isClass*
 
 **Purpose**
 
@@ -493,7 +493,7 @@ Checks if the character belongs to a specific class.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -521,7 +521,7 @@ end)
 
 ---
 
-### getAttrib
+### *getAttrib*
 
 **Purpose**
 
@@ -538,7 +538,7 @@ Returns the character's attribute value, including any boosts.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -563,7 +563,7 @@ end)
 
 ---
 
-### getBoost
+### *getBoost*
 
 **Purpose**
 
@@ -579,7 +579,7 @@ Returns the boost data for a specific attribute.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -611,7 +611,7 @@ end)
 
 ---
 
-### getBoosts
+### *getBoosts*
 
 **Purpose**
 
@@ -627,7 +627,7 @@ Returns all attribute boosts for the character.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -657,7 +657,7 @@ end)
 
 ---
 
-### doesRecognize
+### *doesRecognize*
 
 **Purpose**
 
@@ -673,7 +673,7 @@ Checks if the character recognizes another character by ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -705,7 +705,7 @@ end)
 
 ---
 
-### doesFakeRecognize
+### *doesFakeRecognize*
 
 **Purpose**
 
@@ -721,7 +721,7 @@ Checks if the character has fake recognition of another character by ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -751,7 +751,7 @@ end)
 
 ---
 
-### setData
+### *setData*
 
 **Purpose**
 
@@ -770,7 +770,7 @@ Sets character data and handles networking and database persistence.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -792,7 +792,7 @@ end)
 
 ---
 
-### getData
+### *getData*
 
 **Purpose**
 
@@ -809,7 +809,7 @@ Gets character data by key, with optional default value.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -834,7 +834,7 @@ end)
 
 ---
 
-### isBanned
+### *isBanned*
 
 **Purpose**
 
@@ -850,7 +850,7 @@ Checks if the character is currently banned.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -875,7 +875,7 @@ end)
 
 ---
 
-### recognize
+### *recognize*
 
 **Purpose**
 
@@ -892,7 +892,7 @@ Makes the character recognize another character, optionally with a custom name.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -922,7 +922,7 @@ end)
 
 ---
 
-### classWhitelist
+### *classWhitelist*
 
 **Purpose**
 
@@ -938,7 +938,7 @@ Adds a class to the character's whitelist.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -959,7 +959,7 @@ end)
 
 ---
 
-### classUnWhitelist
+### *classUnWhitelist*
 
 **Purpose**
 
@@ -975,7 +975,7 @@ Removes a class from the character's whitelist.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -996,7 +996,7 @@ end)
 
 ---
 
-### joinClass
+### *joinClass*
 
 **Purpose**
 
@@ -1013,7 +1013,7 @@ Makes the character join a specific class.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1037,7 +1037,7 @@ end)
 
 ---
 
-### kickClass
+### *kickClass*
 
 **Purpose**
 
@@ -1053,7 +1053,7 @@ Removes the character from their current class and assigns a default class.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1073,7 +1073,7 @@ end)
 
 ---
 
-### updateAttrib
+### *updateAttrib*
 
 **Purpose**
 
@@ -1090,7 +1090,7 @@ Updates a character's attribute by adding a value to the current level.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1113,7 +1113,7 @@ end)
 
 ---
 
-### setAttrib
+### *setAttrib*
 
 **Purpose**
 
@@ -1130,7 +1130,7 @@ Sets a character's attribute to a specific value.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1152,7 +1152,7 @@ end)
 
 ---
 
-### addBoost
+### *addBoost*
 
 **Purpose**
 
@@ -1170,7 +1170,7 @@ Adds a boost to a character's attribute.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1196,7 +1196,7 @@ end)
 
 ---
 
-### removeBoost
+### *removeBoost*
 
 **Purpose**
 
@@ -1213,7 +1213,7 @@ Removes a boost from a character's attribute.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1238,7 +1238,7 @@ end)
 
 ---
 
-### setFlags
+### *setFlags*
 
 **Purpose**
 
@@ -1254,7 +1254,7 @@ Sets the character's flags and handles networking and callbacks.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1275,7 +1275,7 @@ end)
 
 ---
 
-### giveFlags
+### *giveFlags*
 
 **Purpose**
 
@@ -1291,7 +1291,7 @@ Adds flags to the character's existing flags.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1312,7 +1312,7 @@ end)
 
 ---
 
-### takeFlags
+### *takeFlags*
 
 **Purpose**
 
@@ -1328,7 +1328,7 @@ Removes flags from the character's existing flags.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1349,7 +1349,7 @@ end)
 
 ---
 
-### save
+### *save*
 
 **Purpose**
 
@@ -1365,7 +1365,7 @@ Saves the character data to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1386,7 +1386,7 @@ end)
 
 ---
 
-### sync
+### *sync*
 
 **Purpose**
 
@@ -1402,7 +1402,7 @@ Synchronizes character data with clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1426,7 +1426,7 @@ end)
 
 ---
 
-### setup
+### *setup*
 
 **Purpose**
 
@@ -1442,7 +1442,7 @@ Sets up the character for the player, including model, team, and networking.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1462,7 +1462,7 @@ end)
 
 ---
 
-### kick
+### *kick*
 
 **Purpose**
 
@@ -1478,7 +1478,7 @@ Kicks the character from the server.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1501,7 +1501,7 @@ end)
 
 ---
 
-### ban
+### *ban*
 
 **Purpose**
 
@@ -1517,7 +1517,7 @@ Bans the character for a specified duration.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1542,7 +1542,7 @@ end)
 
 ---
 
-### delete
+### *delete*
 
 **Purpose**
 
@@ -1558,7 +1558,7 @@ Deletes the character from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1581,7 +1581,7 @@ end)
 
 ---
 
-### destroy
+### *destroy*
 
 **Purpose**
 
@@ -1597,7 +1597,7 @@ Destroys the character instance and removes it from memory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1620,7 +1620,7 @@ end)
 
 ---
 
-### giveMoney
+### *giveMoney*
 
 **Purpose**
 
@@ -1636,7 +1636,7 @@ Gives money to the character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1660,7 +1660,7 @@ end)
 
 ---
 
-### takeMoney
+### *takeMoney*
 
 **Purpose**
 
@@ -1676,7 +1676,7 @@ Takes money from the character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

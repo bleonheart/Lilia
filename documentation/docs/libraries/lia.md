@@ -27,7 +27,7 @@ Includes a Lua file with proper realm handling.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -63,7 +63,7 @@ Recursively includes all Lua files in a directory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -96,7 +96,7 @@ Includes files in a directory with automatic realm detection based on filename p
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -126,7 +126,7 @@ Handles the registration of entities, weapons, tools, and effects from a directo
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -156,7 +156,7 @@ Prints an error message to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -186,7 +186,7 @@ Prints a warning message to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -216,7 +216,7 @@ Prints an information message to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -246,7 +246,7 @@ Prints an admin message to the console.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -277,7 +277,7 @@ Prints a bootstrap message to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -308,7 +308,7 @@ Handles deprecated method warnings.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -340,7 +340,7 @@ Prints an updater message to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -370,7 +370,7 @@ Notifies all administrators about a specific notification.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -401,7 +401,7 @@ Prints a formatted log message.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -437,7 +437,7 @@ Applies punishment to a client based on infraction.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

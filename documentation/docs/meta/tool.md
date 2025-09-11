@@ -10,7 +10,7 @@ The `Tool` meta table provides comprehensive tool gun functionality including cr
 
 ---
 
-### Create
+### *Create*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Creates a new tool instance with default properties.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -57,7 +57,7 @@ end)
 
 ---
 
-### CreateConVars
+### *CreateConVars*
 
 **Purpose**
 
@@ -73,7 +73,7 @@ Creates console variables for the tool on both client and server.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -96,7 +96,7 @@ end)
 
 ---
 
-### UpdateData
+### *UpdateData*
 
 **Purpose**
 
@@ -112,7 +112,7 @@ Updates tool data (placeholder for custom implementations).
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -133,7 +133,7 @@ end)
 
 ---
 
-### FreezeMovement
+### *FreezeMovement*
 
 **Purpose**
 
@@ -149,7 +149,7 @@ Freezes player movement (placeholder for custom implementations).
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -172,7 +172,7 @@ end)
 
 ---
 
-### DrawHUD
+### *DrawHUD*
 
 **Purpose**
 
@@ -188,7 +188,7 @@ Draws HUD elements for the tool (placeholder for custom implementations).
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -211,7 +211,7 @@ end)
 
 ---
 
-### GetServerInfo
+### *GetServerInfo*
 
 **Purpose**
 
@@ -227,7 +227,7 @@ Gets server-side console variable information.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -254,7 +254,7 @@ end)
 
 ---
 
-### BuildConVarList
+### *BuildConVarList*
 
 **Purpose**
 
@@ -270,7 +270,7 @@ Builds a list of console variables for the tool.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -298,7 +298,7 @@ end)
 
 ---
 
-### GetClientInfo
+### *GetClientInfo*
 
 **Purpose**
 
@@ -314,7 +314,7 @@ Gets client-side console variable information.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -336,7 +336,7 @@ end)
 
 ---
 
-### GetClientNumber
+### *GetClientNumber*
 
 **Purpose**
 
@@ -353,7 +353,7 @@ Gets a numeric client-side console variable value.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -376,7 +376,7 @@ end)
 
 ---
 
-### Allowed
+### *Allowed*
 
 **Purpose**
 
@@ -392,7 +392,7 @@ Checks if the tool is allowed to be used.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -417,7 +417,7 @@ end)
 
 ---
 
-### Init
+### *Init*
 
 **Purpose**
 
@@ -433,7 +433,7 @@ Initializes the tool (placeholder for custom implementations).
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -454,7 +454,7 @@ end)
 
 ---
 
-### GetMode
+### *GetMode*
 
 **Purpose**
 
@@ -470,7 +470,7 @@ Gets the tool's mode name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -490,7 +490,7 @@ end)
 
 ---
 
-### GetSWEP
+### *GetSWEP*
 
 **Purpose**
 
@@ -506,7 +506,7 @@ Gets the tool's SWEP (weapon) entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -531,7 +531,7 @@ end)
 
 ---
 
-### GetOwner
+### *GetOwner*
 
 **Purpose**
 
@@ -547,7 +547,7 @@ Gets the tool's owner (player).
 
 **Realm**
 
-Shared.
+Shared
 
 **Notes**
 
@@ -576,7 +576,7 @@ end)
 
 ---
 
-### GetWeapon
+### *GetWeapon*
 
 **Purpose**
 
@@ -592,7 +592,7 @@ Gets the tool's weapon entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Notes**
 
@@ -621,7 +621,7 @@ end)
 
 ---
 
-### LeftClick
+### *LeftClick*
 
 **Purpose**
 
@@ -637,7 +637,7 @@ Handles left click events for the tool.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -659,7 +659,7 @@ end)
 
 ---
 
-### RightClick
+### *RightClick*
 
 **Purpose**
 
@@ -675,7 +675,7 @@ Handles right click events for the tool.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -697,7 +697,7 @@ end)
 
 ---
 
-### Reload
+### *Reload*
 
 **Purpose**
 
@@ -713,7 +713,7 @@ Handles reload events for the tool, clearing objects by default.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -735,7 +735,7 @@ end)
 
 ---
 
-### Deploy
+### *Deploy*
 
 **Purpose**
 
@@ -751,7 +751,7 @@ Handles tool deployment, releasing ghost entities by default.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -773,7 +773,7 @@ end)
 
 ---
 
-### Holster
+### *Holster*
 
 **Purpose**
 
@@ -789,7 +789,7 @@ Handles tool holstering, releasing ghost entities by default.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -811,7 +811,7 @@ end)
 
 ---
 
-### Think
+### *Think*
 
 **Purpose**
 
@@ -827,7 +827,7 @@ Handles tool thinking, releasing ghost entities by default.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -848,7 +848,7 @@ end)
 
 ---
 
-### CheckObjects
+### *CheckObjects*
 
 **Purpose**
 
@@ -864,7 +864,7 @@ Checks if all tool objects are still valid.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -889,7 +889,7 @@ end)
 
 ---
 
-### ClearObjects
+### *ClearObjects*
 
 **Purpose**
 
@@ -905,7 +905,7 @@ Clears all tool objects.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -928,7 +928,7 @@ end)
 
 ---
 
-### ReleaseGhostEntity
+### *ReleaseGhostEntity*
 
 **Purpose**
 
@@ -944,7 +944,7 @@ Releases the tool's ghost entity if it exists.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

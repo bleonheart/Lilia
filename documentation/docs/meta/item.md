@@ -10,7 +10,7 @@ The `Item` meta table provides comprehensive item management functionality inclu
 
 ---
 
-### isRotated
+### *isRotated*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Checks if the item is currently rotated in the inventory.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -60,7 +60,7 @@ end)
 
 ---
 
-### getWidth
+### *getWidth*
 
 **Purpose**
 
@@ -76,7 +76,7 @@ Gets the width of the item, accounting for rotation.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -104,7 +104,7 @@ end)
 
 ---
 
-### getHeight
+### *getHeight*
 
 **Purpose**
 
@@ -120,7 +120,7 @@ Gets the height of the item, accounting for rotation.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -150,7 +150,7 @@ end)
 
 ---
 
-### getQuantity
+### *getQuantity*
 
 **Purpose**
 
@@ -166,7 +166,7 @@ Gets the quantity of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -193,7 +193,7 @@ end)
 
 ---
 
-### eq
+### *eq*
 
 **Purpose**
 
@@ -209,7 +209,7 @@ Checks if two items are equal by comparing their IDs.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -246,7 +246,7 @@ end)
 
 ---
 
-### tostring
+### *tostring*
 
 **Purpose**
 
@@ -262,7 +262,7 @@ Returns a string representation of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -289,7 +289,7 @@ end)
 
 ---
 
-### getID
+### *getID*
 
 **Purpose**
 
@@ -305,7 +305,7 @@ Gets the unique identifier of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -332,7 +332,7 @@ end)
 
 ---
 
-### getModel
+### *getModel*
 
 **Purpose**
 
@@ -348,7 +348,7 @@ Gets the model path of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -375,7 +375,7 @@ end)
 
 ---
 
-### getSkin
+### *getSkin*
 
 **Purpose**
 
@@ -391,7 +391,7 @@ Gets the skin index of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -418,7 +418,7 @@ end)
 
 ---
 
-### getPrice
+### *getPrice*
 
 **Purpose**
 
@@ -434,7 +434,7 @@ Gets the price of the item, including any calculated price modifications.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -461,7 +461,7 @@ end)
 
 ---
 
-### call
+### *call*
 
 **Purpose**
 
@@ -480,7 +480,7 @@ Calls a method on the item with proper context setup.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -509,7 +509,7 @@ end)
 
 ---
 
-### getOwner
+### *getOwner*
 
 **Purpose**
 
@@ -525,7 +525,7 @@ Gets the player who owns this item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -556,7 +556,7 @@ end)
 
 ---
 
-### getData
+### *getData*
 
 **Purpose**
 
@@ -573,7 +573,7 @@ Gets data associated with the item by key.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -601,7 +601,7 @@ end)
 
 ---
 
-### getAllData
+### *getAllData*
 
 **Purpose**
 
@@ -617,7 +617,7 @@ Gets all data associated with the item, including entity data.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -647,7 +647,7 @@ end)
 
 ---
 
-### hook
+### *hook*
 
 **Purpose**
 
@@ -664,7 +664,7 @@ Adds a hook function to the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -692,7 +692,7 @@ end)
 
 ---
 
-### postHook
+### *postHook*
 
 **Purpose**
 
@@ -709,7 +709,7 @@ Adds a post-hook function to the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -737,7 +737,7 @@ end)
 
 ---
 
-### onRegistered
+### *onRegistered*
 
 **Purpose**
 
@@ -753,7 +753,7 @@ Called when the item is registered (placeholder for custom implementations).
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -772,7 +772,7 @@ end)
 
 ---
 
-### print
+### *print*
 
 **Purpose**
 
@@ -788,7 +788,7 @@ Prints information about the item to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -813,7 +813,7 @@ end)
 
 ---
 
-### printData
+### *printData*
 
 **Purpose**
 
@@ -829,7 +829,7 @@ Prints all item data to the console.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -853,7 +853,7 @@ end)
 
 ---
 
-### getName
+### *getName*
 
 **Purpose**
 
@@ -869,7 +869,7 @@ Gets the display name of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -896,7 +896,7 @@ end)
 
 ---
 
-### getDesc
+### *getDesc*
 
 **Purpose**
 
@@ -912,7 +912,7 @@ Gets the description of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -939,7 +939,7 @@ end)
 
 ---
 
-### removeFromInventory
+### *removeFromInventory*
 
 **Purpose**
 
@@ -955,7 +955,7 @@ Removes the item from its current inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -983,7 +983,7 @@ end)
 
 ---
 
-### delete
+### *delete*
 
 **Purpose**
 
@@ -999,7 +999,7 @@ Deletes the item from the database and destroys it.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1027,7 +1027,7 @@ end)
 
 ---
 
-### remove
+### *remove*
 
 **Purpose**
 
@@ -1043,7 +1043,7 @@ Removes the item from the world and inventory, then deletes it.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1071,7 +1071,7 @@ end)
 
 ---
 
-### destroy
+### *destroy*
 
 **Purpose**
 
@@ -1087,7 +1087,7 @@ Destroys the item instance and notifies clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1114,7 +1114,7 @@ end)
 
 ---
 
-### onDisposed
+### *onDisposed*
 
 **Purpose**
 
@@ -1130,7 +1130,7 @@ Called when the item is disposed (placeholder for custom implementations).
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1149,7 +1149,7 @@ end)
 
 ---
 
-### getEntity
+### *getEntity*
 
 **Purpose**
 
@@ -1165,7 +1165,7 @@ Gets the world entity associated with this item.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1196,7 +1196,7 @@ end)
 
 ---
 
-### spawn
+### *spawn*
 
 **Purpose**
 
@@ -1213,7 +1213,7 @@ Spawns the item as a world entity.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1250,7 +1250,7 @@ end)
 
 ---
 
-### transfer
+### *transfer*
 
 **Purpose**
 
@@ -1267,7 +1267,7 @@ Transfers the item to a new inventory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1305,7 +1305,7 @@ end)
 
 ---
 
-### onInstanced
+### *onInstanced*
 
 **Purpose**
 
@@ -1321,7 +1321,7 @@ Called when the item is instantiated (placeholder for custom implementations).
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1340,7 +1340,7 @@ end)
 
 ---
 
-### onSync
+### *onSync*
 
 **Purpose**
 
@@ -1356,7 +1356,7 @@ Called when the item is synchronized (placeholder for custom implementations).
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1375,7 +1375,7 @@ end)
 
 ---
 
-### onRemoved
+### *onRemoved*
 
 **Purpose**
 
@@ -1391,7 +1391,7 @@ Called when the item is removed (placeholder for custom implementations).
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1410,7 +1410,7 @@ end)
 
 ---
 
-### onRestored
+### *onRestored*
 
 **Purpose**
 
@@ -1426,7 +1426,7 @@ Called when the item is restored from storage (placeholder for custom implementa
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1445,7 +1445,7 @@ end)
 
 ---
 
-### sync
+### *sync*
 
 **Purpose**
 
@@ -1461,7 +1461,7 @@ Synchronizes the item data with clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1488,7 +1488,7 @@ end)
 
 ---
 
-### setData
+### *setData*
 
 **Purpose**
 
@@ -1508,7 +1508,7 @@ Sets data for the item and handles networking and persistence.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1537,7 +1537,7 @@ end)
 
 ---
 
-### addQuantity
+### *addQuantity*
 
 **Purpose**
 
@@ -1555,7 +1555,7 @@ Adds to the item's quantity.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1583,7 +1583,7 @@ end)
 
 ---
 
-### setQuantity
+### *setQuantity*
 
 **Purpose**
 
@@ -1601,7 +1601,7 @@ Sets the item's quantity to a specific value.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1629,7 +1629,7 @@ end)
 
 ---
 
-### interact
+### *interact*
 
 **Purpose**
 
@@ -1648,7 +1648,7 @@ Handles item interaction with proper permission checks and hook execution.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1679,7 +1679,7 @@ end)
 
 ---
 
-### getCategory
+### *getCategory*
 
 **Purpose**
 
@@ -1695,7 +1695,7 @@ Gets the localized category name of the item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

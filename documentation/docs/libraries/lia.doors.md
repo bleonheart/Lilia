@@ -27,7 +27,7 @@ Adds a door preset configuration for a specific map.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -82,7 +82,7 @@ Retrieves a door preset configuration for a specific map.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -127,7 +127,7 @@ Verifies that the doors database table has the correct schema and column types.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -166,7 +166,7 @@ Scans the doors database for corrupted data and attempts to fix it.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -208,7 +208,7 @@ Adds the door_group column to the doors database table if it doesn't exist.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

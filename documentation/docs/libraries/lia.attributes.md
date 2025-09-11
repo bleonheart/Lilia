@@ -10,7 +10,7 @@ The attributes library (`lia.attribs`) provides a comprehensive system for manag
 
 ---
 
-### loadFromDir
+### *loadFromDir*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Loads attribute definitions from a directory containing attribute files.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -43,7 +43,7 @@ lia.attribs.loadFromDir("schema/attributes")
 
 ---
 
-### setup
+### *setup*
 
 **Purpose**
 
@@ -59,7 +59,7 @@ Sets up attributes for a client character, calling OnSetup callbacks for each at
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

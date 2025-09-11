@@ -20,7 +20,7 @@ If multiple definitions of the same hook exist on `GM`, `MODULE`, or `SCHEMA`, t
 
 ---
 
-### AddToAdminStickHUD
+### *AddToAdminStickHUD*
 
 **Purpose**
 
@@ -52,7 +52,7 @@ end)
 
 ---
 
-### CharListColumns
+### *CharListColumns*
 
 **Purpose**
 
@@ -89,7 +89,7 @@ end)
 
 ---
 
-### CharListEntry
+### *CharListEntry*
 
 **Purpose**
 
@@ -118,7 +118,7 @@ end)
 
 ---
 
-### ChatTextChanged
+### *ChatTextChanged*
 
 **Purpose**
 
@@ -148,7 +148,7 @@ end)
 
 ---
 
-### OnAdminSystemLoaded
+### *OnAdminSystemLoaded*
 
 **Purpose**
 
@@ -177,7 +177,7 @@ end)
 
 ---
 
-### OnEntityPersistUpdated
+### *OnEntityPersistUpdated*
 
 **Purpose**
 
@@ -208,7 +208,7 @@ end)
 
 ---
 
-### OnPrivilegeRegistered
+### *OnPrivilegeRegistered*
 
 **Purpose**
 
@@ -236,7 +236,7 @@ end)
 
 ---
 
-### OnPrivilegeUnregistered
+### *OnPrivilegeUnregistered*
 
 **Purpose**
 
@@ -264,7 +264,7 @@ end)
 
 ---
 
-### OnUsergroupCreated
+### *OnUsergroupCreated*
 
 **Purpose**
 
@@ -294,7 +294,7 @@ end)
 
 ---
 
-### OnUsergroupPermissionsChanged
+### *OnUsergroupPermissionsChanged*
 
 **Purpose**
 
@@ -315,7 +315,7 @@ Fires when a usergroup's permissions are modified.
 
 ---
 
-### OnUsergroupRemoved
+### *OnUsergroupRemoved*
 
 **Purpose**
 
@@ -343,7 +343,7 @@ end)
 
 ---
 
-### OnUsergroupRenamed
+### *OnUsergroupRenamed*
 
 **Purpose**
 
@@ -372,7 +372,7 @@ end)
 
 ---
 
-### OverrideFactionName
+### *OverrideFactionName*
 
 **Purpose**
 
@@ -393,7 +393,7 @@ Override a faction's display name during registration/loading.
 
 ---
 
-### OverrideFactionDesc
+### *OverrideFactionDesc*
 
 **Purpose**
 
@@ -414,7 +414,7 @@ Override a faction's description during registration/loading.
 
 ---
 
-### OverrideFactionModels
+### *OverrideFactionModels*
 
 **Purpose**
 
@@ -435,7 +435,7 @@ Override a faction's models table during registration/loading.
 
 ---
 
-### PlayerGiveSWEP
+### *PlayerGiveSWEP*
 
 **Purpose**
 
@@ -465,7 +465,7 @@ end)
 
 ---
 
-### PlayerSay
+### *PlayerSay*
 
 **Purpose**
 
@@ -486,7 +486,7 @@ Invoked when a client sends chat text through the chatbox network path. Note: in
 
 ---
 
-### PopulateAdminTabs
+### *PopulateAdminTabs*
 
 **Purpose**
 
@@ -520,7 +520,7 @@ end)
 
 ---
 
-### SetupQuickMenu
+### *SetupQuickMenu*
 
 **Purpose**
 
@@ -549,7 +549,7 @@ end)
 
 ---
 
-### UpdateEntityPersistence
+### *UpdateEntityPersistence*
 
 **Purpose**
 
@@ -576,7 +576,7 @@ hook.Run("UpdateEntityPersistence", vendor)
 
 ---
 
-### getPlayTime
+### *getPlayTime*
 
 **Purpose**
 
@@ -610,7 +610,7 @@ Gamemode hooks fire at various stages during play and let you modify global beha
 
 ---
 
-### LoadCharInformation
+### *LoadCharInformation*
 
 **Purpose**
 
@@ -649,7 +649,7 @@ end)
 
 ---
 
-### liaOptionChanged
+### *liaOptionChanged*
 
 **Purpose**
 
@@ -680,7 +680,7 @@ end)
 
 ---
 
-### WebImageDownloaded
+### *WebImageDownloaded*
 
 **Purpose**
 
@@ -710,7 +710,7 @@ end)
 
 ---
 
-### WebSoundDownloaded
+### *WebSoundDownloaded*
 
 **Purpose**
 
@@ -740,7 +740,7 @@ end)
 
 ---
 
-### DiscordRelaySend
+### *DiscordRelaySend*
 
 **Purpose**
 
@@ -768,7 +768,7 @@ end)
 
 ---
 
-### DiscordRelayed
+### *DiscordRelayed*
 
 **Purpose**
 
@@ -796,7 +796,7 @@ end)
 
 ---
 
-### DiscordRelayUnavailable
+### *DiscordRelayUnavailable*
 
 **Purpose**
 
@@ -824,7 +824,7 @@ end)
 
 ---
 
-### CreateMenuButtons
+### *CreateMenuButtons*
 
 **Purpose**
 
@@ -868,7 +868,7 @@ end)
 
 ---
 
-### DrawLiliaModelView
+### *DrawLiliaModelView*
 
 **Purpose**
 
@@ -912,7 +912,7 @@ end)
 
 ---
 
-### ShouldAllowScoreboardOverride
+### *ShouldAllowScoreboardOverride*
 
 **Purpose**
 
@@ -947,7 +947,7 @@ end)
 
 ---
 
-### GetDisplayedName
+### *GetDisplayedName*
 
 **Purpose**
 
@@ -982,7 +982,7 @@ end)
 
 ---
 
-### PlayerEndVoice
+### *PlayerEndVoice*
 
 **Purpose**
 
@@ -1012,7 +1012,7 @@ end)
 
 ---
 
-### SpawnlistContentChanged
+### *SpawnlistContentChanged*
 
 **Purpose**
 
@@ -1043,7 +1043,7 @@ end)
 
 ---
 
-### ItemPaintOver
+### *ItemPaintOver*
 
 **Purpose**
 
@@ -1078,7 +1078,7 @@ end)
 
 ---
 
-### OnCreateItemInteractionMenu
+### *OnCreateItemInteractionMenu*
 
 **Purpose**
 
@@ -1113,7 +1113,7 @@ end)
 
 ---
 
-### CanRunItemAction
+### *CanRunItemAction*
 
 **Purpose**
 
@@ -1146,7 +1146,7 @@ end)
 
 ---
 
-### ShouldShowPlayerOnScoreboard
+### *ShouldShowPlayerOnScoreboard*
 
 **Purpose**
 
@@ -1177,7 +1177,7 @@ end)
 
 ---
 
-### CanPlayerOpenScoreboard
+### *CanPlayerOpenScoreboard*
 
 **Purpose**
 
@@ -1208,7 +1208,7 @@ end)
 
 ---
 
-### ShowPlayerOptions
+### *ShowPlayerOptions*
 
 **Purpose**
 
@@ -1245,7 +1245,7 @@ end)
 
 ---
 
-### ModifyScoreboardModel
+### *ModifyScoreboardModel*
 
 **Purpose**
 
@@ -1277,7 +1277,7 @@ end)
 
 ---
 
-### GetDisplayedDescription
+### *GetDisplayedDescription*
 
 **Purpose**
 
@@ -1310,7 +1310,7 @@ end)
 
 ---
 
-### ScoreboardOpened
+### *ScoreboardOpened*
 
 **Purpose**
 
@@ -1338,7 +1338,7 @@ end)
 
 ---
 
-### ScoreboardClosed
+### *ScoreboardClosed*
 
 **Purpose**
 
@@ -1366,7 +1366,7 @@ end)
 
 ---
 
-### ScoreboardRowCreated
+### *ScoreboardRowCreated*
 
 **Purpose**
 
@@ -1398,7 +1398,7 @@ end)
 
 ---
 
-### ScoreboardRowRemoved
+### *ScoreboardRowRemoved*
 
 **Purpose**
 
@@ -1430,7 +1430,7 @@ end)
 
 ---
 
-### F1MenuOpened
+### *F1MenuOpened*
 
 **Purpose**
 
@@ -1458,7 +1458,7 @@ end)
 
 ---
 
-### F1MenuClosed
+### *F1MenuClosed*
 
 **Purpose**
 
@@ -1486,7 +1486,7 @@ end)
 
 ---
 
-### CharacterMenuOpened
+### *CharacterMenuOpened*
 
 **Purpose**
 
@@ -1514,7 +1514,7 @@ end)
 
 ---
 
-### CharacterMenuClosed
+### *CharacterMenuClosed*
 
 **Purpose**
 
@@ -1542,7 +1542,7 @@ end)
 
 ---
 
-### ItemPanelOpened
+### *ItemPanelOpened*
 
 **Purpose**
 
@@ -1572,7 +1572,7 @@ end)
 
 ---
 
-### ItemPanelClosed
+### *ItemPanelClosed*
 
 **Purpose**
 
@@ -1602,7 +1602,7 @@ end)
 
 ---
 
-### InventoryOpened
+### *InventoryOpened*
 
 **Purpose**
 
@@ -1632,7 +1632,7 @@ end)
 
 ---
 
-### InventoryClosed
+### *InventoryClosed*
 
 **Purpose**
 
@@ -1662,7 +1662,7 @@ end)
 
 ---
 
-### InteractionMenuOpened
+### *InteractionMenuOpened*
 
 **Purpose**
 
@@ -1690,7 +1690,7 @@ end)
 
 ---
 
-### InteractionMenuClosed
+### *InteractionMenuClosed*
 
 **Purpose**
 
@@ -1720,7 +1720,7 @@ end)
 
 
 
-### FinishChat
+### *FinishChat*
 
 **Purpose**
 
@@ -1753,7 +1753,7 @@ end)
 
 ---
 
-### StartChat
+### *StartChat*
 
 **Purpose**
 
@@ -1785,7 +1785,7 @@ end)
 
 ---
 
-### ChatAddText
+### *ChatAddText*
 
 **Purpose**
 
@@ -1817,7 +1817,7 @@ end)
 
 ---
 
-### ChatboxPanelCreated
+### *ChatboxPanelCreated*
 
 **Purpose**
 
@@ -1845,7 +1845,7 @@ end)
 
 ---
 
-### ChatboxTextAdded
+### *ChatboxTextAdded*
 
 **Purpose**
 
@@ -1873,7 +1873,7 @@ end)
 
 ---
 
-### GetMainMenuPosition
+### *GetMainMenuPosition*
 
 **Purpose**
 
@@ -1902,7 +1902,7 @@ end)
 
 ---
 
-### CanDeleteChar
+### *CanDeleteChar*
 
 **Purpose**
 
@@ -1933,7 +1933,7 @@ end)
 
 ---
 
-### LoadMainMenuInformation
+### *LoadMainMenuInformation*
 
 **Purpose**
 
@@ -1966,7 +1966,7 @@ end)
 
 ---
 
-### CanPlayerCreateChar
+### *CanPlayerCreateChar*
 
 **Purpose**
 
@@ -1998,7 +1998,7 @@ end)
 
 ---
 
-### ModifyCharacterModel
+### *ModifyCharacterModel*
 
 **Purpose**
 
@@ -2033,7 +2033,7 @@ end)
 
 ---
 
-### ConfigureCharacterCreationSteps
+### *ConfigureCharacterCreationSteps*
 
 **Purpose**
 
@@ -2063,7 +2063,7 @@ end)
 
 ---
 
-### GetMaxPlayerChar
+### *GetMaxPlayerChar*
 
 **Purpose**
 
@@ -2093,7 +2093,7 @@ end)
 
 ---
 
-### ShouldMenuButtonShow
+### *ShouldMenuButtonShow*
 
 **Purpose**
 
@@ -2124,7 +2124,7 @@ end)
 
 ---
 
-### ResetCharacterPanel
+### *ResetCharacterPanel*
 
 **Purpose**
 
@@ -2153,9 +2153,9 @@ end)
 
 ---
 
-### TooltipLayout
+### *TooltipLayout*
 
-### TooltipLayout
+### *TooltipLayout*
 
 **Purpose**
 
@@ -2184,7 +2184,7 @@ end)
 
 ---
 
-### TooltipPaint
+### *TooltipPaint*
 
 **Purpose**
 
@@ -2219,7 +2219,7 @@ end)
 
 ---
 
-### TooltipInitialize
+### *TooltipInitialize*
 
 **Purpose**
 
@@ -2251,7 +2251,7 @@ end)
 
 ---
 
-### PlayerLoadout
+### *PlayerLoadout*
 
 **Purpose**
 
@@ -2282,7 +2282,7 @@ end)
 
 ---
 
-### PlayerShouldPermaKill
+### *PlayerShouldPermaKill*
 
 **Purpose**
 
@@ -2317,7 +2317,7 @@ end)
 
 ---
 
-### CanPlayerDropItem
+### *CanPlayerDropItem*
 
 **Purpose**
 
@@ -2350,7 +2350,7 @@ end)
 
 ---
 
-### CanPlayerTakeItem
+### *CanPlayerTakeItem*
 
 **Purpose**
 
@@ -2383,7 +2383,7 @@ end)
 
 ---
 
-### CanPlayerEquipItem
+### *CanPlayerEquipItem*
 
 **Purpose**
 
@@ -2416,7 +2416,7 @@ end)
 
 ---
 
-### CanPlayerUnequipItem
+### *CanPlayerUnequipItem*
 
 **Purpose**
 
@@ -2447,7 +2447,7 @@ hook.Add("CanPlayerUnequipItem", "Cursed", function(ply, item)
 end)
 ```
 
-### CanPlayerRotateItem
+### *CanPlayerRotateItem*
 
 **Purpose**
 
@@ -2477,7 +2477,7 @@ end)
 ```
 
 
-### CanPlayerSeeLogCategory
+### *CanPlayerSeeLogCategory*
 
 **Purpose**
 
@@ -2508,7 +2508,7 @@ end)
 
 ---
 
-### PostPlayerSay
+### *PostPlayerSay*
 
 **Purpose**
 
@@ -2545,7 +2545,7 @@ end)
 
 ---
 
-### ShouldSpawnClientRagdoll
+### *ShouldSpawnClientRagdoll*
 
 **Purpose**
 
@@ -2576,7 +2576,7 @@ end)
 
 ---
 
-### SaveData
+### *SaveData*
 
 **Purpose**
 
@@ -2605,7 +2605,7 @@ end)
 
 ---
 
-### OnDataSet
+### *OnDataSet*
 
 **Purpose**
 
@@ -2640,7 +2640,7 @@ end)
 
 ---
 
-### PersistenceSave
+### *PersistenceSave*
 
 **Purpose**
 
@@ -2679,7 +2679,7 @@ end)
 
 ---
 
-### CanPersistEntity
+### *CanPersistEntity*
 
 **Purpose**
 
@@ -2710,7 +2710,7 @@ end)
 
 ---
 
-### GetEntitySaveData
+### *GetEntitySaveData*
 
 **Purpose**
 
@@ -2741,7 +2741,7 @@ end)
 
 ---
 
-### OnEntityPersisted
+### *OnEntityPersisted*
 
 **Purpose**
 
@@ -2772,7 +2772,7 @@ end)
 
 ---
 
-### OnEntityLoaded
+### *OnEntityLoaded*
 
 **Purpose**
 
@@ -2805,7 +2805,7 @@ end)
 
 ---
 
-### LoadData
+### *LoadData*
 
 **Purpose**
 
@@ -2845,7 +2845,7 @@ end)
 
 ---
 
-### PostLoadData
+### *PostLoadData*
 
 **Purpose**
 
@@ -2880,7 +2880,7 @@ end)
 
 ---
 
-### ShouldDataBeSaved
+### *ShouldDataBeSaved*
 
 **Purpose**
 
@@ -2909,7 +2909,7 @@ end)
 
 ---
 
-### OnCharDisconnect
+### *OnCharDisconnect*
 
 **Purpose**
 
@@ -2940,7 +2940,7 @@ end)
 
 ---
 
-### SetupBotPlayer
+### *SetupBotPlayer*
 
 **Purpose**
 
@@ -2971,7 +2971,7 @@ end)
 
 ---
 
-### PlayerLiliaDataLoaded
+### *PlayerLiliaDataLoaded*
 
 **Purpose**
 
@@ -3004,7 +3004,7 @@ end)
 
 ---
 
-### PostPlayerInitialSpawn
+### *PostPlayerInitialSpawn*
 
 **Purpose**
 
@@ -3034,7 +3034,7 @@ end)
 
 ---
 
-### FactionOnLoadout
+### *FactionOnLoadout*
 
 **Purpose**
 
@@ -3065,7 +3065,7 @@ end)
 
 ---
 
-### ClassOnLoadout
+### *ClassOnLoadout*
 
 **Purpose**
 
@@ -3096,7 +3096,7 @@ end)
 
 ---
 
-### PostPlayerLoadout
+### *PostPlayerLoadout*
 
 **Purpose**
 
@@ -3126,7 +3126,7 @@ end)
 
 ---
 
-### FactionPostLoadout
+### *FactionPostLoadout*
 
 **Purpose**
 
@@ -3157,7 +3157,7 @@ end)
 
 ---
 
-### ClassPostLoadout
+### *ClassPostLoadout*
 
 **Purpose**
 
@@ -3186,7 +3186,7 @@ end)
 
 ---
 
-### GetDefaultInventoryType
+### *GetDefaultInventoryType*
 
 **Purpose**
 
@@ -3215,7 +3215,7 @@ end)
 
 ---
 
-### ShouldDeleteSavedItems
+### *ShouldDeleteSavedItems*
 
 **Purpose**
 
@@ -3246,7 +3246,7 @@ end)
 
 ---
 
-### OnSavedItemLoaded
+### *OnSavedItemLoaded*
 
 **Purpose**
 
@@ -3278,7 +3278,7 @@ end)
 
 ---
 
-### ShouldDrawEntityInfo
+### *ShouldDrawEntityInfo*
 
 **Purpose**
 
@@ -3309,7 +3309,7 @@ end)
 
 ---
 
-### DrawEntityInfo
+### *DrawEntityInfo*
 
 **Purpose**
 
@@ -3342,7 +3342,7 @@ end)
 
 ---
 
-### GetInjuredText
+### *GetInjuredText*
 
 **Purpose**
 
@@ -3373,7 +3373,7 @@ end)
 
 ---
 
-### ShouldDrawPlayerInfo
+### *ShouldDrawPlayerInfo*
 
 **Purpose**
 
@@ -3404,7 +3404,7 @@ end)
 
 ---
 
-### DrawCharInfo
+### *DrawCharInfo*
 
 **Purpose**
 
@@ -3437,7 +3437,7 @@ end)
 
 ---
 
-### ItemShowEntityMenu
+### *ItemShowEntityMenu*
 
 **Purpose**
 
@@ -3468,7 +3468,7 @@ end)
 
 ---
 
-### PreLiliaLoaded
+### *PreLiliaLoaded*
 
 **Purpose**
 
@@ -3497,7 +3497,7 @@ end)
 
 ---
 
-### LiliaLoaded
+### *LiliaLoaded*
 
 **Purpose**
 
@@ -3526,7 +3526,7 @@ end)
 
 ---
 
-### RunAdminSystemCommand
+### *RunAdminSystemCommand*
 
 **Purpose**
 
@@ -3567,7 +3567,7 @@ end)
 
 ---
 
-### liaCommandAdded
+### *liaCommandAdded*
 
 **Purpose**
 
@@ -3597,7 +3597,7 @@ end)
 
 ---
 
-### liaCommandRan
+### *liaCommandRan*
 
 **Purpose**
 
@@ -3631,7 +3631,7 @@ end)
 
 ---
 
-### InventoryDataChanged
+### *InventoryDataChanged*
 
 **Purpose**
 
@@ -3668,7 +3668,7 @@ end)
 
 ---
 
-### ItemInitialized
+### *ItemInitialized*
 
 **Purpose**
 
@@ -3697,7 +3697,7 @@ end)
 
 ---
 
-### InventoryInitialized
+### *InventoryInitialized*
 
 **Purpose**
 
@@ -3726,7 +3726,7 @@ end)
 
 ---
 
-### InventoryItemAdded
+### *InventoryItemAdded*
 
 **Purpose**
 
@@ -3757,7 +3757,7 @@ end)
 
 ---
 
-### InventoryItemRemoved
+### *InventoryItemRemoved*
 
 **Purpose**
 
@@ -3788,7 +3788,7 @@ end)
 
 ---
 
-### InventoryDeleted
+### *InventoryDeleted*
 
 **Purpose**
 
@@ -3817,7 +3817,7 @@ end)
 
 ---
 
-### ItemDeleted
+### *ItemDeleted*
 
 **Purpose**
 
@@ -3846,7 +3846,7 @@ end)
 
 ---
 
-### OnCharVarChanged
+### *OnCharVarChanged*
 
 **Purpose**
 
@@ -3883,7 +3883,7 @@ end)
 
 ---
 
-### OnCharLocalVarChanged
+### *OnCharLocalVarChanged*
 
 **Purpose**
 
@@ -3920,7 +3920,7 @@ end)
 
 ---
 
-### LocalVarChanged
+### *LocalVarChanged*
 
 **Purpose**
 
@@ -3957,7 +3957,7 @@ end)
 
 ---
 
-### NetVarChanged
+### *NetVarChanged*
 
 **Purpose**
 
@@ -3994,7 +3994,7 @@ end)
 
 ---
 
-### ItemDataChanged
+### *ItemDataChanged*
 
 **Purpose**
 
@@ -4031,7 +4031,7 @@ end)
 
 ---
 
-### ItemQuantityChanged
+### *ItemQuantityChanged*
 
 **Purpose**
 
@@ -4064,7 +4064,7 @@ end)
 
 ---
 
-### KickedFromChar
+### *KickedFromChar*
 
 **Purpose**
 
@@ -4095,7 +4095,7 @@ end)
 
 ---
 
-### HandleItemTransferRequest
+### *HandleItemTransferRequest*
 
 **Purpose**
 
@@ -4132,7 +4132,7 @@ end)
 
 ---
 
-### CharLoaded
+### *CharLoaded*
 
 **Purpose**
 
@@ -4161,7 +4161,7 @@ end)
 
 ---
 
-### PreCharDelete
+### *PreCharDelete*
 
 **Purpose**
 
@@ -4192,7 +4192,7 @@ end)
 
 ---
 
-### OnCharDelete
+### *OnCharDelete*
 
 **Purpose**
 
@@ -4223,7 +4223,7 @@ end)
 
 ---
 
-### OnCharCreated
+### *OnCharCreated*
 
 **Purpose**
 
@@ -4256,7 +4256,7 @@ end)
 
 ---
 
-### OnTransferred
+### *OnTransferred*
 
 **Purpose**
 
@@ -4285,7 +4285,7 @@ end)
 
 ---
 
-### CharPreSave
+### *CharPreSave*
 
 **Purpose**
 
@@ -4314,7 +4314,7 @@ end)
 
 ---
 
-### CharListLoaded
+### *CharListLoaded*
 
 **Purpose**
 
@@ -4343,7 +4343,7 @@ end)
 
 ---
 
-### CharListUpdated
+### *CharListUpdated*
 
 **Purpose**
 
@@ -4374,7 +4374,7 @@ end)
 
 ---
 
-### CharListExtraDetails
+### *CharListExtraDetails*
 
 **Purpose**
 
@@ -4409,7 +4409,7 @@ end)
 
 ---
 
-### getCharMaxStamina
+### *getCharMaxStamina*
 
 **Purpose**
 
@@ -4438,7 +4438,7 @@ end)
 
 ---
 
-### AdjustStaminaOffset
+### *AdjustStaminaOffset*
 
 **Purpose**
 
@@ -4469,7 +4469,7 @@ end)
 
 ---
 
-### PostLoadFonts
+### *PostLoadFonts*
 
 **Purpose**
 
@@ -4500,7 +4500,7 @@ end)
 
 ---
 
-### AddBarField
+### *AddBarField*
 
 **Purpose**
 
@@ -4539,7 +4539,7 @@ end)
 
 ---
 
-### AddSection
+### *AddSection*
 
 **Purpose**
 
@@ -4577,7 +4577,7 @@ end)
 
 ---
 
-### CanItemBeTransfered
+### *CanItemBeTransfered*
 
 **Purpose**
 
@@ -4614,7 +4614,7 @@ end)
 
 ---
 
-### CanOpenBagPanel
+### *CanOpenBagPanel*
 
 **Purpose**
 
@@ -4645,7 +4645,7 @@ end)
 
 ---
 
-### CanOutfitChangeModel
+### *CanOutfitChangeModel*
 
 **Purpose**
 
@@ -4676,7 +4676,7 @@ end)
 
 ---
 
-### CanPerformVendorEdit
+### *CanPerformVendorEdit*
 
 **Purpose**
 
@@ -4707,7 +4707,7 @@ end)
 
 ---
 
-### CanPickupMoney
+### *CanPickupMoney*
 
 **Purpose**
 
@@ -4740,7 +4740,7 @@ end)
 
 ---
 
-### CanPlayerAccessDoor
+### *CanPlayerAccessDoor*
 
 **Purpose**
 
@@ -4775,7 +4775,7 @@ end)
 
 ---
 
-### CanPlayerAccessVendor
+### *CanPlayerAccessVendor*
 
 **Purpose**
 
@@ -4808,7 +4808,7 @@ end)
 
 ---
 
-### CanPlayerHoldObject
+### *CanPlayerHoldObject*
 
 **Purpose**
 
@@ -4841,7 +4841,7 @@ end)
 
 ---
 
-### CanPlayerInteractItem
+### *CanPlayerInteractItem*
 
 **Purpose**
 
@@ -4876,7 +4876,7 @@ end)
 
 ---
 
-### CanPlayerKnock
+### *CanPlayerKnock*
 
 **Purpose**
 
@@ -4909,7 +4909,7 @@ end)
 
 ---
 
-### CanPlayerSpawnStorage
+### *CanPlayerSpawnStorage*
 
 **Purpose**
 
@@ -4944,7 +4944,7 @@ end)
 
 ---
 
-### CanPlayerThrowPunch
+### *CanPlayerThrowPunch*
 
 **Purpose**
 
@@ -4975,7 +4975,7 @@ end)
 
 ---
 
-### CanPlayerTradeWithVendor
+### *CanPlayerTradeWithVendor*
 
 **Purpose**
 
@@ -5012,7 +5012,7 @@ end)
 
 ---
 
-### CanPlayerViewInventory
+### *CanPlayerViewInventory*
 
 **Purpose**
 
@@ -5041,7 +5041,7 @@ end)
 
 ---
 
-### CanSaveData
+### *CanSaveData*
 
 **Purpose**
 
@@ -5074,7 +5074,7 @@ end)
 
 ---
 
-### CharHasFlags
+### *CharHasFlags*
 
 **Purpose**
 
@@ -5108,7 +5108,7 @@ end)
 
 ---
 
-### CharPostSave
+### *CharPostSave*
 
 **Purpose**
 
@@ -5137,7 +5137,7 @@ end)
 
 ---
 
-### DatabaseConnected
+### *DatabaseConnected*
 
 **Purpose**
 
@@ -5166,7 +5166,7 @@ end)
 
 ---
 
-### DrawItemDescription
+### *DrawItemDescription*
 
 **Purpose**
 
@@ -5203,7 +5203,7 @@ end)
 
 ---
 
-### GetDefaultInventorySize
+### *GetDefaultInventorySize*
 
 **Purpose**
 
@@ -5234,7 +5234,7 @@ end)
 
 ---
 
-### GetMoneyModel
+### *GetMoneyModel*
 
 **Purpose**
 
@@ -5265,7 +5265,7 @@ end)
 
 ---
 
-### GetPlayerPunchDamage
+### *GetPlayerPunchDamage*
 
 **Purpose**
 
@@ -5298,7 +5298,7 @@ end)
 
 ---
 
-### InterceptClickItemIcon
+### *InterceptClickItemIcon*
 
 **Purpose**
 
@@ -5333,7 +5333,7 @@ end)
 
 ---
 
-### InventoryPanelCreated
+### *InventoryPanelCreated*
 
 **Purpose**
 
@@ -5365,7 +5365,7 @@ end)
 
 ---
 
-### InventoryItemIconCreated
+### *InventoryItemIconCreated*
 
 **Purpose**
 
@@ -5397,7 +5397,7 @@ end)
 
 ---
 
-### ItemCombine
+### *ItemCombine*
 
 **Purpose**
 
@@ -5434,7 +5434,7 @@ end)
 
 ---
 
-### ItemDraggedOutOfInventory
+### *ItemDraggedOutOfInventory*
 
 **Purpose**
 
@@ -5465,7 +5465,7 @@ end)
 
 ---
 
-### ItemFunctionCalled
+### *ItemFunctionCalled*
 
 **Purpose**
 
@@ -5502,7 +5502,7 @@ end)
 
 ---
 
-### ItemTransfered
+### *ItemTransfered*
 
 **Purpose**
 
@@ -5531,7 +5531,7 @@ end)
 
 ---
 
-### OnCharFallover
+### *OnCharFallover*
 
 **Purpose**
 
@@ -5566,7 +5566,7 @@ end)
 
 ---
 
-### OnCharKick
+### *OnCharKick*
 
 **Purpose**
 
@@ -5597,7 +5597,7 @@ end)
 
 ---
 
-### OnCharPermakilled
+### *OnCharPermakilled*
 
 **Purpose**
 
@@ -5628,7 +5628,7 @@ end)
 
 ---
 
-### OnCharRecognized
+### *OnCharRecognized*
 
 **Purpose**
 
@@ -5657,7 +5657,7 @@ end)
 
 ---
 
-### CharacterForceRecognized
+### *CharacterForceRecognized*
 
 **Purpose**
 
@@ -5687,7 +5687,7 @@ end)
 
 ---
 
-### OnCharTradeVendor
+### *OnCharTradeVendor*
 
 **Purpose**
 
@@ -5728,7 +5728,7 @@ end)
 
 ---
 
-### OnCreatePlayerRagdoll
+### *OnCreatePlayerRagdoll*
 
 **Purpose**
 
@@ -5763,7 +5763,7 @@ end)
 
 ---
 
-### GetRagdollTime
+### *GetRagdollTime*
 
 **Purpose**
 
@@ -5794,7 +5794,7 @@ hook.Add("GetRagdollTime", "ScaleByHealth", function(client, baseTime)
 end)
 ```
 
-### GetHandsAttackSpeed
+### *GetHandsAttackSpeed*
 
 **Purpose**
 
@@ -5822,7 +5822,7 @@ end)
 
 ---
 
-### OnCreateStoragePanel
+### *OnCreateStoragePanel*
 
 **Purpose**
 
@@ -5857,7 +5857,7 @@ end)
 
 ---
 
-### OnItemAdded
+### *OnItemAdded*
 
 **Purpose**
 
@@ -5890,7 +5890,7 @@ end)
 
 ---
 
-### OnItemCreated
+### *OnItemCreated*
 
 **Purpose**
 
@@ -5921,7 +5921,7 @@ end)
 
 ---
 
-### OnItemSpawned
+### *OnItemSpawned*
 
 **Purpose**
 
@@ -5952,7 +5952,7 @@ end)
 
 ---
 
-### OnOpenVendorMenu
+### *OnOpenVendorMenu*
 
 **Purpose**
 
@@ -5983,7 +5983,7 @@ end)
 
 ---
 
-### OnPickupMoney
+### *OnPickupMoney*
 
 **Purpose**
 
@@ -6014,7 +6014,7 @@ end)
 
 ---
 
-### OnPlayerEnterSequence
+### *OnPlayerEnterSequence*
 
 **Purpose**
 
@@ -6053,7 +6053,7 @@ end)
 
 ---
 
-### OnPlayerInteractItem
+### *OnPlayerInteractItem*
 
 **Purpose**
 
@@ -6090,7 +6090,7 @@ end)
 
 ---
 
-### OnPlayerJoinClass
+### *OnPlayerJoinClass*
 
 **Purpose**
 
@@ -6125,7 +6125,7 @@ end)
 
 ---
 
-### OnPlayerLeaveSequence
+### *OnPlayerLeaveSequence*
 
 **Purpose**
 
@@ -6154,7 +6154,7 @@ end)
 
 ---
 
-### OnPlayerLostStackItem
+### *OnPlayerLostStackItem*
 
 **Purpose**
 
@@ -6185,7 +6185,7 @@ end)
 
 ---
 
-### OnPlayerSwitchClass
+### *OnPlayerSwitchClass*
 
 **Purpose**
 
@@ -6220,7 +6220,7 @@ end)
 
 ---
 
-### OnRequestItemTransfer
+### *OnRequestItemTransfer*
 
 **Purpose**
 
@@ -6257,7 +6257,7 @@ end)
 
 ---
 
-### PersistenceLoad
+### *PersistenceLoad*
 
 **Purpose**
 
@@ -6286,7 +6286,7 @@ end)
 
 ---
 
-### PlayerAccessVendor
+### *PlayerAccessVendor*
 
 **Purpose**
 
@@ -6317,7 +6317,7 @@ end)
 
 ---
 
-### PlayerStaminaGained
+### *PlayerStaminaGained*
 
 **Purpose**
 
@@ -6348,7 +6348,7 @@ end)
 
 ---
 
-### PlayerStaminaLost
+### *PlayerStaminaLost*
 
 **Purpose**
 
@@ -6379,7 +6379,7 @@ end)
 
 ---
 
-### PlayerThrowPunch
+### *PlayerThrowPunch*
 
 **Purpose**
 
@@ -6410,7 +6410,7 @@ end)
 
 ---
 
-### PostDrawInventory
+### *PostDrawInventory*
 
 **Purpose**
 
@@ -6441,7 +6441,7 @@ end)
 
 ---
 
-### PrePlayerInteractItem
+### *PrePlayerInteractItem*
 
 **Purpose**
 
@@ -6476,7 +6476,7 @@ end)
 
 ---
 
-### SetupBagInventoryAccessRules
+### *SetupBagInventoryAccessRules*
 
 **Purpose**
 
@@ -6505,7 +6505,7 @@ end)
 
 ---
 
-### BagInventoryReady
+### *BagInventoryReady*
 
 **Purpose**
 
@@ -6535,7 +6535,7 @@ end)
 
 ---
 
-### BagInventoryRemoved
+### *BagInventoryRemoved*
 
 **Purpose**
 
@@ -6565,7 +6565,7 @@ end)
 
 ---
 
-### SetupDatabase
+### *SetupDatabase*
 
 **Purpose**
 
@@ -6594,7 +6594,7 @@ end)
 
 ---
 
-### StorageCanTransferItem
+### *StorageCanTransferItem*
 
 **Purpose**
 
@@ -6629,7 +6629,7 @@ end)
 
 ---
 
-### StorageEntityRemoved
+### *StorageEntityRemoved*
 
 **Purpose**
 
@@ -6660,7 +6660,7 @@ end)
 
 ---
 
-### StorageInventorySet
+### *StorageInventorySet*
 
 **Purpose**
 
@@ -6695,7 +6695,7 @@ end)
 
 ---
 
-### StorageOpen
+### *StorageOpen*
 
 **Purpose**
 
@@ -6726,7 +6726,7 @@ end)
 
 ---
 
-### StorageRestored
+### *StorageRestored*
 
 **Purpose**
 
@@ -6757,7 +6757,7 @@ end)
 
 ---
 
-### StorageUnlockPrompt
+### *StorageUnlockPrompt*
 
 **Purpose**
 
@@ -6786,7 +6786,7 @@ end)
 
 ---
 
-### VendorClassUpdated
+### *VendorClassUpdated*
 
 **Purpose**
 
@@ -6815,7 +6815,7 @@ end)
 
 ---
 
-### VendorEdited
+### *VendorEdited*
 
 **Purpose**
 
@@ -6844,7 +6844,7 @@ end)
 
 ---
 
-### VendorExited
+### *VendorExited*
 
 **Purpose**
 
@@ -6873,7 +6873,7 @@ end)
 
 ---
 
-### VendorFactionUpdated
+### *VendorFactionUpdated*
 
 **Purpose**
 
@@ -6902,7 +6902,7 @@ end)
 
 ---
 
-### VendorItemMaxStockUpdated
+### *VendorItemMaxStockUpdated*
 
 **Purpose**
 
@@ -6931,7 +6931,7 @@ end)
 
 ---
 
-### VendorItemModeUpdated
+### *VendorItemModeUpdated*
 
 **Purpose**
 
@@ -6960,7 +6960,7 @@ end)
 
 ---
 
-### VendorItemPriceUpdated
+### *VendorItemPriceUpdated*
 
 **Purpose**
 
@@ -6989,7 +6989,7 @@ end)
 
 ---
 
-### VendorItemStockUpdated
+### *VendorItemStockUpdated*
 
 **Purpose**
 
@@ -7020,7 +7020,7 @@ end)
 
 ---
 
-### VendorOpened
+### *VendorOpened*
 
 **Purpose**
 
@@ -7049,7 +7049,7 @@ end)
 
 ---
 
-### VendorSynchronized
+### *VendorSynchronized*
 
 **Purpose**
 
@@ -7078,7 +7078,7 @@ end)
 
 ---
 
-### VendorTradeEvent
+### *VendorTradeEvent*
 
 **Purpose**
 
@@ -7108,7 +7108,7 @@ end)
 
 ---
 
-### getItemDropModel
+### *getItemDropModel*
 
 **Purpose**
 
@@ -7139,7 +7139,7 @@ end)
 
 ---
 
-### getPriceOverride
+### *getPriceOverride*
 
 **Purpose**
 
@@ -7174,7 +7174,7 @@ end)
 
 ---
 
-### isCharFakeRecognized
+### *isCharFakeRecognized*
 
 **Purpose**
 
@@ -7205,7 +7205,7 @@ end)
 
 ---
 
-### isCharRecognized
+### *isCharRecognized*
 
 **Purpose**
 
@@ -7237,7 +7237,7 @@ end)
 
 ---
 
-### isRecognizedChatType
+### *isRecognizedChatType*
 
 **Purpose**
 
@@ -7269,7 +7269,7 @@ end)
 
 ---
 
-### CanPlayerEarnSalary
+### *CanPlayerEarnSalary*
 
 **Purpose**
 
@@ -7305,7 +7305,7 @@ end)
 
 ---
 
-### CanPlayerJoinClass
+### *CanPlayerJoinClass*
 
 **Purpose**
 
@@ -7340,7 +7340,7 @@ end)
 
 ---
 
-### CanPlayerUseCommand
+### *CanPlayerUseCommand*
 
 **Purpose**
 
@@ -7380,7 +7380,7 @@ end)
 
 ---
 
-### CanPlayerUseDoor
+### *CanPlayerUseDoor*
 
 **Purpose**
 
@@ -7416,7 +7416,7 @@ end)
 
 ---
 
-### CharCleanUp
+### *CharCleanUp*
 
 **Purpose**
 
@@ -7451,7 +7451,7 @@ end)
 
 ---
 
-### CharRestored
+### *CharRestored*
 
 **Purpose**
 
@@ -7484,7 +7484,7 @@ end)
 
 ---
 
-### CreateDefaultInventory
+### *CreateDefaultInventory*
 
 **Purpose**
 
@@ -7523,7 +7523,7 @@ end)
 
 ---
 
-### CreateInventoryPanel
+### *CreateInventoryPanel*
 
 **Purpose**
 
@@ -7572,7 +7572,7 @@ end)
 
 ---
 
-### DoModuleIncludes
+### *DoModuleIncludes*
 
 **Purpose**
 
@@ -7605,7 +7605,7 @@ end)
 
 ---
 
-### GetDefaultCharDesc
+### *GetDefaultCharDesc*
 
 **Purpose**
 
@@ -7640,7 +7640,7 @@ end)
 
 ---
 
-### GetDefaultCharName
+### *GetDefaultCharName*
 
 **Purpose**
 
@@ -7679,7 +7679,7 @@ end)
 
 ---
 
-### GetSalaryAmount
+### *GetSalaryAmount*
 
 **Purpose**
 
@@ -7714,7 +7714,7 @@ end)
 
 ---
 
-### GetSalaryLimit
+### *GetSalaryLimit*
 
 **Purpose**
 
@@ -7751,7 +7751,7 @@ end)
 
 ---
 
-### InitializedConfig
+### *InitializedConfig*
 
 **Purpose**
 
@@ -7785,7 +7785,7 @@ end
 
 ---
 
-### InitializedItems
+### *InitializedItems*
 
 **Purpose**
 
@@ -7823,7 +7823,7 @@ end)
 
 ---
 
-### InitializedModules
+### *InitializedModules*
 
 **Purpose**
 
@@ -7852,7 +7852,7 @@ end)
 
 ---
 
-### InitializedOptions
+### *InitializedOptions*
 
 **Purpose**
 
@@ -7881,7 +7881,7 @@ end
 
 ---
 
-### InitializedSchema
+### *InitializedSchema*
 
 **Purpose**
 
@@ -7911,7 +7911,7 @@ end)
 
 ---
 
-### KeyLock
+### *KeyLock*
 
 **Purpose**
 
@@ -7950,7 +7950,7 @@ end)
 
 ---
 
-### KeyUnlock
+### *KeyUnlock*
 
 **Purpose**
 
@@ -7989,7 +7989,7 @@ end)
 
 ---
 
-### DoorLockToggled
+### *DoorLockToggled*
 
 **Purpose**
 
@@ -8021,7 +8021,7 @@ end)
 
 ---
 
-### DoorOwnableToggled
+### *DoorOwnableToggled*
 
 **Purpose**
 
@@ -8053,7 +8053,7 @@ end)
 
 ---
 
-### DoorEnabledToggled
+### *DoorEnabledToggled*
 
 **Purpose**
 
@@ -8085,7 +8085,7 @@ end)
 
 ---
 
-### DoorHiddenToggled
+### *DoorHiddenToggled*
 
 **Purpose**
 
@@ -8117,7 +8117,7 @@ end)
 
 ---
 
-### DoorPriceSet
+### *DoorPriceSet*
 
 **Purpose**
 
@@ -8149,7 +8149,7 @@ end)
 
 ---
 
-### DoorTitleSet
+### *DoorTitleSet*
 
 **Purpose**
 
@@ -8181,7 +8181,7 @@ end)
 
 ---
 
-### LiliaTablesLoaded
+### *LiliaTablesLoaded*
 
 **Purpose**
 
@@ -8212,7 +8212,7 @@ end)
 
 ---
 
-### OnItemRegistered
+### *OnItemRegistered*
 
 **Purpose**
 
@@ -8251,7 +8251,7 @@ end)
 
 ---
 
-### OnLoadTables
+### *OnLoadTables*
 
 **Purpose**
 
@@ -8282,7 +8282,7 @@ end)
 
 ---
 
-### OnDatabaseLoaded
+### *OnDatabaseLoaded*
 
 **Purpose**
 
@@ -8314,7 +8314,7 @@ end)
 
 ---
 
-### OnPlayerPurchaseDoor
+### *OnPlayerPurchaseDoor*
 
 **Purpose**
 
@@ -8358,7 +8358,7 @@ end)
 
 ---
 
-### OnServerLog
+### *OnServerLog*
 
 **Purpose**
 
@@ -8401,7 +8401,7 @@ end)
 
 ---
 
-### OnWipeTables
+### *OnWipeTables*
 
 **Purpose**
 
@@ -8432,7 +8432,7 @@ end)
 
 ---
 
-### PlayerMessageSend
+### *PlayerMessageSend*
 
 **Purpose**
 
@@ -8470,7 +8470,7 @@ end)
 
 ---
 
-### ChatParsed
+### *ChatParsed*
 
 **Purpose**
 
@@ -8507,7 +8507,7 @@ end)
 
 ---
 
-### PlayerModelChanged
+### *PlayerModelChanged*
 
 **Purpose**
 
@@ -8540,7 +8540,7 @@ end)
 
 ---
 
-### SetupPlayerModel
+### *SetupPlayerModel*
 
 **Purpose**
 
@@ -8573,7 +8573,7 @@ end)
 
 ---
 
-### PlayerUseDoor
+### *PlayerUseDoor*
 
 **Purpose**
 
@@ -8610,7 +8610,7 @@ end)
 
 ---
 
-### ShouldBarDraw
+### *ShouldBarDraw*
 
 **Purpose**
 
@@ -8641,7 +8641,7 @@ end)
 
 ---
 
-### ShouldDisableThirdperson
+### *ShouldDisableThirdperson*
 
 **Purpose**
 
@@ -8672,7 +8672,7 @@ end)
 
 ---
 
-### ShouldHideBars
+### *ShouldHideBars*
 
 **Purpose**
 
@@ -8703,7 +8703,7 @@ end)
 
 ---
 
-### thirdPersonToggled
+### *thirdPersonToggled*
 
 **Purpose**
 
@@ -8737,7 +8737,7 @@ end)
 
 ---
 
-### AddTextField
+### *AddTextField*
 
 **Purpose**
 
@@ -8774,7 +8774,7 @@ end)
 
 ---
 
-### F1OnAddTextField
+### *F1OnAddTextField*
 
 **Purpose**
 
@@ -8809,7 +8809,7 @@ end)
 
 ---
 
-### F1OnAddBarField
+### *F1OnAddBarField*
 
 **Purpose**
 
@@ -8848,7 +8848,7 @@ end)
 
 ---
 
-### CreateInformationButtons
+### *CreateInformationButtons*
 
 **Purpose**
 
@@ -8877,7 +8877,7 @@ end)
 
 ---
 
-### PopulateConfigurationButtons
+### *PopulateConfigurationButtons*
 
 **Purpose**
 
@@ -8906,7 +8906,7 @@ end)
 
 ---
 
-### InitializedKeybinds
+### *InitializedKeybinds*
 
 **Purpose**
 
@@ -8935,7 +8935,7 @@ end)
 
 ---
 
-### getOOCDelay
+### *getOOCDelay*
 
 **Purpose**
 
@@ -8966,7 +8966,7 @@ end)
 
 ---
 
-### OnChatReceived
+### *OnChatReceived*
 
 **Purpose**
 
@@ -9001,7 +9001,7 @@ end)
 
 ---
 
-### getAdjustedPartData
+### *getAdjustedPartData*
 
 **Purpose**
 
@@ -9032,7 +9032,7 @@ end)
 
 ---
 
-### AdjustPACPartData
+### *AdjustPACPartData*
 
 **Purpose**
 
@@ -9066,7 +9066,7 @@ end)
 
 ---
 
-### attachPart
+### *attachPart*
 
 **Purpose**
 
@@ -9097,7 +9097,7 @@ end)
 
 ---
 
-### removePart
+### *removePart*
 
 **Purpose**
 
@@ -9128,7 +9128,7 @@ end)
 
 ---
 
-### OnPAC3PartTransfered
+### *OnPAC3PartTransfered*
 
 **Purpose**
 
@@ -9157,7 +9157,7 @@ end)
 
 ---
 
-### DrawPlayerRagdoll
+### *DrawPlayerRagdoll*
 
 **Purpose**
 
@@ -9186,7 +9186,7 @@ end)
 
 ---
 
-### setupPACDataFromItems
+### *setupPACDataFromItems*
 
 **Purpose**
 
@@ -9215,7 +9215,7 @@ end)
 
 ---
 
-### TryViewModel
+### *TryViewModel*
 
 **Purpose**
 
@@ -9244,7 +9244,7 @@ end)
 
 ---
 
-### WeaponCycleSound
+### *WeaponCycleSound*
 
 **Purpose**
 
@@ -9275,7 +9275,7 @@ end)
 
 ---
 
-### WeaponSelectSound
+### *WeaponSelectSound*
 
 **Purpose**
 
@@ -9306,7 +9306,7 @@ end)
 
 ---
 
-### ShouldDrawWepSelect
+### *ShouldDrawWepSelect*
 
 **Purpose**
 
@@ -9335,7 +9335,7 @@ end)
 
 ---
 
-### CanPlayerChooseWeapon
+### *CanPlayerChooseWeapon*
 
 **Purpose**
 
@@ -9366,7 +9366,7 @@ end)
 
 ---
 
-### OverrideSpawnTime
+### *OverrideSpawnTime*
 
 **Purpose**
 
@@ -9399,7 +9399,7 @@ end)
 
 ---
 
-### ShouldRespawnScreenAppear
+### *ShouldRespawnScreenAppear*
 
 **Purpose**
 
@@ -9428,7 +9428,7 @@ end)
 
 ---
 
-### PlayerSpawnPointSelected
+### *PlayerSpawnPointSelected*
 
 **Purpose**
 
@@ -9458,7 +9458,7 @@ end)
 
 ---
 
-### VoiceToggled
+### *VoiceToggled*
 
 **Purpose**
 
@@ -9487,7 +9487,7 @@ end)
 
 ---
 
-### DermaSkinChanged
+### *DermaSkinChanged*
 
 **Purpose**
 
@@ -9516,7 +9516,7 @@ end)
 
 ---
 
-### RefreshFonts
+### *RefreshFonts*
 
 **Purpose**
 
@@ -9545,7 +9545,7 @@ end)
 
 ---
 
-### AdjustCreationData
+### *AdjustCreationData*
 
 **Purpose**
 
@@ -9582,7 +9582,7 @@ end)
 
 ---
 
-### CanCharBeTransfered
+### *CanCharBeTransfered*
 
 **Purpose**
 
@@ -9617,7 +9617,7 @@ end)
 
 ---
 
-### CanInviteToFaction
+### *CanInviteToFaction*
 
 **Purpose**
 
@@ -9648,7 +9648,7 @@ end)
 
 ---
 
-### CanInviteToClass
+### *CanInviteToClass*
 
 **Purpose**
 
@@ -9679,7 +9679,7 @@ end)
 
 ---
 
-### CanPlayerUseChar
+### *CanPlayerUseChar*
 
 **Purpose**
 
@@ -9712,7 +9712,7 @@ end)
 
 ---
 
-### CanPlayerSwitchChar
+### *CanPlayerSwitchChar*
 
 **Purpose**
 
@@ -9747,7 +9747,7 @@ end)
 
 ---
 
-### CanPlayerLock
+### *CanPlayerLock*
 
 **Purpose**
 
@@ -9780,7 +9780,7 @@ end)
 
 ---
 
-### CanPlayerUnlock
+### *CanPlayerUnlock*
 
 **Purpose**
 
@@ -9813,7 +9813,7 @@ end)
 
 ---
 
-### GetMaxStartingAttributePoints
+### *GetMaxStartingAttributePoints*
 
 **Purpose**
 
@@ -9844,7 +9844,7 @@ end)
 
 ---
 
-### GetAttributeStartingMax
+### *GetAttributeStartingMax*
 
 **Purpose**
 
@@ -9877,7 +9877,7 @@ end)
 
 ---
 
-### GetAttributeMax
+### *GetAttributeMax*
 
 **Purpose**
 
@@ -9910,7 +9910,7 @@ end)
 
 ---
 
-### OnCharAttribBoosted
+### *OnCharAttribBoosted*
 
 **Purpose**
 
@@ -9949,7 +9949,7 @@ end)
 
 ---
 
-### OnCharAttribUpdated
+### *OnCharAttribUpdated*
 
 **Purpose**
 
@@ -9986,7 +9986,7 @@ end)
 
 ---
 
-### CanPlayerModifyConfig
+### *CanPlayerModifyConfig*
 
 **Purpose**
 
@@ -10017,7 +10017,7 @@ end)
 
 ---
 
-### ConfigChanged
+### *ConfigChanged*
 
 **Purpose**
 
@@ -10051,7 +10051,7 @@ end)
 
 ---
 
-### CharDeleted
+### *CharDeleted*
 
 **Purpose**
 
@@ -10082,7 +10082,7 @@ end)
 
 ---
 
-### CheckFactionLimitReached
+### *CheckFactionLimitReached*
 
 **Purpose**
 
@@ -10117,7 +10117,7 @@ end)
 
 ---
 
-### F1OnAddSection
+### *F1OnAddSection*
 
 **Purpose**
 
@@ -10152,7 +10152,7 @@ end)
 
 ---
 
-### GetWeaponName
+### *GetWeaponName*
 
 **Purpose**
 
@@ -10181,7 +10181,7 @@ end)
 
 ---
 
-### OnCharGetup
+### *OnCharGetup*
 
 **Purpose**
 
@@ -10212,7 +10212,7 @@ end)
 
 ---
 
-### OnLocalizationLoaded
+### *OnLocalizationLoaded*
 
 **Purpose**
 
@@ -10241,7 +10241,7 @@ end)
 
 ---
 
-### OnPlayerObserve
+### *OnPlayerObserve*
 
 **Purpose**
 
@@ -10272,7 +10272,7 @@ end)
 
 ---
 
-### PlayerLoadedChar
+### *PlayerLoadedChar*
 
 **Purpose**
 
@@ -10305,7 +10305,7 @@ end)
 
 ---
 
-### PrePlayerLoadedChar
+### *PrePlayerLoadedChar*
 
 **Purpose**
 
@@ -10338,7 +10338,7 @@ end)
 
 ---
 
-### PostPlayerLoadedChar
+### *PostPlayerLoadedChar*
 
 **Purpose**
 
@@ -10373,7 +10373,7 @@ end)
 
 
 
-### PopulateAdminStick
+### *PopulateAdminStick*
 
 **Purpose**
 
@@ -10406,7 +10406,7 @@ end)
 
 ---
 
-### TicketSystemCreated
+### *TicketSystemCreated*
 
 **Purpose**
 
@@ -10437,7 +10437,7 @@ end)
 
 ---
 
-### TicketSystemClaim
+### *TicketSystemClaim*
 
 **Purpose**
 
@@ -10469,7 +10469,7 @@ end)
 
 ---
 
-### TicketSystemClose
+### *TicketSystemClose*
 
 **Purpose**
 
@@ -10501,7 +10501,7 @@ end)
 
 ---
 
-### liaOptionReceived
+### *liaOptionReceived*
 
 **Purpose**
 
@@ -10534,7 +10534,7 @@ end)
 
 ---
 
-### WarningIssued
+### *WarningIssued*
 
 **Purpose**
 
@@ -10572,7 +10572,7 @@ end)
 
 ---
 
-### WarningRemoved
+### *WarningRemoved*
 
 **Purpose**
 
@@ -10611,7 +10611,7 @@ end)
 
 ---
 
-### PlayerGagged
+### *PlayerGagged*
 
 **Purpose**
 
@@ -10641,7 +10641,7 @@ end)
 
 ---
 
-### PlayerUngagged
+### *PlayerUngagged*
 
 **Purpose**
 
@@ -10671,7 +10671,7 @@ end)
 
 ---
 
-### PlayerMuted
+### *PlayerMuted*
 
 **Purpose**
 
@@ -10701,7 +10701,7 @@ end)
 
 ---
 
-### PlayerUnmuted
+### *PlayerUnmuted*
 
 **Purpose**
 
@@ -10731,7 +10731,7 @@ end)
 
 ---
 
-### WebImageDownloaded
+### *WebImageDownloaded*
 
 **Purpose**
 
@@ -10761,7 +10761,7 @@ end)
 
 ---
 
-### WebSoundDownloaded
+### *WebSoundDownloaded*
 
 **Purpose**
 
@@ -10791,7 +10791,7 @@ end)
 
 ---
 
-### PlayerCheatDetected
+### *PlayerCheatDetected*
 
 **Purpose**
 
@@ -10821,7 +10821,7 @@ end)
 
 ---
 
-### OnCheaterCaught
+### *OnCheaterCaught*
 
 **Purpose**
 
@@ -10848,7 +10848,7 @@ hook.Add("OnCheaterCaught", "AnnounceCheater", function(ply)
 end)
 ```
 
-### FilterCharacterModels
+### *FilterCharacterModels*
 
 **Purpose**
 
@@ -10880,7 +10880,7 @@ hook.Add("FilterCharacterModels", "RestrictModels", function(client, faction, mo
 end)
 ```
 
-### GetModelGender
+### *GetModelGender*
 
 **Purpose**
 
@@ -10911,7 +10911,7 @@ hook.Add("GetModelGender", "CustomGenderDetection", function(model)
 end)
 ```
 
-### GetVendorSaleScale
+### *GetVendorSaleScale*
 
 **Purpose**
 
@@ -10940,7 +10940,7 @@ hook.Add("GetVendorSaleScale", "DynamicPricing", function(vendor)
 end)
 ```
 
-### IsSuitableForTrunk
+### *IsSuitableForTrunk*
 
 **Purpose**
 
@@ -10967,7 +10967,7 @@ hook.Add("IsSuitableForTrunk", "VehicleTrunkCheck", function(entity)
 end)
 ```
 
-### ItemDefaultFunctions
+### *ItemDefaultFunctions*
 
 **Purpose**
 
@@ -10998,7 +10998,7 @@ hook.Add("ItemDefaultFunctions", "AddCustomFunctions", function(functions)
 end)
 ```
 
-### OnCharFlagsGiven
+### *OnCharFlagsGiven*
 
 **Purpose**
 
@@ -11008,7 +11008,7 @@ Called when flags are added to a character. Useful for tracking flag changes and
 
 * `client` (*Player*): The player whose character received flags.
 * `character` (*Character*): The character object that received flags.
-- `flags` (`string`): The flags that were added.
+* `flags` (*string*): The flags that were added.
 
 **Realm**
 
@@ -11029,7 +11029,7 @@ hook.Add("OnCharFlagsGiven", "TrackFlagChanges", function(client, character, fla
 end)
 ```
 
-### OnCharFlagsTaken
+### *OnCharFlagsTaken*
 
 **Purpose**
 
@@ -11060,7 +11060,7 @@ hook.Add("OnCharFlagsTaken", "TrackFlagRemoval", function(client, character, fla
 end)
 ```
 
-### OnCheaterStatusChanged
+### *OnCheaterStatusChanged*
 
 **Purpose**
 
@@ -11089,7 +11089,7 @@ hook.Add("OnCheaterStatusChanged", "LogCheaterStatus", function(admin, target, i
 end)
 ```
 
-### OnConfigUpdated
+### *OnConfigUpdated*
 
 **Purpose**
 
@@ -11119,7 +11119,7 @@ hook.Add("OnConfigUpdated", "ReactToConfigChange", function(key, oldValue, newVa
 end)
 ```
 
-### OnOOCMessageSent
+### *OnOOCMessageSent*
 
 **Purpose**
 
@@ -11146,7 +11146,7 @@ hook.Add("OnOOCMessageSent", "LogOOCChat", function(client, message)
 end)
 ```
 
-### OnSalaryGive
+### *OnSalaryGive*
 
 **Purpose**
 
@@ -11179,7 +11179,7 @@ hook.Add("OnSalaryGive", "CustomSalary", function(client, character, amount, fac
 end)
 ```
 
-### OnTicketClaimed
+### *OnTicketClaimed*
 
 **Purpose**
 
@@ -11208,7 +11208,7 @@ hook.Add("OnTicketClaimed", "NotifyTicketClaimed", function(admin, requester, me
 end)
 ```
 
-### OnTicketClosed
+### *OnTicketClosed*
 
 **Purpose**
 
@@ -11236,7 +11236,7 @@ hook.Add("OnTicketClosed", "LogTicketClosure", function(admin, requester, messag
 end)
 ```
 
-### OnTicketCreated
+### *OnTicketCreated*
 
 **Purpose**
 
@@ -11267,7 +11267,7 @@ hook.Add("OnTicketCreated", "NotifyAdmins", function(requester, message)
 end)
 ```
 
-### OnVendorEdited
+### *OnVendorEdited*
 
 **Purpose**
 
@@ -11295,7 +11295,9 @@ hook.Add("OnVendorEdited", "LogVendorChanges", function(admin, vendor, key)
 end)
 ```
 
-### PaintItem
+---
+
+### *PaintItem*
 
 **Purpose**
 
@@ -11303,7 +11305,7 @@ Override the material used to paint item models in UI panels. Allows custom mate
 
 **Parameters**
 
-- `item` (`Item`): The item object being painted.
+* `item` (*Item*): The item object being painted.
 
 **Realm**
 
@@ -11311,7 +11313,7 @@ Override the material used to paint item models in UI panels. Allows custom mate
 
 **Returns**
 
-- `string`: The material path to use for painting the item, or `nil` to use default.
+* `material` (*string*): The material path to use for painting the item, or `nil` to use default.
 
 **Example Usage**
 

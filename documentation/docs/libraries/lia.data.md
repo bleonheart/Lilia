@@ -26,7 +26,7 @@ Encodes a table into a string format for storage or transmission.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -91,7 +91,7 @@ Decodes a string back into a table.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -159,7 +159,7 @@ Serializes data into a format suitable for storage.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -236,7 +236,7 @@ Deserializes data from a stored format.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -302,7 +302,7 @@ Decodes a vector from a string format.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -366,7 +366,7 @@ Decodes an angle from a string format.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -431,7 +431,7 @@ Sets a data value for a key.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -488,7 +488,7 @@ Deletes a data value by key.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -542,7 +542,7 @@ Loads data tables from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -583,7 +583,7 @@ Loads persistence data from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -624,7 +624,7 @@ Saves persistence data to the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -665,7 +665,7 @@ Loads persistence data for a specific key.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -729,7 +729,7 @@ Gets a data value by key.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -789,7 +789,7 @@ Gets persistence data for a specific key.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
