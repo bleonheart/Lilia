@@ -1,5 +1,4 @@
 local PANEL = {}
-
 function PANEL:Init()
     self:SetSize(ScrW(), ScrH())
     self:SetPos(0, 0)
@@ -7,15 +6,11 @@ function PANEL:Init()
     self:SetKeyboardInputEnabled(false)
     self:SetMouseInputEnabled(false)
     self:SetZPos(32767)
-
     -- Background
     self.background = self:Add("DPanel")
     self.background:SetSize(ScrW(), ScrH())
     self.background:SetPos(0, 0)
-    self.background.Paint = function(w, h)
-        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 240))
-    end
-
+    self.background.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 240)) end
     -- Main container
     self.container = self:Add("DPanel")
     self.container:SetSize(600, 300)
@@ -32,7 +27,6 @@ function PANEL:Init()
     self.titleLabel:SizeToContents()
     self.titleLabel:SetPos((600 - self.titleLabel:GetWide()) / 2, 30)
     self.titleLabel:SetTextColor(Color(255, 100, 100))
-
     -- Error message
     self.messageLabel = self.container:Add("DLabel")
     self.messageLabel:SetFont("liaMediumFont")
@@ -42,7 +36,6 @@ function PANEL:Init()
     self.messageLabel:SetWrap(true)
     self.messageLabel:SetTextColor(Color(255, 255, 255))
     self.messageLabel:SetContentAlignment(5)
-
     -- Failure reason (if available)
     self.reasonLabel = self.container:Add("DLabel")
     self.reasonLabel:SetFont("liaSmallFont")
@@ -52,7 +45,6 @@ function PANEL:Init()
     self.reasonLabel:SetWrap(true)
     self.reasonLabel:SetTextColor(Color(200, 200, 200))
     self.reasonLabel:SetContentAlignment(5)
-
     -- Console hint
     self.hintLabel = self.container:Add("DLabel")
     self.hintLabel:SetFont("liaSmallFont")
@@ -62,16 +54,13 @@ function PANEL:Init()
     self.hintLabel:SetWrap(true)
     self.hintLabel:SetTextColor(Color(150, 150, 150))
     self.hintLabel:SetContentAlignment(5)
-
     -- Retry button (in case it's a temporary issue)
     self.retryButton = self.container:Add("DButton")
     self.retryButton:SetSize(100, 30)
     self.retryButton:SetPos((600 - 100) / 2, 260)
     self.retryButton:SetText("Retry")
     self.retryButton:SetFont("liaSmallFont")
-    self.retryButton.DoClick = function()
-        RunConsoleCommand("retry")
-    end
+    self.retryButton.DoClick = function() RunConsoleCommand("retry") end
     self.retryButton.Paint = function(panel, w, h)
         local color = panel:IsHovered() and Color(100, 100, 100) or Color(70, 70, 70)
         draw.RoundedBox(4, 0, 0, w, h, color)
@@ -80,9 +69,7 @@ function PANEL:Init()
 end
 
 function PANEL:SetFailureInfo(reason, details)
-    if reason then
-        self.reasonLabel:SetText("Error: " .. reason .. "\n" .. (details or ""))
-    end
+    if reason then self.reasonLabel:SetText("Error: " .. reason .. "\n" .. (details or "")) end
 end
 
 function PANEL:AddError(errorMessage, line, file)
@@ -106,11 +93,9 @@ end
 
 function PANEL:UpdateErrorDisplay()
     if not self.errorList or #self.errorList == 0 then return end
-
     local errorText = "Recent Errors:\n"
     for i, err in ipairs(self.errorList) do
-        errorText = errorText .. string.format("%d. %s | %s | %s\n",
-            i, err.message, err.line or "N/A", err.file or "Unknown")
+        errorText = errorText .. string.format("%d. %s | %s | %s\n", i, err.message, err.line or "N/A", err.file or "Unknown")
     end
 
     -- Create or update error display label
@@ -122,7 +107,6 @@ function PANEL:UpdateErrorDisplay()
         self.errorDisplayLabel:SetWrap(true)
         self.errorDisplayLabel:SetTextColor(Color(255, 200, 200))
         self.errorDisplayLabel:SetContentAlignment(7) -- Top-left alignment
-
         -- Adjust container size to accommodate errors
         self.container:SetSize(600, 520)
         self.container:SetPos((ScrW() - 600) / 2, (ScrH() - 520) / 2)
