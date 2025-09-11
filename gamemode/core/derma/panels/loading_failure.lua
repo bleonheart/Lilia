@@ -20,6 +20,7 @@ function PANEL:Init()
         draw.RoundedBox(8, 4, 4, w - 8, h - 8, Color(20, 20, 20, 255))
     end
 
+    
     -- Title
     self.titleLabel = self.container:Add("DLabel")
     self.titleLabel:SetFont("liaBigFont")
