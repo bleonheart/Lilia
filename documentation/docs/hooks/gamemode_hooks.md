@@ -1975,7 +1975,7 @@ Checks if a player may start creating a character. Determines if the player may 
 **Parameters**
 
 * `player` (*Player*): The player attempting to create a character.
-- `data` (`table`|nil): Optional character data being created. Only supplied on the server.
+* `data` (*table*|nil): Optional character data being created. Only supplied on the server.
 
 **Realm**
 
@@ -2072,7 +2072,7 @@ Override to change how many characters a player can have. Returns the maximum nu
 **Parameters**
 
 * `player` (*Player*): The player attempting to create a character.
-- `data` (`table`|nil): Optional character data being created. Only supplied on the server.
+* `data` (*table*|nil): Optional character data being created. Only supplied on the server.
 
 **Realm**
 
@@ -2152,8 +2152,6 @@ end)
 ```
 
 ---
-
-### TooltipLayout
 
 ### TooltipLayout
 
@@ -2726,7 +2724,7 @@ Allows adding custom data to each persisted entity during `SaveData`.
 
 **Returns**
 
-- `table|nil`: Extra data to store with the entity.
+* `table|nil`: Extra data to store with the entity.
 
 **Example Usage**
 
@@ -3552,7 +3550,7 @@ Allows external admin mods to intercept and handle admin actions. Returning
 
 **Returns**
 
-- `boolean?`: Return `true` if the command was handled.
+* `boolean?`: Return `true` if the command was handled.
 
 **Example Usage**
 
@@ -4322,7 +4320,7 @@ Called when the character selection list finishes loading. Provides the loaded l
 
 **Parameters**
 
-- `newCharList` (`table`): Table of characters.
+* `newCharList` (*table*): Table of characters.
 
 **Realm**
 
@@ -4351,9 +4349,9 @@ Fires when the character list is refreshed. Gives both old and new tables.
 
 **Parameters**
 
-- `oldCharList` (`table`): Previous list.
+* `oldCharList` (*table*): Previous list.
 
-- `newCharList` (`table`): Updated list.
+* `newCharList` (*table*): Updated list.
 
 **Realm**
 
@@ -4508,17 +4506,17 @@ Called when the F1 menu builds status bars so new fields can be added.
 
 **Parameters**
 
-- `sectionName` (`string`): Section identifier.
+* `sectionName` (*string*): Section identifier.
 
-- `fieldName` (`string`): Unique field name.
+* `fieldName` (*string*): Unique field name.
 
-- `labelText` (`string`): Display label for the bar.
+* `labelText` (*string*): Display label for the bar.
 
-- `minFunc` (`function`): Returns the minimum value.
+* `minFunc` (*function*): Returns the minimum value.
 
-- `maxFunc` (`function`): Returns the maximum value.
+* `maxFunc` (*function*): Returns the maximum value.
 
-- `valueFunc` (`function`): Returns the current value.
+* `valueFunc` (*function*): Returns the current value.
 
 **Realm**
 
@@ -4549,11 +4547,11 @@ Fired when building the F1 menu so modules can insert additional sections.
 
 - `sectionName` (`string`): Name of the section.
 
-- `color` (`Color`): Display color.
+* `color` (*Color*): Display color.
 
-- `priority` (`number`): Sort order priority.
+* `priority` (*number*): Sort order priority.
 
-- `location` (`number`): Column/location index.
+* `location` (*number*): Column/location index.
 
 **Realm**
 
@@ -4585,11 +4583,11 @@ Determines whether an item may move between inventories.
 
 **Parameters**
 
-- `item` (`Item`): Item being transferred.
+* `item` (*Item*): Item being transferred.
 
-- `oldInventory` (`Inventory`): Source inventory.
+* `oldInventory` (*Inventory*): Source inventory.
 
-- `newInventory` (`Inventory`): Destination inventory.
+* `newInventory` (*Inventory*): Destination inventory.
 
 * `client` (*Player*): Owning player.
 
@@ -4622,7 +4620,7 @@ Called right before a bag inventory UI opens. Return false to block opening.
 
 **Parameters**
 
-- `item` (`Item`): Bag item being opened.
+* `item` (*Item*): Bag item being opened.
 
 **Realm**
 
@@ -4653,7 +4651,7 @@ Checks if an outfit is allowed to change the player model.
 
 **Parameters**
 
-- `item` (`Item`): Outfit item attempting to change the model.
+* `item` (*Item*): Outfit item attempting to change the model.
 
 **Realm**
 
@@ -4686,7 +4684,7 @@ Determines if a player can modify a vendor's settings.
 
 * `client` (*Player*): Player attempting the edit.
 
-- `vendor` (`Entity`): Vendor entity targeted.
+* `vendor` (*Entity*): Vendor entity targeted.
 
 **Realm**
 
@@ -4750,7 +4748,7 @@ Determines if a player can open or lock a door entity.
 
 * `client` (*Player*): Player attempting access.
 
-- `door` (`Entity`): Door entity in question.
+* `door` (*Entity*): Door entity in question.
 
 - `access` (`number`): Desired access level.
 
@@ -4785,7 +4783,7 @@ Checks if a player is permitted to open a vendor menu.
 
 * `client` (*Player*): Player requesting access.
 
-- `vendor` (`Entity`): Vendor entity.
+* `vendor` (*Entity*): Vendor entity.
 
 **Realm**
 
@@ -5051,7 +5049,7 @@ Called before persistent storage saves.
 
 * `entity` (*Entity*): Storage entity being saved.
 
-- `inventory` (`Inventory`): Inventory associated with the entity.
+* `inventory` (*Inventory*): Inventory associated with the entity.
 
 **Realm**
 
@@ -6606,7 +6604,7 @@ Determines if an item can move in or out of a storage entity.
 
 - `storage` (`Entity`): Storage entity.
 
-- `item` (`Item`): Item being transferred.
+* `item` (*Item*): Item being transferred.
 
 **Realm**
 
@@ -6639,7 +6637,7 @@ Fired when a storage entity is removed from the world.
 
 * `entity` (*Entity*): The storage entity being removed.
 
-- `inventory` (`Inventory`): Inventory associated with the entity.
+* `inventory` (*Inventory*): Inventory associated with the entity.
 
 **Realm**
 
@@ -8374,7 +8372,7 @@ Called whenever a new log message is added. Allows for custom logic or modificat
 
 * `category` (*string*): Category name.
 
-- `color` (`Color`): Display color.
+* `color` (*Color*): Display color.
 
 **Realm**
 
@@ -8817,7 +8815,7 @@ Triggered after AddBarField inserts a status bar into the F1 menu.
 
 **Parameters**
 
-- `sectionName` (`string`): Section identifier.
+* `sectionName` (*string*): Section identifier.
 
 - `fieldName` (`string`): Bar field name.
 
@@ -11303,7 +11301,7 @@ Override the material used to paint item models in UI panels. Allows custom mate
 
 **Parameters**
 
-- `item` (`Item`): The item object being painted.
+* `item` (*Item*): The item object being painted.
 
 **Realm**
 
@@ -11311,7 +11309,7 @@ Override the material used to paint item models in UI panels. Allows custom mate
 
 **Returns**
 
-- `string`: The material path to use for painting the item, or `nil` to use default.
+* `string`: The material path to use for painting the item, or `nil` to use default.
 
 **Example Usage**
 
