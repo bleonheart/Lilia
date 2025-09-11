@@ -18,7 +18,7 @@ All hooks are optional — if you omit a hook, default behaviour applies.
 
 ---
 
-### OnCanBe
+### *OnCanBe*
 
 **Purpose**
 
@@ -30,7 +30,7 @@ Determines whether a player is allowed to switch to this class.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -57,7 +57,7 @@ end
 
 ---
 
-### OnLeave
+### *OnLeave*
 
 **Purpose**
 
@@ -69,7 +69,7 @@ Runs on the previous class after a player successfully changes classes.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -96,7 +96,7 @@ end
 
 ---
 
-### OnSet
+### *OnSet*
 
 **Purpose**
 
@@ -108,7 +108,7 @@ Executes immediately after a player joins this class.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -139,7 +139,7 @@ end
 
 ---
 
-### OnSpawn
+### *OnSpawn*
 
 **Purpose**
 
@@ -151,7 +151,7 @@ Runs each time a member of this class respawns.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -181,7 +181,7 @@ end
 
 ---
 
-### OnTransferred
+### *OnTransferred*
 
 **Purpose**
 
@@ -195,7 +195,7 @@ Fires when a player is moved into this class from another.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 

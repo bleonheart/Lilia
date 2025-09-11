@@ -26,7 +26,7 @@ Enables or disables database caching.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -81,7 +81,7 @@ Sets the cache time-to-live in seconds.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -141,7 +141,7 @@ Clears the database cache.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -193,7 +193,7 @@ Gets a value from the database cache.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -247,7 +247,7 @@ Sets a value in the database cache.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -289,7 +289,7 @@ Invalidates cache entries for a specific table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -338,7 +338,7 @@ Normalizes a database identifier.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -382,7 +382,7 @@ Normalizes SQL identifiers in a query.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -423,7 +423,7 @@ Establishes a database connection.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -474,7 +474,7 @@ Wipes all database tables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -520,7 +520,7 @@ Loads database tables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -561,7 +561,7 @@ Waits for all tables to finish loading.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -603,7 +603,7 @@ Converts a data type for database storage.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -648,7 +648,7 @@ Inserts data into a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -711,7 +711,7 @@ Updates data in a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -771,7 +771,7 @@ Selects data from a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -831,7 +831,7 @@ Selects data from a table with a condition.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -877,7 +877,7 @@ Counts records in a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -922,7 +922,7 @@ Checks if a record exists in a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -964,7 +964,7 @@ Adds an expected database schema.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1015,7 +1015,7 @@ Migrates database schemas to match expected schemas.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1057,7 +1057,7 @@ Adds fields to a database table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1106,7 +1106,7 @@ Selects a single record from a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1147,7 +1147,7 @@ Selects data from multiple tables with a JOIN.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1189,7 +1189,7 @@ Performs a bulk insert operation.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1233,7 +1233,7 @@ Performs a bulk upsert operation.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1277,7 +1277,7 @@ Inserts data or ignores if it already exists.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1321,7 +1321,7 @@ Checks if a table exists in the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1371,7 +1371,7 @@ Checks if a field exists in a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1418,7 +1418,7 @@ Gets a list of all database tables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1466,7 +1466,7 @@ Gets the columns of a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1522,7 +1522,7 @@ Executes a database transaction.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1584,7 +1584,7 @@ Escapes a database identifier.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1628,7 +1628,7 @@ Updates a record or inserts if it doesn't exist.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1675,7 +1675,7 @@ Deletes records from a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1717,7 +1717,7 @@ Creates a new database table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1770,7 +1770,7 @@ Creates a new column in a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1809,7 +1809,7 @@ Removes a table from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1859,7 +1859,7 @@ Removes a column from a table.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1898,7 +1898,7 @@ Gets the character table name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1940,7 +1940,7 @@ Automatically removes columns with underscores from tables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

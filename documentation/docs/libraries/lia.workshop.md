@@ -26,7 +26,7 @@ Adds a Workshop addon ID to the server's required addons list.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -62,7 +62,7 @@ Gathers all Workshop addon IDs from various sources.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -98,7 +98,7 @@ Sends the addon list to a specific player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -133,7 +133,7 @@ Checks if a Workshop addon is mounted on the client.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -173,7 +173,7 @@ Adds a Workshop addon to the download queue.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -208,7 +208,7 @@ Processes the download queue for Workshop addons.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -243,7 +243,7 @@ Checks if there are addons that need to be downloaded.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -283,7 +283,7 @@ Shows a UI to mount Workshop content.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -318,7 +318,7 @@ Stores server-side addon IDs.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -354,7 +354,7 @@ Stores known addon IDs.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -390,7 +390,7 @@ Stores cached addon data.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -426,7 +426,7 @@ Stores client-side server addon IDs.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -462,7 +462,7 @@ Stores mounted addon status.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -498,7 +498,7 @@ Stores file counts for mounted addons.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -534,7 +534,7 @@ Stores the download queue.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -570,7 +570,7 @@ Stores the active download status.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

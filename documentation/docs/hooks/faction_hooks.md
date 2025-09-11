@@ -18,7 +18,7 @@ All hooks are optional — if you omit a hook, default behaviour applies.
 
 ---
 
-### NameTemplate
+### *NameTemplate*
 
 **Purpose**
 
@@ -30,7 +30,7 @@ Generates a custom character name before defaults are applied.
 
 **Realm**
 
-**Shared**
+Shared
 
 **Returns**
 
@@ -48,7 +48,7 @@ end
 
 ---
 
-### GetDefaultName
+### *GetDefaultName*
 
 **Purpose**
 
@@ -60,7 +60,7 @@ Retrieves the default character name for this faction.
 
 **Realm**
 
-**Shared**
+Shared
 
 **Returns**
 
@@ -77,7 +77,7 @@ end
 
 ---
 
-### GetDefaultDesc
+### *GetDefaultDesc*
 
 **Purpose**
 
@@ -89,7 +89,7 @@ Provides the default description for a newly created character.
 
 **Realm**
 
-**Shared**
+Shared
 
 **Returns**
 
@@ -108,7 +108,7 @@ end
 
 ---
 
-### OnSpawn
+### *OnSpawn*
 
 **Purpose**
 
@@ -120,7 +120,7 @@ Executes whenever a faction member spawns during load-out.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -142,7 +142,7 @@ end
 
 ---
 
-### OnTransferred
+### *OnTransferred*
 
 **Purpose**
 
@@ -156,7 +156,7 @@ Runs after a player is moved into this faction from another.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -179,7 +179,7 @@ end
 
 ---
 
-### OnCheckLimitReached
+### *OnCheckLimitReached*
 
 **Purpose**
 
@@ -193,7 +193,7 @@ Determines if the faction has reached its player limit.
 
 **Realm**
 
-**Shared**
+Shared
 
 **Returns**
 

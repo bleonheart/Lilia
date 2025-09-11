@@ -26,7 +26,7 @@ Adds a new menu to the menu system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -100,7 +100,7 @@ Draws all active menus.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -145,7 +145,7 @@ Gets the currently active menu.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -205,7 +205,7 @@ Handles button press events for menus.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -250,7 +250,7 @@ Opens a menu for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -299,7 +299,7 @@ Closes the active menu for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -351,7 +351,7 @@ Checks if a menu is open for a client.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -406,7 +406,7 @@ Gets a menu by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -466,7 +466,7 @@ Gets all registered menus.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -522,7 +522,7 @@ Removes a menu from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -577,7 +577,7 @@ Clears all menus from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -630,7 +630,7 @@ Sets the position of a menu.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -680,7 +680,7 @@ Gets the position of a menu.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -744,7 +744,7 @@ Sets the size of a menu.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -791,7 +791,7 @@ Gets the size of a menu.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -855,7 +855,7 @@ Sets the visibility of a menu.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -903,7 +903,7 @@ Checks if a menu is visible.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

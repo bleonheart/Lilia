@@ -26,7 +26,7 @@ Gets the current currency symbol.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -77,7 +77,7 @@ Spawns a money entity at the specified position.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -138,7 +138,7 @@ Sets the currency symbol.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -191,7 +191,7 @@ Formats a money amount with the currency symbol.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -244,7 +244,7 @@ Adds money to a character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -319,7 +319,7 @@ Removes money from a character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -405,7 +405,7 @@ Gets the money amount for a character.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -472,7 +472,7 @@ Sets the money amount for a character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -544,7 +544,7 @@ Transfers money from one character to another.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

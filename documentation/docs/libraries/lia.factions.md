@@ -26,7 +26,7 @@ Registers a new faction with the faction system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -86,7 +86,7 @@ Caches faction models for faster access.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -127,7 +127,7 @@ Loads factions from a directory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -169,7 +169,7 @@ Gets a faction by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -225,7 +225,7 @@ Gets the index of a faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -269,7 +269,7 @@ Gets all classes for a faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -315,7 +315,7 @@ Gets all players in a faction.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -361,7 +361,7 @@ Gets the number of players in a faction.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -412,7 +412,7 @@ Checks if a faction is a category.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -462,7 +462,7 @@ Generates job data for a faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -511,7 +511,7 @@ Formats model data for a faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -562,7 +562,7 @@ Gets all faction categories.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -606,7 +606,7 @@ Gets models from a faction category.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -652,7 +652,7 @@ Gets the default class for a faction.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -700,7 +700,7 @@ Registers a faction group.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -746,7 +746,7 @@ Gets a faction group by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -798,7 +798,7 @@ Gets all factions in a group.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -844,7 +844,7 @@ Checks if a faction has a whitelist.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

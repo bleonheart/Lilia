@@ -26,7 +26,7 @@ Gets an item by its unique ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -96,7 +96,7 @@ Gets an item by its item type ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -157,7 +157,7 @@ Gets an instanced item by its unique ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -224,7 +224,7 @@ Gets item data by its item type ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -280,7 +280,7 @@ Loads an item from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -348,7 +348,7 @@ Checks if an object is an item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -413,7 +413,7 @@ Gets the inventory for an item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -480,7 +480,7 @@ Registers a new item type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -554,7 +554,7 @@ Loads items from a directory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -601,7 +601,7 @@ Creates a new item instance.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -673,7 +673,7 @@ Registers an inventory type for items.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -736,7 +736,7 @@ Creates a new item inventory instance.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -805,7 +805,7 @@ Creates an inventory for an item.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -874,7 +874,7 @@ Adds a weapon override for an item.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -934,7 +934,7 @@ Adds a weapon to the blacklist.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -991,7 +991,7 @@ Generates weapon items from registered weapons.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1037,7 +1037,7 @@ Generates ammo items from registered ammo types.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1084,7 +1084,7 @@ Sets item data by item type ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1145,7 +1145,7 @@ Creates an item instance from item data.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1215,7 +1215,7 @@ Deletes an item by its unique ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1277,7 +1277,7 @@ Loads an item by its unique ID from the database.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1338,7 +1338,7 @@ Spawns an item in the world.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1402,7 +1402,7 @@ Restores an inventory for an item.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

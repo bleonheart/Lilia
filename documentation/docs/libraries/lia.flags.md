@@ -27,7 +27,7 @@ Adds a flag to a player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -88,7 +88,7 @@ Handles flag-related actions when a player spawns.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -137,7 +137,7 @@ Removes a flag from a player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -200,7 +200,7 @@ Checks if a player has a specific flag.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -268,7 +268,7 @@ Gets all flags for a player.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -336,7 +336,7 @@ Clears all flags from a player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -397,7 +397,7 @@ Registers a new flag type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -456,7 +456,7 @@ Gets flag data by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -518,7 +518,7 @@ Gets a list of all registered flags.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -574,7 +574,7 @@ Removes a flag type from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -630,7 +630,7 @@ Clears all flag types from the system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

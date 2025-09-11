@@ -27,7 +27,7 @@ Parses markup text and returns a markup object that can be used for rendering.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -79,7 +79,7 @@ Parses markup text with a custom text drawing function for special rendering eff
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

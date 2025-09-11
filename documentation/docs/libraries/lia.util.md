@@ -27,7 +27,7 @@ Finds players within a box area.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -62,7 +62,7 @@ Gets a player by SteamID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -104,7 +104,7 @@ Finds players within a sphere area.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -138,7 +138,7 @@ Finds a player by name or SteamID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -179,7 +179,7 @@ Finds items belonging to a player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -215,7 +215,7 @@ Finds player items by class.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -249,7 +249,7 @@ Finds entities belonging to a player.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -285,7 +285,7 @@ Checks if a string matches a pattern.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -319,7 +319,7 @@ Gets all admin players.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -357,7 +357,7 @@ Finds a player by SteamID64.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -398,7 +398,7 @@ Finds a player by SteamID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -440,7 +440,7 @@ Checks if an object can fit in a position.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -481,7 +481,7 @@ Checks if a player is within a radius.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -518,7 +518,7 @@ Formats a string with named parameters.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -556,7 +556,7 @@ Gets a material by name.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -597,7 +597,7 @@ Finds a faction by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -640,7 +640,7 @@ Sends a table to the client UI.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -676,7 +676,7 @@ Finds an empty space near a position.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -721,7 +721,7 @@ Draws text with a shadow effect.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -761,7 +761,7 @@ Draws text with an outline effect.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -797,7 +797,7 @@ Draws a tooltip.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -836,7 +836,7 @@ Draws text with various effects.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -875,7 +875,7 @@ Draws a texture.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -910,7 +910,7 @@ Applies skin function to a panel.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -948,7 +948,7 @@ Wraps text to fit within a width.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -987,7 +987,7 @@ Draws a blur effect.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -1024,7 +1024,7 @@ Draws a black blur effect.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -1059,7 +1059,7 @@ Draws a blur effect at a specific position.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -1097,7 +1097,7 @@ Requests arguments from a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1133,7 +1133,7 @@ Creates a table UI for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1168,7 +1168,7 @@ Opens the options menu for a client.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

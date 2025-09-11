@@ -10,7 +10,7 @@ The `Vector` meta table extends Garry's Mod's base vector functionality with Lil
 
 ---
 
-### Center
+### *Center*
 
 **Purpose**
 
@@ -26,7 +26,7 @@ Calculates the center point between this vector and another vector.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -46,7 +46,7 @@ end)
 
 ---
 
-### Distance
+### *Distance*
 
 **Purpose**
 
@@ -62,7 +62,7 @@ Calculates the distance between this vector and another vector.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -82,7 +82,7 @@ end)
 
 ---
 
-### RotateAroundAxis
+### *RotateAroundAxis*
 
 **Purpose**
 
@@ -99,7 +99,7 @@ Rotates the vector around a specified axis by a given angle in degrees.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -121,7 +121,7 @@ end)
 
 ---
 
-### Right
+### *Right*
 
 **Purpose**
 
@@ -137,7 +137,7 @@ Gets the right vector perpendicular to this vector and the up vector.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -158,7 +158,7 @@ end)
 
 ---
 
-### Up
+### *Up*
 
 **Purpose**
 
@@ -174,7 +174,7 @@ Gets the up vector perpendicular to this vector and the specified up vector.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

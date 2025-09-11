@@ -27,7 +27,7 @@ Creates a new inventory type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -90,7 +90,7 @@ Creates a new inventory instance.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -149,7 +149,7 @@ Loads an inventory by its ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -209,7 +209,7 @@ Loads an inventory from default storage.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -274,7 +274,7 @@ Gets an inventory instance by ID.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -340,7 +340,7 @@ Loads all inventories for a character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -396,7 +396,7 @@ Deletes an inventory by its ID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -460,7 +460,7 @@ Cleans up inventories for a character.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -514,7 +514,7 @@ Registers a storage type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -580,7 +580,7 @@ Gets a storage type by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -636,7 +636,7 @@ Registers a trunk type.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -701,7 +701,7 @@ Gets a trunk type by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -756,7 +756,7 @@ Gets all registered trunk types.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -814,7 +814,7 @@ Gets all registered storage types.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -873,7 +873,7 @@ Shows an inventory to a player.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

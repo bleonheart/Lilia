@@ -18,7 +18,7 @@ All hooks are optional — if you omit a hook, default behaviour applies.
 
 ---
 
-### OnSetup
+### *OnSetup*
 
 **Purpose**
 
@@ -32,7 +32,7 @@ Called whenever `lia.attribs.setup` initializes or refreshes this attribute for 
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -60,7 +60,7 @@ end
 
 The following hooks are related to the attribute system but are not defined on individual attributes:
 
-### OnCharAttribUpdated
+### *OnCharAttribUpdated*
 
 **Purpose**
 
@@ -75,7 +75,7 @@ Fired when a character attribute value is changed through `setAttrib` or `update
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -91,7 +91,7 @@ end)
 
 ---
 
-### OnCharAttribBoosted
+### *OnCharAttribBoosted*
 
 **Purpose**
 
@@ -107,7 +107,7 @@ Fired when an attribute boost is added or removed from a character.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -127,7 +127,7 @@ end)
 
 ---
 
-### AdjustStaminaOffset
+### *AdjustStaminaOffset*
 
 **Purpose**
 
@@ -140,7 +140,7 @@ Allows modification of stamina regeneration/drain rates before they are applied.
 
 **Realm**
 
-**Shared**
+Shared
 
 **Returns**
 
@@ -159,7 +159,7 @@ end)
 
 ---
 
-### PlayerStaminaLost
+### *PlayerStaminaLost*
 
 **Purpose**
 
@@ -171,7 +171,7 @@ Fired when a player's stamina reaches zero and they become out of breath.
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 
@@ -188,7 +188,7 @@ end)
 
 ---
 
-### PlayerStaminaGained
+### *PlayerStaminaGained*
 
 **Purpose**
 
@@ -200,7 +200,7 @@ Fired when a player's stamina recovers above 50% and they are no longer out of b
 
 **Realm**
 
-**Server**
+Server
 
 **Returns**
 

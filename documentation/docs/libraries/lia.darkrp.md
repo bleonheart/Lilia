@@ -27,7 +27,7 @@ Checks if a position is empty and suitable for spawning entities.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 ```lua
@@ -68,7 +68,7 @@ Finds an empty position near a starting position by searching in expanding circl
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 ```lua
@@ -99,7 +99,7 @@ Sends a notification to a client using Lilia's notification system.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 ```lua
@@ -127,7 +127,7 @@ Wraps text to fit within a specified maximum line width.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 ```lua
@@ -155,7 +155,7 @@ Formats a money amount using Lilia's currency system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 ```lua
@@ -184,7 +184,7 @@ Creates a DarkRP-compatible entity item using Lilia's item system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 ```lua
@@ -216,7 +216,7 @@ Creates a DarkRP category (currently a placeholder function).
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 ```lua

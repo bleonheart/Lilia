@@ -10,7 +10,7 @@ The `Entity` meta table extends Garry's Mod's base entity functionality with Lil
 
 ---
 
-### EmitSound
+### *EmitSound*
 
 **Purpose**
 
@@ -32,7 +32,7 @@ Emits a sound from the entity, with support for web sounds and URL-based audio.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -54,7 +54,7 @@ end)
 
 ---
 
-### isProp
+### *isProp*
 
 **Purpose**
 
@@ -70,7 +70,7 @@ Checks if the entity is a physics prop.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -91,7 +91,7 @@ end)
 
 ---
 
-### isItem
+### *isItem*
 
 **Purpose**
 
@@ -107,7 +107,7 @@ Checks if the entity is a Lilia item entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -131,7 +131,7 @@ end)
 
 ---
 
-### isMoney
+### *isMoney*
 
 **Purpose**
 
@@ -147,7 +147,7 @@ Checks if the entity is a Lilia money entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -171,7 +171,7 @@ end)
 
 ---
 
-### isSimfphysCar
+### *isSimfphysCar*
 
 **Purpose**
 
@@ -187,7 +187,7 @@ Checks if the entity is a Simfphys vehicle.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -212,7 +212,7 @@ end)
 
 ---
 
-### isLiliaPersistent
+### *isLiliaPersistent*
 
 **Purpose**
 
@@ -228,7 +228,7 @@ Checks if the entity is marked as persistent in Lilia.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -250,7 +250,7 @@ end)
 
 ---
 
-### checkDoorAccess
+### *checkDoorAccess*
 
 **Purpose**
 
@@ -267,7 +267,7 @@ Checks if a client has access to a door with the specified access level.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -291,7 +291,7 @@ end)
 
 ---
 
-### keysOwn
+### *keysOwn*
 
 **Purpose**
 
@@ -307,7 +307,7 @@ Sets the owner of a vehicle entity.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -329,7 +329,7 @@ end)
 
 ---
 
-### keysLock
+### *keysLock*
 
 **Purpose**
 
@@ -345,7 +345,7 @@ Locks a vehicle entity.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -367,7 +367,7 @@ end)
 
 ---
 
-### keysUnLock
+### *keysUnLock*
 
 **Purpose**
 
@@ -383,7 +383,7 @@ Unlocks a vehicle entity.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -405,7 +405,7 @@ end)
 
 ---
 
-### getDoorOwner
+### *getDoorOwner*
 
 **Purpose**
 
@@ -421,7 +421,7 @@ Gets the owner of a door entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -444,7 +444,7 @@ end)
 
 ---
 
-### isLocked
+### *isLocked*
 
 **Purpose**
 
@@ -460,7 +460,7 @@ Checks if the entity is locked via networked variables.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -482,7 +482,7 @@ end)
 
 ---
 
-### isDoorLocked
+### *isDoorLocked*
 
 **Purpose**
 
@@ -498,7 +498,7 @@ Checks if a door entity is locked via internal variables.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -520,7 +520,7 @@ end)
 
 ---
 
-### getEntItemDropPos
+### *getEntItemDropPos*
 
 **Purpose**
 
@@ -537,7 +537,7 @@ Gets the position and angle where items should be dropped from this entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -564,7 +564,7 @@ end)
 
 ---
 
-### isFemale
+### *isFemale*
 
 **Purpose**
 
@@ -580,7 +580,7 @@ Checks if the entity's model represents a female character.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -602,7 +602,7 @@ end)
 
 ---
 
-### isNearEntity
+### *isNearEntity*
 
 **Purpose**
 
@@ -619,7 +619,7 @@ Checks if the entity is near another entity within a specified radius.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -645,7 +645,7 @@ end)
 
 ---
 
-### GetCreator
+### *GetCreator*
 
 **Purpose**
 
@@ -661,7 +661,7 @@ Gets the creator of the entity via networked variables.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -684,7 +684,7 @@ end)
 
 ---
 
-### SetCreator
+### *SetCreator*
 
 **Purpose**
 
@@ -700,7 +700,7 @@ Sets the creator of the entity via networked variables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -722,7 +722,7 @@ end)
 
 ---
 
-### sendNetVar
+### *sendNetVar*
 
 **Purpose**
 
@@ -739,7 +739,7 @@ Sends a networked variable to a specific client or all clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -766,7 +766,7 @@ end)
 
 ---
 
-### clearNetVars
+### *clearNetVars*
 
 **Purpose**
 
@@ -782,7 +782,7 @@ Clears all networked variables for the entity and notifies clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -806,7 +806,7 @@ end)
 
 ---
 
-### removeDoorAccessData
+### *removeDoorAccessData*
 
 **Purpose**
 
@@ -822,7 +822,7 @@ Removes all door access data and notifies affected clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -844,7 +844,7 @@ end)
 
 ---
 
-### setLocked
+### *setLocked*
 
 **Purpose**
 
@@ -860,7 +860,7 @@ Sets the locked state of the entity via networked variables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -881,7 +881,7 @@ end)
 
 ---
 
-### setKeysNonOwnable
+### *setKeysNonOwnable*
 
 **Purpose**
 
@@ -897,7 +897,7 @@ Sets whether the entity can be owned via networked variables.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -918,7 +918,7 @@ end)
 
 ---
 
-### isDoor
+### *isDoor*
 
 **Purpose**
 
@@ -934,7 +934,7 @@ Checks if the entity is a door based on its class name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -959,7 +959,7 @@ end)
 
 ---
 
-### getDoorPartner
+### *getDoorPartner*
 
 **Purpose**
 
@@ -975,7 +975,7 @@ Gets the partner door entity if this is a double door.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -998,7 +998,7 @@ end)
 
 ---
 
-### setNetVar
+### *setNetVar*
 
 **Purpose**
 
@@ -1016,7 +1016,7 @@ Sets a networked variable on the entity and replicates it to clients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -1040,7 +1040,7 @@ end)
 
 ---
 
-### getNetVar
+### *getNetVar*
 
 **Purpose**
 
@@ -1057,7 +1057,7 @@ Gets a networked variable value from the entity.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -1080,7 +1080,7 @@ end)
 
 ---
 
-### PlayFollowingSound
+### *PlayFollowingSound*
 
 **Purpose**
 
@@ -1103,7 +1103,7 @@ Plays a sound that follows the entity with 3D positioning and distance attenuati
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

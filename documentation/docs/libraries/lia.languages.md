@@ -26,7 +26,7 @@ Loads language files from a directory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -73,7 +73,7 @@ Adds a language table to the language system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -135,7 +135,7 @@ Gets all available languages.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -174,7 +174,7 @@ end
 
 ---
 
-### L
+### *L*
 
 **Purpose**
 
@@ -191,7 +191,7 @@ Translates text using the current language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -252,7 +252,7 @@ Sets the current language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -306,7 +306,7 @@ Gets the current language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -367,7 +367,7 @@ Gets a translation for a specific language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -431,7 +431,7 @@ Checks if a translation key exists.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -507,7 +507,7 @@ Adds a translation to the current language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -556,7 +556,7 @@ Removes a translation from the current language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -608,7 +608,7 @@ Clears all translations from the current language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -659,7 +659,7 @@ Gets the translation table for a language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -738,7 +738,7 @@ Sets the translation table for a language.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -794,7 +794,7 @@ Formats a translation with parameters.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

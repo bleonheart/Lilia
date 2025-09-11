@@ -26,7 +26,7 @@ Loads a module from a file.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -77,7 +77,7 @@ Initializes a module.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -118,7 +118,7 @@ Loads all modules from a directory.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -159,7 +159,7 @@ Gets a module by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -200,7 +200,7 @@ Prints all disabled modules.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 

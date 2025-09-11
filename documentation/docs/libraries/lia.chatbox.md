@@ -26,7 +26,7 @@ Generates a timestamp string for chat messages based on configuration.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -65,7 +65,7 @@ Registers a new chat type with the chat system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -143,7 +143,7 @@ Parses a chat message to determine its type and extract the message content.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -193,7 +193,7 @@ Sends a chat message to appropriate recipients.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -243,7 +243,7 @@ Adds a chat message to the client's chat display.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 

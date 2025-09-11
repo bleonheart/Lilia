@@ -26,7 +26,7 @@ Builds a syntax string from command arguments for display purposes.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -80,7 +80,7 @@ Adds a new command to the command system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -147,7 +147,7 @@ Checks if a client has access to a command.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -203,7 +203,7 @@ Extracts arguments from a command string.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -255,7 +255,7 @@ Runs a command with the given arguments.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -304,7 +304,7 @@ Parses a command string and executes it.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -349,7 +349,7 @@ Opens an argument prompt for a command.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -396,7 +396,7 @@ Sends a command to the server.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -441,7 +441,7 @@ Finds a player by name or SteamID.
 
 **Realm**
 
-Server.
+Server
 
 **Example Usage**
 
@@ -496,7 +496,7 @@ Gets a command by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -540,7 +540,7 @@ Gets a list of all registered commands.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -589,7 +589,7 @@ Removes a command from the command system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -638,7 +638,7 @@ Clears all registered commands.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 

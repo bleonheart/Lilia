@@ -27,7 +27,7 @@ Registers a new color with the color system.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -69,7 +69,7 @@ Adjusts a color by adding or subtracting RGB values.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -110,7 +110,7 @@ Returns a table of main theme colors with adjusted values.
 
 **Realm**
 
-Client.
+Client
 
 **Example Usage**
 
@@ -169,7 +169,7 @@ Gets a registered color by name.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -217,7 +217,7 @@ Gets a list of all registered color names.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -263,7 +263,7 @@ Sets the main theme color for the framework.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -312,7 +312,7 @@ Gets the current theme color.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -358,7 +358,7 @@ Generates a random color.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -400,7 +400,7 @@ Interpolates between two colors.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -446,7 +446,7 @@ Converts a color to hexadecimal format.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
@@ -485,7 +485,7 @@ Converts a hexadecimal color string to a Color object.
 
 **Realm**
 
-Shared.
+Shared
 
 **Example Usage**
 
