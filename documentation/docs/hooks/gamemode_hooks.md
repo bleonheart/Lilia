@@ -275,6 +275,15 @@ Fires after a new usergroup is created.
 
 - None
 
+**Example Usage**
+
+```lua
+hook.Add("OnUsergroupCreated", "LogNewGroup", function(groupName, groupData)
+    print("New usergroup created:", groupName)
+    PrintTable(groupData)
+end)
+```
+
 ---
 
 ### OnUsergroupPermissionsChanged
@@ -296,6 +305,15 @@ Fires when a usergroup's permissions are modified.
 
 - None
 
+**Example Usage**
+
+```lua
+hook.Add("OnUsergroupPermissionsChanged", "LogPermissionUpdate", function(groupName, groupData)
+    print("Permissions updated for group:", groupName)
+    PrintTable(groupData)
+end)
+```
+
 ---
 
 ### OnUsergroupRemoved
@@ -315,6 +333,14 @@ Fires after a usergroup is removed.
 **Returns**
 
 - None
+
+**Example Usage**
+
+```lua
+hook.Add("OnUsergroupRemoved", "LogGroupRemoval", function(groupName)
+    print("Usergroup removed:", groupName)
+end)
+```
 
 ---
 
@@ -337,6 +363,14 @@ Fires after a usergroup is renamed.
 
 - None
 
+**Example Usage**
+
+```lua
+hook.Add("OnUsergroupRenamed", "LogGroupRename", function(oldName, newName)
+    print("Usergroup renamed from '" .. oldName .. "' to '" .. newName .. "'")
+end)
+```
+
 ---
 
 ### OverrideFactionName
@@ -357,6 +391,19 @@ Override a faction's display name during registration/loading.
 **Returns**
 
 - `string` | `nil`: New name to use, or `nil` to keep existing.
+
+**Example Usage**
+
+```lua
+hook.Add("OverrideFactionName", "CustomFactionNames", function(uniqueID, currentName)
+    if uniqueID == "citizen" then
+        return "Civilian"
+    elseif uniqueID == "police" then
+        return "Law Enforcement"
+    end
+    return nil -- Keep original name for other factions
+end)
+```
 
 ---
 
@@ -379,6 +426,19 @@ Override a faction's description during registration/loading.
 
 - `string` | `nil`
 
+**Example Usage**
+
+```lua
+hook.Add("OverrideFactionDesc", "CustomFactionDescriptions", function(uniqueID, currentDesc)
+    if uniqueID == "citizen" then
+        return "Ordinary citizens who work and live in the city."
+    elseif uniqueID == "police" then
+        return "Law enforcement officers responsible for maintaining order."
+    end
+    return nil -- Keep original description for other factions
+end)
+```
+
 ---
 
 ### OverrideFactionModels
@@ -399,6 +459,26 @@ Override a faction's models table during registration/loading.
 **Returns**
 
 - `table` | `nil`: Replacement models table, or `nil`.
+
+**Example Usage**
+
+```lua
+hook.Add("OverrideFactionModels", "CustomFactionModels", function(uniqueID, currentModels)
+    if uniqueID == "police" then
+        return {
+            "models/player/police.mdl",
+            "models/player/police_fem.mdl"
+        }
+    elseif uniqueID == "citizen" then
+        return {
+            "models/player/Group01/male_01.mdl",
+            "models/player/Group01/male_02.mdl",
+            "models/player/Group01/female_01.mdl"
+        }
+    end
+    return nil -- Keep original models for other factions
+end)
+```
 
 ---
 
@@ -450,6 +530,24 @@ Invoked when a client sends chat text through the chatbox network path. Note: in
 **Returns**
 
 - None (ignored in this invocation path)
+
+**Example Usage**
+
+```lua
+hook.Add("PlayerSay", "CustomCommands", function(ply, text)
+    if string.sub(text, 1, 5) == "!heal" then
+        if ply:Health() < 100 then
+            ply:SetHealth(100)
+            ply:ChatPrint("You have been healed!")
+        end
+        return "" -- Suppress the message
+    elseif string.sub(text, 1, 6) == "!spawn" then
+        ply:Spawn()
+        ply:ChatPrint("You have respawned!")
+        return "" -- Suppress the message
+    end
+end)
+```
 
 ---
 
