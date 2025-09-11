@@ -498,7 +498,7 @@ net.Receive("liaLoadingFailure", function()
     lia.loadingFailurePanel:SetFailureInfo(reason, details)
 
     -- Add individual errors to the panel
-    for i = 1, errorCount do
+    for _ = 1, errorCount do
         local errorMessage = net.ReadString()
         local line = net.ReadString()
         local file = net.ReadString()
