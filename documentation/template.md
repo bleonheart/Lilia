@@ -27,7 +27,7 @@ An extended, detailed explanation of the library, including its purpose, scope, 
 
 ---
 
-### lia.library.functionName
+### *functionName* (by function name understand either method in Table:Method or * in lia.libraryname.* )
 
 **Purpose**
 

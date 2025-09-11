@@ -6,11 +6,11 @@ This page documents the functions for working with character data and management
 
 ## Overview
 
-The character library (`lia.char`) provides a comprehensive system for managing character data, loading, saving, and manipulating character information in the Lilia framework. It handles character creation, restoration, deletion, and various character-related operations.
+The character library (`lia.char`) provides a comprehensive system for managing character data, loading, saving, and manipulating character information in the Lilia framework, serving as the core character management system that handles all aspects of player character lifecycle and data persistence. This library handles sophisticated character management with support for multiple character slots per player, complex character data structures, and dynamic character loading that enables rich character customization and persistent character progression. The system features advanced character creation with support for character validation, default data initialization, and seamless integration with the framework's class and faction systems that ensure consistent character setup and proper roleplay integration. It includes comprehensive character data management with support for persistent storage, real-time synchronization, and robust data validation that maintains character integrity across server restarts and client disconnections. The library provides robust character operations with support for character switching, character deletion, character restoration, and comprehensive cleanup procedures that ensure optimal server performance and data consistency. Additional features include integration with the framework's permission system for character access control, performance optimization for large character databases, and comprehensive character validation that ensures balanced and fair character progression, making it essential for creating engaging character systems that support complex roleplay scenarios and provide meaningful character development opportunities for players.
 
 ---
 
-### lia.char.getCharacter
+### getCharacter
 
 **Purpose**
 
@@ -66,7 +66,7 @@ lia.command.add("getchar", {
 
 ---
 
-### lia.char.isLoaded
+### isLoaded
 
 **Purpose**
 
@@ -109,7 +109,7 @@ end
 
 ---
 
-### lia.char.getAll
+### getAll
 
 **Purpose**
 
@@ -151,7 +151,7 @@ end
 
 ---
 
-### lia.char.addCharacter
+### addCharacter
 
 **Purpose**
 
@@ -182,7 +182,7 @@ lia.char.addCharacter(123, characterObject)
 
 ---
 
-### lia.char.removeCharacter
+### removeCharacter
 
 **Purpose**
 
@@ -212,7 +212,7 @@ lia.char.removeCharacter(123)
 
 ---
 
-### lia.char.new
+### new
 
 **Purpose**
 
@@ -256,7 +256,7 @@ local character = lia.char.new(charData, 125, client)
 
 ---
 
-### lia.char.hookVar
+### hookVar
 
 **Purpose**
 
@@ -297,7 +297,7 @@ end)
 
 ---
 
-### lia.char.registerVar
+### registerVar
 
 **Purpose**
 
@@ -352,7 +352,7 @@ lia.char.registerVar("customData", {
 
 ---
 
-### lia.char.getCharData
+### getCharData
 
 **Purpose**
 
@@ -410,7 +410,7 @@ lia.command.add("chardata", {
 
 ---
 
-### lia.char.getCharDataRaw
+### getCharDataRaw
 
 **Purpose**
 
@@ -449,7 +449,7 @@ end)
 
 ---
 
-### lia.char.getOwnerByID
+### getOwnerByID
 
 **Purpose**
 
@@ -491,7 +491,7 @@ end
 
 ---
 
-### lia.char.getBySteamID
+### getBySteamID
 
 **Purpose**
 
@@ -538,7 +538,7 @@ lia.command.add("findchar", {
 
 ---
 
-### lia.char.GetTeamColor
+### GetTeamColor
 
 **Purpose**
 
@@ -580,7 +580,7 @@ end
 
 ---
 
-### lia.char.create
+### create
 
 **Purpose**
 
@@ -628,7 +628,7 @@ end)
 
 ---
 
-### lia.char.restore
+### restore
 
 **Purpose**
 
@@ -673,7 +673,7 @@ end)
 
 ---
 
-### lia.char.cleanUpForPlayer
+### cleanUpForPlayer
 
 **Purpose**
 
@@ -716,7 +716,7 @@ lia.command.add("cleanupchar", {
 
 ---
 
-### lia.char.delete
+### delete
 
 **Purpose**
 
@@ -758,7 +758,7 @@ lia.command.add("deletechar", {
 
 ---
 
-### lia.char.getCharBanned
+### getCharBanned
 
 **Purpose**
 
@@ -800,7 +800,7 @@ end
 
 ---
 
-### lia.char.setCharDatabase
+### setCharDatabase
 
 **Purpose**
 
@@ -838,7 +838,7 @@ lia.char.setCharDatabase(123, "customData", {level = 5, xp = 1000})
 
 ---
 
-### lia.char.unloadCharacter
+### unloadCharacter
 
 **Purpose**
 
@@ -876,7 +876,7 @@ end)
 
 ---
 
-### lia.char.unloadUnusedCharacters
+### unloadUnusedCharacters
 
 **Purpose**
 
@@ -914,7 +914,7 @@ end
 
 ---
 
-### lia.char.loadSingleCharacter
+### loadSingleCharacter
 
 **Purpose**
 

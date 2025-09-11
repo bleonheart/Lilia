@@ -1,4 +1,7 @@
 ﻿local GM = GM or GAMEMODE
+
+-- Database loading state tracking
+local databaseLoadingComplete = false
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     local loginTime = character:getLoginTime()
@@ -105,7 +108,10 @@ function GM:OnPickupMoney(client, moneyEntity)
     end
 end
 
-function GM:CanItemBeTransfered(item, curInv, inventory)
+function GM:CanItemBeTransfered(item, curInv, inventory, client)
+    if not inventory then
+        return false
+    end
     if item.isBag and curInv ~= inventory and item.getInv and item:getInv() and table.Count(item:getInv():getItems()) > 0 then
         lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyLocalized("forbiddenActionStorage") end end)
         return false
@@ -115,11 +121,11 @@ function GM:CanItemBeTransfered(item, curInv, inventory)
     if itemSteamID then
         local targetCharID = inventory:getData("char")
         if targetCharID then
-            local client = inventory:getRecipients()[1]
-            if IsValid(client) and client:getChar() then
-                local currentCharID = client:getChar():getID()
-                if currentCharID ~= targetCharID and itemSteamID == client:SteamID() then
-                    client:notifyLocalized("playerCharBelonging")
+            local recipient = inventory:getRecipients()[1]
+            if IsValid(recipient) and recipient:getChar() then
+                local currentCharID = recipient:getChar():getID()
+                if currentCharID ~= targetCharID and itemSteamID == recipient:SteamID() then
+                    recipient:notifyLocalized("playerCharBelonging")
                     return false
                 end
             end
@@ -416,6 +422,12 @@ function GM:ShutDown()
 end
 
 function GM:PlayerAuthed(client, steamid)
+    -- Prevent players from joining while database is loading
+    if not databaseLoadingComplete then
+        client:Kick("Server is still loading the database. Please try again in a moment.")
+        return
+    end
+
     lia.db.selectOne({"userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steamid)):next(function(data)
         if not IsValid(client) then return end
         local group = data and data.userGroup
@@ -1019,7 +1031,11 @@ function GM:LiliaTablesLoaded()
     hook.Run("LoadData")
     hook.Run("PostLoadData")
     lia.faction.formatModelData()
-    timer.Simple(2, function() lia.entityDataLoaded = true end)
+    timer.Simple(2, function() 
+        lia.entityDataLoaded = true
+        databaseLoadingComplete = true
+        lia.bootstrap("Database", "Loading complete - players can now join the server.")
+    end)
 end
 
 function ClientAddText(client, ...)
