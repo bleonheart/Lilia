@@ -466,4 +466,102 @@ hook.Add("PlayerGiveSWEP", "RestrictNPCWeapons", function(ply, class, swep)
 end)
 ```
 
+---
+
+### ChatTextChanged
+
+**Purpose**
+
+Fires whenever the chat input text changes in the chat box.
+
+**Parameters**
+
+* `text` (*string*): Current input text.
+
+**Returns**
+
+* `nil` (*nil*): This function does not return a value.
+
+**Realm**
+
+**Client**
+
+**Example Usage**
+
+```lua
+hook.Add("ChatTextChanged", "SlashHint", function(text)
+    if text:StartsWith("/") then
+        -- Show your own autocomplete UI here
+    end
+end)
+```
+
+---
+
+### OverrideFactionName
+
+**Purpose**
+
+Override a faction's display name during registration/loading.
+
+**Parameters**
+
+* `uniqueID` (*string*): Faction unique ID.
+* `currentName` (*string*): Current localized name.
+
+**Returns**
+
+* `newName` (*string* | *nil*): New name to use, or nil to keep existing.
+
+---
+
+### OverrideFactionDesc
+
+**Purpose**
+
+Override a faction's description during registration/loading.
+
+**Parameters**
+
+* `uniqueID` (*string*): Faction unique ID.
+* `currentDesc` (*string*): Current localized description.
+
+**Returns**
+
+* `newDesc` (*string* | *nil*): New description to use, or nil to keep existing.
+
+---
+
+### OverrideFactionModels
+
+**Purpose**
+
+Override a faction's models table during registration/loading.
+
+**Parameters**
+
+* `uniqueID` (*string*): Faction unique ID.
+* `currentModels` (*table*): Models table.
+
+**Returns**
+
+* `models` (*table* | *nil*): Replacement models table, or nil to keep existing.
+
+---
+
+### PlayerSay
+
+**Purpose**
+
+Invoked when a client sends chat text through the chatbox network path. Note: in this context the return value is ignored; use it for side effects.
+
+**Parameters**
+
+* `client` (*Player*): The player who sent the chat message.
+* `text` (*string*): The chat message text.
+
+**Returns**
+
+* `nil` (*nil*): This function does not return a value. (ignored in this invocation path)
+
 
