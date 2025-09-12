@@ -134,11 +134,10 @@ local sqliteQuery = promisifyIfNoCallback(function(query, callback, throw)
                 lastID = nil
             else
                 lastID = tonumber(rawLastID)
-                if not lastID then
-                    lia.warning("[Database] Invalid last insert ID '" .. tostring(rawLastID) .. "' for query: " .. query)
-                end
+                if not lastID then lia.warning("[Database] Invalid last insert ID '" .. tostring(rawLastID) .. "' for query: " .. query) end
             end
         end
+
         callback(data, lastID)
     end
 end)
@@ -186,6 +185,7 @@ function lia.db.connect(connectCallback, reconnect)
                 -- Enforce foreign keys if defined
                 sql.Query("PRAGMA foreign_keys=ON")
             end)
+
             lia.db._pragmasApplied = true
         end
 
@@ -779,11 +779,7 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function()
-        return lia.db.migrateDatabaseSchemas()
-    end):next(function()
-        done()
-    end):catch(function(err)
+    end):next(function() return lia.db.migrateDatabaseSchemas() end):next(function() done() end):catch(function(err)
         lia.error("[Database] Failed to create database tables: " .. tostring(err))
         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "CRITICAL: Database table creation failed! Error: ", tostring(err), "\n")
         MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "This may cause the server to malfunction. Check database permissions and disk space.\n")
@@ -1579,9 +1575,29 @@ function lia.db.addDatabaseFields()
             end)
         end
     end
+
+    lia.db.fieldExists("lia_characters", "schema"):next(function(exists)
+        if not exists then
+            lia.db.createColumn("characters", "schema", "string", {
+                default = "lilia",
+                not_null = false
+            }):next(function(result)
+                if result and result.success then
+                    lia.information("[Lilia] Added missing 'schema' column to lia_characters table")
+                    -- Update existing records with current gamemode
+                    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+                    lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function() lia.information("[Lilia] Updated existing character records with schema: " .. gamemode) end):catch(function(err) lia.error("[Lilia] Failed to update existing character records with schema: " .. err) end)
+                end
+            end):catch(function(err) lia.error("[Lilia] Failed to add 'schema' column to lia_characters table: " .. err) end)
+        else
+            local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+            lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function() lia.information("[Lilia] Updated character records with missing schema values") end):catch(function(err) lia.error("[Lilia] Failed to update character records with missing schema: " .. err) end)
+        end
+    end):catch(function(err) lia.error("[Lilia] Error checking for 'schema' column in lia_characters table: " .. err) end)
 end
 
 function lia.db.exists(dbTable, condition)
+    
     return lia.db.count(dbTable, condition):next(function(n) return n > 0 end)
 end
 
@@ -2423,9 +2439,7 @@ concommand.Add("lia_snapshot", function(ply)
             end):catch(function(err)
                 sendFeedback("? Error processing table " .. tableName .. ": " .. err, Color(255, 0, 0))
                 completed = completed + 1
-                if completed >= total then
-                    sendFeedback("Snapshot creation completed with errors", Color(255, 255, 0))
-                end
+                if completed >= total then sendFeedback("Snapshot creation completed with errors", Color(255, 255, 0)) end
             end)
         end
     end):catch(function(err) sendFeedback("? Failed to get table list: " .. err, Color(255, 0, 0)) end)
@@ -3745,15 +3759,11 @@ concommand.Add("lia_snapshot_skip", function(ply, _, args)
                 end
 
                 completed = completed + 1
-                if completed >= total then
-                    sendFeedback("Selective snapshot creation completed (" .. completed .. "/" .. total .. " tables)", Color(0, 255, 0))
-                end
+                if completed >= total then sendFeedback("Selective snapshot creation completed (" .. completed .. "/" .. total .. " tables)", Color(0, 255, 0)) end
             end):catch(function(err)
                 sendFeedback("? Error processing table " .. tableName .. ": " .. err, Color(255, 0, 0))
                 completed = completed + 1
-                if completed >= total then
-                    sendFeedback("Selective snapshot creation completed with errors (" .. completed .. "/" .. total .. " tables)", Color(255, 255, 0))
-                end
+                if completed >= total then sendFeedback("Selective snapshot creation completed with errors (" .. completed .. "/" .. total .. " tables)", Color(255, 255, 0)) end
             end)
         end
     end):catch(function(err) sendFeedback("? Failed to get table list: " .. err, Color(255, 0, 0)) end)
@@ -3773,16 +3783,13 @@ concommand.Add("lia_diagnose_table", function(ply, _, args)
 
     local tableName = args[1]
     local fullTableName = tableName:StartWith("lia_") and tableName or "lia_" .. tableName
-
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== Diagnosing table: ", fullTableName, " ===\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n\n")
-
     -- Step 1: Check if table exists in sqlite_master
     lia.db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='" .. fullTableName .. "'", function(result)
         if result and #result > 0 then
             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "? Table exists in sqlite_master\n")
-
             -- Step 2: Try to get table schema
             lia.db.query("PRAGMA table_info(" .. fullTableName .. ")", function(schemaResult)
                 if schemaResult and #schemaResult > 0 then
@@ -3790,14 +3797,13 @@ concommand.Add("lia_diagnose_table", function(ply, _, args)
                     for _, col in ipairs(schemaResult) do
                         print("  - " .. col.name .. " (" .. col.type .. ")")
                     end
-                    print("")
 
+                    print("")
                     -- Step 3: Try to count records
                     lia.db.query("SELECT COUNT(*) as count FROM " .. fullTableName, function(countResult)
                         if countResult and countResult[1] then
                             local count = countResult[1].count or 0
                             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "? Table has ", count, " records\n")
-
                             -- Step 4: Try a simple SELECT query
                             lia.db.select("*", tableName:gsub("^lia_", "")):next(function(selectResult)
                                 if selectResult and selectResult.results then
@@ -3829,4 +3835,66 @@ concommand.Add("lia_diagnose_table", function(ply, _, args)
             end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to list tables: ", err, "\n") end)
         end
     end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? sqlite_master query failed: ", err, "\n") end)
+end)
+
+concommand.Add("lia_test_schema_query", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Testing schema column query...\n")
+    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+    local condition = "lia_characters.schema = " .. lia.db.convertDataType(gamemode)
+    lia.db.selectWithJoin("SELECT n.value AS name, c.id, c.steamID, c.playtime, c.lastJoinTime, cl.value AS class, f.value AS faction, p.lastOnline FROM lia_characters AS c LEFT JOIN lia_players AS p ON c.steamID = p.steamID LEFT JOIN lia_chardata AS n ON n.charID = c.id AND n.key = 'name' LEFT JOIN lia_chardata AS cl ON cl.charID = c.id AND cl.key = 'class' LEFT JOIN lia_chardata AS f ON f.charID = c.id AND f.key = 'faction' WHERE " .. condition):next(function(result)
+        if result and result.results then
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Schema query successful! Found " .. #result.results .. " characters with schema = " .. gamemode .. "\n")
+        else
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "⚠️ Query executed but returned no results\n")
+        end
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Schema query failed: " .. err .. "\n") end)
+end)
+
+concommand.Add("lia_fix_schema_column", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixing missing schema column in lia_characters table...\n")
+    
+    lia.db.fieldExists("lia_characters", "schema"):next(function(exists)
+        if not exists then
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Schema column does not exist. Creating it...\n")
+            lia.db.createColumn("characters", "schema", "string", {
+                default = "lilia",
+                not_null = false
+            }):next(function(result)
+                if result and result.success then
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Successfully added 'schema' column to lia_characters table\n")
+                    -- Update existing records with current gamemode
+                    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+                    lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function() 
+                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Updated existing character records with schema: " .. gamemode .. "\n")
+                    end):catch(function(err) 
+                        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Failed to update existing character records with schema: " .. err .. "\n")
+                    end)
+                else
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Failed to add 'schema' column to lia_characters table\n")
+                end
+            end):catch(function(err) 
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Error adding 'schema' column: " .. err .. "\n")
+            end)
+        else
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Schema column already exists. Updating missing values...\n")
+            local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+            lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function() 
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Updated character records with missing schema values: " .. gamemode .. "\n")
+            end):catch(function(err) 
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Failed to update character records with missing schema: " .. err .. "\n")
+            end)
+        end
+    end):catch(function(err) 
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Error checking for 'schema' column: " .. err .. "\n")
+    end)
 end)
