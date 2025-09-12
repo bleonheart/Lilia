@@ -1597,7 +1597,6 @@ function lia.db.addDatabaseFields()
 end
 
 function lia.db.exists(dbTable, condition)
-    
     return lia.db.count(dbTable, condition):next(function(n) return n > 0 end)
 end
 
@@ -3862,7 +3861,6 @@ concommand.Add("lia_fix_schema_column", function(ply)
     end
 
     MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixing missing schema column in lia_characters table...\n")
-    
     lia.db.fieldExists("lia_characters", "schema"):next(function(exists)
         if not exists then
             MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Schema column does not exist. Creating it...\n")
@@ -3874,27 +3872,27 @@ concommand.Add("lia_fix_schema_column", function(ply)
                     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Successfully added 'schema' column to lia_characters table\n")
                     -- Update existing records with current gamemode
                     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-                    lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function() 
+                    lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function()
                         MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Updated existing character records with schema: " .. gamemode .. "\n")
-                    end):catch(function(err) 
+                    end):catch(function(err)
                         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Failed to update existing character records with schema: " .. err .. "\n")
                     end)
                 else
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Failed to add 'schema' column to lia_characters table\n")
                 end
-            end):catch(function(err) 
+            end):catch(function(err)
                 MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Error adding 'schema' column: " .. err .. "\n")
             end)
         else
             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Schema column already exists. Updating missing values...\n")
             local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-            lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function() 
+            lia.db.query("UPDATE lia_characters SET schema = " .. lia.db.convertDataType(gamemode) .. " WHERE schema IS NULL OR schema = ''"):next(function()
                 MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✅ Updated character records with missing schema values: " .. gamemode .. "\n")
-            end):catch(function(err) 
+            end):catch(function(err)
                 MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Failed to update character records with missing schema: " .. err .. "\n")
             end)
         end
-    end):catch(function(err) 
+    end):catch(function(err)
         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 0, 0), "❌ Error checking for 'schema' column: " .. err .. "\n")
     end)
 end)
