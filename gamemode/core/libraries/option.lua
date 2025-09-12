@@ -89,13 +89,11 @@ function lia.option.save()
     if json then
         file.CreateDir("lilia")
         local success = file.Write(path, json)
-        if success then
-            -- Options saved successfully
-        else
-            -- Failed to save options
+        if not success then
+            print("Warning: Failed to save options to file")
         end
     else
-        -- Failed to serialize options to JSON
+        print("Warning: Failed to serialize options to JSON")
     end
 end
 
@@ -114,10 +112,8 @@ function lia.option.load()
                     loadedCount = loadedCount + 1
                 end
             end
-
-            -- Loaded saved options
         else
-            -- Failed to parse JSON data from file
+            print("Warning: Failed to parse JSON data from options file")
         end
     else
         -- No saved options file found, using defaults
@@ -133,10 +129,8 @@ function lia.option.load()
         local json = util.TableToJSON(out, true)
         if json then
             local success = file.Write(path, json)
-            if success then
-                -- Created default options file
-            else
-                -- Failed to create default options file
+            if not success then
+                print("Warning: Failed to create default options file")
             end
         end
     end
