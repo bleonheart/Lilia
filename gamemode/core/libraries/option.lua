@@ -90,12 +90,12 @@ function lia.option.save()
         file.CreateDir("lilia")
         local success = file.Write(path, json)
         if success then
-            print("[LIA OPTIONS] Saved options to " .. path .. " (" .. table.Count(out) .. " options)")
+            -- Options saved successfully
         else
-            print("[LIA OPTIONS] Failed to save options to " .. path)
+            -- Failed to save options
         end
     else
-        print("[LIA OPTIONS] Failed to serialize options to JSON")
+        -- Failed to serialize options to JSON
     end
 end
 
@@ -103,7 +103,7 @@ function lia.option.load()
     local path = "lilia/options.json"
     file.CreateDir("lilia")
     local data = file.Read(path, "DATA")
-    print("[LIA OPTIONS] Loading options from " .. path)
+    -- Loading options from file
     if data then
         local saved = util.JSONToTable(data)
         if saved then
@@ -115,12 +115,12 @@ function lia.option.load()
                 end
             end
 
-            print("[LIA OPTIONS] Loaded " .. loadedCount .. " saved options")
+            -- Loaded saved options
         else
-            print("[LIA OPTIONS] Failed to parse JSON data from file")
+            -- Failed to parse JSON data from file
         end
     else
-        print("[LIA OPTIONS] No saved options file found, using defaults")
+        -- No saved options file found, using defaults
         for _, option in pairs(lia.option.stored) do
             if option.default ~= nil then option.value = option.default end
         end
@@ -134,9 +134,9 @@ function lia.option.load()
         if json then
             local success = file.Write(path, json)
             if success then
-                print("[LIA OPTIONS] Created default options file")
+                -- Created default options file
             else
-                print("[LIA OPTIONS] Failed to create default options file")
+                -- Failed to create default options file
             end
         end
     end
