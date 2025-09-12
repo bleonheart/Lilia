@@ -8,13 +8,19 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 if SERVER then
-    lia.db.select({"id", "name"}, "characters"):next(function(data)
-        local results = data.results or {}
-        if #results > 0 then
-            for _, v in pairs(results) do
-                lia.char.names[v.id] = v.name
+    lia.db.waitForTablesToLoad():next(function()
+        lia.db.tableExists("lia_characters"):next(function(tableExists)
+            if tableExists then
+                lia.db.selectWithJoin("SELECT c.id, n.value AS name FROM lia_characters AS c LEFT JOIN lia_chardata AS n ON n.charID = c.id AND n.key = 'name'"):next(function(data)
+                    local results = data.results or {}
+                    if #results > 0 then
+                        for _, v in pairs(results) do
+                            lia.char.names[v.id] = v.name
+                        end
+                    end
+                end):catch(function(err) lia.warning("[Character] Failed to load character names: " .. tostring(err)) end)
             end
-        end
+        end)
     end)
 
     function lia.char.getCharacter(charID, client, callback)
@@ -412,7 +418,7 @@ lia.char.registerVar("var", {
             net.WriteString(key)
             net.WriteType(value)
             net.WriteType(id)
-            if receiver then
+            if IsValid(receiver) then
                 net.Send(receiver)
             else
                 net.Send(client)
@@ -628,27 +634,56 @@ if SERVER then
             recognition = data.recognition or "",
             fakenames = ""
         }, function(_, charID)
-            local client
-            for _, v in player.Iterator() do
-                if v:SteamID() == data.steamID then
-                    client = v
-                    break
-                end
-            end
-
-            local character = lia.char.new(data, charID, client, data.steamID)
-            character.vars.inv = {}
-            hook.Run("CreateDefaultInventory", character):next(function(inventory)
-                character.vars.inv[1] = inventory
-                lia.char.loaded[charID] = character
-                if istable(data.data) then
-                    for k, v in pairs(data.data) do
-                        lia.char.setCharDatabase(charID, k, v)
+            -- Define the character creation function
+            local function createCharacterWithID()
+                local client
+                for _, v in player.Iterator() do
+                    if v:SteamID() == data.steamID then
+                        client = v
+                        break
                     end
                 end
 
-                if callback then callback(charID) end
-            end)
+                local character = lia.char.new(data, charID, client, data.steamID)
+                if not character then return end
+                -- Set character variables
+                for k, v in pairs(data) do
+                    if lia.char.vars[k] then character:setVar(k, v, nil, client) end
+                end
+
+                -- Save character data
+                character:save()
+                -- Handle player setup
+                if IsValid(client) then
+                    client:setNetVar("char", charID)
+                    lia.char.loaded[charID] = character
+                    client:getChar():sync(client)
+                    client:Spawn()
+                    hook.Run("PlayerLoadedChar", client, character, data.lastChar)
+                    lia.log.add(client, "charCreate", data.name or "Unknown", charID)
+                end
+
+                hook.Run("OnCharCreated", client, character)
+            end
+
+            -- Fix for corrupted character IDs: if charID is nil, query the database to get the correct ID
+            if not charID then
+                lia.db.selectWithJoin("SELECT c.id FROM lia_characters AS c LEFT JOIN lia_chardata AS n ON n.charID = c.id AND n.key = 'name' WHERE c.steamID = " .. lia.db.convertDataType(data.steamID) .. " AND n.value = " .. lia.db.convertDataType(data.name or "") .. " AND c.createTime = " .. lia.db.convertDataType(timeStamp) .. " AND c.schema = " .. lia.db.convertDataType(gamemode)):next(function(result)
+                    if result and result.id then
+                        charID = tonumber(result.id)
+                        lia.warning("[Lilia] Character creation: Retrieved correct ID " .. charID .. " for character '" .. (data.name or "Unknown") .. "'")
+                    else
+                        lia.error("[Lilia] Character creation: Failed to retrieve ID for newly created character '" .. (data.name or "Unknown") .. "'")
+                        return
+                    end
+
+                    -- Continue with character creation using the correct ID
+                    createCharacterWithID()
+                end):catch(function(err) lia.error("[Lilia] Character creation: Error retrieving character ID: " .. err) end)
+                return
+            end
+
+            createCharacterWithID()
         end)
     end
 
@@ -675,12 +710,10 @@ if SERVER then
             for _, v in ipairs(results) do
                 local charId = tonumber(v.id)
                 if not charId then
-                    -- Enhanced error message with detailed corruption information
                     local corruptionReason = "Character ID is not a valid number"
                     local rawId = tostring(v.id)
                     local charName = v.name or "Unknown"
                     local charSteamID = v.steamID or "Unknown"
-
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== CORRUPTED CHARACTER DETECTED ===\n")
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Name: ", charName, "\n")
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Raw ID: '", rawId, "' (type: ", type(v.id), ")\n")
@@ -688,7 +721,6 @@ if SERVER then
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Corruption Reason: ", corruptionReason, "\n")
                     MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Solution: Run 'lia_fix_characters' console command to clean up corrupted characters\n")
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=====================================\n")
-
                     lia.error(L("invalidCharacterID", charName))
                 else
                     local charData = {}

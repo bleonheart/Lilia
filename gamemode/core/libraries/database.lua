@@ -127,7 +127,18 @@ local sqliteQuery = promisifyIfNoCallback(function(query, callback, throw)
 
     if callback then
         local lastID = nil
-        if string.find(string.upper(query), "INSERT") then lastID = tonumber(sql.QueryValue("SELECT last_insert_rowid()")) end
+        if string.find(string.upper(query), "INSERT") then
+            local rawLastID = sql.QueryValue("SELECT last_insert_rowid()")
+            if rawLastID == false then
+                lia.warning("[Database] Failed to retrieve last insert ID for query: " .. query)
+                lastID = nil
+            else
+                lastID = tonumber(rawLastID)
+                if not lastID then
+                    lia.warning("[Database] Invalid last insert ID '" .. tostring(rawLastID) .. "' for query: " .. query)
+                end
+            end
+        end
         callback(data, lastID)
     end
 end)
@@ -159,6 +170,23 @@ function lia.db.connect(connectCallback, reconnect)
         lia.db.query = function(query, queryCallback, onError)
             query = lia.db.normalizeSQLIdentifiers(query)
             return sqliteQuery(query, queryCallback, onError)
+        end
+
+        -- Apply SQLite performance and safety PRAGMAs on connect (server only)
+        if SERVER and not lia.db._pragmasApplied then
+            pcall(function()
+                -- Use WAL for better concurrency and startup durability
+                sql.Query("PRAGMA journal_mode=WAL")
+                -- Balance safety and speed; NORMAL keeps durability reasonable
+                sql.Query("PRAGMA synchronous=NORMAL")
+                -- Keep temp objects in memory for speed
+                sql.Query("PRAGMA temp_store=MEMORY")
+                -- Increase page cache size (negative means KB units)
+                sql.Query("PRAGMA cache_size=-8000")
+                -- Enforce foreign keys if defined
+                sql.Query("PRAGMA foreign_keys=ON")
+            end)
+            lia.db._pragmasApplied = true
         end
 
         if isfunction(connectCallback) then connectCallback(true) end
@@ -750,7 +778,13 @@ function lia.db.loadTables()
                 type = "text"
             }
         })
-    end):next(function() done() end):catch(function(err)
+    end):next(function()
+        -- Ensure schema migrations before signaling readiness
+        return lia.db.migrateDatabaseSchemas()
+    end):next(function() 
+        lia.bootstrap("Database", "Database tables loaded and migrations completed successfully")
+        done() 
+    end):catch(function(err)
         lia.error("[Database] Failed to create database tables: " .. tostring(err))
         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "CRITICAL: Database table creation failed! Error: ", tostring(err), "\n")
         MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "This may cause the server to malfunction. Check database permissions and disk space.\n")
@@ -1500,7 +1534,6 @@ function lia.db.migrateDatabaseSchemas()
                 d:reject(err)
             end)
         else
-            MsgC(Color(0, 255, 0), "[Lilia] No missing database columns found, skipping migration.\n")
             d:resolve()
         end
     end):catch(function(err)
@@ -2375,13 +2408,19 @@ concommand.Add("lia_snapshot", function(ply)
                     end
 
                     file.Write(filename, content)
-                    sendFeedback("? Saved " .. #result.results .. " records from " .. tableName .. " to " .. filename, Color(0, 255, 0))
+                    sendFeedback("? Saved " .. #selectResult.results .. " records from " .. tableName .. " to " .. filename, Color(0, 255, 0))
                 else
-                    sendFeedback("? Failed to query table: " .. tableName, Color(255, 0, 0))
+                    sendFeedback("? Failed to query table: " .. tableName .. " (no results returned)", Color(255, 0, 0))
                 end
 
                 completed = completed + 1
-                if completed >= total then sendFeedback("Snapshot creation completed for all tables", Color(0, 255, 0)) end
+                if completed >= total then
+                    if completed == total then
+                        sendFeedback("Snapshot creation completed for all tables", Color(0, 255, 0))
+                    else
+                        sendFeedback("Snapshot creation completed with some errors", Color(255, 255, 0))
+                    end
+                end
             end):catch(function(err)
                 sendFeedback("? Error processing table " .. tableName .. ": " .. err, Color(255, 0, 0))
                 completed = completed + 1
@@ -3148,7 +3187,7 @@ function lia.db.autoRemoveUnderscoreColumns()
     return d
 end
 
-concommand.Add("lia_fix_characters", function(ply, _, args)
+concommand.Add("lia_fix_characters", function(ply)
     if SERVER and IsValid(ply) then
         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
@@ -3157,7 +3196,6 @@ concommand.Add("lia_fix_characters", function(ply, _, args)
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== Starting Character Corruption Fix ===\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n\n")
-
     lia.db.waitForTablesToLoad():next(function()
         if not lia.db.connected then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
@@ -3166,15 +3204,11 @@ concommand.Add("lia_fix_characters", function(ply, _, args)
 
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local schemaCondition = "schema = " .. lia.db.convertDataType(gamemode)
-
-        -- Check for corrupted characters (non-numeric IDs)
         MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Scanning for corrupted character IDs...\n")
-
-        lia.db.select({"id", "name", "steamID"}, "characters", schemaCondition):next(function(data)
+        lia.db.selectWithJoin("SELECT c.id, n.value AS name, c.steamID FROM lia_characters AS c LEFT JOIN lia_chardata AS n ON n.charID = c.id AND n.key = 'name' WHERE " .. schemaCondition):next(function(data)
             local results = data.results or {}
             local corruptedChars = {}
             local validChars = 0
-
             for _, v in ipairs(results) do
                 local charId = tonumber(v.id)
                 if not charId then
@@ -3189,7 +3223,6 @@ concommand.Add("lia_fix_characters", function(ply, _, args)
             end
 
             MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", #results, " total characters (", validChars, " valid, ", #corruptedChars, " corrupted)\n")
-
             if #corruptedChars == 0 then
                 MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "No corrupted characters found!\n")
                 return
@@ -3200,49 +3233,572 @@ concommand.Add("lia_fix_characters", function(ply, _, args)
                 MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("  %d. ID: '%s' | Name: '%s' | SteamID: '%s'\n", i, char.rawId, char.name, char.steamID))
             end
 
-            MsgC(Color(255, 255, 0), "\n[Lilia] ", Color(255, 255, 255), "Starting cleanup process...\n")
+            MsgC(Color(255, 255, 0), "\n[Lilia] ", Color(255, 255, 255), "Starting repair process...\n")
+            lia.db.select("MAX(id) as maxId", "characters", schemaCondition):next(function(maxIdData)
+                local maxIdResult = maxIdData.results and maxIdData.results[1]
+                local nextId = (maxIdResult and maxIdResult.maxId and tonumber(maxIdResult.maxId) or 0) + 1
+                local fixedCount = 0
+                local deletedCount = 0
+                local promises = {}
+                for _, char in ipairs(corruptedChars) do
+                    local newId = nextId
+                    nextId = nextId + 1
+                    lia.db.selectOne("id", "characters", "id = " .. newId):next(function(existingCheck)
+                        if existingCheck then
+                            newId = nextId
+                            nextId = nextId + 1
+                        end
 
-            local deletedCount = 0
-            local promises = {}
+                        local updatePromise = lia.db.updateTable({
+                            id = newId
+                        }, nil, "characters", "id = " .. lia.db.convertDataType(char.rawId) .. " AND " .. schemaCondition):next(function()
+                            lia.db.updateTable({
+                                charID = newId
+                            }, nil, "chardata", "charID = " .. lia.db.convertDataType(char.rawId)):next(function()
+                                lia.db.select({"invID"}, "inventories", "charID = " .. lia.db.convertDataType(char.rawId)):next(function(invData)
+                                    local invResults = invData.results or {}
+                                    local invPromises = {}
+                                    for _, inv in ipairs(invResults) do
+                                        local invPromise = lia.db.updateTable({
+                                            charID = newId
+                                        }, nil, "inventories", "charID = " .. lia.db.convertDataType(char.rawId) .. " AND invID = " .. inv.invID)
 
-            for _, char in ipairs(corruptedChars) do
-                local deletePromise = lia.db.delete("characters", "id = " .. lia.db.convertDataType(char.rawId) .. " AND " .. schemaCondition)
-                :next(function()
-                    -- Also delete related chardata
-                    lia.db.delete("chardata", "charID = " .. lia.db.convertDataType(char.rawId)):next(function()
-                        -- Also delete related inventories
-                        lia.db.select({"invID"}, "inventories", "charID = " .. lia.db.convertDataType(char.rawId)):next(function(invData)
-                            local invResults = invData.results or {}
-                            for _, inv in ipairs(invResults) do
-                                lia.inventory.deleteByID(tonumber(inv.invID))
-                            end
-                        end):catch(function(err)
-                            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not delete inventories for corrupted character ID '", char.rawId, "': ", err, "\n")
+                                        table.insert(invPromises, invPromise)
+                                    end
+
+                                    if #invPromises > 0 then
+                                        deferred.all(invPromises):next(function()
+                                            fixedCount = fixedCount + 1
+                                            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixed corrupted character: ", char.name, " (", char.rawId, " -> ", newId, ")\n")
+                                        end):catch(function(err)
+                                            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not update inventories for fixed character ID '", char.rawId, "' -> '", newId, "': ", err, "\n")
+                                            fixedCount = fixedCount + 1
+                                            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixed corrupted character (with warnings): ", char.name, " (", char.rawId, " -> ", newId, ")\n")
+                                        end)
+                                    else
+                                        fixedCount = fixedCount + 1
+                                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixed corrupted character: ", char.name, " (", char.rawId, " -> ", newId, ")\n")
+                                    end
+                                end):catch(function(err)
+                                    MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not update inventories for fixed character ID '", char.rawId, "' -> '", newId, "': ", err, "\n")
+                                    fixedCount = fixedCount + 1
+                                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixed corrupted character (with warnings): ", char.name, " (", char.rawId, " -> ", newId, ")\n")
+                                end)
+                            end):catch(function(err)
+                                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not update chardata for fixed character ID '", char.rawId, "' -> '", newId, "': ", err, "\n")
+                                fixedCount = fixedCount + 1
+                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Fixed corrupted character (with warnings): ", char.name, " (", char.rawId, " -> ", newId, ")\n")
+                            end)
+                        end):catch(function(updateErr)
+                            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Failed to fix character ID '", char.rawId, "', deleting character: ", updateErr, "\n")
+                            local deletePromise = lia.db.delete("characters", "id = " .. lia.db.convertDataType(char.rawId) .. " AND " .. schemaCondition):next(function()
+                                lia.db.delete("chardata", "charID = " .. lia.db.convertDataType(char.rawId)):next(function()
+                                    lia.db.select({"invID"}, "inventories", "charID = " .. lia.db.convertDataType(char.rawId)):next(function(invData)
+                                        local invResults = invData.results or {}
+                                        for _, inv in ipairs(invResults) do
+                                            lia.inventory.deleteByID(tonumber(inv.invID))
+                                        end
+                                    end):catch(function(deleteInvErr) MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not delete inventories for corrupted character ID '", char.rawId, "': ", deleteInvErr, "\n") end)
+                                end):catch(function(deleteChardataErr) MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not delete chardata for corrupted character ID '", char.rawId, "': ", deleteChardataErr, "\n") end)
+
+                                deletedCount = deletedCount + 1
+                                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Deleted corrupted character: ", char.name, " (ID: ", char.rawId, ")\n")
+                            end):catch(function(deleteCharErr) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to delete corrupted character ID '", char.rawId, "': ", deleteCharErr, "\n") end)
+
+                            table.insert(promises, deletePromise)
                         end)
+
+                        table.insert(promises, updatePromise)
                     end):catch(function(err)
-                        MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not delete chardata for corrupted character ID '", char.rawId, "': ", err, "\n")
+                        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to check for ID collision for character '", char.rawId, "', deleting character: ", err, "\n")
+                        local deletePromise = lia.db.delete("characters", "id = " .. lia.db.convertDataType(char.rawId) .. " AND " .. schemaCondition):next(function()
+                            lia.db.delete("chardata", "charID = " .. lia.db.convertDataType(char.rawId)):next(function()
+                                lia.db.select({"invID"}, "inventories", "charID = " .. lia.db.convertDataType(char.rawId)):next(function(invData)
+                                    local invResults = invData.results or {}
+                                    for _, inv in ipairs(invResults) do
+                                        lia.inventory.deleteByID(tonumber(inv.invID))
+                                    end
+                                end):catch(function(deleteInvErr2) MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not delete inventories for corrupted character ID '", char.rawId, "': ", deleteInvErr2, "\n") end)
+                            end):catch(function(deleteChardataErr2) MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Warning: Could not delete chardata for corrupted character ID '", char.rawId, "': ", deleteChardataErr2, "\n") end)
+
+                            deletedCount = deletedCount + 1
+                            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Deleted corrupted character: ", char.name, " (ID: ", char.rawId, ")\n")
+                        end):catch(function(deleteCharErr2) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to delete corrupted character ID '", char.rawId, "': ", deleteCharErr2, "\n") end)
+
+                        table.insert(promises, deletePromise)
                     end)
+                end
 
-                    deletedCount = deletedCount + 1
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Deleted corrupted character: ", char.name, " (ID: ", char.rawId, ")\n")
-                end):catch(function(err)
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to delete corrupted character ID '", char.rawId, "': ", err, "\n")
-                end)
+                deferred.all(promises):next(function()
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "\n=== Character Corruption Fix Completed ===\n")
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully fixed ", fixedCount, " corrupted character(s)\n")
+                    MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Deleted ", deletedCount, " corrupted character(s) (unfixable)\n")
+                    MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Total valid characters: ", validChars + fixedCount, "\n")
+                end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error during repair process: ", err, "\n") end)
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to get maximum character ID: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to scan characters table: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
 
-                table.insert(promises, deletePromise)
+concommand.Add("lia_wipecharacters", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING CHARACTER DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL character data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        local schemaCondition = "schema = " .. lia.db.convertDataType(gamemode)
+        MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Counting existing data...\n")
+        lia.db.select("COUNT(*) as count", "characters", schemaCondition):next(function(charData)
+            local charCount = charData.results and charData.results[1] and charData.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", charCount, " characters\n")
+            lia.db.select("COUNT(*) as count", "chardata"):next(function(chardataCount)
+                local chardataTotal = chardataCount.results and chardataCount.results[1] and chardataCount.results[1].count or 0
+                MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", chardataTotal, " character data entries\n")
+                lia.db.select("COUNT(*) as count", "inventories"):next(function(invCount)
+                    local invTotal = invCount.results and invCount.results[1] and invCount.results[1].count or 0
+                    MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", invTotal, " inventories\n")
+                    lia.db.select("COUNT(*) as count", "items"):next(function(itemCount)
+                        local itemTotal = itemCount.results and itemCount.results[1] and itemCount.results[1].count or 0
+                        MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", itemTotal, " items\n")
+                        lia.db.select("COUNT(*) as count", "invdata"):next(function(invdataCount)
+                            local invdataTotal = invdataCount.results and invdataCount.results[1] and invdataCount.results[1].count or 0
+                            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", invdataTotal, " inventory data entries\n\n")
+                            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Beginning wipe process...\n")
+                            lia.db.delete("invdata"):next(function()
+                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Cleared invdata table\n")
+                                lia.db.delete("items"):next(function()
+                                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Cleared items table\n")
+                                    lia.db.delete("inventories"):next(function()
+                                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Cleared inventories table\n")
+                                        lia.db.delete("chardata"):next(function()
+                                            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Cleared chardata table\n")
+                                            lia.db.delete("characters", schemaCondition):next(function()
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Cleared characters table\n\n")
+                                                if lia.db.cacheClear then lia.db.cacheClear() end
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== CHARACTER DATA WIPE COMPLETED ===\n")
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted:\n")
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  • ", charCount, " characters\n")
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  • ", chardataTotal, " character data entries\n")
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  • ", invTotal, " inventories\n")
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  • ", itemTotal, " items\n")
+                                                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  • ", invdataTotal, " inventory data entries\n")
+                                            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear characters table: ", err, "\n") end)
+                                        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear chardata table: ", err, "\n") end)
+                                    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear inventories table: ", err, "\n") end)
+                                end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear items table: ", err, "\n") end)
+                            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear invdata table: ", err, "\n") end)
+                        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count invdata: ", err, "\n") end)
+                    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count items: ", err, "\n") end)
+                end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count inventories: ", err, "\n") end)
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count chardata: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count characters: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipedoors", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING DOORS DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL door data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select("COUNT(*) as count", "doors", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " door entries\n\n")
+            lia.db.delete("doors", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== DOORS DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " door entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear doors table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count doors: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipeconfig", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING CONFIG DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL config data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select("COUNT(*) as count", "config", "schema = " .. lia.db.convertDataType(gamemode)):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " config entries\n\n")
+            lia.db.delete("config", "schema = " .. lia.db.convertDataType(gamemode)):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== CONFIG DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " config entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear config table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count config: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipepersistence", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING PERSISTENCE DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL persistence data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select("COUNT(*) as count", "persistence", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " persistence entries\n\n")
+            lia.db.delete("persistence", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== PERSISTENCE DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " persistence entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear persistence table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count persistence: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipeadmin", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING ADMIN DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL admin data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select("COUNT(*) as count", "admin", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " admin entries\n\n")
+            lia.db.delete("admin", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== ADMIN DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " admin entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear admin table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count admin: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipedata", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING DATA TABLE WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL data table entries!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
+        lia.db.select("COUNT(*) as count", "data", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " data entries\n\n")
+            lia.db.delete("data", "gamemode = " .. lia.db.convertDataType(gamemode)):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== DATA TABLE WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " data entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear data table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count data: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipewarnings", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING WARNINGS DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL warning data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        lia.db.select("COUNT(*) as count", "warnings"):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " warning entries\n\n")
+            lia.db.delete("warnings"):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== WARNINGS DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " warning entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear warnings table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count warnings: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipelogs", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING LOGS DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL log data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        lia.db.select("COUNT(*) as count", "logs"):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " log entries\n\n")
+            lia.db.delete("logs"):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== LOGS DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " log entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear logs table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count logs: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_wipeticketclaims", function(ply)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "=== STARTING TICKET CLAIMS DATA WIPE ===\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "WARNING: This will permanently delete ALL ticket claim data!\n\n")
+    lia.db.waitForTablesToLoad():next(function()
+        if not lia.db.connected then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database not connected!\n")
+            return
+        end
+
+        lia.db.select("COUNT(*) as count", "ticketclaims"):next(function(data)
+            local count = data.results and data.results[1] and data.results[1].count or 0
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Found ", count, " ticket claim entries\n\n")
+            lia.db.delete("ticketclaims"):next(function()
+                if lia.db.cacheClear then lia.db.cacheClear() end
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== TICKET CLAIMS DATA WIPE COMPLETED ===\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully deleted ", count, " ticket claim entries\n")
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to clear ticketclaims table: ", err, "\n") end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to count ticketclaims: ", err, "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n") end)
+end)
+
+concommand.Add("lia_snapshot_skip", function(ply, _, args)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    if #args == 0 then
+        print("Usage: lia_snapshot_skip <table_to_skip> [table_to_skip2] ...")
+        print("Example: lia_snapshot_skip chardata")
+        print("This will create snapshots for all tables EXCEPT the ones specified")
+        return
+    end
+
+    local skipTables = {}
+    for _, tableName in ipairs(args) do
+        local fullTableName = tableName:StartWith("lia_") and tableName or "lia_" .. tableName
+        skipTables[fullTableName] = true
+        print("Will skip table: " .. fullTableName)
+    end
+
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Player ", IsValid(ply) and ply:Nick() or "Console", " initiated selective database snapshot creation\n")
+    local function sendFeedback(msg)
+        print("[DB Snapshot] " .. msg)
+    end
+
+    sendFeedback("Starting database snapshot of all lia_* tables (skipping " .. table.concat(args, ", ") .. ")...", Color(0, 255, 0))
+    lia.db.getTables():next(function(tables)
+        if #tables == 0 then
+            sendFeedback("No lia_* tables found!", Color(255, 255, 0))
+            return
+        end
+
+        -- Filter out tables to skip
+        local filteredTables = {}
+        for _, tableName in ipairs(tables) do
+            if not skipTables[tableName] then
+                table.insert(filteredTables, tableName)
+            else
+                sendFeedback("Skipping table: " .. tableName, Color(255, 255, 0))
             end
+        end
 
-            deferred.all(promises):next(function()
-                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "\n=== Character Corruption Fix Completed ===\n")
-                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully processed ", deletedCount, " corrupted character(s)\n")
-                MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Remaining valid characters: ", validChars, "\n")
+        if #filteredTables == 0 then
+            sendFeedback("No tables left to snapshot after filtering!", Color(255, 255, 0))
+            return
+        end
+
+        sendFeedback("Found " .. #filteredTables .. " tables to snapshot: " .. table.concat(filteredTables, ", "), Color(255, 255, 255))
+        local completed = 0
+        local total = #filteredTables
+        local timestamp = os.date("%Y%m%d_%H%M%S")
+        for _, tableName in ipairs(filteredTables) do
+            lia.db.select("*", tableName:gsub("lia_", "")):next(function(selectResult)
+                if selectResult and selectResult.results then
+                    local shortName = tableName:gsub("lia_", "")
+                    local filename = "lilia/database/" .. shortName .. "_" .. timestamp .. ".txt"
+                    local content = "Database snapshot for table: " .. tableName .. "\n"
+                    content = content .. "Generated on: " .. os.date() .. "\n"
+                    content = content .. "Total records: " .. #selectResult.results .. "\n\n"
+                    for _, row in ipairs(selectResult.results) do
+                        local rowData = {}
+                        for k, v in pairs(row) do
+                            if isstring(v) then
+                                rowData[#rowData + 1] = string.format("%s='%s'", k, v:gsub("'", "''"))
+                            elseif isnumber(v) then
+                                rowData[#rowData + 1] = string.format("%s=%s", k, tostring(v))
+                            elseif v == nil then
+                                rowData[#rowData + 1] = string.format("%s=NULL", k)
+                            else
+                                rowData[#rowData + 1] = string.format("%s='%s'", k, tostring(v):gsub("'", "''"))
+                            end
+                        end
+
+                        content = content .. "INSERT INTO " .. tableName .. " (" .. table.concat(rowData, ", ") .. ");\n"
+                    end
+
+                    file.Write(filename, content)
+                    sendFeedback("? Saved " .. #selectResult.results .. " records from " .. tableName .. " to " .. filename, Color(0, 255, 0))
+                else
+                    sendFeedback("? Failed to query table: " .. tableName .. " (no results returned)", Color(255, 0, 0))
+                end
+
+                completed = completed + 1
+                if completed >= total then
+                    sendFeedback("Selective snapshot creation completed (" .. completed .. "/" .. total .. " tables)", Color(0, 255, 0))
+                end
             end):catch(function(err)
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error during cleanup process: ", err, "\n")
+                sendFeedback("? Error processing table " .. tableName .. ": " .. err, Color(255, 0, 0))
+                completed = completed + 1
+                if completed >= total then
+                    sendFeedback("Selective snapshot creation completed with errors (" .. completed .. "/" .. total .. " tables)", Color(255, 255, 0))
+                end
             end)
-        end):catch(function(err)
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to scan characters table: ", err, "\n")
-        end)
-    end):catch(function(err)
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to wait for database tables to load: ", err, "\n")
-    end)
+        end
+    end):catch(function(err) sendFeedback("? Failed to get table list: " .. err, Color(255, 0, 0)) end)
+end)
+
+concommand.Add("lia_diagnose_table", function(ply, _, args)
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
+        return
+    end
+
+    if #args == 0 then
+        print("Usage: lia_diagnose_table <table_name>")
+        print("Example: lia_diagnose_table chardata")
+        return
+    end
+
+    local tableName = args[1]
+    local fullTableName = tableName:StartWith("lia_") and tableName or "lia_" .. tableName
+
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== Diagnosing table: ", fullTableName, " ===\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Player: ", IsValid(ply) and ply:Nick() or "Console", "\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Timestamp: ", os.date("%Y-%m-%d %H:%M:%S"), "\n\n")
+
+    -- Step 1: Check if table exists in sqlite_master
+    lia.db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='" .. fullTableName .. "'", function(result)
+        if result and #result > 0 then
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "? Table exists in sqlite_master\n")
+
+            -- Step 2: Try to get table schema
+            lia.db.query("PRAGMA table_info(" .. fullTableName .. ")", function(schemaResult)
+                if schemaResult and #schemaResult > 0 then
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "? Table schema retrieved successfully (", #schemaResult, " columns)\n")
+                    for _, col in ipairs(schemaResult) do
+                        print("  - " .. col.name .. " (" .. col.type .. ")")
+                    end
+                    print("")
+
+                    -- Step 3: Try to count records
+                    lia.db.query("SELECT COUNT(*) as count FROM " .. fullTableName, function(countResult)
+                        if countResult and countResult[1] then
+                            local count = countResult[1].count or 0
+                            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "? Table has ", count, " records\n")
+
+                            -- Step 4: Try a simple SELECT query
+                            lia.db.select("*", tableName:gsub("^lia_", "")):next(function(selectResult)
+                                if selectResult and selectResult.results then
+                                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "? SELECT query successful (", #selectResult.results, " records retrieved)\n")
+                                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "=== Diagnosis completed successfully ===\n")
+                                else
+                                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? SELECT query failed: No results returned\n")
+                                end
+                            end):catch(function(err)
+                                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? SELECT query failed: ", err, "\n")
+                                MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "This is likely the cause of the snapshot failure\n")
+                            end)
+                        else
+                            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? Failed to count records in table\n")
+                        end
+                    end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? COUNT query failed: ", err, "\n") end)
+                else
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? Failed to retrieve table schema\n")
+                end
+            end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? PRAGMA table_info failed: ", err, "\n") end)
+        else
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? Table does not exist in sqlite_master\n")
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Available lia_ tables:\n")
+            lia.db.getTables():next(function(tables)
+                for _, tbl in ipairs(tables) do
+                    print("  - " .. tbl)
+                end
+            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to list tables: ", err, "\n") end)
+        end
+    end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "? sqlite_master query failed: ", err, "\n") end)
 end)
