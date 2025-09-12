@@ -144,4 +144,33 @@ lia.inventory.registerTrunk("vehicle", {
         h = lia.config.get("trunkInvH", 2)
     }
 })
+
+-- Console command to test storage fallback
+concommand.Add("lia_test_storage_fallback", function(client, cmd, args)
+    if not args[1] then
+        print("Usage: lia_test_storage_fallback <model>")
+        return
+    end
+
+    local model = args[1]
+    print("Testing storage fallback for model: " .. model)
+
+    -- Create a test entity
+    local testEnt = ents.Create("prop_physics")
+    testEnt:SetModel(model)
+    testEnt:SetPos(Vector(0, 0, 0))
+    testEnt:Spawn()
+
+    -- Test storage initialization
+    MODULE:InitializeStorage(testEnt):next(function(inv)
+        print("Storage initialized successfully for " .. model)
+        print("Inventory ID: " .. tostring(inv:getID()))
+        print("Inventory type: " .. tostring(inv.invType))
+        SafeRemoveEntity(testEnt)
+    end, function(err)
+        print("Storage initialization failed for " .. model .. ": " .. tostring(err))
+        SafeRemoveEntity(testEnt)
+    end)
+end)
+
 return RULES
