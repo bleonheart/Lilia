@@ -450,9 +450,10 @@ lia.char.registerVar("inv", {
     onSync = function(character, recipient)
         net.Start("liaCharacterInvList")
         net.WriteUInt(character:getID(), 32)
-        net.WriteUInt(#character.vars.inv, 32)
-        for i = 1, #character.vars.inv do
-            net.WriteType(character.vars.inv[i].id)
+        local inv = character.vars.inv or {}
+        net.WriteUInt(#inv, 32)
+        for i = 1, #inv do
+            net.WriteType(inv[i].id)
         end
 
         if recipient == nil then
@@ -645,7 +646,10 @@ if SERVER then
                 end
 
                 local character = lia.char.new(data, charID, client, data.steamID)
-                if not character then return end
+                if not character then
+                    if callback then callback(nil) end
+                    return
+                end
                 -- Set character variables
                 for k, v in pairs(data) do
                     if lia.char.vars[k] then character:setVar(k, v, nil, client) end
@@ -664,6 +668,9 @@ if SERVER then
                 end
 
                 hook.Run("OnCharCreated", client, character)
+
+                -- Call the callback with the character ID
+                if callback then callback(charID) end
             end
 
             -- Fix for corrupted character IDs: if charID is nil, query the database to get the correct ID
@@ -674,12 +681,16 @@ if SERVER then
                         lia.warning("[Lilia] Character creation: Retrieved correct ID " .. charID .. " for character '" .. (data.name or "Unknown") .. "'")
                     else
                         lia.error("[Lilia] Character creation: Failed to retrieve ID for newly created character '" .. (data.name or "Unknown") .. "'")
+                        if callback then callback(nil) end
                         return
                     end
 
                     -- Continue with character creation using the correct ID
                     createCharacterWithID()
-                end):catch(function(err) lia.error("[Lilia] Character creation: Error retrieving character ID: " .. err) end)
+                end):catch(function(err)
+                    lia.error("[Lilia] Character creation: Error retrieving character ID: " .. err)
+                    if callback then callback(nil) end
+                end)
                 return
             end
 
