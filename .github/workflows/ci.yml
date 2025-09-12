@@ -147,7 +147,7 @@ jobs:
           retention-days: 1
 
   linter-non-main:
-    if: github.repository == 'LiliaFramework/Lilia' && github.ref != 'refs/heads/main'
+    if: github.repository != 'LiliaFramework/Lilia'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
