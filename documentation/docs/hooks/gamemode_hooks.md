@@ -11466,17 +11466,3 @@ end)
 ```
 
 ---
-
-## Rules
-
-- Only document hooks that are part of the Lilia gamemode framework.
-- Always follow the structure exactly as shown with Purpose, Parameters, Returns, Realm, and Example Usage sections.
-- Always write in clear, concise English.
-- Always generate full Markdown pages ready to be placed in documentation.
-- Always provide extensive usage examples in GLua code fences.
-- Always format code cleanly and consistently.
-- Never omit any of the required sections.
-- Never include comments in code unless they clarify the example's intent.
-- Always use proper hook naming conventions and parameter descriptions.
-- Always specify the correct realm (Server, Client, or Shared) for each hook.
-- Always provide multiple practical examples for each hook.
