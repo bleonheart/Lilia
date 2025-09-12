@@ -779,11 +779,10 @@ function lia.db.loadTables()
             }
         })
     end):next(function()
-        -- Ensure schema migrations before signaling readiness
         return lia.db.migrateDatabaseSchemas()
-    end):next(function() 
+    end):next(function()
         lia.bootstrap("Database", "Database tables loaded and migrations completed successfully")
-        done() 
+        done()
     end):catch(function(err)
         lia.error("[Database] Failed to create database tables: " .. tostring(err))
         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "CRITICAL: Database table creation failed! Error: ", tostring(err), "\n")
