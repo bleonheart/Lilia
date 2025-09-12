@@ -373,6 +373,22 @@ function GM:PostPlayerLoadout(client)
     end
 
     client:SetSkin(character:getSkin())
+
+    -- Apply faction bodygroups
+    local faction = lia.faction.indices[character:getFaction()]
+    local model = character:getModel()
+    if istable(model) then model = model[1] end
+
+    if faction and faction.bodygroups then
+        lia.faction.applyBodygroups(client, faction, model)
+    end
+
+    -- Apply class bodygroups (overrides faction bodygroups if they conflict)
+    local class = lia.class.list[character:getClass()]
+    if class and class.bodygroups then
+        lia.class.applyBodygroups(client, class, model)
+    end
+
     client:setNetVar("VoiceType", L("talking"))
 end
 
