@@ -70,7 +70,6 @@ function MODULE:EntityRemoved(entity)
     if self:IsSuitableForTrunk(entity) == false then return end
     local storageInv = lia.inventory.instances[entity:getNetVar("inv")]
     if storageInv then storageInv:delete() end
-    -- Clean up storage initialization data
     entity.liaStorageInitPromise = nil
     entity.receivers = nil
 end
@@ -126,7 +125,6 @@ function MODULE:OnDatabaseLoaded()
     self.loadedData = true
 end
 
--- Register default storage for entities without models
 lia.inventory.registerStorage("models/props_junk/wood_crate001a.mdl", {
     name = "Storage Container",
     invType = "GridInv",
@@ -144,33 +142,4 @@ lia.inventory.registerTrunk("vehicle", {
         h = lia.config.get("trunkInvH", 2)
     }
 })
-
--- Console command to test storage fallback
-concommand.Add("lia_test_storage_fallback", function(client, cmd, args)
-    if not args[1] then
-        print("Usage: lia_test_storage_fallback <model>")
-        return
-    end
-
-    local model = args[1]
-    print("Testing storage fallback for model: " .. model)
-
-    -- Create a test entity
-    local testEnt = ents.Create("prop_physics")
-    testEnt:SetModel(model)
-    testEnt:SetPos(Vector(0, 0, 0))
-    testEnt:Spawn()
-
-    -- Test storage initialization
-    MODULE:InitializeStorage(testEnt):next(function(inv)
-        print("Storage initialized successfully for " .. model)
-        print("Inventory ID: " .. tostring(inv:getID()))
-        print("Inventory type: " .. tostring(inv.invType))
-        SafeRemoveEntity(testEnt)
-    end, function(err)
-        print("Storage initialization failed for " .. model .. ": " .. tostring(err))
-        SafeRemoveEntity(testEnt)
-    end)
-end)
-
 return RULES
