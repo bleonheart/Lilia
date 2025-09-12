@@ -765,8 +765,8 @@ end
 
 if SERVER then
     concommand.Add("lia_db_status", function(ply)
-        if IsValid(ply) and not ply:IsSuperAdmin() then
-            ply:ChatPrint("You must be a super admin to use this command.")
+        if SERVER and IsValid(ply) then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
             return
         end
 
@@ -2156,9 +2156,8 @@ function lia.db.GetCharacterTable(callback)
 end
 
 concommand.Add("lia_load_snapshot", function(ply, _, args)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_load_snapshot'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2244,9 +2243,8 @@ concommand.Add("lia_load_snapshot", function(ply, _, args)
 end)
 
 concommand.Add("lia_clear_table", function(ply, _, args)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_clear_table'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2289,9 +2287,8 @@ concommand.Add("lia_clear_table", function(ply, _, args)
 end)
 
 concommand.Add("lia_list_snapshots", function(ply, _, args)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_list_snapshots'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2331,9 +2328,8 @@ concommand.Add("lia_list_snapshots", function(ply, _, args)
 end)
 
 concommand.Add("lia_snapshot", function(ply)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_snapshot'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2396,9 +2392,8 @@ concommand.Add("lia_snapshot", function(ply)
 end)
 
 concommand.Add("lia_snapshot_table", function(ply, _, args)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_snapshot_table'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2466,9 +2461,8 @@ concommand.Add("lia_snapshot_table", function(ply, _, args)
 end)
 
 concommand.Add("lia_dbtest", function(ply)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_dbtest'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2741,9 +2735,8 @@ concommand.Add("lia_dbtest", function(ply)
 end)
 
 concommand.Add("lia_list_tables", function(ply)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_list_tables'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2835,9 +2828,8 @@ concommand.Add("lia_list_tables", function(ply)
 end)
 
 concommand.Add("lia_list_columns", function(ply, _, args)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_list_columns'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -2914,9 +2906,8 @@ concommand.Add("lia_list_columns", function(ply, _, args)
 end)
 
 concommand.Add("lia_remove_column_underscores", function(ply)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_remove_column_underscores'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
@@ -3158,9 +3149,8 @@ function lia.db.autoRemoveUnderscoreColumns()
 end
 
 concommand.Add("lia_fix_characters", function(ply, _, args)
-    if SERVER and IsValid(ply) and not ply:IsSuperAdmin() then
-        ply:ChatPrint("This command requires super admin privileges.")
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: Player ", ply:Nick(), " attempted to use command 'lia_fix_characters'\n")
+    if SERVER and IsValid(ply) then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Access denied: This database command can only be run from the server console\n")
         return
     end
 
