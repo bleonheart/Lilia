@@ -584,3 +584,16 @@ function MODULE:ToggleLock(client, door, state)
     hook.Run("DoorLockToggled", client, door, state)
     lia.log.add(client, "toggleLock", door, state and L("locked") or L("unlocked"))
 end
+
+function MODULE:OnWipeTables()
+    -- Clear all door data when wiping database
+    for _, door in ents.Iterator() do
+        if door:isDoor() then
+            door:setNetVar("doorData", {})
+            door.liaFactions = nil
+            door.liaClasses = nil
+        end
+    end
+
+    lia.information("Cleared all door data during database wipe")
+end

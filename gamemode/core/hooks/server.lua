@@ -1180,9 +1180,16 @@ concommand.Add("lia_wipedb", function(client)
     else
         resetCalled = 0
         MsgC(Color(255, 0, 0), "[Lilia] " .. L("databaseWipeProgress") .. "\n")
+        -- Run the wipe tables hook first
         hook.Run("OnWipeTables")
-        lia.db.wipeTables(lia.db.loadTables)
-        game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
+        -- Use the new wipeTables function
+        lia.db.wipeTables(function()
+            -- Reload tables after wipe
+            lia.db.loadTables()
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Database wipe completed successfully\n")
+            -- Change level to restart the server
+            game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
+        end)
     end
 end)
 
@@ -1416,6 +1423,35 @@ concommand.Add("lia_check_players", function(client)
             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  - Character List: " .. table.concat(charList, ", ") .. " (" .. #charList .. " chars)\n")
             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  - Current Char ID: " .. tostring(currentCharID) .. "\n")
             MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  - Has Character: " .. tostring(currentChar ~= nil) .. "\n")
+        end
+    end
+end)
+
+concommand.Add("lia_check_inventories", function(client)
+    if IsValid(client) then
+        client:notifyLocalized("commandConsoleOnly")
+        return
+    end
+
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Character Inventory Status:\n")
+    for _, ply in player.Iterator() do
+        if IsValid(ply) and not ply:IsBot() then
+            local currentChar = ply:getChar()
+            if currentChar then
+                local charID = currentChar:getID()
+                local inventories = currentChar:getInv(true) or {}
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), ply:Name() .. " (Char ID: " .. charID .. "):\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  - Inventory Count: " .. #inventories .. "\n")
+                for i, inv in ipairs(inventories) do
+                    if inv and inv.getID then
+                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "  - Inventory " .. i .. ": ID=" .. inv:getID() .. ", Type=" .. (inv.typeID or "unknown") .. "\n")
+                    else
+                        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "  - Inventory " .. i .. ": INVALID\n")
+                    end
+                end
+            else
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), ply:Name() .. ": No character loaded\n")
+            end
         end
     end
 end)

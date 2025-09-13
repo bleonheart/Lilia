@@ -655,17 +655,55 @@ if SERVER then
                 end
 
                 character:save()
-                if IsValid(client) then
-                    client:setNetVar("char", charID)
-                    lia.char.loaded[charID] = character
-                    client:getChar():sync(client)
-                    client:Spawn()
-                    hook.Run("PlayerLoadedChar", client, character, data.lastChar)
-                    lia.log.add(client, "charCreate", data.name or "Unknown", charID)
-                end
 
-                hook.Run("OnCharCreated", client, character)
-                if callback then callback(charID) end
+                -- Create default inventory for new character
+                character.vars.inv = {}
+                local promise = hook.Run("CreateDefaultInventory", character)
+                if promise then
+                    promise:next(function(inventory)
+                        if inventory then
+                            character.vars.inv = {inventory}
+                        end
+
+                        if IsValid(client) then
+                            client:setNetVar("char", charID)
+                            lia.char.loaded[charID] = character
+                            client:getChar():sync(client)
+                            client:Spawn()
+                            hook.Run("PlayerLoadedChar", client, character, data.lastChar)
+                            lia.log.add(client, "charCreate", data.name or "Unknown", charID)
+                        end
+
+                        hook.Run("OnCharCreated", client, character)
+                        if callback then callback(charID) end
+                    end):catch(function(err)
+                        lia.error("Failed to create default inventory for character " .. charID .. ": " .. tostring(err))
+                        if IsValid(client) then
+                            client:setNetVar("char", charID)
+                            lia.char.loaded[charID] = character
+                            client:getChar():sync(client)
+                            client:Spawn()
+                            hook.Run("PlayerLoadedChar", client, character, data.lastChar)
+                            lia.log.add(client, "charCreate", data.name or "Unknown", charID)
+                        end
+
+                        hook.Run("OnCharCreated", client, character)
+                        if callback then callback(charID) end
+                    end)
+                else
+                    -- Fallback if no CreateDefaultInventory hook exists
+                    if IsValid(client) then
+                        client:setNetVar("char", charID)
+                        lia.char.loaded[charID] = character
+                        client:getChar():sync(client)
+                        client:Spawn()
+                        hook.Run("PlayerLoadedChar", client, character, data.lastChar)
+                        lia.log.add(client, "charCreate", data.name or "Unknown", charID)
+                    end
+
+                    hook.Run("OnCharCreated", client, character)
+                    if callback then callback(charID) end
+                end
             end
 
             if not charID then

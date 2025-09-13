@@ -180,23 +180,40 @@ if SERVER then
                     lia.db.insertTable({
                         invType = self.typeID,
                         charID = charID
-                    }, function(_, lastID)
+                    }, function(results, lastID)
+                        if not lastID then
+                            d:reject("Failed to create inventory: No lastID returned")
+                            return
+                        end
+
                         local count = 0
                         local expected = table.Count(initialData)
-                        if initialData.char then expected = expected - 1 end
-                        if expected == 0 then return d:resolve(lastID) end
+                        if initialData.char then
+                            expected = expected - 1
+                        end
+
+                        if expected == 0 then
+                            d:resolve(lastID)
+                            return
+                        end
+
                         for key, value in pairs(initialData) do
-                            if key == "char" then continue end
+                            if key == "char" then
+                                continue
+                            end
+
                             lia.db.insertTable({
                                 invID = lastID,
                                 key = key,
                                 value = {value}
                             }, function()
                                 count = count + 1
-                                if count == expected then d:resolve(lastID) end
+                                if count == expected then
+                                    d:resolve(lastID)
+                                end
                             end, "invdata")
                         end
-                    end, "inventories"):catch(function(err) d:reject("Failed to create inventory: " .. tostring(err)) end)
+                    end, "inventories")
                 end)
             end)
         end):catch(function(err) d:reject("Failed to wait for database tables: " .. tostring(err)) end)

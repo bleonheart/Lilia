@@ -300,7 +300,7 @@ function lia.administrator.save(noNetwork)
         lia.db.tableExists("lia_admin"):next(function(tableExists)
             if tableExists then
                 lia.db.delete("admin"):next(function()
-                    lia.db.bulkInsert("admin", rows):next(function()
+                    lia.db.bulkUpsert("admin", rows):next(function()
                         if noNetwork or lia.administrator._loading then return end
                         lia.net.ready = lia.net.ready or setmetatable({}, {
                             __mode = "k"
@@ -322,7 +322,7 @@ function lia.administrator.save(noNetwork)
                     end):catch(function(err) lia.warning("[Admin] Failed to bulk insert admin data: " .. tostring(err)) end)
                 end):catch(function(err) lia.warning("[Admin] Failed to delete admin table: " .. tostring(err)) end)
             else
-                lia.db.bulkInsert("admin", rows):next(function()
+                lia.db.bulkUpsert("admin", rows):next(function()
                     if noNetwork or lia.administrator._loading then return end
                     lia.net.ready = lia.net.ready or setmetatable({}, {
                         __mode = "k"

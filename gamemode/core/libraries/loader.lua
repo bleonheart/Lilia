@@ -601,6 +601,7 @@ if SERVER then
         lia.db.connect(function(success, errorMsg)
             if success then
                 lia.loadingState.databaseConnected = true
+                hook.Run("DatabaseConnected")
                 lia.db.loadTables()
             else
                 lia.loadingState.loadingFailed = true
