@@ -116,6 +116,24 @@ function lia.option.load()
     hook.Run("InitializedOptions")
 end
 
+-- Console command to test option setting
+concommand.Add("lia_test_option", function(client, cmd, args)
+    if not IsValid(client) then return end
+
+    local testKey = "espConfiguredDoors"
+    local currentValue = lia.option.get(testKey, false)
+    print("Current value of " .. testKey .. ": " .. tostring(currentValue))
+
+    local newValue = not currentValue
+    lia.option.set(testKey, newValue)
+    print("Set " .. testKey .. " to: " .. tostring(newValue))
+
+    local verifyValue = lia.option.get(testKey, false)
+    print("Verified value: " .. tostring(verifyValue))
+
+    print("Option stored value: " .. tostring(lia.option.stored[testKey] and lia.option.stored[testKey].value))
+end)
+
 hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     local OptionFormatting = {
         Int = function(key, name, cfg, parent)
@@ -588,6 +606,30 @@ lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnc
     r = 255,
     g = 0,
     b = 255,
+    a = 255
+}, nil, {
+    category = "categoryESP",
+    visible = function()
+        local ply = LocalPlayer()
+        if not IsValid(ply) then return false end
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
+    end
+})
+
+lia.option.add("espConfiguredDoors", "espConfiguredDoors", "espConfiguredDoorsDesc", false, nil, {
+    category = "categoryESP",
+    isQuick = true,
+    visible = function()
+        local ply = LocalPlayer()
+        if not IsValid(ply) then return false end
+        return ply:isStaffOnDuty() or ply:hasPrivilege("noClipOutsideStaff")
+    end
+})
+
+lia.option.add("espConfiguredDoorsColor", "espConfiguredDoorsColor", "espConfiguredDoorsColorDesc", {
+    r = 0,
+    g = 255,
+    b = 0,
     a = 255
 }, nil, {
     category = "categoryESP",
