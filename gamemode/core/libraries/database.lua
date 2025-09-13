@@ -240,7 +240,8 @@ CREATE TABLE IF NOT EXISTS lia_persistence (
     class text,
     pos text,
     angles text,
-    model text
+    model text,
+    data text
 );
 CREATE TABLE IF NOT EXISTS lia_saveditems (
     id integer primary key autoincrement,
