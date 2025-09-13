@@ -142,7 +142,7 @@ function lia.config.load()
                 if not existing[k] then
                     lia.config.stored[k].value = v.default
                     inserts[#inserts + 1] = {
-                        schema = schema,
+                        schema = gamemode,
                         key = k,
                         value = {v.default}
                     }
