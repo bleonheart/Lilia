@@ -1,62 +1,50 @@
 lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}
 lia.db.prepared = lia.db.prepared or {}
-PREPARE_CACHE = {}
-local modules = {}
-local function ThrowQueryFault(query, fault)
-    if string.find(fault, "duplicate column name:") or string.find(fault, "UNIQUE constraint failed: lia_config") then return end
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " * " .. query .. "\n")
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. fault .. "\n")
-end
-
-
-local function promisifyIfNoCallback(queryHandler)
-    return function(query, callback)
-        local d
-        local function throw(err)
-            if d then
-                d:reject(err)
-            else
-                ThrowQueryFault(query, err)
+lia.db.modules = {
+    ["sqlite"] = {
+        query = function(query, callback)
+            local d
+            if not isfunction(callback) then
+                d = deferred.new()
+                callback = function(results, lastID)
+                    d:resolve({
+                        results = results,
+                        lastID = lastID
+                    })
+                end
             end
-        end
 
-        if not isfunction(callback) then
-            d = deferred.new()
-            callback = function(results, lastID)
-                d:resolve({
-                    results = results,
-                    lastID = lastID
-                })
+            local data = sql.Query(query)
+            local err = sql.LastError()
+            if data == false then
+                if d then
+                    d:reject(err)
+                else
+                    if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then return end
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " * " .. query .. "\n")
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. err .. "\n")
+                end
             end
-        end
 
-        queryHandler(query, callback, throw)
-        return d
-    end
-end
-
-modules.sqlite = {
-    query = promisifyIfNoCallback(function(query, callback, throw)
-        local data = sql.Query(query)
-        local err = sql.LastError()
-        if data == false then throw(err) end
-        if callback then
-            local lastID = tonumber(sql.QueryValue("SELECT last_insert_rowid()"))
-            callback(data, lastID)
+            if callback then
+                local lastID = tonumber(sql.QueryValue("SELECT last_insert_rowid()"))
+                callback(data, lastID)
+            end
+            return d
+        end,
+        escape = function(value) return sql.SQLStr(value, true) end,
+        connect = function(callback)
+            lia.db.query = lia.db.modules.sqlite.query
+            if callback then callback() end
         end
-    end),
-    escape = function(value) return sql.SQLStr(value, true) end,
-    connect = function(callback)
-        lia.db.query = modules.sqlite.query
-        if callback then callback() end
-    end
+    }
 }
 
-lia.db.escape = lia.db.escape or modules.sqlite.escape
+lia.db.escape = lia.db.escape or lia.db.modules.sqlite.escape
 lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueue + 1] = {...} end
 function lia.db.connect(callback, reconnect)
-    local dbModule = modules[lia.db.module]
+    local dbModule = lia.db.modules[lia.db.module]
     if dbModule then
         if (reconnect or not lia.db.connected) and not lia.db.object then
             dbModule.connect(function()
@@ -364,40 +352,30 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
     local tableName = "lia_" .. (dbTable or "characters")
     local query = "SELECT " .. from .. " FROM " .. tableName
-    
     if conditions and istable(conditions) and next(conditions) then
         local whereParts = {}
         for field, value in pairs(conditions) do
             if value ~= nil then
                 local operator = "="
                 local conditionValue = value
-                
                 if istable(value) and value.operator and value.value ~= nil then
                     operator = value.operator
                     conditionValue = value.value
                 end
-                
+
                 local escapedField = lia.db.escapeIdentifier(field)
                 local convertedValue = lia.db.convertDataType(conditionValue)
                 table.insert(whereParts, escapedField .. " " .. operator .. " " .. convertedValue)
             end
         end
-        
-        if #whereParts > 0 then
-            query = query .. " WHERE " .. table.concat(whereParts, " AND ")
-        end
+
+        if #whereParts > 0 then query = query .. " WHERE " .. table.concat(whereParts, " AND ") end
     elseif isstring(conditions) then
         query = query .. " WHERE " .. tostring(conditions)
     end
-    
-    if orderBy then
-        query = query .. " ORDER BY " .. tostring(orderBy)
-    end
-    
-    if limit then
-        query = query .. " LIMIT " .. tostring(limit)
-    end
-    
+
+    if orderBy then query = query .. " ORDER BY " .. tostring(orderBy) end
+    if limit then query = query .. " LIMIT " .. tostring(limit) end
     lia.db.query(query, function(results, lastID)
         d:resolve({
             results = results,
