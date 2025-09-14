@@ -41,9 +41,14 @@ end
 
 function PANEL:RecalcSize()
     self.scale = ScrH() / 1080
-    local w = NotificationMaxWidth * self.scale
-    surface.SetFont("Trebuchet24")
-    local _, th = surface.GetTextSize(self.msg or "")
+    surface.SetFont("liaSmallFont")
+    local tw, th = surface.GetTextSize(self.msg or "")
+
+    -- Calculate width based on text size, with minimum and maximum constraints
+    local minWidth = 200 * self.scale
+    local maxWidth = NotificationMaxWidth * self.scale
+    local textAreaWidth = tw + (NotificationPadding * 2) + (24 * self.scale) -- text + padding + icon
+    local w = math.Clamp(textAreaWidth, minWidth, maxWidth)
     local h = math.max(NotificationHeight * self.scale, th + NotificationPadding * self.scale)
     self:SetSize(w, h)
     self.iconSize = 24 * self.scale
