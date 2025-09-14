@@ -204,7 +204,7 @@ function playerMeta:notifyMoney(message)
     end
 end
 
-function playerMeta:notifyAdmin(message, ...)
+function playerMeta:notifyAdmin(message)
     if SERVER then
         lia.notices.notify(message, self, "admin")
     else
