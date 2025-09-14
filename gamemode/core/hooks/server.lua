@@ -208,7 +208,8 @@ function GM:CanPlayerTakeItem(client, item)
         client:notifyLocalized("familySharedPickupDisabled")
         return false
     elseif IsValid(item.entity) then
-        if item.entity.SteamID == client:SteamID() then
+        local character = client:getChar()
+        if character and item.entity.liaCharID and item.entity.liaCharID ~= character:getID() then
             client:notifyLocalized("playerCharBelonging")
             return false
         end
