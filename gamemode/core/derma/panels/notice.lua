@@ -47,7 +47,8 @@ function PANEL:RecalcSize()
     -- Calculate width based on text size, with minimum and maximum constraints
     local minWidth = 200 * self.scale
     local maxWidth = NotificationMaxWidth * self.scale
-    local textAreaWidth = tw + (NotificationPadding * 2) + (24 * self.scale) -- text + padding + icon
+    local extraSpacing = 20 * self.scale -- Additional spacing for better visual appearance
+    local textAreaWidth = tw + (NotificationPadding * 2) + (24 * self.scale) + extraSpacing -- text + padding + icon + extra spacing
     local w = math.Clamp(textAreaWidth, minWidth, maxWidth)
     local h = math.max(NotificationHeight * self.scale, th + NotificationPadding * self.scale)
     self:SetSize(w, h)
