@@ -102,8 +102,7 @@ else
             [2] = "success"
         }
 
-        local lp = LocalPlayer()
-        if IsValid(lp) then lp:notifyInfoLocalized(tostring(text), map[tonumber(typeId) or -1] or "default") end
+        lia.notices.notify(nil, tostring(text), map[tonumber(typeId) or -1] or "default")
     end
 end
 
