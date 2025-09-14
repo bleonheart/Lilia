@@ -1,5 +1,4 @@
 ﻿local NotificationMaxWidth = 450
-local NotificationMinWidth = 200
 local NotificationHeight = 54
 local NotificationPadding = 18
 local NotificationLifetime = 6

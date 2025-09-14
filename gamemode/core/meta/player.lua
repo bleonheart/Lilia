@@ -148,7 +148,7 @@ function playerMeta:getEyeEnt(distance)
     return e:GetPos():Distance(self:GetPos()) <= distance and e or nil
 end
 
-function playerMeta:notify(message, notifType, ...)
+function playerMeta:notify(message, notifType)
     if SERVER then
         lia.notices.notify(message, self, notifType or "default")
     else
@@ -164,7 +164,7 @@ function playerMeta:notifyLocalized(message, notifType, ...)
     end
 end
 
-function playerMeta:notifyError(message, ...)
+function playerMeta:notifyError(message)
     if SERVER then
         lia.notices.notify(message, self, "error")
     else
@@ -172,7 +172,7 @@ function playerMeta:notifyError(message, ...)
     end
 end
 
-function playerMeta:notifyWarning(message, ...)
+function playerMeta:notifyWarning(message)
     if SERVER then
         lia.notices.notify(message, self, "warning")
     else
@@ -180,7 +180,7 @@ function playerMeta:notifyWarning(message, ...)
     end
 end
 
-function playerMeta:notifyInfo(message, ...)
+function playerMeta:notifyInfo(message)
     if SERVER then
         lia.notices.notify(message, self, "info")
     else
@@ -188,7 +188,7 @@ function playerMeta:notifyInfo(message, ...)
     end
 end
 
-function playerMeta:notifySuccess(message, ...)
+function playerMeta:notifySuccess(message)
     if SERVER then
         lia.notices.notify(message, self, "success")
     else
@@ -196,7 +196,7 @@ function playerMeta:notifySuccess(message, ...)
     end
 end
 
-function playerMeta:notifyMoney(message, ...)
+function playerMeta:notifyMoney(message)
     if SERVER then
         lia.notices.notify(message, self, "money")
     else
