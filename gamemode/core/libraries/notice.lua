@@ -76,7 +76,7 @@ else
     end
 
     net.Receive("liaNotifyL", lia.notices.receiveNotifyL)
-    function lia.notices.notify(client, message, notifType)
+    function lia.notices.notify(_, message, notifType)
         local notice = vgui.Create("liaNotice")
         notice:SetText(tostring(message))
         notice:SetType(tostring(notifType or "default"))
