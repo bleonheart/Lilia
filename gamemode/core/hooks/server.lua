@@ -232,6 +232,8 @@ function GM:CanPlayerDropItem(client, item)
         client:notifyLocalized("forbiddenActionStorage")
         return false
     end
+    
+    return true
 end
 
 local logTypeMap = {
