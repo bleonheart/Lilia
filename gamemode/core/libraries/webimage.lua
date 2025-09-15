@@ -304,7 +304,7 @@ concommand.Add("lia_cleanup_images", function()
     for _, filePath in ipairs(files) do
         local fileData = file.Read(filePath, "DATA")
         if fileData then
-            -- Basic validation: check if file has valid image headers
+            
             local isValid = false
             if string.lower(string.sub(fileData, 2, 4)) == "png" then
                 isValid = true
@@ -324,7 +324,7 @@ concommand.Add("lia_cleanup_images", function()
         end
     end
 
-    -- Clean up cache entries for deleted files
+    
     for fileName, _ in pairs(cache) do
         local savePath = baseDir .. fileName
         if not file.Exists(savePath, "DATA") then

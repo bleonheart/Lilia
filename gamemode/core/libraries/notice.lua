@@ -1,7 +1,7 @@
 ﻿lia.notices = lia.notices or {}
 if SERVER then
     function lia.notices.notify(client, message, notifType)
-        net.Start("liaNotification")
+        net.Start("liaNotificationData")
         net.WriteString(message)
         net.WriteString(notifType or "default")
         if client then
@@ -50,7 +50,7 @@ else
         MsgN(msg)
     end
 
-    net.Receive("liaNotification", lia.notices.receiveNotify)
+    net.Receive("liaNotificationData", lia.notices.receiveNotify)
     function lia.notices.receiveNotifyL()
         local key = net.ReadString() or ""
         local argc = net.ReadUInt(8) or 0

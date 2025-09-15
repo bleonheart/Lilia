@@ -249,7 +249,7 @@ net.Receive("liaDataSync", function()
     lia.localData[key] = value
 end)
 
-net.Receive("liaAttribute", function()
+net.Receive("liaAttributeData", function()
     local id = net.ReadUInt(32)
     local key = net.ReadString()
     local value = net.ReadType()

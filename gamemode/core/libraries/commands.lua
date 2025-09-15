@@ -479,7 +479,7 @@ else
     end
 
     function lia.command.send(command, ...)
-        net.Start("liaCommand")
+        net.Start("liaCommandData")
         net.WriteString(command)
         net.WriteTable({...})
         net.SendToServer()

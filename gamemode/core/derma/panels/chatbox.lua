@@ -84,7 +84,7 @@ function PANEL:setActive(state)
                     lia.chat.lastLine = input
                 end
 
-                net.Start("liaMessage")
+                net.Start("liaMessageData")
                 net.WriteString(input)
                 net.SendToServer()
             end

@@ -56,7 +56,7 @@ lia.command.add("managesitrooms", {
     onRun = function(client)
         if not client:hasPrivilege("manageSitRooms") then return end
         local rooms = lia.data.get("sitrooms", {})
-        net.Start("liaManageSitRooms")
+        net.Start("liaManagesitrooms")
         net.WriteTable(rooms)
         net.Send(client)
     end
@@ -272,7 +272,7 @@ lia.command.add("charlist", {
         end
 
         local query = [[SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = ]] .. lia.db.convertDataType(steamID)
-        lia.db.query(query):next(function(data)
+        lia.db.query(query, function(data)
             if not data or #data == 0 then
                 client:notifyInfoLocalized("noCharactersForPlayer")
                 return
@@ -341,9 +341,6 @@ lia.command.add("charlist", {
             net.WriteTable(sendData)
             net.WriteString(steamID)
             net.Send(client)
-        end):catch(function(err)
-            lia.error("Failed to query character list: " .. tostring(err))
-            client:notifyErrorLocalized("databaseError")
         end)
     end
 })
@@ -410,13 +407,9 @@ lia.command.add("plyunban", {
     onRun = function(client, arguments)
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
-            lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid)):next(function()
-                client:notifySuccessLocalized("playerUnbanned")
-                lia.log.add(client, "plyUnban", steamid)
-            end):catch(function(err)
-                lia.error("Failed to unban player: " .. tostring(err))
-                client:notifyErrorLocalized("databaseError")
-            end)
+            lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. steamid)
+            client:notifySuccessLocalized("playerUnbanned")
+            lia.log.add(client, "plyUnban", steamid)
         end
     end
 })
@@ -1612,7 +1605,7 @@ lia.command.add("charunban", {
 
         client.liaNextSearch = CurTime() + 15
         local sqlCondition = id and "id = " .. id or "name LIKE \"%" .. lia.db.escape(queryArg) .. "%\""
-        lia.db.query("SELECT id, name FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1"):next(function(data)
+        lia.db.query("SELECT id, name FROM lia_characters WHERE " .. sqlCondition .. " LIMIT 1", function(data)
             if data and data[1] then
                 local charID = tonumber(data[1].id)
                 local banned = lia.char.getCharBanned(charID)
@@ -1627,9 +1620,6 @@ lia.command.add("charunban", {
                 client:notifySuccessLocalized("charUnBan", client:Name(), data[1].name)
                 lia.log.add(client, "charUnban", data[1].name, charID)
             end
-        end):catch(function(err)
-            lia.error("Failed to query character for unban: " .. tostring(err))
-            client:notifyErrorLocalized("databaseError")
         end)
     end
 })
@@ -1844,7 +1834,7 @@ lia.command.add("charwipeoffline", {
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
         if not charID then return client:notifyErrorLocalized("invalidCharID") end
-        lia.db.query("SELECT name FROM lia_characters WHERE id = " .. charID):next(function(data)
+        lia.db.query("SELECT name FROM lia_characters WHERE id = " .. charID, function(data)
             if not data or #data == 0 then
                 client:notifyErrorLocalized("characterNotFound")
                 return
@@ -1861,9 +1851,6 @@ lia.command.add("charwipeoffline", {
             lia.char.delete(charID)
             client:notifySuccessLocalized("offlineCharWiped", charID)
             lia.log.add(client, "charWipeOffline", charName, charID)
-        end):catch(function(err)
-            lia.error("Failed to query character for wipe: " .. tostring(err))
-            client:notifyErrorLocalized("databaseError")
         end)
     end
 })
@@ -2953,20 +2940,3 @@ lia.command.add("serverpassword", {
         return "Server password sent to you."
     end
 })
-
--- Console command for testing database functionality
-concommand.Add("lia_test_database", function(client, cmd, args)
-    if not IsValid(client) then
-        print("[Lilia] Testing database connection...")
-        lia.db.query("SELECT 1 as test"):next(function(result)
-            print("[Lilia] Database test successful!")
-            if result and result[1] then
-                print("[Lilia] Test query returned: " .. tostring(result[1].test))
-            end
-        end):catch(function(err)
-            print("[Lilia] Database test failed: " .. tostring(err))
-        end)
-    else
-        client:notifyErrorLocalized("consoleCommandOnly")
-    end
-end)

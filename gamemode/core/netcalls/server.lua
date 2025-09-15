@@ -344,7 +344,7 @@ net.Receive("liaRequestInteractOptions", function(_, ply)
     net.Send(ply)
 end)
 
-net.Receive("liaCommand", function(_, client)
+net.Receive("liaCommandData", function(_, client)
     local command = net.ReadString()
     local arguments = net.ReadTable()
     if (client.liaNextCmd or 0) < CurTime() then
