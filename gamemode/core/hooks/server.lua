@@ -1473,7 +1473,6 @@ function GM:CreateSalaryTimers()
                 local class = lia.class.list[char:getClass()]
                 local pay = hook.Run("GetSalaryAmount", client, faction, class)
                 pay = isnumber(pay) and pay or class and class.pay or faction and faction.pay or 0
-                
                 local adjustedPay = hook.Run("OnSalaryAdjust", client)
                 if isnumber(adjustedPay) then pay = adjustedPay end
                 local limit = hook.Run("GetSalaryLimit", client, faction, class)

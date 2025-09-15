@@ -260,7 +260,6 @@ net.Receive("liaKickCharacter", function(_, client)
             local oldFactionID = data[1].faction
             local oldFactionData = lia.faction.teams[oldFactionID]
             if oldFactionData and oldFactionData.isDefault then return end
-            
             lia.db.updateTable({
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID):next(function()

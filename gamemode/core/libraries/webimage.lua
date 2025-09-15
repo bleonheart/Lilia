@@ -304,7 +304,6 @@ concommand.Add("lia_cleanup_images", function()
     for _, filePath in ipairs(files) do
         local fileData = file.Read(filePath, "DATA")
         if fileData then
-            
             local isValid = false
             if string.lower(string.sub(fileData, 2, 4)) == "png" then
                 isValid = true
@@ -323,8 +322,6 @@ concommand.Add("lia_cleanup_images", function()
             print(string.format("[WebImage] Removed unreadable file: %s", filePath:sub(#baseDir + 1)))
         end
     end
-
-    
     for fileName, _ in pairs(cache) do
         local savePath = baseDir .. fileName
         if not file.Exists(savePath, "DATA") then
