@@ -1,4 +1,4 @@
-local MaliciousNet = {
+﻿local MaliciousNet = {
     ["Sbox_gm_attackofnullday_key"] = true,
     ["c"] = true,
     ["enablevac"] = true,
@@ -163,7 +163,6 @@ local MaliciousNet = {
     ["m9k_addons"] = true,
     ["fix"] = true,
     ["zilnix"] = true,
-    ["invalid_netstring"] = true,
     ["oldNetReadData"] = true,
     ["ZimbaBackDoor"] = true,
     ["0x13"] = true,
