@@ -30,7 +30,7 @@ local function ReadLogEntries(category)
     return d
 end
 
-net.Receive("send_logs_request", function(_, client)
+net.Receive("liaSendLogsRequest", function(_, client)
     if not CanPlayerSeeLog(client) then return end
     local categories = {}
     for _, v in pairs(lia.log.types) do

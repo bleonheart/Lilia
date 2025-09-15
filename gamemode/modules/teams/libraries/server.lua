@@ -9,7 +9,7 @@
     end
 
     if info2 and info2.OnLeave then info2:OnLeave(client) end
-    net.Start("classUpdate")
+    net.Start("liaClassUpdate")
     net.WriteEntity(client)
     net.Broadcast()
 end
@@ -208,7 +208,7 @@ function MODULE:CanPlayerSwitchChar(client, _, newCharacter)
     if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
 end
 
-net.Receive("KickCharacter", function(_, client)
+net.Receive("liaKickCharacter", function(_, client)
     local char = client:getChar()
     local canManageAny = client:hasPrivilege("canManageFactions")
     local canKick = char and char:hasFlags("K")

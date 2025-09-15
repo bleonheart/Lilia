@@ -793,14 +793,14 @@ if SERVER then
             }, nil, "staffactions")
             return true
         elseif cmd == "blind" then
-            net.Start("blindTarget")
+            net.Start("liaBlindTarget")
             net.WriteBool(true)
             net.Send(target)
             local duration = dur or 0
             if duration > 0 then
                 timer.Create("liaBlind" .. target:SteamID(), duration, 1, function()
                     if IsValid(target) then
-                        net.Start("blindTarget")
+                        net.Start("liaBlindTarget")
                         net.WriteBool(false)
                         net.Send(target)
                     end
@@ -819,7 +819,7 @@ if SERVER then
             }, nil, "staffactions")
             return true
         elseif cmd == "unblind" then
-            net.Start("blindTarget")
+            net.Start("liaBlindTarget")
             net.WriteBool(false)
             net.Send(target)
             lia.log.add(admin, "plyUnblind", target:Name())

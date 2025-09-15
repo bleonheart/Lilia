@@ -1,4 +1,4 @@
-﻿net.Receive("cfgSet", function(_, client)
+﻿net.Receive("liaCfgSet", function(_, client)
     local key = net.ReadString()
     local name = net.ReadString()
     local value = net.ReadType()
@@ -35,7 +35,7 @@ net.Receive("liaRequestTableData", function(_, client)
     end)
 end)
 
-net.Receive("lia_managesitrooms_action", function(_, client)
+net.Receive("liaManagesitroomsAction", function(_, client)
     if not client:hasPrivilege("manageSitRooms") then return end
     local action = net.ReadUInt(2)
     local name = net.ReadString()

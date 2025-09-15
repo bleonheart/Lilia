@@ -1,4 +1,4 @@
-﻿net.Receive("cfgList", function()
+﻿net.Receive("liaCfgList", function()
     local changed = net.ReadTable()
     for key, value in pairs(changed) do
         if lia.config.stored[key] then lia.config.stored[key].value = value end
@@ -156,7 +156,7 @@ net.Receive("liaDBTableData", function()
     end
 end)
 
-net.Receive("cfgSet", function()
+net.Receive("liaCfgSet", function()
     local key = net.ReadString()
     local value = net.ReadType()
     local config = lia.config.stored[key]
@@ -176,7 +176,7 @@ net.Receive("cfgSet", function()
     end
 end)
 
-net.Receive("blindTarget", function()
+net.Receive("liaBlindTarget", function()
     local enabled = net.ReadBool()
     if enabled then
         hook.Add("HUDPaint", "blindTarget", function() draw.RoundedBox(0, 0, 0, ScrW(), ScrH(), Color(0, 0, 0, 255)) end)
@@ -185,7 +185,7 @@ net.Receive("blindTarget", function()
     end
 end)
 
-net.Receive("blindFade", function()
+net.Receive("liaBlindFade", function()
     local isWhite = net.ReadBool()
     local duration = net.ReadFloat()
     local fadeIn = net.ReadFloat()
@@ -215,7 +215,7 @@ net.Receive("blindFade", function()
     end)
 end)
 
-net.Receive("AdminModeSwapCharacter", function()
+net.Receive("liaAdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
     assert(isnumber(id), L("idMustBeNumber"))
     local d = deferred.new()
@@ -235,7 +235,7 @@ net.Receive("AdminModeSwapCharacter", function()
     net.SendToServer()
 end)
 
-net.Receive("managesitrooms", function()
+net.Receive("liaManagesitrooms", function()
     local rooms = net.ReadTable()
     local frame = vgui.Create("DFrame")
     frame:SetTitle(L("manageSitrooms"))
@@ -262,7 +262,7 @@ net.Receive("managesitrooms", function()
             btn:SetWide(80)
             btn:SetText(L(key))
             btn.DoClick = function()
-                net.Start("lia_managesitrooms_action")
+                net.Start("liaManagesitroomsAction")
                 net.WriteUInt(action, 2)
                 net.WriteString(name)
                 if action == 2 then
@@ -467,7 +467,7 @@ local function OpenRoster(panel, data)
                     if steamID and steamID ~= "" and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
                         menu:AddOption(L("kick"), function()
                             Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
-                                net.Start("KickCharacter")
+                                net.Start("liaKickCharacter")
                                 net.WriteInt(rowData.id, 32)
                                 net.SendToServer()
                             end, L("no"))

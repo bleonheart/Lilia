@@ -1019,7 +1019,7 @@ function ClientAddText(client, ...)
     end
 
     local args = {...}
-    net.Start("ServerChatAddText")
+    net.Start("liaServerChatAddText")
     net.WriteTable(args)
     net.Send(client)
 end
@@ -1650,6 +1650,29 @@ concommand.Add("test_all_notifications", function()
     end
 
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Notification demonstration completed!\n")
+end)
+
+concommand.Add("lia_redownload_assets", function(client)
+    if IsValid(client) then
+        client:notifyErrorLocalized("commandConsoleOnly")
+        return
+    end
+
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Starting asset redownload for all connected players...\n")
+    local playerCount = 0
+    for _, ply in ipairs(player.GetAll()) do
+        if IsValid(ply) then
+            net.Start("liaAssureClientSideAssets")
+            net.Send(ply)
+            playerCount = playerCount + 1
+        end
+    end
+
+    if playerCount > 0 then
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Asset redownload initiated for " .. playerCount .. " player(s). Check client consoles for progress.\n")
+    else
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "No players connected to redownload assets for.\n")
+    end
 end)
 
 concommand.Add("test_existing_notifications", function(client)

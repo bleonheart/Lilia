@@ -71,7 +71,7 @@ function MODULE:PopulateAdminTabs(pages)
             icon = "icon16/book_open.png",
             drawFunc = function(panel)
                 receivedPanel = panel
-                net.Start("send_logs_request")
+                net.Start("liaSendLogsRequest")
                 net.SendToServer()
             end
         })
