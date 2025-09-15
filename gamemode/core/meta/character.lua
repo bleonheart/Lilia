@@ -306,7 +306,7 @@ if SERVER then
         local maxLevel = hook.Run("GetAttributeMax", client, key) or math.huge
         attrib[key] = math.min(currentLevel + value, maxLevel)
         if IsValid(client) then
-            net.Start("liaAttrib")
+            net.Start("liaAttribute")
             net.WriteUInt(self:getID(), 32)
             net.WriteString(key)
             net.WriteType(attrib[key])
@@ -322,7 +322,7 @@ if SERVER then
             local attrib = self:getAttribs()
             attrib[key] = value
             if IsValid(client) then
-                net.Start("liaAttrib")
+                net.Start("liaAttribute")
                 net.WriteUInt(self:getID(), 32)
                 net.WriteString(key)
                 net.WriteType(attrib[key])
@@ -514,7 +514,7 @@ if SERVER then
         local isCurChar = curChar and curChar:getID() == self:getID() or false
         if self.steamID == steamID then
             if isCurChar then
-                net.Start("liaRemoveF1")
+                net.Start("liaRemoveFOne")
                 net.Send(client)
             end
 

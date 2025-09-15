@@ -578,7 +578,7 @@ if SERVER then
         self.liaData = self.liaData or {}
         self.liaData[key] = value
         if not noNetworking then
-            net.Start("liaData")
+            net.Start("liaDataSync")
             net.WriteString(key)
             net.WriteType(value)
             net.Send(self)
@@ -994,14 +994,14 @@ if SERVER then
         for entity, data in pairs(lia.net) do
             if entity == "globals" then
                 for k, v in pairs(data) do
-                    net.Start("liaGVar")
+                    net.Start("liaGlobalVar")
                     net.WriteString(k)
                     net.WriteType(v)
                     net.Send(self)
                 end
             elseif IsValid(entity) then
                 for k, v in pairs(data) do
-                    net.Start("liaNVar")
+                    net.Start("liaNetVar")
                     net.WriteUInt(entity:EntIndex(), 16)
                     net.WriteString(k)
                     net.WriteType(v)
@@ -1016,7 +1016,7 @@ if SERVER then
         lia.net[self] = lia.net[self] or {}
         local oldValue = lia.net[self][key]
         lia.net[self][key] = value
-        net.Start("liaNLcl")
+        net.Start("liaNetLocal")
         net.WriteString(key)
         net.WriteType(value)
         net.Send(self)

@@ -197,7 +197,7 @@ net.Receive("liaCharVar", function()
     end)
 end)
 
-net.Receive("liaItem", function()
+net.Receive("liaItemData", function()
     local uniqueID = net.ReadString()
     local id = net.ReadUInt(32)
     local data = net.ReadTable()
@@ -242,21 +242,21 @@ net.Receive("liaDataSync", function()
     lia.lastJoin = last
 end)
 
-net.Receive("liaData", function()
+net.Receive("liaDataSync", function()
     local key = net.ReadString()
     local value = net.ReadType()
     lia.localData = lia.localData or {}
     lia.localData[key] = value
 end)
 
-net.Receive("liaAttrib", function()
+net.Receive("liaAttribute", function()
     local id = net.ReadUInt(32)
     local key = net.ReadString()
     local value = net.ReadType()
     lia.char.getCharacter(id, nil, function(character) if character then character:getAttribs()[key] = value end end)
 end)
 
-net.Receive("liaNVar", function()
+net.Receive("liaNetVar", function()
     local index = net.ReadUInt(16)
     local key = net.ReadString()
     local value = net.ReadType()
@@ -267,7 +267,7 @@ net.Receive("liaNVar", function()
     if IsValid(entity) then hook.Run("NetVarChanged", entity, key, oldValue, value) end
 end)
 
-net.Receive("liaNLcl", function()
+net.Receive("liaNetLocal", function()
     local key = net.ReadString()
     local value = net.ReadType()
     local idx = LocalPlayer():EntIndex()
@@ -801,7 +801,7 @@ net.Receive("liaCharKick", function()
     hook.Run("KickedFromChar", id, isCurrentChar)
 end)
 
-net.Receive("liaGVar", function()
+net.Receive("liaGlobalVar", function()
     local key = net.ReadString()
     local value = net.ReadType()
     local oldValue = lia.net.globals[key]
@@ -809,7 +809,7 @@ net.Receive("liaGVar", function()
     hook.Run("NetVarChanged", nil, key, oldValue, value)
 end)
 
-net.Receive("liaNDel", function()
+net.Receive("liaNetDel", function()
     local index = net.ReadUInt(16)
     lia.net[index] = nil
 end)
@@ -827,7 +827,7 @@ net.Receive("liaCharacterData", function()
     end
 end)
 
-net.Receive("liaEmitURLSound", function()
+net.Receive("liaEmitUrlSound", function()
     local ent = net.ReadEntity()
     local soundPath = net.ReadString()
     local volume = net.ReadFloat()

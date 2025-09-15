@@ -255,16 +255,21 @@ net.Receive("liaKickCharacter", function(_, client)
     end
 
     if not isOnline then
-        lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID, function(data)
+        lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID):next(function(data)
             if not data or not data[1] then return end
             local oldFactionID = data[1].faction
             local oldFactionData = lia.faction.teams[oldFactionID]
             if oldFactionData and oldFactionData.isDefault then return end
+            
             lia.db.updateTable({
                 faction = defaultFaction.uniqueID
-            }, nil, "characters", "id = " .. characterID)
-
-            lia.char.setCharDatabase(characterID, "factionKickWarn", true)
+            }, nil, "characters", "id = " .. characterID):next(function()
+                lia.char.setCharDatabase(characterID, "factionKickWarn", true)
+            end):catch(function(err)
+                lia.error("Failed to update character faction: " .. tostring(err))
+            end)
+        end):catch(function(err)
+            lia.error("Failed to query character faction: " .. tostring(err))
         end)
     end
 end)

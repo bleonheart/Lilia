@@ -802,7 +802,7 @@ if SERVER then
 
         hook.Run("OnCharDelete", client, id)
         if IsValid(client) and client:getChar() and client:getChar():getID() == id then
-            net.Start("liaRemoveF1")
+            net.Start("liaRemoveFOne")
             net.Send(client)
             net.Start("liaCharKick")
             net.WriteUInt(id, 32)

@@ -226,7 +226,7 @@ if SERVER then
         if oldValue == value then return end
         lia.net.globals[key] = value
         if not lia.shuttingDown then
-            net.Start("liaGVar")
+            net.Start("liaGlobalVar")
             net.WriteString(key)
             net.WriteType(value)
             if receiver then

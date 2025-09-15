@@ -91,7 +91,7 @@ function openDecodedTable(tableName, columns, data)
     lia.util.CreateTableUI(L("decodedTableTitle", tableName), columnInfo, decodedRows)
 end
 
-net.Receive("liaDBTables", function()
+net.Receive("liaDbTables", function()
     local tables = net.ReadTable()
     local frame = vgui.Create("DFrame")
     frame:SetTitle(L("dbTablesTitle"))
@@ -116,7 +116,7 @@ net.Receive("liaDBTables", function()
     end
 end)
 
-net.Receive("liaDBTableData", function()
+net.Receive("liaDbTableData", function()
     local tbl = net.ReadString()
     local data = net.ReadTable()
     if not data or #data == 0 then return end
@@ -235,7 +235,7 @@ net.Receive("liaAdminModeSwapCharacter", function()
     net.SendToServer()
 end)
 
-net.Receive("liaManagesitrooms", function()
+net.Receive("liaManageSitRooms", function()
     local rooms = net.ReadTable()
     local frame = vgui.Create("DFrame")
     frame:SetTitle(L("manageSitrooms"))
@@ -296,7 +296,7 @@ net.Receive("liaManagesitrooms", function()
     end
 end)
 
-net.Receive("liaAllPKs", function()
+net.Receive("liaAllPks", function()
     local cases = net.ReadTable() or {}
     if not IsValid(panelRef) then return end
     panelRef:Clear()
