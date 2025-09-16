@@ -50,6 +50,7 @@ class CombinedReportData:
     hooks_documented: List[str]
     localization_data: Dict
     modules_data: List
+    modules_scan: List[Dict]
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -75,20 +76,24 @@ class FunctionComparisonReportGenerator:
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
-        print("🔍 Running comprehensive analysis...")
+        print("Running comprehensive analysis...")
         print("=" * 60)
 
         # 1. Function Documentation Comparison
-        print("📋 Analyzing function documentation...")
+        print("Analyzing function documentation...")
         function_results = self._run_function_comparison()
 
         # 2. Missing Hooks Analysis
-        print("🎣 Analyzing hooks documentation...")
+        print("Analyzing hooks documentation...")
         hooks_missing, hooks_documented = self._run_hooks_analysis()
 
         # 3. Localization Analysis
-        print("🌐 Analyzing localization...")
+        print("Analyzing localization...")
         localization_data, modules_data = self._run_localization_analysis()
+
+        # 4. Module undocumented items scan (hooks and lia.* functions)
+        print("Scanning external modules for undocumented items...")
+        modules_scan = self._scan_modules_for_undocumented()
 
         return CombinedReportData(
             function_comparison=function_results,
@@ -96,6 +101,7 @@ class FunctionComparisonReportGenerator:
             hooks_documented=hooks_documented,
             localization_data=localization_data,
             modules_data=modules_data,
+            modules_scan=modules_scan,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -195,16 +201,216 @@ class FunctionComparisonReportGenerator:
         # Localization Section
         report_lines.extend(self._generate_localization_section(data))
 
-        # Per-module docs generation (for non-Lilia modules)
-        if self.generate_module_docs:
-            try:
-                self._generate_module_docs(data)
-            except Exception as e:
-                print(f"⚠️  Error generating per-module docs: {e}")
-        else:
-            print("ℹ️  Skipping per-module documentation generation (disabled by user)")
+        # Modules Section (in-report; do not create per-module files)
+        try:
+            report_lines.extend(self._generate_modules_section(data.modules_scan))
+        except Exception as e:
+            print(f"⚠️  Error generating modules section: {e}")
 
         return "\n".join(report_lines)
+
+    def _scan_modules_for_undocumented(self) -> List[Dict]:
+        """Scan external modules for undocumented hooks and lia.* functions.
+
+        Returns a list of dicts: {
+            'module_path': str,
+            'undoc_hooks': List[str],
+            'undoc_functions': List[str]
+        }
+        Includes entries for all modules encountered (even if counts are zero) so we can build a complete summary.
+        """
+        results: List[Dict] = []
+
+        # Get documented hooks from main Lilia documentation to filter out already documented hooks
+        try:
+            documented_hooks = self._read_all_documented_hooks()
+        except Exception:
+            documented_hooks = set()
+
+        # Get all documented functions from main Lilia documentation
+        try:
+            documented_functions = set()
+            docs_path = Path(self.docs_path) / "docs"
+
+            # Check libraries documentation
+            if (docs_path / "libraries").exists():
+                for md_file in (docs_path / "libraries").glob("*.md"):
+                    if md_file.name.startswith("lia.") or md_file.stem == "lia.core":
+                        try:
+                            with open(md_file, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                            import re
+                            for match in re.finditer(r'^###+\s+([A-Za-z_][\w\.:]*)\s*$', content, re.MULTILINE):
+                                func_name = match.group(1).strip()
+                                # Qualify bare headers on core page as lia.func
+                                if '.' not in func_name and md_file.stem == 'lia.core':
+                                    documented_functions.add(f'lia.{func_name}')
+                                else:
+                                    documented_functions.add(func_name)
+                        except Exception:
+                            continue
+
+            # Check meta documentation (method names may also appear in code as type-qualified)
+            if (docs_path / "meta").exists():
+                for md_file in (docs_path / "meta").glob("*.md"):
+                    try:
+                        with open(md_file, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                        import re
+                        for match in re.finditer(r'`([A-Za-z_][\w\.:]*)\([^)]*\)`', content):
+                            method_name = match.group(1).strip()
+                            documented_functions.add(method_name)
+                    except Exception:
+                        continue
+        except Exception:
+            documented_functions = set()
+
+        # Iterate modules and scan
+        for base_path in self.modules_paths:
+            base_path = Path(base_path)
+            if not base_path.exists():
+                continue
+
+            for module_name in sorted(os.listdir(base_path)):
+                module_dir = base_path / module_name
+                if not module_dir.is_dir():
+                    continue
+                if module_name == "_disabled" or "_disabled" in str(module_dir):
+                    print(f"ℹ️  Skipping disabled module: {module_dir}")
+                    continue
+
+                # Read module-level docs if present
+                documented_module_hooks, documented_module_functions = self._read_module_docs(module_dir)
+
+                undoc_functions: Set[str] = set()
+                undoc_hooks: Set[str] = set()
+
+                for root, _, files in os.walk(module_dir):
+                    for fname in files:
+                        if not fname.lower().endswith('.lua'):
+                            continue
+                        fpath = Path(root) / fname
+                        try:
+                            with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                        except Exception:
+                            continue
+
+                        import re
+                        # lia.* dotted functions declared in module
+                        for m in re.finditer(r'\b(function\s+([A-Za-z_][\w\.]*?)\s*\(|([A-Za-z_][\w\.]*?)\s*=\s*function\s*\()', content):
+                            name = m.group(2) or m.group(3)
+                            if name and name.startswith('lia.') and name.count('.') >= 2:
+                                if name not in documented_functions and name not in documented_module_functions:
+                                    undoc_functions.add(name)
+
+                        # Hooks via hook.Add / hook.Run literals in module, filtered by documented core hooks
+                        for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
+                            hook_name = m.group(2)
+                            if hook_name not in documented_hooks and hook_name not in documented_module_hooks:
+                                undoc_hooks.add(hook_name)
+                        for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
+                            hook_name = m.group(2)
+                            if hook_name not in documented_hooks and hook_name not in documented_module_hooks:
+                                undoc_hooks.add(hook_name)
+
+                results.append({
+                    'module_path': str(module_dir),
+                    'undoc_hooks': sorted(undoc_hooks, key=str.lower),
+                    'undoc_functions': sorted(undoc_functions, key=str.lower),
+                })
+
+        return results
+
+    def _read_module_docs(self, module_dir: Path) -> Tuple[Set[str], Set[str]]:
+        """Read module-level documentation markers from module_dir/docs.
+        - hooks.lua: list of documented hook names (strings)
+        - libraries.lua: list of documented lia.* function names
+        Returns (documented_hooks, documented_functions)
+        """
+        documented_hooks: Set[str] = set()
+        documented_functions: Set[str] = set()
+
+        docs_dir = module_dir / 'docs'
+        if not docs_dir.exists() or not docs_dir.is_dir():
+            return documented_hooks, documented_functions
+
+        # hooks.lua
+        hooks_file = docs_dir / 'hooks.lua'
+        if hooks_file.exists():
+            try:
+                with open(hooks_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                import re
+                # Extract quoted hook names (e.g., "HookName" or 'HookName')
+                for m in re.finditer(r'["\']([A-Za-z_][A-Za-z0-9_]*)["\']', content):
+                    documented_hooks.add(m.group(1))
+            except Exception:
+                pass
+
+        # libraries.lua
+        libs_file = docs_dir / 'libraries.lua'
+        if libs_file.exists():
+            try:
+                with open(libs_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                import re
+                # Extract lia.* dotted function names
+                for m in re.finditer(r'lia\.[A-Za-z_][\w\.]*', content):
+                    documented_functions.add(m.group(0))
+            except Exception:
+                pass
+
+        return documented_hooks, documented_functions
+
+    def _generate_modules_section(self, modules_scan: List[Dict]) -> List[str]:
+        """Build the in-report Modules section with per-module details and a final summary.
+        Only show a module's detail section if it has any undocumented items, but include all in the summary.
+        """
+        lines: List[str] = []
+        if modules_scan is None:
+            return lines
+
+        lines.append("# Modules")
+        lines.append("")
+
+        # Detail sections
+        for entry in modules_scan:
+            undoc_hooks = entry.get('undoc_hooks', [])
+            undoc_functions = entry.get('undoc_functions', [])
+            if not undoc_hooks and not undoc_functions:
+                continue
+            lines.append("---")
+            lines.append("")
+            lines.append(f"## Module: `{entry['module_path']}`")
+            lines.append("")
+            lines.append("### :package: Module Documentation Report")
+            lines.append("")
+            if undoc_hooks:
+                lines.append("- **Undocumented Hooks:**")
+                for h in undoc_hooks:
+                    lines.append(f"  - `{h}`")
+            if undoc_functions:
+                if undoc_hooks:
+                    lines.append("")
+                lines.append("- **Undocumented lia.* Functions:**")
+                for f in undoc_functions:
+                    lines.append(f"  - `{f}`")
+            lines.append("")
+
+        # Summary table
+        if modules_scan:
+            lines.append("---")
+            lines.append("")
+            lines.append("# :clipboard: Module Documentation Summary")
+            lines.append("")
+            lines.append("| Module Path | Undocumented Hooks | Undocumented lia.* Functions |")
+            lines.append("|---|---:|---:|")
+            for entry in modules_scan:
+                lines.append(f"| {entry['module_path']} | {len(entry.get('undoc_hooks', []))} | {len(entry.get('undoc_functions', []))} |")
+            lines.append("")
+
+        return lines
 
     def _generate_module_docs(self, data: CombinedReportData) -> None:
         """Generate docs inside each external module (non-Lilia) when entries are found.
@@ -728,7 +934,7 @@ Examples:
             print(f"   • Localization issues: {len(data.localization_data.get('unused', []))} unused, {len(data.localization_data.get('undefined_rows', []))} undefined")
 
     except Exception as e:
-        print(f"❌ Error during analysis: {e}")
+        print(f"ERROR during analysis: {e}")
         if not args.quiet:
             import traceback
             traceback.print_exc()

@@ -1346,7 +1346,7 @@ concommand.Add("lia_wipebanking", function(client)
                     default = "[]"
                 }
             }):next(function(result)
-                if result and result.success then
+                if result then
                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Recreated banking table with proper structure...\n")
                     lia.db.query("CREATE INDEX IF NOT EXISTS idx_banking_account_number ON lia_banking(account_number)"):next(function() end):catch(function() end)
                     lia.db.query("CREATE INDEX IF NOT EXISTS idx_banking_steamid ON lia_banking(steamid)"):next(function() end):catch(function() end)
@@ -1403,7 +1403,7 @@ concommand.Add("lia_fixbanking", function(client)
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "Adding missing columns to banking table...\n")
             local function addColumn(name, columnType, options)
                 return lia.db.createColumn("banking", name, columnType, options):next(function(result)
-                    if result and result.success then
+                    if result then
                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Added column: " .. name .. "\n")
                     else
                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), "Failed to add column: " .. name .. "\n")

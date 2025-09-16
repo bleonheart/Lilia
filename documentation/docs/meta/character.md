@@ -10,37 +10,6 @@ The `Character` meta table exposes properties and behaviors for character entiti
 
 ---
 
-### tostring
-
-**Purpose**
-
-Returns a string representation of the character.
-
-**Parameters**
-
-*None.*
-
-**Returns**
-
-* `string` (*string*): String representation in format "character[ID]".
-
-**Realm**
-
-Shared.
-
-**Example Usage**
-
-```lua
-local function logCharacter(character)
-    print("Character info: " .. tostring(character))
-end
-
-hook.Add("OnCharacterCreated", "LogCharacterCreation", function(character)
-    logCharacter(character) -- Output: "character[123]"
-end)
-```
-
----
 
 ### eq
 
@@ -72,6 +41,43 @@ local function areCharactersEqual(char1, char2)
         return false
     end
 end
+```
+
+---
+
+### tostring
+
+**Purpose**
+
+Returns a string representation of the character for debugging and display purposes.
+
+**Parameters**
+
+*None.*
+
+**Returns**
+
+* `string`: A formatted string containing "character[ID]" where ID is the character's unique identifier.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+local function displayCharacterInfo(character)
+    local charString = character:tostring()
+    print("Character info: " .. charString)
+    return charString
+end
+
+hook.Add("PlayerSpawn", "LogCharacterString", function(ply)
+    local char = ply:getChar()
+    if char then
+        displayCharacterInfo(char)
+    end
+end)
 ```
 
 ---
