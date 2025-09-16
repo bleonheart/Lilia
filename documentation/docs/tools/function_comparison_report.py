@@ -324,8 +324,8 @@ class FunctionComparisonReportGenerator:
 
     def _read_module_docs(self, module_dir: Path) -> Tuple[Set[str], Set[str]]:
         """Read module-level documentation markers from module_dir/docs.
-        - hooks.lua: list of documented hook names (strings)
-        - libraries.lua: list of documented lia.* function names
+        - hooks.md: list of documented hook names (strings)
+        - libraries.md: list of documented lia.* function names
         Returns (documented_hooks, documented_functions)
         """
         documented_hooks: Set[str] = set()
@@ -335,29 +335,29 @@ class FunctionComparisonReportGenerator:
         if not docs_dir.exists() or not docs_dir.is_dir():
             return documented_hooks, documented_functions
 
-        # hooks.lua
-        hooks_file = docs_dir / 'hooks.lua'
+        # hooks.md
+        hooks_file = docs_dir / 'hooks.md'
         if hooks_file.exists():
             try:
                 with open(hooks_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 import re
-                # Extract quoted hook names (e.g., "HookName" or 'HookName')
-                for m in re.finditer(r'["\']([A-Za-z_][A-Za-z0-9_]*)["\']', content):
+                # Extract hook names from markdown headers (e.g., ## HookName)
+                for m in re.finditer(r'^##+\s+([A-Za-z_][A-Za-z0-9_]*)\s*$', content, re.MULTILINE):
                     documented_hooks.add(m.group(1))
             except Exception:
                 pass
 
-        # libraries.lua
-        libs_file = docs_dir / 'libraries.lua'
+        # libraries.md
+        libs_file = docs_dir / 'libraries.md'
         if libs_file.exists():
             try:
                 with open(libs_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 import re
-                # Extract lia.* dotted function names
-                for m in re.finditer(r'lia\.[A-Za-z_][\w\.]*', content):
-                    documented_functions.add(m.group(0))
+                # Extract lia.* dotted function names from markdown headers (e.g., ## lia.utilities.Blend)
+                for m in re.finditer(r'^##+\s+(lia\.[A-Za-z_][\w\.]*)\s*$', content, re.MULTILINE):
+                    documented_functions.add(m.group(1))
             except Exception:
                 pass
 
@@ -538,7 +538,21 @@ class FunctionComparisonReportGenerator:
                     f.write('# Module Libraries\n\n')
                     f.write('Detected dotted functions in this module.\n\n')
                     for name in sorted(set(dotted_functions)):
-                        f.write(f'- `{name}`\n')
+                        f.write(f'## {name}\n\n')
+                        f.write('**Purpose**\n\n')
+                        f.write('Function description goes here.\n\n')
+                        f.write('**Parameters**\n\n')
+                        f.write('* `param1` (*type*): Description\n\n')
+                        f.write('**Returns**\n\n')
+                        f.write('* `return` (*type*): Description\n\n')
+                        f.write('**Realm**\n\n')
+                        f.write('Shared.\n\n')
+                        f.write('**Example Usage**\n\n')
+                        f.write('```lua\n')
+                        f.write(f'-- Example usage of {name}\n')
+                        f.write(f'local result = {name}()\n')
+                        f.write('```\n\n')
+                        f.write('---\n\n')
 
             # Handle hooks.md - always overwrite the main file
             hooks_md_path = docs_dir / 'hooks.md'
@@ -549,9 +563,9 @@ class FunctionComparisonReportGenerator:
                 try:
                     with open(hooks_md_path, 'r', encoding='utf-8') as f:
                         content = f.read()
-                        # Extract existing hook names from the file
+                        # Extract existing hook names from markdown headers
                         import re
-                        for match in re.finditer(r'`([^`]+)`', content):
+                        for match in re.finditer(r'^##+\s+([A-Za-z_][A-Za-z0-9_]*)\s*$', content, re.MULTILINE):
                             existing_hooks.add(match.group(1).strip())
                 except Exception:
                     existing_hooks = set()
@@ -562,10 +576,26 @@ class FunctionComparisonReportGenerator:
             # Always update hooks.md with current status
             with open(hooks_md_path, 'w', encoding='utf-8') as f:
                 f.write('# Module Hooks\n\n')
+                f.write('This document describes the hooks available in this module.\n\n')
+                f.write('---\n\n')
                 if hooks_found:
-                    f.write('Detected hooks referenced/added in this module that are NOT documented in the main hooks documentation.\n\n')
                     for name in sorted(hooks_found, key=str.lower):
-                        f.write(f'- `{name}`\n')
+                        f.write(f'## {name}\n\n')
+                        f.write('**Purpose**\n\n')
+                        f.write('Called when [description goes here].\n\n')
+                        f.write('**Parameters**\n\n')
+                        f.write('* `param1` (*type*): Description\n\n')
+                        f.write('**Realm**\n\n')
+                        f.write('Server.\n\n')
+                        f.write('**When Called**\n\n')
+                        f.write('This hook is triggered when [description goes here].\n\n')
+                        f.write('**Example Usage**\n\n')
+                        f.write('```lua\n')
+                        f.write(f'hook.Add("{name}", "MyHookName", function(param1)\n')
+                        f.write('    -- Hook logic here\n')
+                        f.write('end)\n')
+                        f.write('```\n\n')
+                        f.write('---\n\n')
                 else:
                     f.write('All hooks used in this module are already documented in the main hooks documentation.\n\n')
 
@@ -784,24 +814,8 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
         else:
             print("Please enter 'y' for yes or 'n' for no.")
 
-    # Ask about module docs generation if not disabled
-    generate_module_docs = True
-    if not no_module_docs:
-        print("\n📝 MODULE DOCUMENTATION GENERATION:")
-        print("   This will scan module directories and may create 'docs' folders")
-        print("   with 'libraries.md' and 'hooks.md' files in each module.")
-
-        while True:
-            response = input("Generate documentation in module directories? (y/n): ").strip().lower()
-            if response in ['y', 'yes']:
-                generate_module_docs = True
-                break
-            elif response in ['n', 'no']:
-                generate_module_docs = False
-                print("ℹ️  Module documentation generation will be skipped.")
-                break
-            else:
-                print("Please enter 'y' for yes or 'n' for no.")
+    # Module docs generation is controlled by the no_module_docs flag
+    generate_module_docs = not no_module_docs
 
     # Ask about each module path individually
     approved_modules_paths = []
