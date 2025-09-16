@@ -54,7 +54,6 @@ function GM:PlayerDeath(client, inflictor, attacker)
     local character = client:getChar()
     if not character then return end
     if IsValid(client:GetRagdollEntity()) then client:GetRagdollEntity():Remove() end
-    
     local handsWeapon = client:GetActiveWeapon()
     if IsValid(handsWeapon) and handsWeapon:GetClass() == "lia_hands" and handsWeapon:IsHoldingObject() then handsWeapon:DropObject() end
     local inventory = character:getInv()
