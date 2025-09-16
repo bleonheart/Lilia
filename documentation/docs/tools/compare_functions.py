@@ -44,42 +44,51 @@ class LuaFunctionExtractor:
 
         lines = content.split('\n')
 
-        # Pattern for function declarations - only capture library functions that should be documented
-        # Matches: function lia.xxxxx.xxxx(...) and lia.xxxxx.xxxx = function(...)
-        # Also captures other global library functions like ix., nut., etc.
-        func_pattern = r'^\s*function\s+((?:lia|ix|nut)\.[A-Za-z_][\w\.]*)\s*\(([^)]*)\)|^\s*((?:lia|ix|nut)\.[A-Za-z_][\w\.]*)\s*=\s*function\s*\(([^)]*)\)'
-
         for line_num, line in enumerate(lines, 1):
-            # Check for function lia.xxxxx.xxxx(...) pattern
-            match1 = re.search(r'^\s*function\s+((?:lia|ix|nut)\.[A-Za-z_][\w\.]*)\s*\(([^)]*)\)', line)
+            func_name = None
+            params = ""
+            
+            # Check for function lia.xxxxx.xxxx(...) pattern - ONLY lia functions
+            match1 = re.search(r'^\s*function\s+(lia\.[A-Za-z_][\w\.]*)\s*\(([^)]*)\)', line)
             if match1:
                 func_name = match1.group(1)
                 params = match1.group(2)
             else:
-                # Check for lia.xxxxx.xxxx = function(...) pattern
-                match2 = re.search(r'^\s*((?:lia|ix|nut)\.[A-Za-z_][\w\.]*)\s*=\s*function\s*\(([^)]*)\)', line)
+                # Check for lia.xxxxx.xxxx = function(...) pattern - ONLY lia functions
+                match2 = re.search(r'^\s*(lia\.[A-Za-z_][\w\.]*)\s*=\s*function\s*\(([^)]*)\)', line)
                 if match2:
                     func_name = match2.group(1)
                     params = match2.group(2)
                 else:
-                    continue  # Skip if neither pattern matched
+                    # Check for meta function pattern: function metaTable:functionName(...)
+                    # Only detect meta functions that end with "Meta" (e.g., characterMeta, itemMeta, etc.)
+                    match3 = re.search(r'^\s*function\s+([A-Za-z_]+Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', line)
+                    if match3:
+                        meta_table = match3.group(1)
+                        method_name = match3.group(2)
+                        params = match3.group(3)
+                        # Create a Meta:XXXX format for meta functions
+                        func_name = f"Meta:{method_name}"
+                    else:
+                        continue  # Skip if no pattern matched
 
-            # Parse parameters
-            param_list = []
-            if params and params.strip():
-                param_list = [p.strip() for p in params.split(',') if p.strip()]
+            if func_name:
+                # Parse parameters
+                param_list = []
+                if params and params.strip():
+                    param_list = [p.strip() for p in params.split(',') if p.strip()]
 
-            # Determine realm (server/client/shared)
-            is_server = self._is_server_realm(content, line_num)
-            is_client = self._is_client_realm(content, line_num)
+                # Determine realm (server/client/shared)
+                is_server = self._is_server_realm(content, line_num)
+                is_client = self._is_client_realm(content, line_num)
 
-            functions[func_name] = FunctionInfo(
-                name=func_name,
-                line_number=line_num,
-                is_server_only=is_server and not is_client,
-                is_client_only=is_client and not is_server,
-                parameters=param_list
-            )
+                functions[func_name] = FunctionInfo(
+                    name=func_name,
+                    line_number=line_num,
+                    is_server_only=is_server and not is_client,
+                    is_client_only=is_client and not is_server,
+                    parameters=param_list
+                )
 
         return functions
 
@@ -233,20 +242,55 @@ class DocumentationParser:
 
         lines = content.split('\n')
 
-        # Look for method definitions
+        # Look for method definitions in two formats:
+        # 1. ### methodName (standard meta documentation format)
+        # 2. `object:method(param)` (inline code format)
         for line_num, line in enumerate(lines, 1):
-            # Look for method signatures like: object:method(param)
-            method_match = re.search(r'`([A-Za-z_][\w\.:]*)\(([^)]*)\)`', line)
+            stripped = line.strip()
+            
+            # Look for method headers like "### methodName"
+            method_match = re.search(r'^###+\s+([A-Za-z_][\w]*)\s*$', stripped)
             if method_match:
                 method_name = method_match.group(1)
-                params_str = method_match.group(2)
-                params = [p.strip() for p in params_str.split(',') if p.strip()]
+                # Extract parameters from the following lines
+                params = self._extract_parameters_from_docs(lines, line_num)
 
+                # Store in both formats for backward compatibility
+                # 1. Meta:methodName format (new format)
+                meta_function_name = f"Meta:{method_name}"
+                functions[meta_function_name] = FunctionInfo(
+                    name=meta_function_name,
+                    line_number=line_num,
+                    parameters=params
+                )
+                # 2. Just methodName format (existing documentation format)
                 functions[method_name] = FunctionInfo(
                     name=method_name,
                     line_number=line_num,
                     parameters=params
                 )
+            else:
+                # Look for method signatures like: `object:method(param)`
+                method_match = re.search(r'`([A-Za-z_][\w\.:]*)\(([^)]*)\)`', line)
+                if method_match:
+                    method_name = method_match.group(1)
+                    params_str = method_match.group(2)
+                    params = [p.strip() for p in params_str.split(',') if p.strip()]
+
+                    # Store in both formats for backward compatibility
+                    # 1. Meta:methodName format (new format)
+                    meta_function_name = f"Meta:{method_name}"
+                    functions[meta_function_name] = FunctionInfo(
+                        name=meta_function_name,
+                        line_number=line_num,
+                        parameters=params
+                    )
+                    # 2. Just methodName format (existing documentation format)
+                    functions[method_name] = FunctionInfo(
+                        name=method_name,
+                        line_number=line_num,
+                        parameters=params
+                    )
 
         return functions
 
@@ -322,10 +366,39 @@ class FunctionComparator:
         missing_functions = []
 
         for func_name, func_info in code_functions.items():
-            # Extract base function name (e.g., "hasAccess" from "lia.administrator.hasAccess")
-            base_name = self._extract_base_function_name(func_name)
+            # Check if function is documented
+            is_documented = False
             
-            if base_name in all_documented:
+            # First check if the full function name is documented
+            if func_name in all_documented:
+                is_documented = True
+            else:
+                # For Meta:XXXX functions, check if the full Meta:XXXX name is documented
+                if func_name.startswith('Meta:'):
+                    if func_name in all_documented:
+                        is_documented = True
+                    else:
+                        # Also check if the method name alone is documented (for backward compatibility)
+                        method_name = func_name.split(':', 1)[1]
+                        if method_name in all_documented:
+                            is_documented = True
+                else:
+                    # For lia.xxxxx functions, check if it's documented in the correct library
+                    if func_name.startswith('lia.'):
+                        # Extract library name (e.g., "lia.util" from "lia.util.getBySteamID")
+                        parts = func_name.split('.')
+                        if len(parts) >= 2:
+                            library_name = '.'.join(parts[:2])  # e.g., "lia.util"
+                            base_name = self._extract_base_function_name(func_name)
+                            
+                            # Check all library documentation files for this function
+                            # Functions can be documented in any related library file
+                            for doc_file in doc_functions.keys():
+                                if doc_file.endswith('.md') and base_name in doc_functions[doc_file]:
+                                    is_documented = True
+                                    break
+            
+            if is_documented:
                 documented_in_file[func_name] = func_info
             else:
                 missing_functions.append(func_name)

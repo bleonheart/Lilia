@@ -182,16 +182,6 @@ class FunctionComparisonReportGenerator:
         """Generate comprehensive markdown report"""
         report_lines = []
 
-        # Header
-        report_lines.extend([
-            "# 🔍 Comprehensive Function Comparison Report",
-            "",
-            f"**Generated:** {data.generated_at}",
-            f"**Base Path:** `{self.base_path}`",
-            "",
-            "---",
-            ""
-        ])
 
         # Executive Summary
         report_lines.extend(self._generate_executive_summary(data))

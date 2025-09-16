@@ -32,7 +32,7 @@ def analyze_data(language_file: str, gamemode_path: str) -> Dict:
 
 
 def _load_language_keys(language_file: str) -> Tuple[Dict[str, str], Dict[str, int]]:
-    """Load language keys from Lua language file"""
+    """Load language keys from Lua language file using a simple, robust approach"""
     keys = {}
     key_lines = {}
 
@@ -48,84 +48,67 @@ def _load_language_keys(language_file: str) -> Tuple[Dict[str, str], Dict[str, i
         return keys, key_lines
 
     lines = content.split('\n')
-
-    # Patterns for language table entries
-    # Match 1: LANGUAGE["key"] = "value"
-    # Match 2: LANGUAGE.key = "value"
-    # Match 3: key = "value" (inside LANGUAGE table)
-    # Match 4: key = [[value]] (multi-line string syntax - start)
-    # Match 5: ]] (multi-line string syntax - end)
-    pattern1 = r'LANGUAGE\s*\[\s*[\'"]([^\'"]+)[\'"]\s*\]\s*=\s*[\'"]([^\'"]*)[\'"]'
-    pattern2 = r'LANGUAGE\.(\w+)\s*=\s*[\'"]([^\'"]*)[\'"]'
-    pattern3 = r'^\s*(\w+)\s*=\s*[\'"]([^\'"]*)[\'"]'
-    pattern4 = r'^\s*(\w+)\s*=\s*\[\[(.+)$'  # Start of multi-line [[
-    pattern5 = r'^(.+)\]\],'  # End of multi-line ]]
-
-    # Check if we're inside the LANGUAGE table
-    inside_language_table = False
-    multiline_key = None
-    multiline_value = []
-
+    inside_table = False
+    
     for line_num, line in enumerate(lines, 1):
         stripped = line.strip()
-
-        # Check if we're entering the LANGUAGE table
+        
+        # Check for table start/end
         if 'LANGUAGE = {' in stripped:
-            inside_language_table = True
+            inside_table = True
             continue
-        elif inside_language_table and stripped == '}':
-            inside_language_table = False
+        elif inside_table and stripped == '}':
+            inside_table = False
             continue
-
-        # Handle multi-line [[ ]] strings
-        if multiline_key is not None:
-            # Check if this line ends the multi-line string
-            end_match = re.search(pattern5, stripped)
-            if end_match:
-                # Add the final line content
-                multiline_value.append(end_match.group(1))
-                # Join all lines and store the complete value
-                keys[multiline_key] = '\n'.join(multiline_value)
-                key_lines[multiline_key] = line_num
-                multiline_key = None
-                multiline_value = []
-            else:
-                # Continue collecting multi-line content
-                multiline_value.append(stripped)
+        
+        # Only process lines inside the table
+        if not inside_table:
             continue
-
-        # Try pattern 1: LANGUAGE["key"] = "value"
-        match = re.search(pattern1, stripped)
-        if match:
-            key = match.group(1)
-            value = match.group(2)
-            keys[key] = value
-            key_lines[key] = line_num
+        
+        # Skip empty lines and comments
+        if not stripped or stripped.startswith('--'):
             continue
-
-        # Try pattern 2: LANGUAGE.key = "value"
-        match = re.search(pattern2, stripped)
-        if match:
-            key = match.group(1)
-            value = match.group(2)
-            keys[key] = value
-            key_lines[key] = line_num
-            continue
-
-        # Try pattern 3: key = "value" (inside LANGUAGE table)
-        if inside_language_table:
-            match = re.search(pattern3, stripped)
-            if match:
-                key = match.group(1)
-                value = match.group(2)
+        
+        # Handle multiline strings
+        if '= [[' in stripped:
+            # Extract key name
+            key_match = re.match(r'^(\w+)\s*=\s*\[\[', stripped)
+            if key_match:
+                key = key_match.group(1)
+                # Find the closing ]]
+                multiline_content = []
+                current_line = line
+                # Remove the key = [[ part from first line
+                first_line_content = current_line.split('= [[')[1] if '= [[' in current_line else ''
+                if first_line_content.strip():
+                    multiline_content.append(first_line_content)
+                
+                # Look for closing ]] in subsequent lines
+                for next_line_num in range(line_num + 1, len(lines)):
+                    next_line = lines[next_line_num]
+                    if ']]' in next_line:
+                        # Split on ]] and take the part before it
+                        before_close = next_line.split(']]')[0]
+                        if before_close.strip():
+                            multiline_content.append(before_close)
+                        break
+                    else:
+                        multiline_content.append(next_line)
+                
+                # Join all lines and clean up
+                value = '\n'.join(multiline_content).strip()
                 keys[key] = value
                 key_lines[key] = line_num
-            else:
-                # Try pattern 4: key = [[value]] (start of multi-line string)
-                match = re.search(pattern4, stripped)
-                if match:
-                    multiline_key = match.group(1)
-                    multiline_value = [match.group(2)]  # Start collecting content
+            continue
+        
+        # Simple pattern: key = "value" or key = "value",
+        pattern = r'^(\w+)\s*=\s*"([^"]*)"'
+        match = re.match(pattern, stripped)
+        if match:
+            key = match.group(1)
+            value = match.group(2)
+            keys[key] = value
+            key_lines[key] = line_num
 
     return keys, key_lines
 
