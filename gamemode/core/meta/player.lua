@@ -874,6 +874,9 @@ if SERVER then
         entity:Activate()
         if self:IsOnFire() then entity:Ignite(8) end
         if isDead then self:setNetVar("ragdoll", entity) end
+        
+        local handsWeapon = self:GetActiveWeapon()
+        if IsValid(handsWeapon) and handsWeapon:GetClass() == "lia_hands" and handsWeapon:IsHoldingObject() then handsWeapon:DropObject() end
         hook.Run("OnCreatePlayerRagdoll", self, entity, isDead)
         local velocity = self:GetVelocity()
         for i = 0, entity:GetPhysicsObjectCount() - 1 do
@@ -901,6 +904,9 @@ if SERVER then
         local ragdoll = self:getRagdoll()
         local time = hook.Run("GetRagdollTime", self, time) or baseTime or 10
         if state then
+            
+            local handsWeapon = self:GetActiveWeapon()
+            if IsValid(handsWeapon) and handsWeapon:GetClass() == "lia_hands" and handsWeapon:IsHoldingObject() then handsWeapon:DropObject() end
             if IsValid(ragdoll) then SafeRemoveEntity(ragdoll) end
             local entity = self:createRagdoll()
             entity:setNetVar("player", self)

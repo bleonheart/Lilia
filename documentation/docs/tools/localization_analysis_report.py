@@ -57,8 +57,8 @@ def _load_language_keys(language_file: str) -> Tuple[Dict[str, str], Dict[str, i
     # Match 5: ]] (multi-line string syntax - end)
     pattern1 = r'LANGUAGE\s*\[\s*[\'"]([^\'"]+)[\'"]\s*\]\s*=\s*[\'"]([^\'"]*)[\'"]'
     pattern2 = r'LANGUAGE\.(\w+)\s*=\s*[\'"]([^\'"]*)[\'"]'
-    pattern3 = r'^(\w+)\s*=\s*[\'"]([^\'"]*)[\'"]'
-    pattern4 = r'^(\w+)\s*=\s*\[\[(.+)$'  # Start of multi-line [[
+    pattern3 = r'^\s*(\w+)\s*=\s*[\'"]([^\'"]*)[\'"]'
+    pattern4 = r'^\s*(\w+)\s*=\s*\[\[(.+)$'  # Start of multi-line [[
     pattern5 = r'^(.+)\]\],'  # End of multi-line ]]
 
     # Check if we're inside the LANGUAGE table

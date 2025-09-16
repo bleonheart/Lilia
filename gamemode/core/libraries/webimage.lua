@@ -322,6 +322,7 @@ concommand.Add("lia_cleanup_images", function()
             print(string.format("[WebImage] Removed unreadable file: %s", filePath:sub(#baseDir + 1)))
         end
     end
+
     for fileName, _ in pairs(cache) do
         local savePath = baseDir .. fileName
         if not file.Exists(savePath, "DATA") then

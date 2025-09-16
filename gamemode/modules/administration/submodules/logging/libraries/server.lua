@@ -1,6 +1,6 @@
 ﻿local MODULE = MODULE
 local function SendLogs(client, categorizedLogs)
-    lia.net.writeBigTable(client, "send_logs", categorizedLogs)
+    lia.net.writeBigTable(client, "liaSendLogs", categorizedLogs)
 end
 
 local function CanPlayerSeeLog(client)

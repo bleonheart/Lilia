@@ -41,13 +41,9 @@ end
 function PANEL:RecalcSize()
     self.scale = ScrH() / 1080
     surface.SetFont("liaSmallFont")
-
     local msg = self.msg or ""
     local tw, th = surface.GetTextSize(msg)
-    if tw == 0 or th == 0 then
-        tw, th = surface.GetTextSize(" ")
-    end
-
+    if tw == 0 or th == 0 then tw, th = surface.GetTextSize(" ") end
     local minWidth = 300 * self.scale
     local extraSpacing = 40 * self.scale
     local iconWidth = 24 * self.scale
@@ -55,7 +51,6 @@ function PANEL:RecalcSize()
     local requiredWidth = tw + (NotificationPadding * 2) + iconWidth + extraSpacing + textPadding
     local w = math.max(requiredWidth, minWidth)
     local h = math.max(NotificationHeight * self.scale, th + NotificationPadding * self.scale)
-
     self:SetSize(w, h)
     self.iconSize = iconWidth
     self.padding = NotificationPadding * self.scale

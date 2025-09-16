@@ -306,7 +306,7 @@ net.Receive("liaOpenInvMenu", function()
     myInventoryDerma:MoveLeftOf(inventoryDerma, 4)
 end)
 
-lia.net.readBigTable("SendTableUI", function(data) lia.util.CreateTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
+lia.net.readBigTable("liaSendTableUI", function(data) lia.util.CreateTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()

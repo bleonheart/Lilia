@@ -55,7 +55,7 @@ local function OpenLogsUI(panel, categorizedLogs)
     end
 end
 
-lia.net.readBigTable("send_logs", function(categorizedLogs)
+lia.net.readBigTable("liaSendLogs", function(categorizedLogs)
     if not categorizedLogs then
         chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         return
