@@ -62,13 +62,13 @@ class LuaFunctionExtractor:
                 else:
                     # Check for meta function pattern: function metaTable:functionName(...)
                     # Only detect meta functions that end with "Meta" (e.g., characterMeta, itemMeta, etc.)
-                    match3 = re.search(r'^\s*function\s+([A-Za-z_]+Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', line)
+                    match3 = re.search(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', line)
                     if match3:
                         meta_table = match3.group(1)
                         method_name = match3.group(2)
                         params = match3.group(3)
-                        # Create a Meta:XXXX format for meta functions
-                        func_name = f"Meta:{method_name}"
+                        # Keep meta table type to distinguish same method names across different metas
+                        func_name = f"{meta_table}:{method_name}"
                     else:
                         continue  # Skip if no pattern matched
 
@@ -187,19 +187,34 @@ class DocumentationParser:
 
         lines = content.split('\n')
 
-        # Look for function headers in the format "### function.name"
+        # Determine library name: prefer content backticked name (e.g., (`lia.administrator`)); fallback to filename stem
+        library_name = file_path.stem
+        try:
+            # Capture `lia` or dotted forms like `lia.util`, `lia.administrator`
+            m = re.search(r"\(`(lia(?:\.[\w\.]+)?)`\)", content)
+            if m:
+                library_name = m.group(1)
+        except Exception:
+            pass
+
+        # Look for function headers in the format "### functionName" or "### lia.util.functionName"
         for line_num, line in enumerate(lines, 1):
             stripped = line.strip()
 
             # Look for function headers like "### lia.include"
             func_match = re.search(r'^###+\s+([A-Za-z_][\w\.]*)\s*$', stripped)
             if func_match:
-                func_name = func_match.group(1)
+                header_name = func_match.group(1)
+                # If header already includes dots (fully qualified), keep it; otherwise qualify with library name
+                if '.' in header_name:
+                    qualified_name = header_name
+                else:
+                    qualified_name = f"{library_name}.{header_name}"
                 # Extract parameters from the following lines
                 params = self._extract_parameters_from_docs(lines, line_num)
 
-                functions[func_name] = FunctionInfo(
-                    name=func_name,
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
                     line_number=line_num,
                     parameters=params
                 )
@@ -241,6 +256,13 @@ class DocumentationParser:
             return functions
 
         lines = content.split('\n')
+        # Derive meta table name from file name with overrides
+        # Default: <stem>Meta (e.g., character.md -> characterMeta)
+        stem = file_path.stem
+        overrides = {
+            'tool': 'toolGunMeta',
+        }
+        meta_table = overrides.get(stem, f"{stem}Meta")
 
         # Look for method definitions in two formats:
         # 1. ### methodName (standard meta documentation format)
@@ -255,17 +277,10 @@ class DocumentationParser:
                 # Extract parameters from the following lines
                 params = self._extract_parameters_from_docs(lines, line_num)
 
-                # Store in both formats for backward compatibility
-                # 1. Meta:methodName format (new format)
-                meta_function_name = f"Meta:{method_name}"
-                functions[meta_function_name] = FunctionInfo(
-                    name=meta_function_name,
-                    line_number=line_num,
-                    parameters=params
-                )
-                # 2. Just methodName format (existing documentation format)
-                functions[method_name] = FunctionInfo(
-                    name=method_name,
+                # Store type-qualified meta name to avoid cross-type overrides
+                qualified_name = f"{meta_table}:{method_name}"
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
                     line_number=line_num,
                     parameters=params
                 )
@@ -277,17 +292,14 @@ class DocumentationParser:
                     params_str = method_match.group(2)
                     params = [p.strip() for p in params_str.split(',') if p.strip()]
 
-                    # Store in both formats for backward compatibility
-                    # 1. Meta:methodName format (new format)
-                    meta_function_name = f"Meta:{method_name}"
-                    functions[meta_function_name] = FunctionInfo(
-                        name=meta_function_name,
-                        line_number=line_num,
-                        parameters=params
-                    )
-                    # 2. Just methodName format (existing documentation format)
-                    functions[method_name] = FunctionInfo(
-                        name=method_name,
+                    # If inline format includes object:method, keep as-is; otherwise, qualify
+                    if ':' in method_name and method_name.split(':', 1)[0].endswith('Meta'):
+                        qualified_name = method_name
+                    else:
+                        qualified_name = f"{meta_table}:{method_name}"
+
+                    functions[qualified_name] = FunctionInfo(
+                        name=qualified_name,
                         line_number=line_num,
                         parameters=params
                     )
@@ -373,30 +385,20 @@ class FunctionComparator:
             if func_name in all_documented:
                 is_documented = True
             else:
-                # For Meta:XXXX functions, check if the full Meta:XXXX name is documented
-                if func_name.startswith('Meta:'):
+                # For meta functions, require exact type-qualified match (e.g., characterMeta:tostring)
+                if ':' in func_name and func_name.split(':', 1)[0].endswith('Meta'):
                     if func_name in all_documented:
                         is_documented = True
-                    else:
-                        # Also check if the method name alone is documented (for backward compatibility)
-                        method_name = func_name.split(':', 1)[1]
-                        if method_name in all_documented:
-                            is_documented = True
                 else:
-                    # For lia.xxxxx functions, check if it's documented in the correct library
+                    # For lia.xxxxx functions, extract base function name and check
                     if func_name.startswith('lia.'):
-                        # Extract library name (e.g., "lia.util" from "lia.util.getBySteamID")
-                        parts = func_name.split('.')
-                        if len(parts) >= 2:
-                            library_name = '.'.join(parts[:2])  # e.g., "lia.util"
+                        # Require either fully qualified or base-name match present in docs
+                        if func_name in all_documented:
+                            is_documented = True
+                        else:
                             base_name = self._extract_base_function_name(func_name)
-                            
-                            # Check all library documentation files for this function
-                            # Functions can be documented in any related library file
-                            for doc_file in doc_functions.keys():
-                                if doc_file.endswith('.md') and base_name in doc_functions[doc_file]:
-                                    is_documented = True
-                                    break
+                            if base_name in all_documented:
+                                is_documented = True
             
             if is_documented:
                 documented_in_file[func_name] = func_info
