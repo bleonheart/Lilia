@@ -1,5 +1,7 @@
 ﻿function MODULE:IsSuitableForTrunk(ent)
-    if IsValid(ent) and ((ent.isSimfphysCar and ent:isSimfphysCar()) or (ent:IsVehicle() and ent:getNetVar("hasStorage", false))) then return true end
+    if not IsValid(ent) then return false end
+    if (ent.isSimfphysCar and ent:isSimfphysCar()) or (ent:IsVehicle() and ent:getNetVar("hasStorage", false)) then return true end
+    return false
 end
 
 function MODULE:InitializeStorage(entity)
