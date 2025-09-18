@@ -151,6 +151,15 @@ function PANEL:setItemType(itemTypeOrID)
     end
 
     if IsValid(entity) then
+        local skin = item:getSkin()
+        if skin and skin > 0 then entity:SetSkin(skin) end
+        local bodygroups = item:getBodygroups()
+        if bodygroups and istable(bodygroups) then
+            for groupIndex, groupValue in pairs(bodygroups) do
+                if isnumber(groupIndex) and isnumber(groupValue) then entity:SetBodygroup(groupIndex, groupValue) end
+            end
+        end
+
         if isstring(paintMat) and paintMat ~= "" then
             entity:SetMaterial(paintMat)
         elseif isstring(item.material) and item.material ~= "" then

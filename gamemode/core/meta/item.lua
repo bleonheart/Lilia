@@ -48,6 +48,10 @@ function ITEM:getSkin()
     return self.skin
 end
 
+function ITEM:getBodygroups()
+    return self.bodygroups or {}
+end
+
 function ITEM:getPrice()
     local price = self.price
     if self.calcPrice then price = self:calcPrice(self.price) end
