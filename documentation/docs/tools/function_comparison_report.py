@@ -335,9 +335,6 @@ class FunctionComparisonReportGenerator:
         if not docs_dir.exists() or not docs_dir.is_dir():
             return documented_hooks, documented_functions
 
-        # Get the actual namespace used in the module code
-        actual_namespace = self._get_module_namespace(module_dir)
-
         # hooks.md
         hooks_file = docs_dir / 'hooks.md'
         if hooks_file.exists():
@@ -358,45 +355,13 @@ class FunctionComparisonReportGenerator:
                 with open(libs_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 import re
-                # Extract function names from markdown headers
-                # Support both formats: "### lia.module.function" and "### function"
-                for m in re.finditer(r'^##+\s+([A-Za-z_][\w\.]*)\s*$', content, re.MULTILINE):
-                    func_name = m.group(1).strip()
-                    
-                    # If it already has the full lia.module.function format, use it as-is
-                    if func_name.startswith('lia.'):
-                        documented_functions.add(func_name)
-                    # If it's just a function name, prefix it with the actual namespace
-                    else:
-                        if actual_namespace:
-                            documented_functions.add(f'{actual_namespace}.{func_name}')
-                        else:
-                            # Fallback to directory name if we can't determine namespace
-                            documented_functions.add(f'lia.{module_dir.name}.{func_name}')
+                # Extract lia.* dotted function names from markdown headers (e.g., ## lia.utilities.Blend)
+                for m in re.finditer(r'^##+\s+(lia\.[A-Za-z_][\w\.]*)\s*$', content, re.MULTILINE):
+                    documented_functions.add(m.group(1))
             except Exception:
                 pass
 
         return documented_hooks, documented_functions
-
-    def _get_module_namespace(self, module_dir: Path) -> str:
-        """Determine the actual namespace used in the module code by looking at module.lua"""
-        module_file = module_dir / 'module.lua'
-        if not module_file.exists():
-            return None
-        
-        try:
-            with open(module_file, 'r', encoding='utf-8', errors='ignore') as f:
-                content = f.read()
-            
-            import re
-            # Look for patterns like "lia.something = lia.something or {}"
-            for match in re.finditer(r'lia\.([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*lia\.\1\s*or\s*\{\}', content):
-                namespace = f'lia.{match.group(1)}'
-                return namespace
-        except Exception:
-            pass
-        
-        return None
 
     def _generate_modules_section(self, modules_scan: List[Dict]) -> List[str]:
         """Build the in-report Modules section with per-module details and a final summary.

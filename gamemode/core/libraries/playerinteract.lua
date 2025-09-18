@@ -419,7 +419,7 @@ else
     lia.net.readBigTable("liaPlayerInteractCategories", function(data) if istable(data) then lia.playerinteract.categories = data end end)
 end
 
-lia.keybind.add(KEY_TAB, L("interactionMenu"), {
+lia.keybind.add(KEY_TAB, "interactionMenu", {
     onPress = function()
         net.Start("liaRequestInteractOptions")
         net.WriteString("interaction")
@@ -427,7 +427,7 @@ lia.keybind.add(KEY_TAB, L("interactionMenu"), {
     end,
 })
 
-lia.keybind.add(KEY_G, L("personalActions"), {
+lia.keybind.add(KEY_G, "personalActions", {
     onPress = function()
         net.Start("liaRequestInteractOptions")
         net.WriteString("action")
