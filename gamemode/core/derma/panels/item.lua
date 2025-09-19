@@ -141,7 +141,7 @@ function PANEL:setItemType(itemTypeOrID)
     assert(item, L("invalidItemTypeOrID", item and item.name or itemTypeOrID))
     self.liaToolTip = true
     self.itemTable = item
-    self:SetModel(item:getModel(), item:getSkin())
+    self:SetModel(item:getModel())
     local paintMat = hook.Run("PaintItem", item)
     local entity
     if self.Icon and self.Icon.GetEntity then
@@ -152,7 +152,7 @@ function PANEL:setItemType(itemTypeOrID)
 
     if IsValid(entity) then
         local skin = item:getSkin()
-        if skin and skin > 0 then entity:SetSkin(skin) end
+        if skin and isnumber(skin) then entity:SetSkin(skin) end
         local bodygroups = item:getBodygroups()
         if bodygroups and istable(bodygroups) then
             for groupIndex, groupValue in pairs(bodygroups) do
