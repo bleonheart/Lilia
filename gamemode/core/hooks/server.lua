@@ -2,10 +2,14 @@
 function GM:CharPreSave(character)
     local client = character:getPlayer()
     local loginTime = character:getLoginTime()
-    if loginTime and loginTime > 0 then
-        local total = character:getPlayTime()
-        character:setPlayTime(total + os.time() - loginTime)
-        character:setLoginTime(os.time())
+    if IsValid(client) and client:getChar() == character then
+        if loginTime and loginTime > 0 then
+            local total = character:getPlayTime()
+            character:setPlayTime(total + os.time() - loginTime)
+            character:setLoginTime(os.time())
+        else
+            character:setLoginTime(os.time())
+        end
     end
 
     if not character:getInv() then return end
