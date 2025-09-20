@@ -813,7 +813,7 @@ if SERVER then
         end
 
         for _, ply in player.Iterator() do
-            if IsValid(ply) and ply:hasPrivilege("listCharacters") then
+            if IsValid(ply) then
                 net.Start("liaCharDeleted")
                 net.Send(ply)
             end
