@@ -1787,7 +1787,6 @@ function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     local entitiesByCreator = {}
     local nonPlayerEntities = {}
-
     for _, ent in ents.Iterator() do
         if IsValid(ent) then
             if ent.GetCreator and IsValid(ent:GetCreator()) then
@@ -1839,7 +1838,6 @@ function MODULE:PopulateAdminTabs(pages)
         local sheetContainer = vgui.Create("DPropertySheet", entPanel)
         sheetContainer:Dock(FILL)
         sheetContainer:DockPadding(0, 0, 0, 10)
-
         local ownerPanel = vgui.Create("DPanel", sheetContainer)
         ownerPanel:Dock(FILL)
         ownerPanel.Paint = function() end
@@ -1862,9 +1860,7 @@ function MODULE:PopulateAdminTabs(pages)
             icon:SetTall(64)
             icon:DockMargin(5, 5, 0, 0)
             local modelPath = ent:GetModel()
-            if not modelPath or modelPath == "" then
-                modelPath = "models/error.mdl"
-            end
+            if not modelPath or modelPath == "" then modelPath = "models/error.mdl" end
             icon:SetModel(modelPath, ent:GetSkin() or 0)
             local btnContainer = vgui.Create("DPanel", itemPanel)
             btnContainer:Dock(RIGHT)
@@ -1951,9 +1947,7 @@ function MODULE:PopulateAdminTabs(pages)
                         icon:SetTall(64)
                         icon:DockMargin(5, 5, 0, 0)
                         local modelPath = ent:GetModel()
-                        if not modelPath or modelPath == "" then
-                            modelPath = "models/error.mdl"
-                        end
+                        if not modelPath or modelPath == "" then modelPath = "models/error.mdl" end
                         icon:SetModel(modelPath, ent:GetSkin() or 0)
                         local btnContainer = vgui.Create("DPanel", itemPanel)
                         btnContainer:Dock(RIGHT)
@@ -2016,9 +2010,7 @@ function MODULE:PopulateAdminTabs(pages)
         pages[#pages + 1] = {
             name = "Map Entities",
             icon = "icon16/world.png",
-            drawFunc = function(entPanel)
-                createEntityPanel(entPanel, nonPlayerEntities, "Map Entities")
-            end
+            drawFunc = function(entPanel) createEntityPanel(entPanel, nonPlayerEntities, "Map Entities") end
         }
     end
 end

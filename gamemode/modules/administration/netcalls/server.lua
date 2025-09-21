@@ -203,14 +203,7 @@ end)
 net.Receive("liaRequestLevelingList", function(_, client)
     if not IsValid(client) or not client:hasPrivilege("listCharacters") then return end
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local fields = table.concat({
-        "c.id",
-        "c.name",
-        "c.steamID",
-        "c.faction",
-        "c.level",
-        "c.xp"
-    }, ", ")
+    local fields = table.concat({"c.id", "c.name", "c.steamID", "c.faction", "c.level", "c.xp"}, ", ")
     local query = "SELECT " .. fields .. " FROM lia_characters AS c WHERE c.schema = '" .. lia.db.escape(gamemode) .. "'"
     lia.db.query(query, function(rows)
         local data = {}

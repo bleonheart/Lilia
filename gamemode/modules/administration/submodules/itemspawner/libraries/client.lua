@@ -71,7 +71,6 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
         Unsorted = {}
     }
 
-    
     tree:Clear()
     for uniqueID, itemData in pairs(allItems) do
         local category = itemData:getCategory()
@@ -105,7 +104,6 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
         end
     end
 end
-
 
 search.AddProvider(function(str)
     local results = {}
