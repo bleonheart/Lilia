@@ -384,11 +384,9 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
         end
 
         local charData = data[1]
-        local success = false
         if property == "money" then
             local moneyValue = tonumber(value) or 0
-            success = lia.char.setCharDatabase(charID, "money", moneyValue)
-            if success then
+            if lia.char.setCharDatabase(charID, "money", moneyValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
                     client:notifySuccessLocalized("setMoney", target:Name(), lia.currency.get(moneyValue))
@@ -397,11 +395,12 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
                 end
 
                 lia.log.add(client, "adminSetCharMoney", charID, moneyValue)
+            else
+                client:notifyErrorLocalized("failedToUpdateChar")
             end
         elseif property == "name" then
             local nameValue = tostring(value)
-            success = lia.char.setCharDatabase(charID, "name", nameValue)
-            if success then
+            if lia.char.setCharDatabase(charID, "name", nameValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
                     client:notifySuccessLocalized("changeName", client:Name(), charData.name, nameValue)
@@ -410,11 +409,12 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
                 end
 
                 lia.log.add(client, "adminSetCharName", charID, nameValue)
+            else
+                client:notifyErrorLocalized("failedToUpdateChar")
             end
         elseif property == "model" then
             local modelValue = tostring(value)
-            success = lia.char.setCharDatabase(charID, "model", modelValue)
-            if success then
+            if lia.char.setCharDatabase(charID, "model", modelValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
                     client:notifySuccessLocalized("changeModel", client:Name(), target:Name(), modelValue)
@@ -423,13 +423,13 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
                 end
 
                 lia.log.add(client, "adminSetCharModel", charID, modelValue)
+            else
+                client:notifyErrorLocalized("failedToUpdateChar")
             end
         else
             client:notifyErrorLocalized("invalidArg")
             return
         end
-
-        if not success then client:notifyErrorLocalized("failedToUpdateChar") end
     end)
 end)
 
