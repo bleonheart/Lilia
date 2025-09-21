@@ -71,7 +71,7 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
         Unsorted = {}
     }
 
-    -- Clear existing tree nodes to prevent duplicates
+    
     tree:Clear()
     for uniqueID, itemData in pairs(allItems) do
         local category = itemData:getCategory()
@@ -106,7 +106,7 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
     end
 end
 
--- Provide search results for our custom inventory items
+
 search.AddProvider(function(str)
     local results = {}
     if not str or str == "" then return results end
