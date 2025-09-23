@@ -447,6 +447,20 @@ if CLIENT then
         size = 64
     })
 
+    lia.font.register("MontserratMedium", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 16,
+        weight = 500
+    })
+
+    lia.font.register("MontserratBold", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 16,
+        weight = 700
+    })
+
     function lia.font.getAvailableFonts()
         local list = {}
         for name in pairs(lia.font.stored) do
