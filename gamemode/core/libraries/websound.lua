@@ -430,4 +430,6 @@ function lia.websound.getStats()
     }
 end
 
+lia.websound.register("ratio_btn.ogg", "https://bleonheart.github.io/Samael-Assets/misc/ratio_btn.ogg")
+lia.websound.register("btn_click.ogg", "https://bleonheart.github.io/Samael-Assets/misc/btn_click.ogg")
 ensureDir(baseDir)
