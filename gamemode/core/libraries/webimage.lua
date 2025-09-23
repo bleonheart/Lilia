@@ -392,6 +392,9 @@ function lia.webimage.getStats()
     }
 end
 
+lia.webimage.register("close_btn.png", "https://bleonheart.github.io/Samael-Assets/misc/close_btn.png")
+lia.webimage.register("slider.png", "https://bleonheart.github.io/Samael-Assets/misc/slider.png")
+lia.webimage.register("close_btn_new.png", "https://bleonheart.github.io/Samael-Assets/misc/close_btn_new.png")
 lia.webimage.register("lilia.png", "https://bleonheart.github.io/Samael-Assets/lilia.png")
 lia.webimage.register("locked.png", "https://bleonheart.github.io/Samael-Assets/misc/locked.png")
 lia.webimage.register("unlocked.png", "https://bleonheart.github.io/Samael-Assets/misc/unlocked.png")
