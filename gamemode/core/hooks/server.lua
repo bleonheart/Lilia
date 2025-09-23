@@ -312,7 +312,15 @@ function GM:EntityTakeDamage(entity, dmgInfo)
             end
         end
 
-        entity:getNetVar("player"):TakeDamageInfo(dmgInfo)
+        local player = entity:getNetVar("player")
+        local damage = dmgInfo:GetDamage()
+        if IsValid(player) and lia.config.get("RagdollDamageTransfer", true) then
+            local currentHealth = player:Health()
+            local newHealth = math.max(currentHealth - damage, 0)
+            player:SetHealth(newHealth)
+            if newHealth <= 0 and currentHealth > 0 then player:Kill() end
+            dmgInfo:SetDamage(0)
+        end
     end
 end
 
@@ -376,7 +384,16 @@ end
 
 function GM:DoPlayerDeath(client, attacker)
     client:AddDeaths(1)
-    if hook.Run("ShouldSpawnClientRagdoll", client) ~= false then client:createRagdoll(false, true) end
+    local existingRagdoll = client:getRagdoll()
+    if IsValid(existingRagdoll) then
+        existingRagdoll.liaIsDeadRagdoll = true
+        existingRagdoll.liaNoReset = true
+        existingRagdoll:CallOnRemove("deadRagdoll", function() existingRagdoll.liaIgnoreDelete = true end)
+        client:setNetVar("diedInRagdoll", true)
+    elseif hook.Run("ShouldSpawnClientRagdoll", client) ~= false then
+        client:createRagdoll(false, true)
+    end
+
     if IsValid(attacker) and attacker:IsPlayer() then
         if client == attacker then
             attacker:AddFrags(-1)
@@ -391,7 +408,12 @@ end
 function GM:PlayerSpawn(client)
     client:stopAction()
     client:SetDSP(1, false)
-    client:removeRagdoll()
+    if not client:getNetVar("diedInRagdoll", false) then
+        client:removeRagdoll()
+    else
+        client:setNetVar("diedInRagdoll", nil)
+    end
+
     hook.Run("PlayerLoadout", client)
 end
 
@@ -1089,15 +1111,15 @@ end)
 
 concommand.Add("lia_reload", function(client)
     if IsValid(client) and not client:IsSuperAdmin() then
-        client:notifyErrorLocalized("You don't have permission to use this command.")
+        client:notifyErrorLocalized("staffPermissionDenied")
         return
     end
 
     if lia.reloadInProgress then
         if IsValid(client) then
-            client:notifyWarningLocalized("A reload is already in progress.")
+            client:notifyWarningLocalized("reloadInProgress")
         else
-            print("[Lilia] A reload is already in progress.")
+            print("[Lilia] " .. L("reloadInProgress"))
         end
         return
     end
@@ -1107,17 +1129,17 @@ concommand.Add("lia_reload", function(client)
     if timeSinceLastReload < lia.reloadCooldown then
         local remaining = math.ceil(lia.reloadCooldown - timeSinceLastReload)
         if IsValid(client) then
-            client:notifyWarningLocalized("Reload cooldown active. " .. remaining .. " seconds remaining.")
+            client:notifyWarningLocalized("reloadCooldownActive", remaining)
         else
-            print("[Lilia] Reload cooldown active. " .. remaining .. " seconds remaining.")
+            print("[Lilia] " .. L("reloadCooldownActive", remaining))
         end
         return
     end
 
     if IsValid(client) then
-        client:notifyInfoLocalized("Starting controlled reload...")
+        client:notifyInfoLocalized("reloadStarting")
     else
-        print("[Lilia] Starting controlled reload...")
+        print("[Lilia] " .. L("reloadStarting"))
     end
 
     hook.Run("OnReloaded")
@@ -1197,12 +1219,12 @@ concommand.Add("lia_wipecharacters", function(client)
 
     if resetCalled < RealTime() then
         resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL characters? Run this command again within 3 seconds to confirm.\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipeCharsConfirm") .. "\n")
     else
         resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all characters...\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipingChars") .. "\n")
         for _, ply in player.Iterator() do
-            if IsValid(ply) then ply:Kick("Server is wiping character data. Please reconnect after the wipe is complete.") end
+            if IsValid(ply) then ply:Kick(L("serverWipingChars")) end
         end
 
         lia.db.query("DELETE FROM lia_chardata", function()
@@ -1254,11 +1276,11 @@ concommand.Add("lia_wipelogs", function(client)
 
     if resetCalled < RealTime() then
         resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL logs? This cannot be undone.\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipeLogsConfirm") .. "\n")
     else
         resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all logs...\n")
-        lia.db.query("DELETE FROM lia_logs", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All logs have been wiped!\n") end)
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipingLogs") .. "\n")
+        lia.db.query("DELETE FROM lia_logs", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. L("logsWiped") .. "\n") end)
     end
 end)
 
@@ -1270,11 +1292,11 @@ concommand.Add("lia_wipebans", function(client)
 
     if resetCalled < RealTime() then
         resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL bans? This cannot be undone.\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipeBansConfirm") .. "\n")
     else
         resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all bans...\n")
-        lia.db.query("DELETE FROM lia_bans", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All bans have been wiped!\n") end)
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipingBans") .. "\n")
+        lia.db.query("DELETE FROM lia_bans", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. L("bansWiped") .. "\n") end)
     end
 end)
 
@@ -1286,12 +1308,12 @@ concommand.Add("lia_wipepersistence", function(client)
 
     if resetCalled < RealTime() then
         resetCalled = RealTime() + 3
-        MsgC(Color(255, 0, 0), "[Lilia] " .. "Are you sure you want to wipe ALL persistence data? This will remove all saved entities.\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipePersistenceConfirm") .. "\n")
     else
         resetCalled = 0
-        MsgC(Color(255, 0, 0), "[Lilia] Wiping all persistence data...\n")
+        MsgC(Color(255, 0, 0), "[Lilia] " .. L("wipingPersistence") .. "\n")
         lia.db.query("DELETE FROM lia_persistence", function()
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All persistence data has been wiped!\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. L("persistenceWiped") .. "\n")
             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
         end)
     end
@@ -1408,17 +1430,17 @@ concommand.Add("lia_fix_characters", function(client)
         return
     end
 
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Starting character data fix...\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("startingCharacterDataFix") .. "\n")
     lia.db.query("SELECT id, name, steamID FROM lia_characters WHERE id IS NULL OR id = '' OR id = '0'", function(data)
         if not data or #data == 0 then
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "No characters with invalid IDs found.\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("noCharactersWithInvalidIDs") .. "\n")
         else
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "Found " .. #data .. " characters with invalid IDs. Fixing...\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), L("foundCharactersWithInvalidIDs", #data) .. "\n")
             for _, char in ipairs(data) do
                 local charName = char.name or "Unknown"
                 local steamID = char.steamID or "Unknown"
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Fixing character: " .. charName .. " (SteamID: " .. steamID .. ")\n")
-                lia.db.query("DELETE FROM lia_characters WHERE name = " .. lia.db.convertDataType(charName) .. " AND steamID = " .. lia.db.convertDataType(steamID), function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Removed invalid character: " .. charName .. "\n") end)
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("fixingCharacter", charName, steamID) .. "\n")
+                lia.db.query("DELETE FROM lia_characters WHERE name = " .. lia.db.convertDataType(charName) .. " AND steamID = " .. lia.db.convertDataType(steamID), function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("removedInvalidCharacter", charName) .. "\n") end)
             end
         end
     end)
@@ -1432,26 +1454,26 @@ concommand.Add("lia_fix_characters", function(client)
             end
 
             if #invalidChars > 0 then
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "Found " .. #invalidChars .. " characters with non-numeric IDs. Fixing...\n")
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), L("foundCharactersWithNonNumericIDs", #invalidChars) .. "\n")
                 for _, char in ipairs(invalidChars) do
                     local charName = char.name or "Unknown"
                     local steamID = char.steamID or "Unknown"
                     local invalidID = char.id
-                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Fixing character with invalid ID '" .. tostring(invalidID) .. "': " .. charName .. "\n")
-                    lia.db.query("DELETE FROM lia_characters WHERE name = " .. lia.db.convertDataType(charName) .. " AND steamID = " .. lia.db.convertDataType(steamID), function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Removed character with invalid ID: " .. charName .. "\n") end)
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("fixingCharacterWithInvalidID", tostring(invalidID), charName) .. "\n")
+                    lia.db.query("DELETE FROM lia_characters WHERE name = " .. lia.db.convertDataType(charName) .. " AND steamID = " .. lia.db.convertDataType(steamID), function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("removedCharacterWithInvalidID", charName) .. "\n") end)
                 end
             else
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "No characters with non-numeric IDs found.\n")
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("noCharactersWithNonNumericIDs") .. "\n")
             end
         end
     end)
 
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Cleaning up orphaned character data...\n")
-    lia.db.query("DELETE FROM lia_chardata WHERE charID NOT IN (SELECT id FROM lia_characters WHERE id IS NOT NULL AND id != '' AND id != '0')", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Cleaned up orphaned character data.\n") end)
-    lia.db.query("DELETE FROM lia_inventories WHERE charID NOT IN (SELECT id FROM lia_characters WHERE id IS NOT NULL AND id != '' AND id != '0')", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Cleaned up orphaned inventories.\n") end)
-    lia.db.query("DELETE FROM lia_invdata WHERE invID NOT IN (SELECT invID FROM lia_inventories)", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Cleaned up orphaned inventory data.\n") end)
-    lia.db.query("DELETE FROM lia_items WHERE invID NOT IN (SELECT invID FROM lia_inventories)", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Cleaned up orphaned items.\n") end)
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Character data fix completed!\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("cleaningUpOrphanedCharacterData") .. "\n")
+    lia.db.query("DELETE FROM lia_chardata WHERE charID NOT IN (SELECT id FROM lia_characters WHERE id IS NOT NULL AND id != '' AND id != '0')", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("cleanedUpOrphanedCharacterData") .. "\n") end)
+    lia.db.query("DELETE FROM lia_inventories WHERE charID NOT IN (SELECT id FROM lia_characters WHERE id IS NOT NULL AND id != '' AND id != '0')", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("cleanedUpOrphanedInventories") .. "\n") end)
+    lia.db.query("DELETE FROM lia_invdata WHERE invID NOT IN (SELECT invID FROM lia_inventories)", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("cleanedUpOrphanedInventoryData") .. "\n") end)
+    lia.db.query("DELETE FROM lia_items WHERE invID NOT IN (SELECT invID FROM lia_inventories)", function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("cleanedUpOrphanedItems") .. "\n") end)
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("characterDataFixCompleted") .. "\n")
 end)
 
 concommand.Add("test_all_notifications", function()
@@ -1493,10 +1515,10 @@ concommand.Add("test_all_notifications", function()
         }
     }
 
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Starting notification type demonstration...\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("startingNotificationTypeDemo") .. "\n")
     for i, notif in ipairs(notificationTypes) do
         timer.Simple(i - 1, function()
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Sending " .. notif.type .. " notification to all players: " .. notif.message .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("sendingNotificationToAllPlayers", notif.type, notif.message) .. "\n")
             for _, ply in ipairs(player.GetAll()) do
                 if IsValid(ply) then
                     if notif.method == "notify" then
@@ -1552,4 +1574,28 @@ concommand.Add("test_existing_notifications", function(client)
             ply:notifyAdmin("This is an admin notification")
         end
     end
+end)
+
+concommand.Add("print_vector", function(client)
+    if not IsValid(client) then
+        MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+        return
+    end
+
+    local pos = client:GetPos()
+    local vectorString = string.format("Vector(%g, %g, %g)", pos.x, pos.y, pos.z)
+    client:notify(string.format("Your position: %s", vectorString))
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Player " .. client:Name() .. " position: " .. vectorString .. "\n")
+end)
+
+concommand.Add("print_angle", function(client)
+    if not IsValid(client) then
+        MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+        return
+    end
+
+    local ang = client:GetAngles()
+    local angleString = string.format("Angle(%g, %g, %g)", ang.p, ang.y, ang.r)
+    client:notify(string.format("Your angles: %s", angleString))
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Player " .. client:Name() .. " angles: " .. angleString .. "\n")
 end)

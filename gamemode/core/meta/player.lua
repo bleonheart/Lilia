@@ -895,6 +895,8 @@ if SERVER then
         local ragdoll = self:getRagdoll()
         local time = hook.Run("GetRagdollTime", self, time) or baseTime or 10
         if state then
+            self.liaStoredHealth = self:Health()
+            self.liaStoredMaxHealth = self:GetMaxHealth()
             local handsWeapon = self:GetActiveWeapon()
             if IsValid(handsWeapon) and handsWeapon:GetClass() == "lia_hands" and handsWeapon:IsHoldingObject() then handsWeapon:DropObject() end
             if IsValid(ragdoll) then SafeRemoveEntity(ragdoll) end
@@ -903,12 +905,15 @@ if SERVER then
             entity:CallOnRemove("fixer", function()
                 if IsValid(self) then
                     self:setLocalVar("blur", nil)
+                    if self.liaStoredHealth then self:SetHealth(math.max(self.liaStoredHealth, 1)) end
                     if not entity.liaNoReset then self:SetPos(entity:GetPos()) end
                     self:SetNoDraw(false)
                     self:SetNotSolid(false)
                     self:Freeze(false)
                     self:SetMoveType(MOVETYPE_WALK)
                     self:SetLocalVelocity(IsValid(entity) and entity.liaLastVelocity or vector_origin)
+                    self.liaStoredHealth = nil
+                    self.liaStoredMaxHealth = nil
                 end
 
                 if IsValid(self) and not entity.liaIgnoreDelete then
