@@ -2361,4 +2361,11 @@ Reload: Drop]],
     characterDataFixCompleted = "Character data fix completed!",
     sendingNotificationToAllPlayers = "Sending %s notification to all players: %s",
     startingNotificationTypeDemo = "Starting notification type demonstration...",
+
+    
+    appearance = "Appearance",
+
+    
+    colorTheme = "Color Theme",
+    colorThemeDesc = "Select the color theme for the UI.",
 }
