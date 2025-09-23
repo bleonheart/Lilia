@@ -695,3 +695,13 @@ lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelect
     type = "Table",
     options = {"Left", "Right", "Center"}
 })
+
+lia.option.add("colorTheme", "colorTheme", "colorThemeDesc", "dark", function(oldValue, newValue)
+    if lia.color.theme[newValue] then
+        lia.color.transitionTo(newValue)
+    end
+end, {
+    category = "appearance",
+    type = "Table",
+    options = {"dark", "light", "blue", "red", "green", "orange", "purple", "coffee", "ice", "wine", "violet", "moss", "coral", "dark_mono"}
+})
