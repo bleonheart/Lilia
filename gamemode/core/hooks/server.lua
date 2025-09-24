@@ -1519,7 +1519,7 @@ concommand.Add("test_all_notifications", function()
     for i, notif in ipairs(notificationTypes) do
         timer.Simple(i - 1, function()
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("sendingNotificationToAllPlayers", notif.type, notif.message) .. "\n")
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if IsValid(ply) then
                     if notif.method == "notify" then
                         ply:notify(notif.message, notif.type)
@@ -1542,7 +1542,7 @@ concommand.Add("lia_redownload_assets", function(client)
 
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Starting asset redownload for all connected players...\n")
     local playerCount = 0
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if IsValid(ply) then
             net.Start("liaAssureClientSideAssets")
             net.Send(ply)
@@ -1564,7 +1564,7 @@ concommand.Add("test_existing_notifications", function(client)
     end
 
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Testing existing notification methods...\n")
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if IsValid(ply) then
             ply:notifyError("This is an error notification")
             ply:notifySuccess("This is a success notification")

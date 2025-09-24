@@ -147,7 +147,7 @@ end)
 hook.Add("ConfigChanged", "NotifyPlayers", function(key, oldValue, newValue)
     -- Notify all players of important configuration changes
     if key == "serverRules" then
-        for _, ply in pairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             ply:ChatPrint("Server rules have been updated!")
         end
     end
@@ -1034,7 +1034,7 @@ end)
 -- Notify administrators of successful relay
 hook.Add("DiscordRelayed", "NotifyAdmins", function(embed)
     -- Notify online admins of successful Discord relay
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             ply:ChatPrint("Message successfully sent to Discord: " .. (embed.title or "Untitled"))
         end
@@ -1074,7 +1074,7 @@ end)
 -- Notify administrators of Discord issues
 hook.Add("DiscordRelayUnavailable", "NotifyAdmins", function()
     -- Notify online admins about Discord relay issues
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             ply:ChatPrint("Warning: Discord relay is unavailable!")
         end

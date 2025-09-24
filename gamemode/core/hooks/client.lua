@@ -724,3 +724,205 @@ concommand.Add("lia_open_derma_preview", function()
         return container
     end)
 end)
+
+local mantlePreviewFrame
+concommand.Add("lia_open_mantle_preview", function()
+    if IsValid(mantlePreviewFrame) then mantlePreviewFrame:Remove() end
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle(L("mantlePreviewTitle") or "Mantle Panel Preview")
+    frame:SetSize(ScrW() * 0.8, ScrH() * 0.8)
+    frame:Center()
+    frame:MakePopup()
+    mantlePreviewFrame = frame
+    local scroll = vgui.Create("DScrollPanel", frame)
+    scroll:Dock(FILL)
+    local function addPreview(name, creator)
+        local label = scroll:Add("DLabel")
+        label:Dock(TOP)
+        label:DockMargin(10, 10, 10, 2)
+        label:SetText(name)
+        label:SizeToContents()
+        local panel = creator()
+        if IsValid(panel) then
+            panel:Dock(TOP)
+            panel:DockMargin(10, 2, 10, 0)
+        end
+    end
+
+    addPreview("MantleBtn", function()
+        local btn = scroll:Add("MantleBtn")
+        btn:SetText("MantleBtn")
+        btn:SetSize(150, 35)
+        return btn
+    end)
+
+    addPreview("MantleFrame", function()
+        local container = scroll:Add("DPanel")
+        container:SetTall(100)
+        container:SetPaintBackground(false)
+        local mantleFrame = vgui.Create("MantleFrame", container)
+        mantleFrame:SetTitle("MantleFrame")
+        mantleFrame:SetSize(200, 90)
+        mantleFrame:ShowCloseButton(true)
+        mantleFrame:SetDraggable(false)
+        mantleFrame:SetPos(0, 5)
+        return container
+    end)
+
+    addPreview("MantleEntry", function()
+        local entry = scroll:Add("MantleEntry")
+        entry:SetPlaceholderText("MantleEntry")
+        entry:SetSize(200, 35)
+        return entry
+    end)
+
+    addPreview("MantleTextBox", function()
+        local textbox = scroll:Add("MantleTextBox")
+        textbox:SetTitle("MantleTextBox")
+        textbox:SetSize(200, 120)
+        return textbox
+    end)
+
+    addPreview("MantleCheckBox", function()
+        local checkbox = scroll:Add("MantleCheckBox")
+        checkbox:SetText("MantleCheckBox")
+        checkbox:SetSize(150, 25)
+        return checkbox
+    end)
+
+    addPreview("MantleComboBox", function()
+        local combo = scroll:Add("MantleComboBox")
+        combo:AddOption("Option 1")
+        combo:AddOption("Option 2")
+        combo:AddOption("Option 3")
+        combo:ChooseOption("Option 1")
+        combo:SetSize(200, 35)
+        return combo
+    end)
+
+    addPreview("MantleCategory", function()
+        local category = scroll:Add("MantleCategory")
+        category:SetText("MantleCategory")
+        category:Add("Item 1")
+        category:Add("Item 2")
+        category:Add("Item 3")
+        category:SetExpanded(true)
+        category:SetSize(200, 100)
+        return category
+    end)
+
+    addPreview("MantleTabs", function()
+        local tabs = scroll:Add("MantleTabs")
+        tabs:SetSize(200, 100)
+        local tab1 = vgui.Create("DPanel")
+        tab1:Dock(FILL)
+        local lbl1 = vgui.Create("DLabel", tab1)
+        lbl1:Dock(TOP)
+        lbl1:DockMargin(0, 0, 0, 4)
+        lbl1:SetText("Tab 1 Content")
+        lbl1:SizeToContents()
+        local tab2 = vgui.Create("DPanel")
+        tab2:Dock(FILL)
+        local entry = vgui.Create("DTextEntry", tab2)
+        entry:Dock(TOP)
+        entry:SetPlaceholderText("Tab 2 Input")
+        tabs:AddTab("Tab 1", tab1)
+        tabs:AddTab("Tab 2", tab2)
+        return tabs
+    end)
+
+    addPreview("MantleText", function()
+        local text = scroll:Add("MantleText")
+        text:SetText("This is MantleText panel with some example text to show how it looks.")
+        text:SetSize(200, 60)
+        return text
+    end)
+
+    addPreview("MantleColorPicker", function()
+        local container = scroll:Add("DPanel")
+        container:SetTall(200)
+        container:SetPaintBackground(false)
+        local colorPicker = vgui.Create("MantleColorPicker", container)
+        colorPicker:SetSize(200, 200)
+        colorPicker:SetPos(0, 0)
+        return container
+    end)
+
+    addPreview("MantleScrollPanel", function()
+        local scrollPanel = scroll:Add("MantleScrollPanel")
+        scrollPanel:SetSize(200, 120)
+        for i = 1, 10 do
+            local item = vgui.Create("DLabel", scrollPanel)
+            item:SetText("Item " .. i)
+            item:Dock(TOP)
+            item:DockMargin(0, 0, 0, 2)
+            item:SizeToContents()
+        end
+        return scrollPanel
+    end)
+
+    addPreview("MantleSlideBox", function()
+        local slideBox = scroll:Add("MantleSlideBox")
+        slideBox:SetSize(200, 80)
+        local item1 = vgui.Create("DPanel", slideBox)
+        item1:Dock(FILL)
+        item1:SetPaintBackground(true)
+        item1:SetBackgroundColor(Color(100, 100, 255))
+        local item2 = vgui.Create("DPanel", slideBox)
+        item2:Dock(FILL)
+        item2:SetPaintBackground(true)
+        item2:SetBackgroundColor(Color(255, 100, 100))
+        local item3 = vgui.Create("DPanel", slideBox)
+        item3:Dock(FILL)
+        item3:SetPaintBackground(true)
+        item3:SetBackgroundColor(Color(100, 255, 100))
+        slideBox:AddSlide(item1)
+        slideBox:AddSlide(item2)
+        slideBox:AddSlide(item3)
+        return slideBox
+    end)
+
+    addPreview("MantleTable", function()
+        local tablePanel = scroll:Add("MantleTable")
+        tablePanel:SetSize(200, 120)
+        tablePanel:AddColumn("Column 1", 80)
+        tablePanel:AddColumn("Column 2", 80)
+        tablePanel:AddRow("Row 1 Col 1", "Row 1 Col 2")
+        tablePanel:AddRow("Row 2 Col 1", "Row 2 Col 2")
+        tablePanel:AddRow("Row 3 Col 1", "Row 3 Col 2")
+        return tablePanel
+    end)
+
+    addPreview("MantleRadialPanel", function()
+        local radialPanel = scroll:Add("MantleRadialPanel")
+        radialPanel:SetSize(200, 200)
+        radialPanel:AddButton("Button 1", function() print("Button 1 clicked") end)
+        radialPanel:AddButton("Button 2", function() print("Button 2 clicked") end)
+        radialPanel:AddButton("Button 3", function() print("Button 3 clicked") end)
+        radialPanel:AddButton("Button 4", function() print("Button 4 clicked") end)
+        return radialPanel
+    end)
+
+    addPreview("MantleDermaMenu", function()
+        local container = scroll:Add("DPanel")
+        container:SetTall(50)
+        container:SetPaintBackground(false)
+        local menuBtn = vgui.Create("MantleBtn", container)
+        menuBtn:SetText("MantleDermaMenu")
+        menuBtn:SetSize(150, 35)
+        menuBtn.DoClick = function()
+            local menu = vgui.Create("MantleDermaMenu")
+            menu:AddOption("Menu Option 1", function() print("Option 1 selected") end)
+            menu:AddOption("Menu Option 2", function() print("Option 2 selected") end)
+            menu:AddOption("Menu Option 3", function() print("Option 3 selected") end)
+            menu:Open()
+        end
+        return container
+    end)
+
+    addPreview("MantlePlayerSelector", function()
+        local playerSelector = scroll:Add("MantlePlayerSelector")
+        playerSelector:SetSize(200, 150)
+        return playerSelector
+    end)
+end)

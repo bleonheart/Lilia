@@ -461,6 +461,216 @@ if CLIENT then
         weight = 700
     })
 
+    lia.font.register("Fated.12", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 12,
+        weight = 500
+    })
+
+    lia.font.register("Fated.14", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 14,
+        weight = 500
+    })
+
+    lia.font.register("Fated.16", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 16,
+        weight = 500
+    })
+
+    lia.font.register("Fated.18", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 18,
+        weight = 500
+    })
+
+    lia.font.register("Fated.20", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 20,
+        weight = 500
+    })
+
+    lia.font.register("Fated.22", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 22,
+        weight = 500
+    })
+
+    lia.font.register("Fated.24", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 24,
+        weight = 500
+    })
+
+    lia.font.register("Fated.26", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 26,
+        weight = 500
+    })
+
+    lia.font.register("Fated.28", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 28,
+        weight = 500
+    })
+
+    lia.font.register("Fated.30", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 30,
+        weight = 500
+    })
+
+    lia.font.register("Fated.32", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 32,
+        weight = 500
+    })
+
+    lia.font.register("Fated.36", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 36,
+        weight = 500
+    })
+
+    lia.font.register("Fated.40", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 40,
+        weight = 500
+    })
+
+    lia.font.register("Fated.48", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 48,
+        weight = 500
+    })
+
+    lia.font.register("Fated.72", {
+        font = "Montserrat Medium",
+        extended = true,
+        size = 72,
+        weight = 500
+    })
+
+    lia.font.register("Fated.12b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 12,
+        weight = 700
+    })
+
+    lia.font.register("Fated.14b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 14,
+        weight = 700
+    })
+
+    lia.font.register("Fated.16b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 16,
+        weight = 700
+    })
+
+    lia.font.register("Fated.18b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 18,
+        weight = 700
+    })
+
+    lia.font.register("Fated.20b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 20,
+        weight = 700
+    })
+
+    lia.font.register("Fated.22b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 22,
+        weight = 700
+    })
+
+    lia.font.register("Fated.24b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 24,
+        weight = 700
+    })
+
+    lia.font.register("Fated.26b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 26,
+        weight = 700
+    })
+
+    lia.font.register("Fated.28b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 28,
+        weight = 700
+    })
+
+    lia.font.register("Fated.30b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 30,
+        weight = 700
+    })
+
+    lia.font.register("Fated.32b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 32,
+        weight = 700
+    })
+
+    lia.font.register("Fated.36b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 36,
+        weight = 700
+    })
+
+    lia.font.register("Fated.40b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 40,
+        weight = 700
+    })
+
+    lia.font.register("Fated.48b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 48,
+        weight = 700
+    })
+
+    lia.font.register("Fated.72b", {
+        font = "Montserrat Bold",
+        extended = true,
+        size = 72,
+        weight = 700
+    })
+
     function lia.font.getAvailableFonts()
         local list = {}
         for name in pairs(lia.font.stored) do

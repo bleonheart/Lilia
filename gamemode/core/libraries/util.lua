@@ -474,6 +474,165 @@ else
         end
     end
 
+    function lia.util.drawGradient(x, y, w, h, direction, color_shadow, radius, flags)
+        radius = radius or 0
+        local listGradients = {Material('vgui/gradient_up'), Material('vgui/gradient_down'), Material('vgui/gradient-l'), Material('vgui/gradient-r')}
+        RNDX.DrawMaterial(radius, x, y, w, h, color_shadow, listGradients[direction], flags)
+    end
+
+    local math_sin = math.sin
+    local math_clamp = math.Clamp
+    local math_abs = math.abs
+    local math_pow = math.pow
+    local math_sqrt = math.sqrt
+    local math_floor = math.floor
+    local math_min = math.min
+    local math_max = math.max
+    local FrameTime = FrameTime
+    local SysTime = SysTime
+    local CurTime = CurTime
+    function lia.util.drawEntityText(ent, text, posY)
+        local distSqr = EyePos():DistToSqr(ent:GetPos())
+        local maxDist = 380
+        if distSqr > maxDist * maxDist then return end
+        local dist = math_sqrt(distSqr)
+        local minDist = 20
+        local idx = ent:EntIndex()
+        local prev = lia.util.ents_scales and lia.util.ents_scales[idx] or 0
+        local normalized = math_clamp((maxDist - dist) / math_max(1, maxDist - minDist), 0, 1)
+        local appearThreshold = 0.8
+        local disappearThreshold = 0.01
+        local target
+        if normalized <= disappearThreshold then
+            target = 0
+        elseif normalized >= appearThreshold then
+            target = 1
+        else
+            target = (normalized - disappearThreshold) / (appearThreshold - disappearThreshold)
+        end
+
+        local dt = FrameTime() or 0.016
+        local appearSpeed = 18
+        local disappearSpeed = 12
+        local speed = (target > prev) and appearSpeed or disappearSpeed
+        local cur = lia.util.approachExp(prev, target, speed, dt)
+        if math_abs(cur - target) < 0.0005 then cur = target end
+        if not lia.util.ents_scales then lia.util.ents_scales = {} end
+        lia.util.ents_scales[idx] = cur
+        local eased = lia.util.easeInOutCubic(cur)
+        local alpha = eased
+        local baseScale = 0.13
+        local camScale = baseScale * math_max(1e-4, eased)
+        if eased < 0.01 then
+            surface.SetAlphaMultiplier(1)
+            return
+        end
+
+        local _, max = ent:GetRotatedAABB(ent:OBBMins(), ent:OBBMaxs())
+        local rot = (ent:GetPos() - EyePos()):Angle().yaw - 90
+        local bob = math_sin(CurTime() + idx) / 3 + 0.5
+        local center = ent:LocalToWorld(ent:OBBCenter())
+        surface.SetAlphaMultiplier(alpha)
+        cam.Start3D2D(center + Vector(0, 0, math_abs(max.z / 2) + 12 + bob), Angle(0, rot, 90), camScale)
+        local function EntText(text, y)
+            surface.SetFont('lia3D2DFont')
+            local tw, th = surface.GetTextSize(text)
+            local bx, by = -tw * 0.5 - 18, y - 12
+            local bw, bh = tw + 36, th + 24
+            RNDX().Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Blur():Shape(RNDX.SHAPE_IOS):Draw()
+            local currentTheme = lia.color.getCurrentTheme()
+            RNDX().Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(currentTheme.background_alpha):Shape(RNDX.SHAPE_IOS):Draw()
+            RNDX().Rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(currentTheme.text):Draw()
+            draw.SimpleText(text, 'lia3D2DFont', 0, y - 2, currentTheme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        end
+
+        EntText(text, posY)
+        cam.End3D2D()
+        surface.SetAlphaMultiplier(1)
+    end
+
+    local scaleFactor = 0.8
+    function lia.util.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)
+        if not IsValid(panel) then return end
+        duration = (duration and duration > 0) and duration or 0.18
+        alpha_dur = (alpha_dur and alpha_dur > 0) and alpha_dur or duration
+        local startTime = SysTime()
+        local targetX, targetY = panel:GetPos()
+        local initialW = target_w * (scale_factor and scale_factor or scaleFactor)
+        local initialH = target_h * (scale_factor and scale_factor or scaleFactor)
+        local initialX = targetX + (target_w - initialW) / 2
+        local initialY = targetY + (target_h - initialH) / 2
+        panel:SetSize(initialW, initialH)
+        panel:SetPos(initialX, initialY)
+        panel:SetAlpha(0)
+        local curW, curH = initialW, initialH
+        local curX, curY = initialX, initialY
+        local curA = 0
+        local eps = 0.5
+        local alpha_eps = 1
+        local speedSize = 3 / math_max(0.0001, duration)
+        local speedAlpha = 3 / math_max(0.0001, alpha_dur)
+        panel.Think = function()
+            if not IsValid(panel) then return end
+            local dt = FrameTime()
+            curW = lia.util.approachExp(curW, target_w, speedSize, dt)
+            curH = lia.util.approachExp(curH, target_h, speedSize, dt)
+            curX = lia.util.approachExp(curX, targetX, speedSize, dt)
+            curY = lia.util.approachExp(curY, targetY, speedSize, dt)
+            curA = lia.util.approachExp(curA, 255, speedAlpha, dt)
+            panel:SetSize(curW, curH)
+            panel:SetPos(curX, curY)
+            panel:SetAlpha(math.floor(curA + 0.5))
+            local doneSize = math_abs(curW - target_w) <= eps and math_abs(curH - target_h) <= eps
+            local donePos = math_abs(curX - targetX) <= eps and math_abs(curY - targetY) <= eps
+            local doneAlpha = math_abs(curA - 255) <= alpha_eps
+            if doneSize and donePos and doneAlpha then
+                panel:SetSize(target_w, target_h)
+                panel:SetPos(targetX, targetY)
+                panel:SetAlpha(255)
+                panel.Think = nil
+                if callback then callback(panel) end
+            end
+        end
+    end
+
+    function lia.util.approachExp(current, target, speed, dt)
+        local t = 1 - math.exp(-speed * dt)
+        return current + (target - current) * t
+    end
+
+    function lia.util.easeOutCubic(t)
+        return 1 - (1 - t) * (1 - t) * (1 - t)
+    end
+
+    function lia.util.easeInOutCubic(t)
+        if t < 0.5 then
+            return 4 * t * t * t
+        else
+            return 1 - math_pow(-2 * t + 2, 3) / 2
+        end
+    end
+
+    function lia.util.ClampMenuPosition(panel)
+        if not IsValid(panel) then return end
+        local x, y = panel:GetPos()
+        local w, h = panel:GetSize()
+        local sw, sh = ScrW(), ScrH()
+        if x < 5 then
+            x = 5
+        elseif x + w > sw - 5 then
+            x = sw - 5 - w
+        end
+
+        if y < 5 then
+            y = 5
+        elseif y + h > sh - 5 then
+            y = sh - 5 - h
+        end
+
+        panel:SetPos(x, y)
+    end
+
     function lia.util.requestArguments(title, argTypes, onSubmit, defaults)
         defaults = defaults or {}
         local count = table.Count(argTypes)
@@ -898,5 +1057,97 @@ else
             end
         end
         return frame
+    end
+
+    function lia.util.previewPlayer(callback, checkFunc, title, size)
+        local color_disconnect = Color(210, 65, 65)
+        local color_bot = Color(70, 150, 220)
+        local color_online = Color(120, 180, 70)
+        local menu_player_selector = vgui.Create('MantleFrame')
+        menu_player_selector:SetSize((size and size.w) or 340, (size and size.h) or 398)
+        menu_player_selector:Center()
+        menu_player_selector:MakePopup()
+        menu_player_selector:SetTitle('')
+        menu_player_selector:SetCenterTitle(title or L('player_title'))
+        if menu_player_selector.ShowAnimation then menu_player_selector:ShowAnimation() end
+        local contentPanel = vgui.Create('Panel', menu_player_selector)
+        contentPanel:Dock(FILL)
+        contentPanel:DockMargin(8, 0, 8, 8)
+        local menu_player_selectorsp = vgui.Create('MantleScrollPanel', contentPanel)
+        menu_player_selectorsp:Dock(FILL)
+        local CARD_HEIGHT = 44
+        local AVATAR_SIZE = 32
+        local AVATAR_X = 14
+        local function CreatePlayerCard(pl)
+            local card = vgui.Create('DButton', menu_player_selectorsp)
+            card:Dock(TOP)
+            card:DockMargin(0, 5, 0, 0)
+            card:SetTall(CARD_HEIGHT)
+            card:SetText('')
+            card.hover_status = 0
+            card.OnCursorEntered = function(self) self:SetCursor('hand') end
+            card.OnCursorExited = function(self) self:SetCursor('arrow') end
+            card.Think = function(self)
+                local target = self:IsHovered() and 1 or 0
+                self.hover_status = lia.util.approachExp(self.hover_status, target, 8, FrameTime())
+            end
+
+            card.DoClick = function()
+                if IsValid(pl) and (not checkFunc or checkFunc(pl)) then
+                    surface.PlaySound('garrysmod/ui_click.wav')
+                    callback(pl)
+                end
+
+                menu_player_selector:Remove()
+            end
+
+            card.pl_color = team.GetColor(pl:Team()) or color_online
+            card.Paint = function(self, w, h)
+                RNDX().Rect(0, 0, w, h):Rad(10):Color(lia.color.panel[1]):Shape(RNDX.SHAPE_IOS):Draw()
+                if self.hover_status > 0 then RNDX().Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(RNDX.SHAPE_IOS):Draw() end
+                local infoX = AVATAR_X + AVATAR_SIZE + 10
+                if not IsValid(pl) then
+                    draw.SimpleText(L('player_offline'), 'Fated.18', infoX, h * 0.5, color_disconnect, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    return
+                end
+
+                draw.SimpleText(pl:Name(), 'Fated.18', infoX, 6, lia.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                local group = pl:GetUserGroup() or 'user'
+                group = string.upper(string.sub(group, 1, 1)) .. string.sub(group, 2)
+                draw.SimpleText(group, 'Fated.14', infoX, h - 6, lia.color.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+                draw.SimpleText(pl:Ping() .. ' ' .. L('player_ping'), 'Fated.16', w - 20, h - 6, lia.color.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+                local statusColor
+                if pl:IsBot() then
+                    statusColor = color_bot
+                else
+                    statusColor = self.pl_color
+                end
+
+                RNDX.DrawCircle(w - 24, 14, 12, statusColor)
+            end
+
+            local avatarImg = vgui.Create('AvatarImage', card)
+            avatarImg:SetSize(AVATAR_SIZE, AVATAR_SIZE)
+            avatarImg:SetPos(AVATAR_X, (card:GetTall() - AVATAR_SIZE) * 0.5)
+            avatarImg:SetSteamID(pl:SteamID64(), 64)
+            avatarImg:SetMouseInputEnabled(false)
+            avatarImg:SetKeyboardInputEnabled(false)
+            avatarImg.PaintOver = function() end
+            avatarImg:SetPos(AVATAR_X, (card:GetTall() - AVATAR_SIZE) * 0.5)
+            return card
+        end
+
+        for _, pl in player.Iterator() do
+            CreatePlayerCard(pl)
+        end
+
+        local menu_player_selectorbtn_close = vgui.Create('MantleBtn', menu_player_selector)
+        menu_player_selectorbtn_close:Dock(BOTTOM)
+        menu_player_selectorbtn_close:DockMargin(16, 8, 16, 12)
+        menu_player_selectorbtn_close:SetTall(36)
+        menu_player_selectorbtn_close:SetText(L('player_close'))
+        menu_player_selectorbtn_close:SetColorHover(color_disconnect)
+        menu_player_selectorbtn_close.DoClick = function() menu_player_selector:Remove() end
+        return menu_player_selector
     end
 end

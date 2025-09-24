@@ -696,11 +696,7 @@ lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelect
     options = {"Left", "Right", "Center"}
 })
 
-lia.option.add("colorTheme", "colorTheme", "colorThemeDesc", "dark", function(oldValue, newValue)
-    if lia.color.theme[newValue] then
-        lia.color.transitionTo(newValue)
-    end
-end, {
+lia.option.add("colorTheme", "colorTheme", "colorThemeDesc", "dark", function(oldValue, newValue) if lia.color.themes[newValue] then local currentTheme = lia.color.getCurrentTheme(); for key, value in pairs(currentTheme) do lia.color[key] = value end end end, {
     category = "appearance",
     type = "Table",
     options = {"dark", "light", "blue", "red", "green", "orange", "purple", "coffee", "ice", "wine", "violet", "moss", "coral", "dark_mono"}

@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 from pathlib import Path
 
 DEFAULT_DIRECTORIES = [
@@ -26,6 +27,80 @@ def _find_long_bracket_closer(text: str, start_index: int, num_equals: int):
     closer = "]" + ("=" * num_equals) + "]"
     pos = text.find(closer, start_index)
     return -1 if pos == -1 else pos + len(closer)
+
+
+def pretty_print_lua(content: str, indent_size: int = 4) -> str:
+    """Pretty-print Lua code with consistent indentation and spacing."""
+    lines = content.split('\n')
+    formatted_lines = []
+    indent_level = 0
+    prev_line_was_empty = False
+
+    # Keywords that increase indentation
+    indent_increase = {'function', 'if', 'for', 'while', 'repeat', 'do', 'then', '{'}
+    # Keywords that decrease indentation
+    indent_decrease = {'end', 'elseif', 'else', 'until', '}'}
+    # Keywords that should be followed by a space
+    space_after = {'function', 'if', 'for', 'while', 'repeat', 'until', 'do', 'then', 'elseif', 'else', 'return', 'local'}
+
+    for line in lines:
+        original_line = line
+        line = line.strip()
+
+        # Skip empty lines but remember we had one
+        if not line:
+            if not prev_line_was_empty:
+                formatted_lines.append('')
+            prev_line_was_empty = True
+            continue
+
+        prev_line_was_empty = False
+
+        # Remove trailing whitespace
+        line = re.sub(r'\s+$', '', line)
+
+        # Add proper spacing around operators
+        line = re.sub(r'\s*([=<>!+\-*/%~&|^])\s*', r' \1 ', line)
+        line = re.sub(r'\s*([=<>!+\-*/%~&|^])\s*', r' \1 ', line)  # Apply twice for nested operators
+
+        # Ensure space after commas
+        line = re.sub(r',(\S)', r', \1', line)
+
+        # Ensure space before opening braces/parentheses in some cases
+        line = re.sub(r'(\w)(\()', r'\1 (', line)
+        line = re.sub(r'(\w)(\{)', r'\1 \{', line)
+
+        # Handle indentation
+        # Count leading keywords that increase/decrease indentation
+        words = line.split()
+        if words:
+            first_word = words[0]
+
+            # Decrease indentation for these keywords (but only if they're at the start)
+            if first_word in indent_decrease:
+                indent_level = max(0, indent_level - 1)
+            elif line.startswith('end') or line.startswith('}'):
+                indent_level = max(0, indent_level - 1)
+                # Add extra decrease for function ends
+                if 'end' in line and ('function' in line or 'if' in line or 'for' in line):
+                    pass  # Already decreased above
+
+        # Add indentation
+        if line:  # Only indent non-empty lines
+            indented_line = ' ' * (indent_level * indent_size) + line
+            formatted_lines.append(indented_line)
+
+        # Increase indentation for these keywords
+        if words:
+            first_word = words[0]
+            if first_word in indent_increase:
+                indent_level += 1
+            elif line.endswith('{'):
+                indent_level += 1
+            elif 'function' in line and 'end' not in line:
+                indent_level += 1
+
+    return '\n'.join(formatted_lines).rstrip() + '\n'
 
 
 def remove_lua_comments(content: str):
@@ -85,11 +160,16 @@ def remove_lua_comments(content: str):
     return "".join(output_chars), lines_removed
 
 
-def process_file(file_path, dry_run=False):
+def process_file(file_path, dry_run=False, pretty_print=True):
     try:
         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             original_content = f.read()
         cleaned_content, lines_removed = remove_lua_comments(original_content)
+
+        # Apply pretty-printing if requested
+        if pretty_print and original_content != cleaned_content:
+            cleaned_content = pretty_print_lua(cleaned_content)
+
         if original_content != cleaned_content:
             if not dry_run:
                 with open(file_path, "w", encoding="utf-8") as f:
@@ -113,7 +193,7 @@ def find_lua_files(directory):
     return lua_files
 
 
-def process_directory(directory: Path, dry_run: bool, verbose: bool):
+def process_directory(directory: Path, dry_run: bool, verbose: bool, pretty_print: bool = True):
     if not directory.exists():
         print(f"Error: Directory '{directory}' does not exist.")
         return 0, 0, 0
@@ -131,11 +211,12 @@ def process_directory(directory: Path, dry_run: bool, verbose: bool):
     for file_path in lua_files:
         if verbose:
             print(f"Processing: {file_path}")
-        file_path, lines_removed, was_modified = process_file(file_path, dry_run)
+        file_path, lines_removed, was_modified = process_file(file_path, dry_run, pretty_print)
         processed_files += 1
         if lines_removed > 0:
             status = "Would remove" if dry_run else "Removed"
-            print(f"{status} {lines_removed} comment lines from {file_path}")
+            action = " (with formatting)" if pretty_print and not dry_run else ""
+            print(f"{status} {lines_removed} comment lines from {file_path}{action}")
             total_lines_removed += lines_removed
             if was_modified:
                 modified_files += 1
@@ -143,7 +224,7 @@ def process_directory(directory: Path, dry_run: bool, verbose: bool):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Remove Lua comments from files")
+    parser = argparse.ArgumentParser(description="Remove Lua comments from files and format them (formatting enabled by default)")
     parser.add_argument(
         "directory",
         nargs="?",
@@ -157,6 +238,11 @@ def main():
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Show detailed output"
     )
+    parser.add_argument(
+        "--no-pretty-print", "-np",
+        action="store_true",
+        help="Disable code formatting (comments will still be removed)"
+    )
     args = parser.parse_args()
     if args.directory:
         dirs_to_process = [Path(args.directory)]
@@ -167,18 +253,20 @@ def main():
     grand_processed_files = 0
     for d in dirs_to_process:
         processed_files, modified_files, total_lines_removed = process_directory(
-            d, args.dry_run, args.verbose
+            d, args.dry_run, args.verbose, not args.no_pretty_print
         )
         grand_processed_files += processed_files
         grand_modified_files += modified_files
         grand_total_lines += total_lines_removed
     if args.dry_run:
+        action = " and format" if not args.no_pretty_print else ""
         print(
-            f"\nDry run complete. Would remove {grand_total_lines} comment lines from {grand_modified_files} files across {len(dirs_to_process)} director{'y' if len(dirs_to_process)==1 else 'ies'}."
+            f"\nDry run complete. Would remove {grand_total_lines} comment lines{action} from {grand_modified_files} files across {len(dirs_to_process)} director{'y' if len(dirs_to_process)==1 else 'ies'}."
         )
     else:
+        action = " and formatted" if not args.no_pretty_print else ""
         print(
-            f"\nComplete! Removed {grand_total_lines} comment lines from {grand_modified_files} files across {len(dirs_to_process)} director{'y' if len(dirs_to_process)==1 else 'ies'}."
+            f"\nComplete! Removed {grand_total_lines} comment lines{action} from {grand_modified_files} files across {len(dirs_to_process)} director{'y' if len(dirs_to_process)==1 else 'ies'}."
         )
 
 
