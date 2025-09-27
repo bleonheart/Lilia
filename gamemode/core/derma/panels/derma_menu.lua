@@ -19,7 +19,6 @@ function PANEL:Init()
     self.Think = function()
         local ft = FrameTime()
         if not self._initPosSet then
-            local tx, ty = self:GetPos()
             lia.util.clampMenuPosition(self)
             self._targetX, self._targetY = self:GetPos()
             self:SetPos(self._targetX, self._targetY + 6)

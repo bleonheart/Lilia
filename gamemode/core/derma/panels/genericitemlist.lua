@@ -14,9 +14,9 @@ function PANEL:Init()
             self.listView:AddColumn(column)
         end
     else
-        self.listView:AddColumn("Item Name")
-        self.listView:AddColumn("Value")
-        self.listView:AddColumn("Description")
+        self.listView:AddColumn(L("itemNameColumn"))
+        self.listView:AddColumn(L("valueColumn"))
+        self.listView:AddColumn(L("descriptionColumn"))
     end
 
     self.closeButton = self:Add("liaButton")

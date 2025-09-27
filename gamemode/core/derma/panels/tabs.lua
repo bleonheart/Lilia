@@ -167,8 +167,6 @@ function PANEL:PerformLayout(w, h)
         end
 
         if IsValid(activeBtn) then
-            local bx, by = activeBtn:GetPos()
-            local bw, bh = activeBtn:GetSize()
             self.indicator_target_x = bx
             self.indicator_target_w = bw
             if self.indicator_w == 0 and self.indicator_x == 0 then

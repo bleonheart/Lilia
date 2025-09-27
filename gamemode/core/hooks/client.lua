@@ -796,7 +796,7 @@ concommand.Add("lia_open_derma_panels", function()
     end)
 
     addPreview("liaEntry", function()
-        local entry, entry_bg = lia.derma.descEntry(scroll:GetCanvas(), nil, "liaEntry")
+        local _, entry_bg = lia.derma.descEntry(scroll:GetCanvas(), nil, "liaEntry")
         entry_bg:SetSize(200, 35)
         return entry_bg
     end)
@@ -812,7 +812,7 @@ concommand.Add("lia_open_derma_panels", function()
     end)
 
     addPreview("liaCheckBox", function()
-        local checkboxPanel, checkbox = lia.derma.checkbox(scroll:GetCanvas(), "liaCheckBox")
+        local checkboxPanel, _ = lia.derma.checkbox(scroll:GetCanvas(), "liaCheckBox")
         checkboxPanel:SetSize(150, 25)
         return checkboxPanel
     end)
@@ -848,7 +848,7 @@ concommand.Add("lia_open_derma_panels", function()
         lbl1:SizeToContents()
         local tab2 = vgui.Create("liaBasePanel")
         tab2:Dock(FILL)
-        local entry, entry_bg = lia.derma.descEntry(tab2, nil, L("demoTabInput"))
+        local _, entry_bg = lia.derma.descEntry(tab2, nil, L("demoTabInput"))
         tabs:AddTab("Tab 1", tab1)
         tabs:AddTab("Tab 2", tab2)
         return tabs

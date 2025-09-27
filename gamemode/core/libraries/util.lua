@@ -485,8 +485,6 @@ else
     local math_abs = math.abs
     local math_pow = math.pow
     local math_sqrt = math.sqrt
-    local math_floor = math.floor
-    local math_min = math.min
     local math_max = math.max
     local FrameTime = FrameTime
     local SysTime = SysTime
@@ -556,7 +554,6 @@ else
         if not IsValid(panel) then return end
         duration = (duration and duration > 0) and duration or 0.18
         alpha_dur = (alpha_dur and alpha_dur > 0) and alpha_dur or duration
-        local startTime = SysTime()
         local targetX, targetY = panel:GetPos()
         local initialW = target_w * (scale_factor and scale_factor or scaleFactor)
         local initialH = target_h * (scale_factor and scale_factor or scaleFactor)

@@ -382,7 +382,7 @@ function lia.derma.playerSelector(callback, validationFunc)
         card.Paint = function(self, w, h)
             draw.RoundedBox(6, 0, 0, w, h, lia.color.theme.panel_alpha[1])
             if not IsValid(player) then
-                draw.SimpleText("Offline", "Fated.18", 50, h * 0.5, Color(210, 65, 65), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(L("offlineStatus"), "Fated.18", 50, h * 0.5, Color(210, 65, 65), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 return
             end
 

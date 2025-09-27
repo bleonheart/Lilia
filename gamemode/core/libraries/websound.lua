@@ -153,7 +153,7 @@ function lia.websound.download(name, url, cb)
                     if cb then cb(nil, false, "Cached file invalid: " .. cachedValidationError) end
                 end
             else
-                if cb then cb(nil, false, "Could not read cached file") end
+                if cb then cb(nil, false, L("couldNotReadCachedFile")) end
             end
         elseif cb then
             cb(nil, false, err)

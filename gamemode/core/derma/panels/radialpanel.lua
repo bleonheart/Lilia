@@ -6,11 +6,9 @@ local math_atan2 = math.atan2
 local math_sqrt = math.sqrt
 local math_floor = math.floor
 local math_min = math.min
-local math_max = math.max
 local FrameTime = FrameTime
 local SysTime = SysTime
 local CurTime = CurTime
-local Lerp = Lerp
 local EPS = 1e-6
 local EPS_ANGLE = 1e-4
 local function GetSectorIndexFromAngle(angle, cnt)

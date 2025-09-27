@@ -260,7 +260,7 @@ function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerNa
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
         lia.information("Passwords do not match for " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
-        return false, "Passwords do not match."
+        return false, L("passwordsDoNotMatch")
     end
 end
 
@@ -1480,37 +1480,37 @@ concommand.Add("test_all_notifications", function()
     local notificationTypes = {
         {
             type = "default",
-            message = "This is a default notification. It is being used to demonstrate the default notification type in the Lilia framework. The message is intentionally made longer to test the notification panel's ability to handle extended text and to ensure that the notification wraps and displays correctly for all users.",
+            message = L("demoNotificationDefault"),
             method = "notify"
         },
         {
             type = "info",
-            message = "This is an info notification. Information notifications are typically used to provide users with helpful tips, updates, or general information about the current state of the game or server. This message is longer to test the notification system's handling of verbose informational content.",
+            message = L("demoNotificationInfo"),
             method = "notifyInfo"
         },
         {
             type = "error",
-            message = "This is an error notification. An error has occurred in the system, and this notification is being used to alert you to the issue. Please review the error details and take any necessary corrective action. This message is intentionally verbose to test the notification display.",
+            message = L("demoNotificationError"),
             method = "notifyError"
         },
         {
             type = "success",
-            message = "This is a success notification. Your recent action was completed successfully, and everything went as expected. This longer message is used to ensure that success notifications can accommodate more detailed feedback for the user.",
+            message = L("demoNotificationSuccess"),
             method = "notifySuccess"
         },
         {
             type = "warning",
-            message = "This is a warning notification. Please be aware that something may require your attention or caution. This message is extended to test how the notification system handles warnings that contain more context or instructions for the player.",
+            message = L("demoNotificationWarning"),
             method = "notifyWarning"
         },
         {
             type = "money",
-            message = "This is a money notification. You have received or lost some in-game currency. This message is intentionally longer to verify that monetary notifications can display detailed transaction information or explanations as needed.",
+            message = L("demoNotificationMoney"),
             method = "notifyMoney"
         },
         {
             type = "admin",
-            message = "This is an admin notification. Administrative actions or messages are being communicated to you. This longer message is used to test the notification system's ability to display extended admin-related information or instructions.",
+            message = L("demoNotificationAdmin"),
             method = "notifyAdmin"
         }
     }
@@ -1566,12 +1566,12 @@ concommand.Add("test_existing_notifications", function(client)
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Testing existing notification methods...\n")
     for _, ply in player.Iterator() do
         if IsValid(ply) then
-            ply:notifyError("This is an error notification")
-            ply:notifySuccess("This is a success notification")
-            ply:notifyWarning("This is a warning notification")
-            ply:notifyInfo("This is an info notification")
-            ply:notifyMoney("This is a money notification")
-            ply:notifyAdmin("This is an admin notification")
+            ply:notifyError(L("testNotificationError"))
+            ply:notifySuccess(L("testNotificationSuccess"))
+            ply:notifyWarning(L("testNotificationWarning"))
+            ply:notifyInfo(L("testNotificationInfo"))
+            ply:notifyMoney(L("testNotificationMoney"))
+            ply:notifyAdmin(L("testNotificationAdmin"))
         end
     end
 end)

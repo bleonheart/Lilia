@@ -1,6 +1,5 @@
 ﻿local PANEL = {}
 local FrameTime = FrameTime
-local CurTime = CurTime
 local Lerp = Lerp
 local math_max = math.max
 local math_floor = math.floor

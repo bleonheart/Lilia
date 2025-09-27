@@ -962,10 +962,10 @@ net.Receive("liaAssureClientSideAssets", function()
                 print("===========================================")
                 if failedImages > 0 or failedSounds > 0 then
                     print("WARNING: Some assets failed to download. Check console output above for details.")
-                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %d image(s) failed to download. Check console for details.", failedImages)) end
-                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %d sound(s) failed to download. Check console for details.", failedSounds)) end
+                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format(L("assetDownloadWarningImages"), failedImages)) end
+                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format(L("assetDownloadWarningSounds"), failedSounds)) end
                 else
-                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), "All assets downloaded successfully!")
+                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), L("allAssetsDownloadedSuccess"))
                 end
             end)
         else

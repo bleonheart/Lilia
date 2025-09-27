@@ -2980,10 +2980,10 @@ lia.command.add("serverpassword", {
 
         local cvar = GetConVar("sv_password")
         local pw = cvar and cvar:GetString() or ""
-        if not isstring(pw) or pw == "" then return "Server password is not set." end
+        if not isstring(pw) or pw == "" then return L("serverPasswordNotSet") end
         net.Start("liaProvideServerPassword")
         net.WriteString(pw)
         net.Send(client)
-        return "Server password sent to you."
+        return L("serverPasswordSent")
     end
 })

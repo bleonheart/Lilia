@@ -28,7 +28,7 @@
             end
 
             local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-            if unloadedCount > 0 then lia.information("Unloaded " .. unloadedCount .. " unused characters for " .. client:Name()) end
+            if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters", unloadedCount, client:Name())) end
             hook.Run("PrePlayerLoadedChar", client, character, currentChar)
             character:setup()
             hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -57,7 +57,7 @@
     end
 
     local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-    if unloadedCount > 0 then lia.information("Unloaded " .. unloadedCount .. " unused characters for " .. client:Name()) end
+    if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters", unloadedCount, client:Name())) end
     hook.Run("PrePlayerLoadedChar", client, character, currentChar)
     character:setup()
     hook.Run("PlayerLoadedChar", client, character, currentChar)

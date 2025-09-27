@@ -179,7 +179,6 @@ end
 function PANEL:_range()
     if self._needLayout then
         local w, h = self:GetWide(), self:GetTall()
-        local vbw = self.vbar:GetWide()
         self.content:DockPadding(0, 0, 0, 0)
         local vbReserve = self.vbarReserveWidth or self.vbarExpandedWidth
         self.content:SetPos(self.padL, self.padT - self.offset)

@@ -1,7 +1,6 @@
 ﻿local PANEL = {}
 local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
-local color_outline = Color(30, 30, 30)
 local color_target = Color(255, 255, 255, 200)
 function PANEL:Init()
     self.selected_color = Color(255, 255, 255)
