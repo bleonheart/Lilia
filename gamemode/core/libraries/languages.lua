@@ -52,7 +52,7 @@ function L(key, ...)
     local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
     local template = langTable and langTable[key]
     if not template then return tostring(key) end
-    if template:find("%%d") then lia.error("String formatting with %d is not allowed in localization strings: " .. tostring(key)) end
+    -- Only allow %d, %f, %g, %s as format specifiers
     if template:find("%%[^%%sdfg]") then lia.error("Invalid format specifier in localization string: " .. tostring(key) .. " - " .. template) end
     local count = select("#", ...)
     local args = {}
@@ -66,6 +66,12 @@ function L(key, ...)
     end
 
     local needed = select(2, template:gsub("%%[^%%]", ""))
+    -- Check for argument count mismatch
+    if count > needed then
+        lia.error("Too many arguments provided for localization string '" .. tostring(key) .. "': expected " .. needed .. ", got " .. count)
+        return tostring(key)
+    end
+
     for i = count + 1, needed do
         args[i] = ""
     end

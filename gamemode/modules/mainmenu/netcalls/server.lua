@@ -136,7 +136,7 @@ hook.Add("PlayerLoadedChar", "StaffCharacterDiscordPrompt", function(client, cha
     if character:getFaction() ~= FACTION_STAFF then return end
     local storedDiscord = client:getLiliaData("staffDiscord")
     if storedDiscord and storedDiscord ~= "" then
-        local description = "A Staff Character, Discord: " .. storedDiscord .. ", SteamID: " .. client:SteamID()
+        local description = L("staffCharacterDiscord") .. storedDiscord .. ", SteamID: " .. client:SteamID()
         character:setDesc(description)
         return
     end
@@ -157,7 +157,7 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     if not character or character:getFaction() ~= FACTION_STAFF then return end
     client:setLiliaData("staffDiscord", discord)
     local steamID = client:SteamID()
-    local description = "A Staff Character, Discord: " .. discord .. ", SteamID: " .. steamID
+    local description = L("staffCharacterDiscord") .. discord .. ", SteamID: " .. steamID
     character:setDesc(description)
     client:notifySuccessLocalized("staffDescUpdated")
 end)

@@ -15,7 +15,7 @@
         end
 
         client:setLiliaData("staffDiscord", discord)
-        local description = "A Staff Character, Discord: " .. discord .. ", SteamID: " .. client:SteamID()
+        local description = L("staffCharacterDiscord") .. discord .. ", SteamID: " .. client:SteamID()
         character:setDesc(description)
         client:notifySuccessLocalized("staffDescUpdated")
     end

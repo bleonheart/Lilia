@@ -226,14 +226,7 @@ properties.Add("npc_weapon", {
             WarningText:SetContentAlignment(5)
             WarningText:SetTextColor(color_white)
             WarningText:SetFont("DermaLarge")
-            WarningText:SetText(L("npcWeaponWarning1"))
-            local WarningText2 = vgui.Create("liaText", WarningThing)
-            WarningText2:Dock(TOP)
-            WarningText2:SetHeight(35)
-            WarningText2:SetContentAlignment(5)
-            WarningText2:SetTextColor(color_white)
-            WarningText2:SetFont("DermaLarge")
-            WarningText2:SetText(L("npcWeaponWarning2"))
+            WarningText:SetText(L("npcWeaponWarning"))
         end
     end,
     Receive = function(_, _, ply)

@@ -811,9 +811,9 @@ concommand.Add("lia_open_derma_panels", function()
 
     addPreview("liaComboBox", function()
         local combo = vgui.Create("liaComboBox", scroll:GetCanvas())
-        combo:AddChoice("Option 1")
-        combo:AddChoice("Option 2")
-        combo:AddChoice("Option 3")
+        combo:AddChoice(L("option1"))
+        combo:AddChoice(L("option2"))
+        combo:AddChoice(L("option3"))
         combo:ChooseOptionID(1)
         combo:SetSize(200, 35)
         return combo
@@ -821,9 +821,9 @@ concommand.Add("lia_open_derma_panels", function()
 
     addPreview("liaCategory", function()
         local category = lia.derma.category(scroll:GetCanvas(), "liaCategory", true)
-        category:Add("Item 1")
-        category:Add("Item 2")
-        category:Add("Item 3")
+        category:Add(L("item1"))
+        category:Add(L("item2"))
+        category:Add(L("item3"))
         category:SetSize(200, 100)
         return category
     end)
@@ -841,8 +841,8 @@ concommand.Add("lia_open_derma_panels", function()
         local tab2 = vgui.Create("liaBasePanel")
         tab2:Dock(FILL)
         local _ = lia.derma.descEntry(tab2, nil, L("demoTabInput"))
-        tabs:AddTab("Tab 1", tab1)
-        tabs:AddTab("Tab 2", tab2)
+        tabs:AddTab(L("demoTabContent"), tab1)
+        tabs:AddTab(L("demoTabInput"), tab2)
         return tabs
     end)
 
@@ -886,8 +886,8 @@ concommand.Add("lia_open_derma_panels", function()
     addPreview("liaTable", function()
         local tablePanel = vgui.Create("liaTable", scroll:GetCanvas())
         tablePanel:SetSize(200, 120)
-        tablePanel:AddColumn("Column 1", 80)
-        tablePanel:AddColumn("Column 2", 80)
+        tablePanel:AddColumn(L("columnWithNumber", 1), 80)
+        tablePanel:AddColumn(L("columnWithNumber", 2), 80)
         tablePanel:AddItem("Row 1 Col 1", "Row 1 Col 2")
         tablePanel:AddItem("Row 2 Col 1", "Row 2 Col 2")
         tablePanel:AddItem("Row 3 Col 1", "Row 3 Col 2")
@@ -904,19 +904,19 @@ concommand.Add("lia_open_derma_panels", function()
         radialBtn.DoClick = function()
             lia.derma.radialMenu({
                 {
-                    name = L("radialOption1"),
+                    name = L("radialOption", 1),
                     callback = function() print(L("optionSelected", 1)) end
                 },
                 {
-                    name = L("radialOption2"),
+                    name = L("radialOption", 2),
                     callback = function() print(L("optionSelected", 2)) end
                 },
                 {
-                    name = L("radialOption3"),
+                    name = L("radialOption", 3),
                     callback = function() print(L("optionSelected", 3)) end
                 },
                 {
-                    name = L("radialOption4"),
+                    name = L("radialOption", 4),
                     callback = function() print(L("optionSelected", 4)) end
                 }
             })
@@ -933,9 +933,9 @@ concommand.Add("lia_open_derma_panels", function()
         menuBtn:Dock(TOP)
         menuBtn.DoClick = function()
             local menu = lia.derma.dermaMenu()
-            menu:AddOption(L("menuOption1"), function() print(L("optionSelected", 1)) end)
-            menu:AddOption(L("menuOption2"), function() print(L("optionSelected", 2)) end)
-            menu:AddOption(L("menuOption3"), function() print(L("optionSelected", 3)) end)
+            menu:AddOption(L("menuOption", 1), function() print(L("optionSelected", 1)) end)
+            menu:AddOption(L("menuOption", 2), function() print(L("optionSelected", 2)) end)
+            menu:AddOption(L("menuOption", 3), function() print(L("optionSelected", 3)) end)
         end
         return container
     end)

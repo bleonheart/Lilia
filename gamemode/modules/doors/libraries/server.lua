@@ -55,7 +55,7 @@ function MODULE:LoadData()
             if row.factions and row.factions ~= "NULL" and row.factions ~= "" then
                 if tostring(row.factions):match("^[%d%.%-%s]+$") and not tostring(row.factions):match("[{}%[%]]") then
                     lia.warning("Door " .. id .. " has coordinate-like data in factions column: " .. tostring(row.factions))
-                    lia.warning("This suggests data corruption. Clearing factions data.")
+                    lia.warning(L("dataCorruptionClearingFactions"))
                     row.factions = ""
                 else
                     local success, result = pcall(lia.data.deserialize, row.factions)
@@ -87,7 +87,7 @@ function MODULE:LoadData()
             if row.classes and row.classes ~= "NULL" and row.classes ~= "" then
                 if tostring(row.classes):match("^[%d%.%-%s]+$") and not tostring(row.classes):match("[{}%[%]]") then
                     lia.warning("Door " .. id .. " has coordinate-like data in classes column: " .. tostring(row.classes))
-                    lia.warning("This suggests data corruption. Clearing classes data.")
+                    lia.warning(L("dataCorruptionClearingClasses"))
                     row.classes = ""
                 else
                     local success, result = pcall(lia.data.deserialize, row.classes)
