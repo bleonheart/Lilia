@@ -354,7 +354,6 @@ if CLIENT then
     })
 
     function lia.font.loadFonts()
-        -- Clear any existing fonts first
         lia.font.stored = {}
         lia.font.register("CursiveFont", {
             font = "Segoe Script",

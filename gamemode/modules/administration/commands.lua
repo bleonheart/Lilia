@@ -518,18 +518,15 @@ lia.command.add("plyspectate", {
             return
         end
 
-        -- Store the admin's current position for return
         client:setNetVar("spectateReturnPos", client:GetPos())
         client:setNetVar("spectateReturnAng", client:EyeAngles())
 
-        -- Set the admin to spectator mode
         client:Spectate(OBS_MODE_CHASE)
         client:SpectateEntity(target)
         client:GodEnable()
         client:SetNoDraw(true)
         client:SetNotSolid(true)
 
-        -- Store the target being spectated
         client:setNetVar("spectatingTarget", target:SteamID())
 
         client:notifySuccessLocalized("spectateStarted", target:Nick())
@@ -550,17 +547,14 @@ lia.command.add("stopspectate", {
             return
         end
 
-        -- Return the admin to their original position
         client:UnSpectate()
         client:GodDisable()
         client:SetNoDraw(false)
         client:SetNotSolid(false)
 
-        -- Restore position and angles
         client:SetPos(returnPos)
         client:SetEyeAngles(returnAng)
 
-        -- Clear spectate variables
         client:setNetVar("spectateReturnPos", nil)
         client:setNetVar("spectateReturnAng", nil)
         client:setNetVar("spectatingTarget", nil)
