@@ -868,10 +868,10 @@ net.Receive("liaAssureClientSideAssets", function()
     lia.webimage.allowDownloads = true
     local webimages = lia.webimage.stored
     local websounds = lia.websound.stored
-    print("=== STARTING CLIENT-SIDE ASSET DOWNLOAD ===")
-    print("WebImages to download:", table.Count(webimages))
-    print("WebSounds to download:", table.Count(websounds))
-    print("===========================================")
+    print(L("assetDownloadStartHeader"))
+    print(L("assetDownloadWebImagesCount", table.Count(webimages)))
+    print(L("assetDownloadWebSoundsCount", table.Count(websounds)))
+    print(L("assetDownloadCompleteSeparator"))
     local downloadQueue = {}
     local activeDownloads = 0
     local maxConcurrent = 5
@@ -898,8 +898,8 @@ net.Receive("liaAssureClientSideAssets", function()
         })
     end
 
-    print("Download queue size:", #downloadQueue)
-    print("Processing with max concurrent downloads:", maxConcurrent)
+    print(L("assetDownloadQueueSize", #downloadQueue))
+    print(L("assetDownloadProcessingMax", maxConcurrent))
     local function processNextDownload()
         if #downloadQueue == 0 then return end
         local download = table.remove(downloadQueue, 1)
@@ -909,12 +909,12 @@ net.Receive("liaAssureClientSideAssets", function()
                 activeDownloads = activeDownloads - 1
                 if material then
                     completedImages = completedImages + 1
-                    if not fromCache then print(string.format("[?] Image downloaded: %s", download.name)) end
+                    if not fromCache then print(L("assetDownloadImageSuccess", download.name)) end
                 else
                     failedImages = failedImages + 1
                     local errorMessage = errorMsg or L("unknownError")
                     print(string.format("[?] Image failed: %s - %s", download.name, errorMessage))
-                    chat.AddText(Color(255, 100, 100), "[Image Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
+                    chat.AddText(Color(255, 100, 100), L("assetDownloadImagePrefix"), " ", Color(255, 255, 255), L("assetDownloadImageFailed", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -929,7 +929,7 @@ net.Receive("liaAssureClientSideAssets", function()
                     failedSounds = failedSounds + 1
                     local errorMessage = errorMsg or L("unknownError")
                     print(string.format("[?] Sound failed: %s - %s", download.name, errorMessage))
-                    chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
+                    chat.AddText(Color(255, 100, 100), L("assetDownloadSoundPrefix"), " ", Color(255, 255, 255), L("assetDownloadSoundFailed", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -950,26 +950,26 @@ net.Receive("liaAssureClientSideAssets", function()
             timer.Simple(1.0, function()
                 local imageStats = lia.webimage.getStats()
                 local soundStats = lia.websound.getStats()
-                print("===========================================")
-                print("=== CLIENT-SIDE ASSETS DOWNLOAD COMPLETE ===")
-                print("Download Summary")
-                print(string.format("Images: %d/%d completed (%d failed)", completedImages, totalImages, failedImages))
-                print(string.format("Sounds: %d/%d completed (%d failed)", completedSounds, totalSounds, failedSounds))
-                print("Current Statistics")
-                print(string.format("Images: %d downloaded | %d stored", imageStats.downloaded, imageStats.stored))
-                print(string.format("Sounds: %d downloaded | %d stored", soundStats.downloaded, soundStats.stored))
-                print(string.format("Combined: %d downloaded | %d stored", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
-                print("===========================================")
+                print(L("assetDownloadCompleteSeparator"))
+                print(L("assetDownloadCompleteHeader"))
+                print(L("downloadSummary"))
+                print(L("downloadCompletedFormat", "Images", completedImages, totalImages, failedImages))
+                print(L("downloadCompletedFormat", "Sounds", completedSounds, totalSounds, failedSounds))
+                print(L("assetDownloadCurrentStats"))
+                print(L("assetDownloadStatsImagesFormat", imageStats.downloaded, imageStats.stored))
+                print(L("assetDownloadStatsSoundsFormat", soundStats.downloaded, soundStats.stored))
+                print(L("assetDownloadStatsCombinedFormat", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
+                print(L("assetDownloadCompleteSeparator"))
                 if failedImages > 0 or failedSounds > 0 then
-                    print("WARNING: Some assets failed to download. Check console output above for details.")
-                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format(L("assetDownloadWarningImages"), failedImages)) end
-                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format(L("assetDownloadWarningSounds"), failedSounds)) end
+                    print(L("assetDownloadWarningConsole"))
+                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), L("assetDownloadPrefix"), " ", Color(255, 255, 255), string.format(L("assetDownloadWarningImages"), failedImages)) end
+                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), L("assetDownloadPrefix"), " ", Color(255, 255, 255), string.format(L("assetDownloadWarningSounds"), failedSounds)) end
                 else
-                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), L("allAssetsDownloadedSuccess"))
+                    chat.AddText(Color(100, 255, 100), L("assetDownloadPrefix"), " ", Color(255, 255, 255), L("allAssetsDownloadedSuccess"))
                 end
             end)
         else
-            print(string.format("Download progress: %d active, %d queued, %d/%d images, %d/%d sounds", activeDownloads, #downloadQueue, completedImages, totalImages, completedSounds, totalSounds))
+            print(L("assetDownloadProgress", activeDownloads, #downloadQueue, completedImages, totalImages, completedSounds, totalSounds))
         end
     end)
 end)

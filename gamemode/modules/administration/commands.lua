@@ -2076,7 +2076,7 @@ lia.command.add("chargiveitem", {
         end
 
         if #errors > 0 then
-            -- Show summary of what happened when some items failed
+            
             if successCount > 0 then
                 local summaryMessage = string.format("%d/%d %s added to inventory", successCount, count, itemNameDisplay)
                 target:notifyInfoLocalized(summaryMessage)

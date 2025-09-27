@@ -66,7 +66,7 @@ function SimplePanel:Paint(w, h)
 end
 
 vgui.Register("SemiTransparentDPanel", SimplePanel, "liaBasePanel")
--- Custom base panel that sets empty text by default to prevent "Label" from appearing
+
 local LiaBasePanel = {}
 function LiaBasePanel:Init()
     if self.SetText then self:SetText("") end
@@ -816,7 +816,7 @@ end
 
 function meta:Class(name, ...)
     local class = classes[name]
-    assert(class, "Class " .. name .. " does not exist.")
+    assert(class, L("classDoesNotExist", name))
     class(self, ...)
     return self
 end

@@ -370,7 +370,7 @@ else
         color = color or color_white
         return draw.TextShadow({
             text = text,
-            font = font or "liaGenericFont",
+            font = font or "liaSmallFont",
             pos = {x, y},
             color = color,
             xalign = alignX or 0,
@@ -594,6 +594,9 @@ else
     end
 
     function lia.util.approachExp(current, target, speed, dt)
+        if target == nil then
+            return current
+        end
         local t = 1 - math.exp(-speed * dt)
         return current + (target - current) * t
     end

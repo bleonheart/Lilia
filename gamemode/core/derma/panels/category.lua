@@ -119,7 +119,7 @@ end
 
 function PANEL:AddItem(item)
     if isstring(item) then
-        -- Create a label for string items
+        
         local label = vgui.Create("DLabel", self.content)
         label:SetText(item)
         label:Dock(TOP)
@@ -127,7 +127,7 @@ function PANEL:AddItem(item)
         label:SetTextColor(lia.color.theme.text)
         return label
     else
-        -- Assume it's a VGUI element
+        
         item:SetParent(self.content)
         item:Dock(TOP)
         item:DockMargin(0, 0, 0, 5)
@@ -139,7 +139,7 @@ function PANEL:Add(item)
     return self:AddItem(item)
 end
 
--- DCategoryList compatibility functions
+
 function PANEL:RemoveItem(panel)
     if IsValid(panel) and panel:GetParent() == self.content then
         panel:Remove()
@@ -188,7 +188,7 @@ function PANEL:Toggle()
 end
 
 function PANEL:SetShowToggleButton(show)
-    -- liaCategory always shows the toggle button, but we store the value for compatibility
+    
     self.showToggleButton = show
 end
 

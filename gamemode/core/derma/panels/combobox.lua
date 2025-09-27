@@ -203,7 +203,7 @@ function PANEL:OnRemove()
     self:CloseMenu()
 end
 
--- DComboBox compatibility functions
+
 function PANEL:GetOptionText(index)
     if self.choices[index] then
         return self.choices[index].text
@@ -273,7 +273,7 @@ function PANEL:IsMenuOpen()
 end
 
 function PANEL:SetSortItems(sort)
-    -- liaComboBox doesn't implement sorting, but we store the value for compatibility
+    
     self.sortItems = sort
 end
 

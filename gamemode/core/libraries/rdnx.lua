@@ -1,13 +1,4 @@
-﻿--[[
-Copyright (c) 2025 Srlion (https://github.com/Srlion)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-]]
-local bit_band = bit.band
+﻿local bit_band = bit.band
 local surface_SetDrawColor = surface.SetDrawColor
 local surface_SetMaterial = surface.SetMaterial
 local surface_DrawTexturedRectUV = surface.DrawTexturedRectUV
@@ -22,7 +13,7 @@ local SHADERS_GMA = [========[R01BRAOHS2tdVNwrAMQWx2gAAAAAAFJORFhfMTc1Nzg3Nzk1Ng
 do
     local DECODED_SHADERS_GMA = util.Base64Decode(SHADERS_GMA)
     if not DECODED_SHADERS_GMA or #DECODED_SHADERS_GMA == 0 then
-        print(L("shaderLoadFailed")) -- this shouldn't happen
+        print(L("shaderLoadFailed"))
         return
     end
 
@@ -34,9 +25,7 @@ local function GET_SHADER(name)
     return SHADERS_VERSION:gsub("%.", "_") .. "_" .. name
 end
 
-local BLUR_RT = GetRenderTargetEx("RNDX" .. SHADERS_VERSION .. SysTime(), 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), --[[4, 8 is clamp_s + clamp-t]]
-    0, IMAGE_FORMAT_BGRA8888)
-
+local BLUR_RT = GetRenderTargetEx("RNDX" .. SHADERS_VERSION .. SysTime(), 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), 0, IMAGE_FORMAT_BGRA8888)
 local NEW_FLAG
 do
     local flags_n = -1
@@ -47,7 +36,6 @@ do
 end
 
 local NO_TL, NO_TR, NO_BL, NO_BR = NEW_FLAG(), NEW_FLAG(), NEW_FLAG(), NEW_FLAG()
--- Svetov/Jaffies's great idea!
 local SHAPE_CIRCLE, SHAPE_FIGMA, SHAPE_IOS = NEW_FLAG(), NEW_FLAG(), NEW_FLAG()
 local BLUR = NEW_FLAG()
 local RNDX = {}
@@ -104,7 +92,7 @@ local ROUNDED_MAT = create_shader_mat("rounded", {
 local ROUNDED_TEXTURE_MAT = create_shader_mat("rounded_texture", {
     ["$pixshader"] = GET_SHADER("rndx_rounded_ps30"),
     ["$vertexshader"] = GET_SHADER("rndx_vertex_vs30"),
-    ["$basetexture"] = "loveyoumom", -- if there is no base texture, you can't change it later
+    ["$basetexture"] = "loveyoumom",
 })
 
 local BLUR_VERTICAL = "$c0_x"
@@ -223,8 +211,6 @@ local function draw_rounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thi
     end
 
     SetupDraw()
-    -- https://github.com/Jaffies/rboxes/blob/main/rboxes.lua
-    -- fixes setting $basetexture to ""(none) not working correctly
     return surface_DrawTexturedRectUV(x, y, w, h, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
@@ -316,8 +302,6 @@ local function draw_shadows(r, g, b, a)
     end
 
     SetupDraw()
-    -- https://github.com/Jaffies/rboxes/blob/main/rboxes.lua
-    -- fixes having no $basetexture causing uv to be broken
     surface_DrawTexturedRectUV(X, Y, W, H, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
@@ -433,17 +417,13 @@ BASE_FUNCS = {
     end,
     Flags = function(self, flags)
         flags = flags or 0
-        -- Corner flags
         if bit_band(flags, NO_TL) ~= 0 then TL = 0 end
         if bit_band(flags, NO_TR) ~= 0 then TR = 0 end
         if bit_band(flags, NO_BL) ~= 0 then BL = 0 end
         if bit_band(flags, NO_BR) ~= 0 then BR = 0 end
-        -- Shape flags
         local shape_flag = bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)
         if shape_flag ~= 0 then SHAPE = SHAPES[shape_flag] or SHAPES[DEFAULT_SHAPE] end
-        -- Blur flag
         if bit_band(flags, BLUR) ~= 0 then BASE_FUNCS.Blur(self) end
-        -- Manual color flag
         if bit_band(flags, MANUAL_COLOR) ~= 0 then COL_R = nil end
         return self
     end,
@@ -465,16 +445,9 @@ local RECT = {
     Shadow = BASE_FUNCS.Shadow,
     Flags = BASE_FUNCS.Flags,
     Draw = function(_)
-        if START_ANGLE == END_ANGLE then
-            return -- nothing to draw
-        end
-
+        if START_ANGLE == END_ANGLE then return end
         local OLD_CLIPPING_STATE
-        if SHADOW_ENABLED or CLIP_PANEL then
-            -- if we are inside a panel, we need to draw outside of it
-            OLD_CLIPPING_STATE = DisableClipping(true)
-        end
-
+        if SHADOW_ENABLED or CLIP_PANEL then OLD_CLIPPING_STATE = DisableClipping(true) end
         if CLIP_PANEL then
             local sx, sy = CLIP_PANEL:LocalToScreen(0, 0)
             local sw, sh = CLIP_PANEL:GetSize()
@@ -549,7 +522,6 @@ setmetatable(RNDX, {
     __call = function() return TYPES end
 })
 
--- Flags
 RNDX.NO_TL = NO_TL
 RNDX.NO_TR = NO_TR
 RNDX.NO_BL = NO_BL
@@ -573,7 +545,6 @@ function RNDX.SetDefaultShape(shape)
     DEFAULT_DRAW_FLAGS = DEFAULT_SHAPE
 end
 
--- Direct function access for common drawing operations
 RNDX.Rect = TYPES.Rect
 RNDX.Circle = TYPES.Circle
 RNDX.Draw = RNDX.Draw

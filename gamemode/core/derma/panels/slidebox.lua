@@ -1,7 +1,7 @@
 ﻿local PANEL = {}
 
 function PANEL:Init()
-    -- Check if this is being used as a slide container or slider
+    
     self.isSlideContainer = false
     self.slides = {}
     self.currentSlide = 1
@@ -9,7 +9,7 @@ function PANEL:Init()
     self.transitionStart = 0
     self.transitioning = false
 
-    -- If no slides are added, fall back to slider behavior
+    
     self.text = ''
     self.min_value = 0
     self.max_value = 1
@@ -48,7 +48,7 @@ function PANEL:OnRemove()
         self._convar_timer = nil
     end
 
-    -- Clean up slides
+    
     for _, slide in ipairs(self.slides) do
         if IsValid(slide) then
             slide:Remove()
@@ -108,7 +108,7 @@ function PANEL:GetValue()
 end
 
 function PANEL:PerformLayout(_, _)
-    -- If slides are present, layout them to fill the container
+    
     if self.isSlideContainer and #self.slides > 0 then
         for _, slide in ipairs(self.slides) do
             if IsValid(slide) then
@@ -133,12 +133,12 @@ function PANEL:UpdateSliderByCursorPos(x)
 end
 
 function PANEL:Paint(w, h)
-    -- If slides are present, paint as slide container
+    
     if self.isSlideContainer and #self.slides > 0 then
-        -- Paint slide container background
+        
         draw.RoundedBox(8, 0, 0, w, h, lia.color.theme.highlight)
 
-        -- Draw slide indicators if multiple slides
+        
         if #self.slides > 1 then
             local indicatorSize = 8
             local indicatorSpacing = 12
@@ -156,7 +156,7 @@ function PANEL:Paint(w, h)
         return
     end
 
-    -- Fall back to slider painting if no slides
+    
     local ft = FrameTime()
     local padX = 16
     local padTop = 2
@@ -200,7 +200,7 @@ end
 
 function PANEL:OnMousePressed(mcode)
     if mcode == MOUSE_LEFT then
-        -- If slides are present, handle slide switching
+        
         if self.isSlideContainer and #self.slides > 1 then
             local x = self:CursorPos()
             local slideWidth = self:GetWide() / #self.slides
@@ -216,7 +216,7 @@ function PANEL:OnMousePressed(mcode)
             return
         end
 
-        -- Fall back to slider behavior if no slides
+        
         if not self.isSlideContainer then
             local x = self:CursorPos()
             self:UpdateSliderByCursorPos(x)
@@ -231,7 +231,7 @@ end
 
 function PANEL:OnMouseReleased(mcode)
     if mcode == MOUSE_LEFT and not self.isSlideContainer then
-        -- If no slides, handle slider dragging
+        
         self.dragging = false
         self:MouseCapture(false)
     end
@@ -251,18 +251,18 @@ function PANEL:OnCursorExited()
     self.hover = false
 end
 
--- Slide container methods
+
 function PANEL:AddSlide(panel)
     if not IsValid(panel) then return end
 
-    -- When slides are added, switch to slide container mode
+    
     self.isSlideContainer = true
     self.slides[#self.slides + 1] = panel
     panel:SetParent(self)
     panel:Dock(FILL)
     panel:InvalidateLayout(true)
 
-    -- Hide all slides except the first one
+    
     if #self.slides > 1 then
         for i = 1, #self.slides - 1 do
             self.slides[i]:SetVisible(false)
@@ -285,7 +285,7 @@ function PANEL:NextSlide()
         nextSlide = 1
     end
 
-    -- Start transition
+    
     self.slides[current]:SetVisible(false)
     self.slides[nextSlide]:SetVisible(true)
 
@@ -304,7 +304,7 @@ function PANEL:PreviousSlide()
         prevSlide = #self.slides
     end
 
-    -- Start transition
+    
     self.slides[current]:SetVisible(false)
     self.slides[prevSlide]:SetVisible(true)
 

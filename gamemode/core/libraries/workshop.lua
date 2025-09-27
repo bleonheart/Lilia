@@ -219,7 +219,7 @@ else
         hook.Run("liaWorkshopInfoReceived")
     end)
 
-    -- Auto-mount content when client receives workshop info
+    
     hook.Add("liaWorkshopInfoReceived", "liaAutoMountContent", function() if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then timer.Simple(0.5, function() if lia.workshop and lia.workshop.mountContent then lia.workshop.mountContent() end end) end end)
     function lia.workshop.mountContent()
         local ids = lia.workshop.serverIds or {}
@@ -233,7 +233,7 @@ else
             return
         end
 
-        -- Auto-mount content without user confirmation
+        
         net.Start("liaWorkshopDownloaderRequest")
         net.SendToServer()
     end

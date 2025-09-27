@@ -426,7 +426,7 @@ function PANEL:RebuildHeader()
     self:CreateHeader()
 end
 
--- DListView compatibility functions
+
 function PANEL:AddColumn(name, width)
     local col = {
         name = name,
@@ -471,7 +471,7 @@ function PANEL:SelectItem(line)
     if type(line) == "number" then
         self.selectedRow = line
     else
-        -- Find by content
+        
         for i, row in ipairs(self.rows) do
             if row == line then
                 self.selectedRow = i
@@ -509,11 +509,11 @@ function PANEL:SortByColumn(index, descending)
 end
 
 function PANEL:GetMultiSelect()
-    return false -- liaTable doesn't support multi-select by default
+    return false 
 end
 
 function PANEL:SetMultiSelect(multi)
-    -- liaTable doesn't support multi-select, but we store the value for compatibility
+    
     self.multiSelect = multi
 end
 

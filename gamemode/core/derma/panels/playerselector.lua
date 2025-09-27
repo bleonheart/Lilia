@@ -10,19 +10,19 @@ function PANEL:Init()
 
     if self.ShowAnimation then self:ShowAnimation() end
 
-    -- Create content panel
+    
     local contentPanel = vgui.Create("liaBasePanel", self)
     contentPanel:Dock(FILL)
     contentPanel:DockMargin(8, 0, 8, 8)
 
-    -- Create scroll panel
+    
     self.scrollPanel = vgui.Create("liaScrollPanel", contentPanel)
     self.scrollPanel:Dock(FILL)
 
-    -- Populate players
+    
     self:PopulatePlayers()
 
-    -- Close button
+    
     self.closeButton = self:Add("liaButton")
     self.closeButton:Dock(BOTTOM)
     self.closeButton:DockMargin(16, 8, 16, 12)
@@ -115,7 +115,7 @@ function PANEL:CreatePlayerCard(ply, CARD_HEIGHT, AVATAR_SIZE, AVATAR_X, color_d
         RNDX.DrawCircle(w - 24, 14, 12, statusColor)
     end
 
-    -- Avatar image
+    
     local avatarImg = vgui.Create("AvatarImage", card)
     avatarImg:SetSize(AVATAR_SIZE, AVATAR_SIZE)
     avatarImg:SetPos(AVATAR_X, (card:GetTall() - AVATAR_SIZE) * 0.5)
@@ -145,7 +145,7 @@ function PANEL:GetSelectedPlayer()
 end
 
 function PANEL:Paint(_, _)
-    -- Background handled by liaFrame
+    
 end
 
 vgui.Register("liaPlayerSelector", PANEL, "liaFrame")

@@ -100,7 +100,7 @@ end
 function PANEL:OnChange(_)
 end
 
--- CheckButton compatibility functions
+
 function PANEL:GetChecked()
     return self:GetBool()
 end

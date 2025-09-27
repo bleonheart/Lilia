@@ -1131,7 +1131,7 @@ concommand.Add("lia_reload", function(client)
         if IsValid(client) then
             client:notifyWarningLocalized("reloadCooldownActive", remaining)
         else
-            print("[Lilia] " .. L("reloadCooldownActive", remaining))
+            lia.bootstrap("HotReload", L("reloadCooldownActive", remaining))
         end
         return
     end
@@ -1578,7 +1578,7 @@ end)
 
 concommand.Add("print_vector", function(client)
     if not IsValid(client) then
-        MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+        MsgC(Color(255, 0, 0), "[Lilia] Error: " .. L("commandPlayerOnly") .. "\n")
         return
     end
 
@@ -1590,7 +1590,7 @@ end)
 
 concommand.Add("print_angle", function(client)
     if not IsValid(client) then
-        MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+        MsgC(Color(255, 0, 0), "[Lilia] Error: " .. L("commandPlayerOnly") .. "\n")
         return
     end
 

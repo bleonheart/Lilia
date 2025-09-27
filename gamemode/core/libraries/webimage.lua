@@ -314,12 +314,12 @@ concommand.Add("lia_cleanup_images", function()
             if not isValid then
                 file.Delete(filePath)
                 removedCount = removedCount + 1
-                print(string.format("[WebImage] Removed corrupted file: %s", filePath:sub(#baseDir + 1)))
+                print(L("webimageRemovedCorruptedFile", filePath:sub(#baseDir + 1)))
             end
         else
             file.Delete(filePath)
             removedCount = removedCount + 1
-            print(string.format("[WebImage] Removed unreadable file: %s", filePath:sub(#baseDir + 1)))
+            print(L("webimageRemovedUnreadableFile", filePath:sub(#baseDir + 1)))
         end
     end
 
@@ -327,11 +327,11 @@ concommand.Add("lia_cleanup_images", function()
         local savePath = baseDir .. fileName
         if not file.Exists(savePath, "DATA") then
             cache[fileName] = nil
-            print(string.format("[WebImage] Removed from cache: %s", fileName))
+            print(L("webimageRemovedFromCache", fileName))
         end
     end
 
-    print(string.format("[WebImage] Cleanup complete: %d files removed", removedCount))
+    print(L("webimageCleanupComplete", removedCount))
 end)
 
 concommand.Add("lia_wipewebimages", function()

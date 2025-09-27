@@ -304,7 +304,7 @@ function PANEL:addText(...)
         end
         return panel:IsVisible()
     else
-        -- Panel creation failed, return false to indicate no panel was added
+        
         return false
     end
 end

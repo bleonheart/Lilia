@@ -728,15 +728,11 @@ end)
 local dermaPanelsPreviewFrame
 concommand.Add("lia_open_derma_panels", function()
     if IsValid(dermaPanelsPreviewFrame) then dermaPanelsPreviewFrame:Remove() end
-
-    -- Create a regular DFrame instead of liaFrame to avoid positioning issues
     local frame = vgui.Create("liaFrame")
     frame:SetSize(800, 600)
     frame:SetTitle("lia Panel Preview")
     frame:MakePopup()
     frame:ShowCloseButton(true)
-
-    -- Apply Lilia styling
     frame.Paint = function(self, w, h)
         draw.RoundedBox(6, 0, 0, w, h, Color(45, 45, 45))
         draw.RoundedBoxEx(6, 0, 0, w, 24, Color(35, 35, 35), true, true, false, false)
@@ -744,15 +740,10 @@ concommand.Add("lia_open_derma_panels", function()
     end
 
     dermaPanelsPreviewFrame = frame
-
-    -- Center immediately
     frame:Center()
-
     local scroll = lia.derma.scrollpanel(frame)
     scroll:Dock(FILL)
-
     local function addPreview(name, creator)
-        -- Add separator before each entry (except the first one)
         local children = scroll:GetCanvas():GetChildren()
         if children and #children > 0 then
             local separator = vgui.Create("liaBasePanel", scroll:GetCanvas())

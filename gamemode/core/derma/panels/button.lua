@@ -82,7 +82,7 @@ function PANEL:Paint(w, h)
     local activeTarget = showActiveShadow and 10 or 0
     local activeSpeed = (activeTarget > 0) and 7 or 3
     self._activeShadowLerp = Lerp(FrameTime() * activeSpeed, self._activeShadowLerp, activeTarget)
-    -- Use theme colors instead of hardcoded values
+    
     local buttonColor = self.col or lia.color.theme.liaButtonColor
     local buttonHoveredColor = self.col_hov or lia.color.theme.liaButtonHoveredColor
     local buttonShadowColor = lia.color.theme.liaButtonShadowColor
@@ -119,14 +119,14 @@ end
 
 vgui.Register("liaButton", PANEL, "Button")
 local animDuration = 0.3
--- Helper function to ensure theme colors are properly loaded
+
 local function ensureThemeColor(colorKey, fallbackColor)
     if lia.color.theme and lia.color.theme[colorKey] then return lia.color.theme[colorKey] end
     return fallbackColor
 end
 
 local function PaintButton(self, w, h)
-    -- Ensure theme colors are available with fallbacks
+    
     local themeColor = ensureThemeColor("accent", Color(106, 108, 197))
     local borderColor = ensureThemeColor("border", Color(100, 100, 100))
     local backgroundColor = ensureThemeColor("background", Color(25, 25, 25))

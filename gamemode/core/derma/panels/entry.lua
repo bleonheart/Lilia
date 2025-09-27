@@ -22,7 +22,7 @@ function PANEL:Init()
     self.textEntry.PaintOver = function(s, w, h)
         local ft = FrameTime()
 
-        -- Draw shadow using theme colors (only if depth UI is enabled)
+        
         if lia.config.get("uiDepthEnabled", true) then
             local target = s:IsEditing() and 10 or 5
             self._shadowLerp = lia.util.approachExp(self._shadowLerp, target, 12, ft)
@@ -34,7 +34,7 @@ function PANEL:Init()
             :Draw()
         end
 
-        -- Draw main background using theme colors
+        
         RNDX().Rect(0, 0, w, h)
             :Rad(16)
             :Color(lia.color.theme.focus_panel)
@@ -109,7 +109,7 @@ function PANEL:OnEnter()
     self.action(self:GetValue())
 end
 
--- DTextEntry compatibility functions
+
 function PANEL:SetPlaceholderText(text)
     self:SetPlaceholder(text)
 end
@@ -119,7 +119,7 @@ function PANEL:GetPlaceholderText()
 end
 
 function PANEL:SetPlaceholderColor(color)
-    -- Store for potential future use, but we use theme colors
+    
     self.placeholderColor = color
 end
 

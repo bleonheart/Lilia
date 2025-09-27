@@ -143,7 +143,7 @@ lia.keybind.add(KEY_NONE, "adminMode", {
     onPress = function(client)
         if not IsValid(client) then return end
         local steamID = client:SteamID()
-        client:ChatPrint("hi")
+        client:ChatPrint(L("keybindTestMessage"))
         if client:isStaffOnDuty() then
             local oldCharID = client:getNetVar("OldCharID", 0)
             if oldCharID > 0 then

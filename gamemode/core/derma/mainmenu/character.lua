@@ -249,7 +249,7 @@ function PANEL:createStartButton()
     end
 
     if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
-        -- Auto-mount content instead of showing button
+        
         timer.Simple(1, function()
             if lia.workshop and lia.workshop.mountContent then
                 lia.workshop.mountContent()

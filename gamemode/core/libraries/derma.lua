@@ -92,12 +92,12 @@ function lia.derma.panelTabs(parent)
     local tabs = vgui.Create("liaTabs", parent)
     tabs:Dock(FILL)
 
-    -- Store the original AddTab method
+    
     local originalAddTab = tabs.AddTab
 
     function tabs:AddTab(title, panel, icon, _, _)
         local newPanel = panel or vgui.Create("liaBasePanel")
-        -- Call the original AddTab method, not self:AddTab
+        
         originalAddTab(self, title, newPanel, icon)
     end
 

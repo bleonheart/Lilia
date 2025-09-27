@@ -424,25 +424,25 @@ function PANEL:Think()
     vb.btnGrip:SetPos(0, finalY)
 end
 
--- DScrollPanel compatibility functions
+
 function PANEL:GetHBar()
-    -- liaScrollPanel doesn't have horizontal bar, return nil
+    
     return nil
 end
 
--- Add GetCanvas method to DScrollPanel for compatibility
+
 local DScrollPanel = vgui.GetControlTable("DScrollPanel")
 if DScrollPanel and not DScrollPanel.GetCanvas then
     function DScrollPanel:GetCanvas()
-        -- DScrollPanel doesn't have a direct canvas, but we can return the panel itself
-        -- or find the canvas panel if it exists
+        
+        
         if self.Canvas then
             return self.Canvas
         elseif self:GetChildren() and #self:GetChildren() > 0 then
-            -- Return the first child which is typically the canvas
+            
             return self:GetChildren()[1]
         else
-            -- Fallback to self if no canvas is found
+            
             return self
         end
     end

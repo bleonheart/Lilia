@@ -235,7 +235,7 @@ end
 return true
 end
 
--- DLabel compatibility functions
+
 function PANEL:GetTextColor()
     return self:GetColor()
 end

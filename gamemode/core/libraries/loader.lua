@@ -554,11 +554,7 @@ function GM:OnReloaded()
     if lia.config then lia.reloadCooldown = 5 end
     if timeSinceLastReload < lia.reloadCooldown then
         local remaining = math.ceil(lia.reloadCooldown - timeSinceLastReload)
-        if SERVER then
-            print("[Lilia] " .. L("reloadCooldownActive", remaining))
-        else
-            chat.AddText(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("reloadCooldownActive", remaining))
-        end
+        lia.bootstrap("HotReload", L("reloadCooldownActive", remaining))
         return
     end
 

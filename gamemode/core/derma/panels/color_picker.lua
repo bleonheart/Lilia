@@ -172,7 +172,7 @@ end
 function PANEL:Paint(_, _)
 end
 
--- DColorMixer compatibility functions
+
 function PANEL:SetVector(vec)
     if vec and vec.r and vec.g and vec.b then
         self:SetColor(Color(vec.r, vec.g, vec.b))
@@ -188,7 +188,7 @@ function PANEL:GetVector()
 end
 
 function PANEL:SetWangs(wang)
-    -- liaColorPicker doesn't use wangs, but we store the value for compatibility
+    
     self.wangs = wang
 end
 
