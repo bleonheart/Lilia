@@ -882,43 +882,43 @@ end
 
 concommand.Add("lia_snapshot", function(_, _, args)
     if not args[1] then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot <table_name>\n")
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotUsage") .. "\n")
         return
     end
 
     local tableName = args[1]
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Creating snapshot for table: " .. tableName .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotCreating", tableName) .. "\n")
     lia.db.createSnapshot(tableName):next(function(result)
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Snapshot created successfully!\n")
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "File: " .. result.file .. "\n")
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Records: " .. result.records .. "\n")
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Path: " .. result.path .. "\n")
-    end, function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), "Snapshot failed: " .. tostring(err) .. "\n") end)
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("snapshotCreatedSuccess") .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotFileInfo", result.file) .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotRecordsInfo", result.records) .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotPathInfo", result.path) .. "\n")
+    end, function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), L("snapshotFailed", tostring(err)) .. "\n") end)
 end)
 
 concommand.Add("lia_snapshot_load", function(_, _, args)
     if not args[1] then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot_load <filename>\n")
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Available snapshots:\n")
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotLoadUsage") .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotLoadAvailable") .. "\n")
         local files, _ = file.Find("lilia/snapshots/*.json", "DATA")
         if files and #files > 0 then
             for _, file in ipairs(files) do
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "  " .. file .. "\n")
             end
         else
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "  No snapshots found\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotLoadNotFound") .. "\n")
         end
         return
     end
 
     local fileName = args[1]
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Loading snapshot: " .. fileName .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotLoading", fileName) .. "\n")
     lia.db.loadSnapshot(fileName):next(function(result)
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Snapshot loaded successfully!\n")
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Table: " .. result.table .. "\n")
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Records: " .. result.records .. "\n")
-        if result.timestamp then MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Original timestamp: " .. os.date("%Y-%m-%d %H:%M:%S", result.timestamp) .. "\n") end
-    end, function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), "Snapshot load failed: " .. tostring(err) .. "\n") end)
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("snapshotLoadedSuccess") .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotTableInfo", result.table) .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotRecordsInfo", result.records) .. "\n")
+        if result.timestamp then MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotOriginalTimestamp", os.date("%Y-%m-%d %H:%M:%S", result.timestamp)) .. "\n") end
+    end, function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), L("snapshotLoadFailed", tostring(err)) .. "\n") end)
 end)
 
 concommand.Add("lia_add_door_group_column", function()

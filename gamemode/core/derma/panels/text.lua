@@ -203,7 +203,7 @@ function PANEL:_rebuild_if_needed ()
         self._truncated = trunc
     end
 
-    function PANEL:PerformLayout (w, h)
+    function PANEL:PerformLayout (_, _)
         self:_rebuild_if_needed ()
     end
 

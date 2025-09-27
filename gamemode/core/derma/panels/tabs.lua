@@ -181,7 +181,7 @@ function PANEL:PerformLayout(_, _)
 end
 
 -- DPropertySheet compatibility functions
-function PANEL:AddSheet(name, panel, icon, noStretchX, noStretchY, tooltip)
+function PANEL:AddSheet(name, panel, icon, _, _, _)
     self:AddTab(name, panel, icon)
     return #self.tabs
 end

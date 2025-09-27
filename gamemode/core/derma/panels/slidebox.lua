@@ -107,7 +107,7 @@ function PANEL:GetValue()
     return self.value
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(_, _)
     -- If slides are present, layout them to fill the container
     if self.isSlideContainer and #self.slides > 0 then
         for _, slide in ipairs(self.slides) do

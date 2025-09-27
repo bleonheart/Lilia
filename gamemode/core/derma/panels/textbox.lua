@@ -56,7 +56,7 @@ function PANEL:OnCallback(callback)
     self.callback = callback
 end
 
-function PANEL:Paint(w, h)
+function PANEL:Paint(_, _)
 end
 
 vgui.Register("liaTextBox", PANEL, "liaFrame")

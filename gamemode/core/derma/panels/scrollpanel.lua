@@ -269,7 +269,7 @@ function PANEL:SetVBarPaddingRight(enabled)
     self:_markDirty()
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(_, _)
     self:_markDirty()
 end
 
