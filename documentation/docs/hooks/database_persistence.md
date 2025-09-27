@@ -137,7 +137,7 @@ end
 hook.Add("PlayerSay", "UpdateEntityOnCommand", function(ply, text)
     if text == "!saveentities" then
         -- Find all persistent entities and update them
-        for _, ent in pairs(ents.GetAll()) do
+        for _, ent in ents.iterator do
             if ent:GetPersistent() then
                 hook.Run("UpdateEntityPersistence", ent)
             end

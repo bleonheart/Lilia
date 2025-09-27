@@ -1174,7 +1174,7 @@ end)
 
 concommand.Add("bots", function()
     timer.Create("Bots_Add_Timer", 2, 0, function()
-        if #player.GetAll() < game.MaxPlayers() then
+        if player.GetCount() < game.MaxPlayers() then
             game.ConsoleCommand("bot\n")
         else
             timer.Remove("Bots_Add_Timer")

@@ -345,7 +345,7 @@ concommand.Add("lia_wipewebimages", function()
             lia.webimage.download(name, data.url, nil, data.flags)
         end
 
-        lia.information("Started re-downloading stored web images...")
+        lia.information(L("startedRedownloadingWebImages"))
     end)
 end)
 

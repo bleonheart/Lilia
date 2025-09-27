@@ -1416,7 +1416,7 @@ end)
 
 -- Draw health above entities
 hook.Add("PostDrawOpaqueRenderables", "EntityHealth", function()
-    for _, ent in ipairs(ents.GetAll()) do
+    for _, ent in ents.iterator do
         if ent:GetClass() == "npc_zombie" then
             local health = ent:Health()
             local maxHealth = ent:GetMaxHealth()
@@ -1447,7 +1447,7 @@ local function shouldShowText(entity, text)
 end
 
 hook.Add("PostDrawOpaqueRenderables", "SmartEntityText", function()
-    for _, ent in ipairs(ents.GetAll()) do
+    for _, ent in ents.iterator do
         if shouldShowText(ent, "Target") then
             lia.util.drawEntityText(ent, "Target")
         end

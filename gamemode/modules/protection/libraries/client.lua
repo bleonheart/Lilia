@@ -1575,7 +1575,7 @@ local hideWeaponSet = {
 }
 
 local function getEntityDisplayName(ent)
-    if not IsValid(ent) then return "Unknown Entity" end
+    if not IsValid(ent) then return L("unknownEntity") end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
         local item = ent:getItemTable()
         if item and item.getName then

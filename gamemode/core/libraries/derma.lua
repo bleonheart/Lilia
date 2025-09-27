@@ -402,7 +402,7 @@ function lia.derma.playerSelector(callback, validationFunc)
         return card
     end
 
-    for _, player in ipairs(player.GetAll()) do
+    for _, player in player.iterator do
         createPlayerCard(player)
     end
 
