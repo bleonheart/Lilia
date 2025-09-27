@@ -859,7 +859,7 @@ concommand.Add("lia_open_derma_panels", function()
         local colorBtn = lia.derma.button(container, nil, nil, nil, 6)
         colorBtn:SetText(L("openColorPicker"))
         colorBtn:Dock(TOP)
-        colorBtn.DoClick = function() lia.derma.colorPicker(function(color) print("Selected color: ", color) end) end
+        colorBtn.DoClick = function() lia.derma.colorPicker(function(color) print(L("selectedColor", color)) end) end
         return container
     end)
 
@@ -904,19 +904,19 @@ concommand.Add("lia_open_derma_panels", function()
             lia.derma.radialMenu({
                 {
                     name = L("radialOption1"),
-                    callback = function() print("Option 1") end
+                    callback = function() print(L("optionSelected", 1)) end
                 },
                 {
                     name = L("radialOption2"),
-                    callback = function() print("Option 2") end
+                    callback = function() print(L("optionSelected", 2)) end
                 },
                 {
                     name = L("radialOption3"),
-                    callback = function() print("Option 3") end
+                    callback = function() print(L("optionSelected", 3)) end
                 },
                 {
                     name = L("radialOption4"),
-                    callback = function() print("Option 4") end
+                    callback = function() print(L("optionSelected", 4)) end
                 }
             })
         end
@@ -932,9 +932,9 @@ concommand.Add("lia_open_derma_panels", function()
         menuBtn:Dock(TOP)
         menuBtn.DoClick = function()
             local menu = lia.derma.dermaMenu()
-            menu:AddOption(L("menuOption1"), function() print("Option 1 selected") end)
-            menu:AddOption(L("menuOption2"), function() print("Option 2 selected") end)
-            menu:AddOption(L("menuOption3"), function() print("Option 3 selected") end)
+            menu:AddOption(L("menuOption1"), function() print(L("optionSelected", 1)) end)
+            menu:AddOption(L("menuOption2"), function() print(L("optionSelected", 2)) end)
+            menu:AddOption(L("menuOption3"), function() print(L("optionSelected", 3)) end)
         end
         return container
     end)
@@ -946,7 +946,7 @@ concommand.Add("lia_open_derma_panels", function()
         local playerBtn = lia.derma.button(container, nil, nil, nil, 6)
         playerBtn:SetText(L("openPlayerSelector"))
         playerBtn:Dock(TOP)
-        playerBtn.DoClick = function() lia.derma.playerSelector(function(player) print("Selected player: ", player:Name()) end) end
+        playerBtn.DoClick = function() lia.derma.playerSelector(function(player) print(L("selectedPlayer", player:Name())) end) end
         return container
     end)
 end)

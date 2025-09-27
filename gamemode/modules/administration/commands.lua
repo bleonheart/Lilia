@@ -2957,7 +2957,7 @@ lia.command.add("exportprivileges", {
             lia.log.add(client, "privilegesExported", filename)
         else
             client:notifyErrorLocalized("privilegesExportFailed")
-            lia.error("Failed to export privileges to expected locations")
+            lia.error(L("privilegesExportFailed"))
         end
     end
 })

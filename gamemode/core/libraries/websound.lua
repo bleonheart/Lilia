@@ -342,7 +342,7 @@ concommand.Add("lia_wipe_sounds", function()
             lia.websound.download(name, url)
         end
 
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[WebSound]", Color(255, 255, 255), " Started re-downloading stored sounds...\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[WebSound]", Color(255, 255, 255), " " .. L("startedRedownloadingWebSounds") .. "\n")
     end)
 end)
 

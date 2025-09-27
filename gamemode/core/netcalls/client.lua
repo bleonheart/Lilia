@@ -858,9 +858,9 @@ net.Receive("liaNetMessage", function()
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
-        if not success then lia.error("Error in net message callback '" .. name .. "': " .. tostring(err)) end
+        if not success then lia.error(L("errorInNetMessageCallback", name, tostring(err))) end
     else
-        lia.error("Received unregistered net message: " .. name)
+        lia.error(L("receivedUnregisteredNetMessage", name))
     end
 end)
 
@@ -913,7 +913,7 @@ net.Receive("liaAssureClientSideAssets", function()
                 else
                     failedImages = failedImages + 1
                     local errorMessage = errorMsg or L("unknownError")
-                    print(string.format("[?] Image failed: %s - %s", download.name, errorMessage))
+                    print(L("assetDownloadImageFailedConsole", download.name, errorMessage))
                     chat.AddText(Color(255, 100, 100), L("assetDownloadImagePrefix"), " ", Color(255, 255, 255), L("assetDownloadImageFailed", download.name, errorMessage))
                 end
 
@@ -924,11 +924,11 @@ net.Receive("liaAssureClientSideAssets", function()
                 activeDownloads = activeDownloads - 1
                 if path then
                     completedSounds = completedSounds + 1
-                    if not fromCache then print(string.format("[?] Sound downloaded: %s", download.name)) end
+                    if not fromCache then print(L("assetDownloadSoundSuccessConsole", download.name)) end
                 else
                     failedSounds = failedSounds + 1
                     local errorMessage = errorMsg or L("unknownError")
-                    print(string.format("[?] Sound failed: %s - %s", download.name, errorMessage))
+                    print(L("assetDownloadSoundFailedConsole", download.name, errorMessage))
                     chat.AddText(Color(255, 100, 100), L("assetDownloadSoundPrefix"), " ", Color(255, 255, 255), L("assetDownloadSoundFailed", download.name, errorMessage))
                 end
 

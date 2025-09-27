@@ -117,7 +117,7 @@ function lia.keybind.add(k, d, cb)
     d = isstring(d) and L(d) or d
     if not c then return end
     if not istable(cb) or not cb.onPress then
-        lia.error("lia.keybind.add: Invalid callback format in lia.keybind.add of function '" .. tostring(d) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
+        lia.error(L("invalidKeybindCallbackFormat", tostring(d)))
         return
     end
 

@@ -19,6 +19,8 @@ end
 function PANEL:Think()
     if self.indicator_x == nil then self.indicator_x = 0 end
     if self.indicator_w == nil then self.indicator_w = 0 end
+    if self.indicator_target_x == nil then self.indicator_target_x = 0 end
+    if self.indicator_target_w == nil then self.indicator_target_w = 0 end
     self.indicator_x = lia.util.approachExp(self.indicator_x, self.indicator_target_x, self.animation_speed, FrameTime())
     self.indicator_w = lia.util.approachExp(self.indicator_w, self.indicator_target_w, self.animation_speed, FrameTime())
     if math.abs(self.indicator_x - self.indicator_target_x) < 0.5 then self.indicator_x = self.indicator_target_x end
@@ -148,8 +150,8 @@ function PANEL:PerformLayout(_, _)
         local activeBtn = nil
         if self.tabs[self.active_id] then activeBtn = self.tabs[self.active_id]._btn end
         if IsValid(activeBtn) then
-            self.indicator_target_x = bx
-            self.indicator_target_w = bw
+            self.indicator_target_x = activeBtn:GetX()
+            self.indicator_target_w = activeBtn:GetWide()
             if self.indicator_w == 0 and self.indicator_x == 0 then
                 self.indicator_x = self.indicator_target_x
                 self.indicator_w = self.indicator_target_w

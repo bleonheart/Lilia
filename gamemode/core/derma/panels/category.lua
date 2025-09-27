@@ -92,6 +92,10 @@ function PANEL:GetTitle()
     return self.title
 end
 
+function PANEL:SetLabel(title)
+    self:SetTitle(title)
+end
+
 function PANEL:SetCategoryColor(color)
     self.categoryColor = table.Copy(color)
 end

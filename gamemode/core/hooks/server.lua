@@ -724,11 +724,11 @@ function GM:LoadData()
                     if isangle(decodedAng) then
                         local ok, err = pcall(createdEnt.SetAngles, createdEnt, decodedAng)
                         if not ok then
-                            lia.error(string.format("Failed to SetAngles for entity '%s' at %s. Angle: %s (%s) - %s", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng), err))
+                            lia.error(L("failedSetAnglesEntity", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng), err))
                             lia.error(debug.traceback())
                         end
                     else
-                        lia.error(string.format("Invalid angle for entity '%s' at %s: %s (%s)", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
+                        lia.error(L("invalidAngleForEntity", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
                         lia.error(debug.traceback())
                     end
                 end
@@ -1245,7 +1245,7 @@ concommand.Add("lia_wipecharacters", function(client)
                                 lia.db.query("DELETE FROM lia_inventories WHERE charID IS NOT NULL", function()
                                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("characterInventoriesWiped") .. "\n")
                                     lia.db.query("DELETE FROM lia_characters", function()
-                                        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
+                                        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. L("charactersWiped") .. "\n")
                                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                                     end)
                                 end)
@@ -1253,7 +1253,7 @@ concommand.Add("lia_wipecharacters", function(client)
                         end)
                     else
                         lia.db.query("DELETE FROM lia_characters", function()
-                            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
+                            MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. L("charactersWiped") .. "\n")
                             game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                         end)
                     end
