@@ -458,4 +458,57 @@ function PANEL:OnRemove()
     CloseDermaMenus()
 end
 
+-- DListView compatibility functions
+function PANEL:AddColumn(name, width)
+    -- liaScoreboard doesn't use columns in the same way, but we can store for compatibility
+    if not self.columns then self.columns = {} end
+    table.insert(self.columns, {name = name, width = width or 100})
+end
+
+function PANEL:AddLine(...)
+    -- liaScoreboard doesn't work with lines, but for compatibility we could add a player slot
+    local args = {...}
+    -- This would need more implementation to work properly with the scoreboard structure
+    return 0
+end
+
+function PANEL:GetSelectedLine()
+    -- liaScoreboard doesn't have line selection, return nil
+    return nil
+end
+
+function PANEL:GetSelected()
+    -- liaScoreboard doesn't have selection, return empty
+    return {}, 0
+end
+
+function PANEL:RemoveLine(index)
+    -- liaScoreboard doesn't work with lines, but we could remove a player slot if needed
+end
+
+function PANEL:ClearSelection()
+    -- liaScoreboard doesn't have selection
+end
+
+function PANEL:SelectItem(line)
+    -- liaScoreboard doesn't support item selection
+end
+
+function PANEL:SelectFirstItem()
+    -- liaScoreboard doesn't support selection
+end
+
+function PANEL:SortByColumn(index, descending)
+    -- liaScoreboard has its own sorting logic
+end
+
+function PANEL:GetMultiSelect()
+    return false -- liaScoreboard doesn't support multi-select
+end
+
+function PANEL:SetMultiSelect(multi)
+    -- liaScoreboard doesn't support multi-select, but we store the value for compatibility
+    self.multiSelect = multi
+end
+
 vgui.Register("liaScoreboard", PANEL, "EditablePanel")

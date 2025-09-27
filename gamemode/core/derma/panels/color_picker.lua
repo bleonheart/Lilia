@@ -10,17 +10,17 @@ function PANEL:Init()
     self.value = 1
     self.callback = nil
     self:DockPadding(10, 10, 10, 10)
-    local preview = vgui.Create('Panel', self)
+    local preview = vgui.Create("Panel", self)
     preview:Dock(TOP)
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
     preview.Paint = function(s, w, h)
-        RNDX().Rect(2, 2, w - 4, h - 4):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
-        RNDX().Rect(2, 2, w - 4, h - 4):Rad(16):Color(self.selected_color):Shape(RNDX.SHAPE_IOS):Draw()
+        RNDX.Rect(2, 2, w - 4, h - 4):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+        RNDX.Rect(2, 2, w - 4, h - 4):Rad(16):Color(self.selected_color):Shape(RNDX.SHAPE_IOS):Draw()
     end
 
     self.preview = preview
-    local colorField = vgui.Create('Panel', self)
+    local colorField = vgui.Create("Panel", self)
     colorField:Dock(TOP)
     colorField:SetTall(200)
     colorField:DockMargin(0, 0, 0, 10)
@@ -56,7 +56,7 @@ function PANEL:Init()
     colorField.Paint = function(s, w, h)
         local segments = 80
         local segmentSize = w / segments
-        RNDX().Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+        RNDX.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
         for x = 0, segments do
             for y = 0, segments do
                 local s_val = x / segments
@@ -68,10 +68,10 @@ function PANEL:Init()
             end
         end
 
-        RNDX().Circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
+        RNDX.Circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
     end
 
-    local hueSlider = vgui.Create('Panel', self)
+    local hueSlider = vgui.Create("Panel", self)
     hueSlider:Dock(TOP)
     hueSlider:SetTall(20)
     hueSlider:DockMargin(0, 0, 0, 10)
@@ -100,7 +100,7 @@ function PANEL:Init()
     hueSlider.Paint = function(s, w, h)
         local segments = 100
         local segmentWidth = w / segments
-        RNDX().Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+        RNDX.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
         for i = 0, segments - 1 do
             local hueVal = (i / segments) * 360
             local x = i * segmentWidth
@@ -108,27 +108,27 @@ function PANEL:Init()
             surface.DrawRect(x, 1, segmentWidth + 1, h - 2)
         end
 
-        RNDX().Rect(huePos - 2, 0, 4, h):Color(color_target):Draw()
+        RNDX.Rect(huePos - 2, 0, 4, h):Color(color_target):Draw()
     end
 
-    local btnContainer = vgui.Create('Panel', self)
+    local btnContainer = vgui.Create("Panel", self)
     btnContainer:Dock(BOTTOM)
     btnContainer:SetTall(30)
     btnContainer.Paint = nil
-    local btnClose = vgui.Create('MantleBtn', btnContainer)
+    local btnClose = vgui.Create("liaButton", btnContainer)
     btnClose:Dock(LEFT)
     btnClose:SetWide(90)
-    btnClose:SetText(L('color_cancel'))
+    btnClose:SetText(L("color_cancel"))
     btnClose:SetColorHover(color_close)
     btnClose.DoClick = function()
         self:Remove()
         surface.PlaySound('garrysmod/ui_click.wav')
     end
 
-    local btnSelect = vgui.Create('MantleBtn', btnContainer)
+    local btnSelect = vgui.Create("liaButton", btnContainer)
     btnSelect:Dock(RIGHT)
     btnSelect:SetWide(90)
-    btnSelect:SetText(L('color_select'))
+    btnSelect:SetText(L("color_select"))
     btnSelect:SetColorHover(color_accept)
     btnSelect.DoClick = function()
         if self.callback then self.callback(self.selected_color) end
@@ -173,13 +173,80 @@ end
 function PANEL:Paint(w, h)
 end
 
-vgui.Register('MantleColorPicker', PANEL, 'EditablePanel')
-function lia.ui.color_picker(func, color_standart)
-    local picker = vgui.Create('MantleColorPicker')
-    picker:SetSize(300, 378)
-    picker:Center()
-    picker:MakePopup()
-    picker:OnCallback(func)
-    if color_standart then picker:SetColor(color_standart) end
-    return picker
+-- DColorMixer compatibility functions
+function PANEL:SetVector(vec)
+    if vec and vec.r and vec.g and vec.b then
+        self:SetColor(Color(vec.r, vec.g, vec.b))
+    end
 end
+
+function PANEL:GetVector()
+    local color = self:GetColor()
+    if color then
+        return Vector(color.r / 255, color.g / 255, color.b / 255)
+    end
+    return Vector(1, 1, 1)
+end
+
+function PANEL:SetWangs(wang)
+    -- liaColorPicker doesn't use wangs, but we store the value for compatibility
+    self.wangs = wang
+end
+
+function PANEL:GetWangs()
+    return self.wangs or 0
+end
+
+function PANEL:SetConVarR(convar)
+    self.convarR = convar
+    if convar then
+        local cvar = GetConVar(convar)
+        if cvar then
+            local color = self:GetColor()
+            if color then
+                cvar:SetInt(color.r)
+            end
+        end
+    end
+end
+
+function PANEL:SetConVarG(convar)
+    self.convarG = convar
+    if convar then
+        local cvar = GetConVar(convar)
+        if cvar then
+            local color = self:GetColor()
+            if color then
+                cvar:SetInt(color.g)
+            end
+        end
+    end
+end
+
+function PANEL:SetConVarB(convar)
+    self.convarB = convar
+    if convar then
+        local cvar = GetConVar(convar)
+        if cvar then
+            local color = self:GetColor()
+            if color then
+                cvar:SetInt(color.b)
+            end
+        end
+    end
+end
+
+function PANEL:SetConVarA(convar)
+    self.convarA = convar
+    if convar then
+        local cvar = GetConVar(convar)
+        if cvar then
+            local color = self:GetColor()
+            if color then
+                cvar:SetInt(color.a or 255)
+            end
+        end
+    end
+end
+
+vgui.Register("liaColorPicker", PANEL, "EditablePanel")

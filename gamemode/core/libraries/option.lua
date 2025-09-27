@@ -49,7 +49,7 @@ function lia.option.getOptions(key)
             end
             return result
         else
-            print("Warning: Option options function for '" .. key .. "' failed or returned invalid result")
+            print(L("optionFunctionFailed", key))
             return {}
         end
     elseif istable(option.data.options) then
@@ -694,10 +694,4 @@ lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelect
     category = "categoryWeaponSelector",
     type = "Table",
     options = {"Left", "Right", "Center"}
-})
-
-lia.option.add("colorTheme", "colorTheme", "colorThemeDesc", "dark", function(oldValue, newValue) if lia.color.themes[newValue] then local currentTheme = lia.color.getCurrentTheme(); for key, value in pairs(currentTheme) do lia.color[key] = value end end end, {
-    category = "appearance",
-    type = "Table",
-    options = {"dark", "light", "blue", "red", "green", "orange", "purple", "coffee", "ice", "wine", "violet", "moss", "coral", "dark_mono"}
 })

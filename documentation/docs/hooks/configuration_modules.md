@@ -788,12 +788,12 @@ hook.Add("liaOptionReceived", "HandleReceivedOptions", function(key, value)
     end
 end)
 
--- Update UI when options are received
-hook.Add("liaOptionReceived", "UpdateUI", function(key, value)
-    -- Update UI elements when options are received
-    if key == "theme" then
+-- Update UI when config values are received
+hook.Add("OnConfigUpdated", "UpdateUI", function(key, oldValue, newValue)
+    -- Update UI elements when config values are received
+    if key == "Theme" then
         -- Update theme when received from server
-        UpdateTheme(value)
+        UpdateTheme(newValue)
     end
 end)
 ```

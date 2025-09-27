@@ -535,15 +535,15 @@ else
         surface.SetAlphaMultiplier(alpha)
         cam.Start3D2D(center + Vector(0, 0, math_abs(max.z / 2) + 12 + bob), Angle(0, rot, 90), camScale)
         local function EntText(text, y)
-            surface.SetFont('lia3D2DFont')
+            surface.SetFont("lia3D2DFont")
             local tw, th = surface.GetTextSize(text)
             local bx, by = -tw * 0.5 - 18, y - 12
             local bw, bh = tw + 36, th + 24
-            RNDX().Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Blur():Shape(RNDX.SHAPE_IOS):Draw()
-            local currentTheme = lia.color.getCurrentTheme()
-            RNDX().Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(currentTheme.background_alpha):Shape(RNDX.SHAPE_IOS):Draw()
-            RNDX().Rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(currentTheme.text):Draw()
-            draw.SimpleText(text, 'lia3D2DFont', 0, y - 2, currentTheme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+            RNDX.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Blur():Shape(RNDX.SHAPE_IOS):Draw()
+            local currentTheme = lia.color.theme
+            RNDX.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(currentTheme.background_alpha):Shape(RNDX.SHAPE_IOS):Draw()
+            RNDX.Rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(currentTheme.text):Draw()
+            draw.SimpleText(text, "lia3D2DFont", 0, y - 2, currentTheme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         end
 
         EntText(text, posY)
@@ -633,6 +633,10 @@ else
         panel:SetPos(x, y)
     end
 
+    -- Screen scaling functions are already available globally as ScreenScale() and ScreenScaleH()
+    -- These replace Mantle.func.w() and Mantle.func.h() respectively
+    -- Usage: ScreenScale(100) for width, ScreenScaleH(100) for height
+
     function lia.util.requestArguments(title, argTypes, onSubmit, defaults)
         defaults = defaults or {}
         local count = table.Count(argTypes)
@@ -710,7 +714,7 @@ else
             local ctrl
             local isBool = fieldType == "boolean"
             if isBool then
-                ctrl = vgui.Create("liaCheckbox", panel)
+                ctrl = vgui.Create("liaSimpleCheckbox", panel)
                 if defaultVal ~= nil then ctrl:SetChecked(tobool(defaultVal)) end
             elseif fieldType == "table" then
                 ctrl = vgui.Create("DComboBox", panel)
@@ -1063,30 +1067,30 @@ else
         local color_disconnect = Color(210, 65, 65)
         local color_bot = Color(70, 150, 220)
         local color_online = Color(120, 180, 70)
-        local menu_player_selector = vgui.Create('MantleFrame')
+        local menu_player_selector = vgui.Create("liaFrame")
         menu_player_selector:SetSize((size and size.w) or 340, (size and size.h) or 398)
         menu_player_selector:Center()
         menu_player_selector:MakePopup()
         menu_player_selector:SetTitle('')
-        menu_player_selector:SetCenterTitle(title or L('player_title'))
+        menu_player_selector:SetCenterTitle(title or L("player_title"))
         if menu_player_selector.ShowAnimation then menu_player_selector:ShowAnimation() end
-        local contentPanel = vgui.Create('Panel', menu_player_selector)
+        local contentPanel = vgui.Create("Panel", menu_player_selector)
         contentPanel:Dock(FILL)
         contentPanel:DockMargin(8, 0, 8, 8)
-        local menu_player_selectorsp = vgui.Create('MantleScrollPanel', contentPanel)
+        local menu_player_selectorsp = vgui.Create("liaScrollPanel", contentPanel)
         menu_player_selectorsp:Dock(FILL)
         local CARD_HEIGHT = 44
         local AVATAR_SIZE = 32
         local AVATAR_X = 14
         local function CreatePlayerCard(pl)
-            local card = vgui.Create('DButton', menu_player_selectorsp)
+            local card = vgui.Create("DButton", menu_player_selectorsp)
             card:Dock(TOP)
             card:DockMargin(0, 5, 0, 0)
             card:SetTall(CARD_HEIGHT)
             card:SetText('')
             card.hover_status = 0
-            card.OnCursorEntered = function(self) self:SetCursor('hand') end
-            card.OnCursorExited = function(self) self:SetCursor('arrow') end
+            card.OnCursorEntered = function(self) self:SetCursor("hand") end
+            card.OnCursorExited = function(self) self:SetCursor("arrow") end
             card.Think = function(self)
                 local target = self:IsHovered() and 1 or 0
                 self.hover_status = lia.util.approachExp(self.hover_status, target, 8, FrameTime())
@@ -1103,19 +1107,19 @@ else
 
             card.pl_color = team.GetColor(pl:Team()) or color_online
             card.Paint = function(self, w, h)
-                RNDX().Rect(0, 0, w, h):Rad(10):Color(lia.color.panel[1]):Shape(RNDX.SHAPE_IOS):Draw()
-                if self.hover_status > 0 then RNDX().Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(RNDX.SHAPE_IOS):Draw() end
+                RNDX.Rect(0, 0, w, h):Rad(10):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Draw()
+                if self.hover_status > 0 then RNDX.Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(RNDX.SHAPE_IOS):Draw() end
                 local infoX = AVATAR_X + AVATAR_SIZE + 10
                 if not IsValid(pl) then
-                    draw.SimpleText(L('player_offline'), 'Fated.18', infoX, h * 0.5, color_disconnect, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(L("player_offline"), 'Fated.18', infoX, h * 0.5, color_disconnect, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     return
                 end
 
-                draw.SimpleText(pl:Name(), 'Fated.18', infoX, 6, lia.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-                local group = pl:GetUserGroup() or 'user'
+                draw.SimpleText(pl:Name(), 'Fated.18', infoX, 6, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                local group = pl:GetUserGroup() or "user"
                 group = string.upper(string.sub(group, 1, 1)) .. string.sub(group, 2)
-                draw.SimpleText(group, 'Fated.14', infoX, h - 6, lia.color.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
-                draw.SimpleText(pl:Ping() .. ' ' .. L('player_ping'), 'Fated.16', w - 20, h - 6, lia.color.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+                draw.SimpleText(group, 'Fated.14', infoX, h - 6, Color("gray"), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+                draw.SimpleText(pl:Ping() .. ' ' .. L("player_ping"), 'Fated.16', w - 20, h - 6, Color("gray"), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
                 local statusColor
                 if pl:IsBot() then
                     statusColor = color_bot
@@ -1126,7 +1130,7 @@ else
                 RNDX.DrawCircle(w - 24, 14, 12, statusColor)
             end
 
-            local avatarImg = vgui.Create('AvatarImage', card)
+            local avatarImg = vgui.Create("AvatarImage", card)
             avatarImg:SetSize(AVATAR_SIZE, AVATAR_SIZE)
             avatarImg:SetPos(AVATAR_X, (card:GetTall() - AVATAR_SIZE) * 0.5)
             avatarImg:SetSteamID(pl:SteamID64(), 64)
@@ -1141,11 +1145,11 @@ else
             CreatePlayerCard(pl)
         end
 
-        local menu_player_selectorbtn_close = vgui.Create('MantleBtn', menu_player_selector)
+        local menu_player_selectorbtn_close = vgui.Create("liaButton", menu_player_selector)
         menu_player_selectorbtn_close:Dock(BOTTOM)
         menu_player_selectorbtn_close:DockMargin(16, 8, 16, 12)
         menu_player_selectorbtn_close:SetTall(36)
-        menu_player_selectorbtn_close:SetText(L('player_close'))
+        menu_player_selectorbtn_close:SetText(L("player_close"))
         menu_player_selectorbtn_close:SetColorHover(color_disconnect)
         menu_player_selectorbtn_close.DoClick = function() menu_player_selector:Remove() end
         return menu_player_selector

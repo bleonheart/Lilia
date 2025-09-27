@@ -2003,12 +2003,21 @@ lia.command.add("chargiveitem", {
             name = "itemName",
             type = "string"
         },
+        {
+            name = "count",
+            type = "string",
+            optional = true
+        },
     },
     AdminStick = {
         Name = "adminStickGiveItemName",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/user_gray.png"
+    },
+    QMenu = {
+        Name = "giveItem",
+        Count = 0
     },
     onRun = function(client, arguments)
         local itemName = arguments[2]
@@ -2023,6 +2032,8 @@ lia.command.add("chargiveitem", {
             return
         end
 
+        local count = tonumber(arguments[3]) or 1
+        if count < 1 then count = 1 end
         local uniqueID
         for _, v in SortedPairs(lia.item.list) do
             if lia.util.stringMatches(v.name, itemName) or lia.util.stringMatches(v.uniqueID, itemName) then
@@ -2037,13 +2048,49 @@ lia.command.add("chargiveitem", {
         end
 
         local inv = target:getChar():getInv()
-        local succ, err = inv:add(uniqueID)
-        if succ then
-            target:notifySuccessLocalized("itemCreated")
-            if target ~= client then client:notifySuccessLocalized("itemCreated") end
-            lia.log.add(client, "chargiveItem", lia.item.list[uniqueID] and lia.item.list[uniqueID].name or uniqueID, target, L("command"))
-        else
-            target:notifyErrorLocalized(err or "unknownError")
+        local itemNameDisplay = lia.item.list[uniqueID] and lia.item.list[uniqueID].name or uniqueID
+        local successCount = 0
+        local errors = {}
+        for i = 1, count do
+            local succ, err = inv:add(uniqueID)
+            if succ then
+                successCount = successCount + 1
+            else
+                errors[#errors + 1] = err or "unknownError"
+            end
+        end
+
+        if successCount > 0 then
+            if successCount == 1 then
+                target:notifySuccessLocalized("itemCreated")
+                if target ~= client then client:notifySuccessLocalized("itemCreated") end
+            else
+                local successMessage = itemNameDisplay .. " x" .. successCount
+                target:notifySuccessLocalized(successMessage)
+                if target ~= client then
+                    client:notifySuccessLocalized("Gave " .. itemNameDisplay .. " x" .. successCount .. " to " .. target:Name())
+                end
+            end
+            local logMessage = count == 1 and itemNameDisplay or string.format("%s x%d", itemNameDisplay, count)
+            lia.log.add(client, "chargiveItem", logMessage, target, L("command"))
+        end
+
+        if #errors > 0 then
+            -- Show summary of what happened when some items failed
+            if successCount > 0 then
+                local summaryMessage = string.format("%d/%d %s added to inventory", successCount, count, itemNameDisplay)
+                target:notifyInfoLocalized(summaryMessage)
+                if target ~= client then
+                    client:notifyInfoLocalized(string.format("%d/%d %s given to %s", successCount, count, itemNameDisplay, target:Name()))
+                end
+            end
+
+            for _, err in ipairs(errors) do
+                target:notifyErrorLocalized(err)
+                if target ~= client then
+                    client:notifyWarningLocalized(err)
+                end
+            end
         end
     end
 })
@@ -2924,9 +2971,9 @@ lia.command.add("serverpassword", {
             local cvar = GetConVar("sv_password")
             local pw = cvar and cvar:GetString() or ""
             if pw == "" then
-                print("[Lilia] Server password is not set.")
+                print("[Lilia] " .. L("serverPasswordNotSet"))
             else
-                print("[Lilia] Server password: " .. pw)
+                print("[Lilia] " .. L("serverPasswordDisplay", pw))
             end
             return
         end

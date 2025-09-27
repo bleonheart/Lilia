@@ -176,7 +176,7 @@ function PANEL:addJoinButton(parent, cl, canBe)
     local btn = parent:Add("liaMediumButton")
     btn:SetText(isCurrent and L("alreadyInClass") or canBe and L("joinClass") or L("classRequirementsNotMet"))
     btn:SetTall(40)
-    local col = lia.color.ReturnMainAdjustedColors().text
+    local col = lia.color.theme.text
     btn:SetTextColor(col)
     btn:SetFont("liaMediumFont")
     btn:SetExpensiveShadow(1, Color(0, 0, 0, 100))

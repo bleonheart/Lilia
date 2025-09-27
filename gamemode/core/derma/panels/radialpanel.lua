@@ -30,8 +30,8 @@ function PANEL:Init(options)
     options = options or {}
     self.options = {}
     self.rootMenu = {
-        title = L('menu'),
-        desc = L('radial_select_option'),
+        title = L("menu"),
+        desc = L("radial_select_option"),
         options = self.options
     }
 
@@ -54,7 +54,7 @@ function PANEL:Init(options)
     self.scaleAnim = 0.96
     self.scale_animation = options.scale_animation ~= false
     self.disable_background = options.disable_background or false
-    self.hover_sound = options.hover_sound or 'mantle/ratio_btn.ogg'
+    self.hover_sound = options.hover_sound or 'ratio_button.wav'
     self.hoverOption = nil
     self.hoverAnim = 0
     self.selectedOption = nil
@@ -254,7 +254,6 @@ function PANEL:OnCursorMoved(x, y)
 end
 
 function PANEL:OnRemove()
-    if lia.ui.menu_radial == self then lia.ui.menu_radial = nil end
 end
 
 function PANEL:Paint(w, h)
@@ -262,18 +261,18 @@ function PANEL:Paint(w, h)
     local alpha = math.Clamp(self.currentAlpha / 255, 0, 1)
     local opts = self:GetCurrentOptions()
     local cnt = #opts
-    if not self.disable_background then RNDX().Rect(0, 0, w, h):Radii(0, 0, 0, 0):Color(Color(0, 0, 0, 140 * alpha)):Draw() end
+    if not self.disable_background then RNDX.Rect(0, 0, w, h):Radii(0, 0, 0, 0):Color(Color(0, 0, 0, 140 * alpha)):Draw() end
     local outerR = self.radius * self.scaleAnim
     local innerR = self.innerRadius * self.scaleAnim
     local outerD = outerR * 2
     local innerD = innerR * 2
-    RNDX().Circle(cx, cy, outerD + 12):Color(lia.color.window_shadow):Shadow(8, 24):Draw()
-    RNDX().Circle(cx, cy, outerD):Color(Color(lia.color.background.r, lia.color.background.g, lia.color.background.b, math_floor(240 * alpha))):Draw()
-    local currentTheme = lia.color.getCurrentTheme()
-    RNDX().Circle(cx, cy, outerD):Outline(2):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(160 * alpha))):Draw()
+    RNDX.Circle(cx, cy, outerD + 12):Color(lia.color.theme.window_shadow):Shadow(8, 24):Draw()
+    RNDX.Circle(cx, cy, outerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(240 * alpha))):Draw()
+    local currentTheme = lia.color.theme
+    RNDX.Circle(cx, cy, outerD):Outline(2):Color(Color(currentTheme.accent.r, currentTheme.accent.g, currentTheme.accent.b, math_floor(160 * alpha))):Draw()
     if cnt > 0 then
         local sectorDeg = 360 / cnt
-        local baseCol = lia.color.background_panelpopup
+        local baseCol = lia.color.theme.background
         local baseSectorCol = Color(baseCol.r, baseCol.g, baseCol.b, math_floor(255 * alpha))
         for i = 1, cnt do
             local startDeg = (i - 1) * sectorDeg
@@ -281,8 +280,8 @@ function PANEL:Paint(w, h)
             if startDeg < 0 then startDeg = 0 end
             endDeg = ClampEndAngle(endDeg)
             if endDeg > startDeg then
-                RNDX().Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(baseSectorCol):Draw()
-                RNDX().Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(lia.color.panel[1].r, lia.color.panel[1].g, lia.color.panel[1].b, math_floor(160 * alpha))):Draw()
+                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(baseSectorCol):Draw()
+                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(160 * alpha))):Draw()
             end
         end
 
@@ -295,15 +294,15 @@ function PANEL:Paint(w, h)
             if endDeg > startDeg then
                 local th = currentTheme.theme
                 local hoverAlpha = math_floor(200 * self.hoverAnim * alpha)
-                RNDX().Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(Color(th.r, th.g, th.b, math_floor(22 * self.hoverAnim * alpha))):Draw()
-                RNDX().Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(th.r, th.g, th.b, hoverAlpha)):Draw()
+                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(Color(th.r, th.g, th.b, math_floor(22 * self.hoverAnim * alpha))):Draw()
+                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(th.r, th.g, th.b, hoverAlpha)):Draw()
             end
         end
 
-        RNDX().Circle(cx, cy, innerD):Color(Color(lia.color.background_panelpopup.r, lia.color.background_panelpopup.g, lia.color.background_panelpopup.b, math_floor(255 * alpha))):Draw()
+        RNDX.Circle(cx, cy, innerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(255 * alpha))):Draw()
         local tintA = math_floor(36 * alpha)
-        RNDX().Circle(cx, cy, innerD - 8):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, tintA)):Draw()
-        RNDX().Circle(cx, cy, innerD):Outline(2):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(80 * alpha))):Draw()
+        RNDX.Circle(cx, cy, innerD - 8):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, tintA)):Draw()
+        RNDX.Circle(cx, cy, innerD):Outline(2):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(80 * alpha))):Draw()
         local sectorRad = (2 * pi) / cnt
         for i, option in ipairs(opts) do
             local startA = (i - 1) * sectorRad
@@ -318,7 +317,8 @@ function PANEL:Paint(w, h)
             local ny = cy + numberR * math_sin(midA)
             local isHovered = self.hoverOption == i
             local txtAlpha = math_floor((isHovered and 255 or 220) * alpha)
-            local txtCol = Color(lia.color.text.r, lia.color.text.g, lia.color.text.b, txtAlpha)
+            local currentTheme = lia.color.theme
+            local txtCol = Color(currentTheme.text.r, currentTheme.text.g, currentTheme.text.b, txtAlpha)
             if option.icon and option.icon ~= false and option.icon ~= nil then
                 local iconSize = ScreenScale(28) * self.scale * (1 + 0.06 * eased)
                 local iconX = lx - iconSize * 0.5
@@ -331,17 +331,17 @@ function PANEL:Paint(w, h)
                 end
 
                 draw.SimpleText(option.text or '', self.font, lx, ly + iconSize * 0.5 - ScreenScaleH(4) * self.scale, txtCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-                if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, lx, ly + iconSize * 0.5 + ScreenScaleH(16) * self.scale, Color(lia.color.header_text.r, lia.color.header_text.g, lia.color.header_text.b, math_floor(180 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP) end
-                if i <= 9 then draw.SimpleText(tostring(i), 'Fated.14', nx, ny, Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(200 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, lx, ly + iconSize * 0.5 + ScreenScaleH(16) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(180 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP) end
+                if i <= 9 then draw.SimpleText(tostring(i), 'Fated.14', nx, ny, Color(currentTheme.accent.r, currentTheme.accent.g, currentTheme.accent.b, math_floor(200 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             else
                 draw.SimpleText(option.text or '', self.font, lx, ly - ScreenScaleH(4) * self.scale, txtCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, lx, ly + ScreenScaleH(18) * self.scale, Color(lia.color.header_text.r, lia.color.header_text.g, lia.color.header_text.b, math_floor(180 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP) end
-                if i <= 9 then draw.SimpleText(tostring(i), 'Fated.14', nx, ny, Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(200 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, lx, ly + ScreenScaleH(18) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(180 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP) end
+                if i <= 9 then draw.SimpleText(tostring(i), 'Fated.14', nx, ny, Color(currentTheme.accent.r, currentTheme.accent.g, currentTheme.accent.b, math_floor(200 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             end
         end
     else
-        RNDX().Circle(cx, cy, outerD):Color(Color(lia.color.background.r, lia.color.background.g, lia.color.background.b, math_floor(240 * alpha))):Draw()
-        RNDX().Circle(cx, cy, innerD):Color(Color(lia.color.background_panelpopup.r, lia.color.background_panelpopup.g, lia.color.background_panelpopup.b, math_floor(255 * alpha))):Draw()
+        RNDX.Circle(cx, cy, outerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(240 * alpha))):Draw()
+        RNDX.Circle(cx, cy, innerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(255 * alpha))):Draw()
     end
 
     if self.selectedOption then
@@ -355,23 +355,27 @@ function PANEL:Paint(w, h)
                 surface.DrawTexturedRect(cx - isz / 2, cy - isz / 2 - ScreenScaleH(6) * self.scale, isz, isz)
             end
 
-            draw.SimpleText(opt.text or '', self.titleFont, cx + isz * 0.6, cy - ScreenScaleH(6) * self.scale, Color(lia.color.text.r, lia.color.text.g, lia.color.text.b, math_floor(255 * alpha)), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            if opt.desc then draw.SimpleText(opt.desc, self.descFont, cx + isz * 0.6, cy + ScreenScaleH(18) * self.scale, Color(lia.color.header_text.r, lia.color.header_text.g, lia.color.header_text.b, math_floor(180 * alpha)), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+            draw.SimpleText(opt.text or '', self.titleFont, cx + isz * 0.6, cy - ScreenScaleH(6) * self.scale, Color(currentTheme.text.r, currentTheme.text.g, currentTheme.text.b, math_floor(255 * alpha)), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            if opt.desc then draw.SimpleText(opt.desc, self.descFont, cx + isz * 0.6, cy + ScreenScaleH(18) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(180 * alpha)), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
         else
-            draw.SimpleText(opt.text or '', self.titleFont, cx, cy - ScreenScaleH(6) * self.scale, Color(lia.color.text.r, lia.color.text.g, lia.color.text.b, math_floor(255 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            if opt.desc then draw.SimpleText(opt.desc, self.descFont, cx, cy + ScreenScaleH(18) * self.scale, Color(lia.color.header_text.r, lia.color.header_text.g, lia.color.header_text.b, math_floor(180 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+            draw.SimpleText(opt.text or '', self.titleFont, cx, cy - ScreenScaleH(6) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(255 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            if opt.desc then draw.SimpleText(opt.desc, self.descFont, cx, cy + ScreenScaleH(18) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(180 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
         end
     else
-        draw.SimpleText(self.centerText or self.rootMenu.title, self.titleFont, cx, cy - ScreenScaleH(8) * self.scale, Color(lia.color.text.r, lia.color.text.g, lia.color.text.b, math_floor(255 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText(self.centerDesc or self.rootMenu.desc, self.descFont, cx, cy + ScreenScaleH(18) * self.scale, Color(lia.color.header_text.r, lia.color.header_text.g, lia.color.header_text.b, math_floor(160 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.centerText or self.rootMenu.title, self.titleFont, cx, cy - ScreenScaleH(8) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(255 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.centerDesc or self.rootMenu.desc, self.descFont, cx, cy + ScreenScaleH(18) * self.scale, Color(lia.color.theme.text.r, lia.color.theme.text.g, lia.color.theme.text.b, math_floor(160 * alpha)), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 end
 
-vgui.Register('MantleRadialPanel', PANEL, 'DPanel')
-function lia.ui.radial_menu(options)
-    if IsValid(lia.ui.menu_radial) then lia.ui.menu_radial:Remove() end
-    local m = vgui.Create('MantleRadialPanel')
-    m:Init(options)
-    lia.ui.menu_radial = m
-    return m
+function PANEL:AddButton(text, callback, icon, desc)
+    local option = {
+        text = text,
+        callback = callback,
+        icon = icon,
+        desc = desc
+    }
+    table.insert(self.options, option)
+    return option
 end
+
+vgui.Register("liaRadialPanel", PANEL, "DPanel")

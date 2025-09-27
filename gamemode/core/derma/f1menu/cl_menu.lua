@@ -164,7 +164,7 @@ function PANEL:Init()
 end
 
 function PANEL:addTab(name, callback)
-    local colors = lia.color.ReturnMainAdjustedColors()
+    local colors = lia.color.theme
     local tab = self.tabs:Add("liaSmallButton")
     tab:SetText(L(name))
     tab:SetFont("liaMediumFont")

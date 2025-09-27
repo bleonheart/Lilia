@@ -4,19 +4,18 @@ function PANEL:Init()
     self.title = ""
     self.description = ""
     self.callback = nil
-    lia.ui.menu_text_box = self
     self:SetSize(300, 134)
     self:Center()
     self:MakePopup()
     self:DockPadding(12, 30, 12, 12)
-    local entry = vgui.Create('MantleEntry', self)
+    local entry = vgui.Create("liaEntry", self)
     entry:Dock(TOP)
     entry.OnEnter = function() self:Apply() end
     self.entry = entry
-    local btn_accept = vgui.Create('MantleBtn', self)
+    local btn_accept = vgui.Create("liaButton", self)
     btn_accept:Dock(BOTTOM)
     btn_accept:SetTall(30)
-    btn_accept:SetText(L('apply'))
+    btn_accept:SetText(L("apply"))
     btn_accept:SetColorHover(color_accept)
     btn_accept.DoClick = function()
         surface.PlaySound('garrysmod/ui_click.wav')
@@ -60,11 +59,4 @@ end
 function PANEL:Paint(w, h)
 end
 
-vgui.Register('MantleTextBox', PANEL, 'MantleFrame')
-function lia.ui.text_box(title, desc, func)
-    local textbox = vgui.Create('MantleTextBox')
-    textbox:SetTitle(title)
-    textbox:SetDescription(desc)
-    textbox:OnCallback(func)
-    return textbox
-end
+vgui.Register("liaTextBox", PANEL, "liaFrame")

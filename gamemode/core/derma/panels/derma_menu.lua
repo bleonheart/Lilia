@@ -26,7 +26,7 @@ function PANEL:Init()
             self._initPosSet = true
         end
 
-        if CurTime() - self._openTime >= 0.08 then if input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT) then if not self:IsChildHovered() then self:CloseMenu() end end end
+        if CurTime() - self._openTime >= 0.08 and input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT) then if not self:IsChildHovered() then self:CloseMenu() end end
         self._anim = lia.util.approachExp(self._anim, self._animTarget, self._animSpeed, ft)
         self._animEased = self._anim
         local a = math.floor(255 * self._animEased + 0.5)
@@ -52,17 +52,17 @@ function PANEL:Paint(w, h)
 
     local shadowSpread = math.max(0, math.floor(10 * blurMul))
     local shadowIntensity = math.max(0, math.floor(16 * blurMul))
-    RNDX().Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.window_shadow.r, lia.color.window_shadow.g, lia.color.window_shadow.b, math.floor(100 * aMul))):Shape(RNDX.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
-    if not self._disableBlur then RNDX().Rect(0, 0, w, h):Rad(16):Shape(RNDX.SHAPE_IOS):Blur(blurMul):Draw() end
-    RNDX().Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.background_panelpopup.r, lia.color.background_panelpopup.g, lia.color.background_panelpopup.b, math.floor(150 * aMul))):Shape(RNDX.SHAPE_IOS):Draw()
-    RNDX().Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.background_panelpopup.r, lia.color.background_panelpopup.g, lia.color.background_panelpopup.b, math.floor(150 * aMul))):Shape(RNDX.SHAPE_IOS):Outline(1):Draw()
+    RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.window_shadow.r, lia.color.window_shadow.g, lia.color.window_shadow.b, math.floor(100 * aMul))):Shape(RNDX.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
+    if not self._disableBlur then RNDX.Rect(0, 0, w, h):Rad(16):Shape(RNDX.SHAPE_IOS):Blur(blurMul):Draw() end
+    RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.background_panelpopup.r, lia.color.background_panelpopup.g, lia.color.background_panelpopup.b, math.floor(150 * aMul))):Shape(RNDX.SHAPE_IOS):Draw()
+    RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.background_panelpopup.r, lia.color.background_panelpopup.g, lia.color.background_panelpopup.b, math.floor(150 * aMul))):Shape(RNDX.SHAPE_IOS):Outline(1):Draw()
 end
 
 function PANEL:AddOption(text, func, icon, optData)
     surface.SetFont('Fated.18')
     local textW = select(1, surface.GetTextSize(text))
     self.MaxTextWidth = math.max(self.MaxTextWidth or 0, textW)
-    local option = vgui.Create('DButton', self)
+    local option = vgui.Create("DButton", self)
     option:SetText('')
     option:Dock(TOP)
     option:DockMargin(2, 2, 2, 0)
@@ -86,7 +86,7 @@ function PANEL:AddOption(text, func, icon, optData)
         surface.PlaySound('garrysmod/ui_click.wav')
         local function closeAllMenus(panel)
             while IsValid(panel) do
-                if panel.GetName and panel:GetName() == 'MantleDermaMenu' then
+                if panel.GetName and panel:GetName() == "liaDermaMenu" then
                     local parent = panel:GetParent()
                     panel:CloseMenu()
                     panel = parent
@@ -101,7 +101,7 @@ function PANEL:AddOption(text, func, icon, optData)
 
     function option:AddSubMenu()
         if IsValid(option._submenu) then option._submenu:Remove() end
-        local submenu = vgui.Create('MantleDermaMenu')
+        local submenu = vgui.Create("liaDermaMenu")
         submenu:SetDrawOnTop(true)
         submenu:SetParent(self:GetParent())
         submenu:SetVisible(false)
@@ -159,19 +159,19 @@ function PANEL:AddOption(text, func, icon, optData)
     end
 
     local iconMat
-    if option.Icon then iconMat = type(option.Icon) == 'IMaterial' and option.Icon or Material(option.Icon) end
+    if option.Icon then iconMat = type(option.Icon) == "IMaterial" and option.Icon or Material(option.Icon) end
     option.Paint = function(pnl, w, h)
         w = w or pnl:GetWide()
         h = h or pnl:GetTall()
         if pnl:IsHovered() then
-            RNDX().Rect(0, 0, w, h):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+            RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
             RNDX.Draw(16, 0, 0, w, h, lia.color.hover, RNDX.SHAPE_IOS)
             if pnl._submenu and not pnl._submenu_open then pnl:OpenSubMenu() end
         end
 
         if iconMat then
             local iconSize = 16
-            RNDX.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, color_white, iconMat)
+            RNDX.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, lia.color.theme.text, iconMat)
         end
 
         draw.SimpleText(pnl.Text, 'Fated.18', pnl.Icon and 32 or 14, h * 0.5, lia.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -183,7 +183,7 @@ function PANEL:AddOption(text, func, icon, optData)
 end
 
 function PANEL:AddSpacer()
-    local spacer = vgui.Create('DPanel', self)
+    local spacer = vgui.Create("DPanel", self)
     spacer:Dock(TOP)
     spacer:DockMargin(8, 6, 8, 6)
     spacer:SetTall(1)
@@ -226,14 +226,4 @@ function PANEL:GetDeleteSelf()
     return true
 end
 
-vgui.Register('MantleDermaMenu', PANEL, 'DPanel')
-function lia.ui.derma_menu()
-    if IsValid(lia.ui.menu_derma_menu) then lia.ui.menu_derma_menu:CloseMenu() end
-    local mouseX, mouseY = input.GetCursorPos()
-    local m = vgui.Create('MantleDermaMenu')
-    m:SetPos(mouseX, mouseY)
-    lia.util.ClampMenuPosition(m)
-    m._targetX, m._targetY = m:GetPos()
-    lia.ui.menu_derma_menu = m
-    return m
-end
+vgui.Register("liaDermaMenu", PANEL, "DPanel")

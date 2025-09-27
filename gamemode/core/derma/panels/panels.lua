@@ -291,7 +291,7 @@ end
 
 function QuickPanel:addCheck(text, cb, checked)
     local btn = self:addButton(text)
-    local chk = btn:Add("liaCheckbox")
+    local chk = btn:Add("liaSimpleCheckbox")
     chk:SetChecked(checked)
     chk:SetSize(22, 22)
     chk.OnChange = function(_, v) if cb then cb(btn, v) end end
@@ -824,18 +824,18 @@ local math_sin = math.sin
 local math_cos = math.cos
 local math_rad = math.rad
 local math_ceil = math.ceil
-hook.Add('OnScreenSizeChanged', 'UIShadows', function()
+hook.Add("OnScreenSizeChanged", "UIShadows", function()
     BShadows = {}
     local resStr = ScrW() .. ScrH()
-    BShadows.RenderTarget = GetRenderTarget('BShadows_original_' .. resStr, ScrW(), ScrH())
-    BShadows.RenderTarget2 = GetRenderTarget('BShadows_shadow_' .. resStr, ScrW(), ScrH())
-    BShadows.ShadowMaterial = CreateMaterial('BShadows', 'UnlitGeneric', {
+    BShadows.RenderTarget = GetRenderTarget("BShadows_original_" .. resStr, ScrW(), ScrH())
+    BShadows.RenderTarget2 = GetRenderTarget("BShadows_shadow_" .. resStr, ScrW(), ScrH())
+    BShadows.ShadowMaterial = CreateMaterial("BShadows", "UnlitGeneric", {
         ['$translucent'] = 1,
         ['$vertexalpha'] = 1,
-        ['alpha'] = 1
+        ["alpha"] = 1
     })
 
-    BShadows.ShadowMaterialGrayscale = CreateMaterial('BShadows_grayscale', 'UnlitGeneric', {
+    BShadows.ShadowMaterialGrayscale = CreateMaterial("BShadows_grayscale", "UnlitGeneric", {
         ['$translucent'] = 1,
         ['$vertexalpha'] = 1,
         ['$alpha'] = 1,

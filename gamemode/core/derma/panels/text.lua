@@ -8,7 +8,7 @@ function PANEL:Init ()
     self.font = 'Fated.18'
     self.custom_color = nil
     self.align = TEXT_ALIGN_LEFT
-    self.valign = 'top'
+    self.valign = "top"
     self.padding = 6
     self._lines = {''}
     self._line_h = 16
@@ -37,7 +37,7 @@ function PANEL:SetColor (col)
 end
 
 function PANEL:GetColor ()
-    return self.custom_color or lia.color.text
+    return self.custom_color or lia.color.theme.text
 end
 
 function PANEL:SetAlign (a)
@@ -46,7 +46,7 @@ function PANEL:SetAlign (a)
 end
 
 function PANEL:SetVAlign (v)
-    if v == 'top' or v == 'center' or v == 'bottom' then
+    if v == "top" or v == "center" or v == "bottom" then
         self.valign = v
         self:InvalidateLayout ()
     end
@@ -61,9 +61,9 @@ local function GetTextSize (font, txt)
     surface.SetFont (font)
     local ok, w, h = pcall (surface.GetTextSize, txt)
     if not ok then return 0, 16 end
-        if not h or type (h) ~= 'number' or h <= 0 then
-            local ok2, _, h2 = pcall (surface.GetTextSize, 'Ay')
-            if ok2 and type (h2) == 'number' and h2 > 0 then
+        if not h or type (h) ~= "number" or h <= 0 then
+            local ok2, _, h2 = pcall (surface.GetTextSize, "Ay")
+            if ok2 and type (h2) == "number" and h2 > 0 then
                 h = h2
             else
             h = 16
@@ -195,7 +195,7 @@ function PANEL:_rebuild_if_needed ()
     if w == self._last_w and h == self._last_h then return end
         self._last_w, self._last_h = w, h
         local avail_w_df = math.max (1, w - self.padding * 2)
-        local _, line_h = GetTextSize (self.font, 'Ay')
+        local _, line_h = GetTextSize (self.font, "Ay")
         self._line_h = line_h or 16
         local max_lines = math.max (1, math.floor ((h - self.padding * 2) / self._line_h))
         local lines, trunc = WrapAndEllipsize (self.text, self.font, avail_w_df, max_lines)
@@ -213,9 +213,9 @@ function PANEL:_rebuild_if_needed ()
         local line_h = self._line_h or 16
         local total_h = #lines * line_h
         local start_y = self.padding
-        if self.valign == 'center' then
+        if self.valign == "center" then
             start_y = math.floor ((h - total_h) / 2)
-        elseif self.valign == 'bottom' then
+        elseif self.valign == "bottom" then
         start_y = h - self.padding - total_h
     end
 
@@ -235,4 +235,22 @@ end
 return true
 end
 
-vgui.Register ('MantleText', PANEL, 'EditablePanel')
+-- DLabel compatibility functions
+function PANEL:GetTextColor()
+    return self:GetColor()
+end
+
+function PANEL:SetTextColor(col)
+    self:SetColor(col)
+end
+
+function PANEL:GetTextInset()
+    return self.padding
+end
+
+function PANEL:SetTextInset(inset)
+    self.padding = inset
+    self:InvalidateLayout()
+end
+
+vgui.Register ("liaText", PANEL, "EditablePanel")

@@ -8,10 +8,10 @@ function PANEL:Init()
     self.font = 'Fated.18'
     self.hoverAnim = 0
     self.OnSelect = function(_, _, _) end
-    self.btn = vgui.Create('DButton', self)
+    self.btn = vgui.Create("DButton", self)
     self.btn:Dock(FILL)
     self.btn:SetText('')
-    self.btn:SetCursor('hand')
+    self.btn:SetCursor("hand")
     self.btn.Paint = function(_, w, h)
         if self.btn:IsHovered() then
             self.hoverAnim = math.Clamp(self.hoverAnim + FrameTime() * 4, 0, 1)
@@ -19,14 +19,18 @@ function PANEL:Init()
             self.hoverAnim = math.Clamp(self.hoverAnim - FrameTime() * 8, 0, 1)
         end
 
-        RNDX().Rect(0, 0, w, h):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
-        RNDX.Draw(16, 0, 0, w, h, lia.color.focus_panel, RNDX.SHAPE_IOS)
-        if self.hoverAnim > 0 then RNDX().Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.button_hovered.r, lia.color.button_hovered.g, lia.color.button_hovered.b, self.hoverAnim * 255)):Shape(RNDX.SHAPE_IOS):Draw() end
-        draw.SimpleText(self.selected or self.placeholder or L('combobox_select'), self.font, 12, h * 0.5, lia.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        local themeColors = lia.color.theme
+        RNDX.Rect(0, 0, w, h):Rad(16):Color(themeColors.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+        RNDX.Draw(16, 0, 0, w, h, themeColors.focus_panel, RNDX.SHAPE_IOS)
+        if self.hoverAnim > 0 then
+            local themeColors = lia.color.theme
+            RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(themeColors.hover.r, themeColors.hover.g, themeColors.hover.b, self.hoverAnim * 255)):Shape(RNDX.SHAPE_IOS):Draw()
+        end
+        draw.SimpleText(self.selected or self.placeholder or L("combobox_select"), self.font, 12, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         local arrowSize = 6
         local arrowX = w - 16
         local arrowY = h / 2
-        local arrowColor = ColorAlpha(lia.color.text, 180 + self.hoverAnim * 75)
+        local arrowColor = ColorAlpha(lia.color.theme.text, 180 + self.hoverAnim * 75)
         surface.SetDrawColor(arrowColor)
         draw.NoTexture()
         if not self.opened then
@@ -82,7 +86,7 @@ function PANEL:OpenMenu()
     local itemHeight = 26
     local menuHeight = (#self.choices * (itemHeight + 2)) + (menuPadding * 2) + 2
     local x, y = self:LocalToScreen(0, self:GetTall())
-    self.menu = vgui.Create('DPanel')
+    self.menu = vgui.Create("DPanel")
     self.menu:SetSize(self:GetWide(), menuHeight)
     if y + menuHeight > ScrH() - 10 then y = y - menuHeight - self:GetTall() end
     self.menu:SetPos(x, y)
@@ -109,24 +113,24 @@ function PANEL:OpenMenu()
 
         local shadowSpread = math.max(0, math.floor(10 * blurMul))
         local shadowIntensity = math.max(0, math.floor(16 * blurMul))
-        RNDX().Rect(0, 0, w, h):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
-        if not s._disableBlur then RNDX().Rect(0, 0, w, h):Rad(16):Shape(RNDX.SHAPE_IOS):Blur(blurMul):Draw() end
-        RNDX().Rect(0, 0, w, h):Rad(16):Color(lia.color.background_panelpopup):Shape(RNDX.SHAPE_IOS):Draw()
-        RNDX().Rect(0, 0, w, h):Rad(16):Color(lia.color.background_panelpopup):Shape(RNDX.SHAPE_IOS):Outline(1):Draw()
+        RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
+        if not s._disableBlur then RNDX.Rect(0, 0, w, h):Rad(16):Shape(RNDX.SHAPE_IOS):Blur(blurMul):Draw() end
+        RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Draw()
+        RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Outline(1):Draw()
     end
 
     surface.SetFont(self.font)
     for i, choice in ipairs(self.choices) do
-        local option = vgui.Create('DButton', self.menu)
+        local option = vgui.Create("DButton", self.menu)
         option:SetText('')
         option:Dock(TOP)
         option:DockMargin(2, 2, 2, 0)
         option:SetTall(itemHeight)
-        option:SetCursor('hand')
+        option:SetCursor("hand")
         option.Paint = function(s, w, h)
-            if s:IsHovered() then RNDX.Draw(16, 0, 0, w, h, lia.color.hover, RNDX.SHAPE_IOS) end
-            draw.SimpleText(choice.text, 'Fated.18', 14, h * 0.5, lia.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            if self.selected == choice.text then RNDX.Draw(0, 4, h * 0.5 - 1, 4, 2, lia.color.getCurrentTheme().theme) end
+            if s:IsHovered() then RNDX.Draw(16, 0, 0, w, h, lia.color.theme.hover, RNDX.SHAPE_IOS) end
+            draw.SimpleText(choice.text, 'Fated.18', 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            if self.selected == choice.text then RNDX.Draw(0, 4, h * 0.5 - 1, 4, 2, lia.color.theme.accent) end
         end
 
         option.DoClick = function()
@@ -199,4 +203,78 @@ function PANEL:OnRemove()
     self:CloseMenu()
 end
 
-vgui.Register('MantleComboBox', PANEL, 'Panel')
+-- DComboBox compatibility functions
+function PANEL:GetOptionText(index)
+    if self.choices[index] then
+        return self.choices[index].text
+    end
+    return ""
+end
+
+function PANEL:GetOptionData(index)
+    if self.choices[index] then
+        return self.choices[index].data
+    end
+    return nil
+end
+
+function PANEL:GetSelectedID()
+    for i, choice in ipairs(self.choices) do
+        if choice.data == self.selected then
+            return i
+        end
+    end
+    return nil
+end
+
+function PANEL:GetSelected()
+    local selectedID = self:GetSelectedID()
+    if selectedID then
+        return self.choices[selectedID].text, self.choices[selectedID].data
+    end
+    return "", nil
+end
+
+function PANEL:SetSelected(index)
+    if self.choices[index] then
+        self.selected = self.choices[index].data
+    end
+end
+
+function PANEL:ChooseOptionID(index)
+    self:SetSelected(index)
+end
+
+function PANEL:ChooseOption(text)
+    for i, choice in ipairs(self.choices) do
+        if choice.text == text then
+            self.selected = choice.data
+            break
+        end
+    end
+end
+
+function PANEL:Clear()
+    self.choices = {}
+    self.selected = nil
+end
+
+function PANEL:GetOptionTextByData(data)
+    for i, choice in ipairs(self.choices) do
+        if choice.data == data then
+            return choice.text
+        end
+    end
+    return ""
+end
+
+function PANEL:IsMenuOpen()
+    return self.opened or false
+end
+
+function PANEL:SetSortItems(sort)
+    -- liaComboBox doesn't implement sorting, but we store the value for compatibility
+    self.sortItems = sort
+end
+
+vgui.Register("liaComboBox", PANEL, "Panel")

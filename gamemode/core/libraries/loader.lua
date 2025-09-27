@@ -13,6 +13,10 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
+        path = "lilia/gamemode/core/libraries/derma.lua",
+        realm = "client"
+    },
+    {
         path = "lilia/gamemode/core/libraries/keybind.lua",
         realm = "shared"
     },
@@ -70,7 +74,7 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/color.lua",
-        realm = "client"
+        realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/logger.lua",
@@ -361,6 +365,7 @@ end
 
 lia.loader.include("lilia/gamemode/core/libraries/languages.lua", "shared")
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
+lia.loader.include("lilia/gamemode/core/libraries/rdnx.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
 lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
@@ -550,9 +555,9 @@ function GM:OnReloaded()
     if timeSinceLastReload < lia.reloadCooldown then
         local remaining = math.ceil(lia.reloadCooldown - timeSinceLastReload)
         if SERVER then
-            print("[Lilia] Reload cooldown active. " .. remaining .. " seconds remaining.")
+            print("[Lilia] " .. L("reloadCooldownActive", remaining))
         else
-            chat.AddText(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Reload cooldown active. " .. remaining .. " seconds remaining.")
+            chat.AddText(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("reloadCooldownActive", remaining))
         end
         return
     end
@@ -566,9 +571,9 @@ function GM:OnReloaded()
         timer.Simple(0.1, function() lia.config.send() end)
         timer.Simple(0.2, function() lia.administrator.sync() end)
         timer.Simple(0.3, function() lia.playerinteract.syncToClients() end)
-        timer.Simple(0.5, function() lia.bootstrap("HotReload", "Gamemode hotreloaded successfully!") end)
+        timer.Simple(0.5, function() lia.bootstrap("HotReload", L("hotreloadSuccess")) end)
     else
-        chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gamemode hotreloaded successfully!")
+        chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("hotreloadSuccess"))
     end
 
     lia.reloadInProgress = false

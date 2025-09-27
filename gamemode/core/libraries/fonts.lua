@@ -291,6 +291,13 @@ if CLIENT then
         weight = 1000
     })
 
+    lia.font.register("liaLargeFont", {
+        font = lia.config.get("GenericFont"),
+        size = 48 * math.min(ScrW() / 1920, ScrH() / 1080),
+        extended = true,
+        weight = 1000
+    })
+
     lia.font.register("liaBigFont", {
         font = lia.config.get("GenericFont"),
         size = 36 * math.min(ScrW() / 1920, ScrH() / 1080),

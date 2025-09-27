@@ -141,4 +141,57 @@ function PANEL:Populate(data, canKick)
     end)
 end
 
+-- DListView compatibility functions
+function PANEL:AddColumn(name, width)
+    -- liaRoster doesn't use columns in the same way, but we can store for compatibility
+    if not self.columns then self.columns = {} end
+    table.insert(self.columns, {name = name, width = width or 100})
+end
+
+function PANEL:AddLine(...)
+    -- liaRoster doesn't work with lines, but for compatibility we could add a roster item
+    local args = {...}
+    -- This would need more implementation to work properly with the roster structure
+    return 0
+end
+
+function PANEL:GetSelectedLine()
+    -- liaRoster doesn't have line selection, return nil
+    return nil
+end
+
+function PANEL:GetSelected()
+    -- liaRoster doesn't have selection, return empty
+    return {}, 0
+end
+
+function PANEL:RemoveLine(index)
+    -- liaRoster doesn't work with lines, but we could remove a roster item if needed
+end
+
+function PANEL:ClearSelection()
+    -- liaRoster doesn't have selection
+end
+
+function PANEL:SelectItem(line)
+    -- liaRoster doesn't support item selection
+end
+
+function PANEL:SelectFirstItem()
+    -- liaRoster doesn't support selection
+end
+
+function PANEL:SortByColumn(index, descending)
+    -- liaRoster has its own sorting logic
+end
+
+function PANEL:GetMultiSelect()
+    return false -- liaRoster doesn't support multi-select
+end
+
+function PANEL:SetMultiSelect(multi)
+    -- liaRoster doesn't support multi-select, but we store the value for compatibility
+    self.multiSelect = multi
+end
+
 vgui.Register("liaRoster", PANEL, "EditablePanel")

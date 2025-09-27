@@ -568,6 +568,18 @@ lia.config.add("DermaSkin", "dermaSkin", "Lilia Skin", function(_, newSkin) hook
     options = CLIENT and getDermaSkins() or {"liliaSkin"}
 })
 
+lia.config.add("UIBlurEnabled", "uiBlurEnabled", true, nil, {
+    desc = "uiBlurEnabledDesc",
+    category = "categoryVisuals",
+    type = "Boolean"
+})
+
+lia.config.add("UIDepthEnabled", "uiDepthEnabled", true, nil, {
+    desc = "uiDepthEnabledDesc",
+    category = "categoryVisuals",
+    type = "Boolean"
+})
+
 lia.config.add("Language", "language", "English", nil, {
     desc = "languageDesc",
     category = "categoryGeneral",

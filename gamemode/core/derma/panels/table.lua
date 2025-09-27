@@ -21,13 +21,13 @@ function PANEL:Init()
     self.sidePadding = 12
     self.vbarRightPadding = 6
     self.vbarLeftExtra = 0
-    self.header = vgui.Create('Panel', self)
+    self.header = vgui.Create("Panel", self)
     self.header:Dock(TOP)
     self.header:SetTall(self.headerHeight)
-    self.scrollPanel = vgui.Create('MantleScrollPanel', self)
+    self.scrollPanel = vgui.Create("liaScrollPanel", self)
     self.scrollPanel:Dock(FILL)
     self.scrollPanel:DisableVBarPadding()
-    self.content = vgui.Create('Panel', self.scrollPanel)
+    self.content = vgui.Create("Panel", self.scrollPanel)
     self.content:Dock(TOP)
     self.content.Paint = nil
     self._rowPanels = {}
@@ -115,7 +115,7 @@ end
 function PANEL:AddItem(...)
     local args = {...}
     if #args ~= #self.columns then
-        print(L('table_wrong_args'))
+        print(L("table_wrong_args"))
         return
     end
 
@@ -125,9 +125,9 @@ function PANEL:AddItem(...)
 end
 
 local function getValueType(value)
-    if value == nil then return 'nil' end
+    if value == nil then return "nil" end
     value = tostring(value)
-    return tonumber(value) and 'number' or 'string'
+    return tonumber(value) and "number" or "string"
 end
 
 local function compareValues(a, b)
@@ -137,7 +137,7 @@ local function compareValues(a, b)
     local typeA = getValueType(a)
     local typeB = getValueType(b)
     if typeA ~= typeB then return typeA < typeB end
-    if typeA == 'number' then
+    if typeA == "number" then
         local numA = tonumber(a) or 0
         local numB = tonumber(b) or 0
         return numA > numB
@@ -255,12 +255,12 @@ function PANEL:CreateHeader()
 
     self.header:Clear()
     self._headerButtons = {}
-    self.header.Paint = function(_, w, h) RNDX().Rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.focus_panel):Shape(RNDX.SHAPE_IOS):Draw() end
+    self.header.Paint = function(_, w, h) RNDX.Rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.focus_panel):Shape(RNDX.SHAPE_IOS):Draw() end
     self:UpdateColumnWidthTargets()
     local xPos = self.sidePadding + ((self._lastVBarVis and self.vbarLeftExtra) or 0)
     for i, column in ipairs(self.columns) do
         local w = math_floor(self._colWidthsCurrent[i] or self._colWidthsTarget[i] or column.width)
-        local label = vgui.Create('DButton', self.header)
+        local label = vgui.Create("DButton", self.header)
         label:SetText('')
         label:SetSize(w, self.headerHeight)
         label:SetPos(xPos, 0)
@@ -272,11 +272,11 @@ function PANEL:CreateHeader()
             s._hover = lia.util.approachExp(s._hover or 0, target, 14, dt)
             local activeTarget = (self.sortColumn == i) and 1 or 0
             s._activeAlpha = lia.util.approachExp(s._activeAlpha or 0, activeTarget, 12, dt)
-            local currentTheme = lia.color.getCurrentTheme()
-            local tr = Lerp(s._activeAlpha, lia.color.text.r, currentTheme.theme.r)
-            local tg = Lerp(s._activeAlpha, lia.color.text.g, currentTheme.theme.g)
-            local tb = Lerp(s._activeAlpha, lia.color.text.b, currentTheme.theme.b)
-            local ta = Lerp(s._activeAlpha, lia.color.text.a, currentTheme.theme.a)
+            local themeColors = lia.color.theme
+            local tr = Lerp(s._activeAlpha, themeColors.text.r, themeColors.accent.r)
+            local tg = Lerp(s._activeAlpha, themeColors.text.g, themeColors.accent.g)
+            local tb = Lerp(s._activeAlpha, themeColors.text.b, themeColors.accent.b)
+            local ta = Lerp(s._activeAlpha, themeColors.text.a, themeColors.accent.a)
             local textColor = Color(math_floor(tr), math_floor(tg), math_floor(tb), math_floor(ta))
             draw.SimpleText(column.name, self.font, bw / 2, bh / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
@@ -294,7 +294,7 @@ function PANEL:CreateHeader()
 end
 
 function PANEL:CreateRow(rowIndex, rowData)
-    local row = vgui.Create('DButton', self.content)
+    local row = vgui.Create("DButton", self.content)
     row:Dock(TOP)
     row:DockMargin(0, 0, 0, 1)
     row:SetTall(self.rowHeight)
@@ -311,7 +311,7 @@ function PANEL:CreateRow(rowIndex, rowData)
         s._selectedAlpha = lia.util.approachExp(s._selectedAlpha, selTarget, 22, dt)
         local base = lia.color.panel_alpha[1]
         local hoverCol = lia.color.hover
-        local selCol = currentTheme.theme
+        local selCol = lia.color.theme.accent
         local mixHover = s._hoverAlpha * (1 - s._selectedAlpha)
         local blendA = s._selectedAlpha * 0.9 + mixHover * 0.35
         local r = Lerp(blendA, base.r, selCol.r)
@@ -325,7 +325,7 @@ function PANEL:CreateRow(rowIndex, rowData)
             r, g, b = hoverR, hoverG, hoverB
         end
 
-        RNDX().Rect(0, 0, w, math.max(0, h - 1)):Color(Color(math.floor(r), math.floor(g), math.floor(b), math.floor(a))):Shape(RNDX.SHAPE_IOS):Draw()
+        RNDX.Rect(0, 0, w, math.max(0, h - 1)):Color(Color(math.floor(r), math.floor(g), math.floor(b), math.floor(a))):Shape(RNDX.SHAPE_IOS):Draw()
     end
 
     row.DoClick = function()
@@ -338,23 +338,23 @@ function PANEL:CreateRow(rowIndex, rowData)
     row.DoRightClick = function()
         self.selectedRow = rowIndex
         self.OnRightClick(rowData)
-        local menu = lia.ui.derma_menu()
+        local menu = vgui.Create("liaDermaMenu")
         for i, column in ipairs(self.columns) do
-            menu:AddOption(L('table_copy') .. ' ' .. column.name, function() SetClipboardText(tostring(rowData[i])) end)
+            menu:AddOption(L("table_copy") .. ' ' .. column.name, function() SetClipboardText(tostring(rowData[i])) end)
         end
 
         menu:AddSpacer()
-        menu:AddOption(L('table_delete_row'), function() self:RemoveRow(rowIndex) end, 'icon16/delete.png')
+        menu:AddOption(L("table_delete_row"), function() self:RemoveRow(rowIndex) end, 'icon16/delete.png')
     end
 
     local leftPad = self.sidePadding + ((self._lastVBarVis and self.vbarLeftExtra) or 0)
     local xPos = leftPad
     for i, column in ipairs(self.columns) do
         local w = math_floor(self._colWidthsCurrent[i] or self._colWidthsTarget[i] or column.width)
-        local label = vgui.Create('DLabel', row)
+        local label = vgui.Create("DLabel", row)
         label:SetText(tostring(rowData[i]))
         label:SetFont(self.rowFont)
-        label:SetTextColor(lia.color.text)
+        label:SetTextColor(lia.color.theme.text)
         label:SetSize(w, self.rowHeight)
         label:SetPos(xPos, 0)
         if column.align == TEXT_ALIGN_LEFT then
@@ -452,7 +452,102 @@ function PANEL:RemoveRow(index)
 end
 
 function PANEL:Paint(w, h)
-    RNDX().Rect(0, 0, w, h):Rad(16):Color(lia.color.panel_alpha[2]):Shape(RNDX.SHAPE_IOS):Draw()
+    RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.panel_alpha[2]):Shape(RNDX.SHAPE_IOS):Draw()
 end
 
-vgui.Register('MantleTable', PANEL, 'Panel')
+function PANEL:RebuildHeader()
+    self:CreateHeader()
+end
+
+-- DListView compatibility functions
+function PANEL:AddColumn(name, width)
+    local col = {
+        name = name,
+        width = width or 100
+    }
+
+    table.insert(self.columns, col)
+    self:RebuildHeader()
+end
+
+function PANEL:AddLine(...)
+    local row = {}
+    local args = {...}
+    for i = 1, #args do
+        row[i] = tostring(args[i])
+    end
+
+    table.insert(self.rows, row)
+    self:RebuildRows()
+    return #self.rows
+end
+
+function PANEL:GetSelectedLine()
+    return self:GetSelectedRow()
+end
+
+function PANEL:GetSelected()
+    if self.selectedRow then return {self.rows[self.selectedRow]}, self.selectedRow end
+    return {}, 0
+end
+
+function PANEL:RemoveLine(index)
+    self:RemoveRow(index)
+end
+
+function PANEL:ClearSelection()
+    self.selectedRow = nil
+    self:RebuildRows()
+end
+
+function PANEL:SelectItem(line)
+    if type(line) == "number" then
+        self.selectedRow = line
+    else
+        -- Find by content
+        for i, row in ipairs(self.rows) do
+            if row == line then
+                self.selectedRow = i
+                break
+            end
+        end
+    end
+
+    self:RebuildRows()
+end
+
+function PANEL:SelectFirstItem()
+    if #self.rows > 0 then
+        self.selectedRow = 1
+        self:RebuildRows()
+    end
+end
+
+function PANEL:SortByColumn(index, descending)
+    self.sortColumn = index
+    self.sortDesc = descending
+    if self.sortColumn then
+        table.sort(self.rows, function(a, b)
+            local aVal = a[index] or ""
+            local bVal = b[index] or ""
+            if self.sortDesc then
+                return aVal > bVal
+            else
+                return aVal < bVal
+            end
+        end)
+    end
+
+    self:RebuildRows()
+end
+
+function PANEL:GetMultiSelect()
+    return false -- liaTable doesn't support multi-select by default
+end
+
+function PANEL:SetMultiSelect(multi)
+    -- liaTable doesn't support multi-select, but we store the value for compatibility
+    self.multiSelect = multi
+end
+
+vgui.Register("liaTable", PANEL, "Panel")

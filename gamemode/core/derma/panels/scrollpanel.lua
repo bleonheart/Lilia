@@ -1,9 +1,9 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self._vbarPadRight = 6
-    self.content = vgui.Create('Panel', self)
+    self.content = vgui.Create("Panel", self)
     self.content:SetMouseInputEnabled(true)
-    self.vbar = vgui.Create('Panel', self)
+    self.vbar = vgui.Create("Panel", self)
     self.vbar:SetMouseInputEnabled(true)
     self.vbarDefaultWidth = 4
     self.vbarExpandedWidth = 6
@@ -14,20 +14,20 @@ function PANEL:Init()
     self.vbar._press_off = 0
     self.vbar:Dock(RIGHT)
     self.vbar:DockMargin(6, 0, 0, 0)
-    self.vbar.Paint = function(_, w, h) RNDX().Rect(0, 0, w, h):Rad(32):Color(lia.color.focus_panel):Draw() end
+    self.vbar.Paint = function(_, w, h) RNDX.Rect(0, 0, w, h):Rad(32):Color(lia.color.focus_panel):Draw() end
     self.vbarHoverDelay = 1
     self.vbarUnhoverDelay = 0.5
     self.vbar._hoverEnter = 0
     self.vbar._hoverExit = 0
     self.vbar._expanded = false
-    self.vbar.btnGrip = vgui.Create('MantleBtn', self.vbar)
+    self.vbar.btnGrip = vgui.Create("liaButton", self.vbar)
     self.vbar.btnGrip:SetText('')
     self.vbar.btnGrip._ShadowLerp = 0
     self.vbar.btnGrip.Paint = function(s, w, h)
         s._ShadowLerp = Lerp(FrameTime() * 10, s._ShadowLerp, self.vbar.Dragging and 7 or 0)
-        local currentTheme = lia.color.getCurrentTheme()
-        RNDX().Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Shadow(s._ShadowLerp, 20):Draw()
-        RNDX().Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Draw()
+        local currentTheme = lia.color.theme
+        RNDX.Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Shadow(s._ShadowLerp, 20):Draw()
+        RNDX.Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Draw()
     end
 
     self.vbar.btnGrip.OnMousePressed = function(s)
@@ -424,4 +424,64 @@ function PANEL:Think()
     vb.btnGrip:SetPos(0, finalY)
 end
 
-vgui.Register('MantleScrollPanel', PANEL, 'EditablePanel')
+-- DScrollPanel compatibility functions
+function PANEL:GetHBar()
+    -- liaScrollPanel doesn't have horizontal bar, return nil
+    return nil
+end
+
+-- Add GetCanvas method to DScrollPanel for compatibility
+local DScrollPanel = vgui.GetControlTable("DScrollPanel")
+if DScrollPanel and not DScrollPanel.GetCanvas then
+    function DScrollPanel:GetCanvas()
+        -- DScrollPanel doesn't have a direct canvas, but we can return the panel itself
+        -- or find the canvas panel if it exists
+        if self.Canvas then
+            return self.Canvas
+        elseif self:GetChildren() and #self:GetChildren() > 0 then
+            -- Return the first child which is typically the canvas
+            return self:GetChildren()[1]
+        else
+            -- Fallback to self if no canvas is found
+            return self
+        end
+    end
+end
+
+function PANEL:Clear()
+    self.content:Clear()
+end
+
+function PANEL:ScrollToChild(panel)
+    if not IsValid(panel) or not IsValid(self.content) then return end
+
+    local canvas = self.content
+    local scroll = self.vbar
+
+    if not IsValid(scroll) then return end
+
+    local _, y = panel:GetPos()
+    local _, canvasY = canvas:GetPos()
+    local canvasTall = canvas:GetTall()
+    local panelTall = self:GetTall()
+
+    local diffY = y + canvasY
+    local scrollY = math.Clamp(diffY, 0, canvasTall - panelTall)
+
+    scroll:AnimateTo(scrollY / canvasTall, 0.3, 0, 0.3)
+end
+
+function PANEL:InvalidateParent()
+    local parent = self:GetParent()
+    if IsValid(parent) then
+        parent:InvalidateLayout(true)
+    end
+end
+
+function PANEL:SetScrollbarWidth(width)
+    if IsValid(self.vbar) then
+        self.vbar:SetWide(width)
+    end
+end
+
+vgui.Register("liaScrollPanel", PANEL, "EditablePanel")
