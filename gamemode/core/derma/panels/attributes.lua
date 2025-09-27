@@ -68,7 +68,7 @@ function PANEL:Init()
         end
     end
 
-    self.label = self.bar:Add("DLabel")
+    self.label = self.bar:Add("liaText")
     self.label:Dock(FILL)
     self.label:SetExpensiveShadow(1, Color(0, 0, 60))
     self.label:SetContentAlignment(5)
@@ -119,7 +119,7 @@ function PANEL:Paint(w, h)
     surface.DrawRect(0, 0, w, h)
 end
 
-vgui.Register("liaAttribBar", PANEL, "DPanel")
+vgui.Register("liaAttribBar", PANEL, "liaBasePanel")
 PANEL = {}
 function PANEL:Init()
     self.title = self:addLabel(L("attributes"))
@@ -189,12 +189,12 @@ function PANEL:Init()
     self.buttons:SetPaintBackground(false)
     self.sub = self:addButton("-", -1):Dock(LEFT)
     self.add = self:addButton("+", 1):Dock(RIGHT)
-    self.quantity = self.buttons:Add("DLabel")
+    self.quantity = self.buttons:Add("liaText")
     self.quantity:SetFont("liaCharSubTitleFont")
     self.quantity:SetTextColor(color_white)
     self.quantity:Dock(FILL)
     self.quantity:SetContentAlignment(5)
-    self.name = self:Add("DLabel")
+    self.name = self:Add("liaText")
     self.name:SetFont("liaCharSubTitleFont")
     self.name:SetTextColor(color_white)
     self.name:SetContentAlignment(4)
@@ -252,4 +252,4 @@ function PANEL:Paint(w, h)
     surface.DrawRect(0, 0, w, h)
 end
 
-vgui.Register("liaCharacterAttribsRow", PANEL, "DPanel")
+vgui.Register("liaCharacterAttribsRow", PANEL, "liaBasePanel")

@@ -477,7 +477,7 @@ else
     function lia.util.drawGradient(x, y, w, h, direction, color_shadow, radius, flags)
         radius = radius or 0
         local listGradients = {Material('vgui/gradient_up'), Material('vgui/gradient_down'), Material('vgui/gradient-l'), Material('vgui/gradient-r')}
-        RNDX.DrawMaterial(radius, x, y, w, h, color_shadow, listGradients[direction], flags)
+        lia.rndx.DrawMaterial(radius, x, y, w, h, color_shadow, listGradients[direction], flags)
     end
 
     local math_sin = math.sin
@@ -537,10 +537,10 @@ else
             local tw, th = surface.GetTextSize(text)
             local bx, by = -tw * 0.5 - 18, y - 12
             local bw, bh = tw + 36, th + 24
-            RNDX.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Blur():Shape(RNDX.SHAPE_IOS):Draw()
+            lia.rndx.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Blur():Shape(lia.rndx.SHAPE_IOS):Draw()
             local currentTheme = lia.color.theme
-            RNDX.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(currentTheme.background_alpha):Shape(RNDX.SHAPE_IOS):Draw()
-            RNDX.Rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(currentTheme.text):Draw()
+            lia.rndx.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(currentTheme.background_alpha):Shape(lia.rndx.SHAPE_IOS):Draw()
+            lia.rndx.Rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(currentTheme.text):Draw()
             draw.SimpleText(text, "lia3D2DFont", 0, y - 2, currentTheme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         end
 
@@ -702,7 +702,7 @@ else
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = nil
-            local label = vgui.Create("DLabel", panel)
+            local label = vgui.Create("liaText", panel)
             label:SetFont("liaSmallFont")
             label:SetText(name)
             label:SizeToContents()
@@ -713,7 +713,7 @@ else
                 ctrl = vgui.Create("liaSimpleCheckbox", panel)
                 if defaultVal ~= nil then ctrl:SetChecked(tobool(defaultVal)) end
             elseif fieldType == "table" then
-                ctrl = vgui.Create("DComboBox", panel)
+                ctrl = vgui.Create("liaComboBox", panel)
                 local defaultChoiceIndex
                 if istable(dataTbl) then
                     for idx, v in ipairs(dataTbl) do
@@ -904,7 +904,7 @@ else
                         form.Paint = function() end
                         local inputs = {}
                         for fName, fType in pairs(option.ExtraFields) do
-                            local label = vgui.Create("DLabel", form)
+                            local label = vgui.Create("liaText", form)
                             label:SetText(fName)
                             label:Dock(TOP)
                             label:DockMargin(5, 10, 5, 0)
@@ -920,7 +920,7 @@ else
                                     ftype = "text"
                                 }
                             elseif isstring(fType) and fType == "combo" then
-                                local combo = vgui.Create("DComboBox", form)
+                                local combo = vgui.Create("liaComboBox", form)
                                 combo:Dock(TOP)
                                 combo:DockMargin(5, 5, 5, 0)
                                 combo:SetValue(L("selectPrompt", fName))
@@ -930,7 +930,7 @@ else
                                     ftype = "combo"
                                 }
                             elseif istable(fType) then
-                                local combo = vgui.Create("DComboBox", form)
+                                local combo = vgui.Create("liaComboBox", form)
                                 combo:Dock(TOP)
                                 combo:DockMargin(5, 5, 5, 0)
                                 combo:SetValue(L("selectPrompt", fName))
@@ -1024,7 +1024,7 @@ else
             draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
         end
 
-        local titleLabel = frame:Add("DLabel")
+        local titleLabel = frame:Add("liaText")
         titleLabel:SetPos(0, 8)
         titleLabel:SetSize(frameW, 20)
         titleLabel:SetText(L(title or "options"))
@@ -1035,7 +1035,7 @@ else
         layout:Dock(FILL)
         layout:DockMargin(10, 32, 10, 10)
         for _, opt in ipairs(entries) do
-            local btn = layout:Add("DButton")
+            local btn = layout:Add("liaButton")
             btn:SetTall(entryH)
             btn:Dock(TOP)
             btn:DockMargin(0, 0, 0, 5)
@@ -1103,8 +1103,8 @@ else
 
             card.pl_color = team.GetColor(pl:Team()) or color_online
             card.Paint = function(self, w, h)
-                RNDX.Rect(0, 0, w, h):Rad(10):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Draw()
-                if self.hover_status > 0 then RNDX.Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(RNDX.SHAPE_IOS):Draw() end
+                lia.rndx.Rect(0, 0, w, h):Rad(10):Color(lia.color.theme.background):Shape(lia.rndx.SHAPE_IOS):Draw()
+                if self.hover_status > 0 then lia.rndx.Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(lia.rndx.SHAPE_IOS):Draw() end
                 local infoX = AVATAR_X + AVATAR_SIZE + 10
                 if not IsValid(pl) then
                     draw.SimpleText(L("player_offline"), 'Fated.18', infoX, h * 0.5, color_disconnect, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -1123,7 +1123,7 @@ else
                     statusColor = self.pl_color
                 end
 
-                RNDX.DrawCircle(w - 24, 14, 12, statusColor)
+                lia.rndx.DrawCircle(w - 24, 14, 12, statusColor)
             end
 
             local avatarImg = vgui.Create("AvatarImage", card)

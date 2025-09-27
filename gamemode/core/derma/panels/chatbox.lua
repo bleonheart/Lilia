@@ -183,7 +183,7 @@ function PANEL:setActive(state)
                 end
                 return true
             end
-            return DTextEntry.OnKeyCodeTyped(entry, key)
+            return liaEntry.OnKeyCodeTyped(entry, key)
         end
 
         self.text.OnLoseFocus = function(entry)
@@ -353,4 +353,4 @@ function PANEL:Think()
     end
 end
 
-vgui.Register("liaChatBox", PANEL, "DPanel")
+vgui.Register("liaChatBox", PANEL, "liaBasePanel")

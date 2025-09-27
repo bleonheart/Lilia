@@ -124,7 +124,7 @@ else
         panel:SetZPos(10000)
         panel:MoveToFront()
         derma.SkinHook("Paint", "Panel", panel, w, h)
-        local lbl = vgui.Create("DLabel", panel)
+        local lbl = vgui.Create("liaText", panel)
         lbl:SetFont("DermaLarge")
         lbl:SetText(L("downloadingWorkshopAddonsTitle"))
         lbl:SizeToContents()

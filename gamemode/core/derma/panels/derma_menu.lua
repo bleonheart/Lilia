@@ -51,10 +51,10 @@ function PANEL:Paint(w, h)
 
     local shadowSpread = math.max(0, math.floor(10 * blurMul))
     local shadowIntensity = math.max(0, math.floor(16 * blurMul))
-    RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.window_shadow.r, lia.color.theme.window_shadow.g, lia.color.theme.window_shadow.b, math.floor(100 * aMul))):Shape(RNDX.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
-    if not self._disableBlur then RNDX.Rect(0, 0, w, h):Rad(16):Shape(RNDX.SHAPE_IOS):Blur(blurMul):Draw() end
-    RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.background_panelpopup.r, lia.color.theme.background_panelpopup.g, lia.color.theme.background_panelpopup.b, math.floor(150 * aMul))):Shape(RNDX.SHAPE_IOS):Draw()
-    RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.background_panelpopup.r, lia.color.theme.background_panelpopup.g, lia.color.theme.background_panelpopup.b, math.floor(150 * aMul))):Shape(RNDX.SHAPE_IOS):Outline(1):Draw()
+    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.window_shadow.r, lia.color.theme.window_shadow.g, lia.color.theme.window_shadow.b, math.floor(100 * aMul))):Shape(lia.rndx.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
+    if not self._disableBlur then lia.rndx.Rect(0, 0, w, h):Rad(16):Shape(lia.rndx.SHAPE_IOS):Blur(blurMul):Draw() end
+    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.background_panelpopup.r, lia.color.theme.background_panelpopup.g, lia.color.theme.background_panelpopup.b, math.floor(150 * aMul))):Shape(lia.rndx.SHAPE_IOS):Draw()
+    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.background_panelpopup.r, lia.color.theme.background_panelpopup.g, lia.color.theme.background_panelpopup.b, math.floor(150 * aMul))):Shape(lia.rndx.SHAPE_IOS):Outline(1):Draw()
 end
 
 function PANEL:AddOption(text, func, icon, optData)
@@ -163,14 +163,14 @@ function PANEL:AddOption(text, func, icon, optData)
         w = w or pnl:GetWide()
         h = h or pnl:GetTall()
         if pnl:IsHovered() then
-            RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
-            RNDX.Draw(16, 0, 0, w, h, lia.color.theme.hover, RNDX.SHAPE_IOS)
+            lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
+            lia.rndx.Draw(16, 0, 0, w, h, lia.color.theme.hover, lia.rndx.SHAPE_IOS)
             if pnl._submenu and not pnl._submenu_open then pnl:OpenSubMenu() end
         end
 
         if iconMat then
             local iconSize = 16
-            RNDX.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, lia.color.theme.text, iconMat)
+            lia.rndx.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, lia.color.theme.text, iconMat)
         end
 
         draw.SimpleText(pnl.Text, 'Fated.18', pnl.Icon and 32 or 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -187,7 +187,7 @@ function PANEL:AddSpacer()
     spacer:DockMargin(8, 6, 8, 6)
     spacer:SetTall(1)
     spacer.sumTall = 13
-    spacer.Paint = function(_, w, h) RNDX.Draw(0, 0, 0, w, h, lia.color.theme.focus_panel) end
+    spacer.Paint = function(_, w, h) lia.rndx.Draw(0, 0, 0, w, h, lia.color.theme.focus_panel) end
     table.insert(self.Items, spacer)
     self:UpdateSize()
     return spacer
@@ -225,4 +225,4 @@ function PANEL:GetDeleteSelf()
     return true
 end
 
-vgui.Register("liaDermaMenu", PANEL, "DPanel")
+vgui.Register("liaDermaMenu", PANEL, "liaBasePanel")

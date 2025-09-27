@@ -14,8 +14,8 @@ function PANEL:Init()
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
     preview.Paint = function(_, w, h)
-        RNDX.Rect(2, 2, w - 4, h - 4):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
-        RNDX.Rect(2, 2, w - 4, h - 4):Rad(16):Color(self.selected_color):Shape(RNDX.SHAPE_IOS):Draw()
+        lia.rndx.Rect(2, 2, w - 4, h - 4):Rad(16):Color(lia.color.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
+        lia.rndx.Rect(2, 2, w - 4, h - 4):Rad(16):Color(self.selected_color):Shape(lia.rndx.SHAPE_IOS):Draw()
     end
 
     self.preview = preview
@@ -55,7 +55,7 @@ function PANEL:Init()
     colorField.Paint = function(_, w, h)
         local segments = 80
         local segmentSize = w / segments
-        RNDX.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+        lia.rndx.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
         for x = 0, segments do
             for y = 0, segments do
                 local s_val = x / segments
@@ -67,7 +67,7 @@ function PANEL:Init()
             end
         end
 
-        RNDX.Circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
+        lia.rndx.Circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
     end
 
     local hueSlider = vgui.Create("liaBasePanel", self)
@@ -99,7 +99,7 @@ function PANEL:Init()
     hueSlider.Paint = function(_, w, h)
         local segments = 100
         local segmentWidth = w / segments
-        RNDX.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
+        lia.rndx.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
         for i = 0, segments - 1 do
             local hueVal = (i / segments) * 360
             local x = i * segmentWidth
@@ -107,7 +107,7 @@ function PANEL:Init()
             surface.DrawRect(x, 1, segmentWidth + 1, h - 2)
         end
 
-        RNDX.Rect(huePos - 2, 0, 4, h):Color(color_target):Draw()
+        lia.rndx.Rect(huePos - 2, 0, 4, h):Color(color_target):Draw()
     end
 
     local btnContainer = vgui.Create("liaBasePanel", self)

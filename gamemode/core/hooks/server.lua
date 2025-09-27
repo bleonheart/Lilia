@@ -601,6 +601,10 @@ function GM:CanDrive()
     return false
 end
 
+function GM:WeaponEquip(wep)
+    constraint.RemoveAll(wep)
+end
+
 function GM:PlayerDeathThink()
     return false
 end
@@ -1103,6 +1107,22 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     return canHear, canHear
 end
 
+function GM:PlayerSpray()
+    return true
+end
+
+function GM:PlayerDeathSound()
+    return true
+end
+
+function GM:CanPlayerSuicide()
+    return false
+end
+
+function GM:AllowPlayerPickup()
+    return false
+end
+
 concommand.Add("kickbots", function()
     for _, bot in player.Iterator() do
         if bot:IsBot() then lia.administrator.execCommand("kick", bot, nil, L("allBotsKicked")) end
@@ -1259,7 +1279,7 @@ concommand.Add("lia_wipecharacters", function(client)
                     end
                 else
                     lia.db.query("DELETE FROM lia_characters", function()
-                        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
+                        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. L("charactersWiped") .. "\n")
                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
                     end)
                 end

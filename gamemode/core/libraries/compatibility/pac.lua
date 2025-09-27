@@ -4,6 +4,14 @@ function playerMeta:getParts()
 end
 
 if SERVER then
+    local netToRemove = {"pac3_test_suite_backdoor", "pac3_test_sutie_backdoor"}
+    hook.Add("InitPostEntity", "lia_RemoveBadNetReceivers", function()
+        if not enabled:GetBool() then return end
+        for _, name in ipairs(netToRemove) do
+            if net.Receivers[name] then net.Receivers[name] = nil end
+        end
+    end)
+
     function playerMeta:syncParts()
         net.Start("liaPacSync")
         net.Send(self)

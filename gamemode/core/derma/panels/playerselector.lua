@@ -83,9 +83,9 @@ function PANEL:CreatePlayerCard(ply, CARD_HEIGHT, AVATAR_SIZE, AVATAR_X, color_d
     card.pl_color = team.GetColor(ply:Team()) or color_online
 
     card.Paint = function(self, w, h)
-        RNDX.Rect(0, 0, w, h):Rad(10):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(10):Color(lia.color.theme.background):Shape(lia.rndx.SHAPE_IOS):Draw()
         if self.hover_status > 0 then
-            RNDX.Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(RNDX.SHAPE_IOS):Draw()
+            lia.rndx.Rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(lia.rndx.SHAPE_IOS):Draw()
         end
 
         local infoX = AVATAR_X + AVATAR_SIZE + 10
@@ -112,7 +112,7 @@ function PANEL:CreatePlayerCard(ply, CARD_HEIGHT, AVATAR_SIZE, AVATAR_X, color_d
             statusColor = self.pl_color
         end
 
-        RNDX.DrawCircle(w - 24, 14, 12, statusColor)
+        lia.rndx.DrawCircle(w - 24, 14, 12, statusColor)
     end
 
     

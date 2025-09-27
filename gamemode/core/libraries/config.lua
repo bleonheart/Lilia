@@ -61,7 +61,7 @@ function lia.config.getOptions(key)
             end
             return result
         else
-            print("Warning: Config options function for '" .. key .. "' failed or returned invalid result")
+            print(L("configOptionsFunctionFailed", key))
             return {}
         end
     elseif istable(config.data.options) then
@@ -1446,12 +1446,12 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 local configA = lia.config.stored[a]
                 local configB = lia.config.stored[b]
                 if not configA then
-                    lia.error("Config with key '" .. tostring(a) .. "' not found in stored configs")
+                    lia.error(L("configNotFoundInStored", tostring(a)))
                     return false
                 end
 
                 if not configB then
-                    lia.error("Config with key '" .. tostring(b) .. "' not found in stored configs")
+                    lia.error(L("configNotFoundInStored", tostring(b)))
                     return true
                 end
 
@@ -1463,7 +1463,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             for _, k in ipairs(keys) do
                 local opt = lia.config.stored[k]
                 if not opt then
-                    lia.error("Config with key '" .. tostring(k) .. "' is missing from stored configs")
+                    lia.error(L("configMissingFromStored", tostring(k)))
                 else
                     local n = tostring(opt.name or "")
                     local d = tostring(opt.desc or "")

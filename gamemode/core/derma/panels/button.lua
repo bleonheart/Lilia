@@ -68,7 +68,7 @@ function PANEL:OnMousePressed(mousecode)
 end
 
 local math_clamp = math.Clamp
-local btnFlags = RNDX.SHAPE_IOS
+local btnFlags = lia.rndx.SHAPE_IOS
 function PANEL:Paint(w, h)
     if self:IsHovered() then
         self.hover_status = math_clamp(self.hover_status + 4 * FrameTime(), 0, 1)
@@ -88,17 +88,17 @@ function PANEL:Paint(w, h)
     local buttonShadowColor = lia.color.theme.liaButtonShadowColor
     if self._activeShadowLerp > 0 then
         local col = Color(buttonHoveredColor.r, buttonHoveredColor.g, buttonHoveredColor.b, math.Clamp(buttonHoveredColor.a * 1.5, 0, 255))
-        RNDX.Rect(0, 0, w, h):Rad(self.radius):Color(col):Shape(btnFlags):Shadow(self._activeShadowLerp * 1.5, 24):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(self.radius):Color(col):Shape(btnFlags):Shadow(self._activeShadowLerp * 1.5, 24):Draw()
     end
 
-    RNDX.Rect(0, 0, w, h):Rad(self.radius):Color(buttonColor):Shape(btnFlags):Draw()
+    lia.rndx.Rect(0, 0, w, h):Rad(self.radius):Color(buttonColor):Shape(btnFlags):Draw()
     if self.bool_gradient then lia.util.drawGradient(0, 0, w, h, 1, buttonShadowColor, self.radius, btnFlags) end
-    if self.bool_hover then RNDX.Rect(0, 0, w, h):Rad(self.radius):Color(Color(buttonHoveredColor.r, buttonHoveredColor.g, buttonHoveredColor.b, self.hover_status * 255)):Shape(btnFlags):Draw() end
+    if self.bool_hover then lia.rndx.Rect(0, 0, w, h):Rad(self.radius):Color(Color(buttonHoveredColor.r, buttonHoveredColor.g, buttonHoveredColor.b, self.hover_status * 255)):Shape(btnFlags):Draw() end
     if self.click_alpha > 0 then
         self.click_alpha = math_clamp(self.click_alpha - FrameTime() * self.ripple_speed, 0, 1)
         local ripple_size = (1 - self.click_alpha) * math.max(w, h) * 2
         local ripple_color = Color(self.ripple_color.r, self.ripple_color.g, self.ripple_color.b, (self.ripple_color.a or 255) * self.click_alpha)
-        RNDX.Rect(self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size):Rad(100):Color(ripple_color):Shape(btnFlags):Draw()
+        lia.rndx.Rect(self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size):Rad(100):Color(ripple_color):Shape(btnFlags):Draw()
     end
 
     if self.text ~= '' then
@@ -108,12 +108,12 @@ function PANEL:Paint(w, h)
             local textW = surface.GetTextSize(self.text)
             local posX = (w - textW - self.icon_size) * 0.5 - 2
             local posY = (h - self.icon_size) * 0.5
-            RNDX.Rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(lia.color.theme.liaButtonIconColor):Shape(btnFlags):Draw()
+            lia.rndx.Rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(lia.color.theme.liaButtonIconColor):Shape(btnFlags):Draw()
         end
     elseif self.icon ~= '' then
         local posX = (w - self.icon_size) * 0.5
         local posY = (h - self.icon_size) * 0.5
-        RNDX.Rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(lia.color.theme.liaButtonIconColor):Shape(btnFlags):Draw()
+        lia.rndx.Rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(lia.color.theme.liaButtonIconColor):Shape(btnFlags):Draw()
     end
 end
 
@@ -180,7 +180,7 @@ local function RegisterButton(name, defaultFont, useBase)
         return PaintButton(self, w, h)
     end
 
-    vgui.Register(name, PANEL, "DButton")
+    vgui.Register(name, PANEL, "liaButton")
 end
 
 RegisterButton("liaHugeButton", "liaHugeFont", true)

@@ -77,7 +77,7 @@ function MODULE:LoadData()
                             ent:setNetVar("factions", util.TableToJSON(factions))
                         end
                     else
-                        lia.warning("Failed to deserialize factions for door " .. id .. ": " .. tostring(result))
+                        lia.warning(L("failedDeserializeDoorFactions", id, tostring(result)))
                         lia.warning("Raw factions data: " .. tostring(row.factions))
                     end
                 end
@@ -109,7 +109,7 @@ function MODULE:LoadData()
                             ent:setNetVar("classes", util.TableToJSON(classes))
                         end
                     else
-                        lia.warning("Failed to deserialize classes for door " .. id .. ": " .. tostring(result))
+                        lia.warning(L("failedDeserializeDoorClasses", id, tostring(result)))
                         lia.warning("Raw classes data: " .. tostring(row.classes))
                     end
                 end
@@ -158,8 +158,8 @@ function MODULE:LoadData()
             end
         end
     end):catch(function(err)
-        lia.error("Failed to load door data: " .. tostring(err))
-        lia.error("This may indicate a database connection issue or missing table")
+        lia.error(L("failedLoadDoorData", tostring(err)))
+        lia.error(L("doorDatabaseConnectionIssue"))
     end)
 end
 
@@ -182,7 +182,7 @@ function MODULE:SaveData()
                     if success and istable(result) then
                         factionsTable = result
                     else
-                        lia.warning("Failed to parse factions JSON for door " .. mapID .. ", using empty table")
+                        lia.warning(L("failedParseDoorFactionsJSON", mapID))
                     end
                 elseif door.liaFactions then
                     factionsTable = door.liaFactions
@@ -196,7 +196,7 @@ function MODULE:SaveData()
                     if success and istable(result) then
                         classesTable = result
                     else
-                        lia.warning("Failed to parse classes JSON for door " .. mapID .. ", using empty table")
+                        lia.warning(L("failedParseDoorClassesJSON", mapID))
                     end
                 elseif door.liaClasses then
                     classesTable = door.liaClasses
@@ -257,8 +257,8 @@ function MODULE:SaveData()
 
     if #rows > 0 then
         lia.db.bulkUpsert("doors", rows):next(function() end):catch(function(err)
-            lia.error("Failed to save door data: " .. tostring(err))
-            lia.error("This may indicate a database connection issue or schema problem")
+            lia.error(L("failedSaveDoorData", tostring(err)))
+            lia.error(L("doorDatabaseSchemaProblem"))
         end)
     end
 end
@@ -281,7 +281,7 @@ function lia.doors.VerifyDatabaseSchema()
     if lia.db.module == "sqlite" then
         lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
             if not res or not res.results then
-                lia.error("Failed to get table info for lia_doors")
+                lia.error(L("failedGetDoorTableInfo"))
                 return
             end
 
@@ -307,7 +307,7 @@ function lia.doors.VerifyDatabaseSchema()
 
             for colName, expectedType in pairs(expectedColumns) do
                 if not columns[colName] then
-                    lia.error("Missing expected column: " .. colName)
+                    lia.error(L("missingExpectedDoorColumn", colName))
                 elseif columns[colName]:lower() ~= expectedType:lower() then
                     lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
                 end
@@ -316,7 +316,7 @@ function lia.doors.VerifyDatabaseSchema()
     else
         lia.db.query("DESCRIBE lia_doors"):next(function(res)
             if not res or not res.results then
-                lia.error("Failed to get table info for lia_doors")
+                lia.error(L("failedGetDoorTableInfo"))
                 return
             end
 
@@ -343,7 +343,7 @@ function lia.doors.VerifyDatabaseSchema()
 
             for colName, expectedType in pairs(expectedColumns) do
                 if not columns[colName] then
-                    lia.error("Missing expected column: " .. colName)
+                    lia.error(L("missingExpectedDoorColumn", colName))
                 elseif not columns[colName]:lower():match(expectedType:lower()) then
                     lia.warning("Column " .. colName .. " has type " .. columns[colName] .. ", expected " .. expectedType)
                 end
@@ -382,12 +382,12 @@ function lia.doors.CleanupCorruptedData()
 
             if needsUpdate then
                 local updateQuery = "UPDATE lia_doors SET factions = " .. lia.db.convertDataType(newFactions) .. ", classes = " .. lia.db.convertDataType(newClasses) .. " WHERE " .. condition .. " AND id = " .. id
-                lia.db.query(updateQuery):next(function() lia.information("Fixed corrupted data for door " .. id) end):catch(function(err) lia.error("Failed to fix corrupted data for door " .. id .. ": " .. tostring(err)) end)
+                lia.db.query(updateQuery):next(function() lia.information(L("fixedCorruptedDoorData", id)) end):catch(function(err) lia.error(L("failedFixCorruptedDoorData", id, tostring(err))) end)
             end
         end
 
-        if corruptedCount > 0 then lia.information("Found and fixed " .. corruptedCount .. " corrupted door records") end
-    end):catch(function(err) lia.error("Failed to check for corrupted door data: " .. tostring(err)) end)
+        if corruptedCount > 0 then lia.information(L("foundAndFixedCorruptedDoorRecords", corruptedCount)) end
+    end):catch(function(err) lia.error(L("failedCheckCorruptedDoorData", tostring(err))) end)
 end
 
 function MODULE:InitPostEntity()

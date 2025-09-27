@@ -8,7 +8,7 @@ function PANEL:Init()
 
     local font = "Fated.18"
 
-    self.textEntry = vgui.Create("DTextEntry", self)
+    self.textEntry = vgui.Create("liaEntry", self)
     self.textEntry:Dock(FILL)
     self.textEntry:SetText("")
     self.textEntry.OnCloseFocus = function()
@@ -26,19 +26,19 @@ function PANEL:Init()
         if lia.config.get("uiDepthEnabled", true) then
             local target = s:IsEditing() and 10 or 5
             self._shadowLerp = lia.util.approachExp(self._shadowLerp, target, 12, ft)
-            RNDX().Rect(0, 0, w, h)
+            lia.rndx().Rect(0, 0, w, h)
                 :Rad(16)
                 :Color(lia.color.theme.window_shadow)
-                :Shape(RNDX.SHAPE_IOS)
+                :Shape(lia.rndx.SHAPE_IOS)
                 :Shadow(self._shadowLerp, 20)
             :Draw()
         end
 
         
-        RNDX().Rect(0, 0, w, h)
+        lia.rndx().Rect(0, 0, w, h)
             :Rad(16)
             :Color(lia.color.theme.focus_panel)
-            :Shape(RNDX.SHAPE_IOS)
+            :Shape(lia.rndx.SHAPE_IOS)
         :Draw()
 
         local value = self:GetValue() or ''

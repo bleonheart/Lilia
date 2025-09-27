@@ -177,21 +177,21 @@ function PANEL:Paint(w, h)
     local progress = denom == 0 and 0 or (self.value - self.min_value) / denom
     progress = math.Clamp(progress, 0, 1)
     local activeW = barW * progress
-    RNDX.Rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.window_shadow):Shadow(5, 20):Draw()
-    RNDX.Draw(barR, barStart, barY, barW, barH, lia.color.theme.sidebar)
-    RNDX.Draw(barR, barStart, barY, barW, barH, lia.color.theme.border)
+    lia.rndx.Rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.window_shadow):Shadow(5, 20):Draw()
+    lia.rndx.Draw(barR, barStart, barY, barW, barH, lia.color.theme.sidebar)
+    lia.rndx.Draw(barR, barStart, barY, barW, barH, lia.color.theme.border)
     self.smoothPos = lia.util.approachExp(self.smoothPos or 0, activeW, 14, ft)
     if math.abs(self.smoothPos - activeW) < 0.5 then self.smoothPos = activeW end
-    RNDX.Draw(barR, barStart, barY, self.smoothPos, barH, lia.color.theme.accent)
+    lia.rndx.Draw(barR, barStart, barY, self.smoothPos, barH, lia.color.theme.accent)
     local handleX = barStart + self.smoothPos
     local handleY = barY + barH / 2
-    RNDX.DrawShadows(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, lia.color.theme.window_shadow, 3, 10)
+    lia.rndx.DrawShadows(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, lia.color.theme.window_shadow, 3, 10)
     local targetAlpha = self.dragging and 100 or 255
     self._dragAlpha = lia.util.approachExp(self._dragAlpha or 255, targetAlpha, 24, ft)
     if math.abs(self._dragAlpha - targetAlpha) < 1 then self._dragAlpha = targetAlpha end
     local currentTheme = lia.color.theme
     local colorText = Color(currentTheme.accent.r, currentTheme.accent.g, currentTheme.accent.b, math.floor(self._dragAlpha))
-    RNDX.Draw(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, colorText)
+    lia.rndx.Draw(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, colorText)
     local valText = (self.decimals > 0) and tostring(self.value) or tostring(self.value)
     draw.SimpleText(valText, valueFont, barEnd + handleW / 2 + 4, barY + barH / 2, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     draw.SimpleText(self.min_value, minmaxFont, barStart, barY + barH + minmaxPadY - 4, Color("gray"), TEXT_ALIGN_LEFT)

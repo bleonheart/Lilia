@@ -36,7 +36,7 @@ function PANEL:Init()
 
     self.cls = vgui.Create("liaButton", self)
     self.cls:SetText("")
-    self.cls.Paint = function(_, w, h) RNDX.Rect(2, 2, w - 4, h - 4):Color(lia.color.theme.header_text):Material(mat_close):Draw() end
+    self.cls.Paint = function(_, w, h) lia.rndx.Rect(2, 2, w - 4, h - 4):Color(lia.color.theme.header_text):Material(mat_close):Draw() end
     self.cls.DoClick = function()
         self:AlphaTo(0, 0.1, 0, function() self:Remove() end)
         surface.PlaySound("garrysmod/ui_click.wav")
@@ -103,8 +103,8 @@ function PANEL:Notify(text, duration, col)
     mp:SetPos((self:GetWide() - mp:GetWide()) * 0.5, startY)
     mp:SetAlpha(0)
     mp.Paint = function(_, w, h)
-        RNDX.Rect(0, 0, w, h):Rad(16):Color(col):Shadow(7, 20):Outline(3):Clip(self):Draw()
-        RNDX.Rect(0, 0, w, h):Rad(16):Color(col):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(col):Shadow(7, 20):Outline(3):Clip(self):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(col):Draw()
         draw.SimpleText(text, "Fated.20", w * 0.5, h * 0.5 - 1, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
@@ -120,11 +120,11 @@ function PANEL:Notify(text, duration, col)
 end
 
 function PANEL:Paint(w, h)
-    RNDX.Rect(0, 0, w, h):Rad(6):Color(lia.color.theme.window_shadow):Shadow(10, 16):Shape(RNDX.SHAPE_IOS):Draw()
-    if not self.bool_lite then RNDX.Rect(0, 0, w, 24):Radii(6, 6, 0, 0):Color(lia.color.theme.header):Draw() end
+    lia.rndx.Rect(0, 0, w, h):Rad(6):Color(lia.color.theme.window_shadow):Shadow(10, 16):Shape(lia.rndx.SHAPE_IOS):Draw()
+    if not self.bool_lite then lia.rndx.Rect(0, 0, w, 24):Radii(6, 6, 0, 0):Color(lia.color.theme.header):Draw() end
     local headerTall = self.bool_lite and 0 or 24
-    if self.bool_alpha and lia.config.get("uiBlurEnabled", true) then RNDX.Rect(0, headerTall, w, h - headerTall):Radii(self.bool_lite and 6 or 0, self.bool_lite and 6 or 0, 6, 6):Blur():Draw() end
-    RNDX.Rect(0, headerTall, w, h - headerTall):Radii(self.bool_lite and 6 or 0, self.bool_lite and 6 or 0, 6, 6):Color(self.bool_alpha and lia.color.theme.background_alpha or lia.color.theme.background):Draw()
+    if self.bool_alpha and lia.config.get("uiBlurEnabled", true) then lia.rndx.Rect(0, headerTall, w, h - headerTall):Radii(self.bool_lite and 6 or 0, self.bool_lite and 6 or 0, 6, 6):Blur():Draw() end
+    lia.rndx.Rect(0, headerTall, w, h - headerTall):Radii(self.bool_lite and 6 or 0, self.bool_lite and 6 or 0, 6, 6):Color(self.bool_alpha and lia.color.theme.background_alpha or lia.color.theme.background):Draw()
     if not self.bool_lite then
         if self.center_title ~= "" then draw.SimpleText(self.center_title, "Fated.20b", w * 0.5, 12, lia.color.theme.header_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
         draw.SimpleText(self.title, "Fated.16", 6, 4, lia.color.theme.header_text)

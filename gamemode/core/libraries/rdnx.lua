@@ -1,4 +1,5 @@
-﻿local bit_band = bit.band
+﻿lia.rndx = lia.rndx or {}
+local bit_band = bit.band
 local surface_SetDrawColor = surface.SetDrawColor
 local surface_SetMaterial = surface.SetMaterial
 local surface_DrawTexturedRectUV = surface.DrawTexturedRectUV
@@ -25,7 +26,7 @@ local function GET_SHADER(name)
     return SHADERS_VERSION:gsub("%.", "_") .. "_" .. name
 end
 
-local BLUR_RT = GetRenderTargetEx("RNDX" .. SHADERS_VERSION .. SysTime(), 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), 0, IMAGE_FORMAT_BGRA8888)
+local BLUR_RT = GetRenderTargetEx("lia_rndx" .. SHADERS_VERSION .. SysTime(), 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), 0, IMAGE_FORMAT_BGRA8888)
 local NEW_FLAG
 do
     local flags_n = -1
@@ -38,7 +39,6 @@ end
 local NO_TL, NO_TR, NO_BL, NO_BR = NEW_FLAG(), NEW_FLAG(), NEW_FLAG(), NEW_FLAG()
 local SHAPE_CIRCLE, SHAPE_FIGMA, SHAPE_IOS = NEW_FLAG(), NEW_FLAG(), NEW_FLAG()
 local BLUR = NEW_FLAG()
-local RNDX = {}
 local shader_mat = [==[
 screenspace_general
 {
@@ -190,7 +190,7 @@ local function draw_rounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thi
     RESET_PARAMS()
     if not flags then flags = DEFAULT_DRAW_FLAGS end
     local using_blur = bit_band(flags, BLUR) ~= 0
-    if using_blur then return RNDX.DrawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness) end
+    if using_blur then return lia.rndx.DrawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness) end
     MAT = ROUNDED_MAT
     if texture then
         MAT = ROUNDED_TEXTURE_MAT
@@ -214,37 +214,37 @@ local function draw_rounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thi
     return surface_DrawTexturedRectUV(x, y, w, h, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
-function RNDX.Draw(r, x, y, w, h, col, flags)
+function lia.rndx.Draw(r, x, y, w, h, col, flags)
     return draw_rounded(x, y, w, h, col, flags, r, r, r, r)
 end
 
-function RNDX.DrawOutlined(r, x, y, w, h, col, thickness, flags)
+function lia.rndx.DrawOutlined(r, x, y, w, h, col, thickness, flags)
     return draw_rounded(x, y, w, h, col, flags, r, r, r, r, nil, thickness or 1)
 end
 
-function RNDX.DrawTexture(r, x, y, w, h, col, texture, flags)
+function lia.rndx.DrawTexture(r, x, y, w, h, col, texture, flags)
     return draw_rounded(x, y, w, h, col, flags, r, r, r, r, texture)
 end
 
-function RNDX.DrawMaterial(r, x, y, w, h, col, mat, flags)
+function lia.rndx.DrawMaterial(r, x, y, w, h, col, mat, flags)
     local tex = mat:GetTexture("$basetexture")
-    if tex then return RNDX.DrawTexture(r, x, y, w, h, col, tex, flags) end
+    if tex then return lia.rndx.DrawTexture(r, x, y, w, h, col, tex, flags) end
 end
 
-function RNDX.DrawCircle(x, y, r, col, flags)
-    return RNDX.Draw(r / 2, x - r / 2, y - r / 2, r, r, col, (flags or 0) + SHAPE_CIRCLE)
+function lia.rndx.DrawCircle(x, y, r, col, flags)
+    return lia.rndx.Draw(r / 2, x - r / 2, y - r / 2, r, r, col, (flags or 0) + SHAPE_CIRCLE)
 end
 
-function RNDX.DrawCircleOutlined(x, y, r, col, thickness, flags)
-    return RNDX.DrawOutlined(r / 2, x - r / 2, y - r / 2, r, r, col, thickness, (flags or 0) + SHAPE_CIRCLE)
+function lia.rndx.DrawCircleOutlined(x, y, r, col, thickness, flags)
+    return lia.rndx.DrawOutlined(r / 2, x - r / 2, y - r / 2, r, r, col, thickness, (flags or 0) + SHAPE_CIRCLE)
 end
 
-function RNDX.DrawCircleTexture(x, y, r, col, texture, flags)
-    return RNDX.DrawTexture(r / 2, x - r / 2, y - r / 2, r, r, col, texture, (flags or 0) + SHAPE_CIRCLE)
+function lia.rndx.DrawCircleTexture(x, y, r, col, texture, flags)
+    return lia.rndx.DrawTexture(r / 2, x - r / 2, y - r / 2, r, r, col, texture, (flags or 0) + SHAPE_CIRCLE)
 end
 
-function RNDX.DrawCircleMaterial(x, y, r, col, mat, flags)
-    return RNDX.DrawMaterial(r / 2, x - r / 2, y - r / 2, r, r, col, mat, (flags or 0) + SHAPE_CIRCLE)
+function lia.rndx.DrawCircleMaterial(x, y, r, col, mat, flags)
+    return lia.rndx.DrawMaterial(r / 2, x - r / 2, y - r / 2, r, r, col, mat, (flags or 0) + SHAPE_CIRCLE)
 end
 
 local USE_SHADOWS_BLUR = false
@@ -265,7 +265,7 @@ local function draw_blur()
     surface_DrawTexturedRect(X, Y, W, H)
 end
 
-function RNDX.DrawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
+function lia.rndx.DrawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
     RESET_PARAMS()
     if not flags then flags = DEFAULT_DRAW_FLAGS end
     X, Y = x, y
@@ -305,7 +305,7 @@ local function draw_shadows(r, g, b, a)
     surface_DrawTexturedRectUV(X, Y, W, H, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
-function RNDX.DrawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
+function lia.rndx.DrawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
     if col and col.a == 0 then return end
     local OLD_CLIPPING_STATE = DisableClipping(true)
     RESET_PARAMS()
@@ -330,12 +330,12 @@ function RNDX.DrawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, inte
     DisableClipping(OLD_CLIPPING_STATE)
 end
 
-function RNDX.DrawShadows(r, x, y, w, h, col, spread, intensity, flags)
-    return RNDX.DrawShadowsEx(x, y, w, h, col, flags, r, r, r, r, spread, intensity)
+function lia.rndx.DrawShadows(r, x, y, w, h, col, spread, intensity, flags)
+    return lia.rndx.DrawShadowsEx(x, y, w, h, col, flags, r, r, r, r, spread, intensity)
 end
 
-function RNDX.DrawShadowsOutlined(r, x, y, w, h, col, thickness, spread, intensity, flags)
-    return RNDX.DrawShadowsEx(x, y, w, h, col, flags, r, r, r, r, spread, intensity, thickness or 1)
+function lia.rndx.DrawShadowsOutlined(r, x, y, w, h, col, thickness, spread, intensity, flags)
+    return lia.rndx.DrawShadowsEx(x, y, w, h, col, flags, r, r, r, r, spread, intensity, thickness or 1)
 end
 
 local BASE_FUNCS
@@ -518,21 +518,17 @@ local TYPES = {
     end
 }
 
-setmetatable(RNDX, {
-    __call = function() return TYPES end
-})
-
-RNDX.NO_TL = NO_TL
-RNDX.NO_TR = NO_TR
-RNDX.NO_BL = NO_BL
-RNDX.NO_BR = NO_BR
-RNDX.SHAPE_CIRCLE = SHAPE_CIRCLE
-RNDX.SHAPE_FIGMA = SHAPE_FIGMA
-RNDX.SHAPE_IOS = SHAPE_IOS
-RNDX.BLUR = BLUR
-RNDX.MANUAL_COLOR = MANUAL_COLOR
-function RNDX.SetFlag(flags, flag, bool)
-    flag = RNDX[flag] or flag
+lia.rndx.NO_TL = NO_TL
+lia.rndx.NO_TR = NO_TR
+lia.rndx.NO_BL = NO_BL
+lia.rndx.NO_BR = NO_BR
+lia.rndx.SHAPE_CIRCLE = SHAPE_CIRCLE
+lia.rndx.SHAPE_FIGMA = SHAPE_FIGMA
+lia.rndx.SHAPE_IOS = SHAPE_IOS
+lia.rndx.BLUR = BLUR
+lia.rndx.MANUAL_COLOR = MANUAL_COLOR
+function lia.rndx.SetFlag(flags, flag, bool)
+    flag = lia.rndx[flag] or flag
     if tobool(bool) then
         return bit.bor(flags, flag)
     else
@@ -540,20 +536,10 @@ function RNDX.SetFlag(flags, flag, bool)
     end
 end
 
-function RNDX.SetDefaultShape(shape)
+function lia.rndx.SetDefaultShape(shape)
     DEFAULT_SHAPE = shape or SHAPE_FIGMA
     DEFAULT_DRAW_FLAGS = DEFAULT_SHAPE
 end
 
-RNDX.Rect = TYPES.Rect
-RNDX.Circle = TYPES.Circle
-RNDX.Draw = RNDX.Draw
-RNDX.DrawShadows = RNDX.DrawShadows
-RNDX.DrawShadowsEx = RNDX.DrawShadowsEx
-RNDX.DrawMaterial = RNDX.DrawMaterial
-RNDX.DrawCircle = RNDX.DrawCircle
-RNDX.DrawOutlined = RNDX.DrawOutlined
-RNDX.DrawTexture = RNDX.DrawTexture
-RNDX.DrawBlur = RNDX.DrawBlur
-RNDX.DrawShadowsOutlined = RNDX.DrawShadowsOutlined
-_G.RNDX = RNDX
+lia.rndx.Rect = TYPES.Rect
+lia.rndx.Circle = TYPES.Circle

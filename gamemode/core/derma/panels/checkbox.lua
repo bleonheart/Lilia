@@ -48,7 +48,7 @@ function PANEL:Paint()
     return true
 end
 
-vgui.Register("liaSimpleCheckbox", PANEL, "DButton")
+vgui.Register("liaSimpleCheckbox", PANEL, "liaButton")
 PANEL = {}
 function PANEL:Init()
     self.text = ''
@@ -115,9 +115,9 @@ end
 
 function PANEL:Paint(w, h)
     if lia.config.get("uiDepthEnabled", true) then
-        RNDX.DrawShadows(12, 0, 0, w, h, lia.color.theme.window_shadow, 6, 22, RNDX.SHAPE_IOS)
+        lia.rndx.DrawShadows(12, 0, 0, w, h, lia.color.theme.window_shadow, 6, 22, lia.rndx.SHAPE_IOS)
     end
-    RNDX.Draw(12, 0, 0, w, h, lia.color.theme.focus_panel, RNDX.SHAPE_IOS)
+    lia.rndx.Draw(12, 0, 0, w, h, lia.color.theme.focus_panel, lia.rndx.SHAPE_IOS)
     local textX = 14
     draw.SimpleText(self.text, 'Fated.18', textX, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
@@ -135,7 +135,7 @@ function PANEL:PaintOver(_, _)
     local trackH = 18
     local trackX = tx + (tw - trackW) / 2
     local trackY = ty + (th - trackH) / 2
-    RNDX.Draw(trackH / 2, trackX, trackY + 1, trackW, trackH - 2, lia.color.theme.toggle, RNDX.SHAPE_IOS)
+    lia.rndx.Draw(trackH / 2, trackX, trackY + 1, trackW, trackH - 2, lia.color.theme.toggle, lia.rndx.SHAPE_IOS)
     local circleSize = 20
     local pad = 0
     local textMargin = 14
@@ -150,8 +150,8 @@ function PANEL:PaintOver(_, _)
     local circleCol = table.Copy(baseCircle)
     circleCol.a = 255
     self._circleColor = lia.color.Lerp(12, self._circleColor, circleCol)
-    RNDX.DrawCircle(circleCenterX, circleCenterY, circleSize, self._circleColor)
-    RNDX.DrawCircle(circleCenterX, circleCenterY + 2, circleSize * 1.05, lia.color.theme.window_shadow)
+    lia.rndx.DrawCircle(circleCenterX, circleCenterY, circleSize, self._circleColor)
+    lia.rndx.DrawCircle(circleCenterX, circleCenterY + 2, circleSize * 1.05, lia.color.theme.window_shadow)
 end
 
 function PANEL:PerformLayout(_, _)

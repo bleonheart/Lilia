@@ -77,13 +77,13 @@ function PANEL:AddTextRow(data)
     local row = self:AddRow(function(p, row)
         local titleFont = compact and "liaSmallFont" or "liaMediumFont"
         local descFont = compact and "liaMiniFont" or "liaSmallFont"
-        local t = vgui.Create("DLabel", p)
+        local t = vgui.Create("liaText", p)
         t:SetFont(titleFont)
         t:SetText(title)
         t:SizeToContents()
         local d
         if desc ~= "" then
-            d = vgui.Create("DLabel", p)
+            d = vgui.Create("liaText", p)
             d:SetFont(descFont)
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
@@ -92,7 +92,7 @@ function PANEL:AddTextRow(data)
 
         local r
         if right ~= "" then
-            r = vgui.Create("DLabel", p)
+            r = vgui.Create("liaText", p)
             r:SetFont(descFont)
             r:SetText(right)
             r:SizeToContents()
@@ -130,7 +130,7 @@ function PANEL:AddSubsheetRow(cfg)
     local title = cfg.title or ""
     local build = cfg.build
     return self:AddRow(function(p, row)
-        local cat = vgui.Create("DCollapsibleCategory", p)
+        local cat = vgui.Create("liaCategory", p)
         cat:Dock(FILL)
         cat:SetLabel("")
         cat:SetExpanded(false)
@@ -170,13 +170,13 @@ function PANEL:AddPreviewRow(data)
         html:SetSize(size, size)
         if url ~= "" then html:OpenURL(url) end
         html:SetMouseInputEnabled(false)
-        local t = vgui.Create("DLabel", p)
+        local t = vgui.Create("liaText", p)
         t:SetFont("liaMediumFont")
         t:SetText(title)
         t:SizeToContents()
         local d
         if desc ~= "" then
-            d = vgui.Create("DLabel", p)
+            d = vgui.Create("liaText", p)
             d:SetFont("liaSmallFont")
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
@@ -185,7 +185,7 @@ function PANEL:AddPreviewRow(data)
 
         local r
         if right ~= "" then
-            r = vgui.Create("DLabel", p)
+            r = vgui.Create("liaText", p)
             r:SetFont("liaSmallFont")
             r:SetText(right)
             r:SizeToContents()
@@ -268,10 +268,9 @@ function PANEL:AddIconLayoutRow(cfg)
     local build = cfg.build
     local space = cfg.space or 6
     local row = self:AddRow(function(p, row)
-        local layout = vgui.Create("DIconLayout", p)
+        local layout = vgui.Create("liaBasePanel", p)
         layout:Dock(FILL)
-        layout:SetSpaceX(space)
-        layout:SetSpaceY(space)
+        layout:DockPadding(space, space, space, space)
         if build then build(layout) end
         p:SetTall(height)
         row.widget = layout

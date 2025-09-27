@@ -397,17 +397,17 @@ if CLIENT then
 
             for _, action in ipairs(sortedActions) do
                 local data = lia.keybind.stored[action]
-                local rowPanel = vgui.Create("DPanel")
+                local rowPanel = vgui.Create("liaBasePanel")
                 rowPanel:SetTall(70)
                 rowPanel:DockPadding(4, 4, 4, 4)
                 rowPanel.Paint = nil
-                local lbl = rowPanel:Add("DLabel")
+                local lbl = rowPanel:Add("liaText")
                 lbl:Dock(FILL)
                 lbl:SetFont("liaBigFont")
                 lbl:SetText(L(action))
                 local currentKey = lia.keybind.get(action, KEY_NONE)
                 if allowEdit then
-                    local combo = rowPanel:Add("DComboBox")
+                    local combo = rowPanel:Add("liaComboBox")
                     combo:Dock(RIGHT)
                     combo:SetWide(200)
                     combo:SetFont("liaMediumFont")
@@ -445,7 +445,7 @@ if CLIENT then
                         currentKey = newKey
                     end
 
-                    local unbindButton = rowPanel:Add("DButton")
+                    local unbindButton = rowPanel:Add("liaButton")
                     unbindButton:Dock(RIGHT)
                     unbindButton:SetWide(100)
                     unbindButton:SetFont("liaMediumFont")
@@ -460,7 +460,7 @@ if CLIENT then
                         currentKey = KEY_NONE
                     end
                 else
-                    local textLabel = rowPanel:Add("DLabel")
+                    local textLabel = rowPanel:Add("liaText")
                     textLabel:Dock(RIGHT)
                     textLabel:SetFont("liaBigFont")
                     textLabel:SetText(input.GetKeyName(currentKey) or "NONE")

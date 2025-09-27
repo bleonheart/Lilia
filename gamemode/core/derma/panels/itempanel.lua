@@ -7,7 +7,7 @@ function PANEL:Init()
     lia.gui.itemPanel = self
     self.header = vgui.Create("liaBasePanel", self)
     self.header:Dock(TOP)
-    self.nameLabel = vgui.Create("DLabel", self.header)
+    self.nameLabel = vgui.Create("liaText", self.header)
     self.nameLabel:SetFont("liaBigTitle")
     self.nameLabel:SetTextColor(color_white)
     self.nameLabel:SetContentAlignment(5)

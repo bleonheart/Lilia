@@ -380,11 +380,6 @@ function lia.warning(msg)
     MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
-function lia.deprecated(methodName, callback)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logDeprecated") .. "] ")
-    MsgC(Color(255, 255, 0), L("deprecatedMessage", methodName), "\n")
-    if callback and isfunction(callback) then callback() end
-end
 
 function lia.updater(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")

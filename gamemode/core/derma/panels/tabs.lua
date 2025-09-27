@@ -112,25 +112,25 @@ function PANEL:Rebuild()
             local colorText = isActive and lia.color.theme.accent or lia.color.theme.text
             local colorIcon = isActive and lia.color.theme.accent or Color(255, 255, 255)
             if self.tab_style == 'modern' then
-                if s:IsHovered() then RNDX.Draw(16, 0, 0, w, h, color_btn_hovered, RNDX.SHAPE_IOS + (isActive and RNDX.NO_BL + RNDX.NO_BR or 0)) end
+                if s:IsHovered() then lia.rndx.Draw(16, 0, 0, w, h, color_btn_hovered, lia.rndx.SHAPE_IOS + (isActive and lia.rndx.NO_BL + lia.rndx.NO_BR or 0)) end
                 local padding = 16
                 local iconW = tab.icon and 16 or 0
                 local iconTextGap = tab.icon and 8 or 0
                 local textX = padding + (iconW > 0 and (iconW + iconTextGap) or 0)
-                if tab.icon then RNDX.DrawMaterial(0, padding, (h - 16) * 0.5, 16, 16, colorIcon, tab.icon) end
+                if tab.icon then lia.rndx.DrawMaterial(0, padding, (h - 16) * 0.5, 16, 16, colorIcon, tab.icon) end
                 draw.SimpleText(tab.name, 'Fated.18', textX, h * 0.5, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             else
-                if s:IsHovered() then RNDX.Draw(24, 0, 0, w, h, color_btn_hovered, RNDX.SHAPE_IOS) end
+                if s:IsHovered() then lia.rndx.Draw(24, 0, 0, w, h, color_btn_hovered, lia.rndx.SHAPE_IOS) end
                 draw.SimpleText(tab.name, 'Fated.18', 34, h * 0.5 - 1, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 if tab.icon then
-                    RNDX.DrawMaterial(0, 9, 9, 16, 16, colorIcon, tab.icon)
+                    lia.rndx.DrawMaterial(0, 9, 9, 16, 16, colorIcon, tab.icon)
                 else
-                    RNDX.Draw(24, 9, 9, 16, 16, colorIcon, RNDX.SHAPE_IOS)
+                    lia.rndx.Draw(24, 9, 9, 16, 16, colorIcon, lia.rndx.SHAPE_IOS)
                 end
             end
         end
 
-        self.panel_tabs.Paint = function(_, _, h) if self.tab_style == 'modern' and self.indicator_w > 0 then RNDX.Draw(0, self.indicator_x, h - self.indicator_height, self.indicator_w, self.indicator_height, lia.color.theme.accent) end end
+        self.panel_tabs.Paint = function(_, _, h) if self.tab_style == 'modern' and self.indicator_w > 0 then lia.rndx.Draw(0, self.indicator_x, h - self.indicator_height, self.indicator_w, self.indicator_height, lia.color.theme.accent) end end
     end
 end
 

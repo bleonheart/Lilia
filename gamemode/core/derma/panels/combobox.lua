@@ -20,11 +20,11 @@ function PANEL:Init()
         end
 
         local themeColors = lia.color.theme
-        RNDX.Rect(0, 0, w, h):Rad(16):Color(themeColors.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
-        RNDX.Draw(16, 0, 0, w, h, themeColors.focus_panel, RNDX.SHAPE_IOS)
+        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(themeColors.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
+        lia.rndx.Draw(16, 0, 0, w, h, themeColors.focus_panel, lia.rndx.SHAPE_IOS)
         if self.hoverAnim > 0 then
             local themeColors = lia.color.theme
-            RNDX.Rect(0, 0, w, h):Rad(16):Color(Color(themeColors.hover.r, themeColors.hover.g, themeColors.hover.b, self.hoverAnim * 255)):Shape(RNDX.SHAPE_IOS):Draw()
+            lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(themeColors.hover.r, themeColors.hover.g, themeColors.hover.b, self.hoverAnim * 255)):Shape(lia.rndx.SHAPE_IOS):Draw()
         end
         draw.SimpleText(self.selected or self.placeholder or L("combobox_select"), self.font, 12, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         local arrowSize = 6
@@ -113,10 +113,10 @@ function PANEL:OpenMenu()
 
         local shadowSpread = math.max(0, math.floor(10 * blurMul))
         local shadowIntensity = math.max(0, math.floor(16 * blurMul))
-        RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
-        if not s._disableBlur then RNDX.Rect(0, 0, w, h):Rad(16):Shape(RNDX.SHAPE_IOS):Blur(blurMul):Draw() end
-        RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Draw()
-        RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background):Shape(RNDX.SHAPE_IOS):Outline(1):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
+        if not s._disableBlur then lia.rndx.Rect(0, 0, w, h):Rad(16):Shape(lia.rndx.SHAPE_IOS):Blur(blurMul):Draw() end
+        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background):Shape(lia.rndx.SHAPE_IOS):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background):Shape(lia.rndx.SHAPE_IOS):Outline(1):Draw()
     end
 
     surface.SetFont(self.font)
@@ -128,9 +128,9 @@ function PANEL:OpenMenu()
         option:SetTall(itemHeight)
         option:SetCursor("hand")
         option.Paint = function(s, w, h)
-            if s:IsHovered() then RNDX.Draw(16, 0, 0, w, h, lia.color.theme.hover, RNDX.SHAPE_IOS) end
+            if s:IsHovered() then lia.rndx.Draw(16, 0, 0, w, h, lia.color.theme.hover, lia.rndx.SHAPE_IOS) end
             draw.SimpleText(choice.text, 'Fated.18', 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            if self.selected == choice.text then RNDX.Draw(0, 4, h * 0.5 - 1, 4, 2, lia.color.theme.accent) end
+            if self.selected == choice.text then lia.rndx.Draw(0, 4, h * 0.5 - 1, 4, 2, lia.color.theme.accent) end
         end
 
         option.DoClick = function()

@@ -72,7 +72,7 @@ function LiaBasePanel:Init()
     if self.SetText then self:SetText("") end
 end
 
-vgui.Register("liaBasePanel", LiaBasePanel, "DPanel")
+vgui.Register("liaBasePanel", LiaBasePanel, "liaBasePanel")
 timer.Create("derma_convar_fix", 0.5, 0, function()
     if len == 0 then return end
     local name
@@ -138,7 +138,7 @@ function QuickPanel:Init()
     self:SetKeyboardInputEnabled(false)
     self:SetZPos(999)
     self:SetMouseInputEnabled(true)
-    self.title = self:Add("DLabel")
+    self.title = self:Add("liaText")
     self.title:SetTall(36)
     self.title:Dock(TOP)
     self.title:SetFont("liaMediumFont")
@@ -152,7 +152,7 @@ function QuickPanel:Init()
         surface.DrawRect(0, 0, w, h)
     end
 
-    self.expand = self:Add("DButton")
+    self.expand = self:Add("liaButton")
     self.expand:SetContentAlignment(5)
     self.expand:SetText("")
     self.expand:SetFont("DermaDefaultBold")
@@ -161,7 +161,7 @@ function QuickPanel:Init()
     self.expand:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     self.expand:SetSize(36, 36)
     self.expand:SetPos(0, 0)
-    self.expand.icon = self.expand:Add("DImage")
+    self.expand.icon = self.expand:Add("liaImage")
     self.expand.icon:SetImage("settings.png")
     self.expand.icon:SetSize(24, 24)
     self.expand.icon:Dock(FILL)
@@ -186,7 +186,7 @@ function QuickPanel:Init()
         end
     end
 
-    self.scroll = self:Add("DScrollPanel")
+    self.scroll = self:Add("liaScrollPanel")
     self.items = {}
     hook.Run("SetupQuickMenu", self)
     self:populateOptions()
@@ -235,7 +235,7 @@ function QuickPanel:addCategory(text)
 end
 
 function QuickPanel:addButton(text, cb)
-    local btn = self.scroll:Add("DButton")
+    local btn = self.scroll:Add("liaButton")
     btn:SetText(text)
     btn:SetTall(36)
     btn:Dock(TOP)
@@ -252,7 +252,7 @@ function QuickPanel:addButton(text, cb)
 end
 
 function QuickPanel:addSpacer()
-    local pnl = self.scroll:Add("DPanel")
+    local pnl = self.scroll:Add("liaBasePanel")
     pnl:SetTall(1)
     pnl:Dock(TOP)
     pnl:DockMargin(0, 1, 0, 0)
@@ -266,7 +266,7 @@ function QuickPanel:addSpacer()
 end
 
 function QuickPanel:addSlider(text, cb, val, min, max, dec)
-    local s = self.scroll:Add("DNumSlider")
+    local s = self.scroll:Add("liaSlideBox")
     s:SetText(text)
     s:SetTall(36)
     s:Dock(TOP)

@@ -306,12 +306,12 @@ function PANEL:createStartButton()
             http.Fetch(logoPath, function(body)
                 if not IsValid(self) then return end
                 file.Write("temp_logo.png", body)
-                self.logo = self:Add("DImage")
+                self.logo = self:Add("liaImage")
                 self.logo:SetImage("data/temp_logo.png")
                 setLogo(self.logo)
             end)
         else
-            self.logo = self:Add("DImage")
+            self.logo = self:Add("liaImage")
             self.logo:SetImage(logoPath)
             setLogo(self.logo)
         end
@@ -484,14 +484,14 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             line:DockMargin(10, 3, 10, 0)
             line:SetHeight(20)
             line.Paint = function() end
-            local nameLabel = line:Add("DLabel")
+            local nameLabel = line:Add("liaText")
             nameLabel:Dock(LEFT)
             nameLabel:SetFont("liaSmallFont")
             nameLabel:SetTextColor(Color(255, 255, 255))
             nameLabel:SetText(text)
             nameLabel:SizeToContents()
             nameLabel.Paint = function() end
-            local countLabel = line:Add("DLabel")
+            local countLabel = line:Add("liaText")
             countLabel:Dock(RIGHT)
             countLabel:SetFont("liaSmallFont")
             countLabel:SetTextColor(Color(255, 255, 255))
@@ -499,7 +499,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             countLabel:SizeToContents()
             countLabel.Paint = function() end
         else
-            local lbl = vgui.Create("DLabel")
+            local lbl = vgui.Create("liaText")
             scroll:AddItem(lbl)
             lbl:Dock(TOP)
             lbl:DockMargin(10, 5, 10, 10)
@@ -530,7 +530,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         local minValue = entry.attr.min or 0
         local maxValue = entry.attr.max or 100
         local currentValue = character:getAttrib(entry.id) or minValue
-        local label = vgui.Create("DLabel")
+        local label = vgui.Create("liaText")
         scroll:AddItem(label)
         label:Dock(TOP)
         label:DockMargin(10, 3, 10, 5)

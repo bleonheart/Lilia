@@ -65,8 +65,8 @@ function PANEL:Paint(w, h)
         local height = h - self.headerHeight - 5
         local currentHeight = height * (1 - progress)
         if currentHeight > 0 then
-            RNDX.Rect(0, self.headerHeight + 5, w, currentHeight):Rad(12):Color(lia.color.theme.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(6, 22):Draw()
-            RNDX.Rect(0, self.headerHeight + 5, w, currentHeight):Rad(12):Color(lia.color.theme.focus_panel):Shape(RNDX.SHAPE_IOS):Draw()
+            lia.rndx.Rect(0, self.headerHeight + 5, w, currentHeight):Rad(12):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(6, 22):Draw()
+            lia.rndx.Rect(0, self.headerHeight + 5, w, currentHeight):Rad(12):Color(lia.color.theme.focus_panel):Shape(lia.rndx.SHAPE_IOS):Draw()
         end
     end
 end
@@ -124,7 +124,7 @@ end
 function PANEL:AddItem(item)
     if isstring(item) then
         
-        local label = vgui.Create("DLabel", self.content)
+        local label = vgui.Create("liaText", self.content)
         label:SetText(item)
         label:Dock(TOP)
         label:DockMargin(0, 0, 0, 5)

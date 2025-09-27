@@ -496,6 +496,83 @@ lia.command.add("plyunblind", {
     onRun = function(client, arguments) lia.administrator.serverExecCommand("unblind", arguments[1], nil, nil, client) end
 })
 
+lia.command.add("plyspectate", {
+    adminOnly = true,
+    desc = "plySpectateDesc",
+    arguments = {
+        {
+            name = "name",
+            type = "player"
+        },
+    },
+    AdminStick = {
+        Name = "adminStickSpectateName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/eye.png"
+    },
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
+            client:notifyErrorLocalized("targetNotFound")
+            return
+        end
+
+        -- Store the admin's current position for return
+        client:setNetVar("spectateReturnPos", client:GetPos())
+        client:setNetVar("spectateReturnAng", client:EyeAngles())
+
+        -- Set the admin to spectator mode
+        client:Spectate(OBS_MODE_CHASE)
+        client:SpectateEntity(target)
+        client:GodEnable()
+        client:SetNoDraw(true)
+        client:SetNotSolid(true)
+
+        -- Store the target being spectated
+        client:setNetVar("spectatingTarget", target:SteamID())
+
+        client:notifySuccessLocalized("spectateStarted", target:Nick())
+        lia.log.add(client, "plySpectate", target:Name())
+    end
+})
+
+lia.command.add("stopspectate", {
+    adminOnly = false,
+    desc = "stopSpectateDesc",
+    onRun = function(client)
+        local returnPos = client:getNetVar("spectateReturnPos")
+        local returnAng = client:getNetVar("spectateReturnAng")
+        local spectatingTarget = client:getNetVar("spectatingTarget")
+
+        if not returnPos then
+            client:notifyErrorLocalized("notSpectating")
+            return
+        end
+
+        -- Return the admin to their original position
+        client:UnSpectate()
+        client:GodDisable()
+        client:SetNoDraw(false)
+        client:SetNotSolid(false)
+
+        -- Restore position and angles
+        client:SetPos(returnPos)
+        client:SetEyeAngles(returnAng)
+
+        -- Clear spectate variables
+        client:setNetVar("spectateReturnPos", nil)
+        client:setNetVar("spectateReturnAng", nil)
+        client:setNetVar("spectatingTarget", nil)
+
+        client:notifySuccessLocalized("spectateStopped")
+        if spectatingTarget then
+            lia.log.add(client, "stopSpectate")
+        end
+    end,
+    alias = {"unspectate"}
+})
+
 lia.command.add("plyblindfade", {
     adminOnly = true,
     desc = "plyBlindFadeDesc",

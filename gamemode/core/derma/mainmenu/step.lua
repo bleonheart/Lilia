@@ -58,7 +58,7 @@ function PANEL:onSkip()
 end
 
 function PANEL:addLabel(text)
-    local lbl = self:Add("DLabel")
+    local lbl = self:Add("liaText")
     lbl:SetFont("liaCharButtonFont")
     lbl:SetText(L(text):upper())
     lbl:SizeToContents()
@@ -69,4 +69,4 @@ end
 function PANEL:onHide()
 end
 
-vgui.Register("liaCharacterCreateStep", PANEL, "DScrollPanel")
+vgui.Register("liaCharacterCreateStep", PANEL, "liaScrollPanel")

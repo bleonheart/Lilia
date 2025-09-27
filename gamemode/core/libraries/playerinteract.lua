@@ -240,7 +240,7 @@ else
         local padding = ScrW() * 0.15
         local xPos = ScrW() - frameW - padding
         local yPos = (ScrH() - frameH) / 2
-        local frame = vgui.Create("DFrame")
+        local frame = vgui.Create("liaFrame")
         frame:SetSize(frameW, frameH)
         frame:SetPos(xPos, yPos)
         frame:MakePopup()
@@ -267,7 +267,7 @@ else
 
         timer.Remove("InteractionMenu_Frame_Timer")
         timer.Create("InteractionMenu_Frame_Timer", 30, 1, function() if IsValid(frame) then frame:Close() end end)
-        local title = frame:Add("DLabel")
+        local title = frame:Add("liaText")
         title:SetPos(0, titleY)
         title:SetSize(frameW, titleH)
         title:SetText(titleText)
@@ -278,7 +278,7 @@ else
             surface.SetDrawColor(Color(60, 60, 60))
         end
 
-        local scroll = frame:Add("DScrollPanel")
+        local scroll = frame:Add("liaScrollPanel")
         scroll:SetPos(0, titleH + titleY + gap)
         scroll:SetSize(frameW, frameH - titleH - titleY - gap)
         local layout = vgui.Create("DListLayout", scroll)
@@ -291,7 +291,7 @@ else
         end
 
         for categoryName, categoryOptions in pairs(categorized) do
-            local categoryHeader = vgui.Create("DPanel", layout)
+            local categoryHeader = vgui.Create("liaBasePanel", layout)
             categoryHeader:SetTall(categoryH)
             categoryHeader:Dock(TOP)
             categoryHeader:DockMargin(15, 0, 15, 0)
@@ -305,7 +305,7 @@ else
                 draw.SimpleText(categoryName, "liaSmallFont", x, y, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
 
-            local collapseBtn = categoryHeader:Add("DButton")
+            local collapseBtn = categoryHeader:Add("liaButton")
             collapseBtn:SetSize(20, 20)
             collapseBtn:SetPos(10, (categoryH - 20) / 2)
             collapseBtn:SetText("")
@@ -335,7 +335,7 @@ else
 
             layout:Add(categoryHeader)
             for _, entry in pairs(categoryOptions) do
-                local btn = vgui.Create("DButton", layout)
+                local btn = vgui.Create("liaButton", layout)
                 btn:SetTall(entryH)
                 btn:Dock(TOP)
                 btn:DockMargin(15, 8, 15, 0)
@@ -380,7 +380,7 @@ else
                 table.insert(categoryContent, btn)
             end
 
-            local spacer = vgui.Create("DPanel", layout)
+            local spacer = vgui.Create("liaBasePanel", layout)
             spacer:SetTall(10)
             spacer:Dock(TOP)
             spacer:DockMargin(0, 0, 0, 0)

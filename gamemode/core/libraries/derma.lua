@@ -50,7 +50,7 @@ end
 function lia.derma.descEntry(parent, title, placeholder, offTitle)
     local entry, entry_bg
     if not offTitle and title then
-        local label = vgui.Create("DLabel", parent)
+        local label = vgui.Create("liaText", parent)
         label:Dock(TOP)
         label:DockMargin(4, 0, 4, 0)
         label:SetText(title)
@@ -109,7 +109,7 @@ end
 
 function lia.derma.slideBox(parent, label, minValue, maxValue, convar, decimals)
     if parent ~= nil and not IsValid(parent) then return end
-    local slider = vgui.Create("DButton", parent)
+    local slider = vgui.Create("liaButton", parent)
     slider:Dock(TOP)
     slider:DockMargin(0, 6, 0, 0)
     slider:SetTall(40)
@@ -276,7 +276,7 @@ function lia.derma.colorPicker(callback, defaultColor)
             end
         end
 
-        RNDX.DrawCircle(colorCursor.x, colorCursor.y, 6, Color(255, 255, 255, 200))
+        lia.rndx.DrawCircle(colorCursor.x, colorCursor.y, 6, Color(255, 255, 255, 200))
     end
 
     local hueSlider = vgui.Create("Panel", container)
@@ -390,7 +390,7 @@ function lia.derma.playerSelector(callback, validationFunc)
             local group = player:GetUserGroup() or "user"
             group = string.upper(string.sub(group, 1, 1)) .. string.sub(group, 2)
             draw.SimpleText(group, "Fated.14", 50, h - 6, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
-            draw.SimpleText(player:Ping() .. "ms", "Fated.16", w - 20, h - 6, lia.color.theme.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(player:Ping() .. " " .. L("player_ping"), "Fated.16", w - 20, h - 6, lia.color.theme.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
             local statusColor = team.GetColor(player:Team()) or Color(120, 180, 70)
             draw.RoundedBox(50, w - 30, 6, 24, 24, statusColor)
         end

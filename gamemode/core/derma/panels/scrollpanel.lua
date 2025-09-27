@@ -14,7 +14,7 @@ function PANEL:Init()
     self.vbar._press_off = 0
     self.vbar:Dock(RIGHT)
     self.vbar:DockMargin(6, 0, 0, 0)
-    self.vbar.Paint = function(_, w, h) RNDX.Rect(0, 0, w, h):Rad(32):Color(lia.color.focus_panel):Draw() end
+    self.vbar.Paint = function(_, w, h) lia.rndx.Rect(0, 0, w, h):Rad(32):Color(lia.color.focus_panel):Draw() end
     self.vbarHoverDelay = 1
     self.vbarUnhoverDelay = 0.5
     self.vbar._hoverEnter = 0
@@ -26,8 +26,8 @@ function PANEL:Init()
     self.vbar.btnGrip.Paint = function(s, w, h)
         s._ShadowLerp = Lerp(FrameTime() * 10, s._ShadowLerp, self.vbar.Dragging and 7 or 0)
         local currentTheme = lia.color.theme
-        RNDX.Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Shadow(s._ShadowLerp, 20):Draw()
-        RNDX.Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Shadow(s._ShadowLerp, 20):Draw()
+        lia.rndx.Rect(0, 0, w, h):Rad(32):Color(currentTheme.theme):Draw()
     end
 
     self.vbar.btnGrip.OnMousePressed = function(s)
@@ -431,9 +431,9 @@ function PANEL:GetHBar()
 end
 
 
-local DScrollPanel = vgui.GetControlTable("DScrollPanel")
-if DScrollPanel and not DScrollPanel.GetCanvas then
-    function DScrollPanel:GetCanvas()
+local liaScrollPanel = vgui.GetControlTable("liaScrollPanel")
+if liaScrollPanel and not liaScrollPanel.GetCanvas then
+    function liaScrollPanel:GetCanvas()
         
         
         if self.Canvas then

@@ -222,7 +222,7 @@ function PANEL:CreateHeader()
 
     self.header:Clear()
     self._headerButtons = {}
-    self.header.Paint = function(_, w, h) RNDX.Rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.theme.focus_panel):Shape(RNDX.SHAPE_IOS):Draw() end
+    self.header.Paint = function(_, w, h) lia.rndx.Rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.theme.focus_panel):Shape(lia.rndx.SHAPE_IOS):Draw() end
     self:UpdateColumnWidthTargets()
     local xPos = self.sidePadding + ((self._lastVBarVis and self.vbarLeftExtra) or 0)
     for i, column in ipairs(self.columns) do
@@ -292,7 +292,7 @@ function PANEL:CreateRow(rowIndex, rowData)
             r, g, b = hoverR, hoverG, hoverB
         end
 
-        RNDX.Rect(0, 0, w, math.max(0, h - 1)):Color(Color(math.floor(r), math.floor(g), math.floor(b), math.floor(a))):Shape(RNDX.SHAPE_IOS):Draw()
+        lia.rndx.Rect(0, 0, w, math.max(0, h - 1)):Color(Color(math.floor(r), math.floor(g), math.floor(b), math.floor(a))):Shape(lia.rndx.SHAPE_IOS):Draw()
     end
 
     row.DoClick = function()
@@ -318,7 +318,7 @@ function PANEL:CreateRow(rowIndex, rowData)
     local xPos = leftPad
     for i, column in ipairs(self.columns) do
         local w = math_floor(self._colWidthsCurrent[i] or self._colWidthsTarget[i] or column.width)
-        local label = vgui.Create("DLabel", row)
+        local label = vgui.Create("liaText", row)
         label:SetText(tostring(rowData[i]))
         label:SetFont(self.rowFont)
         label:SetTextColor(lia.color.theme.text)
@@ -419,7 +419,7 @@ function PANEL:RemoveRow(index)
 end
 
 function PANEL:Paint(w, h)
-    RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel_alpha[2]):Shape(RNDX.SHAPE_IOS):Draw()
+    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel_alpha[2]):Shape(lia.rndx.SHAPE_IOS):Draw()
 end
 
 function PANEL:RebuildHeader()

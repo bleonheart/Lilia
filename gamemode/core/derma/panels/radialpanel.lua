@@ -259,15 +259,15 @@ function PANEL:Paint(w, h)
     local alpha = math.Clamp(self.currentAlpha / 255, 0, 1)
     local opts = self:GetCurrentOptions()
     local cnt = #opts
-    if not self.disable_background then RNDX.Rect(0, 0, w, h):Radii(0, 0, 0, 0):Color(Color(0, 0, 0, 140 * alpha)):Draw() end
+    if not self.disable_background then lia.rndx.Rect(0, 0, w, h):Radii(0, 0, 0, 0):Color(Color(0, 0, 0, 140 * alpha)):Draw() end
     local outerR = self.radius * self.scaleAnim
     local innerR = self.innerRadius * self.scaleAnim
     local outerD = outerR * 2
     local innerD = innerR * 2
-    RNDX.Circle(cx, cy, outerD + 12):Color(lia.color.theme.window_shadow):Shadow(8, 24):Draw()
-    RNDX.Circle(cx, cy, outerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(240 * alpha))):Draw()
+    lia.rndx.Circle(cx, cy, outerD + 12):Color(lia.color.theme.window_shadow):Shadow(8, 24):Draw()
+    lia.rndx.Circle(cx, cy, outerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(240 * alpha))):Draw()
     local currentTheme = lia.color.theme
-    RNDX.Circle(cx, cy, outerD):Outline(2):Color(Color(currentTheme.accent.r, currentTheme.accent.g, currentTheme.accent.b, math_floor(160 * alpha))):Draw()
+    lia.rndx.Circle(cx, cy, outerD):Outline(2):Color(Color(currentTheme.accent.r, currentTheme.accent.g, currentTheme.accent.b, math_floor(160 * alpha))):Draw()
     if cnt > 0 then
         local sectorDeg = 360 / cnt
         local baseCol = lia.color.theme.background
@@ -278,8 +278,8 @@ function PANEL:Paint(w, h)
             if startDeg < 0 then startDeg = 0 end
             endDeg = ClampEndAngle(endDeg)
             if endDeg > startDeg then
-                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(baseSectorCol):Draw()
-                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(160 * alpha))):Draw()
+                lia.rndx.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(baseSectorCol):Draw()
+                lia.rndx.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(160 * alpha))):Draw()
             end
         end
 
@@ -292,15 +292,15 @@ function PANEL:Paint(w, h)
             if endDeg > startDeg then
                 local th = currentTheme.theme
                 local hoverAlpha = math_floor(200 * self.hoverAnim * alpha)
-                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(Color(th.r, th.g, th.b, math_floor(22 * self.hoverAnim * alpha))):Draw()
-                RNDX.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(th.r, th.g, th.b, hoverAlpha)):Draw()
+                lia.rndx.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Color(Color(th.r, th.g, th.b, math_floor(22 * self.hoverAnim * alpha))):Draw()
+                lia.rndx.Circle(cx, cy, outerD):StartAngle(startDeg):EndAngle(endDeg):Outline(2):Color(Color(th.r, th.g, th.b, hoverAlpha)):Draw()
             end
         end
 
-        RNDX.Circle(cx, cy, innerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(255 * alpha))):Draw()
+        lia.rndx.Circle(cx, cy, innerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(255 * alpha))):Draw()
         local tintA = math_floor(36 * alpha)
-        RNDX.Circle(cx, cy, innerD - 8):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, tintA)):Draw()
-        RNDX.Circle(cx, cy, innerD):Outline(2):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(80 * alpha))):Draw()
+        lia.rndx.Circle(cx, cy, innerD - 8):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, tintA)):Draw()
+        lia.rndx.Circle(cx, cy, innerD):Outline(2):Color(Color(currentTheme.theme.r, currentTheme.theme.g, currentTheme.theme.b, math_floor(80 * alpha))):Draw()
         local sectorRad = (2 * pi) / cnt
         for i, option in ipairs(opts) do
             local startA = (i - 1) * sectorRad
@@ -338,8 +338,8 @@ function PANEL:Paint(w, h)
             end
         end
     else
-        RNDX.Circle(cx, cy, outerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(240 * alpha))):Draw()
-        RNDX.Circle(cx, cy, innerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(255 * alpha))):Draw()
+        lia.rndx.Circle(cx, cy, outerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(240 * alpha))):Draw()
+        lia.rndx.Circle(cx, cy, innerD):Color(Color(lia.color.theme.background.r, lia.color.theme.background.g, lia.color.theme.background.b, math_floor(255 * alpha))):Draw()
     end
 
     if self.selectedOption then

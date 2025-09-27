@@ -453,7 +453,7 @@ net.Receive("liaRequestDropdown", function()
         net.SendToServer()
     end
 
-    local dropdown = vgui.Create("DComboBox", frame)
+    local dropdown = vgui.Create("liaComboBox", frame)
     dropdown:SetPos(15, 50)
     dropdown:SetSize(470, 30)
     dropdown:SetValue(L(subTitleKey))
@@ -516,7 +516,7 @@ net.Receive("liaStringRequest", function()
     label:SetText(subTitle)
     label:Dock(TOP)
     label:DockMargin(10, 30, 10, 5)
-    local entry = vgui.Create("DTextEntry", frame)
+    local entry = vgui.Create("liaEntry", frame)
     entry:Dock(FILL)
     entry:DockMargin(10, 5, 10, 40)
     entry:SetValue(default)
@@ -529,7 +529,7 @@ net.Receive("liaStringRequest", function()
         frame:Remove()
     end
 
-    local buttonPanel = vgui.Create("DPanel", frame)
+    local buttonPanel = vgui.Create("liaBasePanel", frame)
     buttonPanel:Dock(BOTTOM)
     buttonPanel:SetTall(35)
     buttonPanel:DockMargin(10, 5, 10, 5)
@@ -972,4 +972,19 @@ net.Receive("liaAssureClientSideAssets", function()
             print(L("assetDownloadProgress", activeDownloads, #downloadQueue, completedImages, totalImages, completedSounds, totalSounds))
         end
     end)
+end)
+
+net.Receive("liaLoadingFailure", function()
+    local reason = net.ReadString()
+    local details = net.ReadString()
+    local errorCount = net.ReadUInt(8)
+    if IsValid(lia.loadingFailurePanel) then lia.loadingFailurePanel:Remove() end
+    lia.loadingFailurePanel = vgui.Create("liaLoadingFailure")
+    lia.loadingFailurePanel:SetFailureInfo(reason, details)
+    for _ = 1, errorCount do
+        local errorMessage = net.ReadString()
+        local line = net.ReadString()
+        local file = net.ReadString()
+        lia.loadingFailurePanel:AddError(errorMessage, line, file)
+    end
 end)
