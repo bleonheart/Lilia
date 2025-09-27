@@ -34,7 +34,7 @@ end
 
 function ENT:setStock(itemType, value)
     if not lia.item.list[itemType] then
-        print("[Vendor] Warning: Cannot set stock for non-existent item '" .. itemType .. "'")
+        print(L("vendorWarningCannotSetStock", itemType))
         return
     end
 
@@ -166,7 +166,7 @@ end
 
 function ENT:setItemStock(itemType, value)
     if not lia.item.list[itemType] then
-        print("[Vendor] Warning: Cannot set stock for non-existent item '" .. itemType .. "'")
+        print(L("vendorWarningCannotSetStock", itemType))
         return
     end
 
