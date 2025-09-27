@@ -122,7 +122,7 @@ function PANEL:loadBackground()
                 self.background:SetKeyboardInputEnabled(false)
             end
 
-            self.bgLoader = self:Add("DPanel")
+            self.bgLoader = self:Add("liaBasePanel")
             self.bgLoader:SetSize(ScrW(), ScrH())
             self.bgLoader:SetZPos(-998)
             self.bgLoader.Paint = function(_, w, h)
@@ -474,11 +474,11 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.infoFrame:SetTitle("")
     self.infoFrame:SetDraggable(false)
     self.infoFrame:ShowCloseButton(false)
-    local scroll = vgui.Create("DScrollPanel", self.infoFrame)
+    local scroll = vgui.Create("liaScrollPanel", self.infoFrame)
     scroll:Dock(FILL)
     for i, text in ipairs(info) do
         if i == 1 then
-            local line = scroll:Add("DPanel")
+            local line = scroll:Add("liaBasePanel")
             line:Dock(TOP)
             line:DockMargin(10, 3, 10, 0)
             line:SetHeight(20)
@@ -510,7 +510,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local spacer = scroll:Add("DPanel")
+    local spacer = scroll:Add("liaBasePanel")
     spacer:Dock(TOP)
     spacer:SetTall(5)
     spacer.Paint = function() end
@@ -720,7 +720,7 @@ function PANEL:setFadeToBlack(fade)
     local d = deferred.new()
     if fade then
         if IsValid(self.fade) then self.fade:Remove() end
-        local p = vgui.Create("DPanel")
+        local p = vgui.Create("liaBasePanel")
         p:SetSize(ScrW(), ScrH())
         p:SetSkin("Default")
         p:SetBackgroundColor(color_black)

@@ -12,7 +12,7 @@ function PANEL:Init()
     self.invKey = lia.keybind.get(L("openInventory"), KEY_I)
     local baseBtnW, btnH, spacing = 150, 40, 20
     self.baseBtnW = baseBtnW
-    local topBar = self:Add("DPanel")
+    local topBar = self:Add("liaBasePanel")
     topBar:Dock(TOP)
     topBar:SetTall(70)
     topBar:DockPadding(30, 10, 30, 10)

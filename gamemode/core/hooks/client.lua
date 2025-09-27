@@ -538,47 +538,47 @@ concommand.Add("lia_open_derma_preview", function()
         return container
     end)
 
-    addPreview("DPanel", function()
-        local panel = scroll:Add("DPanel")
+    addPreview("liaBasePanel", function()
+        local panel = scroll:Add("liaBasePanel")
         panel:SetTall(50)
         return panel
     end)
 
-    addPreview("DButton", function()
-        local btn = scroll:Add("DButton")
+    addPreview("liaButton", function()
+        local btn = scroll:Add("liaButton")
         btn:SetText(L("demoButton"))
         return btn
     end)
 
-    addPreview("DLabel", function()
-        local lbl = scroll:Add("DLabel")
+    addPreview("liaText", function()
+        local lbl = scroll:Add("liaText")
         lbl:SetText(L("demoLabel"))
         lbl:SizeToContents()
         return lbl
     end)
 
-    addPreview("DTextEntry", function()
-        local txt = scroll:Add("DTextEntry")
+    addPreview("liaEntry", function()
+        local txt = scroll:Add("liaEntry")
         txt:SetText(L("demoTextEntry"))
         return txt
     end)
 
-    addPreview("DCheckBox", function()
-        local cb = scroll:Add("DCheckBox")
+    addPreview("liaCheckBox", function()
+        local cb = scroll:Add("liaCheckBox")
         cb:SetValue(true)
         return cb
     end)
 
-    addPreview("DComboBox", function()
-        local combo = scroll:Add("DComboBox")
+    addPreview("liaComboBox", function()
+        local combo = scroll:Add("liaComboBox")
         combo:AddChoice(L("optionWithNumber", 1))
         combo:AddChoice(L("optionWithNumber", 2))
         combo:ChooseOption(L("optionWithNumber", 1), 1)
         return combo
     end)
 
-    addPreview("DListView", function()
-        local listView = scroll:Add("DListView")
+    addPreview("liaDListView", function()
+        local listView = scroll:Add("liaDListView")
         listView:SetTall(120)
         listView:AddColumn(L("columnWithNumber", 1))
         listView:AddColumn(L("columnWithNumber", 2))
@@ -759,7 +759,7 @@ concommand.Add("lia_open_derma_panels", function()
             separator:Dock(TOP)
             separator:DockMargin(10, 15, 10, 15)
             separator:SetTall(2)
-            separator.Paint = function(self, w, h)
+            separator.Paint = function(_, w, h)
                 surface.SetDrawColor(255, 255, 255, 100)
                 surface.DrawRect(0, 0, w, h)
             end
@@ -848,7 +848,7 @@ concommand.Add("lia_open_derma_panels", function()
         lbl1:SizeToContents()
         local tab2 = vgui.Create("liaBasePanel")
         tab2:Dock(FILL)
-        local _, entry_bg = lia.derma.descEntry(tab2, nil, L("demoTabInput"))
+        local _ = lia.derma.descEntry(tab2, nil, L("demoTabInput"))
         tabs:AddTab("Tab 1", tab1)
         tabs:AddTab("Tab 2", tab2)
         return tabs

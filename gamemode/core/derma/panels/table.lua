@@ -123,38 +123,6 @@ function PANEL:AddItem(...)
     return #self.rows
 end
 
-local function getValueType(value)
-    if value == nil then return "nil" end
-    value = tostring(value)
-    return tonumber(value) and "number" or "string"
-end
-
-local function compareValues(a, b)
-    if a == nil and b == nil then return false end
-    if a == nil then return true end
-    if b == nil then return false end
-    local typeA = getValueType(a)
-    local typeB = getValueType(b)
-    if typeA ~= typeB then return typeA < typeB end
-    if typeA == "number" then
-        local numA = tonumber(a) or 0
-        local numB = tonumber(b) or 0
-        return numA > numB
-    else
-        local strA = tostring(a)
-        local strB = tostring(b)
-        return strA < strB
-    end
-end
-
-local function cloneRows(tbl)
-    local out = {}
-    for i, v in ipairs(tbl) do
-        out[i] = v
-    end
-    return out
-end
-
 function PANEL:SortByColumn(columnIndex)
     local column = self.columns[columnIndex]
     if not column or not column.sortable then return end

@@ -95,7 +95,7 @@ function lia.derma.panelTabs(parent)
     -- Store the original AddTab method
     local originalAddTab = tabs.AddTab
 
-    function tabs:AddTab(title, panel, icon, col, col_hov)
+    function tabs:AddTab(title, panel, icon, _, _)
         local newPanel = panel or vgui.Create("liaBasePanel")
         -- Call the original AddTab method, not self:AddTab
         originalAddTab(self, title, newPanel, icon)
@@ -127,7 +127,7 @@ function lia.derma.slideBox(parent, label, minValue, maxValue, convar, decimals)
     end
 
     UpdateSliderPosition(value)
-    slider.Paint = function(self, w, h)
+    slider.Paint = function(_, w, h)
         draw.RoundedBox(4, 0, h - 16, w, 6, lia.color.theme.panel_alpha[1])
         smoothPos = Lerp(FrameTime() * 10, smoothPos, targetPos)
         draw.RoundedBox(16, smoothPos, 18, 16, 16, lia.color.theme.accent)
@@ -230,7 +230,7 @@ function lia.derma.colorPicker(callback, defaultColor)
     preview:Dock(TOP)
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
-    preview.Paint = function(self, w, h) draw.RoundedBox(8, 2, 2, w - 4, h - 4, selectedColor) end
+    preview.Paint = function(_, w, h) draw.RoundedBox(8, 2, 2, w - 4, h - 4, selectedColor) end
     local colorField = vgui.Create("Panel", container)
     colorField:Dock(TOP)
     colorField:SetTall(200)
@@ -248,7 +248,7 @@ function lia.derma.colorPicker(callback, defaultColor)
         end
     end
 
-    colorField.OnMouseReleased = function(self, keyCode) if keyCode == MOUSE_LEFT then isDraggingColor = false end end
+    colorField.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingColor = false end end
     colorField.OnCursorMoved = function(self, x, y)
         if isDraggingColor then
             local w, h = self:GetSize()
@@ -262,7 +262,7 @@ function lia.derma.colorPicker(callback, defaultColor)
         end
     end
 
-    colorField.Paint = function(self, w, h)
+    colorField.Paint = function(_, w, h)
         local segments = 80
         local segmentSize = w / segments
         for x = 0, segments do
@@ -292,8 +292,8 @@ function lia.derma.colorPicker(callback, defaultColor)
         end
     end
 
-    hueSlider.OnMouseReleased = function(self, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
-    hueSlider.OnCursorMoved = function(self, x, y)
+    hueSlider.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
+    hueSlider.OnCursorMoved = function(self, x, _)
         if isDraggingHue then
             local w = self:GetWide()
             x = math.Clamp(x, 0, w)
@@ -303,7 +303,7 @@ function lia.derma.colorPicker(callback, defaultColor)
         end
     end
 
-    hueSlider.Paint = function(self, w, h)
+    hueSlider.Paint = function(_, w, h)
         local segments = 100
         local segmentWidth = w / segments
         for i = 0, segments - 1 do
@@ -379,7 +379,7 @@ function lia.derma.playerSelector(callback, validationFunc)
             frame:Remove()
         end
 
-        card.Paint = function(self, w, h)
+        card.Paint = function(_, w, h)
             draw.RoundedBox(6, 0, 0, w, h, lia.color.theme.panel_alpha[1])
             if not IsValid(player) then
                 draw.SimpleText(L("offlineStatus"), "Fated.18", 50, h * 0.5, Color(210, 65, 65), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)

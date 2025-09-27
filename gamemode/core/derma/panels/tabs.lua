@@ -24,7 +24,7 @@ function PANEL:Think()
     if math.abs(self.indicator_w - self.indicator_target_w) < 0.5 then self.indicator_w = self.indicator_target_w end
 end
 
-function PANEL:SetTabStyle(style)
+function PANEL:SetTabStyle(_)
     -- Always use modern style
     self.tab_style = "modern"
     self:Rebuild()
@@ -91,7 +91,7 @@ function PANEL:Rebuild()
 
         btnTab.DoRightClick = function()
             local dm = vgui.Create("liaDermaMenu")
-            for k, tabData in pairs(self.tabs) do
+            for k, _ in pairs(self.tabs) do
                 dm:AddOption(tab.name, function()
                     self.tabs[self.active_id].pan:SetVisible(false)
                     tab.pan:SetVisible(true)
@@ -139,7 +139,7 @@ function PANEL:Rebuild()
             end
         end
 
-        self.panel_tabs.Paint = function(s, w, h)
+        self.panel_tabs.Paint = function(_, _, h)
             if self.tab_style == 'modern' and self.indicator_w > 0 then
                 RNDX.Draw(0, self.indicator_x, h - self.indicator_height, self.indicator_w, self.indicator_height, lia.color.theme.accent)
             end
@@ -147,7 +147,7 @@ function PANEL:Rebuild()
     end
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(_, _)
     if self.tab_style == 'modern' then
         self.panel_tabs:Dock(TOP)
         self.panel_tabs:DockMargin(0, 0, 0, 4)
