@@ -144,7 +144,7 @@ function PANEL:Init(options)
     end
 end
 
-function PANEL:OnMousePressed(k)
+function PANEL:OnMousePressed(_)
     local mx, my = self:CursorPos()
     local cx, cy = ScrW() / 2, ScrH() / 2
     local curOuter = self.radius * self.scaleAnim
@@ -154,7 +154,7 @@ function PANEL:OnMousePressed(k)
     return true
 end
 
-function PANEL:OnMouseReleased(k)
+function PANEL:OnMouseReleased(_)
     self:MouseCapture(false)
 end
 

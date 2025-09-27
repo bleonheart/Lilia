@@ -14,7 +14,7 @@ function PANEL:Init()
     self.header:SetText("")
     self.header:SetTall(self.headerHeight)
     self.header.DoClick = function() self:Toggle() end
-    self.header.PaintOver = function(s, w, h) self:PaintHeader(w, h) end
+    self.header.PaintOver = function(_, w, h) self:PaintHeader(w, h) end
     self.content = vgui.Create("liaBasePanel", self)
     self.content:Dock(FILL)
     self.content:DockMargin(self.contentPadding, self.headerHeight + 5, self.contentPadding, self.contentPadding)
@@ -71,7 +71,7 @@ function PANEL:Paint(w, h)
     end
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(_, _)
     self.header:DockMargin(0, 0, 0, 5)
     self.header:SetTall(self.headerHeight)
     if self.expanded then
@@ -117,7 +117,7 @@ end
 function PANEL:AddItem(item)
     if isstring(item) then
         -- Create a label for string items
-        local label = vgui.Create("liaLabel", self.content)
+        local label = vgui.Create("DLabel", self.content)
         label:SetText(item)
         label:Dock(TOP)
         label:DockMargin(0, 0, 0, 5)

@@ -13,7 +13,7 @@ function PANEL:Init()
     preview:Dock(TOP)
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
-    preview.Paint = function(s, w, h)
+    preview.Paint = function(_, w, h)
         RNDX.Rect(2, 2, w - 4, h - 4):Rad(16):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
         RNDX.Rect(2, 2, w - 4, h - 4):Rad(16):Color(self.selected_color):Shape(RNDX.SHAPE_IOS):Draw()
     end
@@ -38,7 +38,7 @@ function PANEL:Init()
         end
     end
 
-    colorField.OnMouseReleased = function(s, keyCode) if keyCode == MOUSE_LEFT then isDraggingColor = false end end
+    colorField.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingColor = false end end
     colorField.OnCursorMoved = function(s, x, y)
         if isDraggingColor then
             local w, h = s:GetSize()
@@ -52,7 +52,7 @@ function PANEL:Init()
         end
     end
 
-    colorField.Paint = function(s, w, h)
+    colorField.Paint = function(_, w, h)
         local segments = 80
         local segmentSize = w / segments
         RNDX.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
@@ -85,8 +85,8 @@ function PANEL:Init()
         end
     end
 
-    hueSlider.OnMouseReleased = function(s, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
-    hueSlider.OnCursorMoved = function(s, x, y)
+    hueSlider.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
+    hueSlider.OnCursorMoved = function(s, x, _)
         if isDraggingHue then
             local w = s:GetWide()
             x = math.Clamp(x, 0, w)
@@ -96,7 +96,7 @@ function PANEL:Init()
         end
     end
 
-    hueSlider.Paint = function(s, w, h)
+    hueSlider.Paint = function(_, w, h)
         local segments = 100
         local segmentWidth = w / segments
         RNDX.Rect(0, 0, w, h):Color(lia.color.window_shadow):Shape(RNDX.SHAPE_IOS):Shadow(5, 20):Draw()
@@ -169,7 +169,7 @@ function PANEL:OnCallback(callback)
     self.callback = callback
 end
 
-function PANEL:Paint(w, h)
+function PANEL:Paint(_, _)
 end
 
 -- DColorMixer compatibility functions

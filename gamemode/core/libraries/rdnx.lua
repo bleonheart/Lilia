@@ -464,7 +464,7 @@ local RECT = {
     Clip = BASE_FUNCS.Clip,
     Shadow = BASE_FUNCS.Shadow,
     Flags = BASE_FUNCS.Flags,
-    Draw = function(self)
+    Draw = function(_)
         if START_ANGLE == END_ANGLE then
             return -- nothing to draw
         end
@@ -499,7 +499,7 @@ local RECT = {
         if CLIP_PANEL then render.SetScissorRect(0, 0, 0, 0, false) end
         if SHADOW_ENABLED or CLIP_PANEL then DisableClipping(OLD_CLIPPING_STATE) end
     end,
-    GetMaterial = function(self)
+    GetMaterial = function(_)
         if SHADOW_ENABLED or USING_BLUR then error("You can't get the material of a shadowed or blurred rectangle!") end
         if TEXTURE then
             MAT = ROUNDED_TEXTURE_MAT

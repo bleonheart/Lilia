@@ -97,7 +97,7 @@ function PANEL:SetConvar(convar)
     self.convar = convar
 end
 
-function PANEL:OnChange(new_value)
+function PANEL:OnChange(_)
 end
 
 -- CheckButton compatibility functions
@@ -122,7 +122,7 @@ function PANEL:Paint(w, h)
     draw.SimpleText(self.text, 'Fated.18', textX, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
-function PANEL:PaintOver(w, h)
+function PANEL:PaintOver(_, _)
     local tw, th = self.toggle:GetWide(), self.toggle:GetTall()
     local tx, ty = self.toggle:GetPos()
     local ft = FrameTime()
@@ -154,7 +154,7 @@ function PANEL:PaintOver(w, h)
     RNDX.DrawCircle(circleCenterX, circleCenterY + 2, circleSize * 1.05, lia.color.theme.window_shadow)
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(_, _)
     self.toggle:SetWide(48)
     self.toggle:DockMargin(0, 0, 14, 0)
 end

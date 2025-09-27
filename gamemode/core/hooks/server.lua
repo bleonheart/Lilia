@@ -1228,7 +1228,7 @@ concommand.Add("lia_wipecharacters", function(client)
         end
 
         lia.db.query("DELETE FROM lia_chardata", function()
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character data wiped...\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("characterDataWiped") .. "\n")
             lia.db.query("SELECT invID FROM lia_inventories WHERE charID IS NOT NULL", function(invData)
                 if invData and #invData > 0 then
                     local invIDs = {}
@@ -1239,11 +1239,11 @@ concommand.Add("lia_wipecharacters", function(client)
                     if #invIDs > 0 then
                         local invIDList = table.concat(invIDs, ",")
                         lia.db.query("DELETE FROM lia_invdata WHERE invID IN (" .. invIDList .. ")", function()
-                            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Inventory data wiped...\n")
+                            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("inventoryDataWiped") .. "\n")
                             lia.db.query("DELETE FROM lia_items WHERE invID IN (" .. invIDList .. ")", function()
-                                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character items wiped...\n")
+                                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("characterItemsWiped") .. "\n")
                                 lia.db.query("DELETE FROM lia_inventories WHERE charID IS NOT NULL", function()
-                                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Character inventories wiped...\n")
+                                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("characterInventoriesWiped") .. "\n")
                                     lia.db.query("DELETE FROM lia_characters", function()
                                         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " All characters and related data have been wiped!\n")
                                         game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
@@ -1531,7 +1531,7 @@ concommand.Add("test_all_notifications", function()
         end)
     end
 
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Notification demonstration completed!\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("notificationDemoCompleted") .. "\n")
 end)
 
 concommand.Add("lia_redownload_assets", function(client)
@@ -1540,7 +1540,7 @@ concommand.Add("lia_redownload_assets", function(client)
         return
     end
 
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Starting asset redownload for all connected players...\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("startingAssetRedownload") .. "\n")
     local playerCount = 0
     for _, ply in player.Iterator() do
         if IsValid(ply) then
@@ -1551,9 +1551,9 @@ concommand.Add("lia_redownload_assets", function(client)
     end
 
     if playerCount > 0 then
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Asset redownload initiated for " .. playerCount .. " player(s). Check client consoles for progress.\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("assetRedownloadInitiated", playerCount) .. "\n")
     else
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "No players connected to redownload assets for.\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), L("noPlayersForRedownload") .. "\n")
     end
 end)
 
@@ -1563,7 +1563,7 @@ concommand.Add("test_existing_notifications", function(client)
         return
     end
 
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Testing existing notification methods...\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("testingNotificationMethods") .. "\n")
     for _, ply in player.Iterator() do
         if IsValid(ply) then
             ply:notifyError(L("testNotificationError"))
@@ -1585,7 +1585,7 @@ concommand.Add("print_vector", function(client)
     local pos = client:GetPos()
     local vectorString = string.format("Vector(%g, %g, %g)", pos.x, pos.y, pos.z)
     client:notify(string.format("Your position: %s", vectorString))
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Player " .. client:Name() .. " position: " .. vectorString .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("playerPositionInfo", client:Name(), vectorString) .. "\n")
 end)
 
 concommand.Add("print_angle", function(client)
@@ -1597,5 +1597,5 @@ concommand.Add("print_angle", function(client)
     local ang = client:GetAngles()
     local angleString = string.format("Angle(%g, %g, %g)", ang.p, ang.y, ang.r)
     client:notify(string.format("Your angles: %s", angleString))
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Player " .. client:Name() .. " angles: " .. angleString .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("playerAnglesInfo", client:Name(), angleString) .. "\n")
 end)

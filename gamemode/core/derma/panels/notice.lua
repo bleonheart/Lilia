@@ -124,7 +124,7 @@ function PANEL:Init()
     self.padding = 80
     self:SetSize(400, 60)
     self:SetContentAlignment(5)
-    self.text = self:Add("liaLabel")
+    self.text = self:Add("DLabel")
     self.text:SetText(L("unassigned"))
     self.text:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     self.text:SetFont("liaMediumFont")

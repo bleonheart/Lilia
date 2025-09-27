@@ -79,7 +79,7 @@ function PANEL:Init()
     else
         self.listView:AddColumn("Item Name")
         self.listView:AddColumn("Value")
-        self.listView:AddColumn("Quantity")
+        self.listView:AddColumn(L("quantityColumn"))
     end
 
     self.actionButton = self:Add("liaButton")

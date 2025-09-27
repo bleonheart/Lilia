@@ -144,7 +144,7 @@ function PANEL:GetSelectedPlayer()
     return self.selectedPlayer
 end
 
-function PANEL:Paint(w, h)
+function PANEL:Paint(_, _)
     -- Background handled by liaFrame
 end
 

@@ -190,7 +190,7 @@ local function GetPlayerInfo(ply)
 end
 
 local function GetAdminInfo(admin)
-    if not IsValid(admin) then return "Console" end
+    if not IsValid(admin) then return L("consoleAdmin") end
     return string.format("%s (%s)", admin:Nick(), admin:SteamID64())
 end
 

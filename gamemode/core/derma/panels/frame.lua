@@ -26,7 +26,7 @@ function PANEL:Init()
         end
     end
 
-    self.top_panel.Think = function(s)
+    self.top_panel.Think = function(_)
         if self.Dragging then
             local mouseX, mouseY = gui.MousePos()
             local newPosX, newPosY = mouseX - self.Dragging[1], mouseY - self.Dragging[2]
@@ -131,7 +131,7 @@ function PANEL:Paint(w, h)
     end
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(w, _)
     self.top_panel:SetSize(w, 24)
     self.cls:SetSize(20, 20)
     self.cls:SetPos(w - 22, 2)
@@ -201,7 +201,7 @@ function PANEL:SetBackgroundBlur(blur)
     self.bool_alpha = blur
 end
 
-function PANEL:SetDeleteOnClose(shouldDelete)
+function PANEL:SetDeleteOnClose(_)
     -- liaFrame always deletes on close, this is just for compatibility
 end
 

@@ -77,13 +77,13 @@ function PANEL:AddTextRow(data)
     local row = self:AddRow(function(p, row)
         local titleFont = compact and "liaSmallFont" or "liaMediumFont"
         local descFont = compact and "liaMiniFont" or "liaSmallFont"
-        local t = vgui.Create("liaLabel", p)
+        local t = vgui.Create("DLabel", p)
         t:SetFont(titleFont)
         t:SetText(title)
         t:SizeToContents()
         local d
         if desc ~= "" then
-            d = vgui.Create("liaLabel", p)
+            d = vgui.Create("DLabel", p)
             d:SetFont(descFont)
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
@@ -92,7 +92,7 @@ function PANEL:AddTextRow(data)
 
         local r
         if right ~= "" then
-            r = vgui.Create("liaLabel", p)
+            r = vgui.Create("DLabel", p)
             r:SetFont(descFont)
             r:SetText(right)
             r:SizeToContents()
@@ -170,13 +170,13 @@ function PANEL:AddPreviewRow(data)
         html:SetSize(size, size)
         if url ~= "" then html:OpenURL(url) end
         html:SetMouseInputEnabled(false)
-        local t = vgui.Create("liaLabel", p)
+        local t = vgui.Create("DLabel", p)
         t:SetFont("liaMediumFont")
         t:SetText(title)
         t:SizeToContents()
         local d
         if desc ~= "" then
-            d = vgui.Create("liaLabel", p)
+            d = vgui.Create("DLabel", p)
             d:SetFont("liaSmallFont")
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
@@ -185,7 +185,7 @@ function PANEL:AddPreviewRow(data)
 
         local r
         if right ~= "" then
-            r = vgui.Create("liaLabel", p)
+            r = vgui.Create("DLabel", p)
             r:SetFont("liaSmallFont")
             r:SetText(right)
             r:SizeToContents()

@@ -318,7 +318,7 @@ function PANEL:CreateRow(rowIndex, rowData)
     local xPos = leftPad
     for i, column in ipairs(self.columns) do
         local w = math_floor(self._colWidthsCurrent[i] or self._colWidthsTarget[i] or column.width)
-        local label = vgui.Create("liaLabel", row)
+        local label = vgui.Create("DLabel", row)
         label:SetText(tostring(rowData[i]))
         label:SetFont(self.rowFont)
         label:SetTextColor(lia.color.theme.text)

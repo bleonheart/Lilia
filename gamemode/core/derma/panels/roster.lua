@@ -56,18 +56,18 @@ function PANEL:Populate(data, canKick)
                 logo:SetSize(logoSize, logoSize)
                 logo:SetMaterial(Material(classData.logo))
                 logo:SetPos(margin, margin)
-                local t = vgui.Create("liaLabel", p)
+                local t = vgui.Create("DLabel", p)
                 t:SetFont("liaMediumFont")
                 t:SetText(title)
                 t:SizeToContents()
                 t:SetPos(margin + logoSize + margin, margin)
-                local d = vgui.Create("liaLabel", p)
+                local d = vgui.Create("DLabel", p)
                 d:SetFont("liaSmallFont")
                 d:SetWrap(true)
                 d:SetAutoStretchVertical(true)
                 d:SetText(desc)
                 d:SetPos(margin + logoSize + margin, margin + t:GetTall() + 5)
-                local r = vgui.Create("liaLabel", p)
+                local r = vgui.Create("DLabel", p)
                 r:SetFont("liaSmallFont")
                 r:SetText(right)
                 r:SizeToContents()
@@ -145,7 +145,10 @@ end
 function PANEL:AddColumn(name, width)
     -- liaRoster doesn't use columns in the same way, but we can store for compatibility
     if not self.columns then self.columns = {} end
-    table.insert(self.columns, {name = name, width = width or 100})
+    table.insert(self.columns, {
+        name = name,
+        width = width or 100
+    })
 end
 
 function PANEL:AddLine(...)

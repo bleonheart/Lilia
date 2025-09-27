@@ -69,7 +69,7 @@ function lia.db.wipeTables(callback)
     local wipedTables = {}
     local function realCallback()
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("dataWiped") .. "\n")
-        if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Wiped tables: " .. table.concat(wipedTables, ", ") .. "\n") end
+        if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), L("wipedTablesInfo", table.concat(wipedTables, ", ")) .. "\n") end
         if isfunction(callback) then callback() end
     end
 
@@ -326,7 +326,7 @@ end
 
 function lia.db.convertDataType(value, noEscape)
     if value == nil then
-        return "NULL"
+        return L("nullValue")
     elseif isstring(value) then
         if noEscape then
             return value
@@ -342,7 +342,7 @@ function lia.db.convertDataType(value, noEscape)
     elseif isbool(value) then
         return value and 1 or 0
     elseif value == NULL then
-        return "NULL"
+        return L("nullValue")
     end
     return value
 end
@@ -922,14 +922,14 @@ concommand.Add("lia_snapshot_load", function(_, _, args)
 end)
 
 concommand.Add("lia_add_door_group_column", function()
-    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Adding door_group column to lia_doors table...\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("addingDoorGroupColumn") .. "\n")
     lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
         if not exists then
-            lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "Successfully added door_group column to lia_doors table\n") end):catch(function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), "Failed to add door_group column: " .. tostring(err) .. "\n") end)
+            lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("doorGroupColumnAdded") .. "\n") end):catch(function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), L("doorGroupColumnFailed", tostring(err)) .. "\n") end)
         else
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "door_group column already exists in lia_doors table\n")
         end
-    end):catch(function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), "Failed to check for door_group column: " .. tostring(err) .. "\n") end)
+    end):catch(function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), L("doorGroupColumnCheckFailed", tostring(err)) .. "\n") end)
 end)
 
 function GM:RegisterPreparedStatements()
