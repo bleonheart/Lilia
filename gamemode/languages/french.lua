@@ -22,6 +22,7 @@ LANGUAGE = {
     storagelockDesc = "Verrouillez ou dverrouillez le conteneur de stockage que vous regardez. Fournissez un mot de passe pour verrouiller, ou excutez sans mot de passe pour le retirer.",
     trunkOpenDesc = "Ouvrez le coffre du vhicule que vous regardez pour accder  son inventaire.",
     ok = "ok",
+    accept = "Accepter",
     renameSitroomTitle = "Renommer la salle d'administration",
     teleport = "Tlporter",
     reposition = "Repositionner",

@@ -11,7 +11,7 @@ function PANEL:Init()
     if self.ShowAnimation then self:ShowAnimation() end
 
     -- Create content panel
-    local contentPanel = vgui.Create("Panel", self)
+    local contentPanel = vgui.Create("liaBasePanel", self)
     contentPanel:Dock(FILL)
     contentPanel:DockMargin(8, 0, 8, 8)
 
@@ -52,7 +52,7 @@ function PANEL:PopulatePlayers()
 end
 
 function PANEL:CreatePlayerCard(ply, CARD_HEIGHT, AVATAR_SIZE, AVATAR_X, color_disconnect, color_bot, color_online)
-    local card = vgui.Create("DButton", self.scrollPanel)
+    local card = vgui.Create("liaButton", self.scrollPanel)
     card:Dock(TOP)
     card:DockMargin(0, 5, 0, 0)
     card:SetTall(CARD_HEIGHT)

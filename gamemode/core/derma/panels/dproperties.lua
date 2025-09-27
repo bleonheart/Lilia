@@ -165,7 +165,7 @@ local tblCategory = vgui.RegisterTable({
             self:InvalidateLayout()
         end
 
-        self.Container = self:Add("Panel")
+        self.Container = self:Add("liaBasePanel")
         self.Container:Dock(TOP)
         self.Container:DockMargin(16, 0, 0, 0)
         self.Container.Paint = function(_, w, h)

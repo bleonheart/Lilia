@@ -1183,7 +1183,7 @@ else
         local _, hfh = surface.GetTextSize("W")
         local headerH = math.max(hfh + 18, 36)
         for _, cat in ipairs(ordered) do
-            local wrap = vgui.Create("DPanel")
+            local wrap = vgui.Create("liaBasePanel")
             wrap.Paint = function(pnl, w, h) derma.SkinHook("Paint", "InnerPanel", pnl, w, h) end
             local list = vgui.Create("DListLayout", wrap)
             list:Dock(TOP)

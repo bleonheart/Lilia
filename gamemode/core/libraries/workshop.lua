@@ -118,13 +118,13 @@ else
         local tw, th = surface.GetTextSize(L("downloadingWorkshopAddonsTitle"))
         local pad, bh = 10, 20
         local w, h = math.max(tw, 200) + pad * 2, th + bh + pad * 3
-        panel = vgui.Create("DPanel")
+        panel = vgui.Create("liaBasePanel")
         panel:SetSize(w, h)
         panel:SetPos((ScrW() - w) / 2, ScrH() * 0.1)
         panel:SetZPos(10000)
         panel:MoveToFront()
         derma.SkinHook("Paint", "Panel", panel, w, h)
-        local lbl = vgui.Create("DLabel", panel)
+        local lbl = vgui.Create("liaLabel", panel)
         lbl:SetFont("DermaLarge")
         lbl:SetText(L("downloadingWorkshopAddonsTitle"))
         lbl:SizeToContents()
@@ -214,7 +214,21 @@ else
         start()
     end)
 
-    net.Receive("liaWorkshopDownloaderInfo", function() refresh(net.ReadTable()) end)
+    net.Receive("liaWorkshopDownloaderInfo", function()
+        refresh(net.ReadTable())
+        hook.Run("liaWorkshopInfoReceived")
+    end)
+
+    -- Auto-mount content when client receives workshop info
+    hook.Add("liaWorkshopInfoReceived", "liaAutoMountContent", function()
+        if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
+            timer.Simple(0.5, function()
+                if lia.workshop and lia.workshop.mountContent then
+                    lia.workshop.mountContent()
+                end
+            end)
+        end
+    end)
     function lia.workshop.mountContent()
         local ids = lia.workshop.serverIds or {}
         local needed = {}
@@ -227,19 +241,9 @@ else
             return
         end
 
-        local pending, totalSize = #needed, 0
-        for _, id in ipairs(needed) do
-            steamworks.FileInfo(id, function(fi)
-                if fi and fi.size then totalSize = totalSize + fi.size end
-                pending = pending - 1
-                if pending <= 0 then
-                    Derma_Query(L("workshopConfirmMount", formatSize(totalSize)), L("workshopDownloader"), L("yes"), function()
-                        net.Start("liaWorkshopDownloaderRequest")
-                        net.SendToServer()
-                    end, L("no"))
-                end
-            end)
-        end
+        -- Auto-mount content without user confirmation
+        net.Start("liaWorkshopDownloaderRequest")
+        net.SendToServer()
     end
 
     concommand.Add("workshop_force_redownload", function()

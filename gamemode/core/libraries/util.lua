@@ -613,7 +613,7 @@ else
         end
     end
 
-    function lia.util.ClampMenuPosition(panel)
+    function lia.util.clampMenuPosition(panel)
         if not IsValid(panel) then return end
         local x, y = panel:GetPos()
         local w, h = panel:GetSize()
@@ -633,15 +633,11 @@ else
         panel:SetPos(x, y)
     end
 
-    -- Screen scaling functions are already available globally as ScreenScale() and ScreenScaleH()
-    -- These replace Mantle.func.w() and Mantle.func.h() respectively
-    -- Usage: ScreenScale(100) for width, ScreenScaleH(100) for height
-
     function lia.util.requestArguments(title, argTypes, onSubmit, defaults)
         defaults = defaults or {}
         local count = table.Count(argTypes)
         local frameW, frameH = 600, 200 + count * 75
-        local frame = vgui.Create("DFrame")
+        local frame = vgui.Create("liaFrame")
         frame:SetTitle("")
         frame:SetSize(frameW, frameH)
         frame:Center()
@@ -652,7 +648,7 @@ else
             draw.SimpleText(title or "", "liaMediumFont", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
         end
 
-        local scroll = vgui.Create("DScrollPanel", frame)
+        local scroll = vgui.Create("liaScrollPanel", frame)
         scroll:Dock(FILL)
         scroll:DockMargin(10, 40, 10, 10)
         surface.SetFont("liaSmallFont")
@@ -701,12 +697,12 @@ else
 
         for _, info in ipairs(ordered) do
             local name, fieldType, dataTbl, defaultVal = info.name, info.fieldType, info.dataTbl, info.defaultVal
-            local panel = vgui.Create("DPanel", scroll)
+            local panel = vgui.Create("liaBasePanel", scroll)
             panel:Dock(TOP)
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = nil
-            local label = vgui.Create("DLabel", panel)
+            local label = vgui.Create("liaLabel", panel)
             label:SetFont("liaSmallFont")
             label:SetText(name)
             label:SizeToContents()
@@ -733,12 +729,12 @@ else
 
                 if defaultChoiceIndex then ctrl:ChooseOptionID(defaultChoiceIndex) end
             elseif fieldType == "int" or fieldType == "number" then
-                ctrl = vgui.Create("DTextEntry", panel)
+                ctrl = vgui.Create("liaEntry", panel)
                 ctrl:SetFont("liaSmallFont")
                 if ctrl.SetNumeric then ctrl:SetNumeric(true) end
                 if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
             else
-                ctrl = vgui.Create("DTextEntry", panel)
+                ctrl = vgui.Create("liaEntry", panel)
                 ctrl:SetFont("liaSmallFont")
                 if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
             end
@@ -772,12 +768,12 @@ else
             end
         end
 
-        local btnPanel = vgui.Create("DPanel", frame)
+        local btnPanel = vgui.Create("liaBasePanel", frame)
         btnPanel:Dock(BOTTOM)
         btnPanel:SetTall(90)
         btnPanel:DockPadding(15, 15, 15, 15)
         btnPanel.Paint = nil
-        local submit = vgui.Create("DButton", btnPanel)
+        local submit = vgui.Create("liaButton", btnPanel)
         submit:Dock(LEFT)
         submit:DockMargin(0, 0, 15, 0)
         submit:SetWide(270)
@@ -785,7 +781,7 @@ else
         submit:SetFont("liaSmallFont")
         submit:SetIcon("icon16/tick.png")
         submit:SetEnabled(false)
-        local cancel = vgui.Create("DButton", btnPanel)
+        local cancel = vgui.Create("liaButton", btnPanel)
         cancel:Dock(RIGHT)
         cancel:SetWide(270)
         cancel:SetText(L("cancel"))
@@ -897,24 +893,24 @@ else
                 menu:AddOption(option.name and L(option.name) or option.name, function()
                     if not option.net then return end
                     if option.ExtraFields then
-                        local inputPanel = vgui.Create("DFrame")
+                        local inputPanel = vgui.Create("liaFrame")
                         inputPanel:SetTitle(L("optionsTitle", option.name))
                         inputPanel:SetSize(300, 300 + #table.GetKeys(option.ExtraFields) * 35)
                         inputPanel:Center()
                         inputPanel:MakePopup()
-                        local form = vgui.Create("DForm", inputPanel)
+                        local form = vgui.Create("liaBasePanel", inputPanel)
                         form:Dock(FILL)
                         form:SetLabel("")
                         form.Paint = function() end
                         local inputs = {}
                         for fName, fType in pairs(option.ExtraFields) do
-                            local label = vgui.Create("DLabel", form)
+                            local label = vgui.Create("liaLabel", form)
                             label:SetText(fName)
                             label:Dock(TOP)
                             label:DockMargin(5, 10, 5, 0)
                             form:AddItem(label)
                             if isstring(fType) and fType == "text" then
-                                local entry = vgui.Create("DTextEntry", form)
+                                local entry = vgui.Create("liaEntry", form)
                                 entry:Dock(TOP)
                                 entry:DockMargin(5, 5, 5, 0)
                                 entry:SetPlaceholderText(L("typeFieldPrompt", fName))
@@ -950,7 +946,7 @@ else
                             end
                         end
 
-                        local submitButton = vgui.Create("DButton", form)
+                        local submitButton = vgui.Create("liaButton", form)
                         submitButton:SetText(L("submit"))
                         submitButton:Dock(TOP)
                         submitButton:DockMargin(5, 10, 5, 0)
@@ -1017,7 +1013,7 @@ else
         if #entries == 0 then return end
         local frameW, entryH = 300, 30
         local frameH = entryH * #entries + 50
-        local frame = vgui.Create("DFrame")
+        local frame = vgui.Create("liaFrame")
         frame:SetSize(frameW, frameH)
         frame:Center()
         frame:MakePopup()
@@ -1083,7 +1079,7 @@ else
         local AVATAR_SIZE = 32
         local AVATAR_X = 14
         local function CreatePlayerCard(pl)
-            local card = vgui.Create("DButton", menu_player_selectorsp)
+            local card = vgui.Create("liaButton", menu_player_selectorsp)
             card:Dock(TOP)
             card:DockMargin(0, 5, 0, 0)
             card:SetTall(CARD_HEIGHT)

@@ -35,7 +35,6 @@ function BlurredDFrame:Init()
 end
 
 function BlurredDFrame:PerformLayout()
-    DFrame.PerformLayout(self)
     if IsValid(self.btnClose) then self.btnClose:SetZPos(1000) end
 end
 
@@ -43,7 +42,7 @@ function BlurredDFrame:Paint(w, h)
     PaintFrame(self, w, h)
 end
 
-vgui.Register("BlurredDFrame", BlurredDFrame, "DFrame")
+vgui.Register("BlurredDFrame", BlurredDFrame, "liaFrame")
 local TransparentDFrame = {}
 function TransparentDFrame:Init()
     self:SetTitle("")
@@ -53,7 +52,6 @@ function TransparentDFrame:Init()
 end
 
 function TransparentDFrame:PerformLayout()
-    DFrame.PerformLayout(self)
     if IsValid(self.btnClose) then self.btnClose:SetZPos(1000) end
 end
 
@@ -61,13 +59,20 @@ function TransparentDFrame:Paint(w, h)
     PaintPanel(self, w, h)
 end
 
-vgui.Register("SemiTransparentDFrame", TransparentDFrame, "DFrame")
+vgui.Register("SemiTransparentDFrame", TransparentDFrame, "liaFrame")
 local SimplePanel = {}
 function SimplePanel:Paint(w, h)
     PaintPanel(self, w, h)
 end
 
-vgui.Register("SemiTransparentDPanel", SimplePanel, "DPanel")
+vgui.Register("SemiTransparentDPanel", SimplePanel, "liaBasePanel")
+-- Custom base panel that sets empty text by default to prevent "Label" from appearing
+local LiaBasePanel = {}
+function LiaBasePanel:Init()
+    if self.SetText then self:SetText("") end
+end
+
+vgui.Register("liaBasePanel", LiaBasePanel, "DPanel")
 timer.Create("derma_convar_fix", 0.5, 0, function()
     if len == 0 then return end
     local name

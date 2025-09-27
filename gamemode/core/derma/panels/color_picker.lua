@@ -10,7 +10,7 @@ function PANEL:Init()
     self.value = 1
     self.callback = nil
     self:DockPadding(10, 10, 10, 10)
-    local preview = vgui.Create("Panel", self)
+    local preview = vgui.Create("liaBasePanel", self)
     preview:Dock(TOP)
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
@@ -20,7 +20,7 @@ function PANEL:Init()
     end
 
     self.preview = preview
-    local colorField = vgui.Create("Panel", self)
+    local colorField = vgui.Create("liaBasePanel", self)
     colorField:Dock(TOP)
     colorField:SetTall(200)
     colorField:DockMargin(0, 0, 0, 10)
@@ -71,7 +71,7 @@ function PANEL:Init()
         RNDX.Circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
     end
 
-    local hueSlider = vgui.Create("Panel", self)
+    local hueSlider = vgui.Create("liaBasePanel", self)
     hueSlider:Dock(TOP)
     hueSlider:SetTall(20)
     hueSlider:DockMargin(0, 0, 0, 10)
@@ -111,7 +111,7 @@ function PANEL:Init()
         RNDX.Rect(huePos - 2, 0, 4, h):Color(color_target):Draw()
     end
 
-    local btnContainer = vgui.Create("Panel", self)
+    local btnContainer = vgui.Create("liaBasePanel", self)
     btnContainer:Dock(BOTTOM)
     btnContainer:SetTall(30)
     btnContainer.Paint = nil

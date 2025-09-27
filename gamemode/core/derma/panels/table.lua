@@ -21,13 +21,13 @@ function PANEL:Init()
     self.sidePadding = 12
     self.vbarRightPadding = 6
     self.vbarLeftExtra = 0
-    self.header = vgui.Create("Panel", self)
+    self.header = vgui.Create("liaBasePanel", self)
     self.header:Dock(TOP)
     self.header:SetTall(self.headerHeight)
     self.scrollPanel = vgui.Create("liaScrollPanel", self)
     self.scrollPanel:Dock(FILL)
     self.scrollPanel:DisableVBarPadding()
-    self.content = vgui.Create("Panel", self.scrollPanel)
+    self.content = vgui.Create("liaBasePanel", self.scrollPanel)
     self.content:Dock(TOP)
     self.content.Paint = nil
     self._rowPanels = {}
@@ -255,12 +255,12 @@ function PANEL:CreateHeader()
 
     self.header:Clear()
     self._headerButtons = {}
-    self.header.Paint = function(_, w, h) RNDX.Rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.focus_panel):Shape(RNDX.SHAPE_IOS):Draw() end
+    self.header.Paint = function(_, w, h) RNDX.Rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.theme.focus_panel):Shape(RNDX.SHAPE_IOS):Draw() end
     self:UpdateColumnWidthTargets()
     local xPos = self.sidePadding + ((self._lastVBarVis and self.vbarLeftExtra) or 0)
     for i, column in ipairs(self.columns) do
         local w = math_floor(self._colWidthsCurrent[i] or self._colWidthsTarget[i] or column.width)
-        local label = vgui.Create("DButton", self.header)
+        local label = vgui.Create("liaButton", self.header)
         label:SetText('')
         label:SetSize(w, self.headerHeight)
         label:SetPos(xPos, 0)
@@ -294,7 +294,7 @@ function PANEL:CreateHeader()
 end
 
 function PANEL:CreateRow(rowIndex, rowData)
-    local row = vgui.Create("DButton", self.content)
+    local row = vgui.Create("liaButton", self.content)
     row:Dock(TOP)
     row:DockMargin(0, 0, 0, 1)
     row:SetTall(self.rowHeight)
@@ -309,8 +309,8 @@ function PANEL:CreateRow(rowIndex, rowData)
         s._hoverAlpha = lia.util.approachExp(s._hoverAlpha, hoverTarget, 18, dt)
         local selTarget = (self.selectedRow == s._index) and 1 or 0
         s._selectedAlpha = lia.util.approachExp(s._selectedAlpha, selTarget, 22, dt)
-        local base = lia.color.panel_alpha[1]
-        local hoverCol = lia.color.hover
+        local base = lia.color.theme.panel_alpha[1]
+        local hoverCol = lia.color.theme.hover
         local selCol = lia.color.theme.accent
         local mixHover = s._hoverAlpha * (1 - s._selectedAlpha)
         local blendA = s._selectedAlpha * 0.9 + mixHover * 0.35
@@ -351,7 +351,7 @@ function PANEL:CreateRow(rowIndex, rowData)
     local xPos = leftPad
     for i, column in ipairs(self.columns) do
         local w = math_floor(self._colWidthsCurrent[i] or self._colWidthsTarget[i] or column.width)
-        local label = vgui.Create("DLabel", row)
+        local label = vgui.Create("liaLabel", row)
         label:SetText(tostring(rowData[i]))
         label:SetFont(self.rowFont)
         label:SetTextColor(lia.color.theme.text)
@@ -452,7 +452,7 @@ function PANEL:RemoveRow(index)
 end
 
 function PANEL:Paint(w, h)
-    RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.panel_alpha[2]):Shape(RNDX.SHAPE_IOS):Draw()
+    RNDX.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel_alpha[2]):Shape(RNDX.SHAPE_IOS):Draw()
 end
 
 function PANEL:RebuildHeader()

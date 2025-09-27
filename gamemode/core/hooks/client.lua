@@ -504,16 +504,16 @@ end)
 local dermaPreviewFrame
 concommand.Add("lia_open_derma_preview", function()
     if IsValid(dermaPreviewFrame) then dermaPreviewFrame:Remove() end
-    local frame = vgui.Create("DFrame")
+    local frame = vgui.Create("liaFrame")
     frame:SetTitle(L("dermaPreviewTitle"))
     frame:SetSize(ScrW() * 0.8, ScrH() * 0.8)
     frame:Center()
     frame:MakePopup()
     dermaPreviewFrame = frame
-    local scroll = vgui.Create("DScrollPanel", frame)
+    local scroll = vgui.Create("liaScrollPanel", frame)
     scroll:Dock(FILL)
     local function addPreview(name, creator)
-        local label = scroll:Add("DLabel")
+        local label = scroll:Add("liaLabel")
         label:Dock(TOP)
         label:DockMargin(10, 10, 10, 2)
         label:SetText(name)
@@ -526,10 +526,10 @@ concommand.Add("lia_open_derma_preview", function()
     end
 
     addPreview("DFrame", function()
-        local container = scroll:Add("DPanel")
+        local container = scroll:Add("liaBasePanel")
         container:SetTall(70)
         container:SetPaintBackground(false)
-        local miniFrame = vgui.Create("DFrame", container)
+        local miniFrame = vgui.Create("liaFrame", container)
         miniFrame:SetTitle("DFrame")
         miniFrame:SetSize(150, 60)
         miniFrame:SetDraggable(false)
@@ -588,7 +588,7 @@ concommand.Add("lia_open_derma_preview", function()
     end)
 
     addPreview("DImage", function()
-        local container = scroll:Add("DPanel")
+        local container = scroll:Add("liaBasePanel")
         container:SetTall(40)
         container:SetPaintBackground(false)
         local img = vgui.Create("DImage", container)
@@ -599,12 +599,12 @@ concommand.Add("lia_open_derma_preview", function()
     end)
 
     addPreview("DPanelList", function()
-        local list = scroll:Add("DPanelList")
+        local list = scroll:Add("liaScrollPanel")
         list:SetTall(80)
         list:EnableVerticalScrollbar()
         list:SetPadding(5)
         for i = 1, 10 do
-            local item = vgui.Create("DLabel")
+            local item = vgui.Create("liaLabel")
             item:SetText(L("item") .. " " .. i)
             item:SizeToContents()
             list:AddItem(item)
@@ -714,7 +714,7 @@ concommand.Add("lia_open_derma_preview", function()
     end)
 
     addPreview("DModelPanel", function()
-        local container = scroll:Add("DPanel")
+        local container = scroll:Add("liaBasePanel")
         container:SetTall(300)
         container:SetPaintBackground(false)
         local modelPanel = vgui.Create("DModelPanel", container)
@@ -725,18 +725,37 @@ concommand.Add("lia_open_derma_preview", function()
     end)
 end)
 
-local mantlePreviewFrame
-concommand.Add("lia_open_mantle_preview", function()
-    if IsValid(mantlePreviewFrame) then mantlePreviewFrame:Remove() end
-    local frame = lia.derma.frame(nil, L("mantlePreviewTitle") or "lia Panel Preview", ScrW() * 0.8, ScrH() * 0.8, true, true)
-    mantlePreviewFrame = frame
+local dermaPanelsPreviewFrame
+concommand.Add("lia_open_derma_panels", function()
+    if IsValid(dermaPanelsPreviewFrame) then dermaPanelsPreviewFrame:Remove() end
+
+    -- Create a regular DFrame instead of liaFrame to avoid positioning issues
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(800, 600)
+    frame:SetTitle("lia Panel Preview")
+    frame:MakePopup()
+    frame:ShowCloseButton(true)
+
+    -- Apply Lilia styling
+    frame.Paint = function(self, w, h)
+        draw.RoundedBox(6, 0, 0, w, h, Color(45, 45, 45))
+        draw.RoundedBoxEx(6, 0, 0, w, 24, Color(35, 35, 35), true, true, false, false)
+        draw.SimpleText(self:GetTitle(), "DermaDefault", 8, 4, Color(255, 255, 255))
+    end
+
+    dermaPanelsPreviewFrame = frame
+
+    -- Center immediately
+    frame:Center()
+
     local scroll = lia.derma.scrollpanel(frame)
     scroll:Dock(FILL)
+
     local function addPreview(name, creator)
         -- Add separator before each entry (except the first one)
         local children = scroll:GetCanvas():GetChildren()
         if children and #children > 0 then
-            local separator = vgui.Create("DPanel", scroll:GetCanvas())
+            local separator = vgui.Create("liaBasePanel", scroll:GetCanvas())
             separator:Dock(TOP)
             separator:DockMargin(10, 15, 10, 15)
             separator:SetTall(2)
@@ -752,7 +771,6 @@ concommand.Add("lia_open_mantle_preview", function()
         label:SetText(name)
         label:SetFont("liaMediumFont")
         label:SizeToContents()
-
         local panel = creator()
         if IsValid(panel) then
             panel:Dock(TOP)
@@ -768,7 +786,7 @@ concommand.Add("lia_open_mantle_preview", function()
     end)
 
     addPreview("liaFrame", function()
-        local container = vgui.Create("DPanel", scroll:GetCanvas())
+        local container = vgui.Create("liaBasePanel", scroll:GetCanvas())
         container:SetTall(100)
         container:SetPaintBackground(false)
         local mantleFrame = lia.derma.frame(container, "liaFrame", 200, 90, true, false)
@@ -821,19 +839,16 @@ concommand.Add("lia_open_mantle_preview", function()
     addPreview("liaTabs", function()
         local tabs = lia.derma.panelTabs(scroll:GetCanvas())
         tabs:SetSize(200, 100)
-
-        local tab1 = vgui.Create("DPanel")
+        local tab1 = vgui.Create("liaBasePanel")
         tab1:Dock(FILL)
         local lbl1 = vgui.Create("DLabel", tab1)
         lbl1:Dock(TOP)
         lbl1:DockMargin(0, 0, 0, 4)
         lbl1:SetText(L("demoTabContent"))
         lbl1:SizeToContents()
-
-        local tab2 = vgui.Create("DPanel")
+        local tab2 = vgui.Create("liaBasePanel")
         tab2:Dock(FILL)
         local entry, entry_bg = lia.derma.descEntry(tab2, nil, L("demoTabInput"))
-
         tabs:AddTab("Tab 1", tab1)
         tabs:AddTab("Tab 2", tab2)
         return tabs
@@ -847,17 +862,13 @@ concommand.Add("lia_open_mantle_preview", function()
     end)
 
     addPreview("liaColorPicker", function()
-        local container = vgui.Create("DPanel", scroll:GetCanvas())
+        local container = vgui.Create("liaBasePanel", scroll:GetCanvas())
         container:SetTall(50)
         container:SetPaintBackground(false)
         local colorBtn = lia.derma.button(container, nil, nil, nil, 6)
         colorBtn:SetText("Open Color Picker")
         colorBtn:Dock(TOP)
-        colorBtn.DoClick = function()
-            lia.derma.colorPicker(function(color)
-                print("Selected color: ", color)
-            end)
-        end
+        colorBtn.DoClick = function() lia.derma.colorPicker(function(color) print("Selected color: ", color) end) end
         return container
     end)
 
@@ -892,7 +903,7 @@ concommand.Add("lia_open_mantle_preview", function()
     end)
 
     addPreview("liaRadialPanel", function()
-        local container = vgui.Create("DPanel", scroll:GetCanvas())
+        local container = vgui.Create("liaBasePanel", scroll:GetCanvas())
         container:SetTall(50)
         container:SetPaintBackground(false)
         local radialBtn = lia.derma.button(container, nil, nil, nil, 6)
@@ -900,17 +911,29 @@ concommand.Add("lia_open_mantle_preview", function()
         radialBtn:Dock(TOP)
         radialBtn.DoClick = function()
             lia.derma.radialMenu({
-                {name = "Option 1", callback = function() print("Option 1") end},
-                {name = "Option 2", callback = function() print("Option 2") end},
-                {name = "Option 3", callback = function() print("Option 3") end},
-                {name = "Option 4", callback = function() print("Option 4") end}
+                {
+                    name = "Option 1",
+                    callback = function() print("Option 1") end
+                },
+                {
+                    name = "Option 2",
+                    callback = function() print("Option 2") end
+                },
+                {
+                    name = "Option 3",
+                    callback = function() print("Option 3") end
+                },
+                {
+                    name = "Option 4",
+                    callback = function() print("Option 4") end
+                }
             })
         end
         return container
     end)
 
     addPreview("liaDermaMenu", function()
-        local container = vgui.Create("DPanel", scroll:GetCanvas())
+        local container = vgui.Create("liaBasePanel", scroll:GetCanvas())
         container:SetTall(50)
         container:SetPaintBackground(false)
         local menuBtn = lia.derma.button(container, nil, nil, nil, 6)
@@ -926,17 +949,13 @@ concommand.Add("lia_open_mantle_preview", function()
     end)
 
     addPreview("liaPlayerSelector", function()
-        local container = vgui.Create("DPanel", scroll:GetCanvas())
+        local container = vgui.Create("liaBasePanel", scroll:GetCanvas())
         container:SetTall(50)
         container:SetPaintBackground(false)
         local playerBtn = lia.derma.button(container, nil, nil, nil, 6)
         playerBtn:SetText("Open Player Selector")
         playerBtn:Dock(TOP)
-        playerBtn.DoClick = function()
-            lia.derma.playerSelector(function(player)
-                print("Selected player: ", player:Name())
-            end)
-        end
+        playerBtn.DoClick = function() lia.derma.playerSelector(function(player) print("Selected player: ", player:Name()) end) end
         return container
     end)
 end)

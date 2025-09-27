@@ -6,7 +6,7 @@ function PANEL:Init()
     self:MakePopup()
     self:ShowCloseButton(true)
     self:DockPadding(10, 50, 10, 10)
-    self.listView = self:Add("DListView")
+    self.listView = self:Add("liaDListView")
     self.listView:Dock(FILL)
     self.listView:SetMultiSelect(false)
     if self.Columns then
@@ -19,7 +19,7 @@ function PANEL:Init()
         self.listView:AddColumn("Description")
     end
 
-    self.closeButton = self:Add("DButton")
+    self.closeButton = self:Add("liaButton")
     self.closeButton:Dock(BOTTOM)
     self.closeButton:SetTall(30)
     self.closeButton:SetText("Close")
@@ -47,7 +47,7 @@ end
 
 function PANEL:SetTitle(title)
     self.Title = title
-    if self:GetTitle() ~= title then DFrame.SetTitle(self, title) end
+    self:GetTitle() -- This will call the liaFrame's SetTitle method
 end
 
 function PANEL:SetColumns(columns)
@@ -60,7 +60,7 @@ function PANEL:Paint(w, h)
     draw.SimpleText(self.Title or "Item List", "liaMediumFont", w / 2, 25, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
-vgui.Register("liaItemList", PANEL, "DFrame")
+vgui.Register("liaItemList", PANEL, "liaFrame")
 PANEL = {}
 function PANEL:Init()
     self:SetTitle(self.Title or "Select Items")
@@ -69,7 +69,7 @@ function PANEL:Init()
     self:MakePopup()
     self:ShowCloseButton(true)
     self:DockPadding(10, 50, 10, 10)
-    self.listView = self:Add("DListView")
+    self.listView = self:Add("liaDListView")
     self.listView:Dock(FILL)
     self.listView:SetMultiSelect(false)
     if self.Columns then
@@ -82,7 +82,7 @@ function PANEL:Init()
         self.listView:AddColumn("Quantity")
     end
 
-    self.actionButton = self:Add("DButton")
+    self.actionButton = self:Add("liaButton")
     self.actionButton:Dock(BOTTOM)
     self.actionButton:SetTall(40)
     self.actionButton:SetText(self.ActionText or "Select Item")
@@ -95,7 +95,7 @@ function PANEL:Init()
         end
     end
 
-    self.closeButton = self:Add("DButton")
+    self.closeButton = self:Add("liaButton")
     self.closeButton:Dock(BOTTOM)
     self.closeButton:DockMargin(0, 5, 0, 0)
     self.closeButton:SetTall(30)
@@ -129,7 +129,7 @@ end
 
 function PANEL:SetTitle(title)
     self.Title = title
-    if self:GetTitle() ~= title then DFrame.SetTitle(self, title) end
+    self:GetTitle() -- This will call the liaFrame's SetTitle method
 end
 
 function PANEL:SetActionText(text)
@@ -147,4 +147,4 @@ function PANEL:Paint(w, h)
     draw.SimpleText(self.Title or "Select Items", "liaMediumFont", w / 2, 25, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
-vgui.Register("liaItemSelector", PANEL, "DFrame")
+vgui.Register("liaItemSelector", PANEL, "liaFrame")

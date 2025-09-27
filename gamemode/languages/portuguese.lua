@@ -22,6 +22,7 @@ LANGUAGE = {
     storagelockDesc = "Tranca ou destranca o contentor de armazenamento que ests a ver. Fornece uma palavra-passe para trancar, ou executa sem palavra-passe para remover o bloqueio.",
     trunkOpenDesc = "Abre a bagageira do veculo que ests a ver para aceder ao seu inventrio.",
     ok = "ok",
+    accept = "Aceitar",
     renameSitroomTitle = "Renomear Sala de Administrao",
     teleport = "Teletransportar",
     reposition = "Reposicionar",

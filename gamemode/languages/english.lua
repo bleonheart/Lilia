@@ -23,6 +23,7 @@ LANGUAGE = {
     storagelockDesc = "Lock or unlock the storage container you're looking at. Provide a password to set the lock, or run without a password to remove it.",
     trunkOpenDesc = "Open the vehicle trunk you're looking at to access its storage inventory.",
     ok = "ok",
+    accept = "Accept",
     renameSitroomTitle = "Rename Administration Room",
     teleport = "Teleport",
     reposition = "Reposition",

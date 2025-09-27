@@ -22,7 +22,6 @@ if CLIENT then
         lia.color.theme = table.Copy(lia.color.themes[themeName])
     end
 
-    -- Smooth theme transition (similar to Mantle)
     function lia.color.setThemeSmooth(name)
         if not isstring(name) then error('Theme name must be a string') end
         local themeName = name:lower()
@@ -68,18 +67,15 @@ if CLIENT then
         end
     end
 
-    -- Helper function to check if a value is a color
     function lia.color.isColor(v)
         return type(v) == "table" and type(v.r) == "number"
     end
 
-    -- Additional color utility functions (similar to Mantle)
     function lia.color.LerpColor(frac, col1, col2)
         local ft = FrameTime() * frac
         return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
     end
 
-    -- Get current theme name
     function lia.color.getCurrentThemeName()
         for name, theme in pairs(lia.color.themes) do
             if theme == lia.color.theme then return name end
@@ -151,7 +147,6 @@ end
 function lia.color.registerTheme(name, themeData)
     if not isstring(name) then error("Theme name must be a string") end
     if not istable(themeData) then error("Theme data must be a table") end
-    -- Validate theme data structure
     local requiredFields = {"background", "sidebar", "accent", "text"}
     for _, field in ipairs(requiredFields) do
         if not themeData[field] then error("Theme '" .. name .. "' is missing required field: " .. field) end
@@ -200,7 +195,6 @@ lia.color.registerTheme("dark", {
     panel_alpha = {Color(60, 60, 60, 150), Color(50, 50, 50, 150), Color(80, 80, 80, 150)}
 })
 
--- Dark Mono Theme (Mantle.color_dark_mono)
 lia.color.registerTheme("dark_mono", {
     background = Color(25, 25, 25),
     sidebar = Color(40, 40, 40),
@@ -232,7 +226,6 @@ lia.color.registerTheme("dark_mono", {
     panel_alpha = {Color(60, 60, 60, 150), Color(50, 50, 50, 150), Color(80, 80, 80, 150)}
 })
 
--- Light Theme (Mantle.color_light)
 lia.color.registerTheme("light", {
     background = Color(255, 255, 255),
     sidebar = Color(240, 240, 240),
@@ -262,7 +255,6 @@ lia.color.registerTheme("light", {
     panel_alpha = {Color(250, 250, 255, 120), Color(240, 240, 245, 120), Color(230, 230, 235, 120)}
 })
 
--- Blue Theme (Mantle.color_blue)
 lia.color.registerTheme("blue", {
     background = Color(24, 28, 38),
     sidebar = Color(36, 48, 66),
@@ -292,7 +284,6 @@ lia.color.registerTheme("blue", {
     panel_alpha = {Color(34, 48, 72, 110), Color(38, 54, 82, 110), Color(70, 120, 180, 110)}
 })
 
--- Red Theme (Mantle.color_red)
 lia.color.registerTheme("red", {
     background = Color(32, 24, 24),
     sidebar = Color(54, 36, 36),
@@ -322,7 +313,6 @@ lia.color.registerTheme("red", {
     panel_alpha = {Color(62, 34, 34, 110), Color(66, 38, 38, 110), Color(140, 70, 70, 110)}
 })
 
--- Green Theme (Mantle.color_green)
 lia.color.registerTheme("green", {
     background = Color(24, 32, 26),
     sidebar = Color(36, 54, 40),
@@ -352,7 +342,6 @@ lia.color.registerTheme("green", {
     panel_alpha = {Color(34, 62, 44, 110), Color(38, 66, 48, 110), Color(70, 140, 90, 110)}
 })
 
--- Orange Theme (Mantle.color_orange)
 lia.color.registerTheme("orange", {
     background = Color(255, 250, 240),
     sidebar = Color(70, 35, 10),
@@ -382,7 +371,6 @@ lia.color.registerTheme("orange", {
     panel_alpha = {Color(255, 250, 240, 120), Color(250, 220, 180, 120), Color(235, 150, 90, 120)}
 })
 
--- Purple Theme (Mantle.color_purple)
 lia.color.registerTheme("purple", {
     background = Color(25, 22, 30),
     sidebar = Color(40, 36, 56),
@@ -412,7 +400,6 @@ lia.color.registerTheme("purple", {
     panel_alpha = {Color(56, 48, 76, 150), Color(44, 36, 64, 150), Color(120, 90, 200, 150)}
 })
 
--- Coffee Theme (Mantle.color_coffee)
 lia.color.registerTheme("coffee", {
     background = Color(45, 32, 25),
     sidebar = Color(67, 48, 36),
@@ -442,7 +429,6 @@ lia.color.registerTheme("coffee", {
     panel_alpha = {Color(68, 50, 40, 110), Color(90, 65, 50, 110), Color(150, 110, 75, 110)}
 })
 
--- Ice Theme (Mantle.color_ice)
 lia.color.registerTheme("ice", {
     background = Color(235, 245, 255),
     sidebar = Color(190, 225, 250),
@@ -472,7 +458,6 @@ lia.color.registerTheme("ice", {
     panel_alpha = {Color(146, 186, 211, 120), Color(107, 157, 190, 120), Color(74, 132, 184, 120)}
 })
 
--- Wine Theme (Mantle.color_wine)
 lia.color.registerTheme("wine", {
     background = Color(31, 23, 22),
     sidebar = Color(59, 42, 53),
@@ -502,7 +487,6 @@ lia.color.registerTheme("wine", {
     panel_alpha = {Color(79, 50, 60, 150), Color(63, 44, 48, 150), Color(160, 85, 143, 150)}
 })
 
--- Violet Theme (Mantle.color_violet)
 lia.color.registerTheme("violet", {
     background = Color(22, 24, 35),
     sidebar = Color(49, 50, 68),
@@ -532,7 +516,6 @@ lia.color.registerTheme("violet", {
     panel_alpha = {Color(58, 64, 84, 150), Color(48, 52, 72, 150), Color(109, 136, 255, 150)}
 })
 
--- Moss Theme (Mantle.color_moss)
 lia.color.registerTheme("moss", {
     background = Color(14, 16, 12),
     sidebar = Color(42, 50, 36),
@@ -562,7 +545,6 @@ lia.color.registerTheme("moss", {
     panel_alpha = {Color(40, 56, 40, 150), Color(66, 86, 66, 150), Color(110, 160, 90, 150)}
 })
 
--- Coral Theme (Mantle.color_coral)
 lia.color.registerTheme("coral", {
     background = Color(18, 14, 16),
     sidebar = Color(52, 32, 36),
@@ -592,7 +574,6 @@ lia.color.registerTheme("coral", {
     panel_alpha = {Color(66, 38, 40, 150), Color(120, 60, 56, 150), Color(240, 120, 90, 150)}
 })
 
--- Teal Theme
 lia.color.registerTheme("teal", {
     background = Color(20, 30, 28),
     sidebar = Color(30, 45, 42),

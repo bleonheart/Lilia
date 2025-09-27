@@ -12,61 +12,11 @@ if CLIENT then
         oldCreateFont(name, data)
     end
 
-    lia.font.register("AddonInfo_Header", {
-        font = "Helvetica",
-        size = ScreenScaleH(24),
-        weight = 1000
-    })
-
-    lia.font.register("AddonInfo_Text", {
-        font = "Helvetica",
-        size = ScreenScaleH(9),
-        weight = 1000
-    })
-
-    lia.font.register("AddonInfo_Small", {
-        font = "Helvetica",
-        size = ScreenScaleH(8),
-        weight = 1000
-    })
-
-    lia.font.register("ConfigFont", {
-        font = lia.config.get("Font"),
-        size = 26,
-        weight = 500,
-        extended = true,
-        antialias = true
-    })
-
     lia.font.register("CursiveFont", {
         font = "Segoe Script",
         size = 35,
         weight = 800,
         antialias = true,
-    })
-
-    lia.font.register("MediumConfigFont", {
-        font = lia.config.get("Font"),
-        size = 30,
-        weight = 1000,
-        extended = true,
-        antialias = true
-    })
-
-    lia.font.register("SmallConfigFont", {
-        font = lia.config.get("Font"),
-        size = math.max(ScreenScale(8), 20),
-        weight = 500,
-        extended = true,
-        antialias = true
-    })
-
-    lia.font.register("ConfigFontBold", {
-        font = lia.config.get("Font"),
-        size = 26,
-        weight = 1000,
-        extended = true,
-        antialias = true
     })
 
     lia.font.register("ConfigFontLarge", {
@@ -85,39 +35,9 @@ if CLIENT then
         antialias = true
     })
 
-    lia.font.register("ticketsystem", {
-        font = lia.config.get("Font"),
-        size = 15,
-        weight = 400
-    })
-
-    lia.font.register("VendorButtonFont", {
-        font = lia.config.get("Font"),
-        weight = 200,
-        size = 40
-    })
-
     lia.font.register("VendorMediumFont", {
         font = lia.config.get("Font"),
         weight = 500,
-        size = 22
-    })
-
-    lia.font.register("VendorSmallFont", {
-        font = lia.config.get("Font"),
-        weight = 500,
-        size = 22
-    })
-
-    lia.font.register("VendorTinyFont", {
-        font = lia.config.get("Font"),
-        weight = 500,
-        size = 15
-    })
-
-    lia.font.register("VendorLightFont", {
-        font = lia.config.get("Font"),
-        weight = 200,
         size = 22
     })
 
@@ -131,24 +51,6 @@ if CLIENT then
         font = lia.config.get("Font"),
         size = 18,
         weight = 500
-    })
-
-    lia.font.register("VendorItemStatsFont", {
-        font = lia.config.get("Font"),
-        size = 16,
-        weight = 500
-    })
-
-    lia.font.register("VendorItemPriceFont", {
-        font = lia.config.get("Font"),
-        size = 20,
-        weight = 600
-    })
-
-    lia.font.register("VendorActionButtonFont", {
-        font = lia.config.get("Font"),
-        size = 18,
-        weight = 600
     })
 
     lia.font.register("liaCharLargeFont", {
@@ -204,13 +106,6 @@ if CLIENT then
         weight = 500
     })
 
-    lia.font.register("liaSubTitleFont", {
-        font = lia.config.get("Font"),
-        size = ScreenScaleH(18) * math.min(ScrW() / 1920, ScrH() / 1080),
-        extended = true,
-        weight = 500
-    })
-
     lia.font.register("liaBigTitle", {
         font = lia.config.get("Font"),
         size = 30,
@@ -220,12 +115,6 @@ if CLIENT then
     lia.font.register("liaBigText", {
         font = lia.config.get("Font"),
         size = 26,
-        weight = 600
-    })
-
-    lia.font.register("liaHugeText", {
-        font = lia.config.get("Font"),
-        size = 48,
         weight = 600
     })
 
@@ -256,30 +145,9 @@ if CLIENT then
         weight = 500
     })
 
-    lia.font.register("liaDynFontSmall", {
-        font = lia.config.get("Font"),
-        size = ScreenScaleH(22) * math.min(ScrW() / 1920, ScrH() / 1080),
-        extended = true,
-        weight = 1000
-    })
-
     lia.font.register("liaDynFontMedium", {
         font = lia.config.get("Font"),
         size = ScreenScaleH(28) * math.min(ScrW() / 1920, ScrH() / 1080),
-        extended = true,
-        weight = 1000
-    })
-
-    lia.font.register("liaDynFontBig", {
-        font = lia.config.get("Font"),
-        size = ScreenScaleH(48) * math.min(ScrW() / 1920, ScrH() / 1080),
-        extended = true,
-        weight = 1000
-    })
-
-    lia.font.register("liaCleanTitleFont", {
-        font = lia.config.get("GenericFont"),
-        size = 200 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 1000
     })
@@ -324,13 +192,6 @@ if CLIENT then
         size = math.max(ScreenScaleH(5), 14) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 400
-    })
-
-    lia.font.register("liaMediumLightFont", {
-        font = lia.config.get("GenericFont"),
-        size = 25 * math.min(ScrW() / 1920, ScrH() / 1080),
-        extended = true,
-        weight = 200
     })
 
     lia.font.register("liaGenericFont", {
@@ -401,27 +262,6 @@ if CLIENT then
     })
 
     local cs = ScrH() / 1080
-    lia.font.register("liaCharTitleFont", {
-        font = lia.config.get("Font"),
-        weight = 200,
-        size = math.floor(70 * cs + 10),
-        additive = true
-    })
-
-    lia.font.register("liaCharDescFont", {
-        font = lia.config.get("Font"),
-        weight = 200,
-        size = math.floor(24 * cs + 10),
-        additive = true
-    })
-
-    lia.font.register("liaCharSubTitleFont", {
-        font = lia.config.get("Font"),
-        weight = 200,
-        size = math.floor(12 * cs + 10),
-        additive = true
-    })
-
     lia.font.register("liaCharButtonFont", {
         font = lia.config.get("Font"),
         weight = 200,
@@ -436,24 +276,6 @@ if CLIENT then
         additive = true
     })
 
-    lia.font.register("PoppinsSmall", {
-        font = "Poppins",
-        extended = true,
-        size = 16
-    })
-
-    lia.font.register("PoppinsMedium", {
-        font = "Poppins",
-        extended = true,
-        size = 32
-    })
-
-    lia.font.register("PoppinsBig", {
-        font = "Poppins",
-        extended = true,
-        size = 64
-    })
-
     lia.font.register("MontserratMedium", {
         font = "Montserrat Medium",
         extended = true,
@@ -465,216 +287,6 @@ if CLIENT then
         font = "Montserrat Bold",
         extended = true,
         size = 16,
-        weight = 700
-    })
-
-    lia.font.register("Fated.12", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 12,
-        weight = 500
-    })
-
-    lia.font.register("Fated.14", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 14,
-        weight = 500
-    })
-
-    lia.font.register("Fated.16", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 16,
-        weight = 500
-    })
-
-    lia.font.register("Fated.18", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 18,
-        weight = 500
-    })
-
-    lia.font.register("Fated.20", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 20,
-        weight = 500
-    })
-
-    lia.font.register("Fated.22", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 22,
-        weight = 500
-    })
-
-    lia.font.register("Fated.24", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 24,
-        weight = 500
-    })
-
-    lia.font.register("Fated.26", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 26,
-        weight = 500
-    })
-
-    lia.font.register("Fated.28", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 28,
-        weight = 500
-    })
-
-    lia.font.register("Fated.30", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 30,
-        weight = 500
-    })
-
-    lia.font.register("Fated.32", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 32,
-        weight = 500
-    })
-
-    lia.font.register("Fated.36", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 36,
-        weight = 500
-    })
-
-    lia.font.register("Fated.40", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 40,
-        weight = 500
-    })
-
-    lia.font.register("Fated.48", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 48,
-        weight = 500
-    })
-
-    lia.font.register("Fated.72", {
-        font = "Montserrat Medium",
-        extended = true,
-        size = 72,
-        weight = 500
-    })
-
-    lia.font.register("Fated.12b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 12,
-        weight = 700
-    })
-
-    lia.font.register("Fated.14b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 14,
-        weight = 700
-    })
-
-    lia.font.register("Fated.16b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 16,
-        weight = 700
-    })
-
-    lia.font.register("Fated.18b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 18,
-        weight = 700
-    })
-
-    lia.font.register("Fated.20b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 20,
-        weight = 700
-    })
-
-    lia.font.register("Fated.22b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 22,
-        weight = 700
-    })
-
-    lia.font.register("Fated.24b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 24,
-        weight = 700
-    })
-
-    lia.font.register("Fated.26b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 26,
-        weight = 700
-    })
-
-    lia.font.register("Fated.28b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 28,
-        weight = 700
-    })
-
-    lia.font.register("Fated.30b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 30,
-        weight = 700
-    })
-
-    lia.font.register("Fated.32b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 32,
-        weight = 700
-    })
-
-    lia.font.register("Fated.36b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 36,
-        weight = 700
-    })
-
-    lia.font.register("Fated.40b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 40,
-        weight = 700
-    })
-
-    lia.font.register("Fated.48b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 48,
-        weight = 700
-    })
-
-    lia.font.register("Fated.72b", {
-        font = "Montserrat Bold",
-        extended = true,
-        size = 72,
         weight = 700
     })
 
@@ -702,24 +314,24 @@ if CLIENT then
     hook.Add("RefreshFonts", "liaFontsRefresh", lia.font.refresh)
 end
 
-lia.config.add("Font", "font", "PoppinsMedium", function()
+lia.config.add("Font", "font", "Fated.16", function()
     if not CLIENT then return end
     hook.Run("RefreshFonts")
 end, {
     desc = "fontDesc",
     category = "categoryFonts",
     type = "Table",
-    options = CLIENT and lia.font.getAvailableFonts() or {"PoppinsMedium"}
+    options = CLIENT and lia.font.getAvailableFonts() or {"Fated.16"}
 })
 
-lia.config.add("GenericFont", "genericFont", "PoppinsMedium", function()
+lia.config.add("GenericFont", "genericFont", "Fated.16", function()
     if not CLIENT then return end
     hook.Run("RefreshFonts")
 end, {
     desc = "genericFontDesc",
     category = "categoryFonts",
     type = "Table",
-    options = CLIENT and lia.font.getAvailableFonts() or {"PoppinsMedium"}
+    options = CLIENT and lia.font.getAvailableFonts() or {"Fated.16"}
 })
 
 hook.Run("PostLoadFonts", lia.config.get("Font"), lia.config.get("GenericFont"))

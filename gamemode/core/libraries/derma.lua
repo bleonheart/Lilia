@@ -29,7 +29,7 @@ function lia.derma.frame(parent, title, width, height, closeButton, animate)
 end
 
 function lia.derma.checkbox(parent, text, convar)
-    local panel = vgui.Create("Panel", parent)
+    local panel = vgui.Create("liaBasePanel", parent)
     panel:Dock(TOP)
     panel:DockMargin(4, 0, 4, 0)
     panel:SetTall(28)
@@ -58,7 +58,7 @@ function lia.derma.descEntry(parent, title, placeholder, offTitle)
         label:SetTextColor(lia.color.theme.text)
     end
 
-    entry_bg = vgui.Create("DPanel", parent)
+    entry_bg = vgui.Create("liaBasePanel", parent)
     entry_bg:Dock(TOP)
     entry_bg:DockMargin(4, 4, 4, 0)
     entry_bg:SetTall(24)
@@ -91,9 +91,14 @@ function lia.derma.panelTabs(parent)
     if parent ~= nil and not IsValid(parent) then return end
     local tabs = vgui.Create("liaTabs", parent)
     tabs:Dock(FILL)
+
+    -- Store the original AddTab method
+    local originalAddTab = tabs.AddTab
+
     function tabs:AddTab(title, panel, icon, col, col_hov)
-        local newPanel = panel or vgui.Create("DPanel")
-        self:AddTab(title, newPanel, icon)
+        local newPanel = panel or vgui.Create("liaBasePanel")
+        -- Call the original AddTab method, not self:AddTab
+        originalAddTab(self, title, newPanel, icon)
     end
 
     function tabs:ActiveTab(title)
@@ -271,8 +276,7 @@ function lia.derma.colorPicker(callback, defaultColor)
             end
         end
 
-        surface.SetDrawColor(255, 255, 255, 200)
-        surface.DrawCircle(colorCursor.x, colorCursor.y, 6, 2)
+        RNDX.DrawCircle(colorCursor.x, colorCursor.y, 6, Color(255, 255, 255, 200))
     end
 
     local hueSlider = vgui.Create("Panel", container)
@@ -358,7 +362,7 @@ function lia.derma.playerSelector(callback, validationFunc)
     frame:MakePopup()
     frame:SetTitle("")
     frame:ShowAnimation()
-    local contentPanel = vgui.Create("Panel", frame)
+    local contentPanel = vgui.Create("liaBasePanel", frame)
     contentPanel:Dock(FILL)
     contentPanel:DockMargin(8, 0, 8, 8)
     local scrollPanel = vgui.Create("liaScrollPanel", contentPanel)

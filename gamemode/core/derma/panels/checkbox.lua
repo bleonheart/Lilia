@@ -60,7 +60,7 @@ function PANEL:Init()
     self._circle = 0
     self._circleEased = 0
     self._circleColor = table.Copy(lia.color.theme.gray)
-    self.toggle = vgui.Create("Button", self)
+    self.toggle = vgui.Create("liaButton", self)
     self.toggle:Dock(RIGHT)
     self.toggle:SetWide(48)
     self.toggle:DockMargin(0, 0, 14, 0)

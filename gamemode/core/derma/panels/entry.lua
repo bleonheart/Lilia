@@ -80,7 +80,7 @@ function PANEL:SetTitle(title)
         self.titlePanel:Remove()
     end
 
-    self.titlePanel = vgui.Create("DPanel", self)
+    self.titlePanel = vgui.Create("liaBasePanel", self)
     self.titlePanel:Dock(TOP)
     self.titlePanel:DockMargin(0, 0, 0, 6)
     self.titlePanel:SetTall(18)

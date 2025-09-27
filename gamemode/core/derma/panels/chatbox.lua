@@ -7,7 +7,7 @@ function PANEL:Init()
     self:SetSize(width, height)
     self:SetPos(border, screenH - height - border)
     self.active = false
-    self.tabs = self:Add("DPanel")
+    self.tabs = self:Add("liaBasePanel")
     self.tabs:Dock(TOP)
     self.tabs:SetTall(28)
     self.tabs:DockPadding(4, 4, 4, 4)
@@ -20,7 +20,7 @@ function PANEL:Init()
     end
 
     self.arguments = {}
-    self.scroll = self:Add("DScrollPanel")
+    self.scroll = self:Add("liaScrollPanel")
     self.scroll:SetPos(4, 31)
     self.scroll:SetSize(width - 8, height - 66)
     self.scroll:GetVBar():SetWide(0)
@@ -60,7 +60,7 @@ function PANEL:setActive(state)
         self.entry.OnRemove = function() hook.Run("FinishChat") end
         self.entry:SetTall(28)
         lia.chat.history = lia.chat.history or {}
-        self.text = self.entry:Add("DTextEntry")
+        self.text = self.entry:Add("liaEntry")
         self.text:Dock(FILL)
         self.text.History = lia.chat.history
         self.text:SetHistoryEnabled(true)
@@ -108,13 +108,13 @@ function PANEL:setActive(state)
                     self.commandList = nil
                 end
 
-                self.commandList = self:Add("DScrollPanel")
+                self.commandList = self:Add("liaScrollPanel")
                 self.commandList:SetPos(4, 31)
                 self.commandList:SetSize(self:GetWide() - 8, self:GetTall() - 66)
                 self.commandList:GetVBar():SetWide(8)
                 for cmdName, cmdInfo in SortedPairs(self.commands) do
                     if not tobool(string.find(cmdName, input:sub(2), 1, true)) then continue end
-                    local btn = self.commandList:Add("DButton")
+                    local btn = self.commandList:Add("liaButton")
                     btn:SetText("/" .. cmdName .. " - " .. (cmdInfo.desc ~= "" and L(cmdInfo.desc) or L("noDesc")))
                     btn:Dock(TOP)
                     btn:DockMargin(0, 0, 0, 2)
@@ -225,7 +225,7 @@ local function PaintFilterButton(btn, btnW, btnH)
 end
 
 function PANEL:addFilterButton(filter)
-    local tab = self.tabs:Add("DButton")
+    local tab = self.tabs:Add("liaButton")
     tab:SetFont("liaChatFont")
     tab:SetText(L(filter):upper())
     tab:SizeToContents()

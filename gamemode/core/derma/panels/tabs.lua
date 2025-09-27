@@ -10,9 +10,9 @@ function PANEL:Init()
     self.indicator_w = 0
     self.indicator_target_x = 0
     self.indicator_target_w = 0
-    self.panel_tabs = vgui.Create("Panel", self)
+    self.panel_tabs = vgui.Create("liaBasePanel", self)
     self.panel_tabs.Paint = nil
-    self.content = vgui.Create("Panel", self)
+    self.content = vgui.Create("liaBasePanel", self)
     self.content.Paint = nil
 end
 
@@ -58,7 +58,7 @@ local color_btn_hovered = Color(255, 255, 255, 10)
 function PANEL:Rebuild()
     self.panel_tabs:Clear()
     for id, tab in ipairs(self.tabs) do
-        local btnTab = vgui.Create("Button", self.panel_tabs)
+        local btnTab = vgui.Create("liaButton", self.panel_tabs)
         tab._btn = btnTab
         if self.tab_style == "modern" then
             surface.SetFont('Fated.18')

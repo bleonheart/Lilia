@@ -119,7 +119,7 @@ end
 hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     local OptionFormatting = {
         Int = function(key, name, cfg, parent)
-            local c = vgui.Create("DPanel", parent)
+            local c = vgui.Create("liaBasePanel", parent)
             c:SetTall(220)
             c:Dock(TOP)
             c:DockMargin(0, 60, 0, 10)
@@ -159,7 +159,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             return c
         end,
         Float = function(key, name, cfg, parent)
-            local c = vgui.Create("DPanel", parent)
+            local c = vgui.Create("liaBasePanel", parent)
             c:SetTall(220)
             c:Dock(TOP)
             c:DockMargin(0, 60, 0, 10)
@@ -199,7 +199,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             return c
         end,
         Generic = function(key, name, cfg, parent)
-            local c = vgui.Create("DPanel", parent)
+            local c = vgui.Create("liaBasePanel", parent)
             c:SetTall(220)
             c:Dock(TOP)
             c:DockMargin(0, 60, 0, 10)
@@ -234,7 +234,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             return c
         end,
         Boolean = function(key, name, cfg, parent)
-            local c = vgui.Create("DPanel", parent)
+            local c = vgui.Create("liaBasePanel", parent)
             c:SetTall(220)
             c:Dock(TOP)
             c:DockMargin(0, 60, 0, 10)
@@ -272,7 +272,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             return c
         end,
         Color = function(key, name, cfg, parent)
-            local c = vgui.Create("DPanel", parent)
+            local c = vgui.Create("liaBasePanel", parent)
             c:SetTall(220)
             c:Dock(TOP)
             c:DockMargin(0, 60, 0, 10)
@@ -310,7 +310,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 
             btn.DoClick = function()
                 if IsValid(btn.picker) then btn.picker:Remove() end
-                local frm = vgui.Create("DFrame")
+                local frm = vgui.Create("liaFrame")
                 frm:SetSize(300, 400)
                 frm:Center()
                 frm:MakePopup()
@@ -350,7 +350,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             return c
         end,
         Table = function(key, name, cfg, parent)
-            local c = vgui.Create("DPanel", parent)
+            local c = vgui.Create("liaBasePanel", parent)
             c:SetTall(220)
             c:Dock(TOP)
             c:DockMargin(0, 60, 0, 10)
@@ -451,7 +451,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             end
 
             cat.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 60)) end
-            local body = vgui.Create("DPanel", cat)
+            local body = vgui.Create("liaBasePanel", cat)
             body:SetTall(#items * 240)
             body.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 50)) end
             cat:SetContents(body)

@@ -22,6 +22,7 @@ LANGUAGE = {
     storagelockDesc = "Bloquea o desbloquea el contenedor de almacenamiento que ests mirando. Proporciona una contrasea para bloquearlo, o ejecuta sin contrasea para quitarla.",
     trunkOpenDesc = "Abre el maletero del vehculo que ests mirando para acceder a su inventario.",
     ok = "ok",
+    accept = "Aceptar",
     renameSitroomTitle = "Renombrar Sala de Administracin",
     teleport = "Teletransportar",
     reposition = "Reposicionar",

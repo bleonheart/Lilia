@@ -22,12 +22,12 @@ function PANEL:Init()
     self:MakePopup()
     self:SetAlpha(0)
     self:AlphaTo(255, 0.2)
-    self.tabs = self:Add("DPanel")
+    self.tabs = self:Add("liaBasePanel")
     self.tabs:Dock(TOP)
     self.tabs:DockMargin(64, 32, 64, 0)
     self.tabs:SetTall(48)
     self.tabs:SetPaintBackground(false)
-    self.content = self:Add("DPanel")
+    self.content = self:Add("liaBasePanel")
     self.content:Dock(FILL)
     self.content:DockMargin(64, 0, 64, 64)
     self.content:SetPaintBackground(false)
@@ -249,19 +249,15 @@ function PANEL:createStartButton()
     end
 
     if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
-        table.insert(buttonsData, {
-            id = "mount",
-            text = "Mount Content",
-            doClick = function()
-                self:clickSound()
-                if lia.workshop and lia.workshop.mountContent then
-                    lia.workshop.mountContent()
-                else
-                    net.Start("liaWorkshopDownloaderRequest")
-                    net.SendToServer()
-                end
+        -- Auto-mount content instead of showing button
+        timer.Simple(1, function()
+            if lia.workshop and lia.workshop.mountContent then
+                lia.workshop.mountContent()
+            else
+                net.Start("liaWorkshopDownloaderRequest")
+                net.SendToServer()
             end
-        })
+        end)
     end
 
     table.insert(buttonsData, {

@@ -8,7 +8,7 @@ function PANEL:Init()
     self.font = 'Fated.18'
     self.hoverAnim = 0
     self.OnSelect = function(_, _, _) end
-    self.btn = vgui.Create("DButton", self)
+    self.btn = vgui.Create("liaButton", self)
     self.btn:Dock(FILL)
     self.btn:SetText('')
     self.btn:SetCursor("hand")
@@ -86,7 +86,7 @@ function PANEL:OpenMenu()
     local itemHeight = 26
     local menuHeight = (#self.choices * (itemHeight + 2)) + (menuPadding * 2) + 2
     local x, y = self:LocalToScreen(0, self:GetTall())
-    self.menu = vgui.Create("DPanel")
+    self.menu = vgui.Create("liaBasePanel")
     self.menu:SetSize(self:GetWide(), menuHeight)
     if y + menuHeight > ScrH() - 10 then y = y - menuHeight - self:GetTall() end
     self.menu:SetPos(x, y)
@@ -121,7 +121,7 @@ function PANEL:OpenMenu()
 
     surface.SetFont(self.font)
     for i, choice in ipairs(self.choices) do
-        local option = vgui.Create("DButton", self.menu)
+        local option = vgui.Create("liaButton", self.menu)
         option:SetText('')
         option:Dock(TOP)
         option:DockMargin(2, 2, 2, 0)
@@ -179,7 +179,7 @@ function PANEL:OpenMenu()
     end
 
     self.menu.OnRemove = function() if IsValid(self) then self.opened = false end end
-    lia.util.ClampMenuPosition(self.menu)
+    lia.util.clampMenuPosition(self.menu)
     self.menu._targetX, self.menu._targetY = self.menu:GetPos()
     if not self.menu._initPosSet then
         self.menu:SetPos(self.menu._targetX, self.menu._targetY + 6)

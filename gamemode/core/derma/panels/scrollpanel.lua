@@ -1,9 +1,9 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self._vbarPadRight = 6
-    self.content = vgui.Create("Panel", self)
+    self.content = vgui.Create("liaBasePanel", self)
     self.content:SetMouseInputEnabled(true)
-    self.vbar = vgui.Create("Panel", self)
+    self.vbar = vgui.Create("liaBasePanel", self)
     self.vbar:SetMouseInputEnabled(true)
     self.vbarDefaultWidth = 4
     self.vbarExpandedWidth = 6

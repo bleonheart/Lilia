@@ -378,4 +378,4 @@ function PANEL:AddButton(text, callback, icon, desc)
     return option
 end
 
-vgui.Register("liaRadialPanel", PANEL, "DPanel")
+vgui.Register("liaRadialPanel", PANEL, "liaBasePanel")

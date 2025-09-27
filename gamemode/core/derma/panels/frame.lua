@@ -1,13 +1,13 @@
 ﻿local PANEL = {}
-local mat_close = Material('mantle/close_btn_new.png')
+local mat_close = Material("close_button.png")
 function PANEL:Init()
     self.bool_alpha = true
     self.bool_lite = false
     self.title = L("frame_title")
-    self.center_title = ''
+    self.center_title = ""
     self:DockPadding(6, 30, 6, 6)
-    self.top_panel = vgui.Create("DButton", self)
-    self.top_panel:SetText('')
+    self.top_panel = vgui.Create("liaButton", self)
+    self.top_panel:SetText("")
     self.top_panel:SetCursor("sizeall")
     self.top_panel.Paint = nil
     self.top_panel.OnMousePressed = function(s, key)
@@ -34,20 +34,20 @@ function PANEL:Init()
         end
     end
 
-    self.cls = vgui.Create("Button", self)
-    self.cls:SetText('')
+    self.cls = vgui.Create("liaButton", self)
+    self.cls:SetText("")
     self.cls.Paint = function(_, w, h) RNDX.Rect(2, 2, w - 4, h - 4):Color(lia.color.theme.header_text):Material(mat_close):Draw() end
     self.cls.DoClick = function()
         self:AlphaTo(0, 0.1, 0, function() self:Remove() end)
-        surface.PlaySound('garrysmod/ui_click.wav')
+        surface.PlaySound("garrysmod/ui_click.wav")
     end
 
     self.cls.DoRightClick = function()
         local DM = vgui.Create("liaDermaMenu")
-        DM:AddOption(L("frame_alpha"), function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and 'icon16/bullet_green.png' or 'icon16/bullet_red.png')
+        DM:AddOption(L("frame_alpha"), function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and "icon16/bullet_green.png" or "icon16/bullet_red.png")
         local boolInput = self:IsKeyboardInputEnabled()
-        DM:AddOption(L("frame_move_from_menu"), function() self:SetKeyBoardInputEnabled(not boolInput) end, not boolInput and 'icon16/bullet_green.png' or 'icon16/bullet_red.png')
-        DM:AddOption(L("frame_close_window"), function() self:Remove() end, 'icon16/cross.png')
+        DM:AddOption(L("frame_move_from_menu"), function() self:SetKeyboardInputEnabled(not boolInput) end, not boolInput and "icon16/bullet_green.png" or "icon16/bullet_red.png")
+        DM:AddOption(L("frame_close_window"), function() self:Remove() end, "icon16/cross.png")
     end
 end
 
@@ -93,9 +93,9 @@ function PANEL:Notify(text, duration, col)
     if IsValid(self.messagePanel) then self.messagePanel:Remove() end
     duration = duration or 2
     col = col or lia.color.theme.accent
-    surface.SetFont('Fated.20')
+    surface.SetFont("Fated.20")
     local tw, th = surface.GetTextSize(text)
-    local mp = vgui.Create("DPanel", self)
+    local mp = vgui.Create("liaBasePanel", self)
     mp:SetSize(tw + 16, th + 8)
     mp:SetMouseInputEnabled(false)
     local startY = self:GetTall() + mp:GetTall()
@@ -105,7 +105,7 @@ function PANEL:Notify(text, duration, col)
     mp.Paint = function(_, w, h)
         RNDX.Rect(0, 0, w, h):Rad(16):Color(col):Shadow(7, 20):Outline(3):Clip(self):Draw()
         RNDX.Rect(0, 0, w, h):Rad(16):Color(col):Draw()
-        draw.SimpleText(text, 'Fated.20', w * 0.5, h * 0.5 - 1, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(text, "Fated.20", w * 0.5, h * 0.5 - 1, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     mp:MoveTo(mp.x, endY, 0.3, 0, 0.7)
@@ -126,8 +126,8 @@ function PANEL:Paint(w, h)
     if self.bool_alpha and lia.config.get("uiBlurEnabled", true) then RNDX.Rect(0, headerTall, w, h - headerTall):Radii(self.bool_lite and 6 or 0, self.bool_lite and 6 or 0, 6, 6):Blur():Draw() end
     RNDX.Rect(0, headerTall, w, h - headerTall):Radii(self.bool_lite and 6 or 0, self.bool_lite and 6 or 0, 6, 6):Color(self.bool_alpha and lia.color.theme.background_alpha or lia.color.theme.background):Draw()
     if not self.bool_lite then
-        if self.center_title ~= '' then draw.SimpleText(self.center_title, 'Fated.20b', w * 0.5, 12, lia.color.theme.header_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
-        draw.SimpleText(self.title, 'Fated.16', 6, 4, lia.color.theme.header_text)
+        if self.center_title ~= "" then draw.SimpleText(self.center_title, "Fated.20b", w * 0.5, 12, lia.color.theme.header_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+        draw.SimpleText(self.title, "Fated.16", 6, 4, lia.color.theme.header_text)
     end
 end
 
@@ -146,7 +146,7 @@ end
 
 function PANEL:Close()
     self:AlphaTo(0, 0.1, 0, function() self:Remove() end)
-    surface.PlaySound('garrysmod/ui_click.wav')
+    surface.PlaySound("garrysmod/ui_click.wav")
 end
 
 function PANEL:GetBackgroundBlur()
@@ -206,9 +206,7 @@ function PANEL:SetDeleteOnClose(shouldDelete)
 end
 
 function PANEL:SetDraggable(draggable)
-    if self.top_panel then
-        self.top_panel:SetVisible(draggable)
-    end
+    if self.top_panel then self.top_panel:SetVisible(draggable) end
 end
 
 function PANEL:SetIcon(path)
@@ -243,9 +241,7 @@ function PANEL:SetSizable(sizable)
 end
 
 function PANEL:ShowCloseButton(show)
-    if self.cls then
-        self.cls:SetVisible(show)
-    end
+    if self.cls then self.cls:SetVisible(show) end
 end
 
 vgui.Register("liaFrame", PANEL, "EditablePanel")

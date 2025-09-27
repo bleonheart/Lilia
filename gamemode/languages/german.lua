@@ -22,6 +22,7 @@ LANGUAGE = {
     storagelockDesc = "Verschliee oder ffne den Lagercontainer, den du ansiehst. Gib ein Passwort ein, um das Schloss zu setzen, oder fhre es ohne Passwort aus, um es zu entfernen.",
     trunkOpenDesc = "ffne den Kofferraum des Fahrzeugs, das du ansiehst, um auf das Inventar zuzugreifen.",
     ok = "OK",
+    accept = "Akzeptieren",
     renameSitroomTitle = "Administrationsraum umbenennen",
     teleport = "Teleportieren",
     reposition = "Neu positionieren",
