@@ -163,7 +163,7 @@ function PANEL:createStartButton()
     if hook.Run("CanPlayerCreateChar", client) ~= false then
         table.insert(buttonsData, {
             id = "create",
-            text = "Create Character",
+            text = L("createCharacter"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -180,7 +180,7 @@ function PANEL:createStartButton()
     if hasNonStaffChar then
         table.insert(buttonsData, {
             id = "load",
-            text = "Load Character",
+            text = L("loadCharacter"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -204,7 +204,7 @@ function PANEL:createStartButton()
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         table.insert(buttonsData, {
             id = "staff",
-            text = hasStaffChar and "Load Staff Character" or "Create Staff Character",
+            text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -229,7 +229,7 @@ function PANEL:createStartButton()
     if discordURL ~= "" then
         table.insert(buttonsData, {
             id = "discord",
-            text = "Discord",
+            text = L("discord"),
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(discordURL)
@@ -240,7 +240,7 @@ function PANEL:createStartButton()
     if workshopURL ~= "" then
         table.insert(buttonsData, {
             id = "workshop",
-            text = "Workshop",
+            text = L("workshop"),
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(workshopURL)
@@ -262,7 +262,7 @@ function PANEL:createStartButton()
 
     table.insert(buttonsData, {
         id = "disconnect",
-        text = "Disconnect",
+        text = L("disconnectButton"),
         doClick = function()
             self:clickSound()
             RunConsoleCommand("disconnect")
@@ -478,7 +478,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     scroll:Dock(FILL)
     for i, text in ipairs(info) do
         if i == 1 then
-            local line = scroll:Add("liaBasePanel")
+            local line = vgui.Create("liaBasePanel")
+            scroll:AddItem(line)
             line:Dock(TOP)
             line:DockMargin(10, 3, 10, 0)
             line:SetHeight(20)
@@ -494,11 +495,12 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             countLabel:Dock(RIGHT)
             countLabel:SetFont("liaSmallFont")
             countLabel:SetTextColor(Color(255, 255, 255))
-            countLabel:SetText(index .. "/" .. total)
+            countLabel:SetText(L("indexOfTotal", index, total))
             countLabel:SizeToContents()
             countLabel.Paint = function() end
         else
-            local lbl = scroll:Add("DLabel")
+            local lbl = vgui.Create("DLabel")
+            scroll:AddItem(lbl)
             lbl:Dock(TOP)
             lbl:DockMargin(10, 5, 10, 10)
             lbl:SetFont("liaSmallFont")
@@ -510,7 +512,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local spacer = scroll:Add("liaBasePanel")
+    local spacer = vgui.Create("liaBasePanel")
+    scroll:AddItem(spacer)
     spacer:Dock(TOP)
     spacer:SetTall(5)
     spacer.Paint = function() end
@@ -527,7 +530,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         local minValue = entry.attr.min or 0
         local maxValue = entry.attr.max or 100
         local currentValue = character:getAttrib(entry.id) or minValue
-        local label = scroll:Add("DLabel")
+        local label = vgui.Create("DLabel")
+        scroll:AddItem(label)
         label:Dock(TOP)
         label:DockMargin(10, 3, 10, 5)
         label:SetFont("liaSmallFont")
@@ -535,12 +539,13 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         label:SetText(entry.attr.name)
         label:SetContentAlignment(5)
         label:SizeToContentsY()
-        local progressBar = scroll:Add("DProgressBar")
+        local progressBar = vgui.Create("DProgressBar")
+        scroll:AddItem(progressBar)
         progressBar:Dock(TOP)
         progressBar:DockMargin(10, 0, 10, 10)
         progressBar:SetBarColor(entry.attr.color or lia.config.get("Color"))
         progressBar:SetFraction(math.Clamp(currentValue / maxValue, 0, 1))
-        progressBar:SetText(currentValue .. "/" .. maxValue)
+        progressBar:SetText(L("valueOfMax", currentValue, maxValue))
         progressBar.Font = "liaSmallFont"
         progressBar:SetTall(20)
     end

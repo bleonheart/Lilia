@@ -110,7 +110,7 @@ function lia.webimage.download(n, u, cb, flags)
         end
 
         if not extension then
-            if cb then cb(nil, false, "Invalid file format - not PNG or JPEG") end
+            if cb then cb(nil, false, L("invalidFileFormat")) end
             return
         end
 

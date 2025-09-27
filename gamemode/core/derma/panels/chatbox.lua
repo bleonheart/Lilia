@@ -277,31 +277,36 @@ function PANEL:addText(...)
 
     markup = markup .. "</font>"
     local panel = self.scroll:Add("liaMarkupPanel")
-    panel:SetWide(self:GetWide() - 8)
-    panel:setMarkup(markup, OnDrawText)
-    panel.start = CurTime() + 5
-    panel.finish = panel.start + 5
-    panel.Think = function(p)
-        if self.active then
-            p:SetAlpha(255)
-        else
-            local alpha = (1 - math.TimeFraction(p.start, p.finish, CurTime())) * 255
-            p:SetAlpha(math.max(alpha, 0))
+    if IsValid(panel) then
+        panel:SetWide(self:GetWide() - 8)
+        panel:setMarkup(markup, OnDrawText)
+        panel.start = CurTime() + 5
+        panel.finish = panel.start + 5
+        panel.Think = function(p)
+            if self.active then
+                p:SetAlpha(255)
+            else
+                local alpha = (1 - math.TimeFraction(p.start, p.finish, CurTime())) * 255
+                p:SetAlpha(math.max(alpha, 0))
+            end
         end
-    end
 
-    self.list[#self.list + 1] = panel
-    local cls = CHAT_CLASS and CHAT_CLASS.filter and CHAT_CLASS.filter:lower() or "ic"
-    panel.filter = cls
-    if LIA_CVAR_CHATFILTER:GetString():lower():find(cls) then
-        self.filtered[panel] = cls
-        panel:SetVisible(false)
+        self.list[#self.list + 1] = panel
+        local cls = CHAT_CLASS and CHAT_CLASS.filter and CHAT_CLASS.filter:lower() or "ic"
+        panel.filter = cls
+        if LIA_CVAR_CHATFILTER:GetString():lower():find(cls) then
+            self.filtered[panel] = cls
+            panel:SetVisible(false)
+        else
+            panel:SetPos(0, self.lastY)
+            self.lastY = self.lastY + panel:GetTall()
+            self.scroll:ScrollToChild(panel)
+        end
+        return panel:IsVisible()
     else
-        panel:SetPos(0, self.lastY)
-        self.lastY = self.lastY + panel:GetTall()
-        self.scroll:ScrollToChild(panel)
+        -- Panel creation failed, return false to indicate no panel was added
+        return false
     end
-    return panel:IsVisible()
 end
 
 function PANEL:setFilter(filter, state)

@@ -724,7 +724,7 @@ function lia.db.removeColumn(tableName, columnName)
 
             lia.db.query("PRAGMA table_info(" .. fullTableName .. ")", function(columns)
                 if not columns then
-                    d:reject("Failed to get table info")
+                    d:reject(L("failedToGetTableInfo"))
                     return
                 end
 
@@ -740,7 +740,7 @@ function lia.db.removeColumn(tableName, columnName)
                 end
 
                 if #newColumns == 0 then
-                    d:reject("Cannot remove the last column from table")
+                    d:reject(L("cannotRemoveLastColumn"))
                     return
                 end
 
@@ -774,13 +774,13 @@ function lia.db.createSnapshot(tableName)
     local fullTableName = "lia_" .. tableName
     lia.db.tableExists(fullTableName):next(function(exists)
         if not exists then
-            d:reject("Table " .. fullTableName .. " does not exist")
+            d:reject(L("tableDoesNotExist", fullTableName))
             return
         end
 
         lia.db.query("SELECT * FROM " .. fullTableName, function(results)
             if not results then
-                d:reject("Failed to query table " .. fullTableName)
+                d:reject(L("failedToQueryTable", fullTableName))
                 return
             end
 
@@ -809,31 +809,31 @@ function lia.db.loadSnapshot(fileName)
     local d = deferred.new()
     local filePath = "lilia/snapshots/" .. fileName
     if not file.Exists(filePath, "DATA") then
-        d:reject("Snapshot file " .. fileName .. " not found")
+        d:reject(L("snapshotFileNotFound", fileName))
         return d
     end
 
     local jsonData = file.Read(filePath, "DATA")
     if not jsonData then
-        d:reject("Failed to read snapshot file")
+        d:reject(L("failedToReadSnapshotFile"))
         return d
     end
 
     local success, snapshot = pcall(util.JSONToTable, jsonData)
     if not success then
-        d:reject("Failed to parse JSON data: " .. tostring(snapshot))
+        d:reject(L("failedToParseJSONData", tostring(snapshot)))
         return d
     end
 
     if not snapshot.table or not snapshot.data then
-        d:reject("Invalid snapshot format")
+        d:reject(L("invalidSnapshotFormat"))
         return d
     end
 
     local fullTableName = "lia_" .. snapshot.table
     lia.db.tableExists(fullTableName):next(function(exists)
         if not exists then
-            d:reject("Target table " .. fullTableName .. " does not exist")
+            d:reject(L("targetTableDoesNotExist", fullTableName))
             return
         end
 
@@ -871,11 +871,11 @@ function lia.db.loadSnapshot(fileName)
                 lia.db.bulkInsert(snapshot.table, batches[currentBatch]):next(function()
                     currentBatch = currentBatch + 1
                     insertNextBatch()
-                end, function(err) d:reject("Failed to insert batch " .. currentBatch .. ": " .. tostring(err)) end)
+                end, function(err) d:reject(L("failedToInsertBatch", currentBatch, tostring(err))) end)
             end
 
             insertNextBatch()
-        end, function(err) d:reject("Failed to clear table: " .. tostring(err)) end)
+        end, function(err) d:reject(L("failedToClearTable", tostring(err))) end)
     end, function(err) d:reject(L("tableCheckError") .. " " .. tostring(err)) end)
     return d
 end

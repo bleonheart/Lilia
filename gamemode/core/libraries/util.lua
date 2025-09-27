@@ -699,7 +699,7 @@ else
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = nil
-            local label = vgui.Create("liaLabel", panel)
+            local label = vgui.Create("DLabel", panel)
             label:SetFont("liaSmallFont")
             label:SetText(name)
             label:SizeToContents()
@@ -901,7 +901,7 @@ else
                         form.Paint = function() end
                         local inputs = {}
                         for fName, fType in pairs(option.ExtraFields) do
-                            local label = vgui.Create("liaLabel", form)
+                            local label = vgui.Create("DLabel", form)
                             label:SetText(fName)
                             label:Dock(TOP)
                             label:DockMargin(5, 10, 5, 0)

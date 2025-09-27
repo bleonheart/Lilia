@@ -446,7 +446,7 @@ lia.command.add("doorinfo", {
                     value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
                 },
                 {
-                    property = L("group") or "Faction Group",
+                    property = L("group") or L("factionGroup"),
                     value = tostring(group ~= "" and group or L("none"))
                 },
                 {

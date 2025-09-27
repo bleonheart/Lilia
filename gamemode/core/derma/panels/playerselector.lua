@@ -1,7 +1,7 @@
 local PANEL = {}
 
 function PANEL:Init()
-    self:SetTitle(self.Title or "Select Player")
+    self:SetTitle(self.Title or L("selectPlayer"))
     self:SetSize(self.Width or 340, self.Height or 398)
     self:Center()
     self:MakePopup()

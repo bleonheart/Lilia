@@ -912,7 +912,7 @@ net.Receive("liaAssureClientSideAssets", function()
                     if not fromCache then print(string.format("[?] Image downloaded: %s", download.name)) end
                 else
                     failedImages = failedImages + 1
-                    local errorMessage = errorMsg or "Unknown error"
+                    local errorMessage = errorMsg or L("unknownError")
                     print(string.format("[?] Image failed: %s - %s", download.name, errorMessage))
                     chat.AddText(Color(255, 100, 100), "[Image Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end
@@ -927,7 +927,7 @@ net.Receive("liaAssureClientSideAssets", function()
                     if not fromCache then print(string.format("[?] Sound downloaded: %s", download.name)) end
                 else
                     failedSounds = failedSounds + 1
-                    local errorMessage = errorMsg or "Unknown error"
+                    local errorMessage = errorMsg or L("unknownError")
                     print(string.format("[?] Sound failed: %s - %s", download.name, errorMessage))
                     chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
                 end

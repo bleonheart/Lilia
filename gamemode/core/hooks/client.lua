@@ -621,7 +621,7 @@ concommand.Add("lia_open_derma_preview", function()
 
     addPreview("DNumSlider", function()
         local slider = scroll:Add("DNumSlider")
-        slider:SetText("DNumSlider")
+        slider:SetText(L("dNumSlider"))
         slider:SetMin(0)
         slider:SetMax(100)
         slider:SetValue(50)
@@ -700,7 +700,7 @@ concommand.Add("lia_open_derma_preview", function()
 
     addPreview("DCollapsibleCategory", function()
         local collCat = scroll:Add("DCollapsibleCategory")
-        collCat:SetLabel("DCollapsibleCategory")
+        collCat:SetLabel(L("dCollapsibleCategory"))
         local content = vgui.Create("DPanel")
         content:SetTall(40)
         collCat:SetContents(content)
@@ -780,7 +780,7 @@ concommand.Add("lia_open_derma_panels", function()
 
     addPreview("liaButton", function()
         local btn = lia.derma.button(scroll:GetCanvas(), nil, nil, nil, 6)
-        btn:SetText("liaButton")
+        btn:SetText(L("liaButton"))
         btn:SetSize(150, 35)
         return btn
     end)
@@ -856,7 +856,7 @@ concommand.Add("lia_open_derma_panels", function()
 
     addPreview("liaText", function()
         local text = vgui.Create("liaText", scroll:GetCanvas())
-        text:SetText("This is liaText panel with some example text to show how it looks.")
+        text:SetText(L("liaTextExample"))
         text:SetSize(200, 60)
         return text
     end)
@@ -866,7 +866,7 @@ concommand.Add("lia_open_derma_panels", function()
         container:SetTall(50)
         container:SetPaintBackground(false)
         local colorBtn = lia.derma.button(container, nil, nil, nil, 6)
-        colorBtn:SetText("Open Color Picker")
+        colorBtn:SetText(L("openColorPicker"))
         colorBtn:Dock(TOP)
         colorBtn.DoClick = function() lia.derma.colorPicker(function(color) print("Selected color: ", color) end) end
         return container
@@ -877,7 +877,7 @@ concommand.Add("lia_open_derma_panels", function()
         scrollPanel:SetSize(200, 120)
         for i = 1, 10 do
             local item = vgui.Create("DLabel", scrollPanel:GetCanvas())
-            item:SetText("Item " .. i)
+            item:SetText(L("itemNumber", i))
             item:Dock(TOP)
             item:DockMargin(0, 0, 0, 2)
             item:SizeToContents()
@@ -907,24 +907,24 @@ concommand.Add("lia_open_derma_panels", function()
         container:SetTall(50)
         container:SetPaintBackground(false)
         local radialBtn = lia.derma.button(container, nil, nil, nil, 6)
-        radialBtn:SetText("Open Radial Menu")
+        radialBtn:SetText(L("openRadialMenu"))
         radialBtn:Dock(TOP)
         radialBtn.DoClick = function()
             lia.derma.radialMenu({
                 {
-                    name = "Option 1",
+                    name = L("radialOption1"),
                     callback = function() print("Option 1") end
                 },
                 {
-                    name = "Option 2",
+                    name = L("radialOption2"),
                     callback = function() print("Option 2") end
                 },
                 {
-                    name = "Option 3",
+                    name = L("radialOption3"),
                     callback = function() print("Option 3") end
                 },
                 {
-                    name = "Option 4",
+                    name = L("radialOption4"),
                     callback = function() print("Option 4") end
                 }
             })
@@ -937,13 +937,13 @@ concommand.Add("lia_open_derma_panels", function()
         container:SetTall(50)
         container:SetPaintBackground(false)
         local menuBtn = lia.derma.button(container, nil, nil, nil, 6)
-        menuBtn:SetText("Open Context Menu")
+        menuBtn:SetText(L("openContextMenu"))
         menuBtn:Dock(TOP)
         menuBtn.DoClick = function()
             local menu = lia.derma.dermaMenu()
-            menu:AddOption("Menu Option 1", function() print("Option 1 selected") end)
-            menu:AddOption("Menu Option 2", function() print("Option 2 selected") end)
-            menu:AddOption("Menu Option 3", function() print("Option 3 selected") end)
+            menu:AddOption(L("menuOption1"), function() print("Option 1 selected") end)
+            menu:AddOption(L("menuOption2"), function() print("Option 2 selected") end)
+            menu:AddOption(L("menuOption3"), function() print("Option 3 selected") end)
         end
         return container
     end)
@@ -953,7 +953,7 @@ concommand.Add("lia_open_derma_panels", function()
         container:SetTall(50)
         container:SetPaintBackground(false)
         local playerBtn = lia.derma.button(container, nil, nil, nil, 6)
-        playerBtn:SetText("Open Player Selector")
+        playerBtn:SetText(L("openPlayerSelector"))
         playerBtn:Dock(TOP)
         playerBtn.DoClick = function() lia.derma.playerSelector(function(player) print("Selected player: ", player:Name()) end) end
         return container

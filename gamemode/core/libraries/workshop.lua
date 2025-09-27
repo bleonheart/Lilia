@@ -124,7 +124,7 @@ else
         panel:SetZPos(10000)
         panel:MoveToFront()
         derma.SkinHook("Paint", "Panel", panel, w, h)
-        local lbl = vgui.Create("liaLabel", panel)
+        local lbl = vgui.Create("DLabel", panel)
         lbl:SetFont("DermaLarge")
         lbl:SetText(L("downloadingWorkshopAddonsTitle"))
         lbl:SizeToContents()
@@ -220,15 +220,7 @@ else
     end)
 
     -- Auto-mount content when client receives workshop info
-    hook.Add("liaWorkshopInfoReceived", "liaAutoMountContent", function()
-        if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
-            timer.Simple(0.5, function()
-                if lia.workshop and lia.workshop.mountContent then
-                    lia.workshop.mountContent()
-                end
-            end)
-        end
-    end)
+    hook.Add("liaWorkshopInfoReceived", "liaAutoMountContent", function() if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then timer.Simple(0.5, function() if lia.workshop and lia.workshop.mountContent then lia.workshop.mountContent() end end) end end)
     function lia.workshop.mountContent()
         local ids = lia.workshop.serverIds or {}
         local needed = {}

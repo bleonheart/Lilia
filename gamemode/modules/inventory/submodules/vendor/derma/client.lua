@@ -581,7 +581,7 @@ function PANEL:setItemType(itemType)
 
     self:updateLabel()
     self:updateAction()
-    local rarity = item.rarity or "Common"
+    local rarity = item.rarity or L("commonRarity")
     local nameColor = RarityColors[rarity] or color_white
     self.name:SetTextColor(nameColor)
 end

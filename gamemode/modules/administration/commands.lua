@@ -2068,7 +2068,7 @@ lia.command.add("chargiveitem", {
                 local successMessage = itemNameDisplay .. " x" .. successCount
                 target:notifySuccessLocalized(successMessage)
                 if target ~= client then
-                    client:notifySuccessLocalized("Gave " .. itemNameDisplay .. " x" .. successCount .. " to " .. target:Name())
+                    client:notifySuccessLocalized("gaveItemToTarget", itemNameDisplay, successCount, target:Name())
                 end
             end
             local logMessage = count == 1 and itemNameDisplay or string.format("%s x%d", itemNameDisplay, count)
@@ -2964,7 +2964,7 @@ lia.command.add("exportprivileges", {
 
 lia.command.add("serverpassword", {
     superAdminOnly = true,
-    desc = "Get the current server password and copy it to your clipboard.",
+    desc = "serverPasswordDesc",
     alias = {"svpassword", "getserverpassword"},
     onRun = function(client)
         if not IsValid(client) then

@@ -107,7 +107,7 @@ function PANEL:GetVBar()
 end
 
 function PANEL:DisableVBarPadding()
-    if not IsValid(self.vbar) then return end
+    if not IsValid(self.vbar) or not IsValid(self.vbar.btnGrip) then return end
     self._vbarPadRight = 0
     self.vbar:DockMargin(self._vbarPadRight, 0, 0, 0)
     self:_markDirty()
@@ -116,6 +116,7 @@ function PANEL:DisableVBarPadding()
 end
 
 function PANEL:AddItem(pnl)
+    if not IsValid(pnl) then return end
     pnl:SetParent(self.content)
     local old = pnl.OnSizeChanged
     pnl.OnSizeChanged = function(...)
@@ -138,8 +139,8 @@ end
 
 function PANEL:OnChildAdded(child)
     timer.Simple(0, function()
-        if child == self.content or child == self.vbar or child == self.vbar.btnGrip then return end
         if not IsValid(child) or not IsValid(self) then return end
+        if child == self.content or (self.vbar and child == self.vbar) or (self.vbar and self.vbar.btnGrip and child == self.vbar.btnGrip) then return end
         if child:GetParent() == self then
             child:SetParent(self.content)
             local old = child.OnSizeChanged
@@ -264,7 +265,7 @@ function PANEL:OnCursorMoved(_, y)
 end
 
 function PANEL:SetVBarPaddingRight(enabled)
-    if not IsValid(self.vbar) then return end
+    if not IsValid(self.vbar) or not IsValid(self.vbar.btnGrip) then return end
     self.vbar:DockMargin(enabled and 6 or 0, 0, 0, 0)
     self:_markDirty()
 end
@@ -284,8 +285,8 @@ function PANEL:Think()
     local maxScrollDF, viewH, contentH = self:_range()
     local extraTop = math.max(0, -self.offset)
     local extraBottom = math.max(0, self.offset - maxScrollDF)
-    if self._springing then if CurTime() - self.lastInput < 0.02 then self._springing = false end end
     if self._springing then
+        if CurTime() - self.lastInput < 0.02 then self._springing = false end
         local t = math.min(1, ft * self.spring)
         self.offset = Lerp(t, self.offset, self._springTarget)
         self.vel = 0
@@ -457,7 +458,7 @@ function PANEL:ScrollToChild(panel)
     local canvas = self.content
     local scroll = self.vbar
 
-    if not IsValid(scroll) then return end
+    if not IsValid(scroll) or not IsValid(scroll.btnGrip) then return end
 
     local _, y = panel:GetPos()
     local _, canvasY = canvas:GetPos()
@@ -478,7 +479,7 @@ function PANEL:InvalidateParent()
 end
 
 function PANEL:SetScrollbarWidth(width)
-    if IsValid(self.vbar) then
+    if IsValid(self.vbar) and IsValid(self.vbar.btnGrip) then
         self.vbar:SetWide(width)
     end
 end

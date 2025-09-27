@@ -11,7 +11,7 @@ function PANEL:Init()
     self.header = vgui.Create("liaButton", self)
     self.header:Dock(TOP)
     self.header:DockMargin(0, 0, 0, 5)
-    self.header:SetText("")
+    self.header:SetText(self.title or "")
     self.header:SetTall(self.headerHeight)
     self.header.DoClick = function() self:Toggle() end
     self.header.PaintOver = function(_, w, h) self:PaintHeader(w, h) end
@@ -83,6 +83,9 @@ end
 
 function PANEL:SetTitle(title)
     self.title = title
+    if IsValid(self.header) then
+        self.header:SetText(title or "")
+    end
 end
 
 function PANEL:GetTitle()
