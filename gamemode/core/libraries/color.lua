@@ -1,7 +1,64 @@
 ﻿lia.color = lia.color or {}
 lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
-lia.color.theme = lia.color.theme or {}
+function lia.color.register(name, color)
+    lia.color.stored[name:lower()] = color
+end
+
+function lia.color.Adjust(color, rOffset, gOffset, bOffset, aOffset)
+    return Color(math.Clamp(color.r + rOffset, 0, 255), math.Clamp(color.g + gOffset, 0, 255), math.Clamp(color.b + bOffset, 0, 255), math.Clamp((color.a or 255) + (aOffset or 0), 0, 255))
+end
+
+function lia.color.registerTheme(name, themeData)
+    local id = name:lower()
+    lia.color.themes[id] = themeData
+end
+
+function lia.color.getCurrentTheme()
+    return lia.config.get("Theme", "Dark"):lower()
+end
+
+function lia.color.getCurrentThemeName()
+    return lia.config.get("Theme", "Dark")
+end
+
+function lia.color.applyTheme(themeName, useTransition)
+    themeName = themeName or lia.color.getCurrentTheme()
+    local themeData = lia.color.themes[themeName]
+    if themeData then
+        if useTransition and CLIENT then
+            -- Use smooth transition
+            lia.color.startThemeTransition(themeName)
+        else
+            -- Immediate theme change
+            -- Store the current theme data for easy access
+            lia.color.theme = table.Copy(themeData)
+        end
+    end
+end
+
+function lia.color.isTransitionActive()
+    return lia.color.transition.active
+end
+
+-- Test function to manually trigger theme transitions (for development)
+function lia.color.testThemeTransition(themeName)
+    if CLIENT then
+        lia.color.applyTheme(themeName, true)
+        print("Started theme transition to: " .. themeName)
+    end
+end
+
+function lia.color.getAllThemes()
+    local themes = {}
+    for id, name in pairs(lia.color.themes) do
+        themes[#themes + 1] = name
+    end
+
+    table.sort(themes)
+    return themes
+end
+
 lia.color.transition = {
     active = false,
     to = nil,
@@ -10,95 +67,84 @@ lia.color.transition = {
     colorBlend = 8
 }
 
-function lia.color.register(name, color)
-    lia.color.stored[name:lower()] = color
-end
-
-function lia.color.setTheme(name)
-    if not isstring(name) then error('Theme name must be a string') end
-    local themeName = name:lower()
-    if not lia.color.themes[themeName] then error('Theme "' .. name .. '" does not exist') end
-    lia.color.theme = table.Copy(lia.color.themes[themeName])
-end
-
-function lia.color.setThemeSmooth(name)
-    if not isstring(name) then error('Theme name must be a string') end
-    local themeName = name:lower()
-    if not lia.color.themes[themeName] then error('Theme "' .. name .. '" does not exist') end
-    lia.color.transition.to = table.Copy(lia.color.themes[themeName])
-    lia.color.transition.active = true
-    lia.color.transition.progress = 0
+function lia.color.startThemeTransition(name)
+    local targetTheme = lia.color.themes[name:lower()]
+    if not targetTheme then return end
+    transition.to = table.Copy(targetTheme)
+    transition.active = true
+    transition.progress = 0
     if not hook.GetTable().LiliaThemeTransition then
-        hook.Add("Think", "LiliaThemeTransition", function()
-            if not lia.color.transition.active then return end
+        hook.Add('Think', 'LiliaThemeTransition', function()
+            if not transition.active then return end
             local dt = FrameTime()
-            lia.color.transition.progress = lia.util.approachExp(lia.color.transition.progress, 1, lia.color.transition.speed, dt)
-            local to = lia.color.transition.to
+            transition.progress = math.min(transition.progress + (transition.speed * dt), 1)
+            local to = transition.to
             if not to then
-                lia.color.transition.active = false
-                hook.Remove("Think", "LiliaThemeTransition")
+                transition.active = false
+                hook.Remove('Think', 'LiliaThemeTransition')
                 return
             end
 
+            -- Update lia.color.stored with interpolated values
             for k, v in pairs(to) do
                 if lia.color.isColor(v) then
-                    lia.color.theme[k] = lia.color.Lerp(lia.color.transition.colorBlend, lia.color.theme[k] or v, v)
+                    local current = lia.color.stored[k]
+                    if current then
+                        lia.color.stored[k] = lia.color.lerp(transition.colorBlend, current, v)
+                    else
+                        lia.color.stored[k] = v
+                    end
                 elseif type(v) == 'table' and #v > 0 then
-                    lia.color.theme[k] = lia.color.theme[k] or {}
+                    if not lia.color.stored[k] then lia.color.stored[k] = {} end
                     for i = 1, #v do
                         local vi = v[i]
                         if lia.color.isColor(vi) then
-                            local currentColor = (lia.color.theme[k] and lia.color.theme[k][i]) or vi
-                            lia.color.theme[k][i] = lia.color.Lerp(lia.color.transition.colorBlend, currentColor, vi)
+                            local currentVal = lia.color.stored[k] and lia.color.stored[k][i]
+                            if currentVal then
+                                lia.color.stored[k][i] = lia.color.lerp(transition.colorBlend, currentVal, vi)
+                            else
+                                lia.color.stored[k][i] = vi
+                            end
                         else
-                            lia.color.theme[k][i] = vi
+                            lia.color.stored[k][i] = vi
                         end
                     end
+                else
+                    lia.color.stored[k] = v
                 end
             end
 
-            if lia.color.transition.progress >= 0.999 then
-                lia.color.theme = table.Copy(lia.color.transition.to)
-                lia.color.transition.active = false
-                hook.Remove("Think", "LiliaThemeTransition")
+            if transition.progress >= 0.999 then
+                -- Complete the transition by copying final values
+                for k, v in pairs(to) do
+                    lia.color.stored[k] = v
+                end
+
+                transition.active = false
+                hook.Remove('Think', 'LiliaThemeTransition')
             end
         end)
     end
 end
 
 function lia.color.isColor(v)
-    return type(v) == "table" and type(v.r) == "number"
+    return type(v) == 'table' and type(v.r) == 'number'
 end
 
-function lia.color.LerpColor(frac, col1, col2)
-    local ft = FrameTime() * frac
-    return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
+function lia.color.ReturnMainAdjustedColors()
+    local base = lia.config.get("Color")
+    return {
+        background = lia.color.Adjust(base, -20, -10, -50, 0),
+        sidebar = lia.color.Adjust(base, -30, -15, -60, -55),
+        accent = base,
+        text = Color(245, 245, 220, 255),
+        hover = lia.color.Adjust(base, -40, -25, -70, -35),
+        border = Color(255, 255, 255, 255),
+        highlight = Color(255, 255, 255, 30)
+    }
 end
 
-function lia.color.getCurrentThemeName()
-    for name, theme in pairs(lia.color.themes) do
-        if theme == lia.color.theme then return name end
-    end
-    return 'unknown'
-end
-
-function lia.color.isTransitioning()
-    return lia.color.transition.active
-end
-
-function lia.color.getTheme(name)
-    if name then
-        return lia.color.themes[name:lower()]
-    else
-        return lia.color.theme
-    end
-end
-
-function lia.color.Adjust(color, rOffset, gOffset, bOffset, aOffset)
-    return Color(math.Clamp(color.r + rOffset, 0, 255), math.Clamp(color.g + gOffset, 0, 255), math.Clamp(color.b + bOffset, 0, 255), math.Clamp((color.a or 255) + (aOffset or 0), 0, 255))
-end
-
-function lia.color.Lerp(frac, col1, col2)
+function lia.color.lerp(frac, col1, col2)
     local ft = FrameTime() * frac
     return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
 end
@@ -113,31 +159,6 @@ function Color(r, g, b, a)
     return oldColor(r, g, b, a)
 end
 
-function lia.color.registerTheme(name, themeData)
-    if not isstring(name) then error("Theme name must be a string") end
-    if not istable(themeData) then error("Theme data must be a table") end
-    local requiredFields = {"background", "sidebar", "accent", "text"}
-    for _, field in ipairs(requiredFields) do
-        if not themeData[field] then error("Theme '" .. name .. "' is missing required field: " .. field) end
-    end
-
-    lia.color.themes[name:lower()] = themeData
-    if CLIENT and table.IsEmpty(lia.color.theme) then lia.color.theme = table.Copy(themeData) end
-    function lia.color.getThemes()
-        local themes = {}
-        for name, _ in pairs(lia.color.themes) do
-            table.insert(themes, name)
-        end
-        return themes
-    end
-
-    -- Set default theme if none is set
-    if CLIENT and table.IsEmpty(lia.color.theme) then
-        local defaultTheme = lia.color.themes["default"]
-        if defaultTheme then lia.color.theme = table.Copy(defaultTheme) end
-    end
-end
-
 lia.color.register("black", {0, 0, 0})
 lia.color.register("white", {255, 255, 255})
 lia.color.register("gray", {128, 128, 128})
@@ -145,495 +166,252 @@ lia.color.register("dark_gray", {64, 64, 64})
 lia.color.register("light_gray", {192, 192, 192})
 lia.color.register("red", {255, 0, 0})
 lia.color.register("dark_red", {139, 0, 0})
-lia.color.register("light_red", {255, 99, 71})
 lia.color.register("green", {0, 255, 0})
 lia.color.register("dark_green", {0, 100, 0})
-lia.color.register("light_green", {144, 238, 144})
 lia.color.register("blue", {0, 0, 255})
 lia.color.register("dark_blue", {0, 0, 139})
-lia.color.register("light_blue", {173, 216, 230})
-lia.color.register("cyan", {0, 255, 255})
-lia.color.register("dark_cyan", {0, 139, 139})
-lia.color.register("magenta", {255, 0, 255})
-lia.color.register("dark_magenta", {139, 0, 139})
 lia.color.register("yellow", {255, 255, 0})
-lia.color.register("dark_yellow", {139, 139, 0})
 lia.color.register("orange", {255, 165, 0})
-lia.color.register("dark_orange", {255, 140, 0})
 lia.color.register("purple", {128, 0, 128})
-lia.color.register("dark_purple", {75, 0, 130})
 lia.color.register("pink", {255, 192, 203})
-lia.color.register("dark_pink", {199, 21, 133})
 lia.color.register("brown", {165, 42, 42})
-lia.color.register("dark_brown", {139, 69, 19})
-lia.color.registerTheme("dark", {
-    background = Color(25, 25, 25),
-    sidebar = Color(40, 40, 40),
-    accent = Color(106, 108, 197),
-    text = Color(255, 255, 255),
-    hover = Color(60, 65, 80),
-    border = Color(100, 100, 100),
-    highlight = Color(106, 108, 197, 30),
-    window_shadow = Color(0, 0, 0, 100),
-    header = Color(40, 40, 40),
-    header_text = Color(100, 100, 100),
-    background_alpha = Color(25, 25, 25, 210),
-    background_panelpopup = Color(20, 20, 20, 150),
-    button = Color(54, 54, 54),
-    button_shadow = Color(0, 0, 0, 25),
-    button_hovered = Color(60, 60, 62),
-    liaButtonColor = Color(54, 54, 54),
-    liaButtonHoveredColor = Color(60, 60, 62),
-    liaButtonShadowColor = Color(0, 0, 0, 25),
-    liaButtonRippleColor = Color(255, 255, 255, 30),
-    liaButtonIconColor = Color(255, 255, 255),
-    category = Color(50, 50, 50),
-    category_opened = Color(50, 50, 50, 0),
+lia.color.register("maroon", {128, 0, 0})
+lia.color.register("navy", {0, 0, 128})
+lia.color.register("olive", {128, 128, 0})
+lia.color.register("teal", {0, 128, 128})
+lia.color.register("cyan", {0, 255, 255})
+lia.color.register("magenta", {255, 0, 255})
+lia.color.registerTheme("Dark", {
+    header = Color(51, 51, 51),
+    header_text = Color(109, 109, 109),
+    background = Color(34, 34, 34),
+    background_alpha = Color(34, 34, 34, 210),
+    background_panelpopup = Color(29, 29, 29),
+    button = Color(56, 56, 56),
+    button_shadow = Color(0, 0, 0, 30),
+    button_hovered = Color(52, 70, 109),
+    category = Color(54, 54, 56),
+    category_opened = Color(54, 54, 56, 0),
     theme = Color(106, 108, 197),
-    panel = {Color(60, 60, 60), Color(50, 50, 50), Color(80, 80, 80)},
-    toggle = Color(56, 56, 56),
+    panel = {Color(71, 71, 75), Color(60, 60, 64), Color(193, 193, 193)},
+    panel_alpha = {ColorAlpha(Color(71, 71, 75), 150), ColorAlpha(Color(60, 60, 64), 150), ColorAlpha(Color(193, 193, 193), 150)},
     focus_panel = Color(46, 46, 46),
-    gray = Color(150, 150, 150, 220),
-    panel_alpha = {Color(60, 60, 60, 150), Color(50, 50, 50, 150), Color(80, 80, 80, 150)}
+    hover = Color(60, 65, 80),
+    window_shadow = Color(0, 0, 0, 150),
+    gray = Color(190, 190, 190, 220),
+    text = Color(255, 255, 255)
 })
 
-lia.color.registerTheme("dark_mono", {
-    background = Color(25, 25, 25),
-    sidebar = Color(40, 40, 40),
-    accent = Color(121, 121, 121),
-    text = Color(255, 255, 255),
+lia.color.registerTheme("Dark Mono", {
+    header = Color(51, 51, 51),
+    header_text = Color(109, 109, 109),
+    background = Color(34, 34, 34),
+    background_alpha = Color(34, 34, 34, 210),
+    background_panelpopup = Color(29, 29, 29),
+    button = Color(56, 56, 56),
+    button_shadow = Color(0, 0, 0, 30),
+    button_hovered = Color(52, 70, 109),
+    category = Color(54, 54, 56),
+    category_opened = Color(54, 54, 56, 0),
+    theme = Color(121, 121, 121),
+    panel = {Color(71, 71, 75), Color(60, 60, 64), Color(193, 193, 193)},
+    panel_alpha = {ColorAlpha(Color(71, 71, 75), 150), ColorAlpha(Color(60, 60, 64), 150), ColorAlpha(Color(193, 193, 193), 150)},
+    focus_panel = Color(46, 46, 46),
     hover = Color(60, 65, 80),
-    border = Color(100, 100, 100),
-    highlight = Color(121, 121, 121, 30),
-    window_shadow = Color(0, 0, 0, 100),
+    window_shadow = Color(0, 0, 0, 150),
+    gray = Color(190, 190, 190, 220),
+    text = Color(255, 255, 255)
+})
+
+lia.color.registerTheme("Graphite", {
     header = Color(40, 40, 40),
     header_text = Color(100, 100, 100),
+    background = Color(25, 25, 25),
     background_alpha = Color(25, 25, 25, 210),
-    background_panelpopup = Color(20, 20, 20, 150),
-    button = Color(54, 54, 54),
+    background_panelpopup = Color(20, 20, 20),
+    button = Color(45, 45, 45),
     button_shadow = Color(0, 0, 0, 25),
-    button_hovered = Color(60, 60, 62),
-    liaButtonColor = Color(54, 54, 54),
-    liaButtonHoveredColor = Color(60, 60, 62),
-    liaButtonShadowColor = Color(0, 0, 0, 25),
-    liaButtonRippleColor = Color(255, 255, 255, 30),
-    liaButtonIconColor = Color(255, 255, 255),
+    button_hovered = Color(60, 60, 60),
     category = Color(50, 50, 50),
     category_opened = Color(50, 50, 50, 0),
-    theme = Color(121, 121, 121),
+    theme = Color(130, 130, 130),
     panel = {Color(60, 60, 60), Color(50, 50, 50), Color(80, 80, 80)},
-    toggle = Color(56, 56, 56),
-    focus_panel = Color(46, 46, 46),
+    panel_alpha = {ColorAlpha(Color(60, 60, 60), 130), ColorAlpha(Color(50, 50, 50), 130), ColorAlpha(Color(80, 80, 80), 130)},
+    focus_panel = Color(55, 55, 55),
+    hover = Color(70, 70, 70),
+    window_shadow = Color(0, 0, 0, 120),
     gray = Color(150, 150, 150, 220),
-    panel_alpha = {Color(60, 60, 60, 150), Color(50, 50, 50, 150), Color(80, 80, 80, 150)}
+    text = Color(220, 220, 220)
 })
 
-lia.color.registerTheme("light", {
-    background = Color(255, 255, 255),
-    sidebar = Color(240, 240, 240),
-    accent = Color(106, 108, 197),
-    text = Color(20, 20, 20),
-    hover = Color(235, 240, 255),
-    border = Color(150, 150, 150),
-    highlight = Color(106, 108, 197, 30),
-    window_shadow = Color(0, 0, 0, 50),
+lia.color.registerTheme("Light", {
     header = Color(240, 240, 240),
     header_text = Color(150, 150, 150),
+    background = Color(255, 255, 255),
     background_alpha = Color(255, 255, 255, 170),
-    background_panelpopup = Color(245, 245, 245, 150),
+    background_panelpopup = Color(245, 245, 245),
     button = Color(235, 235, 235),
     button_shadow = Color(0, 0, 0, 15),
-    button_hovered = Color(196, 199, 218),
-    liaButtonColor = Color(235, 235, 235),
-    liaButtonHoveredColor = Color(196, 199, 218),
-    liaButtonShadowColor = Color(0, 0, 0, 15),
+    button_hovered = Color(215, 220, 255),
     category = Color(240, 240, 245),
     category_opened = Color(240, 240, 245, 0),
     theme = Color(106, 108, 197),
     panel = {Color(250, 250, 255), Color(240, 240, 245), Color(230, 230, 235)},
-    toggle = Color(220, 220, 230),
+    panel_alpha = {ColorAlpha(Color(250, 250, 255), 120), ColorAlpha(Color(240, 240, 245), 120), ColorAlpha(Color(230, 230, 235), 120)},
     focus_panel = Color(245, 245, 255),
+    hover = Color(235, 240, 255),
+    window_shadow = Color(0, 0, 0, 50),
     gray = Color(130, 130, 130, 220),
-    panel_alpha = {Color(250, 250, 255, 120), Color(240, 240, 245, 120), Color(230, 230, 235, 120)}
+    text = Color(20, 20, 20)
 })
 
-lia.color.registerTheme("blue", {
-    background = Color(24, 28, 38),
-    sidebar = Color(36, 48, 66),
-    accent = Color(80, 160, 220),
-    text = Color(210, 220, 235),
-    hover = Color(80, 160, 220, 90),
-    border = Color(109, 129, 159),
-    highlight = Color(80, 160, 220, 30),
-    window_shadow = Color(18, 22, 32, 100),
+lia.color.registerTheme("Blue", {
     header = Color(36, 48, 66),
     header_text = Color(109, 129, 159),
+    background = Color(24, 28, 38),
     background_alpha = Color(24, 28, 38, 210),
-    background_panelpopup = Color(20, 24, 32, 150),
+    background_panelpopup = Color(20, 24, 32),
     button = Color(38, 54, 82),
     button_shadow = Color(18, 22, 32, 35),
-    button_hovered = Color(47, 69, 110),
-    liaButtonColor = Color(38, 54, 82),
-    liaButtonHoveredColor = Color(47, 69, 110),
-    liaButtonShadowColor = Color(18, 22, 32, 35),
+    button_hovered = Color(70, 120, 180),
     category = Color(34, 48, 72),
     category_opened = Color(34, 48, 72, 0),
     theme = Color(80, 160, 220),
     panel = {Color(34, 48, 72), Color(38, 54, 82), Color(70, 120, 180)},
-    toggle = Color(34, 44, 66),
+    panel_alpha = {ColorAlpha(Color(34, 48, 72), 110), ColorAlpha(Color(38, 54, 82), 110), ColorAlpha(Color(70, 120, 180), 110)},
     focus_panel = Color(48, 72, 90),
+    hover = Color(80, 160, 220, 90),
+    window_shadow = Color(18, 22, 32, 90),
     gray = Color(150, 170, 190, 200),
-    panel_alpha = {Color(34, 48, 72, 110), Color(38, 54, 82, 110), Color(70, 120, 180, 110)}
+    text = Color(210, 220, 235)
 })
 
-lia.color.registerTheme("red", {
-    background = Color(32, 24, 24),
-    sidebar = Color(54, 36, 36),
-    accent = Color(180, 80, 80),
-    text = Color(235, 210, 210),
-    hover = Color(180, 80, 80, 90),
-    border = Color(159, 109, 109),
-    highlight = Color(180, 80, 80, 30),
-    window_shadow = Color(32, 18, 18, 100),
+lia.color.registerTheme("Red", {
     header = Color(54, 36, 36),
     header_text = Color(159, 109, 109),
+    background = Color(32, 24, 24),
     background_alpha = Color(32, 24, 24, 210),
-    background_panelpopup = Color(28, 20, 20, 150),
+    background_panelpopup = Color(28, 20, 20),
     button = Color(66, 38, 38),
     button_shadow = Color(32, 18, 18, 35),
-    button_hovered = Color(97, 50, 50),
-    liaButtonColor = Color(66, 38, 38),
-    liaButtonHoveredColor = Color(97, 50, 50),
-    liaButtonShadowColor = Color(32, 18, 18, 35),
+    button_hovered = Color(140, 70, 70),
     category = Color(62, 34, 34),
     category_opened = Color(62, 34, 34, 0),
     theme = Color(180, 80, 80),
     panel = {Color(62, 34, 34), Color(66, 38, 38), Color(140, 70, 70)},
-    toggle = Color(60, 34, 34),
+    panel_alpha = {ColorAlpha(Color(62, 34, 34), 110), ColorAlpha(Color(66, 38, 38), 110), ColorAlpha(Color(140, 70, 70), 110)},
     focus_panel = Color(72, 48, 48),
+    hover = Color(180, 80, 80, 90),
+    window_shadow = Color(32, 18, 18, 90),
     gray = Color(180, 150, 150, 200),
-    panel_alpha = {Color(62, 34, 34, 110), Color(66, 38, 38, 110), Color(140, 70, 70, 110)}
+    text = Color(235, 210, 210)
 })
 
-lia.color.registerTheme("green", {
-    background = Color(24, 32, 26),
-    sidebar = Color(36, 54, 40),
-    accent = Color(80, 180, 120),
-    text = Color(210, 235, 210),
-    hover = Color(80, 180, 120, 90),
-    border = Color(109, 159, 109),
-    highlight = Color(80, 180, 120, 30),
-    window_shadow = Color(18, 32, 22, 100),
+lia.color.registerTheme("Green", {
     header = Color(36, 54, 40),
     header_text = Color(109, 159, 109),
+    background = Color(24, 32, 26),
     background_alpha = Color(24, 32, 26, 210),
-    background_panelpopup = Color(20, 28, 22, 150),
+    background_panelpopup = Color(20, 28, 22),
     button = Color(38, 66, 48),
     button_shadow = Color(18, 32, 22, 35),
-    button_hovered = Color(48, 88, 62),
-    liaButtonColor = Color(38, 66, 48),
-    liaButtonHoveredColor = Color(48, 88, 62),
-    liaButtonShadowColor = Color(18, 32, 22, 35),
+    button_hovered = Color(70, 140, 90),
     category = Color(34, 62, 44),
     category_opened = Color(34, 62, 44, 0),
     theme = Color(80, 180, 120),
     panel = {Color(34, 62, 44), Color(38, 66, 48), Color(70, 140, 90)},
-    toggle = Color(34, 60, 44),
+    panel_alpha = {ColorAlpha(Color(34, 62, 44), 110), ColorAlpha(Color(38, 66, 48), 110), ColorAlpha(Color(70, 140, 90), 110)},
     focus_panel = Color(48, 72, 58),
+    hover = Color(80, 180, 120, 90),
+    window_shadow = Color(18, 32, 22, 90),
     gray = Color(150, 180, 150, 200),
-    panel_alpha = {Color(34, 62, 44, 110), Color(38, 66, 48, 110), Color(70, 140, 90, 110)}
+    text = Color(210, 235, 210)
 })
 
-lia.color.registerTheme("orange", {
-    background = Color(255, 250, 240),
-    sidebar = Color(70, 35, 10),
-    accent = Color(245, 130, 50),
-    text = Color(45, 20, 10),
-    hover = Color(255, 165, 80, 90),
-    border = Color(250, 230, 210),
-    highlight = Color(245, 130, 50, 30),
-    window_shadow = Color(20, 8, 0, 100),
-    header = Color(70, 35, 10),
-    header_text = Color(250, 230, 210),
-    background_alpha = Color(255, 250, 240, 220),
-    background_panelpopup = Color(255, 245, 235, 160),
-    button = Color(184, 122, 64),
-    button_shadow = Color(20, 10, 0, 30),
-    button_hovered = Color(197, 129, 65),
-    liaButtonColor = Color(184, 122, 64),
-    liaButtonHoveredColor = Color(197, 129, 65),
-    liaButtonShadowColor = Color(20, 10, 0, 30),
-    category = Color(255, 245, 235),
-    category_opened = Color(255, 245, 235, 0),
-    theme = Color(245, 130, 50),
-    panel = {Color(255, 250, 240), Color(250, 220, 180), Color(235, 150, 90)},
-    toggle = Color(143, 121, 104),
-    focus_panel = Color(255, 240, 225),
-    gray = Color(180, 161, 150, 200),
-    panel_alpha = {Color(255, 250, 240, 120), Color(250, 220, 180, 120), Color(235, 150, 90, 120)}
+lia.color.registerTheme("Orange", {
+    header = Color(255, 200, 100),
+    header_text = Color(200, 120, 30),
+    background = Color(255, 245, 220),
+    background_alpha = Color(255, 245, 220, 210),
+    background_panelpopup = Color(255, 230, 180),
+    button = Color(255, 210, 140),
+    button_shadow = Color(255, 200, 100, 30),
+    button_hovered = Color(255, 170, 60),
+    category = Color(255, 230, 180),
+    category_opened = Color(255, 230, 180, 0),
+    theme = Color(255, 170, 60),
+    panel = {Color(255, 230, 180), Color(255, 210, 140), Color(255, 170, 60)},
+    panel_alpha = {ColorAlpha(Color(255, 230, 180), 110), ColorAlpha(Color(255, 210, 140), 110), ColorAlpha(Color(255, 170, 60), 110)},
+    focus_panel = Color(255, 210, 140),
+    hover = Color(255, 200, 100, 90),
+    window_shadow = Color(255, 200, 100, 90),
+    gray = Color(180, 150, 120, 200),
+    text = Color(120, 70, 0)
 })
 
-lia.color.registerTheme("purple", {
-    background = Color(25, 22, 30),
-    sidebar = Color(40, 36, 56),
-    accent = Color(138, 114, 219),
-    text = Color(245, 240, 255),
-    hover = Color(138, 114, 219, 90),
-    border = Color(150, 140, 180),
-    highlight = Color(138, 114, 219, 30),
-    window_shadow = Color(8, 6, 20, 100),
-    header = Color(40, 36, 56),
-    header_text = Color(150, 140, 180),
-    background_alpha = Color(25, 22, 30, 210),
-    background_panelpopup = Color(28, 24, 40, 150),
-    button = Color(58, 52, 76),
-    button_shadow = Color(8, 6, 20, 30),
-    button_hovered = Color(74, 64, 105),
-    liaButtonColor = Color(58, 52, 76),
-    liaButtonHoveredColor = Color(74, 64, 105),
-    liaButtonShadowColor = Color(8, 6, 20, 30),
-    category = Color(46, 40, 60),
-    category_opened = Color(46, 40, 60, 0),
-    theme = Color(138, 114, 219),
-    panel = {Color(56, 48, 76), Color(44, 36, 64), Color(120, 90, 200)},
-    toggle = Color(43, 39, 53),
-    focus_panel = Color(48, 42, 62),
-    gray = Color(140, 128, 148, 220),
-    panel_alpha = {Color(56, 48, 76, 150), Color(44, 36, 64, 150), Color(120, 90, 200, 150)}
+lia.color.registerTheme("Purple", {
+    header = Color(120, 81, 169),
+    header_text = Color(180, 140, 220),
+    background = Color(60, 40, 90),
+    background_alpha = Color(60, 40, 90, 210),
+    background_panelpopup = Color(80, 60, 120),
+    button = Color(140, 100, 200),
+    button_shadow = Color(120, 81, 169, 30),
+    button_hovered = Color(180, 140, 220),
+    category = Color(100, 70, 150),
+    category_opened = Color(100, 70, 150, 0),
+    theme = Color(180, 140, 220),
+    panel = {Color(100, 70, 150), Color(140, 100, 200), Color(180, 140, 220)},
+    panel_alpha = {ColorAlpha(Color(100, 70, 150), 110), ColorAlpha(Color(140, 100, 200), 110), ColorAlpha(Color(180, 140, 220), 110)},
+    focus_panel = Color(140, 100, 200),
+    hover = Color(180, 140, 220, 90),
+    window_shadow = Color(120, 81, 169, 90),
+    gray = Color(180, 170, 200, 200),
+    text = Color(230, 220, 255)
 })
 
-lia.color.registerTheme("coffee", {
-    background = Color(45, 32, 25),
-    sidebar = Color(67, 48, 36),
-    accent = Color(150, 110, 75),
-    text = Color(235, 225, 210),
-    hover = Color(150, 110, 75, 90),
-    border = Color(210, 190, 170),
-    highlight = Color(150, 110, 75, 30),
-    window_shadow = Color(15, 10, 5, 100),
+lia.color.registerTheme("Coffee", {
     header = Color(67, 48, 36),
     header_text = Color(210, 190, 170),
+    background = Color(45, 32, 25),
     background_alpha = Color(45, 32, 25, 215),
-    background_panelpopup = Color(38, 28, 22, 150),
+    background_panelpopup = Color(38, 28, 22),
     button = Color(84, 60, 45),
     button_shadow = Color(20, 10, 5, 40),
     button_hovered = Color(100, 75, 55),
-    liaButtonColor = Color(84, 60, 45),
-    liaButtonHoveredColor = Color(100, 75, 55),
-    liaButtonShadowColor = Color(20, 10, 5, 40),
     category = Color(72, 54, 42),
     category_opened = Color(72, 54, 42, 0),
     theme = Color(150, 110, 75),
     panel = {Color(68, 50, 40), Color(90, 65, 50), Color(150, 110, 75)},
-    toggle = Color(53, 40, 31),
+    panel_alpha = {ColorAlpha(Color(68, 50, 40), 110), ColorAlpha(Color(90, 65, 50), 110), ColorAlpha(Color(150, 110, 75), 110)},
     focus_panel = Color(70, 55, 40),
+    hover = Color(150, 110, 75, 90),
+    window_shadow = Color(15, 10, 5, 100),
     gray = Color(180, 150, 130, 200),
-    panel_alpha = {Color(68, 50, 40, 110), Color(90, 65, 50, 110), Color(150, 110, 75, 110)}
+    text = Color(235, 225, 210)
 })
 
-lia.color.registerTheme("ice", {
-    background = Color(235, 245, 255),
-    sidebar = Color(190, 225, 250),
-    accent = Color(100, 170, 230),
-    text = Color(20, 35, 50),
-    hover = Color(100, 170, 230, 80),
-    border = Color(68, 104, 139),
-    highlight = Color(100, 170, 230, 30),
-    window_shadow = Color(60, 100, 140, 100),
+lia.color.registerTheme("Ice", {
     header = Color(190, 225, 250),
     header_text = Color(68, 104, 139),
+    background = Color(235, 245, 255),
     background_alpha = Color(235, 245, 255, 200),
-    background_panelpopup = Color(220, 235, 245, 150),
+    background_panelpopup = Color(220, 235, 245),
     button = Color(145, 185, 225),
     button_shadow = Color(80, 110, 140, 40),
     button_hovered = Color(170, 210, 255),
-    liaButtonColor = Color(145, 185, 225),
-    liaButtonHoveredColor = Color(170, 210, 255),
-    liaButtonShadowColor = Color(80, 110, 140, 40),
     category = Color(200, 225, 245),
     category_opened = Color(200, 225, 245, 0),
     theme = Color(100, 170, 230),
-    panel = {Color(146, 186, 211), Color(107, 157, 190), Color(74, 132, 184)},
-    toggle = Color(168, 194, 219),
+    panel = {Color(210, 235, 250), Color(190, 220, 240), Color(100, 170, 230)},
+    panel_alpha = {ColorAlpha(Color(210, 235, 250), 120), ColorAlpha(Color(190, 220, 240), 120), ColorAlpha(Color(100, 170, 230), 120)},
     focus_panel = Color(205, 230, 245),
-    gray = Color(92, 112, 133, 200),
-    panel_alpha = {Color(146, 186, 211, 120), Color(107, 157, 190, 120), Color(74, 132, 184, 120)}
+    hover = Color(100, 170, 230, 80),
+    window_shadow = Color(60, 100, 140, 80),
+    gray = Color(114, 139, 165, 200),
+    text = Color(20, 35, 50)
 })
 
-lia.color.registerTheme("wine", {
-    background = Color(31, 23, 22),
-    sidebar = Color(59, 42, 53),
-    accent = Color(148, 61, 91),
-    text = Color(246, 242, 246),
-    hover = Color(192, 122, 217, 90),
-    border = Color(246, 242, 246),
-    highlight = Color(148, 61, 91, 30),
-    window_shadow = Color(10, 6, 20, 100),
-    header = Color(59, 42, 53),
-    header_text = Color(246, 242, 246),
-    background_alpha = Color(31, 23, 22, 210),
-    background_panelpopup = Color(36, 28, 28, 150),
-    button = Color(79, 50, 60),
-    button_shadow = Color(10, 6, 18, 30),
-    button_hovered = Color(90, 52, 65),
-    liaButtonColor = Color(79, 50, 60),
-    liaButtonHoveredColor = Color(90, 52, 65),
-    liaButtonShadowColor = Color(10, 6, 18, 30),
-    category = Color(79, 50, 60),
-    category_opened = Color(79, 50, 60, 0),
-    theme = Color(148, 61, 91),
-    panel = {Color(79, 50, 60), Color(63, 44, 48), Color(160, 85, 143)},
-    toggle = Color(63, 40, 47),
-    focus_panel = Color(70, 48, 58),
-    gray = Color(170, 150, 160, 200),
-    panel_alpha = {Color(79, 50, 60, 150), Color(63, 44, 48, 150), Color(160, 85, 143, 150)}
-})
-
-lia.color.registerTheme("violet", {
-    background = Color(22, 24, 35),
-    sidebar = Color(49, 50, 68),
-    accent = Color(159, 180, 255),
-    text = Color(238, 244, 255),
-    hover = Color(159, 180, 255, 90),
-    border = Color(238, 244, 255),
-    highlight = Color(159, 180, 255, 30),
-    window_shadow = Color(8, 6, 20, 100),
-    header = Color(49, 50, 68),
-    header_text = Color(238, 244, 255),
-    background_alpha = Color(22, 24, 35, 210),
-    background_panelpopup = Color(36, 40, 56, 150),
-    button = Color(58, 64, 84),
-    button_shadow = Color(8, 6, 18, 30),
-    button_hovered = Color(64, 74, 104),
-    liaButtonColor = Color(58, 64, 84),
-    liaButtonHoveredColor = Color(64, 74, 104),
-    liaButtonShadowColor = Color(8, 6, 18, 30),
-    category = Color(58, 64, 84),
-    category_opened = Color(58, 64, 84, 0),
-    theme = Color(159, 180, 255),
-    panel = {Color(58, 64, 84), Color(48, 52, 72), Color(109, 136, 255)},
-    toggle = Color(46, 51, 66),
-    focus_panel = Color(56, 62, 86),
-    gray = Color(147, 147, 184, 200),
-    panel_alpha = {Color(58, 64, 84, 150), Color(48, 52, 72, 150), Color(109, 136, 255, 150)}
-})
-
-lia.color.registerTheme("moss", {
-    background = Color(14, 16, 12),
-    sidebar = Color(42, 50, 36),
-    accent = Color(110, 160, 90),
-    text = Color(232, 244, 235),
-    hover = Color(110, 160, 90, 90),
-    border = Color(232, 244, 235),
-    highlight = Color(110, 160, 90, 30),
-    window_shadow = Color(0, 0, 0, 100),
-    header = Color(42, 50, 36),
-    header_text = Color(232, 244, 235),
-    background_alpha = Color(14, 16, 12, 210),
-    background_panelpopup = Color(24, 28, 22, 150),
-    button = Color(64, 82, 60),
-    button_shadow = Color(6, 8, 6, 30),
-    button_hovered = Color(74, 99, 68),
-    liaButtonColor = Color(64, 82, 60),
-    liaButtonHoveredColor = Color(74, 99, 68),
-    liaButtonShadowColor = Color(6, 8, 6, 30),
-    category = Color(46, 64, 44),
-    category_opened = Color(46, 64, 44, 0),
-    theme = Color(110, 160, 90),
-    panel = {Color(40, 56, 40), Color(66, 86, 66), Color(110, 160, 90)},
-    toggle = Color(35, 44, 34),
-    focus_panel = Color(46, 58, 44),
-    gray = Color(148, 165, 140, 220),
-    panel_alpha = {Color(40, 56, 40, 150), Color(66, 86, 66, 150), Color(110, 160, 90, 150)}
-})
-
-lia.color.registerTheme("coral", {
-    background = Color(18, 14, 16),
-    sidebar = Color(52, 32, 36),
-    accent = Color(255, 120, 90),
-    text = Color(255, 243, 242),
-    hover = Color(255, 120, 90, 90),
-    border = Color(255, 243, 242),
-    highlight = Color(255, 120, 90, 30),
-    window_shadow = Color(0, 0, 0, 100),
-    header = Color(52, 32, 36),
-    header_text = Color(255, 243, 242),
-    background_alpha = Color(18, 14, 16, 210),
-    background_panelpopup = Color(30, 22, 24, 150),
-    button = Color(116, 66, 61),
-    button_shadow = Color(8, 4, 6, 30),
-    button_hovered = Color(134, 73, 68),
-    liaButtonColor = Color(116, 66, 61),
-    liaButtonHoveredColor = Color(134, 73, 68),
-    liaButtonShadowColor = Color(8, 4, 6, 30),
-    category = Color(74, 40, 42),
-    category_opened = Color(74, 40, 42, 0),
-    theme = Color(255, 120, 90),
-    panel = {Color(66, 38, 40), Color(120, 60, 56), Color(240, 120, 90)},
-    toggle = Color(58, 39, 37),
-    focus_panel = Color(72, 42, 44),
-    gray = Color(167, 136, 136, 220),
-    panel_alpha = {Color(66, 38, 40, 150), Color(120, 60, 56, 150), Color(240, 120, 90, 150)}
-})
-
-lia.color.registerTheme("teal", {
-    background = Color(20, 30, 28),
-    sidebar = Color(30, 45, 42),
-    accent = Color(0, 180, 160),
-    text = Color(200, 240, 235),
-    hover = Color(0, 180, 160, 90),
-    border = Color(100, 180, 170),
-    highlight = Color(0, 180, 160, 30),
-    window_shadow = Color(0, 0, 0, 100),
-    header = Color(30, 45, 42),
-    header_text = Color(100, 180, 170),
-    background_alpha = Color(20, 30, 28, 210),
-    background_panelpopup = Color(15, 25, 23, 150),
-    button = Color(40, 60, 55),
-    button_shadow = Color(0, 0, 0, 25),
-    button_hovered = Color(50, 75, 70),
-    liaButtonColor = Color(40, 60, 55),
-    liaButtonHoveredColor = Color(50, 75, 70),
-    liaButtonShadowColor = Color(0, 0, 0, 25),
-    liaButtonRippleColor = Color(255, 255, 255, 30),
-    liaButtonIconColor = Color(255, 255, 255),
-    category = Color(35, 50, 47),
-    category_opened = Color(35, 50, 47, 0),
-    theme = Color(0, 180, 160),
-    panel = {Color(25, 40, 37), Color(35, 50, 47), Color(60, 90, 85)},
-    toggle = Color(30, 45, 42),
-    focus_panel = Color(40, 60, 55),
-    gray = Color(120, 160, 150, 220),
-    panel_alpha = {Color(25, 40, 37, 150), Color(35, 50, 47, 150), Color(60, 90, 85, 150)}
-})
-
-lia.color.registerTheme("default", {
-    background = Color(17, 96, 88, 255),
-    sidebar = Color(7, 86, 78, 200),
-    accent = Color(37, 116, 108, 255),
-    text = Color(245, 245, 220, 255),
-    hover = Color(57, 136, 128, 220),
-    border = Color(255, 255, 255, 255),
-    highlight = Color(255, 255, 255, 30),
-    window_shadow = Color(0, 0, 0, 100),
-    header = Color(40, 40, 40),
-    header_text = Color(100, 100, 100),
-    background_alpha = Color(25, 25, 25, 210),
-    background_panelpopup = Color(20, 20, 20, 150),
-    button = Color(54, 54, 54),
-    button_shadow = Color(0, 0, 0, 25),
-    button_hovered = Color(60, 60, 62),
-    liaButtonColor = Color(54, 54, 54),
-    liaButtonHoveredColor = Color(60, 60, 62),
-    liaButtonShadowColor = Color(0, 0, 0, 25),
-    liaButtonRippleColor = Color(255, 255, 255, 30),
-    liaButtonIconColor = Color(255, 255, 255),
-    category = Color(50, 50, 50),
-    category_opened = Color(50, 50, 50, 0),
-    theme = Color(106, 108, 197),
-    panel = {Color(60, 60, 60), Color(50, 50, 50), Color(80, 80, 80)},
-    toggle = Color(56, 56, 56),
-    focus_panel = Color(46, 46, 46),
-    gray = Color(150, 150, 150, 220),
-    panel_alpha = {Color(60, 60, 60, 150), Color(50, 50, 50, 150), Color(80, 80, 80, 150)}
-})
+-- Initialize theme property
+lia.color.theme = nil
+lia.color.applyTheme()

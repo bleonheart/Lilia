@@ -250,9 +250,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
             funcTable.name = L(funcName)
         end
 
-        if isstring(funcTable.tip) then
-            funcTable.tip = L(funcTable.tip)
-        end
+        if isstring(funcTable.tip) then funcTable.tip = L(funcTable.tip) end
     end
 
     if isstring(ITEM.name) then ITEM.name = L(ITEM.name) end
@@ -614,9 +612,9 @@ if SERVER then
 
         promise:next(function(item) if callback then callback(item) end end, function(reason)
             if reason and reason:find("An inventory has a missing item") then
-                lia.error(L("invalidItemInstantiate", reason:match("An inventory has a missing item '([^']+)'") or "Unknown"))
+                lia.error(reason)
             else
-                lia.error(L("failedToSpawnItem", tostring(reason or L("unknownError"))))
+                lia.error("Failed to spawn item: " .. tostring(reason or "Unknown error"))
             end
 
             if callback then callback(nil) end

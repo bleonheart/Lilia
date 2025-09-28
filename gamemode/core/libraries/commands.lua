@@ -14,7 +14,7 @@ function lia.command.buildSyntaxFromArguments(args)
             typ = "string"
         end
 
-        local name = L(arg.name or typ)
+        local name = arg.name or typ
         local optional = arg.optional and " optional" or ""
         tokens[#tokens + 1] = string.format("[%s %s%s]", typ, name, optional)
     end
@@ -25,7 +25,7 @@ function lia.command.add(command, data)
     data.arguments = data.arguments or {}
     data.syntax = lia.command.buildSyntaxFromArguments(data.arguments)
     data.syntax = L(data.syntax or "")
-    data.desc = L(data.desc or "")
+    data.desc = data.desc or ""
     data.privilege = data.privilege or nil
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
@@ -120,7 +120,7 @@ function lia.command.hasAccess(client, command, data)
     local hasAccess = true
     if accessLevels ~= "user" then
         if not isstring(privilegeID) then
-            lia.error(L("invalidPrivilegeIDType", tostring(command), tostring(privilegeID)))
+            lia.error("Command '" .. tostring(command) .. "' has invalid privilege ID type: " .. tostring(privilegeID))
             return false, privilegeName
         end
 
@@ -239,7 +239,7 @@ if SERVER then
                     for i, field in ipairs(fields) do
                         local arg = tokens[i]
                         if not arg or isPlaceholder(arg) then
-                            if not field.optional then missing[#missing + 1] = L(field.name) end
+                            if not field.optional then missing[#missing + 1] = field.name end
                         else
                             prefix[#prefix + 1] = arg
                         end
@@ -285,7 +285,7 @@ else
         prefix = prefix or {}
         local numFields = table.Count(fields)
         local frameW, frameH = 600, 200 + numFields * 75
-        local frame = vgui.Create("liaFrame")
+        local frame = vgui.Create("DFrame")
         frame:SetTitle("")
         frame:SetSize(frameW, frameH)
         frame:Center()
@@ -296,7 +296,7 @@ else
             draw.SimpleText(L(cmdKey), "liaMediumFont", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
         end
 
-        local scroll = vgui.Create("liaScrollPanel", frame)
+        local scroll = vgui.Create("DScrollPanel", frame)
         scroll:Dock(FILL)
         scroll:DockMargin(10, 40, 10, 10)
         surface.SetFont("liaSmallFont")
@@ -308,15 +308,15 @@ else
             local optional = data.optional
             local options = data.options
             local filter = data.filter
-            local panel = vgui.Create("liaBasePanel", scroll)
+            local panel = vgui.Create("DPanel", scroll)
             panel:Dock(TOP)
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = function() end
-            local textW = select(1, surface.GetTextSize(L(L(data.description or name))))
+            local textW = select(1, surface.GetTextSize(L(data.description or name)))
             local ctrl
             if fieldType == "player" then
-                ctrl = vgui.Create("liaComboBox", panel)
+                ctrl = vgui.Create("DComboBox", panel)
                 ctrl:SetValue(L("select") .. " " .. L("player"))
                 local players = {}
                 for _, plyObj in player.Iterator() do
@@ -332,7 +332,7 @@ else
                     ctrl:AddChoice(plyObj:Name(), plyObj:SteamID())
                 end
             elseif fieldType == "table" then
-                ctrl = vgui.Create("liaComboBox", panel)
+                ctrl = vgui.Create("DComboBox", panel)
                 ctrl:SetValue(L("select") .. " " .. L(name))
                 local opts = options
                 if isfunction(opts) then
@@ -350,13 +350,13 @@ else
                     end
                 end
             elseif fieldType == "bool" then
-                ctrl = vgui.Create("liaCheckBox", panel)
+                ctrl = vgui.Create("DCheckBox", panel)
             else
-                ctrl = vgui.Create("liaEntry", panel)
+                ctrl = vgui.Create("DTextEntry", panel)
                 ctrl:SetFont("liaSmallFont")
             end
 
-            local label = vgui.Create("liaText", panel)
+            local label = vgui.Create("DLabel", panel)
             label:SetFont("liaSmallFont")
             label:SetText(L(data.description or name))
             label:SizeToContents()
@@ -404,12 +404,12 @@ else
             end
         end
 
-        local buttons = vgui.Create("liaBasePanel", frame)
+        local buttons = vgui.Create("DPanel", frame)
         buttons:Dock(BOTTOM)
         buttons:SetTall(90)
         buttons:DockPadding(15, 15, 15, 15)
         buttons.Paint = function() end
-        local submit = vgui.Create("liaButton", buttons)
+        local submit = vgui.Create("DButton", buttons)
         submit:Dock(LEFT)
         submit:DockMargin(0, 0, 15, 0)
         submit:SetWide(270)
@@ -447,7 +447,7 @@ else
         end
 
         validate()
-        local cancel = vgui.Create("liaButton", buttons)
+        local cancel = vgui.Create("DButton", buttons)
         cancel:Dock(RIGHT)
         cancel:SetWide(270)
         cancel:SetText(L("cancel"))
@@ -543,3 +543,532 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
 end)
 
 lia.command.findPlayer = lia.util.findPlayer
+-- Console Commands
+if SERVER then
+    concommand.Add("kickbots", function()
+        for _, bot in player.Iterator() do
+            if bot:IsBot() then lia.administrator.execCommand("kick", bot, nil, L("allBotsKicked")) end
+        end
+    end)
+
+    concommand.Add("lia_reload", function(client)
+        if IsValid(client) and not client:IsSuperAdmin() then
+            client:notifyErrorLocalized("staffPermissionDenied")
+            return
+        end
+
+        lia.loader.load()
+        lia.information(L("configReloaded"))
+    end)
+
+    concommand.Add("lia_check_updates", function(client)
+        if IsValid(client) and not client:IsSuperAdmin() then
+            client:notifyErrorLocalized("staffPermissionDenied")
+            return
+        end
+
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Checking for updates...\n")
+        lia.loader.checkForUpdates()
+    end)
+
+    concommand.Add("plysetgroup", function(ply, _, args)
+        local target = lia.util.findPlayer(ply, args[1])
+        local usergroup = args[2]
+        if not IsValid(ply) then
+            if IsValid(target) then
+                if lia.administrator.groups[usergroup] then
+                    target.liaUserGroup = usergroup
+                    target:notifyInfoLocalized("userGroupSet", usergroup)
+                    lia.log.add(nil, "usergroup", target, usergroup)
+                else
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid usergroup '" .. usergroup .. "'\n")
+                end
+            else
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid player '" .. args[1] .. "'\n")
+            end
+        elseif ply:hasPrivilege("setUserGroup") then
+            if IsValid(target) then
+                if lia.administrator.groups[usergroup] then
+                    target.liaUserGroup = usergroup
+                    target:notifyInfoLocalized("userGroupSet", usergroup)
+                    ply:notifyInfoLocalized("userGroupSetBy", target:getName(), usergroup)
+                    lia.log.add(ply, "usergroup", target, usergroup)
+                else
+                    ply:notifyErrorLocalized("invalidUserGroup", usergroup)
+                end
+            else
+                ply:notifyErrorLocalized("plyNoExist")
+            end
+        else
+            ply:notifyErrorLocalized("noPerm")
+        end
+    end)
+
+    concommand.Add("stopsoundall", function(client)
+        if client:hasPrivilege("stopSoundForEveryone") then
+            for _, v in player.Iterator() do
+                v:ConCommand("stopsound")
+            end
+        else
+            client:notifyErrorLocalized("noPerm")
+        end
+    end)
+
+    concommand.Add("bots", function()
+        timer.Create("Bots_Add_Timer", 2, 0, function()
+            if #player.GetAll() < game.MaxPlayers() then
+                game.ConsoleCommand("bot\n")
+            else
+                timer.Remove("Bots_Add_Timer")
+            end
+        end)
+    end)
+
+    concommand.Add("lia_wipedb", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.db.wipeTables()
+        lia.information(L("dbWiped"))
+    end)
+
+    concommand.Add("lia_resetconfig", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.config.load(true)
+        lia.information(L("configReloaded"))
+    end)
+
+    concommand.Add("lia_wipecharacters", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.db.wipeCharacters()
+        lia.information(L("charsWiped"))
+    end)
+
+    concommand.Add("lia_wipelogs", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.db.wipeLogs()
+        lia.information(L("logsWiped"))
+    end)
+
+    concommand.Add("lia_wipebans", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.db.wipeBans()
+        lia.information(L("bansWiped"))
+    end)
+
+    concommand.Add("lia_wipepersistence", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.data.deleteAll()
+        lia.information(L("persistenceWiped"))
+    end)
+
+    concommand.Add("list_entities", function(client)
+        local entityCount = {}
+        local totalEntities = 0
+        if not IsValid(client) then
+            lia.information(L("entitiesOnServer") .. ":")
+            for _, entity in ents.Iterator() do
+                local class = entity:GetClass()
+                entityCount[class] = (entityCount[class] or 0) + 1
+                totalEntities = totalEntities + 1
+            end
+
+            for class, count in SortedPairs(entityCount) do
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), class .. ": " .. count .. "\n")
+            end
+
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("totalEntities") .. ": " .. totalEntities .. "\n")
+        else
+            client:notifyErrorLocalized("commandConsoleOnly")
+        end
+    end)
+
+    concommand.Add("database_list", function(ply)
+        if IsValid(ply) then return end
+        lia.db.GetCharacterTable(function(columns)
+            if #columns == 0 then
+                lia.error(L("dbColumnsNone"))
+            else
+                lia.information(L("dbColumnsList"))
+                for _, column in ipairs(columns) do
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), column .. "\n")
+                end
+            end
+        end)
+    end)
+
+    concommand.Add("lia_fix_characters", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.db.fixCharacters()
+        lia.information(L("charsFixed"))
+    end)
+
+    concommand.Add("test_all_notifications", function()
+        local notificationTypes = {
+            {
+                type = "default",
+                message = "This is a default notification. It is being used to demonstrate the default notification type in the Lilia framework. The message is intentionally made longer to test the notification panel's ability to handle extended text and to ensure that the notification wraps and displays correctly for all users.",
+                method = "notify"
+            },
+            {
+                type = "info",
+                message = "This is an information notification. It provides helpful information to the user about the current state of the system or game.",
+                method = "notifyInfo"
+            },
+            {
+                type = "warning",
+                message = "This is a warning notification. It alerts the user to potential issues or important information that requires attention.",
+                method = "notifyWarning"
+            },
+            {
+                type = "error",
+                message = "This is an error notification. It indicates that something has gone wrong and the user needs to take corrective action.",
+                method = "notifyError"
+            },
+            {
+                type = "success",
+                message = "This is a success notification. It confirms that an action was completed successfully and provides positive feedback to the user.",
+                method = "notifySuccess"
+            }
+        }
+
+        for _, notification in ipairs(notificationTypes) do
+            if notification.method == "notify" then
+                lia.notifier.notify(notification.message, notification.type)
+            else
+                lia.notifier[notification.method](notification.message)
+            end
+        end
+    end)
+
+    concommand.Add("lia_redownload_assets", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.loader.downloadAssets()
+        lia.information(L("assetsRedownloaded"))
+    end)
+
+    concommand.Add("test_existing_notifications", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.notifier.notify(L("testNotification"))
+        lia.notifier.notifyInfo(L("testNotificationInfo"))
+        lia.notifier.notifyWarning(L("testNotificationWarning"))
+        lia.notifier.notifyError(L("testNotificationError"))
+        lia.notifier.notifySuccess(L("testNotificationSuccess"))
+    end)
+
+    concommand.Add("print_vector", function(client)
+        if not IsValid(client) then
+            MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+            return
+        end
+
+        local pos = client:GetPos()
+        local vec = Vector(pos.x, pos.y, pos.z)
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Vector: " .. tostring(vec) .. "\n")
+    end)
+
+    concommand.Add("print_angle", function(client)
+        if not IsValid(client) then
+            MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+            return
+        end
+
+        local ang = client:GetAngles()
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Angle: " .. tostring(ang) .. "\n")
+    end)
+
+    concommand.Add("workshop_force_redownload", function()
+        table.Empty(queue)
+        buildQueue(true)
+        start()
+    end)
+
+    concommand.Add("lia_snapshot", function(_, _, args)
+        if not args[1] then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot <table_name>\n")
+            return
+        end
+
+        local tableName = args[1]
+        lia.db.snapshotTable(tableName)
+    end)
+
+    concommand.Add("lia_snapshot_load", function(_, _, args)
+        if not args[1] then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot_load <filename>\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Available snapshots:\n")
+            local files = file.Find("lilia/snapshots/*", "DATA")
+            for _, fileName in ipairs(files) do
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), fileName .. "\n")
+            end
+            return
+        end
+
+        local fileName = args[1]
+        lia.db.loadSnapshot(fileName)
+    end)
+
+    concommand.Add("lia_add_door_group_column", function()
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Adding door_group column to lia_doors table...\n")
+        lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
+            if not exists then
+                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Successfully added door_group column.\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to add door_group column: " .. error .. "\n") end)
+            else
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "door_group column already exists.\n")
+            end
+        end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to check door_group column: " .. error .. "\n") end)
+    end)
+else
+    -- Client-only commands
+    concommand.Add("weighpoint_stop", function() hook.Remove("HUDPaint", "WeighPoint") end)
+    concommand.Add("lia_vgui_cleanup", function()
+        for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
+            if not (v.Init and debug.getinfo(v.Init, "Sln").short_src:find("chatbox")) then v:Remove() end
+        end
+    end)
+
+    concommand.Add("lia_open_derma_preview", function()
+        if IsValid(dermaPreviewFrame) then dermaPreviewFrame:Remove() end
+        local frame = vgui.Create("DFrame")
+        frame:SetTitle(L("dermaPreviewTitle"))
+        frame:SetSize(800, 600)
+        frame:Center()
+        frame:MakePopup()
+        frame:ShowCloseButton(true)
+        local scroll = vgui.Create("DScrollPanel", frame)
+        scroll:Dock(FILL)
+        local elements = {"DButton", "DLabel", "DTextEntry", "DCheckBox", "DRadioButton", "DNumSlider", "DComboBox", "DListView", "DPanel", "DFrame", "DPropertySheet", "DTree", "DMenuBar", "DToolBar", "DProgress", "DHorizontalDivider", "DVerticalDivider"}
+        for _, element in ipairs(elements) do
+            local panel = vgui.Create("DPanel", scroll)
+            panel:Dock(TOP)
+            panel:SetTall(50)
+            panel:DockMargin(5, 5, 5, 5)
+            panel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(50, 50, 50, 150)) end
+            local label = vgui.Create("DLabel", panel)
+            label:SetText(element)
+            label:Dock(LEFT)
+            label:DockMargin(10, 0, 0, 0)
+            label:SizeToContents()
+            local button = vgui.Create("DButton", panel)
+            button:Dock(RIGHT)
+            button:DockMargin(0, 5, 10, 5)
+            button:SetWide(100)
+            button:SetText(L("test"))
+            button.DoClick = function()
+                local testElement = vgui.Create(element, panel)
+                testElement:Dock(FILL)
+                testElement:DockMargin(5, 5, 5, 5)
+            end
+        end
+    end)
+
+    concommand.Add("lia_open_mantle_preview", function()
+        if IsValid(mantlePreviewFrame) then mantlePreviewFrame:Remove() end
+        local frame = vgui.Create("DFrame")
+        frame:SetTitle(L("mantleDermaPreviewTitle", "Mantle Derma Elements Preview"))
+        frame:SetSize(800, 600)
+        frame:Center()
+        frame:MakePopup()
+        frame:ShowCloseButton(true)
+        local scroll = vgui.Create("DScrollPanel", frame)
+        scroll:Dock(FILL)
+        local elements = {"liaButton", "liaLabel", "liaTextEntry", "liaCheckBox", "liaComboBox", "liaListView", "liaPanel", "liaFrame", "liaSheet", "liaToolbar"}
+        for _, element in ipairs(elements) do
+            local panel = vgui.Create("DPanel", scroll)
+            panel:Dock(TOP)
+            panel:SetTall(50)
+            panel:DockMargin(5, 5, 5, 5)
+            panel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(50, 50, 50, 150)) end
+            local label = vgui.Create("DLabel", panel)
+            label:SetText(element)
+            label:Dock(LEFT)
+            label:DockMargin(10, 0, 0, 0)
+            label:SizeToContents()
+            local button = vgui.Create("DButton", panel)
+            button:Dock(RIGHT)
+            button:DockMargin(0, 5, 10, 5)
+            button:SetWide(100)
+            button:SetText(L("test"))
+            button.DoClick = function()
+                local testElement = vgui.Create(element, panel)
+                testElement:Dock(FILL)
+                testElement:DockMargin(5, 5, 5, 5)
+            end
+        end
+    end)
+
+    -- Websound commands
+    concommand.Add("lia_saved_sounds", function()
+        local files = file.Find(baseDir .. "*", "DATA")
+        if not files or #files == 0 then return end
+        local f = vgui.Create("DFrame")
+        f:SetTitle(L("savedSounds"))
+        f:SetSize(500, 400)
+        f:Center()
+        f:MakePopup()
+        local list = vgui.Create("DListView", f)
+        list:Dock(FILL)
+        list:DockMargin(5, 5, 5, 5)
+        list:AddColumn(L("soundName"))
+        for _, fileName in ipairs(files) do
+            if string.EndsWith(fileName, ".dat") then list:AddLine(string.StripExtension(fileName)) end
+        end
+    end)
+
+    concommand.Add("lia_wipe_sounds", function()
+        local files = file.Find(baseDir .. "*", "DATA")
+        for _, fn in ipairs(files) do
+            file.Delete(baseDir .. fn)
+        end
+
+        LocalPlayer():ChatPrint(L("soundsWiped"))
+    end)
+
+    concommand.Add("lia_validate_sounds", function()
+        local files = file.Find(baseDir .. "**", "DATA")
+        local validCount = 0
+        local invalidCount = 0
+        for _, fileName in ipairs(files) do
+            if string.EndsWith(fileName, ".dat") then
+                local data = file.Read(baseDir .. fileName, "DATA")
+                if data then
+                    local success, soundData = pcall(pon.decode, data)
+                    if success and soundData then
+                        validCount = validCount + 1
+                    else
+                        invalidCount = invalidCount + 1
+                    end
+                end
+            end
+        end
+
+        LocalPlayer():ChatPrint(string.format("Sound validation complete: %d valid, %d invalid", validCount, invalidCount))
+    end)
+
+    concommand.Add("lia_cleanup_sounds", function()
+        local files = file.Find(baseDir .. "**", "DATA")
+        local removedCount = 0
+        for _, fileName in ipairs(files) do
+            if string.EndsWith(fileName, ".dat") then
+                local data = file.Read(baseDir .. fileName, "DATA")
+                if not data then
+                    file.Delete(baseDir .. fileName)
+                    removedCount = removedCount + 1
+                else
+                    local success, soundData = pcall(pon.decode, data)
+                    if not success or not soundData then
+                        file.Delete(baseDir .. fileName)
+                        removedCount = removedCount + 1
+                    end
+                end
+            end
+        end
+
+        LocalPlayer():ChatPrint(string.format("Cleaned up %d invalid sound files", removedCount))
+    end)
+
+    concommand.Add("lia_list_sounds", function()
+        local files = file.Find(baseDir .. "**", "DATA")
+        if #files == 0 then return end
+        LocalPlayer():ChatPrint("Saved sounds:")
+        for _, fileName in ipairs(files) do
+            if string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint("  " .. string.StripExtension(fileName)) end
+        end
+    end)
+
+    -- Webimage commands
+    concommand.Add("lia_saved_images", function()
+        local files = findImagesRecursive(baseDir)
+        if not files or #files == 0 then return end
+        local f = vgui.Create("DFrame")
+        f:SetTitle(L("savedImages"))
+        f:SetSize(500, 400)
+        f:Center()
+        f:MakePopup()
+        local list = vgui.Create("DListView", f)
+        list:Dock(FILL)
+        list:DockMargin(5, 5, 5, 5)
+        list:AddColumn(L("imageName"))
+        for _, fileName in ipairs(files) do
+            if string.EndsWith(fileName, ".png") or string.EndsWith(fileName, ".jpg") or string.EndsWith(fileName, ".jpeg") then list:AddLine(string.StripExtension(fileName)) end
+        end
+    end)
+
+    concommand.Add("lia_cleanup_images", function()
+        local files = findImagesRecursive(baseDir)
+        local removedCount = 0
+        for _, filePath in ipairs(files) do
+            if not file.Exists(filePath, "DATA") then removedCount = removedCount + 1 end
+        end
+
+        LocalPlayer():ChatPrint(string.format("Found %d image files", #files))
+    end)
+
+    concommand.Add("lia_wipewebimages", function()
+        deleteDirectoryRecursive(baseDir)
+        cache = {}
+        urlMap = {}
+        LocalPlayer():ChatPrint(L("webImagesWiped"))
+    end)
+
+    concommand.Add("test_webimage_menu", function()
+        local frame = vgui.Create("DFrame")
+        frame:SetTitle(L("webImageTesterTitle"))
+        frame:SetSize(500, 400)
+        frame:Center()
+        frame:MakePopup()
+        local textEntry = vgui.Create("DTextEntry", frame)
+        textEntry:Dock(TOP)
+        textEntry:DockMargin(5, 5, 5, 5)
+        textEntry:SetPlaceholderText(L("webImageTesterURL"))
+        local button = vgui.Create("DButton", frame)
+        button:Dock(TOP)
+        button:DockMargin(5, 0, 5, 5)
+        button:SetText(L("webImageTesterLoad"))
+        local imagePanel = vgui.Create("DPanel", frame)
+        imagePanel:Dock(FILL)
+        imagePanel:DockMargin(5, 5, 5, 5)
+        button.DoClick = function()
+            local url = textEntry:GetValue()
+            if url and url ~= "" then
+                local img = vgui.Create("DImage", imagePanel)
+                img:Dock(FILL)
+                img:SetImage(url)
+            end
+        end
+    end)
+end

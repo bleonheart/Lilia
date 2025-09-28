@@ -13,10 +13,6 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/libraries/derma.lua",
-        realm = "client"
-    },
-    {
         path = "lilia/gamemode/core/libraries/keybind.lua",
         realm = "shared"
     },
@@ -74,7 +70,7 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/color.lua",
-        realm = "client"
+        realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/logger.lua",
@@ -126,6 +122,10 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/websound.lua",
+        realm = "client"
+    },
+    {
+        path = "lilia/gamemode/core/libraries/derma.lua",
         realm = "client"
     },
     {
@@ -191,7 +191,7 @@ local FilesToLoad = {
     {
         path = "lilia/gamemode/core/netcalls/server.lua",
         realm = "server"
-    }
+    },
 }
 
 local ConditionalFiles = {
@@ -363,48 +363,213 @@ function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
     end
 end
 
+local hasChttp = util.IsBinaryModuleInstalled("chttp")
+if hasChttp then require("chttp") end
+local function fetchURL(url, onSuccess, onError)
+    if hasChttp then
+        CHTTP({
+            url = url,
+            method = "GET",
+            success = function(code, body) onSuccess(body, code) end,
+            failed = function(err) onError(err) end
+        })
+    else
+        http.Fetch(url, function(body, _, _, code) onSuccess(body, code) end, function(err) onError(err) end)
+    end
+end
+
+local function versionCompare(localVersion, remoteVersion)
+    local function toParts(v)
+        local parts = {}
+        if not v then return parts end
+        for num in tostring(v):gmatch("%d+") do
+            table.insert(parts, tonumber(num))
+        end
+        return parts
+    end
+
+    local lParts = toParts(localVersion)
+    local rParts = toParts(remoteVersion)
+    local len = math.max(#lParts, #rParts)
+    for i = 1, len do
+        local l = lParts[i] or 0
+        local r = rParts[i] or 0
+        if l < r then return -1 end
+        if l > r then return 1 end
+    end
+    return 0
+end
+
+local publicURL = "https://liliaframework.github.io/versioning/modules.json"
+local privateURL = "https://raw.githubusercontent.com/bleonheart/bleonheart.github.io/main/docs/versioning/modules.json"
+local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
+function lia.loader.checkForUpdates()
+    local function checkPublicModules()
+        local hasPublic = false
+        for _, mod in pairs(lia.module.list) do
+            if mod.versionID and string.StartsWith(mod.versionID, "public_") then
+                hasPublic = true
+                break
+            end
+        end
+
+        if not hasPublic then return end
+        fetchURL(publicURL, function(body, code)
+            if code ~= 200 then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("moduleListHTTPError", code), "\n")
+                return
+            end
+
+            local remote = util.JSONToTable(body)
+            if not remote then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("moduleDataParseError"), "\n")
+                return
+            end
+
+            for _, mod in pairs(lia.module.list) do
+                if mod.versionID and string.StartsWith(mod.versionID, "public_") then
+                    local match
+                    for _, m in ipairs(remote) do
+                        if m.versionID == mod.versionID then
+                            match = m
+                            break
+                        end
+                    end
+
+                    if not match then
+                        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                        MsgC(Color(0, 255, 255), L("moduleUniqueIDNotFound", mod.versionID), "\n")
+                    elseif not match.version then
+                        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                        MsgC(Color(0, 255, 255), L("moduleNoRemoteVersion", mod.name), "\n")
+                    elseif mod.version and versionCompare(mod.version, match.version) < 0 then
+                        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                        MsgC(Color(0, 255, 255), L("moduleOutdated", mod.name, match.version), "\n")
+                    end
+                end
+            end
+        end, function(err)
+            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+            MsgC(Color(0, 255, 255), L("moduleListError", err), "\n")
+        end)
+    end
+
+    local function checkPrivateModules()
+        local hasPrivate = false
+        for _, mod in pairs(lia.module.list) do
+            if mod.versionID and string.StartsWith(mod.versionID, "private_") then
+                hasPrivate = true
+                break
+            end
+        end
+
+        if not hasPrivate then return end
+        fetchURL(privateURL, function(body, code)
+            if code ~= 200 then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("privateModuleListHTTPError", code), "\n")
+                return
+            end
+
+            local remote = util.JSONToTable(body)
+            if not remote then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("privateModuleDataParseError"), "\n")
+                return
+            end
+
+            for _, mod in pairs(lia.module.list) do
+                if mod.versionID and string.StartsWith(mod.versionID, "private_") then
+                    for _, m in ipairs(remote) do
+                        if m.versionID == mod.versionID and m.version and mod.version and versionCompare(mod.version, m.version) < 0 then
+                            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                            MsgC(Color(0, 255, 255), L("privateModuleOutdated", mod.name), "\n")
+                            break
+                        end
+                    end
+                end
+            end
+        end, function(err)
+            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+            MsgC(Color(0, 255, 255), L("privateModuleListError", err), "\n")
+        end)
+    end
+
+    local function checkFrameworkVersion()
+        fetchURL(versionURL, function(body, code)
+            if code ~= 200 then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("frameworkVersionHTTPError", code), "\n")
+                return
+            end
+
+            local remote = util.JSONToTable(body)
+            if not remote or not remote.version then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("frameworkVersionDataParseError"), "\n")
+                return
+            end
+
+            local localVersion = GM.version
+            if not localVersion then
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("localFrameworkVersionError"), "\n")
+                return
+            end
+
+            if versionCompare(localVersion, remote.version) < 0 then
+                local localNum, remoteNum = tonumber(localVersion), tonumber(remote.version)
+                if localNum and remoteNum then
+                    local diff = remoteNum - localNum
+                    diff = math.Round(diff, 3)
+                    if diff > 0 then
+                        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                        MsgC(Color(0, 255, 255), L("frameworkBehindCount", diff), "\n")
+                    end
+                end
+
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("frameworkOutdated"), "\n")
+            end
+        end, function(err)
+            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+            MsgC(Color(0, 255, 255), L("frameworkVersionError", err), "\n")
+        end)
+    end
+
+    checkPublicModules()
+    checkPrivateModules()
+    checkFrameworkVersion()
+end
+
 lia.loader.include("lilia/gamemode/core/libraries/languages.lua", "shared")
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
-lia.loader.include("lilia/gamemode/core/libraries/rdnx.lua", "client")
+lia.loader.include("lilia/gamemode/core/libraries/rndx.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
 lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
-function lia.error(msg, ...)
+function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
-    MsgC(Color(255, 0, 0), L(msg, ...), "\n")
+    MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
-function lia.warning(msg, ...)
+function lia.warning(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
-    MsgC(Color(255, 255, 0), L(msg, ...), "\n")
+    MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
-function lia.updater(msg, ...)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
-    MsgC(Color(0, 255, 255), L(msg, ...), "\n")
-end
-
-function lia.information(msg, ...)
+function lia.information(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
-    MsgC(Color(83, 143, 239), L(msg, ...), "\n")
-end
-
-function lia.admin(msg, ...)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
-    MsgC(Color(255, 153, 0), L(msg, ...), "\n")
+    MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
 function lia.bootstrap(section, msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
     MsgC(Color(0, 255, 0), "[" .. section .. "] ")
     MsgC(Color(255, 255, 255), tostring(msg), "\n")
-end
-
-function lia.printLog(category, logString, ...)
-    MsgC(Color(83, 143, 239), "[LOG] ")
-    MsgC(Color(0, 255, 0), "[" .. L("logCategory") .. ": " .. L(category) .. "] ")
-    MsgC(Color(255, 255, 255), L(logString, ...), "\n")
 end
 
 for _, files in ipairs(FilesToLoad) do
@@ -548,7 +713,7 @@ function GM:OnReloaded()
     if lia.config then lia.reloadCooldown = 5 end
     if timeSinceLastReload < lia.reloadCooldown then
         local remaining = math.ceil(lia.reloadCooldown - timeSinceLastReload)
-        lia.bootstrap("HotReload", L("reloadCooldownActive", remaining))
+        if SERVER then MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Reload cooldown active. " .. remaining .. " seconds remaining.\n") end
         return
     end
 
@@ -561,9 +726,9 @@ function GM:OnReloaded()
         timer.Simple(0.1, function() lia.config.send() end)
         timer.Simple(0.2, function() lia.administrator.sync() end)
         timer.Simple(0.3, function() lia.playerinteract.syncToClients() end)
-        timer.Simple(0.5, function() lia.bootstrap("HotReload", L("hotreloadSuccess")) end)
+        timer.Simple(0.5, function() lia.bootstrap("HotReload", "Gamemode hotreloaded successfully!") end)
     else
-        chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("hotreloadSuccess"))
+        chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gamemode hotreloaded successfully!")
     end
 
     lia.reloadInProgress = false

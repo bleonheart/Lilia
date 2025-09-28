@@ -1,67 +1,49 @@
-﻿local PANEL = {}
+local PANEL = {}
+local function ClampMenuPosition(panel)
+    if not IsValid(panel) then return end
+    local x, y = panel:GetPos()
+    local w, h = panel:GetSize()
+    local sw, sh = ScrW(), ScrH()
+    if x < 5 then
+        x = 5
+    elseif x + w > sw - 5 then
+        x = sw - 5 - w
+    end
+
+    if y < 5 then
+        y = 5
+    elseif y + h > sh - 5 then
+        y = sh - 5 - h
+    end
+
+    panel:SetPos(x, y)
+end
+
 function PANEL:Init()
     self.Items = {}
     self:SetSize(160, 0)
-    self:DockPadding(4, 5, 4, 5)
+    self:DockPadding(6, 7, 6, 7)
     self:MakePopup()
     self:SetKeyboardInputEnabled(false)
     self:SetDrawOnTop(true)
     self.MaxTextWidth = 0
-    self._anim = 0
-    self._animTarget = 1
-    self._animSpeed = 18
-    self._animEased = 0
-    self._initPosSet = false
-    self._closing = false
-    self._disableBlur = false
     self._openTime = CurTime()
-    self:SetAlpha(0)
     self.Think = function()
-        local ft = FrameTime()
-        if not self._initPosSet then
-            lia.util.clampMenuPosition(self)
-            self._targetX, self._targetY = self:GetPos()
-            self:SetPos(self._targetX, self._targetY + 6)
-            self._initPosSet = true
-        end
-
-        if CurTime() - self._openTime >= 0.08 and input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT) then if not self:IsChildHovered() then self:CloseMenu() end end
-        self._anim = lia.util.approachExp(self._anim, self._animTarget, self._animSpeed, ft)
-        self._animEased = self._anim
-        local a = math.floor(255 * self._animEased + 0.5)
-        self:SetAlpha(a)
-        if self._targetX and self._targetY then
-            local offsetY = 6 * (1 - self._animEased)
-            self:SetPos(self._targetX, self._targetY + offsetY)
-        end
-
-        if self._closing and self._animEased <= 0.005 then return self:Remove() end
+        if CurTime() - self._openTime < 0.1 then return end
+        if input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT) then if not self:IsChildHovered() then self:Remove() end end
     end
 end
 
 function PANEL:Paint(w, h)
-    local aMul = (self._animEased ~= nil) and self._animEased or ((self:GetAlpha() or 255) / 255)
-    local blurMul
-    if self._closing or self._disableBlur or self._animTarget == 0 then
-        blurMul = 0
-    else
-        local fadeStart = 0.3
-        blurMul = math.Clamp((aMul - fadeStart) / (1 - fadeStart), 0, 1)
-    end
-
-    local shadowSpread = math.max(0, math.floor(10 * blurMul))
-    local shadowIntensity = math.max(0, math.floor(16 * blurMul))
-    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.window_shadow.r, lia.color.theme.window_shadow.g, lia.color.theme.window_shadow.b, math.floor(100 * aMul))):Shape(lia.rndx.SHAPE_IOS):Shadow(shadowSpread, shadowIntensity):Draw()
-    if not self._disableBlur then lia.rndx.Rect(0, 0, w, h):Rad(16):Shape(lia.rndx.SHAPE_IOS):Blur(blurMul):Draw() end
-    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.background_panelpopup.r, lia.color.theme.background_panelpopup.g, lia.color.theme.background_panelpopup.b, math.floor(150 * aMul))):Shape(lia.rndx.SHAPE_IOS):Draw()
-    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.background_panelpopup.r, lia.color.theme.background_panelpopup.g, lia.color.theme.background_panelpopup.b, math.floor(150 * aMul))):Shape(lia.rndx.SHAPE_IOS):Outline(1):Draw()
+    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(10, 16):Draw()
+    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.rndx.SHAPE_IOS):Draw()
 end
 
 function PANEL:AddOption(text, func, icon, optData)
     surface.SetFont('Fated.18')
     local textW = select(1, surface.GetTextSize(text))
     self.MaxTextWidth = math.max(self.MaxTextWidth or 0, textW)
-    local option = vgui.Create("liaButton", self)
+    local option = vgui.Create('DButton', self)
     option:SetText('')
     option:Dock(TOP)
     option:DockMargin(2, 2, 2, 0)
@@ -82,12 +64,12 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         if func then func() end
-        surface.PlaySound('garrysmod/ui_click.wav')
+        surface.PlaySound('mantle/btn_click.ogg')
         local function closeAllMenus(panel)
             while IsValid(panel) do
-                if panel.GetName and panel:GetName() == "liaDermaMenu" then
+                if panel:GetName() == 'MantleDermaMenu' then
                     local parent = panel:GetParent()
-                    panel:CloseMenu()
+                    panel:Remove()
                     panel = parent
                 else
                     panel = panel:GetParent()
@@ -100,7 +82,7 @@ function PANEL:AddOption(text, func, icon, optData)
 
     function option:AddSubMenu()
         if IsValid(option._submenu) then option._submenu:Remove() end
-        local submenu = vgui.Create("liaDermaMenu")
+        local submenu = vgui.Create('MantleDermaMenu')
         submenu:SetDrawOnTop(true)
         submenu:SetParent(self:GetParent())
         submenu:SetVisible(false)
@@ -115,8 +97,6 @@ function PANEL:AddOption(text, func, icon, optData)
 
             local x, y = self:LocalToScreen(self:GetWide(), 0)
             submenu:SetPos(x, y)
-            lia.util.clampMenuPosition(submenu)
-            submenu._targetX, submenu._targetY = submenu:GetPos()
             submenu:SetVisible(true)
             submenu:MakePopup()
             submenu:SetKeyboardInputEnabled(false)
@@ -145,8 +125,8 @@ function PANEL:AddOption(text, func, icon, optData)
             return false
         end
 
-        option.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(pnl) then if IsValid(pnl) then pnl:CloseSubMenu() end end end) end
-        submenu.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then if IsValid(pnl) then option:CloseSubMenu() end end end) end
+        option.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(pnl) then pnl:CloseSubMenu() end end) end
+        submenu.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
         return submenu
     end
 
@@ -158,7 +138,7 @@ function PANEL:AddOption(text, func, icon, optData)
     end
 
     local iconMat
-    if option.Icon then iconMat = type(option.Icon) == "IMaterial" and option.Icon or Material(option.Icon) end
+    if option.Icon then iconMat = type(option.Icon) == 'IMaterial' and option.Icon or Material(option.Icon) end
     option.Paint = function(pnl, w, h)
         w = w or pnl:GetWide()
         h = h or pnl:GetTall()
@@ -170,7 +150,7 @@ function PANEL:AddOption(text, func, icon, optData)
 
         if iconMat then
             local iconSize = 16
-            lia.rndx.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, lia.color.theme.text, iconMat)
+            lia.rndx.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, color_white, iconMat)
         end
 
         draw.SimpleText(pnl.Text, 'Fated.18', pnl.Icon and 32 or 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -182,7 +162,7 @@ function PANEL:AddOption(text, func, icon, optData)
 end
 
 function PANEL:AddSpacer()
-    local spacer = vgui.Create("liaBasePanel", self)
+    local spacer = vgui.Create('DPanel', self)
     spacer:Dock(TOP)
     spacer:DockMargin(8, 6, 8, 6)
     spacer:SetTall(1)
@@ -194,35 +174,25 @@ function PANEL:AddSpacer()
 end
 
 function PANEL:UpdateSize()
-    local height = 12
+    local height = 16
     for _, item in ipairs(self.Items) do
-        if IsValid(item) then height = height + (item.sumTall or item:GetTall()) end
+        if IsValid(item) then height = height + item.sumTall end
     end
 
-    local maxWidth = math.max(160, self.MaxTextWidth + 56)
+    local maxWidth = math.max(160, self.MaxTextWidth + 60)
     self:SetSize(maxWidth, math.min(height, ScrH() * 0.8))
-    if not self._targetX or not self._targetY then
-        lia.util.clampMenuPosition(self)
-        self._targetX, self._targetY = self:GetPos()
-        if not self._initPosSet then self:SetPos(self._targetX, self._targetY + 6) end
-    else
-        lia.util.clampMenuPosition(self)
-        self._targetX, self._targetY = self:GetPos()
-    end
 end
 
 function PANEL:Open()
+    -- Clear
 end
 
 function PANEL:CloseMenu()
-    if self._closing then return end
-    self._closing = true
-    self._disableBlur = true
-    self._animTarget = 0
+    self:Remove()
 end
 
 function PANEL:GetDeleteSelf()
     return true
 end
 
-vgui.Register("liaDermaMenu", PANEL, "liaBasePanel")
+vgui.Register('liaDermaMenu', PANEL, 'DPanel')
