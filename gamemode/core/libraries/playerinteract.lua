@@ -36,7 +36,7 @@ end
 function lia.playerinteract.getCategorizedOptions(options)
     local categorized = {}
     for name, entry in pairs(options) do
-        local category = entry.opt and entry.opt.category or L("categoryUnsorted")
+        local category = entry.opt and L(entry.opt.category) or L("categoryUnsorted")
         if not categorized[category] then categorized[category] = {} end
         categorized[category][name] = entry
     end
@@ -47,7 +47,7 @@ if SERVER then
     function lia.playerinteract.addInteraction(name, data)
         data.type = "interaction"
         data.range = data.range or 250
-        data.category = data.category or L("categoryUnsorted")
+        data.category = data.category or "categoryUnsorted"
         data.target = data.target or "player"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
@@ -74,7 +74,7 @@ if SERVER then
     function lia.playerinteract.addAction(name, data)
         data.type = "action"
         data.range = data.range or 250
-        data.category = data.category or L("categoryUnsorted")
+        data.category = data.category or "categoryUnsorted"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
         data.targetActionText = data.targetActionText or nil
@@ -105,7 +105,7 @@ if SERVER then
                 serverOnly = data.serverOnly and true or false,
                 name = name,
                 range = data.range,
-                category = data.category or L("categoryUnsorted"),
+                category = data.category or "categoryUnsorted",
                 target = data.target,
                 timeToComplete = data.timeToComplete,
                 actionText = data.actionText,
@@ -117,7 +117,7 @@ if SERVER then
         lia.net.writeBigTable(client, "liaPlayerInteractCategories", lia.playerinteract.categories)
     end
 
-    lia.playerinteract.addInteraction("giveMoney", {
+    lia.playerinteract.addInteraction("@giveMoney", {
         serverOnly = true,
         shouldShow = function(client, target) return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0 end,
         onRun = function(client, target)
@@ -156,8 +156,8 @@ if SERVER then
         end
     })
 
-    lia.playerinteract.addAction("changeToWhisper", {
-        category = L("categoryVoice"),
+    lia.playerinteract.addAction("@changeToWhisper", {
+        category = "@categoryVoice",
         shouldShow = function(client) return client:getChar() and client:Alive() end,
         onRun = function(client)
             client:setNetVar("VoiceType", L("whispering"))
@@ -166,8 +166,8 @@ if SERVER then
         serverOnly = true
     })
 
-    lia.playerinteract.addAction("changeToTalk", {
-        category = L("categoryVoice"),
+    lia.playerinteract.addAction("@changeToTalk", {
+        category = "@categoryVoice",
         shouldShow = function(client) return client:getChar() and client:Alive() end,
         onRun = function(client)
             client:setNetVar("VoiceType", L("talking"))
@@ -176,8 +176,8 @@ if SERVER then
         serverOnly = true
     })
 
-    lia.playerinteract.addAction("changeToYell", {
-        category = L("categoryVoice"),
+    lia.playerinteract.addAction("@changeToYell", {
+        category = "@categoryVoice",
         shouldShow = function(client) return client:getChar() and client:Alive() end,
         onRun = function(client)
             client:setNetVar("VoiceType", L("yelling"))
@@ -339,7 +339,7 @@ else
                 btn:SetTall(entryH)
                 btn:Dock(TOP)
                 btn:DockMargin(15, 8, 15, 0)
-                btn:SetText(L(entry.name))
+                btn:SetText(L("@" .. entry.name))
                 btn:SetFont("liaSmallFont")
                 btn:SetTextColor(color_white)
                 btn:SetContentAlignment(5)
@@ -403,7 +403,7 @@ else
             merged.type = incoming.type or localEntry.type
             merged.serverOnly = incoming.serverOnly and true or false
             merged.name = name
-            merged.category = incoming.category or localEntry.category or L("categoryUnsorted")
+            merged.category = incoming.category or localEntry.category or "categoryUnsorted"
             if incoming.range ~= nil then merged.range = incoming.range end
             merged.target = incoming.target or localEntry.target or "player"
             if incoming.timeToComplete ~= nil then merged.timeToComplete = incoming.timeToComplete end

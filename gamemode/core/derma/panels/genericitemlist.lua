@@ -47,7 +47,7 @@ end
 
 function PANEL:SetTitle(title)
     self.Title = title
-    self:GetTitle() 
+    self:GetTitle()
 end
 
 function PANEL:SetColumns(columns)
@@ -129,7 +129,7 @@ end
 
 function PANEL:SetTitle(title)
     self.Title = title
-    self:GetTitle() 
+    self:GetTitle()
 end
 
 function PANEL:SetActionText(text)

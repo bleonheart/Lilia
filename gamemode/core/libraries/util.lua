@@ -594,9 +594,7 @@ else
     end
 
     function lia.util.approachExp(current, target, speed, dt)
-        if target == nil then
-            return current
-        end
+        if target == nil then return current end
         local t = 1 - math.exp(-speed * dt)
         return current + (target - current) * t
     end

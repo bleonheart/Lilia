@@ -927,7 +927,7 @@ concommand.Add("lia_add_door_group_column", function()
         if not exists then
             lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), L("doorGroupColumnAdded") .. "\n") end):catch(function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), L("doorGroupColumnFailed", tostring(err)) .. "\n") end)
         else
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), "door_group column already exists in lia_doors table\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 0), L("doorGroupColumnExists") .. "\n")
         end
     end):catch(function(err) MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 0, 0), L("doorGroupColumnCheckFailed", tostring(err)) .. "\n") end)
 end)

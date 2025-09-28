@@ -1,8 +1,8 @@
 ﻿lia.command.add("staffdiscord", {
-    desc = "staffdiscordDesc",
+    desc = "@staffdiscordDesc",
     arguments = {
         {
-            name = "discord",
+            name = "@discord",
             type = "string"
         }
     },

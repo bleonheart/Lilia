@@ -1,15 +1,11 @@
 ﻿local PANEL = {}
-
 function PANEL:Init()
-    
     self.isSlideContainer = false
     self.slides = {}
     self.currentSlide = 1
     self.transitionTime = 0.3
     self.transitionStart = 0
     self.transitioning = false
-
-    
     self.text = ''
     self.min_value = 0
     self.max_value = 1
@@ -48,12 +44,10 @@ function PANEL:OnRemove()
         self._convar_timer = nil
     end
 
-    
     for _, slide in ipairs(self.slides) do
-        if IsValid(slide) then
-            slide:Remove()
-        end
+        if IsValid(slide) then slide:Remove() end
     end
+
     self.slides = {}
 end
 
@@ -108,7 +102,6 @@ function PANEL:GetValue()
 end
 
 function PANEL:PerformLayout(_, _)
-    
     if self.isSlideContainer and #self.slides > 0 then
         for _, slide in ipairs(self.slides) do
             if IsValid(slide) then
@@ -133,30 +126,23 @@ function PANEL:UpdateSliderByCursorPos(x)
 end
 
 function PANEL:Paint(w, h)
-    
     if self.isSlideContainer and #self.slides > 0 then
-        
         draw.RoundedBox(8, 0, 0, w, h, lia.color.theme.highlight)
-
-        
         if #self.slides > 1 then
             local indicatorSize = 8
             local indicatorSpacing = 12
             local indicatorY = h - 20
             local totalWidth = (#self.slides * indicatorSize) + ((#self.slides - 1) * indicatorSpacing)
             local startX = (w - totalWidth) / 2
-
             for i = 1, #self.slides do
                 local x = startX + (i - 1) * (indicatorSize + indicatorSpacing)
                 local color = i == self.currentSlide and lia.color.theme.accent or Color("gray")
                 draw.RoundedBox(indicatorSize / 2, x, indicatorY, indicatorSize, indicatorSize, color)
             end
         end
-
         return
     end
 
-    
     local ft = FrameTime()
     local padX = 16
     local padTop = 2
@@ -200,12 +186,10 @@ end
 
 function PANEL:OnMousePressed(mcode)
     if mcode == MOUSE_LEFT then
-        
         if self.isSlideContainer and #self.slides > 1 then
             local x = self:CursorPos()
             local slideWidth = self:GetWide() / #self.slides
             local clickedSlide = math.floor(x / slideWidth) + 1
-
             if clickedSlide ~= self.currentSlide then
                 if clickedSlide > self.currentSlide then
                     self:NextSlide()
@@ -216,7 +200,6 @@ function PANEL:OnMousePressed(mcode)
             return
         end
 
-        
         if not self.isSlideContainer then
             local x = self:CursorPos()
             self:UpdateSliderByCursorPos(x)
@@ -231,16 +214,13 @@ end
 
 function PANEL:OnMouseReleased(mcode)
     if mcode == MOUSE_LEFT and not self.isSlideContainer then
-        
         self.dragging = false
         self:MouseCapture(false)
     end
 end
 
 function PANEL:OnCursorMoved(x)
-    if self.dragging and not self.isSlideContainer then
-        self:UpdateSliderByCursorPos(x)
-    end
+    if self.dragging and not self.isSlideContainer then self:UpdateSliderByCursorPos(x) end
 end
 
 function PANEL:OnCursorEntered()
@@ -251,63 +231,44 @@ function PANEL:OnCursorExited()
     self.hover = false
 end
 
-
 function PANEL:AddSlide(panel)
     if not IsValid(panel) then return end
-
-    
     self.isSlideContainer = true
     self.slides[#self.slides + 1] = panel
     panel:SetParent(self)
     panel:Dock(FILL)
     panel:InvalidateLayout(true)
-
-    
     if #self.slides > 1 then
         for i = 1, #self.slides - 1 do
             self.slides[i]:SetVisible(false)
         end
+
         self.slides[#self.slides]:SetVisible(true)
     end
-
     return panel
 end
 
 function PANEL:NextSlide()
     if #self.slides < 2 or self.transitioning then return end
-
     self.transitioning = true
     self.transitionStart = CurTime()
-
     local current = self.currentSlide
     local nextSlide = current + 1
-    if nextSlide > #self.slides then
-        nextSlide = 1
-    end
-
-    
+    if nextSlide > #self.slides then nextSlide = 1 end
     self.slides[current]:SetVisible(false)
     self.slides[nextSlide]:SetVisible(true)
-
     self.currentSlide = nextSlide
 end
 
 function PANEL:PreviousSlide()
     if #self.slides < 2 or self.transitioning then return end
-
     self.transitioning = true
     self.transitionStart = CurTime()
-
     local current = self.currentSlide
     local prevSlide = current - 1
-    if prevSlide < 1 then
-        prevSlide = #self.slides
-    end
-
-    
+    if prevSlide < 1 then prevSlide = #self.slides end
     self.slides[current]:SetVisible(false)
     self.slides[prevSlide]:SetVisible(true)
-
     self.currentSlide = prevSlide
 end
 
@@ -322,9 +283,7 @@ end
 function PANEL:Think()
     if self.transitioning then
         local progress = (CurTime() - self.transitionStart) / self.transitionTime
-        if progress >= 1 then
-            self.transitioning = false
-        end
+        if progress >= 1 then self.transitioning = false end
     end
 end
 

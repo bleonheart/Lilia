@@ -717,7 +717,7 @@ if CLIENT then
     lia.font.loadFonts()
 end
 
-lia.config.add("Font", "font", "Fated.16", function()
+lia.config.add("@Font", "@font", "Fated.16", function()
     if not CLIENT then return end
     hook.Run("RefreshFonts")
 end, {

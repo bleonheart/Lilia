@@ -74,7 +74,7 @@ local FilesToLoad = {
     },
     {
         path = "lilia/gamemode/core/libraries/color.lua",
-        realm = "shared"
+        realm = "client"
     },
     {
         path = "lilia/gamemode/core/libraries/logger.lua",
@@ -370,30 +370,29 @@ lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
 lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
-function lia.error(msg)
+function lia.error(msg, ...)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
-    MsgC(Color(255, 0, 0), tostring(msg), "\n")
+    MsgC(Color(255, 0, 0), L(msg, ...), "\n")
 end
 
-function lia.warning(msg)
+function lia.warning(msg, ...)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
-    MsgC(Color(255, 255, 0), tostring(msg), "\n")
+    MsgC(Color(255, 255, 0), L(msg, ...), "\n")
 end
 
-
-function lia.updater(msg)
+function lia.updater(msg, ...)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
-    MsgC(Color(0, 255, 255), tostring(msg), "\n")
+    MsgC(Color(0, 255, 255), L(msg, ...), "\n")
 end
 
-function lia.information(msg)
+function lia.information(msg, ...)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
-    MsgC(Color(83, 143, 239), tostring(msg), "\n")
+    MsgC(Color(83, 143, 239), L(msg, ...), "\n")
 end
 
-function lia.admin(msg)
+function lia.admin(msg, ...)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
-    MsgC(Color(255, 153, 0), tostring(msg), "\n")
+    MsgC(Color(255, 153, 0), L(msg, ...), "\n")
 end
 
 function lia.bootstrap(section, msg)
@@ -402,10 +401,10 @@ function lia.bootstrap(section, msg)
     MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
 
-function lia.printLog(category, logString)
+function lia.printLog(category, logString, ...)
     MsgC(Color(83, 143, 239), "[LOG] ")
-    MsgC(Color(0, 255, 0), "[" .. L("logCategory") .. ": " .. tostring(category) .. "] ")
-    MsgC(Color(255, 255, 255), tostring(logString) .. "\n")
+    MsgC(Color(0, 255, 0), "[" .. L("logCategory") .. ": " .. L(category) .. "] ")
+    MsgC(Color(255, 255, 255), L(logString, ...), "\n")
 end
 
 for _, files in ipairs(FilesToLoad) do

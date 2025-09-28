@@ -14,7 +14,7 @@ function lia.command.buildSyntaxFromArguments(args)
             typ = "string"
         end
 
-        local name = arg.name or typ
+        local name = L(arg.name or typ)
         local optional = arg.optional and " optional" or ""
         tokens[#tokens + 1] = string.format("[%s %s%s]", typ, name, optional)
     end
@@ -25,7 +25,7 @@ function lia.command.add(command, data)
     data.arguments = data.arguments or {}
     data.syntax = lia.command.buildSyntaxFromArguments(data.arguments)
     data.syntax = L(data.syntax or "")
-    data.desc = data.desc or ""
+    data.desc = L(data.desc or "")
     data.privilege = data.privilege or nil
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
@@ -120,7 +120,7 @@ function lia.command.hasAccess(client, command, data)
     local hasAccess = true
     if accessLevels ~= "user" then
         if not isstring(privilegeID) then
-            lia.error("Command '" .. tostring(command) .. "' has invalid privilege ID type: " .. tostring(privilegeID))
+            lia.error(L("invalidPrivilegeIDType", tostring(command), tostring(privilegeID)))
             return false, privilegeName
         end
 
@@ -239,7 +239,7 @@ if SERVER then
                     for i, field in ipairs(fields) do
                         local arg = tokens[i]
                         if not arg or isPlaceholder(arg) then
-                            if not field.optional then missing[#missing + 1] = field.name end
+                            if not field.optional then missing[#missing + 1] = L(field.name) end
                         else
                             prefix[#prefix + 1] = arg
                         end
@@ -313,7 +313,7 @@ else
             panel:DockMargin(0, 0, 0, 5)
             panel:SetTall(70)
             panel.Paint = function() end
-            local textW = select(1, surface.GetTextSize(L(data.description or name)))
+            local textW = select(1, surface.GetTextSize(L(L(data.description or name))))
             local ctrl
             if fieldType == "player" then
                 ctrl = vgui.Create("liaComboBox", panel)

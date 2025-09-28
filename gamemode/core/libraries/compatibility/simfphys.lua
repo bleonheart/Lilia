@@ -32,7 +32,7 @@
         local delay = lia.config.get("TimeToEnterVehicle", 5)
         if entity:isSimfphysCar() and delay > 0 then
             entity.IsBeingEntered = true
-            client:setAction(L("enteringVehicle"), delay)
+            client:setAction("@enteringVehicle", delay)
             client:doStaredAction(entity, function()
                 if IsValid(entity) then
                     entity.IsBeingEntered = false
@@ -63,21 +63,21 @@ hook.Add("CheckValidSit", "liaSimfphys", function(client)
     if IsValid(vehicle) and vehicle:isSimfphysCar() then return false end
 end)
 
-lia.config.add("DamageInCars", "takeDamageInCars", true, nil, {
-    desc = "takeDamageInCarsDesc",
-    category = "simfphysVehicles",
+lia.config.add("@DamageInCars", "@takeDamageInCars", true, nil, {
+    desc = "@takeDamageInCarsDesc",
+    category = "@simfphysVehicles",
     type = "Boolean"
 })
 
-lia.config.add("CarEntryDelayEnabled", "carEntryDelayEnabled", true, nil, {
-    desc = "carEntryDelayEnabledDesc",
-    category = "simfphysVehicles",
+lia.config.add("@CarEntryDelayEnabled", "@carEntryDelayEnabled", true, nil, {
+    desc = "@carEntryDelayEnabledDesc",
+    category = "@simfphysVehicles",
     type = "Boolean"
 })
 
-lia.config.add("TimeToEnterVehicle", "timeToEnterVehicle", 4, nil, {
-    desc = "timeToEnterVehicleDesc",
-    category = "simfphysVehicles",
+lia.config.add("@TimeToEnterVehicle", "@timeToEnterVehicle", 4, nil, {
+    desc = "@timeToEnterVehicleDesc",
+    category = "@simfphysVehicles",
     type = "Int",
     min = 1,
     max = 30

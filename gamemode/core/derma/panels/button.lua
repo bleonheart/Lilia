@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self._activeShadowTimer = 0
     self._activeShadowMinTime = 0.03
@@ -82,7 +82,6 @@ function PANEL:Paint(w, h)
     local activeTarget = showActiveShadow and 10 or 0
     local activeSpeed = (activeTarget > 0) and 7 or 3
     self._activeShadowLerp = Lerp(FrameTime() * activeSpeed, self._activeShadowLerp, activeTarget)
-    
     local buttonColor = self.col or lia.color.theme.liaButtonColor
     local buttonHoveredColor = self.col_hov or lia.color.theme.liaButtonHoveredColor
     local buttonShadowColor = lia.color.theme.liaButtonShadowColor
@@ -119,14 +118,12 @@ end
 
 vgui.Register("liaButton", PANEL, "Button")
 local animDuration = 0.3
-
 local function ensureThemeColor(colorKey, fallbackColor)
     if lia.color.theme and lia.color.theme[colorKey] then return lia.color.theme[colorKey] end
     return fallbackColor
 end
 
 local function PaintButton(self, w, h)
-    
     local themeColor = ensureThemeColor("accent", Color(106, 108, 197))
     local borderColor = ensureThemeColor("border", Color(100, 100, 100))
     local backgroundColor = ensureThemeColor("background", Color(25, 25, 25))

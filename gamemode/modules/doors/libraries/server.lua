@@ -511,7 +511,7 @@ function MODULE:KeyLock(client, door, time)
     local distance = client:GetPos():Distance(door:GetPos())
     local isProperEntity = door:isDoor() or door:IsVehicle() or door:isSimfphysCar()
     if isProperEntity and not door:isLocked() and distance <= 256 and (door:checkDoorAccess(client) or door:GetCreator() == client or client:isStaffOnDuty()) then
-        client:setAction(L("locking"), time, function() end)
+        client:setAction("@locking", time, function() end)
         client:doStaredAction(door, function() self:ToggleLock(client, door, true) end, time, function() client:stopAction() end)
         lia.log.add(client, "lockDoor", door)
     end
@@ -528,7 +528,7 @@ function MODULE:KeyUnlock(client, door, time)
     local distance = client:GetPos():Distance(door:GetPos())
     local isProperEntity = door:isDoor() or door:IsVehicle() or door:isSimfphysCar()
     if isProperEntity and door:isLocked() and distance <= 256 and (door:checkDoorAccess(client) or door:GetCreator() == client or client:isStaffOnDuty()) then
-        client:setAction(L("unlocking"), time, function() end)
+        client:setAction("@unlocking", time, function() end)
         client:doStaredAction(door, function() self:ToggleLock(client, door, false) end, time, function() client:stopAction() end)
         lia.log.add(client, "unlockDoor", door)
     end

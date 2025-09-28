@@ -313,6 +313,11 @@ net.Receive("liaOptionsRequest", function()
     local subTitleKey = net.ReadString()
     local options = net.ReadTable()
     local limit = net.ReadUInt(32)
+    if titleKey:sub(1, 1) == "@" then titleKey = titleKey:sub(2) end
+    if subTitleKey:sub(1, 1) == "@" then subTitleKey = subTitleKey:sub(2) end
+    for i = 1, #options do
+        if options[i]:sub(1, 1) == "@" then options[i] = options[i]:sub(2) end
+    end
     local frame = vgui.Create("liaFrame")
     frame:SetTitle(L(titleKey))
     frame:SetSize(400, 300)
@@ -442,6 +447,11 @@ net.Receive("liaRequestDropdown", function()
     local titleKey = net.ReadString()
     local subTitleKey = net.ReadString()
     local options = net.ReadTable()
+    if titleKey:sub(1, 1) == "@" then titleKey = titleKey:sub(2) end
+    if subTitleKey:sub(1, 1) == "@" then subTitleKey = subTitleKey:sub(2) end
+    for i = 1, #options do
+        if options[i]:sub(1, 1) == "@" then options[i] = options[i]:sub(2) end
+    end
     local frame = vgui.Create("liaFrame")
     frame:SetTitle(L(titleKey))
     frame:SetSize(500, 250)
@@ -485,6 +495,7 @@ net.Receive("liaArgumentsRequest", function()
     local id = net.ReadUInt(32)
     local title = net.ReadString()
     local fields = net.ReadTable()
+    if title:sub(1, 1) == "@" then title = L(title:sub(2)) end
     lia.util.requestArguments(title, fields, function(success, data)
         if success then
             net.Start("liaArgumentsRequest")
@@ -628,6 +639,9 @@ net.Receive("liaBinaryQuestionRequest", function()
     local option1Key = net.ReadString()
     local option2Key = net.ReadString()
     local manualDismiss = net.ReadBool()
+    if questionKey:sub(1, 1) == "@" then questionKey = questionKey:sub(2) end
+    if option1Key:sub(1, 1) == "@" then option1Key = option1Key:sub(2) end
+    if option2Key:sub(1, 1) == "@" then option2Key = option2Key:sub(2) end
     local notice = CreateNoticePanel(10, manualDismiss)
     table.insert(lia.notices, notice)
     notice.isQuery = true
@@ -752,6 +766,11 @@ net.Receive("liaButtonRequest", function()
     local options = {}
     for i = 1, count do
         options[i] = net.ReadString()
+    end
+
+    if titleKey:sub(1, 1) == "@" then titleKey = titleKey:sub(2) end
+    for i = 1, count do
+        if options[i]:sub(1, 1) == "@" then options[i] = options[i]:sub(2) end
     end
 
     local frame = vgui.Create("liaFrame")

@@ -459,56 +459,47 @@ function PANEL:OnRemove()
     CloseDermaMenus()
 end
 
-
 function PANEL:AddColumn(name, width)
-    
     if not self.columns then self.columns = {} end
-    table.insert(self.columns, {name = name, width = width or 100})
+    table.insert(self.columns, {
+        name = name,
+        width = width or 100
+    })
 end
 
 function PANEL:AddLine(...)
-    
     local args = {...}
-    
     return 0
 end
 
 function PANEL:GetSelectedLine()
-    
     return nil
 end
 
 function PANEL:GetSelected()
-    
     return {}, 0
 end
 
 function PANEL:RemoveLine(index)
-    
 end
 
 function PANEL:ClearSelection()
-    
 end
 
 function PANEL:SelectItem(line)
-    
 end
 
 function PANEL:SelectFirstItem()
-    
 end
 
 function PANEL:SortByColumn(index, descending)
-    
 end
 
 function PANEL:GetMultiSelect()
-    return false 
+    return false
 end
 
 function PANEL:SetMultiSelect(multi)
-    
     self.multiSelect = multi
 end
 

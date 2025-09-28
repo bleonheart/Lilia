@@ -172,23 +172,17 @@ end
 function PANEL:Paint(_, _)
 end
 
-
 function PANEL:SetVector(vec)
-    if vec and vec.r and vec.g and vec.b then
-        self:SetColor(Color(vec.r, vec.g, vec.b))
-    end
+    if vec and vec.r and vec.g and vec.b then self:SetColor(Color(vec.r, vec.g, vec.b)) end
 end
 
 function PANEL:GetVector()
     local color = self:GetColor()
-    if color then
-        return Vector(color.r / 255, color.g / 255, color.b / 255)
-    end
+    if color then return Vector(color.r / 255, color.g / 255, color.b / 255) end
     return Vector(1, 1, 1)
 end
 
 function PANEL:SetWangs(wang)
-    
     self.wangs = wang
 end
 
@@ -202,9 +196,7 @@ function PANEL:SetConVarR(convar)
         local cvar = GetConVar(convar)
         if cvar then
             local color = self:GetColor()
-            if color then
-                cvar:SetInt(color.r)
-            end
+            if color then cvar:SetInt(color.r) end
         end
     end
 end
@@ -215,9 +207,7 @@ function PANEL:SetConVarG(convar)
         local cvar = GetConVar(convar)
         if cvar then
             local color = self:GetColor()
-            if color then
-                cvar:SetInt(color.g)
-            end
+            if color then cvar:SetInt(color.g) end
         end
     end
 end
@@ -228,9 +218,7 @@ function PANEL:SetConVarB(convar)
         local cvar = GetConVar(convar)
         if cvar then
             local color = self:GetColor()
-            if color then
-                cvar:SetInt(color.b)
-            end
+            if color then cvar:SetInt(color.b) end
         end
     end
 end
@@ -241,9 +229,7 @@ function PANEL:SetConVarA(convar)
         local cvar = GetConVar(convar)
         if cvar then
             local color = self:GetColor()
-            if color then
-                cvar:SetInt(color.a or 255)
-            end
+            if color then cvar:SetInt(color.a or 255) end
         end
     end
 end

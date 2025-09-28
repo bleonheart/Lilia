@@ -1,5 +1,4 @@
-lia.derma = lia.derma or {}
-
+﻿lia.derma = lia.derma or {}
 function lia.derma.button(parent, icon, iconSize, color, radius, noGradient, hoverColor, noHover)
     if parent ~= nil and not IsValid(parent) then return end
     local button = vgui.Create("liaButton", parent)
@@ -91,13 +90,9 @@ function lia.derma.panelTabs(parent)
     if parent ~= nil and not IsValid(parent) then return end
     local tabs = vgui.Create("liaTabs", parent)
     tabs:Dock(FILL)
-
-    
     local originalAddTab = tabs.AddTab
-
     function tabs:AddTab(title, panel, icon, _, _)
         local newPanel = panel or vgui.Create("liaBasePanel")
-        
         originalAddTab(self, title, newPanel, icon)
     end
 
@@ -415,7 +410,6 @@ function lia.derma.playerSelector(callback, validationFunc)
     lia.derma.menu_player_selector = frame
     return frame
 end
-
 
 function lia.derma.textBox(title, description, callback)
     if not IsValid(lia.derma.menu_text_box) then

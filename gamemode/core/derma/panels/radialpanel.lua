@@ -372,6 +372,7 @@ function PANEL:AddButton(text, callback, icon, desc)
         icon = icon,
         desc = desc
     }
+
     table.insert(self.options, option)
     return option
 end

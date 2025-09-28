@@ -26,6 +26,7 @@ function PANEL:Init()
             local themeColors = lia.color.theme
             lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(themeColors.hover.r, themeColors.hover.g, themeColors.hover.b, self.hoverAnim * 255)):Shape(lia.rndx.SHAPE_IOS):Draw()
         end
+
         draw.SimpleText(self.selected or self.placeholder or L("combobox_select"), self.font, 12, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         local arrowSize = 6
         local arrowX = w - 16
@@ -203,42 +204,31 @@ function PANEL:OnRemove()
     self:CloseMenu()
 end
 
-
 function PANEL:GetOptionText(index)
-    if self.choices[index] then
-        return self.choices[index].text
-    end
+    if self.choices[index] then return self.choices[index].text end
     return ""
 end
 
 function PANEL:GetOptionData(index)
-    if self.choices[index] then
-        return self.choices[index].data
-    end
+    if self.choices[index] then return self.choices[index].data end
     return nil
 end
 
 function PANEL:GetSelectedID()
     for i, choice in ipairs(self.choices) do
-        if choice.data == self.selected then
-            return i
-        end
+        if choice.data == self.selected then return i end
     end
     return nil
 end
 
 function PANEL:GetSelected()
     local selectedID = self:GetSelectedID()
-    if selectedID then
-        return self.choices[selectedID].text, self.choices[selectedID].data
-    end
+    if selectedID then return self.choices[selectedID].text, self.choices[selectedID].data end
     return "", nil
 end
 
 function PANEL:SetSelected(index)
-    if self.choices[index] then
-        self.selected = self.choices[index].data
-    end
+    if self.choices[index] then self.selected = self.choices[index].data end
 end
 
 function PANEL:ChooseOptionID(index)
@@ -261,9 +251,7 @@ end
 
 function PANEL:GetOptionTextByData(data)
     for i, choice in ipairs(self.choices) do
-        if choice.data == data then
-            return choice.text
-        end
+        if choice.data == data then return choice.text end
     end
     return ""
 end
@@ -273,7 +261,6 @@ function PANEL:IsMenuOpen()
 end
 
 function PANEL:SetSortItems(sort)
-    
     self.sortItems = sort
 end
 

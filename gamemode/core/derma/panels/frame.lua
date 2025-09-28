@@ -137,7 +137,6 @@ function PANEL:PerformLayout(w, _)
     self.cls:SetPos(w - 22, 2)
 end
 
-
 function PANEL:Center()
     self:CenterHorizontal()
     self:CenterVertical()
@@ -154,7 +153,7 @@ function PANEL:GetBackgroundBlur()
 end
 
 function PANEL:GetDeleteOnClose()
-    return true 
+    return true
 end
 
 function PANEL:GetDraggable()
@@ -162,7 +161,7 @@ function PANEL:GetDraggable()
 end
 
 function PANEL:GetIsMenu()
-    return false 
+    return false
 end
 
 function PANEL:GetMinHeight()
@@ -174,7 +173,7 @@ function PANEL:GetMinWidth()
 end
 
 function PANEL:GetPaintShadow()
-    return not self.bool_lite 
+    return not self.bool_lite
 end
 
 function PANEL:GetScreenLock()
@@ -194,7 +193,6 @@ function PANEL:IsActive()
 end
 
 function PANEL:OnClose()
-    
 end
 
 function PANEL:SetBackgroundBlur(blur)
@@ -202,7 +200,6 @@ function PANEL:SetBackgroundBlur(blur)
 end
 
 function PANEL:SetDeleteOnClose(_)
-    
 end
 
 function PANEL:SetDraggable(draggable)
@@ -210,12 +207,10 @@ function PANEL:SetDraggable(draggable)
 end
 
 function PANEL:SetIcon(path)
-    
     self.iconPath = path
 end
 
 function PANEL:SetIsMenu(isMenu)
-    
     self.isMenu = isMenu
 end
 
@@ -237,7 +232,6 @@ end
 
 function PANEL:SetSizable(sizable)
     self.sizable = sizable
-    
 end
 
 function PANEL:ShowCloseButton(show)

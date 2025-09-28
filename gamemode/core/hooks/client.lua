@@ -27,9 +27,9 @@ local hidden = {
 }
 
 local VoiceRanges = {
-    [L("whispering")] = 120,
-    [L("talking")] = 300,
-    [L("yelling")] = 600,
+    [("@whispering")] = 120,
+    [("@talking")] = 300,
+    [("@yelling")] = 600,
 }
 
 local lastEntity
@@ -37,27 +37,27 @@ local nextUpdate = 0
 local healthPercent = {
     {
         threshold = 0.2,
-        text = L("criticalCondition"),
+        text = function() return ("@criticalCondition") end,
         color = Color(192, 57, 43)
     },
     {
         threshold = 0.4,
-        text = L("seriousInjury"),
+        text = function() return ("@seriousInjury") end,
         color = Color(231, 76, 60)
     },
     {
         threshold = 0.6,
-        text = L("moderateInjury"),
+        text = function() return ("@moderateInjury") end,
         color = Color(255, 152, 0)
     },
     {
         threshold = 0.8,
-        text = L("minorInjury"),
+        text = function() return ("@minorInjury") end,
         color = Color(255, 193, 7)
     },
     {
         threshold = 1.0,
-        text = L("healthyStatus"),
+        text = function() return ("@healthyStatus") end,
         color = Color(46, 204, 113)
     }
 }
@@ -176,7 +176,7 @@ function GM:PostDrawOpaqueRenderables()
     local client = LocalPlayer()
     if not (IsValid(client) and client:IsSpeaking() and client:getChar()) then return end
     local vt = client:getNetVar("VoiceType", L("talking"))
-    local radius = VoiceRanges[vt] or VoiceRanges[L("talking")]
+    local radius = L(VoiceRanges[vt]) or L(VoiceRanges[("talking")])
     local segments = 36
     local pos = client:GetPos() + Vector(0, 0, 2)
     local color = Color(0, 150, 255)

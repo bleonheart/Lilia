@@ -66,7 +66,6 @@ function SimplePanel:Paint(w, h)
 end
 
 vgui.Register("SemiTransparentDPanel", SimplePanel, "liaBasePanel")
-
 local LiaBasePanel = {}
 function LiaBasePanel:Init()
     if self.SetText then self:SetText("") end

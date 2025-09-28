@@ -100,7 +100,6 @@ end
 function PANEL:OnChange(_)
 end
 
-
 function PANEL:GetChecked()
     return self:GetBool()
 end
@@ -114,9 +113,7 @@ function PANEL:Toggle()
 end
 
 function PANEL:Paint(w, h)
-    if lia.config.get("uiDepthEnabled", true) then
-        lia.rndx.DrawShadows(12, 0, 0, w, h, lia.color.theme.window_shadow, 6, 22, lia.rndx.SHAPE_IOS)
-    end
+    if lia.config.get("uiDepthEnabled", true) then lia.rndx.DrawShadows(12, 0, 0, w, h, lia.color.theme.window_shadow, 6, 22, lia.rndx.SHAPE_IOS) end
     lia.rndx.Draw(12, 0, 0, w, h, lia.color.theme.focus_panel, lia.rndx.SHAPE_IOS)
     local textX = 14
     draw.SimpleText(self.text, 'Fated.18', textX, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)

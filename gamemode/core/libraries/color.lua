@@ -1,147 +1,116 @@
-lia.color = lia.color or {}
+﻿lia.color = lia.color or {}
 lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
 lia.color.theme = lia.color.theme or {}
-if CLIENT then
-    lia.color.transition = {
-        active = false,
-        to = nil,
-        progress = 0,
-        speed = 3,
-        colorBlend = 8
-    }
+lia.color.transition = {
+    active = false,
+    to = nil,
+    progress = 0,
+    speed = 3,
+    colorBlend = 8
+}
 
-    function lia.color.register(name, color)
-        lia.color.stored[name:lower()] = color
-    end
+function lia.color.register(name, color)
+    lia.color.stored[name:lower()] = color
+end
 
-    function lia.color.setTheme(name)
-        if not isstring(name) then error('Theme name must be a string') end
-        local themeName = name:lower()
-        if not lia.color.themes[themeName] then error('Theme "' .. name .. '" does not exist') end
-        lia.color.theme = table.Copy(lia.color.themes[themeName])
-    end
+function lia.color.setTheme(name)
+    if not isstring(name) then error('Theme name must be a string') end
+    local themeName = name:lower()
+    if not lia.color.themes[themeName] then error('Theme "' .. name .. '" does not exist') end
+    lia.color.theme = table.Copy(lia.color.themes[themeName])
+end
 
-    function lia.color.setThemeSmooth(name)
-        if not isstring(name) then error('Theme name must be a string') end
-        local themeName = name:lower()
-        if not lia.color.themes[themeName] then error('Theme "' .. name .. '" does not exist') end
-        lia.color.transition.to = table.Copy(lia.color.themes[themeName])
-        lia.color.transition.active = true
-        lia.color.transition.progress = 0
-        if not hook.GetTable().LiliaThemeTransition then
-            hook.Add("Think", "LiliaThemeTransition", function()
-                if not lia.color.transition.active then return end
-                local dt = FrameTime()
-                lia.color.transition.progress = lia.util.approachExp(lia.color.transition.progress, 1, lia.color.transition.speed, dt)
-                local to = lia.color.transition.to
-                if not to then
-                    lia.color.transition.active = false
-                    hook.Remove("Think", "LiliaThemeTransition")
-                    return
-                end
+function lia.color.setThemeSmooth(name)
+    if not isstring(name) then error('Theme name must be a string') end
+    local themeName = name:lower()
+    if not lia.color.themes[themeName] then error('Theme "' .. name .. '" does not exist') end
+    lia.color.transition.to = table.Copy(lia.color.themes[themeName])
+    lia.color.transition.active = true
+    lia.color.transition.progress = 0
+    if not hook.GetTable().LiliaThemeTransition then
+        hook.Add("Think", "LiliaThemeTransition", function()
+            if not lia.color.transition.active then return end
+            local dt = FrameTime()
+            lia.color.transition.progress = lia.util.approachExp(lia.color.transition.progress, 1, lia.color.transition.speed, dt)
+            local to = lia.color.transition.to
+            if not to then
+                lia.color.transition.active = false
+                hook.Remove("Think", "LiliaThemeTransition")
+                return
+            end
 
-                for k, v in pairs(to) do
-                    if lia.color.isColor(v) then
-                        lia.color.theme[k] = lia.color.Lerp(lia.color.transition.colorBlend, lia.color.theme[k] or v, v)
-                    elseif type(v) == 'table' and #v > 0 then
-                        lia.color.theme[k] = lia.color.theme[k] or {}
-                        for i = 1, #v do
-                            local vi = v[i]
-                            if lia.color.isColor(vi) then
-                                local currentColor = (lia.color.theme[k] and lia.color.theme[k][i]) or vi
-                                lia.color.theme[k][i] = lia.color.Lerp(lia.color.transition.colorBlend, currentColor, vi)
-                            else
-                                lia.color.theme[k][i] = vi
-                            end
+            for k, v in pairs(to) do
+                if lia.color.isColor(v) then
+                    lia.color.theme[k] = lia.color.Lerp(lia.color.transition.colorBlend, lia.color.theme[k] or v, v)
+                elseif type(v) == 'table' and #v > 0 then
+                    lia.color.theme[k] = lia.color.theme[k] or {}
+                    for i = 1, #v do
+                        local vi = v[i]
+                        if lia.color.isColor(vi) then
+                            local currentColor = (lia.color.theme[k] and lia.color.theme[k][i]) or vi
+                            lia.color.theme[k][i] = lia.color.Lerp(lia.color.transition.colorBlend, currentColor, vi)
+                        else
+                            lia.color.theme[k][i] = vi
                         end
                     end
                 end
+            end
 
-                if lia.color.transition.progress >= 0.999 then
-                    lia.color.theme = table.Copy(lia.color.transition.to)
-                    lia.color.transition.active = false
-                    hook.Remove("Think", "LiliaThemeTransition")
-                end
-            end)
-        end
+            if lia.color.transition.progress >= 0.999 then
+                lia.color.theme = table.Copy(lia.color.transition.to)
+                lia.color.transition.active = false
+                hook.Remove("Think", "LiliaThemeTransition")
+            end
+        end)
     end
+end
 
-    function lia.color.isColor(v)
-        return type(v) == "table" and type(v.r) == "number"
+function lia.color.isColor(v)
+    return type(v) == "table" and type(v.r) == "number"
+end
+
+function lia.color.LerpColor(frac, col1, col2)
+    local ft = FrameTime() * frac
+    return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
+end
+
+function lia.color.getCurrentThemeName()
+    for name, theme in pairs(lia.color.themes) do
+        if theme == lia.color.theme then return name end
     end
+    return 'unknown'
+end
 
-    function lia.color.LerpColor(frac, col1, col2)
-        local ft = FrameTime() * frac
-        return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
+function lia.color.isTransitioning()
+    return lia.color.transition.active
+end
+
+function lia.color.getTheme(name)
+    if name then
+        return lia.color.themes[name:lower()]
+    else
+        return lia.color.theme
     end
+end
 
-    function lia.color.getCurrentThemeName()
-        for name, theme in pairs(lia.color.themes) do
-            if theme == lia.color.theme then return name end
-        end
-        return 'unknown'
+function lia.color.Adjust(color, rOffset, gOffset, bOffset, aOffset)
+    return Color(math.Clamp(color.r + rOffset, 0, 255), math.Clamp(color.g + gOffset, 0, 255), math.Clamp(color.b + bOffset, 0, 255), math.Clamp((color.a or 255) + (aOffset or 0), 0, 255))
+end
+
+function lia.color.Lerp(frac, col1, col2)
+    local ft = FrameTime() * frac
+    return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
+end
+
+local oldColor = Color
+function Color(r, g, b, a)
+    if isstring(r) then
+        local c = lia.color.stored[r:lower()]
+        if c then return oldColor(unpack(c), g or 255) end
+        return oldColor(255, 255, 255, 255)
     end
-
-    function lia.color.isTransitioning()
-        return lia.color.transition.active
-    end
-
-    function lia.color.getTheme(name)
-        if name then
-            return lia.color.themes[name:lower()]
-        else
-            return lia.color.theme
-        end
-    end
-
-    function lia.color.Adjust(color, rOffset, gOffset, bOffset, aOffset)
-        return Color(math.Clamp(color.r + rOffset, 0, 255), math.Clamp(color.g + gOffset, 0, 255), math.Clamp(color.b + bOffset, 0, 255), math.Clamp((color.a or 255) + (aOffset or 0), 0, 255))
-    end
-
-    function lia.color.Lerp(frac, col1, col2)
-        local ft = FrameTime() * frac
-        return Color(Lerp(ft, col1.r, col2.r), Lerp(ft, col1.g, col2.g), Lerp(ft, col1.b, col2.b), Lerp(ft, col1.a, col2.a))
-    end
-
-    local oldColor = Color
-    function Color(r, g, b, a)
-        if isstring(r) then
-            local c = lia.color.stored[r:lower()]
-            if c then return oldColor(unpack(c), g or 255) end
-            return oldColor(255, 255, 255, 255)
-        end
-        return oldColor(r, g, b, a)
-    end
-
-    lia.color.register("black", {0, 0, 0})
-    lia.color.register("white", {255, 255, 255})
-    lia.color.register("gray", {128, 128, 128})
-    lia.color.register("dark_gray", {64, 64, 64})
-    lia.color.register("light_gray", {192, 192, 192})
-    lia.color.register("red", {255, 0, 0})
-    lia.color.register("dark_red", {139, 0, 0})
-    lia.color.register("light_red", {255, 99, 71})
-    lia.color.register("green", {0, 255, 0})
-    lia.color.register("dark_green", {0, 100, 0})
-    lia.color.register("light_green", {144, 238, 144})
-    lia.color.register("blue", {0, 0, 255})
-    lia.color.register("dark_blue", {0, 0, 139})
-    lia.color.register("light_blue", {173, 216, 230})
-    lia.color.register("cyan", {0, 255, 255})
-    lia.color.register("dark_cyan", {0, 139, 139})
-    lia.color.register("magenta", {255, 0, 255})
-    lia.color.register("dark_magenta", {139, 0, 139})
-    lia.color.register("yellow", {255, 255, 0})
-    lia.color.register("dark_yellow", {139, 139, 0})
-    lia.color.register("orange", {255, 165, 0})
-    lia.color.register("dark_orange", {255, 140, 0})
-    lia.color.register("purple", {128, 0, 128})
-    lia.color.register("dark_purple", {75, 0, 130})
-    lia.color.register("pink", {255, 192, 203})
-    lia.color.register("dark_pink", {199, 21, 133})
-    lia.color.register("brown", {165, 42, 42})
-    lia.color.register("dark_brown", {139, 69, 19})
+    return oldColor(r, g, b, a)
 end
 
 function lia.color.registerTheme(name, themeData)
@@ -154,16 +123,49 @@ function lia.color.registerTheme(name, themeData)
 
     lia.color.themes[name:lower()] = themeData
     if CLIENT and table.IsEmpty(lia.color.theme) then lia.color.theme = table.Copy(themeData) end
-end
-
-function lia.color.getThemes()
-    local themes = {}
-    for name, _ in pairs(lia.color.themes) do
-        table.insert(themes, name)
+    function lia.color.getThemes()
+        local themes = {}
+        for name, _ in pairs(lia.color.themes) do
+            table.insert(themes, name)
+        end
+        return themes
     end
-    return themes
+
+    -- Set default theme if none is set
+    if CLIENT and table.IsEmpty(lia.color.theme) then
+        local defaultTheme = lia.color.themes["default"]
+        if defaultTheme then lia.color.theme = table.Copy(defaultTheme) end
+    end
 end
 
+lia.color.register("black", {0, 0, 0})
+lia.color.register("white", {255, 255, 255})
+lia.color.register("gray", {128, 128, 128})
+lia.color.register("dark_gray", {64, 64, 64})
+lia.color.register("light_gray", {192, 192, 192})
+lia.color.register("red", {255, 0, 0})
+lia.color.register("dark_red", {139, 0, 0})
+lia.color.register("light_red", {255, 99, 71})
+lia.color.register("green", {0, 255, 0})
+lia.color.register("dark_green", {0, 100, 0})
+lia.color.register("light_green", {144, 238, 144})
+lia.color.register("blue", {0, 0, 255})
+lia.color.register("dark_blue", {0, 0, 139})
+lia.color.register("light_blue", {173, 216, 230})
+lia.color.register("cyan", {0, 255, 255})
+lia.color.register("dark_cyan", {0, 139, 139})
+lia.color.register("magenta", {255, 0, 255})
+lia.color.register("dark_magenta", {139, 0, 139})
+lia.color.register("yellow", {255, 255, 0})
+lia.color.register("dark_yellow", {139, 139, 0})
+lia.color.register("orange", {255, 165, 0})
+lia.color.register("dark_orange", {255, 140, 0})
+lia.color.register("purple", {128, 0, 128})
+lia.color.register("dark_purple", {75, 0, 130})
+lia.color.register("pink", {255, 192, 203})
+lia.color.register("dark_pink", {199, 21, 133})
+lia.color.register("brown", {165, 42, 42})
+lia.color.register("dark_brown", {139, 69, 19})
 lia.color.registerTheme("dark", {
     background = Color(25, 25, 25),
     sidebar = Color(40, 40, 40),
@@ -634,11 +636,4 @@ lia.color.registerTheme("default", {
     focus_panel = Color(46, 46, 46),
     gray = Color(150, 150, 150, 220),
     panel_alpha = {Color(60, 60, 60, 150), Color(50, 50, 50, 150), Color(80, 80, 80, 150)}
-})
-
-lia.config.add("Theme", "theme", "default", function(_, newValue) lia.color.setThemeSmooth(newValue) end, {
-    desc = "themeDesc",
-    category = "categoryVisuals",
-    type = "Table",
-    options = lia.color.getThemes()
 })

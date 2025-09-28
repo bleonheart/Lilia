@@ -27,7 +27,7 @@ function PANEL:Init()
     self.searchBox = vgui.Create("liaEntry", self.topBar)
     self.searchBox:Dock(FILL)
     self.searchBox:SetTall(32)
-    self.searchBox:SetPlaceholderText("")
+    self.searchBox:SetPlaceholderText(L("search"))
     self.searchBox:SetText("")
     self.searchBox.OnTextChanged = function() self:Populate() end
     self.refreshButton = vgui.Create("liaButton", self.topBar)

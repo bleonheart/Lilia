@@ -304,7 +304,6 @@ function PANEL:addText(...)
         end
         return panel:IsVisible()
     else
-        
         return false
     end
 end

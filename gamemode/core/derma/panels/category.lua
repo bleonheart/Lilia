@@ -83,9 +83,7 @@ end
 
 function PANEL:SetTitle(title)
     self.title = title
-    if IsValid(self.header) then
-        self.header:SetText(title or "")
-    end
+    if IsValid(self.header) then self.header:SetText(title or "") end
 end
 
 function PANEL:GetTitle()
@@ -123,7 +121,6 @@ end
 
 function PANEL:AddItem(item)
     if isstring(item) then
-        
         local label = vgui.Create("liaText", self.content)
         label:SetText(item)
         label:Dock(TOP)
@@ -131,7 +128,6 @@ function PANEL:AddItem(item)
         label:SetTextColor(lia.color.theme.text)
         return label
     else
-        
         item:SetParent(self.content)
         item:Dock(TOP)
         item:DockMargin(0, 0, 0, 5)
@@ -143,18 +139,13 @@ function PANEL:Add(item)
     return self:AddItem(item)
 end
 
-
 function PANEL:RemoveItem(panel)
-    if IsValid(panel) and panel:GetParent() == self.content then
-        panel:Remove()
-    end
+    if IsValid(panel) and panel:GetParent() == self.content then panel:Remove() end
 end
 
 function PANEL:SetHeaderHeight(height)
     self.headerHeight = height
-    if IsValid(self.header) then
-        self.header:SetTall(height)
-    end
+    if IsValid(self.header) then self.header:SetTall(height) end
 end
 
 function PANEL:GetHeaderHeight()
@@ -192,7 +183,6 @@ function PANEL:Toggle()
 end
 
 function PANEL:SetShowToggleButton(show)
-    
     self.showToggleButton = show
 end
 

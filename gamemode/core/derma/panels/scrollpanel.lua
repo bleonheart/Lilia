@@ -424,25 +424,18 @@ function PANEL:Think()
     vb.btnGrip:SetPos(0, finalY)
 end
 
-
 function PANEL:GetHBar()
-    
     return nil
 end
-
 
 local liaScrollPanel = vgui.GetControlTable("liaScrollPanel")
 if liaScrollPanel and not liaScrollPanel.GetCanvas then
     function liaScrollPanel:GetCanvas()
-        
-        
         if self.Canvas then
             return self.Canvas
         elseif self:GetChildren() and #self:GetChildren() > 0 then
-            
             return self:GetChildren()[1]
         else
-            
             return self
         end
     end
@@ -454,34 +447,25 @@ end
 
 function PANEL:ScrollToChild(panel)
     if not IsValid(panel) or not IsValid(self.content) then return end
-
     local canvas = self.content
     local scroll = self.vbar
-
     if not IsValid(scroll) or not IsValid(scroll.btnGrip) then return end
-
     local _, y = panel:GetPos()
     local _, canvasY = canvas:GetPos()
     local canvasTall = canvas:GetTall()
     local panelTall = self:GetTall()
-
     local diffY = y + canvasY
     local scrollY = math.Clamp(diffY, 0, canvasTall - panelTall)
-
     scroll:AnimateTo(scrollY / canvasTall, 0.3, 0, 0.3)
 end
 
 function PANEL:InvalidateParent()
     local parent = self:GetParent()
-    if IsValid(parent) then
-        parent:InvalidateLayout(true)
-    end
+    if IsValid(parent) then parent:InvalidateLayout(true) end
 end
 
 function PANEL:SetScrollbarWidth(width)
-    if IsValid(self.vbar) and IsValid(self.vbar.btnGrip) then
-        self.vbar:SetWide(width)
-    end
+    if IsValid(self.vbar) and IsValid(self.vbar.btnGrip) then self.vbar:SetWide(width) end
 end
 
 vgui.Register("liaScrollPanel", PANEL, "EditablePanel")
