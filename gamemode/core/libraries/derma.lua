@@ -4,7 +4,6 @@ local color_bot = Color(70, 150, 220)
 local color_online = Color(120, 180, 70)
 local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
-local color_outline = Color(30, 30, 30)
 local color_target = Color(255, 255, 255, 200)
 function lia.derma.derma_menu()
     if IsValid(lia.derma.menu_derma_menu) then lia.derma.menu_derma_menu:CloseMenu() end
@@ -44,7 +43,7 @@ function lia.derma.color_picker(func, color_standart)
     preview:Dock(TOP)
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
-    preview.Paint = function(self, w, h)
+    preview.Paint = function(_, w, h)
         lia.derma.rect(2, 2, w - 4, h - 4):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
         lia.derma.rect(2, 2, w - 4, h - 4):Rad(16):Color(selected_color):Shape(lia.derma.SHAPE_IOS):Draw()
     end
@@ -67,7 +66,7 @@ function lia.derma.color_picker(func, color_standart)
         end
     end
 
-    colorField.OnMouseReleased = function(self, keyCode) if keyCode == MOUSE_LEFT then isDraggingColor = false end end
+    colorField.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingColor = false end end
     colorField.OnCursorMoved = function(self, x, y)
         if isDraggingColor then
             local w, h = self:GetSize()
@@ -81,7 +80,7 @@ function lia.derma.color_picker(func, color_standart)
         end
     end
 
-    colorField.Paint = function(self, w, h)
+    colorField.Paint = function(_, w, h)
         local segments = 80
         local segmentSize = w / segments
         lia.derma.rect(0, 0, w, h):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
@@ -113,8 +112,8 @@ function lia.derma.color_picker(func, color_standart)
         end
     end
 
-    hueSlider.OnMouseReleased = function(self, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
-    hueSlider.OnCursorMoved = function(self, x, y)
+    hueSlider.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
+    hueSlider.OnCursorMoved = function(self, x, _)
         if isDraggingHue then
             local w = self:GetWide()
             x = math.Clamp(x, 0, w)
@@ -124,7 +123,7 @@ function lia.derma.color_picker(func, color_standart)
         end
     end
 
-    hueSlider.Paint = function(self, w, h)
+    hueSlider.Paint = function(_, w, h)
         local segments = 100
         local segmentWidth = w / segments
         lia.derma.rect(0, 0, w, h):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
@@ -179,7 +178,7 @@ function lia.derma.color_picker(func, color_standart)
     timer.Simple(0.1, function() lia.derma.menu_color_picker:SetAlpha(255) end)
 end
 
-function lia.derma.player_selector(do_click, func_check)
+function lia.derma.player_selector(do_click)
     if IsValid(lia.derma.menu_player_selector) then lia.derma.menu_player_selector:Remove() end
     lia.derma.menu_player_selector = vgui.Create('liaFrame')
     lia.derma.menu_player_selector:SetSize(340, 398)
@@ -236,7 +235,6 @@ function lia.derma.player_selector(do_click, func_check)
             group = string.upper(string.sub(group, 1, 1)) .. string.sub(group, 2)
             draw.SimpleText(group, 'Fated.14', infoX, h - 6, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
             draw.SimpleText(pl:Ping() .. ' ' .. L("ping"), 'Fated.16', w - 20, h - 6, lia.color.theme.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-            local statusColor = color_disconnect
             if pl:IsBot() then
                 statusColor = color_bot
             else
@@ -270,7 +268,6 @@ function lia.derma.player_selector(do_click, func_check)
     lia.derma.menu_player_selector.btn_close.DoClick = function() lia.derma.menu_player_selector:Remove() end
 end
 
-local color_accept = Color(35, 103, 51)
 function lia.derma.text_box(title, desc, func)
     lia.derma.menu_text_box = vgui.Create('liaFrame')
     lia.derma.menu_text_box:SetSize(300, 132)
@@ -715,7 +712,7 @@ lia.derma.Rect = {
     Clip = lia.derma.baseFuncs.Clip,
     Shadow = lia.derma.baseFuncs.Shadow,
     Flags = lia.derma.baseFuncs.Flags,
-    Draw = function(self)
+    Draw = function(_)
         if START_ANGLE == END_ANGLE then return end
         local OLD_CLIPPING_STATE
         if SHADOW_ENABLED or CLIP_PANEL then OLD_CLIPPING_STATE = DisableClipping(true) end
@@ -743,7 +740,7 @@ lia.derma.Rect = {
         if CLIP_PANEL then render.SetScissorRect(0, 0, 0, 0, false) end
         if SHADOW_ENABLED or CLIP_PANEL then DisableClipping(OLD_CLIPPING_STATE) end
     end,
-    GetMaterial = function(self)
+    GetMaterial = function(_)
         if SHADOW_ENABLED or USING_BLUR then error("You can't get the material of a shadowed or blurred rectangle!") end
         if TEXTURE then
             MAT = roundedTextureMat
