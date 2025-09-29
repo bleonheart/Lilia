@@ -235,11 +235,10 @@ local logTypeCategories = {
     cheating = L("categoryCheating"),
 }
 
-local LogTypes = {}
 for category, logTypes in pairs(logTypeData) do
     local categoryName = logTypeCategories[category]
     for logType, func in pairs(logTypes) do
-        LogTypes[logType] = {
+        lia.log.types[logType] = {
             func = func,
             category = categoryName
         }

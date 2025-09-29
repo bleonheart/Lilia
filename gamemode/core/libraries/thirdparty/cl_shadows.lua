@@ -48,7 +48,7 @@ local function CreateBShadows()
         local yOffset = math_cos(math_rad(direction)) * distance
         BShadows.ShadowMaterialGrayscale:SetFloat('$alpha', opacity / 255)
         render.SetMaterial(BShadows.ShadowMaterialGrayscale)
-        for i = 1, math_ceil(intensity) do
+        for _ = 1, math_ceil(intensity) do
             render.DrawScreenQuadEx(xOffset, yOffset, ScrW(), ScrH())
         end
 
@@ -80,7 +80,7 @@ local function CreateBShadows()
         local yOffset = math_cos(math_rad(direction)) * distance
         BShadows.ShadowMaterialGrayscale:SetFloat('$alpha', opacity / 255)
         render.SetMaterial(BShadows.ShadowMaterialGrayscale)
-        for i = 1, math_ceil(intensity) do
+        for _ = 1, math_ceil(intensity) do
             render.DrawScreenQuadEx(xOffset, yOffset, ScrW(), ScrH())
         end
 

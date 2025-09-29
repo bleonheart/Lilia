@@ -1,4 +1,4 @@
-﻿net.Receive("liaConfigUpdate", function(len, client)
+﻿net.Receive("liaConfigUpdate", function(_, client)
     local key = net.ReadString()
     local value = net.ReadType()
     if key == "Theme" then

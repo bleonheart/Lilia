@@ -193,7 +193,7 @@ end
 
 function lia.color.getAllThemes()
     local themes = {}
-    for id, name in pairs(lia.color.themes) do
+    for id, _ in pairs(lia.color.themes) do
         themes[#themes + 1] = id
     end
 
@@ -861,7 +861,7 @@ lia.color.registerTheme("Lavender", {
     text = Color(72, 61, 139)
 })
 
-lia.config.add("Theme", "theme", "Teal", function(oldValue, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
+lia.config.add("Theme", "theme", "Teal", function(_, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
     desc = "themeDesc",
     category = "categoryVisuals",
     type = "Table",

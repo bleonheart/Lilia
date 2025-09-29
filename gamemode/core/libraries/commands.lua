@@ -875,7 +875,7 @@ else
             panel:Dock(TOP)
             panel:SetTall(50)
             panel:DockMargin(5, 5, 5, 5)
-            panel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
+            panel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
             local label = vgui.Create("DLabel", panel)
             label:SetText(element)
             label:Dock(LEFT)
@@ -947,7 +947,7 @@ else
         contentPanel = vgui.Create("DPanel", frame)
         contentPanel:Dock(FILL)
         contentPanel:DockMargin(10, 10, 10, 10)
-        contentPanel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
+        contentPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
         local function clearFeedback()
             if IsValid(contentPanel.feedbackLabel) then
                 contentPanel.feedbackLabel:Remove()
@@ -1064,7 +1064,7 @@ else
 
                 for _, tabInfo in ipairs(tabs) do
                     local tabPanel = vgui.Create("DPanel")
-                    tabPanel.Paint = function(_, w, h)
+                    tabPanel.Paint = function(_, _, _)
                         draw.SimpleText(tabInfo.name, "Fated.24", 24, 24, lia.color.theme.text)
                         draw.SimpleText(tabInfo.description, "Fated.16", 24, 56, lia.color.theme.gray)
                     end
