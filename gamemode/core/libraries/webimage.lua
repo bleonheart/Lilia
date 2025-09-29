@@ -406,4 +406,5 @@ lia.webimage.register("vignette.png", "https://bleonheart.github.io/Samael-Asset
 lia.webimage.register("dark_vignette.png", "https://bleonheart.github.io/Samael-Assets/misc/dark_vignette.png")
 lia.webimage.register("invslotblocked.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotblocked.png")
 lia.webimage.register("settings.png", "https://bleonheart.github.io/Samael-Assets/misc/settings.png")
+lia.webimage.register("close_button.png", "https://bleonheart.github.io/Samael-Assets/misc/close_button.png")
 ensureDir(baseDir)

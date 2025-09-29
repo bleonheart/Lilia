@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.choices = {}
     self.selected = nil
@@ -19,10 +19,10 @@ function PANEL:Init()
             self.hoverAnim = math.Clamp(self.hoverAnim - FrameTime() * 8, 0, 1)
         end
 
-        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
-        lia.rndx.Draw(16, 0, 0, w, h, lia.color.theme.focus_panel, lia.rndx.SHAPE_IOS)
-        if self.hoverAnim > 0 then lia.rndx.Rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.button_hovered.r, lia.color.theme.button_hovered.g, lia.color.theme.button_hovered.b, self.hoverAnim * 255)):Shape(lia.rndx.SHAPE_IOS):Draw() end
-        draw.SimpleText(self.selected or self.placeholder or 'Выберите...', self.font, 12, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.focus_panel):Shape(lia.derma.SHAPE_IOS):Draw()
+        if self.hoverAnim > 0 then lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(lia.color.theme.button_hovered.r, lia.color.theme.button_hovered.g, lia.color.theme.button_hovered.b, self.hoverAnim * 255)):Shape(lia.derma.SHAPE_IOS):Draw() end
+        draw.SimpleText(self.selected or self.placeholder or L("choose"), self.font, 12, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         local arrowSize = 6
         local arrowX = w - 16
         local arrowY = h / 2
@@ -52,7 +52,7 @@ function PANEL:Init()
             self:CloseMenu()
         else
             self:OpenMenu()
-            surface.PlaySound('mantle/btn_click.ogg')
+            surface.PlaySound('button_click.wav')
         end
     end
 end
@@ -68,12 +68,39 @@ function PANEL:SetValue(val)
     self.selected = val
 end
 
+function PANEL:ChooseOption(text, index)
+    self.selected = text
+    if self.convar then RunConsoleCommand(self.convar, tostring(text)) end
+    if self.OnSelect then self.OnSelect(index or 0, text, self.choices[index] and self.choices[index].data) end
+end
+
+function PANEL:ChooseOptionID(index)
+    local choice = self.choices[index]
+    if not choice then return end
+    self:ChooseOption(choice.text, index)
+end
+
+function PANEL:ChooseOptionData(data)
+    for i, choice in ipairs(self.choices) do
+        if choice.data == data then
+            self:ChooseOption(choice.text, i)
+            return
+        end
+    end
+end
+
 function PANEL:GetValue()
     return self.selected
 end
 
 function PANEL:SetPlaceholder(text)
     self.placeholder = text
+end
+
+function PANEL:Clear()
+    self.choices = {}
+    self.selected = nil
+    if IsValid(self.menu) then self.menu:Remove() end
 end
 
 function PANEL:OpenMenu()
@@ -91,8 +118,8 @@ function PANEL:OpenMenu()
     self.menu:SetKeyboardInputEnabled(false)
     self.menu:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding)
     self.menu.Paint = function(s, w, h)
-        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(10, 16):Draw()
-        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.rndx.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
     surface.SetFont(self.font)
@@ -104,16 +131,17 @@ function PANEL:OpenMenu()
         option:SetTall(itemHeight)
         option:SetCursor('hand')
         option.Paint = function(s, w, h)
-            if s:IsHovered() then lia.rndx.Draw(16, 0, 0, w, h, lia.color.theme.hover, lia.rndx.SHAPE_IOS) end
+            if s:IsHovered() then lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw() end
             draw.SimpleText(choice.text, 'Fated.18', 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            if self.selected == choice.text then lia.rndx.Draw(0, 4, h * 0.5 - 1, 4, 2, lia.color.theme.theme) end
+            if self.selected == choice.text then lia.derma.rect(4, h * 0.5 - 1, w - 8, 2):Color(lia.color.theme.theme):Draw() end
         end
 
         option.DoClick = function()
             self.selected = choice.text
+            if self.convar then RunConsoleCommand(self.convar, tostring(choice.data or choice.text)) end
             self:CloseMenu()
             if self.OnSelect then self.OnSelect(i, choice.text, choice.data) end
-            surface.PlaySound('mantle/btn_click.ogg')
+            surface.PlaySound('button_click.wav')
         end
     end
 
@@ -141,6 +169,34 @@ end
 
 function PANEL:OnRemove()
     self:CloseMenu()
+end
+
+function PANEL:GetOptionData(index)
+    return self.choices[index] and self.choices[index].data or nil
+end
+
+function PANEL:SetConVar(cvar)
+    self.convar = cvar
+end
+
+function PANEL:GetSelectedID()
+    if not self.selected then return nil end
+    for i, choice in ipairs(self.choices) do
+        if choice.text == self.selected then return i end
+    end
+end
+
+function PANEL:GetSelectedData()
+    local id = self:GetSelectedID()
+    return id and self:GetOptionData(id) or nil
+end
+
+function PANEL:GetSelectedText()
+    return self.selected
+end
+
+function PANEL:IsMenuOpen()
+    return self.opened
 end
 
 vgui.Register('liaComboBox', PANEL, 'Panel')

@@ -7,7 +7,6 @@
     return plyList
 end
 
-lia.util.ents_scales = {}
 function lia.util.getBySteamID(steamID)
     if not isstring(steamID) or steamID == "" then return end
     local sid = steamID
@@ -478,7 +477,7 @@ else
     function lia.util.drawGradient(_x, _y, _w, _h, direction, color_shadow, radius, flags)
         local listGradients = {Material('vgui/gradient_up'), Material('vgui/gradient_down'), Material('vgui/gradient-l'), Material('vgui/gradient-r')}
         radius = radius and radius or 0
-        lia.rndx.DrawMaterial(radius, _x, _y, _w, _h, color_shadow, listGradients[direction], flags)
+        lia.derma.drawMaterial(radius, _x, _y, _w, _h, color_shadow, listGradients[direction], flags)
     end
 
     function lia.util.wrapText(text, width, font)
@@ -989,25 +988,56 @@ else
         return frame
     end
 
-    local function EntText(text, y)
-        surface.SetFont('Fated.40')
-        local tw, th = surface.GetTextSize(text)
-        local bx, by = -tw * 0.5 - 18, y - 12
-        local bw, bh = tw + 36, th + 24
-        lia.rndx.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Blur():Shape(lia.rndx.SHAPE_IOS):Draw()
-        lia.rndx.Rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(lia.color.theme.background_alpha):Shape(lia.rndx.SHAPE_IOS):Draw()
-        lia.rndx.Rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(lia.color.theme.text):Draw()
-        draw.SimpleText(text, 'Fated.40', 0, y - 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    local vectorMeta = FindMetaTable("Vector")
+    local toScreen = vectorMeta and vectorMeta.ToScreen or function()
+        return {
+            x = 0,
+            y = 0,
+            visible = false
+        }
     end
 
-    function lia.util.drawEntText(ent, text, posY)
+    local defaultTheme = {
+        background_alpha = Color(34, 34, 34, 210),
+        header = Color(34, 34, 34, 210),
+        accent = Color(255, 255, 255, 180),
+        text = Color(255, 255, 255)
+    }
+
+    local function scaleColorAlpha(col, scale)
+        col = col or defaultTheme.background_alpha
+        local a = col.a or 255
+        return Color(col.r, col.g, col.b, math.Clamp(a * scale, 0, 255))
+    end
+
+    local function EntText(text, x, y, fade)
+        surface.SetFont("Fated.40")
+        local tw, th = surface.GetTextSize(text)
+        local bx, by = math.Round(x - tw * 0.5 - 18), math.Round(y - 12)
+        local bw, bh = tw + 36, th + 24
+        local theme = lia.color.theme or defaultTheme
+        local fadeAlpha = math.Clamp(fade, 0, 1)
+        local headerColor = scaleColorAlpha(theme.background_panelpopup or theme.header or defaultTheme.header, fadeAlpha)
+        local accentColor = scaleColorAlpha(theme.theme or theme.text or defaultTheme.accent, fadeAlpha)
+        local textColor = scaleColorAlpha(theme.text or defaultTheme.text, fadeAlpha)
+        lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
+        lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
+        draw.SimpleText(text, "Fated.40", math.Round(x), math.Round(y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        return bh
+    end
+
+    lia.util.entsScales = lia.util.entsScales or {}
+    function lia.util.drawEntText(ent, text, posY, alphaOverride)
+        if not (IsValid(ent) and text and text ~= "") then return end
+        posY = posY or 0
         local distSqr = EyePos():DistToSqr(ent:GetPos())
         local maxDist = 380
         if distSqr > maxDist * maxDist then return end
         local dist = math.sqrt(distSqr)
         local minDist = 20
         local idx = ent:EntIndex()
-        local prev = lia.util.ents_scales[idx] or 0
+        local prev = lia.util.entsScales[idx] or 0
         local normalized = math.Clamp((maxDist - dist) / math.max(1, maxDist - minDist), 0, 1)
         local appearThreshold = 0.8
         local disappearThreshold = 0.01
@@ -1026,24 +1056,30 @@ else
         local speed = (target > prev) and appearSpeed or disappearSpeed
         local cur = lia.util.approachExp(prev, target, speed, dt)
         if math.abs(cur - target) < 0.0005 then cur = target end
-        lia.util.ents_scales[idx] = cur
-        local eased = lia.util.easeInOutCubic(cur)
-        local alpha = eased
-        local baseScale = 0.13
-        local camScale = baseScale * math.max(1e-4, eased)
-        if eased < 0.01 then
-            surface.SetAlphaMultiplier(1)
+        if cur == 0 and target == 0 then
+            lia.util.entsScales[idx] = nil
             return
         end
 
-        local _, max = ent:GetRotatedAABB(ent:OBBMins(), ent:OBBMaxs())
-        local rot = (ent:GetPos() - EyePos()):Angle().yaw - 90
+        lia.util.entsScales[idx] = cur
+        local eased = lia.util.easeInOutCubic(cur)
+        if eased <= 0 then return end
+        local fade = eased
+        if alphaOverride then
+            if alphaOverride > 1 then
+                fade = fade * math.Clamp(alphaOverride / 255, 0, 1)
+            else
+                fade = fade * math.Clamp(alphaOverride, 0, 1)
+            end
+        end
+
+        if fade <= 0 then return end
+        local mins, maxs = ent:OBBMins(), ent:OBBMaxs()
+        local _, rotatedMax = ent:GetRotatedAABB(mins, maxs)
         local bob = math.sin(CurTime() + idx) / 3 + 0.5
-        local center = ent:LocalToWorld(ent:OBBCenter())
-        surface.SetAlphaMultiplier(alpha)
-        cam.Start3D2D(center + Vector(0, 0, math.abs(max.z / 2) + 12 + bob), Angle(0, rot, 90), camScale)
-        EntText(text, posY)
-        cam.End3D2D()
-        surface.SetAlphaMultiplier(1)
+        local center = ent:LocalToWorld(ent:OBBCenter()) + Vector(0, 0, math.abs(rotatedMax.z / 2) + 12 + bob)
+        local screenPos = toScreen(center)
+        if screenPos.visible == false then return end
+        EntText(text, screenPos.x, screenPos.y + posY, fade)
     end
 end

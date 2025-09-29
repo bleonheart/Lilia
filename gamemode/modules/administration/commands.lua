@@ -928,10 +928,8 @@ lia.command.add("plyspectate", {
             return
         end
 
-        -- Store the admin's current position for return
         client:setNetVar("liaSpectateReturnPos", client:GetPos())
         client:setNetVar("liaSpectateReturnAng", client:EyeAngles())
-        -- Start spectating
         client:Spectate(OBS_MODE_CHASE)
         client:SpectateEntity(target)
         client:GodEnable()
@@ -952,11 +950,9 @@ lia.command.add("stopspectate", {
             return
         end
 
-        -- Stop spectating
         client:UnSpectate()
         client:GodDisable()
         client:setNetVar("liaSpectating", false)
-        -- Return to previous position if available
         local returnPos = client:getNetVar("liaSpectateReturnPos")
         local returnAng = client:getNetVar("liaSpectateReturnAng")
         if returnPos then
@@ -969,7 +965,6 @@ lia.command.add("stopspectate", {
             client:setNetVar("liaSpectateReturnAng", nil)
         end
 
-        -- Give back weapons if they had any
         client:Give("weapon_physgun")
         client:Give("weapon_physcannon")
         client:Give("gmod_tool")
@@ -2987,14 +2982,14 @@ lia.command.add("exportprivileges", {
             lia.log.add(client, "privilegesExported", filename)
         else
             client:notifyErrorLocalized("privilegesExportFailed")
-            lia.error("Failed to export privileges to expected locations")
+            lia.error(L("privilegesExportFailed"))
         end
     end
 })
 
 lia.command.add("serverpassword", {
     superAdminOnly = true,
-    desc = "Get the current server password and copy it to your clipboard.",
+    desc = "serverpasswordDesc",
     alias = {"svpassword", "getserverpassword"},
     onRun = function(client)
         if not IsValid(client) then
@@ -3010,10 +3005,10 @@ lia.command.add("serverpassword", {
 
         local cvar = GetConVar("sv_password")
         local pw = cvar and cvar:GetString() or ""
-        if not isstring(pw) or pw == "" then return "Server password is not set." end
+        if not isstring(pw) or pw == "" then return L("serverPasswordNotSet") end
         net.Start("liaProvideServerPassword")
         net.WriteString(pw)
         net.Send(client)
-        return "Server password sent to you."
+        return L("serverPasswordSent")
     end
 })

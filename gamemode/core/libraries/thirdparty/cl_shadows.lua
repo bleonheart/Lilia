@@ -1,4 +1,4 @@
-local math_sin = math.sin
+﻿local math_sin = math.sin
 local math_cos = math.cos
 local math_rad = math.rad
 local math_ceil = math.ceil
@@ -93,4 +93,4 @@ local function CreateBShadows()
 end
 
 CreateBShadows()
-hook.Add('OnScreenSizeChanged', 'Mantle.Shadows', function() CreateBShadows() end)
+hook.Add('OnScreenSizeChanged', 'Lilia.Shadows', function() CreateBShadows() end)

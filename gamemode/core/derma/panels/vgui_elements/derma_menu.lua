@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local function ClampMenuPosition(panel)
     if not IsValid(panel) then return end
     local x, y = panel:GetPos()
@@ -28,6 +28,8 @@ function PANEL:Init()
     self:SetDrawOnTop(true)
     self.MaxTextWidth = 0
     self._openTime = CurTime()
+    self.deleteSelf = true
+    self.maxHeight = nil
     self.Think = function()
         if CurTime() - self._openTime < 0.1 then return end
         if input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT) then if not self:IsChildHovered() then self:Remove() end end
@@ -35,8 +37,8 @@ function PANEL:Init()
 end
 
 function PANEL:Paint(w, h)
-    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(10, 16):Draw()
-    lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.rndx.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 function PANEL:AddOption(text, func, icon, optData)
@@ -64,12 +66,12 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         if func then func() end
-        surface.PlaySound('mantle/btn_click.ogg')
+        surface.PlaySound('button_click.wav')
         local function closeAllMenus(panel)
             while IsValid(panel) do
-                if panel:GetName() == 'MantleDermaMenu' then
+                if panel:GetName() == 'liaDermaMenu' then
                     local parent = panel:GetParent()
-                    panel:Remove()
+                    panel:Close()
                     panel = parent
                 else
                     panel = panel:GetParent()
@@ -82,7 +84,7 @@ function PANEL:AddOption(text, func, icon, optData)
 
     function option:AddSubMenu()
         if IsValid(option._submenu) then option._submenu:Remove() end
-        local submenu = vgui.Create('MantleDermaMenu')
+        local submenu = vgui.Create('liaDermaMenu')
         submenu:SetDrawOnTop(true)
         submenu:SetParent(self:GetParent())
         submenu:SetVisible(false)
@@ -143,14 +145,14 @@ function PANEL:AddOption(text, func, icon, optData)
         w = w or pnl:GetWide()
         h = h or pnl:GetTall()
         if pnl:IsHovered() then
-            lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(5, 20):Draw()
-            lia.rndx.Draw(16, 0, 0, w, h, lia.color.theme.hover, lia.rndx.SHAPE_IOS)
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw()
             if pnl._submenu and not pnl._submenu_open then pnl:OpenSubMenu() end
         end
 
         if iconMat then
             local iconSize = 16
-            lia.rndx.DrawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, color_white, iconMat)
+            lia.derma.drawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, color_white, iconMat)
         end
 
         draw.SimpleText(pnl.Text, 'Fated.18', pnl.Icon and 32 or 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -167,7 +169,7 @@ function PANEL:AddSpacer()
     spacer:DockMargin(8, 6, 8, 6)
     spacer:SetTall(1)
     spacer.sumTall = 13
-    spacer.Paint = function(_, w, h) lia.rndx.Draw(0, 0, 0, w, h, lia.color.theme.focus_panel) end
+    spacer.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Color(lia.color.theme.focus_panel):Draw() end
     table.insert(self.Items, spacer)
     self:UpdateSize()
     return spacer
@@ -180,19 +182,59 @@ function PANEL:UpdateSize()
     end
 
     local maxWidth = math.max(160, self.MaxTextWidth + 60)
-    self:SetSize(maxWidth, math.min(height, ScrH() * 0.8))
+    local limit = self.maxHeight or (ScrH() * 0.8)
+    self:SetSize(maxWidth, math.min(height, limit))
 end
 
 function PANEL:Open()
-    -- Clear
+    self:SetVisible(true)
+    self:SetMouseInputEnabled(true)
+    self:SetKeyboardInputEnabled(false)
+    self._openTime = CurTime()
 end
 
 function PANEL:CloseMenu()
-    self:Remove()
+    self:Close()
 end
 
 function PANEL:GetDeleteSelf()
-    return true
+    return self.deleteSelf ~= false
+end
+
+function PANEL:SetDeleteSelf(deleteSelf)
+    self.deleteSelf = tobool(deleteSelf)
+end
+
+function PANEL:SetMaxHeight(height)
+    self.maxHeight = tonumber(height)
+    self:UpdateSize()
+end
+
+function PANEL:Clear()
+    for _, item in ipairs(self.Items) do
+        if IsValid(item) then item:Remove() end
+    end
+
+    self.Items = {}
+    self.MaxTextWidth = 0
+    self:UpdateSize()
+end
+
+function PANEL:Close()
+    if self.deleteSelf ~= false then
+        self:Remove()
+    else
+        self:SetVisible(false)
+    end
+end
+
+function PANEL:SetPadding(left, top, right, bottom)
+    if bottom == nil and right == nil and top == nil then
+        local pad = left or 0
+        self:DockPadding(pad, pad, pad, pad)
+    else
+        self:DockPadding(left or 0, top or 0, right or 0, bottom or 0)
+    end
 end
 
 vgui.Register('liaDermaMenu', PANEL, 'DPanel')

@@ -1,12 +1,9 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.title = nil
-    self.placeholder = 'Введите текст'
+    self.placeholder = L("enterText")
     self:SetTall(26)
-    self.action = function()
-        -- что-то
-    end
-
+    self.action = function() end
     local font = 'Fated.18'
     self.textEntry = vgui.Create('DTextEntry', self)
     self.textEntry:Dock(FILL)
@@ -18,8 +15,8 @@ function PANEL:Init()
         if not s._shadowLerp then s._shadowLerp = 5 end
         local target = s:IsEditing() and 10 or 5
         s._shadowLerp = Lerp(FrameTime() * 10, s._shadowLerp, target)
-        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.rndx.SHAPE_IOS):Shadow(s._shadowLerp, 20):Draw()
-        lia.rndx.Rect(0, 0, w, h):Rad(16):Color(lia.color.theme.focus_panel):Shape(lia.rndx.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(s._shadowLerp, 20):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.focus_panel):Shape(lia.derma.SHAPE_IOS):Draw()
         local value = self:GetValue()
         surface.SetFont(font)
         local padding = 6
@@ -57,8 +54,40 @@ function PANEL:SetPlaceholder(placeholder)
     self.placeholder = placeholder
 end
 
+function PANEL:SetPlaceholderText(placeholder)
+    self.placeholder = placeholder
+end
+
+function PANEL:SetValue(value)
+    self.textEntry:SetText(value or '')
+end
+
+function PANEL:SetText(value)
+    self:SetValue(value)
+end
+
 function PANEL:GetValue()
     return self.textEntry:GetText()
+end
+
+function PANEL:SelectAll()
+    if self.textEntry.SelectAllText then self.textEntry:SelectAllText(true) end
+end
+
+function PANEL:SetFont(font)
+    self.textEntry:SetFont(font)
+end
+
+function PANEL:SetNumeric(isNumeric)
+    if self.textEntry.SetNumeric then self.textEntry:SetNumeric(isNumeric) end
+end
+
+function PANEL:AllowInput(callback)
+    if isfunction(callback) then
+        self.textEntry.AllowInput = function(_, char) return callback(self, char) end
+    else
+        self.textEntry.AllowInput = nil
+    end
 end
 
 vgui.Register('liaEntry', PANEL, 'EditablePanel')

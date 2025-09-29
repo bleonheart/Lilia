@@ -216,7 +216,7 @@ function lia.module.initialize()
 
     if lia.UpdateCheckDone then return end
     lia.loader.checkForUpdates()
-    lia.db.addDatabaseFields()
+    if SERVER then lia.db.addDatabaseFields() end
     lia.UpdateCheckDone = true
 end
 

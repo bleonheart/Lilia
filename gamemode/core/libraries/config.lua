@@ -61,7 +61,7 @@ function lia.config.getOptions(key)
             end
             return result
         else
-            print("Warning: Config options function for '" .. key .. "' failed or returned invalid result")
+            print(L("configOptionsFunctionWarning", key))
             return {}
         end
     elseif istable(config.data.options) then
@@ -116,6 +116,8 @@ function lia.config.get(key, default)
             return config.default
         end
     end
+
+    if key == "Color" and CLIENT then return lia.color.getMainColor() end
     return default
 end
 
@@ -217,7 +219,7 @@ if SERVER then
     end
 end
 
-lia.config.add("MoneyModel", "moneyModel", "models/props_lab/box01a.mdl", nil, {
+lia.config.add("MoneyModel", "moneyModel", "models/props/cs_office/money.mdl", nil, {
     desc = "moneyModelDesc",
     category = "money",
     type = "Generic"
@@ -434,23 +436,6 @@ lia.config.add("AdminConsoleNetworkLogs", "adminConsoleNetworkLogs", true, nil, 
     desc = "adminConsoleNetworkLogsDesc",
     category = "categoryLogging",
     type = "Boolean"
-})
-
-lia.config.add("Color", "themeColor", {
-    r = 37,
-    g = 116,
-    b = 108
-}, nil, {
-    desc = "themeColorDesc",
-    category = "categoryVisuals",
-    type = "Color"
-})
-
-lia.config.add("Theme", "theme", "Dark", function(oldValue, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
-    desc = "themeDesc",
-    category = "categoryVisuals",
-    type = "Table",
-    options = CLIENT and lia.color.getAllThemes() or {"Dark"}
 })
 
 lia.config.add("CharMenuBGInputDisabled", "charMenuBGInputDisabled", true, nil, {

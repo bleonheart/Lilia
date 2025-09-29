@@ -325,7 +325,7 @@ end
 
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.ID then
-        lia.error("Privilege registration requires an ID field")
+        lia.error(L("privilegeRegistrationError"))
         return
     end
 

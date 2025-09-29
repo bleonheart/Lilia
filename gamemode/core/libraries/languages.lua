@@ -47,13 +47,11 @@ function lia.lang.getLanguages()
     return languages
 end
 
-function L(key, ...)
+function lia.lang.getLocalizedString(key, ...)
     local lang = lia.config and lia.config.get("Language", "english") or "english"
     local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
     local template = langTable and langTable[key]
     if not template then return tostring(key) end
-    if template:find("%%d") then lia.error("String formatting with %d is not allowed in localization strings: " .. tostring(key)) end
-    if template:find("%%[^%%sdfg]") then lia.error("Invalid format specifier in localization string: " .. tostring(key) .. " - " .. template) end
     local count = select("#", ...)
     local args = {}
     for i = 1, count do
@@ -78,5 +76,6 @@ function L(key, ...)
     return result
 end
 
+L = lia.lang.getLocalizedString
 lia.lang.loadFromDir("lilia/gamemode/languages")
 hook.Run("OnLocalizationLoaded")

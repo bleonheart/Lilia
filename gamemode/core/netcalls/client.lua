@@ -881,9 +881,9 @@ net.Receive("liaNetMessage", function()
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
-        if not success then lia.error("Error in net message callback '" .. name .. "': " .. tostring(err)) end
+        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
     else
-        lia.error("Received unregistered net message: " .. name)
+        lia.error(L("unregisteredNetMessage", name))
     end
 end)
 
@@ -937,7 +937,7 @@ net.Receive("liaAssureClientSideAssets", function()
                     failedImages = failedImages + 1
                     local errorMessage = errorMsg or "Unknown error"
                     print(string.format("[?] Image failed: %s - %s", download.name, errorMessage))
-                    chat.AddText(Color(255, 100, 100), "[Image Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
+                    chat.AddText(Color(255, 100, 100), L("imageDownload"), Color(255, 255, 255), string.format(L("failedToDownloadImage", download.name, errorMessage)))
                 end
 
                 processNextDownload()
@@ -952,7 +952,7 @@ net.Receive("liaAssureClientSideAssets", function()
                     failedSounds = failedSounds + 1
                     local errorMessage = errorMsg or "Unknown error"
                     print(string.format("[?] Sound failed: %s - %s", download.name, errorMessage))
-                    chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), string.format("Failed to download: %s (%s)", download.name, errorMessage))
+                    chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), L("failedToDownloadSound", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -985,10 +985,10 @@ net.Receive("liaAssureClientSideAssets", function()
                 print("===========================================")
                 if failedImages > 0 or failedSounds > 0 then
                     print("WARNING: Some assets failed to download. Check console output above for details.")
-                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %d image(s) failed to download. Check console for details.", failedImages)) end
-                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), string.format("Warning: %d sound(s) failed to download. Check console for details.", failedSounds)) end
+                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), L("assetsDownloadWarning", failedImages, "image(s)")) end
+                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), L("assetsDownloadWarning", failedSounds, "sound(s)")) end
                 else
-                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), "All assets downloaded successfully!")
+                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), L("allAssetsDownloadedSuccessfully"))
                 end
             end)
         else

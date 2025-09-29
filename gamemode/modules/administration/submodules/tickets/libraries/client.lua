@@ -102,7 +102,7 @@ function MODULE:TicketFrame(requester, message, claimed)
                 net.WriteEntity(requester)
                 net.SendToServer()
                 shouldClose = true
-                claimButton:SetText("          " .. L("closeCase"))
+                claimButton:SetText(L("closeCase"))
             end
         else
             net.Start("liaTicketSystemClose")

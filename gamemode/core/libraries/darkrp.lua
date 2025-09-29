@@ -111,7 +111,7 @@ function DarkRP.defineChatCommand(cmd, callback)
         onRun = function(client, args)
             local success, result = pcall(callback, client, unpack(args))
             if not success then
-                ErrorNoHalt("Error in DarkRP chat command '" .. cmd .. "': " .. result)
+                ErrorNoHalt(L("darkRPChatCommandError", cmd, result))
                 return
             end
 
@@ -128,7 +128,7 @@ function DarkRP.definePrivilegedChatCommand(cmd, priv, callback)
         onRun = function(client, args)
             local success, result = pcall(callback, client, unpack(args))
             if not success then
-                ErrorNoHalt("Error in DarkRP privileged chat command '" .. cmd .. "': " .. result)
+                ErrorNoHalt(L("darkRPPrivilegedChatCommandError", cmd, result))
                 return
             end
 

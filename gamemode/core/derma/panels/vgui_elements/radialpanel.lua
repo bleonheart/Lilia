@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local math_rad = math.rad
 local math_cos = math.cos
 local math_sin = math.sin
@@ -14,14 +14,8 @@ function PANEL:Init(options)
     local baseInnerRadius = options.inner_radius or 96
     local minWidth = 1366
     local minHeight = 768
-    -- Если разрешение меньше минимального, используем базовый размер
-    -- Если больше - масштабируем пропорционально
     local scale = 1
-    if ScrW() > minWidth and ScrH() > minHeight then
-        scale = math_min(math_min(ScrW() / 1920, ScrH() / 1080), 1.5)
-        -- Максимальный масштаб 150%
-    end
-
+    if ScrW() > minWidth and ScrH() > minHeight then scale = math_min(math_min(ScrW() / 1920, ScrH() / 1080), 1.5) end
     local paddingScale = 1
     if ScrW() <= 1280 then paddingScale = 1.3 end
     self.radius = baseRadius * (ScrW() / 1920) * scale
@@ -30,8 +24,8 @@ function PANEL:Init(options)
     self.selectedOption = nil
     self.hoverOption = nil
     self.hoverAnim = 0
-    self.centerText = 'Меню'
-    self.centerDesc = 'Выберите опцию'
+    self.centerText = L("menu")
+    self.centerDesc = L("selectOption")
     self.font = 'Fated.20'
     self.descFont = 'Fated.16'
     self.titleFont = 'Fated.28'
@@ -40,9 +34,8 @@ function PANEL:Init(options)
     self.currentAlpha = 0
     self.scaleAnim = 0
     self.scale = scale
-    -- Кастомизация
     self.disable_background = options.disable_background or false
-    self.hover_sound = options.hover_sound or 'mantle/ratio_btn.ogg'
+    self.hover_sound = options.hover_sound or 'ratio_button.wav'
     self.scale_animation = options.scale_animation ~= false
     self:SetSize(ScrW(), ScrH())
     self:SetPos(0, 0)
@@ -76,13 +69,13 @@ function PANEL:Init(options)
                     local selectedIndex = math.floor(angle / sectorSize) + 1
                     if selectedIndex <= optionCount then
                         self:SelectOption(selectedIndex)
-                        surface.PlaySound('mantle/btn_click.ogg')
+                        surface.PlaySound('button_click.wav')
                     end
                 end
             elseif dist <= self.innerRadius then
                 if #self.menuStack > 0 then
                     self:GoBack()
-                    surface.PlaySound('mantle/btn_click.ogg')
+                    surface.PlaySound('button_click.wav')
                 else
                     self:Remove()
                 end
@@ -131,20 +124,20 @@ function PANEL:Paint(w, h)
     local alpha = self.currentAlpha / 255
     if not self.disable_background then
         local bgCol = Color(0, 0, 0, 100 * alpha)
-        lia.rndx.Draw(0, 0, 0, w, h, bgCol, lia.rndx.SHAPE_RECT)
+        lia.derma.rect(0, 0, w, h):Color(bgCol):Shape(lia.derma.SHAPE_RECT):Draw()
     end
 
     local outerSize = self.radius * 2 + 20 * (ScrW() / 1920) * self.scale
     local currentRadius = self.radius * self.scaleAnim
     local currentInnerRadius = self.innerRadius * self.scaleAnim
     BShadows.BeginShadow()
-    lia.rndx.Draw(outerSize / 2 * self.scaleAnim, centerX - (outerSize / 2 * self.scaleAnim), centerY - (outerSize / 2 * self.scaleAnim), outerSize * self.scaleAnim, outerSize * self.scaleAnim, ColorAlpha(lia.color.theme.background, 220 * alpha), lia.rndx.SHAPE_CIRCLE)
+    lia.derma.circle(centerX, centerY, outerSize * self.scaleAnim):Color(ColorAlpha(lia.color.theme.background, 220 * alpha)):Draw()
     BShadows.EndShadow(1, 2, 2, 255 * alpha, 0, 0)
     BShadows.BeginShadow()
-    lia.rndx.Draw(currentRadius, centerX - currentRadius, centerY - currentRadius, currentRadius * 2, currentRadius * 2, ColorAlpha(lia.color.theme.background, 240 * alpha), lia.rndx.SHAPE_CIRCLE)
+    lia.derma.circle(centerX, centerY, currentRadius * 2):Color(ColorAlpha(lia.color.theme.background, 240 * alpha)):Draw()
     BShadows.EndShadow(1, 2, 2, 255 * alpha, 0, 0)
     BShadows.BeginShadow()
-    lia.rndx.Draw(currentInnerRadius, centerX - currentInnerRadius, centerY - currentInnerRadius, currentInnerRadius * 2, currentInnerRadius * 2, ColorAlpha(lia.color.theme.background_panelpopup, self.currentAlpha), lia.rndx.SHAPE_CIRCLE)
+    lia.derma.circle(centerX, centerY, currentInnerRadius * 2):Color(ColorAlpha(lia.color.theme.background_panelpopup, self.currentAlpha)):Draw()
     BShadows.EndShadow(1, 1, 1, (lia.color.getCurrentTheme() == 'light' and 150 or 200) * alpha, 0, 0)
     local textColor = lia.color.getCurrentTheme() == 'light' and Color(30, 30, 30) or Color(255, 255, 255)
     draw.SimpleText(self.centerText, self.titleFont, centerX, centerY - 13 * (ScrH() / 1080) * self.scale, ColorAlpha(textColor, self.currentAlpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -165,7 +158,7 @@ function PANEL:Paint(w, h)
                 local iconMat = Material(option.icon)
                 local iconSize = 32 * (ScrW() / 1920) * self.scale * self.scaleAnim
                 local iconColor = ColorAlpha(color_white, self.currentAlpha)
-                lia.rndx.DrawMaterial(0, textX - iconSize / 2, textY - iconSize - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, iconSize, iconSize, iconColor, iconMat)
+                lia.derma.drawMaterial(0, textX - iconSize / 2, textY - iconSize - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, iconSize, iconSize, iconColor, iconMat)
                 draw.SimpleText(option.text, self.font, textX, textY + 4 * (ScrH() / 1080) * self.scale * self.paddingScale, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, textX, textY + 20 * (ScrH() / 1080) * self.scale * self.paddingScale, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             else
@@ -228,8 +221,8 @@ function PANEL:SelectOption(index)
 end
 
 function PANEL:SetCenterText(title, desc)
-    self.centerText = title or 'Меню'
-    self.centerDesc = desc or 'Выберите опцию'
+    self.centerText = title or L("menu")
+    self.centerDesc = desc or L("selectOption")
 end
 
 function PANEL:IsMouseOver()
@@ -249,7 +242,7 @@ end
 vgui.Register('liaRadialPanel', PANEL, 'DPanel')
 function lia.derma.radial_menu(options)
     if IsValid(lia.derma.menu_radial) then lia.derma.menu_radial:Remove() end
-    local m = vgui.Create('MantleRadialPanel')
+    local m = vgui.Create('liaRadialPanel')
     m:Init(options)
     lia.derma.menu_radial = m
     return m
@@ -269,11 +262,11 @@ end
 
 function PANEL:UpdateCenterText()
     if self.currentMenu then
-        self.centerText = self.currentMenu.title or 'Меню'
-        self.centerDesc = self.currentMenu.desc or 'Выберите опцию'
+        self.centerText = self.currentMenu.title or L("menu")
+        self.centerDesc = self.currentMenu.desc or L("selectOption")
     else
-        self.centerText = 'Меню'
-        self.centerDesc = 'Выберите опцию'
+        self.centerText = L("menu")
+        self.centerDesc = L("selectOption")
     end
 end
 

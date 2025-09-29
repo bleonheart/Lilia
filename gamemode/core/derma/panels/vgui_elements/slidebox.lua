@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.text = ''
     self.min_value = 0
@@ -18,7 +18,7 @@ function PANEL:Init()
 end
 
 function PANEL:CreateConVarSyncTimer()
-    return timer.Create('MantleSlideBoxSync' .. tostring(self), 0.1, 0, function()
+    return timer.Create('liaSlideBoxSync' .. tostring(self), 0.1, 0, function()
         if not IsValid(self) or not self.convar then return end
         local cvar = GetConVar(self.convar)
         if not cvar then return end
@@ -31,7 +31,7 @@ function PANEL:CreateConVarSyncTimer()
 end
 
 function PANEL:OnRemove()
-    timer.Remove('MantleSlideBoxSync' .. tostring(self))
+    timer.Remove('liaSlideBoxSync' .. tostring(self))
 end
 
 function PANEL:SetRange(min_value, max_value, decimals)
@@ -101,34 +101,25 @@ function PANEL:Paint(w, h)
     local minmaxFont = 'Fated.14'
     local valueFont = 'Fated.16'
     local minmaxPadY = 12
-    -- Текст сверху
     draw.SimpleText(self.text, textFont, padX, padTop, lia.color.theme.text)
-    -- Линия
     local barStart = padX + handleW / 2
     local barEnd = w - padX - handleW / 2
     local barW = barEnd - barStart
     local progress = (self.value - self.min_value) / (self.max_value - self.min_value)
     local activeW = math.Clamp(barW * progress, 0, barW)
-    -- Тень под линией
-    lia.rndx.Rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.window_shadow):Shadow(5, 20):Draw()
-    -- Фон линии
-    lia.rndx.Draw(barR, barStart, barY, barW, barH, lia.color.theme.focus_panel)
-    lia.rndx.Draw(barR, barStart, barY, barW, barH, lia.color.theme.button_shadow)
-    -- Активная линия
-    lia.rndx.Draw(barR, barStart, barY, self.smoothPos, barH, lia.color.theme.theme)
+    lia.derma.rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.window_shadow):Shadow(5, 20):Draw()
+    lia.derma.rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.focus_panel):Draw()
+    lia.derma.rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.button_shadow):Draw()
+    lia.derma.rect(barStart, barY, self.smoothPos, barH):Rad(barR):Color(lia.color.theme.theme):Draw()
     self.smoothPos = Lerp(FrameTime() * 12, self.smoothPos or 0, activeW)
     local handleX = barStart + self.smoothPos
     local handleY = barY + barH / 2
-    -- Тень под ручкой
-    lia.rndx.DrawShadows(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, lia.color.theme.window_shadow, 3, 10)
+    lia.derma.drawShadows(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, lia.color.theme.window_shadow, 3, 10)
     local targetAlpha = self.dragging and 100 or 255
     self._dragAlpha = Lerp(FrameTime() * 10, self._dragAlpha, targetAlpha)
     local colorText = Color(lia.color.theme.theme.r, lia.color.theme.theme.g, lia.color.theme.theme.b, self._dragAlpha)
-    -- Ручка
-    lia.rndx.Draw(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, colorText)
-    -- Значение справа от линии
+    lia.derma.rect(handleX - handleW / 2, handleY - handleH / 2, handleW, handleH):Rad(handleR):Color(colorText):Draw()
     draw.SimpleText(self.value, valueFont, barEnd + handleW / 2 + 4, barY + barH / 2, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    -- min/max под линией
     draw.SimpleText(self.min_value, minmaxFont, barStart, barY + barH + minmaxPadY - 4, lia.color.theme.gray, TEXT_ALIGN_LEFT)
     draw.SimpleText(self.max_value, minmaxFont, barEnd, barY + barH + minmaxPadY - 4, lia.color.theme.gray, TEXT_ALIGN_RIGHT)
 end

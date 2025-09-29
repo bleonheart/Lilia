@@ -26,11 +26,6 @@ do
     playerMeta.GetName = playerMeta.Name
 end
 
---- Makes the player perform a gesture animation and synchronizes it across all clients.
--- @param a number The gesture slot (0-255)
--- @param b number The gesture type (0-255) 
--- @param c boolean Whether the gesture should loop
--- @usage player:doGesture(1, 1, false) -- Play a one-time gesture in slot 1
 function playerMeta:doGesture(a, b, c)
     self:AnimRestartGesture(a, b, c)
     if SERVER then

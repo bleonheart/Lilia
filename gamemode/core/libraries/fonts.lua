@@ -158,7 +158,6 @@ if CLIENT then
         italic = true
     })
 
-    -- Register Montserrat font variants
     lia.font.register("Montserrat Regular", {
         font = "Montserrat Regular",
         size = 16,
@@ -182,8 +181,30 @@ if CLIENT then
         weight = 700
     })
 
-    -- Manually register all Fated font variants
-    -- Fated.12 (Regular)
+    lia.font.register("PoppinsMedium", {
+        font = "Poppins Medium",
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 500
+    })
+
+    lia.font.register("PoppinsBig", {
+        font = "Poppins Medium",
+        size = 24,
+        extended = true,
+        antialias = true,
+        weight = 600
+    })
+
+    lia.font.register("PoppinsSmall", {
+        font = "Poppins Medium",
+        size = 12,
+        extended = true,
+        antialias = true,
+        weight = 400
+    })
+
     lia.font.register("Fated.12", {
         font = "Montserrat Medium",
         size = 12,
@@ -192,7 +213,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.12b (Bold)
     lia.font.register("Fated.12b", {
         font = "Montserrat Bold",
         size = 12,
@@ -201,7 +221,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.14 (Regular)
     lia.font.register("Fated.14", {
         font = "Montserrat Medium",
         size = 14,
@@ -210,7 +229,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.14b (Bold)
     lia.font.register("Fated.14b", {
         font = "Montserrat Bold",
         size = 14,
@@ -219,7 +237,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.16 (Regular)
     lia.font.register("Fated.16", {
         font = "Montserrat Medium",
         size = 16,
@@ -228,7 +245,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.16b (Bold)
     lia.font.register("Fated.16b", {
         font = "Montserrat Bold",
         size = 16,
@@ -237,7 +253,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.18 (Regular)
     lia.font.register("Fated.18", {
         font = "Montserrat Medium",
         size = 18,
@@ -246,7 +261,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.18b (Bold)
     lia.font.register("Fated.18b", {
         font = "Montserrat Bold",
         size = 18,
@@ -255,7 +269,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.20 (Regular)
     lia.font.register("Fated.20", {
         font = "Montserrat Medium",
         size = 20,
@@ -264,7 +277,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.20b (Bold)
     lia.font.register("Fated.20b", {
         font = "Montserrat Bold",
         size = 20,
@@ -273,7 +285,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.24 (Regular)
     lia.font.register("Fated.24", {
         font = "Montserrat Medium",
         size = 24,
@@ -282,7 +293,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.24b (Bold)
     lia.font.register("Fated.24b", {
         font = "Montserrat Bold",
         size = 24,
@@ -291,7 +301,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.28 (Regular)
     lia.font.register("Fated.28", {
         font = "Montserrat Medium",
         size = 28,
@@ -300,7 +309,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.28b (Bold)
     lia.font.register("Fated.28b", {
         font = "Montserrat Bold",
         size = 28,
@@ -309,7 +317,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.36 (Regular)
     lia.font.register("Fated.36", {
         font = "Montserrat Medium",
         size = 36,
@@ -318,7 +325,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.36b (Bold)
     lia.font.register("Fated.36b", {
         font = "Montserrat Bold",
         size = 36,
@@ -327,7 +333,6 @@ if CLIENT then
         weight = 700
     })
 
-    -- Fated.40 (Regular)
     lia.font.register("Fated.40", {
         font = "Montserrat Medium",
         size = 40,
@@ -336,7 +341,6 @@ if CLIENT then
         weight = 500
     })
 
-    -- Fated.40b (Bold)
     lia.font.register("Fated.40b", {
         font = "Montserrat Bold",
         size = 40,

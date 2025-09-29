@@ -436,8 +436,8 @@ net.Receive("liaNetMessage", function(_, client)
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], client, unpack(args))
-        if not success then lia.error("Error in net message callback '" .. name .. "': " .. tostring(err)) end
+        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
     else
-        lia.error("Received unregistered net message: " .. name)
+        lia.error(L("unregisteredNetMessage", name))
     end
 end)

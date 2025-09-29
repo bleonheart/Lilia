@@ -543,7 +543,6 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
 end)
 
 lia.command.findPlayer = lia.util.findPlayer
--- Console Commands
 if SERVER then
     concommand.Add("kickbots", function()
         for _, bot in player.Iterator() do
@@ -792,7 +791,7 @@ if SERVER then
 
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] Error: " .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
@@ -803,7 +802,7 @@ if SERVER then
 
     concommand.Add("print_angle", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error: This command can only be used by players.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] Error: " .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
@@ -846,14 +845,13 @@ if SERVER then
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Adding door_group column to lia_doors table...\n")
         lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
             if not exists then
-                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Successfully added door_group column.\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to add door_group column: " .. error .. "\n") end)
+                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to add door_group column: " .. error .. "\n") end)
             else
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "door_group column already exists.\n")
+                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAlreadyExists") .. "\n")
             end
         end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to check door_group column: " .. error .. "\n") end)
     end)
 else
-    -- Client-only commands
     concommand.Add("weighpoint_stop", function() hook.Remove("HUDPaint", "WeighPoint") end)
     concommand.Add("lia_vgui_cleanup", function()
         for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
@@ -877,7 +875,7 @@ else
             panel:Dock(TOP)
             panel:SetTall(50)
             panel:DockMargin(5, 5, 5, 5)
-            panel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(50, 50, 50, 150)) end
+            panel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
             local label = vgui.Create("DLabel", panel)
             label:SetText(element)
             label:Dock(LEFT)
@@ -896,42 +894,390 @@ else
         end
     end)
 
-    concommand.Add("lia_open_mantle_preview", function()
-        if IsValid(mantlePreviewFrame) then mantlePreviewFrame:Remove() end
+    concommand.Add("lia_check_theme", function()
+    end)
+
+    concommand.Add("lia_force_theme", function(_, _, args)
+        local themeName = args[1] or lia.color.getCurrentTheme()
+        lia.color.applyTheme(themeName, false) -- Apply without transition
+    end)
+
+    concommand.Add("lia_check_config", function()
+        -- Force reload config
+        lia.config.load(true)
+    end)
+
+    concommand.Add("lia_open_panels_preview", function()
+        -- Debug: Check current theme status
+        local currentTheme = lia.color.getCurrentTheme()
+        local themeData = lia.color.themes[currentTheme]
+        local isTransitionActive = lia.color.isTransitionActive()
+        -- Ensure the current theme is properly applied to lia.color.theme before creating preview
+        if themeData then
+            -- If there's an active theme transition, complete it immediately to ensure preview shows the latest theme
+            if isTransitionActive then
+                local to = lia.color.transition.to
+                if to then
+                    for k, v in pairs(to) do
+                        lia.color.stored[k] = v
+                    end
+
+                    -- Also update lia.color.theme to match the final theme
+                    lia.color.theme = table.Copy(to)
+                end
+
+                lia.color.transition.active = false
+                hook.Remove('Think', 'LiliaThemeTransition')
+            else
+                -- No active transition, just ensure lia.color.theme is up to date
+                lia.color.theme = table.Copy(themeData)
+            end
+        end
+
+        if IsValid(liliaPreviewFrame) then liliaPreviewFrame:Remove() end
+        local elements = {"liaButton", "liaFrame", "liaEntry", "liaScrollPanel", "liaTable", "liaCategory", "liaTabs", "liaComboBox", "liaSlideBox", "liaNewCheckBox", "liaRadialPanel", "liaDermaMenu"}
+        local currentIndex = 1
+        local contentPanel
         local frame = vgui.Create("DFrame")
-        frame:SetTitle(L("mantleDermaPreviewTitle", "Mantle Derma Elements Preview"))
-        frame:SetSize(800, 600)
+        frame:SetTitle(L("liliaDermaPreviewTitle", "Lilia Derma Elements Preview"))
+        frame:SetSize(ScrW() * 0.8, ScrH() * 0.8)
         frame:Center()
         frame:MakePopup()
         frame:ShowCloseButton(true)
-        local scroll = vgui.Create("DScrollPanel", frame)
-        scroll:Dock(FILL)
-        local elements = {"liaButton", "liaLabel", "liaTextEntry", "liaCheckBox", "liaComboBox", "liaListView", "liaPanel", "liaFrame", "liaSheet", "liaToolbar"}
-        for _, element in ipairs(elements) do
-            local panel = vgui.Create("DPanel", scroll)
-            panel:Dock(TOP)
-            panel:SetTall(50)
-            panel:DockMargin(5, 5, 5, 5)
-            panel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(50, 50, 50, 150)) end
-            local label = vgui.Create("DLabel", panel)
-            label:SetText(element)
-            label:Dock(LEFT)
-            label:DockMargin(10, 0, 0, 0)
-            label:SizeToContents()
-            local button = vgui.Create("DButton", panel)
-            button:Dock(RIGHT)
-            button:DockMargin(0, 5, 10, 5)
-            button:SetWide(100)
-            button:SetText(L("test"))
-            button.DoClick = function()
-                local testElement = vgui.Create(element, panel)
-                testElement:Dock(FILL)
-                testElement:DockMargin(5, 5, 5, 5)
+        contentPanel = vgui.Create("DPanel", frame)
+        contentPanel:Dock(FILL)
+        contentPanel:DockMargin(10, 10, 10, 10)
+        contentPanel.Paint = function(self, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
+        local function clearFeedback()
+            if IsValid(contentPanel.feedbackLabel) then
+                contentPanel.feedbackLabel:Remove()
+                contentPanel.feedbackLabel = nil
             end
+        end
+
+        local function createFeedbackLabel(text)
+            clearFeedback()
+            local label = vgui.Create("DLabel", contentPanel)
+            label:SetFont("Fated.16")
+            label:SetText(text or "")
+            label:SetWrap(true)
+            label:SetTall(48)
+            label:SetContentAlignment(5)
+            label:Dock(BOTTOM)
+            label:DockMargin(10, 10, 10, 5)
+            contentPanel.feedbackLabel = label
+            return label
+        end
+
+        local function setupElementExamples(elementName, element)
+            if elementName == "liaButton" then
+                element:SetTxt(L("primaryAction"))
+                element:SetRipple(true)
+                element.DoClick = function(btn)
+                    btn:SetTxt(L("clicked"))
+                    btn:SetColorHover(lia.color.darken(lia.color.theme.button_hovered, 20))
+                    surface.PlaySound("button_click.wav")
+                    timer.Simple(0.6, function()
+                        if IsValid(btn) then
+                            btn:SetTxt(L("primaryAction"))
+                            btn:SetColorHover(lia.color.theme.button_hovered)
+                        end
+                    end)
+                end
+            elseif elementName == "liaEntry" then
+                element:SetPlaceholderText(L("search"))
+                element:SetValue(L("liliaUIDefault"))
+                local feedback = createFeedbackLabel(L("startTypingToSeeLiveUpdates"))
+                if IsValid(element.textEntry) then element.textEntry.OnValueChange = function() if IsValid(feedback) then feedback:SetText(L("currentText", element:GetValue() or "")) end end end
+            elseif elementName == "liaScrollPanel" then
+                element:DockPadding(12, 12, 12, 12)
+                for i = 1, 6 do
+                    local card = vgui.Create("DPanel", element)
+                    card:Dock(TOP)
+                    card:DockMargin(0, 0, 0, 8)
+                    card:SetTall(52)
+                    card.Paint = function(_, w, h)
+                        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
+                        draw.SimpleText(L("scrollableItem", i), "Fated.18", 16, h * 0.3, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(L("useDockToStackCards"), "Fated.16", 16, h * 0.65, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    end
+                end
+            elseif elementName == "liaTable" then
+                element:AddColumn(L("player"), 180, TEXT_ALIGN_LEFT, true)
+                element:AddColumn(L("job"), 140, TEXT_ALIGN_LEFT, true)
+                element:AddColumn(L("ping"), 80, TEXT_ALIGN_CENTER, true)
+                element:AddItem(L("samplePlayer1"), L("securityChief"), 28)
+                element:AddItem(L("samplePlayer2"), L("scientist"), 52)
+                element:AddItem(L("samplePlayer3"), L("engineer"), 16)
+                element:AddItem(L("samplePlayer4"), L("quartermaster"), 34)
+                local feedback = createFeedbackLabel("Click a row to preview selection callbacks.")
+                element:SetAction(function(rowData) if IsValid(feedback) then feedback:SetText(L("selectedRow", tostring(rowData[1]), tostring(rowData[2]))) end end)
+                element:SetRightClickAction(function(rowData) if IsValid(feedback) then feedback:SetText(L("rightClickedRow", tostring(rowData[1]))) end end)
+            elseif elementName == "liaCategory" then
+                element:SetText(L("serverSettings"))
+                element:SetActive(true)
+                local items = {
+                    {
+                        title = L("enableEvents"),
+                        desc = "Broadcast world events to everyone."
+                    },
+                    {
+                        title = L("allowTrading"),
+                        desc = "Permits direct player-to-player trades."
+                    },
+                    {
+                        title = L("maintenanceMode"),
+                        desc = "Locks joins and shows a banner."
+                    }
+                }
+
+                for _, info in ipairs(items) do
+                    local row = vgui.Create("DPanel", element)
+                    row:Dock(TOP)
+                    row:DockMargin(12, 4, 12, 4)
+                    row:SetTall(88)
+                    row.Paint = function(_, w, h)
+                        lia.derma.rect(0, 0, w, h):Rad(12):Color(lia.color.theme.panel_alpha[2]):Shape(lia.derma.SHAPE_IOS):Draw()
+                        draw.SimpleText(info.title, "Fated.18", 12, 24, lia.color.theme.text)
+                        draw.SimpleText(info.desc, "Fated.14", 12, h - 24, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+                    end
+
+                    element:AddItem(row)
+                end
+            elseif elementName == "liaTabs" then
+                element:SetTabStyle("modern")
+                element:SetIndicatorHeight(3)
+                local tabs = {
+                    {
+                        name = L("overview"),
+                        description = "General status and motd."
+                    },
+                    {
+                        name = L("roster"),
+                        description = "Active staff listed with roles."
+                    },
+                    {
+                        name = L("logs"),
+                        description = "Recent events streamed in real-time."
+                    }
+                }
+
+                for _, tabInfo in ipairs(tabs) do
+                    local tabPanel = vgui.Create("DPanel")
+                    tabPanel.Paint = function(_, w, h)
+                        draw.SimpleText(tabInfo.name, "Fated.24", 24, 24, lia.color.theme.text)
+                        draw.SimpleText(tabInfo.description, "Fated.16", 24, 56, lia.color.theme.gray)
+                    end
+
+                    element:AddTab(tabInfo.name, tabPanel)
+                end
+
+                element:SetActiveTab(1)
+                local originalSetActiveTab = element.SetActiveTab
+                local feedback = createFeedbackLabel("Active tab: Overview")
+                element.SetActiveTab = function(self, tab)
+                    originalSetActiveTab(self, tab)
+                    local active = self.tabs[self.active_id]
+                    if IsValid(feedback) and active then feedback:SetText(L("activeTab", tostring(active.name))) end
+                end
+            elseif elementName == "liaComboBox" then
+                element:SetPlaceholder("Choose a lilia theme...")
+                for _, option in ipairs({L("carbon"), L("sapphire"), L("amber"), L("obsidian")}) do
+                    element:AddChoice(option)
+                end
+
+                local feedback = createFeedbackLabel("Select a theme to see callbacks.")
+                element.OnSelect = function(_, index, text) if IsValid(feedback) then feedback:SetText(L("selectedTheme", tostring(text), tostring(index))) end end
+                element:ChooseOptionID(2)
+            elseif elementName == "liaSlideBox" then
+                element:SetText(L("masterVolume"))
+                element:SetRange(0, 100, 0)
+                element:SetValue(65)
+                local feedback = createFeedbackLabel(L("currentValue", "65"))
+                element.OnValueChanged = function(_, value) if IsValid(feedback) then feedback:SetText(L("currentValue", math.floor(value))) end end
+            elseif elementName == "liaNewCheckBox" then
+                element:SetTxt(L("enableNotifications"))
+                element:SetDescription(L("notificationsDesc"))
+                element:SetChecked(true)
+                local feedback = createFeedbackLabel(L("notificationsEnabled"))
+                element.OnChange = function(_, value) if IsValid(feedback) then feedback:SetText(value and L("notificationsEnabled") or L("notificationsDisabled")) end end
+                element:OnChange(element:GetChecked())
+            elseif elementName == "liaFrame" then
+                element:SetTitle(L("liliaChildFrame"))
+                element:SetCenterTitle(L("previewMode"))
+                element:SetDraggable(false)
+                element:ShowCloseButton(false)
+                element:DockPadding(16, 42, 16, 16)
+                local description = vgui.Create("DLabel", element)
+                description:SetFont("Fated.16")
+                description:SetWrap(true)
+                description:SetText(L("liliaFrameDescription"))
+                description:Dock(TOP)
+                description:SetTall(56)
+                local btn = vgui.Create("liaButton", element)
+                if IsValid(btn) then
+                    btn:Dock(TOP)
+                    btn:DockMargin(0, 12, 0, 0)
+                    btn:SetTall(38)
+                    btn:SetTxt(L("showFrameNotification"))
+                    btn:SetRipple(true)
+                    btn.DoClick = function()
+                        surface.PlaySound("button_click.wav")
+                        element:Notify("Lilia frame notification!", 2)
+                    end
+                end
+            end
+        end
+
+        local function createRadialPlaceholder()
+            local wrapper = vgui.Create("DPanel", contentPanel)
+            wrapper:Dock(FILL)
+            wrapper:DockMargin(5, 5, 5, 5)
+            wrapper.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw() end
+            local info = vgui.Create("DLabel", wrapper)
+            info:SetFont("Fated.18")
+            info:SetWrap(true)
+            info:SetText(L("radialPanelDescription"))
+            info:Dock(TOP)
+            info:SetTall(88)
+            info:SetContentAlignment(7)
+            local openBtn = vgui.Create("liaButton", wrapper)
+            if not IsValid(openBtn) then openBtn = vgui.Create("DButton", wrapper) end
+            openBtn:Dock(TOP)
+            openBtn:DockMargin(0, 12, 0, 0)
+            openBtn:SetTall(40)
+            if openBtn.SetTxt then
+                openBtn:SetTxt("Open Sample Radial Menu")
+            else
+                openBtn:SetText(L("openSampleRadialMenu"))
+            end
+
+            openBtn.DoClick = function()
+                surface.PlaySound("button_click.wav")
+                local radial = lia.derma.radial_menu({
+                    title = "Lilia Radial",
+                    desc = "Hover an option, then click."
+                })
+
+                if not IsValid(radial) then return end
+                radial:AddOption(L("inventory"), function() LocalPlayer():ChatPrint(L("inventoryOpened")) end, "icon16/box.png", "Access item storage")
+                radial:AddOption(L("map"), function() LocalPlayer():ChatPrint(L("mapPinged")) end, "icon16/world.png", "Place a waypoint")
+                local settings = radial:CreateSubMenu(L("settings"), "Adjust gameplay toggles")
+                settings:AddOption(L("focus"), function() LocalPlayer():ChatPrint(L("focusMode")) end, "icon16/eye.png", L("toggleFocusOverlay"))
+                radial:AddSubMenuOption("Utilities", settings, "icon16/wrench.png", "Open utility submenu")
+            end
+
+            local feedback = createFeedbackLabel("The radial will appear centered on your screen.")
+            contentPanel.currentElement = wrapper
+            return feedback
+        end
+
+        local function createDermaMenuPlaceholder()
+            local wrapper = vgui.Create("DPanel", contentPanel)
+            wrapper:Dock(FILL)
+            wrapper:DockMargin(5, 5, 5, 5)
+            wrapper.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw() end
+            local info = vgui.Create("DLabel", wrapper)
+            info:SetFont("Fated.18")
+            info:SetWrap(true)
+            info:SetText(L("contextMenuDescription"))
+            info:Dock(TOP)
+            info:SetTall(88)
+            info:SetContentAlignment(7)
+            local openBtn = vgui.Create("liaButton", wrapper)
+            if not IsValid(openBtn) then openBtn = vgui.Create("DButton", wrapper) end
+            openBtn:Dock(TOP)
+            openBtn:DockMargin(0, 12, 0, 0)
+            openBtn:SetTall(40)
+            if openBtn.SetTxt then
+                openBtn:SetTxt("Open Sample Context Menu")
+            else
+                openBtn:SetText(L("openSampleContextMenu"))
+            end
+
+            openBtn.DoClick = function()
+                surface.PlaySound("button_click.wav")
+                local menu = vgui.Create("liaDermaMenu")
+                menu:SetPos(gui.MouseX(), gui.MouseY())
+                menu:AddOption(L("teleport"), function() LocalPlayer():ChatPrint(L("teleported")) end, "icon16/arrow_up.png")
+                menu:AddOption(L("giveCredits"), function() LocalPlayer():ChatPrint(L("creditsAwarded")) end, "icon16/money.png")
+                local sub = menu:AddOption(L("moreActions"), nil, "icon16/cog.png")
+                local submenu = sub:AddSubMenu()
+                submenu:AddOption(L("toggleNoclip"), function() LocalPlayer():ChatPrint(L("noclipToggled")) end, "icon16/contrast.png")
+                submenu:AddOption(L("cleanup"), function() LocalPlayer():ChatPrint(L("cleanupTriggered")) end, "icon16/broom.png")
+                menu:AddSpacer()
+                menu:AddOption(L("close"), function() menu:Remove() end, "icon16/cross.png")
+            end
+
+            local feedback = createFeedbackLabel("Context menu opens at your cursor position.")
+            contentPanel.currentElement = wrapper
+            return feedback
+        end
+
+        local function CreatePreviewElement()
+            if IsValid(contentPanel.currentElement) then
+                contentPanel.currentElement:Remove()
+                contentPanel.currentElement = nil
+            end
+
+            clearFeedback()
+            local elementName = elements[currentIndex]
+            frame:SetTitle(L("liliaDermaPreviewTitle", "Lilia Derma Elements Preview") .. " - " .. elementName)
+            if elementName == "liaRadialPanel" then
+                createRadialPlaceholder()
+                return
+            elseif elementName == "liaDermaMenu" then
+                createDermaMenuPlaceholder()
+                return
+            end
+
+            local success, element = pcall(vgui.Create, elementName, contentPanel)
+            if success and IsValid(element) then
+                contentPanel.currentElement = element
+                element:Dock(FILL)
+                element:DockMargin(5, 5, 5, 5)
+                setupElementExamples(elementName, element)
+            else
+                local label = vgui.Create("DLabel", contentPanel)
+                contentPanel.currentElement = label
+                label:Dock(FILL)
+                label:DockMargin(20, 20, 20, 20)
+                label:SetText(L("failedToCreateElement", elementName) .. "\nError: " .. tostring(element))
+                label:SetContentAlignment(5)
+                label:SetFont("DermaDefaultBold")
+            end
+        end
+
+        local leftArrow = vgui.Create("DButton", frame:GetParent())
+        leftArrow:SetText("◀")
+        leftArrow:SetSize(40, 40)
+        leftArrow:SetPos(frame.x - 60, frame.y + frame:GetTall() / 2 - 20)
+        leftArrow.DoClick = function()
+            currentIndex = currentIndex - 1
+            if currentIndex < 1 then currentIndex = #elements end
+            CreatePreviewElement()
+        end
+
+        local rightArrow = vgui.Create("DButton", frame:GetParent())
+        rightArrow:SetText("▶")
+        rightArrow:SetSize(40, 40)
+        rightArrow:SetPos(frame.x + frame:GetWide() + 20, frame.y + frame:GetTall() / 2 - 20)
+        rightArrow.DoClick = function()
+            currentIndex = currentIndex + 1
+            if currentIndex > #elements then currentIndex = 1 end
+            CreatePreviewElement()
+        end
+
+        CreatePreviewElement()
+        liliaPreviewFrame = frame
+        frame.leftArrow = leftArrow
+        frame.rightArrow = rightArrow
+        frame.OnScreenPositionChanged = function()
+            if IsValid(leftArrow) then leftArrow:SetPos(frame.x - 60, frame.y + frame:GetTall() / 2 - 20) end
+            if IsValid(rightArrow) then rightArrow:SetPos(frame.x + frame:GetWide() + 20, frame.y + frame:GetTall() / 2 - 20) end
         end
     end)
 
-    -- Websound commands
     concommand.Add("lia_saved_sounds", function()
         local files = file.Find(baseDir .. "*", "DATA")
         if not files or #files == 0 then return end
@@ -976,7 +1322,7 @@ else
             end
         end
 
-        LocalPlayer():ChatPrint(string.format("Sound validation complete: %d valid, %d invalid", validCount, invalidCount))
+        LocalPlayer():ChatPrint(L("soundValidationComplete", validCount, invalidCount))
     end)
 
     concommand.Add("lia_cleanup_sounds", function()
@@ -998,19 +1344,18 @@ else
             end
         end
 
-        LocalPlayer():ChatPrint(string.format("Cleaned up %d invalid sound files", removedCount))
+        LocalPlayer():ChatPrint(L("cleanedUpInvalidSounds", removedCount))
     end)
 
     concommand.Add("lia_list_sounds", function()
         local files = file.Find(baseDir .. "**", "DATA")
         if #files == 0 then return end
-        LocalPlayer():ChatPrint("Saved sounds:")
+        LocalPlayer():ChatPrint(L("savedSounds"))
         for _, fileName in ipairs(files) do
             if string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint("  " .. string.StripExtension(fileName)) end
         end
     end)
 
-    -- Webimage commands
     concommand.Add("lia_saved_images", function()
         local files = findImagesRecursive(baseDir)
         if not files or #files == 0 then return end
@@ -1035,7 +1380,7 @@ else
             if not file.Exists(filePath, "DATA") then removedCount = removedCount + 1 end
         end
 
-        LocalPlayer():ChatPrint(string.format("Found %d image files", #files))
+        LocalPlayer():ChatPrint(L("foundImageFiles", #files))
     end)
 
     concommand.Add("lia_wipewebimages", function()

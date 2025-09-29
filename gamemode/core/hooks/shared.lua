@@ -11,4 +11,3 @@ function GM:GetModelGender(model)
     local isFemale = model:find("alyx") or model:find("mossman") or model:find("female")
     return isFemale and "female" or "male"
 end
--- SERVER functions
