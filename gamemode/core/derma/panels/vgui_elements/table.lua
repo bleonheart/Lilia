@@ -78,7 +78,7 @@ function PANEL:SortByColumn(columnIndex)
 
     local success, err = pcall(function() table.sort(self.rows, function(a, b) return compareValues(a[columnIndex], b[columnIndex]) end) end)
     if not success then
-        print('[liaTable] ' .. L("sortError") .. ':', err)
+        print(L("liaTable") .. ' ' .. L("sortError") .. ':', err)
         return
     end
 

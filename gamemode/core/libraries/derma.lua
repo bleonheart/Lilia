@@ -741,7 +741,7 @@ lia.derma.Rect = {
         if SHADOW_ENABLED or CLIP_PANEL then DisableClipping(OLD_CLIPPING_STATE) end
     end,
     GetMaterial = function(_)
-        if SHADOW_ENABLED or USING_BLUR then error("You can't get the material of a shadowed or blurred rectangle!") end
+        if SHADOW_ENABLED or USING_BLUR then error(L("shadowedBlurredRectangleError")) end
         if TEXTURE then
             MAT = roundedTextureMat
             materialSetTexture(MAT, "$basetexture", TEXTURE)

@@ -172,7 +172,7 @@ function MODULE:PopulateAdminTabs(pages)
                     listView.OnRowRightClick = function(_, _, line)
                         local m = DermaMenu()
                         for i, header in ipairs(headers) do
-                            m:AddOption("Copy " .. header, function()
+                            m:AddOption(L("copy") .. " " .. header, function()
                                 SetClipboardText(line:GetColumnText(i) or "")
                                 client:notifySuccessLocalized("copied")
                             end)

@@ -204,7 +204,7 @@ function PANEL:createStartButton()
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         table.insert(buttonsData, {
             id = "staff",
-            text = hasStaffChar and "Load Staff Character" or "Create Staff Character",
+            text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end

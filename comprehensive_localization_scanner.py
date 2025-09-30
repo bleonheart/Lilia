@@ -1,245 +1,265 @@
 #!/usr/bin/env python3
 """
-Comprehensive Localization Scanner for Lilia Gamemode
-Finds all unlocalized English strings that need to be added to language files
+Comprehensive scanner for unlocalized strings in the Lilia gamemode
+Scans all Lua files for hardcoded strings that should be localized
 """
 
 import os
 import re
+import json
 from pathlib import Path
+from collections import defaultdict
 
-def load_all_localized_strings():
-    """Load all strings from all language files"""
-    localized_strings = set()
-    language_dir = Path("gamemode/languages")
+class LocalizationScanner:
+    def __init__(self, root_dir="gamemode"):
+        self.root_dir = Path(root_dir)
+        self.existing_keys = set()
+        self.potential_strings = defaultdict(list)
+        self.ignored_patterns = self._get_ignored_patterns()
 
-    for lang_file in language_dir.glob("*.lua"):
+    def _get_ignored_patterns(self):
+        """Patterns that should be ignored when scanning for localization"""
+        return [
+            # Code patterns
+            r'^[a-zA-Z_][a-zA-Z0-9_]*$',  # Variable names, function names
+            r'^[0-9]+$',  # Numbers
+            r'^[0-9]+\.[0-9]+$',  # Decimal numbers
+            r'^#[0-9a-fA-F]{6}$',  # Hex colors
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*\([^)]*\)$',  # Function calls
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*[=<>!]+\s*',  # Comparisons
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*[\+\-\*\/]',  # Arithmetic
+            r'^".*\\n.*"$',  # Strings with newlines (likely formatting)
+            r'^".*\\t.*"$',  # Strings with tabs (likely formatting)
+
+            # File paths and URLs
+            r'^[a-zA-Z_][a-zA-Z0-9_/\\.-]*$',  # File paths
+            r'^https?://.*$',  # URLs
+
+            # Already localized strings
+            r'^L\(["\'][^"\']+["\']\)$',  # L("string")
+            r'^L\([^)]+\)$',  # L(variable)
+
+            # Very short strings (likely not user-facing)
+            r'^.$',  # Single characters
+            r'^..$',  # Two characters
+
+            # Technical strings
+            r'^[A-Z_][A-Z0-9_]*$',  # Constants
+            r'^[a-z]+[0-9]+$',  # Mixed alphanumeric (likely IDs)
+        ]
+
+    def load_existing_keys(self):
+        """Load all existing localization keys from English file"""
+        english_file = self.root_dir / "languages" / "english.lua"
+
+        if not english_file.exists():
+            print("English language file not found!")
+            return
+
         try:
-            with open(lang_file, 'r', encoding='utf-8') as f:
+            with open(english_file, 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # Extract string values from LANGUAGE table
-            strings = re.findall(r'\s*[\w_]+\s*=\s*"([^"]*)"', content)
-            localized_strings.update(strings)
-        except:
-            pass
+            # Extract key-value pairs
+            pairs = re.findall(r'(\w+)\s*=\s*"([^"]*)"', content)
+            self.existing_keys = {key for key, value in pairs}
 
-    return localized_strings
+            print(f"Loaded {len(self.existing_keys)} existing localization keys")
 
-def find_unlocalized_strings():
-    """Find English strings that are not localized"""
-    localized_strings = load_all_localized_strings()
-    candidates = set()
+        except Exception as e:
+            print(f"Error reading English file: {e}")
 
-    # Patterns that indicate UI contexts where strings need localization
-    ui_patterns = [
-        # Chat and notification functions
-        r"(?:ChatPrint|notify|MsgC|lia.chat.send)\s*\(\s*[\"']([^\"']+)[\"']",
-        # Surface text drawing
-        r"draw\.SimpleText\s*\(\s*[\"']([^\"']+)[\"']",
-        r"draw\.DrawText\s*\(\s*[\"']([^\"']+)[\"']",
-        # VGUI text elements
-        r"SetText\s*\(\s*[\"']([^\"']+)[\"']",
-        r"SetTitle\s*\(\s*[\"']([^\"']+)[\"']",
-        r"SetPlaceholderText\s*\(\s*[\"']([^\"']+)[\"']",
-        r"AddOption\s*\(\s*[\"']([^\"']+)[\"']",
-        r"SetValue\s*\(\s*[\"']([^\"']+)[\"']",
-        r"SetHelpText\s*\(\s*[\"']([^\"']+)[\"']",
-        # Derma menu options
-        r"AddSubMenu\s*\(\s*[\"']([^\"']+)[\"']",
-        # Panel text content
-        r"SetText\s*\(\s*[\"']([^\"']+)[\"']",
-        # Button text
-        r"SetButtonText\s*\(\s*[\"']([^\"']+)[\"']",
-        # Label text
-        r"SetLabelText\s*\(\s*[\"']([^\"']+)[\"']",
-        # Tooltip text
-        r"SetTooltip\s*\(\s*[\"']([^\"']+)[\"']",
-        # Console print
-        r"print\s*\(\s*[\"']([^\"']+)[\"']",
-        # Error messages
-        r"error\s*\(\s*[\"']([^\"']+)[\"']",
-        # Warning messages
-        r"warning\s*\(\s*[\"']([^\"']+)[\"']",
-    ]
+    def should_ignore_string(self, string):
+        """Check if a string should be ignored"""
+        # Remove quotes if present
+        clean_string = string.strip('"\'')
+        if not clean_string:
+            return True
 
-    # Check key directories for Lua files
-    key_dirs = [
-        "gamemode/core",
-        "gamemode/modules",
-        "gamemode/entities"
-    ]
+        # Check against ignored patterns
+        for pattern in self.ignored_patterns:
+            if re.match(pattern, clean_string):
+                return True
 
-    for dir_path in key_dirs:
-        if Path(dir_path).exists():
-            for lua_file in Path(dir_path).rglob("*.lua"):
-                try:
-                    with open(lua_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
+        # Skip very short strings that are likely not user-facing
+        if len(clean_string) < 3:
+            return True
 
-                    # Remove comments
-                    content = re.sub(r'--.*$', '', content, flags=re.MULTILINE)
-                    content = re.sub(r'--\[\[.*?\]\]', '', content, flags=re.DOTALL)
+        # Skip strings that look like code
+        if re.search(r'[{}()\[\]]', clean_string):
+            return True
 
-                    # Find strings in UI contexts
-                    for pattern in ui_patterns:
-                        matches = re.findall(pattern, content, re.IGNORECASE)
-                        for match in matches:
-                            # Skip if already localized
-                            if match in localized_strings:
-                                continue
+        # Skip strings that are all caps (likely constants)
+        if clean_string.isupper() and len(clean_string) > 3:
+            return True
 
-                            # Skip empty or very short strings
-                            if not match.strip() or len(match) < 2:
-                                continue
+        return False
 
-                            # Skip obvious code patterns
-                            if re.match(r'^[A-Z_][A-Z0-9_]*$', match):  # ALL_CAPS
-                                continue
+    def extract_strings_from_file(self, filepath):
+        """Extract potential localization strings from a single file"""
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
 
-                            # Skip file paths and URLs
-                            if '/' in match or '\\' in match or '.mdl' in match or '.wav' in match or '.mp3' in match:
-                                continue
+            # Find all string literals
+            strings = re.findall(r'["\']([^"\']+)["\']', content)
 
-                            # Skip strings with code patterns
-                            if any(pattern in match for pattern in ['%s', '%d', '==', '++', '--', '..']):
-                                continue
+            file_strings = []
+            for string in strings:
+                if not self.should_ignore_string(string):
+                    file_strings.append(string)
 
-                            # Skip strings that look like variable names or function calls
-                            if re.search(r'\w+\([^)]*\)', match):
-                                continue
+            return file_strings
 
-                            # Skip hex colors and other code-like strings
-                            if re.match(r'^#[0-9A-Fa-f]{6}$', match):
-                                continue
+        except Exception as e:
+            print(f"Error reading {filepath}: {e}")
+            return []
 
-                            # Skip numeric strings
-                            if match.isdigit():
-                                continue
+    def scan_codebase(self):
+        """Scan all Lua files for potential localization strings"""
+        print("Scanning codebase for unlocalized strings...")
 
-                            # Only include strings that look like natural language
-                            if (' ' in match or
-                                match.endswith('.') or
-                                match.endswith('!') or
-                                match.endswith('?') or
-                                match.endswith(':') or
-                                match.endswith(',') or
-                                match.lower() in ['ok', 'cancel', 'yes', 'no', 'save', 'load', 'delete', 'edit', 'create', 'close', 'open', 'settings', 'help', 'info', 'warning', 'error', 'success', 'failed', 'loading', 'ready', 'enabled', 'disabled', 'active', 'inactive', 'on', 'off', 'true', 'false']):
+        total_files = 0
+        total_strings = 0
 
-                                candidates.add(match.strip())
+        # Scan all Lua files except language files (which are already localized)
+        for lua_file in self.root_dir.rglob("*.lua"):
+            # Skip language files as they contain already localized content
+            if "languages" in lua_file.parts:
+                continue
 
-                except Exception as e:
-                    print(f"Error processing {lua_file}: {e}")
-                    pass
+            total_files += 1
+            strings = self.extract_strings_from_file(lua_file)
 
-    return sorted(list(candidates))
+            for string in strings:
+                # Check if this string is already localized (appears as a key)
+                if string in self.existing_keys:
+                    continue
 
-def find_hardcoded_english_strings():
-    """Find hardcoded English strings that should be localized"""
-    localized_strings = load_all_localized_strings()
-    candidates = set()
+                # Add to potential strings with file location
+                self.potential_strings[string].append(str(lua_file.relative_to(self.root_dir)))
 
-    # Check key directories for Lua files
-    key_dirs = [
-        "gamemode/core",
-        "gamemode/modules",
-        "gamemode/entities"
-    ]
+            total_strings += len(strings)
 
-    for dir_path in key_dirs:
-        if Path(dir_path).exists():
-            for lua_file in Path(dir_path).rglob("*.lua"):
-                try:
-                    with open(lua_file, 'r', encoding='utf-8') as f:
-                        content = f.read()
+        print(f"Scanned {total_files} files, found {total_strings} string literals")
 
-                    # Remove comments
-                    content = re.sub(r'--.*$', '', content, flags=re.MULTILINE)
-                    content = re.sub(r'--\[\[.*?\]\]', '', content, flags=re.DOTALL)
+    def filter_and_rank_strings(self):
+        """Filter and rank strings by priority and frequency"""
+        print("Filtering and ranking potential localization strings...")
 
-                    # Find string literals that are NOT preceded by L( and are in UI contexts
-                    lines = content.split('\n')
-                    for line_num, line in enumerate(lines, 1):
-                        # Look for string literals in UI contexts that aren't localized
-                        string_patterns = [
-                            r'SetText\s*\(\s*["\']([^"\']+)["\']',
-                            r'SetTitle\s*\(\s*["\']([^"\']+)["\']',
-                            r'SetPlaceholderText\s*\(\s*["\']([^"\']+)["\']',
-                            r'AddOption\s*\(\s*["\']([^"\']+)["\']',
-                            r'SetValue\s*\(\s*["\']([^"\']+)["\']',
-                            r'SetHelpText\s*\(\s*["\']([^"\']+)["\']',
-                            r'ChatPrint\s*\(\s*["\']([^"\']+)["\']',
-                            r'notify\s*\(\s*["\']([^"\']+)["\']',
-                            r'MsgC\s*\(\s*["\']([^"\']+)["\']',
-                            r'draw\.SimpleText\s*\(\s*["\']([^"\']+)["\']',
-                            r'print\s*\(\s*["\']([^"\']+)["\']',
-                            r'error\s*\(\s*["\']([^"\']+)["\']',
-                        ]
+        filtered_strings = {}
 
-                        for pattern in string_patterns:
-                            if re.search(pattern, line):
-                                # Extract the string
-                                string_match = re.search(r'["\']([^"\']+)["\']', line)
-                                if string_match:
-                                    string = string_match.group(1)
+        for string, files in self.potential_strings.items():
+            # Skip strings that appear in too many files (likely code or very common)
+            if len(files) > 10:
+                continue
 
-                                    # Skip if it's already using L() function
-                                    if 'L(' in line and (f'L("{string}")' in line or f"L('{string}')" in line):
-                                        continue
+            # Skip strings that are too short
+            if len(string) < 4:
+                continue
 
-                                    # Skip if it looks like a variable reference
-                                    if re.search(r'\w+\.\w+', string) or re.search(r'\$\w+', string):
-                                        continue
+            # Skip strings that look like code or paths
+            if any(char in string for char in ['/', '\\', '{', '}', '[', ']']):
+                continue
 
-                                    # Apply same filters as before
-                                    if (string.strip() and len(string) >= 2 and
-                                        not re.match(r'^[A-Z_][A-Z0-9_]*$', string) and
-                                        '/' not in string and '\\' not in string and
-                                        not any(ext in string for ext in ['.mdl', '.wav', '.mp3']) and
-                                        not any(pattern in string for pattern in ['%s', '%d', '==', '++', '--', '..']) and
-                                        not re.match(r'^#[0-9A-Fa-f]{6}$', string) and
-                                        not string.isdigit() and
-                                        (' ' in string or string.endswith('.') or string.endswith('!') or string.endswith('?') or string.endswith(':') or string.endswith(',') or
-                                         string.lower() in ['ok', 'cancel', 'yes', 'no', 'save', 'load', 'delete', 'edit', 'create', 'close', 'open', 'settings', 'help', 'info', 'warning', 'error', 'success', 'failed', 'loading', 'ready', 'enabled', 'disabled', 'active', 'inactive', 'on', 'off', 'true', 'false'])):
+            # Skip strings that are all caps (likely constants or acronyms)
+            if string.isupper() and len(string) > 4:
+                continue
 
-                                        candidates.add(string.strip())
+            # Skip strings that contain mostly numbers or special chars
+            if re.search(r'[0-9@$%^&*!]{2,}', string):
+                continue
 
-                except Exception as e:
-                    print(f"Error processing {lua_file}: {e}")
-                    pass
+            # Skip strings that contain Lua concatenation operators
+            if ' .. ' in string or '.. ' in string or ' ..' in string:
+                continue
 
-    return sorted(list(candidates))
+            # Skip strings that look like incomplete code fragments
+            if string.strip().startswith('..') or string.strip().endswith('..'):
+                continue
+
+            # Skip strings that are likely variable names or code
+            if re.search(r'^[a-zA-Z_][a-zA-Z0-9_]*$', string.strip()):
+                continue
+
+            # Skip strings that contain newlines (likely multi-line code)
+            if '\\n' in string or '\n' in string:
+                continue
+
+            # Prioritize strings that look like complete sentences or user messages
+            is_user_message = (
+                len(string) > 10 and
+                not string.startswith(' ') and
+                not string.endswith(' ') and
+                not any(char in string for char in ['=', '(', ')', '{', '}', '[', ']', '<', '>']) and
+                (string[0].isupper() or string.endswith('.') or string.endswith('!') or string.endswith('?'))
+            )
+
+            filtered_strings[string] = {
+                'files': files,
+                'frequency': len(files),
+                'length': len(string),
+                'is_user_message': is_user_message
+            }
+
+        # Sort by user message priority first, then frequency, then length
+        sorted_strings = sorted(
+            filtered_strings.items(),
+            key=lambda x: (x[1]['is_user_message'], x[1]['frequency'], x[1]['length']),
+            reverse=True
+        )
+
+        return sorted_strings
+
+    def generate_report(self, output_file="unlocalized_strings_report.json"):
+        """Generate a report of potential unlocalized strings"""
+        sorted_strings = self.filter_and_rank_strings()
+
+        report = {
+            'total_potential_strings': len(self.potential_strings),
+            'filtered_strings': len(sorted_strings),
+            'strings': []
+        }
+
+        for string, data in sorted_strings:
+            report['strings'].append({
+                'string': string,
+                'files': data['files'],
+                'frequency': data['frequency'],
+                'length': data['length']
+            })
+
+        # Write report
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+
+        print(f"Generated report with {len(sorted_strings)} potential strings")
+
+        return report
+
+    def print_top_candidates(self, limit=50):
+        """Print the top candidates for localization"""
+        sorted_strings = self.filter_and_rank_strings()
+
+        print(f"\nTop {limit} localization candidates:")
+        print("=" * 60)
+
+        for i, (string, data) in enumerate(sorted_strings[:limit]):
+            print(f"{i+1:2d}. '{string}'")
+            print(f"    Files: {', '.join(data['files'][:3])}{'...' if len(data['files']) > 3 else ''}")
+            print(f"    Frequency: {data['frequency']}")
+            print()
 
 def main():
-    print("Running comprehensive localization scan...")
+    scanner = LocalizationScanner()
+    scanner.load_existing_keys()
+    scanner.scan_codebase()
+    report = scanner.generate_report()
 
-    # Get strings from UI contexts
-    ui_strings = find_unlocalized_strings()
+    # Print top candidates
+    scanner.print_top_candidates(30)
 
-    # Get hardcoded English strings
-    hardcoded_strings = find_hardcoded_english_strings()
-
-    # Combine and deduplicate
-    all_candidates = sorted(list(set(ui_strings + hardcoded_strings)))
-
-    print(f"Found {len(all_candidates)} potential unlocalized English strings")
-
-    if all_candidates:
-        print("\nUnlocalized strings found:")
-        for i, candidate in enumerate(all_candidates[:100], 1):
-            print(f"{i:3d}. '{candidate}'")
-
-        if len(all_candidates) > 100:
-            print(f"... and {len(all_candidates) - 100} more")
-
-        # Save to file for review
-        with open('remaining_candidates.txt', 'w', encoding='utf-8') as f:
-            for candidate in all_candidates:
-                f.write(f"'{candidate}'\n")
-
-        print("\nFull list saved to remaining_candidates.txt")
-    else:
-        print("No unlocalized strings found!")
+    print("Full report saved to unlocalized_strings_report.json")
 
 if __name__ == "__main__":
     main()

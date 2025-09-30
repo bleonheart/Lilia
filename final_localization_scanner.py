@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Final Localization Scanner for Lilia Gamemode
-Finds strings in code that aren't in language files
+Final Comprehensive Localization Scanner for Lilia Gamemode
+Finds all remaining unlocalized English strings that need to be added to language files
 """
 
 import os
@@ -21,111 +21,168 @@ def load_all_localized_strings():
             # Extract string values from LANGUAGE table
             strings = re.findall(r'\s*[\w_]+\s*=\s*"([^"]*)"', content)
             localized_strings.update(strings)
-        except:
-            pass
+        except Exception as e:
+            print(f"Error reading {lang_file}: {e}")
 
     return localized_strings
 
 def find_unlocalized_strings():
-    """Find strings in code that aren't localized"""
+    """Find English strings that are not localized"""
     localized_strings = load_all_localized_strings()
-    candidates = []
+    candidates = set()
 
-    for root, dirs, files in os.walk('gamemode'):
+    # Search in all Lua files except language files
+    lua_files = []
+    for root, dirs, files in os.walk("gamemode"):
+        # Skip language files and some other directories
+        if "languages" in root:
+            continue
         for file in files:
-            if file.endswith('.lua'):
-                filepath = os.path.join(root, file)
-                try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
-                        content = f.read()
+            if file.endswith(".lua"):
+                lua_files.append(os.path.join(root, file))
 
-                    # Remove comments
-                    content = re.sub(r'--.*$', '', content, flags=re.MULTILINE)
+    for lua_file in lua_files:
+        try:
+            with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
 
-                    # Find string literals - both single and double quoted
-                    strings = re.findall(r'"([^"]*)"', content)
-                    single_strings = re.findall(r"'([^']*)'", content)
-                    strings.extend(single_strings)
+            # Skip files that are mostly comments or configurations
+            if len(content.strip()) < 100:
+                continue
 
-                    for string in strings:
-                        # Skip if already localized
-                        if string in localized_strings:
-                            continue
+            # Find strings that appear to be user-facing English text
+            # Look for strings in various UI contexts
+            patterns = [
+                # Chat and notification functions
+                r"(?:ChatPrint|notify|MsgC|lia\.chat\.send)\s*\(\s*[\"']([^\"']+)[\"']",
+                # Surface text drawing
+                r"draw\.SimpleText\s*\(\s*[\"']([^\"']+)[\"']",
+                r"draw\.DrawText\s*\(\s*[\"']([^\"']+)[\"']",
+                # VGUI text elements
+                r"SetText\s*\(\s*[\"']([^\"']+)[\"']",
+                r"SetTitle\s*\(\s*[\"']([^\"']+)[\"']",
+                r"SetPlaceholderText\s*\(\s*[\"']([^\"']+)[\"']",
+                r"AddOption\s*\(\s*[\"']([^\"']+)[\"']",
+                r"SetValue\s*\(\s*[\"']([^\"']+)[\"']",
+                r"SetHelpText\s*\(\s*[\"']([^\"']+)[\"']",
+                # Derma menu options
+                r"AddSubMenu\s*\(\s*[\"']([^\"']+)[\"']",
+                # Panel text content
+                r"SetHTML\s*\(\s*[\"']([^\"']+)[\"']",
+                # Error messages and user feedback
+                r"LIA_PRINT\s*\(\s*[\"']([^\"']+)[\"']",
+                # Direct string literals in UI contexts
+                r"[\"']([A-Z][^\"']*[.!?])[\"']",
+                # Menu and button text
+                r"button\.SetText\s*\(\s*[\"']([^\"']+)[\"']",
+                # Label text
+                r"label\.SetText\s*\(\s*[\"']([^\"']+)[\"']",
+                # Frame titles
+                r"frame\.SetTitle\s*\(\s*[\"']([^\"']+)[\"']",
+                # Tooltip text
+                r"SetTooltip\s*\(\s*[\"']([^\"']+)[\"']",
+            ]
 
-                        # Skip empty or very short strings
-                        if not string.strip() or len(string) < 3:
-                            continue
+            for pattern in patterns:
+                matches = re.findall(pattern, content, re.MULTILINE | re.IGNORECASE)
+                for match in matches:
+                    # Clean up the string
+                    string = match.strip()
+                    if (len(string) > 2 and  # Not too short
+                        not string.isdigit() and  # Not a number
+                        not any(char in string for char in ['%', '\\', '{', '}', '[', ']']) and  # Not a format string
+                        string not in localized_strings and  # Not already localized
+                        not re.match(r'^[0-9\s\.,\-()]+$', string) and  # Not just numbers/symbols
+                        not string.startswith(('http', 'www', 'ftp')) and  # Not URLs
+                        not string.endswith(('.lua', '.txt', '.cfg', '.ini', '.json', '.xml')) and  # Not file extensions
+                        string not in ['Yes', 'No', 'OK', 'Cancel', 'Close', 'Open', 'Save', 'Load', 'Delete', 'Edit', 'Create', 'Remove', 'Add', 'Apply', 'Reset', 'Default', 'None', 'All', 'Help', 'Info', 'Warning', 'Error', 'Success', 'Failed', 'Enabled', 'Disabled', 'On', 'Off', 'True', 'False']):  # Common UI words
 
-                        # Skip obvious code patterns
-                        if re.match(r'^[A-Z_][A-Z0-9_]*$', string):  # ALL_CAPS
-                            continue
+                        # Filter out code-like strings
+                        if not re.search(r'[{}()\[\]]', string) and not string.count('.') > 2:
+                            candidates.add(string)
 
-                        # Skip file paths and URLs
-                        if '/' in string or '\\' in string or '.mdl' in string or '.wav' in string or '.mp3' in string:
-                            continue
+        except Exception as e:
+            print(f"Error processing {lua_file}: {e}")
 
-                        # Skip strings with code patterns
-                        if any(pattern in string for pattern in ['%s', '%d', '==', '++', '--', '..']):
-                            continue
+    return candidates
 
-                        # Skip strings that look like variable names or function calls
-                        if re.search(r'\w+\([^)]*\)', string):
-                            continue
+def filter_legitimate_strings(candidates):
+    """Filter out strings that don't need localization"""
+    legitimate = set()
 
-                        # Skip strings with brackets/braces that suggest code
-                        if re.search(r'[{}()\[\]]', string):
-                            continue
+    # Common patterns that indicate legitimate user-facing strings
+    legitimate_patterns = [
+        r'^[A-Z].*[.!?]$',  # Sentences starting with capital letters
+        r'^[A-Z][^.!?]*$',  # Titles and labels
+        r'.*\s+[a-z]+\s+.*',  # Multi-word strings
+        r'.*ing\s+.*',  # Gerunds
+        r'.*ed\s+.*',  # Past tense verbs
+        r'.*ly\s+.*',  # Adverbs
+        r'.*ment\s+.*',  # Nouns ending in -ment
+        r'.*tion\s+.*',  # Nouns ending in -tion
+        r'.*ness\s+.*',  # Nouns ending in -ness
+    ]
 
-                        # Skip strings that are clearly internal/technical
-                        if any(keyword in string.lower() for keyword in ['function', 'local', 'if', 'then', 'else', 'end', 'return', 'nil', 'true', 'false']):
-                            continue
+    # Words that indicate user-facing content
+    user_facing_indicators = [
+        'player', 'character', 'inventory', 'item', 'weapon', 'menu', 'button',
+        'option', 'setting', 'config', 'admin', 'staff', 'server', 'game',
+        'chat', 'message', 'notification', 'warning', 'error', 'success',
+        'failed', 'cannot', 'unable', 'invalid', 'missing', 'found', 'created',
+        'deleted', 'saved', 'loaded', 'opened', 'closed', 'enabled', 'disabled',
+        'allowed', 'denied', 'granted', 'revoked', 'banned', 'kicked', 'muted',
+        'jailed', 'killed', 'respawned', 'teleported', 'moved', 'copied', 'pasted',
+        'selected', 'chosen', 'picked', 'taken', 'given', 'received', 'sent',
+        'received', 'displayed', 'shown', 'hidden', 'visible', 'invisible'
+    ]
 
-                        # Skip SQL fragments
-                        if any(sql_word in string.upper() for sql_word in ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'FROM', 'WHERE', 'ORDER BY', 'LIMIT', 'AND', 'OR', 'NOT', 'NULL']):
-                            continue
+    for candidate in candidates:
+        candidate_lower = candidate.lower()
+        # Check if it matches legitimate patterns
+        is_legitimate = any(re.search(pattern, candidate) for pattern in legitimate_patterns)
 
-                        # Skip console commands and CVars
-                        if string.startswith('+') or string.startswith('-') or string.startswith('sv_') or string.startswith('cl_'):
-                            continue
+        # Check if it contains user-facing indicator words
+        has_indicators = any(indicator in candidate_lower for indicator in user_facing_indicators)
 
-                        # Only include strings that look like natural language
-                        if (' ' in string or
-                            string.endswith('.') or
-                            string.endswith('!') or
-                            string.endswith('?') or
-                            string.lower() in ['ok', 'cancel', 'yes', 'no', 'save', 'load', 'delete', 'edit', 'create', 'close', 'open', 'settings', 'help', 'info', 'warning', 'error', 'success', 'failed', 'loading', 'ready', 'enabled', 'disabled', 'active', 'inactive']):
+        # Check if it's a clear sentence or phrase
+        is_sentence = (candidate[0].isupper() and
+                      len(candidate.split()) >= 3 and
+                      any(punct in candidate for punct in '.!?'))
 
-                            # Skip if it looks like a variable or function name
-                            if not re.match(r'^[a-z][a-zA-Z]*$', string) or ' ' in string:
-                                candidates.append(string)
+        if is_legitimate or has_indicators or is_sentence:
+            legitimate.add(candidate)
 
-                except:
-                    pass
-
-    return sorted(list(set(candidates)))
+    return legitimate
 
 def main():
-    print("Running final localization scan...")
-    candidates = find_unlocalized_strings()
+    print("Scanning for unlocalized strings...")
 
+    candidates = find_unlocalized_strings()
     print(f"Found {len(candidates)} potential unlocalized strings")
 
-    if candidates:
-        print("\nTop candidates:")
-        for i, candidate in enumerate(candidates[:30], 1):
-            print(f"{i:2d}. '{candidate}'")
+    # Filter for legitimate user-facing strings
+    legitimate_strings = filter_legitimate_strings(candidates)
+    print(f"Filtered to {len(legitimate_strings)} legitimate user-facing strings")
 
-        if len(candidates) > 30:
-            print(f"... and {len(candidates) - 30} more")
+    # Sort and save results
+    sorted_strings = sorted(legitimate_strings)
 
-        # Save to file for review
-        with open('final_candidates.txt', 'w', encoding='utf-8') as f:
-            for candidate in candidates:
-                f.write(f"'{candidate}'\n")
+    # Save to file
+    with open('remaining_unlocalized_strings.txt', 'w', encoding='utf-8') as f:
+        f.write("Remaining Unlocalized Strings:\n")
+        f.write("=" * 50 + "\n\n")
+        for string in sorted_strings:
+            f.write(f'"{string}"\n')
 
-        print("\nFull list saved to final_candidates.txt")
-    else:
-        print("No unlocalized strings found!")
+    print(f"Results saved to 'remaining_unlocalized_strings.txt'")
+    print(f"Found {len(sorted_strings)} strings that need localization")
+
+    if sorted_strings:
+        print("\nSample strings found:")
+        for string in sorted_strings[:10]:
+            print(f'  "{string}"')
+        if len(sorted_strings) > 10:
+            print(f"  ... and {len(sorted_strings) - 10} more")
 
 if __name__ == "__main__":
     main()

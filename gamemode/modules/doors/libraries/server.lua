@@ -270,7 +270,7 @@ function lia.doors.AddPreset(mapName, presetData)
     end
 
     lia.doors.presets[mapName] = presetData
-    lia.information("Added door preset for map: " .. mapName)
+    lia.information(L("addedDoorPresetForMap") .. ": " .. mapName)
 end
 
 function lia.doors.GetPreset(mapName)
@@ -281,7 +281,7 @@ function lia.doors.VerifyDatabaseSchema()
     if lia.db.module == "sqlite" then
         lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
             if not res or not res.results then
-                lia.error("L("failedToGetTableInfo")")
+                lia.error(L("failedToGetTableInfo"))
                 return
             end
 
@@ -316,7 +316,7 @@ function lia.doors.VerifyDatabaseSchema()
     else
         lia.db.query("DESCRIBE lia_doors"):next(function(res)
             if not res or not res.results then
-                lia.error("L("failedToGetTableInfo")")
+                lia.error(L("failedToGetTableInfo"))
                 return
             end
 
@@ -325,7 +325,7 @@ function lia.doors.VerifyDatabaseSchema()
                 columns[row.Field] = row.Type
             end
 
-            lia.information("lia_doors table columns: " .. table.concat(table.GetKeys(columns), ", "))
+            lia.information(L("liaDoorsTableColumns") .. ": " .. table.concat(table.GetKeys(columns), ", "))
             local expectedColumns = {
                 gamemode = "text",
                 map = "text",

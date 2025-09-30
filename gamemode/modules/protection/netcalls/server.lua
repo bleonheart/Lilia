@@ -497,7 +497,6 @@ local KnownExploits = {
     ["gMining.sellMineral"] = true,
     ["ItemStoreDrop"] = true,
     ["optarrest"] = true,
-    ["UpdateAdvBoneSettings"] = true,
     ["ViralsScoreboardAdmin"] = true,
     ["PowerRoundsForcePR"] = true,
     ["showDisguiseHUD"] = true,

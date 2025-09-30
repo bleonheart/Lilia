@@ -1,0 +1,1041 @@
+User-Facing Strings That Need Localization:
+==================================================
+
+gamemode\core\derma\panels\extended_spawnmenu.lua (1 strings):
+  "#spawnmenu.category.weapons"
+
+gamemode\core\derma\panels\item.lua (2 strings):
+  "<font=liaItemBoldFont>"
+  "<font=liaItemDescFont>"
+
+gamemode\core\derma\panels\weaponselector.lua (2 strings):
+  "<font=liaItemBoldFont><color=%d,%d,%d>%s</font></color>\n%s\n"
+  "<font=liaItemDescFont>"
+
+gamemode\core\hooks\server.lua (7 strings):
+  "Passwords do not match for "
+  "UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s"
+  "Failed to SetAngles for entity '%s' at %s. Angle: %s (%s) - %s"
+  "Invalid angle for entity '%s' at %s: %s (%s)"
+  "DELETE FROM lia_items WHERE itemID IN "
+  "SELECT itemID, uniqueID, data FROM lia_items WHERE itemID IN "
+  "DELETE FROM lia_bans WHERE playerSteamID = "
+
+gamemode\core\libraries\admin.lua (2 strings):
+  "DELETE FROM lia_admin"
+  "DELETE FROM lia_bans WHERE playerSteamID = "
+
+gamemode\core\libraries\character.lua (9 strings):
+  "SELECT id, name FROM lia_characters"
+  "SELECT key, value FROM lia_chardata WHERE charID = "
+  "SELECT value FROM lia_chardata WHERE charID = "
+  "SELECT key, value FROM lia_chardata WHERE charID = "
+  " FROM lia_characters WHERE "
+  "DELETE FROM lia_characters WHERE id = "
+  "SELECT invID FROM lia_inventories WHERE charID = "
+  "SELECT banned FROM lia_characters WHERE id = "
+  "Failed to load inventories for character "
+
+gamemode\core\libraries\commands.lua (104 strings):
+  " then
+                        client:notifyInfoLocalized(result:sub(2), unpack(results, 2))
+                    else
+                        client:notifyErrorLocalized(result)
+                    end
+                else
+                    print(result)
+                end
+            end
+        end
+    end
+
+    function lia.command.parse(client, text, realCommand, arguments)
+        if realCommand or utf8.sub(text, 1, 1) == "
+  ")
+            if not match then
+                local post = string.Explode("
+  ", text)
+                local len = string.len(post[1])
+                match = utf8.sub(post[1], 2, len)
+            end
+
+            match = match:lower()
+            local command = lia.command.list[match]
+            if command then
+                if not arguments then arguments = lia.command.extractArgs(text:sub(#match + 3)) end
+                local fields = command.arguments or {}
+                if IsValid(client) and client:IsPlayer() and #fields > 0 then
+                    local tokens = combineBracketArgs(arguments)
+                    local missing = {}
+                    local prefix = {}
+                    for i, field in ipairs(fields) do
+                        local arg = tokens[i]
+                        if not arg or isPlaceholder(arg) then
+                            if not field.optional then missing[#missing + 1] = field.name end
+                        else
+                            prefix[#prefix + 1] = arg
+                        end
+                    end
+
+                    if #missing > 0 then
+                        net.Start("
+  ")
+                        net.WriteString(match)
+                        net.WriteTable(missing)
+                        net.WriteTable(prefix)
+                        net.Send(client)
+                        return true
+                    end
+                end
+
+                lia.command.run(client, match, arguments)
+                if not realCommand then lia.log.add(client, "
+  ", text) end
+            else
+                if IsValid(client) then
+                    client:notifyErrorLocalized("
+  ")
+                else
+                    lia.information(L("
+  ")
+        frame:SetSize(frameW, frameH)
+        frame:Center()
+        frame:MakePopup()
+        frame:ShowCloseButton(false)
+        frame.Paint = function(self, w, h)
+            derma.SkinHook("
+  ")
+        local controls = {}
+        local watchers = {}
+        local validate
+        for name, data in pairs(fields) do
+            local fieldType = data.type
+            local optional = data.optional
+            local options = data.options
+            local filter = data.filter
+            local panel = vgui.Create("
+  ", scroll)
+            panel:Dock(TOP)
+            panel:DockMargin(0, 0, 0, 5)
+            panel:SetTall(70)
+            panel.Paint = function() end
+            local textW = select(1, surface.GetTextSize(L(data.description or name)))
+            local ctrl
+            if fieldType == "
+  ", panel)
+                ctrl:SetValue(L("
+  ", panel)
+                ctrl:SetValue(L("
+  ", panel)
+            else
+                ctrl = vgui.Create("
+  ", panel)
+                ctrl:SetFont("
+  ", panel)
+            label:SetFont("
+  ")
+            label:SetText(L(data.description or name))
+            label:SizeToContents()
+            panel.PerformLayout = function(_, w, h)
+                local ctrlH = 30
+                ctrl:SetTall(ctrlH)
+                local ctrlW = w * 0.7
+                local totalW = textW + 10 + ctrlW
+                local xOff = (w - totalW) / 2
+                label:SetPos(xOff, (h - label:GetTall()) / 2)
+                ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2)
+                ctrl:SetWide(ctrlW)
+            end
+
+            controls[name] = {
+                ctrl = ctrl,
+                type = fieldType,
+                optional = optional
+            }
+
+            watchers[#watchers + 1] = function()
+                local oldValue = ctrl.OnValueChange
+                function ctrl:OnValueChange(...)
+                    if oldValue then oldValue(self, ...) end
+                    validate()
+                end
+
+                local oldText = ctrl.OnTextChanged
+                function ctrl:OnTextChanged(...)
+                    if oldText then oldText(self, ...) end
+                    validate()
+                end
+
+                local oldChange = ctrl.OnChange
+                function ctrl:OnChange(...)
+                    if oldChange then oldChange(self, ...) end
+                    validate()
+                end
+
+                local oldSelect = ctrl.OnSelect
+                function ctrl:OnSelect(...)
+                    if oldSelect then oldSelect(self, ...) end
+                    validate()
+                end
+            end
+        end
+
+        local buttons = vgui.Create("
+  ", frame)
+        buttons:Dock(BOTTOM)
+        buttons:SetTall(90)
+        buttons:DockPadding(15, 15, 15, 15)
+        buttons.Paint = function() end
+        local submit = vgui.Create("
+  ", buttons)
+        submit:Dock(LEFT)
+        submit:DockMargin(0, 0, 15, 0)
+        submit:SetWide(270)
+        submit:SetText(L("
+  ")
+        submit:SetEnabled(false)
+        validate = function()
+            for _, data in pairs(controls) do
+                if not data.optional then
+                    local ctl = data.ctrl
+                    local ftype = data.type
+                    local filled
+                    if ftype == "
+  " or ftype == "
+  " then
+                        local txt, _ = ctl:GetSelected()
+                        filled = txt ~= nil and txt ~= "
+  "
+                    elseif ftype == "
+  ", buttons)
+        cancel:Dock(RIGHT)
+        cancel:SetWide(270)
+        cancel:SetText(L("
+  ")
+        cancel.DoClick = function() frame:Remove() end
+        submit.DoClick = function()
+            local args = {}
+            if prefix then table.Add(args, prefix) end
+            for _, info in pairs(controls) do
+                local ctl = info.ctrl
+                local typ = info.type
+                local val
+                if typ == "
+  " then
+                    local _, dataVal = ctl:GetSelected()
+                    val = dataVal or ctl:GetValue()
+                elseif typ == "
+  ", function(client)
+        if IsValid(client) and not client:IsSuperAdmin() then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.loader.load()
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) and not client:IsSuperAdmin() then
+            client:notifyErrorLocalized("
+  ", function(ply, _, args)
+        local target = lia.util.findPlayer(ply, args[1])
+        local usergroup = args[2]
+        if not IsValid(ply) then
+            if IsValid(target) then
+                if lia.administrator.groups[usergroup] then
+                    target.liaUserGroup = usergroup
+                    target:notifyInfoLocalized("
+  ", usergroup)
+                    lia.log.add(nil, "
+  ", target, usergroup)
+                else
+                    MsgC(Color(255, 0, 0), "
+  ") then
+            if IsValid(target) then
+                if lia.administrator.groups[usergroup] then
+                    target.liaUserGroup = usergroup
+                    target:notifyInfoLocalized("
+  ", usergroup)
+                    ply:notifyInfoLocalized("
+  ", target:getName(), usergroup)
+                    lia.log.add(ply, "
+  ", target, usergroup)
+                else
+                    ply:notifyErrorLocalized("
+  ", usergroup)
+                end
+            else
+                ply:notifyErrorLocalized("
+  ")
+            end
+        else
+            ply:notifyErrorLocalized("
+  ")
+            end
+        else
+            client:notifyErrorLocalized("
+  ", 2, 0, function()
+            if #player.GetAll() < game.MaxPlayers() then
+                game.ConsoleCommand("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.db.wipeTables()
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.config.load(true)
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.db.wipeCharacters()
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.db.wipeLogs()
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.db.wipeBans()
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.data.deleteAll()
+        lia.information(L("
+  ", function(client)
+        local entityCount = {}
+        local totalEntities = 0
+        if not IsValid(client) then
+            lia.information(L("
+  ", Color(255, 255, 255), class .. "
+  ", function(ply)
+        if IsValid(ply) then return end
+        lia.db.GetCharacterTable(function(columns)
+            if #columns == 0 then
+                lia.error(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.db.fixCharacters()
+        lia.information(L("
+  ", function()
+        local notificationTypes = {
+            {
+                type = "
+  ",
+                message = L("
+  "
+            },
+            {
+                type = "
+  ",
+                message = L("
+  "
+            },
+            {
+                type = "
+  ",
+                message = L("
+  "
+            },
+            {
+                type = "
+  ",
+                message = L("
+  "
+            },
+            {
+                type = "
+  ",
+                message = L("
+  "
+            }
+        }
+
+        for _, notification in ipairs(notificationTypes) do
+            if notification.method == "
+  " then
+                lia.notifier.notify(notification.message, notification.type)
+            else
+                lia.notifier[notification.method](notification.message)
+            end
+        end
+    end)
+
+    concommand.Add("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ")
+            return
+        end
+
+        lia.loader.downloadAssets()
+        lia.information(L("
+  ", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("
+  ", function()
+        for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
+            if not (v.Init and debug.getinfo(v.Init, "
+  "}
+        for _, element in ipairs(elements) do
+            local panel = vgui.Create("
+  ", scroll)
+            panel:Dock(TOP)
+            panel:SetTall(50)
+            panel:DockMargin(5, 5, 5, 5)
+            panel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
+            local label = vgui.Create("
+  ", panel)
+            label:SetText(element)
+            label:Dock(LEFT)
+            label:DockMargin(10, 0, 0, 0)
+            label:SizeToContents()
+            local button = vgui.Create("
+  ", panel)
+            button:Dock(RIGHT)
+            button:DockMargin(0, 5, 10, 5)
+            button:SetWide(100)
+            button:SetText(L("
+  ", function()
+        -- Debug: Check current theme status
+        local currentTheme = lia.color.getCurrentTheme()
+        local themeData = lia.color.themes[currentTheme]
+        local isTransitionActive = lia.color.isTransitionActive()
+        -- Ensure the current theme is properly applied to lia.color.theme before creating preview
+        if themeData then
+            -- If there's an active theme transition, complete it immediately to ensure preview shows the latest theme
+            if isTransitionActive then
+                local to = lia.color.transition.to
+                if to then
+                    for k, v in pairs(to) do
+                        lia.color.stored[k] = v
+                    end
+
+                    -- Also update lia.color.theme to match the final theme
+                    lia.color.theme = table.Copy(to)
+                end
+
+                lia.color.transition.active = false
+                hook.Remove('Think', 'LiliaThemeTransition')
+            else
+                -- No active transition, just ensure lia.color.theme is up to date
+                lia.color.theme = table.Copy(themeData)
+            end
+        end
+
+        if IsValid(liliaPreviewFrame) then liliaPreviewFrame:Remove() end
+        local elements = {"
+  "}
+        local currentIndex = 1
+        local contentPanel
+        local frame = vgui.Create("
+  "))
+        frame:SetSize(ScrW() * 0.8, ScrH() * 0.8)
+        frame:Center()
+        frame:MakePopup()
+        frame:ShowCloseButton(true)
+        contentPanel = vgui.Create("
+  ", frame)
+        contentPanel:Dock(FILL)
+        contentPanel:DockMargin(10, 10, 10, 10)
+        contentPanel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
+        local function clearFeedback()
+            if IsValid(contentPanel.feedbackLabel) then
+                contentPanel.feedbackLabel:Remove()
+                contentPanel.feedbackLabel = nil
+            end
+        end
+
+        local function createFeedbackLabel(text)
+            clearFeedback()
+            local label = vgui.Create("
+  ", contentPanel)
+            label:SetFont("
+  ")
+            label:SetWrap(true)
+            label:SetTall(48)
+            label:SetContentAlignment(5)
+            label:Dock(BOTTOM)
+            label:DockMargin(10, 10, 10, 5)
+            contentPanel.feedbackLabel = label
+            return label
+        end
+
+        local function setupElementExamples(elementName, element)
+            if elementName == "
+  ", element)
+                    card:Dock(TOP)
+                    card:DockMargin(0, 0, 0, 8)
+                    card:SetTall(52)
+                    card.Paint = function(_, w, h)
+                        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
+                        draw.SimpleText(L("
+  ", element)
+                    row:Dock(TOP)
+                    row:DockMargin(12, 4, 12, 4)
+                    row:SetTall(88)
+                    row.Paint = function(_, w, h)
+                        lia.derma.rect(0, 0, w, h):Rad(12):Color(lia.color.theme.panel_alpha[2]):Shape(lia.derma.SHAPE_IOS):Draw()
+                        draw.SimpleText(info.title, "
+  ", 12, 24, lia.color.theme.text)
+                        draw.SimpleText(info.desc, "
+  ", 12, h - 24, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+                    end
+
+                    element:AddItem(row)
+                end
+            elseif elementName == "
+  ")
+                    tabPanel.Paint = function(_, _, _)
+                        draw.SimpleText(tabInfo.name, "
+  ", 24, 24, lia.color.theme.text)
+                        draw.SimpleText(tabInfo.description, "
+  ", 24, 56, lia.color.theme.gray)
+                    end
+
+                    element:AddTab(tabInfo.name, tabPanel)
+                end
+
+                element:SetActiveTab(1)
+                local originalSetActiveTab = element.SetActiveTab
+                local feedback = createFeedbackLabel("
+  ", contentPanel)
+            wrapper:Dock(FILL)
+            wrapper:DockMargin(5, 5, 5, 5)
+            wrapper.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw() end
+            local info = vgui.Create("
+  ", wrapper)
+            info:SetFont("
+  ")
+            info:SetWrap(true)
+            info:SetText(L("
+  ")
+                local radial = lia.derma.radial_menu({
+                    title = L("
+  ", contentPanel)
+            wrapper:Dock(FILL)
+            wrapper:DockMargin(5, 5, 5, 5)
+            wrapper.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw() end
+            local info = vgui.Create("
+  ", wrapper)
+            info:SetFont("
+  ")
+            info:SetWrap(true)
+            info:SetText(L("
+  ")
+                local menu = vgui.Create("
+  ")
+                menu:SetPos(gui.MouseX(), gui.MouseY())
+                menu:AddOption(L("
+  " then
+                createDermaMenuPlaceholder()
+                return
+            end
+
+            local success, element = pcall(vgui.Create, elementName, contentPanel)
+            if success and IsValid(element) then
+                contentPanel.currentElement = element
+                element:Dock(FILL)
+                element:DockMargin(5, 5, 5, 5)
+                setupElementExamples(elementName, element)
+            else
+                local label = vgui.Create("
+  ", contentPanel)
+                contentPanel.currentElement = label
+                label:Dock(FILL)
+                label:DockMargin(20, 20, 20, 20)
+                label:SetText(L("
+  ")
+        local validCount = 0
+        local invalidCount = 0
+        for _, fileName in ipairs(files) do
+            if string.EndsWith(fileName, "
+  ")
+                if data then
+                    local success, soundData = pcall(pon.decode, data)
+                    if success and soundData then
+                        validCount = validCount + 1
+                    else
+                        invalidCount = invalidCount + 1
+                    end
+                end
+            end
+        end
+
+        LocalPlayer():ChatPrint(L("
+  ")
+                if not data then
+                    file.Delete(baseDir .. fileName)
+                    removedCount = removedCount + 1
+                else
+                    local success, soundData = pcall(pon.decode, data)
+                    if not success or not soundData then
+                        file.Delete(baseDir .. fileName)
+                        removedCount = removedCount + 1
+                    end
+                end
+            end
+        end
+
+        LocalPlayer():ChatPrint(L("
+  ", frame)
+        button:Dock(TOP)
+        button:DockMargin(5, 0, 5, 5)
+        button:SetText(L("
+  ", frame)
+        imagePanel:Dock(FILL)
+        imagePanel:DockMargin(5, 5, 5, 5)
+        button.DoClick = function()
+            local url = textEntry:GetValue()
+            if url and url ~= "
+
+gamemode\core\libraries\config.lua (2 strings):
+  "DELETE FROM lia_config WHERE schema = "
+  "INSERT INTO lia_config (schema,key,value) VALUES ("
+
+gamemode\core\libraries\darkrp.lua (1 strings):
+  "(%s?[%S]+)"
+
+gamemode\core\libraries\database.lua (26 strings):
+  "UNIQUE constraint failed: lia_config"
+  "SELECT last_insert_rowid()"
+  "DROP TABLE IF EXISTS "
+  "SELECT COUNT(*) AS cnt FROM "
+  "ALTER TABLE lia_characters ADD COLUMN "
+  "INSERT OR REPLACE INTO "
+  "INSERT OR IGNORE"
+  "SELECT name FROM sqlite_master WHERE type='table' AND name="
+  "PRAGMA table_info("
+  "SELECT name FROM sqlite_master WHERE type='table'"
+  "BEGIN TRANSACTION"
+  "INSERT OR REPLACE INTO "
+  "CREATE TABLE IF NOT EXISTS "
+  "PRAGMA table_info("
+  "Failed to get table info"
+  "Cannot remove the last column from table"
+  " SELECT "
+  "PRAGMA table_info(lia_characters)"
+  "SELECT * FROM "
+  "Failed to query table "
+  "Failed to read snapshot file"
+  "Failed to parse JSON data: "
+  "Invalid snapshot format"
+  "Failed to insert batch "
+  "Usage: lia_snapshot <table_name>\n"
+  "ALTER TABLE lia_doors ADD COLUMN door_group TEXT"
+
+gamemode\core\libraries\discord.lua (1 strings):
+  "Content-Type"
+
+gamemode\core\libraries\fonts.lua (15 strings):
+  "Montserrat Regular"
+  "Montserrat Regular"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+  "Montserrat Medium"
+
+gamemode\core\libraries\inventory.lua (11 strings):
+  ", type: "
+  "Model must be a string"
+  "Data must be a table"
+  "Storage name is required"
+  "Inventory type is required"
+  "Inventory data is required"
+  "Vehicle class must be a string"
+  "Data must be a table"
+  "Trunk name is required"
+  "Inventory type is required"
+  "Inventory data is required"
+
+gamemode\core\libraries\item.lua (4 strings):
+  "itemID = "
+  "SELECT itemID, uniqueID, data, x, y, quantity FROM lia_items WHERE itemID IN "
+  "An inventory has a missing item"
+  "lilia/gamemode/items"
+
+gamemode\core\libraries\keybind.lua (2 strings):
+  "'. Must use table with 'onPress' function. (Function: lia.keybind.add)"
+  "SELECT * FROM lia_characters WHERE steamID = \"
+
+gamemode\core\libraries\loader.lua (3 strings):
+  "Simfphys Vehicles"
+  "Reload cooldown active. "
+  "Gamemode hotreloaded successfully!"
+
+gamemode\core\libraries\modularity.lua (3 strings):
+  "/factions"
+  "/classes"
+  "/schema/items"
+
+gamemode\core\libraries\option.lua (1 strings):
+  "' failed or returned invalid result"
+
+gamemode\core\libraries\performance.lua (3 strings):
+  "sv_kickerrornum 0"
+  "ai_expression_optimization 1"
+  "in_usekeyboardsampletime 1"
+
+gamemode\core\libraries\playerinteract.lua (2 strings):
+  "@giveMoney"
+  "@enterAmount"
+
+gamemode\core\libraries\webimage.lua (9 strings):
+  ") end
+        return
+    end
+
+    local isValidURL, validationError = validateURL(url)
+    if not isValidURL then
+        if cb then cb(nil, false, "
+  " .. validationError) end
+        return
+    end
+
+    if isstring(url) then urlMap[url] = n end
+    cache[n] = nil
+    local savePath = baseDir .. n
+    local function finalize(fromCache)
+        local m = buildMaterial(savePath, flg)
+        cache[n] = m
+        if cb then cb(m, fromCache) end
+        if not fromCache and not stats.downloadedImages[n] then
+            stats.downloadedImages[n] = true
+            stats.downloaded = stats.downloaded + 1
+            hook.Run("
+  ") then
+        local m = buildMaterial(savePath, flags)
+        cache[key] = m
+        return m
+    end
+end
+
+local origMaterial = Material
+function Material(p, ...)
+    local flags = select(1, ...)
+    if isstring(p) then
+        if p:find("
+  ")
+            local m = lia.webimage.get(webPath)
+            if m and not m:IsError() then
+                origSetImage(self, "
+  ")
+            local m = lia.webimage.get(webPath)
+            if m and not m:IsError() then
+                origSetImage(self, "
+  " .. baseDir .. webPath, backup)
+                return
+            end
+        else
+            local m = lia.webimage.get(src)
+            if m and not m:IsError() then
+                origSetImage(self, "
+  ", function()
+    deleteDirectoryRecursive(baseDir)
+    cache = {}
+    urlMap = {}
+    lia.information(L("
+  ", frame)
+    imgPanel:SetPos(10, 105)
+    imgPanel:SetSize(frame:GetWide() - 20, frame:GetTall() - 115)
+    loadBtn.DoClick = function()
+        for _, child in ipairs(imgPanel:GetChildren()) do
+            child:Remove()
+        end
+
+        local src = urlEntry:GetValue()
+        local img = vgui.Create("
+  ", imgPanel)
+        img:SetPos(0, 0)
+        img:SetSize(imgPanel:GetWide(), imgPanel:GetTall())
+        img:SetImage(src)
+    end
+end)
+
+function lia.webimage.getStats()
+    local totalStored = 0
+    for _ in pairs(lia.webimage.stored) do
+        totalStored = totalStored + 1
+    end
+    return {
+        downloaded = stats.downloaded,
+        stored = totalStored,
+        lastReset = stats.lastReset
+    }
+end
+
+lia.webimage.register("
+
+gamemode\core\libraries\websound.lua (11 strings):
+  "invalid mp3 format"
+  ")
+        if existingFileData then
+            local isValid, _ = validateSoundFile(savePath, existingFileData)
+            if isValid then
+                finalize(true)
+                return
+            else
+                file.Delete(savePath)
+            end
+        end
+    end
+
+    http.Fetch(u, function(body)
+        local isValid, downloadValidationError = validateSoundFile(name, body)
+        if not isValid then
+            if cb then cb(nil, false, "
+  " .. downloadValidationError) end
+            return
+        end
+
+        if file.Exists(savePath, "
+  ")
+            if existingFileData then
+                local isValid, cachedValidationError = validateSoundFile(savePath, existingFileData)
+                if isValid then
+                    finalize(true)
+                else
+                    file.Delete(savePath)
+                    if cb then cb(nil, false, L("
+  ")
+        btn:SetText(fn)
+        btn:SetSize(200, 20)
+        btn.DoClick = function() sound.PlayFile(buildPath(baseDir .. fn), "
+  ")
+    local validCount = 0
+    local invalidCount = 0
+    local corruptedFiles = {}
+    for _, fileName in ipairs(files) do
+        local filePath = baseDir .. fileName
+        local fileData = file.Read(filePath, "
+  ")
+        if fileData then
+            local isValid, errorMsg = validateSoundFile(fileName, fileData)
+            if isValid then
+                validCount = validCount + 1
+            else
+                invalidCount = invalidCount + 1
+                table.insert(corruptedFiles, fileName)
+                print(string.format("
+  ", fileName, errorMsg))
+            end
+        else
+            invalidCount = invalidCount + 1
+            table.insert(corruptedFiles, fileName)
+            print(string.format("
+  ", validCount, invalidCount))
+    if #corruptedFiles > 0 then
+        for _, fileName in ipairs(corruptedFiles) do
+            print(string.format("
+  ")
+        if fileData then
+            local isValid, errorMsg = validateSoundFile(fileName, fileData)
+            if not isValid then
+                file.Delete(filePath)
+                removedCount = removedCount + 1
+                print(string.format("
+  ", fileName, errorMsg))
+            end
+        else
+            file.Delete(filePath)
+            removedCount = removedCount + 1
+            print(string.format("
+
+gamemode\core\libraries\compatibility\cami.lua (6 strings):
+  "CAMI.OnUsergroupRegistered"
+  "CAMI.OnUsergroupUnregistered"
+  "CAMI.PlayerUsergroupChanged"
+  "UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s"
+  "CAMI.SteamIDUsergroupChanged"
+  "UPDATE lia_players SET userGroup = '%s' WHERE steamID = %s"
+
+gamemode\core\libraries\compatibility\sam.lua (2 strings):
+  "SAM.RankPermissionGiven"
+  "SAM.RankPermissionTaken"
+
+gamemode\core\libraries\compatibility\serverguard.lua (2 strings):
+  "serverguard.RankPermissionGiven"
+  "serverguard.RankPermissionTaken"
+
+gamemode\core\meta\inventory.lua (2 strings):
+  "itemID = "
+  "itemID = "
+
+gamemode\core\meta\item.lua (4 strings):
+  "itemID = "
+  "itemID = "
+  "itemID = "
+  "itemID = "
+
+gamemode\core\meta\player.lua (1 strings):
+  "SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = "
+
+gamemode\core\netcalls\client.lua (7 strings):
+  "=== CLIENT-SIDE ASSETS DOWNLOAD COMPLETE ==="
+  "Images: %d/%d completed (%d failed)"
+  "Sounds: %d/%d completed (%d failed)"
+  "Images: %d downloaded | %d stored"
+  "Sounds: %d downloaded | %d stored"
+  "Combined: %d downloaded | %d stored"
+  "Download progress: %d active, %d queued, %d/%d images, %d/%d sounds"
+
+gamemode\core\netcalls\server.lua (1 strings):
+  "SELECT name, money, model FROM lia_characters WHERE id = "
+
+gamemode\entities\entities\lia_item\cl_init.lua (1 strings):
+  "<font=liaItemDescFont>"
+
+gamemode\entities\entities\lia_item\init.lua (2 strings):
+  " AND itemID = "
+  " AND itemID = "
+
+gamemode\items\base\weapons.lua (1 strings):
+  "items.unequipSound"
+
+gamemode\modules\administration\commands.lua (3 strings):
+  "DELETE FROM lia_bans WHERE playerSteamID = "
+  "SELECT id, name FROM lia_characters WHERE "
+  "SELECT name FROM lia_characters WHERE id = "
+
+gamemode\modules\administration\netcalls\server.lua (15 strings):
+  "SELECT * FROM "
+  "SELECT * FROM lia_permakills"
+  "lia_characters.name"
+  "lia_characters.id"
+  "lia_characters.steamID"
+  "lia_characters.playtime"
+  "lia_characters.lastJoinTime"
+  "lia_characters.class"
+  "lia_characters.faction"
+  "lia_characters.schema = '"
+  " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE "
+  "c.faction"
+  " FROM lia_characters AS c WHERE c.schema = '"
+  "SELECT * FROM "
+  "SELECT name FROM lia_characters WHERE steamID = %s AND schema = '%s'"
+
+gamemode\modules\administration\submodules\adminstick\libraries\client.lua (1 strings):
+  "out of character"
+
+gamemode\modules\administration\submodules\tickets\libraries\server.lua (1 strings):
+  "requesterSteamID = "
+
+gamemode\modules\administration\submodules\warns\examples.lua (2 strings):
+  "[WARNING ISSUED] Admin: %s (%s) | Target: %s (%s) | Reason: %s | Total Warnings: %d"
+  "[WARNING REMOVED] Admin: %s (%s) | Target: %s (%s) | Original Admin: %s (%s) | Reason: %s | Index: %d"
+
+gamemode\modules\attributes\entities\weapons\lia_hands\shared.lua (1 strings):
+  "Weapon_Crossbow.BoltHitBody"
+
+gamemode\modules\doors\libraries\client.lua (5 strings):
+  "say /dooraddfaction '"
+  "say /doorremovefaction '"
+  "say /doorsetclass '"
+  "say /doorremoveclass '"
+  "say /doorremoveclass ''"
+
+gamemode\modules\doors\libraries\server.lua (14 strings):
+  "SELECT * FROM lia_doors WHERE "
+  " has coordinate-like data in classes column: "
+  "This suggests data corruption. Clearing classes data."
+  " has invalid factions data type: "
+  " has invalid classes data type: "
+  " factions would serialize to coordinate-like data, resetting to empty"
+  " classes would serialize to coordinate-like data, resetting to empty"
+  "lia.doors.AddPreset: Missing required parameters (mapName, presetData)"
+  "Added door preset for map: "
+  "PRAGMA table_info(lia_doors)"
+  "DESCRIBE lia_doors"
+  "SELECT id, factions, classes FROM lia_doors WHERE "
+  "UPDATE lia_doors SET factions = "
+  ", classes = "
+
+gamemode\modules\inventory\config.lua (4 strings):
+  "UPDATE lia_invdata SET value = '"
+  "' WHERE key = 'w' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)"
+  "UPDATE lia_invdata SET value = '"
+  "' WHERE key = 'h' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)"
+
+gamemode\modules\inventory\derma\cl_grid_inventory_item.lua (2 strings):
+  "<font=liaItemBoldFont>"
+  "</font>\n<font=liaItemDescFont>"
+
+gamemode\modules\mainmenu\libraries\server.lua (1 strings):
+  "SELECT key, value FROM lia_chardata WHERE charID = "
+
+gamemode\modules\mainmenu\netcalls\server.lua (3 strings):
+  " unused characters for "
+  " unused characters for "
+  "A Staff Character, Discord: "
+
+gamemode\modules\protection\libraries\client.lua (4 strings):
+  "+entinfo"
+  "_ihack_esp_weapons"
+  "exploits.Speedhack"
+  "misc.screengrab_alerts"
+
+gamemode\modules\protection\libraries\server.lua (1 strings):
+  "%d+%.%d+%.%d+%.%d+(:%d*)?"
+
+gamemode\modules\protection\netcalls\server.lua (7 strings):
+  "GMBG:PickupItem"
+  "dlib.getinfo.replicate"
+  "Chess ClientWager"
+  "CubeRiot CaptureZone Update"
+  "gPrinters.retrieveMoney"
+  "MG2.Request.GangRankings"
+  "gMining.registerAchievement"
+
+gamemode\modules\teams\libraries\server.lua (1 strings):
+  "SELECT faction FROM lia_characters WHERE id = "
+
+gamemode\modules\teams\netcalls\server.lua (4 strings):
+  "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters.class, lia_characters.playtime"
+  "lia_characters.schema = '"
+  "' AND lia_characters.faction = "
+  " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE "
+

@@ -1,16 +1,16 @@
 ﻿MODULE.name = "Vendors"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Provides NPC vendors who can buy and sell items with stock management and dialogue-driven transactions."
+MODULE.desc = L("npcVendorDescription")
 MODULE.Privileges = {
     {
-        Name = "canEditVendors",
+        Name = L("canEditVendors"),
         ID = "canEditVendors",
         MinAccess = "superadmin",
         Category = "vendors",
     },
     {
-        Name = "canCreateVendorPresets",
+        Name = L("canCreateVendorPresets"),
         ID = "canCreateVendorPresets",
         MinAccess = "admin",
         Category = "vendors",

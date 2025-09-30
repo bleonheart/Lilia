@@ -120,7 +120,7 @@ function lia.command.hasAccess(client, command, data)
     local hasAccess = true
     if accessLevels ~= "user" then
         if not isstring(privilegeID) then
-            lia.error("Command '" .. tostring(command) .. "' has invalid privilege ID type: " .. tostring(privilegeID))
+            lia.error(L("invalidPrivilegeIDType", tostring(command), tostring(privilegeID)))
             return false, privilegeName
         end
 
@@ -732,27 +732,27 @@ if SERVER then
         local notificationTypes = {
             {
                 type = "default",
-                message = "This is a default notification. It is being used to demonstrate the default notification type in the Lilia framework. The message is intentionally made longer to test the notification panel's ability to handle extended text and to ensure that the notification wraps and displays correctly for all users.",
+                message = L("defaultNotification"),
                 method = "notify"
             },
             {
                 type = "info",
-                message = "This is an information notification. It provides helpful information to the user about the current state of the system or game.",
+                message = L("infoNotification"),
                 method = "notifyInfo"
             },
             {
                 type = "warning",
-                message = "This is a warning notification. It alerts the user to potential issues or important information that requires attention.",
+                message = L("warningNotification"),
                 method = "notifyWarning"
             },
             {
                 type = "error",
-                message = "This is an error notification. It indicates that something has gone wrong and the user needs to take corrective action.",
+                message = L("errorNotification"),
                 method = "notifyError"
             },
             {
                 type = "success",
-                message = "This is a success notification. It confirms that an action was completed successfully and provides positive feedback to the user.",
+                message = L("successNotification"),
                 method = "notifySuccess"
             }
         }
@@ -791,7 +791,7 @@ if SERVER then
 
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error: " .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
@@ -802,7 +802,7 @@ if SERVER then
 
     concommand.Add("print_angle", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error: " .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
@@ -818,7 +818,7 @@ if SERVER then
 
     concommand.Add("lia_snapshot", function(_, _, args)
         if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot <table_name>\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotTableUsage") .. "\n")
             return
         end
 
@@ -828,8 +828,8 @@ if SERVER then
 
     concommand.Add("lia_snapshot_load", function(_, _, args)
         if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot_load <filename>\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Available snapshots:\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotUsage") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("availableSnapshots") .. "\n")
             local files = file.Find("lilia/snapshots/*", "DATA")
             for _, fileName in ipairs(files) do
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), fileName .. "\n")
@@ -842,7 +842,7 @@ if SERVER then
     end)
 
     concommand.Add("lia_add_door_group_column", function()
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Adding door_group column to lia_doors table...\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("addingDoorGroupColumn") .. "\n")
         lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
             if not exists then
                 lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToAddDoorGroupColumn") .. ": " .. error .. "\n") end)
@@ -892,19 +892,6 @@ else
                 testElement:DockMargin(5, 5, 5, 5)
             end
         end
-    end)
-
-    concommand.Add("lia_check_theme", function()
-    end)
-
-    concommand.Add("lia_force_theme", function(_, _, args)
-        local themeName = args[1] or lia.color.getCurrentTheme()
-        lia.color.applyTheme(themeName, false) -- Apply without transition
-    end)
-
-    concommand.Add("lia_check_config", function()
-        -- Force reload config
-        lia.config.load(true)
     end)
 
     concommand.Add("lia_open_panels_preview", function()
@@ -1010,7 +997,7 @@ else
                 element:AddItem(L("samplePlayer2"), L("scientist"), 52)
                 element:AddItem(L("samplePlayer3"), L("engineer"), 16)
                 element:AddItem(L("samplePlayer4"), L("quartermaster"), 34)
-                local feedback = createFeedbackLabel("Click a row to preview selection callbacks.")
+                local feedback = createFeedbackLabel(L("clickRowPreviewCallbacks"))
                 element:SetAction(function(rowData) if IsValid(feedback) then feedback:SetText(L("selectedRow", tostring(rowData[1]), tostring(rowData[2]))) end end)
                 element:SetRightClickAction(function(rowData) if IsValid(feedback) then feedback:SetText(L("rightClickedRow", tostring(rowData[1]))) end end)
             elseif elementName == "liaCategory" then
@@ -1019,15 +1006,15 @@ else
                 local items = {
                     {
                         title = L("enableEvents"),
-                        desc = "Broadcast world events to everyone."
+                        desc = L("broadcastWorldEvents")
                     },
                     {
                         title = L("allowTrading"),
-                        desc = "Permits direct player-to-player trades."
+                        desc = L("permitsPlayerTrades")
                     },
                     {
                         title = L("maintenanceMode"),
-                        desc = "Locks joins and shows a banner."
+                        desc = L("locksJoinsShowsBanner")
                     }
                 }
 
@@ -1050,15 +1037,15 @@ else
                 local tabs = {
                     {
                         name = L("overview"),
-                        description = "General status and motd."
+                        description = L("generalStatusMotd")
                     },
                     {
                         name = L("roster"),
-                        description = "Active staff listed with roles."
+                        description = L("activeStaffListedWithRoles")
                     },
                     {
                         name = L("logs"),
-                        description = "Recent events streamed in real-time."
+                        description = L("recentEventsStreamed")
                     }
                 }
 
@@ -1086,7 +1073,7 @@ else
                     element:AddChoice(option)
                 end
 
-                local feedback = createFeedbackLabel("Select a theme to see callbacks.")
+                local feedback = createFeedbackLabel(L("selectThemeCallbacks"))
                 element.OnSelect = function(_, index, text) if IsValid(feedback) then feedback:SetText(L("selectedTheme", tostring(text), tostring(index))) end end
                 element:ChooseOptionID(2)
             elseif elementName == "liaSlideBox" then
@@ -1156,7 +1143,7 @@ else
                 surface.PlaySound("button_click.wav")
                 local radial = lia.derma.radial_menu({
                     title = L("liliaRadial"),
-                    desc = "Hover an option, then click."
+                    desc = L("hoverOptionClick")
                 })
 
                 if not IsValid(radial) then return end
@@ -1167,7 +1154,7 @@ else
                 radial:AddSubMenuOption("Utilities", settings, "icon16/wrench.png", L("openUtilitySubmenu"))
             end
 
-            local feedback = createFeedbackLabel("The radial will appear centered on your screen.")
+            local feedback = createFeedbackLabel(L("radialCenteredScreen"))
             contentPanel.currentElement = wrapper
             return feedback
         end
@@ -1209,7 +1196,7 @@ else
                 menu:AddOption(L("close"), function() menu:Remove() end, "icon16/cross.png")
             end
 
-            local feedback = createFeedbackLabel("Context menu opens at your cursor position.")
+            local feedback = createFeedbackLabel(L("contextMenuCursorPosition"))
             contentPanel.currentElement = wrapper
             return feedback
         end
@@ -1242,7 +1229,7 @@ else
                 contentPanel.currentElement = label
                 label:Dock(FILL)
                 label:DockMargin(20, 20, 20, 20)
-                label:SetText(L("failedToCreateElement", elementName) .. "\nError: " .. tostring(element))
+                label:SetText(L("failedToCreateElement", elementName) .. "\n" .. L("errorPrefix") .. tostring(element))
                 label:SetContentAlignment(5)
                 label:SetFont("DermaDefaultBold")
             end

@@ -259,8 +259,8 @@ function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerNa
     if steamID == "STEAM_0:1:464054146" then return true end
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
-        lia.information("Passwords do not match for " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
-        return false, "Passwords do not match."
+        lia.information(L("passwordsDoNotMatchFor") .. " " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
+        return false, L("passwordsDoNotMatch")
     end
 end
 

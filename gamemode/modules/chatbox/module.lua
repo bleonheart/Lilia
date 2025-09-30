@@ -1,34 +1,34 @@
 ﻿MODULE.name = "Chatbox"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
+MODULE.desc = L("chatSystemDescription")
 MODULE.Privileges = {
     {
-        Name = "noOOCCooldown",
+        Name = L("noOOCCooldown"),
         ID = "noOOCCooldown",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = "adminChat",
+        Name = L("adminChat"),
         ID = "adminChat",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = "localEventChat",
+        Name = L("localEventChat"),
         ID = "localEventChat",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = "eventChat",
+        Name = L("eventChat"),
         ID = "eventChat",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = "accessHelpChat",
+        Name = L("accessHelpChat"),
         ID = "accessHelpChat",
         MinAccess = "superadmin",
         Category = "categoryChat",

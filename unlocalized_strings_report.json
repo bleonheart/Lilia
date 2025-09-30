@@ -1,0 +1,3490 @@
+{
+  "total_potential_strings": 813,
+  "filtered_strings": 427,
+  "strings": [
+    {
+      "string": "Poppins Medium",
+      "files": [
+        "core\\libraries\\fonts.lua",
+        "core\\libraries\\fonts.lua",
+        "core\\libraries\\fonts.lua"
+      ],
+      "frequency": 3,
+      "length": 14
+    },
+    {
+      "string": "URL contains invalid characters",
+      "files": [
+        "core\\libraries\\webimage.lua",
+        "core\\libraries\\websound.lua"
+      ],
+      "frequency": 2,
+      "length": 31
+    },
+    {
+      "string": "Montserrat Regular",
+      "files": [
+        "core\\libraries\\fonts.lua",
+        "core\\libraries\\fonts.lua"
+      ],
+      "frequency": 2,
+      "length": 18
+    },
+    {
+      "string": "This is a default notification. It is being used to demonstrate the default notification type in the Lilia framework. The message is intentionally made longer to test the notification panel",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 189
+    },
+    {
+      "string": "UNIQUE constraint failed: lia_config",
+      "files": [
+        "core\\libraries\\database.lua"
+      ],
+      "frequency": 1,
+      "length": 36
+    },
+    {
+      "string": "SELECT id, name FROM lia_characters",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 35
+    },
+    {
+      "string": "Bypass Noclip Shooting Restriction",
+      "files": [
+        "modules\\protection\\module.lua"
+      ],
+      "frequency": 1,
+      "length": 34
+    },
+    {
+      "string": "Invalid target for lia.net.send",
+      "files": [
+        "core\\libraries\\net.lua"
+      ],
+      "frequency": 1,
+      "length": 31
+    },
+    {
+      "string": "Lilia Derma Elements Preview",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 28
+    },
+    {
+      "string": "CubeRiot CaptureZone Update",
+      "files": [
+        "modules\\protection\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 27
+    },
+    {
+      "string": "DELETE FROM lia_admin",
+      "files": [
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "Teleport to Entity",
+      "files": [
+        "modules\\protection\\module.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": "Simfphys Vehicles",
+      "files": [
+        "core\\libraries\\loader.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "Palatino Linotype",
+      "files": [
+        "items\\base\\books.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "Chess ClientWager",
+      "files": [
+        "modules\\protection\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "SAM | Admin Mod",
+      "files": [
+        "core\\libraries\\loader.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "Palatino LT STD",
+      "files": [
+        "items\\base\\books.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "View Entity Tab",
+      "files": [
+        "modules\\protection\\module.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "GMBG:PickupItem",
+      "files": [
+        "modules\\protection\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "Segoe Script",
+      "files": [
+        "core\\libraries\\fonts.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "Sit Anywhere",
+      "files": [
+        "core\\libraries\\loader.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "Book Antiqua",
+      "files": [
+        "items\\base\\books.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "$basetexture",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 5,
+      "length": 12
+    },
+    {
+      "string": ".wav",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\meta\\entity.lua"
+      ],
+      "frequency": 5,
+      "length": 4
+    },
+    {
+      "string": ", character, ",
+      "files": [
+        "core\\libraries\\character.lua",
+        "core\\libraries\\character.lua",
+        "core\\libraries\\character.lua",
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 4,
+      "length": 13
+    },
+    {
+      "string": ", ply, ",
+      "files": [
+        "core\\derma\\panels\\scoreboard.lua",
+        "core\\derma\\panels\\scoreboard.lua",
+        "core\\derma\\panels\\scoreboard.lua",
+        "core\\derma\\panels\\scoreboard.lua"
+      ],
+      "frequency": 4,
+      "length": 7
+    },
+    {
+      "string": ".mp3",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 4,
+      "length": 4
+    },
+    {
+      "string": ".ogg",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 4,
+      "length": 4
+    },
+    {
+      "string": ".vmt",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 4,
+      "length": 4
+    },
+    {
+      "string": " and isPlayerTarget or targetType == ",
+      "files": [
+        "core\\libraries\\playerinteract.lua",
+        "core\\netcalls\\server.lua",
+        "core\\netcalls\\server.lua"
+      ],
+      "frequency": 3,
+      "length": 37
+    },
+    {
+      "string": " or targetType == ",
+      "files": [
+        "core\\libraries\\playerinteract.lua",
+        "core\\netcalls\\server.lua",
+        "core\\netcalls\\server.lua"
+      ],
+      "frequency": 3,
+      "length": 18
+    },
+    {
+      "string": " and k ~= ",
+      "files": [
+        "core\\libraries\\data.lua",
+        "core\\libraries\\data.lua",
+        "modules\\administration\\commands.lua"
+      ],
+      "frequency": 3,
+      "length": 10
+    },
+    {
+      "string": "$alpha",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 3,
+      "length": 6
+    },
+    {
+      "string": "#spawnmenu.category.addonslegacy",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 32
+    },
+    {
+      "string": "UPDATE lia_invdata SET value = ",
+      "files": [
+        "modules\\inventory\\config.lua",
+        "modules\\inventory\\config.lua"
+      ],
+      "frequency": 2,
+      "length": 31
+    },
+    {
+      "string": "#spawnmenu.category.downloads",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 29
+    },
+    {
+      "string": " not found in stored configs",
+      "files": [
+        "core\\libraries\\config.lua",
+        "core\\libraries\\config.lua"
+      ],
+      "frequency": 2,
+      "length": 28
+    },
+    {
+      "string": "A Staff Character, Discord: ",
+      "files": [
+        "modules\\mainmenu\\commands.lua",
+        "modules\\teams\\libraries\\shared.lua"
+      ],
+      "frequency": 2,
+      "length": 28
+    },
+    {
+      "string": "#spawnmenu.category.addons",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 26
+    },
+    {
+      "string": "#spawnmenu.category.games",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 25
+    },
+    {
+      "string": "#spawnmenu.menu.delete",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 22
+    },
+    {
+      "string": "<font=liaItemDescFont>",
+      "files": [
+        "core\\derma\\panels\\weaponselector.lua",
+        "entities\\entities\\lia_item\\cl_init.lua"
+      ],
+      "frequency": 2,
+      "length": 22
+    },
+    {
+      "string": "#spawnmenu.menu.copy",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 20
+    },
+    {
+      "string": " then return false, ",
+      "files": [
+        "core\\libraries\\webimage.lua",
+        "core\\libraries\\websound.lua"
+      ],
+      "frequency": 2,
+      "length": 20
+    },
+    {
+      "string": " and row.classes ~= ",
+      "files": [
+        "modules\\doors\\libraries\\server.lua",
+        "modules\\doors\\libraries\\server.lua"
+      ],
+      "frequency": 2,
+      "length": 20
+    },
+    {
+      "string": " then modelPath = ",
+      "files": [
+        "modules\\protection\\libraries\\client.lua",
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 2,
+      "length": 18
+    },
+    {
+      "string": " or groupName == ",
+      "files": [
+        "core\\libraries\\admin.lua",
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 2,
+      "length": 17
+    },
+    {
+      "string": " and arg.type ~= ",
+      "files": [
+        "core\\libraries\\commands.lua",
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 2,
+      "length": 17
+    },
+    {
+      "string": " and name ~= ",
+      "files": [
+        "core\\libraries\\admin.lua",
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 2,
+      "length": 13
+    },
+    {
+      "string": " or ftype == ",
+      "files": [
+        "core\\libraries\\commands.lua",
+        "core\\libraries\\util.lua"
+      ],
+      "frequency": 2,
+      "length": 13
+    },
+    {
+      "string": " WHERE key = ",
+      "files": [
+        "modules\\inventory\\config.lua",
+        "modules\\inventory\\config.lua"
+      ],
+      "frequency": 2,
+      "length": 13
+    },
+    {
+      "string": "$translucent",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 2,
+      "length": 12
+    },
+    {
+      "string": "$vertexalpha",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 2,
+      "length": 12
+    },
+    {
+      "string": " or tool == ",
+      "files": [
+        "modules\\administration\\submodules\\permissions\\libraries\\server.lua",
+        "modules\\administration\\submodules\\permissions\\libraries\\server.lua"
+      ],
+      "frequency": 2,
+      "length": 12
+    },
+    {
+      "string": "not provided",
+      "files": [
+        "modules\\teams\\libraries\\shared.lua",
+        "modules\\teams\\libraries\\shared.lua"
+      ],
+      "frequency": 2,
+      "length": 12
+    },
+    {
+      "string": " AND key = ",
+      "files": [
+        "core\\libraries\\character.lua",
+        "core\\meta\\inventory.lua"
+      ],
+      "frequency": 2,
+      "length": 11
+    },
+    {
+      "string": ", speaker, ",
+      "files": [
+        "modules\\chatbox\\libraries\\shared.lua",
+        "modules\\chatbox\\libraries\\shared.lua"
+      ],
+      "frequency": 2,
+      "length": 11
+    },
+    {
+      "string": ", SteamID: ",
+      "files": [
+        "modules\\mainmenu\\commands.lua",
+        "modules\\teams\\libraries\\shared.lua"
+      ],
+      "frequency": 2,
+      "length": 11
+    },
+    {
+      "string": " or rt == ",
+      "files": [
+        "core\\derma\\panels\\dproperties.lua",
+        "core\\derma\\panels\\dproperties.lua"
+      ],
+      "frequency": 2,
+      "length": 10
+    },
+    {
+      "string": "^property_",
+      "files": [
+        "core\\libraries\\admin.lua",
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 2,
+      "length": 10
+    },
+    {
+      "string": ", door, ",
+      "files": [
+        "modules\\doors\\commands.lua",
+        "modules\\doors\\commands.lua"
+      ],
+      "frequency": 2,
+      "length": 8
+    },
+    {
+      "string": "%.mdl$",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua",
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 2,
+      "length": 6
+    },
+    {
+      "string": "^tool_",
+      "files": [
+        "core\\libraries\\admin.lua",
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 2,
+      "length": 6
+    },
+    {
+      "string": "-speed",
+      "files": [
+        "modules\\attributes\\libraries\\client.lua",
+        "modules\\attributes\\libraries\\server.lua"
+      ],
+      "frequency": 2,
+      "length": 6
+    },
+    {
+      "string": "0 0 0",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua",
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 2,
+      "length": 5
+    },
+    {
+      "string": ".lua",
+      "files": [
+        "core\\libraries\\modularity.lua",
+        "core\\libraries\\modularity.lua"
+      ],
+      "frequency": 2,
+      "length": 4
+    },
+    {
+      "string": "lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters.class, lia_characters.playtime",
+      "files": [
+        "modules\\teams\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 186
+    },
+    {
+      "string": "SELECT data, firstJoin, lastJoin, lastIP, lastOnline, totalOnlineTime FROM lia_players WHERE steamID = ",
+      "files": [
+        "core\\meta\\player.lua"
+      ],
+      "frequency": 1,
+      "length": 103
+    },
+    {
+      "string": " FROM lia_characters LEFT JOIN lia_players ON lia_characters.steamID = lia_players.steamID WHERE ",
+      "files": [
+        "modules\\teams\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 97
+    },
+    {
+      "string": "SELECT key, value FROM lia_chardata WHERE charID = ",
+      "files": [
+        "modules\\mainmenu\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 51
+    },
+    {
+      "string": "SELECT invID FROM lia_inventories WHERE charID = ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 49
+    },
+    {
+      "string": "SELECT faction FROM lia_characters WHERE id = ",
+      "files": [
+        "modules\\teams\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 46
+    },
+    {
+      "string": "SELECT banned FROM lia_characters WHERE id = ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 45
+    },
+    {
+      "string": "DELETE FROM lia_characters WHERE id = ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 38
+    },
+    {
+      "string": " failed or returned invalid result",
+      "files": [
+        "core\\libraries\\option.lua"
+      ],
+      "frequency": 1,
+      "length": 34
+    },
+    {
+      "string": "+sykranos_is_luaviewerier_then_hex",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 34
+    },
+    {
+      "string": " has invalid privilege ID type: ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 32
+    },
+    {
+      "string": "mat_framebuffercopyoverlaysize 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 32
+    },
+    {
+      "string": "#spawnmenu.category.postprocess",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 1,
+      "length": 31
+    },
+    {
+      "string": " is missing from stored configs",
+      "files": [
+        "core\\libraries\\config.lua"
+      ],
+      "frequency": 1,
+      "length": 31
+    },
+    {
+      "string": "+sykranos_is_really_luaviewery",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 30
+    },
+    {
+      "string": " AND lia_characters.faction = ",
+      "files": [
+        "modules\\teams\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 30
+    },
+    {
+      "string": "#spawnmenu.category.entities",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 1,
+      "length": 28
+    },
+    {
+      "string": "#spawnmenu.category.vehicles",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 1,
+      "length": 28
+    },
+    {
+      "string": "ai_expression_optimization 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 28
+    },
+    {
+      "string": "+sykranos_is_sexier_then_hex",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 28
+    },
+    {
+      "string": "#spawnmenu.category.weapons",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 1,
+      "length": 27
+    },
+    {
+      "string": " FROM lia_characters WHERE ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 27
+    },
+    {
+      "string": "UPDATE lia_characters SET ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 26
+    },
+    {
+      "string": "in_usekeyboardsampletime 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 26
+    },
+    {
+      "string": "filesystem_unbuffered_io 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 26
+    },
+    {
+      "string": "cl_localnetworkbackdoor 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 25
+    },
+    {
+      "string": "#spawnmenu.category.npcs",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": "cl_threaded_bone_setup 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": " ORDER BY id DESC LIMIT ",
+      "files": [
+        "modules\\administration\\submodules\\logging\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": ", warn.warnedSteamID or ",
+      "files": [
+        "modules\\administration\\submodules\\warns\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": ", warn.warnerSteamID or ",
+      "files": [
+        "modules\\administration\\submodules\\warns\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": "+Bacon_triggerbot_toggle",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": "+sykranos_is_really_sexy",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": "lia_characters.schema = ",
+      "files": [
+        "modules\\teams\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 24
+    },
+    {
+      "string": "#weapon_citizensuitcase",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_extensions.lua"
+      ],
+      "frequency": 1,
+      "length": 23
+    },
+    {
+      "string": "+qq_nospread_triggerbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 23
+    },
+    {
+      "string": "+sykranos_is_luaviewery",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 23
+    },
+    {
+      "string": "duplicate column name:",
+      "files": [
+        "core\\libraries\\database.lua"
+      ],
+      "frequency": 1,
+      "length": 22
+    },
+    {
+      "string": ". Must use table with ",
+      "files": [
+        "core\\libraries\\keybind.lua"
+      ],
+      "frequency": 1,
+      "length": 22
+    },
+    {
+      "string": "mat_powersavingsmode 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 22
+    },
+    {
+      "string": "r_threaded_particles 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 22
+    },
+    {
+      "string": "#weapon_citizenpackage",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_extensions.lua"
+      ],
+      "frequency": 1,
+      "length": 22
+    },
+    {
+      "string": " when applying preset ",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\entities\\entities\\lia_vendor\\init.lua"
+      ],
+      "frequency": 1,
+      "length": 22
+    },
+    {
+      "string": ", TransparentDFrame, ",
+      "files": [
+        "core\\derma\\panels\\panels.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "mp_show_voice_icons 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "gmod_physiterations 4",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "mat_managedtextures 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "downloads not allowed",
+      "files": [
+        "core\\libraries\\webimage.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "#weapon_oldmanharpoon",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_extensions.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": " and row.factions ~= ",
+      "files": [
+        "modules\\doors\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 21
+    },
+    {
+      "string": "cl_lagcompensation 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": ", info.usergroup or ",
+      "files": [
+        "modules\\administration\\netcalls\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": " and self.suffix or ",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\derma\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": ", data.animation or ",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": "+scriptenforcer_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": "+anthrax_floodserver",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": "+wots_toggleimmunity",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 20
+    },
+    {
+      "string": ", PropertiesPanel, ",
+      "files": [
+        "core\\derma\\panels\\dproperties.lua"
+      ],
+      "frequency": 1,
+      "length": 19
+    },
+    {
+      "string": " or column.type == ",
+      "files": [
+        "core\\libraries\\database.lua"
+      ],
+      "frequency": 1,
+      "length": 19
+    },
+    {
+      "string": "studio_queue_mode 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 19
+    },
+    {
+      "string": "+qq_speedhack_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 19
+    },
+    {
+      "string": "2_r_drawothermodels",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 19
+    },
+    {
+      "string": "1_r_drawothermodels",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 19
+    },
+    {
+      "string": " or adminOnly and ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": " and curString ~= ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": " and curString == ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": " or columnType == ",
+      "files": [
+        "core\\libraries\\database.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": "sv_allowdownload 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": "class C_AI_BaseNPC",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_extensions.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": ", info.steamID or ",
+      "files": [
+        "modules\\administration\\netcalls\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": "+qq_aimbot_enabled",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": "+Bacon_Trigger_Bot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 18
+    },
+    {
+      "string": " or panelName == ",
+      "files": [
+        "core\\derma\\mainmenu\\creation.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": ", BlurredDFrame, ",
+      "files": [
+        "core\\derma\\panels\\panels.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": " or privilege == ",
+      "files": [
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "sv_kickerrornum 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "gmod_mcore_test 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "cl_interp_ratio 2",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": " or fieldType == ",
+      "files": [
+        "core\\libraries\\util.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "#weapon_annabelle",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_extensions.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": " and entClass == ",
+      "files": [
+        "modules\\administration\\submodules\\permissions\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": ", warn.warned or ",
+      "files": [
+        "modules\\administration\\submodules\\warns\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": ", warn.warner or ",
+      "files": [
+        "modules\\administration\\submodules\\warns\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": " and row.name ~= ",
+      "files": [
+        "modules\\doors\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": ", data.preset or ",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": "+sykranos_is_sexy",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": " or lvl == 4 and ",
+      "files": [
+        "modules\\recognition\\pim.lua"
+      ],
+      "frequency": 1,
+      "length": 17
+    },
+    {
+      "string": " then filters = ",
+      "files": [
+        "core\\derma\\panels\\chatbox.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": ", TooltipPanel, ",
+      "files": [
+        "core\\derma\\panels\\dproperties.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": " or opt.type == ",
+      "files": [
+        "core\\derma\\panels\\panels.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "sv_allowupload 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "mat_queue_mode 2",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "r_queued_ropes 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "fast_fogvolume 1",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": ", failedImages, ",
+      "files": [
+        "core\\netcalls\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": ", failedSounds, ",
+      "files": [
+        "core\\netcalls\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": " and steamid ~= ",
+      "files": [
+        "modules\\administration\\submodules\\tickets\\netcalls\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "+falco_makesound",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "+ihack_speedhack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "+Sethhacks_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "2_host_timescale",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": "1_host_timescale",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 16
+    },
+    {
+      "string": ", SimplePanel, ",
+      "files": [
+        "core\\derma\\panels\\panels.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": " AND steamID = ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "sv_allowcslua 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "#weapon_alyxgun",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_extensions.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": ", animation or ",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\entities\\entities\\lia_vendor\\init.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+Ares_SlowNikes",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+Coma_SlowNikes",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+Neon_SpeedHack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+SethHackToggle",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+SethHack_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+shenbot_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "-shenbot_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": "+Sethhacks_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 15
+    },
+    {
+      "string": ", QuickPanel, ",
+      "files": [
+        "core\\derma\\panels\\panels.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": " then model = ",
+      "files": [
+        "entities\\entities\\lia_item\\init.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+DragonBot_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+sh_triggerbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+Ares_PropKill",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+mechgear_shot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+Coma_PropKill",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+hax_rapidfire",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+Neon_PropKill",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+SethHack_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+bc_speedshoot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+wots_spinhack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "+Sethhacks_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 14
+    },
+    {
+      "string": "sbox_noclip 0",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "r_radiosity 4",
+      "files": [
+        "core\\libraries\\performance.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": " then return ",
+      "files": [
+        "modules\\administration\\submodules\\adminstick\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+Ares_Pointer",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+turbojordans",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+ph_speedhack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+wurst_silent",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+wurst_getpos",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+ihack_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+Coma_Pointer",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+Obelus_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+odius_pkmode",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+fls_joinspam",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+TB_RapidFire",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+bc_spamprops",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+trooper_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+hermes_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+nbot_options",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+name_changer",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": "+nbot_Options",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 13
+    },
+    {
+      "string": ", settings, ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "@enterAmount",
+      "files": [
+        "core\\libraries\\playerinteract.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "pac_enable 1",
+      "files": [
+        "core\\libraries\\compatibility\\pac.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "pac_enable 0",
+      "files": [
+        "core\\libraries\\compatibility\\pac.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": " and key ~= ",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\derma\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+cf_bunnyhop",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+asp_antidof",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+cherry_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+sbot_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+Demibot_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+Obelus_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+helix_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+hermes_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+namechanger",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+BaconToggle",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+aimbot_scan",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": "+save_replay",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 12
+    },
+    {
+      "string": " or new == ",
+      "files": [
+        "core\\libraries\\admin.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": " or typ == ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "min and max",
+      "files": [
+        "core\\libraries\\config.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": " AND map = ",
+      "files": [
+        "modules\\doors\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": " to vendor.",
+      "files": [
+        "modules\\inventory\\submodules\\vendor\\entities\\entities\\lia_vendor\\init.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+hera_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "-hera_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+triggerbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Isis_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+hermes_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Ares_Nikes",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+iliek2rape",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+bk_forward",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+ph_aimhack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+angel_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+cherry_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+speed_hack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Coma_Nikes",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+exie_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+venus_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+omen_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Obelus_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+bs_getview",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+follow_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Hax_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+int_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Helix_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+Bacon_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "+ubot_viser",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "-ubot_viser",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "2_sv_cheats",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": "1_sv_cheats",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 11
+    },
+    {
+      "string": " AND id = ",
+      "files": [
+        "core\\libraries\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "@giveMoney",
+      "files": [
+        "core\\libraries\\playerinteract.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": ".stepright",
+      "files": [
+        "core\\libraries\\thirdperson.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "!unfreeze ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "          ",
+      "files": [
+        "modules\\administration\\submodules\\tickets\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+hera_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "-hera_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+makesound",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+Isis_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+kilos_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+gen_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+Hera_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+fap_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+bk_attack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+speedhack",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+propthrow",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+bs_getpos",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+speedhake",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+coma_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+exie_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+odius_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+AimAssist",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+hax_admin",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+neon_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+bc_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "-bc_aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+helix_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+CBon_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+wots_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "+gzfaimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 10
+    },
+    {
+      "string": "Категория",
+      "files": [
+        "core\\derma\\panels\\vgui_elements\\category.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "Dark Mono",
+      "files": [
+        "core\\libraries\\color.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": " or c == ",
+      "files": [
+        "core\\libraries\\commands.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": ".stepleft",
+      "files": [
+        "core\\libraries\\thirdperson.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "!unblind ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "!respawn ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+hera_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "-hera_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+autofire",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+cal_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Isis_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+cf_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+gen_bhop",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Ares_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+vh_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+bk_right",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+qq_noob2",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+ph_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+hake_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+uberslow",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+AC_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+SB_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+coma_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+exie_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+omen_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Hax_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Hax_Zoom",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Neon_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Propkill",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+ihaimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+Nis_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+TB_Speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+BMaimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+sh_speed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+jbf_scan",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+wowspeed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+buttfuck",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": "+ares_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 9
+    },
+    {
+      "string": ", self, ",
+      "files": [
+        "core\\meta\\character.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "!freeze ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "!ignite ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "!unmute ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "!return ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "vehicle:",
+      "files": [
+        "modules\\administration\\submodules\\logging\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+enabled",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+cal_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+gen_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+vh_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+yb_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+chiefeh",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+bk_back",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+bk_left",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+qq_noob",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+orgmenu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+comtarg",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+bh_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+qq_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+fox_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+TB_Bhop",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+AimBHOP",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+sh_bhop",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+li_bhop",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+Ink_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+TB_Menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+li_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+sh_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+bb_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+fap_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+ah_menu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+leetbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+slobpos",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+asb_bot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "+entinfo",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 8
+    },
+    {
+      "string": "%.2f %s",
+      "files": [
+        "core\\libraries\\workshop.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "$color2",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "mono 3d",
+      "files": [
+        "core\\meta\\entity.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "!blind ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "!ungag ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "!bring ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "player:",
+      "files": [
+        "modules\\administration\\submodules\\logging\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "entity:",
+      "files": [
+        "modules\\administration\\submodules\\logging\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "F1 Menu",
+      "files": [
+        "modules\\f1menu\\module.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+cf_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+cb_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+ab_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+aimbot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+ph_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+Exmenu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+SB_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+MSpeed",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+MPause",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+ATMenu",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+TB_Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+pb_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+li_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+Mawpos",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+sh_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+gofast",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+goslow",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "+elebot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "?psilon",
+      "files": [
+        "modules\\protection\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 7
+    },
+    {
+      "string": "%.png$",
+      "files": [
+        "core\\derma\\panels\\extended_spawnmenu.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "$color",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_shadows.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "!jail ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "!mute ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "!slay ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "!goto ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "+speed",
+      "files": [
+        "modules\\attributes\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "+spedd",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "+b_aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "+kenny",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 6
+    },
+    {
+      "string": "lia_%",
+      "files": [
+        "core\\libraries\\database.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": ", n, ",
+      "files": [
+        "core\\libraries\\webimage.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "%.png",
+      "files": [
+        "core\\libraries\\thirdparty\\cl_markup.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "!gag ",
+      "files": [
+        "modules\\administration\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+jump",
+      "files": [
+        "modules\\attributes\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+rape",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+bktb",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+zaim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+MAim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+zumg",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "+nBot",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 5
+    },
+    {
+      "string": "%d%s",
+      "files": [
+        "core\\libraries\\time.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": ".gma",
+      "files": [
+        "core\\libraries\\workshop.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "x%x;",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_net.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "X%x;",
+      "files": [
+        "core\\libraries\\thirdparty\\sh_net.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": ".mdl",
+      "files": [
+        "modules\\administration\\submodules\\itemspawner\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "npc:",
+      "files": [
+        "modules\\administration\\submodules\\logging\\libraries\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "+nou",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "+woG",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "+aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "+Aim",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "+asb",
+      "files": [
+        "modules\\protection\\libraries\\client.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    },
+    {
+      "string": "||||",
+      "files": [
+        "modules\\protection\\netcalls\\server.lua"
+      ],
+      "frequency": 1,
+      "length": 4
+    }
+  ]
+}

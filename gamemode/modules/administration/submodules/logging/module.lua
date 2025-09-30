@@ -1,10 +1,10 @@
 ﻿MODULE.name = "Logging"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Tracks administrative actions and server events, writing detailed logs that staff can review for oversight and auditing."
+MODULE.desc = L("loggingSystemDescription")
 MODULE.Privileges = {
     {
-        Name = "canSeeLogs",
+        Name = L("canSeeLogs"),
         ID = "canSeeLogs",
         MinAccess = "superadmin",
         Category = "categoryLogging",

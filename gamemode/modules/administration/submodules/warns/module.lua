@@ -1,16 +1,16 @@
 ﻿MODULE.name = "Warns"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Adds a warning system complete with logs and a management menu so staff can issue, track, and remove player warnings."
+MODULE.desc = L("warningSystemDescription")
 MODULE.Privileges = {
     {
-        Name = "canRemoveWarns",
+        Name = L("canRemoveWarns"),
         ID = "canRemoveWarns",
         MinAccess = "superadmin",
         Category = "warning",
     },
     {
-        Name = "viewPlayerWarnings",
+        Name = L("viewPlayerWarnings"),
         ID = "viewPlayerWarnings",
         MinAccess = "admin",
         Category = "warning",
