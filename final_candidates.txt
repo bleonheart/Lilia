@@ -1,0 +1,661 @@
+' * '
+' - '
+' = '
+' ?",
+    groupCreated = "Groupe '
+' ADD COLUMN '
+' DEFAULT '
+' DEFAULT ''
+' D_HT 999'
+' D_LI 999'
+' INTO '
+' PRIMARY KEY'
+' RENAME TO '
+' SET '
+' a activ le god mode pour '
+' a ajout un point d'
+' a amen le joueur '
+' a baillonn le joueur '
+' a camoufl le joueur '
+' a chou  dplacer l'
+' a combin l'
+' a consult les avertissements donns par le staff '
+' a consult toutes les rclamations de tickets.",
+    logViewPlayerTickets = "L'
+' a dbanni le joueur '
+' a dbanni le personnage '
+' a dfini l'
+' a dgl le joueur '
+' a donn l'
+' a dplac l'
+' a dsarm '
+' a effac le chat.",
+    logCheaterBanned = "Le tricheur '
+' a effac le personnage '
+' a emprisonn le joueur '
+' a enflamm le joueur '
+' a expuls le joueur '
+' a fait apparatre l'
+' a fait apparatre le PNJ '
+' a fait apparatre le vhicule '
+' a fait apparatre un objet : '
+' a fait rapparatre le joueur '
+' a mis '
+' a quip l'
+' a reconnu le personnage avec l'
+' a renvoy '
+' a retir '
+' a t ajout  l'
+' a tu le joueur '
+' a un type d'
+' a utilis l'
+' al aplicar el preset '
+' ao aplicar o preset '
+' attribute.",
+    logAttribCheck = "Admin '
+' au joueur '
+' avec le modle '
+' banned character '
+' banned player '
+' blind-faded player '
+' blinded player '
+' brought player '
+' charg",
+    modulePreloadSuggestion = "Le module '
+' cleared the chat.",
+    logCheaterBanned = "Cheater '
+' cloaked player '
+' combined item '
+' cr.",
+    groupRemoved = "Groupe '
+' cre.",
+    logItemSpawned = "L'
+' dans la classe '
+' dans le préréglage '
+' de la liste blanche de la classe '
+' doesn'
+' dropped item '
+' dtect  l'
+' en liste blanche pour la faction '
+' en preset '
+' equipped item '
+' est obsolte, merci de le signaler  l'
+' est revenu d'
+' extinguished player '
+' failed to move item '
+' froze player '
+' gagged player '
+' gave flags '
+' gave player flags '
+' has invalid privilege ID type: ",
+    whenApplyingPreset = "'
+' ignited player '
+' jailed player '
+' joined class '
+' kicked character '
+' kicked player '
+' killed player '
+' moved item '
+' muted player '
+' na predefinição '
+' on '
+' optional'
+' pour : '
+' pour crer un ticket.",
+    oocBlocked = "Le OOC est bloqu globalement !",
+    oocBanned = "Vous avez t banni de l'
+' pour le joueur '
+' removed '
+' renomm en '
+' respawned player '
+' set '
+' slayed player '
+' supprim.",
+    groupRenamed = "Groupe '
+' to '
+' to class '
+' to their previous position.",
+    logPlyJail = "Admin '
+' took flags '
+' took item '
+' took player flags '
+' transferred '
+' unbanned character '
+' unbanned player '
+' unblinded player '
+' uncloaked player '
+' unequipped item '
+' unfroze player '
+' ungagged player '
+' unjailed player '
+' unmuted player '
+' used item '
+' viewed all ticket claims.",
+    logViewPlayerTickets = "Admin '
+' whitelist.",
+    logBeClass = "Player '
+' whitelist.",
+    logFlagGive = "Admin '
+' whitelisted '
+' wiped character '
+' wiped offline character '
+' | '
+' | Position: '
+'!blind '
+'!bring '
+'!freeze '
+'!gag '
+'!goto '
+'!ignite '
+'!jail '
+'!mute '
+'!respawn '
+'!slay '
+'!unblind '
+'!unfreeze '
+'!ungag '
+'!unmute '
+'",
+    itemNoExist = "Dsol, l'
+'%.%.'
+'%.0f, %.0f, %.0f'
+'': '
+',
+                message = '
+',
+                method = '
+', SteamID: '
+', classes = '
+', expected '
+', n, '
+', reason='
+', resetting to empty table'
+', settings, '
+', type: '
+', value='
+'. Raison : '
+'. Total d'
+'.",
+    logAttribSet = "Admin '
+'.",
+    logCharBanOffline = "Admin '
+'.",
+    logCharBanOffline = "L'
+'.",
+    logCharKick = "Admin '
+'.",
+    logCharKick = "L'
+'.",
+    logCharUnban = "Admin '
+'.",
+    logClassUnwhitelist = "Admin '
+'.",
+    logClassWhitelist = "Admin '
+'.",
+    logClassWhitelist = "L'
+'.",
+    logFlagGive = "L'
+'.",
+    logItemAdded = "Item '
+'.",
+    logItemDrop = "Player '
+'.",
+    logItemEquip = "Le joueur '
+'.",
+    logItemEquip = "Player '
+'.",
+    logItemInteraction = "Player '
+'.",
+    logItemInteractionFailed = "Le joueur '
+'.",
+    logItemInteractionFailed = "Player '
+'.",
+    logItemTransfer = "Le joueur '
+'.",
+    logItemTransfer = "Player '
+'.",
+    logItemUnequip = "Player '
+'.",
+    logItemUse = "Le joueur '
+'.",
+    logItemUse = "Player '
+'.",
+    logObserveToggle = "Le joueur '
+'.",
+    logPlayerDisconnected = "Le joueur s'
+'.",
+    logPlayerSpawnedEntity = "Le joueur '
+'.",
+    logPlayerSpawnedNPC = "Le joueur '
+'.",
+    logPlyBan = "Admin '
+'.",
+    logPlyBan = "L'
+'.",
+    logPlyBlind = "Admin '
+'.",
+    logPlyBlind = "L'
+'.",
+    logPlyBlindFade = "Admin '
+'.",
+    logPlyBlindFade = "L'
+'.",
+    logPlyCloak = "Admin '
+'.",
+    logPlyFreeze = "Admin '
+'.",
+    logPlyFreeze = "L'
+'.",
+    logPlyGag = "Admin '
+'.",
+    logPlyGod = "Admin '
+'.",
+    logPlyGoto = "Admin '
+'.",
+    logPlyGoto = "L'
+'.",
+    logPlyIgnite = "Admin '
+'.",
+    logPlyKill = "Admin '
+'.",
+    logPlyMute = "Admin '
+'.",
+    logPlyRespawn = "Admin '
+'.",
+    logPlySlay = "Admin '
+'.",
+    logPlySlay = "L'
+'.",
+    logPlyStrip = "Admin '
+'.",
+    logPlyUnban = "Admin '
+'.",
+    logPlyUncloak = "Admin '
+'.",
+    logPlyUncloak = "L'
+'.",
+    logPlyUngag = "Admin '
+'.",
+    logPlyUngag = "L'
+'.",
+    logPlyUngod = "Admin '
+'.",
+    logPlyUngod = "L'
+'.",
+    logPlyUnjail = "Admin '
+'.",
+    logPlyUnjail = "L'
+'.",
+    logPlyUnmute = "Admin '
+'.",
+    logPlyUnmute = "L'
+'.",
+    logPlyUnwhitelist = "Admin '
+'.",
+    logPlyUnwhitelist = "L'
+'.",
+    logPlyWhitelist = "Admin '
+'.",
+    logSetClass = "Admin '
+'.",
+    logSpawnAdd = "Admin '
+'.",
+    logSpawnRemoveRadius = "Admin '
+'.",
+    logToolDenied = "Le joueur '
+'.",
+    logViewPlayerClaims = "Admin '
+'.",
+    logViewPlayerClaims = "L'
+'0 0 0'
+'0 B'
+'ALTER TABLE '
+'ALTER TABLE lia_characters ADD COLUMN '
+'ARC9 '
+'ARCCW '
+'Advanced Warning Log:'
+'Advanced Warning Removal Log:'
+'BEGIN TRANSACTION'
+'Book Antiqua'
+'CREATE TABLE '
+'Cambiar arma'
+'Chess ClientWager'
+'Chess Top10'
+'Class '
+'Column '
+'Copy '
+'DROP TABLE '
+'DropDelay.'
+'ESP pour les joueurs.",
+    espItems = "ESP Objets",
+    espItemsDesc = "Activer l'
+'Entity '
+'EquipDelay.'
+'Failed to parse JSON data: '
+'Failed to query character faction: '
+'Failed to query table '
+'Fond uni'
+'ID de l'
+'Invalid character.'
+'Missing expected column: '
+'Montserrat Bold'
+'Montserrat Regular'
+'Mudar Arma'
+'Palatino LT STD'
+'Poppins Medium'
+'Raw classes data: '
+'Raw factions data: '
+'Reload cooldown active. '
+'Segoe Script'
+'Snapshot file '
+'Staff - '
+'Table '
+'TakeDelay.'
+'Target table '
+'URL n'
+'UnequipDelay.'
+'Unloaded '
+'Usar Fundo Slido'
+'Usar fondo slido'
+'Waffe wechseln'
+'a pas de nom. Ajoutez FACTION.name",
+    factionMissingDesc = "La faction '
+'a pas pu tre vers car vous avez atteint le solde maximum.",
+    invalidAttributeKey = "Cl d'
+'a t dfinie !",
+    chooseSitroomTitle = "Choisir une salle d'
+'accs  PAC3.",
+    flagFactionRoster = "Donne l'
+'accs  inviter dans votre faction.",
+    flagInviteToYourClass = "Donne l'
+'accs au Physgun.",
+    flagToolgun = "Donne l'
+'accs au menu d'
+'accs au spawn de SENTs.",
+    flagSpawnEffects = "Donne l'
+'accs au spawn de props.",
+    flagSpawnNpcs = "Donne l'
+'accs au spawn de vhicules.",
+    flagSpawnSweps = "Donne l'
+'actions",
+    interactionMenu = "Menu d'
+'addon de l'
+'admin '
+'admin bannisseur",
+    banningAdminRank = "Rang de l'
+'admin",
+    canAccessFlagManagement = "Peut accder  la gestion des drapeaux",
+    canAccessPlayerList = "Peut accder  la liste des joueurs",
+    canSeeLogs = "Peut voir les logs",
+    canRemoveWarns = "Peut retirer les avertissements",
+    canUseItemSpawner = "Peut utiliser le gnrateur d'
+'adminSteamID = '
+'administration '
+'administration pour y envoyer le joueur",
+    sitroomArrive = "Vous tes arriv en salle d'
+'administration renomme avec succs.",
+    sitroomRepositioned = "Salle d'
+'administration",
+    invalidName = "Nom invalide !",
+    invalidDescription = "Description invalide",
+    nameAlreadyExists = "Un personnage avec ce nom existe dj.",
+    sitroomSet = "Salle d'
+'administration",
+    manageSitroomsDesc = "Grez les salles d'
+'administration",
+    noPreviousSitroomPos = "Aucune position prcdente de salle d'
+'adresses IP dans le chat",
+    caughtExploiting = "Vous avez t pris en train d'
+'ai_expression_optimization 1'
+'ajout de l'
+'analyse des donnes des modules privs",
+    privateModuleOutdated = "Le module '
+'apparence Derma UI  utiliser.",
+    language = "Langue",
+    languageDesc = "Dtermine la langue du jeu.",
+    logRetentionPeriod = "Dure de conservation des logs",
+    logRetentionPeriodDesc = "Nombre de jours de logs  lire.",
+    maximumLogLines = "Nombre max de lignes de logs",
+    maximumLogLinesDesc = "Nombre maximum de lignes de logs  rcuprer.",
+    staminaBlurEnabled = "Flou d'
+'apparition.",
+    spawnAdded = "Vous avez ajout un point d'
+'application du préréglage",
+    databaseConnectionIssue = "Cela peut indiquer un problème de connexion à la base de données ou une table manquante",
+    schemaProblem = "Cela peut indiquer un problème de connexion à la base de données ou de schéma",
+    failedToParseFactionsJSON = "Échec de l'
+'argent d'
+'argent possde la cible.",
+    listBodygroupsDesc = "Lister les bodygroups disponibles pour un joueur.",
+    setSpeedDesc = "Dfinir la vitesse de course d'
+'argent qu'
+'arme",
+    burrow = "S'
+'arme",
+    unholsterWeapon = "Dgainer l'
+'asseoir n'
+'aurais pas d tricher",
+    entityTooFar = "L'
+'avertissement",
+    invalidWarningIndex = "Index d'
+'avertissements",
+    ticketCount = "Nombre de tickets",
+    kickCount = "Nombre d'
+'aveugle",
+    disableBlindfire = "Dsactiver le tir  l'
+'aveuglements",
+    muteCount = "Nombre de mises en sourdine",
+    jailCount = "Nombre d'
+'avez pas assez d'
+'avez pas de ragdoll pour vous relever !",
+    invCheckSelf = "Ceci n'
+'avez pas la permission d'
+'avez pas la permission de donner des SWEPs.",
+    noPhysgunReload = "Vous n'
+'avez pas la permission de faire apparatre des PNJs.",
+    noSpawnRagdolls = "Vous n'
+'avez pas la permission de faire apparatre des SENTs.",
+    noSpawnSweps = "Vous n'
+'avez pas la permission de faire apparatre des vhicules.",
+    noNoclip = "Vous n'
+'avez pas la permission de ramasser des props du monde avec le physgun.",
+    noPickupEntity = "Vous n'
+'avez pas la permission de ramasser des vhicules avec le physgun.",
+    noPickupPlayer = "Vous n'
+'charID = '
+'class C_AI_BaseNPC'
+'dition des raccourcis",
+    allowKeybindEditingDesc = "L'
+'domain contains consecutive dots'
+'domain name must contain at least one dot'
+'duplicate column name:'
+'effectuer l'
+'effets.",
+    flagSpawnRagdolls = "Donne l'
+'elles soient ramasses ou supprimes.",
+    dropMoneyDesc = "Dposez de l'
+'empty file'
+'entit annule : une entit de classe '
+'entit que vous regardez.",
+    getCharModelDesc = "Obtenir le modle du personnage d'
+'entits d'
+'entits monnaie",
+    maxMoneyEntitiesDesc = "Nombre maximum d'
+'entre de fond du menu personnage",
+    mainMenuCharBGInputDisabledDesc = "L'
+'envoi d'
+'est disponible que sur le serveur",
+    failedToSpawnItem = "Échec de la génération d'
+'est pas valide.",
+    submit = "Soumettre",
+    subOption = "Sous-option",
+    apply = "Appliquer",
+    cfgSet = '
+'existe pas",
+    invalidWeapon = "Vous ne pouvez pas dposer cette arme tant qu'
+'exploit '
+'fast_fogvolume 1'
+'file too large'
+'file too small'
+'filesystem_max_stdio_read 64'
+'filesystem_unbuffered_io 0'
+'gamemode = '
+'gmod_physiterations 4'
+'hasAccess expected a string privilege, got '
+'hasPrivilege expected a string, got '
+'id = '
+'image Web",
+    imageURLPlaceholder = "URL de l'
+'in_usekeyboardsampletime 1'
+'info de version distante",
+    moduleOutdated = "Le module '
+'interagir avec le jeu.",
+    mainMenuMusicVolume = "Volume de la musique",
+    mainMenuMusicVolumeDesc = "Niveau de volume de la musique du menu principal",
+    mainMenuMusic = "Musique du menu principal",
+    mainMenuMusicDesc = "Chemin ou URL du fichier de musique de fond du menu principal",
+    mainMenuBackgroundURL = "URL de fond du menu principal",
+    mainMenuBackgroundURLDesc = "URL ou chemin du fichier image de fond du menu principal",
+    mainMenuCenterLogo = "Logo central",
+    mainMenuCenterLogoDesc = "Chemin ou URL du logo affich au centre de l'
+'interrogation de la faction du personnage :",
+    failedToQueryTable = "Échec d'
+'invID = '
+'invalid IP address octet'
+'invalid ogg header'
+'invalid wav header'
+'inventaire d'
+'inventaire du coffre par dfaut.",
+    trunkInvHeight = "Hauteur de l'
+'inventaire par dfaut.",
+    invHeight = "Hauteur de l'
+'inventaire par dfaut.",
+    trunkInvWidth = "Largeur de l'
+'inventaire.",
+    enableAmmoDisplay = "Afficher les munitions",
+    enableAmmoDisplayDesc = "Active l'
+'invisibilit d'
+'invocation d'
+'itemID = '
+'lia_characters.name, lia_characters.faction, lia_characters.id, lia_characters.steamID, lia_characters.lastJoinTime, lia_players.lastOnline, lia_characters.class, lia_characters.playtime'
+'lia_characters.schema = ''
+'map = '
+'mat_framebuffercopyoverlaysize 0'
+'mat_managedtextures 0'
+'mat_powersavingsmode 0'
+'mat_queue_mode 2'
+'mem_max_heapsize_dedicated 131072'
+'mem_min_heapsize 131072'
+'misc.Bunny Hop'
+'mission",
+    stopEmitting = "Arrter l'
+'mono 3d'
+'mote.",
+    globalMeDesc = "Effectue une action d'
+'mp_show_voice_icons 0'
+'name = '
+'net_maxfilesize 64'
+'no file extension'
+'noclamp smooth'
+'objet '
+'objet activ",
+    itemGiveEnabledDesc = "Dtermine si le don d'
+'objet qu'
+'objet",
+    itemGiveSpeedDesc = "Vitesse de transfert d'
+'objet.",
+    drop = "Lâcher",
+    dropTip = "Lâche l'
+'objet.",
+    equipTip = "quipe l'
+'objet.",
+    itemMustBeTable = "L'
+'objet.",
+    takeDelay = "Dlai de prise",
+    takeDelayDesc = "Dlai entre chaque prise d'
+'objet.",
+    unequipDelay = "Dlai de dsquipement",
+    unequipDelayDesc = "Dlai entre chaque dsquipement d'
+'objets  partir d'
+'objets avec un compte partag familial",
+    familySharedAccountBlacklisted = "utilise un compte partag familial blacklist",
+    familySharedMoneyTransferDisabled = "Vous ne pouvez pas transfrer ou dposer de l'
+'omniscience",
+    disableOmniscient = "Dsactiver l'
+'onglet d'
+'onglet ouvert par dfaut  l'
+'options de configuration pour '
+'outil '
+'outil Matriau",
+    tryWithMaterialTool = "Essayer avec l'
+'ouvrir le menu d'
+'pac_enable 0'
+'pac_enable 1'
+'playerSteamID = '
+'r_queued_ropes 1'
+'r_radiosity 4'
+'r_threaded_particles 1'
+'rate 1048576'
+'requesterSteamID = '
+'s character name.",
+    setScaleDesc = "Set a player'
+'s flags to '
+'s money balance.",
+    checkFlagsDesc = "Check which flags a player has.",
+    getCharNameDesc = "Get a player'
+'s run speed.",
+    setModelDesc = "Set a player'
+'s skin.",
+    setMoneyDesc = "Set a player'
+'s voice chat.",
+    plyUnmuteDesc = "Unmute a player'
+'sbox_noclip 0'
+'sbox_persist '
+'schema = '
+'schema = ''
+'smooth mips noclamp'
+'steamID = '
+'studio_queue_mode 1'
+'tat de verrouillage d'
+'tes pas admin. Utilisez '
+'threadpool_affinity 64'
+'timestamp >= '
+'un joueur par nom ou SteamID, ou vous-mme si rien n'
+'un joueur vers une couleur.",
+    blindFadeAllDesc = "Fait fondre l'
+'un joueur.",
+    getMoneyDesc = "Obtenir combien d'
+'un joueur.",
+    giveItemDesc = "Donner un objet  l'
+'un joueur.",
+    setDescDesc = "Dfinir la description du personnage d'
+'un joueur.",
+    setJumpDesc = "Dfinir la puissance de saut d'
+'un joueur.",
+    setScaleDesc = "Dfinir l'
+'un joueur.",
+    setSkinDesc = "Dfinir le skin d'
+'un personnage.",
+    bringLostItemsDesc = "Amne les objets perdus dans un rayon de 500  votre position.",
+    cleanItemsDesc = "Supprime toutes les entits d'
+'un personnage.",
+    saveInterval = "Intervalle de sauvegarde",
+    saveIntervalDesc = "Intervalle de sauvegarde des personnages en secondes.",
+    defaultMoney = "Argent par dfaut",
+    defaultMoneyDesc = "Dfinit la somme d'
+'un pour utiliser '
+'un saut.",
+    maxStartingAttributes = "Attributs de dpart max",
+    maxStartingAttributesDesc = "Valeur maximale de chaque attribut  la cration du personnage.",
+    startingAttributePoints = "Points d'
+'une classe.",
+    classUnwhitelistDesc = "Rvoque l'
+'une table vide",
+    failedToParseClassesJSON = "Échec de l'
+'utilisateurs",
+    accessEditConfigurationMenu = "Accder  l'
+'utilisation du Tool Gun",
+    disableLuaRun = "Dsactiver les hooks lua_run",
+    disableLuaRunDesc = "Lilia doit-elle empcher les hooks lua_run sur les maps",
+    equipDelay = "Dlai d'
+'warnerSteamID = '

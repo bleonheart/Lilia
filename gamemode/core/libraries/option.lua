@@ -49,7 +49,7 @@ function lia.option.getOptions(key)
             end
             return result
         else
-            print("Warning: Option options function for '" .. key .. "' failed or returned invalid result")
+            print(L("warningOptionOptionsFunctionFor") .. " '" .. key .. "' failed or returned invalid result")
             return {}
         end
     elseif istable(option.data.options) then

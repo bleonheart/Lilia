@@ -2996,9 +2996,9 @@ lia.command.add("serverpassword", {
             local cvar = GetConVar("sv_password")
             local pw = cvar and cvar:GetString() or ""
             if pw == "" then
-                print("[Lilia] Server password is not set.")
+                print(L("liliaServerPasswordNotSet"))
             else
-                print("[Lilia] Server password: " .. pw)
+                print(L("liliaServerPassword") .. " " .. pw)
             end
             return
         end

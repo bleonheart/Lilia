@@ -811,7 +811,7 @@ end
 
 function meta:Class(name, ...)
     local class = classes[name]
-    assert(class, "Class " .. name .. " does not exist.")
+    assert(class, L("classDoesNotExist", name))
     class(self, ...)
     return self
 end

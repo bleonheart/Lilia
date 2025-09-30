@@ -875,7 +875,7 @@ function lia.db.loadSnapshot(fileName)
             end
 
             insertNextBatch()
-        end, function(err) d:reject("Failed to clear table: " .. tostring(err)) end)
+        end, function(err) d:reject(L("failedToClearTable") .. " " .. tostring(err)) end)
     end, function(err) d:reject(L("tableCheckError") .. " " .. tostring(err)) end)
     return d
 end

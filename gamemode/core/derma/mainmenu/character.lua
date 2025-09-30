@@ -163,7 +163,7 @@ function PANEL:createStartButton()
     if hook.Run("CanPlayerCreateChar", client) ~= false then
         table.insert(buttonsData, {
             id = "create",
-            text = "Create Character",
+            text = L("createCharacter"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -180,7 +180,7 @@ function PANEL:createStartButton()
     if hasNonStaffChar then
         table.insert(buttonsData, {
             id = "load",
-            text = "Load Character",
+            text = L("loadCharacter"),
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -229,7 +229,7 @@ function PANEL:createStartButton()
     if discordURL ~= "" then
         table.insert(buttonsData, {
             id = "discord",
-            text = "Discord",
+            text = L("discord"),
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(discordURL)
@@ -240,7 +240,7 @@ function PANEL:createStartButton()
     if workshopURL ~= "" then
         table.insert(buttonsData, {
             id = "workshop",
-            text = "Workshop",
+            text = L("workshop"),
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(workshopURL)
@@ -251,7 +251,7 @@ function PANEL:createStartButton()
     if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
         table.insert(buttonsData, {
             id = "mount",
-            text = "Mount Content",
+            text = L("mountContent"),
             doClick = function()
                 self:clickSound()
                 if lia.workshop and lia.workshop.mountContent then
@@ -266,7 +266,7 @@ function PANEL:createStartButton()
 
     table.insert(buttonsData, {
         id = "disconnect",
-        text = "Disconnect",
+        text = L("disconnect"),
         doClick = function()
             self:clickSound()
             RunConsoleCommand("disconnect")
@@ -276,7 +276,7 @@ function PANEL:createStartButton()
     if clientChar then
         table.insert(buttonsData, {
             id = "return",
-            text = "Return",
+            text = L("return"),
             doClick = function() self:Remove() end
         })
     end

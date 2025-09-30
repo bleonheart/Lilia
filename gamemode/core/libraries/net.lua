@@ -15,7 +15,7 @@ end
 
 function lia.net.send(name, target, ...)
     if not isstring(name) then
-        lia.error("Invalid net message name")
+        lia.error(L("invalidNetMessageName"))
         return false
     end
 

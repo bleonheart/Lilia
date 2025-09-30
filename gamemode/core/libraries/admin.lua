@@ -230,7 +230,7 @@ end
 
 function lia.administrator.hasAccess(ply, privilege)
     if not isstring(privilege) then
-        lia.error("hasAccess expected a string privilege, got " .. tostring(privilege))
+        lia.error(L("hasAccessExpectedString", tostring(privilege)))
         return false
     end
 

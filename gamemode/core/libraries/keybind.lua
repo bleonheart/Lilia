@@ -117,7 +117,7 @@ function lia.keybind.add(k, d, cb)
     d = isstring(d) and L(d) or d
     if not c then return end
     if not istable(cb) or not cb.onPress then
-        lia.error("lia.keybind.add: Invalid callback format in lia.keybind.add of function '" .. tostring(d) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
+        lia.error(L("keybindAddInvalidCallbackFormat") .. " '" .. tostring(d) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
         return
     end
 
@@ -143,7 +143,7 @@ lia.keybind.add(KEY_NONE, "adminMode", {
     onPress = function(client)
         if not IsValid(client) then return end
         local steamID = client:SteamID()
-        client:ChatPrint("hi")
+        client:ChatPrint(L("adminModeToggle"))
         if client:isStaffOnDuty() then
             local oldCharID = client:getNetVar("OldCharID", 0)
             if oldCharID > 0 then

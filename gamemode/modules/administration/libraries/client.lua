@@ -143,7 +143,7 @@ function MODULE:PopulateAdminTabs(pages)
                     local privileges = lia.administrator.privileges or {}
                     local names = lia.administrator.privilegeNames or {}
                     local cats = lia.administrator.privilegeCategories or {}
-                    local headers = {"ID", "Name", "Min Access", "Category"}
+                    local headers = {L("id"), L("name"), L("minAccess"), L("category")}
                     local listView = self.sheet:Add("DListView")
                     listView:Dock(FILL)
                     listView:SetMultiSelect(false)
@@ -179,7 +179,7 @@ function MODULE:PopulateAdminTabs(pages)
                         end
 
                         m:AddSpacer()
-                        m:AddOption("Copy All", function()
+                        m:AddOption(L("copyAll"), function()
                             local t = {}
                             for i, header in ipairs(headers) do
                                 t[#t + 1] = header .. ": " .. (line:GetColumnText(i) or "")
@@ -423,7 +423,7 @@ function MODULE:PopulateAdminTabs(pages)
 
     if client:hasPrivilege("listCharacters") then
         table.insert(pages, {
-            name = "Leveling",
+            name = L("leveling"),
             icon = "icon16/chart_bar.png",
             drawFunc = function(panel)
                 panelRef = panel

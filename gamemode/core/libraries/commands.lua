@@ -566,7 +566,7 @@ if SERVER then
             return
         end
 
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Checking for updates...\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("checkingForUpdates") .. "\n")
         lia.loader.checkForUpdates()
     end)
 
@@ -580,10 +580,10 @@ if SERVER then
                     target:notifyInfoLocalized("userGroupSet", usergroup)
                     lia.log.add(nil, "usergroup", target, usergroup)
                 else
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid usergroup '" .. usergroup .. "'\n")
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " '" .. usergroup .. "'\n")
                 end
             else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid player '" .. args[1] .. "'\n")
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " '" .. args[1] .. "'\n")
             end
         elseif ply:hasPrivilege("setUserGroup") then
             if IsValid(target) then
@@ -845,11 +845,11 @@ if SERVER then
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Adding door_group column to lia_doors table...\n")
         lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
             if not exists then
-                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to add door_group column: " .. error .. "\n") end)
+                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToAddDoorGroupColumn") .. ": " .. error .. "\n") end)
             else
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAlreadyExists") .. "\n")
             end
-        end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Failed to check door_group column: " .. error .. "\n") end)
+        end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToCheckDoorGroupColumn") .. ": " .. error .. "\n") end)
     end)
 else
     concommand.Add("weighpoint_stop", function() hook.Remove("HUDPaint", "WeighPoint") end)
@@ -1147,7 +1147,7 @@ else
             openBtn:DockMargin(0, 12, 0, 0)
             openBtn:SetTall(40)
             if openBtn.SetTxt then
-                openBtn:SetTxt("Open Sample Radial Menu")
+                openBtn:SetTxt(L("openSampleRadialMenu"))
             else
                 openBtn:SetText(L("openSampleRadialMenu"))
             end
@@ -1155,16 +1155,16 @@ else
             openBtn.DoClick = function()
                 surface.PlaySound("button_click.wav")
                 local radial = lia.derma.radial_menu({
-                    title = "Lilia Radial",
+                    title = L("liliaRadial"),
                     desc = "Hover an option, then click."
                 })
 
                 if not IsValid(radial) then return end
-                radial:AddOption(L("inventory"), function() LocalPlayer():ChatPrint(L("inventoryOpened")) end, "icon16/box.png", "Access item storage")
-                radial:AddOption(L("map"), function() LocalPlayer():ChatPrint(L("mapPinged")) end, "icon16/world.png", "Place a waypoint")
-                local settings = radial:CreateSubMenu(L("settings"), "Adjust gameplay toggles")
+                radial:AddOption(L("inventory"), function() LocalPlayer():ChatPrint(L("inventoryOpened")) end, "icon16/box.png", L("accessItemStorage"))
+                radial:AddOption(L("map"), function() LocalPlayer():ChatPrint(L("mapPinged")) end, "icon16/world.png", L("placeWaypoint"))
+                local settings = radial:CreateSubMenu(L("settings"), L("adjustGameplayToggles"))
                 settings:AddOption(L("focus"), function() LocalPlayer():ChatPrint(L("focusMode")) end, "icon16/eye.png", L("toggleFocusOverlay"))
-                radial:AddSubMenuOption("Utilities", settings, "icon16/wrench.png", "Open utility submenu")
+                radial:AddSubMenuOption("Utilities", settings, "icon16/wrench.png", L("openUtilitySubmenu"))
             end
 
             local feedback = createFeedbackLabel("The radial will appear centered on your screen.")
@@ -1190,7 +1190,7 @@ else
             openBtn:DockMargin(0, 12, 0, 0)
             openBtn:SetTall(40)
             if openBtn.SetTxt then
-                openBtn:SetTxt("Open Sample Context Menu")
+                openBtn:SetTxt(L("openSampleContextMenu"))
             else
                 openBtn:SetText(L("openSampleContextMenu"))
             end
@@ -1249,7 +1249,7 @@ else
         end
 
         local leftArrow = vgui.Create("DButton", frame:GetParent())
-        leftArrow:SetText("◀")
+        leftArrow:SetText(L("previousElement"))
         leftArrow:SetSize(40, 40)
         leftArrow:SetPos(frame.x - 60, frame.y + frame:GetTall() / 2 - 20)
         leftArrow.DoClick = function()
@@ -1259,7 +1259,7 @@ else
         end
 
         local rightArrow = vgui.Create("DButton", frame:GetParent())
-        rightArrow:SetText("▶")
+        rightArrow:SetText(L("nextElement"))
         rightArrow:SetSize(40, 40)
         rightArrow:SetPos(frame.x + frame:GetWide() + 20, frame.y + frame:GetTall() / 2 - 20)
         rightArrow.DoClick = function()
@@ -1352,7 +1352,7 @@ else
         if #files == 0 then return end
         LocalPlayer():ChatPrint(L("savedSounds"))
         for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint("  " .. string.StripExtension(fileName)) end
+            if string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint(L("soundFileList", string.StripExtension(fileName))) end
         end
     end)
 
