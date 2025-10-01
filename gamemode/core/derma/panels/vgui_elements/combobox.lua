@@ -152,8 +152,8 @@ function PANEL:OpenMenu()
         local mouseDown = input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT)
         if mouseDown and not oldMouseDown then
             local mx, my = gui.MousePos()
-            local x, y = self.menu:LocalToScreen(0, 0)
-            if not (mx >= x and mx <= x + self.menu:GetWide() and my >= y and my <= y + self.menu:GetTall()) then self:CloseMenu() end
+            local menuX, menuY = self.menu:LocalToScreen(0, 0)
+            if not (mx >= menuX and mx <= menuX + self.menu:GetWide() and my >= menuY and my <= menuY + self.menu:GetTall()) then self:CloseMenu() end
         end
 
         oldMouseDown = mouseDown
