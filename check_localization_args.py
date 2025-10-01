@@ -44,6 +44,7 @@ def count_format_specifiers(text: str) -> int:
     return len(matches)
 
 
+def count_arguments_properly(arg_str: str) -> int:
 def parse_lua_string(content: str, start_pos: int) -> Tuple[str, int]:
     """
     Parse a Lua string starting at start_pos.
