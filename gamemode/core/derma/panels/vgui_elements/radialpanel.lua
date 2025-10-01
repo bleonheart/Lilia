@@ -152,16 +152,16 @@ function PANEL:Paint(w, h)
             local textX = centerX + (currentInnerRadius + (currentRadius - currentInnerRadius) / 2) * math_cos(midAngle)
             local textY = centerY + (currentInnerRadius + (currentRadius - currentInnerRadius) / 2) * math_sin(midAngle)
             local baseColor = lia.color.getCurrentTheme() == 'light' and Color(30, 30, 30) or Color(255, 255, 255)
-            local textColor = ColorAlpha(baseColor, (isHovered and 255 or 200) * alpha)
+            local optionTextColor = ColorAlpha(baseColor, (isHovered and 255 or 200) * alpha)
             if option.icon and option.icon ~= false and option.icon ~= nil then
                 local iconMat = Material(option.icon)
                 local iconSize = 32 * (ScrW() / 1920) * self.scale * self.scaleAnim
                 local iconColor = ColorAlpha(color_white, self.currentAlpha)
                 lia.derma.drawMaterial(0, textX - iconSize / 2, textY - iconSize - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, iconSize, iconSize, iconColor, iconMat)
-                draw.SimpleText(option.text, self.font, textX, textY + 4 * (ScrH() / 1080) * self.scale * self.paddingScale, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(option.text, self.font, textX, textY + 4 * (ScrH() / 1080) * self.scale * self.paddingScale, optionTextColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, textX, textY + 20 * (ScrH() / 1080) * self.scale * self.paddingScale, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             else
-                draw.SimpleText(option.text, self.font, textX, textY - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(option.text, self.font, textX, textY - 8 * (ScrH() / 1080) * self.scale * self.paddingScale, optionTextColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 if option.desc and isHovered then draw.SimpleText(option.desc, self.descFont, textX, textY + 8 * (ScrH() / 1080) * self.scale * self.paddingScale, ColorAlpha(baseColor, 180 * self.hoverAnim * alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             end
         end
@@ -276,12 +276,12 @@ function PANEL:CreateSubMenu(title, desc)
         options = {}
     }
 
-    function submenu:AddOption(text, func, icon, desc)
+    function submenu:AddOption(text, func, icon, optionDesc)
         table.insert(self.options, {
             text = text,
             func = func,
             icon = icon,
-            desc = desc
+            desc = optionDesc
         })
         return #self.options
     end
