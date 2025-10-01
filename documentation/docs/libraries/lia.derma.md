@@ -1147,6 +1147,82 @@ lia.derma.draw(10, hoverX, hoverY, hoverW, hoverH, isHovering and Color(255, 255
 
 ---
 
+### drawShadowsOutlined
+
+**Purpose**
+
+Draws an outlined rectangle with drop shadows, combining the effects of `drawShadows` and `drawOutlined` for creating bordered UI elements with depth.
+
+**Parameters**
+
+* `radius` (*number*): The corner radius for all four corners.
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color of the shadow and outline.
+* `thickness` (*number*, optional): The thickness of the outline (default: 1).
+* `spread` (*number*, optional): The spread distance of the shadow (default: 30).
+* `intensity` (*number*, optional): The intensity/opacity of the shadow (default: spread * 1.2).
+* `flags` (*number*, optional): Drawing flags to modify the appearance (shape, blur, corners, etc.).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic outlined rectangle with shadow
+lia.derma.drawShadowsOutlined(10, 100, 100, 200, 100, Color(0, 0, 0, 150), 2, 20, 15)
+
+-- Draw shadowed outlined rectangle with blur effect
+lia.derma.drawShadowsOutlined(12, 50, 50, 150, 80, Color(0, 0, 0, 100), 3, 25, 20, lia.derma.BLUR)
+
+-- Create shadowed outlined buttons
+local function drawShadowedOutlinedButton(x, y, w, h, text, shadowColor, mainColor, thickness)
+    lia.derma.drawShadowsOutlined(8, x, y, w, h, shadowColor, thickness, 20, 15)
+    lia.derma.draw(8, x, y, w, h, mainColor)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawShadowedOutlinedButton(100, 300, 120, 40, "Save", Color(0, 0, 0, 150), Color(100, 200, 100), 2)
+drawShadowedOutlinedButton(250, 300, 120, 40, "Cancel", Color(0, 0, 0, 150), Color(200, 100, 100), 2)
+
+-- Draw shadowed outlined elements with different shapes
+lia.derma.drawShadowsOutlined(15, 100, 200, 80, 80, Color(0, 0, 0, 100), 3, 25, 20, lia.derma.SHAPE_CIRCLE)
+lia.derma.draw(15, 100, 200, 80, 80, Color(150, 100, 255))
+
+lia.derma.drawShadowsOutlined(15, 100, 300, 80, 80, Color(0, 0, 0, 100), 3, 25, 20, lia.derma.SHAPE_FIGMA)
+lia.derma.draw(15, 100, 300, 80, 80, Color(255, 150, 100))
+
+-- Interactive shadowed outlined element that changes on hover
+local hoverX, hoverY, hoverW, hoverH = 300, 200, 100, 60
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 60
+local shadowIntensity = isHovering and 30 or 15
+local hoverThickness = isHovering and 4 or 2
+lia.derma.drawShadowsOutlined(10, hoverX, hoverY, hoverW, hoverH, Color(0, 0, 0, 150), hoverThickness, 25, shadowIntensity)
+lia.derma.draw(10, hoverX, hoverY, hoverW, hoverH, isHovering and Color(255, 255, 100) or Color(150, 150, 255))
+```
+
+**Available Flags**
+
+* `lia.derma.BLUR` - Applies blur effect to the shadow
+* `lia.derma.SHAPE_CIRCLE` - Perfect circle corners
+* `lia.derma.SHAPE_FIGMA` - Figma-style rounded corners (default)
+* `lia.derma.SHAPE_IOS` - iOS-style rounded corners
+* `lia.derma.NO_TL` - Removes top-left corner radius
+* `lia.derma.NO_TR` - Removes top-right corner radius
+* `lia.derma.NO_BL` - Removes bottom-left corner radius
+* `lia.derma.NO_BR` - Removes bottom-right corner radius
+
+---
+
 ### drawTexture
 
 **Purpose**
