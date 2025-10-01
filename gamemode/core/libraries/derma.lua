@@ -6,17 +6,17 @@ local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
 local color_target = Color(255, 255, 255, 200)
 function lia.derma.derma_menu()
-    if IsValid(lia.derma.menu_derma_menu) then lia.derma.menu_derma_menu:CloseMenu() end
+    if IsValid(lia.derma.menuDermaMenu) then lia.derma.menuDermaMenu:CloseMenu() end
     local mouseX, mouseY = input.GetCursorPos()
     local m = vgui.Create('liaDermaMenu')
     m:SetPos(mouseX, mouseY)
     ClampMenuPosition(m)
-    lia.derma.menu_derma_menu = m
+    lia.derma.menuDermaMenu = m
     return m
 end
 
 function lia.derma.color_picker(func, color_standart)
-    if IsValid(lia.derma.menu_color_picker) then lia.derma.menu_color_picker:Remove() end
+    if IsValid(lia.derma.menuColorPicker) then lia.derma.menuColorPicker:Remove() end
     local selected_color = color_standart or Color(255, 255, 255)
     local hue = 0
     local saturation = 1
@@ -29,13 +29,13 @@ function lia.derma.color_picker(func, color_standart)
         value = v
     end
 
-    lia.derma.menu_color_picker = vgui.Create('liaFrame')
-    lia.derma.menu_color_picker:SetSize(300, 378)
-    lia.derma.menu_color_picker:Center()
-    lia.derma.menu_color_picker:MakePopup()
-    lia.derma.menu_color_picker:SetTitle('')
-    lia.derma.menu_color_picker:SetCenterTitle(L("colorPicker"))
-    local container = vgui.Create('Panel', lia.derma.menu_color_picker)
+    lia.derma.menuColorPicker = vgui.Create('liaFrame')
+    lia.derma.menuColorPicker:SetSize(300, 378)
+    lia.derma.menuColorPicker:Center()
+    lia.derma.menuColorPicker:MakePopup()
+    lia.derma.menuColorPicker:SetTitle('')
+    lia.derma.menuColorPicker:SetCenterTitle(L("colorPicker"))
+    local container = vgui.Create('Panel', lia.derma.menuColorPicker)
     container:Dock(FILL)
     container:DockMargin(10, 10, 10, 10)
     container.Paint = nil
@@ -152,7 +152,7 @@ function lia.derma.color_picker(func, color_standart)
     btnClose:SetTxt(L("cancel"))
     btnClose:SetColorHover(color_close)
     btnClose.DoClick = function()
-        lia.derma.menu_color_picker:Remove()
+        lia.derma.menuColorPicker:Remove()
         surface.PlaySound('button_click.wav')
     end
 
@@ -164,7 +164,7 @@ function lia.derma.color_picker(func, color_standart)
     btnSelect.DoClick = function()
         surface.PlaySound('button_click.wav')
         func(selected_color)
-        lia.derma.menu_color_picker:Remove()
+        lia.derma.menuColorPicker:Remove()
     end
 
     timer.Simple(0, function()
@@ -175,28 +175,28 @@ function lia.derma.color_picker(func, color_standart)
         end
     end)
 
-    timer.Simple(0.1, function() lia.derma.menu_color_picker:SetAlpha(255) end)
+    timer.Simple(0.1, function() lia.derma.menuColorPicker:SetAlpha(255) end)
 end
 
 function lia.derma.player_selector(do_click)
-    if IsValid(lia.derma.menu_player_selector) then lia.derma.menu_player_selector:Remove() end
-    lia.derma.menu_player_selector = vgui.Create('liaFrame')
-    lia.derma.menu_player_selector:SetSize(340, 398)
-    lia.derma.menu_player_selector:Center()
-    lia.derma.menu_player_selector:MakePopup()
-    lia.derma.menu_player_selector:SetTitle('')
-    lia.derma.menu_player_selector:SetCenterTitle(L("playerSelector"))
-    lia.derma.menu_player_selector:ShowAnimation()
-    local contentPanel = vgui.Create('Panel', lia.derma.menu_player_selector)
+    if IsValid(lia.derma.menuPlayerSelector) then lia.derma.menuPlayerSelector:Remove() end
+    lia.derma.menuPlayerSelector = vgui.Create('liaFrame')
+    lia.derma.menuPlayerSelector:SetSize(340, 398)
+    lia.derma.menuPlayerSelector:Center()
+    lia.derma.menuPlayerSelector:MakePopup()
+    lia.derma.menuPlayerSelector:SetTitle('')
+    lia.derma.menuPlayerSelector:SetCenterTitle(L("playerSelector"))
+    lia.derma.menuPlayerSelector:ShowAnimation()
+    local contentPanel = vgui.Create('Panel', lia.derma.menuPlayerSelector)
     contentPanel:Dock(FILL)
     contentPanel:DockMargin(8, 0, 8, 8)
-    lia.derma.menu_player_selector.sp = vgui.Create('liaScrollPanel', contentPanel)
-    lia.derma.menu_player_selector.sp:Dock(FILL)
+    lia.derma.menuPlayerSelector.sp = vgui.Create('liaScrollPanel', contentPanel)
+    lia.derma.menuPlayerSelector.sp:Dock(FILL)
     local CARD_HEIGHT = 44
     local AVATAR_SIZE = 32
     local AVATAR_X = 14
     local function CreatePlayerCard(pl)
-        local card = vgui.Create('DButton', lia.derma.menu_player_selector.sp)
+        local card = vgui.Create('DButton', lia.derma.menuPlayerSelector.sp)
         card:Dock(TOP)
         card:DockMargin(0, 5, 0, 0)
         card:SetTall(CARD_HEIGHT)
@@ -218,7 +218,7 @@ function lia.derma.player_selector(do_click)
                 do_click(pl)
             end
 
-            lia.derma.menu_player_selector:Remove()
+            lia.derma.menuPlayerSelector:Remove()
         end
 
         card.Paint = function(self, w, h)
@@ -259,33 +259,33 @@ function lia.derma.player_selector(do_click)
         CreatePlayerCard(pl)
     end
 
-    lia.derma.menu_player_selector.btn_close = vgui.Create('liaBtn', lia.derma.menu_player_selector)
-    lia.derma.menu_player_selector.btn_close:Dock(BOTTOM)
-    lia.derma.menu_player_selector.btn_close:DockMargin(16, 8, 16, 12)
-    lia.derma.menu_player_selector.btn_close:SetTall(36)
-    lia.derma.menu_player_selector.btn_close:SetTxt(L("close"))
-    lia.derma.menu_player_selector.btn_close:SetColorHover(color_disconnect)
-    lia.derma.menu_player_selector.btn_close.DoClick = function() lia.derma.menu_player_selector:Remove() end
+    lia.derma.menuPlayerSelector.btn_close = vgui.Create('liaBtn', lia.derma.menuPlayerSelector)
+    lia.derma.menuPlayerSelector.btn_close:Dock(BOTTOM)
+    lia.derma.menuPlayerSelector.btn_close:DockMargin(16, 8, 16, 12)
+    lia.derma.menuPlayerSelector.btn_close:SetTall(36)
+    lia.derma.menuPlayerSelector.btn_close:SetTxt(L("close"))
+    lia.derma.menuPlayerSelector.btn_close:SetColorHover(color_disconnect)
+    lia.derma.menuPlayerSelector.btn_close.DoClick = function() lia.derma.menuPlayerSelector:Remove() end
 end
 
-function lia.derma.text_box(title, desc, func)
-    lia.derma.menu_text_box = vgui.Create('liaFrame')
-    lia.derma.menu_text_box:SetSize(300, 132)
-    lia.derma.menu_text_box:Center()
-    lia.derma.menu_text_box:MakePopup()
-    lia.derma.menu_text_box:SetTitle(title)
-    lia.derma.menu_text_box:ShowAnimation()
-    lia.derma.menu_text_box:DockPadding(12, 30, 12, 12)
-    local entry = vgui.Create('liaEntry', lia.derma.menu_text_box)
+function lia.derma.textBox(title, desc, func)
+    lia.derma.menuTextBox = vgui.Create('liaFrame')
+    lia.derma.menuTextBox:SetSize(300, 132)
+    lia.derma.menuTextBox:Center()
+    lia.derma.menuTextBox:MakePopup()
+    lia.derma.menuTextBox:SetTitle(title)
+    lia.derma.menuTextBox:ShowAnimation()
+    lia.derma.menuTextBox:DockPadding(12, 30, 12, 12)
+    local entry = vgui.Create('liaEntry', lia.derma.menuTextBox)
     entry:Dock(TOP)
     entry:SetTitle(desc)
     local function apply_func()
         func(entry:GetValue())
-        lia.derma.menu_text_box:Remove()
+        lia.derma.menuTextBox:Remove()
     end
 
     entry.OnEnter = function() apply_func() end
-    local btn_accept = vgui.Create('liaBtn', lia.derma.menu_text_box)
+    local btn_accept = vgui.Create('liaBtn', lia.derma.menuTextBox)
     btn_accept:Dock(BOTTOM)
     btn_accept:SetTall(30)
     btn_accept:SetTxt(L("apply"))

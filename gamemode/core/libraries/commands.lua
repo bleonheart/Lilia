@@ -35,7 +35,7 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = data.privilege and L(data.privilege) or L("accessTo") -- INTENTIONALLY REMOVED 'command' ARGUMENT FOR TESTING
+        local privilegeName = data.privilege and L(data.privilege) or L("accessTo", command)
         local privilegeID = data.privilege or string.lower("command_" .. command)
         lia.administrator.registerPrivilege({
             Name = privilegeName,

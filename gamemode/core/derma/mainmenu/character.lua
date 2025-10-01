@@ -276,7 +276,7 @@ function PANEL:createStartButton()
     if clientChar then
         table.insert(buttonsData, {
             id = "return",
-            text = L("return"),
+            text = L("returnButton"),
             doClick = function() self:Remove() end
         })
     end

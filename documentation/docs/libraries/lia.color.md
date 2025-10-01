@@ -318,7 +318,7 @@ end
 
 ---
 
-### getThemes
+### getAllThemes
 
 **Purpose**
 
@@ -340,12 +340,12 @@ Shared.
 
 ```lua
 -- Get all available themes
-local themes = lia.color.getThemes()
+local themes = lia.color.getAllThemes()
 PrintTable(themes)
 
 -- Check if a specific theme exists
 local function hasTheme(themeName)
-    local themes = lia.color.getThemes()
+    local themes = lia.color.getAllThemes()
     for _, name in ipairs(themes) do
         if name == themeName then
             return true
@@ -355,13 +355,56 @@ local function hasTheme(themeName)
 end
 
 -- Count available themes
-local themeCount = #lia.color.getThemes()
+local themeCount = #lia.color.getAllThemes()
 print("Available themes:", themeCount)
 
 -- Use in a dropdown menu
-local themes = lia.color.getThemes()
+local themes = lia.color.getAllThemes()
 for _, themeName in ipairs(themes) do
     print("Theme:", themeName)
+end
+```
+
+---
+
+### getCurrentThemeName
+
+**Purpose**
+
+Returns the name of the currently active theme.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `themeName` (*string*): The name of the current theme.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Get the current theme name
+local currentTheme = lia.color.getCurrentThemeName()
+print("Current theme:", currentTheme)
+
+-- Use in conditional logic
+if lia.color.getCurrentThemeName() == "Dark" then
+    print("Using dark theme")
+else
+    print("Using light theme")
+end
+
+-- Get available themes for comparison
+local themes = lia.color.getAllThemes()
+for _, themeName in ipairs(themes) do
+    if themeName == lia.color.getCurrentThemeName() then
+        print("Active theme:", themeName)
+    end
 end
 ```
 
@@ -478,6 +521,90 @@ end
 if not lia.color.isTransitioning() then
     -- Only update certain elements when not transitioning
     updateUIElements()
+end
+```
+
+---
+
+### register
+
+**Purpose**
+
+Registers a new color with the color system for client-side use.
+
+**Parameters**
+
+* `name` (*string*): The name of the color to register (case-insensitive).
+* `color` (*table*): The color data table with r, g, b values.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Register a basic color
+lia.color.register("myRed", {255, 0, 0})
+
+-- Register a custom color
+lia.color.register("myBlue", {100, 150, 255})
+
+-- Register a color with alpha
+lia.color.register("myGreen", {0, 255, 0, 128})
+
+-- Register multiple colors
+lia.color.register("darkRed", {139, 0, 0})
+lia.color.register("lightBlue", {173, 216, 230})
+lia.color.register("gold", {255, 215, 0})
+```
+
+---
+
+### Adjust
+
+**Purpose**
+
+Adjusts a color by adding or subtracting RGB values with bounds checking.
+
+**Parameters**
+
+* `color` (*Color*): The base color to adjust.
+* `rOffset` (*number*): Red channel offset (-255 to 255).
+* `gOffset` (*number*): Green channel offset (-255 to 255).
+* `bOffset` (*number*): Blue channel offset (-255 to 255).
+* `aOffset` (*number*, optional): Alpha channel offset (-255 to 255).
+
+**Returns**
+
+* `adjustedColor` (*Color*): The adjusted color with values clamped to valid ranges.
+
+**Realm**
+
+Shared.
+
+**Example Usage**
+
+```lua
+-- Make a color darker
+local darkRed = lia.color.Adjust(Color(255, 0, 0), -50, -50, -50)
+
+-- Make a color lighter
+local lightBlue = lia.color.Adjust(Color(0, 0, 255), 50, 50, 50)
+
+-- Adjust specific channels
+local adjusted = lia.color.Adjust(Color(100, 100, 100), 0, 50, -25)
+
+-- Adjust with alpha
+local semiTransparent = lia.color.Adjust(Color(255, 255, 255), 0, 0, 0, -100)
+
+-- Use in a function
+local function darkenColor(color, amount)
+    return lia.color.Adjust(color, -amount, -amount, -amount)
 end
 ```
 
