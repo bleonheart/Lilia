@@ -228,7 +228,7 @@ function MODULE:CreateMenuButtons(tabs)
                     applyButton:SetWide(200)
                     applyButton:SetTall(35)
                     applyButton:CenterHorizontal()
-                    applyButton:SetText(L("Apply"))
+                    applyButton:SetText(L("apply"))
                     local scroll = page:Add("DScrollPanel")
                     scroll:Dock(FILL)
                     local entries = {}
@@ -281,7 +281,7 @@ function MODULE:CreateMenuButtons(tabs)
                         local isActive = currentTheme == themeID
                         if IsValid(applyButton) then
                             applyButton:SetEnabled(not isActive)
-                            applyButton:SetText(isActive and L("Currently Selected") or L("Apply"))
+                            applyButton:SetText(isActive and L("currentlySelected") or L("apply"))
                         end
                     end
 

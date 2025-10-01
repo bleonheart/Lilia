@@ -698,7 +698,7 @@ if SERVER then
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), class .. ": " .. count .. "\n")
             end
 
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("totalEntities") .. ": " .. totalEntities .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("totalEntities", totalEntities) .. "\n")
         else
             client:notifyErrorLocalized("commandConsoleOnly")
         end
@@ -710,7 +710,7 @@ if SERVER then
             if #columns == 0 then
                 lia.error(L("dbColumnsNone"))
             else
-                lia.information(L("dbColumnsList"))
+                lia.information(L("dbColumnsList", #columns))
                 for _, column in ipairs(columns) do
                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), column .. "\n")
                 end
@@ -926,7 +926,7 @@ else
         local currentIndex = 1
         local contentPanel
         local frame = vgui.Create("DFrame")
-        frame:SetTitle(L("liliaDermaPreviewTitle", "Lilia Derma Elements Preview"))
+        frame:SetTitle(L("liliaDermaPreviewTitle"))
         frame:SetSize(ScrW() * 0.8, ScrH() * 0.8)
         frame:Center()
         frame:MakePopup()
@@ -1209,7 +1209,7 @@ else
 
             clearFeedback()
             local elementName = elements[currentIndex]
-            frame:SetTitle(L("liliaDermaPreviewTitle", "Lilia Derma Elements Preview") .. " - " .. elementName)
+            frame:SetTitle(L("liliaDermaPreviewTitle") .. " - " .. elementName)
             if elementName == "liaRadialPanel" then
                 createRadialPlaceholder()
                 return
