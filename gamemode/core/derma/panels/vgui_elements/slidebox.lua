@@ -89,7 +89,7 @@ function PANEL:UpdateSliderByCursorPos(x)
     self:SetValue(new_value)
 end
 
-function PANEL:Paint(w, h)
+function PANEL:Paint(w)
     local padX = 16
     local padTop = 2
     local barY = 32

@@ -82,12 +82,12 @@ function PANEL:Rebuild()
 
         btnTab.DoRightClick = function()
             local dm = lia.derma.derma_menu()
-            for k, tab in pairs(self.tabs) do
-                dm:AddOption(tab.name, function()
+            for k, v in pairs(self.tabs) do
+                dm:AddOption(v.name, function()
                     self.tabs[self.active_id].pan:SetVisible(false)
-                    tab.pan:SetVisible(true)
+                    v.pan:SetVisible(true)
                     self.active_id = k
-                end, tab.icon)
+                end, v.icon)
             end
         end
 
