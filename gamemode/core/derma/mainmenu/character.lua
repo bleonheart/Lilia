@@ -611,6 +611,34 @@ function PANEL:updateModelEntity(character)
 
     hook.Run("SetupPlayerModel", self.modelEntity, character)
     local pos, ang = hook.Run("GetMainMenuPosition", character)
+
+    -- Check if the character's faction has a custom main menu position
+    -- Factions can define a mainMenuPosition property to control where the character appears in the main menu
+    -- Usage in faction definition:
+    -- FACTION_CITIZEN = lia.faction.register("citizen", {
+    --     name = "Citizen",
+    --     desc = "A regular citizen",
+    --     color = Color(255, 125, 0),
+    --     mainMenuPosition = {
+    --         position = Vector(0, 0, 0), -- Position for the character model
+    --         angles = Angle(0, 180, 0)    -- Angles for the character model
+    --     }
+    -- })
+    -- Or simply as a Vector if you only want to change position:
+    -- mainMenuPosition = Vector(100, 0, 0)
+    if character and character:getFaction() then
+        local faction = lia.faction.get(character:getFaction())
+        if faction and faction.mainMenuPosition then
+            local menuPos = faction.mainMenuPosition
+            if istable(menuPos) then
+                pos = menuPos.position or pos
+                ang = menuPos.angles or ang
+            elseif isvector(menuPos) then
+                pos = menuPos
+            end
+        end
+    end
+
     if not pos or not ang then
         local spawns = ents.FindByClass("info_player_start")
         pos = #spawns > 0 and spawns[1]:GetPos() or Vector()

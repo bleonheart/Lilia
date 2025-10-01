@@ -1633,6 +1633,31 @@ FACTION.spawns = {
 
 ---
 
+### FACTION.mainMenuPosition
+
+**Type:**
+
+`Vector` or `table`
+
+**Description:**
+
+Controls the position and rotation of the character model in the main menu. If set as a `Vector`, only the position is changed. If set as a table, both position and angles can be specified for complete control over the character's appearance in the main menu.
+
+**Example Usage:**
+
+```lua
+-- Simple position change only
+FACTION.mainMenuPosition = Vector(100, 0, 0)
+
+-- Full control with position and rotation
+FACTION.mainMenuPosition = {
+    position = Vector(0, 0, 0),
+    angles = Angle(0, 180, 0)
+}
+```
+
+---
+
 ### FACTION:OnSpawn
 
 **Type:**

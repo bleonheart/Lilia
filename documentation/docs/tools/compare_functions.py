@@ -5,9 +5,22 @@ Function comparison module for analyzing Lua function documentation coverage.
 
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
+
+# Add the parent directory to the path so we can import function_comparison_report
+sys.path.append(str(Path(__file__).parent.parent.parent.parent))
+
+try:
+    from function_comparison_report import should_check_function, get_exclusion_reason
+except ImportError:
+    # Fallback if import fails
+    def should_check_function(func_name):
+        return True
+    def get_exclusion_reason(func_name):
+        return None
 
 
 @dataclass
@@ -73,6 +86,10 @@ class LuaFunctionExtractor:
                         continue  # Skip if no pattern matched
 
             if func_name:
+                # Check if this function should be checked for documentation
+                if not should_check_function(func_name):
+                    continue  # Skip functions that shouldn't be checked
+
                 # Parse parameters
                 param_list = []
                 if params and params.strip():
@@ -322,6 +339,7 @@ class FunctionComparator:
         print("Extracting functions from code...")
         code_functions = self.extractor.extract_all_functions()
 
+        print(f"Found {sum(len(funcs) for funcs in code_functions.values())} functions in code")
         print("Extracting functions from documentation...")
         doc_functions = self.parser.extract_documented_functions()
 
@@ -380,7 +398,7 @@ class FunctionComparator:
         for func_name, func_info in code_functions.items():
             # Check if function is documented
             is_documented = False
-            
+
             # First check if the full function name is documented
             if func_name in all_documented:
                 is_documented = True
@@ -399,7 +417,7 @@ class FunctionComparator:
                             base_name = self._extract_base_function_name(func_name)
                             if base_name in all_documented:
                                 is_documented = True
-            
+
             if is_documented:
                 documented_in_file[func_name] = func_info
             else:
@@ -428,3 +446,21 @@ class FunctionComparator:
             'missing_functions_count': len(missing_functions),
             'extra_documented_count': len(extra_documented)
         }
+
+if __name__ == "__main__":
+    # Test the function
+    base_path = Path(__file__).parent.parent.parent.parent.parent  # Go up to Lilia root
+    comparator = FunctionComparator(str(base_path), str(base_path / "documentation"))
+
+    print("Running function comparison...")
+    results = comparator.compare_functions()
+
+    print(f"\nComparison completed. Found {len(results)} files with functions.")
+    for file_path, data in results.items():
+        print(f"\n{file_path}:")
+        print(f"  Total functions: {data['total_functions']}")
+        print(f"  Documented functions: {data['documented_functions']}")
+        print(f"  Missing functions: {len(data['missing_functions'])}")
+
+        if data['missing_functions']:
+            print("  Missing:", data['missing_functions'][:5])  # Show first 5
