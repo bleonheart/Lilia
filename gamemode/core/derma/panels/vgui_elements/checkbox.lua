@@ -84,7 +84,7 @@ function PANEL:SetDescription(desc)
     self:SetTooltipDelay(1.5)
 end
 
-function PANEL:OnChange(new_value)
+function PANEL:OnChange()
 end
 
 function PANEL:Paint(w, h)
@@ -103,10 +103,10 @@ function PANEL:DoClick()
     end
 end
 
-function PANEL:OnChange(new_value)
+function PANEL:OnChange()
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout()
     self.toggle:SetWide(48)
     self.toggle:DockMargin(0, 0, 8, 0)
 end

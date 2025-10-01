@@ -37,7 +37,7 @@ function PANEL:Init()
         end
     end
 
-    self.top_panel.Think = function(s)
+    self.top_panel.Think = function()
         if self.Dragging then
             local mouseX, mouseY = gui.MousePos()
             local newPosX, newPosY = mouseX - self.Dragging[1], mouseY - self.Dragging[2]
@@ -209,8 +209,8 @@ function PANEL:Notify(text, duration, col)
     self.messagePanel = mp
 end
 
-local flagsHeader = (lia.derma.NO_BL or 0) + (lia.derma.NO_BR or 0)
-local flagsBackground = (lia.derma.NO_TL or 0) + (lia.derma.NO_TR or 0)
+local _ = (lia.derma.NO_BL or 0) + (lia.derma.NO_BR or 0)
+local __ = (lia.derma.NO_TL or 0) + (lia.derma.NO_TR or 0)
 function PANEL:Paint(w, h)
     if self.backgroundBlur then Derma_DrawBackgroundBlur(self, self.backgroundBlurTime) end
     lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.window_shadow):Shadow(10, 16):Shape(lia.derma.SHAPE_IOS):Draw()

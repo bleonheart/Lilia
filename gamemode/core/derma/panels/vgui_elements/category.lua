@@ -79,7 +79,7 @@ function PANEL:SetActive(is_active)
     self:SetTall(totalTall)
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout(w)
     self.header:SetSize(w, 30)
 end
 

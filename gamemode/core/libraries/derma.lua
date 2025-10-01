@@ -113,7 +113,7 @@ function lia.derma.color_picker(func, color_standart)
     end
 
     hueSlider.OnMouseReleased = function(_, keyCode) if keyCode == MOUSE_LEFT then isDraggingHue = false end end
-    hueSlider.OnCursorMoved = function(self, x, _)
+    hueSlider.OnCursorMoved = function(self, x)
         if isDraggingHue then
             local w = self:GetWide()
             x = math.Clamp(x, 0, w)
@@ -712,7 +712,7 @@ lia.derma.Rect = {
     Clip = lia.derma.baseFuncs.Clip,
     Shadow = lia.derma.baseFuncs.Shadow,
     Flags = lia.derma.baseFuncs.Flags,
-    Draw = function(_)
+    Draw = function()
         if START_ANGLE == END_ANGLE then return end
         local OLD_CLIPPING_STATE
         if SHADOW_ENABLED or CLIP_PANEL then OLD_CLIPPING_STATE = DisableClipping(true) end
@@ -740,7 +740,7 @@ lia.derma.Rect = {
         if CLIP_PANEL then render.SetScissorRect(0, 0, 0, 0, false) end
         if SHADOW_ENABLED or CLIP_PANEL then DisableClipping(OLD_CLIPPING_STATE) end
     end,
-    GetMaterial = function(_)
+    GetMaterial = function()
         if SHADOW_ENABLED or USING_BLUR then error(L("shadowedBlurredRectangleError")) end
         if TEXTURE then
             MAT = roundedTextureMat

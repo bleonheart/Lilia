@@ -120,7 +120,7 @@ function lia.command.hasAccess(client, command, data)
     local hasAccess = true
     if accessLevels ~= "user" then
         if not isstring(privilegeID) then
-            lia.error(L("invalidPrivilegeIDType", tostring(command), tostring(privilegeID)))
+            lia.error(L("invalidPrivilegeIDType"))
             return false, privilegeName
         end
 
@@ -1051,7 +1051,7 @@ else
 
                 for _, tabInfo in ipairs(tabs) do
                     local tabPanel = vgui.Create("DPanel")
-                    tabPanel.Paint = function(_, _, _)
+                    tabPanel.Paint = function()
                         draw.SimpleText(tabInfo.name, "Fated.24", 24, 24, lia.color.theme.text)
                         draw.SimpleText(tabInfo.description, "Fated.16", 24, 56, lia.color.theme.gray)
                     end

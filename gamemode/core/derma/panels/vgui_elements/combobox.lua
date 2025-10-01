@@ -7,7 +7,7 @@ function PANEL:Init()
     self:SetText('')
     self.font = 'Fated.18'
     self.hoverAnim = 0
-    self.OnSelect = function(_, _, _) end
+    self.OnSelect = function() end
     self.btn = vgui.Create('DButton', self)
     self.btn:Dock(FILL)
     self.btn:SetText('')
@@ -117,7 +117,7 @@ function PANEL:OpenMenu()
     self.menu:MakePopup()
     self.menu:SetKeyboardInputEnabled(false)
     self.menu:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding)
-    self.menu.Paint = function(s, w, h)
+    self.menu.Paint = function(_, w, h)
         lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
         lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
     end

@@ -47,7 +47,7 @@ function PANEL:SetTitle(title)
     self.titlePanel:Dock(TOP)
     self.titlePanel:DockMargin(0, 0, 0, 6)
     self.titlePanel:SetTall(18)
-    self.titlePanel.Paint = function(_, w, h) draw.SimpleText(self.title, 'Fated.18', 0, 0, lia.color.theme.text) end
+    self.titlePanel.Paint = function() draw.SimpleText(self.title, 'Fated.18', 0, 0, lia.color.theme.text) end
 end
 
 function PANEL:SetPlaceholder(placeholder)

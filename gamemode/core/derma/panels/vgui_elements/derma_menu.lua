@@ -127,7 +127,7 @@ function PANEL:AddOption(text, func, icon, optData)
             return false
         end
 
-        option.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(pnl) then pnl:CloseSubMenu() end end) end
+        option.OnCursorExited = function() timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
         submenu.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
         return submenu
     end
