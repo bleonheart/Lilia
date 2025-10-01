@@ -106,7 +106,7 @@ function PANEL:Init(options)
     end
 end
 
-function PANEL:OnMousePressed(keyCode)
+function PANEL:OnMousePressed()
     local mouseX, mouseY = self:CursorPos()
     local centerX, centerY = ScrW() / 2, ScrH() / 2
     local dist = math_sqrt((mouseX - centerX) ^ 2 + (mouseY - centerY) ^ 2)
@@ -115,7 +115,7 @@ function PANEL:OnMousePressed(keyCode)
     return true
 end
 
-function PANEL:OnMouseReleased(keyCode)
+function PANEL:OnMouseReleased()
     self:MouseCapture(false)
 end
 
@@ -147,7 +147,6 @@ function PANEL:Paint(w, h)
         local sectorSize = math_rad(360) / optionCount
         for i, option in ipairs(self:GetCurrentOptions()) do
             local startAngle = (i - 1) * sectorSize
-            local endAngle = i * sectorSize
             local midAngle = startAngle + sectorSize / 2
             local isHovered = self.hoverOption == i
             local textX = centerX + (currentInnerRadius + (currentRadius - currentInnerRadius) / 2) * math_cos(midAngle)
@@ -175,7 +174,7 @@ function PANEL:Paint(w, h)
     end
 end
 
-function PANEL:DrawCircleOutline(cx, cy, radius, color, thickness)
+function PANEL:DrawCircleOutline(cx, cy, radius, color)
     local segments = 64
     local points = {}
     for i = 0, segments do
@@ -231,7 +230,7 @@ function PANEL:IsMouseOver()
     return math_sqrt((mouseX - centerX) ^ 2 + (mouseY - centerY) ^ 2) <= self.radius
 end
 
-function PANEL:OnCursorMoved(x, y)
+function PANEL:OnCursorMoved()
     if not self:IsMouseOver() then self.hoverOption = nil end
 end
 

@@ -184,6 +184,1619 @@ end
 
 ---
 
+### circle
+
+**Purpose**
+
+Creates a circle drawing object that can be customized with colors, textures, materials, and effects before being rendered.
+
+**Parameters**
+
+* `x` (*number*): The x coordinate of the circle center.
+* `y` (*number*): The y coordinate of the circle center.
+* `radius` (*number*): The radius of the circle.
+
+**Returns**
+
+* `circle` (*liaCircle*): The circle drawing object with chainable methods for customization.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Create a basic circle
+lia.derma.circle(ScrW() / 2, ScrH() / 2, 50):Color(Color(255, 100, 100)):Draw()
+
+-- Create a circle with outline
+lia.derma.circle(100, 100, 30)
+    :Color(Color(100, 200, 100))
+    :Outline(2)
+    :Draw()
+
+-- Create a textured circle
+lia.derma.circle(ScrW() / 2, ScrH() / 2, 40)
+    :Texture("vgui/white")
+    :Color(Color(150, 150, 255))
+    :Draw()
+
+-- Create a circle with blur effect
+lia.derma.circle(200, 200, 25)
+    :Color(Color(255, 255, 100))
+    :Blur(2.0)
+    :Draw()
+
+-- Create a shadowed circle
+lia.derma.circle(ScrW() / 2, ScrH() / 2, 35)
+    :Color(Color(100, 100, 255))
+    :Shadow(20, 15)
+    :Draw()
+
+-- Create a circle with custom angles (arc)
+lia.derma.circle(300, 300, 40)
+    :Color(Color(255, 150, 100))
+    :StartAngle(45)
+    :EndAngle(270)
+    :Draw()
+```
+
+**Available Chainable Methods**
+
+* `:Color(color)` - Sets the circle color
+* `:Texture(texture)` - Sets a texture for the circle
+* `:Material(material)` - Sets a material for the circle
+* `:Outline(thickness)` - Adds an outline with specified thickness
+* `:Blur(intensity)` - Applies blur effect
+* `:Shadow(spread, intensity)` - Adds shadow effect
+* `:Rotation(angle)` - Rotates the circle
+* `:StartAngle(angle)` - Sets the start angle for arc drawing
+* `:EndAngle(angle)` - Sets the end angle for arc drawing
+* `:Clip(panel)` - Clips drawing to specified panel
+* `:Flags(flags)` - Applies drawing flags
+* `:Draw()` - Renders the circle
+
+---
+
+### color_picker
+
+**Purpose**
+
+Creates a comprehensive color picker dialog that allows users to select colors using hue, saturation, and value controls with a live preview.
+
+**Parameters**
+
+* `callback` (*function*): The function to call when a color is selected. Receives the selected Color object as parameter.
+* `defaultColor` (*Color*, optional): The initial color to display in the picker.
+
+**Returns**
+
+* `frame` (*liaFrame*): The color picker frame dialog.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic color picker
+lia.derma.color_picker(function(color)
+    print("Selected color:", color.r, color.g, color.b)
+    myPanel:SetBackgroundColor(color)
+end)
+
+-- Color picker with default color
+local defaultColor = Color(255, 100, 100)
+lia.derma.color_picker(function(color)
+    print("New color selected:", color)
+    updateThemeAccent(color)
+end, defaultColor)
+
+-- Use in theme customization
+lia.derma.color_picker(function(color)
+    local customTheme = table.Copy(lia.color.getTheme())
+    customTheme.accent = color
+    lia.color.registerTheme("custom", customTheme)
+    lia.color.setTheme("custom")
+    print("Theme updated with new accent color")
+end)
+
+-- Color picker for item customization
+lia.derma.color_picker(function(color)
+    currentItem.customColor = color
+    itemPreviewPanel:SetColor(color)
+    print("Item color updated")
+end, currentItem.customColor)
+
+-- Multiple color pickers for different UI elements
+local colorButtons = {}
+local function createColorPalette()
+    local colors = {"Primary", "Secondary", "Accent", "Background"}
+
+    for _, colorName in ipairs(colors) do
+        local button = lia.derma.button(parentPanel, nil, nil, Color(100, 100, 100))
+        button:SetText(colorName)
+        button.DoClick = function()
+            lia.derma.color_picker(function(color)
+                button:SetColor(color)
+                updateColorScheme(colorName:lower(), color)
+                print("Updated " .. colorName .. " color")
+            end)
+        end
+        table.insert(colorButtons, button)
+    end
+end
+
+-- Color picker with validation
+lia.derma.color_picker(function(color)
+    if color.r > 200 and color.g < 50 and color.b < 50 then
+        print("Bright red color selected - applying warning theme")
+        applyWarningTheme()
+    else
+        applyNormalColor(color)
+    end
+end)
+```
+
+---
+
+### derma_menu
+
+**Purpose**
+
+Creates a context menu at the current mouse position with automatic positioning and menu management.
+
+**Parameters**
+
+*None*
+
+**Returns**
+
+* `menu` (*liaDermaMenu*): The created context menu panel.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Create a basic context menu
+local menu = lia.derma.derma_menu()
+menu:AddOption("Copy", function()
+    print("Copy option selected")
+end)
+menu:AddOption("Paste", function()
+    print("Paste option selected")
+end)
+menu:AddOption("Cut", function()
+    print("Cut option selected")
+end)
+
+-- Context menu with submenus
+local menu = lia.derma.derma_menu()
+local editSubmenu = menu:AddSubMenu("Edit")
+
+editSubmenu:AddOption("Undo", function()
+    print("Undo selected")
+end)
+editSubmenu:AddOption("Redo", function()
+    print("Redo selected")
+end)
+
+menu:AddOption("Delete", function()
+    print("Delete selected")
+end)
+
+-- Context menu for player interactions
+local menu = lia.derma.derma_menu()
+local targetPlayer = LocalPlayer()
+
+menu:AddOption("Send Message", function()
+    lia.derma.textBox("Send Message", "Enter your message", function(text)
+        targetPlayer:ChatPrint(text)
+    end)
+end)
+
+menu:AddOption("Trade Items", function()
+    openTradeWindow(targetPlayer)
+end)
+
+menu:AddOption("View Profile", function()
+    showPlayerProfile(targetPlayer)
+end)
+
+-- Context menu with icons
+local menu = lia.derma.derma_menu()
+menu:AddOption("Save", function()
+    saveDocument()
+end):SetIcon("icon16/disk.png")
+
+menu:AddOption("Load", function()
+    loadDocument()
+end):SetIcon("icon16/folder.png")
+
+menu:AddOption("Settings", function()
+    openSettings()
+end):SetIcon("icon16/cog.png")
+
+-- Dynamic context menu based on object type
+local function createContextMenuForObject(object)
+    local menu = lia.derma.derma_menu()
+
+    if object.type == "container" then
+        menu:AddOption("Open", function() object:Open() end)
+        menu:AddOption("Lock", function() object:Lock() end)
+    elseif object.type == "npc" then
+        menu:AddOption("Talk", function() object:Talk() end)
+        menu:AddOption("Trade", function() object:Trade() end)
+    elseif object.type == "item" then
+        menu:AddOption("Use", function() object:Use() end)
+        menu:AddOption("Drop", function() object:Drop() end)
+    end
+
+    return menu
+end
+
+-- Context menu with separators
+local menu = lia.derma.derma_menu()
+menu:AddOption("New", function() print("New") end)
+menu:AddOption("Open", function() print("Open") end)
+menu:AddSpacer()
+menu:AddOption("Save", function() print("Save") end)
+menu:AddOption("Save As", function() print("Save As") end)
+menu:AddSpacer()
+menu:AddOption("Exit", function() print("Exit") end)
+```
+
+---
+
+### draw
+
+**Purpose**
+
+Draws a rounded rectangle with the specified radius for all corners, providing a simple way to create rounded rectangular shapes.
+
+**Parameters**
+
+* `radius` (*number*): The corner radius for all four corners.
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color of the rectangle.
+* `flags` (*number*, optional): Drawing flags to modify the appearance.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic rounded rectangle
+lia.derma.draw(10, 100, 100, 200, 100, Color(100, 150, 255))
+
+-- Draw a circle using high radius
+lia.derma.draw(50, 200, 200, 100, 100, Color(255, 100, 100))
+
+-- Draw with blur effect
+lia.derma.draw(8, 50, 50, 150, 80, Color(100, 255, 100), lia.derma.BLUR)
+
+-- Draw with shadow
+lia.derma.draw(12, 300, 50, 120, 120, Color(255, 200, 100))
+lia.derma.drawShadows(12, 300, 50, 120, 120, Color(0, 0, 0, 100), 20, 15)
+
+-- Draw multiple rounded rectangles
+local function drawButton(x, y, w, h, text, color)
+    lia.derma.draw(8, x, y, w, h, color)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawButton(100, 200, 120, 40, "Click Me", Color(100, 150, 255))
+drawButton(250, 200, 120, 40, "Cancel", Color(200, 100, 100))
+
+-- Draw progress bar background
+lia.derma.draw(6, 50, 300, 300, 20, Color(50, 50, 50))
+
+-- Draw progress bar fill
+local progress = 0.7 -- 70%
+lia.derma.draw(6, 50, 300, 300 * progress, 20, Color(100, 200, 100))
+
+-- Draw with different shapes
+lia.derma.draw(15, 100, 100, 100, 100, Color(150, 100, 255), lia.derma.SHAPE_CIRCLE)
+lia.derma.draw(15, 220, 100, 100, 100, Color(255, 150, 100), lia.derma.SHAPE_FIGMA)
+lia.derma.draw(15, 340, 100, 100, 100, Color(100, 255, 150), lia.derma.SHAPE_IOS)
+```
+
+---
+
+### drawBlur
+
+**Purpose**
+
+Draws a blurred rectangle with customizable corner radii, shape, and outline thickness for creating soft, blurred UI elements.
+
+**Parameters**
+
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `flags` (*number*, optional): Drawing flags to modify the appearance (shape, corners, etc.).
+* `tl` (*number*, optional): Top-left corner radius.
+* `tr` (*number*, optional): Top-right corner radius.
+* `bl` (*number*, optional): Bottom-left corner radius.
+* `br` (*number*, optional): Bottom-right corner radius.
+* `thickness` (*number*, optional): Outline thickness if using outline flags.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic blurred rectangle
+lia.derma.drawBlur(100, 100, 200, 100, nil, 10, 10, 10, 10)
+
+-- Draw blurred rectangle with different corner radii
+lia.derma.drawBlur(50, 200, 150, 80, nil, 5, 15, 20, 10)
+
+-- Draw blurred circle
+lia.derma.drawBlur(200, 50, 100, 100, lia.derma.SHAPE_CIRCLE, 50, 50, 50, 50)
+
+-- Draw blurred rectangle with outline
+lia.derma.drawBlur(300, 100, 120, 80, nil, 8, 8, 8, 8, 2)
+
+-- Create a glowing effect with blur
+local function drawGlowingButton(x, y, w, h, color, glowColor)
+    -- Draw glow first (larger, blurred)
+    lia.derma.drawBlur(x - 10, y - 10, w + 20, h + 20, nil, 15, 15, 15, 15)
+    surface.SetDrawColor(glowColor)
+
+    -- Draw main button
+    lia.derma.draw(x, y, w, h, color)
+end
+
+drawGlowingButton(100, 300, 150, 40, Color(100, 150, 255), Color(100, 150, 255, 100))
+
+-- Create soft shadow effect
+lia.derma.drawBlur(50, 50, 100, 100, nil, 10, 10, 10, 10)
+lia.derma.drawBlur(55, 55, 90, 90, nil, 8, 8, 8, 8)
+
+-- Draw multiple blurred elements
+local positions = {{100, 150}, {220, 150}, {340, 150}, {100, 270}, {220, 270}, {340, 270}}
+for i, pos in ipairs(positions) do
+    local color = HSVToColor(i * 60, 0.8, 1)
+    lia.derma.drawBlur(pos[1], pos[2], 80, 80, lia.derma.SHAPE_CIRCLE, 40, 40, 40, 40)
+    surface.SetDrawColor(color)
+end
+
+-- Create blurred background for text
+lia.derma.drawBlur(200, 200, 300, 60, nil, 15, 15, 15, 15)
+draw.SimpleText("Blurred Background Text", "liaLargeFont", 350, 230, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+```
+
+---
+
+### drawCircle
+
+**Purpose**
+
+Draws a circle with the specified center position, radius, and color using the optimized circular drawing system.
+
+**Parameters**
+
+* `x` (*number*): The x coordinate of the circle center.
+* `y` (*number*): The y coordinate of the circle center.
+* `radius` (*number*): The radius of the circle.
+* `col` (*Color*): The color of the circle.
+* `flags` (*number*, optional): Drawing flags to modify the appearance (blur, outline, etc.).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic circle
+lia.derma.drawCircle(ScrW() / 2, ScrH() / 2, 50, Color(255, 100, 100))
+
+-- Draw multiple circles of different sizes and colors
+local function drawColorfulCircles()
+    local colors = {Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255), Color(255, 255, 0)}
+    for i = 1, 4 do
+        local radius = 20 + i * 15
+        lia.derma.drawCircle(100 + i * 80, 100, radius, colors[i])
+    end
+end
+
+drawColorfulCircles()
+
+-- Draw outlined circles
+lia.derma.drawCircle(200, 200, 40, Color(100, 200, 100))
+lia.derma.drawCircleOutlined(200, 200, 45, Color(50, 150, 50), 3)
+
+-- Draw blurred circles
+lia.derma.drawCircle(300, 150, 30, Color(255, 150, 100), lia.derma.BLUR)
+
+-- Draw circle with texture
+lia.derma.drawCircleTexture(400, 150, 35, Color(255, 255, 255), "vgui/white")
+
+-- Create animated circles
+local time = RealTime()
+local pulseRadius = 25 + math.sin(time * 3) * 10
+lia.derma.drawCircle(500, 150, pulseRadius, Color(150, 100, 255))
+
+-- Draw circle grid pattern
+for x = 1, 5 do
+    for y = 1, 3 do
+        local circleX = 50 + x * 60
+        local circleY = 250 + y * 60
+        local color = HSVToColor((x + y) * 30, 0.8, 1)
+        lia.derma.drawCircle(circleX, circleY, 20, color)
+    end
+end
+
+-- Draw target circles (concentric)
+local centerX, centerY = 300, 350
+for i = 1, 5 do
+    local radius = i * 15
+    local alpha = 255 - i * 40
+    lia.derma.drawCircle(centerX, centerY, radius, Color(255, 100, 100, alpha))
+end
+
+-- Interactive circle that follows mouse
+local mouseX, mouseY = input.GetCursorPos()
+lia.derma.drawCircle(mouseX, mouseY, 20, Color(100, 255, 100))
+```
+
+---
+
+### drawCircleMaterial
+
+**Purpose**
+
+Draws a circle using a material for texture mapping, allowing for complex visual effects and detailed circle rendering.
+
+**Parameters**
+
+* `x` (*number*): The x coordinate of the circle center.
+* `y` (*number*): The y coordinate of the circle center.
+* `radius` (*number*): The radius of the circle.
+* `col` (*Color*): The color tint to apply to the material.
+* `mat` (*IMaterial*): The material to use for drawing the circle.
+* `flags` (*number*, optional): Drawing flags to modify the appearance (blur, outline, etc.).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw circle with a material
+local circleMat = Material("vgui/circle")
+lia.derma.drawCircleMaterial(ScrW() / 2, ScrH() / 2, 50, Color(255, 255, 255), circleMat)
+
+-- Draw circle with tinted material
+local gradientMat = Material("gui/gradient")
+lia.derma.drawCircleMaterial(200, 200, 40, Color(255, 100, 100), gradientMat)
+
+-- Draw circle with animated material
+local noiseMat = Material("effects/noise")
+local time = RealTime()
+lia.derma.drawCircleMaterial(300, 150, 30, Color(100, 150, 255, math.sin(time) * 128 + 128), noiseMat)
+
+-- Draw circles with different materials
+local materials = {
+    Material("vgui/white"),
+    Material("gui/center_gradient"),
+    Material("effects/bubble"),
+    Material("particle/particle_glow_05")
+}
+
+for i, mat in ipairs(materials) do
+    local x = 100 + i * 80
+    local color = HSVToColor(i * 60, 1, 1)
+    lia.derma.drawCircleMaterial(x, 100, 25, color, mat)
+end
+
+-- Create textured buttons with materials
+local function drawMaterialButton(x, y, radius, text, material, color)
+    lia.derma.drawCircleMaterial(x, y, radius, color, material)
+    draw.SimpleText(text, "liaMediumFont", x, y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawMaterialButton(200, 250, 30, "Save", Material("icon16/disk.png"), Color(100, 200, 100))
+drawMaterialButton(280, 250, 30, "Load", Material("icon16/folder.png"), Color(200, 150, 100))
+drawMaterialButton(360, 250, 30, "Delete", Material("icon16/cross.png"), Color(200, 100, 100))
+
+-- Draw circle with material and blur effect
+local sparkleMat = Material("effects/sparkle")
+lia.derma.drawCircleMaterial(400, 200, 35, Color(255, 255, 150), sparkleMat, lia.derma.BLUR)
+
+-- Interactive material circle that changes color on hover
+local hoverX, hoverY = 300, 350
+local isHovering = math.Distance(input.GetCursorPos(), hoverX, hoverY) < 40
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.drawCircleMaterial(hoverX, hoverY, 40, hoverColor, Material("gui/gradient"))
+```
+
+---
+
+### drawCircleOutlined
+
+**Purpose**
+
+Draws an outlined circle with the specified center position, radius, color, and outline thickness using the optimized circular drawing system.
+
+**Parameters**
+
+* `x` (*number*): The x coordinate of the circle center.
+* `y` (*number*): The y coordinate of the circle center.
+* `radius` (*number*): The radius of the circle.
+* `col` (*Color*): The color of the circle outline.
+* `thickness` (*number*): The thickness of the outline.
+* `flags` (*number*, optional): Drawing flags to modify the appearance (blur, etc.).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic outlined circle
+lia.derma.drawCircleOutlined(ScrW() / 2, ScrH() / 2, 50, Color(255, 100, 100), 2)
+
+-- Draw multiple outlined circles with different thicknesses
+for i = 1, 5 do
+    local radius = 20 + i * 10
+    local thickness = i
+    local color = HSVToColor(i * 60, 1, 1)
+    lia.derma.drawCircleOutlined(100 + i * 60, 100, radius, color, thickness)
+end
+
+-- Draw outlined circles with blur effect
+lia.derma.drawCircleOutlined(300, 150, 40, Color(100, 200, 255), 3, lia.derma.BLUR)
+
+-- Create target-like outlined circles (concentric)
+local centerX, centerY = 400, 200
+for i = 1, 6 do
+    local radius = i * 15
+    local thickness = 2
+    local alpha = 255 - i * 30
+    lia.derma.drawCircleOutlined(centerX, centerY, radius, Color(255, 150, 100, alpha), thickness)
+end
+
+-- Draw outlined circle buttons
+local function drawOutlinedButton(x, y, radius, text, color, thickness)
+    lia.derma.drawCircleOutlined(x, y, radius, color, thickness)
+    draw.SimpleText(text, "liaMediumFont", x, y, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawOutlinedButton(200, 300, 25, "OK", Color(100, 200, 100), 2)
+drawOutlinedButton(280, 300, 25, "Cancel", Color(200, 100, 100), 2)
+
+-- Draw outlined circles with different line styles
+lia.derma.drawCircleOutlined(100, 250, 30, Color(255, 255, 100), 1)
+lia.derma.drawCircleOutlined(160, 250, 30, Color(255, 150, 255), 3)
+lia.derma.drawCircleOutlined(220, 250, 30, Color(150, 255, 255), 5)
+
+-- Interactive outlined circle that changes on hover
+local hoverX, hoverY = 350, 300
+local distance = math.Distance(input.GetCursorPos(), hoverX, hoverY)
+local isHovering = distance < 35
+local hoverThickness = isHovering and 4 or 2
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.drawCircleOutlined(hoverX, hoverY, 35, hoverColor, hoverThickness)
+
+-- Draw outlined circle progress indicator
+local progress = 0.75 -- 75%
+local circleX, circleY = 450, 300
+local radius = 30
+
+-- Draw background circle (full outline)
+lia.derma.drawCircleOutlined(circleX, circleY, radius, Color(100, 100, 100), 3)
+
+-- Draw progress arc (partial outline)
+-- Note: This would require custom implementation for arc drawing
+```
+
+---
+
+### drawCircleTexture
+
+**Purpose**
+
+Draws a circle using a texture for detailed visual effects and pattern mapping, allowing for complex circle rendering with texture support.
+
+**Parameters**
+
+* `x` (*number*): The x coordinate of the circle center.
+* `y` (*number*): The y coordinate of the circle center.
+* `radius` (*number*): The radius of the circle.
+* `col` (*Color*): The color tint to apply to the texture.
+* `texture` (*string*): The texture path to use for drawing the circle.
+* `flags` (*number*, optional): Drawing flags to modify the appearance (blur, outline, etc.).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw circle with a texture
+lia.derma.drawCircleTexture(ScrW() / 2, ScrH() / 2, 50, Color(255, 255, 255), "vgui/white")
+
+-- Draw circle with tinted texture
+lia.derma.drawCircleTexture(200, 200, 40, Color(255, 100, 100), "gui/gradient")
+
+-- Draw circles with different textures
+local textures = {
+    "vgui/white",
+    "gui/center_gradient",
+    "effects/bubble",
+    "particle/particle_glow_05"
+}
+
+for i, texture in ipairs(textures) do
+    local x = 100 + i * 80
+    local color = HSVToColor(i * 60, 1, 1)
+    lia.derma.drawCircleTexture(x, 100, 25, color, texture)
+end
+
+-- Create textured circle buttons
+local function drawTextureButton(x, y, radius, text, texture, color)
+    lia.derma.drawCircleTexture(x, y, radius, color, texture)
+    draw.SimpleText(text, "liaMediumFont", x, y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawTextureButton(200, 250, 30, "Save", "icon16/disk.png", Color(100, 200, 100))
+drawTextureButton(280, 250, 30, "Load", "icon16/folder.png", Color(200, 150, 100))
+drawTextureButton(360, 250, 30, "Delete", "icon16/cross.png", Color(200, 100, 100))
+
+-- Draw circle with texture and blur effect
+lia.derma.drawCircleTexture(400, 200, 35, Color(255, 255, 150), "effects/sparkle", lia.derma.BLUR)
+
+-- Animated textured circle
+local time = RealTime()
+local pulseAlpha = math.sin(time * 2) * 64 + 192
+lia.derma.drawCircleTexture(300, 150, 30, Color(100, 150, 255, pulseAlpha), "gui/gradient")
+
+-- Interactive textured circle that changes texture on hover
+local hoverX, hoverY = 350, 300
+local distance = math.Distance(input.GetCursorPos(), hoverX, hoverY)
+local isHovering = distance < 35
+local hoverTexture = isHovering and "effects/sparkle" or "gui/gradient"
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.drawCircleTexture(hoverX, hoverY, 35, hoverColor, hoverTexture)
+
+-- Draw textured circle grid pattern
+for x = 1, 4 do
+    for y = 1, 3 do
+        local circleX = 50 + x * 70
+        local circleY = 350 + y * 70
+        local texture = (x + y) % 2 == 0 and "vgui/white" or "gui/center_gradient"
+        local color = HSVToColor((x + y) * 45, 0.8, 1)
+        lia.derma.drawCircleTexture(circleX, circleY, 25, color, texture)
+    end
+end
+
+-- Create pattern overlay with textured circles
+local overlayTexture = "effects/noise"
+for i = 1, 20 do
+    local randomX = math.random(50, ScrW() - 50)
+    local randomY = math.random(50, ScrH() - 50)
+    local randomSize = math.random(10, 30)
+    lia.derma.drawCircleTexture(randomX, randomY, randomSize, Color(255, 255, 255, 50), overlayTexture)
+end
+```
+
+---
+
+### drawMaterial
+
+**Purpose**
+
+Draws a rounded rectangle using a material for advanced texture mapping and visual effects, automatically extracting the base texture from the material.
+
+**Parameters**
+
+* `radius` (*number*): The corner radius for all four corners.
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color tint to apply to the material.
+* `mat` (*IMaterial*): The material to use for drawing.
+* `flags` (*number*, optional): Drawing flags to modify the appearance.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw with a basic material
+local testMaterial = Material("vgui/white")
+lia.derma.drawMaterial(10, 100, 100, 200, 100, Color(100, 150, 255), testMaterial)
+
+-- Draw with a gradient material
+local gradientMat = Material("gui/gradient")
+lia.derma.drawMaterial(8, 50, 200, 150, 80, Color(255, 100, 100), gradientMat)
+
+-- Draw with animated material properties
+local animatedMat = Material("effects/noise")
+local time = RealTime()
+local pulseColor = Color(100, 150, 255, math.sin(time * 3) * 128 + 128)
+lia.derma.drawMaterial(12, 300, 50, 120, 120, pulseColor, animatedMat)
+
+-- Draw buttons with different materials
+local materials = {
+    Material("vgui/white"),
+    Material("gui/center_gradient"),
+    Material("effects/bubble"),
+    Material("particle/particle_glow_05")
+}
+
+for i, mat in ipairs(materials) do
+    local x = 100 + i * 80
+    local color = HSVToColor(i * 60, 1, 1)
+    lia.derma.drawMaterial(6, x, 100, 60, 40, color, mat)
+end
+
+-- Create material-based UI elements
+local function drawMaterialButton(x, y, w, h, text, material, color)
+    lia.derma.drawMaterial(8, x, y, w, h, color, material)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawMaterialButton(200, 250, 120, 40, "Save", Material("icon16/disk.png"), Color(100, 200, 100))
+drawMaterialButton(350, 250, 120, 40, "Load", Material("icon16/folder.png"), Color(200, 150, 100))
+
+-- Draw with material and blur effect
+local sparkleMat = Material("effects/sparkle")
+lia.derma.drawMaterial(15, 400, 100, 100, 100, Color(255, 255, 150), sparkleMat, lia.derma.BLUR)
+
+-- Interactive material element that changes on hover
+local hoverX, hoverY, hoverW, hoverH = 300, 350, 80, 60
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 50
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.drawMaterial(10, hoverX, hoverY, hoverW, hoverH, hoverColor, Material("gui/gradient"))
+```
+
+---
+
+### drawOutlined
+
+**Purpose**
+
+Draws an outlined rounded rectangle with customizable corner radius and outline thickness for creating bordered UI elements.
+
+**Parameters**
+
+* `radius` (*number*): The corner radius for all four corners.
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color of the outline.
+* `thickness` (*number*, optional): The thickness of the outline (default: 1).
+* `flags` (*number*, optional): Drawing flags to modify the appearance.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic outlined rectangle
+lia.derma.drawOutlined(10, 100, 100, 200, 100, Color(255, 100, 100), 2)
+
+-- Draw outlined rectangles with different thicknesses
+for i = 1, 5 do
+    local thickness = i
+    local color = HSVToColor(i * 60, 1, 1)
+    lia.derma.drawOutlined(8, 50 + i * 70, 50, 60, 40, color, thickness)
+end
+
+-- Draw outlined rectangle with blur effect
+lia.derma.drawOutlined(12, 300, 100, 120, 80, Color(100, 200, 255), 3, lia.derma.BLUR)
+
+-- Create outlined buttons
+local function drawOutlinedButton(x, y, w, h, text, color, thickness)
+    lia.derma.drawOutlined(8, x, y, w, h, color, thickness)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawOutlinedButton(200, 200, 120, 40, "OK", Color(100, 200, 100), 2)
+drawOutlinedButton(350, 200, 120, 40, "Cancel", Color(200, 100, 100), 2)
+
+-- Draw interactive outlined element that changes on hover
+local hoverX, hoverY, hoverW, hoverH = 250, 300, 100, 60
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 60
+local hoverThickness = isHovering and 4 or 2
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.drawOutlined(10, hoverX, hoverY, hoverW, hoverH, hoverColor, hoverThickness)
+
+-- Draw progress bar with outline
+lia.derma.drawOutlined(6, 50, 350, 300, 20, Color(100, 100, 100), 2)
+local progress = 0.7 -- 70%
+lia.derma.draw(6, 50, 350, 300 * progress, 20, Color(100, 200, 100))
+
+-- Draw outlined shapes with different corner styles
+lia.derma.drawOutlined(15, 100, 250, 80, 80, Color(255, 150, 100), 3, lia.derma.SHAPE_CIRCLE)
+lia.derma.drawOutlined(15, 200, 250, 80, 80, Color(100, 255, 150), 3, lia.derma.SHAPE_FIGMA)
+lia.derma.drawOutlined(15, 300, 250, 80, 80, Color(150, 100, 255), 3, lia.derma.SHAPE_IOS)
+```
+
+---
+
+### drawShadows
+
+**Purpose**
+
+Draws drop shadows for rounded rectangles with customizable spread, intensity, and shape flags for creating depth effects.
+
+**Parameters**
+
+* `radius` (*number*): The corner radius for all four corners.
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color of the shadow.
+* `spread` (*number*, optional): The spread distance of the shadow (default: 30).
+* `intensity` (*number*, optional): The intensity/opacity of the shadow (default: spread * 1.2).
+* `flags` (*number*, optional): Drawing flags to modify the appearance.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw a basic shadowed rectangle
+lia.derma.drawShadows(10, 100, 100, 200, 100, Color(0, 0, 0, 100), 20, 15)
+
+-- Draw rectangle with shadow and main content
+lia.derma.drawShadows(8, 50, 50, 150, 80, Color(0, 0, 0, 150), 25, 20)
+lia.derma.draw(8, 50, 50, 150, 80, Color(100, 150, 255))
+
+-- Draw multiple shadowed elements
+local shadowColors = {Color(255, 0, 0, 100), Color(0, 255, 0, 100), Color(0, 0, 255, 100)}
+for i = 1, 3 do
+    local y = 100 + i * 100
+    lia.derma.drawShadows(12, 200 + i * 80, y, 100, 60, shadowColors[i], 30, 25)
+    lia.derma.draw(12, 200 + i * 80, y, 100, 60, Color(255, 255, 255))
+end
+
+-- Create shadowed buttons
+local function drawShadowedButton(x, y, w, h, text, shadowColor, mainColor)
+    lia.derma.drawShadows(8, x, y, w, h, shadowColor, 20, 15)
+    lia.derma.draw(8, x, y, w, h, mainColor)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawShadowedButton(100, 300, 120, 40, "Save", Color(0, 0, 0, 150), Color(100, 200, 100))
+drawShadowedButton(250, 300, 120, 40, "Cancel", Color(0, 0, 0, 150), Color(200, 100, 100))
+
+-- Draw shadowed elements with different shapes
+lia.derma.drawShadows(15, 100, 200, 80, 80, Color(0, 0, 0, 100), 25, 20, lia.derma.SHAPE_CIRCLE)
+lia.derma.draw(15, 100, 200, 80, 80, Color(150, 100, 255))
+
+lia.derma.drawShadows(15, 100, 300, 80, 80, Color(0, 0, 0, 100), 25, 20, lia.derma.SHAPE_FIGMA)
+lia.derma.draw(15, 100, 300, 80, 80, Color(255, 150, 100))
+
+-- Interactive shadowed element that changes on hover
+local hoverX, hoverY, hoverW, hoverH = 300, 200, 100, 60
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 60
+local shadowIntensity = isHovering and 30 or 15
+lia.derma.drawShadows(10, hoverX, hoverY, hoverW, hoverH, Color(0, 0, 0, 150), 25, shadowIntensity)
+lia.derma.draw(10, hoverX, hoverY, hoverW, hoverH, isHovering and Color(255, 255, 100) or Color(150, 150, 255))
+```
+
+---
+
+### drawTexture
+
+**Purpose**
+
+Draws a rounded rectangle using a texture for detailed visual effects and pattern mapping, allowing for complex rectangular rendering with texture support.
+
+**Parameters**
+
+* `radius` (*number*): The corner radius for all four corners.
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color tint to apply to the texture.
+* `texture` (*string*): The texture path to use for drawing.
+* `flags` (*number*, optional): Drawing flags to modify the appearance.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw rectangle with a texture
+lia.derma.drawTexture(10, 100, 100, 200, 100, Color(255, 255, 255), "vgui/white")
+
+-- Draw rectangle with tinted texture
+lia.derma.drawTexture(8, 50, 200, 150, 80, Color(255, 100, 100), "gui/gradient")
+
+-- Draw rectangles with different textures
+local textures = {
+    "vgui/white",
+    "gui/center_gradient",
+    "effects/bubble",
+    "particle/particle_glow_05"
+}
+
+for i, texture in ipairs(textures) do
+    local x = 100 + i * 80
+    local color = HSVToColor(i * 60, 1, 1)
+    lia.derma.drawTexture(6, x, 50, 60, 40, color, texture)
+end
+
+-- Create textured buttons
+local function drawTextureButton(x, y, w, h, text, texture, color)
+    lia.derma.drawTexture(8, x, y, w, h, color, texture)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawTextureButton(200, 150, 120, 40, "Save", "icon16/disk.png", Color(100, 200, 100))
+drawTextureButton(350, 150, 120, 40, "Load", "icon16/folder.png", Color(200, 150, 100))
+
+-- Draw rectangle with texture and blur effect
+lia.derma.drawTexture(15, 400, 50, 100, 100, Color(255, 255, 150), "effects/sparkle", lia.derma.BLUR)
+
+-- Animated textured rectangle
+local time = RealTime()
+local pulseAlpha = math.sin(time * 2) * 64 + 192
+lia.derma.drawTexture(12, 250, 100, 120, 80, Color(100, 150, 255, pulseAlpha), "gui/gradient")
+
+-- Interactive textured element that changes texture on hover
+local hoverX, hoverY, hoverW, hoverH = 300, 250, 100, 60
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 60
+local hoverTexture = isHovering and "effects/sparkle" or "gui/gradient"
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.drawTexture(10, hoverX, hoverY, hoverW, hoverH, hoverColor, hoverTexture)
+
+-- Draw textured background pattern
+local overlayTexture = "effects/noise"
+for i = 1, 20 do
+    local randomX = math.random(50, ScrW() - 150)
+    local randomY = math.random(50, ScrH() - 100)
+    lia.derma.drawTexture(5, randomX, randomY, 100, 60, Color(255, 255, 255, 50), overlayTexture)
+end
+
+-- Create progress bar with textured background
+lia.derma.drawTexture(6, 50, 300, 300, 20, Color(255, 255, 255), "gui/gradient")
+local progress = 0.7 -- 70%
+lia.derma.draw(6, 50, 300, 300 * progress, 20, Color(100, 200, 100))
+```
+
+---
+
+### drawShadowsEx
+
+**Purpose**
+
+Draws advanced drop shadows for rounded rectangles with full customization of corner radii, shadow properties, and outline thickness for creating sophisticated depth effects.
+
+**Parameters**
+
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+* `col` (*Color*): The color of the shadow.
+* `flags` (*number*, optional): Drawing flags to modify the appearance (shape, corners, blur, etc.).
+* `tl` (*number*, optional): Top-left corner radius.
+* `tr` (*number*, optional): Top-right corner radius.
+* `bl` (*number*, optional): Bottom-left corner radius.
+* `br` (*number*, optional): Bottom-right corner radius.
+* `spread` (*number*, optional): The spread distance of the shadow (default: 30).
+* `intensity` (*number*, optional): The intensity/opacity of the shadow (default: spread * 1.2).
+* `thickness` (*number*, optional): Outline thickness if using outline flags.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw shadow with custom corner radii
+lia.derma.drawShadowsEx(100, 100, 200, 100, Color(0, 0, 0, 100), nil, 5, 15, 20, 10, 25, 20)
+
+-- Draw shadowed rectangle with different corner styles
+lia.derma.drawShadowsEx(50, 200, 150, 80, Color(0, 0, 0, 150), lia.derma.SHAPE_CIRCLE, 50, 50, 50, 50, 30, 25)
+lia.derma.draw(8, 50, 200, 150, 80, Color(100, 150, 255))
+
+-- Draw shadow with blur effect
+lia.derma.drawShadowsEx(300, 100, 120, 80, Color(0, 0, 0, 100), lia.derma.BLUR, 8, 8, 8, 8, 25, 20)
+
+-- Create advanced shadowed buttons with individual corner control
+local function drawAdvancedShadowedButton(x, y, w, h, text, shadowColor, mainColor, tl, tr, bl, br)
+    lia.derma.drawShadowsEx(x, y, w, h, shadowColor, nil, tl, tr, bl, br, 20, 15)
+    lia.derma.draw(tl, x, y, w, h, mainColor)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawAdvancedShadowedButton(100, 300, 120, 40, "Rounded", Color(0, 0, 0, 150), Color(100, 200, 100), 8, 8, 8, 8)
+drawAdvancedShadowedButton(250, 300, 120, 40, "Mixed", Color(0, 0, 0, 150), Color(200, 100, 100), 5, 15, 20, 10)
+
+-- Draw shadow with outline
+lia.derma.drawShadowsEx(200, 200, 100, 60, Color(0, 0, 0, 150), nil, 10, 10, 10, 10, 25, 20, 2)
+
+-- Interactive shadowed element with dynamic properties
+local hoverX, hoverY, hoverW, hoverH = 300, 250, 100, 60
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 60
+local shadowSpread = isHovering and 35 or 25
+local shadowIntensity = isHovering and 30 or 15
+lia.derma.drawShadowsEx(hoverX, hoverY, hoverW, hoverH, Color(0, 0, 0, 150), nil, 10, 10, 10, 10, shadowSpread, shadowIntensity)
+lia.derma.draw(10, hoverX, hoverY, hoverW, hoverH, isHovering and Color(255, 255, 100) or Color(150, 150, 255))
+```
+
+---
+
+### player_selector
+
+**Purpose**
+
+Creates a comprehensive player selection dialog with search and filtering capabilities, displaying all players with their avatars, names, user groups, and ping information.
+
+**Parameters**
+
+* `callback` (*function*): The function to call when a player is selected. Receives the selected Player object as parameter.
+* `validationFunc` (*function*, optional): A function to validate player selection. Should return true if the player can be selected.
+
+**Returns**
+
+* `frame` (*liaFrame*): The player selector frame dialog.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic player selector
+lia.derma.player_selector(function(player)
+    print("Selected player:", player:Name(), player:SteamID())
+end)
+
+-- Player selector with validation (only alive players)
+lia.derma.player_selector(function(player)
+    if IsValid(player) and player:Alive() then
+        tradeWithPlayer(player)
+    end
+end, function(player)
+    return player ~= LocalPlayer() and player:Alive()
+end)
+
+-- Use in admin functions
+lia.derma.player_selector(function(player)
+    local menu = lia.derma.derma_menu()
+    menu:AddOption("Kick Player", function() kickPlayer(player) end)
+    menu:AddOption("Ban Player", function() banPlayer(player) end)
+    menu:AddOption("Teleport to Player", function() teleportToPlayer(player) end)
+end)
+
+-- Player selector for team assignment
+lia.derma.player_selector(function(player)
+    local teams = team.GetAllTeams()
+    local menu = lia.derma.derma_menu()
+
+    for _, teamInfo in pairs(teams) do
+        menu:AddOption("Move to " .. teamInfo.Name, function()
+            player:SetTeam(teamInfo.ID)
+            print("Moved " .. player:Name() .. " to " .. teamInfo.Name)
+        end)
+    end
+end, function(player)
+    return player ~= LocalPlayer()
+end)
+
+-- Multiple player selection for group actions
+local selectedPlayers = {}
+lia.derma.player_selector(function(player)
+    if table.HasValue(selectedPlayers, player) then
+        table.RemoveByValue(selectedPlayers, player)
+        print("Deselected:", player:Name())
+    else
+        table.insert(selectedPlayers, player)
+        print("Selected:", player:Name())
+    end
+    print("Total selected players:", #selectedPlayers)
+end)
+
+-- Player selector with custom validation for specific roles
+lia.derma.player_selector(function(player)
+    if player:GetUserGroup() == "admin" then
+        promotePlayer(player)
+    else
+        print("Only admins can be promoted")
+    end
+end, function(player)
+    return player:GetUserGroup() == "moderator"
+end)
+
+-- Player selector for messaging
+lia.derma.player_selector(function(player)
+    lia.derma.textBox("Send Message", "Enter your message to " .. player:Name(), function(text)
+        net.Start("SendPrivateMessage")
+        net.WriteEntity(player)
+        net.WriteString(text)
+        net.SendToServer()
+    end)
+end)
+```
+
+---
+
+### radial_menu
+
+**Purpose**
+
+Creates a radial/circular menu for quick action selection, displaying options in a circular layout that users can select by clicking on sectors.
+
+**Parameters**
+
+* `options` (*table*): A table of options with the following properties:
+  - `title` (*string*, optional): The title displayed in the center of the menu.
+  - `desc` (*string*, optional): The description displayed below the title.
+  - `radius` (*number*, optional): The radius of the radial menu (default: 280).
+  - `inner_radius` (*number*, optional): The inner radius for the center area (default: 96).
+  - `disable_background` (*boolean*, optional): Whether to disable the background overlay.
+  - `hover_sound` (*string*, optional): Sound to play on option hover.
+  - `scale_animation` (*boolean*, optional): Whether to enable scale animation (default: true).
+  - Additional options can be added using the returned panel's methods.
+
+**Returns**
+
+* `menu` (*liaRadialPanel*): The created radial menu panel.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic radial menu
+local options = {
+    title = "Actions",
+    desc = "Select an option"
+}
+
+local menu = lia.derma.radial_menu(options)
+
+-- Add options to the menu
+menu:AddOption("Attack", function() print("Attack selected") end, "icon16/gun.png", "Launch an attack")
+menu:AddOption("Defend", function() print("Defend selected") end, "icon16/shield.png", "Defend position")
+menu:AddOption("Heal", function() print("Heal selected") end, "icon16/heart.png", "Use healing item")
+menu:AddOption("Retreat", function() print("Retreat selected") end, "icon16/arrow_left.png", "Retreat from combat")
+
+-- Radial menu with submenus
+local mainMenu = lia.derma.radial_menu({
+    title = "Main Menu",
+    desc = "Choose a category"
+})
+
+local combatSubmenu = mainMenu:CreateSubMenu("Combat", "Combat actions")
+combatSubmenu:AddOption("Melee Attack", function() print("Melee attack") end, "icon16/sword.png")
+combatSubmenu:AddOption("Ranged Attack", function() print("Ranged attack") end, "icon16/gun.png")
+combatSubmenu:AddOption("Magic", function() print("Magic attack") end, "icon16/lightning.png")
+
+local utilitySubmenu = mainMenu:CreateSubMenu("Utilities", "Utility actions")
+utilitySubmenu:AddOption("Heal", function() print("Heal") end, "icon16/heart.png")
+utilitySubmenu:AddOption("Buff", function() print("Buff") end, "icon16/star.png")
+
+mainMenu:AddOption("Combat", nil, "icon16/bomb.png", "Combat submenu", combatSubmenu)
+mainMenu:AddOption("Utilities", nil, "icon16/wrench.png", "Utility submenu", utilitySubmenu)
+
+-- Radial menu for spell casting
+local spellMenu = lia.derma.radial_menu({
+    title = "Spells",
+    desc = "Choose a spell to cast",
+    radius = 320
+})
+
+local spells = {
+    {name = "Fireball", icon = "icon16/fire.png", desc = "Deals fire damage"},
+    {name = "Ice Bolt", icon = "icon16/weather_snow.png", desc = "Freezes enemies"},
+    {name = "Lightning", icon = "icon16/lightning.png", desc = "Chain lightning"},
+    {name = "Heal", icon = "icon16/heart.png", desc = "Restores health"},
+    {name = "Shield", icon = "icon16/shield.png", desc = "Creates barrier"},
+    {name = "Teleport", icon = "icon16/arrow_right.png", desc = "Instant movement"}
+}
+
+for _, spell in ipairs(spells) do
+    spellMenu:AddOption(spell.name, function() print("Cast " .. spell.name) end, spell.icon, spell.desc)
+end
+
+-- Radial menu for emotes
+local emoteMenu = lia.derma.radial_menu({
+    title = "Emotes",
+    desc = "Choose an emote",
+    radius = 250
+})
+
+local emotes = {
+    {name = "Wave", icon = "icon16/user.png"},
+    {name = "Dance", icon = "icon16/user_go.png"},
+    {name = "Cry", icon = "icon16/user_delete.png"},
+    {name = "Laugh", icon = "icon16/user_comment.png"},
+    {name = "Bow", icon = "icon16/user_suit.png"},
+    {name = "Point", icon = "icon16/user_gray.png"}
+}
+
+for _, emote in ipairs(emotes) do
+    emoteMenu:AddOption(emote.name, function() RunConsoleCommand("say", "/" .. string.lower(emote.name)) end, emote.icon, emote.name .. " emote")
+end
+
+-- Dynamic radial menu creation
+local function createRadialMenuForItems(items)
+    local menu = lia.derma.radial_menu({
+        title = "Items",
+        desc = "Select an item to use"
+    })
+
+    for _, item in ipairs(items) do
+        menu:AddOption(item.name, function() useItem(item) end, item.icon, item.description)
+    end
+
+    return menu
+end
+
+-- Custom radial menu with different settings
+local customMenu = lia.derma.radial_menu({
+    title = "Custom Menu",
+    desc = "Custom radial menu",
+    radius = 300,
+    inner_radius = 120,
+    disable_background = false,
+    hover_sound = "ui/buttonrollover.wav",
+    scale_animation = true
+})
+
+customMenu:AddOption("Option 1", function() print("Option 1") end, "icon16/accept.png")
+customMenu:AddOption("Option 2", function() print("Option 2") end, "icon16/cancel.png")
+customMenu:AddOption("Option 3", function() print("Option 3") end, "icon16/help.png")
+```
+
+---
+
+### rect
+
+**Purpose**
+
+Creates a rectangle drawing object that can be customized with colors, textures, materials, corner radii, and effects before being rendered.
+
+**Parameters**
+
+* `x` (*number*): The x position of the rectangle.
+* `y` (*number*): The y position of the rectangle.
+* `w` (*number*): The width of the rectangle.
+* `h` (*number*): The height of the rectangle.
+
+**Returns**
+
+* `rect` (*liaRect*): The rectangle drawing object with chainable methods for customization.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Create a basic rectangle
+lia.derma.rect(100, 100, 200, 100):Color(Color(100, 150, 255)):Draw()
+
+-- Create a rectangle with rounded corners
+lia.derma.rect(50, 200, 150, 80)
+    :Color(Color(255, 100, 100))
+    :Rad(10)
+    :Draw()
+
+-- Create a rectangle with texture
+lia.derma.rect(250, 50, 120, 120)
+    :Texture("vgui/white")
+    :Color(Color(150, 150, 255))
+    :Draw()
+
+-- Create a rectangle with material
+local gradientMat = Material("gui/gradient")
+lia.derma.rect(400, 100, 100, 100)
+    :Material(gradientMat)
+    :Color(Color(255, 200, 100))
+    :Draw()
+
+-- Create a rectangle with blur effect
+lia.derma.rect(100, 300, 150, 60)
+    :Color(Color(100, 255, 100))
+    :Blur(2.0)
+    :Draw()
+
+-- Create a shadowed rectangle
+lia.derma.rect(300, 250, 120, 80)
+    :Color(Color(255, 150, 100))
+    :Shadow(20, 15)
+    :Draw()
+
+-- Create a rectangle with outline
+lia.derma.rect(450, 200, 100, 100)
+    :Color(Color(150, 100, 255))
+    :Outline(3)
+    :Draw()
+
+-- Create rectangles with different corner radii
+lia.derma.rect(50, 400, 100, 60):Radii(5, 10, 15, 20):Color(Color(255, 100, 255)):Draw()
+lia.derma.rect(200, 400, 100, 60):Radii(20, 5, 10, 15):Color(Color(100, 255, 255)):Draw()
+lia.derma.rect(350, 400, 100, 60):Radii(10, 20, 5, 15):Color(Color(255, 255, 100)):Draw()
+
+-- Interactive rectangle that changes color on hover
+local hoverX, hoverY, hoverW, hoverH = 500, 350, 80, 50
+local distance = math.Distance(input.GetCursorPos(), hoverX + hoverW/2, hoverY + hoverH/2)
+local isHovering = distance < 50
+local hoverColor = isHovering and Color(255, 255, 100) or Color(150, 150, 255)
+lia.derma.rect(hoverX, hoverY, hoverW, hoverH)
+    :Color(hoverColor)
+    :Rad(8)
+    :Draw()
+
+-- Create a progress bar with rectangle
+lia.derma.rect(50, 500, 300, 20):Color(Color(50, 50, 50)):Rad(4):Draw()
+local progress = 0.7 -- 70%
+lia.derma.rect(50, 500, 300 * progress, 20):Color(Color(100, 200, 100)):Rad(4):Draw()
+```
+
+**Available Chainable Methods**
+
+* `:Color(color)` - Sets the rectangle color
+* `:Texture(texture)` - Sets a texture for the rectangle
+* `:Material(material)` - Sets a material for the rectangle
+* `:Rad(radius)` - Sets the same radius for all corners
+* `:Radii(tl, tr, bl, br)` - Sets individual corner radii
+* `:Outline(thickness)` - Adds an outline with specified thickness
+* `:Blur(intensity)` - Applies blur effect
+* `:Shadow(spread, intensity)` - Adds shadow effect
+* `:Rotation(angle)` - Rotates the rectangle
+* `:Shape(shape)` - Sets the shape type (circle, figma, ios)
+* `:Clip(panel)` - Clips drawing to specified panel
+* `:Flags(flags)` - Applies drawing flags
+* `:Draw()` - Renders the rectangle
+
+---
+
+### setDefaultShape
+
+**Purpose**
+
+Sets the default shape type for all subsequent drawing operations, affecting the appearance of corners in drawn elements.
+
+**Parameters**
+
+* `shape` (*number*): The shape type to set as default. Available options:
+  - `lia.derma.SHAPE_CIRCLE` - Perfect circles
+  - `lia.derma.SHAPE_FIGMA` - Figma-style rounded corners (default)
+  - `lia.derma.SHAPE_IOS` - iOS-style rounded corners
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Set default shape to circle
+lia.derma.setDefaultShape(lia.derma.SHAPE_CIRCLE)
+
+-- All subsequent drawing operations will use circle shape
+lia.derma.draw(10, 100, 100, 100, 100, Color(255, 100, 100))
+lia.derma.rect(200, 100, 100, 100):Color(Color(100, 255, 100)):Draw()
+
+-- Set default shape to iOS style
+lia.derma.setDefaultShape(lia.derma.SHAPE_IOS)
+
+-- All subsequent drawing operations will use iOS-style corners
+lia.derma.draw(15, 100, 200, 80, 80, Color(100, 100, 255))
+lia.derma.rect(300, 200, 120, 60):Color(Color(255, 150, 100)):Draw()
+
+-- Reset to default Figma style
+lia.derma.setDefaultShape(lia.derma.SHAPE_FIGMA)
+
+-- All subsequent drawing operations will use Figma-style corners
+lia.derma.draw(12, 50, 300, 150, 80, Color(150, 255, 150))
+
+-- Use in theme or style management
+local function applyRoundedTheme()
+    lia.derma.setDefaultShape(lia.derma.SHAPE_FIGMA)
+    print("Applied rounded theme")
+end
+
+local function applySharpTheme()
+    lia.derma.setDefaultShape(lia.derma.SHAPE_IOS)
+    print("Applied sharp theme")
+end
+
+local function applyCircularTheme()
+    lia.derma.setDefaultShape(lia.derma.SHAPE_CIRCLE)
+    print("Applied circular theme")
+end
+
+-- Apply theme based on user preference
+local userTheme = "rounded" -- Could come from config or user setting
+if userTheme == "rounded" then
+    applyRoundedTheme()
+elseif userTheme == "sharp" then
+    applySharpTheme()
+elseif userTheme == "circular" then
+    applyCircularTheme()
+end
+```
+
+---
+
+### setFlag
+
+**Purpose**
+
+Utility function for setting or unsetting specific flags in a flags value, commonly used for modifying drawing behavior in derma operations.
+
+**Parameters**
+
+* `flags` (*number*): The current flags value to modify.
+* `flag` (*number* or *string*): The flag to set or unset. Can be a flag constant or a string key from lia.derma.
+* `bool` (*boolean*): Whether to set (true) or unset (false) the flag.
+
+**Returns**
+
+* `newFlags` (*number*): The modified flags value.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Set a specific flag
+local flags = 0
+flags = lia.derma.setFlag(flags, lia.derma.BLUR, true)
+flags = lia.derma.setFlag(flags, lia.derma.SHAPE_CIRCLE, true)
+
+-- Use the flags in drawing
+lia.derma.draw(10, 100, 100, 200, 100, Color(255, 100, 100), flags)
+
+-- Unset a flag
+flags = lia.derma.setFlag(flags, lia.derma.BLUR, false)
+
+-- Set multiple flags at once
+local function createFlags(...)
+    local flags = 0
+    for _, flag in ipairs({...}) do
+        flags = lia.derma.setFlag(flags, flag, true)
+    end
+    return flags
+end
+
+local myFlags = createFlags(lia.derma.SHAPE_IOS, lia.derma.BLUR)
+lia.derma.draw(12, 200, 100, 150, 80, Color(100, 200, 255), myFlags)
+
+-- Toggle flags
+local currentFlags = 0
+local function toggleBlur()
+    currentFlags = lia.derma.setFlag(currentFlags, lia.derma.BLUR, not lia.derma.setFlag(currentFlags, lia.derma.BLUR, false) == currentFlags)
+end
+
+-- Use string keys for flags
+flags = lia.derma.setFlag(flags, "BLUR", true)
+flags = lia.derma.setFlag(flags, "SHAPE_CIRCLE", true)
+
+-- Combine with drawing operations
+local function drawElement(x, y, w, h, color, useBlur, useCircle)
+    local flags = 0
+    flags = lia.derma.setFlag(flags, lia.derma.BLUR, useBlur)
+    flags = lia.derma.setFlag(flags, lia.derma.SHAPE_CIRCLE, useCircle)
+
+    lia.derma.draw(10, x, y, w, h, color, flags)
+end
+
+drawElement(50, 50, 100, 100, Color(255, 100, 100), true, false)
+drawElement(200, 50, 100, 100, Color(100, 255, 100), false, true)
+drawElement(350, 50, 100, 100, Color(100, 100, 255), true, true)
+
+-- Advanced flag management
+local flagPresets = {
+    normal = 0,
+    blurred = lia.derma.BLUR,
+    outlined = lia.derma.setFlag(0, lia.derma.BLUR, false), -- This doesn't make sense, need to fix
+    shadowed = lia.derma.BLUR, -- Placeholder
+    glowing = lia.derma.BLUR
+}
+
+local function applyPreset(presetName)
+    return flagPresets[presetName] or 0
+end
+
+local elementFlags = applyPreset("blurred")
+lia.derma.draw(8, 100, 150, 120, 80, Color(255, 200, 100), elementFlags)
+```
+
+---
+
 ### characterAttribRow
 
 **Purpose**

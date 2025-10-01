@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import re
 import argparse
 from pathlib import Path
 from datetime import datetime
@@ -49,6 +50,7 @@ class CombinedReportData:
     hooks_missing: List[str]
     hooks_documented: List[str]
     localization_data: Dict
+    argument_mismatches: List[Dict]  # New field for argument mismatches
     modules_data: List
     modules_scan: List[Dict]
     generated_at: str
@@ -73,6 +75,228 @@ class FunctionComparisonReportGenerator:
         self.function_comparator = FunctionComparator(str(self.base_path))
         self.hooks_doc_dir = self.docs_path / "docs" / "hooks"
 
+    def _detect_argument_mismatches(self) -> List[Dict]:
+        """Detect argument mismatches in localization function calls"""
+        mismatches = []
+
+        # Load language keys and their expected argument counts
+        lang_keys = self._get_localization_keys_with_arg_counts()
+
+        # Scan Lua files for localization function calls
+        lua_files = list(self.base_path.rglob("*.lua"))
+
+        for lua_file in lua_files:
+            # Skip language files themselves
+            if 'languages' in lua_file.parts:
+                continue
+
+            try:
+                with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+
+                # Find localization function calls and check arguments
+                mismatches.extend(self._check_file_for_arg_mismatches(content, str(lua_file.relative_to(self.base_path)), lang_keys))
+
+            except Exception as e:
+                print(f"Warning: Error scanning {lua_file}: {e}")
+                continue
+
+        return mismatches
+
+    def _get_localization_keys_with_arg_counts(self) -> Dict[str, int]:
+        """Get localization keys and count their expected format specifiers"""
+        keys = {}
+
+        if not Path(self.language_file).exists():
+            return keys
+
+        try:
+            with open(self.language_file, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+
+            # Parse LANGUAGE table entries
+            # Pattern matches: key = "value" or key = 'value' or key = [[value]]
+            pattern = r'(\w+)\s*=\s*(["\']|(\[\[))'
+
+            for match in re.finditer(pattern, content):
+                key = match.group(1)
+                start_pos = match.end() - 1  # Position of the quote or bracket
+
+                # Simple string parsing for format specifiers
+                value, _ = self._parse_lua_string_simple(content, start_pos)
+                if value:
+                    arg_count = self._count_format_specifiers(value)
+                    keys[key] = arg_count
+
+        except Exception as e:
+            print(f"Warning: Error parsing language file {self.language_file}: {e}")
+
+        return keys
+
+    def _parse_lua_string_simple(self, content: str, start_pos: int) -> Tuple[str, int]:
+        """Simple Lua string parser for format specifiers"""
+        if start_pos >= len(content):
+            return None, start_pos
+
+        quote_char = content[start_pos]
+
+        # Handle single or double quoted strings
+        if quote_char in ('"', "'"):
+            end_pos = start_pos + 1
+            result = []
+
+            while end_pos < len(content):
+                char = content[end_pos]
+
+                if char == '\\' and end_pos + 1 < len(content):
+                    # Handle escape sequences
+                    next_char = content[end_pos + 1]
+                    if next_char in ('n', 't', '\\', '"', "'"):
+                        result.append(next_char if next_char != 'n' else '\n')
+                    else:
+                        result.append(next_char)
+                    end_pos += 2
+                elif char == quote_char:
+                    return ''.join(result), end_pos + 1
+                else:
+                    result.append(char)
+                    end_pos += 1
+
+            return None, start_pos  # Unclosed string
+
+        # Handle multi-line strings [[...]]
+        elif content[start_pos:start_pos+2] == '[[':
+            end_marker = content.find(']]', start_pos + 2)
+            if end_marker == -1:
+                return None, start_pos
+            return content[start_pos+2:end_marker], end_marker + 2
+
+        return None, start_pos
+
+    def _count_format_specifiers(self, text: str) -> int:
+        """Count the number of format specifiers in a string (excluding escaped %)"""
+        # This pattern matches format specifiers like %s, %d, %f, etc.
+        # but excludes %% (escaped percent)
+        pattern = r'%[^%]'
+        matches = re.findall(pattern, text)
+        return len(matches)
+
+    def _count_function_arguments(self, arg_str: str) -> int:
+        """Count function arguments properly, handling nested parentheses and strings"""
+        if not arg_str or arg_str == ',':
+            return 0
+
+        # Remove leading comma if present
+        arg_str = arg_str.lstrip(',').strip()
+        if not arg_str:
+            return 0
+
+        args = []
+        current_arg = []
+        paren_depth = 0
+        in_string = False
+        string_char = None
+        escape_next = False
+
+        i = 0
+        while i < len(arg_str):
+            char = arg_str[i]
+
+            if escape_next:
+                escape_next = False
+                current_arg.append(char)
+                i += 1
+                continue
+
+            if char == '\\' and in_string:
+                escape_next = True
+                current_arg.append(char)
+                i += 1
+                continue
+
+            if not in_string:
+                if char in ('"', "'"):
+                    in_string = True
+                    string_char = char
+                    current_arg.append(char)
+                elif char == '(':
+                    paren_depth += 1
+                    current_arg.append(char)
+                elif char == ')':
+                    paren_depth -= 1
+                    current_arg.append(char)
+                elif char == ',' and paren_depth == 0:
+                    # Found argument separator at top level
+                    args.append(''.join(current_arg).strip())
+                    current_arg = []
+                else:
+                    current_arg.append(char)
+            else:
+                if char == string_char:
+                    in_string = False
+                    string_char = None
+                current_arg.append(char)
+
+            i += 1
+
+        # Add the last argument
+        if current_arg:
+            args.append(''.join(current_arg).strip())
+
+        return len(args)
+
+    def _check_file_for_arg_mismatches(self, content: str, filename: str, lang_keys: Dict[str, int]) -> List[Dict]:
+        """Check a single file for argument mismatches"""
+        mismatches = []
+        lines = content.split('\n')
+
+        # Pattern for L("key", args...)
+        l_pattern = r'\bL\s*\(\s*(["\']|(\[\[))'
+
+        for match in re.finditer(l_pattern, content):
+            start_pos = match.end() - 1
+            key, end_pos = self._parse_lua_string_simple(content, start_pos)
+
+            if not key:
+                continue
+
+            # Count arguments after the key
+            # Find the closing parenthesis of the function call
+            paren_depth = 1
+            current_pos = end_pos
+            arg_content = []
+
+            while current_pos < len(content) and paren_depth > 0:
+                char = content[current_pos]
+                if char == '(':
+                    paren_depth += 1
+                elif char == ')':
+                    paren_depth -= 1
+                    if paren_depth == 0:
+                        break
+                arg_content.append(char)
+                current_pos += 1
+
+            # Count arguments properly, handling nested function calls and strings
+            arg_count = self._count_function_arguments(''.join(arg_content).strip())
+
+            # Check if key exists and if argument count matches
+            if key in lang_keys:
+                expected = lang_keys[key]
+                if arg_count != expected:
+                    line_num = content[:match.start()].count('\n') + 1
+                    mismatches.append({
+                        'file': filename,
+                        'line': line_num,
+                        'function': 'L',
+                        'key': key,
+                        'expected': expected,
+                        'provided': arg_count,
+                        'context': lines[line_num - 1].strip() if line_num <= len(lines) else ''
+                    })
+
+        return mismatches
+
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
@@ -91,7 +315,11 @@ class FunctionComparisonReportGenerator:
         print("Analyzing localization...")
         localization_data, modules_data = self._run_localization_analysis()
 
-        # 4. Module undocumented items scan (hooks and lia.* functions)
+        # 4. Argument Mismatch Detection
+        print("Detecting argument mismatches...")
+        argument_mismatches = self._detect_argument_mismatches()
+
+        # 5. Module undocumented items scan (hooks and lia.* functions)
         print("Scanning external modules for undocumented items...")
         modules_scan = self._scan_modules_for_undocumented()
 
@@ -100,6 +328,7 @@ class FunctionComparisonReportGenerator:
             hooks_missing=hooks_missing,
             hooks_documented=hooks_documented,
             localization_data=localization_data,
+            argument_mismatches=argument_mismatches,
             modules_data=modules_data,
             modules_scan=modules_scan,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -622,8 +851,9 @@ class FunctionComparisonReportGenerator:
         hooks_missing_count = len(data.hooks_missing)
 
         # Localization stats
-        undefined_calls = data.localization_data.get('undefined_count', len(data.localization_data.get('undefined_rows', [])))
-        at_patterns = data.localization_data.get('at_pattern_count', len(data.localization_data.get('at_pattern_rows', [])))
+        undefined_calls = data.localization_data.get('undefined_count', len(data.localization_data.get('undefined_rows', []))) if data.localization_data else 0
+        at_patterns = data.localization_data.get('at_pattern_count', len(data.localization_data.get('at_pattern_rows', []))) if data.localization_data else 0
+        arg_mismatches = len(data.argument_mismatches)
 
         lines.extend([
             "### 📋 Function Documentation",
@@ -638,6 +868,7 @@ class FunctionComparisonReportGenerator:
             "### 🌐 Localization Analysis",
             f"- **Undefined Calls:** {undefined_calls} unique",
             f"- **@xxxxx Patterns:** {at_patterns} unique",
+            f"- **Argument Mismatches:** {arg_mismatches}",
             "",
             "---",
             ""
@@ -715,7 +946,7 @@ class FunctionComparisonReportGenerator:
         """Generate localization analysis section"""
         lines = ["## 🌐 Localization Analysis", ""]
 
-        if not data.localization_data:
+        if not data.localization_data and not data.argument_mismatches:
             lines.append("_No localization data available._")
             lines.append("")
             return lines
@@ -723,29 +954,53 @@ class FunctionComparisonReportGenerator:
         loc_data = data.localization_data
 
         # Framework summary
-        lines.extend([
-            "### Framework Localization",
-            f"- **Language Keys:** {len(loc_data.get('keys', []))}",
-            f"- **Total Usages:** {loc_data.get('total_hits', 0)}",
-            f"- **Undefined Calls:** {loc_data.get('undefined_count', len(loc_data.get('undefined_rows', [])))}",
-            f"- **@xxxxx Patterns:** {loc_data.get('at_pattern_count', len(loc_data.get('at_pattern_rows', [])))}",
-            "",
-        ])
+        if data.localization_data:
+            lines.extend([
+                "### Framework Localization",
+                f"- **Language Keys:** {len(loc_data.get('keys', []))}",
+                f"- **Total Usages:** {loc_data.get('total_hits', 0)}",
+                f"- **Undefined Calls:** {loc_data.get('undefined_count', len(loc_data.get('undefined_rows', [])))}",
+                f"- **@xxxxx Patterns:** {loc_data.get('at_pattern_count', len(loc_data.get('at_pattern_rows', [])))}",
+                "",
+            ])
 
-        # Issues summary
+        # Argument mismatches summary
+        if data.argument_mismatches:
+            lines.extend([
+                "### ⚠️ Argument Mismatches",
+                f"- **Total Mismatches:** {len(data.argument_mismatches)}",
+                "",
+            ])
+
+            # Group mismatches by file for better organization
+            file_mismatches = defaultdict(list)
+            for mismatch in data.argument_mismatches:
+                file_mismatches[mismatch['file']].append(mismatch)
+
+            for filename, mismatches in sorted(file_mismatches.items()):
+                lines.append(f"#### {filename}")
+                for mismatch in sorted(mismatches, key=lambda x: x['line']):
+                    lines.append(f"- **Line {mismatch['line']}:** `{mismatch['key']}`")
+                    lines.append(f"  - Expected: {mismatch['expected']} args, Provided: {mismatch['provided']} args")
+                    lines.append(f"  - Context: `{mismatch['context'][:80]}{'...' if len(mismatch['context']) > 80 else ''}`")
+                lines.append("")
+
+        # Issues summary (for backward compatibility)
         issues = []
-        if loc_data.get('undefined_rows'):
+        if data.localization_data and loc_data.get('undefined_rows'):
             issues.append(f"🔸 {len(loc_data['undefined_rows'])} undefined calls")
-        if loc_data.get('at_pattern_rows'):
+        if data.localization_data and loc_data.get('at_pattern_rows'):
             issues.append(f"🔸 {len(loc_data['at_pattern_rows'])} @xxxxx patterns")
+        if data.argument_mismatches:
+            issues.append(f"🔸 {len(data.argument_mismatches)} argument mismatches")
 
         if issues:
             lines.append("### Key Issues:")
             lines.extend(issues)
             lines.append("")
 
-        # All issues (complete list)
-        if loc_data.get('undefined_rows'):
+        # All issues (complete list) - only undefined calls for backward compatibility
+        if data.localization_data and loc_data.get('undefined_rows'):
             lines.append("### Undefined Localization Calls:")
             for row in loc_data['undefined_rows']:
                 lines.append(f"- `{row[4]}` in {row[0]}:{row[1]}:{row[2]} ({row[3]})")

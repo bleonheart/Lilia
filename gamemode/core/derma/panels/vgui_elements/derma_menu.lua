@@ -1,23 +1,4 @@
 ﻿local PANEL = {}
-local function ClampMenuPosition(panel)
-    if not IsValid(panel) then return end
-    local x, y = panel:GetPos()
-    local w, h = panel:GetSize()
-    local sw, sh = ScrW(), ScrH()
-    if x < 5 then
-        x = 5
-    elseif x + w > sw - 5 then
-        x = sw - 5 - w
-    end
-
-    if y < 5 then
-        y = 5
-    elseif y + h > sh - 5 then
-        y = sh - 5 - h
-    end
-
-    panel:SetPos(x, y)
-end
 
 function PANEL:Init()
     self.Items = {}
@@ -128,7 +109,7 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         option.OnCursorExited = function() timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
-        submenu.OnCursorExited = function(pnl) timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
+        submenu.OnCursorExited = function() timer.Simple(0.15, function() if not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
         return submenu
     end
 

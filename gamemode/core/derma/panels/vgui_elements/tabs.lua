@@ -117,7 +117,7 @@ function PANEL:Rebuild()
     end
 end
 
-function PANEL:PerformLayout(w, h)
+function PANEL:PerformLayout()
     if self.tab_style == 'modern' then
         self.panel_tabs:Dock(TOP)
         self.panel_tabs:DockMargin(0, 0, 0, 4)
