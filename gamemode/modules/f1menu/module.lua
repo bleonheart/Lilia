@@ -1,4 +1,4 @@
-﻿MODULE.name = "F1 Menu"
+﻿MODULE.name = "f1MenuModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("providesMainF1MenuInterface")
+MODULE.desc = "providesMainF1MenuInterface"

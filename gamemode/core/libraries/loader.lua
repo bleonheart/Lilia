@@ -359,6 +359,7 @@ function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
     end
 end
 
+lia.loader.include("lilia/gamemode/core/libraries/languages.lua", "shared")
 local hasChttp = util.IsBinaryModuleInstalled("chttp")
 if hasChttp then require("chttp") end
 local function fetchURL(url, onSuccess, onError)
@@ -541,7 +542,6 @@ function lia.loader.checkForUpdates()
     checkFrameworkVersion()
 end
 
-lia.loader.include("lilia/gamemode/core/libraries/languages.lua", "shared")
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
 lia.loader.include("lilia/gamemode/core/libraries/derma.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")

@@ -1,8 +1,8 @@
 ﻿if CLIENT then TicketFrames = {} end
-MODULE.name = "Tickets"
+MODULE.name = "ticketsModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("ticketSystemDescription")
+MODULE.desc = ("ticketSystemDescription")
 MODULE.Privileges = {
     {
         Name = L("alwaysSeeTickets"),

@@ -1,10 +1,10 @@
-﻿MODULE.name = "AdminStick"
+﻿MODULE.name = "adminStickModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("adminStickDescription")
+MODULE.desc = ("adminStickDescription")
 MODULE.Privileges = {
     {
-        Name = L("alwaysSpawnAdminStick"),
+        Name = "alwaysSpawnAdminStick",
         ID = "alwaysSpawnAdminStick",
         MinAccess = "superadmin",
         Category = "adminStick",

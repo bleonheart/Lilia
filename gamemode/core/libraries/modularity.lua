@@ -123,6 +123,8 @@ function lia.module.load(uniqueID, path, isSingleFile, variable, skipSubmodules)
     MODULE.path = path
     MODULE.isSingleFile = isSingleFile
     MODULE.variable = variable
+    MODULE.name = L(MODULE.name)
+    MODULE.desc = L(MODULE.desc)
     if isSingleFile then
         lia.loader.include(path, "shared")
     else

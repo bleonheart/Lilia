@@ -1,28 +1,28 @@
-﻿MODULE.name = "Protection"
+﻿MODULE.name = "protectionModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("anticheatDescription")
+MODULE.desc = ("anticheatDescription")
 MODULE.Privileges = {
     {
-        Name = L("canSeeAltingNotifications"),
+        Name = "canSeeAltingNotifications",
         ID = "canSeeAltingNotifications",
         MinAccess = "admin",
         Category = "protection",
     },
     {
-        Name = L("viewEntityTab"),
+        Name = "viewEntityTab",
         ID = "viewEntityTab",
         MinAccess = "admin",
         Category = "protection",
     },
     {
-        Name = L("teleportToEntity"),
+        Name = "teleportToEntity",
         ID = "teleportToEntity",
         MinAccess = "admin",
         Category = "protection",
     },
     {
-        Name = L("bypassNoclipShooting"),
+        Name = "bypassNoclipShooting",
         ID = "bypassNoclipShooting",
         MinAccess = "admin",
         Category = "protection",

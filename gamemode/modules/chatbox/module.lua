@@ -1,34 +1,34 @@
-﻿MODULE.name = "Chatbox"
+﻿MODULE.name = "chatboxModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("chatSystemDescription")
+MODULE.desc = ("chatSystemDescription")
 MODULE.Privileges = {
     {
-        Name = L("noOOCCooldown"),
+        Name = "noOOCCooldown",
         ID = "noOOCCooldown",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = L("adminChat"),
+        Name = "adminChat",
         ID = "adminChat",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = L("localEventChat"),
+        Name = "localEventChat",
         ID = "localEventChat",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = L("eventChat"),
+        Name = "eventChat",
         ID = "eventChat",
         MinAccess = "admin",
         Category = "categoryChat",
     },
     {
-        Name = L("accessHelpChat"),
+        Name = "accessHelpChat",
         ID = "accessHelpChat",
         MinAccess = "superadmin",
         Category = "categoryChat",

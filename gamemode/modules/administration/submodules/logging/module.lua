@@ -1,7 +1,7 @@
-﻿MODULE.name = "Logging"
+﻿MODULE.name = "loggingModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("loggingSystemDescription")
+MODULE.desc = ("loggingSystemDescription")
 MODULE.Privileges = {
     {
         Name = L("canSeeLogs"),

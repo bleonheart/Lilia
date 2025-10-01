@@ -724,7 +724,7 @@ function lia.db.removeColumn(tableName, columnName)
 
             lia.db.query("PRAGMA table_info(" .. fullTableName .. ")", function(columns)
                 if not columns then
-                    d:reject("Failed to get table info")
+                    d:reject(L("failedToGetTableInfo"))
                     return
                 end
 
@@ -740,7 +740,7 @@ function lia.db.removeColumn(tableName, columnName)
                 end
 
                 if #newColumns == 0 then
-                    d:reject("Cannot remove the last column from table")
+                    d:reject(L("cannotRemoveLastColumnFromTable"))
                     return
                 end
 

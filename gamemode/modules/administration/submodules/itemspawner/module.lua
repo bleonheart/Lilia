@@ -1,7 +1,7 @@
-﻿MODULE.name = L("itemSpawner")
+﻿MODULE.name = "itemSpawnerModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = L("itemSpawnerDescription")
+MODULE.desc = ("itemSpawnerDescription")
 MODULE.Privileges = {
     {
         Name = L("canUseItemSpawner"),
