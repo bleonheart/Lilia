@@ -86,8 +86,8 @@ function MODULE:LoadData()
             local classes
             if row.classes and row.classes ~= "NULL" and row.classes ~= "" then
                 if tostring(row.classes):match("^[%d%.%-%s]+$") and not tostring(row.classes):match("[{}%[%]]") then
-                    lia.warning("Door " .. id .. " has coordinate-like data in classes column: " .. tostring(row.classes))
-                    lia.warning("This suggests data corruption. Clearing classes data.")
+                    lia.warning(L("doorCoordinateDataWarning", id, tostring(row.classes)))
+                    lia.warning(L("doorDataCorruptionClearing"))
                     row.classes = ""
                 else
                     local success, result = pcall(lia.data.deserialize, row.classes)
@@ -204,25 +204,25 @@ function MODULE:SaveData()
             end
 
             if not istable(factionsTable) then
-                lia.warning("Door " .. mapID .. " has invalid factions data type: " .. type(factionsTable) .. ", resetting to empty table")
+                lia.warning(L("doorInvalidFactionsType", mapID, type(factionsTable)))
                 factionsTable = {}
             end
 
             if not istable(classesTable) then
-                lia.warning("Door " .. mapID .. " has invalid classes data type: " .. type(classesTable) .. ", resetting to empty table")
+                lia.warning(L("doorInvalidClassesType", mapID, type(classesTable)))
                 classesTable = {}
             end
 
             local factionsSerialized = lia.data.serialize(factionsTable)
             local classesSerialized = lia.data.serialize(classesTable)
             if factionsSerialized and factionsSerialized:match("^[%d%.%-%s]+$") and not factionsSerialized:match("[{}%[%]]") then
-                lia.warning("Door " .. mapID .. " factions would serialize to coordinate-like data, resetting to empty")
+                lia.warning(L("doorFactionsCoordinateReset", mapID))
                 factionsTable = {}
                 factionsSerialized = lia.data.serialize(factionsTable)
             end
 
             if classesSerialized and classesSerialized:match("^[%d%.%-%s]+$") and not classesSerialized:match("[{}%[%]]") then
-                lia.warning("Door " .. mapID .. " classes would serialize to coordinate-like data, resetting to empty")
+                lia.warning(L("doorClassesCoordinateReset", mapID))
                 classesTable = {}
                 classesSerialized = lia.data.serialize(classesTable)
             end

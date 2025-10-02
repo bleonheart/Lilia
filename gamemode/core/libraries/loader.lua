@@ -685,7 +685,7 @@ function GM:OnReloaded()
         if SERVER then
             MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
             MsgC(Color(255, 165, 0), "[HotReload] ")
-            MsgC(Color(255, 255, 255), "Reload cooldown active. " .. remaining .. " seconds remaining.\n")
+            MsgC(Color(255, 255, 255), L("reloadCooldownActive", remaining) .. "\n")
         end
         return
     end
@@ -699,7 +699,7 @@ function GM:OnReloaded()
         timer.Simple(0.1, function() lia.config.send() end)
         timer.Simple(0.2, function() lia.administrator.sync() end)
         timer.Simple(0.3, function() lia.playerinteract.syncToClients() end)
-        timer.Simple(0.5, function() lia.bootstrap("HotReload", "Gamemode hotreloaded successfully!") end)
+        timer.Simple(0.5, function() lia.bootstrap("HotReload", L("gamemodeHotreloadedSuccessfully")) end)
     else
         chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("gamemodeHotreloadedSuccessfully"))
     end

@@ -610,9 +610,9 @@ function PANEL:updateModelEntity(character)
     end
 
     hook.Run("SetupPlayerModel", self.modelEntity, character)
-    local pos, ang = hook.Run("GetMainMenuPosition", character)
-
-    -- Check if the character's faction has a custom main menu position
+    -- Initialize default position and angle
+    local pos, ang = nil, nil
+    -- Check if the character's faction has a custom main menu position FIRST
     -- Factions can define a mainMenuPosition property to control where the character appears in the main menu
     -- Usage in faction definition:
     -- FACTION_CITIZEN = lia.faction.register("citizen", {
@@ -620,25 +620,57 @@ function PANEL:updateModelEntity(character)
     --     desc = "A regular citizen",
     --     color = Color(255, 125, 0),
     --     mainMenuPosition = {
-    --         position = Vector(0, 0, 0), -- Position for the character model
-    --         angles = Angle(0, 180, 0)    -- Angles for the character model
+    --         ["rp_nycity_day"] = { -- Map-specific positions
+    --             position = Vector(0, 0, 0),
+    --             angles = Angle(0, 180, 0)
+    --         },
+    --         ["rp_downtown_v4c"] = { -- Different position for another map
+    --             position = Vector(100, 0, 0),
+    --             angles = Angle(0, 90, 0)
+    --         }
     --     }
     -- })
-    -- Or simply as a Vector if you only want to change position:
+    -- Or for a single position that works on all maps:
+    -- mainMenuPosition = {
+    --     position = Vector(0, 0, 0),
+    --     angles = Angle(0, 180, 0)
+    -- }
+    -- Or for simple position-only changes:
     -- mainMenuPosition = Vector(100, 0, 0)
     if character and character:getFaction() then
         local faction = lia.faction.get(character:getFaction())
         if faction and faction.mainMenuPosition then
             local menuPos = faction.mainMenuPosition
+            local currentMap = game.GetMap()
             if istable(menuPos) then
-                pos = menuPos.position or pos
-                ang = menuPos.angles or ang
+                -- Check if this is a map-based table
+                if menuPos[currentMap] then
+                    -- Map-specific position exists
+                    local mapPos = menuPos[currentMap]
+                    if istable(mapPos) then
+                        pos = mapPos.position or pos
+                        ang = mapPos.angles or ang
+                    elseif isvector(mapPos) then
+                        pos = mapPos
+                    end
+                elseif menuPos.position then
+                    -- Fallback to general position/angles if no map-specific entry
+                    pos = menuPos.position or pos
+                    ang = menuPos.angles or ang
+                else
+                    -- Legacy support for direct vector/angle table
+                    pos = menuPos.position or pos
+                    ang = menuPos.angles or ang
+                end
             elseif isvector(menuPos) then
+                -- Legacy support for direct vector
                 pos = menuPos
             end
         end
     end
 
+    -- Only call the hook if no faction position was set
+    if not pos or not ang then pos, ang = hook.Run("GetMainMenuPosition", character) end
     if not pos or not ang then
         local spawns = ents.FindByClass("info_player_start")
         pos = #spawns > 0 and spawns[1]:GetPos() or Vector()

@@ -1403,4 +1403,15 @@ else
             end
         end
     end)
+
+    concommand.Add("getposition", function(client)
+        if not IsValid(client) then
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
+            return
+        end
+
+        local pos = client:GetPos()
+        local ang = client:GetAngles()
+        MsgC(Color(255, 255, 255), "Vector: (" .. math.Round(pos.x, 2) .. "," .. math.Round(pos.y, 2) .. "," .. math.Round(pos.z, 2) .. ") Angle:(" .. math.Round(ang.x, 2) .. "," .. math.Round(ang.y, 2) .. "," .. math.Round(ang.z, 2) .. ")\n")
+    end)
 end

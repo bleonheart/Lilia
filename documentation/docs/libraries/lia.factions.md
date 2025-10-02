@@ -1641,18 +1641,30 @@ FACTION.spawns = {
 
 **Description:**
 
-Controls the position and rotation of the character model in the main menu. If set as a `Vector`, only the position is changed. If set as a table, both position and angles can be specified for complete control over the character's appearance in the main menu.
+Controls the position and rotation of the character model in the main menu. Supports map-based positioning for different positions on different maps. If set as a `Vector`, only the position is changed. If set as a table, both position and angles can be specified for complete control over the character's appearance in the main menu.
 
 **Example Usage:**
 
 ```lua
--- Simple position change only
+-- Simple position change only (works on all maps)
 FACTION.mainMenuPosition = Vector(100, 0, 0)
 
--- Full control with position and rotation
+-- Full control with position and rotation (works on all maps)
 FACTION.mainMenuPosition = {
     position = Vector(0, 0, 0),
     angles = Angle(0, 180, 0)
+}
+
+-- Map-specific positions
+FACTION.mainMenuPosition = {
+    ["rp_nycity_day"] = {
+        position = Vector(-9598.93, -3528.32, 0.03),
+        angles = Angle(-3.23, 90.56, 0)
+    },
+    ["rp_downtown_v4c"] = {
+        position = Vector(100, 200, 50),
+        angles = Angle(0, 180, 0)
+    }
 }
 ```
 
