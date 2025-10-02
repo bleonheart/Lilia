@@ -17,10 +17,20 @@ if CLIENT then
     end
 
     function lia.color.getCurrentTheme()
+        local forceTheme = lia.config.get("forceTheme", true)
+        if not forceTheme then
+            local optionTheme = lia.option.get("theme", nil)
+            if optionTheme then return optionTheme:lower() end
+        end
         return lia.config.get("Theme", "Teal"):lower()
     end
 
     function lia.color.getCurrentThemeName()
+        local forceTheme = lia.config.get("forceTheme", true)
+        if not forceTheme then
+            local optionTheme = lia.option.get("theme", nil)
+            if optionTheme then return optionTheme end
+        end
         return lia.config.get("Theme", "Teal")
     end
 
@@ -49,10 +59,8 @@ if CLIENT then
     end
 
     function lia.color.testThemeTransition(themeName)
-        if CLIENT then
-            lia.color.applyTheme(themeName, true)
-            print(L("startedThemeTransition", themeName))
-        end
+        lia.color.applyTheme(themeName, true)
+        print(L("startedThemeTransition", themeName))
     end
 
     lia.color.transition = {
@@ -184,6 +192,18 @@ if CLIENT then
     lia.color.register("cyan", {0, 255, 255})
     lia.color.register("magenta", {255, 0, 255})
     hook.Add("InitializedConfig", "ApplyTheme", function() lia.color.applyTheme() end)
+    hook.Add("InitializedOptions", "ApplyThemeFromOption", function()
+        local forceTheme = lia.config.get("forceTheme", true)
+        if not forceTheme then
+            local optionTheme = lia.option.get("theme", nil)
+            if optionTheme then
+                lia.color.applyTheme(optionTheme, false)
+                return
+            end
+        end
+
+        lia.color.applyTheme()
+    end)
 end
 
 function lia.color.registerTheme(name, themeData)
@@ -859,6 +879,18 @@ lia.color.registerTheme("Lavender", {
     window_shadow = Color(138, 43, 226, 50),
     gray = Color(169, 169, 169, 180),
     text = Color(72, 61, 139)
+})
+
+lia.option.add("theme", "theme", "themeDesc", "Teal", function(oldValue, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
+    category = "categoryVisuals",
+    type = "Table",
+    options = function() return lia.color.getAllThemes() end
+})
+
+lia.config.add("forceTheme", "forceTheme", true, nil, {
+    desc = "forceThemeDesc",
+    category = "categoryVisuals",
+    type = "Boolean"
 })
 
 lia.config.add("Theme", "theme", "Teal", function(_, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
