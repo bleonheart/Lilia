@@ -643,7 +643,7 @@ LANGUAGE = {
     offlineCharModelSet = "Character %s's model set to %s.",
     failedToUpdateChar = "Failed to update character property.",
     changeSkin = "%s changed %s's skin to %s.",
-    changeBodygroups = [[%s changed %s's "%s" bodygroup to %s.]],
+    changeBodygroups = "%s changed %s's " % s" bodygroup to %s.",
     adminStickCheckInventoryName = "Check Inventory",
     adminStickOpenCharListName = "Open CharList",
     doorsellDesc = "Sell a door you own and receive a refund based on the door's price.",
@@ -2393,7 +2393,6 @@ Reload: Drop]],
     openSampleContextMenu = "Open Sample Context Menu",
     invalidUsergroup = "Invalid usergroup",
     invalidPlayer = "Invalid player",
-
     -- Additional user interface strings
     createCharacter = "Create Character",
     copy = "Copy",
@@ -2799,7 +2798,6 @@ Reload: Drop]],
     youAreDead = "You are dead",
     canManageFactions = "Can Manage Factions",
     players = "Players",
-
     -- Door warning messages
     doorCoordinateDataWarning = "Door %s has coordinate-like data in classes column: %s",
     doorDataCorruptionClearing = "This suggests data corruption. Clearing classes data.",
@@ -2807,10 +2805,8 @@ Reload: Drop]],
     doorInvalidClassesType = "Door %s has invalid classes data type: %s, resetting to empty table",
     doorFactionsCoordinateReset = "Door %s factions would serialize to coordinate-like data, resetting to empty",
     doorClassesCoordinateReset = "Door %s classes would serialize to coordinate-like data, resetting to empty",
-
     -- Vendor configuration
     vendorSaleScaleDesc = "The default sale scale for all vendors (multiplier for selling items to vendors)",
-
     -- Asset download messages
     assetDownloadStart = "=== STARTING CLIENT-SIDE ASSET DOWNLOAD ===",
     assetDownloadSeparator = "===========================================",
