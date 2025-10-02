@@ -2808,25 +2808,21 @@ Recargar: Soltar]],
     urlTooLong = "La URL es muy larga",
     vendorPresetName = "Nombre de Preajuste de Vendedor",
     visible = "Visible",
-    
     -- UI/Interface Messages
     activeTabOverview = "Pestaña activa: Resumen",
     factionGroup = "Grupo de facción",
     mapEntities = "Entidades del mapa",
     playerEntities = "Entidades del jugador",
-    
     -- Error Messages
     inventoryMissingItem = "Un inventario tiene un objeto faltante",
     failedSetAngles = "Error al SetAngles para entidad '%s' en %s. Ángulo: %s (%s) - %s",
     failedReadSnapshot = "Error al leer archivo de snapshot",
     modelMustBeString = "El modelo debe ser una cadena",
-    
     -- Download/Progress Messages
     downloadProgress = "Progreso de descarga: %d activo, %d en cola, %d/%d imágenes, %d/%d sonidos",
     imagesDownloaded = "Imágenes: %d descargadas | %d almacenadas",
     soundsDownloaded = "Sonidos: %d descargados | %d almacenados",
     combinedDownloaded = "Combinado: %d descargado | %d almacenado",
-    
     -- File/System Messages
     downloadsNotAllowed = "descargas no permitidas",
     emptyFile = "archivo vacío",
@@ -2835,7 +2831,6 @@ Recargar: Soltar]],
     invalidMp3Format = "formato mp3 inválido",
     noFileExtension = "sin extensión de archivo",
     noUrl = "sin URL",
-    
     -- Other User Messages
     outOfCharacter = "fuera de personaje",
     notAvailable = "N/D",

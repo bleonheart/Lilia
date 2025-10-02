@@ -2797,7 +2797,6 @@ Recharger : Lcher]],
     youAreDead = "Vous êtes mort",
     canManageFactions = "Peut gérer les factions",
     players = "Joueurs",
-
     -- Door warning messages
     doorCoordinateDataWarning = "La porte %s a des données de type coordonnées dans la colonne classes: %s",
     doorDataCorruptionClearing = "Cela suggère une corruption de données. Effacement des données de classes.",
@@ -2805,33 +2804,27 @@ Recharger : Lcher]],
     doorInvalidClassesType = "La porte %s a un type de données de classes invalide: %s, réinitialisation à une table vide",
     doorFactionsCoordinateReset = "Les factions de la porte %s se sérialiseraient en données de type coordonnées, réinitialisation à vide",
     doorClassesCoordinateReset = "Les classes de la porte %s se sérialiseraient en données de type coordonnées, réinitialisation à vide",
-
     -- Vendor configuration
     vendorSaleScaleDesc = "L'échelle de vente par défaut pour tous les vendeurs (multiplicateur pour vendre des objets aux vendeurs)",
-
     -- Asset download messages
     assetDownloadStart = "=== DÉBUT DU TÉLÉCHARGEMENT D'ACTIFS CÔTÉ CLIENT ===",
     assetDownloadSeparator = "===========================================",
     assetDownloadComplete = "=== TÉLÉCHARGEMENT D'ACTIFS CÔTÉ CLIENT TERMINÉ ===",
-    
     -- UI/Interface Messages
     activeTabOverview = "Onglet actif : Aperçu",
     factionGroup = "Groupe de faction",
     mapEntities = "Entités de la carte",
     playerEntities = "Entités du joueur",
-    
     -- Error Messages
     inventoryMissingItem = "Un inventaire a un objet manquant",
     failedSetAngles = "Échec de SetAngles pour l'entité '%s' à %s. Angle : %s (%s) - %s",
     failedReadSnapshot = "Échec de lecture du fichier de capture",
     modelMustBeString = "Le modèle doit être une chaîne",
-    
     -- Download/Progress Messages
     downloadProgress = "Progression du téléchargement : %d actif, %d en file d'attente, %d/%d images, %d/%d sons",
     imagesDownloaded = "Images : %d téléchargées | %d stockées",
     soundsDownloaded = "Sons : %d téléchargés | %d stockés",
     combinedDownloaded = "Combiné : %d téléchargé | %d stocké",
-    
     -- File/System Messages
     downloadsNotAllowed = "téléchargements non autorisés",
     emptyFile = "fichier vide",
@@ -2840,7 +2833,6 @@ Recharger : Lcher]],
     invalidMp3Format = "format mp3 invalide",
     noFileExtension = "aucune extension de fichier",
     noUrl = "aucune URL",
-    
     -- Other User Messages
     outOfCharacter = "hors personnage",
     notAvailable = "N/D",

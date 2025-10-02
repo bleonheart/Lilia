@@ -2813,25 +2813,21 @@ Recarregar: Largar]],
     urlContainsInvalidChars = "URL contém caracteres inválidos",
     urlTooLong = "URL muito longa",
     vendorPresetName = "Nome de Predefinição de Vendedor",
-    
     -- UI/Interface Messages
     activeTabOverview = "Aba ativa: Visão geral",
     factionGroup = "Grupo de facção",
     mapEntities = "Entidades do mapa",
     playerEntities = "Entidades do jogador",
-    
     -- Error Messages
     inventoryMissingItem = "Um inventário tem um item ausente",
     failedSetAngles = "Falha ao SetAngles para entidade '%s' em %s. Ângulo: %s (%s) - %s",
     failedReadSnapshot = "Falha ao ler arquivo de snapshot",
     modelMustBeString = "Modelo deve ser uma string",
-    
     -- Download/Progress Messages
     downloadProgress = "Progresso do download: %d ativo, %d na fila, %d/%d imagens, %d/%d sons",
     imagesDownloaded = "Imagens: %d baixadas | %d armazenadas",
     soundsDownloaded = "Sons: %d baixados | %d armazenados",
     combinedDownloaded = "Combinado: %d baixado | %d armazenado",
-    
     -- File/System Messages
     downloadsNotAllowed = "downloads não permitidos",
     emptyFile = "arquivo vazio",
@@ -2840,7 +2836,6 @@ Recarregar: Largar]],
     invalidMp3Format = "formato mp3 inválido",
     noFileExtension = "nenhuma extensão de arquivo",
     noUrl = "nenhuma URL",
-    
     -- Other User Messages
     outOfCharacter = "fora do personagem",
     notAvailable = "N/D",
