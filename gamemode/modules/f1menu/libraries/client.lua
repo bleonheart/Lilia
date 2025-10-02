@@ -187,16 +187,16 @@ function MODULE:CreateMenuButtons(tabs)
         end
     end
 
-    if LocalPlayer():hasPrivilege("accessEditConfigurationMenu") then
+    local hasPrivilege = LocalPlayer():hasPrivilege("accessEditConfigurationMenu")
+    local forceTheme = lia.config.get("forceTheme", true)
+    if (hasPrivilege and forceTheme) or (not forceTheme) then
         tabs["themes"] = function(themesPanel)
             local sheet = themesPanel:Add("DPropertySheet")
             sheet:Dock(FILL)
             sheet:DockMargin(10, 10, 10, 10)
             local function getLocalizedThemeName(themeID)
                 -- Convert lowercase theme ID to proper case for localization key
-                local properCaseName = themeID:gsub("(%a)([%w]*)", function(first, rest)
-                    return first:upper() .. rest:lower()
-                end)
+                local properCaseName = themeID:gsub("(%a)([%w]*)", function(first, rest) return first:upper() .. rest:lower() end)
                 local localizationKey = "theme" .. properCaseName:gsub(" ", ""):gsub("-", "")
                 return L(localizationKey) or themeID
             end
@@ -290,10 +290,17 @@ function MODULE:CreateMenuButtons(tabs)
                     applyButton.DoClick = function()
                         if currentTheme == themeID then return end
                         surface.PlaySound("buttons/button14.wav")
-                        net.Start("liaConfigUpdate")
-                        net.WriteString("Theme")
-                        net.WriteType(themeID)
-                        net.SendToServer()
+                        if forceTheme then
+                            -- When forceTheme is ON, update server config
+                            net.Start("liaConfigUpdate")
+                            net.WriteString("Theme")
+                            net.WriteType(themeID)
+                            net.SendToServer()
+                        else
+                            -- When forceTheme is OFF, update personal option
+                            lia.option.set("theme", themeID)
+                            lia.color.applyTheme(themeID, true)
+                        end
                     end
 
                     if themeID == currentTheme and not activeTab and sheetInfo and sheetInfo.Tab then activeTab = sheetInfo.Tab end
@@ -301,15 +308,6 @@ function MODULE:CreateMenuButtons(tabs)
             end
 
             if activeTab then sheet:SetActiveTab(activeTab) end
-        end
-    else
-        tabs["themes"] = function(themesPanel)
-            local label = themesPanel:Add("DLabel")
-            label:Dock(FILL)
-            label:SetText(L("noPermissionToChangeThemes"))
-            label:SetTextColor(Color(255, 255, 255))
-            label:SetFont("liaMediumFont")
-            label:SetContentAlignment(5) -- Center alignment
         end
     end
 end

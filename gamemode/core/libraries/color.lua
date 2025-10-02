@@ -881,7 +881,7 @@ lia.color.registerTheme("Lavender", {
     text = Color(72, 61, 139)
 })
 
-lia.option.add("theme", "theme", "themeDesc", "Teal", function(oldValue, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
+lia.option.add("theme", "theme", "themeDesc", "Teal", function(_, newValue) if CLIENT then lia.color.applyTheme(newValue, true) end end, {
     category = "categoryVisuals",
     type = "Table",
     options = function() return lia.color.getAllThemes() end

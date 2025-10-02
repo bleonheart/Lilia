@@ -1,0 +1,11 @@
+NAME = "English (Extracted)"
+LANGUAGE = {
+    "Failed to insert batch",
+    "Failed to query table",
+    "Failed to read snapshot file",
+    "Invalid snapshot format",
+    "failed or returned invalid result",
+    "icon16/error.png",
+    "invalid mp3 format",
+    "models/error.mdl",
+}
