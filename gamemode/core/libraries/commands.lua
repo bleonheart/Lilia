@@ -1415,7 +1415,7 @@ else
         MsgC(Color(255, 255, 255), "Vector: (" .. math.Round(pos.x, 2) .. "," .. math.Round(pos.y, 2) .. "," .. math.Round(pos.z, 2) .. ") Angle:(" .. math.Round(ang.x, 2) .. "," .. math.Round(ang.y, 2) .. "," .. math.Round(ang.z, 2) .. ")\n")
     end)
 
-    concommand.Add("lia_check_fonts", function(client)
+    concommand.Add("lia_check_fonts", function()
         if SERVER then
             MsgC(Color(255, 255, 0), "[Lilia] Font checking is only available on the client.\n")
             return
@@ -1425,7 +1425,7 @@ else
         local fontsToCheck = {}
         local fontNames = {}
         -- Get all unique font names from registered fonts
-        for fontName, fontData in pairs(lia.font.stored) do
+        for _, fontData in pairs(lia.font.stored) do
             if fontData.font and not fontNames[fontData.font] then
                 fontNames[fontData.font] = true
                 table.insert(fontsToCheck, fontData.font)
