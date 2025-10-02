@@ -683,7 +683,7 @@ function GM:OnReloaded()
     if timeSinceLastReload < lia.reloadCooldown then
         local remaining = math.ceil(lia.reloadCooldown - timeSinceLastReload)
         if SERVER then
-            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
+            MsgC(Color(0, 255, 0), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
             MsgC(Color(255, 165, 0), "[HotReload] ")
             MsgC(Color(255, 255, 255), L("reloadCooldownActive", remaining) .. "\n")
         end

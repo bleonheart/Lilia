@@ -20,13 +20,6 @@ if CLIENT then
         antialias = true
     })
 
-    lia.font.register("CursiveFont", {
-        font = "Segoe Script",
-        size = 35,
-        weight = 800,
-        antialias = true
-    })
-
     lia.font.register("ConfigFontLarge", {
         font = lia.config.get("Font"),
         size = 36,
@@ -179,30 +172,6 @@ if CLIENT then
         extended = true,
         antialias = true,
         weight = 700
-    })
-
-    lia.font.register("PoppinsMedium", {
-        font = "Poppins Medium",
-        size = 16,
-        extended = true,
-        antialias = true,
-        weight = 500
-    })
-
-    lia.font.register("PoppinsBig", {
-        font = "Poppins Medium",
-        size = 24,
-        extended = true,
-        antialias = true,
-        weight = 600
-    })
-
-    lia.font.register("PoppinsSmall", {
-        font = "Poppins Medium",
-        size = 12,
-        extended = true,
-        antialias = true,
-        weight = 400
     })
 
     lia.font.register("Fated.12", {

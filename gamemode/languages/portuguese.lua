@@ -1670,14 +1670,18 @@ Recarregar: Largar]],
     categoryData = "Dados",
     categoryTimers = "Temporizadores",
     categoryVisuals = "Visuais",
+    forceTheme = "Forçar Tema",
+    forceThemeDesc = "Força todos os jogadores a usar o mesmo tema, impedindo mudanças de tema.",
+    theme = "Tema",
+    themeDesc = "Seleciona o tema visual para a interface do utilizador.",
     moneyModel = "Modelo de Dinheiro",
     moneyModelDesc = "Define o modelo usado para representar dinheiro no jogo.",
     moneyLimit = "Limite de Dinheiro",
     moneyLimitDesc = "Define o limite de dinheiro que um jogador pode ter [0 para infinito].",
     maxMoneyEntities = "Mximo de Entidades de Dinheiro",
     maxMoneyEntitiesDesc = "Nmero mximo de entidades de dinheiro que podem ser largadas de uma vez.",
-    currencySymbol = "Smbolo da Moeda",
-    currencySymbolDesc = "Especifica o smbolo da moeda usada no jogo.",
+    currencySymbol = "Símbolo da Moeda",
+    currencySymbolDesc = "Especifica o símbolo da moeda usada no jogo.",
     pkWorld = "Contar Mortes PK por Mundo",
     pkWorldDesc = "Quando marcado para Perma Kill, as mortes por mundo contam como PK?",
     currencySingularName = "Nome Singular da Moeda",
@@ -2809,4 +2813,35 @@ Recarregar: Largar]],
     urlContainsInvalidChars = "URL contém caracteres inválidos",
     urlTooLong = "URL muito longa",
     vendorPresetName = "Nome de Predefinição de Vendedor",
+    
+    -- UI/Interface Messages
+    activeTabOverview = "Aba ativa: Visão geral",
+    factionGroup = "Grupo de facção",
+    mapEntities = "Entidades do mapa",
+    playerEntities = "Entidades do jogador",
+    
+    -- Error Messages
+    inventoryMissingItem = "Um inventário tem um item ausente",
+    failedSetAngles = "Falha ao SetAngles para entidade '%s' em %s. Ângulo: %s (%s) - %s",
+    failedReadSnapshot = "Falha ao ler arquivo de snapshot",
+    modelMustBeString = "Modelo deve ser uma string",
+    
+    -- Download/Progress Messages
+    downloadProgress = "Progresso do download: %d ativo, %d na fila, %d/%d imagens, %d/%d sons",
+    imagesDownloaded = "Imagens: %d baixadas | %d armazenadas",
+    soundsDownloaded = "Sons: %d baixados | %d armazenados",
+    combinedDownloaded = "Combinado: %d baixado | %d armazenado",
+    
+    -- File/System Messages
+    downloadsNotAllowed = "downloads não permitidos",
+    emptyFile = "arquivo vazio",
+    fileTooLarge = "arquivo muito grande",
+    fileTooSmall = "arquivo muito pequeno",
+    invalidMp3Format = "formato mp3 inválido",
+    noFileExtension = "nenhuma extensão de arquivo",
+    noUrl = "nenhuma URL",
+    
+    -- Other User Messages
+    outOfCharacter = "fora do personagem",
+    notAvailable = "N/D",
 }
