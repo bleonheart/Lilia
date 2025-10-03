@@ -78,14 +78,14 @@ if CLIENT then
         lia.color.transition.active = true
         lia.color.transition.progress = 0
         if not hook.GetTable().LiliaThemeTransition then
-            hook.Add('Think', 'LiliaThemeTransition', function()
+            hook.Add("Think", "LiliaThemeTransition", function()
                 if not lia.color.transition.active then return end
                 local dt = FrameTime()
                 lia.color.transition.progress = math.min(lia.color.transition.progress + (lia.color.transition.speed * dt), 1)
                 local to = lia.color.transition.to
                 if not to then
                     lia.color.transition.active = false
-                    hook.Remove('Think', 'LiliaThemeTransition')
+                    hook.Remove('Think', "LiliaThemeTransition")
                     return
                 end
 
@@ -97,7 +97,7 @@ if CLIENT then
                         else
                             lia.color.stored[k] = v
                         end
-                    elseif type(v) == 'table' and #v > 0 then
+                    elseif type(v) == "table" and #v > 0 then
                         if not lia.color.stored[k] then lia.color.stored[k] = {} end
                         for i = 1, #v do
                             local vi = v[i]
@@ -123,14 +123,14 @@ if CLIENT then
                     end
 
                     lia.color.transition.active = false
-                    hook.Remove('Think', 'LiliaThemeTransition')
+                    hook.Remove('Think', "LiliaThemeTransition")
                 end
             end)
         end
     end
 
     function lia.color.isColor(v)
-        return type(v) == 'table' and type(v.r) == 'number' and type(v.g) == 'number' and type(v.b) == 'number' and type(v.a) == 'number'
+        return type(v) == "table" and type(v.r) == "number" and type(v.g) == "number" and type(v.b) == "number" and type(v.a) == "number"
     end
 
     function lia.color.ReturnMainAdjustedColors()

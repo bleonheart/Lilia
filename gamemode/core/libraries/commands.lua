@@ -580,10 +580,10 @@ if SERVER then
                     target:notifyInfoLocalized("userGroupSet", usergroup)
                     lia.log.add(nil, "usergroup", target, usergroup)
                 else
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " '" .. usergroup .. "'\n")
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " \"" .. usergroup .. "\"\n")
                 end
             else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " '" .. args[1] .. "'\n")
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " \"" .. args[1] .. "\"\n")
             end
         elseif ply:hasPrivilege("setUserGroup") then
             if IsValid(target) then
@@ -845,7 +845,7 @@ if SERVER then
         MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("addingDoorGroupColumn") .. "\n")
         lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
             if not exists then
-                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT 'default'"):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToAddDoorGroupColumn") .. ": " .. error .. "\n") end)
+                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT \"default\""):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToAddDoorGroupColumn") .. ": " .. error .. "\n") end)
             else
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAlreadyExists") .. "\n")
             end
@@ -914,7 +914,7 @@ else
                 end
 
                 lia.color.transition.active = false
-                hook.Remove('Think', 'LiliaThemeTransition')
+                hook.Remove("Think", "LiliaThemeTransition")
             else
                 -- No active transition, just ensure lia.color.theme is up to date
                 lia.color.theme = table.Copy(themeData)

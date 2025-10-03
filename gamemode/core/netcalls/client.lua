@@ -894,7 +894,7 @@ net.Receive("liaAssureClientSideAssets", function()
     print(L("assetDownloadStart"))
     print(L("webImagesToDownload"), table.Count(webimages))
     print(L("webSoundsToDownload"), table.Count(websounds))
-    print(L("assetDownloadSeparator"))
+    print("===========================================")
     local downloadQueue = {}
     local activeDownloads = 0
     local maxConcurrent = 5
@@ -973,7 +973,7 @@ net.Receive("liaAssureClientSideAssets", function()
             timer.Simple(1.0, function()
                 local imageStats = lia.webimage.getStats()
                 local soundStats = lia.websound.getStats()
-                print(L("assetDownloadSeparator"))
+                print("===========================================")
                 print(L("assetDownloadComplete"))
                 print(L("downloadSummary"))
                 print(string.format("Images: %d/%d completed (%d failed)", completedImages, totalImages, failedImages))
@@ -982,7 +982,7 @@ net.Receive("liaAssureClientSideAssets", function()
                 print(string.format("Images: %d downloaded | %d stored", imageStats.downloaded, imageStats.stored))
                 print(string.format("Sounds: %d downloaded | %d stored", soundStats.downloaded, soundStats.stored))
                 print(string.format("Combined: %d downloaded | %d stored", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
-                print(L("assetDownloadSeparator"))
+                print("===========================================")
                 if failedImages > 0 or failedSounds > 0 then
                     print(L("warningAssetsFailedToDownload"))
                     if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), L("assetsDownloadWarning", failedImages, "image(s)")) end

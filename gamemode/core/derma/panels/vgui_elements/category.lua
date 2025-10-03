@@ -2,20 +2,20 @@
 function PANEL:Init()
     self:SetTall(30)
     self:DockPadding(0, 36, 0, 0)
-    self.name = 'Категория'
+    self.name = L("category")
     self.bool_opened = false
     self.bool_header_centered = false
     self.content_size = 0
     self.header_color = lia.color.theme.category
     self.header_color_standard = self.header_color
     self.header_color_opened = lia.color.theme.category_opened
-    self.header = vgui.Create('Button', self)
-    self.header:SetText('')
+    self.header = vgui.Create("Button", self)
+    self.header:SetText("")
     self.header.Paint = function(_, w, h)
         lia.derma.rect(0, 0, w, h):Rad(16):Color(self.header_color):Shape(lia.derma.SHAPE_IOS):Draw()
         local posX = self.bool_header_centered and w * 0.5 or 8
         local alignX = self.bool_header_centered and TEXT_ALIGN_CENTER or TEXT_ALIGN_LEFT
-        draw.SimpleText(self.name, 'Fated.20', posX, 4, lia.color.theme.text, alignX)
+        draw.SimpleText(self.name, "Fated.20", posX, 4, lia.color.theme.text, alignX)
         self.header_color = lia.color.lerp(8, self.header_color, self.bool_opened and self.header_color_opened or self.header_color_standard)
     end
 
@@ -83,4 +83,4 @@ function PANEL:PerformLayout(w)
     self.header:SetSize(w, 30)
 end
 
-vgui.Register('liaCategory', PANEL, 'Panel')
+vgui.Register("liaCategory", PANEL, "Panel")
