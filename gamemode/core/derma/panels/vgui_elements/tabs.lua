@@ -57,19 +57,29 @@ function PANEL:Rebuild()
         local btnTab = vgui.Create('Button', self.panel_tabs)
         if self.tab_style == 'modern' then
             surface.SetFont('Fated.18')
-            local textW = select(1, surface.GetTextSize(tab.name))
+            local textW = surface.GetTextSize(tab.name)
             local iconW = tab.icon and 16 or 0
             local iconTextGap = tab.icon and 8 or 0
             local padding = 16
-            local btnWidth = padding + iconW + iconTextGap + textW + padding
+            local minWidth = 80 -- Minimum tab width
+            local btnWidth = math.max(minWidth, padding + iconW + iconTextGap + textW + padding)
             btnTab:Dock(LEFT)
             btnTab:DockMargin(0, 0, 6, 0)
             btnTab:SetTall(34)
             btnTab:SetWide(btnWidth)
         else
+            -- Calculate width for classic style based on text
+            surface.SetFont('Fated.18')
+            local textW = surface.GetTextSize(tab.name)
+            local iconW = tab.icon and 16 or 0
+            local iconTextGap = tab.icon and 8 or 0
+            local padding = 16
+            local minWidth = 120 -- Minimum tab width for classic style
+            local btnWidth = math.max(minWidth, padding + iconW + iconTextGap + textW + padding)
             btnTab:Dock(TOP)
             btnTab:DockMargin(0, 0, 0, 6)
             btnTab:SetTall(34)
+            btnTab:SetWide(btnWidth)
         end
 
         btnTab:SetText('')
@@ -125,7 +135,19 @@ function PANEL:PerformLayout()
     else
         self.panel_tabs:Dock(LEFT)
         self.panel_tabs:DockMargin(0, 0, 4, 0)
-        self.panel_tabs:SetWide(190)
+        -- Calculate the maximum width needed for all tabs
+        local maxWidth = 0
+        for _, tab in ipairs(self.tabs) do
+            surface.SetFont('Fated.18')
+            local textW = surface.GetTextSize(tab.name)
+            local iconW = tab.icon and 16 or 0
+            local iconTextGap = tab.icon and 8 or 0
+            local padding = 16
+            local minWidth = 120
+            local btnWidth = math.max(minWidth, padding + iconW + iconTextGap + textW + padding)
+            maxWidth = math.max(maxWidth, btnWidth)
+        end
+        self.panel_tabs:SetWide(math.max(190, maxWidth))
     end
 
     self.content:Dock(FILL)

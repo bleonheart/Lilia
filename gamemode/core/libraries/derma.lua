@@ -10,7 +10,7 @@ function lia.derma.derma_menu()
     local mouseX, mouseY = input.GetCursorPos()
     local m = vgui.Create('liaDermaMenu')
     m:SetPos(mouseX, mouseY)
-    ClampMenuPosition(m)
+    lia.util.clampMenuPosition(m)
     lia.derma.menuDermaMenu = m
     return m
 end
@@ -814,4 +814,788 @@ end
 function lia.derma.setDefaultShape(shape)
     defaultShape = shape or SHAPE_FIGMA
     defaultDrawFlags = defaultShape
+end
+
+function lia.derma.ShadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)
+    surface.SetFont(font)
+    local _, h = surface.GetTextSize(text)
+    if yalign == TEXT_ALIGN_CENTER then
+        y = y - h / 2
+    elseif yalign == TEXT_ALIGN_BOTTOM then
+        y = y - h
+    end
+
+    draw.DrawText(text, font, x + dist, y + dist, colorshadow, xalign)
+    draw.DrawText(text, font, x, y, colortext, xalign)
+end
+
+function lia.derma.DrawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
+    local steps = (outlinewidth * 2) / 3
+    if steps < 1 then steps = 1 end
+    for ox = -outlinewidth, outlinewidth, steps do
+        for oy = -outlinewidth, outlinewidth, steps do
+            draw.DrawText(text, font, x + ox, y + oy, outlinecolour, xalign)
+        end
+    end
+    return draw.DrawText(text, font, x, y, colour, xalign)
+end
+
+function lia.derma.DrawTip(x, y, w, h, text, font, textCol, outlineCol)
+    draw.NoTexture()
+    local rectH = 0.85
+    local triW = 0.1
+    local verts = {
+        {
+            x = x,
+            y = y
+        },
+        {
+            x = x + w,
+            y = y
+        },
+        {
+            x = x + w,
+            y = y + h * rectH
+        },
+        {
+            x = x + w / 2 + w * triW,
+            y = y + h * rectH
+        },
+        {
+            x = x + w / 2,
+            y = y + h
+        },
+        {
+            x = x + w / 2 - w * triW,
+            y = y + h * rectH
+        },
+        {
+            x = x,
+            y = y + h * rectH
+        }
+    }
+
+    surface.SetDrawColor(outlineCol)
+    surface.DrawPoly(verts)
+    draw.SimpleText(text, font, x + w / 2, y + h / 2, textCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
+    color = color or Color(255, 255, 255)
+    return draw.TextShadow({
+        text = text,
+        font = font or "liaGenericFont",
+        pos = {x, y},
+        color = color,
+        xalign = alignX or 0,
+        yalign = alignY or 0
+    }, 1, alpha or color.a * 0.575)
+end
+
+function lia.derma.drawTexture(material, color, x, y, w, h)
+    surface.SetDrawColor(color or Color(255, 255, 255))
+    if isstring(material) then
+        surface.SetMaterial(lia.util.getMaterial(material))
+    else
+        surface.SetMaterial(material)
+    end
+    surface.DrawTexturedRect(x, y, w, h)
+end
+
+function lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)
+    local skin = ispanel(panel) and IsValid(panel) and panel:GetSkin() or derma.GetDefaultSkin()
+    if not skin then return end
+    local func = skin[name]
+    if not func then return end
+    return func(skin, panel, a, b, c, d, e, f, g)
+end
+
+function lia.derma.approachExp(current, target, speed, dt)
+    local t = 1 - math.exp(-speed * dt)
+    return current + (target - current) * t
+end
+
+function lia.derma.easeOutCubic(t)
+    return 1 - (1 - t) * (1 - t) * (1 - t)
+end
+
+function lia.derma.easeInOutCubic(t)
+    if t < 0.5 then
+        return 4 * t * t * t
+    else
+        return 1 - math.pow(-2 * t + 2, 3) / 2
+    end
+end
+
+function lia.derma.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)
+    local scaleFactor = 0.8
+    if not IsValid(panel) then return end
+    duration = (duration and duration > 0) and duration or 0.18
+    alpha_dur = (alpha_dur and alpha_dur > 0) and alpha_dur or duration
+    local targetX, targetY = panel:GetPos()
+    local initialW = target_w * (scale_factor and scale_factor or scaleFactor)
+    local initialH = target_h * (scale_factor and scale_factor or scaleFactor)
+    local initialX = targetX + (target_w - initialW) / 2
+    local initialY = targetY + (target_h - initialH) / 2
+    panel:SetSize(initialW, initialH)
+    panel:SetPos(initialX, initialY)
+    panel:SetAlpha(0)
+    local curW, curH = initialW, initialH
+    local curX, curY = initialX, initialY
+    local curA = 0
+    local eps = 0.5
+    local alpha_eps = 1
+    local speedSize = 3 / math.max(0.0001, duration)
+    local speedAlpha = 3 / math.max(0.0001, alpha_dur)
+    panel.Think = function()
+        if not IsValid(panel) then return end
+        local dt = FrameTime()
+        curW = lia.derma.approachExp(curW, target_w, speedSize, dt)
+        curH = lia.derma.approachExp(curH, target_h, speedSize, dt)
+        curX = lia.derma.approachExp(curX, targetX, speedSize, dt)
+        curY = lia.derma.approachExp(curY, targetY, speedSize, dt)
+        curA = lia.derma.approachExp(curA, 255, speedAlpha, dt)
+        panel:SetSize(curW, curH)
+        panel:SetPos(curX, curY)
+        panel:SetAlpha(math.floor(curA + 0.5))
+        local doneSize = math.abs(curW - target_w) <= eps and math.abs(curH - target_h) <= eps
+        local donePos = math.abs(curX - targetX) <= eps and math.abs(curY - targetY) <= eps
+        local doneAlpha = math.abs(curA - 255) <= alpha_eps
+        if doneSize and donePos and doneAlpha then
+            panel:SetSize(target_w, target_h)
+            panel:SetPos(targetX, targetY)
+            panel:SetAlpha(255)
+            panel.Think = nil
+            if callback then callback(panel) end
+        end
+    end
+end
+
+function lia.derma.clampMenuPosition(panel)
+    if not IsValid(panel) then return end
+    local x, y = panel:GetPos()
+    local w, h = panel:GetSize()
+    local sw, sh = ScrW(), ScrH()
+    if x < 5 then
+        x = 5
+    elseif x + w > sw - 5 then
+        x = sw - 5 - w
+    end
+
+    if y < 5 then
+        y = 5
+    elseif y + h > sh - 5 then
+        y = sh - 5 - h
+    end
+
+    panel:SetPos(x, y)
+end
+
+function lia.derma.drawGradient(_x, _y, _w, _h, direction, color_shadow, radius, flags)
+    local listGradients = {Material("vgui/gradient_up"), Material("vgui/gradient_down"), Material("vgui/gradient-l"), Material("vgui/gradient-r")}
+    radius = radius and radius or 0
+    lia.derma.drawMaterial(radius, _x, _y, _w, _h, color_shadow, listGradients[direction], flags)
+end
+
+function lia.derma.wrapText(text, width, font)
+    font = font or "liaChatFont"
+    surface.SetFont(font)
+    local exploded = string.Explode("%s", text, true)
+    local line = ""
+    local lines = {}
+    local w = surface.GetTextSize(text)
+    local maxW = 0
+    if w <= width then
+        text, _ = text:gsub("%s", " ")
+        return {text}, w
+    end
+
+    for i = 1, #exploded do
+        local word = exploded[i]
+        line = line .. " " .. word
+        w = surface.GetTextSize(line)
+        if w > width then
+            lines[#lines + 1] = line
+            line = ""
+            if w > maxW then maxW = w end
+        end
+    end
+
+    if line ~= "" then lines[#lines + 1] = line end
+    return lines, maxW
+end
+
+function lia.derma.drawBlur(panel, amount, passes, alpha)
+    amount = amount or 5
+    alpha = alpha or 255
+    surface.SetMaterial(lia.util.getMaterial("pp/blurscreen"))
+    surface.SetDrawColor(255, 255, 255, alpha)
+    local x, y = panel:LocalToScreen(0, 0)
+    for i = -(passes or 0.2), 1, 0.2 do
+        lia.util.getMaterial("pp/blurscreen"):SetFloat("$blur", i * amount)
+        lia.util.getMaterial("pp/blurscreen"):Recompute()
+        render.UpdateScreenEffectTexture()
+        surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
+    end
+end
+
+function lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
+    if not IsValid(panel) then return end
+    amount = amount or 6
+    passes = math.max(1, passes or 5)
+    alpha = alpha or 255
+    darkAlpha = darkAlpha or 220
+    local mat = lia.util.getMaterial("pp/blurscreen")
+    local x, y = panel:LocalToScreen(0, 0)
+    x = math.floor(x)
+    y = math.floor(y)
+    local sw, sh = ScrW(), ScrH()
+    local expand = 4
+    render.UpdateScreenEffectTexture()
+    surface.SetMaterial(mat)
+    surface.SetDrawColor(255, 255, 255, alpha)
+    for i = 1, passes do
+        mat:SetFloat("$blur", i / passes * amount)
+        mat:Recompute()
+        surface.DrawTexturedRectUV(-x - expand, -y - expand, sw + expand * 2, sh + expand * 2, 0, 0, 1, 1)
+    end
+
+    surface.SetDrawColor(0, 0, 0, darkAlpha)
+    surface.DrawRect(x, y, panel:GetWide(), panel:GetTall())
+end
+
+function lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)
+    amount = amount or 5
+    alpha = alpha or 255
+    surface.SetMaterial(lia.util.getMaterial("pp/blurscreen"))
+    surface.SetDrawColor(255, 255, 255, alpha)
+    local x2, y2 = x / ScrW(), y / ScrH()
+    local w2, h2 = (x + w) / ScrW(), (y + h) / ScrH()
+    for i = -(passes or 0.2), 1, 0.2 do
+        lia.util.getMaterial("pp/blurscreen"):SetFloat("$blur", i * amount)
+        lia.util.getMaterial("pp/blurscreen"):Recompute()
+        render.UpdateScreenEffectTexture()
+        surface.DrawTexturedRectUV(x, y, w, h, x2, y2, w2, h2)
+    end
+end
+
+function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
+    defaults = defaults or {}
+    local count = table.Count(argTypes)
+    local frameW, frameH = 600, 200 + count * 75
+    local frame = vgui.Create("DFrame")
+    frame:SetTitle("")
+    frame:SetSize(frameW, frameH)
+    frame:Center()
+    frame:MakePopup()
+    frame:ShowCloseButton(false)
+    frame.Paint = function(self, w, h)
+        derma.SkinHook("Paint", "Frame", self, w, h)
+        draw.SimpleText(title or "", "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
+    end
+
+    local scroll = vgui.Create("DScrollPanel", frame)
+    scroll:Dock(FILL)
+    scroll:DockMargin(10, 40, 10, 10)
+    surface.SetFont("liaSmallFont")
+    local controls, watchers = {}, {}
+    local validate
+    local ordered = {}
+    local grouped = {
+        strings = {},
+        dropdowns = {},
+        bools = {},
+        rest = {}
+    }
+
+    for name, typeInfo in pairs(argTypes) do
+        local fieldType, dataTbl, defaultVal = typeInfo, nil, nil
+        if istable(typeInfo) then
+            fieldType, dataTbl = typeInfo[1], typeInfo[2]
+            if typeInfo[3] ~= nil then defaultVal = typeInfo[3] end
+        end
+
+        fieldType = string.lower(tostring(fieldType))
+        if defaultVal == nil and defaults[name] ~= nil then defaultVal = defaults[name] end
+        local info = {
+            name = name,
+            fieldType = fieldType,
+            dataTbl = dataTbl,
+            defaultVal = defaultVal
+        }
+
+        if fieldType == "string" then
+            table.insert(grouped.strings, info)
+        elseif fieldType == "table" then
+            table.insert(grouped.dropdowns, info)
+        elseif fieldType == "boolean" then
+            table.insert(grouped.bools, info)
+        else
+            table.insert(grouped.rest, info)
+        end
+    end
+
+    for _, group in ipairs({grouped.strings, grouped.dropdowns, grouped.bools, grouped.rest}) do
+        for _, v in ipairs(group) do
+            table.insert(ordered, v)
+        end
+    end
+
+    for _, info in ipairs(ordered) do
+        local name, fieldType, dataTbl, defaultVal = info.name, info.fieldType, info.dataTbl, info.defaultVal
+        local panel = vgui.Create("DPanel", scroll)
+        panel:Dock(TOP)
+        panel:DockMargin(0, 0, 0, 5)
+        panel:SetTall(70)
+        panel.Paint = nil
+        local label = vgui.Create("DLabel", panel)
+        label:SetFont("liaSmallFont")
+        label:SetText(name)
+        label:SizeToContents()
+        local textW = select(1, surface.GetTextSize(name))
+        local ctrl
+        local isBool = fieldType == "boolean"
+        if isBool then
+            ctrl = vgui.Create("liaCheckbox", panel)
+            if defaultVal ~= nil then ctrl:SetChecked(tobool(defaultVal)) end
+        elseif fieldType == "table" then
+            ctrl = vgui.Create("DComboBox", panel)
+            local defaultChoiceIndex
+            if istable(dataTbl) then
+                for idx, v in ipairs(dataTbl) do
+                    if istable(v) then
+                        ctrl:AddChoice(v[1], v[2])
+                        if defaultVal ~= nil and (v[2] == defaultVal or v[1] == defaultVal) then defaultChoiceIndex = idx end
+                    else
+                        ctrl:AddChoice(tostring(v))
+                        if defaultVal ~= nil and v == defaultVal then defaultChoiceIndex = idx end
+                    end
+                end
+            end
+
+            if defaultChoiceIndex then ctrl:ChooseOptionID(defaultChoiceIndex) end
+        elseif fieldType == "int" or fieldType == "number" then
+            ctrl = vgui.Create("DTextEntry", panel)
+            ctrl:SetFont("liaSmallFont")
+            if ctrl.SetNumeric then ctrl:SetNumeric(true) end
+            if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
+        else
+            ctrl = vgui.Create("DTextEntry", panel)
+            ctrl:SetFont("liaSmallFont")
+            if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
+        end
+
+        panel.PerformLayout = function(_, w, h)
+            local ctrlH, ctrlW
+            if isBool then
+                ctrlH, ctrlW = 22, 22
+            else
+                ctrlH, ctrlW = 30, w * 0.7
+            end
+
+            local totalW = textW + 10 + ctrlW
+            local xOff = (w - totalW) / 2
+            label:SetPos(xOff, (h - label:GetTall()) / 2)
+            ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2)
+            ctrl:SetSize(ctrlW, ctrlH)
+        end
+
+        controls[name] = {
+            ctrl = ctrl,
+            type = fieldType
+        }
+
+        watchers[#watchers + 1] = function()
+            local function trigger()
+                validate()
+            end
+
+            ctrl.OnValueChange, ctrl.OnTextChanged, ctrl.OnChange, ctrl.OnSelect = trigger, trigger, trigger, trigger
+        end
+    end
+
+    local btnPanel = vgui.Create("DPanel", frame)
+    btnPanel:Dock(BOTTOM)
+    btnPanel:SetTall(90)
+    btnPanel:DockPadding(15, 15, 15, 15)
+    btnPanel.Paint = nil
+    local submit = vgui.Create("DButton", btnPanel)
+    submit:Dock(LEFT)
+    submit:DockMargin(0, 0, 15, 0)
+    submit:SetWide(270)
+    submit:SetText(L("submit"))
+    submit:SetFont("liaSmallFont")
+    submit:SetIcon("icon16/tick.png")
+    submit:SetEnabled(false)
+    local cancel = vgui.Create("DButton", btnPanel)
+    cancel:Dock(RIGHT)
+    cancel:SetWide(270)
+    cancel:SetText(L("cancel"))
+    cancel:SetFont("liaSmallFont")
+    cancel:SetIcon("icon16/cross.png")
+    cancel.DoClick = function()
+        if isfunction(onSubmit) then onSubmit(false) end
+        frame:Remove()
+    end
+
+    validate = function()
+        for _, data in pairs(controls) do
+            local ctl, ftype, ok = data.ctrl, data.type, true
+            if ftype == "boolean" then
+                ok = true
+            elseif ctl.GetSelected then
+                local txt = select(1, ctl:GetSelected())
+                ok = txt and txt ~= ""
+            elseif ctl.GetValue then
+                local val = ctl:GetValue()
+                ok = val and val ~= ""
+            end
+
+            if not ok then
+                submit:SetEnabled(false)
+                return
+            end
+        end
+
+        submit:SetEnabled(true)
+    end
+
+    for _, fn in ipairs(watchers) do
+        fn()
+    end
+
+    validate()
+    submit.DoClick = function()
+        local result = {}
+        for k, data in pairs(controls) do
+            local ctl, ftype = data.ctrl, data.type
+            if ftype == "boolean" then
+                result[k] = ctl:GetChecked()
+            elseif ctl.GetSelected then
+                local txt, val = ctl:GetSelected()
+                result[k] = val or txt
+            else
+                local val = ctl:GetValue()
+                result[k] = (ftype == "int" or ftype == "number") and tonumber(val) or val
+            end
+        end
+
+        if isfunction(onSubmit) then onSubmit(true, result) end
+        frame:Remove()
+    end
+
+    frame.OnClose = function() if isfunction(onSubmit) then onSubmit(false) end end
+end
+
+function lia.derma.CreateTableUI(title, columns, data, options, charID)
+    local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
+    local frame = vgui.Create("liaDListView")
+    frame:SetWindowTitle(title and L(title) or L("tableListTitle"))
+    frame:SetSize(frameWidth, frameHeight)
+    frame:Center()
+    frame:MakePopup()
+    if IsValid(frame.topBar) then frame.topBar:Remove() end
+    if IsValid(frame.statusBar) then frame.statusBar:Remove() end
+    local listView = frame.listView
+    listView:Dock(FILL)
+    listView:Clear()
+    if listView.ClearColumns then listView:ClearColumns() end
+    for _, colInfo in ipairs(columns or {}) do
+        local localizedName = colInfo.name and L(colInfo.name) or L("na")
+        local col = listView:AddColumn(localizedName)
+        surface.SetFont(col.Header:GetFont())
+        local textW = surface.GetTextSize(localizedName)
+        local minWidth = textW + 16
+        col:SetMinWidth(minWidth)
+        col:SetWidth(colInfo.width or minWidth)
+    end
+
+    for _, row in ipairs(data) do
+        local lineData = {}
+        for _, colInfo in ipairs(columns) do
+            table.insert(lineData, row[colInfo.field] or L("na"))
+        end
+
+        local line = listView:AddLine(unpack(lineData))
+        line.rowData = row
+    end
+
+    listView.OnRowRightClick = function(_, _, line)
+        if not IsValid(line) or not line.rowData then return end
+        local rowData = line.rowData
+        local menu = DermaMenu()
+        menu:AddOption(L("copyRow"), function()
+            local rowString = ""
+            for key, value in pairs(rowData) do
+                value = tostring(value or L("na"))
+                rowString = rowString .. key:gsub("^%l", string.upper) .. " " .. value .. " | "
+            end
+
+            rowString = rowString:sub(1, -4)
+            SetClipboardText(rowString)
+        end)
+
+        for _, option in ipairs(istable(options) and options or {}) do
+            menu:AddOption(option.name and L(option.name) or option.name, function()
+                if not option.net then return end
+                if option.ExtraFields then
+                    local inputPanel = vgui.Create("DFrame")
+                    inputPanel:SetTitle(L("optionsTitle", option.name))
+                    inputPanel:SetSize(300, 300 + #table.GetKeys(option.ExtraFields) * 35)
+                    inputPanel:Center()
+                    inputPanel:MakePopup()
+                    local form = vgui.Create("DForm", inputPanel)
+                    form:Dock(FILL)
+                    form:SetLabel("")
+                    form.Paint = function() end
+                    local inputs = {}
+                    for fName, fType in pairs(option.ExtraFields) do
+                        local label = vgui.Create("DLabel", form)
+                        label:SetText(fName)
+                        label:Dock(TOP)
+                        label:DockMargin(5, 10, 5, 0)
+                        form:AddItem(label)
+                        if isstring(fType) and fType == "text" then
+                            local entry = vgui.Create("DTextEntry", form)
+                            entry:Dock(TOP)
+                            entry:DockMargin(5, 5, 5, 0)
+                            entry:SetPlaceholderText(L("typeFieldPrompt", fName))
+                            form:AddItem(entry)
+                            inputs[fName] = {
+                                panel = entry,
+                                ftype = "text"
+                            }
+                        elseif isstring(fType) and fType == "combo" then
+                            local combo = vgui.Create("DComboBox", form)
+                            combo:Dock(TOP)
+                            combo:DockMargin(5, 5, 5, 0)
+                            combo:SetValue(L("selectPrompt", fName))
+                            form:AddItem(combo)
+                            inputs[fName] = {
+                                panel = combo,
+                                ftype = "combo"
+                            }
+                        elseif istable(fType) then
+                            local combo = vgui.Create("DComboBox", form)
+                            combo:Dock(TOP)
+                            combo:DockMargin(5, 5, 5, 0)
+                            combo:SetValue(L("selectPrompt", fName))
+                            for _, choice in ipairs(fType) do
+                                combo:AddChoice(choice)
+                            end
+
+                            form:AddItem(combo)
+                            inputs[fName] = {
+                                panel = combo,
+                                ftype = "combo"
+                            }
+                        end
+                    end
+
+                    local submitButton = vgui.Create("DButton", form)
+                    submitButton:SetText(L("submit"))
+                    submitButton:Dock(TOP)
+                    submitButton:DockMargin(5, 10, 5, 0)
+                    form:AddItem(submitButton)
+                    submitButton.DoClick = function()
+                        local values = {}
+                        for fName, info in pairs(inputs) do
+                            if not IsValid(info.panel) then continue end
+                            if info.ftype == "text" then
+                                values[fName] = info.panel:GetValue() or ""
+                            elseif info.ftype == "combo" then
+                                values[fName] = info.panel:GetSelected() or ""
+                            end
+                        end
+
+                        net.Start(option.net)
+                        net.WriteInt(charID, 32)
+                        net.WriteTable(rowData)
+                        for _, fVal in pairs(values) do
+                            if isnumber(fVal) then
+                                net.WriteInt(fVal, 32)
+                            else
+                                net.WriteString(fVal)
+                            end
+                        end
+
+                        net.SendToServer()
+                        inputPanel:Close()
+                        frame:Remove()
+                    end
+                else
+                    net.Start(option.net)
+                    net.WriteInt(charID, 32)
+                    net.WriteTable(rowData)
+                    net.SendToServer()
+                    frame:Remove()
+                end
+            end)
+        end
+
+        menu:Open()
+    end
+    return frame, listView
+end
+
+function lia.derma.openOptionsMenu(title, options)
+    if not istable(options) then return end
+    local entries = {}
+    if options[1] then
+        for _, opt in ipairs(options) do
+            if isstring(opt.name) and isfunction(opt.callback) then entries[#entries + 1] = opt end
+        end
+    else
+        for name, callback in pairs(options) do
+            if isfunction(callback) then
+                entries[#entries + 1] = {
+                    name = name,
+                    callback = callback
+                }
+            end
+        end
+    end
+
+    if #entries == 0 then return end
+    local frameW, entryH = 300, 30
+    local frameH = entryH * #entries + 50
+    local frame = vgui.Create("DFrame")
+    frame:SetSize(frameW, frameH)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:ShowCloseButton(true)
+    frame.Paint = function(self, w, h)
+        lia.derma.drawBlur(self, 4)
+        draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
+    end
+
+    local titleLabel = frame:Add("DLabel")
+    titleLabel:SetPos(0, 8)
+    titleLabel:SetSize(frameW, 20)
+    titleLabel:SetText(L(title or "options"))
+    titleLabel:SetFont("liaSmallFont")
+    titleLabel:SetColor(Color(255, 255, 255))
+    titleLabel:SetContentAlignment(5)
+    local layout = frame:Add("DListLayout")
+    layout:Dock(FILL)
+    layout:DockMargin(10, 32, 10, 10)
+    for _, opt in ipairs(entries) do
+        local btn = layout:Add("DButton")
+        btn:SetTall(entryH)
+        btn:Dock(TOP)
+        btn:DockMargin(0, 0, 0, 5)
+        btn:SetText(L(opt.name))
+        btn:SetFont("liaSmallFont")
+        btn:SetTextColor(Color(255, 255, 255))
+        btn:SetContentAlignment(5)
+        btn.Paint = function(self, w, h)
+            if self:IsHovered() then
+                draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 160))
+            else
+                draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 100))
+            end
+        end
+
+        btn.DoClick = function()
+            frame:Close()
+            opt.callback()
+        end
+    end
+    return frame
+end
+
+local vectorMeta = FindMetaTable("Vector")
+local toScreen = vectorMeta and vectorMeta.ToScreen or function()
+    return {
+        x = 0,
+        y = 0,
+        visible = false
+    }
+end
+
+local defaultTheme = {
+    background_alpha = Color(34, 34, 34, 210),
+    header = Color(34, 34, 34, 210),
+    accent = Color(255, 255, 255, 180),
+    text = Color(255, 255, 255)
+}
+
+local function scaleColorAlpha(col, scale)
+    col = col or defaultTheme.background_alpha
+    local a = col.a or 255
+    return Color(col.r, col.g, col.b, math.Clamp(a * scale, 0, 255))
+end
+
+local function EntText(text, x, y, fade)
+    surface.SetFont("Fated.40")
+    local tw, th = surface.GetTextSize(text)
+    local bx, by = math.Round(x - tw * 0.5 - 18), math.Round(y - 12)
+    local bw, bh = tw + 36, th + 24
+    local theme = lia.color.theme or defaultTheme
+    local fadeAlpha = math.Clamp(fade, 0, 1)
+    local headerColor = scaleColorAlpha(theme.background_panelpopup or theme.header or defaultTheme.header, fadeAlpha)
+    local accentColor = scaleColorAlpha(theme.theme or theme.text or defaultTheme.accent, fadeAlpha)
+    local textColor = scaleColorAlpha(theme.text or defaultTheme.text, fadeAlpha)
+    lia.derma.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
+    lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
+    draw.SimpleText(text, "Fated.40", math.Round(x), math.Round(y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    return bh
+end
+
+lia.derma.entsScales = lia.derma.entsScales or {}
+function lia.derma.drawEntText(ent, text, posY, alphaOverride)
+    if not (IsValid(ent) and text and text ~= "") then return end
+    posY = posY or 0
+    local distSqr = EyePos():DistToSqr(ent:GetPos())
+    local maxDist = 380
+    if distSqr > maxDist * maxDist then return end
+    local dist = math.sqrt(distSqr)
+    local minDist = 20
+    local idx = ent:EntIndex()
+    local prev = lia.derma.entsScales[idx] or 0
+    local normalized = math.Clamp((maxDist - dist) / math.max(1, maxDist - minDist), 0, 1)
+    local appearThreshold = 0.8
+    local disappearThreshold = 0.01
+    local target
+    if normalized <= disappearThreshold then
+        target = 0
+    elseif normalized >= appearThreshold then
+        target = 1
+    else
+        target = (normalized - disappearThreshold) / (appearThreshold - disappearThreshold)
+    end
+
+    local dt = FrameTime() or 0.016
+    local appearSpeed = 18
+    local disappearSpeed = 12
+    local speed = (target > prev) and appearSpeed or disappearSpeed
+    local cur = lia.derma.approachExp(prev, target, speed, dt)
+    if math.abs(cur - target) < 0.0005 then cur = target end
+    if cur == 0 and target == 0 then
+        lia.derma.entsScales[idx] = nil
+        return
+    end
+
+    lia.derma.entsScales[idx] = cur
+    local eased = lia.derma.easeInOutCubic(cur)
+    if eased <= 0 then return end
+    local fade = eased
+    if alphaOverride then
+        if alphaOverride > 1 then
+            fade = fade * math.Clamp(alphaOverride / 255, 0, 1)
+        else
+            fade = fade * math.Clamp(alphaOverride, 0, 1)
+        end
+    end
+
+    if fade <= 0 then return end
+    local mins, maxs = ent:OBBMins(), ent:OBBMaxs()
+    local _, rotatedMax = ent:GetRotatedAABB(mins, maxs)
+    local bob = math.sin(CurTime() + idx) / 3 + 0.5
+    local center = ent:LocalToWorld(ent:OBBCenter()) + Vector(0, 0, math.abs(rotatedMax.z / 2) + 12 + bob)
+    local screenPos = toScreen(center)
+    if screenPos.visible == false then return end
+    EntText(text, screenPos.x, screenPos.y + posY, fade)
 end

@@ -133,18 +133,18 @@ function MODULE:PopulateAdminTabs(pages)
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
-                panel:DockPadding(10, 10, 10, 10)
+                panel:DockPadding(6, 6, 6, 6)
                 panel.Paint = function() end
                 function panel:buildSheet()
                     if IsValid(self.sheet) then self.sheet:Remove() end
-                    self.sheet = self:Add("DPanel")
+                    self.sheet = self:Add("Panel")
                     self.sheet:Dock(FILL)
                     self.sheet.Paint = function() end
                     local privileges = lia.administrator.privileges or {}
                     local names = lia.administrator.privilegeNames or {}
                     local cats = lia.administrator.privilegeCategories or {}
                     local headers = {L("id"), L("name"), L("minAccess"), L("category")}
-                    local listView = self.sheet:Add("DListView")
+                    local listView = self.sheet:Add("liaTable")
                     listView:Dock(FILL)
                     listView:SetMultiSelect(false)
                     for _, header in ipairs(headers) do
@@ -228,13 +228,13 @@ function MODULE:PopulateAdminTabs(pages)
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
-                panel:DockPadding(10, 10, 10, 10)
+                panel:DockPadding(6, 6, 6, 6)
                 panel.Paint = function() end
-                panel.sheet = panel:Add("DPropertySheet")
+                panel.sheet = panel:Add("liaTabs")
                 panel.sheet:Dock(FILL)
                 function panel:buildSheets(data)
                     if IsValid(self.sheet) then self.sheet:Remove() end
-                    self.sheet = self:Add("DPropertySheet")
+                    self.sheet = self:Add("liaTabs")
                     self.sheet:Dock(FILL)
                     local function formatPlayTime(secs)
                         local h = math.floor(secs / 3600)
@@ -252,10 +252,6 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     local columns = {
-                        {
-                            name = "id",
-                            field = L("id")
-                        },
                         {
                             name = "name",
                             field = L("name")
@@ -314,14 +310,16 @@ function MODULE:PopulateAdminTabs(pages)
 
                     hook.Run("CharListColumns", columns)
                     local function createList(parent, rows)
-                        local container = parent:Add("DPanel")
-                        container:Dock(FILL)
-                        container.Paint = function() end
-                        local search = container:Add("DTextEntry")
+                    local container = parent:Add("Panel")
+                    container:Dock(FILL)
+                    container:DockMargin(0, 20, 0, 0)
+                    container.Paint = function() end
+                        local search = container:Add("liaEntry")
                         search:Dock(TOP)
+                        search:DockMargin(0, 0, 0, 15)
                         search:SetPlaceholderText(L("search"))
                         search:SetTextColor(Color(255, 255, 255))
-                        local list = container:Add("DListView")
+                        local list = container:Add("liaTable")
                         list:Dock(FILL)
                         local steamIDColumnIndex
                         for i, col in ipairs(columns) do
@@ -399,14 +397,14 @@ function MODULE:PopulateAdminTabs(pages)
                         end
                     end
 
-                    local allPanel = self.sheet:Add("DPanel")
+                    local allPanel = self.sheet:Add("Panel")
                     allPanel:Dock(FILL)
                     allPanel.Paint = function() end
                     createList(allPanel, data.all or {})
                     self.sheet:AddSheet(L("allCharacters"), allPanel)
                     for steamID, chars in pairs(data.players or {}) do
                         local ply = lia.util.getBySteamID(tostring(steamID))
-                        local pnl = self.sheet:Add("DPanel")
+                        local pnl = self.sheet:Add("Panel")
                         pnl:Dock(FILL)
                         pnl.Paint = function() end
                         createList(pnl, chars)
@@ -428,7 +426,7 @@ function MODULE:PopulateAdminTabs(pages)
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
-                panel:DockPadding(10, 10, 10, 10)
+                panel:DockPadding(6, 6, 6, 6)
                 panel.Paint = function() end
                 net.Start("liaRequestLevelingList")
                 net.SendToServer()
@@ -443,9 +441,9 @@ function MODULE:PopulateAdminTabs(pages)
             drawFunc = function(panel)
                 panelRef = panel
                 panel:Clear()
-                panel:DockPadding(10, 10, 10, 10)
+                panel:DockPadding(6, 6, 6, 6)
                 panel.Paint = function() end
-                panel.sheet = panel:Add("DPropertySheet")
+                panel.sheet = panel:Add("liaTabs")
                 panel.sheet:Dock(FILL)
                 function panel:buildSheets(data)
                     for _, v in ipairs(self.sheet.Items or {}) do
@@ -454,10 +452,16 @@ function MODULE:PopulateAdminTabs(pages)
 
                     self.sheet.Items = {}
                     for tbl, rows in SortedPairs(data or {}) do
-                        local pnl = self.sheet:Add("DPanel")
+                        local pnl = self.sheet:Add("Panel")
                         pnl:Dock(FILL)
                         pnl.Paint = function() end
-                        local list = pnl:Add("DListView")
+
+                        local container = pnl:Add("Panel")
+                        container:Dock(FILL)
+                        container:DockMargin(0, 20, 0, 0)
+                        container.Paint = function() end
+
+                        local list = container:Add("liaTable")
                         list:Dock(FILL)
                         local columns = {}
                         function list:OnRowRightClick(_, line)

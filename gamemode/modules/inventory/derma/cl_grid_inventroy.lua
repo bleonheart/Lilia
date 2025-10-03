@@ -34,7 +34,7 @@ function PANEL:OnRemove()
     self:liaDeleteInventoryHooks()
 end
 
-vgui.Register("liaInventory", PANEL, "DFrame")
+vgui.Register("liaInventory", PANEL, "liaFrame")
 PANEL = {}
 local function headerHeight(f)
     return IsValid(f.btnClose) and f.btnClose:GetTall() + 4 or 24

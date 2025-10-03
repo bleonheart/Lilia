@@ -494,3 +494,57 @@ end
 function GM:DrawDeathNotice()
     return false
 end
+
+-- Refresh UI elements when fonts change
+hook.Add("RefreshFonts", "liaRefreshUIElements", function()
+    print("RefreshFonts hook triggered - refreshing UI elements")
+    -- Force all VGUI elements to invalidate their layout and refresh fonts
+    local function refreshPanel(panel)
+        if not IsValid(panel) then return end
+
+        -- Invalidate layout to force re-calculation with new fonts
+        panel:InvalidateLayout(true)
+
+        -- Force re-render
+        panel:SetVisible(false)
+        panel:SetVisible(true)
+
+        -- Recursively refresh child panels
+        for _, child in pairs(panel:GetChildren()) do
+            refreshPanel(child)
+        end
+    end
+
+    -- Refresh F1 menu if open
+    if IsValid(lia.gui.menu) then
+        lia.gui.menu:Update()
+        refreshPanel(lia.gui.menu)
+    end
+
+    -- Refresh character menu if open
+    if IsValid(lia.gui.character) then
+        lia.gui.character:Update()
+        refreshPanel(lia.gui.character)
+    end
+
+    -- Refresh main menu if open
+    if IsValid(lia.gui.main) then
+        lia.gui.main:Update()
+        refreshPanel(lia.gui.main)
+    end
+
+    -- Refresh scoreboard if open
+    if IsValid(lia.gui.score) then
+        lia.gui.score:Update()
+        refreshPanel(lia.gui.score)
+    end
+
+    -- Refresh chatbox if open
+    if IsValid(lia.gui.chat) then
+        lia.gui.chat:Update()
+        refreshPanel(lia.gui.chat)
+    end
+
+    -- Refresh any other open UI elements that use fonts
+    hook.Run("OnFontsRefreshed")
+end)

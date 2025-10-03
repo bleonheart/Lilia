@@ -302,112 +302,17 @@ if SERVER then
         return output
     end
 else
-    function lia.util.ShadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)
-        surface.SetFont(font)
-        local _, h = surface.GetTextSize(text)
-        if yalign == TEXT_ALIGN_CENTER then
-            y = y - h / 2
-        elseif yalign == TEXT_ALIGN_BOTTOM then
-            y = y - h
-        end
+    -- UI functions moved to lia.derma - aliases for backward compatibility
+    lia.util.ShadowText = lia.derma.ShadowText
+    lia.util.DrawTextOutlined = lia.derma.DrawTextOutlined
+    lia.util.DrawTip = lia.derma.DrawTip
+    lia.util.drawText = lia.derma.drawText
+    lia.util.drawTexture = lia.derma.drawTexture
+    lia.util.skinFunc = lia.derma.skinFunc
 
-        draw.DrawText(text, font, x + dist, y + dist, colorshadow, xalign)
-        draw.DrawText(text, font, x, y, colortext, xalign)
-    end
-
-    function lia.util.DrawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
-        local steps = (outlinewidth * 2) / 3
-        if steps < 1 then steps = 1 end
-        for ox = -outlinewidth, outlinewidth, steps do
-            for oy = -outlinewidth, outlinewidth, steps do
-                draw.DrawText(text, font, x + ox, y + oy, outlinecolour, xalign)
-            end
-        end
-        return draw.DrawText(text, font, x, y, colour, xalign)
-    end
-
-    function lia.util.DrawTip(x, y, w, h, text, font, textCol, outlineCol)
-        draw.NoTexture()
-        local rectH = 0.85
-        local triW = 0.1
-        local verts = {
-            {
-                x = x,
-                y = y
-            },
-            {
-                x = x + w,
-                y = y
-            },
-            {
-                x = x + w,
-                y = y + h * rectH
-            },
-            {
-                x = x + w / 2 + w * triW,
-                y = y + h * rectH
-            },
-            {
-                x = x + w / 2,
-                y = y + h
-            },
-            {
-                x = x + w / 2 - w * triW,
-                y = y + h * rectH
-            },
-            {
-                x = x,
-                y = y + h * rectH
-            }
-        }
-
-        surface.SetDrawColor(outlineCol)
-        surface.DrawPoly(verts)
-        draw.SimpleText(text, font, x + w / 2, y + h / 2, textCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    end
-
-    function lia.util.drawText(text, x, y, color, alignX, alignY, font, alpha)
-        color = color or color_white
-        return draw.TextShadow({
-            text = text,
-            font = font or "liaGenericFont",
-            pos = {x, y},
-            color = color,
-            xalign = alignX or 0,
-            yalign = alignY or 0
-        }, 1, alpha or color.a * 0.575)
-    end
-
-    function lia.util.drawTexture(material, color, x, y, w, h)
-        surface.SetDrawColor(color or color_white)
-        surface.SetMaterial(lia.util.getMaterial(material))
-        surface.DrawTexturedRect(x, y, w, h)
-    end
-
-    function lia.util.skinFunc(name, panel, a, b, c, d, e, f, g)
-        local skin = ispanel(panel) and IsValid(panel) and panel:GetSkin() or derma.GetDefaultSkin()
-        if not skin then return end
-        local func = skin[name]
-        if not func then return end
-        return func(skin, panel, a, b, c, d, e, f, g)
-    end
-
-    function lia.util.approachExp(current, target, speed, dt)
-        local t = 1 - math.exp(-speed * dt)
-        return current + (target - current) * t
-    end
-
-    function lia.util.easeOutCubic(t)
-        return 1 - (1 - t) * (1 - t) * (1 - t)
-    end
-
-    function lia.util.easeInOutCubic(t)
-        if t < 0.5 then
-            return 4 * t * t * t
-        else
-            return 1 - math.pow(-2 * t + 2, 3) / 2
-        end
-    end
+    lia.util.approachExp = lia.derma.approachExp
+    lia.util.easeOutCubic = lia.derma.easeOutCubic
+    lia.util.easeInOutCubic = lia.derma.easeInOutCubic
 
     function lia.util.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)
         local scaleFactor = 0.8

@@ -90,4 +90,10 @@ function PANEL:AllowInput(callback)
     end
 end
 
+function PANEL:SetTextColor(color)
+    if IsValid(self.textEntry) then
+        self.textEntry:SetTextColor(color)
+    end
+end
+
 vgui.Register('liaEntry', PANEL, 'EditablePanel')

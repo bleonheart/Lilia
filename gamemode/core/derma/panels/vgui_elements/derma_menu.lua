@@ -133,7 +133,7 @@ function PANEL:AddOption(text, func, icon, optData)
 
         if iconMat then
             local iconSize = 16
-            lia.derma.drawMaterial(0, 10, (h - iconSize) / 2, iconSize, iconSize, color_white, iconMat)
+            lia.derma.drawTexture(iconMat, color_white, 0, 10, iconSize, iconSize)
         end
 
         draw.SimpleText(pnl.Text, 'Fated.18', pnl.Icon and 32 or 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)

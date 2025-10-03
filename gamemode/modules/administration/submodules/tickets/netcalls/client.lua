@@ -5,82 +5,112 @@ net.Receive("liaActiveTickets", function()
     local tickets = net.ReadTable() or {}
     if not IsValid(ticketPanel) then return end
     ticketPanel:Clear()
-    local search = ticketPanel:Add("DTextEntry")
-    search:Dock(TOP)
-    search:SetPlaceholderText(L("search"))
-    search:SetTextColor(Color(255, 255, 255))
-    local list = ticketPanel:Add("DListView")
-    list:Dock(FILL)
-    local function addSizedColumn(text)
-        local col = list:AddColumn(text)
-        surface.SetFont(col.Header:GetFont())
-        local w = surface.GetTextSize(col.Header:GetText())
-        col:SetMinWidth(w + 16)
-        col:SetWidth(w + 16)
-        return col
-    end
+    ticketPanel:DockPadding(6, 6, 6, 6)
+    ticketPanel.Paint = function() end
+    ticketPanel.sheet = ticketPanel:Add("liaTabs")
+    ticketPanel.sheet:Dock(FILL)
 
-    addSizedColumn(L("timestamp"))
-    addSizedColumn(L("requester"))
-    addSizedColumn(L("admin"))
-    addSizedColumn(L("message"))
-    local function populate(filter)
-        list:Clear()
-        filter = string.lower(filter or "")
-        for _, t in pairs(tickets) do
-            local requester = t.requester or ""
-            if requester ~= "" then
-                local requesterPly = lia.util.getBySteamID(requester)
-                local requesterName = IsValid(requesterPly) and requesterPly:Nick() or requester
-                requester = string.format("%s (%s)", requesterName, requester)
-            end
+    local function createList(parent, rows)
+        local container = parent:Add("Panel")
+        container:Dock(FILL)
+        container:DockMargin(0, 20, 0, 0)
+        container.Paint = function() end
 
-            local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-            local entries = {
-                ts,
-                requester,
-                t.admin and (function()
+        local search = container:Add("liaEntry")
+        search:Dock(TOP)
+        search:DockMargin(0, 0, 0, 15)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
+
+        local list = container:Add("liaTable")
+        list:Dock(FILL)
+
+        local columns = {
+            {name = L("timestamp"), field = "timestamp"},
+            {name = L("requester"), field = "requesterDisplay"},
+            {name = L("admin"), field = "adminDisplay"},
+            {name = L("message"), field = "message"}
+        }
+
+        for _, col in ipairs(columns) do
+            list:AddColumn(col.name)
+        end
+
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, t in pairs(rows) do
+                local requester = t.requester or ""
+                local requesterDisplay = ""
+                if requester ~= "" then
+                    local requesterPly = lia.util.getBySteamID(requester)
+                    local requesterName = IsValid(requesterPly) and requesterPly:Nick() or requester
+                    requesterDisplay = string.format("%s (%s)", requesterName, requester)
+                end
+
+                local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
+
+                local adminDisplay = L("unassigned")
+                if t.admin then
                     local adminPly = lia.util.getBySteamID(t.admin)
                     local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
-                    return string.format("%s (%s)", adminName, t.admin)
-                end)() or L("unassigned"),
-                t.message or ""
-            }
+                    adminDisplay = string.format("%s (%s)", adminName, t.admin)
+                end
 
-            local match = false
-            if filter == "" then
-                match = true
-            else
-                for _, value in ipairs(entries) do
-                    if tostring(value):lower():find(filter, 1, true) then
-                        match = true
-                        break
+                local values = {
+                    ts,
+                    requesterDisplay,
+                    adminDisplay,
+                    t.message or ""
+                }
+
+                local match = false
+                if filter == "" then
+                    match = true
+                else
+                    for _, value in ipairs(values) do
+                        if tostring(value):lower():find(filter, 1, true) then
+                            match = true
+                            break
+                        end
                     end
                 end
-            end
 
-            if match then list:AddLine(unpack(entries)) end
+                if match then
+                    local line = list:AddLine(unpack(values))
+                end
+            end
         end
+
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
+
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) then return end
+            local menu = DermaMenu()
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for i, column in ipairs(self.Columns or {}) do
+                    local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                    local value = line:GetColumnText(i) or ""
+                    rowString = rowString .. header .. " " .. value .. " | "
+                end
+
+                SetClipboardText(string.sub(rowString, 1, -4))
+            end):SetIcon("icon16/page_copy.png")
+
+            menu:Open()
+        end
+
+        local allPanel = parent
+        createList(allPanel, tickets)
     end
 
-    search.OnChange = function() populate(search:GetValue()) end
-    populate("")
-    function list:OnRowRightClick(_, line)
-        if not IsValid(line) then return end
-        local menu = DermaMenu()
-        menu:AddOption(L("copyRow"), function()
-            local rowString = ""
-            for i, column in ipairs(self.Columns or {}) do
-                local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
-                local value = line:GetColumnText(i) or ""
-                rowString = rowString .. header .. " " .. value .. " | "
-            end
-
-            SetClipboardText(string.sub(rowString, 1, -4))
-        end):SetIcon("icon16/page_copy.png")
-
-        menu:Open()
-    end
+    local allPanel = ticketPanel.sheet:Add("Panel")
+    allPanel:Dock(FILL)
+    allPanel.Paint = function() end
+    createList(allPanel, tickets)
+    ticketPanel.sheet:AddSheet(L("activeTickets"), allPanel)
 end)
 
 net.Receive("liaTicketsCount", function()

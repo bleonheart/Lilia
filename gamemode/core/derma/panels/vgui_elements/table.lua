@@ -10,6 +10,8 @@ function PANEL:Init()
     self.sortColumn = nil
     self.hoverAnim = 0
     self.padding = 8
+    self.isRebuilding = false
+    self.autoSizeScheduled = false
     self.header = vgui.Create('Panel', self)
     self.header:Dock(TOP)
     self.header:SetTall(self.headerHeight)
@@ -26,9 +28,10 @@ end
 function PANEL:AddColumn(name, width, align, sortable)
     table.insert(self.columns, {
         name = name,
-        width = width,
+        width = width or 100, -- Default width if not specified
         align = align or TEXT_ALIGN_LEFT,
-        sortable = sortable or false
+        sortable = sortable or false,
+        autoSize = width == nil -- Flag to indicate if column should auto-size
     })
 end
 
@@ -40,8 +43,24 @@ function PANEL:AddItem(...)
     end
 
     table.insert(self.rows, args)
+    local rowIndex = #self.rows
     self:RebuildRows()
-    return #self.rows
+
+    -- Return a proxy object that allows property setting
+    local proxy = {}
+    local rowData = self.rows[rowIndex]
+
+    -- Create a metatable that forwards property access to the row data
+    setmetatable(proxy, {
+        __index = function(t, key)
+            return rowData[key]
+        end,
+        __newindex = function(t, key, value)
+            rowData[key] = value
+        end
+    })
+
+    return proxy
 end
 
 function PANEL:AddLine(...)
@@ -162,7 +181,40 @@ function PANEL:CreateRow(rowIndex, rowData)
     end
 end
 
+function PANEL:CalculateColumnWidths()
+    if #self.rows == 0 then return end
+
+    -- Defer calculation if fonts aren't ready yet
+    if not self.font or not self.rowFont then
+        return
+    end
+
+    for colIndex, column in ipairs(self.columns) do
+        if column.autoSize then
+            local maxWidth = 0
+
+            -- Check header width
+            surface.SetFont(self.font)
+            local headerWidth = surface.GetTextSize(column.name or "")
+            maxWidth = math.max(maxWidth, headerWidth + self.padding * 2)
+
+            -- Check row content width
+            surface.SetFont(self.rowFont)
+            for _, rowData in ipairs(self.rows) do
+                if rowData[colIndex] then
+                    local textWidth = surface.GetTextSize(tostring(rowData[colIndex] or ""))
+                    maxWidth = math.max(maxWidth, textWidth + self.padding * 2)
+                end
+            end
+
+            -- Set minimum width and ensure it's not too small
+            column.width = math.max(maxWidth, 60)
+        end
+    end
+end
+
 function PANEL:RebuildRows()
+    self:CalculateColumnWidths()
     self.content:Clear()
     self:CreateHeader()
     local totalWidth = 0
@@ -175,6 +227,46 @@ function PANEL:RebuildRows()
     end
 
     self.content:SetSize(totalWidth, #self.rows * (self.rowHeight + 1))
+
+    -- Schedule a recalculation after fonts are loaded (but not if we're already rebuilding)
+    if not self.isRebuilding then
+        self.isRebuilding = true
+        timer.Simple(0.1, function()
+            if IsValid(self) then
+                self:RecalculateColumnWidths()
+                self.isRebuilding = nil
+            end
+        end)
+    end
+end
+
+function PANEL:RecalculateColumnWidths()
+    if #self.rows == 0 or self.isRebuilding then return end
+
+    -- Only recalculate if fonts are available
+    if not self.font or not self.rowFont then return end
+
+    local oldWidths = {}
+    for i, column in ipairs(self.columns) do
+        oldWidths[i] = column.width
+    end
+
+    self:CalculateColumnWidths()
+
+    -- Check if widths changed and rebuild if necessary
+    local widthsChanged = false
+    for i, column in ipairs(self.columns) do
+        if oldWidths[i] ~= column.width then
+            widthsChanged = true
+            break
+        end
+    end
+
+    if widthsChanged then
+        self.isRebuilding = true
+        self:RebuildRows()
+        self.isRebuilding = nil
+    end
 end
 
 function PANEL:SetAction(func)

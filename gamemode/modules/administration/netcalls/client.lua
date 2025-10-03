@@ -162,8 +162,8 @@ net.Receive("liaCfgSet", function()
     local config = lia.config.stored[key]
     if config then
         local oldValue = config.value
-        if config.callback then config.callback(oldValue, value) end
         config.value = value
+        if config.callback then config.callback(oldValue, value) end
         hook.Run("OnConfigUpdated", key, oldValue, value)
         local properties = lia.gui.properties
         if IsValid(properties) then
@@ -383,14 +383,14 @@ end
 
 local function OpenRoster(panel, data)
     panel:Clear()
-    local sheet = panel:Add("DPropertySheet")
+    local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
     sheet:DockMargin(10, 10, 10, 10)
     for factionName, members in pairs(data) do
         local membersData = members
         local factionTable = lia.util.findFaction(LocalPlayer(), factionName)
         local isDefaultFaction = factionTable and factionTable.isDefault or false
-        local page = sheet:Add("DPanel")
+        local page = vgui.Create("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
         local rosterSheet = page:Add("liaSheet")
@@ -511,83 +511,123 @@ end
 
 function OpenFlagsPanel(panel, data)
     panel:Clear()
-    local search = panel:Add("DTextEntry")
-    search:Dock(TOP)
-    search:SetPlaceholderText(L("search"))
-    search:SetTextColor(Color(255, 255, 255))
-    local list = panel:Add("DListView")
-    list:Dock(FILL)
-    local function addSizedColumn(text)
-        local col = list:AddColumn(text)
-        surface.SetFont(col.Header:GetFont())
-        local w = surface.GetTextSize(col.Header:GetText())
-        col:SetMinWidth(w + 16)
-        col:SetWidth(w + 16)
-        return col
-    end
+    panel:DockPadding(6, 6, 6, 6)
+    panel.Paint = function() end
+    panel.sheet = panel:Add("liaTabs")
+    panel.sheet:Dock(FILL)
 
-    addSizedColumn(L("name"))
-    addSizedColumn(L("steamID"))
-    addSizedColumn(L("charFlagsTitle"))
-    addSizedColumn(L("playerFlagsTitle"))
-    local function populate(filter)
-        list:Clear()
-        filter = string.lower(filter or "")
-        for _, entry in ipairs(data or {}) do
-            local name = entry.name or ""
-            local steamID = entry.steamID or ""
-            local cFlags = entry.flags or ""
-            local pFlags = entry.playerFlags or ""
-            if filter == "" or name:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or cFlags:lower():find(filter, 1, true) or pFlags:lower():find(filter, 1, true) then list:AddLine(name, steamID, cFlags, pFlags) end
+    local function createList(parent, rows)
+        local container = parent:Add("Panel")
+        container:Dock(FILL)
+        container:DockMargin(0, 20, 0, 0)
+        container.Paint = function() end
+
+        local search = container:Add("liaEntry")
+        search:Dock(TOP)
+        search:DockMargin(0, 0, 0, 15)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
+
+        local list = container:Add("liaTable")
+        list:Dock(FILL)
+
+        local columns = {
+            {name = L("name"), field = "name"},
+            {name = L("steamID"), field = "steamID"},
+            {name = L("charFlagsTitle"), field = "flags"},
+            {name = L("playerFlagsTitle"), field = "playerFlags"}
+        }
+
+        for _, col in ipairs(columns) do
+            list:AddColumn(col.name)
         end
-    end
 
-    search.OnChange = function() populate(search:GetValue()) end
-    populate("")
-    function list:OnRowRightClick(_, line)
-        if not IsValid(line) then return end
-        local menu = DermaMenu()
-        menu:AddOption(L("copyRow"), function()
-            local rowString = ""
-            for i, column in ipairs(self.Columns or {}) do
-                local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
-                local value = line:GetColumnText(i) or ""
-                rowString = rowString .. header .. " " .. value .. " | "
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, entry in ipairs(rows or {}) do
+                local name = entry.name or ""
+                local steamID = entry.steamID or ""
+                local cFlags = entry.flags or ""
+                local pFlags = entry.playerFlags or ""
+
+                local values = {name, steamID, cFlags, pFlags}
+
+                local match = false
+                if filter == "" then
+                    match = true
+                else
+                    for _, value in ipairs(values) do
+                        if tostring(value):lower():find(filter, 1, true) then
+                            match = true
+                            break
+                        end
+                    end
+                end
+
+                if match then
+                    local line = list:AddLine(unpack(values))
+                end
             end
+        end
 
-            SetClipboardText(string.sub(rowString, 1, -4))
-        end):SetIcon("icon16/page_copy.png")
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
 
-        menu:AddOption(L("modifyCharFlags"), function()
-            local steamID = line:GetColumnText(2) or ""
-            local currentFlags = line:GetColumnText(3) or ""
-            Derma_StringRequest(L("modifyCharFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
-                text = string.gsub(text or "", "%s", "")
-                net.Start("liaModifyFlags")
-                net.WriteString(steamID)
-                net.WriteString(text)
-                net.WriteBool(false)
-                net.SendToServer()
-                line:SetColumnText(3, text)
-            end)
-        end):SetIcon("icon16/flag_orange.png")
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) then return end
+            local menu = DermaMenu()
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for i, column in ipairs(self.Columns or {}) do
+                    local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                    local value = line:GetColumnText(i) or ""
+                    rowString = rowString .. header .. " " .. value .. " | "
+                end
 
-        menu:AddOption(L("modifyPlayerFlags"), function()
-            local steamID = line:GetColumnText(2) or ""
-            local currentFlags = line:GetColumnText(4) or ""
-            Derma_StringRequest(L("modifyPlayerFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
-                text = string.gsub(text or "", "%s", "")
-                net.Start("liaModifyFlags")
-                net.WriteString(steamID)
-                net.WriteString(text)
-                net.WriteBool(true)
-                net.SendToServer()
-                line:SetColumnText(4, text)
-            end)
-        end):SetIcon("icon16/flag_green.png")
+                SetClipboardText(string.sub(rowString, 1, -4))
+            end):SetIcon("icon16/page_copy.png")
 
-        menu:Open()
+            menu:AddOption(L("modifyCharFlags"), function()
+                local steamID = line:GetColumnText(2) or ""
+                local currentFlags = line:GetColumnText(3) or ""
+                Derma_StringRequest(L("modifyCharFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+                    text = string.gsub(text or "", "%s", "")
+                    net.Start("liaModifyFlags")
+                    net.WriteString(steamID)
+                    net.WriteString(text)
+                    net.WriteBool(false)
+                    net.SendToServer()
+                    line:SetColumnText(3, text)
+                end)
+            end):SetIcon("icon16/flag_orange.png")
+
+            menu:AddOption(L("modifyPlayerFlags"), function()
+                local steamID = line:GetColumnText(2) or ""
+                local currentFlags = line:GetColumnText(4) or ""
+                Derma_StringRequest(L("modifyPlayerFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
+                    text = string.gsub(text or "", "%s", "")
+                    net.Start("liaModifyFlags")
+                    net.WriteString(steamID)
+                    net.WriteString(text)
+                    net.WriteBool(true)
+                    net.SendToServer()
+                    line:SetColumnText(4, text)
+                end)
+            end):SetIcon("icon16/flag_green.png")
+
+            menu:Open()
+        end
+
+        local allPanel = parent
+        createList(allPanel, data)
     end
+
+    local allPanel = panel.sheet:Add("Panel")
+    allPanel:Dock(FILL)
+    allPanel.Paint = function() end
+    createList(allPanel, data)
+    panel.sheet:AddSheet(L("allFlags"), allPanel)
 end
 
 lia.net.readBigTable("liaAllFlags", function(data)
@@ -614,77 +654,116 @@ end)
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:Clear()
-    local search = panelRef:Add("DTextEntry")
-    search:Dock(TOP)
-    search:SetPlaceholderText(L("search"))
-    search:SetTextColor(Color(255, 255, 255))
-    local list = panelRef:Add("DListView")
-    list:Dock(FILL)
-    local function addSizedColumn(text)
-        local col = list:AddColumn(text)
-        surface.SetFont(col.Header:GetFont())
-        local w = surface.GetTextSize(col.Header:GetText())
-        col:SetMinWidth(w + 16)
-        col:SetWidth(w + 16)
-        return col
-    end
+    panelRef:DockPadding(6, 6, 6, 6)
+    panelRef.Paint = function() end
+    panelRef.sheet = panelRef:Add("liaTabs")
+    panelRef.sheet:Dock(FILL)
 
-    addSizedColumn(L("player"))
-    addSizedColumn(L("playerSteamID"))
-    addSizedColumn(L("usergroup"))
-    addSizedColumn(L("warningCount"))
-    addSizedColumn(L("ticketCount"))
-    addSizedColumn(L("kickCount"))
-    addSizedColumn(L("killCount"))
-    addSizedColumn(L("respawnCount"))
-    addSizedColumn(L("blindCount"))
-    addSizedColumn(L("muteCount"))
-    addSizedColumn(L("jailCount"))
-    addSizedColumn(L("stripCount"))
-    local function populate(filter)
-        list:Clear()
-        filter = string.lower(filter or "")
-        for _, info in ipairs(data) do
-            local entries = {info.player or "", info.steamID or "", info.usergroup or "", info.warnings or 0, info.tickets or 0, info.kicks or 0, info.kills or 0, info.respawns or 0, info.blinds or 0, info.mutes or 0, info.jails or 0, info.strips or 0}
-            local match = false
-            if filter == "" then
-                match = true
-            else
-                for _, value in ipairs(entries) do
-                    if tostring(value):lower():find(filter, 1, true) then
-                        match = true
-                        break
+    local function createList(parent, rows)
+        local container = parent:Add("Panel")
+        container:Dock(FILL)
+        container:DockMargin(0, 20, 0, 0)
+        container.Paint = function() end
+
+        local search = container:Add("liaEntry")
+        search:Dock(TOP)
+        search:DockMargin(0, 0, 0, 15)
+        search:SetPlaceholderText(L("search"))
+        search:SetTextColor(Color(255, 255, 255))
+
+        local list = container:Add("liaTable")
+        list:Dock(FILL)
+
+        local columns = {
+            {name = L("player"), field = "player"},
+            {name = L("playerSteamID"), field = "steamID"},
+            {name = L("usergroup"), field = "usergroup"},
+            {name = L("warningCount"), field = "warnings"},
+            {name = L("ticketCount"), field = "tickets"},
+            {name = L("kickCount"), field = "kicks"},
+            {name = L("killCount"), field = "kills"},
+            {name = L("respawnCount"), field = "respawns"},
+            {name = L("blindCount"), field = "blinds"},
+            {name = L("muteCount"), field = "mutes"},
+            {name = L("jailCount"), field = "jails"},
+            {name = L("stripCount"), field = "strips"}
+        }
+
+        for _, col in ipairs(columns) do
+            list:AddColumn(col.name)
+        end
+
+        local function populate(filter)
+            list:Clear()
+            filter = string.lower(filter or "")
+            for _, info in ipairs(rows) do
+                local values = {
+                    info.player or "",
+                    info.steamID or "",
+                    info.usergroup or "",
+                    info.warnings or 0,
+                    info.tickets or 0,
+                    info.kicks or 0,
+                    info.kills or 0,
+                    info.respawns or 0,
+                    info.blinds or 0,
+                    info.mutes or 0,
+                    info.jails or 0,
+                    info.strips or 0
+                }
+
+                local match = false
+                if filter == "" then
+                    match = true
+                else
+                    for _, value in ipairs(values) do
+                        if tostring(value):lower():find(filter, 1, true) then
+                            match = true
+                            break
+                        end
                     end
                 end
-            end
 
-            if match then list:AddLine(unpack(entries)) end
+                if match then
+                    local line = list:AddLine(unpack(values))
+                end
+            end
         end
+
+        search.OnChange = function() populate(search:GetValue()) end
+        populate("")
+
+        function list:OnRowRightClick(_, line)
+            if not IsValid(line) then return end
+            local menu = DermaMenu()
+            local steamID = line:GetColumnText(2)
+            local warningCount = tonumber(line:GetColumnText(4)) or 0
+            if warningCount > 0 and lia.command.hasAccess(LocalPlayer(), "viewwarnsissued") then menu:AddOption(L("viewWarningsIssued"), function() LocalPlayer():ConCommand("say /viewwarnsissued " .. steamID) end):SetIcon("icon16/error.png") end
+            local ticketCount = tonumber(line:GetColumnText(5)) or 0
+            if ticketCount > 0 and lia.command.hasAccess(LocalPlayer(), "plyviewclaims") then menu:AddOption(L("viewTicketClaims"), function() LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end):SetIcon("icon16/page_white_text.png") end
+            menu:AddOption(L("copyRow"), function()
+                local rowString = ""
+                for i, column in ipairs(self.Columns or {}) do
+                    local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
+                    local value = line:GetColumnText(i) or ""
+                    rowString = rowString .. header .. " " .. value .. " | "
+                end
+
+                SetClipboardText(string.sub(rowString, 1, -4))
+            end):SetIcon("icon16/page_copy.png")
+
+            menu:Open()
+        end
+
+        local allPanel = parent
+        createList(allPanel, data)
     end
 
-    search.OnChange = function() populate(search:GetValue()) end
-    populate("")
-    function list:OnRowRightClick(_, line)
-        if not IsValid(line) then return end
-        local menu = DermaMenu()
-        local steamID = line:GetColumnText(2)
-        local warningCount = tonumber(line:GetColumnText(4)) or 0
-        if warningCount > 0 and lia.command.hasAccess(LocalPlayer(), "viewwarnsissued") then menu:AddOption(L("viewWarningsIssued"), function() LocalPlayer():ConCommand("say /viewwarnsissued " .. steamID) end):SetIcon("icon16/error.png") end
-        local ticketCount = tonumber(line:GetColumnText(5)) or 0
-        if ticketCount > 0 and lia.command.hasAccess(LocalPlayer(), "plyviewclaims") then menu:AddOption(L("viewTicketClaims"), function() LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end):SetIcon("icon16/page_white_text.png") end
-        menu:AddOption(L("copyRow"), function()
-            local rowString = ""
-            for i, column in ipairs(self.Columns or {}) do
-                local header = column.Header and column.Header:GetText() or L("columnWithNumber", i)
-                local value = line:GetColumnText(i) or ""
-                rowString = rowString .. header .. " " .. value .. " | "
-            end
-
-            SetClipboardText(string.sub(rowString, 1, -4))
-        end):SetIcon("icon16/page_copy.png")
-
-        menu:Open()
-    end
+    local allPanel = panelRef.sheet:Add("Panel")
+    allPanel:Dock(FILL)
+    allPanel.Paint = function() end
+    createList(allPanel, data)
+    panelRef.sheet:AddSheet(L("staffSummary"), allPanel)
 end)
 
 lia.net.readBigTable("liaPlayerCharacters", function(data)

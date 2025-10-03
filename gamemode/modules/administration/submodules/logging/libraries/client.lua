@@ -1,7 +1,7 @@
 ﻿local receivedPanel
 local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
-    local sheet = panel:Add("DPropertySheet")
+    local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
     sheet:DockMargin(10, 10, 10, 10)
     local function addSizedColumn(list, text)
@@ -14,7 +14,7 @@ local function OpenLogsUI(panel, categorizedLogs)
     end
 
     for category, logs in pairs(categorizedLogs) do
-        local page = sheet:Add("DPanel")
+        local page = vgui.Create("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
         local search = page:Add("DTextEntry")

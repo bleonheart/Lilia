@@ -188,8 +188,7 @@ function MODULE:CreateMenuButtons(tabs)
     end
 
     local hasPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
-    local forceTheme = lia.config.get("forceTheme", true)
-    if (hasPrivilege and forceTheme) or (not forceTheme) then
+    if hasPrivilege then
         tabs["themes"] = function(themesPanel)
             local sheet = themesPanel:Add("DPropertySheet")
             sheet:Dock(FILL)
@@ -290,17 +289,11 @@ function MODULE:CreateMenuButtons(tabs)
                     applyButton.DoClick = function()
                         if currentTheme == themeID then return end
                         surface.PlaySound("buttons/button14.wav")
-                        if forceTheme then
-                            -- When forceTheme is ON, update server config
-                            net.Start("liaConfigUpdate")
-                            net.WriteString("Theme")
-                            net.WriteType(themeID)
-                            net.SendToServer()
-                        else
-                            -- When forceTheme is OFF, update personal option
-                            lia.option.set("theme", themeID)
-                            lia.color.applyTheme(themeID, true)
-                        end
+                        net.Start("liaCfgSet")
+                        net.WriteString("Theme")
+                        net.WriteString(L("theme"))
+                        net.WriteType(themeID)
+                        net.SendToServer()
                     end
 
                     if themeID == currentTheme and not activeTab and sheetInfo and sheetInfo.Tab then activeTab = sheetInfo.Tab end
@@ -322,3 +315,6 @@ function MODULE:CanDisplayCharInfo(name)
     if name == "class" and not class then return false end
     return true
 end
+
+-- Refresh the F1 menu when fonts change
+hook.Add("RefreshFonts", "liaF1MenuRefreshFonts", function() if IsValid(lia.gui.menu) then lia.gui.menu:Update() end end)
