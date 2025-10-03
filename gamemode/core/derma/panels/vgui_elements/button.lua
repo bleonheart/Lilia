@@ -5,9 +5,9 @@ function PANEL:Init()
     self._activeShadowLerp = 0
     self.hover_status = 0
     self.bool_hover = true
-    self.font = 'Fated.18'
+    self.font = "Fated.18"
     self.radius = 16
-    self.icon = ''
+    self.icon = ""
     self.icon_size = 16
     self.text = L("button")
     self.col = lia.color.theme.button
@@ -19,7 +19,7 @@ function PANEL:Init()
     self.ripple_speed = 4
     self.enable_ripple = false
     self.ripple_color = Color(255, 255, 255, 30)
-    self.BaseClass.SetText(self, '')
+    self.BaseClass.SetText(self, "")
 end
 
 function PANEL:SetHover(is_hover)
@@ -40,12 +40,12 @@ function PANEL:SetIcon(icon, icon_size)
 end
 
 function PANEL:SetTxt(text)
-    self.text = text or ''
+    self.text = text or ""
 end
 
 function PANEL:SetText(text)
     self:SetTxt(text)
-    self.BaseClass.SetText(self, '')
+    self.BaseClass.SetText(self, "")
 end
 
 function PANEL:GetText()
@@ -106,19 +106,19 @@ function PANEL:Paint(w, h)
         lia.derma.rect(self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size):Rad(100):Color(ripple_color):Shape(btnFlags):Draw()
     end
 
-    if self.text ~= '' then
-        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon ~= '' and self.icon_size * 0.5 + 2 or 0), h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        if self.icon ~= '' then
+    if self.text ~= "" then
+        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon ~= "" and self.icon_size * 0.5 + 2 or 0), h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        if self.icon ~= "" then
             surface.SetFont(self.font)
             local posX = (w - surface.GetTextSize(self.text) - self.icon_size) * 0.5 - 2
             local posY = (h - self.icon_size) * 0.5
             lia.derma.rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
         end
-    elseif self.icon ~= '' then
+    elseif self.icon ~= "" then
         local posX = (w - self.icon_size) * 0.5
         local posY = (h - self.icon_size) * 0.5
         lia.derma.rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
     end
 end
 
-vgui.Register('liaButton', PANEL, 'Button')
+vgui.Register("liaButton", PANEL, "Button")

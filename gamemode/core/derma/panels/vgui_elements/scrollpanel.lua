@@ -16,4 +16,4 @@ function PANEL:Init()
     end
 end
 
-vgui.Register('liaScrollPanel', PANEL, 'DScrollPanel')
+vgui.Register("liaScrollPanel", PANEL, "DScrollPanel")

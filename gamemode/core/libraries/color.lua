@@ -97,7 +97,7 @@ if CLIENT then
                         else
                             lia.color.stored[k] = v
                         end
-                    elseif type(v) == "table" and #v > 0 then
+                    elseif istable(v) and #v > 0 then
                         if not lia.color.stored[k] then lia.color.stored[k] = {} end
                         for i = 1, #v do
                             local vi = v[i]
@@ -130,7 +130,7 @@ if CLIENT then
     end
 
     function lia.color.isColor(v)
-        return type(v) == "table" and type(v.r) == "number" and type(v.g) == "number" and type(v.b) == "number" and type(v.a) == "number"
+        return istable(v) and isnumber(v.r) and isnumber(v.g) and isnumber(v.b) and isnumber(v.a)
     end
 
     function lia.color.ReturnMainAdjustedColors()
@@ -163,7 +163,7 @@ if CLIENT then
     function Color(r, g, b, a)
         if isstring(r) then
             local c = lia.color.stored[r:lower()]
-            if c and type(c) == 'table' and c.r and c.g and c.b and c.a then return oldColor(c.r, c.g, c.b, c.a) end
+            if c and istable(c) and c.r and c.g and c.b and c.a then return oldColor(c.r, c.g, c.b, c.a) end
             return oldColor(255, 255, 255, 255)
         end
         return oldColor(r, g, b, a)

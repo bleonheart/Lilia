@@ -474,7 +474,7 @@ else
     end
 
     function lia.util.drawGradient(_x, _y, _w, _h, direction, color_shadow, radius, flags)
-        local listGradients = {Material('vgui/gradient_up'), Material('vgui/gradient_down'), Material('vgui/gradient-l'), Material('vgui/gradient-r')}
+        local listGradients = {Material("vgui/gradient_up"), Material("vgui/gradient_down"), Material("vgui/gradient-l"), Material("vgui/gradient-r")}
         radius = radius and radius or 0
         lia.derma.drawMaterial(radius, _x, _y, _w, _h, color_shadow, listGradients[direction], flags)
     end

@@ -258,12 +258,12 @@ function PANEL:addText(...)
     if CHAT_CLASS then markup = "<font=" .. (CHAT_CLASS.font or "liaChatFont") .. ">" end
     markup = hook.Run("ChatAddText", markup, ...) or markup
     for _, item in ipairs({...}) do
-        if type(item) == "IMaterial" then
+        if isMaterial(item) then
             local matName = item:GetName()
             markup = markup .. "<img=" .. matName .. "," .. item:Width() .. "x" .. item:Height() .. ">"
         elseif IsColor(item) then
             markup = markup .. "<color=" .. item.r .. "," .. item.g .. "," .. item.b .. ">"
-        elseif type(item) == "Player" then
+        elseif isplayer(item) then
             local clr = team.GetColor(item:Team())
             markup = markup .. "<color=" .. clr.r .. "," .. clr.g .. "," .. clr.b .. ">" .. item:Name():gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("#", "\226\128\139#")
         else

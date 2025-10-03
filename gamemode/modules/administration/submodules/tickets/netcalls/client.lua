@@ -125,7 +125,7 @@ net.Receive("liaTicketSystem", function()
     local pl = net.ReadEntity()
     local msg = net.ReadString()
     local claimed = net.ReadEntity()
-    if LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("alwaysSeeTickets") then MODULE:TicketFrame(pl, msg, claimed) end
+    if IsValid(LocalPlayer()) and (LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("alwaysSeeTickets")) then MODULE:TicketFrame(pl, msg, claimed) end
 end)
 
 net.Receive("liaTicketSystemClaim", function()
