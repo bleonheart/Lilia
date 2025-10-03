@@ -273,7 +273,7 @@ if CLIENT then
         if data then
             if data.isDefault then return true end
             if faction == FACTION_STAFF then
-                local hasPriv = LocalPlayer():hasPrivilege("createStaffCharacter")
+                local hasPriv = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("createStaffCharacter") or false
                 return hasPriv
             end
 

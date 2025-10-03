@@ -2004,7 +2004,7 @@ function MODULE:PopulateAdminTabs(pages)
         }
     end
 
-    if #nonPlayerEntities > 0 and client:hasPrivilege("viewEntityTab") then
+    if #nonPlayerEntities > 0 and IsValid(client) and client:hasPrivilege("viewEntityTab") then
         pages[#pages + 1] = {
             name = "Map Entities",
             icon = "icon16/world.png",

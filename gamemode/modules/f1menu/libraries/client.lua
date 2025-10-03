@@ -187,7 +187,7 @@ function MODULE:CreateMenuButtons(tabs)
         end
     end
 
-    local hasPrivilege = LocalPlayer():hasPrivilege("accessEditConfigurationMenu")
+    local hasPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
     local forceTheme = lia.config.get("forceTheme", true)
     if (hasPrivilege and forceTheme) or (not forceTheme) then
         tabs["themes"] = function(themesPanel)

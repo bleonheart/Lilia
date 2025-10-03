@@ -682,7 +682,7 @@ function PANEL:Init()
     self.savePreset:SetTextColor(color_white)
     self.savePreset:DockMargin(0, 4, 0, 0)
     self.savePreset.DoClick = function()
-        if not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
+        if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
             LocalPlayer():notifyErrorLocalized(L("noPermission"))
             return
         end
@@ -806,7 +806,7 @@ function PANEL:OnFocusChanged(gained)
 end
 
 function PANEL:saveVendorPreset(_, displayName)
-    if not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
+    if not IsValid(LocalPlayer()) or not LocalPlayer():hasPrivilege("canCreateVendorPresets") then
         LocalPlayer():notifyError(L("noPermission"))
         return
     end
