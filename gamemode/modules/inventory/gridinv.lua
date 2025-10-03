@@ -142,7 +142,7 @@ if SERVER then
     end
 
     function GridInv:setOwner(owner, fullUpdate)
-        if isplayer(owner) and owner:getChar() then
+        if IsValid(owner) and owner:IsPlayer() and owner:getChar() then
             owner = owner:getChar():getID()
         elseif not isnumber(owner) then
             return

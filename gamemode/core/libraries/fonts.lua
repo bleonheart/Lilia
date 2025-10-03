@@ -13,7 +13,7 @@ if CLIENT then
     end
 
     lia.font.register("ConfigFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 26,
         weight = 500,
         extended = true,
@@ -21,7 +21,7 @@ if CLIENT then
     })
 
     lia.font.register("ConfigFontLarge", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 36,
         weight = 700,
         extended = true,
@@ -29,7 +29,7 @@ if CLIENT then
     })
 
     lia.font.register("DescriptionFontLarge", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 24,
         weight = 500,
         extended = true,
@@ -37,25 +37,25 @@ if CLIENT then
     })
 
     lia.font.register("ticketsystem", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 15,
         weight = 400
     })
 
     lia.font.register("VendorItemNameFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 24,
         weight = 700
     })
 
     lia.font.register("VendorItemDescFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 18,
         weight = 500
     })
 
     lia.font.register("liaCharSubTitleFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 16 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 500,
@@ -63,88 +63,88 @@ if CLIENT then
     })
 
     lia.font.register("liaBigTitle", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 30,
         weight = 800
     })
 
     lia.font.register("liaHugeText", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 48,
         weight = 600
     })
 
     lia.font.register("liaBigBtn", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 28,
         weight = 900
     })
 
     lia.font.register("liaToolTipText", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 20,
         extended = true,
         weight = 500
     })
 
     lia.font.register("liaHugeFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 72 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 1000
     })
 
     lia.font.register("liaBigFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 36 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 1000
     })
 
     lia.font.register("liaMediumFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 25 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 1000
     })
 
     lia.font.register("liaSmallFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = math.max(ScreenScaleH(6), 17) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 500
     })
 
     lia.font.register("liaMiniFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = math.max(ScreenScaleH(5), 14) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 400
     })
 
     lia.font.register("liaMediumLightFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 25 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 200
     })
 
     lia.font.register("liaGenericFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = 20 * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 1000
     })
 
     lia.font.register("liaChatFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = math.max(ScreenScaleH(7), 17) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 200
     })
 
     lia.font.register("liaChatFontItalics", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = math.max(ScreenScaleH(7), 17) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         weight = 200,
@@ -152,7 +152,7 @@ if CLIENT then
     })
 
     lia.font.register("Montserrat Regular", {
-        font = "Montserrat Regular",
+        font = "Montserrat",
         size = 16,
         extended = true,
         antialias = true
@@ -172,6 +172,13 @@ if CLIENT then
         extended = true,
         antialias = true,
         weight = 700
+    })
+
+    lia.font.register("marlett", {
+        font = "Marlett",
+        size = 14,
+        extended = true,
+        antialias = true
     })
 
     lia.font.register("Fated.12", {
@@ -319,7 +326,7 @@ if CLIENT then
     })
 
     lia.font.register("liaItemDescFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         size = math.max(ScreenScaleH(6), 17) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
         shadow = true,
@@ -327,7 +334,7 @@ if CLIENT then
     })
 
     lia.font.register("liaItemBoldFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         shadow = true,
         size = math.max(ScreenScaleH(8), 20) * math.min(ScrW() / 1920, ScrH() / 1080),
         extended = true,
@@ -335,14 +342,14 @@ if CLIENT then
     })
 
     lia.font.register("liaCharSubTitleFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         weight = 200,
         size = math.floor(12 * ScrH() / 1080 + 10),
         additive = true
     })
 
     lia.font.register("liaCharButtonFont", {
-        font = lia.config.get("Font"),
+        font = lia.config.get("Font", "Montserrat"),
         weight = 200,
         size = math.floor(24 * ScrH() / 1080 + 10),
         additive = true
@@ -365,7 +372,7 @@ if CLIENT then
             surface.CreateFont(name, data)
         end
 
-        hook.Run("PostLoadFonts", lia.config.get("Font"), lia.config.get("Font"))
+        hook.Run("PostLoadFonts", lia.config.get("Font", "Montserrat"), lia.config.get("Font", "Montserrat"))
     end
 
     local oldSurfaceSetFont = surface.SetFont
@@ -410,4 +417,4 @@ end, {
     options = CLIENT and lia.font.getAvailableFonts() or {"Montserrat Medium"}
 })
 
-hook.Run("PostLoadFonts", lia.config.get("Font"), lia.config.get("Font"))
+hook.Run("PostLoadFonts", lia.config.get("Font", "Montserrat"), lia.config.get("Font", "Montserrat"))
