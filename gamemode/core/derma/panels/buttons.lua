@@ -162,35 +162,35 @@ local function PaintButton(self, w, h)
 end
 
 local function RegisterButton(name, defaultFont, useBase)
-    local PANEL = {}
-    PANEL.DefaultFont = defaultFont or name:match("lia(%w+)Button") .. "Font"
-    PANEL.Base = useBase
-    function PANEL:Init()
+    local BUTTON_PANEL = {}
+    BUTTON_PANEL.DefaultFont = defaultFont or name:match("lia(%w+)Button") .. "Font"
+    BUTTON_PANEL.Base = useBase
+    function BUTTON_PANEL:Init()
         self:SetFont(self.DefaultFont)
         self.Selected = false
     end
 
-    function PANEL:SetFont(font)
+    function BUTTON_PANEL:SetFont(font)
         self.ButtonFont = font
     end
 
-    function PANEL:GetFont()
+    function BUTTON_PANEL:GetFont()
         return self.ButtonFont
     end
 
-    function PANEL:SetSelected(state)
+    function BUTTON_PANEL:SetSelected(state)
         self.Selected = state
     end
 
-    function PANEL:IsSelected()
+    function BUTTON_PANEL:IsSelected()
         return self.Selected
     end
 
-    function PANEL:Paint(w, h)
+    function BUTTON_PANEL:Paint(w, h)
         return PaintButton(self, w, h)
     end
 
-    vgui.Register(name, PANEL, "DButton")
+    vgui.Register(name, BUTTON_PANEL, "DButton")
 end
 
 RegisterButton("liaHugeButton", "liaHugeFont", true)

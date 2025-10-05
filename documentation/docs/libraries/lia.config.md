@@ -19,10 +19,7 @@ Adds a new configuration option to the config system.
 **Parameters**
 
 * `key` (*string*): The configuration key.
-* `name` (*string*): The configuration display name.
-* `value` (*any*): The default value.
-* `callback` (*function*, optional): Function called when value changes.
-* `data` (*table*): The configuration data table containing type, category, desc, etc.
+* `data` (*table*): The configuration data table containing type, default, etc.
 
 **Returns**
 
@@ -116,44 +113,6 @@ local function createConfigMenu()
     end
     
     return menu
-end
-```
-
----
-
-### getOptions
-
-**Purpose**
-
-Gets all available options for a configuration key.
-
-**Parameters**
-
-* `key` (*string*): The configuration key.
-
-**Returns**
-
-* `options` (*table*): Table of available options.
-
-**Realm**
-
-Shared.
-
-**Example Usage**
-
-```lua
--- Get options for a configuration
-local function getConfigOptions(key)
-    return lia.config.getOptions(key)
-end
-
--- Use in a function
-local function showConfigOptions(key)
-    local options = lia.config.getOptions(key)
-    print("Available options for " .. key .. ":")
-    for _, option in ipairs(options) do
-        print("- " .. tostring(option))
-    end
 end
 ```
 

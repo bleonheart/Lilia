@@ -115,8 +115,8 @@ function PANEL:SetSize()
 end
 
 vgui.Register('liaCheckbox', PANEL, 'Panel')
-local PANEL = {}
-function PANEL:Init()
+local SIMPLE_CHECKBOX_PANEL = {}
+function SIMPLE_CHECKBOX_PANEL:Init()
     self:SetText("")
     self:SetToggle(true)
     self:SetSize(24, 24)
@@ -126,33 +126,33 @@ function PANEL:Init()
     self.textFont = "DermaDefault"
 end
 
-function PANEL:SetText(text)
+function SIMPLE_CHECKBOX_PANEL:SetText(text)
     self.text = text
 end
 
-function PANEL:SetTextColor(color)
+function SIMPLE_CHECKBOX_PANEL:SetTextColor(color)
     self.textColor = color
 end
 
-function PANEL:SetTextFont(font)
+function SIMPLE_CHECKBOX_PANEL:SetTextFont(font)
     self.textFont = font
 end
 
-function PANEL:SetChecked(state)
+function SIMPLE_CHECKBOX_PANEL:SetChecked(state)
     self.checked = state and true or false
     self:SetSelected(self.checked)
     if self.OnChange then self.OnChange(self, self.checked) end
 end
 
-function PANEL:GetChecked()
+function SIMPLE_CHECKBOX_PANEL:GetChecked()
     return self.checked
 end
 
-function PANEL:DoClick()
+function SIMPLE_CHECKBOX_PANEL:DoClick()
     self:SetChecked(not self.checked)
 end
 
-function PANEL:Paint()
+function SIMPLE_CHECKBOX_PANEL:Paint()
     local icon = self.checked and "checkbox.png" or "unchecked.png"
     local w, h = self:GetSize()
     lia.util.drawTexture(icon, color_white, 0, 0, w, h)
@@ -165,4 +165,4 @@ function PANEL:Paint()
     return true
 end
 
-vgui.Register("liaSimpleCheckbox", PANEL, "DButton")
+vgui.Register("liaSimpleCheckbox", SIMPLE_CHECKBOX_PANEL, "DButton")

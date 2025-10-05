@@ -6,47 +6,11 @@ This page documents the functions for working with utilities and helper function
 
 ## Overview
 
-The util library (`lia.util`) provides a comprehensive system for managing utilities, helper functions, and common operations in the Lilia framework. This library handles player-related operations including player searching, validation, and management functions that work across different player states and connection statuses. The system features advanced text utilities with support for string manipulation, formatting, validation, and localization that provide consistent text handling throughout the framework. It includes comprehensive rendering utilities with support for 2D and 3D rendering operations, UI element creation, and visual effects that enhance the user interface and gameplay experience. The library provides robust general helper functions with support for mathematical operations, data validation, performance optimization, and debugging tools that improve development efficiency and system reliability.
+The util library (`lia.util`) provides a comprehensive system for managing utilities, helper functions, and common operations in the Lilia framework, serving as the foundational utility layer that supports all other framework components with essential functionality. This library handles sophisticated utility management with support for player-related operations including player searching, validation, and management functions that work across different player states and connection statuses. The system features advanced text utilities with support for string manipulation, formatting, validation, and localization that provide consistent text handling throughout the framework. It includes comprehensive rendering utilities with support for 2D and 3D rendering operations, UI element creation, and visual effects that enhance the user interface and gameplay experience. The library provides robust general helper functions with support for mathematical operations, data validation, performance optimization, and debugging tools that improve development efficiency and system reliability. Additional features include integration with Garry's Mod's native functions, cross-platform compatibility utilities, and performance monitoring tools that ensure optimal framework operation across different server configurations and client setups, making it essential for maintaining code quality and providing consistent functionality throughout the entire framework ecosystem.
 
 ---
 
-### FindPlayersInBox
 
-**Purpose**
-
-Finds players within a box area.
-
-**Parameters**
-
-* `mins` (*Vector*): The minimum bounds of the box.
-* `maxs` (*Vector*): The maximum bounds of the box.
-
-**Returns**
-
-* `players` (*table*): Table of players in the box.
-
-**Realm**
-
-Shared.
-
-**Example Usage**
-
-```lua
--- Find players in box
-local function findPlayersInBox(mins, maxs)
-    return lia.util.FindPlayersInBox(mins, maxs)
-end
-
--- Use in a function
-local function findPlayersInArea(center, size)
-    local halfSize = size / 2
-    local mins = center - halfSize
-    local maxs = center + halfSize
-    return lia.util.FindPlayersInBox(mins, maxs)
-end
-```
-
----
 
 ### FindPlayersInSphere
 
@@ -65,7 +29,7 @@ Finds players within a sphere area.
 
 **Realm**
 
-Shared.
+Server.
 
 **Example Usage**
 
@@ -91,7 +55,6 @@ Finds a player by name or SteamID.
 
 **Parameters**
 
-* `client` (*Player*): The client requesting the search (for notifications).
 * `identifier` (*string*): The player identifier.
 
 **Returns**
@@ -100,7 +63,7 @@ Finds a player by name or SteamID.
 
 **Realm**
 
-Shared.
+Server.
 
 **Example Usage**
 
@@ -444,10 +407,8 @@ Checks if an object can fit in a position.
 
 **Parameters**
 
-* `pos` (*Vector*): The position to check.
-* `mins` (*Vector*, optional): The minimum bounds. Defaults to Vector(16, 16, 0).
-* `maxs` (*Vector*, optional): The maximum bounds. Defaults to mins parameter.
-* `filter` (*Entity*, optional): Entity to ignore in collision check.
+* `position` (*Vector*): The position to check.
+* `size` (*Vector*): The size of the object.
 
 **Returns**
 
@@ -455,7 +416,7 @@ Checks if an object can fit in a position.
 
 **Realm**
 
-Shared.
+Server.
 
 **Example Usage**
 
@@ -571,7 +532,7 @@ Gets a material by name.
 
 **Realm**
 
-Shared.
+Client.
 
 **Example Usage**
 
@@ -604,8 +565,7 @@ Finds a faction by name.
 
 **Parameters**
 
-* `client` (*Player*): The client requesting the search (for notifications).
-* `name` (*string*): The faction name.
+* `factionName` (*string*): The faction name.
 
 **Returns**
 
@@ -647,11 +607,8 @@ Sends a table to the client UI.
 **Parameters**
 
 * `client` (*Player*): The client to send to.
-* `title` (*string*): The title of the table UI.
-* `columns` (*table*): Table of column definitions.
+* `tableName` (*string*): The table name.
 * `data` (*table*): The table data.
-* `options` (*table*, optional): Additional options for the table UI.
-* `characterID` (*number*, optional): Character ID for data filtering.
 
 **Returns**
 
@@ -682,16 +639,12 @@ end
 
 **Purpose**
 
-Finds an empty space near an entity position.
+Finds an empty space near a position.
 
 **Parameters**
 
-* `entity` (*Entity*): The entity to search around.
-* `filter` (*Entity*, optional): Entity to ignore in collision check.
-* `spacing` (*number*, optional): Grid spacing for search. Defaults to 32.
-* `size` (*number*, optional): Search radius in grid units. Defaults to 3.
-* `height` (*number*, optional): Maximum height for placement. Defaults to 36.
-* `tolerance` (*number*, optional): Collision tolerance. Defaults to 5.
+* `position` (*Vector*): The position to search from.
+* `size` (*Vector*): The size of the space needed.
 
 **Returns**
 
