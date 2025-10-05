@@ -367,7 +367,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     draw.RoundedBox(2, 0, 0, w, h, Color(255, 255, 255, 50))
                 end
 
-                button.DoClick = function() lia.derma.color_picker(function(color) timer.Create("ConfigChange" .. name, 1, 1, function() lia.option.set(key, color) end) end, lia.option.get(key, cfg.value)) end
+                button.DoClick = function() lia.derma.colorPicker(function(color) timer.Create("ConfigChange" .. name, 1, 1, function() lia.option.set(key, color) end) end, lia.option.get(key, cfg.value)) end
             end
             return container
         end,

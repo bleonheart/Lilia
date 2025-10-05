@@ -1406,7 +1406,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 end
 
                 button.DoClick = function()
-                    lia.derma.color_picker(function(color)
+                    lia.derma.colorPicker(function(color)
                         local t = "ConfigChange_" .. key .. "_" .. os.time()
                         timer.Create(t, 0.5, 1, function()
                             net.Start("liaCfgSet")

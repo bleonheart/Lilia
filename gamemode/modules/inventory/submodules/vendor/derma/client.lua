@@ -908,7 +908,7 @@ function PANEL:OnRowRightClick(line)
     if IsValid(menu) then menu:Remove() end
     local uniqueID = line.item
     local itemTable = lia.item.list[uniqueID]
-    menu = lia.derma.derma_menu()
+    menu = lia.derma.dermaMenu()
     local mode, modePanel = menu:AddSubMenu(L("mode"))
     modePanel:SetImage("icon16/key.png")
     mode:AddOption(L("none"), function() lia.vendor.editor.mode(uniqueID, nil) end):SetImage("icon16/cog_error.png")

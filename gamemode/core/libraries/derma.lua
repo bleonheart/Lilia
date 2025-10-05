@@ -15,7 +15,7 @@ function lia.derma.dermaMenu()
     return m
 end
 
-function lia.derma.color_picker(func, color_standart)
+function lia.derma.colorPicker(func, color_standart)
     if IsValid(lia.derma.menuColorPicker) then lia.derma.menuColorPicker:Remove() end
     local selected_color = color_standart or Color(255, 255, 255)
     local hue = 0
@@ -178,7 +178,7 @@ function lia.derma.color_picker(func, color_standart)
     timer.Simple(0.1, function() lia.derma.menuColorPicker:SetAlpha(255) end)
 end
 
-function lia.derma.player_selector(do_click)
+function lia.derma.playerSelector(do_click)
     if IsValid(lia.derma.menuPlayerSelector) then lia.derma.menuPlayerSelector:Remove() end
     lia.derma.menuPlayerSelector = vgui.Create('liaFrame')
     lia.derma.menuPlayerSelector:SetSize(340, 398)

@@ -430,7 +430,7 @@ function MODULE:CreateMenuButtons(tabs)
                         staffTable:AddColumn(L("usergroup"), nil, TEXT_ALIGN_LEFT, true) -- Auto-size usergroup column
                         staffTable:AddColumn(L("tickets"), 80, TEXT_ALIGN_CENTER, true) -- Fixed width for tickets
                         staffTable:AddColumn(L("warnings"), 80, TEXT_ALIGN_CENTER, true) -- Fixed width for warnings
-                        staffTable:AddColumn(L("staffOnDuty"), 100, TEXT_ALIGN_CENTER, true) -- Fixed width for duty status
+                        staffTable:AddColumn(L("staffOnDuty", ""), 100, TEXT_ALIGN_CENTER, true) -- Fixed width for duty status
                         -- Function to update table data
                         function updateStaffTable(dataToShow)
                             staffTable:Clear()

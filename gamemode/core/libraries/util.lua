@@ -512,7 +512,7 @@ else
         listView.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
             local rowData = line.rowData
-            local menu = lia.derma.derma_menu()
+            local menu = lia.derma.dermaMenu()
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do
