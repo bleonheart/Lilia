@@ -10,6 +10,273 @@ The derma library (`lia.derma`) provides a comprehensive collection of pre-built
 
 ---
 
+### CreateTableUI
+
+**Purpose**
+
+Creates a comprehensive table UI dialog for displaying data in a structured format with columns, rows, and interactive options.
+
+**Parameters**
+
+* `title` (*string*): The title text for the table window.
+* `columns` (*table*): A table of column definitions with the following properties:
+  - `name` (*string*): The localized name key for the column header.
+  - `field` (*string*): The field name in the data rows to display.
+  - `width` (*number*, optional): The width of the column.
+* `data` (*table*): An array of data rows where each row is a table with field keys matching column definitions.
+* `options` (*table*, optional): An array of action options with the following properties:
+  - `name` (*string*): The localized name key for the option.
+  - `net` (*string*): The network message to send when the option is selected.
+  - `ExtraFields` (*table*, optional): Additional form fields for the option.
+* `charID` (*number*): The character ID for network communication.
+
+**Returns**
+
+* `frame` (*liaDListView*): The created table frame dialog.
+* `listView` (*DListView*): The underlying list view panel.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic table with player data
+local columns = {
+    {name = "playerName", field = "name"},
+    {name = "playerSteamID", field = "steamID"},
+    {name = "playerPing", field = "ping"}
+}
+
+local playerData = {}
+for _, ply in ipairs(player.GetAll()) do
+    table.insert(playerData, {
+        name = ply:Name(),
+        steamID = ply:SteamID(),
+        ping = ply:Ping()
+    })
+end
+
+local frame, listView = lia.derma.CreateTableUI("Players", columns, playerData)
+
+-- Table with action options
+local options = {
+    {
+        name = "kickPlayer",
+        net = "KickPlayer",
+        ExtraFields = {
+            reason = "text"
+        }
+    },
+    {
+        name = "banPlayer",
+        net = "BanPlayer"
+    }
+}
+
+local frame, listView = lia.derma.CreateTableUI("Manage Players", columns, playerData, options, LocalPlayer():getChar():getID())
+
+-- Table for item management
+local itemColumns = {
+    {name = "itemName", field = "name", width = 150},
+    {name = "itemDesc", field = "description", width = 200},
+    {name = "itemQuantity", field = "quantity"}
+}
+
+local inventoryData = {}
+for itemID, itemData in pairs(LocalPlayer():getChar():getInv():getItems()) do
+    table.insert(inventoryData, {
+        name = itemData.name,
+        description = itemData.description or "No description",
+        quantity = itemData.quantity or 1
+    })
+end
+
+lia.derma.CreateTableUI("Inventory", itemColumns, inventoryData, nil, LocalPlayer():getChar():getID())
+```
+
+---
+
+### animateAppearance
+
+**Purpose**
+
+Animates the appearance of a panel with smooth size scaling and alpha fading transitions, creating a polished entrance effect for UI elements.
+
+**Parameters**
+
+* `panel` (*Panel*): The panel to animate.
+* `target_w` (*number*): The target width for the panel.
+* `target_h` (*number*): The target height for the panel.
+* `duration` (*number*, optional): The duration of the animation in seconds (default: 0.18).
+* `alpha_dur` (*number*, optional): The duration of the alpha fade in seconds (default: same as duration).
+* `callback` (*function*, optional): A function to call when the animation completes.
+* `scale_factor` (*number*, optional): The initial scale factor for the animation (default: 0.8).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic panel appearance animation
+local frame = lia.derma.frame(nil, "Animated Frame", 400, 300)
+lia.derma.animateAppearance(frame, 400, 300)
+
+-- Custom animation with longer duration
+local dialog = lia.derma.frame(nil, "Slow Animation", 500, 200)
+lia.derma.animateAppearance(dialog, 500, 200, 0.5)
+
+-- Animation with callback
+local panel = vgui.Create("DPanel")
+panel:SetSize(200, 100)
+lia.derma.animateAppearance(panel, 200, 100, 0.3, 0.3, function()
+    print("Animation completed!")
+    panel:Remove()
+end)
+
+-- Animation with different scale factor
+local largeFrame = lia.derma.frame(nil, "Large Animation", 800, 600)
+lia.derma.animateAppearance(largeFrame, 800, 600, 0.25, 0.25, nil, 0.6)
+
+-- Animate multiple panels sequentially
+local function animatePanelsSequentially(panels, index)
+    if index > #panels then return end
+
+    local panel = panels[index]
+    lia.derma.animateAppearance(panel, panel.targetW, panel.targetH, 0.2, 0.2, function()
+        animatePanelsSequentially(panels, index + 1)
+    end)
+end
+
+local panels = {
+    {panel = panel1, targetW = 300, targetH = 200},
+    {panel = panel2, targetW = 400, targetH = 150},
+    {panel = panel3, targetW = 250, targetH = 300}
+}
+
+animatePanelsSequentially(panels, 1)
+
+-- Use in menu systems for smooth transitions
+local function showMenuWithAnimation(menuPanel)
+    menuPanel:SetVisible(true)
+    lia.derma.animateAppearance(menuPanel, menuPanel:GetWide(), menuPanel:GetTall(), 0.15)
+end
+
+-- Animate appearance of settings panels
+local settingsFrame = lia.derma.frame(nil, "Settings", 600, 400)
+settingsFrame:SetVisible(false)
+
+local function openSettings()
+    showMenuWithAnimation(settingsFrame)
+end
+
+-- Animate appearance with different easing
+local customPanel = vgui.Create("DPanel")
+customPanel:SetSize(100, 50)
+lia.derma.animateAppearance(customPanel, 300, 200, 0.4, 0.4, function()
+    print("Custom panel animation finished")
+end, 0.9)
+```
+
+---
+
+### approachExp
+
+**Purpose**
+
+Calculates an exponential approach value for smooth transitions between current and target values, commonly used for creating smooth animations and value interpolation.
+
+**Parameters**
+
+* `current` (*number*): The current value.
+* `target` (*number*): The target value to approach.
+* `speed` (*number*): The speed of the approach (higher values = faster approach).
+* `dt` (*number*): The time delta (usually FrameTime()).
+
+**Returns**
+
+* `value` (*number*): The new value after applying exponential approach.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic exponential approach
+local currentValue = 0
+local targetValue = 100
+local speed = 3.0
+
+-- In a think hook or animation loop
+local dt = FrameTime()
+currentValue = lia.derma.approachExp(currentValue, targetValue, speed, dt)
+
+-- Smooth color transition
+local currentColor = Color(255, 0, 0)
+local targetColor = Color(0, 255, 0)
+local transitionSpeed = 2.0
+
+local dt = FrameTime()
+currentColor.r = lia.derma.approachExp(currentColor.r, targetColor.r, transitionSpeed, dt)
+currentColor.g = lia.derma.approachExp(currentColor.g, targetColor.g, transitionSpeed, dt)
+currentColor.b = lia.derma.approachExp(currentColor.b, targetColor.b, transitionSpeed, dt)
+
+-- Smooth position interpolation
+local currentPos = {x = 0, y = 0}
+local targetPos = {x = 100, y = 200}
+local moveSpeed = 4.0
+
+local dt = FrameTime()
+currentPos.x = lia.derma.approachExp(currentPos.x, targetPos.x, moveSpeed, dt)
+currentPos.y = lia.derma.approachExp(currentPos.y, targetPos.y, moveSpeed, dt)
+
+-- Smooth scale animation
+local currentScale = 1.0
+local targetScale = 1.5
+local scaleSpeed = 2.5
+
+local dt = FrameTime()
+currentScale = lia.derma.approachExp(currentScale, targetScale, scaleSpeed, dt)
+
+-- Use in custom animation system
+local function animateValue(current, target, speed, dt, callback)
+    local newValue = lia.derma.approachExp(current, target, speed, dt)
+
+    if callback then
+        callback(newValue)
+    end
+
+    return newValue
+end
+
+-- Smooth rotation
+local currentRotation = 0
+local targetRotation = 360
+local rotationSpeed = 1.5
+
+local dt = FrameTime()
+currentRotation = lia.derma.approachExp(currentRotation, targetRotation, rotationSpeed, dt)
+
+-- Smooth opacity changes
+local currentAlpha = 255
+local targetAlpha = 0
+local fadeSpeed = 3.0
+
+local dt = FrameTime()
+currentAlpha = lia.derma.approachExp(currentAlpha, targetAlpha, fadeSpeed, dt)
+```
+
+---
+
 ### attribBar
 
 **Purpose**
@@ -449,6 +716,241 @@ menu:AddOption("Save", function() print("Save") end)
 menu:AddOption("Save As", function() print("Save As") end)
 menu:AddSpacer()
 menu:AddOption("Exit", function() print("Exit") end)
+```
+
+---
+
+### DrawTip
+
+**Purpose**
+
+Draws a tooltip-style graphic with text, consisting of a rounded rectangle background with a triangular pointer, commonly used for displaying helpful information when hovering over UI elements.
+
+**Parameters**
+
+* `x` (*number*): The x position of the tooltip.
+* `y` (*number*): The y position of the tooltip.
+* `w` (*number*): The width of the tooltip rectangle.
+* `h` (*number*): The height of the tooltip rectangle.
+* `text` (*string*): The text to display in the tooltip.
+* `font` (*string*): The font to use for the text.
+* `textCol` (*Color*): The color of the tooltip text.
+* `outlineCol` (*Color*): The color of the tooltip outline/background.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic tooltip
+lia.derma.DrawTip(100, 100, 200, 60, "This is a tooltip", "liaSmallFont", Color(255, 255, 255), Color(50, 50, 50, 200))
+
+-- Tooltip with different colors
+lia.derma.DrawTip(ScrW() / 2 - 100, ScrH() / 2, 200, 50, "Hover tooltip", "liaMediumFont", Color(255, 255, 0), Color(100, 100, 255, 220))
+
+-- Use in button hover effects
+local function drawButtonWithTooltip(x, y, w, h, text, tooltipText)
+    local isHovered = math.Distance(input.GetCursorPos(), x + w/2, y + h/2) < 100
+
+    lia.derma.draw(8, x, y, w, h, isHovered and Color(150, 150, 255) or Color(100, 100, 200))
+
+    if isHovered and tooltipText then
+        lia.derma.DrawTip(x, y - 70, 200, 50, tooltipText, "liaSmallFont", Color(255, 255, 255), Color(0, 0, 0, 200))
+    end
+
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawButtonWithTooltip(100, 100, 150, 40, "Hover Me!", "This button does something important")
+
+-- Tooltip for inventory items
+local function drawInventoryTooltip(item, x, y)
+    if not item then return end
+
+    local tooltipText = item.name .. "\n" .. (item.description or "No description")
+    local textWidth = 250
+    local textHeight = 80
+
+    lia.derma.DrawTip(x, y - textHeight - 20, textWidth, textHeight, tooltipText, "liaSmallFont", Color(255, 255, 255), Color(50, 50, 50, 220))
+end
+
+-- Tooltip for HUD elements
+local function drawHUDTooltip()
+    local mouseX, mouseY = input.GetCursorPos()
+
+    -- Health tooltip
+    if mouseX > 50 and mouseX < 150 and mouseY > ScrH() - 80 and mouseY < ScrH() - 20 then
+        local health = LocalPlayer():Health()
+        local maxHealth = LocalPlayer():GetMaxHealth()
+        lia.derma.DrawTip(mouseX + 10, mouseY - 60, 200, 40,
+                         "Health: " .. health .. "/" .. maxHealth, "liaSmallFont",
+                         Color(255, 255, 255), Color(100, 0, 0, 200))
+    end
+
+    -- Armor tooltip
+    if mouseX > 200 and mouseX < 300 and mouseY > ScrH() - 80 and mouseY < ScrH() - 20 then
+        local armor = LocalPlayer():Armor()
+        lia.derma.DrawTip(mouseX + 10, mouseY - 60, 200, 40,
+                         "Armor: " .. armor, "liaSmallFont",
+                         Color(255, 255, 255), Color(0, 100, 0, 200))
+    end
+end
+
+hook.Add("HUDPaint", "DrawHUDTooltips", drawHUDTooltip)
+
+-- Tooltip with multiple lines
+lia.derma.DrawTip(200, 200, 250, 100, "Line 1\nLine 2\nLine 3", "liaSmallFont", Color(255, 255, 255), Color(50, 50, 50, 200))
+```
+
+---
+
+### ShadowText
+
+**Purpose**
+
+Draws text with a drop shadow effect by rendering the text twice - once in the shadow color at an offset position, and once in the main color at the original position.
+
+**Parameters**
+
+* `text` (*string*): The text to draw.
+* `font` (*string*): The font to use for drawing the text.
+* `x` (*number*): The x position to draw the text.
+* `y` (*number*): The y position to draw the text.
+* `colortext` (*Color*): The main color of the text.
+* `colorshadow` (*Color*): The color of the shadow.
+* `dist` (*number*, optional): The distance/offset of the shadow in pixels (default: 1).
+* `xalign` (*number*, optional): The horizontal alignment (TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT).
+* `yalign` (*number*, optional): The vertical alignment (TEXT_ALIGN_TOP, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic shadowed text
+lia.derma.ShadowText("Hello World", "liaMediumFont", 100, 100, Color(255, 255, 255), Color(0, 0, 0), 2)
+
+-- Shadowed text with different colors
+lia.derma.ShadowText("Colored Shadow", "liaLargeFont", ScrW() / 2, ScrH() / 2, Color(255, 100, 100), Color(100, 0, 100), 3, TEXT_ALIGN_CENTER)
+
+-- Shadowed text aligned to different positions
+lia.derma.ShadowText("Right Aligned", "liaSmallFont", ScrW() - 50, 50, Color(100, 255, 100), Color(0, 100, 0), 1, TEXT_ALIGN_RIGHT)
+
+-- Shadowed text with large shadow distance for dramatic effect
+lia.derma.ShadowText("DRAMATIC!", "liaLargeFont", 200, 200, Color(255, 255, 0), Color(255, 0, 0), 5, TEXT_ALIGN_CENTER)
+
+-- Use in UI elements for depth
+local function drawShadowedButton(x, y, w, h, text)
+    lia.derma.draw(8, x, y, w, h, Color(100, 150, 255))
+    lia.derma.ShadowText(text, "liaMediumFont", x + w/2, y + h/2, Color(255, 255, 255), Color(0, 0, 0), 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawShadowedButton(100, 100, 200, 50, "Click Me!")
+
+-- Shadowed text for HUD elements
+local function drawPlayerHUD()
+    local health = LocalPlayer():Health()
+    local maxHealth = LocalPlayer():GetMaxHealth()
+
+    lia.derma.ShadowText("Health: " .. health .. "/" .. maxHealth, "liaMediumFont", 100, ScrH() - 100,
+                         health > 50 and Color(100, 255, 100) or Color(255, 100, 100),
+                         Color(0, 0, 0), 2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+end
+
+hook.Add("HUDPaint", "DrawPlayerHUD", drawPlayerHUD)
+
+-- Shadowed text with custom shadow color and distance
+lia.derma.ShadowText("Custom Shadow", "liaMediumFont", 100, 300, Color(150, 150, 255), Color(50, 50, 150), 4)
+
+-- Multiple shadowed text elements for layered effect
+lia.derma.ShadowText("Layer 1", "liaLargeFont", 300, 300, Color(255, 255, 255), Color(100, 100, 100), 1)
+lia.derma.ShadowText("Layer 2", "liaLargeFont", 302, 302, Color(255, 255, 255), Color(50, 50, 50), 2)
+lia.derma.ShadowText("Layer 3", "liaLargeFont", 304, 304, Color(255, 255, 255), Color(0, 0, 0), 3)
+
+-- Shadowed text for game titles or important messages
+lia.derma.ShadowText("IMPORTANT ANNOUNCEMENT", "liaLargeFont", ScrW() / 2, 150, Color(255, 255, 0), Color(255, 0, 0), 4, TEXT_ALIGN_CENTER)
+```
+
+---
+
+### DrawTextOutlined
+
+**Purpose**
+
+Draws text with an outline effect by rendering the text multiple times at offset positions with the specified outline color, creating a bordered appearance.
+
+**Parameters**
+
+* `text` (*string*): The text to draw.
+* `font` (*string*): The font to use for drawing the text.
+* `x` (*number*): The x position to draw the text.
+* `y` (*number*): The y position to draw the text.
+* `colour` (*Color*): The main color of the text.
+* `xalign` (*number*, optional): The horizontal alignment (TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT).
+* `outlinewidth` (*number*, optional): The width of the outline in pixels (default: 1).
+* `outlinecolour` (*Color*, optional): The color of the outline (default: Color(0, 0, 0, 255)).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw basic outlined text
+lia.derma.DrawTextOutlined("Hello World", "liaMediumFont", 100, 100, Color(255, 255, 255), TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
+
+-- Draw centered outlined text
+lia.derma.DrawTextOutlined("Centered Text", "liaLargeFont", ScrW() / 2, ScrH() / 2, Color(255, 100, 100), TEXT_ALIGN_CENTER, 3, Color(100, 0, 0))
+
+-- Draw right-aligned outlined text
+lia.derma.DrawTextOutlined("Right Aligned", "liaSmallFont", ScrW() - 50, 50, Color(100, 255, 100), TEXT_ALIGN_RIGHT, 1, Color(0, 100, 0))
+
+-- Draw outlined text with thick outline for emphasis
+lia.derma.DrawTextOutlined("IMPORTANT!", "liaLargeFont", 200, 200, Color(255, 255, 0), TEXT_ALIGN_CENTER, 5, Color(255, 0, 0))
+
+-- Draw outlined text in a custom color scheme
+lia.derma.DrawTextOutlined("Custom Colors", "liaMediumFont", 100, 300, Color(150, 150, 255), TEXT_ALIGN_LEFT, 2, Color(50, 50, 150))
+
+-- Use in UI elements
+local function drawOutlinedButton(x, y, w, h, text)
+    lia.derma.draw(8, x, y, w, h, Color(100, 150, 255))
+    lia.derma.DrawTextOutlined(text, "liaMediumFont", x + w/2, y + h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, 2, Color(0, 0, 0))
+end
+
+drawOutlinedButton(100, 100, 200, 50, "Click Me!")
+
+-- Draw outlined text with different font sizes for headings
+lia.derma.DrawTextOutlined("Main Title", "liaLargeFont", ScrW() / 2, 100, Color(255, 255, 255), TEXT_ALIGN_CENTER, 3, Color(0, 0, 0))
+lia.derma.DrawTextOutlined("Subtitle", "liaMediumFont", ScrW() / 2, 150, Color(200, 200, 200), TEXT_ALIGN_CENTER, 2, Color(50, 50, 50))
+
+-- Draw outlined text for game UI elements
+local function drawPlayerHUD()
+    local health = LocalPlayer():Health()
+    local maxHealth = LocalPlayer():GetMaxHealth()
+
+    lia.derma.DrawTextOutlined("Health: " .. health .. "/" .. maxHealth, "liaMediumFont", 100, ScrH() - 100,
+                               health > 50 and Color(100, 255, 100) or Color(255, 100, 100),
+                               TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
+end
+
+hook.Add("HUDPaint", "DrawPlayerHUD", drawPlayerHUD)
 ```
 
 ---
