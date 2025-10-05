@@ -478,8 +478,14 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.infoFrame:SetTitle("")
     self.infoFrame:SetDraggable(false)
     self.infoFrame:ShowCloseButton(false)
-    local scroll = vgui.Create("DScrollPanel", self.infoFrame)
+    local scroll = vgui.Create("liaScrollPanel", self.infoFrame)
     scroll:Dock(FILL)
+    scroll:InvalidateLayout(true) -- Ensure proper layout initialization
+
+    -- Ensure scrollbar is properly initialized
+    if not IsValid(scroll.VBar) then
+        scroll:PerformLayout()
+    end
     for i, text in ipairs(info) do
         if i == 1 then
             local line = scroll:Add("DPanel")
@@ -490,14 +496,14 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             local nameLabel = line:Add("DLabel")
             nameLabel:Dock(LEFT)
             nameLabel:SetFont("liaSmallFont")
-            nameLabel:SetTextColor(Color(255, 255, 255))
+            nameLabel:SetTextColor(lia.color.theme.text or Color(255, 255, 255))
             nameLabel:SetText(text)
             nameLabel:SizeToContents()
             nameLabel.Paint = function() end
             local countLabel = line:Add("DLabel")
             countLabel:Dock(RIGHT)
             countLabel:SetFont("liaSmallFont")
-            countLabel:SetTextColor(Color(255, 255, 255))
+            countLabel:SetTextColor(lia.color.theme.gray or Color(255, 255, 255))
             countLabel:SetText(index .. "/" .. total)
             countLabel:SizeToContents()
             countLabel.Paint = function() end
@@ -508,7 +514,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             lbl:SetFont("liaSmallFont")
             lbl:SetWrap(true)
             lbl:SetAutoStretchVertical(true)
-            lbl:SetTextColor(Color(255, 255, 255))
+            lbl:SetTextColor(lia.color.theme.text or Color(255, 255, 255))
             lbl:SetText(text)
             lbl:SizeToContentsY()
         end
@@ -535,7 +541,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         label:Dock(TOP)
         label:DockMargin(10, 3, 10, 5)
         label:SetFont("liaSmallFont")
-        label:SetTextColor(Color(255, 255, 255))
+        label:SetTextColor(lia.color.theme.text or Color(255, 255, 255))
         label:SetText(entry.attr.name)
         label:SetContentAlignment(5)
         label:SizeToContentsY()
@@ -568,7 +574,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn:SetText(selectText)
     if clientChar and character:getID() == clientChar:getID() then
         self.selectBtn:SetEnabled(false)
-        self.selectBtn:SetTextColor(Color(255, 255, 255))
+        self.selectBtn:SetTextColor(lia.color.theme.gray or Color(255, 255, 255))
     end
 
     self.selectBtn.DoClick = function()

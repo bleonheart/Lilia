@@ -33,7 +33,7 @@ function PANEL:Init()
         local col = lia.color.theme.gray
         if value ~= '' then
             text = value
-            col = lia.color.theme.text
+            col = lia.color.theme.text_entry or lia.color.theme.text
         end
 
         draw.SimpleText(text, font, padding - self._text_offset, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -47,7 +47,7 @@ function PANEL:SetTitle(title)
     self.titlePanel:Dock(TOP)
     self.titlePanel:DockMargin(0, 0, 0, 6)
     self.titlePanel:SetTall(18)
-    self.titlePanel.Paint = function() draw.SimpleText(self.title, 'Fated.18', 0, 0, lia.color.theme.text) end
+    self.titlePanel.Paint = function() draw.SimpleText(self.title, 'Fated.18', 0, 0, lia.color.theme.text_entry or lia.color.theme.text) end
 end
 
 function PANEL:SetPlaceholder(placeholder)

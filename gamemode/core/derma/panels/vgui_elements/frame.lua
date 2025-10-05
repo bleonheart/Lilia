@@ -1,10 +1,9 @@
 ﻿local PANEL = {}
-local mat_close = Material('close_button.png')
 function PANEL:Init()
     self.bool_alpha = true
     self.bool_lite = false
     self.title = L("title")
-    self.center_title = ''
+    self.center_title = ""
     self.blurAmount = 6
     self.blurPasses = 0
     self.blurAlpha = 255
@@ -17,9 +16,9 @@ function PANEL:Init()
     self.minHeight = 80
     self.iconMat = nil
     self:DockPadding(6, 30, 6, 6)
-    self.top_panel = vgui.Create('DButton', self)
-    self.top_panel:SetText('')
-    self.top_panel:SetCursor('sizeall')
+    self.top_panel = vgui.Create("DButton", self)
+    self.top_panel:SetText("")
+    self.top_panel:SetCursor("sizeall")
     self.top_panel.Paint = nil
     self.top_panel.OnMousePressed = function(s, key)
         if key == MOUSE_LEFT then
@@ -47,7 +46,11 @@ function PANEL:Init()
 
     self.cls = vgui.Create('Button', self)
     self.cls:SetText('')
-    self.cls.Paint = function(_, w, h) lia.derma.rect(2, 2, w - 4, h - 4):Color(lia.color.theme.header_text):Material(mat_close):Draw() end
+    self.cls.Paint = function(_, w, h)
+        lia.derma.rect(2, 2, w - 4, h - 4):Color(lia.color.theme.header_text):Draw()
+        draw.SimpleText("✕", "lia.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+
     self.cls.DoClick = function()
         surface.PlaySound('button_click.wav')
         if self.deleteOnClose then
@@ -58,7 +61,7 @@ function PANEL:Init()
     end
 
     self.cls.DoRightClick = function()
-        local DM = lia.derma.derma_menu()
+        local DM = lia.derma.dermaMenu()
         DM:AddOption(L("transparency"), function() self.bool_alpha = not self.bool_alpha end, self.bool_alpha and 'icon16/bullet_green.png' or 'icon16/bullet_red.png')
         local boolInput = self:IsKeyboardInputEnabled()
         DM:AddOption(L("moveFromMenu"), function() self:SetKeyBoardInputEnabled(not boolInput) end, not boolInput and 'icon16/bullet_green.png' or 'icon16/bullet_red.png')

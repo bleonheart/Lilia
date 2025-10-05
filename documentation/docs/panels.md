@@ -1652,7 +1652,7 @@ panel:SetSize(200, 100)
 - `SetWindowTitle(title)` – sets the window title.
 - `SetPlaceholderText(text)` – sets the search box placeholder text.
 - `SetColumns(columns)` – defines the list columns.
-- `SetData(rows)` – populates the list with data rows.
+- `setData(rows)` – populates the list with data rows.
 - `SetSort(column, desc)` – sets the sort column and direction.
 - `Populate()` – refreshes the list based on current search filter.
 
@@ -1797,7 +1797,7 @@ Client.
 **Functions:**
 
 - `SetTitle(title)` – sets the window title.
-- `SetData(data)` – populates the list with item data.
+- `setData(data)` – populates the list with item data.
 - `SetColumns(columns)` – defines the column structure.
 - `PopulateItems()` – refreshes the list display.
 
@@ -1814,7 +1814,7 @@ itemList:MakePopup()
 itemList:SetColumns({"Item Name", "Value", "Description"})
 
 -- Set data
-itemList:SetData({
+itemList:setData({
     {"Sword", "100", "A sharp blade"},
     {"Shield", "50", "Protective gear"},
     {"Potion", "25", "Healing item"}
@@ -1840,7 +1840,7 @@ Client.
 **Functions:**
 
 - `SetTitle(title)` – sets the dialog title.
-- `SetData(data)` – populates the selector with item data.
+- `setData(data)` – populates the selector with item data.
 - `SetColumns(columns)` – defines the column structure.
 - `SetActionText(text)` – sets the text for the action button.
 
@@ -1864,7 +1864,7 @@ selector.OnAction = function(line, selectedIndex)
 end
 
 -- Populate with data
-selector:SetData({
+selector:setData({
     {"Sword", "100", "5"},
     {"Shield", "50", "10"},
     {"Potion", "25", "20"}

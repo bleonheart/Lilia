@@ -501,14 +501,11 @@ hook.Add("RefreshFonts", "liaRefreshUIElements", function()
     -- Force all VGUI elements to invalidate their layout and refresh fonts
     local function refreshPanel(panel)
         if not IsValid(panel) then return end
-
         -- Invalidate layout to force re-calculation with new fonts
         panel:InvalidateLayout(true)
-
         -- Force re-render
         panel:SetVisible(false)
         panel:SetVisible(true)
-
         -- Recursively refresh child panels
         for _, child in pairs(panel:GetChildren()) do
             refreshPanel(child)

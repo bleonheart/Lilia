@@ -1585,7 +1585,7 @@ local function createRadialMenuForItems(items)
     })
 
     for _, item in ipairs(items) do
-        menu:AddOption(item.name, function() useItem(item) end, item.icon, item.description)
+        menu:AddOption(item.name, function() useItem(item) end, item.icon, ITEM.desc)
     end
 
     return menu

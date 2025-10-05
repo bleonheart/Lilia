@@ -195,7 +195,8 @@ lia.command.add("charkill", {
             [playerKey] = {"table", choices},
             [reasonKey] = "string",
             [evidenceKey] = "string"
-        }, function(data)
+        }, function(success, data)
+            if not success then return end
             local selection = data[playerKey]
             local reason = data[reasonKey]
             local evidence = data[evidenceKey]

@@ -4,21 +4,21 @@ function PANEL:Init()
     self.rows = {}
     self.headerHeight = 36
     self.rowHeight = 32
-    self.font = 'Fated.18'
-    self.rowFont = 'Fated.16'
+    self.font = "Fated.18"
+    self.rowFont = "Fated.16"
     self.selectedRow = nil
     self.sortColumn = nil
     self.hoverAnim = 0
     self.padding = 8
     self.isRebuilding = false
     self.autoSizeScheduled = false
-    self.header = vgui.Create('Panel', self)
+    self.header = vgui.Create("Panel", self)
     self.header:Dock(TOP)
     self.header:SetTall(self.headerHeight)
-    self.scrollPanel = vgui.Create('liaScrollPanel', self)
+    self.scrollPanel = vgui.Create("liaScrollPanel", self)
     self.scrollPanel:Dock(FILL)
     self.scrollPanel:DockMargin(0, 0, 0, 0)
-    self.content = vgui.Create('Panel', self.scrollPanel)
+    self.content = vgui.Create("Panel", self.scrollPanel)
     self.content:Dock(FILL)
     self.content.Paint = nil
     self.OnAction = function() end
@@ -152,7 +152,7 @@ function PANEL:CreateRow(rowIndex, rowData)
     row.DoRightClick = function()
         self.selectedRow = rowIndex
         self.OnRightClick(rowData)
-        local menu = lia.derma.derma_menu()
+        local menu = lia.derma.dermaMenu()
         for i, column in ipairs(self.columns) do
             menu:AddOption(L("copy") .. ' ' .. column.name, function() SetClipboardText(tostring(rowData[i])) end)
         end
@@ -189,6 +189,8 @@ function PANEL:CalculateColumnWidths()
         return
     end
 
+    -- First pass: calculate minimum widths for auto-sized columns
+    local autoSizeColumns = {}
     for colIndex, column in ipairs(self.columns) do
         if column.autoSize then
             local maxWidth = 0
@@ -209,6 +211,31 @@ function PANEL:CalculateColumnWidths()
 
             -- Set minimum width and ensure it's not too small
             column.width = math.max(maxWidth, 60)
+            table.insert(autoSizeColumns, colIndex)
+        end
+    end
+
+    -- Second pass: distribute remaining space evenly among auto-sized columns
+    if #autoSizeColumns > 0 then
+        local totalUsedWidth = 0
+        for _, column in ipairs(self.columns) do
+            totalUsedWidth = totalUsedWidth + column.width
+        end
+
+        local availableWidth = self:GetWide()
+        local remainingWidth = availableWidth - totalUsedWidth
+
+        if remainingWidth > 0 then
+            local extraWidthPerColumn = math.floor(remainingWidth / #autoSizeColumns)
+            local remainder = remainingWidth % #autoSizeColumns
+
+            for i, colIndex in ipairs(autoSizeColumns) do
+                local extraWidth = extraWidthPerColumn
+                if i <= remainder then
+                    extraWidth = extraWidth + 1
+                end
+                self.columns[colIndex].width = self.columns[colIndex].width + extraWidth
+            end
         end
     end
 end
@@ -226,7 +253,9 @@ function PANEL:RebuildRows()
         self:CreateRow(rowIndex, rowData)
     end
 
-    self.content:SetSize(totalWidth, #self.rows * (self.rowHeight + 1))
+    -- Ensure content width matches panel width for proper scrolling
+    local panelWidth = self:GetWide()
+    self.content:SetSize(math.max(totalWidth, panelWidth), #self.rows * (self.rowHeight + 1))
 
     -- Schedule a recalculation after fonts are loaded (but not if we're already rebuilding)
     if not self.isRebuilding then
@@ -363,6 +392,20 @@ end
 
 function PANEL:GetLines()
     return self.rows
+end
+
+function PANEL:OnSizeChanged(w, h)
+    -- Recalculate column widths when panel is resized
+    if #self.columns > 0 then
+        -- Always recalculate if we have columns, even if no rows yet
+        self:CalculateColumnWidths()
+        if #self.rows > 0 then
+            self:RebuildRows()
+        else
+            -- If no rows but columns exist, still rebuild header
+            self:CreateHeader()
+        end
+    end
 end
 
 function PANEL:Paint(w, h)

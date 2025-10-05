@@ -4,14 +4,14 @@ function PANEL:Init()
     self.selected = nil
     self.opened = false
     self:SetTall(26)
-    self:SetText('')
-    self.font = 'Fated.18'
+    self:SetText("")
+    self.font = "Fated.18"
     self.hoverAnim = 0
     self.OnSelect = function() end
-    self.btn = vgui.Create('DButton', self)
+    self.btn = vgui.Create("DButton", self)
     self.btn:Dock(FILL)
-    self.btn:SetText('')
-    self.btn:SetCursor('hand')
+    self.btn:SetText("")
+    self.btn:SetCursor("hand")
     self.btn.Paint = function(_, w, h)
         if self.btn:IsHovered() then
             self.hoverAnim = math.Clamp(self.hoverAnim + FrameTime() * 4, 0, 1)
@@ -52,7 +52,7 @@ function PANEL:Init()
             self:CloseMenu()
         else
             self:OpenMenu()
-            surface.PlaySound('button_click.wav')
+            surface.PlaySound("button_click.wav")
         end
     end
 end
@@ -62,6 +62,12 @@ function PANEL:AddChoice(text, data)
         text = text,
         data = data
     })
+
+    -- Force UI refresh after adding choices to ensure proper sizing
+    if IsValid(self.menu) and self.opened then
+        self:CloseMenu()
+        self:OpenMenu()
+    end
 end
 
 function PANEL:SetValue(val)
@@ -71,7 +77,12 @@ end
 function PANEL:ChooseOption(text, index)
     self.selected = text
     if self.convar then RunConsoleCommand(self.convar, tostring(text)) end
-    if self.OnSelect then self.OnSelect(index or 0, text, self.choices[index] and self.choices[index].data) end
+    if self.OnSelect then
+        local actualIndex = index or 0
+        local choiceData = nil
+        if actualIndex > 0 and self.choices[actualIndex] then choiceData = self.choices[actualIndex].data end
+        self.OnSelect(actualIndex, text, choiceData)
+    end
 end
 
 function PANEL:ChooseOptionID(index)
@@ -107,41 +118,118 @@ function PANEL:OpenMenu()
     if IsValid(self.menu) then self.menu:Remove() end
     local menuPadding = 6
     local itemHeight = 26
-    local menuHeight = (#self.choices * (itemHeight + 2)) + (menuPadding * 2) + 2
-    self.menu = vgui.Create('DPanel')
-    self.menu:SetSize(self:GetWide(), menuHeight)
-    local x, y = self:LocalToScreen(0, self:GetTall())
-    if y + menuHeight > ScrH() - 10 then y = y - menuHeight - self:GetTall() end
-    self.menu:SetPos(x, y)
-    self.menu:SetDrawOnTop(true)
-    self.menu:MakePopup()
-    self.menu:SetKeyboardInputEnabled(false)
-    self.menu:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding)
-    self.menu.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
+    local maxMenuHeight = 200 -- Maximum height before scrolling
+    local numChoices = #self.choices
+
+    -- Calculate optimal width based on option text lengths
+    surface.SetFont(self.font)
+    local maxTextWidth = 0
+    for _, choice in ipairs(self.choices) do
+        local textWidth = surface.GetTextSize(choice.text)
+        if textWidth > maxTextWidth then
+            maxTextWidth = textWidth
+        end
     end
 
-    surface.SetFont(self.font)
-    for i, choice in ipairs(self.choices) do
-        local option = vgui.Create('DButton', self.menu)
-        option:SetText('')
-        option:Dock(TOP)
-        option:DockMargin(2, 2, 2, 0)
-        option:SetTall(itemHeight)
-        option:SetCursor('hand')
-        option.Paint = function(s, w, h)
-            if s:IsHovered() then lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw() end
-            draw.SimpleText(choice.text, 'Fated.18', 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-            if self.selected == choice.text then lia.derma.rect(4, h * 0.5 - 1, w - 8, 2):Color(lia.color.theme.theme):Draw() end
+    -- Add padding for text and ensure minimum width
+    local optimalWidth = math.max(self:GetWide(), maxTextWidth + 40) -- 40px padding for text
+    local menuWidth = math.min(optimalWidth, ScrW() * 0.4) -- Cap at 40% of screen width
+
+    -- Calculate if we need scrolling
+    local needsScroll = numChoices * (itemHeight + 2) > maxMenuHeight - (menuPadding * 2) - 2
+    if needsScroll then
+        -- Use scroll panel for many options
+        self.menu = vgui.Create("liaScrollPanel")
+        self.menu:SetSize(menuWidth, maxMenuHeight)
+        local x, y = self:LocalToScreen(0, self:GetTall())
+        if y + maxMenuHeight > ScrH() - 10 then y = y - maxMenuHeight - self:GetTall() end
+        self.menu:SetPos(x, y)
+        self.menu:SetDrawOnTop(true)
+        self.menu:MakePopup()
+        self.menu:SetKeyboardInputEnabled(false)
+        -- Create a container for the options
+        local container = vgui.Create("DPanel", self.menu)
+        container:Dock(FILL)
+        container:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding)
+        container.Paint = function(_, w, h)
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
         end
 
-        option.DoClick = function()
-            self.selected = choice.text
-            if self.convar then RunConsoleCommand(self.convar, tostring(choice.data or choice.text)) end
-            self:CloseMenu()
-            if self.OnSelect then self.OnSelect(i, choice.text, choice.data) end
-            surface.PlaySound('button_click.wav')
+        surface.SetFont(self.font)
+        for i, choice in ipairs(self.choices) do
+            local option = vgui.Create("DButton", container)
+            option:SetText("")
+            option:Dock(TOP)
+            option:DockMargin(2, 2, 2, 0)
+            option:SetTall(itemHeight)
+            option:SetCursor("hand")
+            option.Paint = function(s, w, h)
+                local isSelected = self.selected == choice.text
+                local isHovered = s:IsHovered()
+                -- Draw background for selected option (full box)
+                if isSelected then
+                    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.theme):Shape(lia.derma.SHAPE_IOS):Draw()
+                elseif isHovered then
+                    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw()
+                end
+
+                -- Draw text
+                local textColor = isSelected and lia.color.theme.text_entry or lia.color.theme.text
+                draw.SimpleText(choice.text, "Fated.18", 14, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
+
+            option.DoClick = function()
+                self:ChooseOption(choice.text, i)
+                self:CloseMenu()
+                surface.PlaySound("button_click.wav")
+            end
+        end
+    else
+        -- Use regular panel for few options
+        local menuHeight = (numChoices * (itemHeight + 2)) + (menuPadding * 2) + 2
+        self.menu = vgui.Create("DPanel")
+        self.menu:SetSize(menuWidth, menuHeight)
+        local x, y = self:LocalToScreen(0, self:GetTall())
+        if y + menuHeight > ScrH() - 10 then y = y - menuHeight - self:GetTall() end
+        self.menu:SetPos(x, y)
+        self.menu:SetDrawOnTop(true)
+        self.menu:MakePopup()
+        self.menu:SetKeyboardInputEnabled(false)
+        self.menu:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding)
+        self.menu.Paint = function(_, w, h)
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
+        end
+
+        surface.SetFont(self.font)
+        for i, choice in ipairs(self.choices) do
+            local option = vgui.Create("DButton", self.menu)
+            option:SetText("")
+            option:Dock(TOP)
+            option:DockMargin(2, 2, 2, 0)
+            option:SetTall(itemHeight)
+            option:SetCursor("hand")
+            option.Paint = function(s, w, h)
+                local isSelected = self.selected == choice.text
+                local isHovered = s:IsHovered()
+                -- Draw background for selected option (full box)
+                if isSelected then
+                    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.theme):Shape(lia.derma.SHAPE_IOS):Draw()
+                elseif isHovered then
+                    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw()
+                end
+
+                -- Draw text
+                local textColor = isSelected and lia.color.theme.text_entry or lia.color.theme.text
+                draw.SimpleText(choice.text, "Fated.18", 14, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            end
+
+            option.DoClick = function()
+                self:ChooseOption(choice.text, i)
+                self:CloseMenu()
+                surface.PlaySound("button_click.wav")
+            end
         end
     end
 
@@ -199,4 +287,22 @@ function PANEL:IsMenuOpen()
     return self.opened
 end
 
-vgui.Register('liaComboBox', PANEL, 'Panel')
+function PANEL:SetFont(font)
+    self.font = font
+end
+
+function PANEL:RefreshDropdown()
+    -- Force refresh of dropdown if it's currently open
+    if IsValid(self.menu) and self.opened then
+        self:CloseMenu()
+        self:OpenMenu()
+    end
+end
+
+function PANEL:FinishAddingOptions()
+    -- This method can be called after all options have been added
+    -- to ensure the dropdown is properly sized
+    self:RefreshDropdown()
+end
+
+vgui.Register("liaComboBox", PANEL, "Panel")

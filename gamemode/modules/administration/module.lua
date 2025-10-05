@@ -46,12 +46,6 @@ MODULE.Privileges = {
         Category = "character",
     },
     {
-        Name = "viewDBTables",
-        ID = "viewDBTables",
-        MinAccess = "superadmin",
-        Category = "database",
-    },
-    {
         Name = "canAccessFlagManagement",
         ID = "canAccessFlagManagement",
         MinAccess = "superadmin",

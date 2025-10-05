@@ -3,9 +3,7 @@ lia.font.stored = lia.font.stored or {}
 function lia.font.register(fontName, fontData)
     if not (isstring(fontName) and istable(fontData)) then return lia.error(L("invalidFont")) end
     lia.font.stored[fontName] = fontData
-    if CLIENT then
-        surface.CreateFont(fontName, fontData)
-    end
+    if CLIENT then surface.CreateFont(fontName, fontData) end
 end
 
 function lia.font.getAvailableFonts()
@@ -178,13 +176,6 @@ lia.font.register("Montserrat Bold", {
     extended = true,
     antialias = true,
     weight = 700
-})
-
-lia.font.register("marlett", {
-    font = "Marlett",
-    size = SERVER and 0 or 14,
-    extended = true,
-    antialias = true
 })
 
 lia.font.register("Fated.12", {
@@ -369,16 +360,10 @@ if CLIENT then
         -- Get the current font configuration
         local currentFont = lia.config.get("Font", "Montserrat Medium")
         print("Refreshing fonts with:", currentFont)
-
         -- Force VGUI to refresh font cache
-        if vgui and vgui.RefreshFonts then
-            vgui.RefreshFonts()
-        end
-
+        if vgui and vgui.RefreshFonts then vgui.RefreshFonts() end
         -- Clear surface font cache to force re-creation
-        if surface and surface.ClearFontCache then
-            surface.ClearFontCache()
-        end
+        if surface and surface.ClearFontCache then surface.ClearFontCache() end
         lia.font.register("ConfigFont", {
             font = currentFont,
             size = SERVER and 0 or 26,
@@ -539,13 +524,6 @@ if CLIENT then
             extended = true,
             antialias = true,
             weight = 700
-        })
-
-        lia.font.register("marlett", {
-            font = "Marlett",
-            size = SERVER and 0 or 14,
-            extended = true,
-            antialias = true
         })
 
         lia.font.register("Fated.12", {
@@ -723,17 +701,13 @@ if CLIENT then
         })
 
         hook.Run("PostLoadFonts", currentFont, currentFont)
-
         -- Force all VGUI elements to refresh their font references
         local function refreshVGUIElement(element)
             if not IsValid(element) then return end
-
             -- Force element to re-render with new fonts
             if element.SetFont and element.GetFont then
                 local elementFont = element:GetFont()
-                if elementFont and elementFont ~= "" then
-                    element:SetFont(elementFont)
-                end
+                if elementFont and elementFont ~= "" then element:SetFont(elementFont) end
             end
 
             -- Recursively refresh child elements
@@ -793,7 +767,6 @@ end, {
 })
 
 hook.Run("PostLoadFonts", lia.config.get("Font", "Montserrat Medium"), lia.config.get("Font", "Montserrat Medium"))
-
 -- Console command to manually refresh fonts for testing
 if CLIENT then
     concommand.Add("lia_refresh_fonts", function()
@@ -812,7 +785,6 @@ if CLIENT then
         print("Current font setting:", currentFont)
         print("Stored fonts count:", table.Count(lia.font.stored))
         print("Available fonts:", table.concat(lia.font.getAvailableFonts(), ", "))
-
         -- Test a specific font
         surface.SetFont("ConfigFontLarge")
         local w, h = surface.GetTextSize("Test Text")

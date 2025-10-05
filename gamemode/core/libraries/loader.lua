@@ -69,10 +69,6 @@ local FilesToLoad = {
         realm = "server"
     },
     {
-        path = "lilia/gamemode/core/libraries/color.lua",
-        realm = "shared"
-    },
-    {
         path = "lilia/gamemode/core/libraries/logger.lua",
         realm = "server"
     },
@@ -515,6 +511,8 @@ function lia.loader.checkForUpdates()
 end
 
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
+lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
+lia.loader.include("lilia/gamemode/core/libraries/color.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/derma.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
@@ -684,7 +682,7 @@ function GM:OnReloaded()
         local remaining = math.ceil(lia.reloadCooldown - timeSinceLastReload)
         if SERVER then
             MsgC(Color(0, 255, 0), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
-            MsgC(Color(255, 165, 0), "[HotReload] ")
+            MsgC(Color(0, 255, 0), "[HotReload] ")
             MsgC(Color(255, 255, 255), L("reloadCooldownActive", remaining) .. "\n")
         end
         return

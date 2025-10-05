@@ -1,20 +1,38 @@
 ﻿local animDuration = 0.3
 local function PaintButton(self, w, h)
-    local r, g, b = lia.config.get("Color")
+    -- Get color from config with fallback
+    local colorTable = lia.config.get("Color")
+    local r = (colorTable and colorTable.r) or 255
+    local g = (colorTable and colorTable.g) or 255
+    local b = (colorTable and colorTable.b) or 255
+    local cornerRadius = 8
+
     if self.Base then
-        surface.SetDrawColor(0, 0, 0, 255)
-        surface.DrawOutlinedRect(0, 0, w, h, 2)
-        surface.SetDrawColor(0, 0, 0, 150)
-        surface.DrawRect(1, 1, w - 2, h - 2)
+        -- Draw shadow/background
+        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Draw main background
+        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
+    -- Draw text
     draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+    -- Draw hover/selected effects
     if self:IsHovered() or self:IsSelected() then
         self.startTime = self.startTime or CurTime()
         local elapsed = CurTime() - self.startTime
         local anim = math.min(w, elapsed / animDuration * w) / 2
-        surface.SetDrawColor(r, g, b)
-        surface.DrawLine(w / 2 - anim, h - 1, w / 2 + anim, h - 1)
+
+        -- Draw hover overlay with subtle shadow effect
+        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 30)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(r, g, b, 40)):Shape(lia.derma.SHAPE_IOS):Draw()
+
+        -- Draw animated underline that grows from center
+        if anim > 0 then
+            local lineWidth = math.min(w - cornerRadius * 2, anim * 2)
+            local lineX = (w - lineWidth) / 2
+            lia.derma.rect(lineX, h - 3, lineWidth, 2):Rad(1):Color(Color(r, g, b)):Draw()
+        end
     else
         self.startTime = nil
     end

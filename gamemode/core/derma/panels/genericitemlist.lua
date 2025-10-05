@@ -40,7 +40,7 @@ function PANEL:PopulateItems()
     end
 end
 
-function PANEL:SetData(data)
+function PANEL:setData(data)
     self.Data = data
     self:PopulateItems()
 end
@@ -122,7 +122,7 @@ function PANEL:PopulateItems()
     end
 end
 
-function PANEL:SetData(data)
+function PANEL:setData(data)
     self.Data = data
     self:PopulateItems()
 end

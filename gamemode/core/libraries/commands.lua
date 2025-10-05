@@ -296,7 +296,7 @@ else
             draw.SimpleText(L(cmdKey), "liaMediumFont", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
         end
 
-        local scroll = vgui.Create("DScrollPanel", frame)
+        local scroll = vgui.Create("liaScrollPanel", frame)
         scroll:Dock(FILL)
         scroll:DockMargin(10, 40, 10, 10)
         surface.SetFont("liaSmallFont")
@@ -683,6 +683,16 @@ if SERVER then
         lia.information(L("persistenceWiped"))
     end)
 
+    concommand.Add("lia_wipeconfig", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        lia.config.reset()
+        lia.information(L("configWiped"))
+    end)
+
     concommand.Add("list_entities", function(client)
         local entityCount = {}
         local totalEntities = 0
@@ -856,41 +866,6 @@ else
     concommand.Add("lia_vgui_cleanup", function()
         for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
             if not (v.Init and debug.getinfo(v.Init, "Sln").short_src:find("chatbox")) then v:Remove() end
-        end
-    end)
-
-    concommand.Add("lia_open_derma_preview", function()
-        if IsValid(dermaPreviewFrame) then dermaPreviewFrame:Remove() end
-        local frame = vgui.Create("DFrame")
-        frame:SetTitle(L("dermaPreviewTitle"))
-        frame:SetSize(800, 600)
-        frame:Center()
-        frame:MakePopup()
-        frame:ShowCloseButton(true)
-        local scroll = vgui.Create("DScrollPanel", frame)
-        scroll:Dock(FILL)
-        local elements = {"DButton", "DLabel", "DTextEntry", "DCheckBox", "DRadioButton", "DNumSlider", "DComboBox", "DListView", "DPanel", "DFrame", "DPropertySheet", "DTree", "DMenuBar", "DToolBar", "DProgress", "DHorizontalDivider", "DVerticalDivider"}
-        for _, element in ipairs(elements) do
-            local panel = vgui.Create("DPanel", scroll)
-            panel:Dock(TOP)
-            panel:SetTall(50)
-            panel:DockMargin(5, 5, 5, 5)
-            panel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, lia.color.theme.background_panelpopup) end
-            local label = vgui.Create("DLabel", panel)
-            label:SetText(element)
-            label:Dock(LEFT)
-            label:DockMargin(10, 0, 0, 0)
-            label:SizeToContents()
-            local button = vgui.Create("DButton", panel)
-            button:Dock(RIGHT)
-            button:DockMargin(0, 5, 10, 5)
-            button:SetWide(100)
-            button:SetText(L("test"))
-            button.DoClick = function()
-                local testElement = vgui.Create(element, panel)
-                testElement:Dock(FILL)
-                testElement:DockMargin(5, 5, 5, 5)
-            end
         end
     end)
 
@@ -1404,7 +1379,7 @@ else
         end
     end)
 
-    concommand.Add("getposition", function(client)
+    concommand.Add("printpos", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
@@ -1415,3 +1390,86 @@ else
         MsgC(Color(255, 255, 255), "Vector: (" .. math.Round(pos.x, 2) .. "," .. math.Round(pos.y, 2) .. "," .. math.Round(pos.z, 2) .. ") Angle:(" .. math.Round(ang.x, 2) .. "," .. math.Round(ang.y, 2) .. "," .. math.Round(ang.z, 2) .. ")\n")
     end)
 end
+
+lia.command.add("demorequests", {
+    description = "Demonstrates all available request UI functions",
+    privilege = "Staff",
+    onRun = function(client, arguments)
+        if SERVER then
+            client:notify("Opening request UI demo...")
+            -- Start with binary question
+            client:binaryQuestion("Would you like to see all the request UI demos?", "Yes, show me!", "No, thanks", false, function(confirmed)
+                if confirmed then
+                    -- Show dropdown demo
+                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, data)
+                        if selected then
+                            -- Show options demo
+                            client:requestOptions("Demo: Multi-Select Options", "Select your favorite activities (max 3):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
+                                if selectedOptions and #selectedOptions > 0 then
+                                    -- Show string input demo
+                                    client:requestString("Demo: Text Input", "Enter a fun message (max 50 characters):", function(message)
+                                        if message then
+                                            -- Show arguments demo
+                                            client:requestArguments("Demo: Structured Input", {
+                                                {"Name", "string"},
+                                                {
+                                                    "Age",
+                                                    {
+                                                        "number",
+                                                        {
+                                                            min = 1,
+                                                            max = 150
+                                                        }
+                                                    }
+                                                },
+                                                {"Favorite Color", {"table", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}}}},
+                                                {"Agree to Terms", "boolean"}
+                                            }, function(success, data)
+                                                if success and data then
+                                                    -- Show buttons demo
+                                                    client:requestButtons("Demo: Button Selection", {
+                                                        {
+                                                            text = "Save Progress",
+                                                            icon = "icon16/disk.png"
+                                                        },
+                                                        {
+                                                            text = "Load Previous",
+                                                            icon = "icon16/folder.png"
+                                                        },
+                                                        {
+                                                            text = "Start Over",
+                                                            icon = "icon16/arrow_refresh.png"
+                                                        },
+                                                        {
+                                                            text = "Exit Demo",
+                                                            icon = "icon16/door.png"
+                                                        }
+                                                    }, function(buttonIndex, buttonText) client:notify("Demo completed! You selected: " .. buttonText) end, "Choose what to do next:")
+                                                else
+                                                    client:notify("Arguments demo cancelled")
+                                                end
+                                            end, {
+                                                Name = "Demo User",
+                                                Age = 25,
+                                                ["Favorite Color"] = {"Blue", "blue"},
+                                                ["Agree to Terms"] = true
+                                            })
+                                        else
+                                            client:notify("String input demo cancelled")
+                                        end
+                                    end, "", 50)
+                                else
+                                    client:notify("Options demo cancelled")
+                                end
+                            end)
+                        else
+                            client:notify("Dropdown demo cancelled")
+                        end
+                    end)
+                else
+                    client:notify("Demo cancelled - no problem!")
+                end
+            end)
+        end
+    end
+})

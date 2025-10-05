@@ -10,12 +10,6 @@ MODULE.Privileges = {
         Category = "protection",
     },
     {
-        Name = "viewEntityTab",
-        ID = "viewEntityTab",
-        MinAccess = "admin",
-        Category = "protection",
-    },
-    {
         Name = "teleportToEntity",
         ID = "teleportToEntity",
         MinAccess = "admin",

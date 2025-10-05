@@ -13,7 +13,7 @@ function PANEL:Init()
     self.maxHeight = nil
     self.Think = function()
         if CurTime() - self._openTime < 0.1 then return end
-        if input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT) then if not self:IsChildHovered() then self:Remove() end end
+        if (input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT)) and not self:IsChildHovered() then self:Remove() end
     end
 end
 
@@ -23,11 +23,11 @@ function PANEL:Paint(w, h)
 end
 
 function PANEL:AddOption(text, func, icon, optData)
-    surface.SetFont('Fated.18')
+    surface.SetFont("Fated.18")
     local textW = select(1, surface.GetTextSize(text))
     self.MaxTextWidth = math.max(self.MaxTextWidth or 0, textW)
-    local option = vgui.Create('DButton', self)
-    option:SetText('')
+    local option = vgui.Create("DButton", self)
+    option:SetText("")
     option:Dock(TOP)
     option:DockMargin(2, 2, 2, 0)
     option:SetTall(26)
@@ -131,12 +131,15 @@ function PANEL:AddOption(text, func, icon, optData)
             if pnl._submenu and not pnl._submenu_open then pnl:OpenSubMenu() end
         end
 
+        local textPadding = 14
         if iconMat then
             local iconSize = 16
-            lia.derma.drawTexture(iconMat, color_white, 0, 10, iconSize, iconSize)
+            lia.derma.drawSurfaceTexture(iconMat, color_white, textPadding, (h - iconSize) * 0.5, iconSize, iconSize)
         end
-
-        draw.SimpleText(pnl.Text, 'Fated.18', pnl.Icon and 32 or 14, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        local iconW = pnl.Icon and 16 or 0
+        local iconTextGap = pnl.Icon and 8 or 0
+        local textX = textPadding + (iconW > 0 and (iconW + iconTextGap) or 0)
+            draw.SimpleText(pnl.Text, 'Fated.18', textX, h * 0.5, lia.color.ReturnMainAdjustedColors().text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     table.insert(self.Items, option)

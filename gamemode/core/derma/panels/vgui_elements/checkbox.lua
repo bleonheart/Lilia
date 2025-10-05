@@ -1,38 +1,41 @@
 ﻿local PANEL = {}
 function PANEL:Init()
-    self.text = ''
-    self.description = ''
-    self.convar = ''
+    self.text = ""
+    self.description = ""
+    self.convar = ""
     self.value = false
     self.hoverAnim = 0
     self.circleAnim = 0
-    self:SetText('')
-    self:SetCursor('hand')
-    self:SetTall(32)
-    self.toggle = vgui.Create('DButton', self)
-    self.toggle:Dock(RIGHT)
-    self.toggle:SetWide(48)
-    self.toggle:DockMargin(0, 0, 8, 0)
-    self.toggle:SetText('')
-    self.toggle:SetCursor('hand')
-    self.toggle.Paint = function(_, w, h)
-        if self.toggle:IsHovered() then
+    self:SetText("")
+    self:SetCursor("hand")
+    -- Create the toggle button as the main element
+    self.toggle = vgui.Create("DButton", self)
+    self.toggle:Dock(FILL) -- Fill the entire panel
+    self.toggle:SetText("")
+    self.toggle:SetCursor("hand")
+    -- Move all the checkbox logic to the toggle button
+    self.toggle.hoverAnim = 0
+    self.toggle.circleAnim = 0
+    self.toggle.Paint = function(toggle, w, h)
+        if toggle:IsHovered() then
             self.hoverAnim = math.Clamp(self.hoverAnim + FrameTime() * 6, 0, 1)
         else
             self.hoverAnim = math.Clamp(self.hoverAnim - FrameTime() * 10, 0, 1)
         end
 
         self.circleAnim = Lerp(FrameTime() * 12, self.circleAnim, self.value and 1 or 0)
-        local trackH = 20
+        local trackH = math.min(20, h - 4)
         local trackY = (h - trackH) / 2
-        lia.derma.rect(0, trackY, w, trackH):Rad(16):Color(lia.color.theme.button):Shape(lia.derma.SHAPE_IOS):Draw()
-        if self.hoverAnim > 0 then lia.derma.rect(0, trackY, w, trackH):Rad(16):Color(Color(lia.color.theme.button_hovered.r, lia.color.theme.button_hovered.g, lia.color.theme.button_hovered.b, self.hoverAnim * 80)):Shape(lia.derma.SHAPE_IOS):Draw() end
-        local circleSize = 16
+        local trackW = math.min(w, 120) -- Limit width to 120 pixels for bigger checkboxes
+        local trackX = (w - trackW) / 2 -- Center the track
+        lia.derma.rect(trackX, trackY, trackW, trackH):Rad(16):Color(lia.color.theme.button):Shape(lia.derma.SHAPE_IOS):Draw()
+        if self.hoverAnim > 0 then lia.derma.rect(trackX, trackY, trackW, trackH):Rad(16):Color(Color(lia.color.theme.button_hovered.r, lia.color.theme.button_hovered.g, lia.color.theme.button_hovered.b, self.hoverAnim * 80)):Shape(lia.derma.SHAPE_IOS):Draw() end
+        local circleSize = math.min(16, trackH - 4)
         local pad = trackY + (trackH - circleSize) / 2
-        local x0 = pad
-        local x1 = w - circleSize - pad
+        local x0 = trackX + pad
+        local x1 = trackX + trackW - circleSize - pad
         local circleX = Lerp(self.circleAnim, x0, x1)
-        local circleCol = self.value and lia.color.theme.theme or lia.color.theme.gray
+        local circleCol = self.value and Color(lia.color.theme.theme.r + 50, lia.color.theme.theme.g + 50, lia.color.theme.theme.b + 50) or lia.color.theme.gray
         lia.derma.circle(circleX + circleSize / 2, h / 2, circleSize):Color(circleCol):Draw()
     end
 
@@ -42,6 +45,9 @@ function PANEL:Init()
         self:OnChange(self.value)
         surface.PlaySound('button_click.wav')
     end
+
+    -- Override the main panel's click to go to the toggle
+    self.DoClick = function() self.toggle:DoClick() end
 end
 
 function PANEL:SetTxt(text)
@@ -84,31 +90,28 @@ function PANEL:SetDescription(desc)
     self:SetTooltipDelay(1.5)
 end
 
-function PANEL:OnChange()
-end
-
 function PANEL:Paint(w, h)
-    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
-    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.focus_panel):Shape(lia.derma.SHAPE_IOS):Draw()
-    draw.SimpleText(self.text, 'Fated.18', 12, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    if self.description ~= '' and self:GetTall() > 32 then draw.SimpleText(self.description, 'Fated.16', 12, h - 6, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM) end
+    -- No background painting needed - the toggle button handles everything
+    -- Text and description are now handled externally since this is just the button
 end
 
 function PANEL:DoClick()
-    if self.description == '' then return end
-    if self:GetTall() == 32 then
-        self:SetTall(48)
-    else
-        self:SetTall(32)
-    end
+    -- Clicking now goes directly to the toggle button
+    self.toggle:DoClick()
 end
 
-function PANEL:OnChange()
+function PANEL:OnChange(val)
+    -- Base OnChange method - can be overridden
+    -- val is the new boolean value of the checkbox
 end
 
 function PANEL:PerformLayout()
-    self.toggle:SetWide(48)
-    self.toggle:DockMargin(0, 0, 8, 0)
+    -- No special layout needed - toggle fills the entire panel
 end
 
-vgui.Register('liaNewCheckBox', PANEL, 'Panel')
+-- Override SetSize to ensure proper sizing
+function PANEL:SetSize(w, h)
+    -- The toggle will automatically resize to fill the panel due to Dock(FILL)
+end
+
+vgui.Register('liaCheckbox', PANEL, 'Panel')

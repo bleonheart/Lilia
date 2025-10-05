@@ -5,8 +5,14 @@ function PANEL:Init()
     self:SetSize(ScrW() * 0.85, ScrH() * 0.8)
     self:SetPos(50, 50)
     self.Paint = function() end
-    local scroll = vgui.Create("DScrollPanel", self)
+    local scroll = vgui.Create("liaScrollPanel", self)
     scroll:Dock(FILL)
+    scroll:InvalidateLayout(true) -- Ensure proper layout initialization
+
+    -- Ensure scrollbar is properly initialized
+    if not IsValid(scroll.VBar) then
+        scroll:PerformLayout()
+    end
     local canvas = scroll:GetCanvas()
     canvas:DockPadding(8, 10, 8, 10)
     canvas.Paint = function() end
@@ -132,12 +138,14 @@ function PANEL:CreateSection(parent, title)
     cat:DockMargin(0, 10, 0, 10)
     cat:SetLabel("")
     cat:SetExpanded(true)
-    cat.Header:SetTall(30)
-    cat.Paint = function() end
-    cat.Header.Paint = function(p, w, h)
-        derma.SkinHook("Paint", "Panel", p, w, h)
-        draw.SimpleText(L(title), "liaSmallFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    if IsValid(cat.Header) then
+        cat.Header:SetTall(30)
+        cat.Header.Paint = function(p, w, h)
+            derma.SkinHook("Paint", "Panel", p, w, h)
+            draw.SimpleText(L(title), "liaSmallFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
     end
+    cat.Paint = function() end
 
     local contents = vgui.Create("DPanel", cat)
     contents:Dock(FILL)

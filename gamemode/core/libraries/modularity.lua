@@ -233,29 +233,3 @@ end
 function lia.module.get(identifier)
     return lia.module.list[identifier]
 end
-
-hook.Add("CreateInformationButtons", "liaInformationModulesUnified", function(pages)
-    table.insert(pages, {
-        name = "modules",
-        drawFunc = function(parent)
-            local sheet = vgui.Create("liaSheet", parent)
-            sheet:SetPlaceholderText(L("searchModules"))
-            sheet:SetPadding(5)
-            sheet:SetSpacing(4)
-            for _, moduleData in SortedPairs(lia.module.list) do
-                local title = moduleData.name or ""
-                local desc = moduleData.desc or ""
-                local right = moduleData.version and tostring(moduleData.version) or ""
-                local row = sheet:AddTextRow({
-                    title = title,
-                    desc = desc,
-                    right = right,
-                })
-
-                row.filterText = (title .. " " .. desc .. " " .. right):lower()
-            end
-
-            sheet:Refresh()
-        end
-    })
-end)

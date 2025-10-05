@@ -49,7 +49,7 @@ local function registerContentType(typeName, setupIcon, onClick, menuEntries)
         setupIcon(icon, obj.spawnname)
         icon.DoClick = function() onClick(obj.spawnname) end
         icon.OpenMenu = function(icn)
-            local menu = DermaMenu()
+            local menu = lia.derma.derma_menu()
             for _, e in ipairs(menuEntries) do
                 if e.spacer then
                     menu:AddSpacer()

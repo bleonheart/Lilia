@@ -48,4 +48,4 @@ function PANEL:Paint()
     return true
 end
 
-vgui.Register("liaCheckbox", PANEL, "DButton")
+vgui.Register("liaSimpleCheckbox", PANEL, "DButton")

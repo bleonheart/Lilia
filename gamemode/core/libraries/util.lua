@@ -307,7 +307,7 @@ else
     lia.util.DrawTextOutlined = lia.derma.DrawTextOutlined
     lia.util.DrawTip = lia.derma.DrawTip
     lia.util.drawText = lia.derma.drawText
-    lia.util.drawTexture = lia.derma.drawTexture
+    lia.util.drawTexture = lia.derma.drawSurfaceTexture
     lia.util.skinFunc = lia.derma.skinFunc
 
     lia.util.approachExp = lia.derma.approachExp
@@ -481,7 +481,7 @@ else
             draw.SimpleText(title or "", "liaMediumFont", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
         end
 
-        local scroll = vgui.Create("DScrollPanel", frame)
+        local scroll = vgui.Create("liaScrollPanel", frame)
         scroll:Dock(FILL)
         scroll:DockMargin(10, 40, 10, 10)
         surface.SetFont("liaSmallFont")
@@ -676,14 +676,26 @@ else
 
     function lia.util.CreateTableUI(title, columns, data, options, charID)
         local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
-        local frame = vgui.Create("liaDListView")
-        frame:SetWindowTitle(title and L(title) or L("tableListTitle"))
+        local frame = vgui.Create("DFrame")
+        frame:SetTitle(title and L(title) or L("tableListTitle"))
         frame:SetSize(frameWidth, frameHeight)
         frame:Center()
         frame:MakePopup()
-        if IsValid(frame.topBar) then frame.topBar:Remove() end
-        if IsValid(frame.statusBar) then frame.statusBar:Remove() end
-        local listView = frame.listView
+        frame.Paint = function(self, w, h)
+            lia.util.drawBlur(self, 4)
+            draw.RoundedBox(0, 0, 0, w, h, Color(20, 20, 20, 120))
+        end
+
+        local sheet = frame:Add("liaTabs")
+        sheet:Dock(FILL)
+
+        -- Create a panel for the table content
+        local tablePanel = vgui.Create("DPanel")
+        tablePanel:Dock(FILL)
+        tablePanel:DockPadding(10, 10, 10, 10)
+        tablePanel.Paint = function() end
+
+        local listView = tablePanel:Add("liaDListView")
         listView:Dock(FILL)
         listView:Clear()
         if listView.ClearColumns then listView:ClearColumns() end
@@ -707,10 +719,12 @@ else
             line.rowData = row
         end
 
+        sheet:AddSheet(L("table"), tablePanel)
+
         listView.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
             local rowData = line.rowData
-            local menu = DermaMenu()
+            local menu = lia.derma.derma_menu()
             menu:AddOption(L("copyRow"), function()
                 local rowString = ""
                 for key, value in pairs(rowData) do

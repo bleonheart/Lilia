@@ -20,7 +20,7 @@ function PANEL:Init()
     end
 
     self.arguments = {}
-    self.scroll = self:Add("DScrollPanel")
+    self.scroll = self:Add("liaScrollPanel")
     self.scroll:SetPos(4, 31)
     self.scroll:SetSize(width - 8, height - 66)
     self.scroll:GetVBar():SetWide(0)
@@ -108,7 +108,7 @@ function PANEL:setActive(state)
                     self.commandList = nil
                 end
 
-                self.commandList = self:Add("DScrollPanel")
+                self.commandList = self:Add("liaScrollPanel")
                 self.commandList:SetPos(4, 31)
                 self.commandList:SetSize(self:GetWide() - 8, self:GetTall() - 66)
                 self.commandList:GetVBar():SetWide(8)

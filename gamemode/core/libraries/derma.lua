@@ -5,10 +5,10 @@ local color_online = Color(120, 180, 70)
 local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
 local color_target = Color(255, 255, 255, 200)
-function lia.derma.derma_menu()
+function lia.derma.dermaMenu()
     if IsValid(lia.derma.menuDermaMenu) then lia.derma.menuDermaMenu:CloseMenu() end
     local mouseX, mouseY = input.GetCursorPos()
-    local m = vgui.Create('liaDermaMenu')
+    local m = vgui.Create("liaDermaMenu")
     m:SetPos(mouseX, mouseY)
     lia.util.clampMenuPosition(m)
     lia.derma.menuDermaMenu = m
@@ -95,7 +95,7 @@ function lia.derma.color_picker(func, color_standart)
             end
         end
 
-        lia.derma.Circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
+        lia.derma.circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
     end
 
     local hueSlider = vgui.Create('Panel', container)
@@ -146,7 +146,7 @@ function lia.derma.color_picker(func, color_standart)
     btnContainer:Dock(BOTTOM)
     btnContainer:SetTall(30)
     btnContainer.Paint = nil
-    local btnClose = vgui.Create('liaBtn', btnContainer)
+    local btnClose = vgui.Create('liaButton', btnContainer)
     btnClose:Dock(LEFT)
     btnClose:SetWide(90)
     btnClose:SetTxt(L("cancel"))
@@ -156,7 +156,7 @@ function lia.derma.color_picker(func, color_standart)
         surface.PlaySound('button_click.wav')
     end
 
-    local btnSelect = vgui.Create('liaBtn', btnContainer)
+    local btnSelect = vgui.Create('liaButton', btnContainer)
     btnSelect:Dock(RIGHT)
     btnSelect:SetWide(90)
     btnSelect:SetTxt(L("select"))
@@ -259,7 +259,7 @@ function lia.derma.player_selector(do_click)
         CreatePlayerCard(pl)
     end
 
-    lia.derma.menuPlayerSelector.btn_close = vgui.Create('liaBtn', lia.derma.menuPlayerSelector)
+    lia.derma.menuPlayerSelector.btn_close = vgui.Create('liaButton', lia.derma.menuPlayerSelector)
     lia.derma.menuPlayerSelector.btn_close:Dock(BOTTOM)
     lia.derma.menuPlayerSelector.btn_close:DockMargin(16, 8, 16, 12)
     lia.derma.menuPlayerSelector.btn_close:SetTall(36)
@@ -285,7 +285,7 @@ function lia.derma.textBox(title, desc, func)
     end
 
     entry.OnEnter = function() apply_func() end
-    local btn_accept = vgui.Create('liaBtn', lia.derma.menuTextBox)
+    local btn_accept = vgui.Create('liaButton', lia.derma.menuTextBox)
     btn_accept:Dock(BOTTOM)
     btn_accept:SetTall(30)
     btn_accept:SetTxt(L("apply"))
@@ -493,7 +493,7 @@ local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thic
     TL, TR, BL, BR = bit_band(flags, NO_TL) == 0 and tl or 0, bit_band(flags, NO_TR) == 0 and tr or 0, bit_band(flags, NO_BL) == 0 and bl or 0, bit_band(flags, NO_BR) == 0 and br or 0
     SHAPE = shapes[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or shapes[defaultShape]
     OUTLINE_THICKNESS = thickness
-    if bit_band(flags, manualColor) ~= 0 then
+    if bit_band(flags, manualColor) ~= 0 and not col then
         COL_R = nil
     elseif col then
         COL_R, COL_G, COL_B, COL_A = col.r, col.g, col.b, col.a
@@ -892,13 +892,14 @@ function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
     }, 1, alpha or color.a * 0.575)
 end
 
-function lia.derma.drawTexture(material, color, x, y, w, h)
+function lia.derma.drawSurfaceTexture(material, color, x, y, w, h)
     surface.SetDrawColor(color or Color(255, 255, 255))
     if isstring(material) then
         surface.SetMaterial(lia.util.getMaterial(material))
     else
         surface.SetMaterial(material)
     end
+
     surface.DrawTexturedRect(x, y, w, h)
 end
 
@@ -1083,7 +1084,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
     defaults = defaults or {}
     local count = table.Count(argTypes)
     local frameW, frameH = 600, 200 + count * 75
-    local frame = vgui.Create("DFrame")
+    local frame = vgui.Create("liaFrame")
     frame:SetTitle("")
     frame:SetSize(frameW, frameH)
     frame:Center()
@@ -1094,7 +1095,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
         draw.SimpleText(title or "", "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
     end
 
-    local scroll = vgui.Create("DScrollPanel", frame)
+    local scroll = vgui.Create("liaScrollPanel", frame)
     scroll:Dock(FILL)
     scroll:DockMargin(10, 40, 10, 10)
     surface.SetFont("liaSmallFont")
@@ -1159,7 +1160,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
             ctrl = vgui.Create("liaCheckbox", panel)
             if defaultVal ~= nil then ctrl:SetChecked(tobool(defaultVal)) end
         elseif fieldType == "table" then
-            ctrl = vgui.Create("DComboBox", panel)
+            ctrl = vgui.Create("liaComboBox", panel)
             local defaultChoiceIndex
             if istable(dataTbl) then
                 for idx, v in ipairs(dataTbl) do
@@ -1175,13 +1176,15 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
 
             if defaultChoiceIndex then ctrl:ChooseOptionID(defaultChoiceIndex) end
         elseif fieldType == "int" or fieldType == "number" then
-            ctrl = vgui.Create("DTextEntry", panel)
+            ctrl = vgui.Create("liaEntry", panel)
             ctrl:SetFont("liaSmallFont")
+            ctrl:SetTitle("")
             if ctrl.SetNumeric then ctrl:SetNumeric(true) end
             if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
         else
-            ctrl = vgui.Create("DTextEntry", panel)
+            ctrl = vgui.Create("liaEntry", panel)
             ctrl:SetFont("liaSmallFont")
+            ctrl:SetTitle("")
             if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
         end
 
@@ -1219,19 +1222,17 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
     btnPanel:SetTall(90)
     btnPanel:DockPadding(15, 15, 15, 15)
     btnPanel.Paint = nil
-    local submit = vgui.Create("DButton", btnPanel)
+    local submit = vgui.Create("liaButton", btnPanel)
     submit:Dock(LEFT)
     submit:DockMargin(0, 0, 15, 0)
     submit:SetWide(270)
-    submit:SetText(L("submit"))
-    submit:SetFont("liaSmallFont")
+    submit:SetTxt(L("submit"))
     submit:SetIcon("icon16/tick.png")
     submit:SetEnabled(false)
-    local cancel = vgui.Create("DButton", btnPanel)
+    local cancel = vgui.Create("liaButton", btnPanel)
     cancel:Dock(RIGHT)
     cancel:SetWide(270)
-    cancel:SetText(L("cancel"))
-    cancel:SetFont("liaSmallFont")
+    cancel:SetTxt(L("cancel"))
     cancel:SetIcon("icon16/cross.png")
     cancel.DoClick = function()
         if isfunction(onSubmit) then onSubmit(false) end
@@ -1323,7 +1324,7 @@ function lia.derma.CreateTableUI(title, columns, data, options, charID)
     listView.OnRowRightClick = function(_, _, line)
         if not IsValid(line) or not line.rowData then return end
         local rowData = line.rowData
-        local menu = DermaMenu()
+        local menu = lia.derma.dermaMenu()
         menu:AddOption(L("copyRow"), function()
             local rowString = ""
             for key, value in pairs(rowData) do
@@ -1546,6 +1547,8 @@ end
 
 lia.derma.entsScales = lia.derma.entsScales or {}
 function lia.derma.drawEntText(ent, text, posY, alphaOverride)
+    -- Refresh skins after initialization to avoid stack overflow during panel creation
+    timer.Simple(0, function() if derma.RefreshSkins then derma.RefreshSkins() end end)
     if not (IsValid(ent) and text and text ~= "") then return end
     posY = posY or 0
     local distSqr = EyePos():DistToSqr(ent:GetPos())
@@ -1598,4 +1601,322 @@ function lia.derma.drawEntText(ent, text, posY, alphaOverride)
     local screenPos = toScreen(center)
     if screenPos.visible == false then return end
     EntText(text, screenPos.x, screenPos.y + posY, fade)
+end
+
+-- Request UI Functions using liaXXXX Panels
+function lia.derma.requestDropdown(title, options, callback, defaultValue)
+    if IsValid(lia.derma.menuRequestDropdown) then lia.derma.menuRequestDropdown:Remove() end
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(300, 150)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:SetCenterTitle(title or L("selectOption"))
+    frame:ShowAnimation()
+    local dropdown = vgui.Create("liaComboBox", frame)
+    dropdown:Dock(TOP)
+    dropdown:DockMargin(20, 40, 20, 20)
+    dropdown:SetTall(30)
+    if istable(options) then
+        for i, option in ipairs(options) do
+            if istable(option) then
+                dropdown:AddChoice(option[1], option[2])
+            else
+                dropdown:AddChoice(tostring(option))
+            end
+        end
+    end
+
+    -- Set default value if provided
+    if defaultValue then
+        if istable(defaultValue) then
+            dropdown:ChooseOptionData(defaultValue[2])
+        else
+            dropdown:ChooseOption(tostring(defaultValue))
+        end
+    end
+
+    local buttonPanel = vgui.Create("Panel", frame)
+    buttonPanel:Dock(BOTTOM)
+    buttonPanel:DockMargin(20, 10, 20, 20)
+    buttonPanel:SetTall(40)
+    local submitBtn = vgui.Create("liaButton", buttonPanel)
+    submitBtn:Dock(RIGHT)
+    submitBtn:SetWide(100)
+    submitBtn:SetTxt(L("select"))
+    submitBtn.DoClick = function()
+        local selectedText = dropdown:GetValue()
+        local selectedData = dropdown:GetSelectedData()
+        if callback then
+            if selectedData ~= nil then
+                callback(selectedText, selectedData)
+            else
+                callback(selectedText)
+            end
+        end
+
+        frame:Remove()
+    end
+
+    local cancelBtn = vgui.Create("liaButton", buttonPanel)
+    cancelBtn:Dock(LEFT)
+    cancelBtn:SetWide(100)
+    cancelBtn:SetTxt(L("cancel"))
+    cancelBtn.DoClick = function()
+        if callback then callback(false) end
+        frame:Remove()
+    end
+
+    lia.derma.menuRequestDropdown = frame
+    return frame
+end
+
+function lia.derma.requestString(title, description, callback, defaultValue, maxLength)
+    if IsValid(lia.derma.menuRequestString) then lia.derma.menuRequestString:Remove() end
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(350, 160)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:SetCenterTitle(title or L("enterText"))
+    frame:ShowAnimation()
+    local descriptionLabel = vgui.Create("DLabel", frame)
+    descriptionLabel:Dock(TOP)
+    descriptionLabel:DockMargin(20, 40, 20, 10)
+    descriptionLabel:SetText(description or L("enterValue"))
+    descriptionLabel:SetFont("liaSmallFont")
+    descriptionLabel:SetTextColor(lia.color.theme.text or color_white)
+    descriptionLabel:SetContentAlignment(5)
+    descriptionLabel:SizeToContents()
+    local textEntry = vgui.Create("liaEntry", frame)
+    textEntry:Dock(TOP)
+    textEntry:DockMargin(20, 0, 20, 20)
+    textEntry:SetTall(30)
+    textEntry:SetTitle("")
+    if defaultValue then textEntry:SetValue(tostring(defaultValue)) end
+    if maxLength then textEntry:SetMaxLength(maxLength) end
+    local buttonPanel = vgui.Create("Panel", frame)
+    buttonPanel:Dock(BOTTOM)
+    buttonPanel:DockMargin(20, 10, 20, 20)
+    buttonPanel:SetTall(40)
+    local submitBtn = vgui.Create("liaButton", buttonPanel)
+    submitBtn:Dock(RIGHT)
+    submitBtn:SetWide(120)
+    submitBtn:SetTxt(L("submit"))
+    submitBtn.DoClick = function()
+        local value = textEntry:GetValue()
+        if callback then callback(value) end
+        frame:Remove()
+    end
+
+    local cancelBtn = vgui.Create("liaButton", buttonPanel)
+    cancelBtn:Dock(LEFT)
+    cancelBtn:SetWide(120)
+    cancelBtn:SetTxt(L("cancel"))
+    cancelBtn.DoClick = function()
+        if callback then callback(false) end
+        frame:Remove()
+    end
+
+    lia.derma.menuRequestString = frame
+    return frame
+end
+
+function lia.derma.requestOptions(title, options, callback, defaults)
+    if IsValid(lia.derma.menuRequestOptions) then lia.derma.menuRequestOptions:Remove() end
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(400, 300)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:SetCenterTitle(title or L("selectOptions"))
+    frame:ShowAnimation()
+    local scrollPanel = vgui.Create("liaScrollPanel", frame)
+    scrollPanel:Dock(FILL)
+    scrollPanel:DockMargin(20, 40, 20, 60)
+    local checkboxes = {}
+    local maxLabelWidth = 0
+    if istable(options) then
+        for i, option in ipairs(options) do
+            local optionText = ""
+            local optionData = nil
+            if istable(option) then
+                optionText = option[1] or tostring(option[2])
+                optionData = option[2]
+            else
+                optionText = tostring(option)
+                optionData = option
+            end
+
+            local optionPanel = vgui.Create("Panel", scrollPanel)
+            optionPanel:Dock(TOP)
+            optionPanel:DockMargin(0, 5, 0, 5)
+            optionPanel:SetTall(30)
+            local checkbox = vgui.Create("liaCheckbox", optionPanel)
+            checkbox:Dock(LEFT)
+            checkbox:SetWide(30)
+            checkbox:SetChecked(defaults and table.HasValue(defaults, optionData))
+            local label = vgui.Create("DLabel", optionPanel)
+            label:Dock(FILL)
+            label:DockMargin(40, 0, 0, 0)
+            label:SetText(optionText)
+            label:SetFont("liaSmallFont")
+            label:SetTextColor(lia.color.theme.text or color_white)
+            label:SetContentAlignment(4)
+            checkboxes[optionData] = checkbox
+        end
+    end
+
+    local buttonPanel = vgui.Create("Panel", frame)
+    buttonPanel:Dock(BOTTOM)
+    buttonPanel:DockMargin(20, 10, 20, 20)
+    buttonPanel:SetTall(40)
+    local submitBtn = vgui.Create("liaButton", buttonPanel)
+    submitBtn:Dock(RIGHT)
+    submitBtn:SetWide(120)
+    submitBtn:SetTxt(L("confirm"))
+    submitBtn.DoClick = function()
+        local selectedOptions = {}
+        for optionData, checkbox in pairs(checkboxes) do
+            if checkbox:GetChecked() then table.insert(selectedOptions, optionData) end
+        end
+
+        if callback then callback(selectedOptions) end
+        frame:Remove()
+    end
+
+    local cancelBtn = vgui.Create("liaButton", buttonPanel)
+    cancelBtn:Dock(LEFT)
+    cancelBtn:SetWide(120)
+    cancelBtn:SetTxt(L("cancel"))
+    cancelBtn.DoClick = function()
+        if callback then callback(false) end
+        frame:Remove()
+    end
+
+    lia.derma.menuRequestOptions = frame
+    return frame
+end
+
+function lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)
+    if IsValid(lia.derma.menuRequestBinary) then lia.derma.menuRequestBinary:Remove() end
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(350, 180)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:SetCenterTitle(title or L("question"))
+    frame:ShowAnimation()
+    local questionLabel = vgui.Create("DLabel", frame)
+    questionLabel:Dock(TOP)
+    questionLabel:DockMargin(20, 40, 20, 20)
+    questionLabel:SetText(question or L("areYouSure"))
+    questionLabel:SetFont("liaMediumFont")
+    questionLabel:SetTextColor(lia.color.theme.text or color_white)
+    questionLabel:SetContentAlignment(5)
+    questionLabel:SizeToContents()
+    local buttonPanel = vgui.Create("Panel", frame)
+    buttonPanel:Dock(BOTTOM)
+    buttonPanel:DockMargin(20, 10, 20, 20)
+    buttonPanel:SetTall(40)
+    local yesBtn = vgui.Create("liaButton", buttonPanel)
+    yesBtn:Dock(RIGHT)
+    yesBtn:DockMargin(10, 0, 0, 0)
+    yesBtn:SetWide(140)
+    yesBtn:SetTxt(yesText or L("yes"))
+    yesBtn.DoClick = function()
+        if callback then callback(true) end
+        frame:Remove()
+    end
+
+    local noBtn = vgui.Create("liaButton", buttonPanel)
+    noBtn:Dock(LEFT)
+    noBtn:DockMargin(0, 0, 10, 0)
+    noBtn:SetWide(140)
+    noBtn:SetTxt(noText or L("no"))
+    noBtn.DoClick = function()
+        if callback then callback(false) end
+        frame:Remove()
+    end
+
+    lia.derma.menuRequestBinary = frame
+    return frame
+end
+
+function lia.derma.requestButtons(title, buttons, callback, description)
+    if IsValid(lia.derma.menuRequestButtons) then lia.derma.menuRequestButtons:Remove() end
+    local buttonCount = #buttons
+    local frameHeight = 200 + (buttonCount * 45)
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(350, frameHeight)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:SetCenterTitle(title or L("selectOption"))
+    frame:ShowAnimation()
+    local descriptionLabel = vgui.Create("DLabel", frame)
+    descriptionLabel:Dock(TOP)
+    descriptionLabel:DockMargin(20, 40, 20, 20)
+    descriptionLabel:SetText(description or "")
+    descriptionLabel:SetFont("liaSmallFont")
+    descriptionLabel:SetTextColor(lia.color.theme.text or color_white)
+    descriptionLabel:SetContentAlignment(5)
+    descriptionLabel:SizeToContents()
+    local buttonContainer = vgui.Create("Panel", frame)
+    buttonContainer:Dock(FILL)
+    buttonContainer:DockMargin(20, 0, 20, 60)
+    local buttonPanels = {}
+    for i, buttonInfo in ipairs(buttons) do
+        local buttonText = ""
+        local buttonCallback = nil
+        local buttonIcon = nil
+        if istable(buttonInfo) then
+            buttonText = buttonInfo.text or buttonInfo[1] or tostring(buttonInfo)
+            buttonCallback = buttonInfo.callback or buttonInfo[2]
+            buttonIcon = buttonInfo.icon or buttonInfo[3]
+        else
+            buttonText = tostring(buttonInfo)
+        end
+
+        local buttonPanel = vgui.Create("Panel", buttonContainer)
+        buttonPanel:Dock(TOP)
+        buttonPanel:DockMargin(0, 5, 0, 5)
+        buttonPanel:SetTall(40)
+        local button = vgui.Create("liaButton", buttonPanel)
+        button:Dock(FILL)
+        button:DockMargin(0, 0, 0, 0)
+        button:SetTxt(buttonText)
+        if buttonIcon then button:SetIcon(buttonIcon) end
+        button.DoClick = function()
+            if buttonCallback then
+                local result = buttonCallback()
+                if result ~= false then -- If callback doesn't explicitly return false, close the dialog
+                    frame:Remove()
+                end
+            else
+                -- Default behavior: pass the button index and text to callback
+                if callback then
+                    local result = callback(i, buttonText)
+                    if result ~= false then frame:Remove() end
+                else
+                    frame:Remove()
+                end
+            end
+        end
+
+        buttonPanels[i] = button
+    end
+
+    local closeBtn = vgui.Create("liaButton", frame)
+    closeBtn:Dock(BOTTOM)
+    closeBtn:DockMargin(20, 10, 20, 20)
+    closeBtn:SetTall(40)
+    closeBtn:SetTxt(L("close"))
+    closeBtn.DoClick = function()
+        if callback then callback(false) end
+        frame:Remove()
+    end
+
+    lia.derma.menuRequestButtons = frame
+    return frame, buttonPanels
 end
