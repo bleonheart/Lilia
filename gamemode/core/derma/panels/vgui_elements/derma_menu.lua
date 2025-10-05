@@ -1,5 +1,4 @@
 ﻿local PANEL = {}
-
 function PANEL:Init()
     self.Items = {}
     self:SetSize(160, 0)
@@ -136,10 +135,11 @@ function PANEL:AddOption(text, func, icon, optData)
             local iconSize = 16
             lia.derma.drawSurfaceTexture(iconMat, color_white, textPadding, (h - iconSize) * 0.5, iconSize, iconSize)
         end
+
         local iconW = pnl.Icon and 16 or 0
         local iconTextGap = pnl.Icon and 8 or 0
         local textX = textPadding + (iconW > 0 and (iconW + iconTextGap) or 0)
-            draw.SimpleText(pnl.Text, 'Fated.18', textX, h * 0.5, lia.color.ReturnMainAdjustedColors().text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(pnl.Text, 'Fated.18', textX, h * 0.5, lia.color.ReturnMainAdjustedColors().text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     table.insert(self.Items, option)

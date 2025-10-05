@@ -400,17 +400,13 @@ if CLIENT then
                 local rowPanel = vgui.Create("SemiTransparentDPanel")
                 rowPanel:SetTall(70)
                 rowPanel:DockPadding(4, 4, 4, 4)
-                rowPanel.Paint = function(_, w, h)
-                    lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 200)):Shape(lia.derma.SHAPE_IOS):Shadow(3, 10):Draw()
-                end
+                rowPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 200)):Shape(lia.derma.SHAPE_IOS):Shadow(3, 10):Draw() end
                 local lbl = rowPanel:Add("DLabel")
                 lbl:Dock(FILL)
                 lbl:DockMargin(10, 10, 10, 10)
                 lbl:SetFont("liaBigFont")
                 lbl:SetText("")
-                lbl.Paint = function(_, w, h)
-                    draw.SimpleText(L(action), "liaBigFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                end
+                lbl.Paint = function(_, w, h) draw.SimpleText(L(action), "liaBigFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 local currentKey = lia.keybind.get(action, KEY_NONE)
                 if allowEdit then
                     local combo = rowPanel:Add("liaComboBox")
@@ -473,9 +469,7 @@ if CLIENT then
                     textLabel:DockMargin(10, 10, 10, 10)
                     textLabel:SetFont("liaBigFont")
                     textLabel:SetText("")
-                    textLabel.Paint = function(_, w, h)
-                        draw.SimpleText(input.GetKeyName(currentKey) or "NONE", "liaBigFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                    end
+                    textLabel.Paint = function(_, w, h) draw.SimpleText(input.GetKeyName(currentKey) or "NONE", "liaBigFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 end
 
                 sheet:AddPanelRow(rowPanel, {

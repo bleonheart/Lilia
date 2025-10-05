@@ -1,15 +1,12 @@
-local PANEL = {}
-
+﻿local PANEL = {}
 function PANEL:Init()
     self.groupName = ""
     self.groupData = {}
     self.isDefault = false
     self.selected = false
     self.hovered = false
-
     -- Hide the base class text since we're drawing our own
     self:SetText("")
-
     self:SetupTransition("HoverAlpha", 6, function(s) return s:IsHovered() end)
     self:SetupTransition("SelectedAlpha", 8, function(s) return s.selected end)
 end
@@ -40,7 +37,6 @@ function PANEL:Paint(w, h)
     local bgColor = lia.color.theme.panel[3]
     local textColor = lia.color.theme.text
     local accentColor = lia.config.get("Color")
-
     -- Background
     if self.selected then
         bgColor = ColorAlpha(accentColor, 30)
@@ -50,12 +46,8 @@ function PANEL:Paint(w, h)
     end
 
     lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-
     -- Border for selected state
-    if self.selected then
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(accentColor):Shape(lia.derma.SHAPE_IOS):Outline(2):Draw()
-    end
-
+    if self.selected then lia.derma.rect(0, 0, w, h):Rad(8):Color(accentColor):Shape(lia.derma.SHAPE_IOS):Outline(2):Draw() end
     -- Group name
     draw.SimpleText(self.groupName, "liaMediumFont", 15, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end

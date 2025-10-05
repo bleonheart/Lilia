@@ -20,7 +20,6 @@ function MODULE:TicketFrame(requester, message, claimed)
     frm:SetPos(xpos, ypos)
     frm.idiot = requester
     frm:ShowCloseButton(false)
-
     if claimed and IsValid(claimed) and claimed:IsPlayer() then
         frm:SetTitle(L("ticketTitleClaimed", requester:Nick(), claimed:Nick()))
         if claimed == LocalPlayer() then
@@ -40,6 +39,7 @@ function MODULE:TicketFrame(requester, message, claimed)
         lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.panel[2]):Shape(lia.derma.SHAPE_IOS):Draw()
         draw.SimpleText(panel.message, "DermaDefault", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
+
     local function createButton(text, position, clickFunc, disabled)
         text = L(text)
         local btn = vgui.Create("liaButton", frm)
@@ -48,7 +48,6 @@ function MODULE:TicketFrame(requester, message, claimed)
         btn:SetText(text)
         btn.Disabled = disabled
         btn.DoClick = function() if not btn.Disabled then clickFunc() end end
-
         if disabled then btn:SetTooltip(L("ticketActionSelf")) end
         return btn
     end

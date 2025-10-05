@@ -408,7 +408,6 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 
                 -- Force UI refresh after adding all options to ensure proper sizing
                 combo:FinishAddingOptions()
-
                 combo.OnSelect = function(_, _, v) lia.option.set(key, v) end
             end
             return container

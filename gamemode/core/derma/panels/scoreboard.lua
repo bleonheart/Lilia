@@ -173,6 +173,7 @@ function PANEL:Init()
                 else
                     hlbl = vgui.Create("DLabel")
                 end
+
                 hlbl:Dock(LEFT)
                 hlbl:SetFont("liaMediumFont")
                 hlbl:SetTextColor(color_white)

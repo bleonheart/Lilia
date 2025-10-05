@@ -221,7 +221,6 @@ net.Receive("liaAllPks", function()
     end
 end)
 
-
 local function OpenRoster(panel, data)
     panel:Clear()
     local sheet = panel:Add("liaTabs")
@@ -255,9 +254,9 @@ local function OpenRoster(panel, data)
                 row.OnRightClick = function()
                     if not IsValid(row) or not row.rowData then return end
                     local rowData = row.rowData
-                    local steamID = rowData.steamID
+                    local rowSteamID = rowData.steamID
                     local menu = lia.derma.dermaMenu()
-                    if steamID and steamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
+                    if rowSteamID and rowSteamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
                         menu:AddOption(L("kick"), function()
                             Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                                 net.Start("liaKickCharacter")
@@ -266,7 +265,7 @@ local function OpenRoster(panel, data)
                             end, L("no"))
                         end):SetIcon("icon16/user_delete.png")
 
-                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png") end
+                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowSteamID) end):SetIcon("icon16/page_copy.png") end
                     end
 
                     menu:AddOption(L("copyRow"), function()
@@ -281,13 +280,13 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/page_copy.png")
 
                     menu:AddOption(L("copyName"), function()
-                        local name = rowData.name or ""
-                        SetClipboardText(name)
+                        local rowName = rowData.name or ""
+                        SetClipboardText(rowName)
                     end):SetIcon("icon16/page_copy.png")
 
-                    if steamID and steamID ~= "" then
-                        menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                        menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
+                    if rowSteamID and rowSteamID ~= "" then
+                        menu:AddOption(L("copySteamID"), function() SetClipboardText(rowSteamID) end):SetIcon("icon16/page_copy.png")
+                        menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowSteamID)) end):SetIcon("icon16/world.png")
                     end
 
                     menu:Open()
@@ -543,7 +542,6 @@ lia.net.readBigTable("liaStaffSummary", function(data)
         menu:Open()
     end
 end)
-
 
 lia.net.readBigTable("liaAllPlayers", function(players)
     if not IsValid(panelRef) then return end

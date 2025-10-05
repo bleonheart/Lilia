@@ -108,7 +108,6 @@ function PANEL:Paint(w, h)
 
     -- Ensure icon_size is never nil
     local iconSize = self.icon_size or 16
-
     if self.text ~= "" then
         draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         if self.icon ~= "" then

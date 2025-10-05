@@ -1138,7 +1138,6 @@ else
             row:SetTall(50)
             row:DockMargin(0, 0, 0, 8)
             row:SetPrivilege(name, current[name] and true or false, editable)
-            
             if editable then
                 row.OnChange = function(_, value)
                     if value then
@@ -1164,9 +1163,7 @@ else
         local headerH = math.max(hfh + 18, 36)
         for _, cat in ipairs(ordered) do
             local wrap = vgui.Create("DPanel")
-            wrap.Paint = function(pnl, w, h)
-                lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[3]):Shape(lia.derma.SHAPE_IOS):Draw()
-            end
+            wrap.Paint = function(pnl, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[3]):Shape(lia.derma.SHAPE_IOS):Draw() end
             local list = vgui.Create("DListLayout", wrap)
             list:Dock(TOP)
             list:DockMargin(8, 8, 8, 8)
@@ -1341,9 +1338,7 @@ else
             if lia.gui.usergroups.groupsList then
                 -- New interface - refresh the group details if the current group is the one being updated
                 local selectedGroup = lia.gui.usergroups.groupsList:GetSelectedGroup()
-                if selectedGroup == group and lia.gui.usergroups.updateGroupDetails then
-                    lia.gui.usergroups.updateGroupDetails(group)
-                end
+                if selectedGroup == group and lia.gui.usergroups.updateGroupDetails then lia.gui.usergroups.updateGroupDetails(group) end
             elseif lia.gui.usergroups.checks and lia.gui.usergroups.checks[group] then
                 -- Fallback to old interface
                 local chk = lia.gui.usergroups.checks[group][privilege]
@@ -1359,42 +1354,30 @@ else
         -- Main container
         local container = parent:Add("DPanel")
         container:Dock(FILL)
-        container.Paint = function(pnl, w, h)
-            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-        end
-
-
+        container.Paint = function(pnl, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
         -- Groups list
         local groupsList = container:Add("liaUserGroupList")
         groupsList:Dock(LEFT)
         groupsList:SetWide(200)
         groupsList:DockMargin(10, 5, 5, 10)
-
         -- Group details
         local groupDetails = container:Add("DPanel")
         groupDetails:Dock(FILL)
         groupDetails:DockMargin(5, 5, 10, 10)
-        groupDetails.Paint = function(pnl, w, h)
-            lia.derma.rect(0, 0, w, h):Rad(12):Color(lia.color.theme.panel[2]):Shape(lia.derma.SHAPE_IOS):Draw()
-        end
-
+        groupDetails.Paint = function(pnl, w, h) lia.derma.rect(0, 0, w, h):Rad(12):Color(lia.color.theme.panel[2]):Shape(lia.derma.SHAPE_IOS):Draw() end
         -- Bottom buttons
         local bottom = container:Add("DPanel")
         bottom:Dock(BOTTOM)
         bottom:SetTall(50)
         bottom:DockMargin(10, 5, 10, 10)
         bottom.Paint = function() end
-
         -- Create group button
         local createBtn = vgui.Create("liaButton", bottom)
         createBtn:Dock(LEFT)
         createBtn:SetWide(120)
         createBtn:DockMargin(0, 0, 10, 0)
         createBtn:SetTxt(L("create") .. " " .. L("group"))
-        createBtn.DoClick = function()
-            promptCreateGroup()
-        end
-
+        createBtn.DoClick = function() promptCreateGroup() end
         -- Rename group button
         local renameBtn = vgui.Create("liaButton", bottom)
         renameBtn:Dock(LEFT)
@@ -1404,7 +1387,6 @@ else
         renameBtn.DoClick = function()
             local selectedGroup = groupsList:GetSelectedGroup()
             if not selectedGroup then return end
-
             Derma_StringRequest(L("rename") .. " " .. L("group"), L("renameGroupPrompt", selectedGroup) .. ":", selectedGroup, function(txt)
                 txt = string.Trim(txt or "")
                 if txt ~= "" and txt ~= selectedGroup then
@@ -1425,7 +1407,6 @@ else
         deleteBtn.DoClick = function()
             local selectedGroup = groupsList:GetSelectedGroup()
             if not selectedGroup then return end
-
             Derma_Query(L("deleteGroupPrompt", selectedGroup), L("confirm"), L("yes"), function()
                 net.Start("liaGroupsRemove")
                 net.WriteString(selectedGroup)
@@ -1441,28 +1422,20 @@ else
             end
 
             groupDetails:Clear()
-
             local isDefault = lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[groupName] ~= nil
             local editable = not isDefault
-
-
             -- Privileges container
             local privContainer = groupDetails:Add("DPanel")
             privContainer:Dock(FILL)
             privContainer:DockMargin(20, 0, 20, 20)
             privContainer.Paint = function() end
-
             buildPrivilegeList(privContainer, groupName, lia.administrator.groups, editable)
         end
 
         -- Connect the group list to the details panel
-        groupsList.OnGroupSelected = function(_, groupName)
-            updateGroupDetails(groupName)
-        end
-
+        groupsList.OnGroupSelected = function(_, groupName) updateGroupDetails(groupName) end
         -- Set initial groups
         groupsList:SetGroups(lia.administrator.groups)
-
         -- Store references for updates
         parent.groupsList = groupsList
         parent.updateGroupDetails = updateGroupDetails
@@ -1478,10 +1451,8 @@ else
                 parent:Clear()
                 parent:DockPadding(10, 10, 10, 10)
                 parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
-
                 -- Create the user group interface directly in the parent panel
                 SetupUserGroupInterface(parent)
-
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end

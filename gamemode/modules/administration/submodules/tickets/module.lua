@@ -2,7 +2,7 @@
 MODULE.name = "ticketsModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = ("ticketSystemDescription")
+MODULE.desc = "ticketSystemDescription"
 MODULE.Privileges = {
     {
         Name = L("alwaysSeeTickets"),

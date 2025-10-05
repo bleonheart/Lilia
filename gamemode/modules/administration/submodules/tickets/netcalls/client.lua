@@ -7,7 +7,6 @@ net.Receive("liaActiveTickets", function()
     ticketPanel:Clear()
     ticketPanel:DockPadding(6, 6, 6, 6)
     ticketPanel.Paint = function() end
-
     local search = ticketPanel:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -15,15 +14,25 @@ net.Receive("liaActiveTickets", function()
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
-
     local list = ticketPanel:Add("liaTable")
     list:Dock(FILL)
-
     local columns = {
-        {name = L("timestamp"), field = "timestamp"},
-        {name = L("requester"), field = "requesterDisplay"},
-        {name = L("admin"), field = "adminDisplay"},
-        {name = L("message"), field = "message"}
+        {
+            name = L("timestamp"),
+            field = "timestamp"
+        },
+        {
+            name = L("requester"),
+            field = "requesterDisplay"
+        },
+        {
+            name = L("admin"),
+            field = "adminDisplay"
+        },
+        {
+            name = L("message"),
+            field = "message"
+        }
     }
 
     for _, col in ipairs(columns) do
@@ -43,7 +52,6 @@ net.Receive("liaActiveTickets", function()
             end
 
             local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-
             local adminDisplay = L("unassigned")
             if t.admin then
                 local adminPly = lia.util.getBySteamID(t.admin)
@@ -51,13 +59,7 @@ net.Receive("liaActiveTickets", function()
                 adminDisplay = string.format("%s (%s)", adminName, t.admin)
             end
 
-            local values = {
-                ts,
-                requesterDisplay,
-                adminDisplay,
-                t.message or ""
-            }
-
+            local values = {ts, requesterDisplay, adminDisplay, t.message or ""}
             local match = false
             if filter == "" then
                 match = true
@@ -70,15 +72,12 @@ net.Receive("liaActiveTickets", function()
                 end
             end
 
-            if match then
-                local _ = list:AddLine(unpack(values))
-            end
+            if match then local _ = list:AddLine(unpack(values)) end
         end
     end
 
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
-
     function list:OnRowRightClick(_, line)
         if not IsValid(line) then return end
         local menu = lia.derma.dermaMenu()
@@ -100,9 +99,7 @@ end)
 net.Receive("liaTicketsCount", function()
     local count = net.ReadInt(32)
     ticketsCount = count
-    if not ticketsTabAdded and count > 0 then
-        ticketsTabAdded = true
-    end
+    if not ticketsTabAdded and count > 0 then ticketsTabAdded = true end
 end)
 
 hook.Add("PopulateAdminTabs", "liaTicketsTab", function(pages)
@@ -121,7 +118,6 @@ hook.Add("PopulateAdminTabs", "liaTicketsTab", function(pages)
 end)
 
 -- Tickets count is requested and handled by the hook above
-
 net.Receive("liaViewClaims", function()
     local tbl = net.ReadTable()
     local steamid = net.ReadString()

@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local animDuration = 0.3
 function PANEL:Init()
     self.text = ""
@@ -10,7 +10,6 @@ function PANEL:Init()
     -- Initialize as a clickable panel (like DButton)
     self:SetMouseInputEnabled(true)
     self:SetCursor("hand")
-
 end
 
 function PANEL:SetText(text)
@@ -46,9 +45,7 @@ end
 
 function PANEL:DoClick()
     -- This will be overridden by the parent when the button is created
-    if self.DoClickCallback then
-        self:DoClickCallback()
-    end
+    if self.DoClickCallback then self:DoClickCallback() end
 end
 
 function PANEL:SetDoClick(callback)
@@ -83,13 +80,10 @@ function PANEL:SetIndicatorHeight(height)
     self:InvalidateLayout()
 end
 
-
 function PANEL:Paint(w, h)
     if not self.text then return end
-
     local colorText = self.isActive and lia.color.theme.theme or lia.color.theme.text
     local colorIcon = self.isActive and lia.color.theme.theme or color_white
-
     -- Removed hover effects - no background overlays for hover or active states
     -- Only draw active indicator at bottom for active tabs
     if self.isActive then
@@ -100,13 +94,11 @@ function PANEL:Paint(w, h)
     -- Calculate positioning for icon and text
     local iconW = self.icon and 16 or 0
     local iconTextGap = self.icon and 8 or 0
-
     -- Use surface.SetFont to get proper text size
     surface.SetFont("Fated.18")
     local totalContentWidth = iconW + iconTextGap + surface.GetTextSize(self.text)
     local startX = (w - totalContentWidth) / 2
     local textX = startX + (iconW > 0 and (iconW + iconTextGap) or 0)
-
     -- Draw icon
     if self.icon then
         surface.SetDrawColor(colorIcon.r, colorIcon.g, colorIcon.b, 255)

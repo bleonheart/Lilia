@@ -336,7 +336,6 @@ net.Receive("liaOptionsRequest", function()
     net.ReadString() -- subTitleKey (unused)
     local options = net.ReadTable()
     local limit = net.ReadUInt(32)
-
     -- Use lia.derma.requestOptions with limit handling
     lia.derma.requestOptions(L(titleKey), options, function(selectedOptions)
         if selectedOptions == false then
@@ -349,10 +348,9 @@ net.Receive("liaOptionsRequest", function()
             if limit > 0 and #selectedOptions > limit then
                 local limited = {}
                 for i = 1, limit do
-                    if selectedOptions[i] then
-                        table.insert(limited, selectedOptions[i])
-                    end
+                    if selectedOptions[i] then table.insert(limited, selectedOptions[i]) end
                 end
+
                 selectedOptions = limited
             end
 
@@ -411,7 +409,6 @@ net.Receive("liaRequestDropdown", function()
     local titleKey = net.ReadString()
     net.ReadString() -- subTitleKey (unused)
     local options = net.ReadTable()
-
     -- Use lia.derma.requestDropdown
     lia.derma.requestDropdown(L(titleKey), options, function(selectedText, _)
         if selectedText == false then
@@ -453,7 +450,6 @@ net.Receive("liaStringRequest", function()
     local default = net.ReadString()
     if title:sub(1, 1) == "@" then title = L(title:sub(2)) end
     if subTitle:sub(1, 1) == "@" then subTitle = L(subTitle:sub(2)) end
-
     -- Use lia.derma.requestString
     lia.derma.requestString(title, subTitle, function(value)
         if value == false then
@@ -677,11 +673,7 @@ net.Receive("liaButtonRequest", function()
     end
 
     -- Use lia.derma.requestButtons
-    lia.derma.requestButtons(L(titleKey), buttons, function(selectedIndex)
-        if selectedIndex and selectedIndex > 0 and selectedIndex <= #buttons then
-            buttons[selectedIndex].callback()
-        end
-    end)
+    lia.derma.requestButtons(L(titleKey), buttons, function(selectedIndex) if selectedIndex and selectedIndex > 0 and selectedIndex <= #buttons then buttons[selectedIndex].callback() end end)
 end)
 
 net.Receive("liaAnimationStatus", function()

@@ -8,11 +8,8 @@ function PANEL:Init()
     local scroll = vgui.Create("liaScrollPanel", self)
     scroll:Dock(FILL)
     scroll:InvalidateLayout(true) -- Ensure proper layout initialization
-
     -- Ensure scrollbar is properly initialized
-    if not IsValid(scroll.VBar) then
-        scroll:PerformLayout()
-    end
+    if not IsValid(scroll.VBar) then scroll:PerformLayout() end
     local canvas = scroll:GetCanvas()
     canvas:DockPadding(8, 10, 8, 10)
     canvas.Paint = function() end
@@ -33,10 +30,7 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     entry:Dock(TOP)
     entry:DockMargin(0, 0, 0, marginBot or 0)
     entry:SetTall(35)
-    entry.Paint = function(s, w, _)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-    end
-
+    entry.Paint = function(s, w, _) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
     local lbl = entry:Add("DLabel")
     lbl:Dock(LEFT)
     lbl:SetFont("liaSmallFont")
@@ -47,7 +41,6 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     lbl:DockMargin(8, 0, 10, 0)
     lbl:SetContentAlignment(5)
     lbl:SetTextColor(lia.color.theme.text)
-
     local txt = entry:Add("liaEntry")
     txt:Dock(FILL)
     txt:DockMargin(0, 4, 8, 4)
@@ -55,16 +48,12 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     txt:SetTall(27)
     local isDesc = (name or ""):lower() == "desc"
     txt.textEntry:SetEditable(isDesc)
-
     if isfunction(valueFunc) then
         local v = valueFunc()
         if isstring(v) then txt:SetValue(v) end
     end
 
-    txt.action = function(value)
-        if isDesc and isstring(value) then lia.command.send("chardesc", value) end
-    end
-
+    txt.action = function(value) if isDesc and isstring(value) then lia.command.send("chardesc", value) end end
     self[name] = txt
 end
 
@@ -73,10 +62,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     entry:Dock(TOP)
     entry:DockMargin(0, margin or 0, 0, margin or 0)
     entry:SetTall(40)
-    entry.Paint = function(s, w, _)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-    end
-
+    entry.Paint = function(s, w, _) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
     local lbl = entry:Add("DLabel")
     lbl:Dock(LEFT)
     lbl:SetFont("liaSmallFont")
@@ -86,7 +72,6 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     lbl:DockMargin(8, 0, 10, 0)
     lbl:SetContentAlignment(5)
     lbl:SetTextColor(lia.color.theme.text)
-
     local bar = entry:Add("DPanel")
     bar:Dock(FILL)
     bar:DockMargin(0, 6, 8, 6)
@@ -95,15 +80,10 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
         local mx = isfunction(maxFunc) and maxFunc() or tonumber(maxFunc) or 1
         local val = isfunction(valueFunc) and valueFunc() or tonumber(valueFunc) or 0
         local frac = mx > mn and math.Clamp((val - mn) / (mx - mn), 0, 1) or 0
-
         -- Background
         lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.focus_panel):Shape(lia.derma.SHAPE_IOS):Draw()
-
         -- Progress bar
-        if frac > 0 then
-            lia.derma.rect(0, 0, w * frac, h):Rad(6):Color(lia.color.theme.theme):Shape(lia.derma.SHAPE_IOS):Draw()
-        end
-
+        if frac > 0 then lia.derma.rect(0, 0, w * frac, h):Rad(6):Color(lia.color.theme.theme):Shape(lia.derma.SHAPE_IOS):Draw() end
         -- Text
         local text = L("barProgress", math.Round(val), math.Round(mx))
         draw.SimpleText(text, "liaSmallFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -154,10 +134,8 @@ function PANEL:CreateSection(parent, title)
     frame.Paint = function(s, w, _)
         -- Draw Lilia-styled section background
         lia.derma.rect(0, 0, w, s:GetTall()):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-
         -- Draw section title (centered)
         draw.SimpleText(L(title), "liaSmallFont", w / 2, 8, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-
         -- Draw subtle line under title
         surface.SetDrawColor(lia.color.theme.theme.r, lia.color.theme.theme.g, lia.color.theme.theme.b, 100)
         surface.DrawLine(12, 28, w - 12, 28)
@@ -167,7 +145,6 @@ function PANEL:CreateSection(parent, title)
     contents:Dock(FILL)
     contents:DockPadding(8, 35, 8, 10) -- Extra top padding for title
     contents.Paint = function() end
-
     -- Auto-size the frame based on content
     contents.PerformLayout = function(s, _, _)
         local contentHeight = 35 -- Start with title height
@@ -177,17 +154,15 @@ function PANEL:CreateSection(parent, title)
                 -- Add margin if child has one - check if it's a DPanel with margins
                 if child.GetDockMargin then
                     local _, top = child:GetDockMargin()
-                    if top then
-                        contentHeight = contentHeight + top
-                    end
+                    if top then contentHeight = contentHeight + top end
                 end
             end
         end
+
         -- Add bottom padding
         contentHeight = contentHeight + 10
         frame:SetTall(math.max(60, contentHeight))
     end
-
     return contents
 end
 
@@ -202,9 +177,7 @@ function PANEL:setup()
         local fields = isfunction(data.fields) and data.fields() or data.fields
         for _, f in ipairs(fields) do
             local ctrl = self[f.name]
-            if ctrl and f.type == "text" and f.name:lower() ~= "desc" then
-                ctrl:SetValue(f.value())
-            end
+            if ctrl and f.type == "text" and f.name:lower() ~= "desc" then ctrl:SetValue(f.value()) end
         end
     end
 end

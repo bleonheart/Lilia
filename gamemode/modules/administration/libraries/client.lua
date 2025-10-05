@@ -126,7 +126,6 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-
     if client:hasPrivilege("canAccessPlayerList") then
         table.insert(pages, {
             name = "players",
@@ -149,12 +148,8 @@ function MODULE:PopulateAdminTabs(pages)
                 panel:Clear()
                 panel:DockPadding(6, 6, 6, 6)
                 panel.Paint = function() end
-
                 -- Remove existing sheet if it exists to force recreation
-                if IsValid(panel.sheet) then
-                    panel.sheet:Remove()
-                end
-
+                if IsValid(panel.sheet) then panel.sheet:Remove() end
                 panel.sheet = panel:Add("liaTabs")
                 panel.sheet:Dock(FILL)
                 function panel:buildSheets(data)

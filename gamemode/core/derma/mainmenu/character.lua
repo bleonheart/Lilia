@@ -481,11 +481,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local scroll = vgui.Create("liaScrollPanel", self.infoFrame)
     scroll:Dock(FILL)
     scroll:InvalidateLayout(true) -- Ensure proper layout initialization
-
     -- Ensure scrollbar is properly initialized
-    if not IsValid(scroll.VBar) then
-        scroll:PerformLayout()
-    end
+    if not IsValid(scroll.VBar) then scroll:PerformLayout() end
     for i, text in ipairs(info) do
         if i == 1 then
             local line = scroll:Add("DPanel")

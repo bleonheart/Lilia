@@ -1,7 +1,7 @@
 ﻿MODULE.name = "mainMenuModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = ("mainMenuDescription")
+MODULE.desc = "mainMenuDescription"
 if SERVER then
     function MODULE:syncCharList(client)
         if not client.liaCharList then return end

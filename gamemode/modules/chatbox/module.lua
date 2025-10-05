@@ -1,7 +1,7 @@
 ﻿MODULE.name = "chatboxModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = ("chatSystemDescription")
+MODULE.desc = "chatSystemDescription"
 MODULE.Privileges = {
     {
         Name = "noOOCCooldown",

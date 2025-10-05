@@ -1457,7 +1457,6 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
 
                 -- Force UI refresh after adding all options to ensure proper sizing
                 combo:FinishAddingOptions()
-
                 combo.OnSelect = function(_, _, v)
                     net.Start("liaCfgSet")
                     net.WriteString(key)

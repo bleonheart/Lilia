@@ -6,7 +6,6 @@ local function PaintButton(self, w, h)
     local g = (colorTable and colorTable.g) or 255
     local b = (colorTable and colorTable.b) or 255
     local cornerRadius = 8
-
     if self.Base then
         -- Draw shadow/background
         lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -16,17 +15,14 @@ local function PaintButton(self, w, h)
 
     -- Draw text
     draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
     -- Draw hover/selected effects
     if self:IsHovered() or self:IsSelected() then
         self.startTime = self.startTime or CurTime()
         local elapsed = CurTime() - self.startTime
         local anim = math.min(w, elapsed / animDuration * w) / 2
-
         -- Draw hover overlay with subtle shadow effect
         lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 30)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
         lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(r, g, b, 40)):Shape(lia.derma.SHAPE_IOS):Draw()
-
         -- Draw animated underline that grows from center
         if anim > 0 then
             local lineWidth = math.min(w - cornerRadius * 2, anim * 2)

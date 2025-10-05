@@ -1,6 +1,4 @@
-﻿
-
-function MODULE:InitializedModules()
+﻿function MODULE:InitializedModules()
 end
 
 net.Receive("liaCheckSeed", function(_, client)

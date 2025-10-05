@@ -101,10 +101,8 @@ function PANEL:Rebuild()
                 local isActive = self.active_id == id
                 local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
                 local colorIcon = isActive and lia.color.theme.theme or color_white
-
                 -- Override the default button hover behavior by not calling the parent paint
                 -- and ensuring no hover effects are drawn
-
                 if self.tab_style == 'modern' then
                     -- Only draw active indicator for modern style, no hover effects
                     if isActive then lia.derma.rect(0, h - self.indicator_height, w, self.indicator_height):Color(lia.color.theme.theme):Draw() end

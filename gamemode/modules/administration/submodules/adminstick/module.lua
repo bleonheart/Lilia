@@ -1,7 +1,7 @@
 ﻿MODULE.name = "adminStickModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = ("adminStickDescription")
+MODULE.desc = "adminStickDescription"
 MODULE.Privileges = {
     {
         Name = "alwaysSpawnAdminStick",

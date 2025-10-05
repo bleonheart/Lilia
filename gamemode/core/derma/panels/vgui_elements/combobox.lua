@@ -120,21 +120,17 @@ function PANEL:OpenMenu()
     local itemHeight = 26
     local maxMenuHeight = 200 -- Maximum height before scrolling
     local numChoices = #self.choices
-
     -- Calculate optimal width based on option text lengths
     surface.SetFont(self.font)
     local maxTextWidth = 0
     for _, choice in ipairs(self.choices) do
         local textWidth = surface.GetTextSize(choice.text)
-        if textWidth > maxTextWidth then
-            maxTextWidth = textWidth
-        end
+        if textWidth > maxTextWidth then maxTextWidth = textWidth end
     end
 
     -- Add padding for text and ensure minimum width
     local optimalWidth = math.max(self:GetWide(), maxTextWidth + 40) -- 40px padding for text
     local menuWidth = math.min(optimalWidth, ScrW() * 0.4) -- Cap at 40% of screen width
-
     -- Calculate if we need scrolling
     local needsScroll = numChoices * (itemHeight + 2) > maxMenuHeight - (menuPadding * 2) - 2
     if needsScroll then

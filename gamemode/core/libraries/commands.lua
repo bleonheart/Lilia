@@ -1406,7 +1406,6 @@ else
             local target = arguments[1]
             local message = arguments[2]
             local amount = arguments[3] or 1
-
             client:notify("Test command executed!")
             client:notify("Target: " .. tostring(target))
             client:notify("Message: " .. tostring(message))

@@ -19,8 +19,6 @@ net.Receive("liaCfgSet", function()
     elseif key == "Font" then
         lia.config.set(key, value)
         -- Refresh the F1 menu if it's open to apply new fonts
-        if IsValid(lia.gui.menu) then
-            lia.gui.menu:Update()
-        end
+        if IsValid(lia.gui.menu) then lia.gui.menu:Update() end
     end
 end)

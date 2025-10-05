@@ -1,4 +1,4 @@
-lia.color = lia.color or {}
+﻿lia.color = lia.color or {}
 lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
 if CLIENT then
@@ -617,9 +617,7 @@ end, {
         local themeIDs = lia.color.getAllThemes()
         for _, themeID in ipairs(themeIDs) do
             -- Convert theme ID to proper display name
-            local displayName = themeID:gsub("_", " "):gsub("(%a)([%w]*)", function(first, rest)
-                return first:upper() .. rest:lower()
-            end)
+            local displayName = themeID:gsub("_", " "):gsub("(%a)([%w]*)", function(first, rest) return first:upper() .. rest:lower() end)
             themes[displayName] = themeID
         end
         return themes

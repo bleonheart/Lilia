@@ -1,7 +1,7 @@
 ﻿MODULE.name = "inventoryModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = ("inventorySystemDescription")
+MODULE.desc = "inventorySystemDescription"
 MODULE.Privileges = {
     {
         Name = L("noItemCooldown"),

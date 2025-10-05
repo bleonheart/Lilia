@@ -1,7 +1,7 @@
 ﻿MODULE.name = "teamsModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = ("teamsSystemDescription")
+MODULE.desc = "teamsSystemDescription"
 MODULE.Privileges = {
     {
         Name = L("canManageFactions"),
