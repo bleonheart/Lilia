@@ -33,7 +33,7 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     entry:Dock(TOP)
     entry:DockMargin(0, 0, 0, marginBot or 0)
     entry:SetTall(35)
-    entry.Paint = function(s, w, h)
+    entry.Paint = function(s, w, _)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
@@ -73,7 +73,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     entry:Dock(TOP)
     entry:DockMargin(0, margin or 0, 0, margin or 0)
     entry:SetTall(40)
-    entry.Paint = function(s, w, h)
+    entry.Paint = function(s, w, _)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
@@ -90,7 +90,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     local bar = entry:Add("DPanel")
     bar:Dock(FILL)
     bar:DockMargin(0, 6, 8, 6)
-    bar.Paint = function(s, w, h)
+    bar.Paint = function(s, w, _)
         local mn = isfunction(minFunc) and minFunc() or tonumber(minFunc) or 0
         local mx = isfunction(maxFunc) and maxFunc() or tonumber(maxFunc) or 1
         local val = isfunction(valueFunc) and valueFunc() or tonumber(valueFunc) or 0
@@ -151,9 +151,9 @@ function PANEL:CreateSection(parent, title)
     frame:Dock(TOP)
     frame:DockMargin(0, 10, 0, 10)
     frame:SetTall(200) -- Will be auto-sized
-    frame.Paint = function(s, w, h)
+    frame.Paint = function(s, w, _)
         -- Draw Lilia-styled section background
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, s:GetTall()):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
 
         -- Draw section title (centered)
         draw.SimpleText(L(title), "liaSmallFont", w / 2, 8, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -169,7 +169,7 @@ function PANEL:CreateSection(parent, title)
     contents.Paint = function() end
 
     -- Auto-size the frame based on content
-    contents.PerformLayout = function(s, w, h)
+    contents.PerformLayout = function(s, _, _)
         local contentHeight = 35 -- Start with title height
         for _, child in ipairs(s:GetChildren()) do
             if IsValid(child) then

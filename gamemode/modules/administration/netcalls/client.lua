@@ -157,7 +157,7 @@ net.Receive("liaAllPks", function()
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("DListView")
     list:Dock(FILL)
     local function addSizedColumn(text)
@@ -221,19 +221,6 @@ net.Receive("liaAllPks", function()
     end
 end)
 
-local charMenuContext
-local function requestPlayerCharacters(steamID, line, buildMenu)
-    charMenuContext = {
-        pos = {gui.MousePos()},
-        line = line,
-        steamID = steamID,
-        buildMenu = buildMenu
-    }
-
-    net.Start("liaRequestPlayerCharacters")
-    net.WriteString(steamID)
-    net.SendToServer()
-end
 
 local function OpenRoster(panel, data)
     panel:Clear()
@@ -324,7 +311,7 @@ function OpenFlagsPanel(panel, data)
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panel:Add("liaTable")
     list:Dock(FILL)
     local columns = {
@@ -453,7 +440,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {
@@ -528,7 +515,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
                 end
             end
 
-            if match then local line = list:AddLine(unpack(values)) end
+            if match then local _ = list:AddLine(unpack(values)) end
         end
     end
 
@@ -557,18 +544,6 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     end
 end)
 
-lia.net.readBigTable("liaPlayerCharacters", function(data)
-    if not data or not charMenuContext then return end
-    local menu = lia.derma.dermaMenu()
-    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
-    if charMenuContext.pos then
-        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
-    else
-        menu:Open()
-    end
-
-    charMenuContext = nil
-end)
 
 lia.net.readBigTable("liaAllPlayers", function(players)
     if not IsValid(panelRef) then return end
@@ -581,7 +556,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {

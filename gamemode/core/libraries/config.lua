@@ -1153,7 +1153,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             slider:SetValue(lia.config.get(key, config.value))
             slider:SetText("")
             -- Override Paint function to remove extra text underneath slider
-            slider.Paint = function(s, w, h)
+            slider.Paint = function(s, w, _)
                 local padX = 16
                 local padTop = 2
                 local barY = 32
@@ -1235,7 +1235,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             slider:SetValue(lia.config.get(key, config.value))
             slider:SetText("")
             -- Override Paint function to remove extra text underneath slider
-            slider.Paint = function(s, w, h)
+            slider.Paint = function(s, w, _)
                 local padX = 16
                 local padTop = 2
                 local barY = 32
@@ -1398,11 +1398,11 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 button:DockMargin(300, 10, 300, 0)
                 button:SetTall(60)
                 button:SetTxt("")
-                button.Paint = function(s, w, h)
+                button.Paint = function(s, w, _)
                     local c = lia.config.get(key, config.value)
-                    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
-                    lia.derma.rect(0, 0, w, h):Rad(16):Color(c):Shape(lia.derma.SHAPE_IOS):Draw()
-                    draw.RoundedBox(2, 0, 0, w, h, Color(255, 255, 255, 50))
+                    lia.derma.rect(0, 0, w, s:GetTall()):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
+                    lia.derma.rect(0, 0, w, s:GetTall()):Rad(16):Color(c):Shape(lia.derma.SHAPE_IOS):Draw()
+                    draw.RoundedBox(2, 0, 0, w, s:GetTall(), Color(255, 255, 255, 50))
                 end
 
                 button.DoClick = function()
@@ -1450,7 +1450,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 combo:SetValue(tostring(lia.config.get(key, config.value)))
                 combo:SetFont("ConfigFontLarge")
                 local options = lia.config.getOptions(key)
-                for data, text in pairs(options) do
+                for _, text in pairs(options) do
                     -- Always use the display text as the data value to ensure consistent types
                     combo:AddChoice(text, text)
                 end

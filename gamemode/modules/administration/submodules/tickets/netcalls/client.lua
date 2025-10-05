@@ -14,7 +14,7 @@ net.Receive("liaActiveTickets", function()
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
 
     local list = ticketPanel:Add("liaTable")
     list:Dock(FILL)
@@ -71,7 +71,7 @@ net.Receive("liaActiveTickets", function()
             end
 
             if match then
-                local line = list:AddLine(unpack(values))
+                local _ = list:AddLine(unpack(values))
             end
         end
     end

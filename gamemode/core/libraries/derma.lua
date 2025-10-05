@@ -1616,7 +1616,7 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
     dropdown:DockMargin(20, 40, 20, 20)
     dropdown:SetTall(30)
     if istable(options) then
-        for i, option in ipairs(options) do
+        for _, option in ipairs(options) do
             if istable(option) then
                 dropdown:AddChoice(option[1], option[2])
             else
@@ -1733,11 +1733,12 @@ function lia.derma.requestOptions(title, options, callback, defaults)
     scrollPanel:Dock(FILL)
     scrollPanel:DockMargin(20, 40, 20, 60)
     local checkboxes = {}
-    local maxLabelWidth = 0
+    local _ = 0
     if istable(options) then
-        for i, option in ipairs(options) do
-            local optionText = ""
-            local optionData = nil
+        for _, option in ipairs(options) do
+            local _ = ""
+            local _ = nil
+            local optionText, optionData
             if istable(option) then
                 optionText = option[1] or tostring(option[2])
                 optionData = option[2]

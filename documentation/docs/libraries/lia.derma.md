@@ -10,6 +10,109 @@ The derma library (`lia.derma`) provides a comprehensive collection of pre-built
 
 ---
 
+### clampMenuPosition
+
+**Purpose**
+
+Clamps a menu panel's position to ensure it stays within the visible screen bounds, preventing menus from appearing partially or completely off-screen.
+
+**Parameters**
+
+* `panel` (*Panel*): The panel/menu to clamp the position for.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic menu position clamping
+local menu = lia.derma.dermaMenu()
+menu:SetSize(200, 300)
+menu:SetPos(ScrW() - 50, ScrH() - 100) -- Position near screen edge
+lia.derma.clampMenuPosition(menu) -- Will adjust position to stay on screen
+
+-- Context menu positioning with clamping
+local function showContextMenuAt(x, y)
+    local menu = lia.derma.dermaMenu()
+    menu:SetSize(150, 200)
+    menu:SetPos(x, y)
+    lia.derma.clampMenuPosition(menu) -- Ensure menu stays on screen
+end
+
+-- Use with mouse position for context menus
+local function showContextMenuAtMouse()
+    local mouseX, mouseY = input.GetCursorPos()
+    showContextMenuAt(mouseX, mouseY)
+end
+
+hook.Add("OnContextMenuOpen", "ClampContextMenu", function()
+    showContextMenuAtMouse()
+end)
+
+-- Custom menu positioning with fallback clamping
+local function createMenuAtPosition(x, y, width, height)
+    local menu = vgui.Create("DFrame")
+    menu:SetSize(width, height)
+    menu:SetPos(x - width/2, y - height/2) -- Center on position
+    menu:MakePopup()
+
+    -- Always clamp to ensure visibility
+    lia.derma.clampMenuPosition(menu)
+
+    return menu
+end
+
+-- Dropdown menu positioning
+local function showDropdownMenu(parentPanel, options)
+    local menu = lia.derma.frame(parentPanel, "Options", 200, 300)
+
+    -- Position below parent panel
+    local parentX, parentY = parentPanel:GetPos()
+    menu:SetPos(parentX, parentY + parentPanel:GetTall())
+
+    -- Clamp to screen bounds
+    lia.derma.clampMenuPosition(menu)
+
+    return menu
+end
+
+-- Notification popup positioning
+local function showNotificationAtCorner(text, corner)
+    local notification = vgui.Create("DPanel")
+    notification:SetSize(300, 80)
+    notification:SetPos(ScrW() - 310, ScrH() - 90)
+
+    -- Clamp to ensure it doesn't go off screen
+    lia.derma.clampMenuPosition(notification)
+
+    -- Add text and styling...
+end
+
+-- Multi-monitor aware positioning
+local function createMenuForScreen(screen)
+    local screenX, screenY, screenW, screenH = screen.Bounds
+
+    local menu = vgui.Create("DFrame")
+    menu:SetSize(400, 300)
+
+    -- Position in center of specific screen
+    menu:SetPos(screenX + screenW/2 - 200, screenY + screenH/2 - 150)
+
+    -- Clamp to that screen's bounds
+    lia.derma.clampMenuPosition(menu)
+
+    return menu
+end
+```
+
+---
+
 ### CreateTableUI
 
 **Purpose**
@@ -955,6 +1058,907 @@ hook.Add("HUDPaint", "DrawPlayerHUD", drawPlayerHUD)
 
 ---
 
+### drawBlackBlur
+
+**Purpose**
+
+Draws a black blur background effect behind a panel, commonly used for creating modal overlays or darkening the background to focus attention on a specific UI element.
+
+**Parameters**
+
+* `panel` (*Panel*): The panel to draw the blur effect for.
+* `amount` (*number*, optional): The blur intensity (default: 6).
+* `passes` (*number*, optional): The number of blur passes (default: 5).
+* `alpha` (*number*, optional): The alpha transparency of the blur effect (default: 255).
+* `darkAlpha` (*number*, optional): The alpha transparency of the black overlay (default: 220).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic black blur effect
+local modalPanel = vgui.Create("DPanel")
+modalPanel:SetSize(400, 300)
+modalPanel:Center()
+
+-- Draw black blur background
+lia.derma.drawBlackBlur(modalPanel, 6, 5, 255, 220)
+
+-- Custom blur settings
+local settingsPanel = vgui.Create("DFrame")
+settingsPanel:SetSize(500, 400)
+settingsPanel:Center()
+settingsPanel:MakePopup()
+
+lia.derma.drawBlackBlur(settingsPanel, 8, 8, 200, 180)
+
+-- Use in modal dialogs
+local function showModalDialog(title, content)
+    local frame = lia.derma.frame(nil, title, 400, 300)
+    frame:MakePopup()
+
+    -- Draw black blur background for modal effect
+    lia.derma.drawBlackBlur(frame, 5, 3, 255, 200)
+
+    -- Add content...
+end
+
+-- Blur effect for loading screens
+local loadingPanel = vgui.Create("DPanel")
+loadingPanel:SetSize(ScrW(), ScrH())
+
+lia.derma.drawBlackBlur(loadingPanel, 10, 10, 150, 100)
+
+-- Custom blur for notifications
+local notificationPanel = vgui.Create("DPanel")
+notificationPanel:SetSize(300, 100)
+notificationPanel:SetPos(ScrW() - 320, 20)
+
+lia.derma.drawBlackBlur(notificationPanel, 4, 4, 255, 180)
+
+-- Use with animation for smooth transitions
+local function fadeInWithBlur(panel, duration)
+    panel:SetAlpha(0)
+    lia.derma.drawBlackBlur(panel, 6, 5, 0, 0) -- Start transparent
+
+    local startTime = CurTime()
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+
+        local blurAlpha = progress * 255
+        local darkAlpha = progress * 220
+
+        lia.derma.drawBlackBlur(panel, 6, 5, blurAlpha, darkAlpha)
+
+        if progress >= 1 then
+            panel.Think = nil
+        end
+    end
+end
+
+-- Blur effect for inventory screens
+local inventoryFrame = lia.derma.frame(nil, "Inventory", 800, 600)
+lia.derma.drawBlackBlur(inventoryFrame, 7, 6, 255, 200)
+```
+
+---
+
+### drawBlurAt
+
+**Purpose**
+
+Draws a blur effect at specific screen coordinates with customizable parameters, allowing for precise control over blur effects in specific areas of the screen.
+
+**Parameters**
+
+* `x` (*number*): The x coordinate of the blur area.
+* `y` (*number*): The y coordinate of the blur area.
+* `w` (*number*): The width of the blur area.
+* `h` (*number*): The height of the blur area.
+* `amount` (*number*, optional): The blur intensity (default: 5).
+* `passes` (*number*, optional): The number of blur passes (default: 0.2).
+* `alpha` (*number*, optional): The alpha transparency of the blur effect (default: 255).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic blur at specific coordinates
+lia.derma.drawBlurAt(100, 100, 200, 150, 5, 0.2, 255)
+
+-- Blur with custom settings
+lia.derma.drawBlurAt(ScrW() / 2 - 150, ScrH() / 2 - 100, 300, 200, 8, 0.5, 200)
+
+-- Use for highlighting areas
+local function highlightArea(x, y, w, h)
+    lia.derma.drawBlurAt(x, y, w, h, 3, 0.1, 150)
+end
+
+highlightArea(200, 300, 100, 80)
+
+-- Blur effect for UI transitions
+local function blurTransitionArea(startX, startY, width, height, progress)
+    local blurAmount = progress * 10
+    local blurAlpha = progress * 255
+
+    lia.derma.drawBlurAt(startX, startY, width, height, blurAmount, 0.3, blurAlpha)
+end
+
+-- Blur specific regions of HUD
+local function blurHUDArea()
+    -- Blur health area
+    lia.derma.drawBlurAt(50, ScrH() - 80, 200, 60, 4, 0.2, 100)
+
+    -- Blur minimap area
+    lia.derma.drawBlurAt(ScrW() - 220, 50, 200, 200, 3, 0.15, 80)
+end
+
+hook.Add("HUDPaint", "BlurHUDAreas", blurHUDArea)
+
+-- Animated blur effect
+local function createAnimatedBlur()
+    local startTime = CurTime()
+    local duration = 2.0
+
+    local function animateBlur()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+
+        local pulseAmount = math.sin(progress * math.pi * 4) * 5 + 7
+        local pulseAlpha = (math.sin(progress * math.pi * 2) + 1) * 127 + 128
+
+        lia.derma.drawBlurAt(ScrW() / 2 - 100, ScrH() / 2 - 75, 200, 150, pulseAmount, 0.4, pulseAlpha)
+
+        if progress < 1 then
+            timer.Simple(0.016, animateBlur) -- ~60 FPS
+        end
+    end
+
+    animateBlur()
+end
+
+-- Blur for screen effects
+lia.derma.drawBlurAt(0, 0, ScrW(), ScrH(), 6, 0.3, 100) -- Full screen blur
+lia.derma.drawBlurAt(ScrW() / 4, ScrH() / 4, ScrW() / 2, ScrH() / 2, 4, 0.2, 150) -- Center blur
+```
+
+---
+
+### drawEntText
+
+**Purpose**
+
+Draws text above entities in the 3D world with distance-based fading and smooth appearance/disappearance transitions, commonly used for displaying entity names, health, or other information.
+
+**Parameters**
+
+* `ent` (*Entity*): The entity to draw text above.
+* `text` (*string*): The text to display above the entity.
+* `posY` (*number*, optional): The vertical offset for the text position (default: 0).
+* `alphaOverride` (*number*, optional): Override alpha value (default: uses distance-based calculation).
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic entity text display
+lia.derma.drawEntText(LocalPlayer(), "Player Name", 0)
+
+-- Entity text with offset
+lia.derma.drawEntText(someNPC, "NPC Name", 20)
+
+-- Entity text with custom alpha
+lia.derma.drawEntText(doorEntity, "Door", 0, 150)
+
+-- Display health above players
+local function drawPlayerHealth()
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:Alive() and ply ~= LocalPlayer() then
+            local health = ply:Health()
+            local maxHealth = ply:GetMaxHealth()
+            local healthText = "HP: " .. health .. "/" .. maxHealth
+
+            -- Color based on health percentage
+            local healthPercent = health / maxHealth
+            local textColor = healthPercent > 0.5 and "green" or "red"
+
+            lia.derma.drawEntText(ply, healthText, 10)
+        end
+    end
+end
+
+hook.Add("PostDrawOpaqueRenderables", "DrawPlayerHealth", drawPlayerHealth)
+
+-- Display item names above dropped items
+local function drawItemNames()
+    for _, ent in ipairs(ents.FindByClass("lia_item")) do
+        if IsValid(ent) then
+            local itemName = ent:getItemName and ent:getItemName() or "Unknown Item"
+            lia.derma.drawEntText(ent, itemName, 5)
+        end
+    end
+end
+
+hook.Add("PostDrawOpaqueRenderables", "DrawItemNames", drawItemNames)
+
+-- Display NPC dialogue options
+local function drawNPCDialogue(npc)
+    if not IsValid(npc) then return end
+
+    local dialogueOptions = npc:getDialogueOptions and npc:getDialogueOptions()
+    if dialogueOptions then
+        local text = "Press E to talk"
+        lia.derma.drawEntText(npc, text, 15)
+    end
+end
+
+-- Entity distance-based text with custom logic
+local function drawEntityInfo()
+    local eyePos = LocalPlayer():EyePos()
+
+    for _, ent in ipairs(ents.GetAll()) do
+        if IsValid(ent) and ent:GetClass() ~= "worldspawn" then
+            local dist = eyePos:Distance(ent:GetPos())
+
+            -- Only show text for entities within range
+            if dist < 500 then
+                local text = ent:GetClass()
+
+                -- Different text based on entity type
+                if ent:IsPlayer() then
+                    text = ent:Name()
+                elseif ent:IsNPC() then
+                    text = "NPC"
+                elseif ent:IsVehicle() then
+                    text = "Vehicle"
+                end
+
+                lia.derma.drawEntText(ent, text, 0)
+            end
+        end
+    end
+end
+
+-- Animated entity text that appears/disappears smoothly
+local function drawAnimatedEntityText(ent, text)
+    local distSqr = LocalPlayer():EyePos():DistToSqr(ent:GetPos())
+    local maxDist = 300
+
+    if distSqr < maxDist * maxDist then
+        -- Calculate fade based on distance
+        local fade = 1 - (math.sqrt(distSqr) / maxDist)
+        lia.derma.drawEntText(ent, text, 0, fade * 255)
+    end
+end
+
+-- Use in entity think hooks for dynamic text
+local function updateEntityTexts()
+    for _, ent in ipairs(ents.FindByClass("lia_*")) do
+        if ent.getDisplayText then
+            local text = ent:getDisplayText()
+            if text then
+                drawAnimatedEntityText(ent, text)
+            end
+        end
+    end
+end
+
+hook.Add("PostDrawOpaqueRenderables", "UpdateEntityTexts", updateEntityTexts)
+```
+
+---
+
+### drawGradient
+
+**Purpose**
+
+Draws a gradient rectangle using predefined gradient materials in different directions (up, down, left, right), providing a simple way to create gradient backgrounds and effects.
+
+**Parameters**
+
+* `_x` (*number*): The x position of the gradient rectangle.
+* `_y` (*number*): The y position of the gradient rectangle.
+* `_w` (*number*): The width of the gradient rectangle.
+* `_h` (*number*): The height of the gradient rectangle.
+* `direction` (*number*): The gradient direction (1=up, 2=down, 3=left, 4=right).
+* `color_shadow` (*Color*): The color to apply to the gradient.
+* `radius` (*number*, optional): The corner radius for the gradient (default: 0).
+* `flags` (*number*, optional): Drawing flags to modify the appearance.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic gradient in different directions
+lia.derma.drawGradient(100, 100, 200, 100, 1, Color(100, 150, 255)) -- Up gradient
+lia.derma.drawGradient(100, 250, 200, 100, 2, Color(255, 100, 100)) -- Down gradient
+lia.derma.drawGradient(350, 100, 200, 100, 3, Color(100, 255, 100)) -- Left gradient
+lia.derma.drawGradient(350, 250, 200, 100, 4, Color(255, 255, 100)) -- Right gradient
+
+-- Gradient with rounded corners
+lia.derma.drawGradient(100, 400, 200, 100, 1, Color(150, 100, 255), 10)
+
+-- Use gradients for backgrounds
+local function drawGradientBackground(x, y, w, h, color, direction)
+    lia.derma.drawGradient(x, y, w, h, direction or 1, color)
+end
+
+drawGradientBackground(50, 50, 300, 200, Color(50, 100, 150), 2)
+
+-- Gradient for button hover effects
+local function drawGradientButton(x, y, w, h, text, isHovered)
+    local gradientColor = isHovered and Color(150, 200, 255) or Color(100, 150, 255)
+    lia.derma.drawGradient(x, y, w, h, 2, gradientColor, 8)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+-- Gradient for progress bars
+local function drawGradientProgressBar(x, y, w, h, progress, color)
+    -- Background
+    lia.derma.drawGradient(x, y, w, h, 1, Color(50, 50, 50), 4)
+
+    -- Progress fill
+    local fillWidth = w * math.Clamp(progress, 0, 1)
+    lia.derma.drawGradient(x, y, fillWidth, h, 1, color, 4)
+end
+
+drawGradientProgressBar(100, 100, 300, 30, 0.7, Color(100, 255, 100))
+
+-- Gradient for HUD elements
+local function drawGradientHUD()
+    -- Health bar gradient background
+    lia.derma.drawGradient(50, ScrH() - 80, 200, 30, 1, Color(100, 0, 0), 4)
+
+    -- Armor bar gradient background
+    lia.derma.drawGradient(300, ScrH() - 80, 200, 30, 1, Color(0, 100, 0), 4)
+
+    -- Experience bar gradient
+    lia.derma.drawGradient(50, ScrH() - 40, 450, 20, 1, Color(100, 100, 0), 2)
+end
+
+hook.Add("HUDPaint", "DrawGradientHUD", drawGradientHUD)
+
+-- Animated gradient effect
+local function drawAnimatedGradient()
+    local time = CurTime()
+    local pulseColor = HSVToColor(time * 50 % 360, 0.8, 1)
+
+    lia.derma.drawGradient(ScrW() / 2 - 150, ScrH() / 2 - 75, 300, 150, 2, pulseColor, 15)
+end
+
+-- Gradient for panel backgrounds
+local function createGradientPanel(parent, x, y, w, h, color, direction)
+    local panel = vgui.Create("DPanel", parent)
+    panel:SetPos(x, y)
+    panel:SetSize(w, h)
+
+    panel.Paint = function(self, pw, ph)
+        lia.derma.drawGradient(0, 0, pw, ph, direction or 1, color)
+    end
+
+    return panel
+end
+
+local gradientPanel = createGradientPanel(parentPanel, 50, 50, 200, 100, Color(150, 100, 255), 2)
+```
+
+---
+
+### drawSurfaceTexture
+
+**Purpose**
+
+Draws a textured rectangle using Garry's Mod surface functions, providing a simple way to draw textures with custom colors and materials.
+
+**Parameters**
+
+* `material` (*string* or *IMaterial*): The material/texture to draw.
+* `color` (*Color*, optional): The color to tint the texture with.
+* `x` (*number*): The x position to draw the texture.
+* `y` (*number*): The y position to draw the texture.
+* `w` (*number*): The width of the texture.
+* `h` (*number*): The height of the texture.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Draw basic texture
+lia.derma.drawSurfaceTexture("vgui/white", Color(255, 255, 255), 100, 100, 200, 150)
+
+-- Draw texture with color tint
+lia.derma.drawSurfaceTexture("gui/gradient", Color(255, 100, 100), 50, 50, 300, 200)
+
+-- Draw material object
+local customMaterial = Material("effects/bubble")
+lia.derma.drawSurfaceTexture(customMaterial, Color(100, 255, 100), 200, 200, 100, 100)
+
+-- Use in panel backgrounds
+local function createTexturedPanel(parent, x, y, w, h, texture, color)
+    local panel = vgui.Create("DPanel", parent)
+    panel:SetPos(x, y)
+    panel:SetSize(w, h)
+
+    panel.Paint = function(self, pw, ph)
+        lia.derma.drawSurfaceTexture(texture, color, 0, 0, pw, ph)
+    end
+
+    return panel
+end
+
+local texturedPanel = createTexturedPanel(parentPanel, 50, 50, 200, 100, "vgui/white", Color(150, 150, 255))
+
+-- Animated texture effect
+local function drawAnimatedTexture()
+    local time = CurTime()
+    local pulseColor = Color(255, 255, 255, math.sin(time * 3) * 64 + 192)
+
+    lia.derma.drawSurfaceTexture("effects/noise", pulseColor, 100, 100, 200, 200)
+end
+
+-- Texture for HUD elements
+local function drawTexturedHUD()
+    -- Health bar background texture
+    lia.derma.drawSurfaceTexture("gui/gradient", Color(100, 0, 0, 150), 50, ScrH() - 80, 200, 30)
+
+    -- Armor bar background texture
+    lia.derma.drawSurfaceTexture("gui/gradient", Color(0, 100, 0, 150), 300, ScrH() - 80, 200, 30)
+
+    -- Minimap texture background
+    lia.derma.drawSurfaceTexture("vgui/white", Color(0, 0, 0, 100), ScrW() - 220, 50, 200, 200)
+end
+
+hook.Add("HUDPaint", "DrawTexturedHUD", drawTexturedHUD)
+
+-- Use with different texture materials
+local textures = {
+    "vgui/white",
+    "gui/gradient",
+    "effects/bubble",
+    "effects/noise"
+}
+
+for i, texture in ipairs(textures) do
+    local x = 50 + (i - 1) * 120
+    lia.derma.drawSurfaceTexture(texture, Color(255, 255, 255), x, 300, 100, 100)
+end
+
+-- Texture for button backgrounds
+local function drawTexturedButton(x, y, w, h, text, texture, color)
+    lia.derma.drawSurfaceTexture(texture, color, x, y, w, h)
+    draw.SimpleText(text, "liaMediumFont", x + w/2, y + h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawTexturedButton(100, 100, 200, 50, "Textured Button", "gui/gradient", Color(100, 150, 255))
+```
+
+---
+
+### wrapText
+
+**Purpose**
+
+Wraps text to fit within a specified width by breaking it into multiple lines, commonly used for displaying long text in constrained UI spaces.
+
+**Parameters**
+
+* `text` (*string*): The text to wrap.
+* `width` (*number*): The maximum width for each line.
+* `font` (*string*, optional): The font to use for text measurement (default: "liaChatFont").
+
+**Returns**
+
+* `lines` (*table*): An array of wrapped text lines.
+* `maxWidth` (*number*): The maximum width of any single line.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic text wrapping
+local text = "This is a very long text that needs to be wrapped to fit within the specified width."
+local lines, maxWidth = lia.derma.wrapText(text, 300)
+
+for i, line in ipairs(lines) do
+    print("Line " .. i .. ": " .. line)
+end
+
+-- Use in UI elements
+local function drawWrappedText(text, x, y, width, font)
+    local lines, maxWidth = lia.derma.wrapText(text, width, font or "liaSmallFont")
+
+    for i, line in ipairs(lines) do
+        draw.SimpleText(line, font or "liaSmallFont", x, y + (i - 1) * 20, Color(255, 255, 255))
+    end
+
+    return #lines * 20 -- Return total height
+end
+
+local height = drawWrappedText("This is some long text that will be wrapped across multiple lines", 100, 100, 200)
+
+-- Wrap text for chat messages
+local function formatChatMessage(message, maxWidth)
+    local lines, _ = lia.derma.wrapText(message, maxWidth)
+
+    local formattedMessage = ""
+    for i, line in ipairs(lines) do
+        formattedMessage = formattedMessage .. line
+        if i < #lines then
+            formattedMessage = formattedMessage .. "\n"
+        end
+    end
+
+    return formattedMessage
+end
+
+-- Wrap text for tooltips
+local function createWrappedTooltip(x, y, width, text)
+    local lines, maxWidth = lia.derma.wrapText(text, width - 20) -- Account for padding
+
+    local tooltipHeight = #lines * 18 + 10
+    lia.derma.draw(8, x, y, width, tooltipHeight, Color(50, 50, 50, 220))
+
+    for i, line in ipairs(lines) do
+        draw.SimpleText(line, "liaSmallFont", x + 10, y + 5 + (i - 1) * 18, Color(255, 255, 255))
+    end
+end
+
+-- Dynamic text wrapping for different screen sizes
+local function drawResponsiveText(text, x, y, maxWidth)
+    local screenWidth = ScrW()
+    local adaptiveWidth = math.min(maxWidth, screenWidth * 0.8)
+
+    local lines, actualMaxWidth = lia.derma.wrapText(text, adaptiveWidth)
+
+    for i, line in ipairs(lines) do
+        draw.SimpleText(line, "liaMediumFont", x, y + (i - 1) * 25, Color(255, 255, 255))
+    end
+
+    return #lines * 25, actualMaxWidth
+end
+
+-- Wrap text for item descriptions
+local function formatItemDescription(item)
+    if not item.description then return "" end
+
+    local lines, _ = lia.derma.wrapText(item.description, 250)
+    return table.concat(lines, "\n")
+end
+
+-- Text wrapping with different fonts
+local function getOptimalFontSize(text, maxWidth, maxHeight)
+    local fonts = {"liaSmallFont", "liaMediumFont", "liaLargeFont"}
+
+    for _, font in ipairs(fonts) do
+        local lines, _ = lia.derma.wrapText(text, maxWidth, font)
+        local totalHeight = #lines * surface.GetFontHeight(font)
+
+        if totalHeight <= maxHeight then
+            return font, lines
+        end
+    end
+
+    return "liaSmallFont", lia.derma.wrapText(text, maxWidth, "liaSmallFont")
+end
+```
+
+---
+
+### easeOutCubic
+
+**Purpose**
+
+Calculates an easing value using a cubic out function, providing smooth deceleration for animations and transitions.
+
+**Parameters**
+
+* `t` (*number*): The time value between 0 and 1.
+
+**Returns**
+
+* `value` (*number*): The eased value between 0 and 1.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic easing usage
+local progress = 0.5
+local easedValue = lia.derma.easeOutCubic(progress)
+
+-- Use in animation loop
+local startTime = CurTime()
+local duration = 2.0
+
+local function animateWithEasing()
+    local elapsed = CurTime() - startTime
+    local progress = math.min(elapsed / duration, 1)
+    local easedProgress = lia.derma.easeOutCubic(progress)
+
+    -- Apply eased progress to animation
+    local panel = somePanel
+    panel:SetAlpha(easedProgress * 255)
+end
+
+-- Custom animation function with easing
+local function animatePanel(panel, targetAlpha, duration)
+    local startAlpha = panel:GetAlpha()
+    local startTime = CurTime()
+
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+        local easedProgress = lia.derma.easeOutCubic(progress)
+
+        local currentAlpha = Lerp(easedProgress, startAlpha, targetAlpha)
+        panel:SetAlpha(currentAlpha)
+
+        if progress >= 1 then
+            panel.Think = nil
+        end
+    end
+end
+
+-- Multiple easing curves comparison
+local function compareEasingCurves()
+    local curves = {
+        "Linear",
+        "easeOutCubic",
+        "easeInOutCubic"
+    }
+
+    for i, curveName in ipairs(curves) do
+        local x = 50 + (i - 1) * 150
+        local points = {}
+
+        for step = 0, 100 do
+            local t = step / 100
+            local eased = curveName == "easeOutCubic" and lia.derma.easeOutCubic(t) or
+                         (curveName == "easeInOutCubic" and lia.derma.easeInOutCubic(t) or t)
+
+            table.insert(points, {x = x + step, y = 300 - eased * 100})
+        end
+
+        -- Draw curve...
+    end
+end
+
+-- Smooth UI transitions
+local function fadeOutPanel(panel, duration, callback)
+    local startAlpha = panel:GetAlpha()
+    local startTime = CurTime()
+
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+        local easedProgress = lia.derma.easeOutCubic(progress)
+
+        local currentAlpha = Lerp(1 - easedProgress, startAlpha, 0)
+        panel:SetAlpha(currentAlpha)
+
+        if progress >= 1 then
+            panel.Think = nil
+            if callback then callback() end
+        end
+    end
+end
+
+-- Easing for movement animations
+local function movePanel(panel, targetX, targetY, duration)
+    local startX, startY = panel:GetPos()
+    local startTime = CurTime()
+
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+        local easedProgress = lia.derma.easeOutCubic(progress)
+
+        local currentX = Lerp(easedProgress, startX, targetX)
+        local currentY = Lerp(easedProgress, startY, targetY)
+        panel:SetPos(currentX, currentY)
+
+        if progress >= 1 then
+            panel.Think = nil
+        end
+    end
+end
+```
+
+---
+
+### easeInOutCubic
+
+**Purpose**
+
+Calculates an easing value using a cubic in-out function, providing smooth acceleration and deceleration for animations that need to start and end slowly.
+
+**Parameters**
+
+* `t` (*number*): The time value between 0 and 1.
+
+**Returns**
+
+* `value` (*number*): The eased value between 0 and 1.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic easing usage
+local progress = 0.5
+local easedValue = lia.derma.easeInOutCubic(progress)
+
+-- Use in animation loop with smooth start and end
+local startTime = CurTime()
+local duration = 3.0
+
+local function animateWithSmoothEasing()
+    local elapsed = CurTime() - startTime
+    local progress = math.min(elapsed / duration, 1)
+    local easedProgress = lia.derma.easeInOutCubic(progress)
+
+    -- Apply eased progress to animation
+    local panel = somePanel
+    local scale = 1 + easedProgress * 0.5 -- Scale from 1 to 1.5
+    panel:SetSize(panel.baseWidth * scale, panel.baseHeight * scale)
+end
+
+-- Bounce effect using in-out easing
+local function createBounceEffect(panel, targetPos, duration)
+    local startPos = panel:GetPos()
+    local startTime = CurTime()
+
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+
+        -- Use in-out easing for smooth bounce
+        local easedProgress = lia.derma.easeInOutCubic(progress)
+
+        -- Create bounce effect by overshooting and returning
+        local bounceProgress = easedProgress * 1.2 - 0.1
+        bounceProgress = math.max(0, math.min(1, bounceProgress))
+
+        local currentX = Lerp(bounceProgress, startPos.x, targetPos.x)
+        local currentY = Lerp(bounceProgress, startPos.y, targetPos.y)
+        panel:SetPos(currentX, currentY)
+
+        if progress >= 1 then
+            panel.Think = nil
+            panel:SetPos(targetPos) -- Ensure final position
+        end
+    end
+end
+
+-- Smooth sliding panel animation
+local function slideInPanel(panel, targetX, duration)
+    local startX = panel:GetPos()
+    local startTime = CurTime()
+
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = math.min(elapsed / duration, 1)
+        local easedProgress = lia.derma.easeInOutCubic(progress)
+
+        local currentX = Lerp(easedProgress, startX, targetX)
+        panel:SetPos(currentX, panel:GetY())
+
+        if progress >= 1 then
+            panel.Think = nil
+        end
+    end
+end
+
+-- Pulsing animation with in-out easing
+local function createPulsingEffect(panel, duration)
+    local startTime = CurTime()
+    local baseAlpha = 150
+    local pulseRange = 100
+
+    panel.Think = function()
+        local elapsed = CurTime() - startTime
+        local progress = (elapsed % duration) / duration
+        local easedProgress = lia.derma.easeInOutCubic(progress)
+
+        -- Create pulsing effect
+        local pulseAlpha = baseAlpha + math.sin(easedProgress * math.pi * 2) * pulseRange
+        panel:SetAlpha(pulseAlpha)
+    end
+end
+
+-- Complex animation combining multiple easing types
+local function complexAnimation(panel, duration)
+    local startTime = CurTime()
+    local phases = {
+        {duration = duration * 0.3, easing = lia.derma.easeInOutCubic},
+        {duration = duration * 0.4, easing = lia.derma.easeOutCubic},
+        {duration = duration * 0.3, easing = lia.derma.easeInOutCubic}
+    }
+
+    local currentPhase = 1
+    local phaseStartTime = startTime
+
+    panel.Think = function()
+        local elapsed = CurTime() - phaseStartTime
+        local phase = phases[currentPhase]
+
+        if elapsed >= phase.duration then
+            currentPhase = currentPhase + 1
+            phaseStartTime = CurTime()
+            elapsed = 0
+
+            if currentPhase > #phases then
+                panel.Think = nil
+                return
+            end
+
+            phase = phases[currentPhase]
+        end
+
+        local progress = elapsed / phase.duration
+        local easedProgress = phase.easing(progress)
+
+        -- Apply different effects based on phase
+        if currentPhase == 1 then
+            panel:SetAlpha(easedProgress * 255)
+        elseif currentPhase == 2 then
+            local scale = 0.5 + easedProgress * 0.5
+            panel:SetSize(panel.baseWidth * scale, panel.baseHeight * scale)
+        elseif currentPhase == 3 then
+            local offset = (1 - easedProgress) * 50
+            panel:SetPos(panel.baseX + offset, panel.baseY)
+        end
+    end
+end
+```
+
+---
+
 ### draw
 
 **Purpose**
@@ -1878,6 +2882,965 @@ local shadowSpread = isHovering and 35 or 25
 local shadowIntensity = isHovering and 30 or 15
 lia.derma.drawShadowsEx(hoverX, hoverY, hoverW, hoverH, Color(0, 0, 0, 150), nil, 10, 10, 10, 10, shadowSpread, shadowIntensity)
 lia.derma.draw(10, hoverX, hoverY, hoverW, hoverH, isHovering and Color(255, 255, 100) or Color(150, 150, 255))
+```
+
+---
+
+### requestString
+
+**Purpose**
+
+Creates a modal dialog for requesting a string input from the user with a title, description, and optional default value.
+
+**Parameters**
+
+* `title` (*string*): The title of the dialog.
+* `description` (*string*): The description/placeholder text for the input field.
+* `callback` (*function*): The function to call with the entered string (or false if cancelled).
+* `defaultValue` (*string*, optional): The default value for the input field.
+* `maxLength` (*number*, optional): The maximum length of the input string.
+
+**Returns**
+
+* `frame` (*liaFrame*): The created dialog frame.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic string input dialog
+lia.derma.requestString("Enter Name", "Please enter your name", function(name)
+    if name then
+        print("User entered:", name)
+        playerName = name
+    else
+        print("User cancelled")
+    end
+end)
+
+-- String input with default value
+lia.derma.requestString("Edit Name", "Current name", function(newName)
+    if newName and newName ~= "" then
+        updatePlayerName(newName)
+    end
+end, "Default Name")
+
+-- Password input with length limit
+lia.derma.requestString("Set Password", "Enter new password", function(password)
+    if password then
+        if string.len(password) >= 8 then
+            setPlayerPassword(password)
+            print("Password updated successfully")
+        else
+            print("Password must be at least 8 characters")
+        end
+    end
+end, "", 20)
+
+-- Input for item naming
+lia.derma.requestString("Name Item", "Enter a name for this item", function(itemName)
+    if itemName and itemName ~= "" then
+        currentItem.name = itemName
+        print("Item renamed to:", itemName)
+    end
+end, currentItem.name)
+
+-- Sequential input prompts
+local function promptForDetails()
+    lia.derma.requestString("Enter Title", "What is the title?", function(title)
+        if title then
+            lia.derma.requestString("Enter Description", "Describe it briefly", function(description)
+                if description then
+                    lia.derma.requestString("Enter Tags", "Comma-separated tags", function(tags)
+                        if tags then
+                            saveContent(title, description, tags)
+                        end
+                    end)
+                end
+            end)
+        end
+    end)
+end
+
+-- Input with validation
+lia.derma.requestString("Enter Steam ID", "Enter Steam ID (STEAM_0:...)", function(steamID)
+    if steamID then
+        if string.match(steamID, "^STEAM_[01]:[01]:%d+$") then
+            connectToSteamID(steamID)
+        else
+            print("Invalid Steam ID format")
+            -- Show dialog again with error message
+            timer.Simple(0.1, function()
+                lia.derma.requestString("Enter Steam ID", "Invalid format. Use STEAM_0:X:XXXXX", function(newSteamID)
+                    if newSteamID and string.match(newSteamID, "^STEAM_[01]:[01]:%d+$") then
+                        connectToSteamID(newSteamID)
+                    end
+                end, steamID)
+            end)
+        end
+    end
+end)
+
+-- Input for search functionality
+lia.derma.requestString("Search", "Enter search terms", function(searchText)
+    if searchText then
+        performSearch(searchText)
+    end
+end)
+```
+
+---
+
+### requestBinaryQuestion
+
+**Purpose**
+
+Creates a modal dialog for asking the user a yes/no question with customizable button text and a descriptive question.
+
+**Parameters**
+
+* `title` (*string*): The title of the dialog.
+* `question` (*string*): The question text to display.
+* `callback` (*function*): The function to call with the user's choice (true for yes, false for no).
+* `yesText` (*string*, optional): The text for the yes button (default: "Yes").
+* `noText` (*string*, optional): The text for the no button (default: "No").
+
+**Returns**
+
+* `frame` (*liaFrame*): The created dialog frame.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic yes/no question
+lia.derma.requestBinaryQuestion("Confirm Action", "Are you sure you want to proceed?", function(confirmed)
+    if confirmed then
+        print("User confirmed")
+        proceedWithAction()
+    else
+        print("User cancelled")
+    end
+end)
+
+-- Custom button text
+lia.derma.requestBinaryQuestion("Delete Item", "Do you want to permanently delete this item?", function(delete)
+    if delete then
+        deleteItem()
+    end
+end, "Delete", "Cancel")
+
+-- Confirmation for dangerous actions
+lia.derma.requestBinaryQuestion("Warning", "This action cannot be undone. Continue?", function(confirmed)
+    if confirmed then
+        performDangerousAction()
+    end
+end, "Continue", "Cancel")
+
+-- Use in admin functions
+lia.derma.requestBinaryQuestion("Kick Player", "Are you sure you want to kick " .. targetPlayer:Name() .. "?", function(kick)
+    if kick then
+        kickPlayer(targetPlayer)
+    end
+end, "Kick", "Cancel")
+
+-- Confirmation for settings changes
+lia.derma.requestBinaryQuestion("Reset Settings", "This will reset all settings to default. Continue?", function(reset)
+    if reset then
+        resetAllSettings()
+        print("Settings reset to default")
+    end
+end, "Reset", "Keep Current")
+
+-- Sequential confirmations
+local function confirmMultipleActions()
+    lia.derma.requestBinaryQuestion("First Action", "Perform first action?", function(confirmed)
+        if confirmed then
+            performFirstAction()
+            lia.derma.requestBinaryQuestion("Second Action", "Perform second action?", function(confirmed2)
+                if confirmed2 then
+                    performSecondAction()
+                end
+            end)
+        end
+    end)
+end
+
+-- Confirmation with custom titles
+lia.derma.requestBinaryQuestion("Security Check", "Allow this application to access your files?", function(allow)
+    if allow then
+        grantFileAccess()
+    else
+        denyFileAccess()
+    end
+end, "Allow", "Deny")
+
+-- Use in error handling
+local function handleError(errorMessage)
+    lia.derma.requestBinaryQuestion("Error Occurred", "An error occurred: " .. errorMessage .. "\nTry again?", function(retry)
+        if retry then
+            retryOperation()
+        else
+            cancelOperation()
+        end
+    end, "Retry", "Cancel")
+end
+```
+
+---
+
+### openOptionsMenu
+
+**Purpose**
+
+Opens a simple menu dialog with multiple options for user selection, providing a quick way to present choices without complex form handling.
+
+**Parameters**
+
+* `title` (*string*): The title of the options menu.
+* `options` (*table*): A table of options where each option can be:
+  - A string (option name with callback of the same name)
+  - A table with `name` and `callback` keys
+  - An array with [name, callback] structure.
+
+**Returns**
+
+* `frame` (*DFrame*): The created options menu frame.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic options menu with string keys
+lia.derma.openOptionsMenu("Choose Action", {
+    "Option 1",
+    "Option 2",
+    "Option 3"
+})
+
+-- Options menu with table format
+lia.derma.openOptionsMenu("Select Tool", {
+    {name = "Hammer", callback = function() print("Selected Hammer") end},
+    {name = "Screwdriver", callback = function() print("Selected Screwdriver") end},
+    {name = "Wrench", callback = function() print("Selected Wrench") end}
+})
+
+-- Options menu with array format
+lia.derma.openOptionsMenu("Game Mode", {
+    {"Single Player", function() startSinglePlayer() end},
+    {"Multiplayer", function() startMultiplayer() end},
+    {"Settings", function() openSettings() end}
+})
+
+-- Use in context menus
+local function showPlayerOptions(player)
+    lia.derma.openOptionsMenu("Player Actions", {
+        {"Send Message", function() openMessageDialog(player) end},
+        {"Trade Items", function() openTradeDialog(player) end},
+        {"View Profile", function() openProfile(player) end},
+        {"Add Friend", function() addFriend(player) end}
+    })
+end
+
+-- Options menu for item actions
+local function showItemOptions(item)
+    lia.derma.openOptionsMenu("Item Actions", {
+        {"Use Item", function() useItem(item) end},
+        {"Drop Item", function() dropItem(item) end},
+        {"Give to Player", function() giveItemToPlayer(item) end}
+    })
+end
+
+-- Dynamic options based on conditions
+local function showConditionalOptions()
+    local options = {}
+
+    if canEdit then
+        table.insert(options, {"Edit", function() editMode() end})
+    end
+
+    if canDelete then
+        table.insert(options, {"Delete", function() deleteItem() end})
+    end
+
+    table.insert(options, {"Cancel", function() closeMenu() end})
+
+    lia.derma.openOptionsMenu("Actions", options)
+end
+
+-- Options menu for admin functions
+lia.derma.openOptionsMenu("Admin Tools", {
+    {"Kick Player", function() openKickDialog() end},
+    {"Ban Player", function() openBanDialog() end},
+    {"Mute Player", function() openMuteDialog() end},
+    {"Teleport", function() openTeleportDialog() end}
+})
+
+-- Options menu for game settings
+lia.derma.openOptionsMenu("Graphics Settings", {
+    {"Low Quality", function() setGraphicsQuality("low") end},
+    {"Medium Quality", function() setGraphicsQuality("medium") end},
+    {"High Quality", function() setGraphicsQuality("high") end},
+    {"Ultra Quality", function() setGraphicsQuality("ultra") end}
+})
+```
+
+---
+
+### requestButtons
+
+**Purpose**
+
+Creates a modal dialog with multiple button options for user selection, providing a flexible way to present various choices with custom text and icons.
+
+**Parameters**
+
+* `title` (*string*): The title of the dialog.
+* `buttons` (*table*): An array of button definitions where each button can be:
+  - A string (button text)
+  - A table with `text`, `callback`, and optional `icon` keys
+  - An array with [text, callback, icon] structure.
+* `callback` (*function*, optional): A function to call with the selected button index and text when a button is clicked.
+* `description` (*string*, optional): A description to display above the buttons.
+
+**Returns**
+
+* `frame` (*liaFrame*): The created dialog frame.
+* `buttonPanels` (*table*): An array of the created button panels.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic button dialog with string buttons
+lia.derma.requestButtons("Choose Action", {
+    "Option 1",
+    "Option 2",
+    "Option 3"
+}, function(index, text)
+    print("Selected option " .. index .. ": " .. text)
+end)
+
+-- Button dialog with table format
+lia.derma.requestButtons("Select Tool", {
+    {text = "Hammer", callback = function() print("Selected Hammer") end, icon = "icon16/hammer.png"},
+    {text = "Screwdriver", callback = function() print("Selected Screwdriver") end, icon = "icon16/screwdriver.png"},
+    {text = "Wrench", callback = function() print("Selected Wrench") end, icon = "icon16/wrench.png"}
+})
+
+-- Button dialog with array format and description
+lia.derma.requestButtons("Game Mode", {
+    {"Single Player", function() startSinglePlayer() end, "icon16/user.png"},
+    {"Multiplayer", function() startMultiplayer() end, "icon16/group.png"},
+    {"Settings", function() openSettings() end, "icon16/cog.png"}
+}, nil, "Choose your preferred game mode")
+
+-- Use in context menus for player actions
+local function showPlayerActionDialog(player)
+    lia.derma.requestButtons("Player Actions", {
+        {"Send Message", function() openMessageDialog(player) end, "icon16/email.png"},
+        {"Trade Items", function() openTradeDialog(player) end, "icon16/arrow_switch.png"},
+        {"View Profile", function() openProfile(player) end, "icon16/vcard.png"},
+        {"Add Friend", function() addFriend(player) end, "icon16/user_add.png"}
+    })
+end
+
+-- Button dialog for item actions
+local function showItemActionDialog(item)
+    lia.derma.requestButtons("Item Actions", {
+        {"Use Item", function() useItem(item) end, "icon16/accept.png"},
+        {"Drop Item", function() dropItem(item) end, "icon16/cross.png"},
+        {"Give to Player", function() giveItemToPlayer(item) end, "icon16/user_go.png"}
+    })
+end
+
+-- Dynamic buttons based on conditions
+local function showConditionalButtons()
+    local buttons = {}
+
+    if canEdit then
+        table.insert(buttons, {"Edit", function() editMode() end, "icon16/pencil.png"})
+    end
+
+    if canDelete then
+        table.insert(buttons, {"Delete", function() deleteItem() end, "icon16/delete.png"})
+    end
+
+    table.insert(buttons, {"Cancel", function() closeMenu() end, "icon16/cancel.png"})
+
+    lia.derma.requestButtons("Actions", buttons)
+end
+
+-- Button dialog for admin functions
+lia.derma.requestButtons("Admin Tools", {
+    {"Kick Player", function() openKickDialog() end, "icon16/user_delete.png"},
+    {"Ban Player", function() openBanDialog() end, "icon16/shield.png"},
+    {"Mute Player", function() openMuteDialog() end, "icon16/sound_mute.png"},
+    {"Teleport", function() openTeleportDialog() end, "icon16/arrow_right.png"}
+})
+
+-- Button dialog for game settings
+lia.derma.requestButtons("Graphics Settings", {
+    {"Low Quality", function() setGraphicsQuality("low") end},
+    {"Medium Quality", function() setGraphicsQuality("medium") end},
+    {"High Quality", function() setGraphicsQuality("high") end},
+    {"Ultra Quality", function() setGraphicsQuality("ultra") end}
+}, function(index, text)
+    print("Selected quality: " .. text)
+end, "Choose your graphics quality setting")
+```
+
+---
+
+### requestDropdown
+
+**Purpose**
+
+Creates a modal dialog with a dropdown selection for choosing from a list of options, providing a compact way to present multiple choices.
+
+**Parameters**
+
+* `title` (*string*): The title of the dialog.
+* `options` (*table*): An array of options where each option can be:
+  - A string (option text)
+  - A table with [displayText, value] structure for display text different from the actual value.
+* `callback` (*function*): The function to call with the selected option text and value.
+* `defaultValue` (*string* or *table*, optional): The default selected value or [displayText, value] pair.
+
+**Returns**
+
+* `frame` (*liaFrame*): The created dialog frame.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic dropdown selection
+lia.derma.requestDropdown("Select Color", {
+    "Red",
+    "Green",
+    "Blue",
+    "Yellow"
+}, function(selectedText, selectedValue)
+    print("Selected: " .. selectedText)
+    setThemeColor(selectedText)
+end)
+
+-- Dropdown with different display text and values
+lia.derma.requestDropdown("Choose Resolution", {
+    {"1920x1080 (Full HD)", "1920x1080"},
+    {"2560x1440 (2K)", "2560x1440"},
+    {"3840x2160 (4K)", "3840x2160"}
+}, function(displayText, value)
+    print("Selected resolution: " .. value)
+    setGameResolution(value)
+end)
+
+-- Dropdown with default value
+lia.derma.requestDropdown("Select Quality", {
+    "Low",
+    "Medium",
+    "High",
+    "Ultra"
+}, function(quality)
+    setGraphicsQuality(quality)
+end, "Medium")
+
+-- Dropdown for item selection
+lia.derma.requestDropdown("Choose Item", {
+    {"Health Potion", "health_potion"},
+    {"Mana Potion", "mana_potion"},
+    {"Stamina Potion", "stamina_potion"}
+}, function(displayName, itemID)
+    if itemID then
+        useItem(itemID)
+    end
+end)
+
+-- Dropdown for player selection
+local players = {}
+for _, ply in ipairs(player.GetAll()) do
+    if ply ~= LocalPlayer() then
+        table.insert(players, {ply:Name(), ply})
+    end
+end
+
+lia.derma.requestDropdown("Select Player", players, function(playerName, player)
+    if player and IsValid(player) then
+        openTradeDialog(player)
+    end
+end)
+
+-- Dropdown for time zone selection
+lia.derma.requestDropdown("Select Timezone", {
+    {"UTC-8 (Pacific)", "UTC-8"},
+    {"UTC-5 (Eastern)", "UTC-5"},
+    {"UTC+0 (GMT)", "UTC+0"},
+    {"UTC+1 (Central European)", "UTC+1"},
+    {"UTC+8 (China)", "UTC+8"}
+}, function(displayName, timezone)
+    setPlayerTimezone(timezone)
+end, {"UTC+0 (GMT)", "UTC+0"})
+
+-- Dropdown for weapon selection
+local weapons = {
+    {"AK-47", "weapon_ak47"},
+    {"M4A1", "weapon_m4a1"},
+    {"AWP", "weapon_awp"},
+    {"Desert Eagle", "weapon_deagle"}
+}
+
+lia.derma.requestDropdown("Choose Weapon", weapons, function(weaponName, weaponClass)
+    if weaponClass then
+        givePlayerWeapon(weaponClass)
+    end
+end)
+```
+
+---
+
+### requestOptions
+
+**Purpose**
+
+Creates a modal dialog with multiple checkbox options for user selection, allowing users to choose multiple items from a list.
+
+**Parameters**
+
+* `title` (*string*): The title of the dialog.
+* `options` (*table*): An array of options where each option can be:
+  - A string (option text)
+  - A table with [displayText, value] structure for display text different from the actual value.
+* `callback` (*function*): The function to call with an array of selected options.
+* `defaults` (*table*, optional): An array of default selected values.
+
+**Returns**
+
+* `frame` (*liaFrame*): The created dialog frame.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic multiple selection
+lia.derma.requestOptions("Select Colors", {
+    "Red",
+    "Green",
+    "Blue",
+    "Yellow"
+}, function(selectedOptions)
+    print("Selected colors:", table.concat(selectedOptions, ", "))
+    for _, color in ipairs(selectedOptions) do
+        enableColorFilter(color)
+    end
+end)
+
+-- Options with different display text and values
+lia.derma.requestOptions("Choose Permissions", {
+    {"View Reports", "reports.view"},
+    {"Edit Reports", "reports.edit"},
+    {"Delete Reports", "reports.delete"},
+    {"Manage Users", "users.manage"}
+}, function(selectedPermissions)
+    for _, permission in ipairs(selectedPermissions) do
+        grantUserPermission(permission)
+    end
+end)
+
+-- Options with default selections
+lia.derma.requestOptions("Select Features", {
+    "Auto-save",
+    "Notifications",
+    "Sound Effects",
+    "Music",
+    "Tooltips"
+}, function(selectedFeatures)
+    for _, feature in ipairs(selectedFeatures) do
+        enableFeature(feature)
+    end
+end, {"Auto-save", "Notifications"})
+
+-- Use for item selection
+lia.derma.requestOptions("Choose Items to Buy", {
+    {"Health Potion", "health_potion"},
+    {"Mana Potion", "mana_potion"},
+    {"Sword", "weapon_sword"},
+    {"Shield", "armor_shield"}
+}, function(selectedItems)
+    for _, itemID in ipairs(selectedItems) do
+        purchaseItem(itemID)
+    end
+end)
+
+-- Options for poll creation
+lia.derma.requestOptions("Select Poll Options", {
+    "Option A",
+    "Option B",
+    "Option C",
+    "Option D"
+}, function(selectedOptions)
+    if #selectedOptions >= 2 then
+        createPoll(selectedOptions)
+    else
+        print("Please select at least 2 options")
+    end
+end)
+
+-- Options for tag selection
+lia.derma.requestOptions("Select Tags", {
+    {"Action", "action"},
+    {"Adventure", "adventure"},
+    {"RPG", "rpg"},
+    {"Strategy", "strategy"},
+    {"Puzzle", "puzzle"}
+}, function(selectedTags)
+    for _, tag in ipairs(selectedTags) do
+        addGameTag(tag)
+    end
+end, {"action", "adventure"})
+```
+
+---
+
+### drawText
+
+**Purpose**
+
+Draws text with advanced formatting options including shadow effects, custom fonts, and alignment, providing enhanced text rendering capabilities.
+
+**Parameters**
+
+* `text` (*string*): The text to draw.
+* `x` (*number*): The x position to draw the text.
+* `y` (*number*): The y position to draw the text.
+* `color` (*Color*, optional): The color of the text (default: white).
+* `alignX` (*number*, optional): The horizontal alignment (TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT).
+* `alignY` (*number*, optional): The vertical alignment (TEXT_ALIGN_TOP, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM).
+* `font` (*string*, optional): The font to use for drawing (default: "liaGenericFont").
+* `alpha` (*number*, optional): The alpha transparency override for the text shadow.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic text drawing
+lia.derma.drawText("Hello World", 100, 100, Color(255, 255, 255))
+
+-- Text with custom color and alignment
+lia.derma.drawText("Centered Text", ScrW() / 2, ScrH() / 2, Color(255, 100, 100), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+-- Text with custom font
+lia.derma.drawText("Custom Font Text", 100, 200, Color(100, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, "liaLargeFont")
+
+-- Right-aligned text
+lia.derma.drawText("Right Aligned", ScrW() - 50, 50, Color(255, 255, 100), TEXT_ALIGN_RIGHT)
+
+-- Text for HUD elements
+local function drawPlayerHUD()
+    local health = LocalPlayer():Health()
+    local maxHealth = LocalPlayer():GetMaxHealth()
+
+    lia.derma.drawText("Health: " .. health .. "/" .. maxHealth, 100, ScrH() - 100,
+                       health > 50 and Color(100, 255, 100) or Color(255, 100, 100),
+                       TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, "liaMediumFont")
+end
+
+hook.Add("HUDPaint", "DrawPlayerHUD", drawPlayerHUD)
+
+-- Text with custom shadow alpha
+lia.derma.drawText("Custom Shadow", 100, 300, Color(150, 150, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, "liaMediumFont", 128)
+
+-- Use in UI elements
+local function drawTextButton(x, y, w, h, text)
+    lia.derma.draw(8, x, y, w, h, Color(100, 150, 255))
+    lia.derma.drawText(text, x + w/2, y + h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+drawTextButton(100, 100, 200, 50, "Click Me!")
+
+-- Text for game titles
+lia.derma.drawText("MY GAME TITLE", ScrW() / 2, 100, Color(255, 255, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, "liaLargeFont")
+
+-- Text for status messages
+lia.derma.drawText("Ready to Play", ScrW() / 2, ScrH() - 50, Color(100, 255, 100), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, "liaMediumFont")
+
+-- Text with different vertical alignments
+lia.derma.drawText("Top Aligned", 200, 200, Color(255, 150, 150), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+lia.derma.drawText("Center Aligned", 200, 250, Color(150, 255, 150), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+lia.derma.drawText("Bottom Aligned", 200, 300, Color(150, 150, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+
+-- Text for inventory display
+local function drawInventoryText()
+    local itemCount = #LocalPlayer():getChar():getInv():getItems()
+
+    lia.derma.drawText("Items: " .. itemCount, 50, 50, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, "liaSmallFont")
+end
+
+hook.Add("HUDPaint", "DrawInventoryText", drawInventoryText)
+```
+
+---
+
+### skinFunc
+
+**Purpose**
+
+Calls a skin function with automatic fallback to the default skin if the function is not available in the current skin, providing safe skin function calling.
+
+**Parameters**
+
+* `name` (*string*): The name of the skin function to call.
+* `panel` (*Panel*): The panel to pass to the skin function.
+* `a` (*any*, optional): First argument to pass to the skin function.
+* `b` (*any*, optional): Second argument to pass to the skin function.
+* `c` (*any*, optional): Third argument to pass to the skin function.
+* `d` (*any*, optional): Fourth argument to pass to the skin function.
+* `e` (*any*, optional): Fifth argument to pass to the skin function.
+* `f` (*any*, optional): Sixth argument to pass to the skin function.
+* `g` (*any*, optional): Seventh argument to pass to the skin function.
+
+**Returns**
+
+* `result` (*any*): The result of the skin function call, or nil if not found.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic skin function call
+local skin = lia.derma.skinFunc("Paint", somePanel)
+
+-- Safe skin function calling with fallback
+local function safePaintFunction(panel, w, h)
+    return lia.derma.skinFunc("Paint", panel, w, h)
+end
+
+-- Use in custom panel painting
+local customPanel = vgui.Create("DPanel")
+customPanel.Paint = function(self, w, h)
+    -- Try to call the skin's Paint function, fallback to default if not available
+    lia.derma.skinFunc("Paint", self, w, h)
+
+    -- Add custom drawing
+    draw.RoundedBox(4, 0, 0, w, h, Color(100, 100, 100, 100))
+end
+
+-- Skin function for button painting
+local customButton = vgui.Create("DButton")
+customButton.Paint = function(self, w, h)
+    -- Use skin function for base button painting
+    lia.derma.skinFunc("Paint", self, w, h)
+
+    -- Add custom hover effect
+    if self:IsHovered() then
+        draw.RoundedBox(4, 0, 0, w, h, Color(150, 150, 255, 50))
+    end
+end
+
+-- Skin function for frame painting
+local customFrame = vgui.Create("DFrame")
+customFrame.Paint = function(self, w, h)
+    -- Call skin's frame painting function
+    lia.derma.skinFunc("Paint", self, w, h)
+
+    -- Add custom title bar styling
+    if self.lblTitle then
+        self.lblTitle:SetColor(Color(255, 255, 0))
+    end
+end
+
+-- Use in theme switching
+local function switchToCustomSkin()
+    -- This function would typically change the active skin
+    -- The skinFunc ensures compatibility with different skins
+
+    local testPanel = vgui.Create("DPanel")
+    testPanel.Paint = function(self, w, h)
+        lia.derma.skinFunc("Paint", self, w, h)
+    end
+end
+
+-- Skin function for scrollbar painting
+local customScrollbar = vgui.Create("DVScrollBar")
+customScrollbar.Paint = function(self, w, h)
+    lia.derma.skinFunc("Paint", self, w, h)
+end
+
+-- Safe skin function calling in hooks
+hook.Add("OnSkinChanged", "UpdateSkinFunctions", function()
+    -- Reinitialize panels that use skin functions
+    -- The skinFunc will automatically use the new skin
+    print("Skin changed, skinFunc will use new skin automatically")
+end)
+```
+
+---
+
+### requestArguments
+
+**Purpose**
+
+Creates a comprehensive form dialog for requesting multiple arguments from the user with different input types (string, boolean, table/dropdown), providing a flexible way to collect complex user input.
+
+**Parameters**
+
+* `title` (*string*): The title of the form dialog.
+* `argTypes` (*table*): A table defining the argument types where keys are argument names and values can be:
+  - A string specifying the type ("string", "boolean", "table", "int", "number")
+  - A table with [type, options] for dropdown types where options is an array of choices
+  - A table with [type, options, defaultValue] for types with default values
+* `onSubmit` (*function*): The function to call when the form is submitted. Receives (success, results) where results is a table of argument values.
+* `defaults` (*table*, optional): A table of default values for arguments.
+
+**Returns**
+
+* `frame` (*liaFrame*): The created form dialog frame.
+
+**Realm**
+
+Client.
+
+**Example Usage**
+
+```lua
+-- Basic form with different input types
+lia.derma.requestArguments("Player Settings", {
+    name = "string",
+    admin = "boolean",
+    team = {"table", {"Red Team", "Blue Team", "Green Team"}},
+    level = {"int", nil, 10}
+}, function(success, results)
+    if success then
+        print("Player name:", results.name)
+        print("Is admin:", results.admin)
+        print("Team:", results.team)
+        print("Level:", results.level)
+    end
+end)
+
+-- Form with default values
+lia.derma.requestArguments("Character Creation", {
+    name = {"string", nil, "Default Name"},
+    class = {"table", {"Warrior", "Mage", "Rogue", "Priest"}},
+    strength = {"int", nil, 10},
+    intelligence = {"int", nil, 8},
+    dexterity = {"int", nil, 12}
+}, function(success, results)
+    if success then
+        createCharacter(results)
+    end
+end, {
+    strength = 15,
+    intelligence = 10
+})
+
+-- Complex form for item creation
+lia.derma.requestArguments("Create Item", {
+    name = {"string", nil, "New Item"},
+    type = {"table", {
+        {"Weapon", "weapon"},
+        {"Armor", "armor"},
+        {"Consumable", "consumable"},
+        {"Quest Item", "quest"}
+    }},
+    rarity = {"table", {"Common", "Uncommon", "Rare", "Epic", "Legendary"}},
+    description = "string",
+    value = "int",
+    weight = "number"
+}, function(success, results)
+    if success then
+        createGameItem(results)
+    end
+end)
+
+-- Form for server configuration
+lia.derma.requestArguments("Server Settings", {
+    serverName = {"string", nil, "My Server"},
+    maxPlayers = {"int", nil, 32},
+    password = "string",
+    pvp = "boolean",
+    difficulty = {"table", {"Easy", "Normal", "Hard", "Expert"}},
+    autoSave = "boolean"
+}, function(success, results)
+    if success then
+        applyServerSettings(results)
+    end
+end)
+
+-- Form with validation
+lia.derma.requestArguments("User Registration", {
+    username = {"string", nil, ""},
+    email = "string",
+    password = "string",
+    confirmPassword = "string",
+    age = {"int", nil, 18},
+    agreeToTerms = "boolean"
+}, function(success, results)
+    if success then
+        if results.password == results.confirmPassword then
+            if results.age >= 13 then
+                if results.agreeToTerms then
+                    registerUser(results)
+                else
+                    print("Must agree to terms")
+                end
+            else
+                print("Must be at least 13 years old")
+            end
+        else
+            print("Passwords do not match")
+        end
+    end
+end)
+
+-- Dynamic form based on conditions
+local function createDynamicForm()
+    local argTypes = {
+        title = "string"
+    }
+
+    if needsDescription then
+        argTypes.description = "string"
+    end
+
+    if hasOptions then
+        argTypes.category = {"table", {"Category A", "Category B", "Category C"}}
+    end
+
+    lia.derma.requestArguments("Dynamic Form", argTypes, function(success, results)
+        if success then
+            processFormData(results)
+        end
+    end)
+end
 ```
 
 ---
