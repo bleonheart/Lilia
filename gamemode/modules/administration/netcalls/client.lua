@@ -279,8 +279,8 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/page_copy.png")
 
                     menu:AddOption(L("copyName"), function()
-                        local name = rowData.name or ""
-                        SetClipboardText(name)
+                        local charName = rowData.name or ""
+                        SetClipboardText(charName)
                     end):SetIcon("icon16/page_copy.png")
 
                     if steamID and steamID ~= "" then
