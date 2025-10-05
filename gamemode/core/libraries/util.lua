@@ -309,11 +309,9 @@ else
     lia.util.drawText = lia.derma.drawText
     lia.util.drawTexture = lia.derma.drawSurfaceTexture
     lia.util.skinFunc = lia.derma.skinFunc
-
     lia.util.approachExp = lia.derma.approachExp
     lia.util.easeOutCubic = lia.derma.easeOutCubic
     lia.util.easeInOutCubic = lia.derma.easeInOutCubic
-
     function lia.util.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)
         local scaleFactor = 0.8
         if not IsValid(panel) then return end
@@ -466,214 +464,7 @@ else
         end
     end
 
-    function lia.util.requestArguments(title, argTypes, onSubmit, defaults)
-        defaults = defaults or {}
-        local count = table.Count(argTypes)
-        local frameW, frameH = 600, 200 + count * 75
-        local frame = vgui.Create("DFrame")
-        frame:SetTitle("")
-        frame:SetSize(frameW, frameH)
-        frame:Center()
-        frame:MakePopup()
-        frame:ShowCloseButton(false)
-        frame.Paint = function(self, w, h)
-            derma.SkinHook("Paint", "Frame", self, w, h)
-            draw.SimpleText(title or "", "liaMediumFont", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
-        end
-
-        local scroll = vgui.Create("liaScrollPanel", frame)
-        scroll:Dock(FILL)
-        scroll:DockMargin(10, 40, 10, 10)
-        surface.SetFont("liaSmallFont")
-        local controls, watchers = {}, {}
-        local validate
-        local ordered = {}
-        local grouped = {
-            strings = {},
-            dropdowns = {},
-            bools = {},
-            rest = {}
-        }
-
-        for name, typeInfo in pairs(argTypes) do
-            local fieldType, dataTbl, defaultVal = typeInfo, nil, nil
-            if istable(typeInfo) then
-                fieldType, dataTbl = typeInfo[1], typeInfo[2]
-                if typeInfo[3] ~= nil then defaultVal = typeInfo[3] end
-            end
-
-            fieldType = string.lower(tostring(fieldType))
-            if defaultVal == nil and defaults[name] ~= nil then defaultVal = defaults[name] end
-            local info = {
-                name = name,
-                fieldType = fieldType,
-                dataTbl = dataTbl,
-                defaultVal = defaultVal
-            }
-
-            if fieldType == "string" then
-                table.insert(grouped.strings, info)
-            elseif fieldType == "table" then
-                table.insert(grouped.dropdowns, info)
-            elseif fieldType == "boolean" then
-                table.insert(grouped.bools, info)
-            else
-                table.insert(grouped.rest, info)
-            end
-        end
-
-        for _, group in ipairs({grouped.strings, grouped.dropdowns, grouped.bools, grouped.rest}) do
-            for _, v in ipairs(group) do
-                table.insert(ordered, v)
-            end
-        end
-
-        for _, info in ipairs(ordered) do
-            local name, fieldType, dataTbl, defaultVal = info.name, info.fieldType, info.dataTbl, info.defaultVal
-            local panel = vgui.Create("DPanel", scroll)
-            panel:Dock(TOP)
-            panel:DockMargin(0, 0, 0, 5)
-            panel:SetTall(70)
-            panel.Paint = nil
-            local label = vgui.Create("DLabel", panel)
-            label:SetFont("liaSmallFont")
-            label:SetText(name)
-            label:SizeToContents()
-            local textW = select(1, surface.GetTextSize(name))
-            local ctrl
-            local isBool = fieldType == "boolean"
-            if isBool then
-                ctrl = vgui.Create("liaCheckbox", panel)
-                if defaultVal ~= nil then ctrl:SetChecked(tobool(defaultVal)) end
-            elseif fieldType == "table" then
-                ctrl = vgui.Create("DComboBox", panel)
-                local defaultChoiceIndex
-                if istable(dataTbl) then
-                    for idx, v in ipairs(dataTbl) do
-                        if istable(v) then
-                            ctrl:AddChoice(v[1], v[2])
-                            if defaultVal ~= nil and (v[2] == defaultVal or v[1] == defaultVal) then defaultChoiceIndex = idx end
-                        else
-                            ctrl:AddChoice(tostring(v))
-                            if defaultVal ~= nil and v == defaultVal then defaultChoiceIndex = idx end
-                        end
-                    end
-                end
-
-                if defaultChoiceIndex then ctrl:ChooseOptionID(defaultChoiceIndex) end
-            elseif fieldType == "int" or fieldType == "number" then
-                ctrl = vgui.Create("DTextEntry", panel)
-                ctrl:SetFont("liaSmallFont")
-                if ctrl.SetNumeric then ctrl:SetNumeric(true) end
-                if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
-            else
-                ctrl = vgui.Create("DTextEntry", panel)
-                ctrl:SetFont("liaSmallFont")
-                if defaultVal ~= nil then ctrl:SetValue(tostring(defaultVal)) end
-            end
-
-            panel.PerformLayout = function(_, w, h)
-                local ctrlH, ctrlW
-                if isBool then
-                    ctrlH, ctrlW = 22, 22
-                else
-                    ctrlH, ctrlW = 30, w * 0.7
-                end
-
-                local totalW = textW + 10 + ctrlW
-                local xOff = (w - totalW) / 2
-                label:SetPos(xOff, (h - label:GetTall()) / 2)
-                ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2)
-                ctrl:SetSize(ctrlW, ctrlH)
-            end
-
-            controls[name] = {
-                ctrl = ctrl,
-                type = fieldType
-            }
-
-            watchers[#watchers + 1] = function()
-                local function trigger()
-                    validate()
-                end
-
-                ctrl.OnValueChange, ctrl.OnTextChanged, ctrl.OnChange, ctrl.OnSelect = trigger, trigger, trigger, trigger
-            end
-        end
-
-        local btnPanel = vgui.Create("DPanel", frame)
-        btnPanel:Dock(BOTTOM)
-        btnPanel:SetTall(90)
-        btnPanel:DockPadding(15, 15, 15, 15)
-        btnPanel.Paint = nil
-        local submit = vgui.Create("DButton", btnPanel)
-        submit:Dock(LEFT)
-        submit:DockMargin(0, 0, 15, 0)
-        submit:SetWide(270)
-        submit:SetText(L("submit"))
-        submit:SetFont("liaSmallFont")
-        submit:SetIcon("icon16/tick.png")
-        submit:SetEnabled(false)
-        local cancel = vgui.Create("DButton", btnPanel)
-        cancel:Dock(RIGHT)
-        cancel:SetWide(270)
-        cancel:SetText(L("cancel"))
-        cancel:SetFont("liaSmallFont")
-        cancel:SetIcon("icon16/cross.png")
-        cancel.DoClick = function()
-            if isfunction(onSubmit) then onSubmit(false) end
-            frame:Remove()
-        end
-
-        validate = function()
-            for _, data in pairs(controls) do
-                local ctl, ftype, ok = data.ctrl, data.type, true
-                if ftype == "boolean" then
-                    ok = true
-                elseif ctl.GetSelected then
-                    local txt = select(1, ctl:GetSelected())
-                    ok = txt and txt ~= ""
-                elseif ctl.GetValue then
-                    local val = ctl:GetValue()
-                    ok = val and val ~= ""
-                end
-
-                if not ok then
-                    submit:SetEnabled(false)
-                    return
-                end
-            end
-
-            submit:SetEnabled(true)
-        end
-
-        for _, fn in ipairs(watchers) do
-            fn()
-        end
-
-        validate()
-        submit.DoClick = function()
-            local result = {}
-            for k, data in pairs(controls) do
-                local ctl, ftype = data.ctrl, data.type
-                if ftype == "boolean" then
-                    result[k] = ctl:GetChecked()
-                elseif ctl.GetSelected then
-                    local txt, val = ctl:GetSelected()
-                    result[k] = val or txt
-                else
-                    local val = ctl:GetValue()
-                    result[k] = (ftype == "int" or ftype == "number") and tonumber(val) or val
-                end
-            end
-
-            if isfunction(onSubmit) then onSubmit(true, result) end
-            frame:Remove()
-        end
-
-        frame.OnClose = function() if isfunction(onSubmit) then onSubmit(false) end end
-    end
-
+    lia.util.requestArguments = lia.derma.requestArguments
     function lia.util.CreateTableUI(title, columns, data, options, charID)
         local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
         local frame = vgui.Create("DFrame")
@@ -688,13 +479,11 @@ else
 
         local sheet = frame:Add("liaTabs")
         sheet:Dock(FILL)
-
         -- Create a panel for the table content
         local tablePanel = vgui.Create("DPanel")
         tablePanel:Dock(FILL)
         tablePanel:DockPadding(10, 10, 10, 10)
         tablePanel.Paint = function() end
-
         local listView = tablePanel:Add("liaDListView")
         listView:Dock(FILL)
         listView:Clear()
@@ -720,7 +509,6 @@ else
         end
 
         sheet:AddSheet(L("table"), tablePanel)
-
         listView.OnRowRightClick = function(_, _, line)
             if not IsValid(line) or not line.rowData then return end
             local rowData = line.rowData

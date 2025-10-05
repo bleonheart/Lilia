@@ -32,7 +32,11 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     local entry = parent:Add("DPanel")
     entry:Dock(TOP)
     entry:DockMargin(0, 0, 0, marginBot or 0)
-    entry:SetTall(25)
+    entry:SetTall(35)
+    entry.Paint = function(s, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
+
     local lbl = entry:Add("DLabel")
     lbl:Dock(LEFT)
     lbl:SetFont("liaSmallFont")
@@ -40,26 +44,25 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     lbl:SizeToContents()
     local lw, _ = lbl:GetSize()
     lbl:SetWide(lw + 20)
-    lbl:DockMargin(0, 0, 10, 0)
+    lbl:DockMargin(8, 0, 10, 0)
     lbl:SetContentAlignment(5)
-    lbl:SetTextColor(color_white)
-    local txt = entry:Add("DTextEntry")
+    lbl:SetTextColor(lia.color.theme.text)
+
+    local txt = entry:Add("liaEntry")
     txt:Dock(FILL)
+    txt:DockMargin(0, 4, 8, 4)
     txt:SetFont("liaSmallFont")
-    txt:SetTall(20)
-    txt:SetTextColor(color_white)
+    txt:SetTall(27)
     local isDesc = (name or ""):lower() == "desc"
-    txt:SetEditable(isDesc)
+    txt.textEntry:SetEditable(isDesc)
+
     if isfunction(valueFunc) then
         local v = valueFunc()
-        if isstring(v) then txt:SetText(v) end
+        if isstring(v) then txt:SetValue(v) end
     end
 
-    txt.OnLoseFocus = function(selfEntry)
-        if isDesc then
-            local t = selfEntry:GetValue()
-            if isstring(t) then lia.command.send("chardesc", t) end
-        end
+    txt.action = function(value)
+        if isDesc and isstring(value) then lia.command.send("chardesc", value) end
     end
 
     self[name] = txt
@@ -69,30 +72,41 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     local entry = parent:Add("DPanel")
     entry:Dock(TOP)
     entry:DockMargin(0, margin or 0, 0, margin or 0)
-    entry:SetTall(30)
+    entry:SetTall(40)
+    entry.Paint = function(s, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
+
     local lbl = entry:Add("DLabel")
     lbl:Dock(LEFT)
     lbl:SetFont("liaSmallFont")
     lbl:SetText(labelText or "")
     lbl:SizeToContents()
     lbl:SetWide(lbl:GetWide() + 20)
-    lbl:DockMargin(0, 0, 10, 0)
+    lbl:DockMargin(8, 0, 10, 0)
     lbl:SetContentAlignment(5)
-    lbl:SetTextColor(color_white)
-    local bar = entry:Add("DProgressBar")
+    lbl:SetTextColor(lia.color.theme.text)
+
+    local bar = entry:Add("DPanel")
     bar:Dock(FILL)
-    bar:SetBarColor(Color(45, 45, 45, 255))
-    local function updateBar()
+    bar:DockMargin(0, 6, 8, 6)
+    bar.Paint = function(s, w, h)
         local mn = isfunction(minFunc) and minFunc() or tonumber(minFunc) or 0
         local mx = isfunction(maxFunc) and maxFunc() or tonumber(maxFunc) or 1
         local val = isfunction(valueFunc) and valueFunc() or tonumber(valueFunc) or 0
         local frac = mx > mn and math.Clamp((val - mn) / (mx - mn), 0, 1) or 0
-        bar:SetFraction(frac)
-        bar:SetText(L("barProgress", math.Round(val), math.Round(mx)))
-    end
 
-    function bar:Think()
-        updateBar()
+        -- Background
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.focus_panel):Shape(lia.derma.SHAPE_IOS):Draw()
+
+        -- Progress bar
+        if frac > 0 then
+            lia.derma.rect(0, 0, w * frac, h):Rad(6):Color(lia.color.theme.theme):Shape(lia.derma.SHAPE_IOS):Draw()
+        end
+
+        -- Text
+        local text = L("barProgress", math.Round(val), math.Round(mx))
+        draw.SimpleText(text, "liaSmallFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     parent[name] = bar
@@ -133,25 +147,47 @@ function PANEL:GenerateSections()
 end
 
 function PANEL:CreateSection(parent, title)
-    local cat = parent:Add("DCollapsibleCategory")
-    cat:Dock(TOP)
-    cat:DockMargin(0, 10, 0, 10)
-    cat:SetLabel("")
-    cat:SetExpanded(true)
-    if IsValid(cat.Header) then
-        cat.Header:SetTall(30)
-        cat.Header.Paint = function(p, w, h)
-            derma.SkinHook("Paint", "Panel", p, w, h)
-            draw.SimpleText(L(title), "liaSmallFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        end
-    end
-    cat.Paint = function() end
+    local frame = parent:Add("DPanel")
+    frame:Dock(TOP)
+    frame:DockMargin(0, 10, 0, 10)
+    frame:SetTall(200) -- Will be auto-sized
+    frame.Paint = function(s, w, h)
+        -- Draw Lilia-styled section background
+        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
 
-    local contents = vgui.Create("DPanel", cat)
+        -- Draw section title (centered)
+        draw.SimpleText(L(title), "liaSmallFont", w / 2, 8, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+        -- Draw subtle line under title
+        surface.SetDrawColor(lia.color.theme.theme.r, lia.color.theme.theme.g, lia.color.theme.theme.b, 100)
+        surface.DrawLine(12, 28, w - 12, 28)
+    end
+
+    local contents = vgui.Create("DPanel", frame)
     contents:Dock(FILL)
-    contents:DockPadding(8, 10, 8, 10)
+    contents:DockPadding(8, 35, 8, 10) -- Extra top padding for title
     contents.Paint = function() end
-    cat:SetContents(contents)
+
+    -- Auto-size the frame based on content
+    contents.PerformLayout = function(s, w, h)
+        local contentHeight = 35 -- Start with title height
+        for _, child in ipairs(s:GetChildren()) do
+            if IsValid(child) then
+                contentHeight = contentHeight + child:GetTall()
+                -- Add margin if child has one - check if it's a DPanel with margins
+                if child.GetDockMargin then
+                    local _, top = child:GetDockMargin()
+                    if top then
+                        contentHeight = contentHeight + top
+                    end
+                end
+            end
+        end
+        -- Add bottom padding
+        contentHeight = contentHeight + 10
+        frame:SetTall(math.max(60, contentHeight))
+    end
+
     return contents
 end
 
@@ -166,7 +202,9 @@ function PANEL:setup()
         local fields = isfunction(data.fields) and data.fields() or data.fields
         for _, f in ipairs(fields) do
             local ctrl = self[f.name]
-            if ctrl and f.type == "text" and f.name:lower() ~= "desc" then ctrl:SetText(f.value()) end
+            if ctrl and f.type == "text" and f.name:lower() ~= "desc" then
+                ctrl:SetValue(f.value())
+            end
         end
     end
 end

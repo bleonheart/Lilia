@@ -10,17 +10,62 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 
-# Add the parent directory to the path so we can import function_comparison_report
-sys.path.append(str(Path(__file__).parent.parent.parent.parent))
+# Define the functions locally to avoid circular import
+def should_check_function(func_name):
+    """
+    Determine if a function should be checked for documentation.
+    
+    Args:
+        func_name (str): The name of the function to check
+        
+    Returns:
+        bool: True if the function should be checked, False otherwise
+    """
+    # Functions that should NOT be checked during documentation analysis
+    FUNCTIONS_NOT_TO_CHECK = {
+        # Derma/UI related functions that are internal callbacks
+        "lia.derma.menuPlayerSelector.btn_close.DoClick",
+        # Add other functions here as needed
+    }
+    
+    # Functions that should be checked (explicit allowlist)
+    FUNCTIONS_TO_CHECK = {
+        # Core framework functions that need documentation
+        "lia.util.*",
+        "lia.config.*",
+        "lia.database.*",
+        # Add other patterns here as needed
+    }
+    
+    # First check if it's explicitly in the "not to check" list
+    if func_name in FUNCTIONS_NOT_TO_CHECK:
+        return False
+    
+    # Then check if it matches any pattern in the "to check" list
+    for pattern in FUNCTIONS_TO_CHECK:
+        if func_name.startswith(pattern.replace("*", "")):
+            return True
+    
+    # Default behavior: check the function
+    return True
 
-try:
-    from function_comparison_report import should_check_function, get_exclusion_reason
-except ImportError:
-    # Fallback if import fails
-    def should_check_function(func_name):
-        return True
-    def get_exclusion_reason(func_name):
-        return None
+def get_exclusion_reason(func_name):
+    """
+    Get the reason why a function is excluded from checking.
+    
+    Args:
+        func_name (str): The name of the function
+        
+    Returns:
+        str: Reason for exclusion, or None if not excluded
+    """
+    FUNCTIONS_NOT_TO_CHECK = {
+        "lia.derma.menuPlayerSelector.btn_close.DoClick",
+    }
+    
+    if func_name in FUNCTIONS_NOT_TO_CHECK:
+        return "Explicitly excluded from documentation checking"
+    return None
 
 
 @dataclass

@@ -173,7 +173,6 @@ function MODULE:CreateMenuButtons(tabs)
             contentPanel:Dock(TOP)
             contentPanel:SetVisible(i == 1)
             contentPanel.Paint = function() end
-
             -- Override PerformLayout to set proper height after parent layout is complete
             contentPanel.PerformLayout = function(s, w, h)
                 if IsValid(frame) and IsValid(tabContainer) then
@@ -304,7 +303,6 @@ function MODULE:CreateMenuButtons(tabs)
             contentPanel:Dock(TOP)
             contentPanel:SetVisible(i == 1)
             contentPanel.Paint = function() end
-
             -- Override PerformLayout to set proper height after parent layout is complete
             contentPanel.PerformLayout = function(s, w, h)
                 if IsValid(frame) and IsValid(tabContainer) then
@@ -389,7 +387,6 @@ function MODULE:CreateMenuButtons(tabs)
                     -- Store original staff data and filtered data
                     panel.originalStaffData = {}
                     panel.filteredStaffData = {}
-
                     -- Create search functionality
                     local function filterStaffData(searchText)
                         if not searchText or searchText == "" then
@@ -401,10 +398,7 @@ function MODULE:CreateMenuButtons(tabs)
                                 local nameMatch = staffInfo.name and staffInfo.name:lower():find(searchLower, 1, true)
                                 local usergroupMatch = staffInfo.usergroup and staffInfo.usergroup:lower():find(searchLower, 1, true)
                                 local characterMatch = staffInfo.characterName and staffInfo.characterName:lower():find(searchLower, 1, true)
-
-                                if nameMatch or usergroupMatch or characterMatch then
-                                    panel.filteredStaffData[#panel.filteredStaffData + 1] = staffInfo
-                                end
+                                if nameMatch or usergroupMatch or characterMatch then panel.filteredStaffData[#panel.filteredStaffData + 1] = staffInfo end
                             end
                         end
                         return panel.filteredStaffData
@@ -413,7 +407,6 @@ function MODULE:CreateMenuButtons(tabs)
                     -- Create staff table display using liaTable
                     local function createStaffTable(staffData)
                         panel:Clear()
-
                         -- Add search
                         local searchEntry = panel:Add("DTextEntry")
                         searchEntry:Dock(TOP)
@@ -422,9 +415,7 @@ function MODULE:CreateMenuButtons(tabs)
                         searchEntry:SetFont("liaSmallFont")
                         searchEntry:SetPlaceholderText(L("searchStaff") or "Search staff...")
                         searchEntry:SetTextColor(Color(200, 200, 200))
-                        searchEntry.PaintOver = function(s, w, h)
-                            lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw()
-                        end
+                        searchEntry.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
                         searchEntry.OnChange = function(textEntry)
                             local filteredData = filterStaffData(textEntry:GetValue())
                             updateStaffTable(filteredData)
@@ -440,7 +431,6 @@ function MODULE:CreateMenuButtons(tabs)
                         staffTable:AddColumn(L("tickets"), 80, TEXT_ALIGN_CENTER, true) -- Fixed width for tickets
                         staffTable:AddColumn(L("warnings"), 80, TEXT_ALIGN_CENTER, true) -- Fixed width for warnings
                         staffTable:AddColumn(L("staffOnDuty"), 100, TEXT_ALIGN_CENTER, true) -- Fixed width for duty status
-
                         -- Function to update table data
                         function updateStaffTable(dataToShow)
                             staffTable:Clear()
@@ -457,7 +447,6 @@ function MODULE:CreateMenuButtons(tabs)
 
                         -- Store the update function for external use
                         panel.updateStaffTable = updateStaffTable
-
                         -- Update table with provided data
                         updateStaffTable(staffData)
                     end
@@ -583,7 +572,6 @@ function MODULE:CreateMenuButtons(tabs)
                 contentPanel:Dock(TOP)
                 contentPanel:SetVisible(i == 1)
                 contentPanel.Paint = function() end
-
                 -- Override PerformLayout to set proper height after parent layout is complete
                 contentPanel.PerformLayout = function(s, w, h)
                     if IsValid(frame) and IsValid(tabContainer) then
@@ -637,11 +625,7 @@ function MODULE:CreateMenuButtons(tabs)
             end
 
             -- Initialize first tab after a short delay to ensure proper layout
-            if pages[1] and pages[1].drawFunc and IsValid(tabPanels[1]) then
-                timer.Simple(0.01, function()
-                    if IsValid(tabPanels[1]) then pages[1].drawFunc(tabPanels[1]) end
-                end)
-            end
+            if pages[1] and pages[1].drawFunc and IsValid(tabPanels[1]) then timer.Simple(0.01, function() if IsValid(tabPanels[1]) then pages[1].drawFunc(tabPanels[1]) end end) end
         end
     end
 
@@ -686,7 +670,7 @@ function MODULE:CreateMenuButtons(tabs)
                     applyButton:SetTall(35)
                     applyButton:CenterHorizontal()
                     applyButton:SetText(L("apply"))
-                    local scroll = page:Add("liaScrollPanel")
+                    local scroll = page:Add("DScrollPanel")
                     scroll:Dock(FILL)
                     local entries = {}
                     for key, value in pairs(themeData) do

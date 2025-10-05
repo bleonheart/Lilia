@@ -399,7 +399,7 @@ class FunctionComparisonReportGenerator:
         try:
             return self.function_comparator.compare_functions()
         except Exception as e:
-            print(f"⚠️  Error in function comparison: {e}")
+            print(f"Error in function comparison: {e}")
             return {}
 
     def _run_hooks_analysis(self) -> Tuple[List[str], List[str]]:
@@ -410,7 +410,7 @@ class FunctionComparisonReportGenerator:
             hooks_missing = [h for h in hooks_found if h not in hooks_documented]
             return sorted(hooks_missing), sorted(list(hooks_documented))
         except Exception as e:
-            print(f"⚠️  Error in hooks analysis: {e}")
+            print(f"Error in hooks analysis: {e}")
             return [], []
 
     def _read_all_documented_hooks(self) -> Set[str]:
@@ -454,7 +454,7 @@ class FunctionComparisonReportGenerator:
 
                     # Skip _disabled directories and modules inside _disabled
                     if module_name == "_disabled" or "_disabled" in str(module_dir):
-                        print(f"ℹ️  Skipping disabled module: {module_dir}")
+                        print(f"Skipping disabled module: {module_dir}")
                         continue
 
                     lang_file = module_dir / "languages" / f"{lang_name}.lua"
@@ -470,7 +470,7 @@ class FunctionComparisonReportGenerator:
 
             return framework_data, modules
         except Exception as e:
-            print(f"⚠️  Error in localization analysis: {e}")
+            print(f"Error in localization analysis: {e}")
             return {}, []
 
     def generate_markdown_report(self, data: CombinedReportData) -> str:
@@ -494,7 +494,7 @@ class FunctionComparisonReportGenerator:
         try:
             report_lines.extend(self._generate_modules_section(data.modules_scan))
         except Exception as e:
-            print(f"⚠️  Error generating modules section: {e}")
+            print(f"Error generating modules section: {e}")
 
         return "\n".join(report_lines)
 
@@ -565,7 +565,7 @@ class FunctionComparisonReportGenerator:
                 if not module_dir.is_dir():
                     continue
                 if module_name == "_disabled" or "_disabled" in str(module_dir):
-                    print(f"ℹ️  Skipping disabled module: {module_dir}")
+                    print(f"Skipping disabled module: {module_dir}")
                     continue
 
                 # Read module-level docs if present
@@ -673,7 +673,7 @@ class FunctionComparisonReportGenerator:
             lines.append("")
             lines.append(f"## Module: `{entry['module_path']}`")
             lines.append("")
-            lines.append("### :package: Module Documentation Report")
+            lines.append("### Module Documentation Report")
             lines.append("")
             if undoc_hooks:
                 lines.append("- **Undocumented Hooks:**")
@@ -691,7 +691,7 @@ class FunctionComparisonReportGenerator:
         if modules_scan:
             lines.append("---")
             lines.append("")
-            lines.append("# :clipboard: Module Documentation Summary")
+            lines.append("# Module Documentation Summary")
             lines.append("")
             lines.append("| Module Path | Undocumented Hooks | Undocumented lia.* Functions |")
             lines.append("|---|---:|---:|")
@@ -775,7 +775,7 @@ class FunctionComparisonReportGenerator:
 
                 # Skip _disabled directories and modules inside _disabled
                 if module_name == "_disabled" or "_disabled" in str(module_dir):
-                    print(f"ℹ️  Skipping disabled module: {module_dir}")
+                    print(f"Skipping disabled module: {module_dir}")
                     continue
 
                 docs_dir = module_dir / 'docs'
@@ -899,7 +899,7 @@ class FunctionComparisonReportGenerator:
 
     def _generate_executive_summary(self, data: CombinedReportData) -> List[str]:
         """Generate executive summary section"""
-        lines = ["## 📊 Executive Summary", ""]
+        lines = ["## Executive Summary", ""]
 
         # Function stats - use unique counts for display
         total_functions = sum(r.get('total_functions', 0) for r in data.function_comparison.values())
@@ -916,16 +916,16 @@ class FunctionComparisonReportGenerator:
         arg_mismatches = len(data.argument_mismatches)
 
         lines.extend([
-            "### 📋 Function Documentation",
+            "### Function Documentation",
             f"- **Total Functions:** {total_functions}",
             f"- **Documented:** {total_documented} ({(total_documented/total_functions*100):.1f}%)" if total_functions > 0 else "- **Documented:** N/A",
             f"- **Missing Functions:** {total_missing} unique ({total_missing_unique} total occurrences)",
             "",
-            "### 🎣 Hooks Documentation",
+            "### Hooks Documentation",
             f"- **Missing Hooks:** {hooks_missing_count}",
             f"- **Documented Hooks:** {len(data.hooks_documented)}",
             "",
-            "### 🌐 Localization Analysis",
+            "### Localization Analysis",
             f"- **Undefined Calls:** {undefined_calls} unique",
             f"- **@xxxxx Patterns:** {at_patterns} unique",
             f"- **Argument Mismatches:** {arg_mismatches}",
@@ -938,7 +938,7 @@ class FunctionComparisonReportGenerator:
 
     def _generate_function_docs_section(self, data: CombinedReportData) -> List[str]:
         """Generate function documentation section"""
-        lines = ["## 📋 Function Documentation Analysis", ""]
+        lines = ["## Function Documentation Analysis", ""]
 
         if not data.function_comparison:
             lines.append("_No function comparison data available._")
@@ -980,7 +980,7 @@ class FunctionComparisonReportGenerator:
 
     def _generate_hooks_section(self, data: CombinedReportData) -> List[str]:
         """Generate hooks documentation section"""
-        lines = ["## 🎣 Hooks Documentation Analysis", ""]
+        lines = ["## Hooks Documentation Analysis", ""]
 
         if not data.hooks_missing and not data.hooks_documented:
             lines.append("_No hooks analysis data available._")
@@ -1004,7 +1004,7 @@ class FunctionComparisonReportGenerator:
 
     def _generate_localization_section(self, data: CombinedReportData) -> List[str]:
         """Generate localization analysis section"""
-        lines = ["## 🌐 Localization Analysis", ""]
+        lines = ["## Localization Analysis", ""]
 
         if not data.localization_data and not data.argument_mismatches:
             lines.append("_No localization data available._")
@@ -1027,7 +1027,7 @@ class FunctionComparisonReportGenerator:
         # Argument mismatches summary
         if data.argument_mismatches:
             lines.extend([
-                "### ⚠️ Argument Mismatches",
+                "### Argument Mismatches",
                 f"- **Total Mismatches:** {len(data.argument_mismatches)}",
                 "",
             ])
@@ -1048,11 +1048,11 @@ class FunctionComparisonReportGenerator:
         # Issues summary (for backward compatibility)
         issues = []
         if data.localization_data and loc_data.get('undefined_rows'):
-            issues.append(f"🔸 {len(loc_data['undefined_rows'])} undefined calls")
+            issues.append(f"- {len(loc_data['undefined_rows'])} undefined calls")
         if data.localization_data and loc_data.get('at_pattern_rows'):
-            issues.append(f"🔸 {len(loc_data['at_pattern_rows'])} @xxxxx patterns")
+            issues.append(f"- {len(loc_data['at_pattern_rows'])} @xxxxx patterns")
         if data.argument_mismatches:
-            issues.append(f"🔸 {len(data.argument_mismatches)} argument mismatches")
+            issues.append(f"- {len(data.argument_mismatches)} argument mismatches")
 
         if issues:
             lines.append("### Key Issues:")
@@ -1098,23 +1098,23 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
     if force:
         return True, not no_module_docs, modules_paths
 
-    print("\n🔍 ANALYSIS CONFIRMATION")
+    print("\nANALYSIS CONFIRMATION")
     print("=" * 60)
 
-    print("\n📁 MAIN DIRECTORIES TO SCAN:")
-    print(f"   • Gamemode: {base_path}")
-    print(f"   • Documentation: {docs_path}")
-    print(f"   • Language file: {language_file}")
+    print("\nMAIN DIRECTORIES TO SCAN:")
+    print(f"   - Gamemode: {base_path}")
+    print(f"   - Documentation: {docs_path}")
+    print(f"   - Language file: {language_file}")
 
-    print("\n📤 OUTPUT LOCATION:")
-    print(f"   • Documentation directory: {output_dir}")
-    print("   • The report.md file will be created/updated here")
+    print("\nOUTPUT LOCATION:")
+    print(f"   - Documentation directory: {output_dir}")
+    print("   - The report.md file will be created/updated here")
 
-    print("\n⚠️  POTENTIAL FILESYSTEM CHANGES:")
-    print("   • The report.md file will be created/updated in the documentation directory")
+    print("\nPOTENTIAL FILESYSTEM CHANGES:")
+    print("   - The report.md file will be created/updated in the documentation directory")
     if not no_module_docs:
-        print("   • 'docs' folders may be created in module directories")
-        print("   • 'libraries.md' and 'hooks.md' files may be created in module docs folders")
+        print("   - 'docs' folders may be created in module directories")
+        print("   - 'libraries.md' and 'hooks.md' files may be created in module docs folders")
 
     print("\n" + "=" * 60)
 
@@ -1124,7 +1124,7 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
         if response in ['y', 'yes']:
             break
         elif response in ['n', 'no']:
-            print("❌ Analysis cancelled by user.")
+            print("Analysis cancelled by user.")
             return False, False, []
         else:
             print("Please enter 'y' for yes or 'n' for no.")
@@ -1134,44 +1134,44 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
 
     # Ask about each module path individually
     approved_modules_paths = []
-    print("\n📂 MODULE PATH CONFIRMATION:")
+    print("\nMODULE PATH CONFIRMATION:")
     print("-" * 40)
 
     for i, path in enumerate(modules_paths, 1):
         path_obj = Path(path)
-        status = "✅ Exists" if path_obj.exists() else "❌ Missing"
+        status = "Exists" if path_obj.exists() else "Missing"
         print(f"\n{i}. {path}")
         print(f"   Status: {status}")
 
         if not path_obj.exists():
-            print("   ⚠️  Directory does not exist - skipping")
+            print("   Directory does not exist - skipping")
             continue
 
         while True:
             response = input(f"   Scan this module path? (y/n): ").strip().lower()
             if response in ['y', 'yes']:
                 approved_modules_paths.append(path)
-                print("   ✅ Added to scan list")
+                print("   Added to scan list")
                 break
             elif response in ['n', 'no']:
-                print("   ❌ Skipped")
+                print("   Skipped")
                 break
             else:
                 print("   Please enter 'y' for yes or 'n' for no.")
 
     if not approved_modules_paths:
-        print("\n⚠️  No module paths approved for scanning.")
+        print("\nNo module paths approved for scanning.")
         while True:
             response = input("Continue with main analysis only? (y/n): ").strip().lower()
             if response in ['y', 'yes']:
                 break
             elif response in ['n', 'no']:
-                print("❌ Analysis cancelled by user.")
+                print("Analysis cancelled by user.")
                 return False, False, []
             else:
                 print("Please enter 'y' for yes or 'n' for no.")
 
-    print("\n✅ Proceeding with analysis...\n")
+    print("\nProceeding with analysis...\n")
     return True, generate_module_docs, approved_modules_paths
 
 def main():
@@ -1207,11 +1207,11 @@ Examples:
     docs_path = Path(args.docs_path)
 
     if not base_path.exists():
-        print(f"❌ Error: Base path does not exist: {base_path}")
+        print(f"Error: Base path does not exist: {base_path}")
         sys.exit(1)
 
     if not docs_path.exists():
-        print(f"❌ Error: Documentation path does not exist: {docs_path}")
+        print(f"Error: Documentation path does not exist: {docs_path}")
         sys.exit(1)
 
     # Handle modules paths
@@ -1226,10 +1226,10 @@ Examples:
         sys.exit(0)
 
     if not args.quiet:
-        print("🚀 Starting comprehensive function comparison analysis...")
-        print(f"📁 Base Path: {base_path}")
-        print(f"📚 Docs Path: {docs_path}")
-        print(f"📂 Approved Module Paths: {len(approved_modules_paths)}")
+        print("Starting comprehensive function comparison analysis...")
+        print(f"Base Path: {base_path}")
+        print(f"Docs Path: {docs_path}")
+        print(f"Approved Module Paths: {len(approved_modules_paths)}")
         for i, path in enumerate(approved_modules_paths, 1):
             print(f"   {i}. {path}")
 
@@ -1250,17 +1250,17 @@ Examples:
         report_file = generator.save_report(data, args.output)
 
         if not args.quiet:
-            print("\n✅ Analysis complete!")
-            print(f"📄 Report saved: {report_file}")
+            print("\nAnalysis complete!")
+            print(f"Report saved: {report_file}")
 
             # Print quick summary
             total_functions = sum(r.get('total_functions', 0) for r in data.function_comparison.values())
             total_documented = sum(r.get('documented_functions', 0) for r in data.function_comparison.values())
 
-            print("\n📈 Quick Summary:")
-            print(f"   • Functions: {total_documented}/{total_functions} documented ({(total_documented/total_functions*100):.1f}%)" if total_functions > 0 else "   • Functions: No data")
-            print(f"   • Missing hooks: {len(data.hooks_missing)}")
-            print(f"   • Localization issues: {len(data.localization_data.get('unused', []))} unused, {len(data.localization_data.get('undefined_rows', []))} undefined")
+            print("\nQuick Summary:")
+            print(f"   - Functions: {total_documented}/{total_functions} documented ({(total_documented/total_functions*100):.1f}%)" if total_functions > 0 else "   - Functions: No data")
+            print(f"   - Missing hooks: {len(data.hooks_missing)}")
+            print(f"   - Localization issues: {len(data.localization_data.get('unused', []))} unused, {len(data.localization_data.get('undefined_rows', []))} undefined")
 
     except Exception as e:
         print(f"ERROR during analysis: {e}")

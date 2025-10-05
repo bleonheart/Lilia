@@ -285,20 +285,15 @@ else
         prefix = prefix or {}
         local numFields = table.Count(fields)
         local frameW, frameH = 600, 200 + numFields * 75
-        local frame = vgui.Create("DFrame")
-        frame:SetTitle("")
+        local frame = vgui.Create("liaFrame")
+        frame:SetTitle(L(cmdKey))
         frame:SetSize(frameW, frameH)
         frame:Center()
         frame:MakePopup()
-        frame:ShowCloseButton(false)
-        frame.Paint = function(self, w, h)
-            derma.SkinHook("Paint", "Frame", self, w, h)
-            draw.SimpleText(L(cmdKey), "liaMediumFont", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
-        end
-
+        frame:ShowCloseButton(true)
         local scroll = vgui.Create("liaScrollPanel", frame)
         scroll:Dock(FILL)
-        scroll:DockMargin(10, 40, 10, 10)
+        scroll:DockMargin(10, 10, 10, 10)
         surface.SetFont("liaSmallFont")
         local controls = {}
         local watchers = {}
@@ -409,13 +404,11 @@ else
         buttons:SetTall(90)
         buttons:DockPadding(15, 15, 15, 15)
         buttons.Paint = function() end
-        local submit = vgui.Create("DButton", buttons)
+        local submit = vgui.Create("liaButton", buttons)
         submit:Dock(LEFT)
         submit:DockMargin(0, 0, 15, 0)
         submit:SetWide(270)
-        submit:SetText(L("submit"))
-        submit:SetFont("liaSmallFont")
-        submit:SetIcon("icon16/tick.png")
+        submit:SetTxt(L("submit"))
         submit:SetEnabled(false)
         validate = function()
             for _, data in pairs(controls) do
@@ -447,12 +440,10 @@ else
         end
 
         validate()
-        local cancel = vgui.Create("DButton", buttons)
+        local cancel = vgui.Create("liaButton", buttons)
         cancel:Dock(RIGHT)
         cancel:SetWide(270)
-        cancel:SetText(L("cancel"))
-        cancel:SetFont("liaSmallFont")
-        cancel:SetIcon("icon16/cross.png")
+        cancel:SetTxt(L("cancel"))
         cancel.DoClick = function() frame:Remove() end
         submit.DoClick = function()
             local args = {}
@@ -1389,6 +1380,39 @@ else
         local ang = client:GetAngles()
         MsgC(Color(255, 255, 255), "Vector: (" .. math.Round(pos.x, 2) .. "," .. math.Round(pos.y, 2) .. "," .. math.Round(pos.z, 2) .. ") Angle:(" .. math.Round(ang.x, 2) .. "," .. math.Round(ang.y, 2) .. "," .. math.Round(ang.z, 2) .. ")\n")
     end)
+
+    -- Test command for argument prompt
+    lia.command.add("testargs", {
+        desc = "Test command for argument prompt",
+        arguments = {
+            {
+                name = "player",
+                type = "player",
+                description = "Target player"
+            },
+            {
+                name = "message",
+                type = "string",
+                description = "Message to send"
+            },
+            {
+                name = "amount",
+                type = "number",
+                description = "Amount (optional)",
+                optional = true
+            }
+        },
+        onRun = function(client, arguments)
+            local target = arguments[1]
+            local message = arguments[2]
+            local amount = arguments[3] or 1
+
+            client:notify("Test command executed!")
+            client:notify("Target: " .. tostring(target))
+            client:notify("Message: " .. tostring(message))
+            client:notify("Amount: " .. tostring(amount))
+        end
+    })
 end
 
 lia.command.add("demorequests", {

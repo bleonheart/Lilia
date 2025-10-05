@@ -333,110 +333,35 @@ lia.net.readBigTable("liaSendTableUI", function(data) lia.util.CreateTableUI(dat
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()
-    local subTitleKey = net.ReadString()
+    net.ReadString() -- subTitleKey (unused)
     local options = net.ReadTable()
     local limit = net.ReadUInt(32)
-    local frame = vgui.Create("liaFrame")
-    frame:SetTitle("")
-    frame:SetSize(400, 300)
-    frame:Center()
-    frame:MakePopup()
-    frame:ShowCloseButton(false)
-    frame.Paint = function(self, w, h)
-        derma.SkinHook("Paint", "Frame", self, w, h)
-        draw.SimpleText(L(titleKey), "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-    end
 
-    frame.OnClose = function()
-        net.Start("liaOptionsRequestCancel")
-        net.WriteUInt(id, 32)
-        net.SendToServer()
-    end
-
-    local label = vgui.Create("DLabel", frame)
-    label:Dock(TOP)
-    label:DockMargin(20, 40, 20, 10)
-    label:SetText(L(subTitleKey))
-    label:SizeToContents()
-    label:SetTextColor(Color(255, 255, 255))
-    label:SetContentAlignment(5)
-    local scrollPanel = vgui.Create("liaScrollPanel", frame)
-    scrollPanel:Dock(FILL)
-    scrollPanel:DockMargin(20, 0, 20, 60)
-    local selected = {}
-    local checkboxes = {}
-    for _, option in ipairs(options) do
-        local optionPanel = vgui.Create("Panel", scrollPanel)
-        optionPanel:Dock(TOP)
-        optionPanel:DockMargin(0, 5, 0, 5)
-        optionPanel:SetTall(30)
-        local checkbox = vgui.Create("liaCheckbox", optionPanel)
-        checkbox:Dock(LEFT)
-        checkbox:SetWide(30)
-        checkbox:SetChecked(false)
-        local optionLabel = vgui.Create("DLabel", optionPanel)
-        optionLabel:Dock(FILL)
-        optionLabel:DockMargin(40, 0, 0, 0)
-        optionLabel:SetText(L(option))
-        optionLabel:SetFont("liaSmallFont")
-        optionLabel:SetTextColor(Color(255, 255, 255))
-        optionLabel:SetContentAlignment(4)
-        checkbox.OnChange = function(self, value)
-            if value then
-                if #selected < limit then
-                    table.insert(selected, option)
-                else
-                    self:SetChecked(false)
-                end
-            else
-                for i, v in ipairs(selected) do
-                    if v == option then
-                        table.remove(selected, i)
-                        break
-                    end
-                end
-            end
-        end
-
-        table.insert(checkboxes, checkbox)
-    end
-
-    local buttonPanel = vgui.Create("Panel", frame)
-    buttonPanel:Dock(BOTTOM)
-    buttonPanel:DockMargin(20, 10, 20, 20)
-    buttonPanel:SetTall(40)
-    local submitBtn = vgui.Create("liaButton", buttonPanel)
-    submitBtn:Dock(RIGHT)
-    submitBtn:DockMargin(10, 0, 0, 0)
-    submitBtn:SetWide(150)
-    submitBtn:SetTxt(L("submit"))
-    submitBtn.DoClick = function()
-        if #selected == 0 then
+    -- Use lia.derma.requestOptions with limit handling
+    lia.derma.requestOptions(L(titleKey), options, function(selectedOptions)
+        if selectedOptions == false then
+            -- User cancelled
             net.Start("liaOptionsRequestCancel")
             net.WriteUInt(id, 32)
             net.SendToServer()
-            frame:Remove()
-            return
+        else
+            -- Apply limit if needed
+            if limit > 0 and #selectedOptions > limit then
+                local limited = {}
+                for i = 1, limit do
+                    if selectedOptions[i] then
+                        table.insert(limited, selectedOptions[i])
+                    end
+                end
+                selectedOptions = limited
+            end
+
+            net.Start("liaOptionsRequest")
+            net.WriteUInt(id, 32)
+            net.WriteTable(selectedOptions)
+            net.SendToServer()
         end
-
-        net.Start("liaOptionsRequest")
-        net.WriteUInt(id, 32)
-        net.WriteTable(selected)
-        net.SendToServer()
-        frame:Remove()
-    end
-
-    local cancelBtn = vgui.Create("liaButton", buttonPanel)
-    cancelBtn:Dock(LEFT)
-    cancelBtn:DockMargin(0, 0, 10, 0)
-    cancelBtn:SetWide(150)
-    cancelBtn:SetTxt(L("cancel"))
-    cancelBtn.DoClick = function()
-        net.Start("liaOptionsRequestCancel")
-        net.WriteUInt(id, 32)
-        net.SendToServer()
-        frame:Remove()
-    end
+    end)
 end)
 
 net.Receive("liaProvideInteractOptions", function()
@@ -484,54 +409,23 @@ end)
 net.Receive("liaRequestDropdown", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()
-    local subTitleKey = net.ReadString()
+    net.ReadString() -- subTitleKey (unused)
     local options = net.ReadTable()
-    local frame = vgui.Create("liaFrame")
-    frame:SetTitle("")
-    frame:SetSize(500, 150)
-    frame:Center()
-    frame:MakePopup()
-    frame:ShowCloseButton(false)
-    frame.Paint = function(self, w, h)
-        derma.SkinHook("Paint", "Frame", self, w, h)
-        draw.SimpleText(L(titleKey), "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-    end
 
-    frame.OnClose = function()
-        net.Start("liaRequestDropdownCancel")
-        net.WriteUInt(id, 32)
-        net.SendToServer()
-    end
-
-    local dropdown = vgui.Create("liaComboBox", frame)
-    dropdown:Dock(TOP)
-    dropdown:DockMargin(20, 40, 20, 20)
-    dropdown:SetTall(30)
-    dropdown:SetPlaceholderText(L(subTitleKey))
-
-    for _, option in ipairs(options) do
-        dropdown:AddChoice(L(option))
-    end
-
-    dropdown.OnSelect = function(_, _, value)
-        net.Start("liaRequestDropdown")
-        net.WriteUInt(id, 32)
-        net.WriteString(value)
-        net.SendToServer()
-        frame:Remove()
-    end
-
-    local cancelBtn = vgui.Create("liaButton", frame)
-    cancelBtn:Dock(BOTTOM)
-    cancelBtn:DockMargin(20, 10, 20, 20)
-    cancelBtn:SetTall(40)
-    cancelBtn:SetTxt(L("cancel"))
-    cancelBtn.DoClick = function()
-        net.Start("liaRequestDropdownCancel")
-        net.WriteUInt(id, 32)
-        net.SendToServer()
-        frame:Remove()
-    end
+    -- Use lia.derma.requestDropdown
+    lia.derma.requestDropdown(L(titleKey), options, function(selectedText, selectedData)
+        if selectedText == false then
+            -- User cancelled
+            net.Start("liaRequestDropdownCancel")
+            net.WriteUInt(id, 32)
+            net.SendToServer()
+        else
+            net.Start("liaRequestDropdown")
+            net.WriteUInt(id, 32)
+            net.WriteString(selectedText)
+            net.SendToServer()
+        end
+    end)
 end)
 
 net.Receive("liaArgumentsRequest", function()
@@ -559,75 +453,21 @@ net.Receive("liaStringRequest", function()
     local default = net.ReadString()
     if title:sub(1, 1) == "@" then title = L(title:sub(2)) end
     if subTitle:sub(1, 1) == "@" then subTitle = L(subTitle:sub(2)) end
-    local frame = vgui.Create("liaFrame")
-    frame:SetTitle("")
-    frame:SetSize(400, 160)
-    frame:Center()
-    frame:MakePopup()
-    frame:ShowCloseButton(false)
-    frame.Paint = function(self, w, h)
-        derma.SkinHook("Paint", "Frame", self, w, h)
-        draw.SimpleText(title, "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-    end
 
-    frame.OnClose = function()
-        net.Start("liaStringRequestCancel")
-        net.WriteUInt(id, 32)
-        net.SendToServer()
-    end
-
-    local label = vgui.Create("DLabel", frame)
-    label:Dock(TOP)
-    label:DockMargin(20, 40, 20, 10)
-    label:SetText(subTitle)
-    label:SizeToContents()
-    label:SetTextColor(Color(255, 255, 255))
-    label:SetContentAlignment(5)
-
-    local entry = vgui.Create("liaEntry", frame)
-    entry:Dock(TOP)
-    entry:DockMargin(20, 0, 20, 20)
-    entry:SetTall(30)
-    entry:SetTitle("")
-    entry:SetValue(default)
-    entry:SelectAll()
-    entry.OnEnter = function()
-        net.Start("liaStringRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(entry:GetValue())
-        net.SendToServer()
-        frame:Remove()
-    end
-
-    local buttonPanel = vgui.Create("Panel", frame)
-    buttonPanel:Dock(BOTTOM)
-    buttonPanel:DockMargin(20, 10, 20, 20)
-    buttonPanel:SetTall(40)
-
-    local submit = vgui.Create("liaButton", buttonPanel)
-    submit:Dock(RIGHT)
-    submit:DockMargin(10, 0, 0, 0)
-    submit:SetWide(150)
-    submit:SetTxt(L("submit"))
-    submit.DoClick = function()
-        net.Start("liaStringRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(entry:GetValue())
-        net.SendToServer()
-        frame:Remove()
-    end
-
-    local cancel = vgui.Create("liaButton", buttonPanel)
-    cancel:Dock(LEFT)
-    cancel:DockMargin(0, 0, 10, 0)
-    cancel:SetWide(150)
-    cancel:SetTxt(L("cancel"))
-    cancel.DoClick = function()
-        net.Start("liaStringRequestCancel")
-        net.WriteUInt(id, 32)
-        net.SendToServer()
-        frame:Remove()
-    end
+    -- Use lia.derma.requestString
+    lia.derma.requestString(title, subTitle, function(value)
+        if value == false then
+            -- User cancelled
+            net.Start("liaStringRequestCancel")
+            net.WriteUInt(id, 32)
+            net.SendToServer()
+        else
+            net.Start("liaStringRequest")
+            net.WriteUInt(id, 32)
+            net.WriteString(value)
+            net.SendToServer()
+        end
+    end, default)
 end)
 
 local function OrganizeNotices()
@@ -822,44 +662,26 @@ net.Receive("liaButtonRequest", function()
         options[i] = net.ReadString()
     end
 
-    local frame = vgui.Create("liaFrame")
-    frame:SetTitle("")
-    frame:SetSize(400, 100 + count * 45)
-    frame:Center()
-    frame:MakePopup()
-    frame:ShowCloseButton(false)
-    frame.Paint = function(self, w, h)
-        derma.SkinHook("Paint", "Frame", self, w, h)
-        draw.SimpleText(L(titleKey), "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-    end
-
-    local buttonContainer = vgui.Create("Panel", frame)
-    buttonContainer:Dock(FILL)
-    buttonContainer:DockMargin(20, 40, 20, 60)
-
+    -- Convert options to button format for lia.derma.requestButtons
+    local buttons = {}
     for i, key in ipairs(options) do
-        local btn = vgui.Create("liaButton", buttonContainer)
-        btn:Dock(TOP)
-        btn:DockMargin(0, 5, 0, 5)
-        btn:SetTall(40)
-        btn:SetTxt(L(key))
-        btn.DoClick = function()
-            net.Start("liaButtonRequest")
-            net.WriteUInt(id, 32)
-            net.WriteUInt(i, 8)
-            net.SendToServer()
-            frame:Remove()
-        end
+        table.insert(buttons, {
+            text = L(key),
+            callback = function()
+                net.Start("liaButtonRequest")
+                net.WriteUInt(id, 32)
+                net.WriteUInt(i, 8)
+                net.SendToServer()
+            end
+        })
     end
 
-    local closeBtn = vgui.Create("liaButton", frame)
-    closeBtn:Dock(BOTTOM)
-    closeBtn:DockMargin(20, 10, 20, 20)
-    closeBtn:SetTall(40)
-    closeBtn:SetTxt(L("close"))
-    closeBtn.DoClick = function()
-        frame:Remove()
-    end
+    -- Use lia.derma.requestButtons
+    lia.derma.requestButtons(L(titleKey), buttons, function(selectedIndex)
+        if selectedIndex and selectedIndex > 0 and selectedIndex <= #buttons then
+            buttons[selectedIndex].callback()
+        end
+    end)
 end)
 
 net.Receive("liaAnimationStatus", function()

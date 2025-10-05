@@ -36,7 +36,7 @@ end
 
 function PANEL:SetIcon(icon, icon_size)
     self.icon = type(icon) == 'IMaterial' and icon or Material(icon)
-    self.icon_size = icon_size
+    self.icon_size = icon_size or 16
 end
 
 function PANEL:SetTxt(text)
@@ -106,18 +106,21 @@ function PANEL:Paint(w, h)
         lia.derma.rect(self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size):Rad(100):Color(ripple_color):Shape(btnFlags):Draw()
     end
 
+    -- Ensure icon_size is never nil
+    local iconSize = self.icon_size or 16
+
     if self.text ~= "" then
-        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon ~= "" and self.icon_size * 0.5 + 2 or 0), h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         if self.icon ~= "" then
             surface.SetFont(self.font)
-            local posX = (w - surface.GetTextSize(self.text) - self.icon_size) * 0.5 - 2
-            local posY = (h - self.icon_size) * 0.5
-            lia.derma.rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
+            local posX = (w - surface.GetTextSize(self.text) - iconSize) * 0.5 - 2
+            local posY = (h - iconSize) * 0.5
+            lia.derma.rect(posX, posY, iconSize, iconSize):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
         end
     elseif self.icon ~= "" then
-        local posX = (w - self.icon_size) * 0.5
-        local posY = (h - self.icon_size) * 0.5
-        lia.derma.rect(posX, posY, self.icon_size, self.icon_size):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
+        local posX = (w - iconSize) * 0.5
+        local posY = (h - iconSize) * 0.5
+        lia.derma.rect(posX, posY, iconSize, iconSize):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
     end
 end
 
