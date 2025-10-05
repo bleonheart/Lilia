@@ -410,7 +410,7 @@ net.Receive("liaRequestDropdown", function()
     net.ReadString() -- subTitleKey (unused)
     local options = net.ReadTable()
     -- Use lia.derma.requestDropdown
-    lia.derma.requestDropdown(L(titleKey), options, function(selectedText, _)
+    lia.derma.requestDropdown(L(titleKey), options, function(selectedText, selectedData)
         if selectedText == false then
             -- User cancelled
             net.Start("liaRequestDropdownCancel")

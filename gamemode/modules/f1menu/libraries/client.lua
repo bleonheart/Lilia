@@ -174,7 +174,7 @@ function MODULE:CreateMenuButtons(tabs)
             contentPanel:SetVisible(i == 1)
             contentPanel.Paint = function() end
             -- Override PerformLayout to set proper height after parent layout is complete
-            contentPanel.PerformLayout = function(s, _, _)
+            contentPanel.PerformLayout = function(s, w, h)
                 if IsValid(frame) and IsValid(tabContainer) then
                     s:SetTall(frame:GetTall() - tabContainer:GetTall() - 20) -- Account for margins
                 end
@@ -219,7 +219,7 @@ function MODULE:CreateMenuButtons(tabs)
 
         -- Override tab container PerformLayout to adjust tab widths
         local originalPerformLayout = tabContainer.PerformLayout
-        tabContainer.PerformLayout = function(s, _, _)
+        tabContainer.PerformLayout = function(s, w, h)
             if originalPerformLayout then originalPerformLayout(s, w, h) end
             -- Adjust tab widths after layout
             timer.Simple(0, function() if IsValid(s) then AdjustTabWidths() end end)
@@ -304,7 +304,7 @@ function MODULE:CreateMenuButtons(tabs)
             contentPanel:SetVisible(i == 1)
             contentPanel.Paint = function() end
             -- Override PerformLayout to set proper height after parent layout is complete
-            contentPanel.PerformLayout = function(s, _, _)
+            contentPanel.PerformLayout = function(s, w, h)
                 if IsValid(frame) and IsValid(tabContainer) then
                     s:SetTall(frame:GetTall() - tabContainer:GetTall() - 20) -- Account for margins
                 end
@@ -349,7 +349,7 @@ function MODULE:CreateMenuButtons(tabs)
 
         -- Override tab container PerformLayout to adjust tab widths
         local originalPerformLayout = tabContainer.PerformLayout
-        tabContainer.PerformLayout = function(s, _, _)
+        tabContainer.PerformLayout = function(s, w, h)
             if originalPerformLayout then originalPerformLayout(s, w, h) end
             -- Adjust tab widths after layout
             timer.Simple(0, function() if IsValid(s) then AdjustTabWidths() end end)
@@ -415,7 +415,7 @@ function MODULE:CreateMenuButtons(tabs)
                         searchEntry:SetFont("liaSmallFont")
                         searchEntry:SetPlaceholderText(L("searchStaff") or "Search staff...")
                         searchEntry:SetTextColor(Color(200, 200, 200))
-                        searchEntry.PaintOver = function(s, _, _) lia.derma.rect(0, 0, s:GetWide(), s:GetTall()):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                        searchEntry.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
                         searchEntry.OnChange = function(textEntry)
                             local filteredData = filterStaffData(textEntry:GetValue())
                             updateStaffTable(filteredData)
@@ -430,7 +430,7 @@ function MODULE:CreateMenuButtons(tabs)
                         staffTable:AddColumn(L("usergroup"), nil, TEXT_ALIGN_LEFT, true) -- Auto-size usergroup column
                         staffTable:AddColumn(L("tickets"), 80, TEXT_ALIGN_CENTER, true) -- Fixed width for tickets
                         staffTable:AddColumn(L("warnings"), 80, TEXT_ALIGN_CENTER, true) -- Fixed width for warnings
-                        staffTable:AddColumn(L("staffOnDuty", ""), 100, TEXT_ALIGN_CENTER, true) -- Fixed width for duty status
+                        staffTable:AddColumn(L("staffOnDuty"), 100, TEXT_ALIGN_CENTER, true) -- Fixed width for duty status
                         -- Function to update table data
                         function updateStaffTable(dataToShow)
                             staffTable:Clear()
@@ -452,7 +452,7 @@ function MODULE:CreateMenuButtons(tabs)
                     end
 
                     -- Override PerformLayout to ensure table resizes properly when panel changes size
-                    panel.PerformLayout = function(s, _, _)
+                    panel.PerformLayout = function(s, w, h)
                         if IsValid(s.staffTable) and s.staffTable.CalculateColumnWidths and s.staffTable.RebuildRows then
                             -- Trigger responsive column recalculation for the staff table
                             s.staffTable:CalculateColumnWidths()
@@ -462,7 +462,7 @@ function MODULE:CreateMenuButtons(tabs)
 
                     -- Also add a resize timer for more reliable resizing
                     panel.resizeTimer = nil
-                    panel.OnSizeChanged = function(s, _, _)
+                    panel.OnSizeChanged = function(s, w, h)
                         if IsValid(s.staffTable) and s.staffTable.CalculateColumnWidths and s.staffTable.RebuildRows then
                             -- Clear existing timer
                             if s.resizeTimer then timer.Remove(s.resizeTimer) end
@@ -573,7 +573,7 @@ function MODULE:CreateMenuButtons(tabs)
                 contentPanel:SetVisible(i == 1)
                 contentPanel.Paint = function() end
                 -- Override PerformLayout to set proper height after parent layout is complete
-                contentPanel.PerformLayout = function(s, _, _)
+                contentPanel.PerformLayout = function(s, w, h)
                     if IsValid(frame) and IsValid(tabContainer) then
                         s:SetTall(frame:GetTall() - tabContainer:GetTall() - 20) -- Account for margins
                     end
@@ -618,7 +618,7 @@ function MODULE:CreateMenuButtons(tabs)
 
             -- Override tab container PerformLayout to adjust tab widths
             local originalPerformLayout = tabContainer.PerformLayout
-            tabContainer.PerformLayout = function(s, _, _)
+            tabContainer.PerformLayout = function(s, w, h)
                 if originalPerformLayout then originalPerformLayout(s, w, h) end
                 -- Adjust tab widths after layout
                 timer.Simple(0, function() if IsValid(s) then AdjustTabWidths() end end)

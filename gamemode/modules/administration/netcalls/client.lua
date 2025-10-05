@@ -157,7 +157,7 @@ net.Receive("liaAllPks", function()
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("DListView")
     list:Dock(FILL)
     local function addSizedColumn(text)
@@ -221,6 +221,20 @@ net.Receive("liaAllPks", function()
     end
 end)
 
+local charMenuContext
+local function requestPlayerCharacters(steamID, line, buildMenu)
+    charMenuContext = {
+        pos = {gui.MousePos()},
+        line = line,
+        steamID = steamID,
+        buildMenu = buildMenu
+    }
+
+    net.Start("liaRequestPlayerCharacters")
+    net.WriteString(steamID)
+    net.SendToServer()
+end
+
 local function OpenRoster(panel, data)
     panel:Clear()
     local sheet = panel:Add("liaTabs")
@@ -254,9 +268,9 @@ local function OpenRoster(panel, data)
                 row.OnRightClick = function()
                     if not IsValid(row) or not row.rowData then return end
                     local rowData = row.rowData
-                    local rowSteamID = rowData.steamID
+                    local steamID = rowData.steamID
                     local menu = lia.derma.dermaMenu()
-                    if rowSteamID and rowSteamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
+                    if steamID and steamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
                         menu:AddOption(L("kick"), function()
                             Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                                 net.Start("liaKickCharacter")
@@ -265,7 +279,7 @@ local function OpenRoster(panel, data)
                             end, L("no"))
                         end):SetIcon("icon16/user_delete.png")
 
-                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowSteamID) end):SetIcon("icon16/page_copy.png") end
+                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png") end
                     end
 
                     menu:AddOption(L("copyRow"), function()
@@ -280,13 +294,13 @@ local function OpenRoster(panel, data)
                     end):SetIcon("icon16/page_copy.png")
 
                     menu:AddOption(L("copyName"), function()
-                        local rowName = rowData.name or ""
-                        SetClipboardText(rowName)
+                        local name = rowData.name or ""
+                        SetClipboardText(name)
                     end):SetIcon("icon16/page_copy.png")
 
-                    if rowSteamID and rowSteamID ~= "" then
-                        menu:AddOption(L("copySteamID"), function() SetClipboardText(rowSteamID) end):SetIcon("icon16/page_copy.png")
-                        menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowSteamID)) end):SetIcon("icon16/world.png")
+                    if steamID and steamID ~= "" then
+                        menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
+                        menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
                     end
 
                     menu:Open()
@@ -310,7 +324,7 @@ function OpenFlagsPanel(panel, data)
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panel:Add("liaTable")
     list:Dock(FILL)
     local columns = {
@@ -439,7 +453,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {
@@ -514,7 +528,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
                 end
             end
 
-            if match then local _ = list:AddLine(unpack(values)) end
+            if match then local line = list:AddLine(unpack(values)) end
         end
     end
 
@@ -543,6 +557,19 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     end
 end)
 
+lia.net.readBigTable("liaPlayerCharacters", function(data)
+    if not data or not charMenuContext then return end
+    local menu = lia.derma.dermaMenu()
+    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
+    if charMenuContext.pos then
+        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
+    else
+        menu:Open()
+    end
+
+    charMenuContext = nil
+end)
+
 lia.net.readBigTable("liaAllPlayers", function(players)
     if not IsValid(panelRef) then return end
     panelRef:Clear()
@@ -554,7 +581,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     search:SetTall(30)
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    search.PaintOver = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {
