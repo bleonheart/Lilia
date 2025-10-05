@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "loggingSystemDescription"
 MODULE.Privileges = {
     {
-        Name = L("canSeeLogs"),
+        Name = "canSeeLogs",
         ID = "canSeeLogs",
         MinAccess = "superadmin",
         Category = "categoryLogging",

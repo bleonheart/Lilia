@@ -4,7 +4,7 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "inventorySystemDescription"
 MODULE.Privileges = {
     {
-        Name = L("noItemCooldown"),
+        Name = "noItemCooldown",
         ID = "noItemCooldown",
         MinAccess = "admin",
         Category = "categoryStaffManagement"
