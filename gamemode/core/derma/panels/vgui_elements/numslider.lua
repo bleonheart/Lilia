@@ -150,12 +150,11 @@ function PANEL:UpdateSliderPosition()
         local trackWidth = self.track:GetWide()
         local sliderWidth = 20
         local fraction = (self.value - self.min) / (self.max - self.min)
-        local sliderX = fraction * (trackWidth - sliderWidth)
         self.slider:SetWide(sliderWidth)
     end
 end
 
-function PANEL:OnValueChanged(value)
+function PANEL:OnValueChanged(_)
     -- Override this function to handle value changes
 end
 
