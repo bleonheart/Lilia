@@ -41,14 +41,14 @@ function PANEL:Init()
         if self.hoverAnim > 0 then lia.derma.rect(sliderX, 0, sliderWidth, sliderHeight):Rad(16):Color(Color(lia.color.theme.button_hovered.r, lia.color.theme.button_hovered.g, lia.color.theme.button_hovered.b, self.hoverAnim * 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     end
 
-    self.slider.OnMousePressed = function(s, mouseCode)
+    self.slider.OnMousePressed = function(_, mouseCode)
         if mouseCode == MOUSE_LEFT then
             self.dragging = true
             self:OnDragStart()
         end
     end
 
-    self.slider.OnMouseReleased = function(s, mouseCode)
+    self.slider.OnMouseReleased = function(_, mouseCode)
         if mouseCode == MOUSE_LEFT then
             self.dragging = false
             self:OnDragEnd()
