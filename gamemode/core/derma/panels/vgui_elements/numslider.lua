@@ -48,7 +48,7 @@ function PANEL:Init()
         end
     end
 
-    self.slider.OnMouseReleased = function(_, mouseCode)
+    self.slider.OnMouseReleased = function(s, mouseCode)
         if mouseCode == MOUSE_LEFT then
             self.dragging = false
             self:OnDragEnd()
@@ -57,7 +57,7 @@ function PANEL:Init()
 
     self.slider.Think = function(s)
         if self.dragging then
-            local x = s:CursorPos()
+            local x, y = s:CursorPos()
             local parent = s:GetParent()
             local trackWidth = parent:GetWide()
             local sliderWidth = 20
