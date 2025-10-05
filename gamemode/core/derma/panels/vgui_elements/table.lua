@@ -50,8 +50,8 @@ function PANEL:AddItem(...)
     local rowData = self.rows[rowIndex]
     -- Create a metatable that forwards property access to the row data
     setmetatable(proxy, {
-        __index = function(t, key) return rowData[key] end,
-        __newindex = function(t, key, value) rowData[key] = value end
+        __index = function(_, key) return rowData[key] end,
+        __newindex = function(_, key, value) rowData[key] = value end
     })
     return proxy
 end
@@ -373,7 +373,7 @@ function PANEL:GetLines()
     return self.rows
 end
 
-function PANEL:OnSizeChanged(w, h)
+function PANEL:OnSizeChanged()
     -- Recalculate column widths when panel is resized
     if #self.columns > 0 then
         -- Always recalculate if we have columns, even if no rows yet

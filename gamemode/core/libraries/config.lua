@@ -1153,7 +1153,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             slider:SetValue(lia.config.get(key, config.value))
             slider:SetText("")
             -- Override Paint function to remove extra text underneath slider
-            slider.Paint = function(s, w, h)
+            slider.Paint = function(s, w)
                 local padX = 16
                 local padTop = 2
                 local barY = 32
@@ -1235,7 +1235,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             slider:SetValue(lia.config.get(key, config.value))
             slider:SetText("")
             -- Override Paint function to remove extra text underneath slider
-            slider.Paint = function(s, w, h)
+            slider.Paint = function(s, w)
                 local padX = 16
                 local padTop = 2
                 local barY = 32
@@ -1398,7 +1398,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 button:DockMargin(300, 10, 300, 0)
                 button:SetTall(60)
                 button:SetTxt("")
-                button.Paint = function(s, w, h)
+                button.Paint = function(_, w, h)
                     local c = lia.config.get(key, config.value)
                     lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
                     lia.derma.rect(0, 0, w, h):Rad(16):Color(c):Shape(lia.derma.SHAPE_IOS):Draw()

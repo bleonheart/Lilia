@@ -27,7 +27,7 @@ function PANEL:OnMousePressed(keyCode)
     end
 end
 
-function PANEL:OnMouseReleased(keyCode)
+function PANEL:OnMouseReleased()
     -- Prevent default behavior that might interfere with VGUI
     return true
 end

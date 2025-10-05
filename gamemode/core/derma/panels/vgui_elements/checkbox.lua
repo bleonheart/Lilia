@@ -90,7 +90,7 @@ function PANEL:SetDescription(desc)
     self:SetTooltipDelay(1.5)
 end
 
-function PANEL:Paint(w, h)
+function PANEL:Paint()
     -- No background painting needed - the toggle button handles everything
     -- Text and description are now handled externally since this is just the button
 end
@@ -100,7 +100,7 @@ function PANEL:DoClick()
     self.toggle:DoClick()
 end
 
-function PANEL:OnChange(val)
+function PANEL:OnChange()
     -- Base OnChange method - can be overridden
     -- val is the new boolean value of the checkbox
 end
@@ -110,7 +110,7 @@ function PANEL:PerformLayout()
 end
 
 -- Override SetSize to ensure proper sizing
-function PANEL:SetSize(w, h)
+function PANEL:SetSize()
     -- The toggle will automatically resize to fill the panel due to Dock(FILL)
 end
 

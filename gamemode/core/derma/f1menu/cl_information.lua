@@ -30,7 +30,7 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
     entry:Dock(TOP)
     entry:DockMargin(0, 0, 0, marginBot or 0)
     entry:SetTall(35)
-    entry.Paint = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
+    entry.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
     local lbl = entry:Add("DLabel")
     lbl:Dock(LEFT)
     lbl:SetFont("liaSmallFont")
@@ -62,7 +62,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     entry:Dock(TOP)
     entry:DockMargin(0, margin or 0, 0, margin or 0)
     entry:SetTall(40)
-    entry.Paint = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
+    entry.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
     local lbl = entry:Add("DLabel")
     lbl:Dock(LEFT)
     lbl:SetFont("liaSmallFont")
@@ -75,7 +75,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     local bar = entry:Add("DPanel")
     bar:Dock(FILL)
     bar:DockMargin(0, 6, 8, 6)
-    bar.Paint = function(s, w, h)
+    bar.Paint = function(_, w, h)
         local mn = isfunction(minFunc) and minFunc() or tonumber(minFunc) or 0
         local mx = isfunction(maxFunc) and maxFunc() or tonumber(maxFunc) or 1
         local val = isfunction(valueFunc) and valueFunc() or tonumber(valueFunc) or 0
@@ -131,7 +131,7 @@ function PANEL:CreateSection(parent, title)
     frame:Dock(TOP)
     frame:DockMargin(0, 10, 0, 10)
     frame:SetTall(200) -- Will be auto-sized
-    frame.Paint = function(s, w, h)
+    frame.Paint = function(_, w, h)
         -- Draw Lilia-styled section background
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
         -- Draw section title (centered)
@@ -146,7 +146,7 @@ function PANEL:CreateSection(parent, title)
     contents:DockPadding(8, 35, 8, 10) -- Extra top padding for title
     contents.Paint = function() end
     -- Auto-size the frame based on content
-    contents.PerformLayout = function(s, w, h)
+    contents.PerformLayout = function(s)
         local contentHeight = 35 -- Start with title height
         for _, child in ipairs(s:GetChildren()) do
             if IsValid(child) then

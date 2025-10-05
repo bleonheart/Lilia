@@ -159,7 +159,7 @@ function SKIN:PaintScrollBarGrip(_, w, h)
     surface.DrawRect(0, 0, w, h)
 end
 
-function SKIN:PaintButtonUp(panel, w, h)
+function SKIN:PaintButtonUp(_, w, h)
     if w <= 0 then return end
     surface.SetDrawColor(lia.config.get("Color", Color(255, 255, 255)))
     surface.DrawRect(0, 0, w, h)
@@ -169,7 +169,7 @@ function SKIN:PaintButtonUp(panel, w, h)
     surface.DrawText("▲")
 end
 
-function SKIN:PaintButtonDown(panel, w, h)
+function SKIN:PaintButtonDown(_, w, h)
     if w <= 0 then return end
     surface.SetDrawColor(lia.config.get("Color", Color(255, 255, 255)))
     surface.DrawRect(0, 0, w, h)

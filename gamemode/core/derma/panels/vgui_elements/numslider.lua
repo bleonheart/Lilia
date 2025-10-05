@@ -151,7 +151,7 @@ function PANEL:UpdateSliderPosition()
     end
 end
 
-function PANEL:OnValueChanged(value)
+function PANEL:OnValueChanged()
     -- Override this function to handle value changes
 end
 

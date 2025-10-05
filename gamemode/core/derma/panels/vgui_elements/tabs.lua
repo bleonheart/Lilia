@@ -97,7 +97,7 @@ function PANEL:Rebuild()
                 end
             end
 
-            btnTab.Paint = function(s, w, h)
+            btnTab.Paint = function(_, w, h)
                 local isActive = self.active_id == id
                 local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
                 local colorIcon = isActive and lia.color.theme.theme or color_white

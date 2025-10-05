@@ -12,7 +12,7 @@ function PANEL:SetupUI()
     header:Dock(TOP)
     header:SetTall(40)
     header:DockMargin(0, 0, 0, 5)
-    header.Paint = function(pnl, w, h)
+    header.Paint = function(_, w, h)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[3]):Shape(lia.derma.SHAPE_IOS):Draw()
         draw.SimpleText(L("groups"), "liaMediumFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end

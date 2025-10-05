@@ -1417,14 +1417,14 @@ end
 lia.command.add("demorequests", {
     description = "Demonstrates all available request UI functions",
     privilege = "Staff",
-    onRun = function(client, arguments)
+    onRun = function(client)
         if SERVER then
             client:notify("Opening request UI demo...")
             -- Start with binary question
             client:binaryQuestion("Would you like to see all the request UI demos?", "Yes, show me!", "No, thanks", false, function(confirmed)
                 if confirmed then
                     -- Show dropdown demo
-                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, data)
+                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
                         if selected then
                             -- Show options demo
                             client:requestOptions("Demo: Multi-Select Options", "Select your favorite activities (max 3):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
@@ -1467,7 +1467,7 @@ lia.command.add("demorequests", {
                                                             text = "Exit Demo",
                                                             icon = "icon16/door.png"
                                                         }
-                                                    }, function(buttonIndex, buttonText) client:notify("Demo completed! You selected: " .. buttonText) end, "Choose what to do next:")
+                                                    }, function(_, buttonText) client:notify("Demo completed! You selected: " .. buttonText) end, "Choose what to do next:")
                                                 else
                                                     client:notify("Arguments demo cancelled")
                                                 end
