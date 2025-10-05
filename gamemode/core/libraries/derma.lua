@@ -1733,11 +1733,10 @@ function lia.derma.requestOptions(title, options, callback, defaults)
     scrollPanel:Dock(FILL)
     scrollPanel:DockMargin(20, 40, 20, 60)
     local checkboxes = {}
-    local maxLabelWidth = 0
     if istable(options) then
         for _, option in ipairs(options) do
-            local optionText = ""
-            local optionData = nil
+            local optionText
+            local optionData
             if istable(option) then
                 optionText = option[1] or tostring(option[2])
                 optionData = option[2]

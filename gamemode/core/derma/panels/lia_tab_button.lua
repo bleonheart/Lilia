@@ -1,5 +1,4 @@
 ﻿local PANEL = {}
-local animDuration = 0.3
 function PANEL:Init()
     self.text = ""
     self.icon = nil

@@ -513,7 +513,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
                 end
             end
 
-            if match then local line = list:AddLine(unpack(values)) end
+            if match then list:AddLine(unpack(values)) end
         end
     end
 
