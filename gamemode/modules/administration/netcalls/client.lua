@@ -221,20 +221,6 @@ net.Receive("liaAllPks", function()
     end
 end)
 
-local charMenuContext
-local function requestPlayerCharacters(steamID, line, buildMenu)
-    charMenuContext = {
-        pos = {gui.MousePos()},
-        line = line,
-        steamID = steamID,
-        buildMenu = buildMenu
-    }
-
-    net.Start("liaRequestPlayerCharacters")
-    net.WriteString(steamID)
-    net.SendToServer()
-end
-
 local function OpenRoster(panel, data)
     panel:Clear()
     local sheet = panel:Add("liaTabs")
@@ -268,9 +254,8 @@ local function OpenRoster(panel, data)
                 row.OnRightClick = function()
                     if not IsValid(row) or not row.rowData then return end
                     local rowData = row.rowData
-                    local steamID = rowData.steamID
                     local menu = lia.derma.dermaMenu()
-                    if steamID and steamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
+                    if rowData.steamID and rowData.steamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
                         menu:AddOption(L("kick"), function()
                             Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
                                 net.Start("liaKickCharacter")
@@ -279,7 +264,7 @@ local function OpenRoster(panel, data)
                             end, L("no"))
                         end):SetIcon("icon16/user_delete.png")
 
-                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. steamID) end):SetIcon("icon16/page_copy.png") end
+                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end):SetIcon("icon16/page_copy.png") end
                     end
 
                     menu:AddOption(L("copyRow"), function()
@@ -555,19 +540,6 @@ lia.net.readBigTable("liaStaffSummary", function(data)
 
         menu:Open()
     end
-end)
-
-lia.net.readBigTable("liaPlayerCharacters", function(data)
-    if not data or not charMenuContext then return end
-    local menu = lia.derma.dermaMenu()
-    if charMenuContext.buildMenu then charMenuContext.buildMenu(menu, charMenuContext.line, data.steamID, data.characters or {}) end
-    if charMenuContext.pos then
-        menu:Open(charMenuContext.pos[1], charMenuContext.pos[2])
-    else
-        menu:Open()
-    end
-
-    charMenuContext = nil
 end)
 
 lia.net.readBigTable("liaAllPlayers", function(players)

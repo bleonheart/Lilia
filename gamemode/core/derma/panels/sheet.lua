@@ -274,7 +274,7 @@ function PANEL:AddListViewRow(cfg)
         local lv = vgui.Create("DListView", p)
         lv:Dock(FILL)
         -- Add columns with initial sizing
-        for i, colName in ipairs(cols) do
+        for _, colName in ipairs(cols) do
             lv:AddColumn(colName)
         end
 

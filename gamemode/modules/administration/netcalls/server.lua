@@ -373,27 +373,6 @@ net.Receive("liaRequestMapEntities", function(_, client)
     lia.net.writeBigTable(client, "liaMapEntities", entities)
 end)
 
-net.Receive("liaRequestPlayerCharacters", function(_, client)
-    if not (client:hasPrivilege("canAccessPlayerList") or client:hasPrivilege("canManageFactions")) then return end
-    local steamID = net.ReadString()
-    if not steamID or steamID == "" then return end
-    local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-    local query = string.format("SELECT name FROM lia_characters WHERE steamID = %s AND schema = '%s'", lia.db.convertDataType(steamID), lia.db.escape(gamemode))
-    lia.db.query(query, function(data)
-        local chars = {}
-        if data then
-            for _, v in ipairs(data) do
-                chars[#chars + 1] = v.name
-            end
-        end
-
-        lia.net.writeBigTable(client, "liaPlayerCharacters", {
-            steamID = steamID,
-            characters = chars
-        })
-    end)
-end)
-
 net.Receive("liaRequestOnlineStaffData", function(_, client)
     local d = deferred.new()
     -- Send data for all online staff members with their ticket and warning counts

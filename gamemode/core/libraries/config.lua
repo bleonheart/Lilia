@@ -1450,7 +1450,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 combo:SetValue(tostring(lia.config.get(key, config.value)))
                 combo:SetFont("ConfigFontLarge")
                 local options = lia.config.getOptions(key)
-                for data, text in pairs(options) do
+                for _, text in pairs(options) do
                     -- Always use the display text as the data value to ensure consistent types
                     combo:AddChoice(text, text)
                 end

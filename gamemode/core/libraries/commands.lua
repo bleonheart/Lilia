@@ -1447,8 +1447,8 @@ lia.command.add("demorequests", {
                                                 },
                                                 {"Favorite Color", {"table", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}}}},
                                                 {"Agree to Terms", "boolean"}
-                                            }, function(success, data)
-                                                if success and data then
+                                            }, function(success, argumentsData)
+                                                if success and argumentsData then
                                                     -- Show buttons demo
                                                     client:requestButtons("Demo: Button Selection", {
                                                         {
