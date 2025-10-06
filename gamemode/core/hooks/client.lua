@@ -586,7 +586,6 @@ end
 
 -- Refresh UI elements when fonts change
 hook.Add("RefreshFonts", "liaRefreshUIElements", function()
-    print("RefreshFonts hook triggered - refreshing UI elements")
     -- Force all VGUI elements to invalidate their layout and refresh fonts
     local function refreshPanel(panel)
         if not IsValid(panel) then return end

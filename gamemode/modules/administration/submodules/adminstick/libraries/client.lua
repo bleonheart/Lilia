@@ -423,7 +423,6 @@ local function OpenReasonUI(tgt, cmd)
 end
 
 local function HandleModerationOption(opt, tgt)
-    print("HandleModerationOption called with:", opt.name, opt.cmd)
     if opt.name == L("ban") then
         OpenReasonUI(tgt, "banid")
     elseif opt.name == L("kick") then
@@ -520,22 +519,16 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     for _, p in ipairs(mods) do
         if p.action then
-            print("Adding moderation option:", p.action.name, "with command:", p.action.cmd)
             modSubCategory:AddOption(L(p.action.name), function() 
-                print("Moderation option clicked:", p.action.name)
                 HandleModerationOption(p.action, tgt) 
             end):SetIcon(p.action.icon)
             if p.inverse then 
-                print("Adding inverse moderation option:", p.inverse.name, "with command:", p.inverse.cmd)
                 modSubCategory:AddOption(L(p.inverse.name), function() 
-                    print("Inverse moderation option clicked:", p.inverse.name)
                     HandleModerationOption(p.inverse, tgt) 
                 end):SetIcon(p.inverse.icon) 
             end
         else
-            print("Adding direct moderation option:", p.name, "with command:", p.cmd)
             modSubCategory:AddOption(L(p.name), function() 
-                print("Direct moderation option clicked:", p.name)
                 HandleModerationOption(p, tgt) 
             end):SetIcon(p.icon)
         end

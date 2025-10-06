@@ -109,24 +109,10 @@ function PANEL:AddOption(text, func, icon, optData)
     option.Text = text
     option.Func = func
     
-    -- Debug mouse events and handle clicks directly
     option.OnMousePressed = function(self, keyCode)
-        print("Button mouse pressed:", option.Text, "key:", keyCode)
         if keyCode == MOUSE_LEFT then
-            print("Left mouse button pressed, calling DoClick manually")
             option:DoClick()
         end
-    end
-    
-    option.OnCursorEntered = function(self)
-        print("Button cursor entered:", option.Text)
-    end
-    
-    option.OnCursorExited = function(self)
-        print("Button cursor exited:", option.Text)
-    end
-    if not func then
-        print("DermaMenu: AddOption called with nil function for:", text)
     end
     option.IconWidth = icon and 16 or 0
     option._cachedIconMat = nil
@@ -151,9 +137,7 @@ function PANEL:AddOption(text, func, icon, optData)
     option._submenu = nil
     option._submenu_open = false
     option.DoClick = function()
-        print("=== DermaMenu DoClick called for:", option.Text, "===")
         if option._submenu then
-            print("Has submenu, toggling...")
             if option._submenu_open then
                 option:CloseSubMenu()
             else
@@ -163,12 +147,8 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         if option.Func then 
-            print("Executing function for:", option.Text)
-            -- Execute the function first
             option.Func() 
             surface.PlaySound('button_click.wav')
-        else
-            print("DermaMenu: No function found for option:", option.Text)
         end
         
         -- Close menus after function execution with a small delay to ensure function completes
@@ -346,7 +326,9 @@ function PANEL:AddOption(text, func, icon, optData)
                     if IsValid(pnl) and pnl:IsHovered() and pnl._submenu and not pnl._submenu_open then
                         pnl:OpenSubMenu()
                     end
-                    pnl._hoverTimer = nil
+                    if IsValid(pnl) then
+                        pnl._hoverTimer = nil
+                    end
                 end)
             end
         else
