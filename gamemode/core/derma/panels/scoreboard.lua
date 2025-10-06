@@ -277,7 +277,6 @@ function PANEL:addPlayer(ply, parent)
             end
 
             menu:Open()
-            RegisterDermaMenuForClose(menu)
         end
     end
 

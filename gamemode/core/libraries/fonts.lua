@@ -354,12 +354,10 @@ lia.font.register("liaCharButtonFont", {
 
 if CLIENT then
     function lia.font.refresh()
-        print("lia.font.refresh() called")
         -- Clear stored fonts and re-register with current configuration
         lia.font.stored = {}
         -- Get the current font configuration
         local currentFont = lia.config.get("Font", "Montserrat Medium")
-        print("Refreshing fonts with:", currentFont)
         -- Force VGUI to refresh font cache
         if vgui and vgui.RefreshFonts then vgui.RefreshFonts() end
         -- Clear surface font cache to force re-creation

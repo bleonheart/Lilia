@@ -12,7 +12,7 @@ The util library (`lia.util`) provides a comprehensive system for managing utili
 
 
 
-### FindPlayersInSphere
+### findPlayersInSphere
 
 **Purpose**
 
@@ -20,7 +20,7 @@ Finds players within a sphere area.
 
 **Parameters**
 
-* `position` (*Vector*): The center position.
+* `origin` (*Vector*): The center position.
 * `radius` (*number*): The sphere radius.
 
 **Returns**
@@ -36,12 +36,47 @@ Server.
 ```lua
 -- Find players in sphere
 local function findPlayersInSphere(position, radius)
-    return lia.util.FindPlayersInSphere(position, radius)
+    return lia.util.findPlayersInSphere(position, radius)
 end
 
 -- Use in a function
 local function findPlayersNearEntity(entity, radius)
-    return lia.util.FindPlayersInSphere(entity:GetPos(), radius)
+    return lia.util.findPlayersInSphere(entity:GetPos(), radius)
+end
+```
+
+---
+
+### findPlayersInBox
+
+**Purpose**
+
+Finds players within a box area.
+
+**Parameters**
+
+* `mins` (*Vector*): The minimum bounds of the box.
+* `maxs` (*Vector*): The maximum bounds of the box.
+
+**Returns**
+
+* `players` (*table*): Table of players in the box.
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Find players in box
+local function findPlayersInBox(mins, maxs)
+    return lia.util.findPlayersInBox(mins, maxs)
+end
+
+-- Use in a function
+local function findPlayersInArea(minPos, maxPos)
+    return lia.util.findPlayersInBox(minPos, maxPos)
 end
 ```
 
@@ -55,6 +90,7 @@ Finds a player by name or SteamID.
 
 **Parameters**
 
+* `client` (*Player*): The client calling this function (for notifications).
 * `identifier` (*string*): The player identifier.
 
 **Returns**
@@ -69,13 +105,13 @@ Server.
 
 ```lua
 -- Find player by identifier
-local function findPlayer(identifier)
-    return lia.util.findPlayer(identifier)
+local function findPlayer(client, identifier)
+    return lia.util.findPlayer(client, identifier)
 end
 
 -- Use in a function
-local function findPlayerByName(name)
-    local player = lia.util.findPlayer(name)
+local function findPlayerByName(client, name)
+    local player = lia.util.findPlayer(client, name)
     if player then
         print("Player found: " .. player:Name())
         return player
@@ -183,7 +219,7 @@ Finds player items by class.
 **Parameters**
 
 * `client` (*Player*): The player to search for.
-* `itemClass` (*string*): The item class.
+* `class` (*string*): The item class.
 
 **Returns**
 
@@ -197,8 +233,8 @@ Server.
 
 ```lua
 -- Find player items by class
-local function findPlayerItemsByClass(client, itemClass)
-    return lia.util.findPlayerItemsByClass(client, itemClass)
+local function findPlayerItemsByClass(client, class)
+    return lia.util.findPlayerItemsByClass(client, class)
 end
 
 -- Use in a function
@@ -218,6 +254,7 @@ Finds entities belonging to a player.
 **Parameters**
 
 * `client` (*Player*): The player to search for.
+* `class` (*string*, optional): The entity class to filter by.
 
 **Returns**
 
@@ -233,6 +270,11 @@ Server.
 -- Find player entities
 local function findPlayerEntities(client)
     return lia.util.findPlayerEntities(client)
+end
+
+-- Find player entities by class
+local function findPlayerEntitiesByClass(client, class)
+    return lia.util.findPlayerEntities(client, class)
 end
 
 -- Use in a function
@@ -407,8 +449,10 @@ Checks if an object can fit in a position.
 
 **Parameters**
 
-* `position` (*Vector*): The position to check.
-* `size` (*Vector*): The size of the object.
+* `pos` (*Vector*): The position to check.
+* `mins` (*Vector*, optional): The minimum bounds. Defaults to Vector(16, 16, 0).
+* `maxs` (*Vector*, optional): The maximum bounds. Defaults to mins parameter.
+* `filter` (*Entity*, optional): Entity to ignore in collision check.
 
 **Returns**
 
@@ -448,8 +492,8 @@ Checks if a player is within a radius.
 
 **Parameters**
 
-* `position` (*Vector*): The center position.
-* `radius` (*number*): The radius.
+* `pos` (*Vector*): The center position.
+* `dist` (*number*): The radius.
 
 **Returns**
 
@@ -463,14 +507,14 @@ Server.
 
 ```lua
 -- Check players in radius
-local function playerInRadius(position, radius)
-    return lia.util.playerInRadius(position, radius)
+local function playerInRadius(pos, dist)
+    return lia.util.playerInRadius(pos, dist)
 end
 
 -- Use in a function
-local function findNearbyPlayers(pos, radius)
-    local players = lia.util.playerInRadius(pos, radius)
-    print("Found " .. #players .. " players within " .. radius .. " units")
+local function findNearbyPlayers(pos, dist)
+    local players = lia.util.playerInRadius(pos, dist)
+    print("Found " .. #players .. " players within " .. dist .. " units")
     return players
 end
 ```
@@ -524,7 +568,8 @@ Gets a material by name.
 
 **Parameters**
 
-* `materialName` (*string*): The material name.
+* `materialPath` (*string*): The material path.
+* `materialParameters` (*string*, optional): Additional material parameters.
 
 **Returns**
 
@@ -538,18 +583,23 @@ Client.
 
 ```lua
 -- Get material by name
-local function getMaterial(materialName)
-    return lia.util.getMaterial(materialName)
+local function getMaterial(materialPath)
+    return lia.util.getMaterial(materialPath)
+end
+
+-- Get material with parameters
+local function getMaterialWithParams(materialPath, materialParameters)
+    return lia.util.getMaterial(materialPath, materialParameters)
 end
 
 -- Use in a function
-local function loadMaterial(materialName)
-    local material = lia.util.getMaterial(materialName)
+local function loadMaterial(materialPath)
+    local material = lia.util.getMaterial(materialPath)
     if material then
-        print("Material loaded: " .. materialName)
+        print("Material loaded: " .. materialPath)
         return material
     else
-        print("Material not found: " .. materialName)
+        print("Material not found: " .. materialPath)
         return nil
     end
 end
@@ -565,7 +615,8 @@ Finds a faction by name.
 
 **Parameters**
 
-* `factionName` (*string*): The faction name.
+* `client` (*Player*): The client calling this function (for notifications).
+* `name` (*string*): The faction name.
 
 **Returns**
 
@@ -579,13 +630,13 @@ Shared.
 
 ```lua
 -- Find faction by name
-local function findFaction(factionName)
-    return lia.util.findFaction(factionName)
+local function findFaction(client, name)
+    return lia.util.findFaction(client, name)
 end
 
 -- Use in a function
-local function checkFactionExists(factionName)
-    local faction = lia.util.findFaction(factionName)
+local function checkFactionExists(client, factionName)
+    local faction = lia.util.findFaction(client, factionName)
     if faction then
         print("Faction exists: " .. factionName)
         return true
@@ -607,8 +658,11 @@ Sends a table to the client UI.
 **Parameters**
 
 * `client` (*Player*): The client to send to.
-* `tableName` (*string*): The table name.
+* `title` (*string*): The table title.
+* `columns` (*table*): Table column definitions.
 * `data` (*table*): The table data.
+* `options` (*table*, optional): Table options.
+* `characterID` (*number*, optional): Character ID.
 
 **Returns**
 
@@ -643,8 +697,12 @@ Finds an empty space near a position.
 
 **Parameters**
 
-* `position` (*Vector*): The position to search from.
-* `size` (*Vector*): The size of the space needed.
+* `entity` (*Entity*): The entity to find space for.
+* `filter` (*Entity*, optional): Entity to ignore in collision check.
+* `spacing` (*number*, optional): Spacing between search positions. Defaults to 32.
+* `size` (*number*, optional): Search radius size. Defaults to 3.
+* `height` (*number*, optional): Height requirement. Defaults to 36.
+* `tolerance` (*number*, optional): Collision tolerance. Defaults to 5.
 
 **Returns**
 
@@ -796,7 +854,7 @@ end
 
 **Purpose**
 
-Draws text with various effects.
+Draws text with various effects. This is an alias to `lia.derma.drawText`.
 
 **Parameters**
 
@@ -824,8 +882,7 @@ end
 
 -- Use in a function
 local function drawCenteredText(text, x, y, color)
-    local width = lia.util.getTextWidth(text, "liaMediumFont")
-    lia.util.drawText(text, "liaMediumFont", x - width / 2, y, color)
+    lia.util.drawText(text, "liaMediumFont", x, y, color)
 end
 ```
 
@@ -835,11 +892,11 @@ end
 
 **Purpose**
 
-Draws a texture.
+Draws a texture. This is an alias to `lia.derma.drawSurfaceTexture`.
 
 **Parameters**
 
-* `texture*): The texture to draw.
+* `texture` (*Material*): The texture to draw.
 * `x` (*number*): The x position.
 * `y` (*number*): The y position.
 * `width` (*number*): The width.
@@ -1026,8 +1083,13 @@ Draws a blur effect at a specific position.
 
 **Parameters**
 
-* `position` (*Vector*): The position to draw at.
-* `size` (*Vector*): The size of the blur.
+* `x` (*number*): The x position.
+* `y` (*number*): The y position.
+* `w` (*number*): The width.
+* `h` (*number*): The height.
+* `amount` (*number*, optional): Blur amount. Defaults to 5.
+* `passes` (*number*, optional): Number of blur passes. Defaults to 0.2.
+* `alpha` (*number*, optional): Alpha value. Defaults to 255.
 
 **Returns**
 
@@ -1091,6 +1153,42 @@ end
 
 ---
 
+### requestArguments
+
+**Purpose**
+
+Requests arguments from a client. This is an alias to `lia.derma.requestArguments`.
+
+**Parameters**
+
+* `client` (*Player*): The client to request from.
+* `prompt` (*string*): The prompt text.
+* `callback` (*function*): The callback function.
+
+**Returns**
+
+*None*
+
+**Realm**
+
+Server.
+
+**Example Usage**
+
+```lua
+-- Request arguments from client
+local function requestArguments(client, prompt, callback)
+    lia.util.requestArguments(client, prompt, callback)
+end
+
+-- Use in a function
+local function requestPlayerName(client, callback)
+    lia.util.requestArguments(client, "Enter player name:", callback)
+end
+```
+
+---
+
 ### CreateTableUI
 
 **Purpose**
@@ -1099,13 +1197,16 @@ Creates a table UI for a client.
 
 **Parameters**
 
-* `client` (*Player*): The client to create for.
-* `tableName` (*string*): The table name.
+* `title` (*string*): The table title.
+* `columns` (*table*): Table column definitions.
 * `data` (*table*): The table data.
+* `options` (*table*, optional): Table options.
+* `charID` (*number*, optional): Character ID.
 
 **Returns**
 
-*None*
+* `frame` (*liaFrame*): The created frame.
+* `listView` (*liaDListView*): The list view component.
 
 **Realm**
 
@@ -1136,11 +1237,12 @@ Opens the options menu for a client.
 
 **Parameters**
 
-* `client` (*Player*): The client to open for.
+* `title` (*string*): The menu title.
+* `options` (*table*): The options to display.
 
 **Returns**
 
-*None*
+* `frame` (*DFrame*): The created frame.
 
 **Realm**
 
@@ -1594,86 +1696,6 @@ local function revealElement(element)
     element:SetSize(element.targetWidth * eased, element.targetHeight)
 end
 ```
-
----
-
-### previewPlayer
-
-**Purpose**
-
-Creates a player preview/selection interface with enhanced visuals and hover effects.
-
-**Parameters**
-
-* `callback` (*function*): Function called when a player is selected.
-* `checkFunc` (*function*, optional): Function to validate player selection.
-* `title` (*string*, optional): The title for the preview window.
-* `size` (*table*, optional): Custom size with w and h properties.
-
-**Returns**
-
-* `frame` (*liaFrame*): The player preview frame.
-
-**Realm**
-
-Client.
-
-**Example Usage**
-
-```lua
--- Basic player preview
-lia.util.previewPlayer(function(player)
-    print("Selected player:", player:Name())
-end)
-
--- Player preview with validation
-lia.util.previewPlayer(function(player)
-    if player:Team() == TEAM_ADMIN then
-        promotePlayer(player)
-    else
-        print("Cannot promote non-admin players")
-    end
-end, function(player)
-    return player ~= LocalPlayer()
-end)
-
--- Custom titled preview
-lia.util.previewPlayer(function(player)
-    startPrivateMessage(player)
-end, nil, "Select Player to Message")
-
--- Custom sized preview
-lia.util.previewPlayer(function(player)
-    teleportToPlayer(player)
-end, nil, "Teleport Target", {w = 400, h = 500})
-
--- Use in admin menu
-local adminMenu = lia.derma.frame(nil, "Admin Tools", 300, 400)
-local selectPlayerBtn = lia.derma.button(adminMenu, "icon16/user.png")
-selectPlayerBtn:SetText("Select Player")
-selectPlayerBtn.DoClick = function()
-    lia.util.previewPlayer(function(player)
-        -- Show admin options for selected player
-        showPlayerAdminOptions(player)
-    end, function(player)
-        return player ~= LocalPlayer()
-    end, "Select Target Player")
-end
-
--- Player preview for team management
-lia.util.previewPlayer(function(player)
-    local teams = team.GetAllTeams()
-    local menu = lia.derma.dermaMenu()
-
-    for teamID, teamInfo in pairs(teams) do
-        menu:AddOption("Move to " .. teamInfo.Name, function()
-            player:SetTeam(teamID)
-            print("Moved " .. player:Name() .. " to " .. teamInfo.Name)
-        end)
-    end
-end, function(player)
-    return IsValid(player) and player:Alive()
-end, "Team Management")
 
 ---
 
