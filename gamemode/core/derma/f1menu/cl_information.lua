@@ -174,7 +174,7 @@ function PANEL:OnRemove()
     hook.Remove("OnThemeChanged", self)
 end
 
-function PANEL:OnThemeChanged(themeName, useTransition)
+function PANEL:OnThemeChanged()
     if not IsValid(self) then return end
     self:Refresh()
 end
