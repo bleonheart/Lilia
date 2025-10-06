@@ -693,7 +693,7 @@ end
 
 **Purpose**
 
-Finds an empty space near a position.
+Finds empty spaces near an entity's position.
 
 **Parameters**
 
@@ -706,7 +706,7 @@ Finds an empty space near a position.
 
 **Returns**
 
-* `emptyPosition` (*Vector*): The empty position or nil.
+* `emptyPositions` (*table*): Table of empty positions sorted by distance.
 
 **Realm**
 
@@ -715,17 +715,17 @@ Server.
 **Example Usage**
 
 ```lua
--- Find empty space
-local function findEmptySpace(position, size)
-    return lia.util.findEmptySpace(position, size)
+-- Find empty spaces
+local function findEmptySpaces(entity)
+    return lia.util.findEmptySpace(entity)
 end
 
 -- Use in a function
-local function findSpawnPosition(pos, size)
-    local emptyPos = lia.util.findEmptySpace(pos, size)
-    if emptyPos then
-        print("Empty space found at " .. tostring(emptyPos))
-        return emptyPos
+local function findSpawnPositions(entity)
+    local emptyPositions = lia.util.findEmptySpace(entity)
+    if #emptyPositions > 0 then
+        print("Found " .. #emptyPositions .. " empty positions")
+        return emptyPositions[1] -- Return closest position
     else
         print("No empty space found")
         return nil
@@ -972,12 +972,13 @@ Wraps text to fit within a width.
 **Parameters**
 
 * `text` (*string*): The text to wrap.
-* `font` (*string*): The font to use.
 * `width` (*number*): The maximum width.
+* `font` (*string*, optional): The font to use. Defaults to "liaChatFont".
 
 **Returns**
 
-* `wrappedText` (*table*): Table of wrapped lines.
+* `wrappedLines` (*table*): Table of wrapped lines.
+* `maxWidth` (*number*): The maximum width of the wrapped text.
 
 **Realm**
 
@@ -987,15 +988,15 @@ Client.
 
 ```lua
 -- Wrap text
-local function wrapText(text, font, width)
-    return lia.util.wrapText(text, font, width)
+local function wrapText(text, width, font)
+    return lia.util.wrapText(text, width, font)
 end
 
 -- Use in a function
 local function wrapLongText(text, width)
-    local lines = lia.util.wrapText(text, "liaMediumFont", width)
+    local lines, maxWidth = lia.util.wrapText(text, width, "liaMediumFont")
     print("Text wrapped into " .. #lines .. " lines")
-    return lines
+    return lines, maxWidth
 end
 ```
 
@@ -1005,14 +1006,14 @@ end
 
 **Purpose**
 
-Draws a blur effect.
+Draws a blur effect on a panel.
 
 **Parameters**
 
-* `x` (*number*): The x position.
-* `y` (*number*): The y position.
-* `width` (*number*): The width.
-* `height` (*number*): The height.
+* `panel` (*Panel*): The panel to draw blur on.
+* `amount` (*number*, optional): Blur amount. Defaults to 5.
+* `passes` (*number*, optional): Number of blur passes. Defaults to 0.2.
+* `alpha` (*number*, optional): Alpha value. Defaults to 255.
 
 **Returns**
 
@@ -1025,14 +1026,14 @@ Client.
 **Example Usage**
 
 ```lua
--- Draw blur effect
-local function drawBlur(x, y, width, height)
-    lia.util.drawBlur(x, y, width, height)
+-- Draw blur effect on panel
+local function drawBlur(panel, amount, passes, alpha)
+    lia.util.drawBlur(panel, amount, passes, alpha)
 end
 
 -- Use in a function
-local function drawBackgroundBlur()
-    lia.util.drawBlur(0, 0, ScrW(), ScrH())
+local function drawBackgroundBlur(panel)
+    lia.util.drawBlur(panel, 5, 0.2, 255)
 end
 ```
 
@@ -1042,14 +1043,15 @@ end
 
 **Purpose**
 
-Draws a black blur effect.
+Draws a black blur effect on a panel.
 
 **Parameters**
 
-* `x` (*number*): The x position.
-* `y` (*number*): The y position.
-* `width` (*number*): The width.
-* `height` (*number*): The height.
+* `panel` (*Panel*): The panel to draw blur on.
+* `amount` (*number*, optional): Blur amount. Defaults to 6.
+* `passes` (*number*, optional): Number of blur passes. Defaults to 5.
+* `alpha` (*number*, optional): Alpha value. Defaults to 255.
+* `darkAlpha` (*number*, optional): Dark overlay alpha. Defaults to 220.
 
 **Returns**
 
@@ -1062,14 +1064,14 @@ Client.
 **Example Usage**
 
 ```lua
--- Draw black blur effect
-local function drawBlackBlur(x, y, width, height)
-    lia.util.drawBlackBlur(x, y, width, height)
+-- Draw black blur effect on panel
+local function drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
+    lia.util.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
 end
 
 -- Use in a function
-local function drawDarkBackground()
-    lia.util.drawBlackBlur(0, 0, ScrW(), ScrH())
+local function drawDarkBackground(panel)
+    lia.util.drawBlackBlur(panel, 6, 5, 255, 220)
 end
 ```
 
@@ -1103,51 +1105,15 @@ Client.
 
 ```lua
 -- Draw blur at position
-local function drawBlurAt(position, size)
-    lia.util.drawBlurAt(position, size)
+local function drawBlurAt(x, y, w, h, amount, passes, alpha)
+    lia.util.drawBlurAt(x, y, w, h, amount, passes, alpha)
 end
 
 -- Use in a function
 local function drawBlurAtEntity(entity)
     local pos = entity:GetPos()
-    local size = Vector(100, 100, 100)
-    lia.util.drawBlurAt(pos, size)
-end
-```
-
----
-
-### requestArguments
-
-**Purpose**
-
-Requests arguments from a client.
-
-**Parameters**
-
-* `client` (*Player*): The client to request from.
-* `prompt` (*string*): The prompt text.
-* `callback` (*function*): The callback function.
-
-**Returns**
-
-*None*
-
-**Realm**
-
-Server.
-
-**Example Usage**
-
-```lua
--- Request arguments from client
-local function requestArguments(client, prompt, callback)
-    lia.util.requestArguments(client, prompt, callback)
-end
-
--- Use in a function
-local function requestPlayerName(client, callback)
-    lia.util.requestArguments(client, "Enter player name:", callback)
+    local screenPos = pos:ToScreen()
+    lia.util.drawBlurAt(screenPos.x, screenPos.y, 100, 100)
 end
 ```
 
@@ -1205,25 +1171,30 @@ Creates a table UI for a client.
 
 **Returns**
 
-* `frame` (*liaFrame*): The created frame.
+* `frame` (*DFrame*): The created frame.
 * `listView` (*liaDListView*): The list view component.
 
 **Realm**
 
-Server.
+Client.
 
 **Example Usage**
 
 ```lua
 -- Create table UI
-local function createTableUI(client, tableName, data)
-    lia.util.CreateTableUI(client, tableName, data)
+local function createTableUI(title, columns, data, options, charID)
+    return lia.util.CreateTableUI(title, columns, data, options, charID)
 end
 
 -- Use in a function
-local function createPlayerListUI(client, players)
-    lia.util.CreateTableUI(client, "PlayerList", players)
-    print("Player list UI created for " .. client:Name())
+local function createPlayerListUI(players)
+    local columns = {
+        {name = "Name", field = "name"},
+        {name = "SteamID", field = "steamid"}
+    }
+    local frame, listView = lia.util.CreateTableUI("PlayerList", columns, players)
+    print("Player list UI created")
+    return frame, listView
 end
 ```
 
@@ -1246,20 +1217,25 @@ Opens the options menu for a client.
 
 **Realm**
 
-Server.
+Client.
 
 **Example Usage**
 
 ```lua
 -- Open options menu
-local function openOptionsMenu(client)
-    lia.util.openOptionsMenu(client)
+local function openOptionsMenu(title, options)
+    return lia.util.openOptionsMenu(title, options)
 end
 
 -- Use in a function
-local function showOptionsMenu(client)
-    lia.util.openOptionsMenu(client)
-    print("Options menu opened for " .. client:Name())
+local function showOptionsMenu()
+    local options = {
+        {name = "Option 1", callback = function() print("Option 1 clicked") end},
+        {name = "Option 2", callback = function() print("Option 2 clicked") end}
+    }
+    local frame = lia.util.openOptionsMenu("My Menu", options)
+    print("Options menu opened")
+    return frame
 end
 ```
 
