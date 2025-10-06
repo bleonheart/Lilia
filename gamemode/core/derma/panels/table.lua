@@ -58,6 +58,10 @@ function PANEL:AddLine(...)
     return self:AddItem(...)
 end
 
+function PANEL:AddRow(...)
+    return self:AddItem(...)
+end
+
 function PANEL:SortByColumn(columnIndex)
     local column = self.columns[columnIndex]
     if not column or not column.sortable then return end
@@ -370,6 +374,11 @@ function PANEL:OnSizeChanged()
             self:CreateHeader()
         end
     end
+end
+
+function PANEL:SetMinHeight(height)
+    self.minHeight = tonumber(height) or self.minHeight
+    if self:GetTall() < self.minHeight then self:SetTall(self.minHeight) end
 end
 
 function PANEL:Paint(w, h)
