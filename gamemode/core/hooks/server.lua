@@ -553,7 +553,7 @@ function GM:SetupBotPlayer(client)
     if not invType then return end
     local inventory = lia.inventory.new(invType)
     local character = lia.char.new({
-        name = client:Name(),
+        name = lia.util.generateRandomName(),
         faction = faction and faction.uniqueID or "unknown",
         desc = L("botDesc", botID),
         model = "models/player/phoenix.mdl",
