@@ -35,7 +35,7 @@ function PANEL:Init()
         local focusedItem = nil
         local focusedIndex = 1
         -- Find currently focused item
-        for i, item in ipairs(self.Items) do
+        for i, item in ipairs(panel.Items) do
             if IsValid(item) and item:IsHovered() then
                 focusedItem = item
                 focusedIndex = i
@@ -46,9 +46,9 @@ function PANEL:Init()
         if keyCode == KEY_DOWN then
             -- Navigate down
             local nextIndex = focusedIndex + 1
-            if nextIndex > #self.Items then nextIndex = 1 end
-            for i = nextIndex, #self.Items do
-                local item = self.Items[i]
+            if nextIndex > #panel.Items then nextIndex = 1 end
+            for i = nextIndex, #panel.Items do
+                local item = panel.Items[i]
                 if IsValid(item) and item.SetHovered then
                     item:SetHovered(true)
                     if focusedItem then focusedItem:SetHovered(false) end
@@ -58,9 +58,9 @@ function PANEL:Init()
         elseif keyCode == KEY_UP then
             -- Navigate up
             local prevIndex = focusedIndex - 1
-            if prevIndex < 1 then prevIndex = #self.Items end
+            if prevIndex < 1 then prevIndex = #panel.Items end
             for i = prevIndex, 1, -1 do
-                local item = self.Items[i]
+                local item = panel.Items[i]
                 if IsValid(item) and item.SetHovered then
                     item:SetHovered(true)
                     if focusedItem then focusedItem:SetHovered(false) end
@@ -75,14 +75,14 @@ function PANEL:Init()
             if focusedItem and focusedItem._submenu and focusedItem._submenu_open then
                 focusedItem:CloseSubMenu()
             else
-                self:Remove()
+                panel:Remove()
             end
         elseif keyCode == KEY_ENTER or keyCode == KEY_SPACE then
             -- Activate item
             if focusedItem then focusedItem:DoClick() end
         elseif keyCode == KEY_ESCAPE then
             -- Close menu
-            self:Remove()
+            panel:Remove()
         end
     end
 end
