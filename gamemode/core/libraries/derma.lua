@@ -1613,8 +1613,14 @@ end
 
 function lia.derma.requestDropdown(title, options, callback, defaultValue)
     if IsValid(lia.derma.menuRequestDropdown) then lia.derma.menuRequestDropdown:Remove() end
+    -- Calculate frame height based on number of options
+    local numOptions = istable(options) and #options or 0
+    local itemHeight = 26 -- Same as combobox item height
+    local itemMargin = 2 -- Margin between items
+    local dropdownHeight = math.min(numOptions * (itemHeight + itemMargin) + 12, 400) -- Cap at 400px
+    local frameHeight = 140 + dropdownHeight -- Base height + dropdown height
     local frame = vgui.Create("liaFrame")
-    frame:SetSize(300, 150)
+    frame:SetSize(300, frameHeight)
     frame:Center()
     frame:MakePopup()
     frame:SetTitle("")
@@ -1622,7 +1628,7 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
     frame:ShowAnimation()
     local dropdown = vgui.Create("liaComboBox", frame)
     dropdown:Dock(TOP)
-    dropdown:DockMargin(20, 40, 20, 20)
+    dropdown:DockMargin(20, 20, 20, 20)
     dropdown:SetTall(30)
     if istable(options) then
         for _, option in ipairs(options) do
