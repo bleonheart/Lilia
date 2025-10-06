@@ -241,7 +241,6 @@ function PANEL:OpenMenu()
 
     self.opened = true
     local oldMouseDown = false
-
     if IsValid(self.menu) then
         self.menu.Think = function()
             if not self.menu:IsVisible() then return end
@@ -311,7 +310,6 @@ end
 function PANEL:AutoSize()
     -- Calculate optimal width based on option text lengths
     if #self.choices == 0 then return end
-
     surface.SetFont(self.font)
     local maxTextWidth = 0
     for _, choice in ipairs(self.choices) do
@@ -322,23 +320,16 @@ function PANEL:AutoSize()
     -- Add padding for text and ensure minimum width
     local optimalWidth = math.max(150, maxTextWidth + 50) -- 50px padding for text, minimum 150px
     local cappedWidth = math.min(optimalWidth, ScrW() * 0.5) -- Cap at 50% of screen width
-
     -- Only resize if the calculated width is larger than current width
     if cappedWidth > self:GetWide() then
         self:SetWide(cappedWidth)
-
         -- Trigger layout update for parent containers
         local parent = self:GetParent()
         if parent then
-            if parent.InvalidateLayout then
-                parent:InvalidateLayout()
-            end
-
+            if parent.InvalidateLayout then parent:InvalidateLayout() end
             -- Also trigger layout for grandparent if needed (for nested panels)
             local grandparent = parent:GetParent()
-            if grandparent and grandparent.InvalidateLayout then
-                grandparent:InvalidateLayout()
-            end
+            if grandparent and grandparent.InvalidateLayout then grandparent:InvalidateLayout() end
         end
     end
 end
@@ -347,12 +338,9 @@ function PANEL:FinishAddingOptions()
     -- This method can be called after all options have been added
     -- to ensure the dropdown is properly sized
     self:RefreshDropdown()
-
     -- Only auto-size if not handled by config formatter
     local parent = self:GetParent()
-    if not (parent and parent.ClassName == "DPanel" and self:GetDock() == TOP) then
-        self:AutoSize()
-    end
+    if not (parent and parent.ClassName == "DPanel" and self:GetDock() == TOP) then self:AutoSize() end
 end
 
 function PANEL:RecalculateSize()

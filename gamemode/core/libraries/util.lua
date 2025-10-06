@@ -361,7 +361,6 @@ else
         local x, y = panel:GetPos()
         local w, h = panel:GetSize()
         local sw, sh = ScrW(), ScrH()
-
         -- Check if logo exists and adjust positioning
         local logoMargin = 0
         if IsValid(lia.gui.character) and IsValid(lia.gui.character.logo) then
@@ -369,7 +368,6 @@ else
             local logoW, logoH = lia.gui.character.logo:GetSize()
             local logoRight = logoX + logoW
             local logoBottom = logoY + logoH
-
             -- If menu would overlap with logo area, add margin
             if x < logoRight and x + w > logoX and y < logoBottom and y + h > logoY then
                 logoMargin = logoH + (ScrH() * 0.01) -- Logo height + padding
@@ -389,10 +387,7 @@ else
         end
 
         -- Apply logo margin if needed
-        if logoMargin > 0 and y < logoMargin then
-            y = logoMargin
-        end
-
+        if logoMargin > 0 and y < logoMargin then y = logoMargin end
         panel:SetPos(x, y)
     end
 

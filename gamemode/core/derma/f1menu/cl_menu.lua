@@ -162,14 +162,9 @@ function PANEL:Init()
     end
 
     if defaultTab then self:setActiveTab(defaultTab) end
-
     -- Ensure tab colors are up to date when menu opens
     -- Use a timer to ensure theme colors are fully applied
-    timer.Simple(0.1, function()
-        if IsValid(self) then
-            self:UpdateTabColors()
-        end
-    end)
+    timer.Simple(0.1, function() if IsValid(self) then self:UpdateTabColors() end end)
 end
 
 function PANEL:addTab(name, callback)
@@ -179,7 +174,6 @@ function PANEL:addTab(name, callback)
     surface.SetFont(tab:GetFont())
     local tw = select(1, surface.GetTextSize(tab:GetText()))
     tab.calcW = math.max(self.baseBtnW or 150, tw + 20)
-
     -- Use the same text color as other UI elements for consistency
     tab:SetTextColor(lia.color.theme.text or Color(210, 235, 235))
     tab:SetExpensiveShadow(1, Color(0, 0, 0, 100))
@@ -244,17 +238,13 @@ end
 function PANEL:ApplyCurrentTheme()
     -- Ensure the current theme is properly applied
     local currentTheme = lia.color.getCurrentTheme()
-    if currentTheme and lia.color.themes[currentTheme] then
-        lia.color.theme = table.Copy(lia.color.themes[currentTheme])
-    end
+    if currentTheme and lia.color.themes[currentTheme] then lia.color.theme = table.Copy(lia.color.themes[currentTheme]) end
 end
 
 function PANEL:UpdateTabColors()
     if not self.tabList then return end
-
     -- Update all existing tabs with current theme colors (use same source as other UI elements)
     local textColor = lia.color.theme.text or Color(210, 235, 235)
-
     -- Debug: Print current theme info (remove this after testing)
     -- print("[F1 Menu Debug] Current theme:", lia.color.getCurrentTheme())
     -- print("[F1 Menu Debug] Theme text color:", textColor)
@@ -263,12 +253,9 @@ function PANEL:UpdateTabColors()
     -- else
     --     print("[F1 Menu Debug] lia.color.theme is nil!")
     -- end
-
     -- Update all existing tabs with current theme colors
     for _, tab in pairs(self.tabList) do
-        if IsValid(tab) then
-            tab:SetTextColor(textColor)
-        end
+        if IsValid(tab) then tab:SetTextColor(textColor) end
     end
 end
 

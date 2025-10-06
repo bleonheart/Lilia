@@ -451,12 +451,8 @@ function GM:ItemShowEntityMenu(entity, useKeyHeld)
     liaItemDermaMenu:SetVisible(true)
     liaItemDermaMenu:SetKeyboardInputEnabled(false)
     liaItemDermaMenu:SetMouseInputEnabled(true) -- Enable mouse input for click-outside detection
-
     -- Ensure menu state is properly reset when menu is removed
-    liaItemDermaMenu.OnRemove = function()
-        liaItemMenuVisible = false
-    end
-
+    liaItemDermaMenu.OnRemove = function() liaItemMenuVisible = false end
     liaItemMenuVisible = true
 end
 

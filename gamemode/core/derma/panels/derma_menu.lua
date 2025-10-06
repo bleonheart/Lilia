@@ -25,14 +25,13 @@ function PANEL:Init()
                     break
                 end
             end
-            if not anySubmenuHovered then
-                self:Remove()
-            end
+
+            if not anySubmenuHovered then self:Remove() end
         end
     end
 
     -- Enhanced keyboard navigation
-    self.OnKeyCodePressed = function(self, keyCode)
+    self.OnKeyCodePressed = function(panel, keyCode)
         local focusedItem = nil
         local focusedIndex = 1
         -- Find currently focused item
@@ -108,12 +107,7 @@ function PANEL:AddOption(text, func, icon, optData)
     option.Icon = icon
     option.Text = text
     option.Func = func
-    
-    option.OnMousePressed = function(self, keyCode)
-        if keyCode == MOUSE_LEFT then
-            option:DoClick()
-        end
-    end
+    option.OnMousePressed = function(_, keyCode) if keyCode == MOUSE_LEFT then option:DoClick() end end
     option.IconWidth = icon and 16 or 0
     option._cachedIconMat = nil
     function option:SetImage(newIcon)
@@ -146,11 +140,11 @@ function PANEL:AddOption(text, func, icon, optData)
             return
         end
 
-        if option.Func then 
-            option.Func() 
+        if option.Func then
+            option.Func()
             surface.PlaySound('button_click.wav')
         end
-        
+
         -- Close menus after function execution with a small delay to ensure function completes
         timer.Simple(0.01, function()
             local function closeAllMenus(panel)
@@ -164,18 +158,19 @@ function PANEL:AddOption(text, func, icon, optData)
                     end
                 end
             end
+
             closeAllMenus(option)
         end)
     end
 
     -- Enhanced keyboard navigation for menu items
-    option.OnKeyCodePressed = function(self, keyCode)
-        if keyCode == KEY_RIGHT and self._submenu then
-            if not self._submenu_open then self:OpenSubMenu() end
-        elseif keyCode == KEY_LEFT and self._submenu and self._submenu_open then
-            self:CloseSubMenu()
+    option.OnKeyCodePressed = function(panel, keyCode)
+        if keyCode == KEY_RIGHT and panel._submenu then
+            if not panel._submenu_open then panel:OpenSubMenu() end
+        elseif keyCode == KEY_LEFT and panel._submenu and panel._submenu_open then
+            panel:CloseSubMenu()
         elseif keyCode == KEY_ENTER or keyCode == KEY_SPACE then
-            self:DoClick()
+            panel:DoClick()
         end
     end
 
@@ -225,7 +220,6 @@ function PANEL:AddOption(text, func, icon, optData)
             if y < 10 then y = 10 end
             -- Check if submenu would go off the left edge
             if x < 10 then x = 10 end
-
             submenu:SetPos(x, y)
             submenu:MakePopup()
             submenu:SetVisible(true)
@@ -288,21 +282,8 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         -- Improved hover detection with proper timing
-        option.OnCursorExited = function()
-            timer.Simple(0.3, function()
-                if IsValid(option) and not isAnySubmenuHovered(option) then
-                    option:CloseSubMenu()
-                end
-            end)
-        end
-
-        submenu.OnCursorExited = function()
-            timer.Simple(0.3, function()
-                if IsValid(option) and not isAnySubmenuHovered(option) then
-                    option:CloseSubMenu()
-                end
-            end)
-        end
+        option.OnCursorExited = function() timer.Simple(0.3, function() if IsValid(option) and not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
+        submenu.OnCursorExited = function() timer.Simple(0.3, function() if IsValid(option) and not isAnySubmenuHovered(option) then option:CloseSubMenu() end end) end
         return submenu
     end
 
@@ -323,12 +304,8 @@ function PANEL:AddOption(text, func, icon, optData)
             -- Only open submenu after a brief delay to prevent flickering
             if pnl._submenu and not pnl._submenu_open and not pnl._hoverTimer then
                 pnl._hoverTimer = timer.Simple(0.1, function()
-                    if IsValid(pnl) and pnl:IsHovered() and pnl._submenu and not pnl._submenu_open then
-                        pnl:OpenSubMenu()
-                    end
-                    if IsValid(pnl) then
-                        pnl._hoverTimer = nil
-                    end
+                    if IsValid(pnl) and pnl:IsHovered() and pnl._submenu and not pnl._submenu_open then pnl:OpenSubMenu() end
+                    if IsValid(pnl) then pnl._hoverTimer = nil end
                 end)
             end
         else

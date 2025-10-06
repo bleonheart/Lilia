@@ -190,9 +190,7 @@ end
 function PANEL:ApplyCurrentTheme()
     -- Ensure the current theme is properly applied
     local currentTheme = lia.color.getCurrentTheme()
-    if currentTheme and lia.color.themes[currentTheme] then
-        lia.color.theme = table.Copy(lia.color.themes[currentTheme])
-    end
+    if currentTheme and lia.color.themes[currentTheme] then lia.color.theme = table.Copy(lia.color.themes[currentTheme]) end
 end
 
 function PANEL:setup()

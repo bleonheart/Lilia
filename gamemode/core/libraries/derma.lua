@@ -1,9 +1,7 @@
 ﻿lia.derma = lia.derma or {}
 local color_disconnect = Color(210, 65, 65)
-
 -- Panel color index counter for automatic color swapping
 lia.derma.panelColorIndex = lia.derma.panelColorIndex or 1
-
 function lia.derma.getNextPanelColor()
     local color = lia.color.theme.panel[lia.derma.panelColorIndex] or lia.color.theme.panel[1]
     lia.derma.panelColorIndex = (lia.derma.panelColorIndex % 3) + 1
@@ -13,6 +11,7 @@ end
 function lia.derma.resetPanelColorIndex()
     lia.derma.panelColorIndex = 1
 end
+
 local color_bot = Color(70, 150, 220)
 local color_online = Color(120, 180, 70)
 local color_close = Color(210, 65, 65)
