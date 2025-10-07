@@ -7,7 +7,7 @@ function PANEL:Init()
     self.font = "Fated.18"
     self.hoverAnim = 0
     self.OnSelect = function() end
-    self.userSetHeight = false
+    self:AutoSize()
     self.btn = vgui.Create("DButton", self)
     self.btn:Dock(FILL)
     self.btn:SetText("")
@@ -48,11 +48,6 @@ function PANEL:Init()
     end
 
     self.btn.DoClick = function()
-        -- Ensure we're initialized before opening menu
-        if not self.initialized then
-            self:PostInitInternal()
-        end
-
         if self.opened then
             self:CloseMenu()
         else
@@ -60,21 +55,6 @@ function PANEL:Init()
             surface.PlaySound("button_click.wav")
         end
     end
-
-    -- Initialize size after panel is set up
-    self:PostInitInternal()
-end
-
-function PANEL:PostInitInternal()
-    -- Use a more reliable initialization method
-    local hookName = "liaComboBoxInit_" .. tostring(self)
-    hook.Add("Think", hookName, function()
-        if IsValid(self) and not self.initialized then
-            self.initialized = true
-            self:AutoSize()
-            hook.Remove("Think", hookName)
-        end
-    end)
 end
 
 function PANEL:AddChoice(text, data)
@@ -83,22 +63,16 @@ function PANEL:AddChoice(text, data)
         data = data
     })
 
-    if self.initialized then
-        if not self.opened then
-            self:AutoSize()
-        else
-            self:CloseMenu()
-            self:OpenMenu()
-        end
+    if not self.opened then
+        self:AutoSize()
+    else
+        self:CloseMenu()
+        self:OpenMenu()
     end
 end
 
 function PANEL:SetValue(val)
     self.selected = val
-    -- Ensure we're initialized
-    if not self.initialized then
-        self:PostInitInternal()
-    end
 end
 
 function PANEL:ChooseOption(text, index)
@@ -257,9 +231,8 @@ function PANEL:OpenMenu()
     local oldMouseDown = false
     if IsValid(self.menu) then
         self.menu.Think = function()
-            if not IsValid(self.menu) or not self.menu:IsVisible() then return end
+            if not self.menu:IsVisible() then return end
             local mouseDown = input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT)
-            if not IsValid(self.menu) then return end
             if mouseDown and not oldMouseDown then
                 local mx, my = gui.MousePos()
                 local menuX, menuY = self.menu:LocalToScreen(0, 0)
@@ -269,7 +242,7 @@ function PANEL:OpenMenu()
             oldMouseDown = mouseDown
         end
 
-        if IsValid(self.menu) then self.menu.OnRemove = function() self.opened = false end
+        if IsValid(self.menu) then self.menu.OnRemove = function() self.opened = false end end
     end
 end
 
@@ -280,8 +253,6 @@ end
 
 function PANEL:OnRemove()
     self:CloseMenu()
-    -- Clean up the initialization hook
-    hook.Remove("Think", "liaComboBoxInit_" .. tostring(self))
 end
 
 function PANEL:GetOptionData(index)
@@ -314,9 +285,6 @@ end
 
 function PANEL:SetFont(font)
     self.font = font
-    if self.initialized then
-        self:AutoSize()
-    end
 end
 
 function PANEL:RefreshDropdown()
@@ -327,42 +295,27 @@ function PANEL:RefreshDropdown()
 end
 
 function PANEL:AutoSize()
-    -- Only proceed if we're in a valid state
-    if not self.font then return end
-
-    -- Set default height if not explicitly set by user
-    if not self.userSetHeight then
-        local defaultHeight = 26 -- fallback height
-        if CLIENT and surface and surface.GetTextSize then
-            surface.SetFont(self.font)
-            local _, fontHeight = surface.GetTextSize("Ag")
-            if fontHeight and fontHeight > 0 then
-                defaultHeight = fontHeight + 8 -- padding
-            end
-        end
-        self:SetTall(defaultHeight)
+    surface.SetFont(self.font)
+    local _, fontHeight = surface.GetTextSize("Ag")
+    local padding = 8
+    local optimalHeight = fontHeight + padding
+    if not self.userSetHeight then self:SetTall(optimalHeight) end
+    if #self.choices == 0 then return end
+    local maxTextWidth = 0
+    for _, choice in ipairs(self.choices) do
+        local textWidth = surface.GetTextSize(choice.text)
+        if textWidth > maxTextWidth then maxTextWidth = textWidth end
     end
 
-    if #self.choices == 0 then return end
-
-    if CLIENT and surface and surface.GetTextSize then
-        local maxTextWidth = 0
-        surface.SetFont(self.font)
-        for _, choice in ipairs(self.choices) do
-            local textWidth = surface.GetTextSize(choice.text)
-            if textWidth and textWidth > maxTextWidth then maxTextWidth = textWidth end
-        end
-
-        local optimalWidth = math.max(150, maxTextWidth + 50)
-        local cappedWidth = math.min(optimalWidth, ScrW() * 0.5)
-        if cappedWidth > self:GetWide() then
-            self:SetWide(cappedWidth)
-            local parent = self:GetParent()
-            if parent then
-                if parent.InvalidateLayout then parent:InvalidateLayout() end
-                local grandparent = parent:GetParent()
-                if grandparent and grandparent.InvalidateLayout then grandparent:InvalidateLayout() end
-            end
+    local optimalWidth = math.max(150, maxTextWidth + 50)
+    local cappedWidth = math.min(optimalWidth, ScrW() * 0.5)
+    if cappedWidth > self:GetWide() then
+        self:SetWide(cappedWidth)
+        local parent = self:GetParent()
+        if parent then
+            if parent.InvalidateLayout then parent:InvalidateLayout() end
+            local grandparent = parent:GetParent()
+            if grandparent and grandparent.InvalidateLayout then grandparent:InvalidateLayout() end
         end
     end
 end
@@ -370,9 +323,7 @@ end
 function PANEL:FinishAddingOptions()
     self:RefreshDropdown()
     local parent = self:GetParent()
-    if self.initialized and not (parent and parent.ClassName == "DPanel" and self:GetDock() == TOP) then
-        self:AutoSize()
-    end
+    if not (parent and parent.ClassName == "DPanel" and self:GetDock() == TOP) then self:AutoSize() end
 end
 
 function PANEL:SetTall(tall)
@@ -384,4 +335,4 @@ function PANEL:RecalculateSize()
     self:AutoSize()
 end
 
-vgui.Register("liaComboBox", PANEL, "DPanel")
+vgui.Register("liaComboBox", PANEL, "Panel")
