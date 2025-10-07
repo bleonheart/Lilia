@@ -21,12 +21,27 @@ end
 
 function lia.font.registerFonts(fontName)
     local mainFont = fontName or lia.config.get("Font", "Montserrat Medium")
-    lia.font.register("liaCharSubTitleFont", {
-        font = mainFont,
+    lia.font.register("Montserrat Regular", {
+        font = "Montserrat",
         size = 16,
         extended = true,
-        weight = 500,
         antialias = true
+    })
+
+    lia.font.register("Montserrat Medium", {
+        font = "Montserrat Medium",
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 500
+    })
+
+    lia.font.register("Montserrat Bold", {
+        font = "Montserrat Bold",
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 700
     })
 
     lia.font.register("liaHugeFont", {
@@ -64,90 +79,8 @@ function lia.font.registerFonts(fontName)
         weight = 400
     })
 
-    lia.font.register("liaMediumLightFont", {
-        font = mainFont,
-        size = 25,
-        extended = true,
-        weight = 200
-    })
-
-    lia.font.register("liaGenericFont", {
-        font = mainFont,
-        size = 20,
-        extended = true,
-        weight = 1000
-    })
-
-    lia.font.register("liaChatFont", {
-        font = mainFont,
-        size = 17,
-        extended = true,
-        weight = 200
-    })
-
-    lia.font.register("liaChatFontItalics", {
-        font = mainFont,
-        size = 17,
-        extended = true,
-        weight = 200,
-        italic = true
-    })
-
-    lia.font.register("Montserrat Regular", {
-        font = "Montserrat",
-        size = 16,
-        extended = true,
-        antialias = true
-    })
-
-    lia.font.register("Montserrat Medium", {
-        font = "Montserrat Medium",
-        size = 16,
-        extended = true,
-        antialias = true,
-        weight = 500
-    })
-
-    lia.font.register("Montserrat Bold", {
-        font = "Montserrat Bold",
-        size = 16,
-        extended = true,
-        antialias = true,
-        weight = 700
-    })
-
-    lia.font.register("liaItemDescFont", {
-        font = mainFont,
-        size = 17,
-        extended = true,
-        shadow = true,
-        weight = 500
-    })
-
-    lia.font.register("liaItemBoldFont", {
-        font = mainFont,
-        shadow = true,
-        size = 20,
-        extended = true,
-        weight = 800
-    })
-
-    lia.font.register("liaCharSubTitleFont", {
-        font = mainFont,
-        weight = 200,
-        size = 22,
-        additive = true
-    })
-
-    lia.font.register("liaCharButtonFont", {
-        font = mainFont,
-        weight = 200,
-        size = 34,
-        additive = true
-    })
-
-    local fatedSizes = {12, 14, 15, 16, 18, 20, 24, 28, 30, 36, 40, 48}
-    for _, size in ipairs(fatedSizes) do
+    local fontSizes = {12, 14, 15, 16, 17, 18, 20, 22, 24, 25, 28, 30, 34, 36, 40, 48}
+    for _, size in ipairs(fontSizes) do
         lia.font.register("LiliaFont." .. size, {
             font = mainFont,
             size = size,
@@ -164,6 +97,108 @@ function lia.font.registerFonts(fontName)
             weight = 700
         })
     end
+
+    lia.font.register("LiliaFont.17i", {
+        font = mainFont,
+        size = 17,
+        extended = true,
+        weight = 200,
+        italic = true
+    })
+
+    lia.font.register("LiliaFont.17s", {
+        font = mainFont,
+        size = 17,
+        extended = true,
+        shadow = true,
+        weight = 500
+    })
+
+    lia.font.register("LiliaFont.16a", {
+        font = mainFont,
+        size = 16,
+        extended = true,
+        weight = 500,
+        antialias = true
+    })
+
+    lia.font.register("LiliaFont.20s", {
+        font = mainFont,
+        shadow = true,
+        size = 20,
+        extended = true,
+        weight = 800
+    })
+
+    lia.font.register("LiliaFont.22a", {
+        font = mainFont,
+        weight = 200,
+        size = 22,
+        additive = true
+    })
+
+    lia.font.register("LiliaFont.34a", {
+        font = mainFont,
+        weight = 200,
+        size = 34,
+        additive = true
+    })
+
+    lia.font.register("LiliaFont.25l", {
+        font = mainFont,
+        size = 25,
+        extended = true,
+        weight = 200
+    })
+
+    lia.font.register("LiliaFont.20h", {
+        font = mainFont,
+        size = 20,
+        extended = true,
+        weight = 1000
+    })
+
+    -- Chat-specific fonts
+    lia.font.register("liaChatFont", {
+        font = mainFont,
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 500
+    })
+
+    lia.font.register("liaBigChatFont", {
+        font = mainFont,
+        size = 20,
+        extended = true,
+        antialias = true,
+        weight = 700
+    })
+
+    lia.font.register("liaItalicsChatFont", {
+        font = mainFont,
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 500,
+        italic = true
+    })
+
+    lia.font.register("liaSmallChatFont", {
+        font = mainFont,
+        size = 14,
+        extended = true,
+        antialias = true,
+        weight = 400
+    })
+
+    lia.font.register("liaMediumChatFont", {
+        font = mainFont,
+        size = 18,
+        extended = true,
+        antialias = true,
+        weight = 600
+    })
 
     hook.Run("PostLoadFonts", mainFont, mainFont)
 end
@@ -208,4 +243,22 @@ end, {
     options = lia.font.getAvailableFonts()
 })
 
-hook.Add("InitializedConfig", "liaFontsOnConfigLoad", function() lia.font.registerFonts(lia.config.get("Font", "Montserrat Medium")) end)
+hook.Add("InitializedConfig", "liaFontsOnConfigLoad", function()
+    if CLIENT then
+        print("[FONTS] OnReloaded triggered, checking config...")
+        if not lia.config.stored or not lia.config.stored.Font then
+            print("[FONTS] Config not loaded, waiting...")
+            timer.Simple(0.1, function()
+                local fontName = lia.config.get("Font", "Montserrat Medium")
+                print("[FONTS] Registering fonts with: " .. fontName)
+                lia.font.registerFonts(fontName)
+                timer.Simple(0.2, function() hook.Run("RefreshFonts") end)
+            end)
+        else
+            local fontName = lia.config.get("Font", "Montserrat Medium")
+            print("[FONTS] Config loaded, registering fonts with: " .. fontName)
+            lia.font.registerFonts(fontName)
+            timer.Simple(0.2, function() hook.Run("RefreshFonts") end)
+        end
+    end
+end)

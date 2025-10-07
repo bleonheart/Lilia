@@ -664,5 +664,3 @@ function MODULE:CanDisplayCharInfo(name)
     if name == "class" and not class then return false end
     return true
 end
-
-hook.Add("RefreshFonts", "liaF1MenuRefreshFonts", function() if IsValid(lia.gui.menu) then lia.gui.menu:Update() end end)

@@ -386,6 +386,13 @@ function PANEL:Think()
     end
 end
 
+function PANEL:Update()
+    if IsValid(self) then
+        self:Remove()
+        vgui.Create("liaChatBox")
+    end
+end
+
 function PANEL:OnRemove()
     if IsValid(self.commandList) then
         self.commandList:Remove()

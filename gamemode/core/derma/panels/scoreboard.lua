@@ -474,6 +474,14 @@ function PANEL:Paint(w, h)
     lia.derma.rect(0, 0, w, h):Rad(radius):Color(Color(0, 0, 0, alpha)):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
+function PANEL:Update()
+    -- Font refresh functionality - recreate the panel to apply new fonts
+    if IsValid(self) then
+        self:Remove()
+        vgui.Create("liaScoreboard")
+    end
+end
+
 function PANEL:OnRemove()
     hook.Run("ScoreboardClosed", self)
     CloseDermaMenus()

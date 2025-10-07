@@ -1378,6 +1378,128 @@ else
         MsgC(Color(255, 255, 255), "Vector: (" .. math.Round(pos.x, 2) .. "," .. math.Round(pos.y, 2) .. "," .. math.Round(pos.z, 2) .. ") Angle:(" .. math.Round(ang.x, 2) .. "," .. math.Round(ang.y, 2) .. "," .. math.Round(ang.z, 2) .. ")\n")
     end)
 
+    -- Variables to store the faction view override state (global so CalcView hook can access them)
+    factionViewEnabled = factionViewEnabled or false
+    factionViewPosition = factionViewPosition or nil
+    factionViewAngles = factionViewAngles or nil
+    factionViewModel = factionViewModel or nil
+    factionViewFaction = factionViewFaction or nil
+
+    concommand.Add("viewAsFaction", function(client, _, args)
+        if not IsValid(client) then
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
+            return
+        end
+
+        -- Build the list of available factions with mainMenuPosition
+        local factionOptions = {}
+        for uniqueID, faction in pairs(lia.faction.teams) do
+            if faction.mainMenuPosition then
+                factionOptions[L(faction.name)] = uniqueID
+            end
+        end
+
+        if table.IsEmpty(factionOptions) then
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. "No factions with mainMenuPosition found.\n")
+            return
+        end
+
+        -- Use lia.util.requestArguments to create a dropdown selection
+        client:requestArguments("Select Faction to View As", {
+            ["Faction"] = {"table", factionOptions}
+        }, function(success, data)
+            if not success or not data or not data.Faction then
+                return
+            end
+
+            local factionUniqueID = data.Faction
+            local faction = lia.faction.teams[factionUniqueID]
+
+            if not faction then
+                client:notify("Faction not found.")
+                return
+            end
+
+            -- Get the main menu position for this faction
+            local menuPos = faction.mainMenuPosition
+            if not menuPos then
+                client:notify("Faction '" .. faction.name .. "' has no mainMenuPosition defined.")
+                return
+            end
+
+            local position, angles = nil, nil
+            local currentMap = game.GetMap()
+
+            -- Handle different formats of mainMenuPosition
+            if isvector(menuPos) then
+                -- Simple vector position
+                position = menuPos
+                angles = Angle(0, 180, 0) -- Default angles
+            elseif istable(menuPos) then
+                -- Table format with position and/or angles
+                if menuPos[currentMap] then
+                    -- Map-specific position
+                    local mapPos = menuPos[currentMap]
+                    if istable(mapPos) then
+                        position = mapPos.position or mapPos
+                        angles = mapPos.angles or Angle(0, 180, 0)
+                    elseif isvector(mapPos) then
+                        position = mapPos
+                        angles = Angle(0, 180, 0)
+                    end
+                else
+                    -- Global position settings
+                    position = menuPos.position or menuPos
+                    angles = menuPos.angles or Angle(0, 180, 0)
+                end
+            end
+
+            if not position then
+                client:notify("Could not determine position for faction '" .. faction.name .. "'.")
+                return
+            end
+
+            -- Enable the faction view override
+            factionViewEnabled = true
+            factionViewPosition = position
+            factionViewAngles = angles or Angle(0, 180, 0)
+            factionViewFaction = factionUniqueID
+
+            client:notify("Now viewing as faction: " .. faction.name)
+            client:notify("Position: " .. tostring(position))
+            if angles then
+                client:notify("Angles: " .. tostring(angles))
+            end
+            client:notify("Use 'stopFactionView' to return to normal view.")
+        end)
+    end)
+
+    concommand.Add("stopFactionView", function(client)
+        if not IsValid(client) then
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
+            return
+        end
+
+        if not factionViewEnabled then
+            MsgC(Color(255, 193, 7), "[Lilia] Faction view is not currently active.\n")
+            return
+        end
+
+        -- Disable the faction view override
+        factionViewEnabled = false
+        factionViewPosition = nil
+        factionViewAngles = nil
+        factionViewFaction = nil
+
+        -- Clean up the model entity
+        if IsValid(factionViewModel) then
+            factionViewModel:Remove()
+            factionViewModel = nil
+        end
+
+        MsgC(Color(0, 255, 0), "[Lilia] Faction view disabled. Returning to normal view.\n")
+    end)
+
     lia.command.add("testargs", {
         desc = "Test command for argument prompt",
         arguments = {

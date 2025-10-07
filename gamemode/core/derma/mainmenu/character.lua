@@ -364,6 +364,7 @@ function PANEL:backToMainMenu()
         self.characterSelector:Remove()
         self.characterSelector = nil
     end
+
     for _, btn in pairs(self.buttons) do
         if IsValid(btn) then btn:Remove() end
     end
@@ -454,7 +455,6 @@ function PANEL:updateSelectedCharacter()
     self.currentIndex = self.currentIndex or 1
     local sel = chars[self.currentIndex] or chars[1]
     local character = lia.char.getCharacter(sel)
-
     -- Update combobox selection if it exists
     if IsValid(self.characterSelector) then
         for i, choice in ipairs(self.characterSelector.choices) do
@@ -476,7 +476,6 @@ function PANEL:updateSelectedCharacterForID(charID)
     if not self.isLoadMode then return end
     local chars = self.availableCharacters or {}
     if #chars == 0 then return end
-
     -- Find the index of the selected character
     local selectedIndex = 1
     for i, cID in ipairs(chars) do
@@ -488,7 +487,6 @@ function PANEL:updateSelectedCharacterForID(charID)
 
     self.currentIndex = selectedIndex
     local character = lia.char.getCharacter(charID)
-
     -- Update combobox selection if it exists
     if IsValid(self.characterSelector) then
         for i, choice in ipairs(self.characterSelector.choices) do
@@ -527,7 +525,6 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         self.characterSelector:SetTall(40)
         self.characterSelector:SetPlaceholder(L("selectPrompt", L("character")))
         self.characterSelector:SetFont("liaSmallFont")
-
         -- Populate combobox with available characters
         for i, charID in ipairs(chars) do
             local charObj = isnumber(charID) and lia.char.getCharacter(charID) or charID
@@ -696,34 +693,6 @@ function PANEL:updateModelEntity(character)
     end
 
     hook.Run("SetupPlayerModel", self.modelEntity, character)
-    local pos, ang = nil, nil
-    if character and character:getFaction() then
-        local faction = lia.faction.get(character:getFaction())
-        if faction and faction.mainMenuPosition then
-            local menuPos = faction.mainMenuPosition
-            local currentMap = game.GetMap()
-            if istable(menuPos) then
-                if menuPos[currentMap] then
-                    local mapPos = menuPos[currentMap]
-                    if istable(mapPos) then
-                        pos = mapPos.position or pos
-                        ang = mapPos.angles or ang
-                    elseif isvector(mapPos) then
-                        pos = mapPos
-                    end
-                elseif menuPos.position then
-                    pos = menuPos.position or pos
-                    ang = menuPos.angles or ang
-                else
-                    pos = menuPos.position or pos
-                    ang = menuPos.angles or ang
-                end
-            elseif isvector(menuPos) then
-                pos = menuPos
-            end
-        end
-    end
-
     if not pos or not ang then pos, ang = hook.Run("GetMainMenuPosition", character) end
     if not pos or not ang then
         local spawns = ents.FindByClass("info_player_start")
@@ -890,6 +859,13 @@ end
 
 function PANEL:warningSound()
     LocalPlayer():EmitSound("friends/friend_join.wav", 40, 255)
+end
+
+function PANEL:Update()
+    if IsValid(self) then
+        self:Remove()
+        vgui.Create("liaCharacter")
+    end
 end
 
 function PANEL:OnRemove()

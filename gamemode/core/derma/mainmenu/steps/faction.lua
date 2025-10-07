@@ -51,7 +51,7 @@ function PANEL:onFactionSelected(fac)
 end
 
 function PANEL:shouldSkip()
-    return #self.faction.Choices == 1
+    return #self.faction.choices == 1
 end
 
 function PANEL:onSkip()

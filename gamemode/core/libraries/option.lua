@@ -379,7 +379,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             if IsValid(combo) then
                 combo:Dock(TOP)
                 combo:SetTall(60)
-                combo:DockMargin(300, 10, 300, 0)
+                combo:DockMargin(300, 20, 300, 0)
                 combo:SetValue(tostring(lia.option.get(key, cfg.value)))
                 combo:SetFont("LiliaFont.18")
                 local options = lia.option.getOptions(key)
