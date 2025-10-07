@@ -1201,6 +1201,7 @@ LANGUAGE = {
     inventoryTitle = "%ss Inventar",
     searchKeybinds = "Tastenkrzel suchen...",
     openInventory = "Inventar ffnen",
+    convertEntity = "Entität Konvertieren",
     spawnmenuAll = "Alle",
     charIDCopyFormat = "CharID: %s (kopieren)",
     steamIDCopyFormat = "SteamID: %s (kopieren)",

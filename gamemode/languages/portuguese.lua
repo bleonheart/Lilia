@@ -1188,6 +1188,7 @@ LANGUAGE = {
     inventoryTitle = "Inventrio de %s",
     searchKeybinds = "Procurar atalhos...",
     openInventory = "Abrir Inventrio",
+    convertEntity = "Converter Entidade",
     searchConfigs = "Procurar configuraes...",
     spawnmenuAll = "Todos",
     spawnmenuGMod = "Garry's Mod",

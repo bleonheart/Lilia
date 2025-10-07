@@ -1289,6 +1289,7 @@ LANGUAGE = {
     inventoryTitle = "%s's Inventory",
     searchKeybinds = "Search keybinds...",
     openInventory = "Open Inventory",
+    convertEntity = "Convert Entity",
     spawnmenuAll = "All",
     charIDCopyFormat = "CharID: %s (copy)",
     steamIDCopyFormat = "SteamID: %s (copy)",
