@@ -226,6 +226,7 @@ local function OpenRoster(panel, data)
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
     sheet:DockMargin(10, 10, 10, 10)
+    panel.sheet = sheet
     for factionName, members in pairs(data) do
         local membersData = members
         local factionTable = lia.util.findFaction(LocalPlayer(), factionName)
@@ -298,6 +299,8 @@ local function OpenRoster(panel, data)
 end
 
 function OpenFlagsPanel(panel, data)
+    -- Check if panel is already populated with same data structure
+    if IsValid(panel.searchEntry) and IsValid(panel.list) and panel.flagsData == data then return end
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = function() end
@@ -310,6 +313,11 @@ function OpenFlagsPanel(panel, data)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panel:Add("liaTable")
     list:Dock(FILL)
+    -- Store references to track panel state
+    panel.searchEntry = search
+    panel.list = list
+    panel.flagsData = data
+    panel.populating = false
     local columns = {
         {
             name = L("name"),
@@ -334,31 +342,42 @@ function OpenFlagsPanel(panel, data)
     end
 
     local function populate(filter)
+        if panel.populating then return end
+        panel.populating = true
         list:Clear()
         filter = string.lower(filter or "")
+        -- Track added entries to prevent duplicates
+        local addedEntries = {}
         for _, entry in ipairs(data or {}) do
             local name = entry.name or ""
             local steamID = entry.steamID or ""
             local cFlags = entry.flags or ""
             local pFlags = entry.playerFlags or ""
-            local values = {name, steamID, cFlags, pFlags}
-            local match = false
-            if filter == "" then
-                match = true
-            else
-                for _, value in ipairs(values) do
-                    if tostring(value):lower():find(filter, 1, true) then
-                        match = true
-                        break
+            -- Create a unique key for this entry to detect duplicates
+            local entryKey = steamID .. "|" .. name
+            if not addedEntries[entryKey] then
+                local values = {name, steamID, cFlags, pFlags}
+                local match = false
+                if filter == "" then
+                    match = true
+                else
+                    for _, value in ipairs(values) do
+                        if tostring(value):lower():find(filter, 1, true) then
+                            match = true
+                            break
+                        end
                     end
                 end
-            end
 
-            if match then
-                local line = list:AddLine(unpack(values))
-                line.steamID = steamID
+                if match then
+                    local line = list:AddLine(unpack(values))
+                    line.steamID = steamID
+                    addedEntries[entryKey] = true
+                end
             end
         end
+
+        panel.populating = false
     end
 
     search.OnChange = function() populate(search:GetValue()) end
@@ -411,10 +430,8 @@ end
 
 lia.net.readBigTable("liaAllFlags", function(data)
     flagsData = data or {}
-    if IsValid(flagsPanel) then
-        OpenFlagsPanel(flagsPanel, flagsData)
-        flagsData = nil
-    end
+    if IsValid(flagsPanel) then OpenFlagsPanel(flagsPanel, flagsData) end
+    flagsData = nil
 end)
 
 lia.net.readBigTable("liaFactionRosterData", function(data)
@@ -439,6 +456,9 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
+    -- Store references to track panel state
+    panelRef.searchEntry = search
+    panelRef.list = list
     local columns = {
         {
             name = L("player"),
@@ -554,6 +574,9 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
+    -- Store references to track panel state
+    panelRef.searchEntry = search
+    panelRef.list = list
     local columns = {
         {
             name = L("steamName"),

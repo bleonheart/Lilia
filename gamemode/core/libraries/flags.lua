@@ -67,7 +67,6 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
 
                     local pnl = row.panel
                     pnl.Paint = function(pnl2, w, h)
-                        derma.SkinHook("Paint", "Panel", pnl2, w, h)
                         local char = client:getChar()
                         local hasFlag = char and char:hasFlags(flagName)
                         local icon = hasFlag and "checkbox.png" or "unchecked.png"
@@ -98,7 +97,6 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
 
                     local pnl = row.panel
                     pnl.Paint = function(pnl2, w, h)
-                        derma.SkinHook("Paint", "Panel", pnl2, w, h)
                         local hasFlag = client:getFlags("player"):find(flagName, 1, true)
                         local icon = hasFlag and "checkbox.png" or "unchecked.png"
                         local s = 40

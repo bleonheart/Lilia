@@ -134,7 +134,7 @@ function PANEL:CreateRow(rowIndex, rowData)
     row:SetTall(self.rowHeight)
     row:SetText('')
     row.Paint = function(s, w, h)
-        local bgColor = self.selectedRow == rowIndex and lia.color.theme.theme or (s:IsHovered() and lia.color.theme.hover or lia.derma.getNextPanelColor())
+        local bgColor = self.selectedRow == rowIndex and lia.color.theme.theme or (s:IsHovered() and lia.color.theme.hover or lia.color.theme.panel[1])
         lia.derma.rect(0, 0, w, h):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
@@ -382,7 +382,7 @@ function PANEL:SetMinHeight(height)
 end
 
 function PANEL:Paint(w, h)
-    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.derma.getNextPanelColor()):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 vgui.Register('liaTable', PANEL, 'Panel')
