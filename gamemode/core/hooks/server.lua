@@ -584,6 +584,12 @@ function GM:SetupBotPlayer(client)
         table.remove(itemKeys, randomIndex)
     end
 
+    -- Notify the admin who created this bot
+    if lia.botCreator and IsValid(lia.botCreator) then
+        lia.botCreator:notifySuccessLocalized("botSpawned", character:getName())
+        lia.botCreator = nil -- Clear the creator tracking
+    end
+
     client:Spawn()
 end
 

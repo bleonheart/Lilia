@@ -146,7 +146,7 @@ function MODULE:PopulateAdminTabs(pages)
                 panelRef = panel
                 panel:Clear()
                 panel:DockPadding(6, 6, 6, 6)
-                panel.Paint = function() end
+                panel.Paint = nil
                 if IsValid(panel.sheet) then panel.sheet:Remove() end
                 panel.sheet = panel:Add("liaTabs")
                 panel.sheet:Dock(FILL)

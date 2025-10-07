@@ -302,7 +302,7 @@ function OpenFlagsPanel(panel, data)
     -- Always clear and recreate the panel to prevent duplication issues
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
-    panel.Paint = function() end
+    panel.Paint = nil
 
     local search = panel:Add("DTextEntry")
     search:Dock(TOP)
@@ -317,6 +317,10 @@ function OpenFlagsPanel(panel, data)
     panel.searchEntry = search
     panel.list = list
     panel.populating = false
+
+    -- Invalidate layout after adding content
+    panel:InvalidateLayout(true)
+    panel:SizeToChildren(false, true)
     local columns = {
         {
             name = L("name"),
@@ -429,7 +433,9 @@ end
 
 lia.net.readBigTable("liaAllFlags", function(data)
     flagsData = data or {}
-    if IsValid(flagsPanel) then OpenFlagsPanel(flagsPanel, flagsData) end
+    if IsValid(flagsPanel) and not flagsPanel.flagsInitialized then
+        OpenFlagsPanel(flagsPanel, flagsData)
+    end
     flagsData = nil
 end)
 
@@ -445,7 +451,8 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
-    panelRef.Paint = function() end
+    panelRef.Paint = nil
+
     local search = panelRef:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -458,6 +465,10 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     -- Store references to track panel state
     panelRef.searchEntry = search
     panelRef.list = list
+
+    -- Invalidate layout after adding content
+    panelRef:InvalidateLayout(true)
+    panelRef:SizeToChildren(false, true)
     local columns = {
         {
             name = L("player"),
@@ -563,7 +574,8 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     if not IsValid(panelRef) then return end
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
-    panelRef.Paint = function() end
+    panelRef.Paint = nil
+
     local search = panelRef:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -576,6 +588,10 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     -- Store references to track panel state
     panelRef.searchEntry = search
     panelRef.list = list
+
+    -- Invalidate layout after adding content
+    panelRef:InvalidateLayout(true)
+    panelRef:SizeToChildren(false, true)
     local columns = {
         {
             name = L("steamName"),

@@ -209,9 +209,38 @@ lia.command.add("setclass", {
                 local options = {}
                 local targetName = prefix and prefix[1]
                 local target = targetName and lia.util.findPlayer(client, targetName)
-                for _, v in pairs(lia.class.list) do
-                    if not target or not target:getChar() or target:getChar():getClass() ~= v.uniqueID then options[L(v.name)] = v.uniqueID end
+
+                -- Check if there are any classes defined
+                if not lia.class.list or table.IsEmpty(lia.class.list) then
+                    return options -- Return empty options if no classes exist
                 end
+
+                if target and target:getChar() then
+                    local targetFaction = target:Team()
+
+                    -- Check if target's faction has any classes
+                    local factionClasses = lia.faction.getClasses(targetFaction)
+                    if not factionClasses or #factionClasses == 0 then
+                        return options -- Return empty options if faction has no classes
+                    end
+
+                    for _, v in pairs(lia.class.list) do
+                        -- Only show classes that belong to the target player's faction
+                        if v.faction == targetFaction then
+                            -- Check if the class requires whitelist and if the player has access
+                            local canAccess = true
+                            if lia.class.hasWhitelist(v.index) then
+                                canAccess = target:hasClassWhitelist(v.index)
+                            end
+
+                            -- Only add the class if player can access it and it's not their current class
+                            if canAccess and target:getChar():getClass() ~= v.uniqueID then
+                                options[L(v.name)] = v.uniqueID
+                            end
+                        end
+                    end
+                end
+
                 return options
             end
         }
@@ -220,6 +249,26 @@ lia.command.add("setclass", {
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
             client:notifyErrorLocalized("targetNotFound")
+            return
+        end
+
+        -- Check if target has a valid character
+        if not target:getChar() then
+            client:notifyErrorLocalized("invalidTarget")
+            return
+        end
+
+        -- Check if there are any classes defined
+        if not lia.class.list or table.IsEmpty(lia.class.list) then
+            client:notifyErrorLocalized("noClassesAvailable")
+            return
+        end
+
+        -- Check if target's faction has any classes
+        local targetFaction = target:Team()
+        local factionClasses = lia.faction.getClasses(targetFaction)
+        if not factionClasses or #factionClasses == 0 then
+            client:notifyErrorLocalized("factionHasNoClasses")
             return
         end
 

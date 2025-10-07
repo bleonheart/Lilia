@@ -2991,7 +2991,7 @@ lia.command.add("exportprivileges", {
 lia.command.add("bots", {
     superAdminOnly = true,
     desc = "botsManageDesc",
-    onRun = function()
+    onRun = function(client)
         if not SERVER then return end
         if not timer.Exists("Bots_Add_Timer") then
             timer.Create("Bots_Add_Timer", 2, 0, function()
@@ -3012,6 +3012,7 @@ lia.command.add("bot", {
     desc = "botSpawnDesc",
     onRun = function(client)
         if not SERVER then return end
+        lia.botCreator = client -- Track who spawned the bot for notifications
         game.ConsoleCommand("bot\n")
     end
 })
