@@ -110,6 +110,9 @@ function SKIN:PaintButton(panel)
 end
 
 function SKIN:PaintComboBox(panel, w, h)
+    if panel:GetFont() == "Default" or panel:GetFont() == "" then
+        panel:SetFont("LiliaFont.18")
+    end
     paintButtonBase(panel, w, h)
 end
 

@@ -4,10 +4,9 @@ function PANEL:Init()
     self.selected = nil
     self.opened = false
     self:SetText("")
-    self.font = "Fated.18"
+    self.font = "LiliaFont.18"
     self.hoverAnim = 0
     self.OnSelect = function() end
-    self:AutoSize()
     self.btn = vgui.Create("DButton", self)
     self.btn:Dock(FILL)
     self.btn:SetText("")
@@ -118,10 +117,10 @@ end
 function PANEL:OpenMenu()
     if IsValid(self.menu) then self.menu:Remove() end
     local menuPadding = 6
-    local itemHeight = 26
+    local itemHeight = 32
     local numChoices = #self.choices
     local calculatedHeight = numChoices * (itemHeight + 2) + (menuPadding * 2) + 2
-    local maxMenuHeight = math.max(200, math.min(500, calculatedHeight))
+    local maxMenuHeight = math.max(300, math.min(600, calculatedHeight))
     print("ComboBox Debug - Dropdown Height - Choices:", numChoices, "Calculated:", calculatedHeight, "Max:", maxMenuHeight)
     surface.SetFont(self.font)
     local maxTextWidth = 0
@@ -173,7 +172,7 @@ function PANEL:OpenMenu()
                 end
 
                 local textColor = isSelected and lia.color.theme.text_entry or lia.color.theme.text
-                draw.SimpleText(choice.text, "Fated.18", 14, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(choice.text, "LiliaFont.18", 14, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             option.DoClick = function()
@@ -216,7 +215,7 @@ function PANEL:OpenMenu()
                 end
 
                 local textColor = isSelected and lia.color.theme.text_entry or lia.color.theme.text
-                draw.SimpleText(choice.text, "Fated.18", 14, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(choice.text, "LiliaFont.18", 14, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             option.DoClick = function()
@@ -242,7 +241,7 @@ function PANEL:OpenMenu()
             oldMouseDown = mouseDown
         end
 
-        if IsValid(self.menu) then self.menu.OnRemove = function() self.opened = false end end
+        self.menu.OnRemove = function() self.opened = false end
     end
 end
 
@@ -327,12 +326,27 @@ function PANEL:FinishAddingOptions()
 end
 
 function PANEL:SetTall(tall)
-    self.BaseClass.SetTall(self, tall)
+    if self.BaseClass and self.BaseClass.SetTall then
+        self.BaseClass.SetTall(self, tall)
+    else
+        -- Fallback for when BaseClass is not available yet
+        local panel = vgui.GetControlTable("Panel")
+        if panel and panel.SetTall then
+            panel.SetTall(self, tall)
+        end
+    end
     self.userSetHeight = true
 end
 
 function PANEL:RecalculateSize()
     self:AutoSize()
+end
+
+function PANEL:PostInit()
+    if not self.postInitDone then
+        self:AutoSize()
+        self.postInitDone = true
+    end
 end
 
 vgui.Register("liaComboBox", PANEL, "Panel")

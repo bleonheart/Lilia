@@ -326,6 +326,7 @@ else
                 for _, plyObj in ipairs(players) do
                     ctrl:AddChoice(plyObj:Name(), plyObj:SteamID())
                 end
+                ctrl:PostInit()
             elseif fieldType == "table" then
                 ctrl = vgui.Create("liaComboBox", panel)
                 ctrl:SetValue(L("select") .. " " .. L(name))
@@ -344,6 +345,7 @@ else
                         end
                     end
                 end
+                ctrl:PostInit()
             elseif fieldType == "bool" then
                 ctrl = vgui.Create("liaCheckbox", panel)
             else
@@ -906,7 +908,7 @@ else
         local function createFeedbackLabel(text)
             clearFeedback()
             local label = vgui.Create("DLabel", contentPanel)
-            label:SetFont("Fated.16")
+            label:SetFont("LiliaFont.16")
             label:SetText(text or "")
             label:SetWrap(true)
             label:SetTall(48)
@@ -946,8 +948,8 @@ else
                     card:SetTall(52)
                     card.Paint = function(_, w, h)
                         lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
-                        draw.SimpleText(L("scrollableItem", i), "Fated.18", 16, h * 0.3, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                        draw.SimpleText(L("useDockToStackCards"), "Fated.16", 16, h * 0.65, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(L("scrollableItem", i), "LiliaFont.18", 16, h * 0.3, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        draw.SimpleText(L("useDockToStackCards"), "LiliaFont.16", 16, h * 0.65, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                     end
                 end
             elseif elementName == "liaTable" then
@@ -986,8 +988,8 @@ else
                     row:SetTall(88)
                     row.Paint = function(_, w, h)
                         lia.derma.rect(0, 0, w, h):Rad(12):Color(lia.color.theme.panel_alpha[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-                        draw.SimpleText(info.title, "Fated.18", 12, 24, lia.color.theme.text)
-                        draw.SimpleText(info.desc, "Fated.14", 12, h - 24, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+                        draw.SimpleText(info.title, "LiliaFont.18", 12, 24, lia.color.theme.text)
+                        draw.SimpleText(info.desc, "LiliaFont.14", 12, h - 24, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
                     end
 
                     element:AddItem(row)
@@ -1013,8 +1015,8 @@ else
                 for _, tabInfo in ipairs(tabs) do
                     local tabPanel = vgui.Create("DPanel")
                     tabPanel.Paint = function()
-                        draw.SimpleText(tabInfo.name, "Fated.24", 24, 24, lia.color.theme.text)
-                        draw.SimpleText(tabInfo.description, "Fated.16", 24, 56, lia.color.theme.gray)
+                        draw.SimpleText(tabInfo.name, "LiliaFont.24", 24, 24, lia.color.theme.text)
+                        draw.SimpleText(tabInfo.description, "LiliaFont.16", 24, 56, lia.color.theme.gray)
                     end
 
                     element:AddTab(tabInfo.name, tabPanel)
@@ -1057,7 +1059,7 @@ else
                 element:ShowCloseButton(false)
                 element:DockPadding(16, 42, 16, 16)
                 local description = vgui.Create("DLabel", element)
-                description:SetFont("Fated.16")
+                description:SetFont("LiliaFont.16")
                 description:SetWrap(true)
                 description:SetText(L("liliaFrameDescription"))
                 description:Dock(TOP)
@@ -1083,7 +1085,7 @@ else
             wrapper:DockMargin(5, 5, 5, 5)
             wrapper.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw() end
             local info = vgui.Create("DLabel", wrapper)
-            info:SetFont("Fated.18")
+            info:SetFont("LiliaFont.18")
             info:SetWrap(true)
             info:SetText(L("radialPanelDescription"))
             info:Dock(TOP)
@@ -1126,7 +1128,7 @@ else
             wrapper:DockMargin(5, 5, 5, 5)
             wrapper.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw() end
             local info = vgui.Create("DLabel", wrapper)
-            info:SetFont("Fated.18")
+            info:SetFont("LiliaFont.18")
             info:SetWrap(true)
             info:SetText(L("contextMenuDescription"))
             info:Dock(TOP)

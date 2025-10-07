@@ -1,9 +1,9 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self.title = self:addLabel(L("selectFaction"))
-    self.faction = self:Add("DComboBox")
-    self.faction:SetFont("liaCharButtonFont")
+    self.faction = self:Add("liaComboBox")
     self.faction:Dock(TOP)
+    self.faction:PostInit()
     self.faction:DockMargin(0, 4, 0, 0)
     self.faction:SetTall(40)
     self.faction.Paint = function(p, w, h)

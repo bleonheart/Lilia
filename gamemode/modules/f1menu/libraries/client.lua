@@ -127,7 +127,7 @@ function MODULE:CreateMenuButtons(tabs)
         local baseTabWidths = {}
         local baseMargin = 8
         for i, page in ipairs(pages) do
-            surface.SetFont("Fated.18")
+            surface.SetFont("LiliaFont.18")
             local textWidth = surface.GetTextSize(L(page.name))
             local iconWidth = 0
             local padding = 20
@@ -233,7 +233,7 @@ function MODULE:CreateMenuButtons(tabs)
         local baseTabWidths = {}
         local baseMargin = 8
         for i, page in ipairs(pages) do
-            surface.SetFont("Fated.18")
+            surface.SetFont("LiliaFont.18")
             local textWidth = surface.GetTextSize(L(page.name))
             local iconWidth = 0
             local padding = 20
@@ -458,7 +458,7 @@ function MODULE:CreateMenuButtons(tabs)
             local baseTabWidths = {}
             local baseMargin = 8
             for i, page in ipairs(pages) do
-                surface.SetFont("Fated.18")
+                surface.SetFont("LiliaFont.18")
                 local textWidth = surface.GetTextSize(L(page.name))
                 local iconWidth = 0
                 local padding = 20

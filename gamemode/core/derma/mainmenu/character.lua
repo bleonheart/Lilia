@@ -360,6 +360,10 @@ function PANEL:backToMainMenu()
 
     if IsValid(self.selectBtn) then self.selectBtn:Remove() end
     if IsValid(self.deleteBtn) then self.deleteBtn:Remove() end
+    if IsValid(self.characterSelector) then
+        self.characterSelector:Remove()
+        self.characterSelector = nil
+    end
     for _, btn in pairs(self.buttons) do
         if IsValid(btn) then btn:Remove() end
     end
@@ -395,6 +399,12 @@ function PANEL:createCharacterSelection()
     if IsValid(self.rightArrow) then
         self.rightArrow:Remove()
         self.rightArrow = nil
+    end
+
+    -- Remove character selector combobox
+    if IsValid(self.characterSelector) then
+        self.characterSelector:Remove()
+        self.characterSelector = nil
     end
 
     self.content:Clear()
@@ -444,6 +454,51 @@ function PANEL:updateSelectedCharacter()
     self.currentIndex = self.currentIndex or 1
     local sel = chars[self.currentIndex] or chars[1]
     local character = lia.char.getCharacter(sel)
+
+    -- Update combobox selection if it exists
+    if IsValid(self.characterSelector) then
+        for i, choice in ipairs(self.characterSelector.choices) do
+            if choice.data == sel then
+                self.characterSelector:ChooseOptionID(i)
+                break
+            end
+        end
+    end
+
+    if IsValid(self.infoFrame) then self.infoFrame:Remove() end
+    if IsValid(self.selectBtn) then self.selectBtn:Remove() end
+    if IsValid(self.deleteBtn) then self.deleteBtn:Remove() end
+    self:createSelectedCharacterInfoPanel(character)
+    self:updateModelEntity(character)
+end
+
+function PANEL:updateSelectedCharacterForID(charID)
+    if not self.isLoadMode then return end
+    local chars = self.availableCharacters or {}
+    if #chars == 0 then return end
+
+    -- Find the index of the selected character
+    local selectedIndex = 1
+    for i, cID in ipairs(chars) do
+        if cID == charID then
+            selectedIndex = i
+            break
+        end
+    end
+
+    self.currentIndex = selectedIndex
+    local character = lia.char.getCharacter(charID)
+
+    -- Update combobox selection if it exists
+    if IsValid(self.characterSelector) then
+        for i, choice in ipairs(self.characterSelector.choices) do
+            if choice.data == charID then
+                self.characterSelector:ChooseOptionID(i)
+                break
+            end
+        end
+    end
+
     if IsValid(self.infoFrame) then self.infoFrame:Remove() end
     if IsValid(self.selectBtn) then self.selectBtn:Remove() end
     if IsValid(self.deleteBtn) then self.deleteBtn:Remove() end
@@ -461,6 +516,35 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         if cObj and cObj.getID and cObj:getID() == character:getID() then
             index = i
             break
+        end
+    end
+
+    -- Add character selection combobox
+    if total > 1 and not IsValid(self.characterSelector) then
+        self.characterSelector = self:Add("liaComboBox")
+        self.characterSelector:Dock(TOP)
+        self.characterSelector:DockMargin(0, 0, 0, 10)
+        self.characterSelector:SetTall(40)
+        self.characterSelector:SetPlaceholder(L("selectPrompt", L("character")))
+        self.characterSelector:SetFont("liaSmallFont")
+
+        -- Populate combobox with available characters
+        for i, charID in ipairs(chars) do
+            local charObj = isnumber(charID) and lia.char.getCharacter(charID) or charID
+            if charObj and charObj.getName then
+                local charName = charObj:getName() or "Unknown"
+                local factionName = team.GetName(charObj:getFaction()) or "Unknown"
+                local displayText = charName .. " (" .. factionName .. ")"
+                self.characterSelector:AddChoice(displayText, charID, i == index)
+            end
+        end
+
+        self.characterSelector.OnSelect = function(_, _, _, selectedCharID)
+            local selectedChar = lia.char.getCharacter(selectedCharID)
+            if selectedChar then
+                self:clickSound()
+                self:updateSelectedCharacterForID(selectedCharID)
+            end
         end
     end
 
@@ -727,6 +811,11 @@ function PANEL:showContent(disableBg)
     if IsValid(self.logo) then
         self.logo:Remove()
         self.logo = nil
+    end
+
+    if IsValid(self.characterSelector) then
+        self.characterSelector:Remove()
+        self.characterSelector = nil
     end
 
     for _, b in pairs(self.buttons) do
