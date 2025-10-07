@@ -60,17 +60,10 @@ local function ensureDefaults(groups)
 end
 
 ensureDefaults(lia.administrator.groups)
--- Cache for privilege categories to avoid repeated string operations
 local privilegeCategoryCache = {}
-
 function getPrivilegeCategory(privilegeName)
     if not privilegeName then return L("unassigned") end
-
-    -- Check cache first
-    if privilegeCategoryCache[privilegeName] then
-        return privilegeCategoryCache[privilegeName]
-    end
-
+    if privilegeCategoryCache[privilegeName] then return privilegeCategoryCache[privilegeName] end
     local categoryChecks = {
         {
             match = function(name) return string.match(name, "^tool_") end,
@@ -111,7 +104,6 @@ function getPrivilegeCategory(privilegeName)
     }
 
     local category
-
     if lia.administrator and lia.administrator.privilegeCategories and lia.administrator.privilegeCategories[privilegeName] then
         category = L(lia.administrator.privilegeCategories[privilegeName])
     elseif lia.command and lia.command.list and lia.command.list[privilegeName] then
@@ -126,15 +118,14 @@ function getPrivilegeCategory(privilegeName)
                     end
                 end
             end
+
             if category then break end
         end
     end
 
     if not category and CAMI then
         local camiPriv = CAMI.GetPrivilege(privilegeName)
-        if camiPriv and camiPriv.Category then
-            category = L(camiPriv.Category)
-        end
+        if camiPriv and camiPriv.Category then category = L(camiPriv.Category) end
     end
 
     if not category then
@@ -146,16 +137,11 @@ function getPrivilegeCategory(privilegeName)
         end
     end
 
-    if not category then
-        category = L("unassigned")
-    end
-
-    -- Cache the result
+    if not category then category = L("unassigned") end
     privilegeCategoryCache[privilegeName] = category
     return category
 end
 
--- Function to clear privilege category cache when privileges are modified
 local function clearPrivilegeCategoryCache()
     privilegeCategoryCache = {}
 end
@@ -203,7 +189,6 @@ local function rebuildPrivileges()
             end
         end
 
-        -- Clear privilege category cache after privilege registration
         clearPrivilegeCategoryCache()
     end
 end
@@ -1098,21 +1083,15 @@ if SERVER then
     end)
 else
     local LAST_GROUP
-    -- Cache for category maps to avoid recomputation
     local categoryMapCache = {}
     local lastCacheGroups = {}
-
     local function computeCategoryMap(groups)
-        -- Check if we can use cached results by comparing group data
         local groupsChanged = false
         local currentGroupsTable = {}
-
         for groupName, groupData in pairs(groups or {}) do
             currentGroupsTable[groupName] = {}
             for permName, hasPerm in pairs(groupData or {}) do
-                if permName ~= "_info" then
-                    currentGroupsTable[groupName][permName] = hasPerm
-                end
+                if permName ~= "_info" then currentGroupsTable[groupName][permName] = hasPerm end
             end
         end
 
@@ -1124,38 +1103,36 @@ else
                     groupsChanged = true
                     break
                 end
+
                 for permName, hasPerm in pairs(groupData) do
                     if lastCacheGroups[groupName][permName] ~= hasPerm then
                         groupsChanged = true
                         break
                     end
                 end
+
                 if groupsChanged then break end
             end
 
-            -- Also check if cached groups have permissions that current groups don't
             for groupName, groupData in pairs(lastCacheGroups) do
                 if not currentGroupsTable[groupName] then
                     groupsChanged = true
                     break
                 end
+
                 for permName, hasPerm in pairs(groupData) do
                     if currentGroupsTable[groupName][permName] ~= hasPerm then
                         groupsChanged = true
                         break
                     end
                 end
+
                 if groupsChanged then break end
             end
         end
 
-        if not groupsChanged and categoryMapCache and #categoryMapCache > 0 then
-            return categoryMapCache
-        end
-
-        -- Update cache tracking
+        if not groupsChanged and categoryMapCache and #categoryMapCache > 0 then return categoryMapCache end
         lastCacheGroups = currentGroupsTable
-
         local cats, labels, seen = {}, {}, {}
         for name in pairs(lia.administrator.privileges or {}) do
             local c = tostring(getPrivilegeCategory(name))

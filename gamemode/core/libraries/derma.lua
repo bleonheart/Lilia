@@ -1,6 +1,5 @@
 ﻿lia.derma = lia.derma or {}
 local color_disconnect = Color(210, 65, 65)
-
 local color_bot = Color(70, 150, 220)
 local color_online = Color(120, 180, 70)
 local color_close = Color(210, 65, 65)
@@ -1603,12 +1602,11 @@ end
 
 function lia.derma.requestDropdown(title, options, callback, defaultValue)
     if IsValid(lia.derma.menuRequestDropdown) then lia.derma.menuRequestDropdown:Remove() end
-    -- Calculate frame height based on number of options
     local numOptions = istable(options) and #options or 0
-    local itemHeight = 26 -- Same as combobox item height
-    local itemMargin = 2 -- Margin between items
-    local dropdownHeight = math.min(numOptions * (itemHeight + itemMargin) + 12, 400) -- Cap at 400px
-    local frameHeight = 140 + dropdownHeight -- Base height + dropdown height
+    local itemHeight = 26
+    local itemMargin = 2
+    local dropdownHeight = math.min(numOptions * (itemHeight + itemMargin) + 12, 400)
+    local frameHeight = 140 + dropdownHeight
     local frame = vgui.Create("liaFrame")
     frame:SetSize(300, frameHeight)
     frame:Center()

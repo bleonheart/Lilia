@@ -3012,7 +3012,7 @@ lia.command.add("bot", {
     desc = "botSpawnDesc",
     onRun = function(client)
         if not SERVER then return end
-        lia.botCreator = client -- Track who spawned the bot for notifications
+        lia.botCreator = client
         game.ConsoleCommand("bot\n")
     end
 })

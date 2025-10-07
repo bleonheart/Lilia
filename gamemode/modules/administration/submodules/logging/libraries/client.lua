@@ -3,7 +3,6 @@ local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
-
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
     for category, logs in pairs(categorizedLogs) do

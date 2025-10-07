@@ -299,11 +299,9 @@ local function OpenRoster(panel, data)
 end
 
 function OpenFlagsPanel(panel, data)
-    -- Always clear and recreate the panel to prevent duplication issues
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
-
     local search = panel:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -313,12 +311,9 @@ function OpenFlagsPanel(panel, data)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panel:Add("liaTable")
     list:Dock(FILL)
-    -- Store references for external access
     panel.searchEntry = search
     panel.list = list
     panel.populating = false
-
-    -- Invalidate layout after adding content
     panel:InvalidateLayout(true)
     panel:SizeToChildren(false, true)
     local columns = {
@@ -349,14 +344,12 @@ function OpenFlagsPanel(panel, data)
         panel.populating = true
         list:Clear()
         filter = string.lower(filter or "")
-        -- Track added entries to prevent duplicates
         local addedEntries = {}
         for _, entry in ipairs(data or {}) do
             local name = entry.name or ""
             local steamID = entry.steamID or ""
             local cFlags = entry.flags or ""
             local pFlags = entry.playerFlags or ""
-            -- Create a unique key for this entry to detect duplicates
             local entryKey = steamID .. "|" .. name
             if not addedEntries[entryKey] then
                 local values = {name, steamID, cFlags, pFlags}
@@ -433,9 +426,7 @@ end
 
 lia.net.readBigTable("liaAllFlags", function(data)
     flagsData = data or {}
-    if IsValid(flagsPanel) and not flagsPanel.flagsInitialized then
-        OpenFlagsPanel(flagsPanel, flagsData)
-    end
+    if IsValid(flagsPanel) and not flagsPanel.flagsInitialized then OpenFlagsPanel(flagsPanel, flagsData) end
     flagsData = nil
 end)
 
@@ -452,7 +443,6 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
     panelRef.Paint = nil
-
     local search = panelRef:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -462,11 +452,8 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
-    -- Store references to track panel state
     panelRef.searchEntry = search
     panelRef.list = list
-
-    -- Invalidate layout after adding content
     panelRef:InvalidateLayout(true)
     panelRef:SizeToChildren(false, true)
     local columns = {
@@ -575,7 +562,6 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
     panelRef.Paint = nil
-
     local search = panelRef:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -585,11 +571,8 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
-    -- Store references to track panel state
     panelRef.searchEntry = search
     panelRef.list = list
-
-    -- Invalidate layout after adding content
     panelRef:InvalidateLayout(true)
     panelRef:SizeToChildren(false, true)
     local columns = {

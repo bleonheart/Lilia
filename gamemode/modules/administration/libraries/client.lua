@@ -345,14 +345,12 @@ function MODULE:PopulateAdminTabs(pages)
             icon = "icon16/flag_red.png",
             drawFunc = function(panel)
                 flagsPanel = panel
-                -- Only initialize once per panel instance
                 if not panel.flagsInitialized then
                     panel.flagsInitialized = true
                     if flagsData then
                         self:OpenFlagsPanel(panel, flagsData)
                         flagsData = nil
                     else
-                        -- Always request fresh data since we don't cache panel state
                         net.Start("liaRequestAllFlags")
                         net.SendToServer()
                     end

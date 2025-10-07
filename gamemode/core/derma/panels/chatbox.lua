@@ -111,10 +111,9 @@ function PANEL:setActive(state)
                 end
 
                 self.commandList = vgui.Create("liaScrollPanel")
-                local listHeight = math.min(self:GetTall() - 66, 200) -- Limit height to prevent going off screen
+                local listHeight = math.min(self:GetTall() - 66, 200)
                 local listWidth = self:GetWide() - 16
                 local chatX, chatY = self:LocalToScreen(0, 0)
-                -- Position above the chatbox, but below if it would go off-screen
                 local listY = chatY - listHeight - 4
                 if listY < 0 then listY = chatY + self:GetTall() + 4 end
                 self.commandList:SetPos(chatX + 4, listY)
@@ -175,7 +174,6 @@ function PANEL:setActive(state)
                     if #canvasChildren > 0 then
                         self.commandIndex = (self.commandIndex or 0) + 1
                         if self.commandIndex > #canvasChildren then self.commandIndex = 1 end
-                        -- Update visual selection for all buttons
                         for idx, listChild in ipairs(canvasChildren) do
                             listChild.commandIndex = idx
                             if not listChild.PaintConfigured then
@@ -190,7 +188,6 @@ function PANEL:setActive(state)
                             end
                         end
 
-                        -- Apply the selected command to the text entry
                         local selected = canvasChildren[self.commandIndex]
                         if IsValid(selected) then
                             local selName = selected:GetText():match("^/([^ ]+)")
@@ -200,7 +197,6 @@ function PANEL:setActive(state)
                             end
                         end
 
-                        -- Ensure text entry keeps focus
                         self.text:RequestFocus()
                     end
                 end
@@ -210,13 +206,10 @@ function PANEL:setActive(state)
         end
 
         self.text.OnLoseFocus = function(entry)
-            -- Don't remove command list immediately on focus loss
-            -- Let the Think() function handle removal with proper timing
             if IsValid(self.commandList) then
                 local currentText = entry:GetText()
                 local timeSinceCreation = self.commandListCreateTime and (CurTime() - self.commandListCreateTime) or 0
                 local isTypingCommand = currentText:sub(1, 1) == "/"
-                -- Only remove if user is no longer typing a command and enough time has passed
                 if not isTypingCommand and timeSinceCreation > 0.5 then
                     self.commandList:Remove()
                     self.commandList = nil
@@ -224,7 +217,6 @@ function PANEL:setActive(state)
                 end
             end
 
-            -- Request focus back to keep typing active
             entry:RequestFocus()
         end
 
@@ -332,7 +324,6 @@ function PANEL:addText(...)
     else
         panel:SetPos(0, self.lastY)
         self.lastY = self.lastY + panel:GetTall() + 2
-        -- Scroll to bottom after panel is properly sized
         timer.Simple(0.01, function() if IsValid(self.scroll) and IsValid(panel) then self.scroll:ScrollToChild(panel) end end)
     end
     return panel:IsVisible()
@@ -365,10 +356,7 @@ function PANEL:setFilter(filter, state)
         end
     end
 
-    if IsValid(lastChild) then
-        -- Scroll to bottom after repositioning
-        timer.Simple(0.01, function() if IsValid(self.scroll) and IsValid(lastChild) then self.scroll:ScrollToChild(lastChild) end end)
-    end
+    if IsValid(lastChild) then timer.Simple(0.01, function() if IsValid(self.scroll) and IsValid(lastChild) then self.scroll:ScrollToChild(lastChild) end end) end
 end
 
 function PANEL:Think()
@@ -389,7 +377,6 @@ function PANEL:Think()
         local textHasFocus = self.text:HasFocus()
         local currentText = self.text:GetText()
         local timeSinceCreation = self.commandListCreateTime and (CurTime() - self.commandListCreateTime) or 0
-        -- Don't remove command list if user is still typing a command
         local isTypingCommand = currentText:sub(1, 1) == "/"
         if not textHasFocus and not isTypingCommand and timeSinceCreation > 0.1 then
             self.commandList:Remove()
