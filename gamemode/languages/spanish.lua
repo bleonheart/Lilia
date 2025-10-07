@@ -716,6 +716,7 @@ LANGUAGE = {
     attribNonNegative = "El valor del atributo debe ser no negativo.",
     attribPositive = "El valor a aadir al atributo debe ser positivo.",
     attribCalculationError = "Valor de atributo calculado invlido.",
+    noAttributesRegistered = "No hay atributos registrados actualmente en el sistema.",
     invalidMode = "Modo seleccionado invlido.",
     yourAttributeSet = "Tu atributo '%s' ha sido establecido en %s por %s.",
     yourAttributeIncreased = "Tu atributo '%s' ha sido incrementado en %s por %s.",

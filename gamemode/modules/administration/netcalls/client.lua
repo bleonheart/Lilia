@@ -299,11 +299,11 @@ local function OpenRoster(panel, data)
 end
 
 function OpenFlagsPanel(panel, data)
-    -- Check if panel is already populated with same data structure
-    if IsValid(panel.searchEntry) and IsValid(panel.list) and panel.flagsData == data then return end
+    -- Always clear and recreate the panel to prevent duplication issues
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = function() end
+
     local search = panel:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -313,10 +313,9 @@ function OpenFlagsPanel(panel, data)
     search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panel:Add("liaTable")
     list:Dock(FILL)
-    -- Store references to track panel state
+    -- Store references for external access
     panel.searchEntry = search
     panel.list = list
-    panel.flagsData = data
     panel.populating = false
     local columns = {
         {

@@ -348,8 +348,8 @@ function MODULE:PopulateAdminTabs(pages)
                 if flagsData then
                     self:OpenFlagsPanel(panel, flagsData)
                     flagsData = nil
-                elseif not (IsValid(panel.searchEntry) and IsValid(panel.list)) then
-                    -- Only request data if panel doesn't already have content
+                else
+                    -- Always request fresh data since we don't cache panel state
                     net.Start("liaRequestAllFlags")
                     net.SendToServer()
                 end

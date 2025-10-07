@@ -720,6 +720,7 @@ LANGUAGE = {
     attribNonNegative = "La valeur de l'attribut doit tre non ngative.",
     attribPositive = "La valeur  ajouter doit tre positive.",
     attribCalculationError = "Valeur d'attribut calcule invalide.",
+    noAttributesRegistered = "Aucun attribut n'est actuellement enregistr dans le systme.",
     invalidMode = "Mode slectionn invalide.",
     yourAttributeSet = "Votre attribut '%s' a t dfini  %s par %s.",
     yourAttributeIncreased = "Votre attribut '%s' a t augment de %s par %s.",

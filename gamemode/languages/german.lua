@@ -721,6 +721,7 @@ LANGUAGE = {
     attribNonNegative = "Attributwert muss nicht negativ sein.",
     attribPositive = "Attributwert zum Hinzufgen muss positiv sein.",
     attribCalculationError = "Ungltiger Attributwert berechnet.",
+    noAttributesRegistered = "Derzeit sind keine Attribute im System registriert.",
     invalidMode = "Ungltiger Modus ausgewhlt.",
     yourAttributeSet = "Dein Attribut '%s' wurde von %s auf %s gesetzt.",
     yourAttributeIncreased = "Dein Attribut '%s' wurde von %s um %s erhht.",

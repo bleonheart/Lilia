@@ -789,6 +789,7 @@ LANGUAGE = {
     attribNonNegative = "Attribute value must be non-negative.",
     attribPositive = "Attribute value to add must be positive.",
     attribCalculationError = "Invalid attribute value calculated.",
+    noAttributesRegistered = "No attributes are currently registered in the system.",
     invalidMode = "Invalid mode selected.",
     yourAttributeSet = "Your attribute '%s' has been set to %s by %s.",
     yourAttributeIncreased = "Your attribute '%s' has been increased by %s by %s.",
