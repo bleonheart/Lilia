@@ -414,8 +414,7 @@ if CLIENT then
                     combo:DockMargin(10, 10, 10, 10)
                     combo:SetWide(200)
                     combo:SetFont("liaMediumFont")
-                    combo:SetTall(50) -- Set explicit height to ensure consistency
-                    -- Set up choices first
+                    combo:SetValue(input.GetKeyName(currentKey) or "NONE")
                     local choices = {}
                     for name, code in pairs(KeybindKeys) do
                         if not taken[code] or code == currentKey then
@@ -430,8 +429,6 @@ if CLIENT then
                     for _, c in ipairs(choices) do
                         combo:AddChoice(c.txt, c.keycode)
                     end
-
-                    combo:SetValue(input.GetKeyName(currentKey) or "NONE")
 
                     combo.OnSelect = function(_, _, _, newKey)
                         if not newKey then return end
