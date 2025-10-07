@@ -3,11 +3,11 @@ function PANEL:Init()
     self.choices = {}
     self.selected = nil
     self.opened = false
-    self:SetTall(26)
     self:SetText("")
     self.font = "Fated.18"
     self.hoverAnim = 0
     self.OnSelect = function() end
+    self:AutoSize()
     self.btn = vgui.Create("DButton", self)
     self.btn:Dock(FILL)
     self.btn:SetText("")
@@ -242,7 +242,7 @@ function PANEL:OpenMenu()
             oldMouseDown = mouseDown
         end
 
-        self.menu.OnRemove = function() self.opened = false end
+        if IsValid(self.menu) then self.menu.OnRemove = function() self.opened = false end end
     end
 end
 
@@ -295,8 +295,13 @@ function PANEL:RefreshDropdown()
 end
 
 function PANEL:AutoSize()
-    if #self.choices == 0 then return end
     surface.SetFont(self.font)
+    local _, fontHeight = surface.GetTextSize("Ag")
+    local padding = 8
+    local optimalHeight = fontHeight + padding
+    -- Only set height if not explicitly set by user
+    if not self.userSetHeight then self:SetTall(optimalHeight) end
+    if #self.choices == 0 then return end
     local maxTextWidth = 0
     for _, choice in ipairs(self.choices) do
         local textWidth = surface.GetTextSize(choice.text)
@@ -320,6 +325,11 @@ function PANEL:FinishAddingOptions()
     self:RefreshDropdown()
     local parent = self:GetParent()
     if not (parent and parent.ClassName == "DPanel" and self:GetDock() == TOP) then self:AutoSize() end
+end
+
+function PANEL:SetTall(tall)
+    self.BaseClass.SetTall(self, tall)
+    self.userSetHeight = true
 end
 
 function PANEL:RecalculateSize()
