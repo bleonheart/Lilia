@@ -55,14 +55,8 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
             adminStickSubCategoryGetInfos = {
                 name = L("adminStickSubCategoryGetInfos"),
                 icon = "icon16/magnifier.png"
-            }
-        }
-    },
-    flagManagement = {
-        name = L("adminStickCategoryFlagManagement"),
-        icon = "icon16/flag_blue.png",
-        subcategories = {
-            characterFlags = {
+            },
+            flags = {
                 name = L("adminStickSubCategoryCharacterFlags"),
                 icon = "icon16/flag_green.png"
             }
@@ -131,7 +125,7 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
         }
     }
 }
-MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {"playerInformation", "moderation", "characterManagement", "flagManagement", "doorManagement", "teleportation", "utility", "administration"}
+MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {"playerInformation", "moderation", "characterManagement", "doorManagement", "teleportation", "utility", "administration"}
 function MODULE:addAdminStickCategory(key, data, index)
     self.adminStickCategories = self.adminStickCategories or {}
     self.adminStickCategories[key] = data
@@ -262,9 +256,7 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
                 hasContent = true
             elseif categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
-            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation")) then
-                hasContent = true
-            elseif categoryKey == "flagManagement" and tgt:IsPlayer() and cl:hasPrivilege("manageFlags") then
+            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation") or cl:hasPrivilege("manageFlags")) then
                 hasContent = true
             elseif categoryKey == "doorManagement" and tgt:isDoor() then
                 hasContent = true
@@ -278,7 +270,6 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
             if hasContent then GetOrCreateCategoryMenu(menu, categoryKey, stores) end
         end
     end
-    menu:SetWide(math.min(menu:GetWide(), 400))
     if menu.UpdateSize then menu:UpdateSize() end
     return menu
 end
@@ -712,9 +703,9 @@ end
 local function IncludeFlagManagement(tgt, menu, stores)
     local cl = LocalPlayer()
     if not cl:hasPrivilege("manageFlags") then return end
-    local flagCategory = GetOrCreateCategoryMenu(menu, "flagManagement", stores)
-    if not flagCategory then return end
-    local cf = GetOrCreateSubCategoryMenu(flagCategory, "flagManagement", "characterFlags", stores)
+    local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
+    if not charCategory then return end
+    local cf = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "flags", stores)
     if not cf then return end
     local charObj = tgt:getChar()
     local toGive, toTake = {}, {}
@@ -864,9 +855,11 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
         elseif sub == "adminStickSubCategoryGetInfos" then
             subcategoryKey = "adminStickSubCategoryGetInfos"
         end
-    elseif cat == "flagManagement" then
-        categoryKey = "flagManagement"
-        if sub == "characterFlags" then subcategoryKey = "characterFlags" end
+    elseif cat == "characterManagement" then
+        categoryKey = "characterManagement"
+        if sub == "flags" then
+            subcategoryKey = "flags"
+        end
     elseif cat == "doorManagement" then
         categoryKey = "doorManagement"
         if sub == "doorActions" then
@@ -954,7 +947,6 @@ function MODULE:OpenAdminStickUI(tgt)
         if #info > 0 then hasOptions = true end
         if cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() then hasOptions = true end
         if cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation") then hasOptions = true end
-        if cl:hasPrivilege("manageFlags") then hasOptions = true end
     end
     local tgtClass = tgt:GetClass()
     local cmds = {}
