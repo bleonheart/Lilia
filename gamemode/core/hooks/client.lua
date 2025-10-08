@@ -615,7 +615,6 @@ function GM:RefreshFonts()
     end
 
     -- lia.gui.main is not defined in the codebase, skipping
-
     if IsValid(lia.gui.score) then
         lia.gui.score:Update()
         refreshPanel(lia.gui.score)
@@ -630,27 +629,54 @@ function GM:RefreshFonts()
 end
 
 function GM:GetMainMenuPosition(character)
-    if character and character:getFaction() then
+    print("[TEST] GM:GetMainMenuPosition called")
+    if character then
+        print("[TEST] character is valid")
+        if character.getFaction then
+            print("[TEST] character:getFaction() exists")
+        else
+            print("[TEST] character:getFaction() does not exist")
+        end
+    else
+        print("[TEST] character is nil")
+    end
+
+    if character and character.getFaction and character:getFaction() then
+        print("[TEST] character:getFaction() returned: " .. tostring(character:getFaction()))
         local faction = lia.faction.get(character:getFaction())
+        print("[TEST] lia.faction.get returned: " .. tostring(faction))
         if faction and faction.mainMenuPosition then
+            print("[TEST] faction.mainMenuPosition exists")
             local menuPos = faction.mainMenuPosition
             local currentMap = game.GetMap()
-            -- Handle map-specific positions
+            print("[TEST] currentMap: " .. tostring(currentMap))
             if istable(menuPos) and menuPos[currentMap] then
+                print("[TEST] menuPos is table and has entry for currentMap")
                 local mapPos = menuPos[currentMap]
                 if istable(mapPos) then
+                    print("[TEST] mapPos is table, returning mapPos.position and mapPos.angles")
                     return mapPos.position, mapPos.angles
                 elseif isvector(mapPos) then
-                    return mapPos
+                    print("[TEST] mapPos is vector, returning mapPos and default Angle")
+                    return mapPos, Angle(0, 0, 0)
+                else
+                    print("[TEST] mapPos is neither table nor vector")
                 end
             end
 
-            -- Handle global position settings
             if istable(menuPos) then
+                print("[TEST] menuPos is table, returning menuPos.position and menuPos.angles")
                 return menuPos.position, menuPos.angles
             elseif isvector(menuPos) then
-                return menuPos
+                print("[TEST] menuPos is vector, returning menuPos and default Angle")
+                return menuPos, Angle(0, 0, 0)
+            else
+                print("[TEST] menuPos is neither table nor vector")
             end
+        else
+            print("[TEST] faction or faction.mainMenuPosition is nil")
         end
+    else
+        print("[TEST] character is nil or does not have getFaction or getFaction returned nil")
     end
 end

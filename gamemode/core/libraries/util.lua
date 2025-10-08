@@ -404,7 +404,7 @@ else
     end
 
     function lia.util.wrapText(text, width, font)
-        font = font or "liaChatFont"
+        font = font or "LiliaFont.16"
         surface.SetFont(font)
         local exploded = string.Explode("%s", text, true)
         local line = ""
@@ -595,6 +595,7 @@ else
                                     combo:AddChoice(choice)
                                 end
 
+                                combo:FinishAddingOptions()
                                 form:AddItem(combo)
                                 inputs[fName] = {
                                     panel = combo,

@@ -589,12 +589,6 @@ lia.config.add("MaxLogLines", "maximumLogLines", 1000, nil, {
     max = 1000000,
 })
 
-lia.config.add("StaminaBlur", "staminaBlurEnabled", true, nil, {
-    desc = "staminaBlurEnabledDesc",
-    category = "attributes",
-    type = "Boolean",
-})
-
 lia.config.add("StaminaSlowdown", "staminaSlowdownEnabled", true, nil, {
     desc = "staminaSlowdownEnabledDesc",
     category = "attributes",

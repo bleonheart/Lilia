@@ -66,6 +66,7 @@ function PANEL:AddChoice(text, data)
 
     if not self.opened then
         self:AutoSize()
+        self:RefreshDropdown()
     else
         self:CloseMenu()
         self:OpenMenu()
@@ -123,7 +124,7 @@ function PANEL:OpenMenu()
     local itemHeight = 32
     local numChoices = #self.choices
     local calculatedHeight = numChoices * (itemHeight + 2) + (menuPadding * 2) + 2
-    local maxMenuHeight = math.max(300, math.min(600, calculatedHeight))
+    local maxMenuHeight = math.min(600, calculatedHeight)
     surface.SetFont(self.font)
     local maxTextWidth = 0
     for _, choice in ipairs(self.choices) do
@@ -243,9 +244,7 @@ function PANEL:OpenMenu()
             oldMouseDown = mouseDown
         end
 
-        self.menu.OnRemove = function()
-            if IsValid(self) then self.opened = false end
-        end
+        self.menu.OnRemove = function() if IsValid(self) then self.opened = false end end
     end
 end
 
@@ -288,6 +287,9 @@ end
 
 function PANEL:SetFont(font)
     self.font = font
+    -- Recalculate control size when font changes
+    self:AutoSize()
+    self:RefreshDropdown()
 end
 
 function PANEL:RefreshDropdown()
@@ -302,7 +304,8 @@ function PANEL:AutoSize()
     local _, fontHeight = surface.GetTextSize("Ag")
     local padding = 8
     local optimalHeight = fontHeight + padding
-    if not self.userSetHeight then self:SetTall(optimalHeight) end
+    -- Use internal flag to avoid marking as user-set when auto-sizing
+    if not self.userSetHeight then self:SetTall(optimalHeight, true) end
     if #self.choices == 0 then return end
     local maxTextWidth = 0
     for _, choice in ipairs(self.choices) do
@@ -329,17 +332,19 @@ function PANEL:FinishAddingOptions()
     if not (parent and parent.ClassName == "DPanel" and self:GetDock() == TOP) then self:AutoSize() end
 end
 
-function PANEL:SetTall(tall)
+function PANEL:SetTall(tall, internal)
     if self.BaseClass and self.BaseClass.SetTall then
         self.BaseClass.SetTall(self, tall)
     else
         -- Fallback for when BaseClass is not available yet
         local panel = vgui.GetControlTable("Panel")
-        if panel and panel.SetTall then
-            panel.SetTall(self, tall)
-        end
+        if panel and panel.SetTall then panel.SetTall(self, tall) end
     end
-    self.userSetHeight = true
+
+    -- Only mark as user-set when called externally
+    if not internal then
+        self.userSetHeight = true
+    end
 end
 
 function PANEL:RecalculateSize()

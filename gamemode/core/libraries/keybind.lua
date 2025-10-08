@@ -449,7 +449,6 @@ if CLIENT then
                     end
 
                     combo:PostInit()
-
                     local unbindButton = rowPanel:Add("liaButton")
                     unbindButton:Dock(RIGHT)
                     unbindButton:DockMargin(10, 10, 10, 10)

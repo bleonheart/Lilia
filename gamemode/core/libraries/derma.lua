@@ -884,7 +884,7 @@ function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
     color = color or Color(255, 255, 255)
     return draw.TextShadow({
         text = text,
-        font = font or "liaGenericFont",
+        font = font or "LiliaFont.16",
         pos = {x, y},
         color = color,
         xalign = alignX or 0,
@@ -999,7 +999,7 @@ function lia.derma.drawGradient(_x, _y, _w, _h, direction, color_shadow, radius,
 end
 
 function lia.derma.wrapText(text, width, font)
-    font = font or "liaChatFont"
+    font = font or "LiliaFont.16"
     surface.SetFont(font)
     local exploded = string.Explode("%s", text, true)
     local line = ""
@@ -1175,6 +1175,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
             end
 
             if defaultChoiceIndex then ctrl:ChooseOptionID(defaultChoiceIndex) end
+            ctrl:FinishAddingOptions()
             ctrl:PostInit()
         elseif fieldType == "int" or fieldType == "number" then
             ctrl = vgui.Create("liaEntry", panel)
@@ -1386,6 +1387,7 @@ function lia.derma.CreateTableUI(title, columns, data, options, charID)
                                 combo:AddChoice(choice)
                             end
 
+                            combo:FinishAddingOptions()
                             form:AddItem(combo)
                             inputs[fName] = {
                                 panel = combo,
@@ -1640,7 +1642,6 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
     end
 
     dropdown:PostInit()
-
     local buttonPanel = vgui.Create("Panel", frame)
     buttonPanel:Dock(BOTTOM)
     buttonPanel:DockMargin(20, 10, 20, 20)

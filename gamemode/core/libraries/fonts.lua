@@ -19,6 +19,14 @@ function lia.font.getAvailableFonts()
     return list
 end
 
+function lia.font.getBoldFontName(fontName)
+    if string.find(fontName, "Montserrat") then
+        return fontName:gsub(" Medium", " Bold"):gsub("Montserrat$", "Montserrat Bold")
+    else
+        return fontName:gsub(" Medium", " Bold")
+    end
+end
+
 function lia.font.registerFonts(fontName)
     local mainFont = fontName or lia.config.get("Font", "Montserrat Medium")
     lia.font.register("Montserrat Regular", {
@@ -90,7 +98,7 @@ function lia.font.registerFonts(fontName)
         })
 
         lia.font.register("LiliaFont." .. size .. "b", {
-            font = mainFont:gsub(" Medium", " Bold"):gsub("Montserrat$", "Montserrat Bold"),
+            font = lia.font.getBoldFontName(mainFont),
             size = size,
             extended = true,
             antialias = true,
@@ -158,25 +166,24 @@ function lia.font.registerFonts(fontName)
         weight = 1000
     })
 
-    -- Chat-specific fonts
-    lia.font.register("liaChatFont", {
-        font = mainFont,
+    lia.font.register("Montserrat Regular Italic", {
+        font = "Montserrat",
         size = 16,
         extended = true,
         antialias = true,
-        weight = 500
+        italic = true
     })
 
-    lia.font.register("liaBigChatFont", {
-        font = mainFont,
-        size = 20,
+    lia.font.register("Montserrat Regular Shadow", {
+        font = "Montserrat",
+        size = 16,
         extended = true,
         antialias = true,
-        weight = 700
+        shadow = true
     })
 
-    lia.font.register("liaItalicsChatFont", {
-        font = mainFont,
+    lia.font.register("Montserrat Medium Italic", {
+        font = "Montserrat Medium",
         size = 16,
         extended = true,
         antialias = true,
@@ -184,21 +191,156 @@ function lia.font.registerFonts(fontName)
         italic = true
     })
 
-    lia.font.register("liaSmallChatFont", {
+    lia.font.register("Montserrat Medium Shadow", {
+        font = "Montserrat Medium",
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 500,
+        shadow = true
+    })
+
+    lia.font.register("Montserrat Bold Italic", {
+        font = "Montserrat Bold",
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 700,
+        italic = true
+    })
+
+    lia.font.register("Montserrat Bold Shadow", {
+        font = "Montserrat Bold",
+        size = 16,
+        extended = true,
+        antialias = true,
+        weight = 700,
+        shadow = true
+    })
+
+    -- Lia font italic and shadow variants
+    lia.font.register("liaHugeFont Italic", {
+        font = mainFont,
+        size = 72,
+        extended = true,
+        weight = 1000,
+        italic = true
+    })
+
+    lia.font.register("liaHugeFont Shadow", {
+        font = mainFont,
+        size = 72,
+        extended = true,
+        weight = 1000,
+        shadow = true
+    })
+
+    lia.font.register("liaBigFont Italic", {
+        font = mainFont,
+        size = 36,
+        extended = true,
+        weight = 1000,
+        italic = true
+    })
+
+    lia.font.register("liaBigFont Shadow", {
+        font = mainFont,
+        size = 36,
+        extended = true,
+        weight = 1000,
+        shadow = true
+    })
+
+    lia.font.register("liaMediumFont Italic", {
+        font = mainFont,
+        size = 25,
+        extended = true,
+        weight = 1000,
+        italic = true
+    })
+
+    lia.font.register("liaMediumFont Shadow", {
+        font = mainFont,
+        size = 25,
+        extended = true,
+        weight = 1000,
+        shadow = true
+    })
+
+    lia.font.register("liaSmallFont Italic", {
+        font = mainFont,
+        size = 17,
+        extended = true,
+        weight = 500,
+        italic = true
+    })
+
+    lia.font.register("liaSmallFont Shadow", {
+        font = mainFont,
+        size = 17,
+        extended = true,
+        weight = 500,
+        shadow = true
+    })
+
+    lia.font.register("liaMiniFont Italic", {
         font = mainFont,
         size = 14,
         extended = true,
-        antialias = true,
-        weight = 400
+        weight = 400,
+        italic = true
     })
 
-    lia.font.register("liaMediumChatFont", {
+    lia.font.register("liaMiniFont Shadow", {
         font = mainFont,
-        size = 18,
+        size = 14,
         extended = true,
-        antialias = true,
-        weight = 600
+        weight = 400,
+        shadow = true
     })
+
+    -- Generate italic and shadow variants for all LiliaFont sizes
+    for _, size in ipairs(fontSizes) do
+        -- Normal italic variants
+        lia.font.register("LiliaFont." .. size .. "i", {
+            font = mainFont,
+            size = size,
+            extended = true,
+            antialias = true,
+            weight = 500,
+            italic = true
+        })
+
+        -- Normal shadow variants
+        lia.font.register("LiliaFont." .. size .. "s", {
+            font = mainFont,
+            size = size,
+            extended = true,
+            antialias = true,
+            weight = 500,
+            shadow = true
+        })
+
+        -- Bold italic variants
+        lia.font.register("LiliaFont." .. size .. "bi", {
+            font = lia.font.getBoldFontName(mainFont),
+            size = size,
+            extended = true,
+            antialias = true,
+            weight = 700,
+            italic = true
+        })
+
+        -- Bold shadow variants
+        lia.font.register("LiliaFont." .. size .. "bs", {
+            font = lia.font.getBoldFontName(mainFont),
+            size = size,
+            extended = true,
+            antialias = true,
+            weight = 700,
+            shadow = true
+        })
+    end
 
     hook.Run("PostLoadFonts", mainFont, mainFont)
 end
@@ -225,6 +367,24 @@ if CLIENT then
             if boldMatch then
                 fontData.font = boldMatch
                 fontData.weight = 700
+            end
+
+            local italicMatch = font:match("^(.-)(%d+)i$")
+            if italicMatch then fontData.italic = true end
+            local shadowMatch = font:match("^(.-)(%d+)s$")
+            if shadowMatch then fontData.shadow = true end
+            local boldItalicMatch = font:match("^(.-)(%d+)bi$")
+            if boldItalicMatch then
+                fontData.font = boldItalicMatch
+                fontData.weight = 700
+                fontData.italic = true
+            end
+
+            local boldShadowMatch = font:match("^(.-)(%d+)bs$")
+            if boldShadowMatch then
+                fontData.font = boldShadowMatch
+                fontData.weight = 700
+                fontData.shadow = true
             end
 
             lia.font.register(font, fontData)
