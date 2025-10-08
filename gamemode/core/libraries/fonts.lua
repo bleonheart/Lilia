@@ -348,18 +348,14 @@ end, {
 })
 hook.Add("InitializedConfig", "liaFontsOnConfigLoad", function()
     if CLIENT then
-        print("[FONTS] OnReloaded triggered, checking config...")
         if not lia.config.stored or not lia.config.stored.Font then
-            print("[FONTS] Config not loaded, waiting...")
             timer.Simple(0.1, function()
                 local fontName = lia.config.get("Font", "Montserrat Medium")
-                print("[FONTS] Registering fonts with: " .. fontName)
                 lia.font.registerFonts(fontName)
                 timer.Simple(0.2, function() hook.Run("RefreshFonts") end)
             end)
         else
             local fontName = lia.config.get("Font", "Montserrat Medium")
-            print("[FONTS] Config loaded, registering fonts with: " .. fontName)
             lia.font.registerFonts(fontName)
             timer.Simple(0.2, function() hook.Run("RefreshFonts") end)
         end

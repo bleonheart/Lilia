@@ -50,7 +50,11 @@ function PANEL:SetValue(val)
     self.value = val
 end
 function PANEL:SetChecked(val)
+    local oldValue = self.value
     self:SetValue(tobool(val))
+    if self.value ~= oldValue then
+        self:OnChange(self.value)
+    end
 end
 function PANEL:GetChecked()
     return self.value
@@ -60,7 +64,6 @@ function PANEL:IsChecked()
 end
 function PANEL:Toggle()
     self:SetChecked(not self.value)
-    self:OnChange(self.value)
 end
 function PANEL:GetBool()
     return self.value

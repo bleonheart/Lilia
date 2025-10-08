@@ -62,24 +62,24 @@ function SWEP:DrawHUD()
     lia.derma.rect(x - thickness / 2, y - length / 2, thickness, length):Color(themeColors.text):Draw()
     if #information > 0 then
         local maxWidth, totalHeight = 0, 0
-        surface.SetFont("liaMediumFont")
+        surface.SetFont("LiliaFont.17")
         for _, v in pairs(information) do
             local t_w, t_h = surface.GetTextSize(v)
             maxWidth = math.max(maxWidth, t_w)
-            totalHeight = totalHeight + t_h + 8
+            totalHeight = totalHeight + t_h + 4
         end
-        local boxWidth = maxWidth + 40
-        local boxHeight = totalHeight + 40
+        local boxWidth = maxWidth + 20
+        local boxHeight = totalHeight + 20
         local boxX = (ScrW() - boxWidth) / 2
-        local boxY = ScrH() - boxHeight - 40
+        local boxY = ScrH() - boxHeight - 20
         lia.util.drawBlurAt(boxX, boxY, boxWidth, boxHeight, 3, 3, 0.9)
         lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Color(themeColors.background):Rad(8):Draw()
         lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Color(themeColors.accent):Rad(8):Outline(2):Draw()
         local startPosX, startPosY, buffer = boxX + 20, boxY + 20, 0
         for _, v in pairs(information) do
-            lia.derma.drawText(v, startPosX, startPosY + buffer, themeColors.text, 0, 0, "liaMediumFont")
+            lia.derma.drawText(v, startPosX, startPosY + buffer, themeColors.text, 0, 0, "LiliaFont.17")
             local _, t_h = surface.GetTextSize(v)
-            buffer = buffer + t_h + 8
+            buffer = buffer + t_h + 4
         end
     end
 end

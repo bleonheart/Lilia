@@ -11,154 +11,118 @@ function PANEL:Init()
         surface.SetDrawColor(0, 0, 0, 100)
         surface.DrawRect(0, 0, w, h)
     end
+
     self.faction:SetTextColor(color_white)
-    self.faction.OnSelect = function(_, _, _, id)
-        local fac = lia.faction.teams[id]
-        if fac then
-            self:onFactionSelected(fac)
+    self.faction.OnSelect = function(index, text, data)
+        if data then
+            local fac = lia.faction.teams[data]
+            if fac then
+                self:onFactionSelected(fac)
+            else
+                self.desc:SetVisible(false)
+            end
         else
             self.desc:SetVisible(false)
         end
     end
+
     self.desc = self:addLabel(L("description"))
     self.desc:DockMargin(0, 8, 0, 0)
     self.desc:SetFont("LiliaFont.18")
     self.desc:SetWrap(true)
     self.desc:SetAutoStretchVertical(true)
     self.desc:SetVisible(false)
-    print("[Faction Step Init] Description label created, visible:", self.desc:IsVisible())
     self.skipFirstSelect = true
-    local client = LocalPlayer()
-    print("[Faction Step Init] Player on duty:", client:isStaffOnDuty())
-    print("[Faction Step Init] Always excluding staff faction from character creation")
-    print("[Faction Step Init] Total factions:", table.Count(lia.faction.teams))
-    for id, fac in pairs(lia.faction.teams) do
-        print("[Faction Step Init] Faction:", fac.name, "uniqueID:", fac.uniqueID, "index:", fac.index)
-    end
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
-        print("[Faction Step Init] Checking faction:", fac.name, "ID:", id, "uniqueID:", fac.uniqueID, "hasWhitelist:", lia.faction.hasWhitelist(fac.index))
         if lia.faction.hasWhitelist(fac.index) then
-            if fac.uniqueID == "staff" then
-                print("[Faction Step Init] Skipping staff faction")
-                continue
-            end
-            print("[Faction Step Init] Adding faction:", fac.name, "ID:", id)
+            if fac.uniqueID == "staff" then continue end
             self.faction:AddChoice(L(fac.name), id, self.skipFirstSelect)
             self.skipFirstSelect = false
         end
     end
+
     self.faction:FinishAddingOptions()
 end
+
 function PANEL:onDisplay()
     self.skipFirstSelect = true
     if self.faction.choices and #self.faction.choices > 0 then
         local currentChoices = #self.faction.choices
         local availableFactions = 0
-        local client = LocalPlayer()
-        print("[Faction Step onDisplay] Player on duty:", client:isStaffOnDuty())
-        print("[Faction Step onDisplay] Always excluding staff faction from character creation")
-        print("[Faction Step onDisplay] Current choices:", currentChoices)
         for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
             if lia.faction.hasWhitelist(fac.index) then
-                if fac.uniqueID == "staff" then
-                    print("[Faction Step onDisplay] Skipping staff faction")
-                    continue
-                end
+                if fac.uniqueID == "staff" then continue end
                 availableFactions = availableFactions + 1
-                print("[Faction Step onDisplay] Counting faction:", fac.name, "available:", availableFactions)
             end
         end
-        print("[Faction Step onDisplay] Available factions:", availableFactions, "Current choices:", currentChoices)
+
         if availableFactions ~= currentChoices then
-            print("[Faction Step onDisplay] Refreshing faction list")
             self.faction:Clear()
             for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
                 if lia.faction.hasWhitelist(fac.index) then
-                    if fac.uniqueID == "staff" then
-                        print("[Faction Step onDisplay] Skipping staff faction in refresh")
-                        continue
-                    end
-                    print("[Faction Step onDisplay] Adding faction in refresh:", fac.name)
+                    if fac.uniqueID == "staff" then continue end
                     self.faction:AddChoice(L(fac.name), id)
                 end
             end
+
             self.faction:FinishAddingOptions()
-        else
-            print("[Faction Step onDisplay] No refresh needed")
         end
-    else
-        print("[Faction Step onDisplay] No existing choices, skipping refresh")
     end
+
     local id = self.faction:GetSelectedData()
-    print("[Faction Step onDisplay] Selected faction ID:", id)
     if id then
         local fac = lia.faction.teams[id]
         if fac then
-            print("[Faction Step onDisplay] Showing description for faction:", fac.name)
-            print("[Faction Step onDisplay] Description text:", L(fac.desc or "noDesc"))
             self.desc:SetText(L(fac.desc or "noDesc"))
             self.desc:SetVisible(true)
-            print("[Faction Step onDisplay] Description shown, visible:", self.desc:IsVisible())
-            self:onFactionSelected(fac)
+            -- Set context for already selected faction but don't call onFactionSelected to avoid issues
+            self:setContext("faction", fac.index)
+            self:setContext("model", 1)
+            self:updateModelPanel()
         else
-            print("[Faction Step onDisplay] Faction not found for ID:", id)
             self.desc:SetVisible(false)
         end
     else
-        print("[Faction Step onDisplay] No faction selected, hiding description")
         self.desc:SetVisible(false)
-        print("[Faction Step onDisplay] Description hidden, visible:", self.desc:IsVisible())
     end
 end
+
 function PANEL:onFactionSelected(fac)
-    print("[Faction Step onFactionSelected] Setting description for faction:", fac.name)
-    print("[Faction Step onFactionSelected] Description text:", L(fac.desc or "noDesc"))
     self.desc:SetText(L(fac.desc or "noDesc"))
+    self.desc:SizeToContentsY()
     self.desc:SetVisible(true)
-    print("[Faction Step onFactionSelected] Description visible:", self.desc:IsVisible())
-    if self:getContext("faction") == fac.index and not self.skipFirstSelect then
-        print("[Faction Step onFactionSelected] Same faction selected, skipping context updates")
-        return
-    end
-    print("[Faction Step onFactionSelected] Updating context for faction:", fac.name)
+    if self:getContext("faction") == fac.index and not self.skipFirstSelect then return end
     self:clearContext()
     self:setContext("faction", fac.index)
     self:setContext("model", 1)
     self:updateModelPanel()
     if self.skipFirstSelect then
         self.skipFirstSelect = false
-        print("[Faction Step onFactionSelected] First faction selected")
         return
     end
-    print("[Faction Step onFactionSelected] Playing click sound")
+
     lia.gui.character:clickSound()
 end
+
 function PANEL:shouldSkip()
-    local client = LocalPlayer()
     local availableFactions = 0
-    print("[Faction Step shouldSkip] Player on duty:", client:isStaffOnDuty())
-    print("[Faction Step shouldSkip] Always excluding staff faction from character creation")
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
         if lia.faction.hasWhitelist(fac.index) then
-            if fac.uniqueID == "staff" then
-                print("[Faction Step shouldSkip] Skipping staff faction in count")
-                continue
-            end
+            if fac.uniqueID == "staff" then continue end
             availableFactions = availableFactions + 1
-            print("[Faction Step shouldSkip] Counting faction:", fac.name, "total:", availableFactions)
         end
     end
-    print("[Faction Step shouldSkip] Available factions:", availableFactions, "Should skip:", availableFactions == 1)
     return availableFactions == 1
 end
+
 function PANEL:onSkip()
     local id = self.faction:GetSelectedData()
     if id then
         local fac = lia.faction.teams[id]
-        if fac then
-            self:setContext("faction", fac.index)
-        end
+        if fac then self:setContext("faction", fac.index) end
     end
+
     self:setContext("model", self:getContext("model", 1))
 end
+
 vgui.Register("liaCharacterFaction", PANEL, "liaCharacterCreateStep")
