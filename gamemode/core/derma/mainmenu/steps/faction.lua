@@ -28,6 +28,7 @@ function PANEL:Init()
     self.desc:SetWrap(true)
     self.desc:SetAutoStretchVertical(true)
     self.desc:SetVisible(false)
+    print("[Faction Step Init] Description label created, visible:", self.desc:IsVisible())
     self.skipFirstSelect = true
     local client = LocalPlayer()
     print("[Faction Step Init] Player on duty:", client:isStaffOnDuty())
@@ -106,26 +107,36 @@ function PANEL:onDisplay()
     end
 
     local id = self.faction:GetSelectedData()
+    print("[Faction Step onDisplay] Selected faction ID:", id)
     if id then
         local fac = lia.faction.teams[id]
         if fac then
             -- Show description for already selected faction
+            print("[Faction Step onDisplay] Showing description for faction:", fac.name)
+            print("[Faction Step onDisplay] Description text:", L(fac.desc or "noDesc"))
             self.desc:SetText(L(fac.desc or "noDesc"))
             self.desc:SetVisible(true)
+            print("[Faction Step onDisplay] Description shown, visible:", self.desc:IsVisible())
             self:onFactionSelected(fac)
         else
+            print("[Faction Step onDisplay] Faction not found for ID:", id)
             self.desc:SetVisible(false)
         end
     else
         -- Hide description if no faction is selected
+        print("[Faction Step onDisplay] No faction selected, hiding description")
         self.desc:SetVisible(false)
+        print("[Faction Step onDisplay] Description hidden, visible:", self.desc:IsVisible())
     end
 end
 
 function PANEL:onFactionSelected(fac)
     -- Always update the description when a faction is selected
+    print("[Faction Step onFactionSelected] Setting description for faction:", fac.name)
+    print("[Faction Step onFactionSelected] Description text:", L(fac.desc or "noDesc"))
     self.desc:SetText(L(fac.desc or "noDesc"))
     self.desc:SetVisible(true)
+    print("[Faction Step onFactionSelected] Description visible:", self.desc:IsVisible())
 
     -- Only skip context updates if it's the same faction and not the first select
     if self:getContext("faction") == fac.index and not self.skipFirstSelect then
