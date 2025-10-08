@@ -243,7 +243,7 @@ function SKIN:PaintCategoryList(panel, w, h)
     drawAltBg(panel, w, h)
 end
 
-function SKIN:PaintCategoryButton(panel, w, h)
+function SKIN:PaintCategoryButton(_, w, h)
     -- Skip blur for category buttons to improve performance
     surface.SetDrawColor(45, 45, 45, 200)
     surface.DrawRect(0, 0, w, h)
@@ -253,13 +253,13 @@ function SKIN:PaintContentPanel(panel, w, h)
     drawAltBg(panel, w, h)
 end
 
-function SKIN:PaintContentIcon(panel, w, h)
+function SKIN:PaintContentIcon(_, w, h)
     -- Skip blur for individual content icons to improve performance
     surface.SetDrawColor(45, 45, 45, 200)
     surface.DrawRect(0, 0, w, h)
 end
 
-function SKIN:PaintSpawnIcon(panel, w, h)
+function SKIN:PaintSpawnIcon(_, w, h)
     -- Skip blur for individual spawn icons to improve performance
     surface.SetDrawColor(45, 45, 45, 200)
     surface.DrawRect(0, 0, w, h)
