@@ -49,7 +49,7 @@ function PANEL:onDisplay()
     if self.faction.choices and #self.faction.choices > 0 then
         local currentChoices = #self.faction.choices
         local availableFactions = 0
-        for _id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
+        for _, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
             if lia.faction.hasWhitelist(fac.index) then
                 if fac.uniqueID == "staff" then continue end
                 availableFactions = availableFactions + 1
