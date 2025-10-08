@@ -124,7 +124,6 @@ function PANEL:OpenMenu()
     local itemHeight = 32
     local numChoices = #self.choices
     local calculatedHeight = numChoices * (itemHeight + 2) + (menuPadding * 2) + 2
-    local maxMenuHeight = math.min(600, calculatedHeight)
     surface.SetFont(self.font)
     local maxTextWidth = 0
     for _, choice in ipairs(self.choices) do
@@ -134,28 +133,34 @@ function PANEL:OpenMenu()
 
     local optimalWidth = math.max(self:GetWide(), maxTextWidth + 40)
     local menuWidth = math.min(optimalWidth, ScrW() * 0.4)
-    local scrollThreshold = maxMenuHeight - (menuPadding * 2) - 2
-    local needsScroll = numChoices * (itemHeight + 2) > scrollThreshold
+    -- Determine dynamic max height based on available screen space above/below
+    local sx, sy = self:LocalToScreen(0, self:GetTall())
+    local spaceBelow = ScrH() - sy - 10
+    local spaceAbove = (sy - self:GetTall()) - 10
+    local maxAvailable = math.max(spaceBelow, spaceAbove)
+    local menuHeight = math.Clamp(calculatedHeight, 0, math.max(0, maxAvailable))
+    local needsScroll = calculatedHeight > menuHeight
     if needsScroll then
         self.menu = vgui.Create("liaScrollPanel")
-        self.menu:SetSize(menuWidth, maxMenuHeight)
-        local x, y = self:LocalToScreen(0, self:GetTall())
-        if y + maxMenuHeight > ScrH() - 10 then y = y - maxMenuHeight - self:GetTall() end
+        self.menu:SetSize(menuWidth, menuHeight)
+        local x, y = sx, sy
+        if spaceBelow < menuHeight then y = sy - menuHeight - self:GetTall() end
         self.menu:SetPos(x, y)
         self.menu:SetDrawOnTop(true)
         self.menu:MakePopup()
         self.menu:SetKeyboardInputEnabled(false)
-        local container = vgui.Create("DPanel", self.menu)
-        container:Dock(FILL)
-        container:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding)
-        container.Paint = function(_, w, h)
+        -- Paint background on the scroll panel itself
+        self.menu.Paint = function(_, w, h)
             lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
             lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
         end
+        -- Apply padding to the canvas so options have inner spacing
+        local canvas = self.menu:GetCanvas()
+        if IsValid(canvas) then canvas:DockPadding(menuPadding, menuPadding, menuPadding, menuPadding) end
 
         surface.SetFont(self.font)
         for i, choice in ipairs(self.choices) do
-            local option = vgui.Create("DButton", container)
+            local option = self.menu:Add("DButton")
             option:SetText("")
             option:Dock(TOP)
             option:DockMargin(2, 2, 2, 0)
@@ -183,11 +188,11 @@ function PANEL:OpenMenu()
             end
         end
     else
-        local menuHeight = math.min((numChoices * (itemHeight + 2)) + (menuPadding * 2) + 2, maxMenuHeight)
+        menuHeight = (numChoices * (itemHeight + 2)) + (menuPadding * 2) + 2
         self.menu = vgui.Create("DPanel")
         self.menu:SetSize(menuWidth, menuHeight)
-        local x, y = self:LocalToScreen(0, self:GetTall())
-        if y + menuHeight > ScrH() - 10 then y = y - menuHeight - self:GetTall() end
+        local x, y = sx, sy
+        if spaceBelow < menuHeight then y = sy - menuHeight - self:GetTall() end
         self.menu:SetPos(x, y)
         self.menu:SetDrawOnTop(true)
         self.menu:MakePopup()

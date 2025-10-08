@@ -31,14 +31,20 @@ function PANEL:Init()
     self.skipFirstSelect = true
     local client = LocalPlayer()
     print("[Faction Step Init] Player on duty:", client:isStaffOnDuty())
+    print("[Faction Step Init] Always excluding staff faction from character creation")
     print("[Faction Step Init] Total factions:", table.Count(lia.faction.teams))
+
+    -- Debug: List all factions
+    for id, fac in pairs(lia.faction.teams) do
+        print("[Faction Step Init] Faction:", fac.name, "uniqueID:", fac.uniqueID, "index:", fac.index)
+    end
 
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
         print("[Faction Step Init] Checking faction:", fac.name, "ID:", id, "uniqueID:", fac.uniqueID, "hasWhitelist:", lia.faction.hasWhitelist(fac.index))
         if lia.faction.hasWhitelist(fac.index) then
-            -- Don't show staff faction if player is on duty
-            if fac.uniqueID == "staff" and client:isStaffOnDuty() then
-                print("[Faction Step Init] Skipping staff faction - player is on duty")
+            -- Don't show staff faction in character creation dropdown
+            if fac.uniqueID == "staff" then
+                print("[Faction Step Init] Skipping staff faction")
                 continue
             end
             print("[Faction Step Init] Adding faction:", fac.name, "ID:", id)
@@ -58,31 +64,45 @@ function PANEL:onDisplay()
         local currentChoices = #self.faction.choices
         local availableFactions = 0
         local client = LocalPlayer()
+        print("[Faction Step onDisplay] Player on duty:", client:isStaffOnDuty())
+        print("[Faction Step onDisplay] Always excluding staff faction from character creation")
+        print("[Faction Step onDisplay] Current choices:", currentChoices)
 
         for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
             if lia.faction.hasWhitelist(fac.index) then
-                -- Don't show staff faction if player is on duty
-                if fac.uniqueID == "staff" and client:isStaffOnDuty() then
+                -- Don't show staff faction in character creation dropdown
+                if fac.uniqueID == "staff" then
+                    print("[Faction Step onDisplay] Skipping staff faction")
                     continue
                 end
                 availableFactions = availableFactions + 1
+                print("[Faction Step onDisplay] Counting faction:", fac.name, "available:", availableFactions)
             end
         end
 
+        print("[Faction Step onDisplay] Available factions:", availableFactions, "Current choices:", currentChoices)
+
         -- If the number of available factions changed, refresh the choices
         if availableFactions ~= currentChoices then
+            print("[Faction Step onDisplay] Refreshing faction list")
             self.faction:Clear()
             for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
                 if lia.faction.hasWhitelist(fac.index) then
-                    -- Don't show staff faction if player is on duty
-                    if fac.uniqueID == "staff" and client:isStaffOnDuty() then
+                    -- Don't show staff faction in character creation dropdown
+                    if fac.uniqueID == "staff" then
+                        print("[Faction Step onDisplay] Skipping staff faction in refresh")
                         continue
                     end
+                    print("[Faction Step onDisplay] Adding faction in refresh:", fac.name)
                     self.faction:AddChoice(L(fac.name), id)
                 end
             end
             self.faction:FinishAddingOptions()
+        else
+            print("[Faction Step onDisplay] No refresh needed")
         end
+    else
+        print("[Faction Step onDisplay] No existing choices, skipping refresh")
     end
 
     local id = self.faction:GetSelectedData()
@@ -109,35 +129,44 @@ function PANEL:onFactionSelected(fac)
 
     -- Only skip context updates if it's the same faction and not the first select
     if self:getContext("faction") == fac.index and not self.skipFirstSelect then
+        print("[Faction Step onFactionSelected] Same faction selected, skipping context updates")
         return
     end
 
+    print("[Faction Step onFactionSelected] Updating context for faction:", fac.name)
     self:clearContext()
     self:setContext("faction", fac.index)
     self:setContext("model", 1)
     self:updateModelPanel()
     if self.skipFirstSelect then
         self.skipFirstSelect = false
+        print("[Faction Step onFactionSelected] First faction selected")
         return
     end
 
+    print("[Faction Step onFactionSelected] Playing click sound")
     lia.gui.character:clickSound()
 end
 
 function PANEL:shouldSkip()
     local client = LocalPlayer()
     local availableFactions = 0
+    print("[Faction Step shouldSkip] Player on duty:", client:isStaffOnDuty())
+    print("[Faction Step shouldSkip] Always excluding staff faction from character creation")
 
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
         if lia.faction.hasWhitelist(fac.index) then
-            -- Don't count staff faction if player is on duty
-            if fac.uniqueID == "staff" and client:isStaffOnDuty() then
+            -- Don't count staff faction in character creation dropdown
+            if fac.uniqueID == "staff" then
+                print("[Faction Step shouldSkip] Skipping staff faction in count")
                 continue
             end
             availableFactions = availableFactions + 1
+            print("[Faction Step shouldSkip] Counting faction:", fac.name, "total:", availableFactions)
         end
     end
 
+    print("[Faction Step shouldSkip] Available factions:", availableFactions, "Should skip:", availableFactions == 1)
     return availableFactions == 1
 end
 
