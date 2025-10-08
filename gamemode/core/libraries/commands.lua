@@ -1255,7 +1255,7 @@ else
     factionViewAngles = factionViewAngles or nil
     factionViewModel = factionViewModel or nil
     factionViewFaction = factionViewFaction or nil
-    concommand.Add("viewAsFaction", function(client, _, args)
+    concommand.Add("viewAsFaction", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
@@ -1342,7 +1342,7 @@ else
             return
         end
         local faction = nil
-        for uniqueID, f in pairs(lia.faction.teams) do
+        for _, f in pairs(lia.faction.teams) do
             if string.lower(f.name) == string.lower(factionName) then
                 faction = f
                 break

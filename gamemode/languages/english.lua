@@ -346,7 +346,6 @@ LANGUAGE = {
     flagTakeDesc = "Remove the following flags from the player.",
     flagSet = "%s has set %s's flags to '%s'.",
     charFlagsTitle = "Character Flags",
-    charFlagsTitle = "Character Flags",
     modifyCharFlags = "Modify Character Flags",
     giveAllCharFlags = "Give All Character Flags",
     takeAllCharFlags = "Take All Character Flags",

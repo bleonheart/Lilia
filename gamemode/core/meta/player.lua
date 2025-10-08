@@ -381,7 +381,7 @@ function playerMeta:leaveSequence()
     if isfunction(self.liaSeqCallback) then self.liaSeqCallback() end
     self.liaSeqCallback = nil
 end
-function playerMeta:getFlags(flagType)
+function playerMeta:getFlags()
     local char = self:getChar()
     return char and char:getFlags() or ""
 end

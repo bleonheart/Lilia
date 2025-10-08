@@ -9,7 +9,7 @@ function lia.flag.add(flag, desc, callback)
 end
 if SERVER then
     function lia.flag.onSpawn(client)
-        local flags = client:getFlags() .. client:getFlags("player")
+        local flags = client:getFlags()
         local processed = {}
         for i = 1, #flags do
             local flag = flags:sub(i, i)
