@@ -6,6 +6,7 @@
         client:StripWeapon("weapon_physgun")
     end
 end)
+
 lia.flag.add("t", "flagToolgun", function(client, isGiven)
     if isGiven then
         client:Give("gmod_tool")
@@ -14,6 +15,7 @@ lia.flag.add("t", "flagToolgun", function(client, isGiven)
         client:StripWeapon("gmod_tool")
     end
 end)
+
 lia.flag.add("C", "flagSpawnVehicles")
 lia.flag.add("z", "flagSpawnSweps")
 lia.flag.add("E", "flagSpawnSents")

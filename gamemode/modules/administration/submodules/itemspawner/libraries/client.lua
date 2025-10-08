@@ -13,6 +13,7 @@
         local matName = string.Replace(model, ".mdl", "")
         icon.Image:SetMaterial(Material("spawnicons/" .. matName .. ".png"))
     end
+
     icon:SetColor(Color(205, 92, 92, 255))
     icon:SetTooltip(lia.darkrp.textWrap(itemData.desc or "", "DermaDefault", 560))
     icon.DoClick = function()
@@ -21,6 +22,7 @@
         net.SendToServer()
         surface.PlaySound("outlands-rp/ui/ui_return.wav")
     end
+
     icon.OpenMenu = function()
         local menu = lia.derma.dermaMenu()
         menu:AddOption(L("copy"), function() SetClipboardText(icon:GetSpawnName()) end):SetIcon("icon16/page_copy.png")
@@ -43,6 +45,7 @@
                     combo:AddChoice(L("characterSteamIDFormat", character:getName() or L("unknown"), steamID), steamID)
                 end
             end
+
             local button = vgui.Create("liaSmallButton", popup)
             button:Dock(BOTTOM)
             button:SetText(L("spawnItem"))
@@ -55,16 +58,20 @@
                 popup:Remove()
             end
         end)
+
         menu:Open()
     end
+
     container:Add(icon)
     return icon
 end)
+
 function MODULE:PopulateInventoryItems(pnlContent, tree)
     local allItems = lia.item.list
     local categorized = {
         Unsorted = {}
     }
+
     tree:Clear()
     for uniqueID, itemData in pairs(allItems) do
         local category = itemData:getCategory()
@@ -74,6 +81,7 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
             name = itemData.name
         })
     end
+
     for category, itemList in SortedPairs(categorized) do
         if category ~= L("unsorted") or #itemList > 0 then
             local node = tree:AddNode(category == L("unsorted") and L("unsorted") or category, "icon16/picture.png")
@@ -89,6 +97,7 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
                     })
                 end
             end
+
             node.DoClick = function(btn)
                 btn:DoPopulate()
                 pnlContent:SwitchPanel(btn.PropPanel)
@@ -96,6 +105,7 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
         end
     end
 end
+
 search.AddProvider(function(str)
     local results = {}
     if not str or str == "" then return results end
@@ -109,15 +119,18 @@ search.AddProvider(function(str)
                 name = name ~= "" and name or uniqueID,
                 id = uniqueID
             })
+
             table.insert(results, {
                 text = name ~= "" and name or uniqueID,
                 icon = icon
             })
         end
     end
+
     table.SortByMember(results, "text", true)
     return results
 end, "inventoryitems")
+
 spawnmenu.AddCreationTab(L("inventoryItems"), function()
     local client = LocalPlayer()
     if not IsValid(client) or not client.hasPrivilege or not client:hasPrivilege("canUseItemSpawner") then
