@@ -12,6 +12,16 @@ net.Receive("liaCfgSet", function()
     local value = net.ReadType()
     local config = lia.config.stored[key]
     if config then
+        if key == "Theme" then
+            lia.color.applyTheme(value, true)
+            if IsValid(lia.gui.menu) and lia.gui.menu.currentTab == "themes" then
+                lia.gui.menu:Remove()
+                vgui.Create("liaMenu")
+            end
+        elseif key == "Font" then
+            if IsValid(lia.gui.menu) then lia.gui.menu:Update() end
+        end
+
         local oldValue = config.value
         config.value = value
         if config.callback then config.callback(oldValue, value) end
