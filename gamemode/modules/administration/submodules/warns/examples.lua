@@ -14,8 +14,10 @@ hook.Add("WarningIssued", "AdvancedWarningLogger", function(admin, target, reaso
         map = game.GetMap(),
         server_name = GetHostName()
     }
+
     print(L("advancedWarningLog"), util.TableToJSON(logEntry, true))
 end)
+
 hook.Add("WarningRemoved", "AdvancedWarningRemovalLogger", function(admin, target, warning, index)
     local timestamp = os.date("%Y-%m-%d %H:%M:%S")
     local logEntry = {
@@ -32,5 +34,6 @@ hook.Add("WarningRemoved", "AdvancedWarningRemovalLogger", function(admin, targe
         map = game.GetMap(),
         server_name = GetHostName()
     }
+
     print(L("advancedWarningRemovalLog"), util.TableToJSON(logEntry, true))
 end)

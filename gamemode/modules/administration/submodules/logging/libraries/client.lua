@@ -33,9 +33,11 @@ local function OpenLogsUI(panel, categorizedLogs)
                 field = "steamID"
             }
         }
+
         for _, col in ipairs(columns) do
             list:AddColumn(col.name)
         end
+
         local function populate(filter)
             filter = string.lower(filter or "")
             list:Clear()
@@ -48,6 +50,7 @@ local function OpenLogsUI(panel, categorizedLogs)
                 end
             end
         end
+
         search.OnChange = function() populate(search:GetValue()) end
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.rowData then return end
@@ -57,17 +60,21 @@ local function OpenLogsUI(panel, categorizedLogs)
             menu:AddOption(L("copyLogMessage"), function() SetClipboardText(data.message or "") end):SetIcon("icon16/page_copy.png")
             menu:Open()
         end
+
         populate("")
         sheet:AddSheet(category, page)
     end
 end
+
 lia.net.readBigTable("liaSendLogs", function(categorizedLogs)
     if not categorizedLogs then
         chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         return
     end
+
     if IsValid(receivedPanel) then OpenLogsUI(receivedPanel, categorizedLogs) end
 end)
+
 function MODULE:PopulateAdminTabs(pages)
     if IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canSeeLogs") then
         table.insert(pages, {

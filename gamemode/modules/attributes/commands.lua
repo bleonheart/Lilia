@@ -33,6 +33,7 @@
             client:notifyErrorLocalized("noAttributesRegistered")
             return
         end
+
         local target = lia.util.findPlayer(client, arguments[1])
         local attribName = arguments[2]
         local attribNumber = tonumber(arguments[3])
@@ -40,6 +41,7 @@
             client:notifyErrorLocalized("targetNotFound")
             return
         end
+
         lia.log.add(client, "attribCheck", target:Name())
         local character = target:getChar()
         if character then
@@ -54,6 +56,7 @@
         end
     end
 })
+
 lia.command.add("checkattributes", {
     adminOnly = true,
     desc = "checkAttributes",
@@ -74,11 +77,13 @@ lia.command.add("checkattributes", {
             client:notifyErrorLocalized("noAttributesRegistered")
             return
         end
+
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
             client:notifyErrorLocalized("targetNotFound")
             return
         end
+
         local attributesData = {}
         for attrKey, attrData in SortedPairsByMemberValue(lia.attribs.list, "name") do
             local currentValue = target:getChar():getAttrib(attrKey, 0) or 0
@@ -92,6 +97,7 @@ lia.command.add("checkattributes", {
                 progress = progress .. "%"
             })
         end
+
         lia.util.SendTableUI(client, "characterAttributes", {
             {
                 name = "attributeName",
@@ -121,6 +127,7 @@ lia.command.add("checkattributes", {
         }, client:getChar():getID())
     end
 })
+
 lia.command.add("charaddattrib", {
     superAdminOnly = true,
     desc = "addAttributes",
@@ -156,6 +163,7 @@ lia.command.add("charaddattrib", {
             client:notifyErrorLocalized("noAttributesRegistered")
             return
         end
+
         local target = lia.util.findPlayer(client, arguments[1])
         local attribName = arguments[2]
         local attribNumber = tonumber(arguments[3])
@@ -163,6 +171,7 @@ lia.command.add("charaddattrib", {
             client:notifyErrorLocalized("targetNotFound")
             return
         end
+
         local character = target:getChar()
         if character then
             for k, v in pairs(lia.attribs.list) do
