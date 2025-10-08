@@ -278,7 +278,6 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
             if hasContent then GetOrCreateCategoryMenu(menu, categoryKey, stores) end
         end
     end
-    -- Set maximum width for the menu to make it smaller
     menu:SetWide(math.min(menu:GetWide(), 400))
     if menu.UpdateSize then menu:UpdateSize() end
     return menu
