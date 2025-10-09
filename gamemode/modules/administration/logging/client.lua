@@ -1,4 +1,4 @@
-﻿local receivedPanel
+local receivedPanel
 local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)

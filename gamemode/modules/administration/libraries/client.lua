@@ -339,7 +339,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("canAccessFlagManagement") then
+    if client:hasPrivilege("manageFlags") then
         table.insert(pages, {
             name = L("flagsManagement"),
             icon = "icon16/flag_red.png",

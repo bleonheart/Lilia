@@ -188,22 +188,34 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
 end)
 
 net.Receive("liaRequestAllFlags", function(_, client)
-    if not client:hasPrivilege("canAccessFlagManagement") then return end
+    print("[Flags Server Debug] Received request from " .. client:Name())
+    if not client:hasPrivilege("manageFlags") then
+        print("[Flags Server Debug] " .. client:Name() .. " does not have manageFlags privilege")
+        return
+    end
+
     local data = {}
+    local playerCount = 0
     for _, ply in player.Iterator() do
         local char = ply:getChar()
-        data[#data + 1] = {
-            name = ply:Name(),
-            steamID = ply:SteamID(),
-            flags = char and char:getFlags() or "",
-        }
+        if char then
+            playerCount = playerCount + 1
+            data[#data + 1] = {
+                name = ply:Name(),
+                steamID = ply:SteamID(),
+                flags = char:getFlags() or "",
+            }
+        end
     end
+
+    print("[Flags Server Debug] Found " .. playerCount .. " players with characters")
+    print("[Flags Server Debug] Sending " .. #data .. " entries")
 
     lia.net.writeBigTable(client, "liaAllFlags", data)
 end)
 
 net.Receive("liaModifyFlags", function(_, client)
-    if not client:hasPrivilege("canAccessFlagManagement") then return end
+    if not client:hasPrivilege("manageFlags") then return end
     local steamID = net.ReadString()
     local flags = net.ReadString()
     local target = lia.util.findPlayerBySteamID(steamID)

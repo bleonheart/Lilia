@@ -21,6 +21,12 @@ function PANEL:Init()
     makeLabel("model")
     local faction = lia.faction.indices[self:getContext("faction")]
     if not faction then return end
+
+    -- Check if faction has models, if not use default or skip
+    if not faction.models or #faction.models == 0 then
+        faction.models = {["models/alyx.mdl"] = "models/alyx.mdl"}
+    end
+
     local function paintOver(icon, w, h)
         if self:getContext("model") == icon.index then
             local col = lia.config.get("Color", color_white)
@@ -92,11 +98,19 @@ end
 
 function PANEL:shouldSkip()
     local faction = lia.faction.indices[self:getContext("faction")]
-    return faction and #faction.models == 1 or false
+    if not faction then return true end
+
+    -- Skip if no models or only one model
+    return not faction.models or #faction.models <= 1
 end
 
 function PANEL:onSkip()
-    self:setContext("model", 1)
+    local faction = lia.faction.indices[self:getContext("faction")]
+    if not faction or not faction.models then return end
+
+    -- Set to first available model key
+    local firstModel = next(faction.models)
+    self:setContext("model", firstModel)
 end
 
 function PANEL:validate()

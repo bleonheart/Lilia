@@ -1,4 +1,4 @@
-﻿local TicketFrames = {}
+local TicketFrames = {}
 local xpos = xpos or 20
 local ypos = ypos or 20
 function MODULE:TicketFrame(requester, message, claimed)

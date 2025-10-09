@@ -443,6 +443,16 @@ function playerMeta:getFlags()
     return char and char:getFlags() or ""
 end
 
+function playerMeta:giveFlags(flags)
+    local char = self:getChar()
+    if char then char:giveFlags(flags) end
+end
+
+function playerMeta:takeFlags(flags)
+    local char = self:getChar()
+    if char then char:takeFlags(flags) end
+end
+
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()

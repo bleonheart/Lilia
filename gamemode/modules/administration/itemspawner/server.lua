@@ -1,4 +1,4 @@
-﻿net.Receive("liaSpawnMenuSpawnItem", function(_, client)
+net.Receive("liaSpawnMenuSpawnItem", function(_, client)
     local function fixupProp(client, ent, mins, maxs)
         local pos = ent:GetPos()
         local down, up = ent:LocalToWorld(mins), ent:LocalToWorld(maxs)

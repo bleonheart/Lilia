@@ -309,9 +309,23 @@ local function OpenRoster(panel, data)
 end
 
 function OpenFlagsPanel(panel, data)
+    print("[Flags Debug] Opening panel with " .. #data .. " entries")
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
+
+    -- If no data, show a message
+    if not data or #data == 0 then
+        local noDataLabel = panel:Add("DLabel")
+        noDataLabel:Dock(FILL)
+        noDataLabel:SetText("No players with characters are currently online.\n\nPlayers must be online with a loaded character to appear in this list.\n\nYou can manage flags for offline characters using console commands:\n• /flaggive <player> <flags>\n• /flagtake <player> <flags>")
+        noDataLabel:SetFont("liaSmallFont")
+        noDataLabel:SetTextColor(Color(150, 150, 150))
+        noDataLabel:SetContentAlignment(5)
+        noDataLabel:SetWrap(true)
+        return
+    end
+
     local search = panel:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -397,19 +411,6 @@ function OpenFlagsPanel(panel, data)
             SetClipboardText(string.sub(rowString, 1, -4))
         end):SetIcon("icon16/page_copy.png")
 
-        menu:AddOption(L("modifyCharFlags"), function()
-            local steamID = line:GetColumnText(2) or ""
-            local currentFlags = line:GetColumnText(3) or ""
-            Derma_StringRequest(L("modifyCharFlags"), L("modifyFlagsDesc"), currentFlags, function(text)
-                text = string.gsub(text or "", "%s", "")
-                net.Start("liaModifyFlags")
-                net.WriteString(steamID)
-                net.WriteString(text)
-                net.WriteBool(false)
-                net.SendToServer()
-                line:SetColumnText(3, text)
-            end)
-        end):SetIcon("icon16/flag_orange.png")
 
         menu:AddOption(L("modifyCharFlags"), function()
             local steamID = line:GetColumnText(2) or ""
@@ -429,8 +430,12 @@ function OpenFlagsPanel(panel, data)
 end
 
 lia.net.readBigTable("liaAllFlags", function(data)
+    print("[Flags Client Debug] Received flags data with " .. #data .. " entries")
     flagsData = data or {}
-    if IsValid(flagsPanel) and not flagsPanel.flagsInitialized then OpenFlagsPanel(flagsPanel, flagsData) end
+    if IsValid(flagsPanel) and not flagsPanel.flagsInitialized then
+        print("[Flags Client Debug] Opening flags panel with data")
+        OpenFlagsPanel(flagsPanel, flagsData)
+    end
     flagsData = nil
 end)
 

@@ -54,6 +54,7 @@ function PANEL:Init()
     lia.gui.score = self
     hook.Run("ScoreboardOpened", self)
     self:ApplyConfig()
+    self:ShowCloseButton(false)
     local header = self:Add("DPanel")
     header:Dock(TOP)
     header:SetTall(80)
@@ -455,24 +456,6 @@ function PANEL:addPlayer(ply, parent)
     hook.Run("ScoreboardRowCreated", slot, ply)
 end
 
-function PANEL:Paint(w, h)
-    local radius = 16
-    if lia.config.get("UseSolidBackground", false) then
-        local bg = lia.config.get("ScoreboardBackgroundColor", {
-            r = 50,
-            g = 50,
-            b = 50,
-            a = 255
-        })
-
-        lia.derma.rect(0, 0, w, h):Rad(radius):Color(Color(bg.r, bg.g, bg.b, bg.a)):Shape(lia.derma.SHAPE_IOS):Draw()
-    else
-        lia.derma.rect(0, 0, w, h):Rad(radius):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Draw()
-    end
-
-    local alpha = lia.config.get("UseSolidBackground", false) and 200 or 150
-    lia.derma.rect(0, 0, w, h):Rad(radius):Color(Color(0, 0, 0, alpha)):Shape(lia.derma.SHAPE_IOS):Draw()
-end
 
 function PANEL:Update()
     if IsValid(self) then
@@ -486,4 +469,4 @@ function PANEL:OnRemove()
     CloseDermaMenus()
 end
 
-vgui.Register("liaScoreboard", PANEL, "EditablePanel")
+vgui.Register("liaScoreboard", PANEL, "SemiTransparentDFrame")
