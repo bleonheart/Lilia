@@ -200,15 +200,15 @@ function PANEL:Rebuild()
                             table.insert(tab_children, child)
                         end
                     end
-                    local visibleIndex = 1
-                    for _, child in ipairs(tab_children) do
-                        local actualTabId = self.scroll_offset + visibleIndex
-                        if visibleIndex <= visibleTabs and actualTabId <= #self.tabs then
+                    local startIndex = self.scroll_offset + 1
+                    local endIndex = self.scroll_offset + visibleTabs
+                    for i, child in ipairs(tab_children) do
+                        if i >= startIndex and i <= endIndex then
                             child:SetVisible(true)
-                            local finalWidth = widthPerTab + ((visibleIndex <= remainder) and 1 or 0)
+                            local slotIndex = i - self.scroll_offset -- 1..visibleTabs
+                            local finalWidth = widthPerTab + ((slotIndex <= remainder) and 1 or 0)
                             child:SetWide(finalWidth)
-                            child:DockMargin(0, 0, (visibleIndex < visibleTabs) and self._baseMargin or 0, 0)
-                            visibleIndex = visibleIndex + 1
+                            child:DockMargin(0, 0, (slotIndex < visibleTabs) and self._baseMargin or 0, 0)
                         else
                             child:SetVisible(false)
                         end
