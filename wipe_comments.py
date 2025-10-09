@@ -1,4 +1,4 @@
-R#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Simple script to remove comments from Lua files.
 Removes both single-line (--) and multi-line (--[[ ]]) comments.

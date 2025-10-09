@@ -205,7 +205,7 @@ function PANEL:Rebuild()
                     for i, child in ipairs(tab_children) do
                         if i >= startIndex and i <= endIndex then
                             child:SetVisible(true)
-                            local slotIndex = i - self.scroll_offset -- 1..visibleTabs
+                            local slotIndex = i - self.scroll_offset
                             local finalWidth = widthPerTab + ((slotIndex <= remainder) and 1 or 0)
                             child:SetWide(finalWidth)
                             child:DockMargin(0, 0, (slotIndex < visibleTabs) and self._baseMargin or 0, 0)
