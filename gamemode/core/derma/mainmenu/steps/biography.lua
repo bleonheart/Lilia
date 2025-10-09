@@ -1,7 +1,7 @@
 ﻿local PANEL = {}
 local HIGHLIGHT = Color(255, 255, 255, 50)
 function PANEL:Init()
-    self:SetSize(400, 600)
+    self:Dock(FILL)
     local function makeLabel(key)
         local lbl = self:Add("DLabel")
         lbl:SetFont("liaMediumFont")
@@ -43,96 +43,48 @@ function PANEL:makeTextEntry(key)
 end
 
 function PANEL:addAttributes()
-    -- Determine if there are any visible attributes
-    local visible = {}
-    for k, v in pairs(lia.attribs.list or {}) do
-        if not v.noStartBonus then visible[#visible + 1] = { id = k, data = v } end
+    local function makeLabel(key)
+        local lbl = self:Add("DLabel")
+        lbl:SetFont("liaMediumFont")
+        lbl:SetText(L(key):upper())
+        lbl:SizeToContents()
+        lbl:Dock(TOP)
+        lbl:DockMargin(0, 0, 0, 4)
+        return lbl
     end
-    if #visible == 0 then return end
 
-    table.SortByMember(visible, "id", true)
-
-    -- Header labels
-    local header = self:Add("DPanel")
-    header:Dock(TOP)
-    header:DockMargin(0, 8, 0, 16)
-    header:SetTall(24)
-    header:SetPaintBackground(false)
-    local title = header:Add("DLabel")
-    title:SetFont("liaMediumFont")
-    title:SetText(L("attributes"):upper())
-    title:Dock(LEFT)
-    title:SizeToContents()
-    self.pointsLeftLabel = header:Add("DLabel")
-    self.pointsLeftLabel:SetFont("LiliaFont.18")
-    self.pointsLeftLabel:Dock(RIGHT)
-    self.pointsLeftLabel:SetTextColor(color_white)
-    self.pointsLeftLabel:SetContentAlignment(6)
-
-    -- Container for rows (wrapped in scroll panel)
-    self.attribsScrollPanel = self:Add("liaScrollPanel")
-    self.attribsScrollPanel:Dock(TOP)
-    self.attribsScrollPanel:DockMargin(0, 0, 0, 8)
-    -- Some canvas implementations may not support SetPaintBackground; avoid calling it
-
-    -- Set minimum and maximum height for the scroll panel
-    local minHeight = 100
-    local maxHeight = 300
-    self.attribsScrollPanel:SetTall(math.min(math.max(#visible * 36, minHeight), maxHeight))
-
-    self.attribsContainer = self.attribsScrollPanel:Add("DPanel")
-    self.attribsContainer:Dock(TOP)
-    self.attribsContainer:DockMargin(0, 0, 0, 0)
-    self.attribsContainer:SetPaintBackground(false)
-
-    -- Prepare totals/state
-    self.attribRows = {}
-    self.totalAttribPoints = hook.Run("GetMaxStartingAttributePoints", LocalPlayer(), self:getContext()) or lia.config.get("MaxAttributePoints")
-
-    local rowHeight = 36
-    for _, entry in ipairs(visible) do
-        local row = self.attribsContainer:Add("liaCharacterAttribsRow")
-        row:Dock(TOP)
-        row:SetTall(rowHeight)
-        row:setAttribute(entry.id, entry.data)
-        row.parent = self -- so row:delta() calls our onPointChange
-        self.attribRows[entry.id] = row
+    local hasAttributes = false
+    for _, attrib in pairs(lia.attribs.list) do
+        if not attrib.noStartBonus then
+            hasAttributes = true
+            break
+        end
     end
-    self:updateAttributesUI()
-end
 
-function PANEL:updateAttributesUI()
-    if not self.attribRows then return end
-    local t = self:getContext("attribs", {})
-    local sum = 0
-    for _, q in pairs(t) do sum = sum + q end
-    self.pointsLeft = math.max((self.totalAttribPoints or 0) - sum, 0)
-    if IsValid(self.pointsLeftLabel) then self.pointsLeftLabel:SetText(L("pointsLeft"):upper() .. ": " .. tostring(self.pointsLeft)) end
-    for k, row in pairs(self.attribRows) do
-        row.points = t[k] or 0
-        if row.updateQuantity then row:updateQuantity() end
-    end
-end
+    if not hasAttributes then return end
 
-function PANEL:onPointChange(attributeKey, delta)
-    if not attributeKey then return 0 end
-    local t = self:getContext("attribs", {})
-    local current = t[attributeKey] or 0
-    local newValue = current + delta
-    local startingMax = hook.Run("GetAttributeStartingMax", LocalPlayer(), attributeKey) or lia.config.get("MaxStartingAttributes")
-    if self.pointsLeft == nil then self:updateAttributesUI() end
-    local newLeft = (self.pointsLeft or 0) - delta
-    if newLeft < 0 or newLeft > (self.totalAttribPoints or 0) then return current end
-    if newValue < 0 or newValue > (startingMax or newValue) then return current end
-    self.pointsLeft = newLeft
-    if IsValid(self.pointsLeftLabel) then self.pointsLeftLabel:SetText(L("pointsLeft"):upper() .. ": " .. tostring(self.pointsLeft)) end
-    t[attributeKey] = newValue
-    self:setContext("attribs", t)
-    return newValue
+    -- Add attributes label
+    local attrLabel = makeLabel("attributes")
+    self.attrLabel = attrLabel
+
+    -- Add attributes panel
+    self.attribsPanel = self:Add("liaCharacterAttribs")
+    self.attribsPanel:Dock(TOP)
+    self.attribsPanel:DockMargin(0, 4, 0, 8)
+
+    -- Store reference to parent for easy access
+    self.attribsPanel.parentBio = self
 end
 
 function PANEL:shouldSkip()
     return false
+end
+
+function PANEL:updateAttributesLabel()
+    if IsValid(self.attrLabel) and IsValid(self.attribsPanel) then
+        local points = self.attribsPanel.left or 0
+        self.attrLabel:SetText(L("attributes"):upper() .. " - " .. points .. " " .. L("pointsLeft"):lower())
+    end
 end
 
 
@@ -154,6 +106,12 @@ function PANEL:onDisplay()
     -- Restore attributes if they exist
     if IsValid(self.attribsPanel) then
         self.attribsPanel:onDisplay()
+        -- Update the attributes label after everything is initialized
+        timer.Simple(0.01, function()
+            if IsValid(self) then
+                self:updateAttributesLabel()
+            end
+        end)
     end
 end
 

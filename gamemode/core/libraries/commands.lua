@@ -488,7 +488,11 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
     table.insert(pages, {
         name = "commands",
         drawFunc = function(parent)
+            -- Clear existing content to prevent duplication when tab is revisited
+            parent:Clear()
+
             local sheet = vgui.Create("liaSheet", parent)
+            sheet:Dock(FILL)
             sheet:SetPlaceholderText(L("searchCommands"))
             local useList = false
             if useList then

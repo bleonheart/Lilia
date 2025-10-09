@@ -55,7 +55,11 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
     table.insert(pages, {
         name = "charFlagsTitle",
         drawFunc = function(parent)
+            -- Clear existing content to prevent duplication when tab is revisited
+            parent:Clear()
+
             local sheet = vgui.Create("liaSheet", parent)
+            sheet:Dock(FILL)
             sheet:SetPlaceholderText(L("searchFlags"))
             for flagName, flagData in SortedPairs(lia.flag.list) do
                 if not isnumber(flagName) then

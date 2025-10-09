@@ -1,6 +1,6 @@
 ﻿local PANEL = {}
 function PANEL:Init()
-    self:SetTall(20)
+    self:SetTall(24)
     self.add = self:Add("DImageButton")
     self.add:SetSize(16, 16)
     self.add:Dock(RIGHT)
@@ -122,21 +122,40 @@ end
 vgui.Register("liaAttribBar", PANEL, "DPanel")
 PANEL = {}
 function PANEL:Init()
-    self.title = self:addLabel(L("attributes"))
-    self.title:SetTextColor(color_white)
-    self.leftLabel = self:addLabel(L("pointsLeft"))
-    self.leftLabel:SetFont("LiliaFont.18")
-    self.leftLabel:SetTextColor(color_white)
     self.total = hook.Run("GetMaxStartingAttributePoints", LocalPlayer(), self:getContext()) or lia.config.get("MaxAttributePoints")
     self.attribs = {}
     for k, v in SortedPairsByMemberValue(lia.attribs.list, "name") do
         if not v.noStartBonus then self.attribs[k] = self:addAttribute(k, v) end
     end
+
+    -- Calculate height based on content
+    self:InvalidateLayout(true)
+    self:SizeToChildren(false, true)
 end
 
-function PANEL:updatePointsLeft()
-    self.leftLabel:SetText(L("pointsLeft"):upper() .. ": " .. self.left)
+function PANEL:Paint()
 end
+
+function PANEL:addLabel(text)
+    local lbl = self:Add("DLabel")
+    lbl:SetFont("LiliaFont.16")
+    lbl:SetText(L(text):upper())
+    lbl:SizeToContents()
+    lbl:Dock(TOP)
+    return lbl
+end
+
+function PANEL:getContext(k, d)
+    local ctx = lia.gui.charCreate and lia.gui.charCreate.context
+    if k == nil then return ctx end
+    local v = ctx and ctx[k]
+    return v == nil and d or v
+end
+
+function PANEL:setContext(k, v)
+    if lia.gui.charCreate then lia.gui.charCreate.context[k] = v end
+end
+
 
 function PANEL:onDisplay()
     local t = self:getContext("attribs", {})
@@ -146,7 +165,7 @@ function PANEL:onDisplay()
     end
 
     self.left = math.max(self.total - sum, 0)
-    self:updatePointsLeft()
+
     for k, row in pairs(self.attribs) do
         row.points = t[k] or 0
         row:updateQuantity()
@@ -170,18 +189,23 @@ function PANEL:onPointChange(k, d)
     local nl = self.left - d
     if nl < 0 or nl > self.total or nq < 0 or nq > self.total or nm and nq > nm then return qty end
     self.left = nl
-    self:updatePointsLeft()
+
+    -- Update the biography panel's label
+    if self.parentBio and self.parentBio.updateAttributesLabel then
+        self.parentBio:updateAttributesLabel()
+    end
+
     t[k] = nq
     self:setContext("attribs", t)
     return nq
 end
 
-vgui.Register("liaCharacterAttribs", PANEL, "liaCharacterCreateStep")
+vgui.Register("liaCharacterAttribs", PANEL, "DPanel")
 PANEL = {}
 function PANEL:Init()
     self:Dock(TOP)
-    self:DockMargin(0, 0, 0, 4)
-    self:SetTall(36)
+    self:DockMargin(0, 0, 0, 6)
+    self:SetTall(44)
     self:SetPaintBackground(false)
     self.buttons = self:Add("DPanel")
     self.buttons:Dock(RIGHT)
@@ -224,7 +248,6 @@ function PANEL:addButton(sym, d)
     b:SetWide(32)
     b:SetText(sym)
     b:SetContentAlignment(5)
-    b:SetPaintBackground(false)
     b.OnMousePressed = function()
         self.autoDelta = d
         self.nextAuto = CurTime() + 0.4
