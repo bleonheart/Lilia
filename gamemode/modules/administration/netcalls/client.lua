@@ -3,10 +3,8 @@
     for key, value in pairs(changed) do
         if lia.config.stored[key] then lia.config.stored[key].value = value end
     end
-
     hook.Run("InitializedConfig")
 end)
-
 net.Receive("liaCfgSet", function()
     local key = net.ReadString()
     local value = net.ReadType()
@@ -21,7 +19,6 @@ net.Receive("liaCfgSet", function()
         elseif key == "Font" then
             if IsValid(lia.gui.menu) then lia.gui.menu:Update() end
         end
-
         local oldValue = config.value
         config.value = value
         if config.callback then config.callback(oldValue, value) end
@@ -36,7 +33,6 @@ net.Receive("liaCfgSet", function()
         end
     end
 end)
-
 net.Receive("liaBlindTarget", function()
     local enabled = net.ReadBool()
     if enabled then
@@ -45,7 +41,6 @@ net.Receive("liaBlindTarget", function()
         hook.Remove("HUDPaint", "blindTarget")
     end
 end)
-
 net.Receive("liaBlindFade", function()
     local isWhite = net.ReadBool()
     local duration = net.ReadFloat()
@@ -61,7 +56,6 @@ net.Receive("liaBlindFade", function()
             hook.Remove("HUDPaint", hookName)
             return
         end
-
         local alpha
         if ct < startTime + fadeIn then
             alpha = (ct - startTime) / fadeIn
@@ -70,12 +64,10 @@ net.Receive("liaBlindFade", function()
         else
             alpha = 1
         end
-
         surface.SetDrawColor(color.r, color.g, color.b, math.Clamp(alpha * 255, 0, 255))
         surface.DrawRect(0, 0, ScrW(), ScrH())
     end)
 end)
-
 net.Receive("liaAdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
     assert(isnumber(id), L("idMustBeNumber"))
@@ -89,13 +81,11 @@ net.Receive("liaAdminModeSwapCharacter", function()
             d:reject(message)
         end
     end)
-
     d:catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
     net.Start("liaCharChoose")
     net.WriteUInt(id, 32)
     net.SendToServer()
 end)
-
 net.Receive("liaManageSitRooms", function()
     local rooms = net.ReadTable()
     local frame = vgui.Create("DFrame")
@@ -145,18 +135,15 @@ net.Receive("liaManageSitRooms", function()
                     end
                     return
                 end
-
                 net.SendToServer()
                 frame:Close()
             end
         end
-
         makeButton("teleport", 1)
         makeButton("reposition", 3)
         makeButton("rename", 2)
     end
 end)
-
 net.Receive("liaAllPks", function()
     local cases = net.ReadTable() or {}
     if not IsValid(panelRef) then return end
@@ -178,7 +165,6 @@ net.Receive("liaAllPks", function()
         col:SetWidth(w + 16)
         return col
     end
-
     addSizedColumn(L("timestamp"))
     addSizedColumn(L("character"))
     addSizedColumn(L("submitter"))
@@ -203,7 +189,6 @@ net.Receive("liaAllPks", function()
             end
         end
     end
-
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
     function list:OnRowRightClick(_, line)
@@ -226,11 +211,9 @@ net.Receive("liaAllPks", function()
                 if lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then menu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. line.charID .. '"') end):SetIcon("icon16/accept.png") end
             end
         end
-
         menu:Open()
     end
 end)
-
 local function OpenRoster(panel, data)
     panel:Clear()
     local sheet = panel:Add("liaTabs")
@@ -273,46 +256,37 @@ local function OpenRoster(panel, data)
                                 net.SendToServer()
                             end, L("no"))
                         end):SetIcon("icon16/user_delete.png")
-
                         if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end):SetIcon("icon16/page_copy.png") end
                     end
-
                     menu:AddOption(L("copyRow"), function()
                         local rowString = ""
                         for key, value in pairs(rowData) do
                             value = tostring(value or L("na"))
                             rowString = rowString .. key:gsub("^%l", string.upper) .. ": " .. value .. " | "
                         end
-
                         rowString = rowString:sub(1, -4)
                         SetClipboardText(rowString)
                     end):SetIcon("icon16/page_copy.png")
-
                     menu:AddOption(L("copyName"), function()
                         local charName = rowData.name or ""
                         SetClipboardText(charName)
                     end):SetIcon("icon16/page_copy.png")
-
                     if steamID and steamID ~= "" then
                         menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
                         menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
                     end
-
                     menu:Open()
                 end
             end
         end
-
         populate()
         sheet:AddSheet(factionName, page)
     end
 end
-
 function OpenFlagsPanel(panel, data)
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
-    -- If no data, show a message
     if not data or #data == 0 then
         local noDataLabel = panel:Add("DLabel")
         noDataLabel:Dock(FILL)
@@ -323,7 +297,6 @@ function OpenFlagsPanel(panel, data)
         noDataLabel:SetWrap(true)
         return
     end
-
     local search = panel:Add("DTextEntry")
     search:Dock(TOP)
     search:DockMargin(0, 0, 0, 15)
@@ -352,11 +325,9 @@ function OpenFlagsPanel(panel, data)
             field = "flags"
         },
     }
-
     for _, col in ipairs(columns) do
         list:AddColumn(col.name)
     end
-
     local function populate(filter)
         if panel.populating then return end
         panel.populating = true
@@ -381,7 +352,6 @@ function OpenFlagsPanel(panel, data)
                         end
                     end
                 end
-
                 if match then
                     local line = list:AddLine(unpack(values))
                     line.steamID = steamID
@@ -389,10 +359,8 @@ function OpenFlagsPanel(panel, data)
                 end
             end
         end
-
         panel.populating = false
     end
-
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
     function list:OnRowRightClick(_, line)
@@ -405,10 +373,8 @@ function OpenFlagsPanel(panel, data)
                 local value = line:GetColumnText(i) or ""
                 rowString = rowString .. header .. " " .. value .. " | "
             end
-
             SetClipboardText(string.sub(rowString, 1, -4))
         end):SetIcon("icon16/page_copy.png")
-
         menu:AddOption(L("modifyCharFlags"), function()
             local steamID = line:GetColumnText(2) or ""
             local currentFlags = line:GetColumnText(3) or ""
@@ -421,11 +387,9 @@ function OpenFlagsPanel(panel, data)
                 line:SetColumnText(3, text)
             end)
         end):SetIcon("icon16/flag_green.png")
-
         menu:Open()
     end
 end
-
 lia.net.readBigTable("liaAllFlags", function(data)
     flagsData = data or {}
     if IsValid(panelRef) and panelRef.flagsInitialized then
@@ -433,7 +397,6 @@ lia.net.readBigTable("liaAllFlags", function(data)
         flagsData = nil
     end
 end)
-
 lia.net.readBigTable("liaFactionRosterData", function(data)
     if IsValid(panelRef) and isfunction(panelRef.buildSheets) then
         panelRef:buildSheets(data or {})
@@ -441,7 +404,6 @@ lia.net.readBigTable("liaFactionRosterData", function(data)
         OpenRoster(rosterPanel, data or {})
     end
 end)
-
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
     panelRef:Clear()
@@ -510,11 +472,9 @@ lia.net.readBigTable("liaStaffSummary", function(data)
             field = "strips"
         }
     }
-
     for _, col in ipairs(columns) do
         list:AddColumn(col.name)
     end
-
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")
@@ -531,11 +491,9 @@ lia.net.readBigTable("liaStaffSummary", function(data)
                     end
                 end
             end
-
             if match then list:AddLine(unpack(values)) end
         end
     end
-
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
     function list:OnRowRightClick(_, line)
@@ -553,14 +511,11 @@ lia.net.readBigTable("liaStaffSummary", function(data)
                 local value = line:GetColumnText(i) or ""
                 rowString = rowString .. header .. " " .. value .. " | "
             end
-
             SetClipboardText(string.sub(rowString, 1, -4))
         end):SetIcon("icon16/page_copy.png")
-
         menu:Open()
     end
 end)
-
 lia.net.readBigTable("liaAllPlayers", function(players)
     if not IsValid(panelRef) then return end
     panelRef:Clear()
@@ -613,11 +568,9 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             field = "warnings"
         }
     }
-
     for _, col in ipairs(columns) do
         list:AddColumn(col.name)
     end
-
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")
@@ -640,14 +593,12 @@ lia.net.readBigTable("liaAllPlayers", function(players)
                     lastOnlineText = L("unknown")
                 end
             end
-
             local playtime
             if IsValid(ply) then
                 playtime = lia.time.formatDHM(ply:getPlayTime())
             else
                 playtime = lia.time.formatDHM(tonumber(v.totalOnlineTime) or 0)
             end
-
             local charCount = tonumber(v.characterCount) or 0
             local warnings = tonumber(v.warnings) or 0
             local ticketRequests = tonumber(v.ticketsRequested) or 0
@@ -660,7 +611,6 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             end
         end
     end
-
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
     function list:OnRowRightClick(_, line)
@@ -674,10 +624,8 @@ lia.net.readBigTable("liaAllPlayers", function(players)
                 local value = line:GetColumnText(i) or ""
                 rowString = rowString .. header .. " " .. value .. " | "
             end
-
             SetClipboardText(string.sub(rowString, 1, -4))
         end):SetIcon("icon16/page_copy.png")
-
         menu:AddOption(L("copySteamID"), function() SetClipboardText(line.steamID) end):SetIcon("icon16/page_copy.png")
         menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(line.steamID)) end):SetIcon("icon16/world.png")
         if lia.command.hasAccess(LocalPlayer(), "viewwarns") then menu:AddOption(L("viewWarnings"), function() LocalPlayer():ConCommand("say /viewwarns " .. line.steamID) end):SetIcon("icon16/error.png") end
@@ -685,19 +633,16 @@ lia.net.readBigTable("liaAllPlayers", function(players)
         menu:Open()
     end
 end)
-
 lia.net.readBigTable("liaFullCharList", function(data)
     if not IsValid(panelRef) or not data or not isfunction(panelRef.buildSheets) then return end
     panelRef:buildSheets(data)
 end)
-
 net.Receive("liaCharDeleted", function()
     if IsValid(panelRef) and isfunction(panelRef.buildSheets) then
         net.Start("liaRequestFullCharList")
         net.SendToServer()
     end
 end)
-
 net.Receive("liaOnlineStaffData", function()
     local staffData = net.ReadTable() or {}
     hook.Run("liaOnlineStaffDataReceived", staffData)

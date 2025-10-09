@@ -11,18 +11,14 @@ function PANEL:Init()
         lbl:DockMargin(0, 0, 0, 4)
         return lbl
     end
-
     self.nameLabel = makeLabel("name")
     self.nameEntry = self:makeTextEntry("name")
     self.nameEntry:SetTall(32)
     self.descLabel = makeLabel("desc")
     self.descEntry = self:makeTextEntry("desc")
     self.descEntry:SetTall(32)
-
-    -- Add attributes if they exist
     self:addAttributes()
 end
-
 function PANEL:makeTextEntry(key)
     local entry = self:Add("DTextEntry")
     entry:Dock(TOP)
@@ -35,13 +31,11 @@ function PANEL:makeTextEntry(key)
         surface.DrawRect(0, 0, w, h)
         entry:DrawTextEntryText(color_white, HIGHLIGHT, HIGHLIGHT)
     end
-
     entry.OnValueChange = function(_, val) self:setContext(key, string.Trim(val)) end
     local saved = self:getContext(key)
     if saved then entry:SetValue(saved) end
     return entry
 end
-
 function PANEL:addAttributes()
     local function makeLabel(key)
         local lbl = self:Add("DLabel")
@@ -52,7 +46,6 @@ function PANEL:addAttributes()
         lbl:DockMargin(0, 0, 0, 4)
         return lbl
     end
-
     local hasAttributes = false
     for _, attrib in pairs(lia.attribs.list) do
         if not attrib.noStartBonus then
@@ -60,34 +53,23 @@ function PANEL:addAttributes()
             break
         end
     end
-
     if not hasAttributes then return end
-
-    -- Add attributes label
     local attrLabel = makeLabel("attributes")
     self.attrLabel = attrLabel
-
-    -- Add attributes panel
     self.attribsPanel = self:Add("liaCharacterAttribs")
     self.attribsPanel:Dock(TOP)
     self.attribsPanel:DockMargin(0, 4, 0, 8)
-
-    -- Store reference to parent for easy access
     self.attribsPanel.parentBio = self
 end
-
 function PANEL:shouldSkip()
     return false
 end
-
 function PANEL:updateAttributesLabel()
     if IsValid(self.attrLabel) and IsValid(self.attribsPanel) then
         local points = self.attribsPanel.left or 0
         self.attrLabel:SetText(L("attributes"):upper() .. " - " .. points .. " " .. L("pointsLeft"):lower())
     end
 end
-
-
 function PANEL:validate()
     for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
         local val = string.Trim(info[1]:GetValue() or "")
@@ -95,18 +77,14 @@ function PANEL:validate()
     end
     return true
 end
-
 function PANEL:onDisplay()
     local n, d = self.nameEntry:GetValue(), self.descEntry:GetValue()
     self:Clear()
     self:Init()
     self.nameEntry:SetValue(n)
     self.descEntry:SetValue(d)
-
-    -- Restore attributes if they exist
     if IsValid(self.attribsPanel) then
         self.attribsPanel:onDisplay()
-        -- Update the attributes label after everything is initialized
         timer.Simple(0.01, function()
             if IsValid(self) then
                 self:updateAttributesLabel()
@@ -114,5 +92,4 @@ function PANEL:onDisplay()
         end)
     end
 end
-
 vgui.Register("liaCharacterBiography", PANEL, "liaCharacterCreateStep")

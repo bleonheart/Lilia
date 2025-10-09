@@ -80,19 +80,27 @@ function lia.net.readBigTable(netStr, callback)
         if state.count == state.total then
             buffers[sid] = nil
             local full = table.concat(state.parts, "", 1, total)
-            local decomp = util.Decompress(full)
-            local tbl = decomp and util.JSONToTable(decomp) or nil
-            if SERVER then
-                if callback then callback(ply, tbl) end
+            local function finalizeDecode()
+                local decomp = util.Decompress(full)
+                local tbl = decomp and util.JSONToTable(decomp) or nil
+                if SERVER then
+                    if callback then callback(ply, tbl) end
+                else
+                    if callback then callback(tbl) end
+                end
+            end
+
+            if CLIENT then
+                timer.Simple(0, finalizeDecode)
             else
-                if callback then callback(tbl) end
+                finalizeDecode()
             end
         end
     end)
 end
 
 if SERVER then
-    local chunkTime = 0.05
+    local chunkTime = 0.02
     local function sendChunk(ply, s, sid, idx)
         if not IsValid(ply) then
             if lia.net.sendq[ply] then lia.net.sendq[ply][sid] = nil end
@@ -150,14 +158,7 @@ if SERVER then
         }
 
         lia.net.sendq[ply][sid] = s
-        timer.Simple(chunkTime, function()
-            if not IsValid(ply) then return end
-            local q = lia.net.sendq[ply]
-            if not q then return end
-            local ss = q[sid]
-            if not ss then return end
-            sendChunk(ply, ss, sid, 1)
-        end)
+        if IsValid(ply) then sendChunk(ply, s, sid, 1) end
     end
 
     function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
@@ -167,7 +168,7 @@ if SERVER then
         local data = util.Compress(json)
         if not data or #data == 0 then return end
         local isReload = lia.reloadInProgress or false
-        local size = isReload and math.max(128, math.min(1024, chunkSize or 512)) or math.max(256, math.min(4096, chunkSize or 2048))
+        local size = isReload and math.max(256, math.min(4096, chunkSize or 2048)) or math.max(512, math.min(8192, chunkSize or 8192))
         local chunks = {}
         local pos = 1
         while pos <= #data do

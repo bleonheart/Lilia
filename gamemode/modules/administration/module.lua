@@ -159,21 +159,18 @@ MODULE.Privileges = {
         MinAccess = "admin",
         Category = "warning",
     },
-    -- Warns module privileges
     {
         Name = "canRemoveWarns",
         ID = "canRemoveWarns",
         MinAccess = "superadmin",
         Category = "warning",
     },
-    -- Tickets module privileges
     {
         Name = "alwaysSeeTickets",
         ID = "alwaysSeeTickets",
         MinAccess = "superadmin",
         Category = "tickets",
     },
-    -- Permissions module privileges
     {
         Name = "canBypassCharacterLock",
         ID = "canBypassCharacterLock",
@@ -318,14 +315,12 @@ MODULE.Privileges = {
         MinAccess = "superadmin",
         Category = "categoryStaffManagement",
     },
-    -- Logging module privileges
     {
         Name = "canSeeLogs",
         ID = "canSeeLogs",
         MinAccess = "superadmin",
         Category = "categoryLogging",
     },
-    -- Adminstick module privileges
     {
         Name = "alwaysSpawnAdminStick",
         ID = "alwaysSpawnAdminStick",

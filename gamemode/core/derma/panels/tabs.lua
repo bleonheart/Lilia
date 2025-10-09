@@ -10,8 +10,6 @@ function PANEL:Init()
     self.panel_tabs.Paint = nil
     self.content = vgui.Create("Panel", self)
     self.content.Paint = nil
-
-    -- Navigation and scrolling variables
     self.scroll_offset = 0
     self.max_visible_tabs = 5
     self.nav_button_size = 24
@@ -19,22 +17,18 @@ function PANEL:Init()
     self.btn_right = nil
     self.needs_navigation = false
 end
-
 function PANEL:SetTabStyle(style)
     self.tab_style = style
     self:Rebuild()
 end
-
 function PANEL:SetTabHeight(height)
     self.tab_height = height
     self:Rebuild()
 end
-
 function PANEL:SetIndicatorHeight(height)
     self.indicator_height = height
     self:Rebuild()
 end
-
 function PANEL:AddTab(name, pan, icon)
     local newId = #self.tabs + 1
     self.tabs[newId] = {
@@ -42,13 +36,11 @@ function PANEL:AddTab(name, pan, icon)
         pan = pan,
         icon = icon
     }
-
     self.tabs[newId].pan:SetParent(self.content)
     self.tabs[newId].pan:Dock(FILL)
     self.tabs[newId].pan:SetVisible(newId == 1 and true or false)
     self:Rebuild()
 end
-
 function PANEL:AddSheet(label, panel, material)
     local newId = #self.tabs + 1
     self:AddTab(label, panel, material)
@@ -57,16 +49,12 @@ function PANEL:AddSheet(label, panel, material)
         Panel = panel
     }
 end
-
 function PANEL:CreateNavigationButtons()
     if self.btn_left then
         self.btn_left:Remove()
         self.btn_right:Remove()
     end
-
     if not self.needs_navigation then return end
-
-    -- Left navigation button
     self.btn_left = vgui.Create("Button", self.panel_tabs)
     self.btn_left:Dock(LEFT)
     self.btn_left:SetWide(self.nav_button_size)
@@ -76,7 +64,6 @@ function PANEL:CreateNavigationButtons()
     self.btn_left.DoClick = function()
         self:ScrollTabs(-1)
     end
-
     self.btn_left.Paint = function(_, w, h)
         if self.scroll_offset > 0 then
             draw.SimpleText("◀", "LiliaFont.18", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -84,8 +71,6 @@ function PANEL:CreateNavigationButtons()
             draw.SimpleText("◀", "LiliaFont.18", w / 2, h / 2, Color(100, 100, 100, 150), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
-
-    -- Right navigation button
     self.btn_right = vgui.Create("Button", self.panel_tabs)
     self.btn_right:Dock(RIGHT)
     self.btn_right:SetWide(self.nav_button_size)
@@ -95,7 +80,6 @@ function PANEL:CreateNavigationButtons()
     self.btn_right.DoClick = function()
         self:ScrollTabs(1)
     end
-
     self.btn_right.Paint = function(_, w, h)
         local max_scroll = math.max(0, #self.tabs - self.max_visible_tabs)
         if self.scroll_offset < max_scroll then
@@ -105,33 +89,24 @@ function PANEL:CreateNavigationButtons()
         end
     end
 end
-
 function PANEL:ScrollTabs(direction)
     local max_scroll = math.max(0, #self.tabs - self.max_visible_tabs)
     self.scroll_offset = math.Clamp(self.scroll_offset + direction, 0, max_scroll)
-
     if direction < 0 and self.scroll_offset == 0 then
-        surface.PlaySound("buttons/button10.wav") -- Error sound
+        surface.PlaySound("buttons/button10.wav")
     elseif direction > 0 and self.scroll_offset >= max_scroll then
-        surface.PlaySound("buttons/button10.wav") -- Error sound
+        surface.PlaySound("buttons/button10.wav")
     else
-        surface.PlaySound("buttons/button14.wav") -- Click sound
+        surface.PlaySound("buttons/button14.wav")
     end
-
     self:UpdateTabVisibility()
 end
-
 function PANEL:UpdateTabVisibility()
-    -- Defer sizing/visibility to PerformLayout so tabs evenly fill width
     self:InvalidateLayout()
 end
-
 function PANEL:Rebuild()
     self.panel_tabs:Clear()
-
-    -- Check if navigation is needed
     self.needs_navigation = #self.tabs > self.max_visible_tabs
-
     if self.tab_style == "modern" then
         local tabWidths = {}
         local baseMargin = 6
@@ -145,13 +120,9 @@ function PANEL:Rebuild()
             local btnWidth = math.max(minWidth, padding + iconW + iconTextGap + textW + padding)
             tabWidths[id] = btnWidth
         end
-
         self._tabWidths = tabWidths
         self._baseMargin = baseMargin
-
-        -- Create navigation buttons first if needed
         self:CreateNavigationButtons()
-
         for id, tab in ipairs(self.tabs) do
             local btnTab = vgui.Create("Button", self.panel_tabs)
             local btnWidth = tabWidths[id] or 80
@@ -167,7 +138,6 @@ function PANEL:Rebuild()
                 surface.PlaySound("button_click.wav")
                 self:UpdateActiveTabVisual()
             end
-
             btnTab.DoRightClick = function()
                 local dm = lia.derma.dermaMenu()
                 for k, v in pairs(self.tabs) do
@@ -179,7 +149,6 @@ function PANEL:Rebuild()
                     end, v.icon)
                 end
             end
-
             btnTab.Paint = function(_, w, h)
                 local isActive = self.active_id == id
                 local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
@@ -204,35 +173,26 @@ function PANEL:Rebuild()
                     else
                         lia.derma.rect(startX, (h - 16) * 0.5, 16, 16):Rad(24):Color(colorIcon):Shape(lia.derma.SHAPE_IOS):Draw()
                     end
-
                     draw.SimpleText(tab.name, "LiliaFont.18", textX, h * 0.5 - 1, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
             end
         end
     end
-
     function PANEL:PerformLayout()
         if self.tab_style == "modern" then
             self.panel_tabs:Dock(TOP)
             self.panel_tabs:DockMargin(0, 0, 0, 4)
             self.panel_tabs:SetTall(self.tab_height)
             if #self.tabs > 0 then
-                -- Account for navigation buttons in width calculation
                 local navButtonWidth = (self.needs_navigation and self.nav_button_size * 2) or 0
                 local availableWidth = self:GetWide() - navButtonWidth
-
-                -- Determine visible count for this page
                 local visibleTabs = self.needs_navigation and self.max_visible_tabs or #self.tabs
                 visibleTabs = math.min(visibleTabs, math.max(#self.tabs - self.scroll_offset, 0))
-
                 if visibleTabs > 0 then
-                    -- Only include margins between currently visible tabs
                     local totalMargins = self._baseMargin * (visibleTabs - 1)
                     local widthPool = math.max(availableWidth - totalMargins, 0)
                     local widthPerTab = math.floor(widthPool / visibleTabs)
                     local remainder = widthPool % visibleTabs
-
-                    -- Collect tab-only children
                     local children = self.panel_tabs:GetChildren()
                     local tab_children = {}
                     for _, child in ipairs(children) do
@@ -240,8 +200,6 @@ function PANEL:Rebuild()
                             table.insert(tab_children, child)
                         end
                     end
-
-                    -- Apply sizing/visibility to visible range; hide the rest
                     local visibleIndex = 1
                     for _, child in ipairs(tab_children) do
                         local actualTabId = self.scroll_offset + visibleIndex
@@ -271,19 +229,13 @@ function PANEL:Rebuild()
                 local btnWidth = math.max(minWidth, padding + iconW + iconTextGap + textW + padding)
                 maxWidth = math.max(maxWidth, btnWidth)
             end
-
             self.panel_tabs:SetWide(math.max(190, maxWidth))
         end
     end
-
     self.content:Dock(FILL)
-
-    -- Update tab visibility after layout
     self:UpdateTabVisibility()
     end
-
 function PANEL:UpdateActiveTabVisual()
-    -- Ensure the active tab is visible by adjusting scroll if necessary
     if self.needs_navigation then
         local max_scroll = math.max(0, #self.tabs - self.max_visible_tabs)
         if self.active_id <= self.scroll_offset then
@@ -294,7 +246,6 @@ function PANEL:UpdateActiveTabVisual()
         self:UpdateTabVisibility()
     end
 end
-
 function PANEL:SetActiveTab(tab)
     if type(tab) == "number" then
         if not self.tabs[tab] then return end
@@ -313,11 +264,9 @@ function PANEL:SetActiveTab(tab)
         end
     end
 end
-
 function PANEL:GetActiveTab()
     return self.panel_tabs:GetChild(self.active_id)
 end
-
 function PANEL:CloseTab(tab)
     local id
     if type(tab) == "number" then
@@ -330,7 +279,6 @@ function PANEL:CloseTab(tab)
             end
         end
     end
-
     if not id or not self.tabs[id] then return end
     local panel = self.tabs[id].pan
     if IsValid(panel) then panel:Remove() end
@@ -338,11 +286,8 @@ function PANEL:CloseTab(tab)
     self.active_id = math.Clamp(self.active_id, 1, #self.tabs)
     self:Rebuild()
 end
-
 function PANEL:SetFadeTime()
 end
-
 function PANEL:SetShowIcons()
 end
-
 vgui.Register("liaTabs", PANEL, "Panel")

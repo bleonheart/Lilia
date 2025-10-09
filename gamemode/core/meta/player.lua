@@ -173,7 +173,7 @@ function playerMeta:notify(message, notifType)
     if SERVER then
         lia.notices.notify(self, message, notifType or "default")
     else
-        lia.notices.notify(message, notifType or "default")
+        lia.notices.notify(nil, message, notifType or "default")
     end
 end
 
@@ -189,7 +189,7 @@ function playerMeta:notifyError(message)
     if SERVER then
         lia.notices.notify(self, message, "error")
     else
-        lia.notices.notify(message, "error")
+        lia.notices.notify(nil, message, "error")
     end
 end
 
@@ -197,7 +197,7 @@ function playerMeta:notifyWarning(message)
     if SERVER then
         lia.notices.notify(self, message, "warning")
     else
-        lia.notices.notify(message, "warning")
+        lia.notices.notify(nil, message, "warning")
     end
 end
 
@@ -205,7 +205,7 @@ function playerMeta:notifyInfo(message)
     if SERVER then
         lia.notices.notify(self, message, "info")
     else
-        lia.notices.notify(message, "info")
+        lia.notices.notify(nil, message, "info")
     end
 end
 
@@ -213,7 +213,7 @@ function playerMeta:notifySuccess(message)
     if SERVER then
         lia.notices.notify(self, message, "success")
     else
-        lia.notices.notify(message, "success")
+        lia.notices.notify(nil, message, "success")
     end
 end
 
@@ -221,7 +221,7 @@ function playerMeta:notifyMoney(message)
     if SERVER then
         lia.notices.notify(self, message, "money")
     else
-        lia.notices.notify(message, "money")
+        lia.notices.notify(nil, message, "money")
     end
 end
 
@@ -229,7 +229,7 @@ function playerMeta:notifyAdmin(message)
     if SERVER then
         lia.notices.notify(self, message, "admin")
     else
-        lia.notices.notify(message, "admin")
+        lia.notices.notify(nil, message, "admin")
     end
 end
 
