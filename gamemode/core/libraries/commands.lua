@@ -4429,12 +4429,10 @@ lia.command.add("exportprivileges", {
             if lia.permissions then table.insert(srcs, lia.permissions) end
             if lia.privileges then table.insert(srcs, lia.privileges) end
             if lia.command then table.insert(srcs, lia.command.stored or lia.command.list) end
-            if lia.module.list then
-                for _, p in pairs(lia.module.list) do
-                    if istable(p) == "table" then
-                        table.insert(srcs, p.Privileges or p.privileges)
-                        collect(p)
-                    end
+            for _, p in pairs(lia.module.list) do
+                if istable(p) == "table" then
+                    table.insert(srcs, p.Privileges or p.privileges)
+                    collect(p)
                 end
             end
         end
@@ -4761,7 +4759,7 @@ lia.command.add("trunk", {
             if inv then
                 openStorage(inv)
             else
-                lia.module.list["storage"]:InitializeStorage(entity):next(openStorage, function(err)
+                lia.module.get("storage"):InitializeStorage(entity):next(openStorage, function(err)
                     client:notifyErrorLocalized("unableCreateStorageEntity", err)
                     client.liaStorageEntity = nil
                 end)
@@ -5244,7 +5242,7 @@ lia.command.add("doortoggleownable", {
                 lia.log.add(client, "doorToggleOwnable", door, newState)
                 hook.Run("DoorOwnableToggled", client, door, newState)
                 client:notifySuccessLocalized(newState and "doorMadeUnownable" or "doorMadeOwnable")
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5281,7 +5279,7 @@ lia.command.add("doorresetdata", {
 
             door:setNetVar("doorData", doorData)
             client:notifySuccessLocalized("doorResetData")
-            lia.module.list["doors"]:SaveData()
+            lia.module.get["doors"]:SaveData()
         else
             client:notifyErrorLocalized("doorNotValid")
         end
@@ -5309,7 +5307,7 @@ lia.command.add("doortoggleenabled", {
             lia.log.add(client, newState and "doorDisable" or "doorEnable", door)
             hook.Run("DoorEnabledToggled", client, door, newState)
             client:notifySuccessLocalized(newState and "doorSetDisabled" or "doorSetNotDisabled")
-            lia.module.list["doors"].list["doors"]:SaveData()
+            lia.module.get["doors"].list["doors"]:SaveData()
         else
             client:notifyErrorLocalized("doorNotValid")
         end
@@ -5337,7 +5335,7 @@ lia.command.add("doortogglehidden", {
             lia.log.add(client, "doorSetHidden", entity, newState)
             hook.Run("DoorHiddenToggled", client, entity, newState)
             client:notifySuccessLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
-            lia.module.list["doors"]:SaveData()
+            lia.module.get["doors"]:SaveData()
         else
             client:notifyErrorLocalized("doorNotValid")
         end
@@ -5372,7 +5370,7 @@ lia.command.add("doorsetprice", {
                 lia.log.add(client, "doorSetPrice", door, price)
                 hook.Run("DoorPriceSet", client, door, price)
                 client:notifySuccessLocalized("doorSetPrice", lia.currency.get(price))
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5434,7 +5432,7 @@ lia.command.add("savedoors", {
         Icon = "icon16/disk.png"
     },
     onRun = function(client)
-        lia.module.list["doors"]:SaveData()
+        lia.module.get["doors"]:SaveData()
         lia.log.add(client, "doorSaveData")
         client:notifySuccessLocalized("doorsSaved")
     end
@@ -5582,7 +5580,7 @@ lia.command.add("dooraddfaction", {
                     client:notifySuccessLocalized("doorRemoveFaction")
                 end
 
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5644,7 +5642,7 @@ lia.command.add("doorremovefaction", {
                     client:notifySuccessLocalized("doorRemoveFaction")
                 end
 
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5713,7 +5711,7 @@ lia.command.add("doorsetclass", {
                     client:notifySuccessLocalized("doorRemoveClass")
                 end
 
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5794,7 +5792,7 @@ lia.command.add("doorremoveclass", {
                     client:notifySuccessLocalized("doorRemoveClass")
                 end
 
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5832,7 +5830,7 @@ lia.command.add("togglealldoors", {
 
         client:notifySuccessLocalized(toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
         lia.log.add(client, toggleToDisable and "doorDisableAll" or "doorEnableAll", count)
-        lia.module.list["doors"]:SaveData()
+        lia.module.get["doors"]:SaveData()
     end
 })
 
@@ -5906,7 +5904,7 @@ lia.command.add("doorsetgroup", {
                     client:notifySuccessLocalized("doorRemoveGroup")
                 end
 
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -5978,7 +5976,7 @@ lia.command.add("dooraddgroup", {
                     client:notifyErrorLocalized("missingGroupName")
                 end
 
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -6007,7 +6005,7 @@ lia.command.add("doorremovegroup", {
                 door:setNetVar("doorData", doorData)
                 lia.log.add(client, "doorRemoveGroup", door)
                 client:notifySuccessLocalized("doorRemoveGroup")
-                lia.module.list["doors"]:SaveData()
+                lia.module.get["doors"]:SaveData()
             else
                 client:notifyErrorLocalized("doorNotValid")
             end
@@ -6453,7 +6451,7 @@ lia.command.add("togglecheater", {
             client:notifySuccessLocalized("cheaterMarked", target:Name())
             target:notifyWarningLocalized("cheaterMarkedByAdmin")
             local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-            local warnsModule = lia.module.list["warns"]
+            local warnsModule = lia.module.get["warns"]
             if warnsModule and warnsModule.AddWarning then
                 warnsModule:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, L("cheaterWarningReason"), client:Nick(), client:SteamID())
                 lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
@@ -6493,7 +6491,7 @@ lia.command.add("spawnadd", {
 
         local factionInfo = lia.faction.teams[factionName] or lia.util.findFaction(client, factionName)
         if factionInfo then
-            lia.module.list["spawns"]:FetchSpawns():next(function(spawns)
+            lia.module.get["spawns"]:FetchSpawns():next(function(spawns)
                 spawns[factionInfo.uniqueID] = spawns[factionInfo.uniqueID] or {}
                 local newSpawn = {
                     pos = client:GetPos(),
@@ -6502,7 +6500,7 @@ lia.command.add("spawnadd", {
                 }
 
                 table.insert(spawns[factionInfo.uniqueID], newSpawn)
-                lia.module.list["spawns"]:StoreSpawns(spawns):next(function()
+                lia.module.get["spawns"]:StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnAdd", factionInfo.name)
                     client:notifySuccessLocalized("spawnAdded", L(factionInfo.name))
                 end)
@@ -6526,7 +6524,7 @@ lia.command.add("spawnremoveinradius", {
     onRun = function(client, arguments)
         local position = client:GetPos()
         local radius = tonumber(arguments[1]) or 120
-        lia.module.list["spawns"]:FetchSpawns():next(function(spawns)
+        lia.module.get["spawns"]:FetchSpawns():next(function(spawns)
             local removedCount = 0
             local curMap = game.GetMap():lower()
             for faction, list in pairs(spawns) do
@@ -6546,7 +6544,7 @@ lia.command.add("spawnremoveinradius", {
             end
 
             if removedCount > 0 then
-                lia.module.list["spawns"]:StoreSpawns(spawns):next(function()
+                lia.module.get["spawns"]:StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
                     client:notifySuccessLocalized("spawnDeleted", removedCount)
                 end)
@@ -6578,7 +6576,7 @@ lia.command.add("spawnremovebyname", {
         local factionName = arguments[1]
         local factionInfo = factionName and (lia.faction.teams[factionName] or lia.util.findFaction(client, factionName))
         if factionInfo then
-            lia.module.list["spawns"]:FetchSpawns():next(function(spawns)
+            lia.module.get["spawns"]:FetchSpawns():next(function(spawns)
                 local list = spawns[factionInfo.uniqueID]
                 if list then
                     local curMap = game.GetMap():lower()
@@ -6593,7 +6591,7 @@ lia.command.add("spawnremovebyname", {
 
                     if removedCount > 0 then
                         if #list == 0 then spawns[factionInfo.uniqueID] = nil end
-                        lia.module.list["spawns"]:StoreSpawns(spawns):next(function()
+                        lia.module.get["spawns"]:StoreSpawns(spawns):next(function()
                             lia.log.add(client, "spawnRemoveByName", factionInfo.name, removedCount)
                             client:notifySuccessLocalized("spawnDeletedByName", L(factionInfo.name), removedCount)
                         end)
@@ -6682,7 +6680,7 @@ lia.command.add("viewtickets", {
             displayName = targetName
         end
 
-        lia.module.list["tickets"]:GetTicketsByRequester(steamID):next(function(tickets)
+        lia.module.get("tickets"):GetTicketsByRequester(steamID):next(function(tickets)
             if #tickets == 0 then
                 client:notifyInfoLocalized("noTicketsFound")
                 return
@@ -6746,7 +6744,7 @@ lia.command.add("plyviewclaims", {
         end
 
         local steamID = target:SteamID()
-        lia.module.list["tickets"]:GetAllCaseClaims():next(function(caseclaims)
+        lia.module.get("tickets"):GetAllCaseClaims():next(function(caseclaims)
             local claim = caseclaims[steamID]
             if not claim then
                 client:notifyInfoLocalized("noClaimsFound")
@@ -6806,7 +6804,7 @@ lia.command.add("viewallclaims", {
     adminOnly = true,
     desc = "viewAllClaimsDesc",
     onRun = function(client)
-        lia.module.list["tickets"]:GetAllCaseClaims():next(function(caseclaims)
+        lia.module.get("tickets"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
                 client:notifyInfoLocalized("noClaimsRecorded")
                 return
@@ -6866,7 +6864,7 @@ lia.command.add("viewclaims", {
     adminOnly = true,
     desc = "viewClaimsDesc",
     onRun = function(client)
-        lia.module.list["tickets"]:GetAllCaseClaims():next(function(caseclaims)
+        lia.module.get("tickets"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
                 client:notifyInfoLocalized("noClaimsData")
                 return
@@ -6958,7 +6956,7 @@ lia.command.add("warn", {
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local warnerName = client:Nick()
         local warnerSteamID = client:SteamID()
-        lia.module.list["warns"]:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, reason, warnerName, warnerSteamID)
+        lia.module.get["warns"]:AddWarning(target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, reason, warnerName, warnerSteamID)
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
             target:notifyWarningLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", reason)
             client:notifySuccessLocalized("warningIssued", target:Nick())
@@ -6989,7 +6987,7 @@ lia.command.add("viewwarns", {
             return
         end
 
-        lia.module.list["warns"]:GetWarnings(target:getChar():getID()):next(function(warns)
+        lia.module.get["warns"]:GetWarnings(target:getChar():getID()):next(function(warns)
             if #warns == 0 then
                 client:notifyInfoLocalized("noWarnings", target:Nick())
                 return
@@ -7057,7 +7055,7 @@ lia.command.add("viewwarnsissued", {
             displayName = target:Nick()
         end
 
-        lia.module.list["warns"]:GetWarningsByIssuer(steamID):next(function(warns)
+        lia.module.get["warns"]:GetWarningsByIssuer(steamID):next(function(warns)
             if #warns == 0 then
                 client:notifyInfoLocalized("noWarnings", displayName)
                 return
@@ -7109,7 +7107,7 @@ lia.command.add("recogwhisper", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) or not target:getChar() then return end
-        lia.module.list["recognition"]:ForceRecognizeRange(target, "whisper")
+        lia.module.get("recognition"):ForceRecognizeRange(target, "whisper")
     end
 })
 
@@ -7125,7 +7123,7 @@ lia.command.add("recognormal", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) or not target:getChar() then return end
-        lia.module.list["recognition"]:ForceRecognizeRange(target, "normal")
+        lia.module.get("recognition"):ForceRecognizeRange(target, "normal")
     end
 })
 
@@ -7141,7 +7139,7 @@ lia.command.add("recogyell", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) or not target:getChar() then return end
-        lia.module.list["recognition"]:ForceRecognizeRange(target, "yell")
+        lia.module.get("recognition"):ForceRecognizeRange(target, "yell")
     end
 })
 
@@ -7164,7 +7162,7 @@ lia.command.add("recogbots", {
         local range = arguments[1] or "normal"
         local fakeName = arguments[2]
         for _, ply in player.Iterator() do
-            if ply:IsBot() then lia.module.list["recognition"]:ForceRecognizeRange(ply, range, fakeName) end
+            if ply:IsBot() then lia.module.get("recognition"):ForceRecognizeRange(ply, range, fakeName) end
         end
     end
 })

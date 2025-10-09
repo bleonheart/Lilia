@@ -14,10 +14,8 @@ function PANEL:Init()
     canvas.Paint = function() end
     self.content = canvas
     hook.Run("LoadCharInformation")
-    if lia.module and lia.module.list then
-        for _, module in pairs(lia.module.list) do
-            if module.LoadCharInformation then module:LoadCharInformation() end
-        end
+    for _, module in pairs(lia.module.list) do
+        if module.LoadCharInformation then module:LoadCharInformation() end
     end
 
     hook.Add("OnThemeChanged", self, self.OnThemeChanged)
@@ -25,7 +23,7 @@ function PANEL:Init()
         if not IsValid(self) then return end
         local client = LocalPlayer()
         local char = client:getChar()
-        local info = lia.module.list and lia.module.list["f1menu"] and lia.module.list["f1menu"].CharacterInformation or {}
+        local info = lia.module.get("f1menu") and lia.module.get("f1menu").CharacterInformation or {}
         if char and not table.IsEmpty(info) then
             self:GenerateSections()
             self:Refresh()
@@ -117,7 +115,7 @@ function PANEL:AddSpacer(parent, height)
 end
 
 function PANEL:GenerateSections()
-    local info = lia.module.list and lia.module.list["f1menu"] and lia.module.list["f1menu"].CharacterInformation or {}
+    local info = lia.module.get("f1menu") and lia.module.get("f1menu").CharacterInformation or {}
     local secs = {}
     if table.IsEmpty(info) then return end
     for name, data in pairs(info) do
@@ -204,7 +202,7 @@ function PANEL:ApplyCurrentTheme()
 end
 
 function PANEL:setup()
-    local info = lia.module.list and lia.module.list["f1menu"] and lia.module.list["f1menu"].CharacterInformation or {}
+    local info = lia.module.get("f1menu") and lia.module.get("f1menu").CharacterInformation or {}
     if table.IsEmpty(info) then return end
     for _, data in pairs(info) do
         local fields = isfunction(data.fields) and data.fields() or data.fields

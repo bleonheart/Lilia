@@ -1,6 +1,6 @@
 ﻿local PANEL = {}
 function PANEL:Init()
-    lia.module.list["f1menu"].CharacterInformation = {}
+    lia.module.get("f1menu").CharacterInformation = {}
     lia.gui.menu = self
     hook.Run("F1MenuOpened", self)
     self:SetSize(ScrW(), ScrH())

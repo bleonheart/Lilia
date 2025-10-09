@@ -70,8 +70,7 @@ function PANEL:onFinish()
         self:showError(err)
     end
 
-    local mainMenu = lia.module.list["mainmenu"]
-    mainMenu:createCharacter(self.context):next(function()
+    lia.module.get("mainmenu"):createCharacter(self.context):next(function()
         finish()
         hook.Run("ResetCharacterPanel")
     end, fail)

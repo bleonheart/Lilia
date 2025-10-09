@@ -108,7 +108,7 @@ function getPrivilegeCategory(privilegeName)
         category = L(lia.administrator.privilegeCategories[privilegeName])
     elseif lia.command and lia.command.list and lia.command.list[privilegeName] then
         category = L("commands")
-    elseif lia.module and lia.module.list then
+    else
         for _, module in pairs(lia.module.list) do
             if module.Privileges and istable(module.Privileges) then
                 for _, priv in ipairs(module.Privileges) do
