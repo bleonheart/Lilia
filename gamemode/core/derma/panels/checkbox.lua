@@ -38,10 +38,10 @@ function PANEL:Init()
     end
 
     self.toggle.DoClick = function()
-        if self.convar ~= '' then LocalPlayer():ConCommand(self.convar .. ' ' .. (self.value and 0 or 1)) end
+        if self.convar ~= "" then LocalPlayer():ConCommand(self.convar .. " " .. (self.value and 0 or 1)) end
         self.value = not self.value
         self:OnChange(self.value)
-        surface.PlaySound('button_click.wav')
+        surface.PlaySound("button_click.wav")
     end
 
     self.DoClick = function() self.toggle:DoClick() end
@@ -104,7 +104,7 @@ end
 function PANEL:SetSize()
 end
 
-vgui.Register('liaCheckbox', PANEL, 'Panel')
+vgui.Register("liaCheckbox", PANEL, "Panel")
 local SIMPLE_CHECKBOX_PANEL = {}
 function SIMPLE_CHECKBOX_PANEL:Init()
     self:SetText("")

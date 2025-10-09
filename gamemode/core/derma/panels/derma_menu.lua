@@ -83,13 +83,13 @@ function PANEL:Paint(w, h)
 end
 
 function PANEL:AddOption(text, func, icon, optData)
-    surface.SetFont('LiliaFont.18')
+    surface.SetFont("LiliaFont.18")
     local textW = select(1, surface.GetTextSize(text))
     local iconW = icon and 16 or 0
     self.MaxTextWidth = math.max(self.MaxTextWidth or 0, textW)
     self.MaxIconWidth = math.max(self.MaxIconWidth or 0, iconW)
-    local option = vgui.Create('DButton', self)
-    option:SetText('')
+    local option = vgui.Create("DButton", self)
+    option:SetText("")
     option:Dock(TOP)
     option:DockMargin(2, 2, 2, 0)
     option:SetTall(26)
@@ -131,13 +131,13 @@ function PANEL:AddOption(text, func, icon, optData)
 
         if option.Func then
             option.Func()
-            surface.PlaySound('button_click.wav')
+            surface.PlaySound("button_click.wav")
         end
 
         timer.Simple(0.01, function()
             local function closeAllMenus(panel)
                 while IsValid(panel) do
-                    if panel:GetName() == 'liaDermaMenu' then
+                    if panel:GetName() == "liaDermaMenu" then
                         local parent = panel:GetParent()
                         panel:Close()
                         panel = parent
@@ -232,11 +232,11 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         function option:SetSubMenuPositionMode(mode)
-            option._submenu_position_mode = mode or 'auto'
+            option._submenu_position_mode = mode or "auto"
         end
 
         function option:GetSubMenuPositionMode()
-            return option._submenu_position_mode or 'auto'
+            return option._submenu_position_mode or "auto"
         end
 
         local function isAnySubmenuHovered(opt)
@@ -286,7 +286,7 @@ function PANEL:AddOption(text, func, icon, optData)
         local textPadding = 14
         local iconMat = pnl._cachedIconMat
         if pnl.Icon and not iconMat then
-            iconMat = type(pnl.Icon) == 'IMaterial' and pnl.Icon or Material(pnl.Icon)
+            iconMat = type(pnl.Icon) == "IMaterial" and pnl.Icon or Material(pnl.Icon)
             pnl._cachedIconMat = iconMat
         end
 
@@ -303,7 +303,7 @@ function PANEL:AddOption(text, func, icon, optData)
             local arrowX = w - arrowSize - 8
             local arrowY = h * 0.5
             local arrowSymbol = pnl._submenu_open and "◄" or "►"
-            draw.SimpleText(arrowSymbol, 'LiliaFont.16', arrowX, arrowY, colors.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(arrowSymbol, "LiliaFont.16", arrowX, arrowY, colors.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
 
         if currentIconWidth > 0 then
@@ -314,7 +314,7 @@ function PANEL:AddOption(text, func, icon, optData)
             end
         end
 
-        draw.SimpleText(pnl.Text, 'LiliaFont.18', textX, h * 0.5, colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(pnl.Text, "LiliaFont.18", textX, h * 0.5, colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     table.insert(self.Items, option)
@@ -323,7 +323,7 @@ function PANEL:AddOption(text, func, icon, optData)
 end
 
 function PANEL:AddSpacer()
-    local spacer = vgui.Create('DPanel', self)
+    local spacer = vgui.Create("DPanel", self)
     spacer:Dock(TOP)
     spacer:DockMargin(8, 6, 8, 6)
     spacer:SetTall(1)
@@ -342,7 +342,7 @@ end
 
 function PANEL:AddSubMenuSeparator()
     if not IsValid(self) then return end
-    local spacer = vgui.Create('DPanel', self)
+    local spacer = vgui.Create("DPanel", self)
     spacer:Dock(TOP)
     spacer:DockMargin(8, 3, 8, 3)
     spacer:SetTall(1)
@@ -440,4 +440,4 @@ function PANEL:SetPadding(left, top, right, bottom)
     end
 end
 
-vgui.Register('liaDermaMenu', PANEL, 'DPanel')
+vgui.Register("liaDermaMenu", PANEL, "DPanel")

@@ -298,12 +298,6 @@ lia.config.add("WalkRatio", "walkRatio", 0.5, nil, {
     decimals = 2
 })
 
-lia.config.add("AllowExistNames", "allowDuplicateNames", true, nil, {
-    desc = "allowDuplicateNamesDesc",
-    category = "character",
-    type = "Boolean"
-})
-
 lia.config.add("WhitelistEnabled", "whitelistEnabled", false, nil, {
     desc = "whitelistEnabledDesc",
     category = "categoryServer",

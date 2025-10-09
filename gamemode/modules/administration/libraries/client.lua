@@ -344,11 +344,11 @@ function MODULE:PopulateAdminTabs(pages)
             name = L("flagsManagement"),
             icon = "icon16/flag_red.png",
             drawFunc = function(panel)
-                flagsPanel = panel
+                panelRef = panel
                 if not panel.flagsInitialized then
                     panel.flagsInitialized = true
                     if flagsData then
-                        self:OpenFlagsPanel(panel, flagsData)
+                        OpenFlagsPanel(panel, flagsData)
                         flagsData = nil
                     else
                         net.Start("liaRequestAllFlags")

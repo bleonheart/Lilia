@@ -1,6 +1,7 @@
 ﻿local PANEL = {}
 function PANEL:configureSteps()
     self:addStep(vgui.Create("liaCharacterFaction"))
+    self:addStep(vgui.Create("liaCharacterModel"))
     self:addStep(vgui.Create("liaCharacterBiography"))
     hook.Run("ConfigureCharacterCreationSteps", self)
     local keys = table.GetKeys(self.steps)
@@ -16,9 +17,11 @@ end
 function PANEL:updateModel()
     local faction = lia.faction.indices[self.context.faction]
     if not faction then return end
-    local info = faction.models[self.context.model or 1]
+    local info = faction.models and faction.models[self.context.model or 1]
+    if not info then return end
     local mdl, skin, groups = info, 0, {}
     if istable(info) then mdl, skin, groups = info[1], info[2], info[3] end
+    if not mdl then return end
     self.model:SetModel(mdl)
     self.model:fitFOV()
     local entity = self.model:GetEntity()
@@ -185,7 +188,7 @@ function PANEL:onStepChanged(oldStep, newStep)
     local key = finish and "finish" or "next"
     if IsValid(newStep) then
         local panelName = newStep:GetName()
-        local shouldShowModel = panelName == "liaCharacterBiography" or panelName == "liaCharacterModel"
+        local shouldShowModel = panelName == "liaCharacterModel"
         self.model:SetVisible(shouldShowModel)
     end
 

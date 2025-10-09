@@ -70,6 +70,16 @@ function PANEL:onDisplay()
     end
 
     local id = self.faction:GetSelectedData()
+    if not id and self.faction.choices and #self.faction.choices > 0 then
+        local firstChoice = self.faction.choices[1]
+        if firstChoice and firstChoice.data then
+            -- Manually set the selection since ChooseOptionID might not work
+            self.faction.selected = firstChoice.text
+            self.faction.OnSelect(1, firstChoice.text, firstChoice.data)
+            id = firstChoice.data
+        end
+    end
+
     if id then
         local fac = lia.faction.teams[id]
         if fac then

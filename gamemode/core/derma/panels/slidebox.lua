@@ -31,7 +31,7 @@ function PANEL:CreateConVarSyncTimer()
 end
 
 function PANEL:OnRemove()
-    timer.Remove('liaSlideBoxSync' .. tostring(self))
+    timer.Remove("liaSlideBoxSync" .. tostring(self))
 end
 
 function PANEL:SetRange(min_value, max_value, decimals)
@@ -97,9 +97,9 @@ function PANEL:Paint(w)
     local barR = barH / 2
     local handleW, handleH = 14, 14
     local handleR = handleH / 2
-    local textFont = 'LiliaFont.18'
-    local minmaxFont = 'LiliaFont.14'
-    local valueFont = 'LiliaFont.16'
+    local textFont = "LiliaFont.18"
+    local minmaxFont = "LiliaFont.14"
+    local valueFont = "LiliaFont.16"
     local minmaxPadY = 12
     draw.SimpleText(self.text, textFont, padX, padTop, lia.color.theme.text)
     local barStart = padX + handleW / 2
@@ -155,4 +155,4 @@ function PANEL:OnCursorExited()
     self.hover = false
 end
 
-vgui.Register('liaSlideBox', PANEL, 'Panel')
+vgui.Register("liaSlideBox", PANEL, "Panel")

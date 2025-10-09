@@ -309,11 +309,9 @@ local function OpenRoster(panel, data)
 end
 
 function OpenFlagsPanel(panel, data)
-    print("[Flags Debug] Opening panel with " .. #data .. " entries")
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
-
     -- If no data, show a message
     if not data or #data == 0 then
         local noDataLabel = panel:Add("DLabel")
@@ -411,7 +409,6 @@ function OpenFlagsPanel(panel, data)
             SetClipboardText(string.sub(rowString, 1, -4))
         end):SetIcon("icon16/page_copy.png")
 
-
         menu:AddOption(L("modifyCharFlags"), function()
             local steamID = line:GetColumnText(2) or ""
             local currentFlags = line:GetColumnText(3) or ""
@@ -430,13 +427,11 @@ function OpenFlagsPanel(panel, data)
 end
 
 lia.net.readBigTable("liaAllFlags", function(data)
-    print("[Flags Client Debug] Received flags data with " .. #data .. " entries")
     flagsData = data or {}
-    if IsValid(flagsPanel) and not flagsPanel.flagsInitialized then
-        print("[Flags Client Debug] Opening flags panel with data")
-        OpenFlagsPanel(flagsPanel, flagsData)
+    if IsValid(panelRef) and panelRef.flagsInitialized then
+        OpenFlagsPanel(panelRef, flagsData)
+        flagsData = nil
     end
-    flagsData = nil
 end)
 
 lia.net.readBigTable("liaFactionRosterData", function(data)

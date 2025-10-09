@@ -264,7 +264,7 @@ end
 function PANEL:addPlayer(ply, parent)
     local slot = parent:Add("DPanel")
     slot:Dock(TOP)
-    local height = ScrH() * 0.07
+    local height = ScrH() * 0.09
     slot:SetTall(height)
     slot.Paint = function() end
     slot.character = ply:getChar()
@@ -339,7 +339,8 @@ function PANEL:addPlayer(ply, parent)
         local availW = totalW - (iconSize + margin * 2) - extra - pingW - margin
         self.name:SetPos(iconSize + margin * 2, 2)
         self.name:SetWide(availW)
-        self.desc:SetPos(iconSize + margin * 2, 48)
+        self.name:SetTall(30)
+        self.desc:SetPos(iconSize + margin * 2, 35)
         self.desc:SetWide(availW)
         if hasLogo then
             self.classLogo:SetVisible(true)
@@ -393,7 +394,7 @@ function PANEL:addPlayer(ply, parent)
         local wrapped = wrap(desc, self.desc:GetWide(), "liaSmallFont")
         surface.SetFont("liaSmallFont")
         local _, lineH = surface.GetTextSize("W")
-        local maxLines = math.floor((height - 48) / lineH)
+        local maxLines = math.floor((height - 35) / lineH)
         if #wrapped > maxLines then
             wrapped[maxLines] = wrapped[maxLines] .. " (...)"
             for i = maxLines + 1, #wrapped do

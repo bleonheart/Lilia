@@ -18,63 +18,9 @@ function PANEL:Init()
     self.descLabel = makeLabel("desc")
     self.descEntry = self:makeTextEntry("desc")
     self.descEntry:SetTall(32)
-    makeLabel("model")
-    local faction = lia.faction.indices[self:getContext("faction")]
-    if not faction then return end
 
-    -- Check if faction has models, if not use default or skip
-    if not faction.models or #faction.models == 0 then
-        faction.models = {["models/alyx.mdl"] = "models/alyx.mdl"}
-    end
-
-    local function paintOver(icon, w, h)
-        if self:getContext("model") == icon.index then
-            local col = lia.config.get("Color", color_white)
-            surface.SetDrawColor(col.r, col.g, col.b, 200)
-            for i = 1, 3 do
-                surface.DrawOutlinedRect(i, i, w - i * 2, h - i * 2)
-            end
-        end
-    end
-
-    self.models = self:Add("DIconLayout")
-    self.models:Dock(TOP)
-    self.models:DockMargin(0, 4, 0, 4)
-    self.models:SetSpaceX(5)
-    self.models:SetSpaceY(0)
-    local iconW, iconH = 64, 128
-    local spacing = 5
-    local count = #faction.models
-    self.models:SetWide(count * (iconW + spacing) - spacing)
-    self.models:SetTall(iconH)
-    for idx, data in SortedPairs(faction.models) do
-        local icon = self.models:Add("SpawnIcon")
-        icon:SetSize(iconW, iconH)
-        icon:InvalidateLayout(true)
-        icon.index = idx
-        icon.PaintOver = paintOver
-        icon.DoClick = function()
-            self:setContext("model", idx)
-            lia.gui.character:clickSound()
-            self:updateModelPanel()
-        end
-
-        if isstring(data) then
-            icon:SetModel(data)
-            icon.model, icon.skin, icon.bodyGroups = data, 0, ""
-        else
-            local m, skin, bg = data[1], data[2] or 0, data[3] or {}
-            local groups = {}
-            for i = 0, 8 do
-                groups[i + 1] = tostring(bg[i] or 0)
-            end
-
-            icon:SetModel(m, skin, table.concat(groups))
-            icon.model, icon.skin, icon.bodyGroups = m, skin, table.concat(groups)
-        end
-
-        if self:getContext("model") == idx then icon:DoClick() end
-    end
+    -- Add attributes if they exist
+    self:addAttributes()
 end
 
 function PANEL:makeTextEntry(key)
@@ -96,22 +42,99 @@ function PANEL:makeTextEntry(key)
     return entry
 end
 
+function PANEL:addAttributes()
+    -- Determine if there are any visible attributes
+    local visible = {}
+    for k, v in pairs(lia.attribs.list or {}) do
+        if not v.noStartBonus then visible[#visible + 1] = { id = k, data = v } end
+    end
+    if #visible == 0 then return end
+
+    table.SortByMember(visible, "id", true)
+
+    -- Header labels
+    local header = self:Add("DPanel")
+    header:Dock(TOP)
+    header:DockMargin(0, 8, 0, 16)
+    header:SetTall(24)
+    header:SetPaintBackground(false)
+    local title = header:Add("DLabel")
+    title:SetFont("liaMediumFont")
+    title:SetText(L("attributes"):upper())
+    title:Dock(LEFT)
+    title:SizeToContents()
+    self.pointsLeftLabel = header:Add("DLabel")
+    self.pointsLeftLabel:SetFont("LiliaFont.18")
+    self.pointsLeftLabel:Dock(RIGHT)
+    self.pointsLeftLabel:SetTextColor(color_white)
+    self.pointsLeftLabel:SetContentAlignment(6)
+
+    -- Container for rows (wrapped in scroll panel)
+    self.attribsScrollPanel = self:Add("liaScrollPanel")
+    self.attribsScrollPanel:Dock(TOP)
+    self.attribsScrollPanel:DockMargin(0, 0, 0, 8)
+    -- Some canvas implementations may not support SetPaintBackground; avoid calling it
+
+    -- Set minimum and maximum height for the scroll panel
+    local minHeight = 100
+    local maxHeight = 300
+    self.attribsScrollPanel:SetTall(math.min(math.max(#visible * 36, minHeight), maxHeight))
+
+    self.attribsContainer = self.attribsScrollPanel:Add("DPanel")
+    self.attribsContainer:Dock(TOP)
+    self.attribsContainer:DockMargin(0, 0, 0, 0)
+    self.attribsContainer:SetPaintBackground(false)
+
+    -- Prepare totals/state
+    self.attribRows = {}
+    self.totalAttribPoints = hook.Run("GetMaxStartingAttributePoints", LocalPlayer(), self:getContext()) or lia.config.get("MaxAttributePoints")
+
+    local rowHeight = 36
+    for _, entry in ipairs(visible) do
+        local row = self.attribsContainer:Add("liaCharacterAttribsRow")
+        row:Dock(TOP)
+        row:SetTall(rowHeight)
+        row:setAttribute(entry.id, entry.data)
+        row.parent = self -- so row:delta() calls our onPointChange
+        self.attribRows[entry.id] = row
+    end
+    self:updateAttributesUI()
+end
+
+function PANEL:updateAttributesUI()
+    if not self.attribRows then return end
+    local t = self:getContext("attribs", {})
+    local sum = 0
+    for _, q in pairs(t) do sum = sum + q end
+    self.pointsLeft = math.max((self.totalAttribPoints or 0) - sum, 0)
+    if IsValid(self.pointsLeftLabel) then self.pointsLeftLabel:SetText(L("pointsLeft"):upper() .. ": " .. tostring(self.pointsLeft)) end
+    for k, row in pairs(self.attribRows) do
+        row.points = t[k] or 0
+        if row.updateQuantity then row:updateQuantity() end
+    end
+end
+
+function PANEL:onPointChange(attributeKey, delta)
+    if not attributeKey then return 0 end
+    local t = self:getContext("attribs", {})
+    local current = t[attributeKey] or 0
+    local newValue = current + delta
+    local startingMax = hook.Run("GetAttributeStartingMax", LocalPlayer(), attributeKey) or lia.config.get("MaxStartingAttributes")
+    if self.pointsLeft == nil then self:updateAttributesUI() end
+    local newLeft = (self.pointsLeft or 0) - delta
+    if newLeft < 0 or newLeft > (self.totalAttribPoints or 0) then return current end
+    if newValue < 0 or newValue > (startingMax or newValue) then return current end
+    self.pointsLeft = newLeft
+    if IsValid(self.pointsLeftLabel) then self.pointsLeftLabel:SetText(L("pointsLeft"):upper() .. ": " .. tostring(self.pointsLeft)) end
+    t[attributeKey] = newValue
+    self:setContext("attribs", t)
+    return newValue
+end
+
 function PANEL:shouldSkip()
-    local faction = lia.faction.indices[self:getContext("faction")]
-    if not faction then return true end
-
-    -- Skip if no models or only one model
-    return not faction.models or #faction.models <= 1
+    return false
 end
 
-function PANEL:onSkip()
-    local faction = lia.faction.indices[self:getContext("faction")]
-    if not faction or not faction.models then return end
-
-    -- Set to first available model key
-    local firstModel = next(faction.models)
-    self:setContext("model", firstModel)
-end
 
 function PANEL:validate()
     for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
@@ -122,14 +145,16 @@ function PANEL:validate()
 end
 
 function PANEL:onDisplay()
-    local n, d, m = self.nameEntry:GetValue(), self.descEntry:GetValue(), self:getContext("model")
+    local n, d = self.nameEntry:GetValue(), self.descEntry:GetValue()
     self:Clear()
     self:Init()
     self.nameEntry:SetValue(n)
     self.descEntry:SetValue(d)
-    self:setContext("model", m)
-    local children = self.models:GetChildren()
-    if children[m] then children[m].DoClick(children[m]) end
+
+    -- Restore attributes if they exist
+    if IsValid(self.attribsPanel) then
+        self.attribsPanel:onDisplay()
+    end
 end
 
 vgui.Register("liaCharacterBiography", PANEL, "liaCharacterCreateStep")

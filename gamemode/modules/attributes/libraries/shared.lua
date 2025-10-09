@@ -1,4 +1,42 @@
-﻿function MODULE:CalcStaminaChange(client)
+﻿-- Simple RPG Attributes
+lia.attribs.list = lia.attribs.list or {}
+
+lia.attribs.list.strength = {
+    name = "Strength",
+    desc = "Determines physical power, damage dealt in melee combat, and carrying capacity.",
+    startingMax = 10,
+    maxValue = 20
+}
+
+lia.attribs.list.agility = {
+    name = "Agility",
+    desc = "Affects movement speed, dodge chance, and accuracy with ranged weapons.",
+    startingMax = 10,
+    maxValue = 20
+}
+
+lia.attribs.list.endurance = {
+    name = "Endurance",
+    desc = "Increases maximum health and stamina, affects resistance to damage and fatigue.",
+    startingMax = 10,
+    maxValue = 20
+}
+
+lia.attribs.list.intelligence = {
+    name = "Intelligence",
+    desc = "Affects learning speed, crafting efficiency, and magical aptitude.",
+    startingMax = 10,
+    maxValue = 20
+}
+
+lia.attribs.list.luck = {
+    name = "Luck",
+    desc = "Influences random events, critical hit chance, and loot quality.",
+    startingMax = 10,
+    maxValue = 20
+}
+
+function MODULE:CalcStaminaChange(client)
     local char = client:getChar()
     if not char or client:isNoClipping() then return 1 end
     local walkSpeed = lia.config.get("WalkSpeed", client:GetWalkSpeed())

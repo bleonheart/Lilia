@@ -358,12 +358,6 @@ net.Receive("liaCommandData", function(_, client)
     end
 end)
 
-net.Receive("liaCharFetchNames", function(_, client)
-    net.Start("liaCharFetchNames")
-    net.WriteTable(lia.char.names)
-    net.Send(client)
-end)
-
 net.Receive("liaAdminSetCharProperty", function(_, client)
     if not client:hasPrivilege("listCharacters") then return end
     local charID = net.ReadInt(32)

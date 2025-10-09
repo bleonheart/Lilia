@@ -29,17 +29,17 @@ function lia.derma.colorPicker(func, color_standart)
         value = v
     end
 
-    lia.derma.menuColorPicker = vgui.Create('liaFrame')
+    lia.derma.menuColorPicker = vgui.Create("liaFrame")
     lia.derma.menuColorPicker:SetSize(300, 378)
     lia.derma.menuColorPicker:Center()
     lia.derma.menuColorPicker:MakePopup()
-    lia.derma.menuColorPicker:SetTitle('')
+    lia.derma.menuColorPicker:SetTitle("")
     lia.derma.menuColorPicker:SetCenterTitle(L("colorPicker"))
-    local container = vgui.Create('Panel', lia.derma.menuColorPicker)
+    local container = vgui.Create("Panel", lia.derma.menuColorPicker)
     container:Dock(FILL)
     container:DockMargin(10, 10, 10, 10)
     container.Paint = nil
-    local preview = vgui.Create('Panel', container)
+    local preview = vgui.Create("Panel", container)
     preview:Dock(TOP)
     preview:SetTall(40)
     preview:DockMargin(0, 0, 0, 10)
@@ -48,7 +48,7 @@ function lia.derma.colorPicker(func, color_standart)
         lia.derma.rect(2, 2, w - 4, h - 4):Rad(16):Color(selected_color):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
-    local colorField = vgui.Create('Panel', container)
+    local colorField = vgui.Create("Panel", container)
     colorField:Dock(TOP)
     colorField:SetTall(200)
     colorField:DockMargin(0, 0, 0, 10)
@@ -62,7 +62,7 @@ function lia.derma.colorPicker(func, color_standart)
         if keyCode == MOUSE_LEFT then
             isDraggingColor = true
             self:OnCursorMoved(self:CursorPos())
-            surface.PlaySound('button_click.wav')
+            surface.PlaySound("button_click.wav")
         end
     end
 
@@ -98,7 +98,7 @@ function lia.derma.colorPicker(func, color_standart)
         lia.derma.circle(colorCursor.x, colorCursor.y, 12):Outline(2):Color(color_target):Draw()
     end
 
-    local hueSlider = vgui.Create('Panel', container)
+    local hueSlider = vgui.Create("Panel", container)
     hueSlider:Dock(TOP)
     hueSlider:SetTall(20)
     hueSlider:DockMargin(0, 0, 0, 10)
@@ -108,7 +108,7 @@ function lia.derma.colorPicker(func, color_standart)
         if keyCode == MOUSE_LEFT then
             isDraggingHue = true
             self:OnCursorMoved(self:CursorPos())
-            surface.PlaySound('button_click.wav')
+            surface.PlaySound("button_click.wav")
         end
     end
 
@@ -137,32 +137,32 @@ function lia.derma.colorPicker(func, color_standart)
         lia.derma.rect(huePos - 2, 0, 4, h):Color(color_target):Draw()
     end
 
-    local rgbContainer = vgui.Create('Panel', container)
+    local rgbContainer = vgui.Create("Panel", container)
     rgbContainer:Dock(TOP)
     rgbContainer:SetTall(60)
     rgbContainer:DockMargin(0, 0, 0, 10)
     rgbContainer.Paint = nil
-    local btnContainer = vgui.Create('Panel', container)
+    local btnContainer = vgui.Create("Panel", container)
     btnContainer:Dock(BOTTOM)
     btnContainer:SetTall(30)
     btnContainer.Paint = nil
-    local btnClose = vgui.Create('liaButton', btnContainer)
+    local btnClose = vgui.Create("liaButton", btnContainer)
     btnClose:Dock(LEFT)
     btnClose:SetWide(90)
     btnClose:SetTxt(L("cancel"))
     btnClose:SetColorHover(color_close)
     btnClose.DoClick = function()
         lia.derma.menuColorPicker:Remove()
-        surface.PlaySound('button_click.wav')
+        surface.PlaySound("button_click.wav")
     end
 
-    local btnSelect = vgui.Create('liaButton', btnContainer)
+    local btnSelect = vgui.Create("liaButton", btnContainer)
     btnSelect:Dock(RIGHT)
     btnSelect:SetWide(90)
     btnSelect:SetTxt(L("select"))
     btnSelect:SetColorHover(color_accept)
     btnSelect.DoClick = function()
-        surface.PlaySound('button_click.wav')
+        surface.PlaySound("button_click.wav")
         func(selected_color)
         lia.derma.menuColorPicker:Remove()
     end
@@ -180,30 +180,30 @@ end
 
 function lia.derma.playerSelector(do_click)
     if IsValid(lia.derma.menuPlayerSelector) then lia.derma.menuPlayerSelector:Remove() end
-    lia.derma.menuPlayerSelector = vgui.Create('liaFrame')
+    lia.derma.menuPlayerSelector = vgui.Create("liaFrame")
     lia.derma.menuPlayerSelector:SetSize(340, 398)
     lia.derma.menuPlayerSelector:Center()
     lia.derma.menuPlayerSelector:MakePopup()
-    lia.derma.menuPlayerSelector:SetTitle('')
+    lia.derma.menuPlayerSelector:SetTitle("")
     lia.derma.menuPlayerSelector:SetCenterTitle(L("playerSelector"))
     lia.derma.menuPlayerSelector:ShowAnimation()
-    local contentPanel = vgui.Create('Panel', lia.derma.menuPlayerSelector)
+    local contentPanel = vgui.Create("Panel", lia.derma.menuPlayerSelector)
     contentPanel:Dock(FILL)
     contentPanel:DockMargin(8, 0, 8, 8)
-    lia.derma.menuPlayerSelector.sp = vgui.Create('liaScrollPanel', contentPanel)
+    lia.derma.menuPlayerSelector.sp = vgui.Create("liaScrollPanel", contentPanel)
     lia.derma.menuPlayerSelector.sp:Dock(FILL)
     local CARD_HEIGHT = 44
     local AVATAR_SIZE = 32
     local AVATAR_X = 14
     local function CreatePlayerCard(pl)
-        local card = vgui.Create('DButton', lia.derma.menuPlayerSelector.sp)
+        local card = vgui.Create("DButton", lia.derma.menuPlayerSelector.sp)
         card:Dock(TOP)
         card:DockMargin(0, 5, 0, 0)
         card:SetTall(CARD_HEIGHT)
-        card:SetText('')
+        card:SetText("")
         card.hover_status = 0
-        card.OnCursorEntered = function(self) self:SetCursor('hand') end
-        card.OnCursorExited = function(self) self:SetCursor('arrow') end
+        card.OnCursorEntered = function(self) self:SetCursor("hand") end
+        card.OnCursorExited = function(self) self:SetCursor("arrow") end
         card.Think = function(self)
             if self:IsHovered() then
                 self.hover_status = math.Clamp(self.hover_status + 4 * FrameTime(), 0, 1)
@@ -214,7 +214,7 @@ function lia.derma.playerSelector(do_click)
 
         card.DoClick = function()
             if IsValid(pl) then
-                surface.PlaySound('button_click.wav')
+                surface.PlaySound("button_click.wav")
                 do_click(pl)
             end
 
@@ -226,15 +226,15 @@ function lia.derma.playerSelector(do_click)
             if self.hover_status > 0 then lia.derma.rect(0, 0, w, h):Rad(10):Color(Color(0, 0, 0, 40 * self.hover_status)):Shape(lia.derma.SHAPE_IOS):Draw() end
             local infoX = AVATAR_X + AVATAR_SIZE + 10
             if not IsValid(pl) then
-                draw.SimpleText(L("disconnected"), 'LiliaFont.18', infoX, h * 0.5, color_disconnect, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                draw.SimpleText(L("disconnected"), "LiliaFont.18", infoX, h * 0.5, color_disconnect, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 return
             end
 
-            draw.SimpleText(pl:Name(), 'LiliaFont.18', infoX, 6, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-            local group = pl:GetUserGroup() or 'user'
+            draw.SimpleText(pl:Name(), "LiliaFont.18", infoX, 6, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+            local group = pl:GetUserGroup() or "user"
             group = string.upper(string.sub(group, 1, 1)) .. string.sub(group, 2)
-            draw.SimpleText(group, 'LiliaFont.14', infoX, h - 6, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
-            draw.SimpleText(pl:Ping() .. ' ' .. L("ping"), 'LiliaFont.16', w - 20, h - 6, lia.color.theme.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(group, "LiliaFont.14", infoX, h - 6, lia.color.theme.gray, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+            draw.SimpleText(pl:Ping() .. " " .. L("ping"), "LiliaFont.16", w - 20, h - 6, lia.color.theme.gray, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
             if pl:IsBot() then
                 statusColor = color_bot
             else
@@ -244,7 +244,7 @@ function lia.derma.playerSelector(do_click)
             lia.derma.circle(w - 24, 14, 24):Color(statusColor):Draw()
         end
 
-        local avatarImg = vgui.Create('AvatarImage', card)
+        local avatarImg = vgui.Create("AvatarImage", card)
         avatarImg:SetSize(AVATAR_SIZE, AVATAR_SIZE)
         avatarImg:SetPos(AVATAR_X, (CARD_HEIGHT - AVATAR_SIZE) * 0.5)
         avatarImg:SetPlayer(pl, 64)
@@ -259,7 +259,7 @@ function lia.derma.playerSelector(do_click)
         CreatePlayerCard(pl)
     end
 
-    lia.derma.menuPlayerSelector.btn_close = vgui.Create('liaButton', lia.derma.menuPlayerSelector)
+    lia.derma.menuPlayerSelector.btn_close = vgui.Create("liaButton", lia.derma.menuPlayerSelector)
     lia.derma.menuPlayerSelector.btn_close:Dock(BOTTOM)
     lia.derma.menuPlayerSelector.btn_close:DockMargin(16, 8, 16, 12)
     lia.derma.menuPlayerSelector.btn_close:SetTall(36)
@@ -269,14 +269,14 @@ function lia.derma.playerSelector(do_click)
 end
 
 function lia.derma.textBox(title, desc, func)
-    lia.derma.menuTextBox = vgui.Create('liaFrame')
+    lia.derma.menuTextBox = vgui.Create("liaFrame")
     lia.derma.menuTextBox:SetSize(300, 132)
     lia.derma.menuTextBox:Center()
     lia.derma.menuTextBox:MakePopup()
     lia.derma.menuTextBox:SetTitle(title)
     lia.derma.menuTextBox:ShowAnimation()
     lia.derma.menuTextBox:DockPadding(12, 30, 12, 12)
-    local entry = vgui.Create('liaEntry', lia.derma.menuTextBox)
+    local entry = vgui.Create("liaEntry", lia.derma.menuTextBox)
     entry:Dock(TOP)
     entry:SetTitle(desc)
     local function apply_func()
@@ -285,13 +285,13 @@ function lia.derma.textBox(title, desc, func)
     end
 
     entry.OnEnter = function() apply_func() end
-    local btn_accept = vgui.Create('liaButton', lia.derma.menuTextBox)
+    local btn_accept = vgui.Create("liaButton", lia.derma.menuTextBox)
     btn_accept:Dock(BOTTOM)
     btn_accept:SetTall(30)
     btn_accept:SetTxt(L("apply"))
     btn_accept:SetColorHover(color_accept)
     btn_accept.DoClick = function()
-        surface.PlaySound('button_click.wav')
+        surface.PlaySound("button_click.wav")
         apply_func()
     end
 end
