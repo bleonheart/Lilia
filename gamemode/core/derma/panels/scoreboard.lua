@@ -266,11 +266,42 @@ function PANEL:addPlayer(ply, parent)
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
         if #opts > 0 then
-            local menu = lia.derma.dermaMenu()
+            local frame = vgui.Create("liaFrame")
+            frame:SetSize(200, 300)
+            frame:Center()
+            frame:MakePopup()
+            frame:SetTitle(L("sbOptions"))
+            frame:LiteMode()
+
+            local scrollPanel = vgui.Create("liaScrollPanel", frame)
+            scrollPanel:Dock(FILL)
+            scrollPanel:DockMargin(5, 5, 5, 5)
+
             for _, o in ipairs(opts) do
-                menu:AddOption(L(o.name), o.func):SetImage(o.image)
+                local button = vgui.Create("liaButton", scrollPanel)
+                button:Dock(TOP)
+                button:DockMargin(5, 5, 5, 0)
+                button:SetTall(32)
+                button:SetText("")
+                button.Paint = function(self, w, h)
+                    if self:IsHovered() then
+                        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.button_hovered):Shape(lia.derma.SHAPE_IOS):Draw()
+                    else
+                        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.button):Shape(lia.derma.SHAPE_IOS):Draw()
+                    end
+                    local iconSize = 16
+                    if o.image then
+                        surface.SetDrawColor(lia.color.theme.text)
+                        surface.SetMaterial(Material(o.image))
+                        surface.DrawTexturedRect(8, (h - iconSize) / 2, iconSize, iconSize)
+                    end
+                    draw.SimpleText(L(o.name), "liaSmallFont", 32, h / 2, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                end
+                button.DoClick = function()
+                    o.func()
+                    frame:Remove()
+                end
             end
-            menu:Open()
         end
     end
     timer.Simple(0, function()
