@@ -23,6 +23,7 @@ function PANEL:Init()
     self.content.Paint = nil
     self.OnAction = function() end
     self.OnRightClick = function() end
+    self.customMenuOptions = {}
 end
 function PANEL:AddColumn(name, width, align, sortable)
     table.insert(self.columns, {
@@ -133,11 +134,11 @@ function PANEL:CreateRow(rowIndex, rowData)
         self.selectedRow = rowIndex
         self.OnRightClick(rowData)
         local menu = lia.derma.dermaMenu()
-        for i, column in ipairs(self.columns) do
-            menu:AddOption(L("copy") .. " " .. column.name, function() SetClipboardText(tostring(rowData[i])) end)
+        for _, option in ipairs(self.customMenuOptions) do
+            menu:AddOption(option.text, function() option.callback(rowData, rowIndex) end, option.icon)
         end
-        menu:AddSpacer()
-        menu:AddOption(L("deleteRow"), function() self:RemoveRow(rowIndex) end, "icon16/delete.png")
+        if #self.customMenuOptions == 0 then menu:AddOption(L("adminStickNoOptions"), function() end) end
+        menu:Open()
     end
     local xPos = 0
     for i, column in ipairs(self.columns) do
@@ -245,6 +246,24 @@ function PANEL:SetAction(func)
 end
 function PANEL:SetRightClickAction(func)
     self.OnRightClick = func
+end
+function PANEL:AddMenuOption(text, callback, icon)
+    table.insert(self.customMenuOptions, {
+        text = text,
+        callback = callback,
+        icon = icon
+    })
+end
+function PANEL:RemoveMenuOption(text)
+    for i, option in ipairs(self.customMenuOptions) do
+        if option.text == text then
+            table.remove(self.customMenuOptions, i)
+            break
+        end
+    end
+end
+function PANEL:ClearMenuOptions()
+    self.customMenuOptions = {}
 end
 function PANEL:Clear()
     self.rows = {}

@@ -1,4 +1,35 @@
-﻿local MODULE = MODULE
+local ActiveTickets = {}
+local function fixupProp(client, ent, mins, maxs)
+    local pos = ent:GetPos()
+    local down, up = ent:LocalToWorld(mins), ent:LocalToWorld(maxs)
+    local trD = util.TraceLine({
+        start = pos,
+        endpos = down,
+        filter = {ent, client}
+    })
+    local trU = util.TraceLine({
+        start = pos,
+        endpos = up,
+        filter = {ent, client}
+    })
+    if trD.Hit and trU.Hit then return end
+    if trD.Hit then ent:SetPos(pos + trD.HitPos - down) end
+    if trU.Hit then ent:SetPos(pos + trU.HitPos - up) end
+end
+local function tryFixPropPosition(client, ent)
+    local m, M = ent:OBBMins(), ent:OBBMaxs()
+    fixupProp(client, ent, Vector(m.x, 0, 0), Vector(M.x, 0, 0))
+    fixupProp(client, ent, Vector(0, m.y, 0), Vector(0, M.y, 0))
+    fixupProp(client, ent, Vector(0, 0, m.z), Vector(0, 0, M.z))
+end
+local function GetPlayerInfo(ply)
+    if not IsValid(ply) then return L("unknownPlayer") end
+    return string.format("%s (%s)", ply:Nick(), ply:SteamID64())
+end
+local function GetAdminInfo(admin)
+    if not IsValid(admin) then return L("console") end
+    return string.format("%s (%s)", admin:Nick(), admin:SteamID64())
+end
 function MODULE:PlayerSay(client, text)
     if client:getNetVar("liaGagged") then return "" end
     if text and string.sub(text, 1, 1) == "@" then
@@ -12,34 +43,10 @@ function MODULE:PlayerSpawn(client)
     if IsValid(client) and client:IsPlayer() then client:ConCommand("spawnmenu_reload") end
     lia.log.add(client, "playerSpawn")
 end
-local MODULE = MODULE
 function MODULE:PostPlayerLoadout(client)
     if client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("adminstick") end
 end
 net.Receive("liaSpawnMenuSpawnItem", function(_, client)
-    local function fixupProp(client, ent, mins, maxs)
-        local pos = ent:GetPos()
-        local down, up = ent:LocalToWorld(mins), ent:LocalToWorld(maxs)
-        local trD = util.TraceLine({
-            start = pos,
-            endpos = down,
-            filter = {ent, client}
-        })
-        local trU = util.TraceLine({
-            start = pos,
-            endpos = up,
-            filter = {ent, client}
-        })
-        if trD.Hit and trU.Hit then return end
-        if trD.Hit then ent:SetPos(pos + trD.HitPos - down) end
-        if trU.Hit then ent:SetPos(pos + trU.HitPos - up) end
-    end
-    local function tryFixPropPosition(client, ent)
-        local m, M = ent:OBBMins(), ent:OBBMaxs()
-        fixupProp(client, ent, Vector(m.x, 0, 0), Vector(M.x, 0, 0))
-        fixupProp(client, ent, Vector(0, m.y, 0), Vector(0, M.y, 0))
-        fixupProp(client, ent, Vector(0, 0, m.z), Vector(0, 0, M.z))
-    end
     local id = net.ReadString()
     if not IsValid(client) or not id or not client:hasPrivilege("canUseItemSpawner") then return end
     local startPos, dir = client:EyePos(), client:GetAimVector()
@@ -78,7 +85,6 @@ net.Receive("liaSpawnMenuGiveItem", function(_, client)
     targetChar:getInv():add(id)
     lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
 end)
-local MODULE = MODULE
 local function SendLogs(client, categorizedLogs)
     lia.net.writeBigTable(client, "liaSendLogs", categorizedLogs)
 end
@@ -107,21 +113,41 @@ local function ReadLogEntries(category)
     return d
 end
 net.Receive("liaSendLogsRequest", function(_, client)
-    if not CanPlayerSeeLog(client) then return end
+    if not CanPlayerSeeLog(client) then
+        print("Logs request denied for", client:Nick(), "- no permission")
+        return
+    end
+
+    print("Logs request received from", client:Nick())
+
     local categories = {}
     for _, v in pairs(lia.log.types) do
         categories[v.category or L("uncategorized")] = true
     end
+
     local catList = {}
     for k in pairs(categories) do
-        if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then catList[#catList + 1] = k end
+        if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then
+            catList[#catList + 1] = k
+        end
     end
+
+    print("Available categories for", client:Nick() .. ":", table.Count(catList))
+
     local logsByCategory = {}
     local function fetch(i)
-        if i > #catList then return SendLogs(client, logsByCategory) end
+        if i > #catList then
+            print("Sending logs to", client:Nick(), "- categories:", table.Count(logsByCategory))
+            return SendLogs(client, logsByCategory)
+        end
         local cat = catList[i]
         ReadLogEntries(cat):next(function(entries)
-            if #entries > 0 then logsByCategory[cat] = entries end
+            if #entries > 0 then
+                logsByCategory[cat] = entries
+                print("Category", cat, "has", #entries, "entries")
+            else
+                print("Category", cat, "has no entries")
+            end
             fetch(i + 1)
         end)
     end
@@ -228,7 +254,7 @@ function MODULE:OnPlayerObserve(client, state)
 end
 function MODULE:TicketSystemClaim(admin, requester)
     lia.db.count("ticketclaims", "adminSteamID = " .. lia.db.convertDataType(admin:SteamID())):next(function(count) lia.log.add(admin, "ticketClaimed", requester:Name(), count) end)
-    local ticket = MODULE.ActiveTickets[requester:SteamID()]
+    local ticket = ActiveTickets[requester:SteamID()]
     lia.db.insertTable({
         timestamp = os.date("%Y-%m-%d %H:%M:%S"),
         requester = requester:Nick(),
@@ -237,126 +263,15 @@ function MODULE:TicketSystemClaim(admin, requester)
         adminSteamID = admin:SteamID(),
         message = ticket and ticket.message or ""
     }, nil, "ticketclaims")
-    lia.discord.relayMessage({
-        title = L("discordTicketSystemTitle"),
-        description = L("discordTicketSystemClaimedDescription"),
-        color = 3447003,
-        fields = {
-            {
-                name = L("discordTicketSystemStaffMember"),
-                value = GetAdminInfo(admin),
-                inline = true
-            },
-            {
-                name = L("discordTicketSystemRequester"),
-                value = GetPlayerInfo(requester),
-                inline = true
-            },
-            {
-                name = L("discordTicketSystemMessage"),
-                value = ticket and ticket.message or L("noMessage"),
-                inline = false
-            }
-        }
-    })
-end
-local function GetPlayerInfo(ply)
-    if not IsValid(ply) then return L("unknownPlayer") end
-    return string.format("%s (%s)", ply:Nick(), ply:SteamID64())
-end
-local function GetAdminInfo(admin)
-    if not IsValid(admin) then return L("console") end
-    return string.format("%s (%s)", admin:Nick(), admin:SteamID64())
 end
 function MODULE:TicketSystemClose(admin, requester)
     lia.db.count("ticketclaims", "adminSteamID = " .. lia.db.convertDataType(admin:SteamID())):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
-    lia.discord.relayMessage({
-        title = L("discordTicketSystemTitle"),
-        description = L("discordTicketSystemClosedDescription"),
-        color = 3447003,
-        fields = {
-            {
-                name = L("discordTicketSystemStaffMember"),
-                value = GetAdminInfo(admin),
-                inline = true
-            },
-            {
-                name = L("discordTicketSystemRequester"),
-                value = GetPlayerInfo(requester),
-                inline = true
-            },
-            {
-                name = L("discordTicketSystemOriginalMessage"),
-                value = message or L("discordTicketSystemNoMessageProvided"),
-                inline = false
-            }
-        }
-    })
 end
 function MODULE:WarningIssued(admin, target, reason, index)
     lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
-    lia.discord.relayMessage({
-        title = L("discordWarningSystemTitle"),
-        description = L("discordWarningSystemIssuedDescription"),
-        color = 16776960,
-        fields = {
-            {
-                name = L("discordWarningSystemAdmin"),
-                value = GetAdminInfo(admin),
-                inline = true
-            },
-            {
-                name = L("discordWarningSystemTargetPlayer"),
-                value = GetPlayerInfo(target),
-                inline = true
-            },
-            {
-                name = L("discordWarningSystemReason"),
-                value = reason or L("discordWarningSystemNoReasonSpecified"),
-                inline = false
-            },
-            {
-                name = L("discordWarningSystemWarningCount"),
-                value = tostring(count or 1),
-                inline = true
-            }
-        }
-    })
 end
 function MODULE:WarningRemoved(admin, target, warning, index)
     lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningRemoved", target, warning, count, index) end)
-    lia.discord.relayMessage({
-        title = L("discordWarningSystemTitle"),
-        description = L("discordWarningSystemRemovedDescription"),
-        color = 16776960,
-        fields = {
-            {
-                name = L("discordWarningSystemAdmin"),
-                value = GetAdminInfo(admin),
-                inline = true
-            },
-            {
-                name = L("discordWarningSystemTargetPlayer"),
-                value = GetPlayerInfo(target),
-                inline = true
-            },
-            {
-                name = L("discordWarningSystemRemovedWarningReason"),
-                value = warning and warning.reason or L("discordWarningSystemNoReasonSpecified"),
-                inline = false
-            },
-            {
-                name = L("discordWarningSystemWarningIndex"),
-                value = tostring(index or L("discordWarningSystemUnknown")),
-                inline = true
-            },
-            {
-                name = L("discordWarningSystemOriginalWarner"),
-                value = warning and warning.admin or L("discordWarningSystemUnknown"),
-                inline = true
-            }
-        }
-    })
 end
 function MODULE:ItemTransfered(context)
     local client = context.client
@@ -1066,8 +981,6 @@ end
 function GM:CanPlayerUseChar(client)
     if GetGlobalBool("characterSwapLock", false) and not client:hasPrivilege("canBypassCharacterLock") then return false, L("serverEventCharLock") end
 end
-local MODULE = MODULE
-MODULE.ActiveTickets = MODULE.ActiveTickets or {}
 local function buildClaimTable(rows)
     local caseclaims = {}
     for _, row in ipairs(rows or {}) do
@@ -1111,32 +1024,14 @@ function MODULE:GetTicketsByRequester(steamID)
         return tickets
     end)
 end
-local function GetPlayerInfo(ply)
-    if not IsValid(ply) then return L("unknownPlayer") end
-    return string.format("%s (%s)", ply:Nick(), ply:SteamID64())
-end
-local function GetAdminInfo(admin)
-    if not IsValid(admin) then return L("console") end
-    return string.format("%s (%s)", admin:Nick(), admin:SteamID64())
-end
-function MODULE:TicketSystemCreated(requester, message)
-    lia.discord.relayMessage({
-        title = L("discordTicketSystemTitle"),
-        description = L("discordTicketSystemCreatedDescription"),
-        color = 3447003,
-        fields = {
-            {
-                name = L("discordTicketSystemRequester"),
-                value = GetPlayerInfo(requester),
-                inline = true
-            },
-            {
-                name = L("discordTicketSystemMessage"),
-                value = message or L("discordTicketSystemNoMessageProvided"),
-                inline = false
-            }
-        }
-    })
+function MODULE:OnReloaded(requester, message)
+    for steamID, ticket in pairs(ActiveTickets) do
+        ActiveTickets[steamID] = nil
+    end
+    timer.Simple(0.05, function()
+        net.Start("liaClearAllTicketFrames")
+        net.Broadcast()
+    end)
 end
 function MODULE:PlayerDisconnected(client)
     for _, v in player.Iterator() do
@@ -1146,7 +1041,7 @@ function MODULE:PlayerDisconnected(client)
             net.Send(v)
         end
     end
-    MODULE.ActiveTickets[client:SteamID()] = nil
+    ActiveTickets[client:SteamID()] = nil
 end
 function MODULE:SendPopup(noob, message)
     for _, v in player.Iterator() do
@@ -1160,7 +1055,7 @@ function MODULE:SendPopup(noob, message)
     end
     if IsValid(noob) and noob:IsPlayer() then
         local requesterSteamID = noob:SteamID()
-        MODULE.ActiveTickets[requesterSteamID] = {
+        ActiveTickets[requesterSteamID] = {
             timestamp = os.time(),
             requester = requesterSteamID,
             admin = noob.CaseClaimed and IsValid(noob.CaseClaimed) and noob.CaseClaimed:SteamID() or nil,
@@ -1171,11 +1066,10 @@ function MODULE:SendPopup(noob, message)
         timer.Remove("ticketsystem-" .. requesterSteamID)
         timer.Create("ticketsystem-" .. requesterSteamID, 60, 1, function()
             if IsValid(noob) and noob:IsPlayer() then noob.CaseClaimed = nil end
-            MODULE.ActiveTickets[requesterSteamID] = nil
+            ActiveTickets[requesterSteamID] = nil
         end)
     end
 end
-local MODULE = MODULE
 net.Receive("liaViewClaims", function(_, client)
     local sid = net.ReadString()
     MODULE:GetAllCaseClaims():next(function(caseclaims)
@@ -1201,7 +1095,7 @@ net.Receive("liaTicketSystemClaim", function(_, client)
             end
         end
         local ticketMessage = ""
-        local t = MODULE.ActiveTickets[requester:SteamID()]
+        local t = ActiveTickets[requester:SteamID()]
         if t then
             ticketMessage = t.message or ""
             t.admin = client:SteamID()
@@ -1227,12 +1121,12 @@ net.Receive("liaTicketSystemClose", function(_, client)
         end
     end
     local ticketMessage = ""
-    local t = MODULE.ActiveTickets[requester:SteamID()]
+    local t = ActiveTickets[requester:SteamID()]
     if t then ticketMessage = t.message or "" end
     hook.Run("TicketSystemClose", client, requester, ticketMessage)
     hook.Run("OnTicketClosed", client, requester, ticketMessage)
     requester.CaseClaimed = nil
-    MODULE.ActiveTickets[requester:SteamID()] = nil
+    ActiveTickets[requester:SteamID()] = nil
 end)
 net.Receive("liaRequestActiveTickets", function(_, client)
     if not (client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty()) then return end
@@ -1259,7 +1153,6 @@ net.Receive("liaRequestTicketsCount", function(_, client)
         net.Send(client)
     end)
 end)
-local MODULE = MODULE
 function MODULE:GetWarnings(charID)
     local condition = "charID = " .. lia.db.convertDataType(charID)
     return lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID"}, "warnings", condition):next(function(res) return res.results or {} end)

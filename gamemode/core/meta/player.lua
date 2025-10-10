@@ -855,10 +855,25 @@ else
             local spos = vector:ToScreen()
             local howclose = math.Round(dist / 40)
             if spos.visible then
-                render.SuppressEngineLighting(true)
                 surface.SetFont("liaMediumFont")
-                draw.DrawText(name .. "\n" .. L("meters", howclose) .. "\n", "liaMediumFont", spos.x, spos.y, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-                render.SuppressEngineLighting(false)
+                local nameText = name
+                local metersText = L("meters", howclose)
+                local nameTw, nameTh = surface.GetTextSize(nameText)
+                local metersTw, metersTh = surface.GetTextSize(metersText)
+                local containerTw = math.max(nameTw, metersTw)
+                local containerTh = nameTh + metersTh + 10
+                local bx, by = math.Round(spos.x - containerTw * 0.5 - 18), math.Round(spos.y - 12)
+                local bw, bh = containerTw + 36, containerTh + 24
+                local theme = lia.color.theme or {background_panelpopup = Color(30, 30, 30, 180), theme = Color(255, 255, 255), text = Color(255, 255, 255)}
+                local fadeAlpha = 1
+                local headerColor = Color(theme.background_panelpopup.r, theme.background_panelpopup.g, theme.background_panelpopup.b, math.Clamp(theme.background_panelpopup.a * fadeAlpha, 0, 255))
+                local accentColor = Color(theme.theme.r, theme.theme.g, theme.theme.b, math.Clamp(theme.theme.a * fadeAlpha, 0, 255))
+                local textColor = Color(theme.text.r, theme.text.g, theme.text.b, math.Clamp(theme.text.a * fadeAlpha, 0, 255))
+                lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
+                lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
+                draw.SimpleText(nameText, "liaMediumFont", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+                draw.SimpleText(metersText, "liaMediumFont", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
             end
             if howclose <= 3 then RunConsoleCommand("weighpoint_stop") end
         end)
@@ -891,7 +906,25 @@ else
                     surface.SetMaterial(logoMaterial)
                     surface.DrawTexturedRect(spos.x - logoSize / 2, spos.y - logoSize / 2 - 40, logoSize, logoSize)
                 end
-                draw.DrawText(name .. "\n" .. L("meters", howClose), "liaBigFont", spos.x, spos.y - 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
+                surface.SetFont("LiliaFont.40")
+                local nameText = name
+                local metersText = L("meters", howClose)
+                local nameTw, nameTh = surface.GetTextSize(nameText)
+                local metersTw, metersTh = surface.GetTextSize(metersText)
+                local containerTw = math.max(nameTw, metersTw)
+                local containerTh = nameTh + metersTh + 10
+                local bx, by = math.Round(spos.x - containerTw * 0.5 - 18), math.Round(spos.y - 12)
+                local bw, bh = containerTw + 36, containerTh + 24
+                local theme = lia.color.theme or {background_panelpopup = Color(30, 30, 30, 180), theme = Color(255, 255, 255), text = Color(255, 255, 255)}
+                local fadeAlpha = 1
+                local headerColor = Color(theme.background_panelpopup.r, theme.background_panelpopup.g, theme.background_panelpopup.b, math.Clamp(theme.background_panelpopup.a * fadeAlpha, 0, 255))
+                local accentColor = Color(theme.theme.r, theme.theme.g, theme.theme.b, math.Clamp(theme.theme.a * fadeAlpha, 0, 255))
+                local textColor = Color(theme.text.r, theme.text.g, theme.text.b, math.Clamp(theme.text.a * fadeAlpha, 0, 255))
+                lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
+                lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
+                draw.SimpleText(nameText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+                draw.SimpleText(metersText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
             end
             if howClose <= 3 then RunConsoleCommand("waypoint_withlogo_stop_" .. waypointID) end
         end)

@@ -1,8 +1,7 @@
 ﻿local PANEL = {}
 function PANEL:configureSteps()
-    self:addStep(vgui.Create("liaCharacterFaction"))
-    self:addStep(vgui.Create("liaCharacterModel"))
     self:addStep(vgui.Create("liaCharacterBiography"))
+    self:addStep(vgui.Create("liaCharacterModel"))
     hook.Run("ConfigureCharacterCreationSteps", self)
     local keys = table.GetKeys(self.steps)
     table.sort(keys)

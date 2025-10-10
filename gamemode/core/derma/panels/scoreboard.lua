@@ -272,11 +272,9 @@ function PANEL:addPlayer(ply, parent)
             frame:MakePopup()
             frame:SetTitle(L("sbOptions"))
             frame:LiteMode()
-
             local scrollPanel = vgui.Create("liaScrollPanel", frame)
             scrollPanel:Dock(FILL)
             scrollPanel:DockMargin(5, 5, 5, 5)
-
             for _, o in ipairs(opts) do
                 local button = vgui.Create("liaButton", scrollPanel)
                 button:Dock(TOP)

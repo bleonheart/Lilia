@@ -283,7 +283,6 @@ local SHADERS_GMA = [========[R01BRAOHS2tdVNwrAMQWx2gAAAAAAFJORFhfMTc1Nzg3Nzk1Ng
 do
     local DECODED_SHADERS_GMA = util.Base64Decode(SHADERS_GMA)
     if not DECODED_SHADERS_GMA or #DECODED_SHADERS_GMA == 0 then
-        print(L("failedToLoadShaders"))
         return
     end
     file.Write("rndx_shaders_" .. SHADERS_VERSION .. ".gma", DECODED_SHADERS_GMA)
@@ -982,17 +981,14 @@ end
 function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
     defaults = defaults or {}
     local count = table.Count(argTypes)
-    local frameW, frameH = 600, 300 + count * 85
+    local frameW, frameH = 600, 450 + count * 120
     local frame = vgui.Create("liaFrame")
-    frame:SetTitle("")
     frame:SetSize(frameW, frameH)
     frame:Center()
     frame:MakePopup()
     frame:ShowCloseButton(false)
-    frame.Paint = function(self, w, h)
-        derma.SkinHook("Paint", "Frame", self, w, h)
-        draw.SimpleText(title or "", "liaMediumFont", w / 2, 10, Color(255, 255, 255), TEXT_ALIGN_CENTER)
-    end
+    frame:SetTitle("")
+    frame:SetCenterTitle(title or L("enterArguments"))
     local scroll = vgui.Create("liaScrollPanel", frame)
     scroll:Dock(FILL)
     scroll:DockMargin(10, 40, 10, 10)
@@ -1040,7 +1036,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
         local panel = vgui.Create("DPanel", scroll)
         panel:Dock(TOP)
         panel:DockMargin(0, 0, 0, 5)
-        panel:SetTall(70)
+        panel:SetTall(100)
         panel.Paint = nil
         local label = vgui.Create("DLabel", panel)
         label:SetFont("liaSmallFont")
@@ -1086,12 +1082,12 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
             if isBool then
                 ctrlH, ctrlW = 22, 22
             else
-                ctrlH, ctrlW = 30, w * 0.85
+                ctrlH, ctrlW = 60, w * 0.85
             end
             local totalW = textW + 10 + ctrlW
             local xOff = (w - totalW) / 2
             label:SetPos(xOff, (h - label:GetTall()) / 2)
-            ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2)
+            ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2 - 6)
             ctrl:SetSize(ctrlW, ctrlH)
         end
         controls[name] = {
@@ -1131,10 +1127,10 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
                 ok = true
             elseif ctl.GetSelected then
                 local txt = select(1, ctl:GetSelected())
-                ok = txt and txt ~= ""
+                ok = txt and txt ~= "" and txt ~= "Select..." and txt ~= "Choose..."
             elseif ctl.GetValue then
                 local val = ctl:GetValue()
-                ok = val and val ~= ""
+                ok = val ~= nil and val ~= "" and val ~= "0"
             end
             if not ok then
                 submit:SetEnabled(false)
@@ -1478,6 +1474,8 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
     dropdown:Dock(TOP)
     dropdown:DockMargin(20, 20, 20, 20)
     dropdown:SetTall(30)
+    dropdown:SetMouseInputEnabled(true)
+    dropdown:SetKeyboardInputEnabled(true)
     if istable(options) then
         for _, option in ipairs(options) do
             if istable(option) then
@@ -1495,6 +1493,22 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
         end
     end
     dropdown:PostInit()
+    if #options > 0 then
+        local firstOption = options[1]
+        if istable(firstOption) then
+            dropdown:ChooseOption(firstOption[1])
+            dropdown.selectedText = firstOption[1]
+            dropdown.selectedData = firstOption[2]
+        else
+            dropdown:ChooseOption(tostring(firstOption))
+            dropdown.selectedText = tostring(firstOption)
+        end
+    end
+    dropdown.OnSelect = function(index, text, data)
+        dropdown.selectedText = text
+        dropdown.selectedData = data
+        dropdown.selected = text
+    end
     local buttonPanel = vgui.Create("Panel", frame)
     buttonPanel:Dock(BOTTOM)
     buttonPanel:DockMargin(20, 10, 20, 20)
@@ -1504,8 +1518,17 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
     submitBtn:SetWide(100)
     submitBtn:SetTxt(L("select"))
     submitBtn.DoClick = function()
-        local selectedText = dropdown:GetValue()
-        local selectedData = dropdown:GetSelectedData()
+        local selectedText = dropdown.selectedText or dropdown:GetValue()
+        local selectedData = dropdown.selectedData or dropdown:GetSelectedData()
+        if not selectedText and #options > 0 then
+            local firstOption = options[1]
+            if istable(firstOption) then
+                selectedText = firstOption[1]
+                selectedData = firstOption[2]
+            else
+                selectedText = tostring(firstOption)
+            end
+        end
         if callback then
             if selectedData ~= nil then
                 callback(selectedText, selectedData)
@@ -1529,7 +1552,7 @@ end
 function lia.derma.requestString(title, description, callback, defaultValue, maxLength)
     if IsValid(lia.derma.menuRequestString) then lia.derma.menuRequestString:Remove() end
     local frame = vgui.Create("liaFrame")
-    frame:SetSize(350, 160)
+    frame:SetSize(600, 300)
     frame:Center()
     frame:MakePopup()
     frame:SetTitle("")
@@ -1577,7 +1600,7 @@ end
 function lia.derma.requestOptions(title, options, callback, defaults)
     if IsValid(lia.derma.menuRequestOptions) then lia.derma.menuRequestOptions:Remove() end
     local frame = vgui.Create("liaFrame")
-    frame:SetSize(400, 300)
+    frame:SetSize(500, 400)
     frame:Center()
     frame:MakePopup()
     frame:SetTitle("")

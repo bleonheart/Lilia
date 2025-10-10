@@ -5,7 +5,7 @@ function PANEL:Init()
     self.faction:Dock(TOP)
     self.faction:PostInit()
     self.faction:DockMargin(0, 4, 0, 0)
-    self.faction:SetTall(40)
+    self.faction:SetTall(48)
     self.faction.Paint = function(p, w, h)
         lia.util.drawBlur(p)
         surface.SetDrawColor(0, 0, 0, 100)
@@ -102,14 +102,7 @@ function PANEL:onFactionSelected(fac)
     lia.gui.character:clickSound()
 end
 function PANEL:shouldSkip()
-    local availableFactions = 0
-    for _, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
-        if lia.faction.hasWhitelist(fac.index) then
-            if fac.uniqueID == "staff" then continue end
-            availableFactions = availableFactions + 1
-        end
-    end
-    return availableFactions == 1
+    return true
 end
 function PANEL:onSkip()
     local id = self.faction:GetSelectedData()

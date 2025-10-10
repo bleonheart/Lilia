@@ -30,6 +30,7 @@ lia.flag.add("e", "flagSpawnProps")
 lia.flag.add("n", "flagSpawnNpcs")
 lia.flag.add("Z", "flagInviteToYourFaction")
 lia.flag.add("X", "flagInviteToYourClass")
+lia.flag.add("V", "flagFactionRoster")
 lia.flag.add("p", "flagPhysgun", function(client, isGiven)
     if isGiven then
         client:Give("weapon_physgun")

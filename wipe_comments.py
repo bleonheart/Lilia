@@ -7,6 +7,7 @@ Removes both single-line (--) and multi-line (--[[ ]]) comments.
 import os
 import re
 import sys
+import subprocess
 
 def remove_comments(content):
     """Remove Lua comments from content."""
@@ -37,6 +38,24 @@ def remove_comments(content):
         i += 1
     
     return '\n'.join(cleaned_lines)
+
+def run_glualint_pretty_print(target_dir):
+    """Run glualint pretty-print on the target directory."""
+    try:
+        print(f"Running glualint pretty-print on {target_dir}...")
+        result = subprocess.run(['glualint', 'pretty-print', target_dir],
+                              capture_output=True, text=True, check=True)
+        print("glualint pretty-print completed successfully")
+        if result.stdout:
+            print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running glualint pretty-print: {e}")
+        if e.stdout:
+            print(f"stdout: {e.stdout}")
+        if e.stderr:
+            print(f"stderr: {e.stderr}")
+    except FileNotFoundError:
+        print("Error: glualint not found. Make sure it's installed and in your PATH.")
 
 def process_file(filepath):
     """Process a single file."""

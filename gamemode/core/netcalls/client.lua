@@ -298,7 +298,7 @@ lia.net.readBigTable("liaSendTableUI", function(data) lia.util.CreateTableUI(dat
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()
-    net.ReadString()
+    local subTitle = net.ReadString()
     local options = net.ReadTable()
     local limit = net.ReadUInt(32)
     lia.derma.requestOptions(L(titleKey), options, function(selectedOptions)
@@ -365,7 +365,7 @@ net.Receive("liaRequestDropdown", function()
     local titleKey = net.ReadString()
     net.ReadString()
     local options = net.ReadTable()
-    lia.derma.requestDropdown(L(titleKey), options, function(selectedText)
+    lia.derma.requestDropdown(L(titleKey), options, function(selectedText, selectedData)
         if selectedText == false then
             net.Start("liaRequestDropdownCancel")
             net.WriteUInt(id, 32)
@@ -374,6 +374,11 @@ net.Receive("liaRequestDropdown", function()
             net.Start("liaRequestDropdown")
             net.WriteUInt(id, 32)
             net.WriteString(selectedText)
+            if selectedData ~= nil then
+                net.WriteString(tostring(selectedData))
+            else
+                net.WriteString("")
+            end
             net.SendToServer()
         end
     end)
@@ -382,7 +387,7 @@ net.Receive("liaArgumentsRequest", function()
     local id = net.ReadUInt(32)
     local title = net.ReadString()
     local fields = net.ReadTable()
-    lia.util.requestArguments(title, fields, function(success, data)
+    lia.derma.requestArguments(title, fields, function(success, data)
         if success then
             net.Start("liaArgumentsRequest")
             net.WriteUInt(id, 32)
