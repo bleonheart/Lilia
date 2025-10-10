@@ -293,7 +293,7 @@ function MODULE:PopulateAdminTabs(pages)
                             end
                         end
 
-                        searchBox.OnChange = function() populate(searchBox:GetValue()) end
+                        search.OnChange = function() populate(search:GetValue()) end
                         populate("")
                         function list:OnRowRightClick(_, line)
                             if not IsValid(line) then return end
