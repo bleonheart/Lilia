@@ -298,7 +298,7 @@ lia.net.readBigTable("liaSendTableUI", function(data) lia.util.CreateTableUI(dat
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()
-    local subTitle = net.ReadString()
+    local _ = net.ReadString()
     local options = net.ReadTable()
     local limit = net.ReadUInt(32)
     lia.derma.requestOptions(L(titleKey), options, function(selectedOptions)

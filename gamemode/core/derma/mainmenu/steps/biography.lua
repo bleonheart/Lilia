@@ -6,7 +6,7 @@ function PANEL:Init()
         lbl:Dock(TOP)
         lbl:DockMargin(0, 0, 0, 8)
         lbl:SetTall(32)
-        lbl.Paint = function(_, w, h) draw.SimpleText(L(key):upper(), "liaMediumFont", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+        lbl.Paint = function(_, _, h) draw.SimpleText(L(key):upper(), "liaMediumFont", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
         return lbl
     end
     self.factionLabel = makeLabel("faction")
@@ -37,7 +37,7 @@ function PANEL:makeFactionComboBox()
     combo:PostInit()
     combo:DockMargin(0, 8, 0, 12)
     combo:SetTall(48)
-    combo.Paint = function(p, w, h)
+    combo.Paint = function(_, w, h)
         surface.SetDrawColor(0, 0, 0, 100)
         surface.DrawRect(0, 0, w, h)
     end
@@ -63,7 +63,7 @@ function PANEL:addAttributes()
         lbl:Dock(TOP)
         lbl:DockMargin(0, 0, 0, 8)
         lbl:SetTall(32)
-        lbl.Paint = function(_, w, h) draw.SimpleText(L(key):upper(), "liaMediumFont", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+        lbl.Paint = function(_, _, h) draw.SimpleText(L(key):upper(), "liaMediumFont", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
         return lbl
     end
     local hasAttributes = false

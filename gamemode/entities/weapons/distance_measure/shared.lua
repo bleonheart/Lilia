@@ -24,7 +24,6 @@ function SWEP:PrimaryAttack()
     if not self.StartPos then
         self.StartPos = tr.HitPos
     else
-        local distance = self.StartPos:Distance(tr.HitPos)
         self.StartPos = nil
     end
 end

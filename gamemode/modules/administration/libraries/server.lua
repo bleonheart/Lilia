@@ -22,14 +22,6 @@ local function tryFixPropPosition(client, ent)
     fixupProp(client, ent, Vector(0, m.y, 0), Vector(0, M.y, 0))
     fixupProp(client, ent, Vector(0, 0, m.z), Vector(0, 0, M.z))
 end
-local function GetPlayerInfo(ply)
-    if not IsValid(ply) then return L("unknownPlayer") end
-    return string.format("%s (%s)", ply:Nick(), ply:SteamID64())
-end
-local function GetAdminInfo(admin)
-    if not IsValid(admin) then return L("console") end
-    return string.format("%s (%s)", admin:Nick(), admin:SteamID64())
-end
 function MODULE:PlayerSay(client, text)
     if client:getNetVar("liaGagged") then return "" end
     if text and string.sub(text, 1, 1) == "@" then
@@ -1019,8 +1011,8 @@ function MODULE:GetTicketsByRequester(steamID)
         return tickets
     end)
 end
-function MODULE:OnReloaded(requester, message)
-    for steamID, ticket in pairs(ActiveTickets) do
+function MODULE:OnReloaded()
+    for steamID, _ in pairs(ActiveTickets) do
         ActiveTickets[steamID] = nil
     end
     timer.Simple(0.05, function()

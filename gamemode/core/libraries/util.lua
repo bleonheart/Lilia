@@ -459,7 +459,7 @@ else
             local line = listView:AddLine(unpack(lineData))
             line.rowData = row
         end
-        listView:AddMenuOption(L("copyRow"), function(rowData, rowIndex)
+        listView:AddMenuOption(L("copyRow"), function(rowData)
             local rowString = ""
             for key, value in pairs(rowData) do
                 value = tostring(value or L("na"))
@@ -469,7 +469,7 @@ else
             SetClipboardText(rowString)
         end)
         for _, option in ipairs(istable(options) and options or {}) do
-            listView:AddMenuOption(option.name and L(option.name) or option.name, function(rowData, rowIndex)
+            listView:AddMenuOption(option.name and L(option.name) or option.name, function(rowData)
                 if not option.net then return end
                 if option.ExtraFields then
                     local inputPanel = vgui.Create("DFrame")

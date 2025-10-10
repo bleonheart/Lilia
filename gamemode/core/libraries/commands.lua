@@ -779,7 +779,7 @@ else
             local panel = vgui.Create("DPanel", frame)
             panel:Dock(FILL)
             panel:DockMargin(10, 10, 10, 10)
-            panel.Paint = function(self, w, h) draw.SimpleText("This is a test frame opened via console command!", "DermaDefault", w / 2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+            panel.Paint = function(_, w, h) draw.SimpleText("This is a test frame opened via console command!", "DermaDefault", w / 2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
             frame:ShowAnimation()
         else
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
@@ -1450,7 +1450,7 @@ lia.command.add("demorequests", {
             client:notify("Opening request UI demo...")
             client:binaryQuestion("Would you like to see all the request UI demos?", "Yes, show me!", "No, thanks", false, function(confirmed)
                 if confirmed then
-                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, selectedData)
+                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, _)
                         if selected ~= nil then
                             client:requestOptions("Demo: Multi-Select Options", "Select your favorite activities (max 3):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
                                 if selectedOptions and #selectedOptions > 0 then
@@ -4131,25 +4131,6 @@ lia.command.add("bot", {
         if not SERVER then return end
         lia.botCreator = client
         game.ConsoleCommand("bot\n")
-    end
-})
-lia.command.add("serverpassword", {
-    superAdminOnly = true,
-    desc = "serverpasswordDesc",
-    alias = {"svpassword", "getserverpassword"},
-    onRun = function(client)
-        if not IsValid(client) then
-            local cvar = GetConVar("sv_password")
-            local pw = cvar and cvar:GetString() or ""
-            return
-        end
-        local cvar = GetConVar("sv_password")
-        local pw = cvar and cvar:GetString() or ""
-        if not isstring(pw) or pw == "" then return L("serverPasswordNotSet") end
-        net.Start("liaProvideServerPassword")
-        net.WriteString(pw)
-        net.Send(client)
-        return L("serverPasswordSent")
     end
 })
 lia.command.add("charsetattrib", {

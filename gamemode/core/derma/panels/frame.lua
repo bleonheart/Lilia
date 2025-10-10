@@ -44,8 +44,8 @@ function PANEL:Init()
     end
     self.cls = vgui.Create("Button", self)
     self.cls:SetText("")
-    self.cls.Paint = function(self, w, h)
-        if self:IsHovered() then
+    self.cls.Paint = function(s, w, h)
+        if s:IsHovered() then
             lia.derma.rect(2, 2, w - 4, h - 4):Color(lia.color.theme.header_text):Draw()
         end
         draw.SimpleText("✕", "lia.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)

@@ -234,8 +234,8 @@ function MODULE:PopulateAdminTabs(pages)
                             list:AddColumn(col.name)
                             if col.field == L("steamID") then steamIDColumnIndex = i end
                         end
-                        list:AddMenuOption(L("copySteamID"), function(rowData, rowIndex) if steamIDColumnIndex then SetClipboardText(tostring(rowData[steamIDColumnIndex]) or "") end end, "icon16/page_copy.png")
-                        list:AddMenuOption(L("copyRow"), function(rowData, rowIndex)
+                        list:AddMenuOption(L("copySteamID"), function(rowData, _) if steamIDColumnIndex then SetClipboardText(tostring(rowData[steamIDColumnIndex]) or "") end end, "icon16/page_copy.png")
+                        list:AddMenuOption(L("copyRow"), function(rowData, _)
                             local rowString = ""
                             for i, column in ipairs(columns) do
                                 local header = column.name or L("columnWithNumber", i)
@@ -244,8 +244,8 @@ function MODULE:PopulateAdminTabs(pages)
                             end
                             SetClipboardText(string.sub(rowString, 1, -4))
                         end, "icon16/page_copy.png")
-                        list:AddMenuOption(L("wipeCharacter"), function(rowData, rowIndex) if rowData.CharID then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.CharID .. '"') end end, "icon16/user_delete.png")
-                        list:AddMenuOption(L("wipeCharacterOffline"), function(rowData, rowIndex) if rowData.CharID then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.CharID .. '"') end end, "icon16/user_delete.png")
+                        list:AddMenuOption(L("wipeCharacter"), function(rowData) if rowData.CharID then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.CharID .. '"') end end, "icon16/user_delete.png")
+                        list:AddMenuOption(L("wipeCharacterOffline"), function(rowData, _) if rowData.CharID then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.CharID .. '"') end end, "icon16/user_delete.png")
                         local function populate(filter)
                             list:Clear()
                             filter = string.lower(filter or "")
@@ -1608,12 +1608,12 @@ local function OpenLogsUI(panel, categorizedLogs)
         for _, col in ipairs(columns) do
             list:AddColumn(col.name)
         end
-        list:AddMenuOption(L("copySteamID"), function(rowData, rowIndex)
+        list:AddMenuOption(L("copySteamID"), function(rowData, _)
             if rowData[3] and rowData[3] ~= "" then
                 SetClipboardText(tostring(rowData[3]))
             end
         end, "icon16/page_copy.png")
-        list:AddMenuOption(L("copyLogMessage"), function(rowData, rowIndex)
+        list:AddMenuOption(L("copyLogMessage"), function(rowData, _)
             SetClipboardText(tostring(rowData[2] or ""))
         end, "icon16/page_copy.png")
         local currentPage = 1
@@ -1629,6 +1629,18 @@ local function OpenLogsUI(panel, categorizedLogs)
             prevButton:SetTextColor(currentPage <= 1 and Color(100, 100, 100) or Color(200, 200, 200))
             nextButton:SetTextColor(currentPage >= totalPages and Color(100, 100, 100) or Color(200, 200, 200))
         end
+        local function showCurrentPage()
+            list:Clear()
+            local startIndex = (currentPage - 1) * LOGS_PER_PAGE + 1
+            local endIndex = math.min(startIndex + LOGS_PER_PAGE - 1, #filteredLogs)
+            for i = startIndex, endIndex do
+                local log = filteredLogs[i]
+                if log then
+                    local line = list:AddLine(log.timestamp, log.message, log.steamID or "")
+                    line.rowData = log
+                end
+            end
+        end
         local function populate(filter)
             filter = string.lower(filter or "")
             filteredLogs = {}
@@ -1643,22 +1655,10 @@ local function OpenLogsUI(panel, categorizedLogs)
             updatePagination()
             showCurrentPage()
         end
-        local function showCurrentPage()
-            list:Clear()
-            local startIndex = (currentPage - 1) * LOGS_PER_PAGE + 1
-            local endIndex = math.min(startIndex + LOGS_PER_PAGE - 1, #filteredLogs)
-            for i = startIndex, endIndex do
-                local log = filteredLogs[i]
-                if log then
-                    local line = list:AddLine(log.timestamp, log.message, log.steamID or "")
-                    line.rowData = log
-                end
-            end
-        end
-        local function goToPage(page)
+        local function goToPage(_)
             local totalPages = getTotalPages()
-            if page >= 1 and page <= totalPages then
-                currentPage = page
+            if _ >= 1 and _ <= totalPages then
+                currentPage = _
                 updatePagination()
                 showCurrentPage()
             end
@@ -1677,6 +1677,7 @@ local function OpenLogsUI(panel, categorizedLogs)
             menu:Open()
         end
         populate("")
+        page:SetParent(sheet)
         sheet:AddSheet(category, page)
     end
     if sheet.tabs and #sheet.tabs > 0 then
@@ -2289,7 +2290,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
         end
         SetClipboardText(string.sub(rowString, 1, -4))
     end, "icon16/page_copy.png")
-    list:AddMenuOption(L("copySteamID"), function(rowData, rowIndex) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copySteamID"), function(rowData, _) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")

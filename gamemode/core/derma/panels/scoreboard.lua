@@ -281,17 +281,17 @@ function PANEL:addPlayer(ply, parent)
                 button:DockMargin(5, 5, 5, 0)
                 button:SetTall(32)
                 button:SetText("")
-                button.Paint = function(self, w, h)
-                    if self:IsHovered() then
+                button.Paint = function(s, w, h)
+                    if s:IsHovered() then
                         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.button_hovered):Shape(lia.derma.SHAPE_IOS):Draw()
                     else
                         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.button):Shape(lia.derma.SHAPE_IOS):Draw()
                     end
-                    local iconSize = 16
+                    local localIconSize = 16
                     if o.image then
                         surface.SetDrawColor(lia.color.theme.text)
                         surface.SetMaterial(Material(o.image))
-                        surface.DrawTexturedRect(8, (h - iconSize) / 2, iconSize, iconSize)
+                        surface.DrawTexturedRect(8, (h - localIconSize) / 2, localIconSize, localIconSize)
                     end
                     draw.SimpleText(L(o.name), "liaSmallFont", 32, h / 2, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
