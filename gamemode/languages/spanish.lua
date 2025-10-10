@@ -2860,4 +2860,5 @@ Recargar: Soltar]],
     uiLiliaFrameNotification = "¡Notificación de marco Lilia!",
     testArgsDesc = "Comando de prueba para solicitud de argumentos",
     demoRequestsDesc = "Demuestra todas las funciones de interfaz de usuario de solicitud disponibles",
+    maybeYouShouldntHaveCheated = "Tal vez no deberías haber hecho trampa",
 }

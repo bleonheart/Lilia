@@ -2903,4 +2903,5 @@ Reload: Drop]],
     themeCoral = "Coral",
     testArgsDesc = "Test command for argument prompt",
     demoRequestsDesc = "Demonstrates all available request UI functions",
+    maybeYouShouldntHaveCheated = "Maybe you shouldn't have cheated",
 }

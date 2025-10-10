@@ -2859,4 +2859,5 @@ Recharger : Lcher]],
     uiLiliaFrameNotification = "Notification de cadre Lilia !",
     testArgsDesc = "Commande de test pour l'invite d'arguments",
     demoRequestsDesc = "Démontre toutes les fonctions d'interface utilisateur de demande disponibles",
+    maybeYouShouldntHaveCheated = "Peut-être que tu n'aurais pas dû tricher",
 }

@@ -2863,4 +2863,5 @@ Nachladen: Fallenlassen]],
     uiLiliaFrameNotification = "Lilia Frame-Benachrichtigung!",
     testArgsDesc = "Testbefehl für Argumentaufforderung",
     demoRequestsDesc = "Demonstriert alle verfügbaren Anfrage-UI-Funktionen",
+    maybeYouShouldntHaveCheated = "Vielleicht hättest du nicht schummeln sollen",
 }

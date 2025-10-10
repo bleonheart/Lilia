@@ -2864,4 +2864,5 @@ Recarregar: Largar]],
     uiLiliaFrameNotification = "Notificação de frame Lilia!",
     testArgsDesc = "Comando de teste para prompt de argumentos",
     demoRequestsDesc = "Demonstra todas as funções de interface de usuário de solicitação disponíveis",
+    maybeYouShouldntHaveCheated = "Talvez você não deveria ter trapaceado",
 }
