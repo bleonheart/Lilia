@@ -1450,7 +1450,7 @@ lia.command.add("demorequests", {
             client:notify("Opening request UI demo...")
             client:binaryQuestion("Would you like to see all the request UI demos?", "Yes, show me!", "No, thanks", false, function(confirmed)
                 if confirmed then
-                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, _)
+                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
                         if selected ~= nil then
                             client:requestOptions("Demo: Multi-Select Options", "Select your favorite activities (max 3):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
                                 if selectedOptions and #selectedOptions > 0 then
