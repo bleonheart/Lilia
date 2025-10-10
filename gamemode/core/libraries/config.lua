@@ -566,6 +566,13 @@ lia.config.add("PunchLethality", "punchLethality", true, nil, {
     isGlobal = true,
     type = "Boolean"
 })
+lia.config.add("logsPerPage", "logsPerPage", 50, nil, {
+    desc = "logsPerPageDesc",
+    category = "categoryLogging",
+    type = "Int",
+    min = 10,
+    max = 200
+})
 lia.config.add("PunchRagdollTime", "punchRagdollTime", 25, nil, {
     desc = "punchRagdollTimeDesc",
     category = "attributes",
