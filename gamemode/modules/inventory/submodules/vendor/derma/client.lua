@@ -29,28 +29,20 @@ function PANEL:Init()
     self.vendorPanel:SetPos(sw * 0.5 - self.panelW - 16, self.y0)
     self.vendorPanel.items = self.vendorPanel:Add("liaScrollPanel")
     self.vendorPanel.items:Dock(FILL)
-    -- Add scoreboard-style background painting to the vendor items container
     self.vendorPanel.items.pnlCanvas.Paint = function(s, w, h)
-        -- Draw alternating row backgrounds like scoreboard
         local children = s:GetChildren()
         local yOffset = 0
-
         for i, child in ipairs(children) do
             if IsValid(child) and child:GetTall() > 0 then
                 local childH = child:GetTall()
-
-                -- Alternate between two background colors like scoreboard
                 if i % 2 == 1 then
                     surface.SetDrawColor(0, 0, 0, 120)
                 else
                     surface.SetDrawColor(0, 0, 0, 80)
                 end
                 surface.DrawRect(0, yOffset, w, childH)
-
-                -- Add subtle line at bottom of each row
                 surface.SetDrawColor(255, 255, 255, 50)
                 surface.DrawLine(0, yOffset + childH - 1, w, yOffset + childH - 1)
-
                 yOffset = yOffset + childH
             end
         end
@@ -60,30 +52,22 @@ function PANEL:Init()
     self.mePanel:SetPos(sw * 0.5 + 16, self.y0)
     self.mePanel.items = self.mePanel:Add("liaScrollPanel")
     self.mePanel.items:Dock(FILL)
-    -- Add scoreboard-style background painting to the player panel
     self.mePanel.Paint = function(s, w, h)
-        -- Draw alternating row backgrounds like scoreboard for the items inside
         local scrollPanel = s.items
         if IsValid(scrollPanel) and IsValid(scrollPanel.pnlCanvas) then
             local children = scrollPanel.pnlCanvas:GetChildren()
             local yOffset = 0
-
             for i, child in ipairs(children) do
                 if IsValid(child) and child:GetTall() > 0 then
                     local childH = child:GetTall()
-
-                    -- Alternate between two background colors like scoreboard
                     if i % 2 == 1 then
                         surface.SetDrawColor(0, 0, 0, 120)
                     else
                         surface.SetDrawColor(0, 0, 0, 80)
                     end
                     surface.DrawRect(0, yOffset, w, childH)
-
-                    -- Add subtle line at bottom of each row
                     surface.SetDrawColor(255, 255, 255, 50)
                     surface.DrawLine(0, yOffset + childH - 1, w, yOffset + childH - 1)
-
                     yOffset = yOffset + childH
                 end
             end
@@ -690,15 +674,11 @@ function PANEL:updateFactionChecked()
     end
 end
 function PANEL:PerformLayout(width, height)
-    -- Call parent PerformLayout first
     self.BaseClass.PerformLayout(self, width, height)
-
-    -- Ensure the close button is properly positioned on the right side
     if IsValid(self.cls) then
         self.cls:SetSize(20, 20)
         self.cls:SetPos(width - 22, 2)
     end
-
     if IsValid(self.leftPanel) then
         self.leftPanel:SetWide(width * 0.4)
     end

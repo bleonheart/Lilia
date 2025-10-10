@@ -1,6 +1,13 @@
 ﻿function MODULE:CanPlayerModifyConfig(client)
     return client:hasPrivilege("accessEditConfigurationMenu")
 end
+lia.config.add("logsPerPage", "Logs Per Page", 50, nil, {
+    desc = "Number of log entries to display per page in the administration logs interface",
+    category = L("categoryLogging"),
+    type = "Int",
+    min = 10,
+    max = 200
+})
 properties.Add("TogglePropBlacklist", {
     MenuLabel = L("togglePropBlacklist"),
     Order = 900,

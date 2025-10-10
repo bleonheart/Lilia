@@ -340,17 +340,13 @@ function MODULE:PopulateAdminTabs(pages)
             name = "logs",
             icon = "icon16/book_open.png",
             drawFunc = function(panel)
-                -- Store panel reference more persistently and globally
                 if not panel.liaLogsPanel then
                     panel.liaLogsPanel = panel
-                    liaLogsPanel = panel -- Set global reference
+                    liaLogsPanel = panel
                     panel:Clear()
                     panel:DockPadding(6, 6, 6, 6)
                     panel.Paint = nil
-
                     print("Sending logs request for", LocalPlayer():Nick())
-
-                    -- Send request for logs
                     net.Start("liaSendLogsRequest")
                     net.SendToServer()
                 end
@@ -1537,40 +1533,29 @@ function MODULE:OpenAdminStickUI(tgt)
     end
     menu:Open()
 end
--- Configuration: Number of logs to display per page
--- Can be overridden by server config if needed
 local LOGS_PER_PAGE = lia.config and lia.config.get("logsPerPage", 50) or 50
-
 local function OpenLogsUI(panel, categorizedLogs)
-    -- Debug: Log what we're receiving
     print("OpenLogsUI called with", table.Count(categorizedLogs) or 0, "categories")
-
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
-
-    -- Check if we have any logs to display
     if not categorizedLogs or table.Count(categorizedLogs) == 0 then
         local noLogsLabel = panel:Add("DLabel")
         noLogsLabel:Dock(FILL)
         noLogsLabel:SetText(L("noLogsAvailable"))
         noLogsLabel:SetTextColor(Color(150, 150, 150))
         noLogsLabel:SetFont("LiliaFont.20")
-        noLogsLabel:SetContentAlignment(5) -- Center alignment
+        noLogsLabel:SetContentAlignment(5)
         return
     end
-
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
-
     for category, logs in pairs(categorizedLogs) do
         print("Processing category:", category, "with", #logs, "logs")
-
         local page = vgui.Create("DPanel")
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
         page.Paint = nil
-
         local searchBox = page:Add("DTextEntry")
         searchBox:Dock(TOP)
         searchBox:DockMargin(0, 0, 0, 15)
@@ -1578,8 +1563,6 @@ local function OpenLogsUI(panel, categorizedLogs)
         searchBox:SetPlaceholderText(L("searchLogs"))
         searchBox:SetTextColor(Color(200, 200, 200))
         searchBox.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
-
-        -- Pagination controls container
         local paginationContainer = page:Add("DPanel")
         paginationContainer:Dock(BOTTOM)
         paginationContainer:DockMargin(0, 15, 0, 0)
@@ -1587,35 +1570,27 @@ local function OpenLogsUI(panel, categorizedLogs)
         paginationContainer.Paint = function(_, w, h)
             lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(0, 0, 0, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
         end
-
-        -- Previous page button
         local prevButton = paginationContainer:Add("DButton")
         prevButton:Dock(LEFT)
         prevButton:SetWide(80)
         prevButton:SetText(L("previousPage"))
         prevButton:SetFont("LiliaFont.16")
         prevButton:DockMargin(5, 5, 5, 5)
-
-        -- Page indicator
         local pageLabel = paginationContainer:Add("DLabel")
         pageLabel:Dock(FILL)
         pageLabel:DockMargin(10, 5, 10, 5)
         pageLabel:SetTextColor(Color(200, 200, 200))
         pageLabel:SetFont("LiliaFont.16")
-        pageLabel:SetContentAlignment(5) -- Center
-
-        -- Next page button
+        pageLabel:SetContentAlignment(5)
         local nextButton = paginationContainer:Add("DButton")
         nextButton:Dock(RIGHT)
         nextButton:SetWide(80)
         nextButton:SetText(L("nextPage"))
         nextButton:SetFont("LiliaFont.16")
         nextButton:DockMargin(5, 5, 5, 5)
-
         local list = page:Add("liaTable")
         list:Dock(FILL)
-        list:DockMargin(0, 0, 0, 10) -- Space for pagination
-
+        list:DockMargin(0, 0, 0, 10)
         local columns = {
             {
                 name = L("timestamp"),
@@ -1630,45 +1605,33 @@ local function OpenLogsUI(panel, categorizedLogs)
                 field = "steamID"
             }
         }
-
         for _, col in ipairs(columns) do
             list:AddColumn(col.name)
         end
-
         list:AddMenuOption(L("copySteamID"), function(rowData, rowIndex)
             if rowData[3] and rowData[3] ~= "" then
                 SetClipboardText(tostring(rowData[3]))
             end
         end, "icon16/page_copy.png")
-
         list:AddMenuOption(L("copyLogMessage"), function(rowData, rowIndex)
             SetClipboardText(tostring(rowData[2] or ""))
         end, "icon16/page_copy.png")
-
         local currentPage = 1
-        local filteredLogs = logs -- Will hold filtered results
-
+        local filteredLogs = logs
         local function getTotalPages()
             return math.max(1, math.ceil(#filteredLogs / LOGS_PER_PAGE))
         end
-
         local function updatePagination()
             local totalPages = getTotalPages()
             pageLabel:SetText(string.format(L("pageIndicator"), currentPage, totalPages))
-
             prevButton:SetDisabled(currentPage <= 1)
             nextButton:SetDisabled(currentPage >= totalPages)
-
-            -- Update button colors
             prevButton:SetTextColor(currentPage <= 1 and Color(100, 100, 100) or Color(200, 200, 200))
             nextButton:SetTextColor(currentPage >= totalPages and Color(100, 100, 100) or Color(200, 200, 200))
         end
-
         local function populate(filter)
             filter = string.lower(filter or "")
             filteredLogs = {}
-
-            -- Filter logs based on search
             for _, log in ipairs(logs) do
                 local msgMatch = string.find(string.lower(log.message), filter, 1, true)
                 local idMatch = log.steamID and string.find(string.lower(log.steamID), filter, 1, true)
@@ -1676,19 +1639,14 @@ local function OpenLogsUI(panel, categorizedLogs)
                     table.insert(filteredLogs, log)
                 end
             end
-
-            -- Reset to first page when filtering
             currentPage = 1
             updatePagination()
             showCurrentPage()
         end
-
         local function showCurrentPage()
             list:Clear()
-
             local startIndex = (currentPage - 1) * LOGS_PER_PAGE + 1
             local endIndex = math.min(startIndex + LOGS_PER_PAGE - 1, #filteredLogs)
-
             for i = startIndex, endIndex do
                 local log = filteredLogs[i]
                 if log then
@@ -1697,7 +1655,6 @@ local function OpenLogsUI(panel, categorizedLogs)
                 end
             end
         end
-
         local function goToPage(page)
             local totalPages = getTotalPages()
             if page >= 1 and page <= totalPages then
@@ -1706,59 +1663,42 @@ local function OpenLogsUI(panel, categorizedLogs)
                 showCurrentPage()
             end
         end
-
-        -- Button click handlers
         prevButton.DoClick = function()
             goToPage(currentPage - 1)
         end
-
         nextButton.DoClick = function()
             goToPage(currentPage + 1)
         end
-
         searchBox.OnChange = function() populate(searchBox:GetValue()) end
-
         function list:OnRowRightClick(_, line)
             if not IsValid(line) or not line.rowData then return end
             local menu = lia.derma.dermaMenu()
             menu:AddOption(L("noOptionsAvailable"), function() end)
             menu:Open()
         end
-
-        -- Initialize with all logs (no filter)
         populate("")
         sheet:AddSheet(category, page)
     end
-
-    -- Set active tab to first one
     if sheet.tabs and #sheet.tabs > 0 then
         sheet:SetActiveTab(1)
     end
 end
--- Global reference to track the active logs panel
 liaLogsPanel = liaLogsPanel or nil
-
 lia.net.readBigTable("liaSendLogs", function(categorizedLogs)
     if not categorizedLogs then
         chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         return
     end
-
-    -- Use the tracked logs panel if available, otherwise try to find it
     local logsPanel = liaLogsPanel
-
     if not IsValid(logsPanel) then
-        -- Fallback: search through panels if we don't have a tracked reference
         for _, panel in ipairs(vgui.GetWorldPanel():GetChildren()) do
             if IsValid(panel) and panel.liaLogsPanel then
                 logsPanel = panel.liaLogsPanel
-                -- Update global reference for future use
                 liaLogsPanel = logsPanel
                 break
             end
         end
     end
-
     if IsValid(logsPanel) then
         OpenLogsUI(logsPanel, categorizedLogs)
         print("Successfully updated logs panel with", table.Count(categorizedLogs) or 0, "categories")
@@ -2655,7 +2595,6 @@ function MODULE:TicketFrame(requester, message, claimed)
     if claimed and IsValid(claimed) and claimed:IsPlayer() then
         frm:SetTitle(L("ticketTitleClaimed", requester:Nick(), claimed:Nick()))
         if claimed == LocalPlayer() then
-            -- Player owns this ticket
         else
             frm.headerColor = Color(207, 0, 15)
         end

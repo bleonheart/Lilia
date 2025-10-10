@@ -60,12 +60,16 @@ net.Receive("liaKeybindServer", function(_, ply)
     if isRelease then
         if data.release and data.serverOnly then
             local success, err = pcall(data.release, player)
-            if not success then end
+            if not success then
+                lia.error("Keybind release callback error: " .. tostring(err))
+            end
         end
     else
         if data.callback and data.serverOnly then
             local success, err = pcall(data.callback, player)
-            if not success then end
+            if not success then
+                lia.error("Keybind callback error: " .. tostring(err))
+            end
         end
     end
 end)

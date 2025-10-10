@@ -117,23 +117,18 @@ net.Receive("liaSendLogsRequest", function(_, client)
         print("Logs request denied for", client:Nick(), "- no permission")
         return
     end
-
     print("Logs request received from", client:Nick())
-
     local categories = {}
     for _, v in pairs(lia.log.types) do
         categories[v.category or L("uncategorized")] = true
     end
-
     local catList = {}
     for k in pairs(categories) do
         if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then
             catList[#catList + 1] = k
         end
     end
-
     print("Available categories for", client:Nick() .. ":", table.Count(catList))
-
     local logsByCategory = {}
     local function fetch(i)
         if i > #catList then
