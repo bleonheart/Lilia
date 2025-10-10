@@ -469,7 +469,7 @@ else
             SetClipboardText(rowString)
         end)
         for _, option in ipairs(istable(options) and options or {}) do
-            listView:AddMenuOption(option.name and L(option.name) or option.name, function(rowData)
+            listView:AddMenuOption(option.name and L(option.name) or option.name, function()
                 if not option.net then return end
                 if option.ExtraFields then
                     local inputPanel = vgui.Create("DFrame")
