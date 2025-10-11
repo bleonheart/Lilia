@@ -14,10 +14,7 @@ function PANEL:Init()
     self.tabs:SetVisible(false)
     self.commandIndex = 0
     self.commands = lia.command.list
-    self.tabs.Paint = function(_, tabW, tabH)
-        lia.derma.rect(0, 0, tabW, tabH):Rad(8):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(3, 10):Draw()
-    end
-
+    self.tabs.Paint = function(_, tabW, tabH) lia.derma.rect(0, 0, tabW, tabH):Rad(8):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(3, 10):Draw() end
     self.arguments = {}
     self.scroll = self:Add("liaScrollPanel")
     self.scroll:SetPos(4, 31)
@@ -124,10 +121,7 @@ function PANEL:setActive(state)
                     btn:Dock(TOP)
                     btn:DockMargin(0, 0, 0, 2)
                     btn:SetTall(20)
-                    btn.Paint = function(_, bw, bh)
-                        lia.derma.rect(0, 0, bw, bh):Rad(6):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
-                    end
-
+                    btn.Paint = function(_, bw, bh) lia.derma.rect(0, 0, bw, bh):Rad(6):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw() end
                     btn.DoClick = function()
                         local syntax = L(cmdInfo.syntax or "")
                         self.text:SetText("/" .. cmdName .. " " .. syntax)
@@ -178,6 +172,7 @@ function PANEL:setActive(state)
                                     else
                                         lia.derma.rect(0, 0, bw, bh):Rad(6):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
                                     end
+
                                     if IsValid(btn.text) then btn.text:SetTextColor(isSel and ColorAlpha(lia.config.get("Color"), 255) or ColorAlpha(color_white, 200)) end
                                 end
 

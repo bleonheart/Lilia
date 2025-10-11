@@ -2057,7 +2057,6 @@ net.Receive("liaAllPks", function()
     end
 end)
 
-
 function OpenFlagsPanel(panel, data)
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
@@ -2182,7 +2181,6 @@ lia.net.readBigTable("liaAllFlags", function(data)
         flagsData = nil
     end
 end)
-
 
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end

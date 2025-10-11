@@ -5,21 +5,15 @@ end
 function ENT:Think()
     if not self.hasSetupVars then self:setupVars() end
     local curTime = CurTime()
-
-    -- Check if animation netvar has changed and we need to update
     local currentAnim = self:getNetVar("animation", "")
     if (self.lastAnimationCheck or "") ~= currentAnim and currentAnim ~= "" then
         self.lastAnimationCheck = currentAnim
-        if self:isReadyForAnim() then
-            self:setAnim()
-        end
+        if self:isReadyForAnim() then self:setAnim() end
     end
 
     if (self.nextAnimCheck or 0) < curTime then
-        if self:isReadyForAnim() then
-            self:setAnim()
-        end
-        self.nextAnimCheck = curTime + 5 -- Check more frequently for animation updates
+        if self:isReadyForAnim() then self:setAnim() end
+        self.nextAnimCheck = curTime + 5
     end
 
     self:SetNextClientThink(curTime + 0.5)

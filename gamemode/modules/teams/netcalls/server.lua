@@ -4,4 +4,3 @@
     if timeSince:sub(-#suffix) == suffix then return timeSince:sub(1, -#suffix - 1) end
     return timeSince
 end
-

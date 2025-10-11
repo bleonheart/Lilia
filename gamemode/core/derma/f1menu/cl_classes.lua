@@ -3,8 +3,6 @@ function PANEL:Init()
     lia.gui.classes = self
     local w, h = self:GetParent():GetSize()
     self:SetSize(w, h)
-
-    -- Sidebar with Lilia styling
     self.sidebar = self:Add("liaScrollPanel")
     self.sidebar:Dock(LEFT)
     self.sidebar:SetWide(220)
@@ -12,19 +10,16 @@ function PANEL:Init()
     self.sidebar.Paint = function(sidebar, sidebarW, sidebarH)
         local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
         local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
-
         lia.derma.rect(0, 0, sidebarW, sidebarH):Rad(12):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(8, 16):Draw()
         lia.derma.rect(0, 0, sidebarW, sidebarH):Rad(12):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
-    -- Main content with Lilia styling
     self.mainContent = self:Add("liaScrollPanel")
     self.mainContent:Dock(FILL)
     self.mainContent:DockMargin(10, 10, 10, 10)
     self.mainContent.Paint = function(content, contentW, contentH)
         local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
         local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
-
         lia.derma.rect(0, 0, contentW, contentH):Rad(12):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(8, 16):Draw()
         lia.derma.rect(0, 0, contentW, contentH):Rad(12):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
     end
@@ -50,13 +45,10 @@ function PANEL:loadClasses()
         btn:SetTall(50)
         btn:Dock(TOP)
         btn:DockMargin(5, 5, 5, 5)
-
-        -- Enhanced Lilia styling for sidebar buttons
         local textColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().text or color_white
         btn:SetTextColor(textColor)
         btn:SetFont("liaMediumFont")
         btn:SetExpensiveShadow(1, Color(0, 0, 0, 100))
-
         btn.DoClick = function()
             for _, b in ipairs(self.tabList) do
                 b:SetSelected(b == btn)
@@ -75,12 +67,9 @@ function PANEL:populateClassDetails(cl, canBe)
     container:Dock(TOP)
     container:DockMargin(10, 10, 10, 10)
     container:SetTall(800)
-
-    -- Lilia styling for the class details container
     container.Paint = function(panel, w, h)
         local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
         local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
-
         lia.derma.rect(0, 0, w, h):Rad(8):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 12):Draw()
         lia.derma.rect(0, 0, w, h):Rad(8):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
     end
@@ -105,12 +94,9 @@ function PANEL:createModelPanel(parent, cl)
     panel:SetWide(sizeX)
     panel:SetTall(sizeY)
     panel:SetFOV(35)
-
-    -- Lilia styling for the model panel container
     panel.Paint = function(modelPanel, modelW, modelH)
         local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
         local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
-
         lia.derma.rect(0, 0, modelW, modelH):Rad(8):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 12):Draw()
         lia.derma.rect(0, 0, modelW, modelH):Rad(8):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
     end
@@ -173,12 +159,7 @@ function PANEL:addClassDetails(parent, cl)
         lbl:SetWrap(true)
         lbl:Dock(TOP)
         lbl:DockMargin(10, 5, 10, 0)
-
-        -- Enhanced styling for text labels
-        lbl.Paint = function(panel, w, h)
-            -- Subtle background for better readability
-            lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(0, 0, 0, 30)):Shape(lia.derma.SHAPE_IOS):Draw()
-        end
+        lbl.Paint = function(panel, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(0, 0, 0, 30)):Shape(lia.derma.SHAPE_IOS):Draw() end
     end
 
     add(L("name") .. ": " .. (cl.name and L(cl.name) or L("unnamed")))
@@ -233,35 +214,21 @@ function PANEL:addJoinButton(parent, cl, canBe)
     btn:SetTall(45)
     btn:Dock(BOTTOM)
     btn:DockMargin(10, 10, 10, 10)
-
-    -- Enhanced Lilia styling for join button
     local textColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().text or color_white
     local accentColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().accent or Color(100, 150, 255)
-
     btn:SetTextColor(textColor)
     btn:SetFont("liaMediumFont")
     btn:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     btn:SetContentAlignment(5)
-
-    -- Custom paint for better visual feedback
     btn.Paint = function(panel, w, h)
         local baseColor = Color(45, 45, 45, 200)
         local hoverColor = Color(55, 55, 55, 220)
-
-        if panel:IsHovered() and not panel:GetDisabled() then
-            baseColor = hoverColor
-        end
-
-        if panel:GetDisabled() then
-            baseColor = Color(35, 35, 35, 150)
-        end
-
+        if panel:IsHovered() and not panel:GetDisabled() then baseColor = hoverColor end
+        if panel:GetDisabled() then baseColor = Color(35, 35, 35, 150) end
         lia.derma.rect(0, 0, w, h):Rad(6):Color(baseColor):Shape(lia.derma.SHAPE_IOS):Shadow(panel:IsHovered() and not panel:GetDisabled() and 3 or 2, panel:IsHovered() and not panel:GetDisabled() and 8 or 4):Draw()
-
-        -- Draw accent border if enabled
         if canBe and not isCurrent then
             lia.derma.rect(0, 0, w, h):Rad(6):Color(accentColor):Shape(lia.derma.SHAPE_IOS):Draw()
-            lia.derma.rect(2, 2, w-4, h-4):Rad(4):Color(baseColor):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(2, 2, w - 4, h - 4):Rad(4):Color(baseColor):Shape(lia.derma.SHAPE_IOS):Draw()
         end
     end
 

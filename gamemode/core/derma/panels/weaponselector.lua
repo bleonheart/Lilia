@@ -27,35 +27,13 @@ end
 
 local function hideUIElementsWhenWeaponSelectActive()
     if alpha > 0 then
-        -- Hide quick menu if it's visible during weapon selection
-        if IsValid(lia.gui.quick) then
-            lia.gui.quick:SetVisible(false)
-        end
-
-        -- Hide context menu if it's visible during weapon selection
-        if g_ContextMenu and g_ContextMenu:IsVisible() then
-            g_ContextMenu:SetVisible(false)
-        end
-
-        -- Hide any active liaDermaMenu (item menus)
-        if liaItemMenuVisible and IsValid(liaItemDermaMenu) then
-            liaItemDermaMenu:SetVisible(false)
-        end
+        if IsValid(lia.gui.quick) then lia.gui.quick:SetVisible(false) end
+        if g_ContextMenu and g_ContextMenu:IsVisible() then g_ContextMenu:SetVisible(false) end
+        if liaItemMenuVisible and IsValid(liaItemDermaMenu) then liaItemDermaMenu:SetVisible(false) end
     else
-        -- Show quick menu if it should be visible
-        if IsValid(lia.gui.quick) and not lia.gui.quick:IsVisible() then
-            lia.gui.quick:SetVisible(true)
-        end
-
-        -- Show context menu if it should be visible
-        if g_ContextMenu and not g_ContextMenu:IsVisible() then
-            g_ContextMenu:SetVisible(true)
-        end
-
-        -- Show item menu if it should be visible
-        if liaItemMenuVisible and IsValid(liaItemDermaMenu) and not liaItemDermaMenu:IsVisible() then
-            liaItemDermaMenu:SetVisible(true)
-        end
+        if IsValid(lia.gui.quick) and not lia.gui.quick:IsVisible() then lia.gui.quick:SetVisible(true) end
+        if g_ContextMenu and not g_ContextMenu:IsVisible() then g_ContextMenu:SetVisible(true) end
+        if liaItemMenuVisible and IsValid(liaItemDermaMenu) and not liaItemDermaMenu:IsVisible() then liaItemDermaMenu:SetVisible(true) end
     end
 end
 
@@ -71,9 +49,7 @@ local function HUDPaint()
         alphaDelta = Lerp(frameTime * 10, alphaDelta, alpha)
     end
 
-    -- Hide UI elements when weapon selector is active
     hideUIElementsWhenWeaponSelectActive()
-
     local client = LocalPlayer()
     local weapons = client:GetWeapons()
     local position = lia.option.get("weaponSelectorPosition", "Left")
@@ -145,8 +121,6 @@ local function onIndexChanged()
     if not shouldDrawWepSelect() then return end
     alpha = 1
     fadeTime = CurTime() + 5
-
-    -- Hide UI elements when weapon selector becomes active
     hideUIElementsWhenWeaponSelectActive()
     local client = LocalPlayer()
     local weapons = client:GetWeapons()
@@ -237,10 +211,4 @@ end
 hook.Add("HUDPaint", "liaWeaponSelectHUDPaint", HUDPaint)
 hook.Add("PlayerBindPress", "liaWeaponSelectPlayerBindPress", PlayerBindPress)
 hook.Add("StartCommand", "liaWeaponSelectStartCommand", StartCommand)
-
--- Add a Think hook to continuously manage UI visibility during weapon selection
-hook.Add("Think", "liaWeaponSelectUIHiding", function()
-    if shouldDrawWepSelect() then
-        hideUIElementsWhenWeaponSelectActive()
-    end
-end)
+hook.Add("Think", "liaWeaponSelectUIHiding", function() if shouldDrawWepSelect() then hideUIElementsWhenWeaponSelectActive() end end)

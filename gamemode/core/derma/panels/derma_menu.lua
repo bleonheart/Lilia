@@ -80,7 +80,6 @@ end
 function PANEL:Paint(w, h)
     local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
     local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
-
     lia.derma.rect(0, 0, w, h):Rad(16):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
     lia.derma.rect(0, 0, w, h):Rad(16):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
 end
@@ -273,7 +272,6 @@ function PANEL:AddOption(text, func, icon, optData)
         if pnl:IsHovered() then
             local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 35)
             local hoverColor = lia.color.theme and lia.color.theme.hover or Color(60, 140, 140, 90)
-
             lia.derma.rect(0, 0, w, h):Rad(16):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
             lia.derma.rect(0, 0, w, h):Rad(16):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
             if pnl._submenu and not pnl._submenu_open and not pnl._hoverTimer then

@@ -184,10 +184,7 @@ function ENT:setModel(model)
     assert(isstring(model), L("vendorModelString"))
     model = model:lower()
     self:SetModel(model)
-    if self:isReadyForAnim() then
-        self:setAnim()
-    end
-
+    if self:isReadyForAnim() then self:setAnim() end
     hook.Run("UpdateEntityPersistence", self)
     net.Start("liaVendorEdit")
     net.WriteString("model")
@@ -215,10 +212,7 @@ end
 
 function ENT:setAnimation(animation)
     self:setNetVar("animation", animation or "")
-    if self:isReadyForAnim() then
-        self:setAnim()
-    end
-
+    if self:isReadyForAnim() then self:setAnim() end
     hook.Run("UpdateEntityPersistence", self)
     net.Start("liaVendorEdit")
     net.WriteString("animation")

@@ -12,4 +12,3 @@ net.Receive("liaClassUpdate", function()
         end
     end
 end)
-
