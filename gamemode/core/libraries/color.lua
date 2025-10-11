@@ -250,7 +250,8 @@ lia.color.registerTheme("Teal", {
     window_shadow = Color(18, 32, 32, 90),
     gray = Color(150, 180, 180, 200),
     text = Color(210, 235, 235),
-    text_entry = Color(210, 235, 235)
+    text_entry = Color(210, 235, 235),
+    accent = Color(60, 140, 140)
 })
 
 lia.color.registerTheme("Dark", {
@@ -274,7 +275,8 @@ lia.color.registerTheme("Dark", {
     window_shadow = Color(0, 0, 0, 100),
     gray = Color(150, 150, 150, 220),
     text = Color(255, 255, 255),
-    text_entry = Color(255, 255, 255)
+    text_entry = Color(255, 255, 255),
+    accent = Color(106, 108, 197)
 })
 
 lia.color.registerTheme("Dark Mono", {
@@ -298,7 +300,8 @@ lia.color.registerTheme("Dark Mono", {
     window_shadow = Color(0, 0, 0, 100),
     gray = Color(150, 150, 150, 220),
     text = Color(255, 255, 255),
-    text_entry = Color(255, 255, 255)
+    text_entry = Color(255, 255, 255),
+    accent = Color(121, 121, 121)
 })
 
 lia.color.registerTheme("Blue", {
@@ -322,7 +325,8 @@ lia.color.registerTheme("Blue", {
     window_shadow = Color(18, 22, 32, 100),
     gray = Color(150, 170, 190, 200),
     text = Color(210, 220, 235),
-    text_entry = Color(210, 220, 235)
+    text_entry = Color(210, 220, 235),
+    accent = Color(80, 160, 220)
 })
 
 lia.color.registerTheme("Red", {
@@ -346,7 +350,8 @@ lia.color.registerTheme("Red", {
     window_shadow = Color(32, 18, 18, 100),
     gray = Color(180, 150, 150, 200),
     text = Color(235, 210, 210),
-    text_entry = Color(235, 210, 210)
+    text_entry = Color(235, 210, 210),
+    accent = Color(180, 80, 80)
 })
 
 lia.color.registerTheme("Light", {
@@ -370,7 +375,8 @@ lia.color.registerTheme("Light", {
     window_shadow = Color(0, 0, 0, 50),
     gray = Color(130, 130, 130, 220),
     text = Color(20, 20, 20),
-    text_entry = Color(20, 20, 20)
+    text_entry = Color(20, 20, 20),
+    accent = Color(106, 108, 197)
 })
 
 lia.color.registerTheme("Green", {
@@ -394,7 +400,8 @@ lia.color.registerTheme("Green", {
     window_shadow = Color(18, 32, 22, 100),
     gray = Color(150, 180, 150, 200),
     text = Color(210, 235, 210),
-    text_entry = Color(210, 235, 210)
+    text_entry = Color(210, 235, 210),
+    accent = Color(80, 180, 120)
 })
 
 lia.color.registerTheme("Orange", {
@@ -418,7 +425,8 @@ lia.color.registerTheme("Orange", {
     window_shadow = Color(20, 8, 0, 100),
     gray = Color(180, 161, 150, 200),
     text = Color(45, 20, 10),
-    text_entry = Color(45, 20, 10)
+    text_entry = Color(45, 20, 10),
+    accent = Color(245, 130, 50)
 })
 
 lia.color.registerTheme("Purple", {
@@ -442,7 +450,8 @@ lia.color.registerTheme("Purple", {
     window_shadow = Color(8, 6, 20, 100),
     gray = Color(140, 128, 148, 220),
     text = Color(245, 240, 255),
-    text_entry = Color(245, 240, 255)
+    text_entry = Color(245, 240, 255),
+    accent = Color(138, 114, 219)
 })
 
 lia.color.registerTheme("Coffee", {
@@ -466,7 +475,8 @@ lia.color.registerTheme("Coffee", {
     window_shadow = Color(15, 10, 5, 100),
     gray = Color(180, 150, 130, 200),
     text = Color(235, 225, 210),
-    text_entry = Color(235, 225, 210)
+    text_entry = Color(235, 225, 210),
+    accent = Color(150, 110, 75)
 })
 
 lia.color.registerTheme("Ice", {
@@ -490,7 +500,8 @@ lia.color.registerTheme("Ice", {
     window_shadow = Color(60, 100, 140, 100),
     gray = Color(92, 112, 133, 200),
     text = Color(20, 35, 50),
-    text_entry = Color(20, 35, 50)
+    text_entry = Color(20, 35, 50),
+    accent = Color(100, 170, 230)
 })
 
 lia.color.registerTheme("Wine", {
@@ -514,7 +525,8 @@ lia.color.registerTheme("Wine", {
     window_shadow = Color(10, 6, 20, 100),
     gray = Color(170, 150, 160, 200),
     text = Color(246, 242, 246),
-    text_entry = Color(246, 242, 246)
+    text_entry = Color(246, 242, 246),
+    accent = Color(148, 61, 91)
 })
 
 lia.color.registerTheme("Violet", {
@@ -538,7 +550,8 @@ lia.color.registerTheme("Violet", {
     window_shadow = Color(8, 6, 20, 100),
     gray = Color(147, 147, 184, 200),
     text = Color(238, 244, 255),
-    text_entry = Color(238, 244, 255)
+    text_entry = Color(238, 244, 255),
+    accent = Color(159, 180, 255)
 })
 
 lia.color.registerTheme("Moss", {
@@ -562,7 +575,8 @@ lia.color.registerTheme("Moss", {
     window_shadow = Color(0, 0, 0, 100),
     gray = Color(148, 165, 140, 220),
     text = Color(232, 244, 235),
-    text_entry = Color(232, 244, 235)
+    text_entry = Color(232, 244, 235),
+    accent = Color(110, 160, 90)
 })
 
 lia.color.registerTheme("Coral", {
@@ -586,7 +600,8 @@ lia.color.registerTheme("Coral", {
     window_shadow = Color(0, 0, 0, 100),
     gray = Color(167, 136, 136, 220),
     text = Color(255, 243, 242),
-    text_entry = Color(255, 243, 242)
+    text_entry = Color(255, 243, 242),
+    accent = Color(255, 120, 90)
 })
 
 lia.config.add("Theme", "theme", "Teal", function(_, newValue)

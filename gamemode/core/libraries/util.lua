@@ -628,6 +628,15 @@ else
                 end
             end)
         end
+
+        -- Adjust frame size to fit content
+        timer.Simple(0.1, function()
+            if IsValid(frame) and IsValid(listView) then
+                frame:InvalidateLayout(true)
+                listView:InvalidateLayout(true)
+                frame:SizeToChildren(false, true)
+            end
+        end)
         return frame, listView
     end
 

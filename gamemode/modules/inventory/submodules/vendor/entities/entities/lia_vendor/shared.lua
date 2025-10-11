@@ -33,7 +33,17 @@ function ENT:Initialize()
             if self:isReadyForAnim() then
                 self:setAnim()
             else
-                timer.Simple(2, function() if IsValid(self) and self:isReadyForAnim() then self:setAnim() end end)
+                timer.Simple(2, function()
+                    if IsValid(self) and self:isReadyForAnim() then
+                        self:setAnim()
+                    end
+                end)
+
+                timer.Simple(5, function()
+                    if IsValid(self) and self:isReadyForAnim() then
+                        self:setAnim()
+                    end
+                end)
             end
         end)
         return
@@ -55,6 +65,15 @@ function ENT:Initialize()
     end
 
     LiliaVendors[self:EntIndex()] = self
+
+    -- Set initial animation after a short delay to ensure model is loaded
+    timer.Simple(0.5, function()
+        if IsValid(self) then
+            if self:isReadyForAnim() then
+                self:setAnim()
+            end
+        end
+    end)
 end
 
 function ENT:getWelcomeMessage()
@@ -134,33 +153,63 @@ function ENT:isReadyForAnim()
 end
 
 function ENT:setAnim()
-    if not self:isReadyForAnim() then return end
+    if not self:isReadyForAnim() then
+        return
+    end
+
     local customAnim = self:getNetVar("animation", "")
+    local sequenceList = self:GetSequenceList()
+
+    -- First try to use custom animation if specified
     if customAnim and customAnim ~= "" then
-        local sequenceList = self:GetSequenceList()
         for k, v in ipairs(sequenceList) do
-            if v:lower() == customAnim:lower() then
-                self:ResetSequence(k)
-                self:SetCycle(1)
-                self:SetPlaybackRate(0)
+            if string.find(string.lower(v), string.lower(customAnim)) or v:lower() == customAnim:lower() then
+                self:SetSequence(k)
+                self:SetCycle(0)
+                self:SetPlaybackRate(1)
                 return
             end
         end
     end
 
-    local sequenceList = self:GetSequenceList()
+    -- Look for idle-like animations (Idle_Relaxed, Idle_Alert, or regular idle)
     for k, v in ipairs(sequenceList) do
-        if v:lower():find("idle") and v ~= "idlenoise" then
-            self:ResetSequence(k)
-            self:SetCycle(1)
-            self:SetPlaybackRate(0)
+        local lowerV = v:lower()
+        if lowerV:find("idle") and not lowerV:find("idlenoise") then
+            self:SetSequence(k)
+            self:SetCycle(0)
+            self:SetPlaybackRate(1)
             return
         end
     end
 
-    if self:GetSequenceCount() > 1 then
-        self:ResetSequence(4)
-        self:SetCycle(1)
-        self:SetPlaybackRate(0)
+    -- If no idle found, look for relaxed or alert animations
+    for k, v in ipairs(sequenceList) do
+        local lowerV = v:lower()
+        if lowerV:find("relaxed") or lowerV:find("alert") then
+            self:SetSequence(k)
+            self:SetCycle(0)
+            self:SetPlaybackRate(1)
+            return
+        end
+    end
+
+    -- If still no animation found, look for any animation that might be suitable (not body parts or transitions)
+    for k, v in ipairs(sequenceList) do
+        local lowerV = v:lower()
+        -- Avoid body part animations and transitions, prefer action-like animations
+        if not lowerV:find("body") and not lowerV:find("spine") and not lowerV:find("neck") and not lowerV:find("head") and not lowerV:find("trans") then
+            self:SetSequence(k)
+            self:SetCycle(0)
+            self:SetPlaybackRate(1)
+            return
+        end
+    end
+
+    -- Last resort: use sequence 1 (usually the first/main animation)
+    if self:GetSequenceCount() > 0 then
+        self:SetSequence(1)
+        self:SetCycle(0)
+        self:SetPlaybackRate(1)
     end
 end

@@ -186,7 +186,6 @@ function ENT:setModel(model)
     self:SetModel(model)
     if self:isReadyForAnim() then
         self:setAnim()
-    else
     end
 
     hook.Run("UpdateEntityPersistence", self)
@@ -218,7 +217,6 @@ function ENT:setAnimation(animation)
     self:setNetVar("animation", animation or "")
     if self:isReadyForAnim() then
         self:setAnim()
-    else
     end
 
     hook.Run("UpdateEntityPersistence", self)

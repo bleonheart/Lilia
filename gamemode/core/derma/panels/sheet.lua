@@ -9,6 +9,7 @@ function PANEL:Init()
     self.search:Dock(TOP)
     self.search:SetTall(30)
     self.search:DockMargin(0, 0, 0, 8)
+    self.search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     self.scroll = vgui.Create("liaScrollPanel", self)
     self.scroll:Dock(FILL)
     self.scroll:InvalidateLayout(true)
@@ -106,6 +107,7 @@ function PANEL:AddTextRow(data)
         local t = vgui.Create("DLabel", p)
         t:SetFont(titleFont)
         t:SetText(title)
+        t:SetTextColor(lia.color.theme.text)
         t:SizeToContents()
         local d
         if desc ~= "" then
@@ -114,6 +116,7 @@ function PANEL:AddTextRow(data)
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
             d:SetText(desc)
+            d:SetTextColor(lia.color.theme.text)
         end
 
         local r
@@ -121,6 +124,7 @@ function PANEL:AddTextRow(data)
             r = vgui.Create("DLabel", p)
             r:SetFont(descFont)
             r:SetText(right)
+            r:SetTextColor(lia.color.theme.text)
             r:SizeToContents()
         end
 
@@ -164,7 +168,7 @@ function PANEL:AddSubsheetRow(cfg)
             cat.Header:SetTall(28)
             cat.Header.Paint = function(pnl, w, h)
                 derma.SkinHook("Paint", "Panel", pnl, w, h)
-                draw.SimpleText(title, "liaSmallFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(title, "liaSmallFont", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
         end
 
@@ -211,6 +215,7 @@ function PANEL:AddPreviewRow(data)
         local t = vgui.Create("DLabel", p)
         t:SetFont("liaMediumFont")
         t:SetText(title)
+        t:SetTextColor(lia.color.theme.text)
         t:SizeToContents()
         local d
         if desc ~= "" then
@@ -219,6 +224,7 @@ function PANEL:AddPreviewRow(data)
             d:SetWrap(true)
             d:SetAutoStretchVertical(true)
             d:SetText(desc)
+            d:SetTextColor(lia.color.theme.text)
         end
 
         local r
@@ -226,6 +232,7 @@ function PANEL:AddPreviewRow(data)
             r = vgui.Create("DLabel", p)
             r:SetFont("liaSmallFont")
             r:SetText(right)
+            r:SetTextColor(lia.color.theme.text)
             r:SizeToContents()
         end
 

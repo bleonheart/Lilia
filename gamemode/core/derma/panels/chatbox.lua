@@ -15,8 +15,7 @@ function PANEL:Init()
     self.commandIndex = 0
     self.commands = lia.command.list
     self.tabs.Paint = function(_, tabW, tabH)
-        surface.SetDrawColor(0, 0, 0, 100)
-        surface.DrawRect(0, 0, tabW, tabH)
+        lia.derma.rect(0, 0, tabW, tabH):Rad(8):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(3, 10):Draw()
     end
 
     self.arguments = {}
@@ -41,12 +40,9 @@ end
 function PANEL:Paint(panelW, panelH)
     if self.active then
         lia.util.drawBlur(self, 10)
-        surface.SetDrawColor(0, 0, 0, 255)
-        surface.DrawOutlinedRect(0, 0, panelW, panelH)
-        surface.SetDrawColor(0, 0, 0, 150)
-        surface.DrawRect(1, 1, panelW - 2, panelH - 2)
-        surface.SetDrawColor(0, 0, 0, 200)
-        surface.DrawOutlinedRect(0, 0, panelW, panelH)
+        local radius = 16
+        lia.derma.rect(0, 0, panelW, panelH):Rad(radius):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
+        lia.derma.rect(0, 0, panelW, panelH):Rad(radius):Color(Color(0, 0, 0, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 end
 
@@ -93,10 +89,9 @@ function PANEL:setActive(state)
 
         self.text:SetAllowNonAsciiCharacters(true)
         self.text.Paint = function(entry, txtW, txtH)
-            surface.SetDrawColor(0, 0, 0, 100)
-            surface.DrawRect(0, 0, txtW, txtH)
-            surface.SetDrawColor(0, 0, 0, 200)
-            surface.DrawOutlinedRect(0, 0, txtW, txtH)
+            local radius = 8
+            lia.derma.rect(0, 0, txtW, txtH):Rad(radius):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(3, 10):Draw()
+            lia.derma.rect(0, 0, txtW, txtH):Rad(radius):Color(Color(0, 0, 0, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
             entry:DrawTextEntryText(Color(255, 255, 255, 200), lia.config.get("Color"), Color(255, 255, 255, 200))
         end
 
@@ -130,8 +125,7 @@ function PANEL:setActive(state)
                     btn:DockMargin(0, 0, 0, 2)
                     btn:SetTall(20)
                     btn.Paint = function(_, bw, bh)
-                        surface.SetDrawColor(ColorAlpha(color_black, 200))
-                        surface.DrawRect(0, 0, bw, bh)
+                        lia.derma.rect(0, 0, bw, bh):Rad(6):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
                     end
 
                     btn.DoClick = function()
@@ -179,8 +173,11 @@ function PANEL:setActive(state)
                             if not listChild.PaintConfigured then
                                 listChild.Paint = function(btn, bw, bh)
                                     local isSel = btn.commandIndex == self.commandIndex
-                                    surface.SetDrawColor(isSel and ColorAlpha(lia.config.get("Color"), 255) or ColorAlpha(color_black, 200))
-                                    surface.DrawRect(0, 0, bw, bh)
+                                    if isSel then
+                                        lia.derma.rect(0, 0, bw, bh):Rad(6):Color(ColorAlpha(lia.config.get("Color"), 255)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
+                                    else
+                                        lia.derma.rect(0, 0, bw, bh):Rad(6):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
+                                    end
                                     if IsValid(btn.text) then btn.text:SetTextColor(isSel and ColorAlpha(lia.config.get("Color"), 255) or ColorAlpha(color_white, 200)) end
                                 end
 
@@ -238,15 +235,13 @@ end
 
 local function PaintFilterButton(btn, btnW, btnH)
     if btn.active then
-        surface.SetDrawColor(40, 40, 40)
+        lia.derma.rect(0, 0, btnW, btnH):Rad(8):Color(Color(40, 40, 40, 200)):Shape(lia.derma.SHAPE_IOS):Draw()
     else
         local alpha = 120 + math.cos(RealTime() * 5) * 10
-        surface.SetDrawColor(ColorAlpha(lia.config.get("Color"), alpha))
+        lia.derma.rect(0, 0, btnW, btnH):Rad(8):Color(ColorAlpha(lia.config.get("Color"), alpha)):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
-    surface.DrawRect(0, 0, btnW, btnH)
-    surface.SetDrawColor(0, 0, 0, 200)
-    surface.DrawOutlinedRect(0, 0, btnW, btnH)
+    lia.derma.rect(0, 0, btnW, btnH):Rad(8):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
 end
 
 function PANEL:addFilterButton(filter)

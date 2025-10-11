@@ -78,8 +78,11 @@ function PANEL:Init()
 end
 
 function PANEL:Paint(w, h)
-    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
-    lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.background_panelpopup):Shape(lia.derma.SHAPE_IOS):Draw()
+    local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
+    local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
+
+    lia.derma.rect(0, 0, w, h):Rad(16):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(16):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 function PANEL:AddOption(text, func, icon, optData)
@@ -266,10 +269,13 @@ function PANEL:AddOption(text, func, icon, optData)
     option.Paint = function(pnl, w, h)
         w = w or pnl:GetWide()
         h = h or pnl:GetTall()
-        local colors = lia.color.ReturnMainAdjustedColors()
+        local textColor = lia.color.theme and lia.color.theme.text or Color(210, 235, 235)
         if pnl:IsHovered() then
-            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
-            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw()
+            local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 35)
+            local hoverColor = lia.color.theme and lia.color.theme.hover or Color(60, 140, 140, 90)
+
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
             if pnl._submenu and not pnl._submenu_open and not pnl._hoverTimer then
                 pnl._hoverTimer = timer.Simple(0.1, function()
                     if IsValid(pnl) and pnl:IsHovered() and pnl._submenu and not pnl._submenu_open then pnl:OpenSubMenu() end
@@ -303,7 +309,7 @@ function PANEL:AddOption(text, func, icon, optData)
             local arrowX = w - arrowSize - 8
             local arrowY = h * 0.5
             local arrowSymbol = pnl._submenu_open and "◄" or "►"
-            draw.SimpleText(arrowSymbol, "LiliaFont.16", arrowX, arrowY, colors.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(arrowSymbol, "LiliaFont.16", arrowX, arrowY, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
 
         if currentIconWidth > 0 then
@@ -314,7 +320,7 @@ function PANEL:AddOption(text, func, icon, optData)
             end
         end
 
-        draw.SimpleText(pnl.Text, "LiliaFont.18", textX, h * 0.5, colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(pnl.Text, "LiliaFont.18", textX, h * 0.5, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 
     table.insert(self.Items, option)
@@ -328,7 +334,8 @@ function PANEL:AddSpacer()
     spacer:DockMargin(8, 6, 8, 6)
     spacer:SetTall(1)
     spacer.sumTall = 13
-    spacer.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Color(lia.color.theme.focus_panel):Draw() end
+    local focusPanelColor = lia.color.theme and lia.color.theme.focus_panel or Color(48, 72, 72)
+    spacer.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Color(focusPanelColor):Draw() end
     table.insert(self.Items, spacer)
     self:UpdateSize()
     return spacer
@@ -347,7 +354,8 @@ function PANEL:AddSubMenuSeparator()
     spacer:DockMargin(8, 3, 8, 3)
     spacer:SetTall(1)
     spacer.sumTall = 7
-    spacer.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Color(lia.color.theme.accent):Draw() end
+    local accentColor = lia.color.theme and lia.color.theme.accent or Color(60, 140, 140)
+    spacer.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Color(accentColor):Draw() end
     table.insert(self.Items, spacer)
     self:UpdateSize()
     return spacer

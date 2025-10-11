@@ -634,7 +634,17 @@ function PANEL:Init()
         if not IsValid(self.animation) then return end
         if not isstring(value) then return end
         if value == L("none") then value = "" end
+
+        -- Send the animation to server
         lia.vendor.editor.animation(value)
+
+        -- Update the current animation display immediately for feedback
+        timer.Simple(0.1, function()
+            if IsValid(self.animation) then
+                local displayValue = value == "" and L("none") or value
+                self.animation:SetValue(displayValue)
+            end
+        end)
     end
 
     self.itemSearchBar = self.rightPanel:Add("liaEntry")
@@ -666,6 +676,19 @@ function PANEL:Init()
     self.items:AddColumn(L("category")).Header:SetTextColor(lia.color.theme.text or color_white)
     self.items:SetMultiSelect(false)
     self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
+
+    -- Apply theme-based text color to all existing and future rows
+    self.items.Paint = function(listView, w, h)
+        -- Theme the existing lines
+        for _, line in ipairs(listView:GetLines()) do
+            for i = 1, #listView.Columns do
+                local colData = line.Columns and line.Columns[i]
+                if colData and colData.TextPanel then
+                    colData.TextPanel:SetTextColor(lia.color.theme.text or color_white)
+                end
+            end
+        end
+    end
     self.lines = {}
     self:ReloadItemList()
     self:listenForUpdates()
@@ -776,19 +799,25 @@ end
 
 function PANEL:refreshAnimationDropdown()
     if not IsValid(self.animation) then return end
+
     self.animation:Clear()
     self.animation:AddChoice(L("none"))
+
     if IsValid(liaVendorEnt) then
         local sequenceList = liaVendorEnt:GetSequenceList()
-        if sequenceList then
+        if sequenceList and #sequenceList > 0 then
             for _, sequenceName in ipairs(sequenceList) do
-                if isstring(sequenceName) and sequenceName ~= "" then self.animation:AddChoice(sequenceName) end
+                if isstring(sequenceName) and sequenceName ~= "" then
+                    self.animation:AddChoice(sequenceName)
+                end
             end
         end
     end
 
     local currentAnimation = liaVendorEnt:getNetVar("animation", "")
-    if isstring(currentAnimation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
+    if isstring(currentAnimation) then
+        self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
+    end
 end
 
 function PANEL:onNameDescChanged(key)
@@ -798,6 +827,15 @@ function PANEL:onNameDescChanged(key)
     elseif key == "model" then
         self.model:SetText(entity:GetModel())
         self:refreshAnimationDropdown()
+        -- Also refresh the animation value in case the model change affected available animations
+        timer.Simple(0.1, function()
+            if IsValid(self) and IsValid(entity) then
+                local currentAnimation = entity:getNetVar("animation", "")
+                if IsValid(self.animation) then
+                    self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
+                end
+            end
+        end)
     elseif key == "scale" then
         self:updateSellScale()
     elseif key == "welcome" and entity.getWelcomeMessage then
@@ -812,12 +850,32 @@ function PANEL:onItemModeUpdated(_, itemType, value)
     local line = self.lines[itemType]
     if not IsValid(line) then return end
     line:SetColumnText(COLS_MODE, self:getModeText(value))
+
+    -- Reapply theme color after text update
+    timer.Simple(0, function()
+        if IsValid(line) then
+            local colData = line.Columns and line.Columns[COLS_MODE]
+            if colData and colData.TextPanel then
+                colData.TextPanel:SetTextColor(lia.color.theme.text or color_white)
+            end
+        end
+    end)
 end
 
 function PANEL:onItemPriceUpdated(vendor, itemType)
     local line = self.lines[itemType]
     if not IsValid(line) then return end
     line:SetColumnText(COLS_PRICE, vendor:getPrice(itemType))
+
+    -- Reapply theme color after text update
+    timer.Simple(0, function()
+        if IsValid(line) then
+            local colData = line.Columns and line.Columns[COLS_PRICE]
+            if colData and colData.TextPanel then
+                colData.TextPanel:SetTextColor(lia.color.theme.text or color_white)
+            end
+        end
+    end)
 end
 
 function PANEL:onItemStockUpdated(vendor, itemType)
@@ -825,6 +883,16 @@ function PANEL:onItemStockUpdated(vendor, itemType)
     if not IsValid(line) then return end
     local current, max = vendor:getStock(itemType)
     line:SetColumnText(COLS_STOCK, max and current .. "/" .. max or "-")
+
+    -- Reapply theme color after text update
+    timer.Simple(0, function()
+        if IsValid(line) then
+            local colData = line.Columns and line.Columns[COLS_STOCK]
+            if colData and colData.TextPanel then
+                colData.TextPanel:SetTextColor(lia.color.theme.text or color_white)
+            end
+        end
+    end)
 end
 
 function PANEL:listenForUpdates()
@@ -887,6 +955,18 @@ function PANEL:ReloadItemList(filter)
         local panel = self.items:AddLine(v.getName and name or L(name), self:getModeText(mode), entity:getPrice(k), max and current .. "/" .. max or "-", v:getCategory())
         panel.item = k
         self.lines[k] = panel
+
+        -- Apply theme color to the newly added line
+        timer.Simple(0, function()
+            if IsValid(panel) then
+                for i = 1, #self.items.Columns do
+                    local colData = panel.Columns and panel.Columns[i]
+                    if colData and colData.TextPanel then
+                        colData.TextPanel:SetTextColor(lia.color.theme.text or color_white)
+                    end
+                end
+            end
+        end)
     end
 end
 

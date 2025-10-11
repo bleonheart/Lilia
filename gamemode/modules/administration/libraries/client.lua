@@ -2057,82 +2057,6 @@ net.Receive("liaAllPks", function()
     end
 end)
 
-local function OpenRoster(panel, data)
-    panel:Clear()
-    local sheet = panel:Add("liaTabs")
-    sheet:Dock(FILL)
-    sheet:DockMargin(10, 10, 10, 10)
-    panel.sheet = sheet
-    for factionName, members in pairs(data) do
-        local membersData = members
-        local factionTable = lia.util.findFaction(LocalPlayer(), factionName)
-        local isDefaultFaction = factionTable and factionTable.isDefault or false
-        local page = vgui.Create("DPanel")
-        page:Dock(FILL)
-        page:DockPadding(10, 10, 10, 10)
-        local rosterTable = page:Add("liaTable")
-        rosterTable:Dock(FILL)
-        rosterTable:AddColumn(L("name"), nil, TEXT_ALIGN_LEFT, true)
-        rosterTable:AddColumn(L("steamID"), nil, TEXT_ALIGN_LEFT, true)
-        rosterTable:AddColumn(L("class"), nil, TEXT_ALIGN_LEFT, true)
-        rosterTable:AddColumn(L("playTime"), 100, TEXT_ALIGN_CENTER, true)
-        rosterTable:AddColumn(L("lastOnline"), 120, TEXT_ALIGN_CENTER, true)
-        local function populate()
-            rosterTable:Clear()
-            for _, member in ipairs(membersData) do
-                local name = member.name or L("unnamed")
-                local steamID = member.steamID or L("na")
-                local className = member.class or L("none")
-                local playTime = member.playTime or L("na")
-                local lastOnline = member.lastOnline or L("na")
-                local row = rosterTable:AddLine(name, steamID, className, playTime, lastOnline)
-                row.rowData = member
-                row.OnRightClick = function()
-                    if not IsValid(row) or not row.rowData then return end
-                    local rowData = row.rowData
-                    local menu = lia.derma.dermaMenu()
-                    if rowData.steamID and rowData.steamID ~= "" and IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("canManageFactions") and not isDefaultFaction then
-                        menu:AddOption(L("kick"), function()
-                            Derma_Query(L("kickConfirm"), L("confirm"), L("yes"), function()
-                                net.Start("liaKickCharacter")
-                                net.WriteInt(rowData.id, 32)
-                                net.SendToServer()
-                            end, L("no"))
-                        end):SetIcon("icon16/user_delete.png")
-
-                        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. rowData.steamID) end):SetIcon("icon16/page_copy.png") end
-                    end
-
-                    menu:AddOption(L("copyRow"), function()
-                        local rowString = ""
-                        for key, value in pairs(rowData) do
-                            value = tostring(value or L("na"))
-                            rowString = rowString .. key:gsub("^%l", string.upper) .. ": " .. value .. " | "
-                        end
-
-                        rowString = rowString:sub(1, -4)
-                        SetClipboardText(rowString)
-                    end):SetIcon("icon16/page_copy.png")
-
-                    menu:AddOption(L("copyName"), function()
-                        local charName = rowData.name or ""
-                        SetClipboardText(charName)
-                    end):SetIcon("icon16/page_copy.png")
-
-                    if steamID and steamID ~= "" then
-                        menu:AddOption(L("copySteamID"), function() SetClipboardText(steamID) end):SetIcon("icon16/page_copy.png")
-                        menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(steamID)) end):SetIcon("icon16/world.png")
-                    end
-
-                    menu:Open()
-                end
-            end
-        end
-
-        populate()
-        sheet:AddSheet(factionName, page)
-    end
-end
 
 function OpenFlagsPanel(panel, data)
     panel:Clear()
@@ -2259,13 +2183,6 @@ lia.net.readBigTable("liaAllFlags", function(data)
     end
 end)
 
-lia.net.readBigTable("liaFactionRosterData", function(data)
-    if IsValid(panelRef) and isfunction(panelRef.buildSheets) then
-        panelRef:buildSheets(data or {})
-    elseif IsValid(rosterPanel) then
-        OpenRoster(rosterPanel, data or {})
-    end
-end)
 
 lia.net.readBigTable("liaStaffSummary", function(data)
     if not IsValid(panelRef) or not data then return end
