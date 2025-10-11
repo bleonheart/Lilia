@@ -228,23 +228,6 @@ lia.keybind.add("adminMode", {
     end
 })
 
-lia.keybind.add("quickMenu", {
-    keyBind = "c",
-    desc = "quickMenuDesc",
-    onPress = function()
-        if IsValid(lia.gui.quick) then
-            lia.gui.quick:Remove()
-        else
-            vgui.Create("liaQuick")
-        end
-    end,
-    onRelease = function()
-        if IsValid(lia.gui.quick) then
-            lia.gui.quick:Remove()
-        end
-    end
-})
-
 lia.keybind.add("quickTakeItem", {
     keyBind = KEY_NONE,
     desc = "quickTakeItemDesc",
@@ -443,7 +426,7 @@ if CLIENT then
                 if allowEdit then
                     local combo = panel:Add("liaComboBox")
                     combo:Dock(TOP)
-                    combo:DockMargin(10, 25, 10, 15)
+                    combo:DockMargin(300, 25, 300, 15)
                     combo:SetTall(60)
                     combo:SetFont("LiliaFont.18")
                     combo:SetValue(input.GetKeyName(currentKey) or "NONE")

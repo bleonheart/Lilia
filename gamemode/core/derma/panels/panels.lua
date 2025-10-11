@@ -181,23 +181,18 @@ function QuickPanel:Init()
     end
 
     self.scroll = self:Add("liaScrollPanel")
-    self.scroll.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
-    end
+    self.scroll.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw() end
     self.items = {}
     hook.Run("SetupQuickMenu", self)
     self:populateOptions()
     self:MoveTo(self.x, 30, 0.05)
-
-    -- Listen for theme changes
-    hook.Add("OnThemeChanged", self, self.OnThemeChanged)
+    -- Listen for theme changes and refresh colors live
+    hook.Add("OnThemeChanged", self, function() if IsValid(self) then self:RefreshTheme() end end)
 end
 
 function QuickPanel:PerformLayout(w, h)
-    if IsValid(self.scroll) then
-        self.scroll:SetPos(0, 36)
-        self.scroll:SetSize(w, math.max(h - 36, 0))
-    end
+    self.scroll:SetPos(0, 36)
+    self.scroll:SetSize(w, math.max(h - 36, 0))
 end
 
 local function paintButton(button, w, h)
@@ -242,7 +237,6 @@ function QuickPanel:addCategory(text)
 end
 
 function QuickPanel:addButton(text, cb)
-    if not IsValid(self.scroll) then return end
     local btn = self.scroll:Add("DButton")
     btn:SetText(text)
     btn:SetTall(36)
@@ -260,7 +254,6 @@ function QuickPanel:addButton(text, cb)
 end
 
 function QuickPanel:addSpacer()
-    if not IsValid(self.scroll) then return end
     local pnl = self.scroll:Add("DPanel")
     pnl:SetTall(1)
     pnl:Dock(TOP)
@@ -275,7 +268,6 @@ function QuickPanel:addSpacer()
 end
 
 function QuickPanel:addSlider(text, cb, val, min, max, dec)
-    if not IsValid(self.scroll) then return end
     local s = self.scroll:Add("DNumSlider")
     s:SetText(text)
     s:SetTall(36)
@@ -335,40 +327,48 @@ function QuickPanel:Paint(w, h)
     lia.derma.rect(0, 0, w, 36):Rad(radius):Color(lia.color.theme and lia.color.theme.theme or color_white):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
-function QuickPanel:OnThemeChanged()
+-- Refresh colors/text after theme updates without recreating the panel
+function QuickPanel:RefreshTheme()
     if not IsValid(self) then return end
-
-    -- Update title colors
+    -- Title styling
     if IsValid(self.title) then
         self.title:SetTextColor(lia.color.theme.text or color_white)
         self.title:SetExpensiveShadow(1, lia.color.theme and ColorAlpha(lia.color.theme.text, 175) or Color(0, 0, 0, 175))
+        self.title.Paint = function(_, w, h)
+            surface.SetDrawColor(lia.color.theme and lia.color.theme.theme or color_white)
+            surface.DrawRect(0, 0, w, h)
+        end
     end
 
-    -- Update expand button colors
+    -- Expand button label color
     if IsValid(self.expand) then
         self.expand:SetTextColor(lia.color.theme.text or color_white)
         self.expand:SetExpensiveShadow(1, lia.color.theme.text and ColorAlpha(lia.color.theme.text, 150) or Color(0, 0, 0, 150))
     end
 
-    -- Update scroll panel background
-    if IsValid(self.scroll) then
-        self.scroll.Paint = function(_, w, h)
-            lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+    -- Scroll panel background
+    if IsValid(self.scroll) then self.scroll.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw() end end
+    -- Update child items' text colors where applicable
+    for _, item in ipairs(self.items or {}) do
+        if IsValid(item) then
+            -- Category labels and buttons
+            if item.SetTextColor then item:SetTextColor(lia.color.theme.text or color_white) end
+            -- Sliders (DNumSlider has Label and TextArea)
+            if item.Label and item.Label.SetTextColor then item.Label:SetTextColor(lia.color.theme.text or color_white) end
+            if item.GetTextArea then
+                local te = item:GetTextArea()
+                if IsValid(te) and te.SetTextColor then te:SetTextColor(lia.color.theme.text or color_white) end
+            end
         end
     end
 
-    -- Repopulate options to update all item colors
-    self:populateOptions()
+    self:InvalidateLayout(true)
 end
 
-function QuickPanel:Remove()
+function QuickPanel:OnRemove()
     -- Remove theme change hook
     hook.Remove("OnThemeChanged", self)
-
-    -- Clear the global reference
-    if lia.gui.quick == self then
-        lia.gui.quick = nil
-    end
+    if lia.gui.quick == self then lia.gui.quick = nil end
 end
 
 function QuickPanel:populateOptions()
@@ -415,10 +415,8 @@ function QuickPanel:populateOptions()
                 self:addSlider(opt.name or key, function(_, v) lia.option.set(key, v) end, val, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
             end
 
-            -- Add spacer between child elements (but not after the last one in this category)
-            if j < #list then
-                self:addSpacer()
-            end
+            -- Add spacer between entries within the same category (but not after the last entry)
+            if j < #list then self:addSpacer() end
         end
 
         if i < #names then self:addSpacer() end

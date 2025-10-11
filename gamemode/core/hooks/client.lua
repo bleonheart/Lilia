@@ -457,12 +457,12 @@ end
 
 function GM:OnContextMenuOpen()
     self.BaseClass:OnContextMenuOpen()
-    -- liaQuick panel is now controlled by C key binding instead of context menu
+    vgui.Create("liaQuick")
 end
 
 function GM:OnContextMenuClose()
     self.BaseClass:OnContextMenuClose()
-    -- liaQuick panel is now controlled by C key binding instead of context menu
+    if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
 end
 
 function GM:CharListLoaded()

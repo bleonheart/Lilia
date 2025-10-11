@@ -29,7 +29,7 @@ local function hideUIElementsWhenWeaponSelectActive()
     if alpha > 0 then
         -- Hide quick menu if it's visible during weapon selection
         if IsValid(lia.gui.quick) then
-            lia.gui.quick:Remove()
+            lia.gui.quick:SetVisible(false)
         end
 
         -- Hide context menu if it's visible during weapon selection
@@ -42,7 +42,10 @@ local function hideUIElementsWhenWeaponSelectActive()
             liaItemDermaMenu:SetVisible(false)
         end
     else
-        -- Quick menu is now controlled by C key binding, no need to restore it here
+        -- Show quick menu if it should be visible
+        if IsValid(lia.gui.quick) and not lia.gui.quick:IsVisible() then
+            lia.gui.quick:SetVisible(true)
+        end
 
         -- Show context menu if it should be visible
         if g_ContextMenu and not g_ContextMenu:IsVisible() then

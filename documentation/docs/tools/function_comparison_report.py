@@ -282,24 +282,45 @@ class FunctionComparisonReportGenerator:
 
                 # If we're inside the LANGUAGE table, look for key patterns
                 if in_language_table and brace_depth > 0:
-                    # Find regular quoted strings first
-                    pattern = r'(\w+)\s*=\s*["\']([^"\']*(?:\\.[^"\']*)*)["\']'
-
-                    for match in re.finditer(pattern, line):
+                    # Find key = "value" patterns and extract the value properly
+                    key_value_pattern = r'(\w+)\s*=\s*["\']'
+                    for match in re.finditer(key_value_pattern, line):
                         key = match.group(1)
                         if key and key != 'LANGUAGE':
-                            value = match.group(2)
-                            arg_count = self._count_format_specifiers(value)
-                            keys[key] = arg_count
+                            # Extract the full quoted string value, handling escaped quotes
+                            start_pos = match.end() - 1  # Position of the opening quote
+                            quote_char = line[start_pos]
+                            end_pos = start_pos + 1
+                            while end_pos < len(line):
+                                if line[end_pos] == quote_char:
+                                    # Check if this quote is escaped (preceded by odd number of backslashes)
+                                    escape_count = 0
+                                    check_pos = end_pos - 1
+                                    while check_pos >= 0 and line[check_pos] == '\\':
+                                        escape_count += 1
+                                        check_pos -= 1
+                                    # If even number of escapes, this quote is not escaped (it's the closing quote)
+                                    if escape_count % 2 == 0:
+                                        break
+                                end_pos += 1
+                            if end_pos < len(line):
+                                value = line[start_pos + 1:end_pos]
+                                arg_count = self._count_format_specifiers(value)
+                                keys[key] = arg_count
 
                     # Also find multiline strings [[...]]
-                    multiline_pattern = r'(\w+)\s*=\s*\[\[([^]]*)\]\]'
-                    for match in re.finditer(multiline_pattern, line, re.DOTALL):
+                    multiline_pattern = r'(\w+)\s*=\s*\[\['
+                    for match in re.finditer(multiline_pattern, line):
                         key = match.group(1)
                         if key and key != 'LANGUAGE':
-                            value = match.group(2)
-                            arg_count = self._count_format_specifiers(value)
-                            keys[key] = arg_count
+                            # Extract the full multiline string value
+                            start_pos = match.end()  # Position after [[
+                            end_marker = ']]'
+                            end_pos = line.find(end_marker, start_pos)
+                            if end_pos != -1:
+                                value = line[start_pos:end_pos]
+                                arg_count = self._count_format_specifiers(value)
+                                keys[key] = arg_count
 
         except Exception as e:
             print(f"Warning: Error parsing language file {self.language_file}: {e}")
@@ -426,52 +447,74 @@ class FunctionComparisonReportGenerator:
         # Define all localization patterns to check
         patterns = [
             # L("key", args...)
-            (r'\bL\s*\(\s*(["\']|(\[\[))', 'L'),
+            (r'\bL\s*\(\s*["\']', 'L'),  # L with single/double quoted strings
+            (r'\bL\s*\(\s*\[\[', 'L'),   # L with multiline strings
             # lia.lang.getLocalizedString("key", args...)
-            (r'\blia\.lang\.getLocalizedString\s*\(\s*(["\']|(\[\[))', 'lia.lang.getLocalizedString'),
+            (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']', 'lia.lang.getLocalizedString'),
+            (r'\blia\.lang\.getLocalizedString\s*\(\s*\[\[', 'lia.lang.getLocalizedString'),
             # :notifyLocalized("key", args...)
-            (r':notifyLocalized\s*\(\s*(["\']|(\[\[))', ':notifyLocalized'),
+            (r':notifyLocalized\s*\(\s*["\']', ':notifyLocalized'),
+            (r':notifyLocalized\s*\(\s*\[\[', ':notifyLocalized'),
             # :notifyErrorLocalized("key", args...)
-            (r':notifyErrorLocalized\s*\(\s*(["\']|(\[\[))', ':notifyErrorLocalized'),
+            (r':notifyErrorLocalized\s*\(\s*["\']', ':notifyErrorLocalized'),
+            (r':notifyErrorLocalized\s*\(\s*\[\[', ':notifyErrorLocalized'),
             # :notifyWarningLocalized("key", args...)
-            (r':notifyWarningLocalized\s*\(\s*(["\']|(\[\[))', ':notifyWarningLocalized'),
+            (r':notifyWarningLocalized\s*\(\s*["\']', ':notifyWarningLocalized'),
+            (r':notifyWarningLocalized\s*\(\s*\[\[', ':notifyWarningLocalized'),
             # :notifyInfoLocalized("key", args...)
-            (r':notifyInfoLocalized\s*\(\s*(["\']|(\[\[))', ':notifyInfoLocalized'),
+            (r':notifyInfoLocalized\s*\(\s*["\']', ':notifyInfoLocalized'),
+            (r':notifyInfoLocalized\s*\(\s*\[\[', ':notifyInfoLocalized'),
             # :notifySuccessLocalized("key", args...)
-            (r':notifySuccessLocalized\s*\(\s*(["\']|(\[\[))', ':notifySuccessLocalized'),
+            (r':notifySuccessLocalized\s*\(\s*["\']', ':notifySuccessLocalized'),
+            (r':notifySuccessLocalized\s*\(\s*\[\[', ':notifySuccessLocalized'),
             # :notifyMoneyLocalized("key", args...)
-            (r':notifyMoneyLocalized\s*\(\s*(["\']|(\[\[))', ':notifyMoneyLocalized'),
+            (r':notifyMoneyLocalized\s*\(\s*["\']', ':notifyMoneyLocalized'),
+            (r':notifyMoneyLocalized\s*\(\s*\[\[', ':notifyMoneyLocalized'),
             # :notifyAdminLocalized("key", args...)
-            (r':notifyAdminLocalized\s*\(\s*(["\']|(\[\[))', ':notifyAdminLocalized'),
+            (r':notifyAdminLocalized\s*\(\s*["\']', ':notifyAdminLocalized'),
+            (r':notifyAdminLocalized\s*\(\s*\[\[', ':notifyAdminLocalized'),
         ]
 
         for pattern, func_name in patterns:
             for match in re.finditer(pattern, content):
+                # Extract the key from the match - start from the quote character
                 start_pos = match.end() - 1
                 key, end_pos = self._parse_lua_string_simple(content, start_pos)
 
                 if not key:
                     continue
 
-                # Count arguments after the key
-                # Find the closing parenthesis of the function call
-                paren_depth = 1
-                current_pos = end_pos
-                arg_content = []
+                # Find the opening parenthesis of the function call (should be before the quote)
+                func_start = match.start()
+                open_paren_pos = content.find('(', func_start)
+                if open_paren_pos == -1:
+                    continue
 
-                while current_pos < len(content) and paren_depth > 0:
+                # Find the matching closing parenthesis
+                paren_depth = 0
+                current_pos = open_paren_pos
+                arg_end = open_paren_pos
+
+                while current_pos < len(content):
                     char = content[current_pos]
                     if char == '(':
                         paren_depth += 1
                     elif char == ')':
                         paren_depth -= 1
                         if paren_depth == 0:
+                            arg_end = current_pos
                             break
-                    arg_content.append(char)
                     current_pos += 1
 
-                # Count arguments properly, handling nested function calls and strings
-                arg_count = self._count_function_arguments(''.join(arg_content).strip())
+                # Extract arguments (content between opening and closing paren, excluding the parens themselves)
+                if arg_end > open_paren_pos:
+                    arg_content = content[open_paren_pos + 1:arg_end]
+                    raw_arg_count = self._count_function_arguments(arg_content.strip())
+
+                    # For localization functions, subtract 1 because the key itself is the first argument
+                    arg_count = max(0, raw_arg_count - 1)
+                else:
+                    arg_count = 0
 
                 # Check if key exists and if argument count matches
                 if key in lang_keys:
