@@ -339,16 +339,22 @@ function QuickPanel:OnThemeChanged()
     if not IsValid(self) then return end
 
     -- Update title colors
-    self.title:SetTextColor(lia.color.theme.text or color_white)
-    self.title:SetExpensiveShadow(1, lia.color.theme and ColorAlpha(lia.color.theme.text, 175) or Color(0, 0, 0, 175))
+    if IsValid(self.title) then
+        self.title:SetTextColor(lia.color.theme.text or color_white)
+        self.title:SetExpensiveShadow(1, lia.color.theme and ColorAlpha(lia.color.theme.text, 175) or Color(0, 0, 0, 175))
+    end
 
     -- Update expand button colors
-    self.expand:SetTextColor(lia.color.theme.text or color_white)
-    self.expand:SetExpensiveShadow(1, lia.color.theme.text and ColorAlpha(lia.color.theme.text, 150) or Color(0, 0, 0, 150))
+    if IsValid(self.expand) then
+        self.expand:SetTextColor(lia.color.theme.text or color_white)
+        self.expand:SetExpensiveShadow(1, lia.color.theme.text and ColorAlpha(lia.color.theme.text, 150) or Color(0, 0, 0, 150))
+    end
 
     -- Update scroll panel background
-    self.scroll.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+    if IsValid(self.scroll) then
+        self.scroll.Paint = function(_, w, h)
+            lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+        end
     end
 
     -- Repopulate options to update all item colors
@@ -358,11 +364,6 @@ end
 function QuickPanel:Remove()
     -- Remove theme change hook
     hook.Remove("OnThemeChanged", self)
-
-    -- Call parent Remove function if BaseClass exists
-    if self.BaseClass and self.BaseClass.Remove then
-        self.BaseClass.Remove(self)
-    end
 end
 
 function QuickPanel:populateOptions()

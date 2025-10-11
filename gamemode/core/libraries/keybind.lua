@@ -228,6 +228,23 @@ lia.keybind.add("adminMode", {
     end
 })
 
+lia.keybind.add("quickMenu", {
+    keyBind = "c",
+    desc = "quickMenuDesc",
+    onPress = function()
+        if IsValid(lia.gui.quick) then
+            lia.gui.quick:Remove()
+        else
+            vgui.Create("liaQuick")
+        end
+    end,
+    onRelease = function()
+        if IsValid(lia.gui.quick) then
+            lia.gui.quick:Remove()
+        end
+    end
+})
+
 lia.keybind.add("quickTakeItem", {
     keyBind = KEY_NONE,
     desc = "quickTakeItemDesc",
