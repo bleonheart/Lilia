@@ -631,13 +631,15 @@ function PANEL:Init()
     self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
     self.animation:ChooseOption(currentAnimation == "" and L("none") or currentAnimation)
     self.animation.OnSelect = function(_, _, value)
+        local currentValue = self.animation:GetValue()
         if not IsValid(self.animation) then return end
-        if not isstring(value) then return end
-        if value == L("none") then value = "" end
-        lia.vendor.editor.animation(value)
+        local selectedValue = value or currentValue
+        if not isstring(selectedValue) then return end
+        if selectedValue == L("none") then selectedValue = "" end
+        if lia.vendor.editor.animation then lia.vendor.editor.animation(selectedValue) end
         timer.Simple(0.1, function()
             if IsValid(self.animation) then
-                local displayValue = value == "" and L("none") or value
+                local displayValue = selectedValue == "" and L("none") or selectedValue
                 self.animation:SetValue(displayValue)
             end
         end)

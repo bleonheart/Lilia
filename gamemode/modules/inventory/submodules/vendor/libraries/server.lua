@@ -205,6 +205,17 @@ function MODULE:OnEntityLoaded(ent, data)
                         ent:SetBodygroup(tonumber(k), v)
                     end
                 end
+
+                if ent.isReadyForAnim and ent:isReadyForAnim() then
+                    ent:setAnim()
+                else
+                    timer.Simple(0.2, function()
+                        if IsValid(ent) and ent.isReadyForAnim and ent:isReadyForAnim() then
+                            ent:setAnim()
+                        else
+                        end
+                    end)
+                end
             end
         end)
     else
@@ -213,6 +224,12 @@ function MODULE:OnEntityLoaded(ent, data)
             for k, v in pairs(data.bodygroups) do
                 ent:SetBodygroup(tonumber(k), v)
             end
+        end
+
+        if ent.isReadyForAnim and ent:isReadyForAnim() then
+            ent:setAnim()
+        else
+            timer.Simple(0.2, function() if IsValid(ent) and ent.isReadyForAnim and ent:isReadyForAnim() then ent:setAnim() end end)
         end
     end
 end
