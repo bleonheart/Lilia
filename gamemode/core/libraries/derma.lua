@@ -1238,7 +1238,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
                 ok = true
             elseif ctl.GetSelected then
                 local txt = select(1, ctl:GetSelected())
-                ok = txt and txt ~= "" and txt ~= "Select..." and txt ~= "Choose..."
+                ok = txt and txt ~= "" and txt ~= L("select") and txt ~= L("choose")
             elseif ctl.GetValue then
                 local val = ctl:GetValue()
                 ok = val ~= nil and val ~= "" and val ~= "0"
