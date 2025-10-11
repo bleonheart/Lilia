@@ -114,6 +114,7 @@ class CombinedReportData:
     argument_mismatches: List[Dict]  # New field for argument mismatches
     modules_data: List
     modules_scan: List[Dict]
+    language_comparison: Dict[str, Dict[str, List[str]]]  # New field for language key mismatches
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -164,6 +165,86 @@ class FunctionComparisonReportGenerator:
 
         return mismatches
 
+    def _scan_all_language_files(self) -> Dict[str, Set[str]]:
+        """Scan all language files and extract their keys"""
+        language_keys = {}
+        languages_dir = self.base_path / "languages"
+
+        if not languages_dir.exists():
+            print(f"Warning: Languages directory not found: {languages_dir}")
+            return language_keys
+
+        # Find all .lua files in languages directory
+        for lang_file in languages_dir.glob("*.lua"):
+            lang_name = lang_file.stem  # filename without extension
+            keys = self._extract_language_keys(str(lang_file))
+
+            if keys:
+                language_keys[lang_name] = keys
+                print(f"Found {len(keys)} keys in {lang_name}")
+            else:
+                print(f"No keys found in {lang_name}")
+
+        return language_keys
+
+    def _extract_language_keys(self, file_path: str) -> Set[str]:
+        """Extract all language keys from a single language file"""
+        keys = set()
+
+        if not Path(file_path).exists():
+            return keys
+
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+
+            # Parse LANGUAGE table entries by processing the entire file
+            # This approach is more reliable than trying to extract the table content
+            in_language_table = False
+            brace_depth = 0
+
+            lines = content.split('\n')
+            for line in lines:
+                stripped_line = line.strip()
+
+                # Check if we're entering or exiting the LANGUAGE table
+                if stripped_line == 'LANGUAGE = {' or stripped_line == 'LANGUAGE = {':
+                    in_language_table = True
+                    brace_depth = 1
+                    continue
+                elif in_language_table:
+                    # Count opening and closing braces
+                    brace_depth += line.count('{')
+                    brace_depth -= line.count('}')
+
+                    # If we've closed all braces, we're done
+                    if brace_depth <= 0:
+                        in_language_table = False
+                        break
+
+                # If we're inside the LANGUAGE table, look for key patterns
+                if in_language_table and brace_depth > 0:
+                    # Pattern matches: key = "value" or key = 'value' or key = [[value]]
+                    # Also handles whitespace and optional commas
+                    key_pattern = r'(\w+)\s*=\s*["\'](?:[^"\'\\]|\\.)*["\']'
+
+                    for match in re.finditer(key_pattern, line):
+                        key = match.group(1)
+                        if key and key != 'LANGUAGE':  # Skip the LANGUAGE key itself
+                            keys.add(key)
+
+                    # Also find multiline string keys [[...]]
+                    multiline_pattern = r'(\w+)\s*=\s*\[\[([^]]*)\]\]'
+                    for match in re.finditer(multiline_pattern, line, re.DOTALL):
+                        key = match.group(1)
+                        if key and key != 'LANGUAGE':  # Skip the LANGUAGE key itself
+                            keys.add(key)
+
+        except Exception as e:
+            print(f"Warning: Error parsing language file {file_path}: {e}")
+
+        return keys
+
     def _get_localization_keys_with_arg_counts(self) -> Dict[str, int]:
         """Get localization keys and count their expected format specifiers"""
         keys = {}
@@ -175,19 +256,50 @@ class FunctionComparisonReportGenerator:
             with open(self.language_file, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
 
-            # Parse LANGUAGE table entries
-            # Pattern matches: key = "value" or key = 'value' or key = [[value]]
-            pattern = r'(\w+)\s*=\s*(["\']|(\[\[))'
+            # Parse LANGUAGE table entries by processing the entire file
+            # This approach is more reliable than trying to extract the table content
+            in_language_table = False
+            brace_depth = 0
 
-            for match in re.finditer(pattern, content):
-                key = match.group(1)
-                start_pos = match.end() - 1  # Position of the quote or bracket
+            lines = content.split('\n')
+            for line in lines:
+                stripped_line = line.strip()
 
-                # Simple string parsing for format specifiers
-                value, _ = self._parse_lua_string_simple(content, start_pos)
-                if value:
-                    arg_count = self._count_format_specifiers(value)
-                    keys[key] = arg_count
+                # Check if we're entering or exiting the LANGUAGE table
+                if stripped_line == 'LANGUAGE = {' or stripped_line == 'LANGUAGE = {':
+                    in_language_table = True
+                    brace_depth = 1
+                    continue
+                elif in_language_table:
+                    # Count opening and closing braces
+                    brace_depth += line.count('{')
+                    brace_depth -= line.count('}')
+
+                    # If we've closed all braces, we're done
+                    if brace_depth <= 0:
+                        in_language_table = False
+                        break
+
+                # If we're inside the LANGUAGE table, look for key patterns
+                if in_language_table and brace_depth > 0:
+                    # Find regular quoted strings first
+                    pattern = r'(\w+)\s*=\s*["\']([^"\']*(?:\\.[^"\']*)*)["\']'
+
+                    for match in re.finditer(pattern, line):
+                        key = match.group(1)
+                        if key and key != 'LANGUAGE':
+                            value = match.group(2)
+                            arg_count = self._count_format_specifiers(value)
+                            keys[key] = arg_count
+
+                    # Also find multiline strings [[...]]
+                    multiline_pattern = r'(\w+)\s*=\s*\[\[([^]]*)\]\]'
+                    for match in re.finditer(multiline_pattern, line, re.DOTALL):
+                        key = match.group(1)
+                        if key and key != 'LANGUAGE':
+                            value = match.group(2)
+                            arg_count = self._count_format_specifiers(value)
+                            keys[key] = arg_count
 
         except Exception as e:
             print(f"Warning: Error parsing language file {self.language_file}: {e}")
@@ -378,6 +490,39 @@ class FunctionComparisonReportGenerator:
 
         return mismatches
 
+    def _compare_language_files(self) -> Dict[str, Dict[str, List[str]]]:
+        """Compare all language files to find missing keys"""
+        print("Comparing language files for missing keys...")
+
+        # Scan all language files
+        language_keys = self._scan_all_language_files()
+
+        if len(language_keys) < 2:
+            print(f"Warning: Need at least 2 language files to compare, found {len(language_keys)}")
+            return {}
+
+        # Get all unique keys across all languages
+        all_keys = set()
+        for keys in language_keys.values():
+            all_keys.update(keys)
+
+        # Compare each language against all others
+        missing_keys = {}
+
+        for base_lang, base_keys in language_keys.items():
+            missing_keys[base_lang] = {}
+
+            for other_lang, other_keys in language_keys.items():
+                if base_lang == other_lang:
+                    continue
+
+                # Find keys that base_lang is missing compared to other_lang
+                missing = sorted(list(other_keys - base_keys))
+                missing_keys[base_lang][other_lang] = missing
+
+        print(f"Compared {len(language_keys)} language files, found {len(all_keys)} total unique keys")
+        return missing_keys
+
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
@@ -401,8 +546,14 @@ class FunctionComparisonReportGenerator:
         argument_mismatches = self._detect_argument_mismatches()
 
         # 5. Module undocumented items scan (hooks and lia.* functions)
-        print("Scanning external modules for undocumented items...")
-        modules_scan = self._scan_modules_for_undocumented()
+        modules_scan = []
+        if self.generate_module_docs:
+            print("Scanning external modules for undocumented items...")
+            modules_scan = self._scan_modules_for_undocumented()
+
+        # 6. Language file comparison
+        print("Comparing language files...")
+        language_comparison = self._compare_language_files()
 
         return CombinedReportData(
             function_comparison=function_results,
@@ -412,6 +563,7 @@ class FunctionComparisonReportGenerator:
             argument_mismatches=argument_mismatches,
             modules_data=modules_data,
             modules_scan=modules_scan,
+            language_comparison=language_comparison,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -459,35 +611,36 @@ class FunctionComparisonReportGenerator:
             # Framework analysis
             framework_data = analyze_data(self.language_file, str(self.base_path))
 
-            # Modules analysis
+            # Modules analysis (only if module docs generation is enabled)
             modules = []
-            lang_name = Path(self.language_file).stem
+            if self.generate_module_docs:
+                lang_name = Path(self.language_file).stem
 
-            for base_path in self.modules_paths:
-                base_path = Path(base_path)
-                if not base_path.exists():
-                    continue
-
-                for module_name in sorted(os.listdir(base_path)):
-                    module_dir = base_path / module_name
-                    if not module_dir.is_dir():
+                for base_path in self.modules_paths:
+                    base_path = Path(base_path)
+                    if not base_path.exists():
                         continue
 
-                    # Skip _disabled directories and modules inside _disabled
-                    if module_name == "_disabled" or "_disabled" in str(module_dir):
-                        print(f"Skipping disabled module: {module_dir}")
-                        continue
-
-                    lang_file = module_dir / "languages" / f"{lang_name}.lua"
-                    # Only check localization for gitmodules; skip other modules for localization
-                    if 'gitmodules' not in str(base_path).lower():
-                        # Skip localization analysis for non-gitmodules
-                        pass
-                    else:
-                        if not lang_file.exists():
+                    for module_name in sorted(os.listdir(base_path)):
+                        module_dir = base_path / module_name
+                        if not module_dir.is_dir():
                             continue
-                        module_data = analyze_data(str(lang_file), str(module_dir))
-                        modules.append(module_data)
+
+                        # Skip _disabled directories and modules inside _disabled
+                        if module_name == "_disabled" or "_disabled" in str(module_dir):
+                            print(f"Skipping disabled module: {module_dir}")
+                            continue
+
+                        lang_file = module_dir / "languages" / f"{lang_name}.lua"
+                        # Only check localization for gitmodules; skip other modules for localization
+                        if 'gitmodules' not in str(base_path).lower():
+                            # Skip localization analysis for non-gitmodules
+                            pass
+                        else:
+                            if not lang_file.exists():
+                                continue
+                            module_data = analyze_data(str(lang_file), str(module_dir))
+                            modules.append(module_data)
 
             return framework_data, modules
         except Exception as e:
@@ -511,11 +664,15 @@ class FunctionComparisonReportGenerator:
         # Localization Section
         report_lines.extend(self._generate_localization_section(data))
 
+        # Language Comparison Section
+        report_lines.extend(self._generate_language_comparison_section(data))
+
         # Modules Section (in-report; do not create per-module files)
-        try:
-            report_lines.extend(self._generate_modules_section(data.modules_scan))
-        except Exception as e:
-            print(f"Error generating modules section: {e}")
+        if self.generate_module_docs:
+            try:
+                report_lines.extend(self._generate_modules_section(data.modules_scan))
+            except Exception as e:
+                print(f"Error generating modules section: {e}")
 
         return "\n".join(report_lines)
 
@@ -1086,6 +1243,57 @@ class FunctionComparisonReportGenerator:
             for row in loc_data['undefined_rows']:
                 lines.append(f"- `{row[4]}` in {row[0]}:{row[1]}:{row[2]} ({row[3]})")
             lines.append("")
+
+        return lines
+
+    def _generate_language_comparison_section(self, data: CombinedReportData) -> List[str]:
+        """Generate language comparison section"""
+        lines = ["## Language File Comparison", ""]
+
+        if not data.language_comparison:
+            lines.append("_No language comparison data available._")
+            lines.append("")
+            return lines
+
+        # Count total missing keys
+        total_missing = sum(
+            len(missing_list)
+            for lang_data in data.language_comparison.values()
+            for missing_list in lang_data.values()
+        )
+
+        lines.extend([
+            "### Summary",
+            f"- **Languages Compared:** {len(data.language_comparison)}",
+            f"- **Total Missing Keys:** {total_missing}",
+            "",
+        ])
+
+        # Generate the detailed comparison for each language
+        for base_lang in sorted(data.language_comparison.keys()):
+            lang_missing = data.language_comparison[base_lang]
+
+            if not any(lang_missing.values()):  # Skip if no missing keys
+                continue
+
+            lines.append(f"### {base_lang.title()}")
+            lines.append("")
+
+            # Check if this language is missing any keys from others
+            has_missing_keys = any(missing_keys for missing_keys in lang_missing.values())
+
+            if has_missing_keys:
+                lines.append("- **Missing Keys:**")
+                for other_lang in sorted(lang_missing.keys()):
+                    missing_keys = lang_missing[other_lang]
+                    if missing_keys:
+                        lines.append(f"  - **From {other_lang.title()}:** {len(missing_keys)} keys")
+                        for key in missing_keys:
+                            lines.append(f"    - `{key}`")
+                lines.append("")
+            else:
+                lines.append("- **No missing keys from other languages**")
+                lines.append("")
 
         return lines
 
