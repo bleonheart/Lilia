@@ -275,6 +275,7 @@ function QuickPanel:addSpacer()
 end
 
 function QuickPanel:addSlider(text, cb, val, min, max, dec)
+    if not IsValid(self.scroll) then return end
     local s = self.scroll:Add("DNumSlider")
     s:SetText(text)
     s:SetTall(36)
