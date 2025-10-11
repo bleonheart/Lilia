@@ -118,12 +118,26 @@ def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, in
     usage_data = defaultdict(list)
     gamemode_path = Path(gamemode_path)
 
-    # Patterns for localization calls - only these 3 formats as specified by user
+    # Patterns for localization calls - comprehensive coverage of all localization methods
     patterns = [
-        # :notifyLocalized("xxxx", ...)
-        (r':notifyLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyLocalized'),
         # L("xxxxx",...)
         (r'\bL\s*\(\s*["\']([^"\']+)["\']', 'L'),
+        # lia.lang.getLocalizedString("xxxxx",...)
+        (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']([^"\']+)["\']', 'lia.lang.getLocalizedString'),
+        # :notifyLocalized("xxxx", ...)
+        (r':notifyLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyLocalized'),
+        # :notifyErrorLocalized("xxxx", ...)
+        (r':notifyErrorLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyErrorLocalized'),
+        # :notifyWarningLocalized("xxxx", ...)
+        (r':notifyWarningLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyWarningLocalized'),
+        # :notifyInfoLocalized("xxxx", ...)
+        (r':notifyInfoLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyInfoLocalized'),
+        # :notifySuccessLocalized("xxxx", ...)
+        (r':notifySuccessLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifySuccessLocalized'),
+        # :notifyMoneyLocalized("xxxx", ...)
+        (r':notifyMoneyLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyMoneyLocalized'),
+        # :notifyAdminLocalized("xxxx", ...)
+        (r':notifyAdminLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyAdminLocalized'),
         # "@xxxx"
         (r'@"([^"]+)"', '@'),
     ]
@@ -223,22 +237,23 @@ def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
             for usage in usages:
                 file_path, line_num, line_content, func_type = usage
 
-                # For L() function calls, check if arguments match placeholders
-                if func_type == 'L':
-                    # Extract arguments after the key
-                    args_match = re.search(r'\bL\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)', line_content)
-                    if args_match:
-                        args_str = args_match.group(1)
-                        # Count commas (rough estimate of argument count)
-                        arg_count = args_str.count(',') + 1 if args_str.strip() else 0
+                # Define patterns for different function types
+                patterns = {
+                    'L': r'\bL\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    'lia.lang.getLocalizedString': r'\blia\.lang\.getLocalizedString\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyLocalized': r':notifyLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyErrorLocalized': r':notifyErrorLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyWarningLocalized': r':notifyWarningLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyInfoLocalized': r':notifyInfoLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifySuccessLocalized': r':notifySuccessLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyMoneyLocalized': r':notifyMoneyLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    ':notifyAdminLocalized': r':notifyAdminLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                }
 
-                        if arg_count != placeholder_count:
-                            mismatch_keys_seen.add(key)
-                            results['mismatch_rows'].append(usage + (key,))
-                            break  # Only add once per key
-                elif func_type == ':notifyLocalized':
-                    # For notifyLocalized, extract arguments after the key
-                    args_match = re.search(r':notifyLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)', line_content)
+                # Check if this function type has argument checking
+                if func_type in patterns:
+                    # Extract arguments after the key
+                    args_match = re.search(patterns[func_type], line_content)
                     if args_match:
                         args_str = args_match.group(1)
                         # Count commas (rough estimate of argument count)

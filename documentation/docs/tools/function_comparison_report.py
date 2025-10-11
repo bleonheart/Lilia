@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 import os
 import sys
@@ -310,50 +311,70 @@ class FunctionComparisonReportGenerator:
         mismatches = []
         lines = content.split('\n')
 
-        # Pattern for L("key", args...)
-        l_pattern = r'\bL\s*\(\s*(["\']|(\[\[))'
+        # Define all localization patterns to check
+        patterns = [
+            # L("key", args...)
+            (r'\bL\s*\(\s*(["\']|(\[\[))', 'L'),
+            # lia.lang.getLocalizedString("key", args...)
+            (r'\blia\.lang\.getLocalizedString\s*\(\s*(["\']|(\[\[))', 'lia.lang.getLocalizedString'),
+            # :notifyLocalized("key", args...)
+            (r':notifyLocalized\s*\(\s*(["\']|(\[\[))', ':notifyLocalized'),
+            # :notifyErrorLocalized("key", args...)
+            (r':notifyErrorLocalized\s*\(\s*(["\']|(\[\[))', ':notifyErrorLocalized'),
+            # :notifyWarningLocalized("key", args...)
+            (r':notifyWarningLocalized\s*\(\s*(["\']|(\[\[))', ':notifyWarningLocalized'),
+            # :notifyInfoLocalized("key", args...)
+            (r':notifyInfoLocalized\s*\(\s*(["\']|(\[\[))', ':notifyInfoLocalized'),
+            # :notifySuccessLocalized("key", args...)
+            (r':notifySuccessLocalized\s*\(\s*(["\']|(\[\[))', ':notifySuccessLocalized'),
+            # :notifyMoneyLocalized("key", args...)
+            (r':notifyMoneyLocalized\s*\(\s*(["\']|(\[\[))', ':notifyMoneyLocalized'),
+            # :notifyAdminLocalized("key", args...)
+            (r':notifyAdminLocalized\s*\(\s*(["\']|(\[\[))', ':notifyAdminLocalized'),
+        ]
 
-        for match in re.finditer(l_pattern, content):
-            start_pos = match.end() - 1
-            key, end_pos = self._parse_lua_string_simple(content, start_pos)
+        for pattern, func_name in patterns:
+            for match in re.finditer(pattern, content):
+                start_pos = match.end() - 1
+                key, end_pos = self._parse_lua_string_simple(content, start_pos)
 
-            if not key:
-                continue
+                if not key:
+                    continue
 
-            # Count arguments after the key
-            # Find the closing parenthesis of the function call
-            paren_depth = 1
-            current_pos = end_pos
-            arg_content = []
+                # Count arguments after the key
+                # Find the closing parenthesis of the function call
+                paren_depth = 1
+                current_pos = end_pos
+                arg_content = []
 
-            while current_pos < len(content) and paren_depth > 0:
-                char = content[current_pos]
-                if char == '(':
-                    paren_depth += 1
-                elif char == ')':
-                    paren_depth -= 1
-                    if paren_depth == 0:
-                        break
-                arg_content.append(char)
-                current_pos += 1
+                while current_pos < len(content) and paren_depth > 0:
+                    char = content[current_pos]
+                    if char == '(':
+                        paren_depth += 1
+                    elif char == ')':
+                        paren_depth -= 1
+                        if paren_depth == 0:
+                            break
+                    arg_content.append(char)
+                    current_pos += 1
 
-            # Count arguments properly, handling nested function calls and strings
-            arg_count = self._count_function_arguments(''.join(arg_content).strip())
+                # Count arguments properly, handling nested function calls and strings
+                arg_count = self._count_function_arguments(''.join(arg_content).strip())
 
-            # Check if key exists and if argument count matches
-            if key in lang_keys:
-                expected = lang_keys[key]
-                if arg_count != expected:
-                    line_num = content[:match.start()].count('\n') + 1
-                    mismatches.append({
-                        'file': filename,
-                        'line': line_num,
-                        'function': 'L',
-                        'key': key,
-                        'expected': expected,
-                        'provided': arg_count,
-                        'context': lines[line_num - 1].strip() if line_num <= len(lines) else ''
-                    })
+                # Check if key exists and if argument count matches
+                if key in lang_keys:
+                    expected = lang_keys[key]
+                    if arg_count != expected:
+                        line_num = content[:match.start()].count('\n') + 1
+                        mismatches.append({
+                            'file': filename,
+                            'line': line_num,
+                            'function': func_name,
+                            'key': key,
+                            'expected': expected,
+                            'provided': arg_count,
+                            'context': lines[line_num - 1].strip() if line_num <= len(lines) else ''
+                        })
 
         return mismatches
 
@@ -1270,22 +1291,5 @@ Examples:
         sys.exit(1)
 
 if __name__ == "__main__":
-    # Check if run with no arguments (simple mode)
-    if len(sys.argv) == 1:
-        # Simple mode - run basic function filtering example
-        print("Function Comparison Report Tool - Simple Mode")
-        print("=" * 50)
-
-        test_functions = [
-            "lia.derma.menuPlayerSelector.btn_close.DoClick",
-            "lia.util.getTableSize",
-            "some.unknown.function"
-        ]
-
-        for func in test_functions:
-            should_check = should_check_function(func)
-            reason = get_exclusion_reason(func)
-            print(f"{func}: Check={should_check}, Reason={reason}")
-    else:
-        # Advanced mode - run comprehensive analysis
-        main()
+    # Always run comprehensive analysis (complex mode)
+    main()
