@@ -120,13 +120,11 @@ function PANEL:onFactionSelected(fac)
 end
 
 function PANEL:updateContext()
-    -- Update context with current values from text entries
     if IsValid(self.nameEntry) then self:setContext("name", string.Trim(self.nameEntry:GetValue() or "")) end
     if IsValid(self.descEntry) then self:setContext("desc", string.Trim(self.descEntry:GetValue() or "")) end
     if IsValid(self.factionCombo) then
         local factionUniqueID = self.factionCombo:GetSelectedData()
         if factionUniqueID then
-            -- Convert uniqueID to faction index
             local faction = lia.faction.teams[factionUniqueID]
             if faction then self:setContext("faction", faction.index) end
         end

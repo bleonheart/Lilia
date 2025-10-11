@@ -169,7 +169,6 @@ function MODULE:LoadData()
             if hasData then
                 ent:setNetVar("doorData", doorData)
                 loadedCount = loadedCount + 1
-                -- Immediately sync door lock state with Source engine
                 if ent:isDoor() then
                     if doorData.locked then
                         ent:Fire("lock")

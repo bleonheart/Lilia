@@ -767,10 +767,6 @@ net.Receive("liaAssureClientSideAssets", function()
     lia.webimage.allowDownloads = true
     local webimages = lia.webimage.stored
     local websounds = lia.websound.stored
-    print(L("assetDownloadStart"))
-    print(L("webImagesToDownload"), table.Count(webimages))
-    print(L("webSoundsToDownload"), table.Count(websounds))
-    print("===========================================")
     local downloadQueue = {}
     local activeDownloads = 0
     local maxConcurrent = 5
@@ -827,7 +823,6 @@ net.Receive("liaAssureClientSideAssets", function()
                 else
                     failedSounds = failedSounds + 1
                     local errorMessage = errorMsg or L("unknownError")
-                    print(L("soundFailed") .. ": " .. download.name .. " - " .. errorMessage)
                     chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), L("failedToDownloadSound", download.name, errorMessage))
                 end
 
@@ -868,7 +863,6 @@ net.Receive("liaAssureClientSideAssets", function()
                 end
             end)
         else
-            print(string.format("Download progress: %d active, %d queued, %d/%d images, %d/%d sounds", activeDownloads, #downloadQueue, completedImages, totalImages, completedSounds, totalSounds))
         end
     end)
 end)

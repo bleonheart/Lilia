@@ -86,14 +86,14 @@ function PANEL:Init()
     local lbl = self:Add("DLabel")
     lbl:SetText(L("vendorYourItems"))
     lbl:SetFont("liaMediumFont")
-    lbl:SetTextColor(lia.color.theme.text or color_white)
+    lbl:SetTextColor(color_white)
     lbl:SetContentAlignment(5)
     lbl:SizeToContents()
     lbl:SetPos(self.mePanel.x + self.mePanel:GetWide() * 0.5 - lbl:GetWide() * 0.5, self.y0 - lbl:GetTall() - 8)
     local lbl2 = self:Add("DLabel")
     lbl2:SetText(L("vendorItemsTitle"))
     lbl2:SetFont("liaMediumFont")
-    lbl2:SetTextColor(lia.color.theme.text or color_white)
+    lbl2:SetTextColor(color_white)
     lbl2:SetContentAlignment(5)
     lbl2:SizeToContents()
     lbl2:SetPos(self.vendorPanel.x + self.vendorPanel:GetWide() * 0.5 - lbl2:GetWide() * 0.5, self.y0 - lbl2:GetTall() - 8)
@@ -416,7 +416,7 @@ function PANEL:Init()
     self.action:Dock(BOTTOM)
     self.action:DockMargin(0, 10, 0, 0)
     self.action:SetFont("LiliaFont.18")
-        self.action:SetTextColor(lia.color.theme.text or color_white)
+    self.action:SetTextColor(lia.color.theme.text or color_white)
     self.isSelling = false
     self.suffix = ""
 end
@@ -632,6 +632,7 @@ function PANEL:Init()
     self.animation:ChooseOption(currentAnimation == "" and L("none") or currentAnimation)
     self.animation.OnSelect = function(_, _, value)
         if not IsValid(self.animation) then return end
+        if not isstring(value) then return end
         if value == L("none") then value = "" end
         lia.vendor.editor.animation(value)
     end
@@ -781,13 +782,13 @@ function PANEL:refreshAnimationDropdown()
         local sequenceList = liaVendorEnt:GetSequenceList()
         if sequenceList then
             for _, sequenceName in ipairs(sequenceList) do
-                self.animation:AddChoice(sequenceName)
+                if isstring(sequenceName) and sequenceName ~= "" then self.animation:AddChoice(sequenceName) end
             end
         end
     end
 
     local currentAnimation = liaVendorEnt:getNetVar("animation", "")
-    self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
+    if isstring(currentAnimation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
 end
 
 function PANEL:onNameDescChanged(key)

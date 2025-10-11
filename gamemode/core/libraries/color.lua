@@ -70,7 +70,6 @@ if CLIENT then
 
     function lia.color.testThemeTransition(themeName)
         lia.color.applyTheme(themeName, true)
-        print(L("startedThemeTransition", themeName))
     end
 
     lia.color.transition = {

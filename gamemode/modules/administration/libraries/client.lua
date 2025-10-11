@@ -1,4 +1,4 @@
-function MODULE:ShowPlayerOptions(target, options)
+﻿function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if not IsValid(client) or not IsValid(target) then return end
     if not (client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty()) then return end
@@ -32,77 +32,77 @@ function MODULE:ShowPlayerOptions(target, options)
         {
             name = L("blind"),
             image = "icon16/eye.png",
-            func = function() RunConsoleCommand("say", "!blind " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!blind " .. GetIdentifier(target)) end
         },
         {
             name = L("freeze"),
             image = "icon16/lock.png",
-            func = function() RunConsoleCommand("say", "!freeze " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!freeze " .. GetIdentifier(target)) end
         },
         {
             name = L("gag"),
             image = "icon16/sound_mute.png",
-            func = function() RunConsoleCommand("say", "!gag " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!gag " .. GetIdentifier(target)) end
         },
         {
             name = L("ignite"),
             image = "icon16/fire.png",
-            func = function() RunConsoleCommand("say", "!ignite " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!ignite " .. GetIdentifier(target)) end
         },
         {
             name = L("jail"),
             image = "icon16/lock.png",
-            func = function() RunConsoleCommand("say", "!jail " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!jail " .. GetIdentifier(target)) end
         },
         {
             name = L("mute"),
             image = "icon16/sound_delete.png",
-            func = function() RunConsoleCommand("say", "!mute " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!mute " .. GetIdentifier(target)) end
         },
         {
             name = L("slay"),
             image = "icon16/bomb.png",
-            func = function() RunConsoleCommand("say", "!slay " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!slay " .. GetIdentifier(target)) end
         },
         {
             name = L("unblind"),
             image = "icon16/eye.png",
-            func = function() RunConsoleCommand("say", "!unblind " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!unblind " .. GetIdentifier(target)) end
         },
         {
             name = L("ungag"),
             image = "icon16/sound_low.png",
-            func = function() RunConsoleCommand("say", "!ungag " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!ungag " .. GetIdentifier(target)) end
         },
         {
             name = L("unfreeze"),
             image = "icon16/accept.png",
-            func = function() RunConsoleCommand("say", "!unfreeze " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!unfreeze " .. GetIdentifier(target)) end
         },
         {
             name = L("unmute"),
             image = "icon16/sound_add.png",
-            func = function() RunConsoleCommand("say", "!unmute " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!unmute " .. GetIdentifier(target)) end
         },
         {
             name = L("bring"),
             image = "icon16/arrow_down.png",
-            func = function() RunConsoleCommand("say", "!bring " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!bring " .. GetIdentifier(target)) end
         },
         {
             name = L("goTo"),
             image = "icon16/arrow_right.png",
-            func = function() RunConsoleCommand("say", "!goto " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!goto " .. GetIdentifier(target)) end
         },
         {
             name = L("respawn"),
             image = "icon16/arrow_refresh.png",
-            func = function() RunConsoleCommand("say", "!respawn " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!respawn " .. GetIdentifier(target)) end
         },
         {
             name = L("returnText"),
             image = "icon16/arrow_redo.png",
-            func = function() RunConsoleCommand("say", "!return " .. target:SteamID()) end
+            func = function() RunConsoleCommand("say", "!return " .. GetIdentifier(target)) end
         }
     }
 
