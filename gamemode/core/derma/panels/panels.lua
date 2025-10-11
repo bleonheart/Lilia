@@ -181,21 +181,29 @@ function QuickPanel:Init()
     end
 
     self.scroll = self:Add("liaScrollPanel")
+    self.scroll.Paint = function(_, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
     self.items = {}
     hook.Run("SetupQuickMenu", self)
     self:populateOptions()
     self:MoveTo(self.x, 30, 0.05)
+
+    -- Listen for theme changes
+    hook.Add("OnThemeChanged", self, self.OnThemeChanged)
 end
 
 function QuickPanel:PerformLayout(w, h)
-    self.scroll:SetPos(0, 36)
-    self.scroll:SetSize(w, math.max(h - 36, 0))
+    if IsValid(self.scroll) then
+        self.scroll:SetPos(0, 36)
+        self.scroll:SetSize(w, math.max(h - 36, 0))
+    end
 end
 
 local function paintButton(button, w, h)
-    local themeColor = lia.color.theme and lia.color.theme.theme or color_white
-    local r, g, b = themeColor:Unpack()
-    local a = button.Depressed or button.m_bSelected and 255 or button.Hovered and 200 or 100
+    local baseColor = lia.color.theme and lia.color.theme.button or Color(60, 60, 60)
+    local r, g, b = baseColor:Unpack()
+    local a = button.Depressed and 255 or button.m_bSelected and 220 or button.Hovered and 180 or 140
     surface.SetDrawColor(r, g, b, a)
     surface.SetMaterial(lia.util.getMaterial("vgui/gradient-r"))
     surface.DrawTexturedRect(0, 0, w / 2, h)
@@ -226,10 +234,15 @@ function QuickPanel:addCategory(text)
     label:SetTextColor(lia.color.theme.text or color_white)
     label:SetExpensiveShadow(1, lia.color.theme.text and ColorAlpha(lia.color.theme.text, 150) or Color(0, 0, 0, 150))
     label:SetContentAlignment(5)
-    label.Paint = function() end
+    label.Paint = function(_, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+        surface.SetDrawColor(lia.color.theme and lia.color.theme.panel[3] or Color(80, 80, 80))
+        surface.DrawOutlinedRect(0, 0, w, h, 1)
+    end
 end
 
 function QuickPanel:addButton(text, cb)
+    if not IsValid(self.scroll) then return end
     local btn = self.scroll:Add("DButton")
     btn:SetText(text)
     btn:SetTall(36)
@@ -247,12 +260,13 @@ function QuickPanel:addButton(text, cb)
 end
 
 function QuickPanel:addSpacer()
+    if not IsValid(self.scroll) then return end
     local pnl = self.scroll:Add("DPanel")
     pnl:SetTall(1)
     pnl:Dock(TOP)
     pnl:DockMargin(0, 1, 0, 0)
     pnl.Paint = function(_, w, h)
-        surface.SetDrawColor(ColorAlpha(lia.color.theme and lia.color.theme.text or color_white, 10))
+        surface.SetDrawColor(lia.color.theme and lia.color.theme.panel[2] or Color(60, 60, 60))
         surface.DrawRect(0, 0, w, h)
     end
 
@@ -285,7 +299,16 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
     end
 
     self.items[#self.items + 1] = s
-    s.Paint = paintButton
+    s.Paint = function(slider, w, h)
+        local baseColor = lia.color.theme and lia.color.theme.button or Color(60, 60, 60)
+        local r, g, b = baseColor:Unpack()
+        local a = slider.Depressed and 255 or slider.Hovered and 180 or 140
+        surface.SetDrawColor(r, g, b, a)
+        surface.SetMaterial(lia.util.getMaterial("vgui/gradient-r"))
+        surface.DrawTexturedRect(0, 0, w / 2, h)
+        surface.SetMaterial(lia.util.getMaterial("vgui/gradient-l"))
+        surface.DrawTexturedRect(w / 2, 0, w / 2, h)
+    end
     return s
 end
 
@@ -309,6 +332,36 @@ function QuickPanel:Paint(w, h)
     lia.util.drawBlur(self)
     lia.derma.rect(0, 0, w, h):Rad(radius):Color(lia.color.theme and lia.color.theme.window_shadow or Color(0, 0, 0, 200)):Shape(lia.derma.SHAPE_IOS):Shadow(5, 20):Draw()
     lia.derma.rect(0, 0, w, 36):Rad(radius):Color(lia.color.theme and lia.color.theme.theme or color_white):Shape(lia.derma.SHAPE_IOS):Draw()
+end
+
+function QuickPanel:OnThemeChanged()
+    if not IsValid(self) then return end
+
+    -- Update title colors
+    self.title:SetTextColor(lia.color.theme.text or color_white)
+    self.title:SetExpensiveShadow(1, lia.color.theme and ColorAlpha(lia.color.theme.text, 175) or Color(0, 0, 0, 175))
+
+    -- Update expand button colors
+    self.expand:SetTextColor(lia.color.theme.text or color_white)
+    self.expand:SetExpensiveShadow(1, lia.color.theme.text and ColorAlpha(lia.color.theme.text, 150) or Color(0, 0, 0, 150))
+
+    -- Update scroll panel background
+    self.scroll.Paint = function(_, w, h)
+        lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
+
+    -- Repopulate options to update all item colors
+    self:populateOptions()
+end
+
+function QuickPanel:Remove()
+    -- Remove theme change hook
+    hook.Remove("OnThemeChanged", self)
+
+    -- Call parent Remove function if BaseClass exists
+    if self.BaseClass and self.BaseClass.Remove then
+        self.BaseClass.Remove(self)
+    end
 end
 
 function QuickPanel:populateOptions()
@@ -344,7 +397,7 @@ function QuickPanel:populateOptions()
         self:addCategory(cat)
         local list = cats[cat]
         table.sort(list, function(a, b) return (a.opt.name or a.key) < (b.opt.name or b.key) end)
-        for _, info in ipairs(list) do
+        for j, info in ipairs(list) do
             local key = info.key
             local opt = info.opt
             local data = opt.data or {}
@@ -353,6 +406,11 @@ function QuickPanel:populateOptions()
                 self:addCheck(opt.name or key, function(_, state) lia.option.set(key, state) end, val)
             elseif opt.type == "Int" or opt.type == "Float" then
                 self:addSlider(opt.name or key, function(_, v) lia.option.set(key, v) end, val, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
+            end
+
+            -- Add spacer between child elements (but not after the last one in this category)
+            if j < #list then
+                self:addSpacer()
             end
         end
 

@@ -264,7 +264,7 @@ end
 function PANEL:addPlayer(ply, parent)
     local slot = parent:Add("DPanel")
     slot:Dock(TOP)
-    local height = ScrH() * 0.15
+    local height = ScrH() * 0.16
     slot:SetTall(height)
     slot.Paint = function() end
     slot.character = ply:getChar()
@@ -344,7 +344,7 @@ function PANEL:addPlayer(ply, parent)
     end)
 
     slot.name = vgui.Create("DLabel", slot)
-    slot.name:SetFont("liaSmallFont")
+    slot.name:SetFont("liaMediumFont")
     slot.name:SetTextColor(color_white)
     slot.name:SetExpensiveShadow(1, color_black)
     slot.desc = vgui.Create("DLabel", slot)
@@ -371,7 +371,7 @@ function PANEL:addPlayer(ply, parent)
         self.name:SetPos(iconSize + margin * 2, 0)
         self.name:SetWide(availW)
         self.name:SetTall(50)
-        self.desc:SetPos(iconSize + margin * 2, 55)
+        self.desc:SetPos(iconSize + margin * 2, 50)
         self.desc:SetWide(availW)
         if hasLogo then
             self.classLogo:SetVisible(true)
