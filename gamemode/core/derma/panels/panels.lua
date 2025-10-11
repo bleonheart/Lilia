@@ -364,6 +364,11 @@ end
 function QuickPanel:Remove()
     -- Remove theme change hook
     hook.Remove("OnThemeChanged", self)
+
+    -- Clear the global reference
+    if lia.gui.quick == self then
+        lia.gui.quick = nil
+    end
 end
 
 function QuickPanel:populateOptions()
