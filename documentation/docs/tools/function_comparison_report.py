@@ -1447,9 +1447,33 @@ class FunctionComparisonReportGenerator:
                 f"Total: {len(data.missing_library_functions)} functions",
                 "",
             ])
+            
+            # Group functions by library prefix
+            library_groups = {}
             for func in data.missing_library_functions:
-                lines.append(f"- `{func}`")
-            lines.append("")
+                if '.' in func:
+                    # Extract library prefix (e.g., "lia.char" from "lia.char.something")
+                    parts = func.split('.')
+                    if len(parts) >= 2:
+                        library_prefix = '.'.join(parts[:2])  # e.g., "lia.char"
+                    else:
+                        library_prefix = parts[0]  # fallback
+                else:
+                    library_prefix = "other"
+                
+                if library_prefix not in library_groups:
+                    library_groups[library_prefix] = []
+                library_groups[library_prefix].append(func)
+            
+            # Sort groups by prefix name
+            for library_prefix in sorted(library_groups.keys()):
+                functions = library_groups[library_prefix]
+                lines.append(f"#### {library_prefix}")
+                lines.append(f"Count: {len(functions)} functions")
+                lines.append("")
+                for func in sorted(functions):
+                    lines.append(f"- `{func}`")
+                lines.append("")
 
         if data.missing_hook_functions:
             lines.extend([
@@ -1467,9 +1491,30 @@ class FunctionComparisonReportGenerator:
                 f"Total: {len(data.missing_meta_functions)} functions",
                 "",
             ])
+            
+            # Group meta functions by meta type
+            meta_groups = {}
             for func in data.missing_meta_functions:
-                lines.append(f"- `{func}`")
-            lines.append("")
+                # Extract meta type from function name
+                # Common patterns: Character.something, Player.something, Entity.something, Panel.something, etc.
+                if '.' in func:
+                    meta_type = func.split('.')[0]  # e.g., "Character" from "Character.something"
+                else:
+                    meta_type = "other"
+                
+                if meta_type not in meta_groups:
+                    meta_groups[meta_type] = []
+                meta_groups[meta_type].append(func)
+            
+            # Sort groups by meta type name
+            for meta_type in sorted(meta_groups.keys()):
+                functions = meta_groups[meta_type]
+                lines.append(f"#### {meta_type}")
+                lines.append(f"Count: {len(functions)} functions")
+                lines.append("")
+                for func in sorted(functions):
+                    lines.append(f"- `{func}`")
+                lines.append("")
 
         # Show uncategorized if any exist (shouldn't happen with proper categorization)
         all_categorized = set(data.missing_library_functions + data.missing_hook_functions + data.missing_meta_functions)
@@ -1525,12 +1570,6 @@ class FunctionComparisonReportGenerator:
                 lines.append(f"- `{hook}`")
             lines.append("")
 
-        if data.hooks_registered:
-            lines.append("### Registered Hooks in Code:")
-            for hook in sorted(data.hooks_registered):
-                status = "✅ Documented" if hook in data.hooks_documented else "❌ Undocumented"
-                lines.append(f"- `{hook}` - {status}")
-            lines.append("")
 
         return lines
 

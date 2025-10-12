@@ -265,6 +265,10 @@ net.Receive("liaDataSync", function()
     lia.lastJoin = last
 end)
 
+net.Receive("liaStorageSync", function()
+    lia.inventory.storage = net.ReadTable()
+end)
+
 net.Receive("liaDataSync", function()
     local key = net.ReadString()
     local value = net.ReadType()
@@ -508,7 +512,7 @@ end
 
 local function CreateNoticePanel(length, notimer)
     if not notimer then notimer = false end
-    local notice = vgui.Create("noticePanel")
+    local notice = vgui.Create("liaNoticePanel")
     notice.start = CurTime() + 0.25
     notice.endTime = CurTime() + length
     notice.oh = notice:GetTall()

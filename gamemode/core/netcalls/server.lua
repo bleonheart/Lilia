@@ -7,6 +7,12 @@
     end
 end)
 
+net.Receive("liaStorageSyncRequest", function(_, client)
+    net.Start("liaStorageSync")
+    net.WriteTable(lia.inventory.storage)
+    net.Send(client)
+end)
+
 net.Receive("liaStringRequestCancel", function(_, client)
     local id = net.ReadUInt(32)
     if client.liaStrReqs and client.liaStrReqs[id] then client.liaStrReqs[id] = nil end
