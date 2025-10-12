@@ -60,7 +60,6 @@ function lia.command.add(command, data)
     data._onRun = data.onRun
     data.onRun = function(client, arguments)
         local accessResult
-
         if onCheckAccess then
             accessResult, privilegeName = onCheckAccess(client, command, data)
             if accessResult ~= nil then
@@ -72,10 +71,7 @@ function lia.command.add(command, data)
             end
         end
 
-        if accessResult == nil then
-            accessResult, privilegeName = lia.command.hasAccess(client, command, data)
-        end
-
+        if accessResult == nil then accessResult, privilegeName = lia.command.hasAccess(client, command, data) end
         if accessResult then
             return onRun(client, arguments)
         else
@@ -134,14 +130,11 @@ function lia.command.hasAccess(client, command, data)
     local adminOnly = data.adminOnly
     local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
     local privilegeName = data.privilege and L(data.privilege) or accessLevels == "user" and L("globalAccess") or L("accessTo", command)
-
     -- Call onCheckAccess callback if it exists
     if data.onCheckAccess then
         local accessResult, customPrivilegeName = data.onCheckAccess(client, command, data)
         -- If onCheckAccess returns explicit values, use them
-        if accessResult ~= nil then
-            return accessResult, customPrivilegeName or privilegeName
-        end
+        if accessResult ~= nil then return accessResult, customPrivilegeName or privilegeName end
     end
 
     local hasAccess = true
