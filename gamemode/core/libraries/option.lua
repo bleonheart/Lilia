@@ -489,12 +489,6 @@ lia.option.add("invertWeaponScroll", "invertWeaponScroll", "invertWeaponScrollDe
     isQuick = true,
 })
 
-lia.option.add("autoDownloadWorkshop", "autoDownloadWorkshop", "autoDownloadWorkshopDesc", nil, nil, {
-    category = "categoryWorkshop",
-    type = "Boolean",
-    isQuick = true,
-    shouldNetwork = true
-})
 
 lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
     category = "categoryESP",
