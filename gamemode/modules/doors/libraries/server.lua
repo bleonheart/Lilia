@@ -276,7 +276,6 @@ function MODULE:SaveData()
             if not mapID or mapID <= 0 then continue end
             local doorData = door:getNetVar("doorData", {})
             if not doorData or table.IsEmpty(doorData) then continue end
-
             doorData = hook.Run("PreDoorDataSave", door, doorData) or doorData
             local factionsTable = doorData.factions or {}
             local classesTable = doorData.classes or {}
@@ -345,7 +344,6 @@ function MODULE:SaveData()
             local clearance = doorData.clearance or 0
             if clearance < 0 then clearance = 0 end
             if clearance > 6 then clearance = 6 end
-
             rows[#rows + 1] = {
                 gamemode = gamemode,
                 map = map,
