@@ -166,12 +166,6 @@ function MODULE:LoadData()
                 hasData = true
             end
 
-            local clearance = tonumber(row.clearance)
-            if clearance and clearance > 0 then
-                doorData.clearance = clearance
-                hasData = true
-            end
-
             if hasData then
                 doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
                 ent:setNetVar("doorData", doorData)
@@ -232,11 +226,6 @@ function MODULE:LoadData()
                         if doorVars.classes and istable(doorVars.classes) and not table.IsEmpty(doorVars.classes) then
                             doorData.classes = doorVars.classes
                             ent.liaClasses = doorVars.classes
-                            hasPresetData = true
-                        end
-
-                        if doorVars.clearance and doorVars.clearance > 0 then
-                            doorData.clearance = doorVars.clearance
                             hasPresetData = true
                         end
 
@@ -341,9 +330,6 @@ function MODULE:SaveData()
             local price = tonumber(doorData.price) or 0
             if price < 0 then price = 0 end
             if price > 999999999 then price = 999999999 end
-            local clearance = doorData.clearance or 0
-            if clearance < 0 then clearance = 0 end
-            if clearance > 6 then clearance = 6 end
             rows[#rows + 1] = {
                 gamemode = gamemode,
                 map = map,
@@ -355,8 +341,7 @@ function MODULE:SaveData()
                 ownable = doorData.noSell and 0 or 1,
                 name = name,
                 price = price,
-                locked = doorData.locked and 1 or 0,
-                clearance = clearance
+                locked = doorData.locked and 1 or 0
             }
 
             doorCount = doorCount + 1
@@ -410,8 +395,7 @@ function lia.doors.VerifyDatabaseSchema()
                 name = "text",
                 price = "integer",
                 locked = "integer",
-                door_group = "text",
-                clearance = "integer"
+                door_group = "text"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
@@ -447,8 +431,7 @@ function lia.doors.VerifyDatabaseSchema()
                 name = "text",
                 price = "int",
                 locked = "tinyint",
-                door_group = "text",
-                clearance = "int"
+                door_group = "text"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
