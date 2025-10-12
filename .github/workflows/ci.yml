@@ -137,7 +137,53 @@ jobs:
         with:
           node-version: '18'
       - run: |
-          node documentation/docs/tools/generate-changelog.js
+          cd "${{ github.workspace }}"
+          echo "=== Generating Changelog ==="
+          echo "Current working directory: $(pwd)"
+          echo "Version: $VERSION"
+          
+          # Create changelog directory if it doesn't exist
+          mkdir -p documentation/docs
+          
+          # Generate changelog content
+          CURRENT_DATE=$(date '+%B %d, %Y')
+          
+          # Get recent commits and format them
+          echo "Fetching recent commits..."
+          COMMITS=$(git log --no-merges --pretty=format:'- %s' -n 20 | grep -v '^Successfully updated')
+          
+          # Build new entry with a here-doc (safer for YAML and quoting)
+          cat > new_entry.md <<EOF
+          ## Version $VERSION ($CURRENT_DATE)
+          
+          ### Changes
+          
+          $COMMITS
+          
+          EOF
+          
+          # Check if changelog exists and has content, then prepend
+          if [ -f "documentation/docs/changelog.md" ] && [ -s "documentation/docs/changelog.md" ]; then
+            {
+              echo "# Changelog";
+              echo;
+              cat new_entry.md;
+              # Remove the existing header (first two lines) from current file and append the rest
+              sed '1,2d' "documentation/docs/changelog.md";
+            } > temp_changelog.md
+            mv temp_changelog.md documentation/docs/changelog.md
+          else
+            {
+              echo "# Changelog";
+              echo;
+              cat new_entry.md;
+            } > documentation/docs/changelog.md
+          fi
+          rm -f new_entry.md
+          
+          echo "Changelog generated successfully at: documentation/docs/changelog.md"
+          echo "Changelog preview:"
+          head -10 documentation/docs/changelog.md
         env:
           VERSION: ${{ env.VERSION }}
       - run: |
