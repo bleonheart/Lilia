@@ -36,9 +36,11 @@ jobs:
           luarocks install luafilesystem
           luarocks install argparse
       - run: |
-          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-linux-x86_64
+          wget -O glualint.zip https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-1.29.0-x86_64-linux.zip
+          unzip glualint.zip
           chmod +x glualint
           sudo mv glualint /usr/local/bin/
+          rm glualint.zip
       - uses: actions/checkout@v3
         with:
           repository: LiliaFramework/GluaCheck
@@ -69,9 +71,11 @@ jobs:
           luarocks install luafilesystem
           luarocks install argparse
       - run: |
-          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-linux-x86_64
+          wget -O glualint.zip https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-1.29.0-x86_64-linux.zip
+          unzip glualint.zip
           chmod +x glualint
           sudo mv glualint /usr/local/bin/
+          rm glualint.zip
       - uses: actions/checkout@v3
         with:
           repository: LiliaFramework/GluaCheck
@@ -130,9 +134,11 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y rsync wget
       - run: |
-          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-linux-x86_64
+          wget -O glualint.zip https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-1.29.0-x86_64-linux.zip
+          unzip glualint.zip
           chmod +x glualint
           sudo mv glualint /usr/local/bin/
+          rm glualint.zip
       - run: |
           python3 - << 'PY'
           import os, re, pathlib, sys
