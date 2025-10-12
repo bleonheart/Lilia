@@ -130,10 +130,8 @@ function lia.command.hasAccess(client, command, data)
     local adminOnly = data.adminOnly
     local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
     local privilegeName = data.privilege and L(data.privilege) or accessLevels == "user" and L("globalAccess") or L("accessTo", command)
-    -- Call onCheckAccess callback if it exists
     if data.onCheckAccess then
         local accessResult, customPrivilegeName = data.onCheckAccess(client, command, data)
-        -- If onCheckAccess returns explicit values, use them
         if accessResult ~= nil then return accessResult, customPrivilegeName or privilegeName end
     end
 
@@ -316,109 +314,113 @@ else
         local controls = {}
         local watchers = {}
         local validate
-        for name, data in pairs(fields) do
-            local fieldType = data.type
-            local optional = data.optional
-            local options = data.options
-            local filter = data.filter
-            local panel = vgui.Create("DPanel", scroll)
-            panel:Dock(TOP)
-            panel:DockMargin(0, 0, 0, 5)
-            panel:SetTall(70)
-            panel.Paint = function() end
-            local textW = select(1, surface.GetTextSize(L(data.description or name)))
-            local ctrl
-            if fieldType == "player" then
-                ctrl = vgui.Create("liaComboBox", panel)
-                ctrl:SetValue(L("select") .. " " .. L("player"))
-                local players = {}
-                for _, plyObj in player.Iterator() do
-                    if IsValid(plyObj) then players[#players + 1] = plyObj end
-                end
+        for _, arg in ipairs(command.arguments or {}) do
+            local name = arg.name
+            if fields[name] then
+                local data = arg
+                local fieldType = data.type
+                local optional = data.optional
+                local options = data.options
+                local filter = data.filter
+                local panel = vgui.Create("DPanel", scroll)
+                panel:Dock(TOP)
+                panel:DockMargin(0, 0, 0, 5)
+                panel:SetTall(70)
+                panel.Paint = function() end
+                local textW = select(1, surface.GetTextSize(L(data.description or name)))
+                local ctrl
+                if fieldType == "player" then
+                    ctrl = vgui.Create("liaComboBox", panel)
+                    ctrl:SetValue(L("select") .. " " .. L("player"))
+                    local players = {}
+                    for _, plyObj in player.Iterator() do
+                        if IsValid(plyObj) then players[#players + 1] = plyObj end
+                    end
 
-                if isfunction(filter) then
-                    local ok, res = pcall(filter, LocalPlayer(), players)
-                    if ok and istable(res) then players = res end
-                end
+                    if isfunction(filter) then
+                        local ok, res = pcall(filter, LocalPlayer(), players)
+                        if ok and istable(res) then players = res end
+                    end
 
-                for _, plyObj in ipairs(players) do
-                    ctrl:AddChoice(plyObj:Name(), plyObj:SteamID())
-                end
+                    for _, plyObj in ipairs(players) do
+                        ctrl:AddChoice(plyObj:Name(), plyObj:SteamID())
+                    end
 
-                ctrl:FinishAddingOptions()
-                ctrl:PostInit()
-            elseif fieldType == "table" then
-                ctrl = vgui.Create("liaComboBox", panel)
-                ctrl:SetValue(L("select") .. " " .. L(name))
-                local opts = options
-                if isfunction(opts) then
-                    local ok, res = pcall(opts, LocalPlayer(), prefix)
-                    if ok then opts = res end
-                end
+                    ctrl:FinishAddingOptions()
+                    ctrl:PostInit()
+                elseif fieldType == "table" then
+                    ctrl = vgui.Create("liaComboBox", panel)
+                    ctrl:SetValue(L("select") .. " " .. L(name))
+                    local opts = options
+                    if isfunction(opts) then
+                        local ok, res = pcall(opts, LocalPlayer(), prefix)
+                        if ok then opts = res end
+                    end
 
-                if istable(opts) then
-                    for k, v in pairs(opts) do
-                        if isnumber(k) then
-                            ctrl:AddChoice(tostring(v), v)
-                        else
-                            ctrl:AddChoice(tostring(k), v)
+                    if istable(opts) then
+                        for k, v in pairs(opts) do
+                            if isnumber(k) then
+                                ctrl:AddChoice(tostring(v), v)
+                            else
+                                ctrl:AddChoice(tostring(k), v)
+                            end
                         end
                     end
+
+                    ctrl:FinishAddingOptions()
+                    ctrl:PostInit()
+                elseif fieldType == "bool" then
+                    ctrl = vgui.Create("liaCheckbox", panel)
+                else
+                    ctrl = vgui.Create("liaEntry", panel)
+                    ctrl:SetFont("liaSmallFont")
                 end
 
-                ctrl:FinishAddingOptions()
-                ctrl:PostInit()
-            elseif fieldType == "bool" then
-                ctrl = vgui.Create("liaCheckbox", panel)
-            else
-                ctrl = vgui.Create("liaEntry", panel)
-                ctrl:SetFont("liaSmallFont")
-            end
-
-            local label = vgui.Create("DLabel", panel)
-            label:SetFont("liaSmallFont")
-            label:SetText(L(data.description or name))
-            label:SizeToContents()
-            panel.PerformLayout = function(_, w, h)
-                local ctrlH = 30
-                ctrl:SetTall(ctrlH)
-                local ctrlW = w * 0.7
-                local totalW = textW + 10 + ctrlW
-                local xOff = (w - totalW) / 2
-                label:SetPos(xOff, (h - label:GetTall()) / 2)
-                ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2)
-                ctrl:SetWide(ctrlW)
-            end
-
-            controls[name] = {
-                ctrl = ctrl,
-                type = fieldType,
-                optional = optional
-            }
-
-            watchers[#watchers + 1] = function()
-                local oldValue = ctrl.OnValueChange
-                function ctrl:OnValueChange(...)
-                    if oldValue then oldValue(self, ...) end
-                    validate()
+                local label = vgui.Create("DLabel", panel)
+                label:SetFont("liaSmallFont")
+                label:SetText(L(data.description or name))
+                label:SizeToContents()
+                panel.PerformLayout = function(_, w, h)
+                    local ctrlH = 30
+                    ctrl:SetTall(ctrlH)
+                    local ctrlW = w * 0.7
+                    local totalW = textW + 10 + ctrlW
+                    local xOff = (w - totalW) / 2
+                    label:SetPos(xOff, (h - label:GetTall()) / 2)
+                    ctrl:SetPos(xOff + textW + 10, (h - ctrlH) / 2)
+                    ctrl:SetWide(ctrlW)
                 end
 
-                local oldText = ctrl.OnTextChanged
-                function ctrl:OnTextChanged(...)
-                    if oldText then oldText(self, ...) end
-                    validate()
-                end
+                controls[name] = {
+                    ctrl = ctrl,
+                    type = fieldType,
+                    optional = optional
+                }
 
-                local oldChange = ctrl.OnChange
-                function ctrl:OnChange(...)
-                    if oldChange then oldChange(self, ...) end
-                    validate()
-                end
+                watchers[#watchers + 1] = function()
+                    local oldValue = ctrl.OnValueChange
+                    function ctrl:OnValueChange(...)
+                        if oldValue then oldValue(self, ...) end
+                        validate()
+                    end
 
-                local oldSelect = ctrl.OnSelect
-                function ctrl:OnSelect(...)
-                    if oldSelect then oldSelect(self, ...) end
-                    validate()
+                    local oldText = ctrl.OnTextChanged
+                    function ctrl:OnTextChanged(...)
+                        if oldText then oldText(self, ...) end
+                        validate()
+                    end
+
+                    local oldChange = ctrl.OnChange
+                    function ctrl:OnChange(...)
+                        if oldChange then oldChange(self, ...) end
+                        validate()
+                    end
+
+                    local oldSelect = ctrl.OnSelect
+                    function ctrl:OnSelect(...)
+                        if oldSelect then oldSelect(self, ...) end
+                        validate()
+                    end
                 end
             end
         end
@@ -435,18 +437,21 @@ else
         submit:SetTxt(L("submit"))
         submit:SetEnabled(false)
         validate = function()
+            if not IsValid(submit) then return end
             for _, data in pairs(controls) do
                 if not data.optional then
                     local ctl = data.ctrl
+                    if not IsValid(ctl) then continue end
                     local ftype = data.type
                     local filled
                     if ftype == "player" or ftype == "table" then
                         local txt = ctl:GetValue()
-                        filled = txt ~= nil and txt ~= ""
+                        filled = txt ~= nil and txt ~= "" and txt ~= "nil"
                     elseif ftype == "bool" then
                         filled = true
                     else
-                        filled = ctl:GetValue() ~= nil and ctl:GetValue() ~= ""
+                        local val = ctl:GetValue()
+                        filled = val ~= nil and val ~= "" and val ~= "nil"
                     end
 
                     if not filled then
@@ -459,11 +464,11 @@ else
             submit:SetEnabled(true)
         end
 
+        timer.Simple(0.1, function() if IsValid(submit) then validate() end end)
         for _, fn in ipairs(watchers) do
             fn()
         end
 
-        validate()
         local cancel = vgui.Create("liaButton", buttons)
         cancel:Dock(RIGHT)
         cancel:SetWide(270)
@@ -472,20 +477,24 @@ else
         submit.DoClick = function()
             local args = {}
             if prefix then table.Add(args, prefix) end
-            for _, info in pairs(controls) do
-                local ctl = info.ctrl
-                local typ = info.type
-                local val
-                if typ == "player" or typ == "table" then
-                    local dataVal = ctl:GetSelectedData()
-                    val = dataVal or ctl:GetValue()
-                elseif typ == "bool" then
-                    val = ctl:GetChecked()
-                else
-                    val = ctl:GetValue()
-                end
+            for _, arg in ipairs(command.arguments or {}) do
+                local name = arg.name
+                if controls[name] then
+                    local info = controls[name]
+                    local ctl = info.ctrl
+                    local typ = info.type
+                    local val
+                    if typ == "player" or typ == "table" then
+                        local dataVal = ctl:GetSelectedData()
+                        val = dataVal or ctl:GetValue()
+                    elseif typ == "bool" then
+                        val = ctl:GetChecked()
+                    else
+                        val = ctl:GetValue()
+                    end
 
-                args[#args + 1] = val ~= "" and val or nil
+                    args[#args + 1] = val ~= nil and val ~= "" and val ~= "nil" and val or nil
+                end
             end
 
             RunConsoleCommand("say", "/" .. cmdKey .. " " .. table.concat(args, " "))

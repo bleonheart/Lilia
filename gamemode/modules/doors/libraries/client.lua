@@ -4,33 +4,41 @@
     local factions = doorData.factions or {}
     local price = doorData.price or 0
     local ownable = not (doorData.noSell or false)
-    local title = doorData.title or doorData.name or (IsValid(owner) and L("doorTitleOwned") or (#classes == 0 and #factions == 0 and L("doorTitle") or ""))
+    local title = doorData.title or doorData.name or ""
+    if title and title ~= "" then
+        table.insert(doorInfo, {
+            text = title
+        })
+    end
 
-    -- Add title
-    table.insert(doorInfo, {text = title})
-
-    -- Add price if applicable
     if ownable and price > 0 then
-        table.insert(doorInfo, {text = L("price") .. ": " .. lia.currency.get(price)})
+        table.insert(doorInfo, {
+            text = L("price") .. ": " .. lia.currency.get(price)
+        })
     end
 
-    -- Add owner if applicable
     if IsValid(owner) then
-        table.insert(doorInfo, {text = L("doorOwnedBy", owner:Name())})
+        table.insert(doorInfo, {
+            text = L("doorOwnedBy", owner:Name())
+        })
     end
 
-    -- Add factions if applicable
     if factions and #factions > 0 then
-        table.insert(doorInfo, {text = L("factions") .. ":"})
+        table.insert(doorInfo, {
+            text = L("factions") .. ":"
+        })
+
         for _, id in ipairs(factions) do
             local info = lia.faction.get(id)
             if info then
-                table.insert(doorInfo, {text = info.name, color = info.color or color_white})
+                table.insert(doorInfo, {
+                    text = info.name,
+                    color = info.color or color_white
+                })
             end
         end
     end
 
-    -- Add classes if applicable
     if classes and #classes > 0 then
         local classData = {}
         for _, uid in ipairs(classes) do
@@ -40,16 +48,17 @@
         end
 
         if #classData > 0 then
-            table.insert(doorInfo, {text = L("classes") .. ":"})
+            table.insert(doorInfo, {
+                text = L("classes") .. ":"
+            })
+
             for _, data in ipairs(classData) do
-                table.insert(doorInfo, {text = data.name, color = data.color or color_white})
+                table.insert(doorInfo, {
+                    text = data.name,
+                    color = data.color or color_white
+                })
             end
         end
-    end
-
-    -- Add ownable status if no restrictions
-    if not IsValid(owner) and #factions == 0 and #classes == 0 then
-        table.insert(doorInfo, {text = ownable and L("doorIsOwnable") or L("doorIsNotOwnable")})
     end
 end
 
@@ -65,12 +74,8 @@ function MODULE:DrawEntityInfo(entity, alpha)
 
             local pos = entity:LocalToWorld(entity:OBBCenter()):ToScreen()
             local x, y = pos.x, pos.y
-
-            -- Collect door info through hook system
             local doorInfo = {}
             hook.Run("GetDoorInfo", entity, doorData, doorInfo)
-
-            -- Draw all collected information
             for _, info in ipairs(doorInfo) do
                 if info.text and info.text ~= "" then
                     local color = info.color or ColorAlpha(color_white, alpha)

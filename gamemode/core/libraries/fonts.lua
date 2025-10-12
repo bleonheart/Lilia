@@ -1,4 +1,4 @@
-lia.font = lia.font or {}
+﻿lia.font = lia.font or {}
 lia.font.stored = lia.font.stored or {}
 function lia.font.loadFonts()
     if not CLIENT then return end

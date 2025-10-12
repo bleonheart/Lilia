@@ -310,15 +310,8 @@ local origSurfacePlaySound = surface.PlaySound
 function surface.PlaySound(soundPath)
     if isstring(soundPath) and lia.websound.stored[soundPath] then
         local cachedPath = lia.websound.get(soundPath)
-        if cachedPath then
-            return origSurfacePlaySound(cachedPath)
-        end
-
-        lia.websound.register(soundPath, lia.websound.stored[soundPath], function(localPath)
-            if localPath then
-                return origSurfacePlaySound(localPath)
-            end
-        end)
+        if cachedPath then return origSurfacePlaySound(cachedPath) end
+        lia.websound.register(soundPath, lia.websound.stored[soundPath], function(localPath) if localPath then return origSurfacePlaySound(localPath) end end)
         return
     end
     return origSurfacePlaySound(soundPath)

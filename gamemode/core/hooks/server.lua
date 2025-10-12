@@ -964,7 +964,7 @@ function GM:CreateSalaryTimers()
                             local finalPay = hook.Run("OnSalaryGiven", client, char, pay, faction, class)
                             if isnumber(finalPay) then pay = finalPay end
                             char:giveMoney(pay)
-                            client:notifyMoneyLocalized("salary", lia.currency.get(pay))
+                            client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
                         end
                     end
                 end
