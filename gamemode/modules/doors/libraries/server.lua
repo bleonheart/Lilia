@@ -166,7 +166,14 @@ function MODULE:LoadData()
                 hasData = true
             end
 
+            local clearance = tonumber(row.clearance)
+            if clearance and clearance > 0 then
+                doorData.clearance = clearance
+                hasData = true
+            end
+
             if hasData then
+                doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
                 ent:setNetVar("doorData", doorData)
                 loadedCount = loadedCount + 1
                 if ent:isDoor() then
@@ -228,7 +235,13 @@ function MODULE:LoadData()
                             hasPresetData = true
                         end
 
+                        if doorVars.clearance and doorVars.clearance > 0 then
+                            doorData.clearance = doorVars.clearance
+                            hasPresetData = true
+                        end
+
                         if hasPresetData then
+                            doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
                             ent:setNetVar("doorData", doorData)
                             lia.information(L("appliedPresetToDoor", doorID))
                             loadedCount = loadedCount + 1
@@ -263,6 +276,8 @@ function MODULE:SaveData()
             if not mapID or mapID <= 0 then continue end
             local doorData = door:getNetVar("doorData", {})
             if not doorData or table.IsEmpty(doorData) then continue end
+
+            doorData = hook.Run("PreDoorDataSave", door, doorData) or doorData
             local factionsTable = doorData.factions or {}
             local classesTable = doorData.classes or {}
             if not doorData.factions then
@@ -327,6 +342,10 @@ function MODULE:SaveData()
             local price = tonumber(doorData.price) or 0
             if price < 0 then price = 0 end
             if price > 999999999 then price = 999999999 end
+            local clearance = doorData.clearance or 0
+            if clearance < 0 then clearance = 0 end
+            if clearance > 6 then clearance = 6 end
+
             rows[#rows + 1] = {
                 gamemode = gamemode,
                 map = map,
@@ -338,7 +357,8 @@ function MODULE:SaveData()
                 ownable = doorData.noSell and 0 or 1,
                 name = name,
                 price = price,
-                locked = doorData.locked and 1 or 0
+                locked = doorData.locked and 1 or 0,
+                clearance = clearance
             }
 
             doorCount = doorCount + 1
@@ -392,7 +412,8 @@ function lia.doors.VerifyDatabaseSchema()
                 name = "text",
                 price = "integer",
                 locked = "integer",
-                door_group = "text"
+                door_group = "text",
+                clearance = "integer"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
@@ -428,7 +449,8 @@ function lia.doors.VerifyDatabaseSchema()
                 name = "text",
                 price = "int",
                 locked = "tinyint",
-                door_group = "text"
+                door_group = "text",
+                clearance = "int"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
