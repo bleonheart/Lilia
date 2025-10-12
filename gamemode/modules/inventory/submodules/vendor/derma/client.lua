@@ -674,7 +674,7 @@ function PANEL:Init()
     self.items:AddColumn(L("category")).Header:SetTextColor(lia.color.theme.text or color_white)
     self.items:SetMultiSelect(false)
     self.items.OnRowRightClick = function(_, _, line) self:OnRowRightClick(line) end
-    self.items.Paint = function(listView, w, h)
+    self.items.Paint = function(listView)
         for _, line in ipairs(listView:GetLines()) do
             for i = 1, #listView.Columns do
                 local colData = line.Columns and line.Columns[i]

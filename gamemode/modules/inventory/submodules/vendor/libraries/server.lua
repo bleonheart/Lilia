@@ -212,7 +212,6 @@ function MODULE:OnEntityLoaded(ent, data)
                     timer.Simple(0.2, function()
                         if IsValid(ent) and ent.isReadyForAnim and ent:isReadyForAnim() then
                             ent:setAnim()
-                        else
                         end
                     end)
                 end

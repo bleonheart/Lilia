@@ -1,5 +1,4 @@
-﻿local characterPanel
-net.Receive("liaClassUpdate", function()
+﻿net.Receive("liaClassUpdate", function()
     local joinedClient = net.ReadEntity()
     if lia.gui.classes and lia.gui.classes:IsVisible() then
         if joinedClient == LocalPlayer() then

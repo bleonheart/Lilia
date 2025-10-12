@@ -31,7 +31,7 @@ end
 
 function SWEP:DrawHUD()
     local owner = self:GetOwner()
-    local scrW, scrH = ScrW(), ScrH()
+    local scrW = ScrW()
     local instructionsText = self.StartPos and L("distanceMeasureInstructionsMeasuring") or L("distanceMeasureInstructions")
     local instructionsWidth = 250
     local instructionsHeight = 80

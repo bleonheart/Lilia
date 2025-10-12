@@ -862,7 +862,6 @@ net.Receive("liaAssureClientSideAssets", function()
                     chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), L("allAssetsDownloadedSuccessfully"))
                 end
             end)
-        else
         end
     end)
 end)

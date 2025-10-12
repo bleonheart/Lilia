@@ -16,7 +16,6 @@ function lia.config.add(key, name, value, callback, data)
     }
 
     if not data.type or not validTypes[data.type] then data.type = configType end
-    if (data.type == "Int" or data.type == "Float") and (data.min == nil or data.max == nil) then local missing = data.min == nil and data.max == nil and "min and max" or data.min == nil and "min" or "max" end
     local oldConfig = lia.config.stored[key]
     local savedValue = oldConfig and oldConfig.value or value
     if istable(data.options) then

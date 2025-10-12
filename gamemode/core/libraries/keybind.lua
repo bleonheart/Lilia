@@ -445,7 +445,7 @@ if CLIENT then
                         combo:AddChoice(c.txt, c.keycode)
                     end
 
-                    combo.OnSelect = function(index, text, newKey)
+                    combo.OnSelect = function(_, _, newKey)
                         if not newKey then return end
                         for tk, tv in pairs(taken) do
                             if tk == newKey and tv ~= action then

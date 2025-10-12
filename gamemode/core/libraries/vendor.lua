@@ -135,10 +135,7 @@ function lia.vendor.addPreset(name, items)
     assert(istable(items), L("vendorPresetItemsTable"))
     local validItems = {}
     for itemType, itemData in pairs(items) do
-        if lia.item.list[itemType] then
-            validItems[itemType] = itemData
-        else
-        end
+        if lia.item.list[itemType] then validItems[itemType] = itemData end
     end
 
     lia.vendor.presets[string.lower(name)] = validItems

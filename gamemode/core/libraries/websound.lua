@@ -355,7 +355,7 @@ concommand.Add("lia_validate_sounds", function()
         local filePath = baseDir .. fileName
         local fileData = file.Read(filePath, "DATA")
         if fileData then
-            local isValid, errorMsg = validateSoundFile(fileName, fileData)
+            local isValid, _ = validateSoundFile(fileName, fileData)
             if isValid then
                 validCount = validCount + 1
             else
@@ -381,7 +381,7 @@ concommand.Add("lia_cleanup_sounds", function()
         local filePath = baseDir .. fileName
         local fileData = file.Read(filePath, "DATA")
         if fileData then
-            local isValid, errorMsg = validateSoundFile(fileName, fileData)
+            local isValid = validateSoundFile(fileName, fileData)
             if not isValid then
                 file.Delete(filePath)
                 removedCount = removedCount + 1
@@ -402,7 +402,7 @@ concommand.Add("lia_list_sounds", function()
     local files = file.Find(baseDir .. "**", "DATA")
     if #files == 0 then return end
     for _, fileName in ipairs(files) do
-        local fileSize = file.Size(baseDir .. fileName, "DATA")
+        file.Size(baseDir .. fileName, "DATA")
     end
 end)
 

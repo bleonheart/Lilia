@@ -245,7 +245,6 @@ function ENT:applyPreset(name)
             if data.price ~= nil then self:setItemPrice(itemType, data.price) end
             if data.maxStock ~= nil then self:setMaxStock(itemType, data.maxStock) end
             if data.stock ~= nil then self:setStock(itemType, data.stock) end
-        else
         end
     end
 

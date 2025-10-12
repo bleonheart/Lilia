@@ -87,7 +87,7 @@ function PANEL:SortByColumn(columnIndex)
         end
     end
 
-    local success, err = pcall(function() table.sort(self.rows, function(a, b) return compareValues(a[columnIndex], b[columnIndex]) end) end)
+    local success, _ = pcall(function() table.sort(self.rows, function(a, b) return compareValues(a[columnIndex], b[columnIndex]) end) end)
     if not success then return end
     self:RebuildRows()
 end
