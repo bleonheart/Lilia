@@ -36,7 +36,7 @@ jobs:
           luarocks install luafilesystem
           luarocks install argparse
       - run: |
-          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/latest/download/glualint-linux-x86_64
+          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-linux-x86_64
           chmod +x glualint
           sudo mv glualint /usr/local/bin/
       - uses: actions/checkout@v3
@@ -69,7 +69,7 @@ jobs:
           luarocks install luafilesystem
           luarocks install argparse
       - run: |
-          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/latest/download/glualint-linux-x86_64
+          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-linux-x86_64
           chmod +x glualint
           sudo mv glualint /usr/local/bin/
       - uses: actions/checkout@v3
@@ -130,7 +130,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y rsync wget
       - run: |
-          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/latest/download/glualint-linux-x86_64
+          wget -O glualint https://github.com/FPtje/GLuaFixer/releases/download/1.29.0/glualint-linux-x86_64
           chmod +x glualint
           sudo mv glualint /usr/local/bin/
       - run: |
