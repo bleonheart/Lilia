@@ -110,11 +110,18 @@ class CombinedReportData:
     function_comparison: Dict[str, Dict]
     hooks_missing: List[str]
     hooks_documented: List[str]
+    hooks_registered: List[str]  # New field for hooks registered in code
     localization_data: Dict
     argument_mismatches: List[Dict]  # New field for argument mismatches
     modules_data: List
     modules_scan: List[Dict]
     language_comparison: Dict[str, Dict[str, List[str]]]  # New field for language key mismatches
+    panels_found: List[str]  # New field for panels found in code
+    panels_documented: List[str]  # New field for documented panels
+    # Categorized missing documentation
+    missing_library_functions: List[str]
+    missing_hook_functions: List[str]
+    missing_meta_functions: List[str]
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -578,7 +585,7 @@ class FunctionComparisonReportGenerator:
 
         # 2. Missing Hooks Analysis
         print("Analyzing hooks documentation...")
-        hooks_missing, hooks_documented = self._run_hooks_analysis()
+        hooks_missing, hooks_documented, hooks_registered = self._run_hooks_analysis()
 
         # 3. Localization Analysis
         print("Analyzing localization...")
@@ -598,17 +605,131 @@ class FunctionComparisonReportGenerator:
         print("Comparing language files...")
         language_comparison = self._compare_language_files()
 
+        # 7. Panel Documentation Analysis
+        print("Analyzing panel documentation...")
+        panels_found, panels_documented = self._run_panels_analysis()
+
+        # Categorize missing functions by type
+        missing_library_functions, missing_hook_functions, missing_meta_functions = self._categorize_missing_functions(function_results)
+
         return CombinedReportData(
             function_comparison=function_results,
             hooks_missing=hooks_missing,
             hooks_documented=hooks_documented,
+            hooks_registered=hooks_registered,
             localization_data=localization_data,
             argument_mismatches=argument_mismatches,
             modules_data=modules_data,
             modules_scan=modules_scan,
             language_comparison=language_comparison,
+            panels_found=panels_found,
+            panels_documented=panels_documented,
+            missing_library_functions=missing_library_functions,
+            missing_hook_functions=missing_hook_functions,
+            missing_meta_functions=missing_meta_functions,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
+
+    def _categorize_missing_functions(self, function_comparison: Dict[str, Dict]) -> Tuple[List[str], List[str], List[str]]:
+        """Categorize missing functions into library, hook, and meta types"""
+        missing_library_functions = []
+        missing_hook_functions = []
+        missing_meta_functions = []
+
+        # Get documented functions from each category
+        documented_libraries = self._get_documented_library_functions()
+        documented_hooks = set(self.hooks_documented) if hasattr(self, 'hooks_documented') else set()
+        documented_meta = self._get_documented_meta_functions()
+
+        # Process all missing functions from function_comparison
+        all_missing = []
+        for file_data in function_comparison.values():
+            all_missing.extend(file_data.get('missing_functions', []))
+
+        for func_name in all_missing:
+            # Remove duplicates while preserving order
+            if func_name in missing_library_functions or func_name in missing_hook_functions or func_name in missing_meta_functions:
+                continue
+
+            # Categorize based on naming patterns and existing documentation
+            if func_name in documented_libraries or self._is_library_function(func_name):
+                if func_name not in [f for f in missing_library_functions]:
+                    missing_library_functions.append(func_name)
+            elif func_name in documented_hooks or self._is_hook_function(func_name):
+                if func_name not in [f for f in missing_hook_functions]:
+                    missing_hook_functions.append(func_name)
+            elif func_name in documented_meta or self._is_meta_function(func_name):
+                if func_name not in [f for f in missing_meta_functions]:
+                    missing_meta_functions.append(func_name)
+            else:
+                # Default to library if we can't determine the type
+                if func_name not in [f for f in missing_library_functions]:
+                    missing_library_functions.append(func_name)
+
+        return sorted(missing_library_functions), sorted(missing_hook_functions), sorted(missing_meta_functions)
+
+    def _get_documented_library_functions(self) -> Set[str]:
+        """Get all documented library functions"""
+        documented_functions = set()
+        libs_dir = self.docs_path / "docs" / "libraries"
+
+        if not libs_dir.exists():
+            return documented_functions
+
+        for md_file in libs_dir.glob("*.md"):
+            try:
+                with open(md_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                # Extract function names from headers like ### lia.util.functionName
+                for match in re.finditer(r'^###+\s+([A-Za-z_][\w\.:]*)\s*$', content, re.MULTILINE):
+                    func_name = match.group(1).strip()
+                    documented_functions.add(func_name)
+            except Exception:
+                continue
+
+        return documented_functions
+
+    def _get_documented_meta_functions(self) -> Set[str]:
+        """Get all documented meta functions"""
+        documented_functions = set()
+        meta_dir = self.docs_path / "docs" / "meta"
+
+        if not meta_dir.exists():
+            return documented_functions
+
+        for md_file in meta_dir.glob("*.md"):
+            try:
+                with open(md_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                # Extract method names from code patterns like `methodName(...)`
+                for match in re.finditer(r'`([A-Za-z_][\w\.:]*)\([^)]*\)`', content):
+                    method_name = match.group(1).strip()
+                    documented_functions.add(method_name)
+            except Exception:
+                continue
+
+        return documented_functions
+
+    def _is_library_function(self, func_name: str) -> bool:
+        """Check if a function name indicates it's a library function"""
+        # Library functions typically start with lia. and have dotted paths
+        return func_name.startswith('lia.') and func_name.count('.') >= 1
+
+    def _is_hook_function(self, func_name: str) -> bool:
+        """Check if a function name indicates it's a hook function"""
+        # Hook functions are typically just the hook name (no dots)
+        # and are used with hook.Add/hook.Run
+        return '.' not in func_name and len(func_name) > 0
+
+    def _is_meta_function(self, func_name: str) -> bool:
+        """Check if a function name indicates it's a meta function"""
+        # Meta functions are typically methods on entities/players/panels
+        # They might be prefixed with the type name
+        meta_patterns = [
+            r'^[A-Za-z_][a-z_]*\.[A-Za-z_]',  # Like Entity.GetPos, Player.SetName
+            r'^[A-Z][a-zA-Z]*\.[A-Z][a-zA-Z]*',  # Like Panel.SetVisible, Vector.Normalize
+        ]
+        return any(re.match(pattern, func_name) for pattern in meta_patterns)
 
     def _run_function_comparison(self) -> Dict[str, Dict]:
         """Run function documentation comparison analysis"""
@@ -618,16 +739,16 @@ class FunctionComparisonReportGenerator:
             print(f"Error in function comparison: {e}")
             return {}
 
-    def _run_hooks_analysis(self) -> Tuple[List[str], List[str]]:
+    def _run_hooks_analysis(self) -> Tuple[List[str], List[str], List[str]]:
         """Run hooks documentation analysis"""
         try:
-            hooks_found = scan_hooks(self.base_path / "gamemode")
+            hooks_registered = self._scan_hook_registrations()
             hooks_documented = self._read_all_documented_hooks()
-            hooks_missing = [h for h in hooks_found if h not in hooks_documented]
-            return sorted(hooks_missing), sorted(list(hooks_documented))
+            hooks_missing = [h for h in hooks_registered if h not in hooks_documented]
+            return sorted(hooks_missing), sorted(list(hooks_documented)), hooks_registered
         except Exception as e:
             print(f"Error in hooks analysis: {e}")
-            return [], []
+            return [], [], []
 
     def _read_all_documented_hooks(self) -> Set[str]:
         """Read documented hooks from all hooks documentation files"""
@@ -647,6 +768,120 @@ class FunctionComparisonReportGenerator:
                 continue
         
         return documented_hooks
+
+    def _scan_hook_registrations(self) -> List[str]:
+        """Scan Lua files for hook.Add() calls to find registered hooks"""
+        registered_hooks = set()
+
+        # Scan gamemode files
+        lua_files = list(self.base_path.rglob("*.lua"))
+
+        for lua_file in lua_files:
+            # Skip certain directories
+            if any(skip in str(lua_file) for skip in ['languages', 'documentation']):
+                continue
+
+            try:
+                with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+
+                # Find hook.Add() calls
+                # Pattern: hook.Add("HookName", "Identifier", function) or hook.Add('HookName', 'Identifier', function)
+                pattern = r'hook\.Add\s*\(\s*["\']([^"\']+)["\']'
+                matches = re.findall(pattern, content, re.IGNORECASE)
+
+                for hook_name in matches:
+                    if hook_name and hook_name.strip():
+                        registered_hooks.add(hook_name.strip())
+
+            except Exception as e:
+                print(f"Warning: Error scanning {lua_file}: {e}")
+                continue
+
+        return sorted(list(registered_hooks))
+
+    def _run_panels_analysis(self) -> Tuple[List[str], List[str]]:
+        """Run panel documentation analysis"""
+        try:
+            panels_found = self._scan_panels_in_code()
+            panels_documented = self._read_documented_panels()
+            return sorted(panels_found), sorted(list(panels_documented))
+        except Exception as e:
+            print(f"Error in panels analysis: {e}")
+            return [], []
+
+    def _scan_panels_in_code(self) -> List[str]:
+        """Scan Lua files for vgui.Register() calls to find panels"""
+        panels = set()
+
+        # Scan gamemode files
+        lua_files = list(self.base_path.rglob("*.lua"))
+
+        for lua_file in lua_files:
+            # Skip certain directories
+            if any(skip in str(lua_file) for skip in ['languages', 'documentation']):
+                continue
+
+            try:
+                with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+
+                # Find vgui.Register() calls
+                # Pattern: vgui.Register("PanelName", panelData) or vgui.Register('PanelName', panelData)
+                pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
+                matches = re.findall(pattern, content, re.IGNORECASE)
+
+                for panel_name in matches:
+                    if panel_name and panel_name.strip():
+                        panels.add(panel_name.strip())
+
+            except Exception as e:
+                print(f"Warning: Error scanning {lua_file}: {e}")
+                continue
+
+        return list(panels)
+
+    def _read_documented_panels(self) -> Set[str]:
+        """Read documented panels from panels documentation files"""
+        documented_panels = set()
+
+        # Check panels documentation directory
+        panels_doc_dir = self.docs_path / "docs" / "panels"
+        if not panels_doc_dir.exists():
+            print(f"Warning: Panels documentation directory not found: {panels_doc_dir}")
+            return documented_panels
+
+        # Read from all .md files in the panels directory
+        for md_file in panels_doc_dir.glob("*.md"):
+            try:
+                with open(md_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+
+                # Look for panel names in headers or content
+                # Pattern matches: ### PanelName or # PanelName or mentions in content
+                lines = content.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    # Check for headers like ### liaMenu or # liaMenu
+                    if line.startswith('#') and len(line) > 1:
+                        # Extract panel name from header (remove # symbols and get first word)
+                        header_content = line.lstrip('#').strip()
+                        panel_name = header_content.split()[0] if header_content else ""
+                        if panel_name and panel_name not in ['Panels', 'Panel']:
+                            documented_panels.add(panel_name)
+
+                    # Also check for vgui.Register mentions in content
+                    register_pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
+                    matches = re.findall(register_pattern, line, re.IGNORECASE)
+                    for panel_name in matches:
+                        if panel_name and panel_name.strip():
+                            documented_panels.add(panel_name.strip())
+
+            except Exception as e:
+                print(f"Warning: Could not read panels from {md_file}: {e}")
+                continue
+
+        return documented_panels
 
     def _run_localization_analysis(self) -> Tuple[Dict, List]:
         """Run localization analysis"""
@@ -703,6 +938,9 @@ class FunctionComparisonReportGenerator:
 
         # Hooks Documentation Section
         report_lines.extend(self._generate_hooks_section(data))
+
+        # Panels Documentation Section
+        report_lines.extend(self._generate_panels_section(data))
 
         # Localization Section
         report_lines.extend(self._generate_localization_section(data))
@@ -1128,8 +1366,17 @@ class FunctionComparisonReportGenerator:
         total_missing = sum(len(r.get('missing_functions', [])) for r in data.function_comparison.values())
         total_missing_unique = sum(r.get('missing_functions_count', len(r.get('missing_functions', []))) for r in data.function_comparison.values())
 
+        # Categorized missing functions counts
+        missing_library_count = len(data.missing_library_functions)
+        missing_hook_count = len(data.missing_hook_functions)
+        missing_meta_count = len(data.missing_meta_functions)
+
         # Hooks stats
         hooks_missing_count = len(data.hooks_missing)
+        unused_hooks_count = len(data.hooks_documented) - len(data.hooks_registered) if data.hooks_registered else 0
+
+        # Panels stats
+        panels_missing_count = len(data.panels_found) - len(data.panels_documented) if data.panels_found else 0
 
         # Localization stats
         undefined_calls = data.localization_data.get('undefined_count', len(data.localization_data.get('undefined_rows', []))) if data.localization_data else 0
@@ -1141,10 +1388,20 @@ class FunctionComparisonReportGenerator:
             f"- **Total Functions:** {total_functions}",
             f"- **Documented:** {total_documented} ({(total_documented/total_functions*100):.1f}%)" if total_functions > 0 else "- **Documented:** N/A",
             f"- **Missing Functions:** {total_missing} unique ({total_missing_unique} total occurrences)",
+            f"  - **Library Functions:** {missing_library_count}",
+            f"  - **Hook Functions:** {missing_hook_count}",
+            f"  - **Meta Functions:** {missing_meta_count}",
             "",
             "### Hooks Documentation",
-            f"- **Missing Hooks:** {hooks_missing_count}",
-            f"- **Documented Hooks:** {len(data.hooks_documented)}",
+            f"- **Missing Hooks:** {hooks_missing_count} (used but undocumented)",
+            f"- **Unused Hooks:** {unused_hooks_count} (documented but unused)",
+            f"- **Total Documented Hooks:** {len(data.hooks_documented)}",
+            f"- **Total Registered Hooks:** {len(data.hooks_registered)}",
+            "",
+            "### Panels Documentation",
+            f"- **Panels Found:** {len(data.panels_found)}",
+            f"- **Documented Panels:** {len(data.panels_documented)}",
+            f"- **Missing Panels:** {panels_missing_count}",
             "",
             "### Localization Analysis",
             f"- **Undefined Calls:** {undefined_calls} unique",
@@ -1172,8 +1429,9 @@ class FunctionComparisonReportGenerator:
         total_documented = sum(r.get('documented_functions', 0) for r in data.function_comparison.values())
         total_missing = sum(len(r.get('missing_functions', [])) for r in data.function_comparison.values())
         total_missing_unique = sum(r.get('missing_functions_count', len(r.get('missing_functions', []))) for r in data.function_comparison.values())
+
         lines.extend([
-            f"### Summary Statistics",
+            "### Summary Statistics",
             f"- **Files Analyzed:** {total_files}",
             f"- **Total Functions:** {total_functions}",
             f"- **Documented Functions:** {total_documented}",
@@ -1182,18 +1440,51 @@ class FunctionComparisonReportGenerator:
             "",
         ])
 
-        # Global missing functions list
+        # Missing functions by category
+        if data.missing_library_functions:
+            lines.extend([
+                "### Missing Library Functions",
+                f"Total: {len(data.missing_library_functions)} functions",
+                "",
+            ])
+            for func in data.missing_library_functions:
+                lines.append(f"- `{func}`")
+            lines.append("")
+
+        if data.missing_hook_functions:
+            lines.extend([
+                "### Missing Hook Functions",
+                f"Total: {len(data.missing_hook_functions)} functions",
+                "",
+            ])
+            for func in data.missing_hook_functions:
+                lines.append(f"- `{func}`")
+            lines.append("")
+
+        if data.missing_meta_functions:
+            lines.extend([
+                "### Missing Meta Functions",
+                f"Total: {len(data.missing_meta_functions)} functions",
+                "",
+            ])
+            for func in data.missing_meta_functions:
+                lines.append(f"- `{func}`")
+            lines.append("")
+
+        # Show uncategorized if any exist (shouldn't happen with proper categorization)
+        all_categorized = set(data.missing_library_functions + data.missing_hook_functions + data.missing_meta_functions)
         all_missing = []
         for file_data in data.function_comparison.values():
             all_missing.extend(file_data.get('missing_functions', []))
 
-        if all_missing:
+        uncategorized = [func for func in set(all_missing) if func not in all_categorized]
+        if uncategorized:
             lines.extend([
-                "### Missing Documentation (Global List)",
-                f"Total: {len(set(all_missing))} unique functions across all files",
+                "### Uncategorized Functions",
+                f"Total: {len(uncategorized)} functions (could not be categorized)",
                 "",
             ])
-            for func in sorted(set(all_missing)):
+            for func in sorted(uncategorized):
                 lines.append(f"- `{func}`")
             lines.append("")
 
@@ -1203,22 +1494,76 @@ class FunctionComparisonReportGenerator:
         """Generate hooks documentation section"""
         lines = ["## Hooks Documentation Analysis", ""]
 
-        if not data.hooks_missing and not data.hooks_documented:
+        if not data.hooks_missing and not data.hooks_documented and not data.hooks_registered:
             lines.append("_No hooks analysis data available._")
             lines.append("")
             return lines
 
+        # Find unused hooks (documented but not registered)
+        unused_hooks = [h for h in data.hooks_documented if h not in data.hooks_registered]
+
         lines.extend([
             f"### Summary",
-            f"- **Missing Hooks:** {len(data.hooks_missing)}",
+            f"- **Missing Hooks:** {len(data.hooks_missing)} (used in code but not documented)",
             f"- **Documented Hooks:** {len(data.hooks_documented)}",
+            f"- **Registered Hooks:** {len(data.hooks_registered)}",
+            f"- **Unused Hooks:** {len(unused_hooks)} (documented but not registered)",
             "",
         ])
 
         if data.hooks_missing:
             lines.append("### Missing Hook Documentation:")
+            lines.append("These hooks are registered in code but missing from documentation:")
             for hook in data.hooks_missing:
                 lines.append(f"- `{hook}`")
+            lines.append("")
+
+        if unused_hooks:
+            lines.append("### Unused Hook Documentation:")
+            lines.append("These hooks are documented but not registered in code:")
+            for hook in sorted(unused_hooks):
+                lines.append(f"- `{hook}`")
+            lines.append("")
+
+        if data.hooks_registered:
+            lines.append("### Registered Hooks in Code:")
+            for hook in sorted(data.hooks_registered):
+                status = "✅ Documented" if hook in data.hooks_documented else "❌ Undocumented"
+                lines.append(f"- `{hook}` - {status}")
+            lines.append("")
+
+        return lines
+
+    def _generate_panels_section(self, data: CombinedReportData) -> List[str]:
+        """Generate panels documentation section"""
+        lines = ["## Panels Documentation Analysis", ""]
+
+        if not data.panels_found and not data.panels_documented:
+            lines.append("_No panels analysis data available._")
+            lines.append("")
+            return lines
+
+        # Find missing panels (panels found in code but not documented)
+        panels_missing = [p for p in data.panels_found if p not in data.panels_documented]
+
+        lines.extend([
+            "### Summary",
+            f"- **Panels Found:** {len(data.panels_found)}",
+            f"- **Documented Panels:** {len(data.panels_documented)}",
+            f"- **Missing Documentation:** {len(panels_missing)}",
+            "",
+        ])
+
+        if panels_missing:
+            lines.append("### Missing Panel Documentation:")
+            for panel in sorted(panels_missing):
+                lines.append(f"- `{panel}`")
+            lines.append("")
+
+        if data.panels_documented:
+            lines.append("### Documented Panels:")
+            for panel in sorted(data.panels_documented):
+                lines.append(f"- `{panel}`")
             lines.append("")
 
         return lines
@@ -1401,13 +1746,29 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
         else:
             print("Please enter 'y' for yes or 'n' for no.")
 
-    # Module docs generation is controlled by the no_module_docs flag
+    # Ask about module documentation generation
     generate_module_docs = not no_module_docs
+    if not force:
+        print("\nMODULE DOCUMENTATION:")
+        print("   - Module documentation includes scanning external modules for undocumented items")
+        print("   - This can create 'docs' folders in module directories")
+        while True:
+            response = input("Do you want to generate module documentation? (y/n): ").strip().lower()
+            if response in ['y', 'yes']:
+                generate_module_docs = True
+                break
+            elif response in ['n', 'no']:
+                generate_module_docs = False
+                print("Module documentation generation disabled.")
+                break
+            else:
+                print("Please enter 'y' for yes or 'n' for no.")
 
-    # Ask about each module path individually
+    # Ask about each module path individually (only if module docs are enabled)
     approved_modules_paths = []
-    print("\nMODULE PATH CONFIRMATION:")
-    print("-" * 40)
+    if generate_module_docs:
+        print("\nMODULE PATH CONFIRMATION:")
+        print("-" * 40)
 
     for i, path in enumerate(modules_paths, 1):
         path_obj = Path(path)
@@ -1532,6 +1893,8 @@ Examples:
             print("\nQuick Summary:")
             print(f"   - Functions: {total_documented}/{total_functions} documented ({(total_documented/total_functions*100):.1f}%)" if total_functions > 0 else "   - Functions: No data")
             print(f"   - Missing hooks: {len(data.hooks_missing)}")
+            unused_hooks = len(data.hooks_documented) - len(data.hooks_registered) if data.hooks_registered else 0
+            print(f"   - Unused hooks: {unused_hooks}")
             print(f"   - Localization issues: {len(data.localization_data.get('unused', []))} unused, {len(data.localization_data.get('undefined_rows', []))} undefined")
 
     except Exception as e:
