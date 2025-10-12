@@ -170,6 +170,39 @@ if SERVER then
 
     function lia.config.send(client)
         local data = lia.config.getChangedValues()
+        local function getTargets()
+            if IsValid(client) then return {client} end
+            return player.GetHumans()
+        end
+
+        local targets = getTargets()
+        if not istable(targets) or #targets == 0 then return end
+        -- When sending to many clients, avoid a single large broadcast to reduce reliable overflow.
+        -- Stagger per-client sends in small batches; also keep chunk sizes modest when there are many keys.
+        local batchSize = 5
+        local baseDelayPerBatch = 0.05
+        local function sendTableStaggered(tbl, startDelay)
+            local delay = startDelay or 0
+            for i = 1, #targets, batchSize do
+                local batch = {}
+                for j = i, math.min(i + batchSize - 1, #targets) do
+                    batch[#batch + 1] = targets[j]
+                end
+
+                timer.Simple(delay, function()
+                    for _, ply in ipairs(batch) do
+                        if IsValid(ply) then
+                            net.Start("liaCfgList")
+                            net.WriteTable(tbl)
+                            net.Send(ply)
+                        end
+                    end
+                end)
+
+                delay = delay + baseDelayPerBatch
+            end
+        end
+
         if not client and table.Count(data) > 50 then
             local chunks = {}
             local chunkSize = 25
@@ -184,20 +217,12 @@ if SERVER then
 
             if table.Count(currentChunk) > 0 then table.insert(chunks, currentChunk) end
             for i, chunk in ipairs(chunks) do
-                timer.Simple((i - 1) * 0.1, function()
-                    net.Start("liaCfgList")
-                    net.WriteTable(chunk)
-                    net.Broadcast()
-                end)
+                -- Space out chunk waves; also stagger clients within each wave
+                local startDelay = (i - 1) * 0.15
+                sendTableStaggered(chunk, startDelay)
             end
         else
-            net.Start("liaCfgList")
-            net.WriteTable(data)
-            if client then
-                net.Send(client)
-            else
-                net.Broadcast()
-            end
+            sendTableStaggered(data, 0)
         end
     end
 

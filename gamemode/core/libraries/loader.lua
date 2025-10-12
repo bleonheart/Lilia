@@ -697,12 +697,13 @@ function GM:OnReloaded()
         timer.Simple(0.5, function() lia.config.send() end)
         timer.Simple(2.0, function() lia.administrator.sync() end)
         timer.Simple(3.5, function() lia.playerinteract.syncToClients() end)
-        timer.Simple(5.0, function() lia.bootstrap("HotReload", L("gamemodeHotreloadedSuccessfully")) end)
+        timer.Simple(5.0, function()
+            lia.bootstrap("HotReload", L("gamemodeHotreloadedSuccessfully"))
+            lia.reloadInProgress = false
+        end)
     else
         chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("gamemodeHotreloadedSuccessfully"))
     end
-
-    lia.reloadInProgress = false
 end
 
 local loadedCompatibility = {}
