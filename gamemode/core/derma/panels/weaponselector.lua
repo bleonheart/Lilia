@@ -25,18 +25,6 @@ local function shouldDrawWepSelect(client)
     return hook.Run("ShouldDrawWepSelect", client) ~= false
 end
 
-local function hideUIElementsWhenWeaponSelectActive()
-    if alpha > 0 then
-        if IsValid(lia.gui.quick) then lia.gui.quick:SetVisible(false) end
-        if g_ContextMenu and g_ContextMenu:IsVisible() then g_ContextMenu:SetVisible(false) end
-        if liaItemMenuVisible and IsValid(liaItemDermaMenu) then liaItemDermaMenu:SetVisible(false) end
-    else
-        if IsValid(lia.gui.quick) and not lia.gui.quick:IsVisible() then lia.gui.quick:SetVisible(true) end
-        if g_ContextMenu and not g_ContextMenu:IsVisible() then g_ContextMenu:SetVisible(true) end
-        if liaItemMenuVisible and IsValid(liaItemDermaMenu) and not liaItemDermaMenu:IsVisible() then liaItemDermaMenu:SetVisible(true) end
-    end
-end
-
 local infoMarkup
 local function HUDPaint()
     if not shouldDrawWepSelect() then return end
@@ -49,7 +37,6 @@ local function HUDPaint()
         alphaDelta = Lerp(frameTime * 10, alphaDelta, alpha)
     end
 
-    hideUIElementsWhenWeaponSelectActive()
     local client = LocalPlayer()
     local weapons = client:GetWeapons()
     local position = lia.option.get("weaponSelectorPosition", "Left")
@@ -121,7 +108,6 @@ local function onIndexChanged()
     if not shouldDrawWepSelect() then return end
     alpha = 1
     fadeTime = CurTime() + 5
-    hideUIElementsWhenWeaponSelectActive()
     local client = LocalPlayer()
     local weapons = client:GetWeapons()
     local weapon = getWeaponFromIndex(index, weapons)
@@ -131,12 +117,12 @@ local function onIndexChanged()
         local textParts = {}
         local activeColor = lia.config.get("Color")
         for _, key in ipairs({"Author", "Contact", "Purpose", "Instructions"}) do
-            if weapon[key] and weapon[key]:find("%S") then table.insert(textParts, string.format("<font=LiliaFont.16b><color=%d,%d,%d>%s</font></color>\n%s\n", activeColor.r, activeColor.g, activeColor.b, L(key:lower()), weapon[key])) end
+            if weapon[key] and weapon[key]:find("%S") then table.insert(textParts, string.format("<font=liaItemBoldFont><color=%d,%d,%d>%s</font></color>\n%s\n", activeColor.r, activeColor.g, activeColor.b, L(key:lower()), weapon[key])) end
         end
 
         if #textParts > 0 then
             local text = table.concat(textParts)
-            infoMarkup = markup.Parse("<font=LiliaFont.16>" .. text, ScrW() * 0.3)
+            infoMarkup = markup.Parse("<font=liaItemDescFont>" .. text, ScrW() * 0.3)
         end
 
         local source, pitch = hook.Run("WeaponCycleSound")
@@ -211,4 +197,3 @@ end
 hook.Add("HUDPaint", "liaWeaponSelectHUDPaint", HUDPaint)
 hook.Add("PlayerBindPress", "liaWeaponSelectPlayerBindPress", PlayerBindPress)
 hook.Add("StartCommand", "liaWeaponSelectStartCommand", StartCommand)
-hook.Add("Think", "liaWeaponSelectUIHiding", function() if shouldDrawWepSelect() then hideUIElementsWhenWeaponSelectActive() end end)
