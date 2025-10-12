@@ -367,11 +367,6 @@ concommand.Add("lia_validate_sounds", function()
             table.insert(corruptedFiles, fileName)
         end
     end
-
-    if #corruptedFiles > 0 then
-        for _, fileName in ipairs(corruptedFiles) do
-        end
-    end
 end)
 
 concommand.Add("lia_cleanup_sounds", function()
@@ -381,7 +376,7 @@ concommand.Add("lia_cleanup_sounds", function()
         local filePath = baseDir .. fileName
         local fileData = file.Read(filePath, "DATA")
         if fileData then
-            local isValid = validateSoundFile(fileName, fileData)
+            local isValid, _ = validateSoundFile(fileName, fileData)
             if not isValid then
                 file.Delete(filePath)
                 removedCount = removedCount + 1
