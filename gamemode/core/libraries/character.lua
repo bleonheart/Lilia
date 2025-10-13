@@ -33,10 +33,6 @@ function lia.char.isLoaded(charID)
     return lia.char.loaded[charID] ~= nil
 end
 
-function lia.char.getAll()
-    return lia.char.loaded
-end
-
 function lia.char.addCharacter(id, character)
     lia.char.loaded[id] = character
     if lia.char.pendingRequests and lia.char.pendingRequests[id] then
@@ -550,7 +546,7 @@ end
 
 function lia.char.getOwnerByID(ID)
     ID = tonumber(ID)
-    for client, character in pairs(lia.char.getAll()) do
+    for client, character in pairs(lia.char.loaded) do
         if character and character:getID() == ID then return client end
     end
 end
@@ -564,15 +560,7 @@ function lia.char.getBySteamID(steamID)
     end
 end
 
-function lia.char.getAll()
-    local charTable = {}
-    for _, client in player.Iterator() do
-        if client:getChar() then charTable[client] = client:getChar() end
-    end
-    return charTable
-end
-
-function lia.char.GetTeamColor(client)
+function lia.char.getTeamColor(client)
     local char = client:getChar()
     if not char then return team.GetColor(client:Team()) end
     local classIndex = char:getClass()

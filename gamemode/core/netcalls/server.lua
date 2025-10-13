@@ -455,3 +455,10 @@ net.Receive("liaNetMessage", function(_, client)
         lia.error(L("unregisteredNetMessage", name))
     end
 end)
+
+net.Receive("liaWaypointReached", function(_, client)
+    if client.waypointOnReach and isfunction(client.waypointOnReach) then
+        client.waypointOnReach(client)
+        client.waypointOnReach = nil -- Clear the callback
+    end
+end)

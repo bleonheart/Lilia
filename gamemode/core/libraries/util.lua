@@ -265,7 +265,7 @@ function lia.util.generateRandomName(firstNames, lastNames)
 end
 
 if SERVER then
-    function lia.util.SendTableUI(client, title, columns, data, options, characterID)
+    function lia.util.sendTableUI(client, title, columns, data, options, characterID)
         if not IsValid(client) or not client:IsPlayer() then return end
         local localizedColumns = {}
         for i, colInfo in ipairs(columns or {}) do
@@ -314,9 +314,9 @@ if SERVER then
         return output
     end
 else
-    lia.util.ShadowText = lia.derma.ShadowText
-    lia.util.DrawTextOutlined = lia.derma.DrawTextOutlined
-    lia.util.DrawTip = lia.derma.DrawTip
+    lia.util.ShadowText = lia.derma.shadowText
+    lia.util.DrawTextOutlined = lia.derma.drawTextOutlined
+    lia.util.DrawTip = lia.derma.drawTip
     lia.util.drawText = lia.derma.drawText
     lia.util.drawTexture = lia.derma.drawSurfaceTexture
     lia.util.skinFunc = lia.derma.skinFunc
@@ -486,7 +486,7 @@ else
     end
 
     lia.util.requestArguments = lia.derma.requestArguments
-    function lia.util.CreateTableUI(title, columns, data, options, charID)
+    function lia.util.createTableUI(title, columns, data, options, charID)
         local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
         local frame = vgui.Create("DFrame")
         frame:SetTitle(title and L(title) or L("tableListTitle"))

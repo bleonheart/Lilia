@@ -742,7 +742,7 @@ if SERVER then
 
     concommand.Add("database_list", function(ply)
         if IsValid(ply) then return end
-        lia.db.GetCharacterTable(function(columns)
+        lia.db.getCharacterTable(function(columns)
             if #columns == 0 then
                 lia.error(L("dbColumnsNone"))
             else
@@ -2834,14 +2834,14 @@ lia.command.add("charunban", {
         local charFound
         local id = tonumber(queryArg)
         if id then
-            for _, v in pairs(lia.char.getAll()) do
+            for _, v in pairs(lia.char.loaded) do
                 if v:getID() == id then
                     charFound = v
                     break
                 end
             end
         else
-            for _, v in pairs(lia.char.getAll()) do
+            for _, v in pairs(lia.char.loaded) do
                 if lia.util.stringMatches(v:getName(), queryArg) then
                     charFound = v
                     break
@@ -3169,7 +3169,7 @@ lia.command.add("listbodygroups", {
         end
 
         if #bodygroups > 0 then
-            lia.util.SendTableUI(client, L("uiBodygroupsFor", target:Nick()), {
+            lia.util.sendTableUI(client, L("uiBodygroupsFor", target:Nick()), {
                 {
                     name = "groupID",
                     field = "group"
@@ -4266,7 +4266,7 @@ lia.command.add("checkattributes", {
             })
         end
 
-        lia.util.SendTableUI(client, "characterAttributes", {
+        lia.util.sendTableUI(client, "characterAttributes", {
             {
                 name = "attributeName",
                 field = "name"
@@ -5153,7 +5153,7 @@ lia.command.add("doorinfo", {
                 }
             }
 
-            lia.util.SendTableUI(client, L("door") .. " " .. L("information"), {
+            lia.util.sendTableUI(client, L("door") .. " " .. L("information"), {
                 {
                     name = "doorInfoProperty",
                     field = "property"
@@ -5689,7 +5689,7 @@ lia.command.add("listdoorids", {
             })
         end
 
-        lia.util.SendTableUI(client, L("doorIDsOnMap", game.GetMap()), {
+        lia.util.sendTableUI(client, L("doorIDsOnMap", game.GetMap()), {
             {
                 name = L("doorIDColumn"),
                 field = "property"
@@ -6336,7 +6336,7 @@ lia.command.add("viewtickets", {
                 }
             end
 
-            lia.util.SendTableUI(client, L("ticketsForTitle", displayName), {
+            lia.util.sendTableUI(client, L("ticketsForTitle", displayName), {
                 {
                     name = "timestamp",
                     field = "timestamp"
@@ -6398,7 +6398,7 @@ lia.command.add("plyviewclaims", {
                     name = claim.name,
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
-                    timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
+                    timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
                     claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
@@ -6409,7 +6409,7 @@ lia.command.add("plyviewclaims", {
                 }
             }
 
-            lia.util.SendTableUI(client, L("claimsForTitle", target:Nick()), {
+            lia.util.sendTableUI(client, L("claimsForTitle", target:Nick()), {
                 {
                     name = "steamID",
                     field = "steamID"
@@ -6458,7 +6458,7 @@ lia.command.add("viewallclaims", {
                     name = claim.name,
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
-                    timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
+                    timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
                     claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
@@ -6469,7 +6469,7 @@ lia.command.add("viewallclaims", {
                 })
             end
 
-            lia.util.SendTableUI(client, "adminClaimsTitle", {
+            lia.util.sendTableUI(client, "adminClaimsTitle", {
                 {
                     name = "steamID",
                     field = "steamID"
@@ -6519,7 +6519,7 @@ lia.command.add("viewclaims", {
                     name = claim.name,
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
-                    timeSinceLastClaim = lia.time.TimeSince(claim.lastclaim),
+                    timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
                     claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
@@ -6530,7 +6530,7 @@ lia.command.add("viewclaims", {
                 })
             end
 
-            lia.util.SendTableUI(client, "adminClaimsTitle", {
+            lia.util.sendTableUI(client, "adminClaimsTitle", {
                 {
                     name = "steamID",
                     field = "steamID"
@@ -6644,7 +6644,7 @@ lia.command.add("viewwarns", {
                 })
             end
 
-            lia.util.SendTableUI(client, L("playerWarningsTitle", target:Nick()), {
+            lia.util.sendTableUI(client, L("playerWarningsTitle", target:Nick()), {
                 {
                     name = "id",
                     field = "index"
@@ -6712,7 +6712,7 @@ lia.command.add("viewwarnsissued", {
                 }
             end
 
-            lia.util.SendTableUI(client, L("warningsIssuedTitle", displayName), {
+            lia.util.sendTableUI(client, L("warningsIssuedTitle", displayName), {
                 {
                     name = "id",
                     field = "index"

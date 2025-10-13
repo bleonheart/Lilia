@@ -132,17 +132,23 @@ function entityMeta:isNearEntity(radius, otherEntity)
     return false
 end
 
-function entityMeta:GetCreator()
-    if not IsValid(self) then return nil end
-    return self:getNetVar("creator", nil)
+function entityMeta:getDoorPartner()
+    if SERVER then
+        return self.liaPartner
+    else
+        if not IsValid(self) then return nil end
+        local owner = self:GetOwner() or self.liaDoorOwner
+        if IsValid(owner) and owner:isDoor() then return owner end
+        for _, v in ipairs(ents.FindByClass("prop_door_rotating")) do
+            if v:GetOwner() == self then
+                self.liaDoorOwner = v
+                return v
+            end
+        end
+    end
 end
 
 if SERVER then
-    function entityMeta:SetCreator(client)
-        if not IsValid(self) then return end
-        self:setNetVar("creator", client)
-    end
-
     function entityMeta:sendNetVar(key, receiver)
         if not IsValid(self) then return end
         net.Start("liaNetVar")
@@ -201,10 +207,6 @@ if SERVER then
         return false
     end
 
-    function entityMeta:getDoorPartner()
-        return self.liaPartner
-    end
-
     function entityMeta:setNetVar(key, value, receiver)
         if not IsValid(self) then return end
         if checkBadType(key, value) then return end
@@ -220,24 +222,10 @@ if SERVER then
         if lia.net[self] and lia.net[self][key] ~= nil then return lia.net[self][key] end
         return default
     end
-
-    playerMeta.getLocalVar = entityMeta.getNetVar
 else
     function entityMeta:isDoor()
         if not IsValid(self) then return false end
         return self:GetClass():find("door")
-    end
-
-    function entityMeta:getDoorPartner()
-        if not IsValid(self) then return nil end
-        local owner = self:GetOwner() or self.liaDoorOwner
-        if IsValid(owner) and owner:isDoor() then return owner end
-        for _, v in ipairs(ents.FindByClass("prop_door_rotating")) do
-            if v:GetOwner() == self then
-                self.liaDoorOwner = v
-                return v
-            end
-        end
     end
 
     function entityMeta:getNetVar(key, default)
@@ -384,6 +372,4 @@ else
             return
         end
     end
-
-    playerMeta.getLocalVar = entityMeta.getNetVar
 end

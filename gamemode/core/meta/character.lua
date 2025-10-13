@@ -80,7 +80,7 @@ function characterMeta:getMaxStamina()
 end
 
 function characterMeta:getStamina()
-    local stamina = self:getPlayer():getLocalVar("stamina", 100) or lia.config.get("DefaultStamina", 100)
+    local stamina = self:getPlayer():getNetVar("stamina", 100) or lia.config.get("DefaultStamina", 100)
     return stamina
 end
 

@@ -16,7 +16,7 @@ function MODULE:PostPlayerLoadout(client)
         end
     end
 
-    client:setLocalVar("stamina", char:getMaxStamina())
+    client:setNetVar("stamina", char:getMaxStamina())
     staminaPlayers[client] = true
 end
 
@@ -42,7 +42,7 @@ function MODULE:KeyPress(client, key)
         local cost = lia.config.get("JumpStaminaCost", 25)
         local maxStamina = char:getMaxStamina() or lia.config.get("DefaultStamina", 100)
         client:consumeStamina(cost)
-        local newStamina = client:getLocalVar("stamina", maxStamina)
+        local newStamina = client:getNetVar("stamina", maxStamina)
         if newStamina <= 0 then
             client:setNetVar("brth", true)
             client:ConCommand("-speed")
@@ -51,7 +51,7 @@ function MODULE:KeyPress(client, key)
 end
 
 function MODULE:PlayerLoadedChar(client, character)
-    timer.Simple(0.25, function() if IsValid(client) then client:setLocalVar("stamina", character:getMaxStamina()) end end)
+    timer.Simple(0.25, function() if IsValid(client) then client:setNetVar("stamina", character:getMaxStamina()) end end)
 end
 
 function MODULE:PlayerStaminaLost(client)
@@ -68,7 +68,7 @@ function MODULE:PlayerStaminaLost(client)
         end
 
         local char = client:getChar()
-        local currentStamina = client:getLocalVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
+        local currentStamina = client:getNetVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
         if currentStamina <= breathThreshold then
             client:EmitSound("player/breathe1.wav", 35, 100)
             return

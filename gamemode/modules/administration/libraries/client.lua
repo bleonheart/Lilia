@@ -458,7 +458,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
             local combo = vgui.Create("liaComboBox", popup)
             combo:Dock(TOP)
             combo:PostInit()
-            for _, character in pairs(lia.char.getAll()) do
+            for _, character in pairs(lia.char.loaded) do
                 local ply = character:getPlayer()
                 if IsValid(ply) then
                     local steamID = ply:SteamID() or ""
@@ -2387,7 +2387,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
                 local last = tonumber(v.lastOnline)
                 if last and last > 0 then
                     local lastDiff = os.time() - last
-                    local timeSince = lia.time.TimeSince(last)
+                    local timeSince = lia.time.timeSince(last)
                     local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
                     lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                 else
@@ -2607,7 +2607,7 @@ net.Receive("liaDisplayCharList", function()
         })
     end
 
-    local _, listView = lia.util.CreateTableUI(L("charlistTitle", targetSteamIDsafe), columns, sendData)
+    local _, listView = lia.util.createTableUI(L("charlistTitle", targetSteamIDsafe), columns, sendData)
     if IsValid(listView) then
         for _, line in ipairs(listView:GetLines()) do
             local dataIndex = line:GetID()

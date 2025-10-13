@@ -8,6 +8,113 @@ import re
 from pathlib import Path
 from typing import List, Set
 
+# Blacklist of standard Garry's Mod hooks that should not be counted as missing documentation
+# These are built-in GMod hooks and don't need Lilia-specific documentation
+GMOD_HOOKS_BLACKLIST = {
+    "AcceptInput", "AddDeathNotice", "AdjustMouseSensitivity", "AllowPlayerPickup",
+    "CalcMainActivity", "CalcVehicleView", "CalcView", "CalcViewModelView",
+    "CanCreateUndo", "CanEditVariable", "CanExitVehicle", "CanPlayerEnterVehicle",
+    "CanPlayerSuicide", "CanPlayerUnfreeze", "CanProperty", "CanUndo",
+    "CaptureVideo", "ChatText", "ChatTextChanged", "CheckPassword",
+    "ClientSignOnStateChanged", "CloseDermaMenus", "CreateClientsideRagdoll",
+    "CreateEntityRagdoll", "CreateMove", "CreateTeams", "DoAnimationEvent",
+    "DoPlayerDeath", "DrawDeathNotice", "DrawMonitors", "DrawOverlay",
+    "DrawPhysgunBeam", "EndEntityDriving", "EntityEmitSound", "EntityFireBullets",
+    "EntityKeyValue", "EntityNetworkedVarChanged", "EntityRemoved", "EntityTakeDamage",
+    "FindUseEntity", "FinishChat", "FinishMove", "ForceDermaSkin",
+    "GameContentChanged", "GetDeathNoticeEntityName", "GetFallDamage",
+    "GetGameDescription", "GetMotionBlurValues", "GetPreferredCarryAngles",
+    "GetTeamColor", "GetTeamNumColor", "GrabEarAnimation", "GravGunOnDropped",
+    "GravGunOnPickedUp", "GravGunPickupAllowed", "GravGunPunt", "GUIMouseDoublePressed",
+    "GUIMousePressed", "GUIMouseReleased", "HandlePlayerArmorReduction",
+    "HandlePlayerDriving", "HandlePlayerDucking", "HandlePlayerJumping",
+    "HandlePlayerLanding", "HandlePlayerNoClipping", "HandlePlayerSwimming",
+    "HandlePlayerVaulting", "HideTeam", "HUDAmmoPickedUp", "HUDDrawPickupHistory",
+    "HUDDrawScoreBoard", "HUDDrawTargetID", "HUDItemPickedUp", "HUDPaint",
+    "HUDPaintBackground", "HUDShouldDraw", "HUDWeaponPickedUp", "Initialize",
+    "InitPostEntity", "InputMouseApply", "IsSpawnpointSuitable", "KeyPress",
+    "KeyRelease", "LoadGModSave", "LoadGModSaveFailed", "MenuStart",
+    "MouthMoveAnimation", "Move", "NeedsDepthPass", "NetworkEntityCreated",
+    "NetworkIDValidated", "NotifyShouldTransmit", "OnAchievementAchieved",
+    "OnChatTab", "OnCleanup", "OnClientLuaError", "OnCloseCaptionEmit",
+    "OnContextMenuClose", "OnContextMenuOpen", "OnCrazyPhysics",
+    "OnDamagedByExplosion", "OnEntityCreated", "OnEntityWaterLevelChanged",
+    "OnGamemodeLoaded", "OnLuaError", "OnNotifyAddonConflict", "OnNPCDropItem",
+    "OnNPCKilled", "OnPauseMenuBlockedTooManyTimes", "OnPauseMenuShow",
+    "OnPermissionsChanged", "OnPhysgunFreeze", "OnPhysgunPickup",
+    "OnPhysgunReload", "OnPlayerChangedTeam", "OnPlayerChat", "OnPlayerHitGround",
+    "OnPlayerJump", "OnPlayerPhysicsDrop", "OnPlayerPhysicsPickup",
+    "OnReloaded", "OnScreenSizeChanged", "OnSpawnMenuClose", "OnSpawnMenuOpen",
+    "OnTextEntryGetFocus", "OnTextEntryLoseFocus", "OnUndo", "OnViewModelChanged",
+    "PhysgunDrop", "PhysgunPickup", "PlayerAmmoChanged", "PlayerAuthed",
+    "PlayerBindPress", "PlayerButtonDown", "PlayerButtonUp",
+    "PlayerCanHearPlayersVoice", "PlayerCanJoinTeam", "PlayerCanPickupItem",
+    "PlayerCanPickupWeapon", "PlayerCanSeePlayersChat", "PlayerChangedTeam",
+    "PlayerCheckLimit", "PlayerClassChanged", "PlayerConnect", "PlayerDeath",
+    "PlayerDeathSound", "PlayerDeathThink", "PlayerDisconnected",
+    "PlayerDriveAnimate", "PlayerDroppedWeapon", "PlayerEndVoice",
+    "PlayerEnteredVehicle", "PlayerFireAnimationEvent", "PlayerFootstep",
+    "PlayerFrozeObject", "PlayerHandleAnimEvent", "PlayerHurt",
+    "PlayerInitialSpawn", "PlayerJoinTeam", "PlayerLeaveVehicle",
+    "PlayerLoadout", "PlayerNoClip", "PlayerPostThink", "PlayerRequestTeam",
+    "PlayerSay", "PlayerSelectSpawn", "PlayerSelectTeamSpawn",
+    "PlayerSetHandsModel", "PlayerSetModel", "PlayerShouldTakeDamage",
+    "PlayerShouldTaunt", "PlayerSilentDeath", "PlayerSpawn",
+    "PlayerSpawnAsSpectator", "PlayerSpray", "PlayerStartTaunt",
+    "PlayerStartVoice", "PlayerStepSoundTime", "PlayerSwitchFlashlight",
+    "PlayerSwitchWeapon", "PlayerTick", "PlayerTraceAttack",
+    "PlayerUnfrozeObject", "PlayerUse", "PopulateMenuBar", "PostCleanupMap",
+    "PostDraw2DSkyBox", "PostDrawEffects", "PostDrawHUD",
+    "PostDrawOpaqueRenderables", "PostDrawPlayerHands", "PostDrawSkyBox",
+    "PostDrawTranslucentRenderables", "PostDrawViewModel",
+    "PostEntityFireBullets", "PostEntityTakeDamage", "PostGamemodeLoaded",
+    "PostPlayerDeath", "PostPlayerDraw", "PostProcessPermitted", "PostRender",
+    "PostRenderVGUI", "PostUndo", "PreCleanupMap", "PreDrawEffects",
+    "PreDrawHalos", "PreDrawHUD", "PreDrawOpaqueRenderables",
+    "PreDrawPlayerHands", "PreDrawSkyBox", "PreDrawTranslucentRenderables",
+    "PreDrawViewModel", "PreDrawViewModels", "PreGamemodeLoaded",
+    "PrePlayerDraw", "PreRegisterSENT", "PreRegisterSWEP", "PreRender",
+    "PreUndo", "PreventScreenClicks", "PropBreak", "RenderScene",
+    "RenderScreenspaceEffects", "Restored", "Saved", "ScaleNPCDamage",
+    "ScalePlayerDamage", "ScoreboardHide", "ScoreboardShow", "SendDeathNotice",
+    "SetPlayerSpeed", "SetupMove", "SetupPlayerVisibility", "SetupSkyboxFog",
+    "SetupWorldFog", "ShouldCollide", "ShouldDrawLocalPlayer", "ShowHelp",
+    "ShowSpare1", "ShowSpare2", "ShowTeam", "ShutDown", "SpawniconGenerated",
+    "SpawnMenuCreated", "StartChat", "StartCommand", "StartEntityDriving",
+    "StartGame", "Think", "Tick", "TranslateActivity", "UpdateAnimation",
+    "VariableEdited", "VehicleMove", "VGUIMousePressAllowed", "VGUIMousePressed",
+    "WeaponEquip", "WorkshopDownloadedFile", "WorkshopDownloadFile",
+    "WorkshopDownloadProgress", "WorkshopDownloadTotals", "WorkshopEnd",
+    "WorkshopExtractProgress", "WorkshopStart", "WorkshopSubscriptionsChanged",
+    "WorkshopSubscriptionsMessage", "WorkshopSubscriptionsProgress",
+    # Additional spawn menu and tool menu hooks
+    "AddGamemodeToolMenuCategories", "AddGamemodeToolMenuTabs", "AddToolMenuCategories",
+    "AddToolMenuTabs", "CanArmDupe", "CanDrive", "CanTool", "ContentSidebarSelection",
+    "ContextMenuClosed", "ContextMenuCreated", "ContextMenuEnabled", "ContextMenuOpen",
+    "ContextMenuOpened", "ContextMenuShowTool", "OnRevertSpawnlist", "OnSaveSpawnlist",
+    "OpenToolbox", "PaintNotes", "PaintWorldTips", "PersistenceLoad", "PersistenceSave",
+    "PlayerGiveSWEP", "PlayerSpawnedEffect", "PlayerSpawnedNPC", "PlayerSpawnedProp",
+    "PlayerSpawnedRagdoll", "PlayerSpawnedSENT", "PlayerSpawnedSWEP", "PlayerSpawnedVehicle",
+    "PlayerSpawnEffect", "PlayerSpawnNPC", "PlayerSpawnObject", "PlayerSpawnProp",
+    "PlayerSpawnRagdoll", "PlayerSpawnSENT", "PlayerSpawnSWEP", "PlayerSpawnVehicle",
+    "PopulateContent", "PopulateEntities", "PopulateNPCs", "PopulatePropMenu",
+    "PopulateToolMenu", "PopulateVehicles", "PopulateWeapons", "PostReloadToolsMenu",
+    "PreRegisterTOOL", "PreReloadToolsMenu", "SpawnlistContentChanged",
+    "SpawnlistOpenGenericMenu", "SpawnMenuEnabled", "SpawnmenuIconMenuOpen",
+    "SpawnMenuOpen", "SpawnMenuOpened",
+    # CAMI (Compatibility and Mod Integration) hooks
+    "CAMI.OnPrivilegeRegistered", "CAMI.OnPrivilegeUnregistered", "CAMI.OnUsergroupRegistered",
+    "CAMI.OnUsergroupUnregistered", "CAMI.PlayerHasAccess", "CAMI.PlayerUsergroupChanged",
+    "CAMI.SteamIDUsergroupChanged",
+    # Additional addon hooks
+    "server_addban", "server_removeban", "serverguard.RankPermissionGiven",
+    "serverguard.RankPermissionTaken", "serverguard.RanksLoaded", "VC_canAddMoney",
+    "VC_canAfford", "VC_canRemoveMoney", "ULibGroupAccessChanged", "SAM.CanRunCommand",
+    "SAM.RankPermissionGiven", "SAM.RankPermissionTaken", "PAC3RegisterEvents",
+    "PermaProps.CanPermaProp", "PermaProps.OnEntityCreated", "PermaProps.OnEntitySaved",
+    "simfphysUse", "CheckValidSit", "simfphysPhysicsCollide"
+}
+
 
 def scan_hooks(base_path: str) -> List[str]:
     """Scan Lua files for hook.Add and hook.Run calls"""
@@ -50,13 +157,13 @@ def _extract_hooks_from_file(file_path: str) -> Set[str]:
     # Find hook.Add calls
     for match in re.finditer(hook_add_pattern, content):
         hook_name = match.group(2)
-        if hook_name:
+        if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
             hooks.add(hook_name.strip())
 
     # Find hook.Run calls
     for match in re.finditer(hook_run_pattern, content):
         hook_name = match.group(2)
-        if hook_name:
+        if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
             hooks.add(hook_name.strip())
 
     return hooks

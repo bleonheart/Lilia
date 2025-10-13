@@ -4,7 +4,7 @@ function MODULE:PlayerBindPress(client, bind, pressed)
     local char = client:getChar()
     if not char then return end
     local predicted = predictedStamina or 0
-    local actual = client:getLocalVar("stamina", char:getMaxStamina())
+        local actual = client:getNetVar("stamina", char:getMaxStamina())
     local jumpReq = lia.config.get("JumpStaminaCost", 25)
     if bind == "+jump" and predicted < jumpReq and actual < jumpReq then return true end
     local stamina = math.min(predicted, actual)
@@ -24,7 +24,7 @@ function MODULE:Think()
     if offset ~= 0 then predictedStamina = math.Clamp(predictedStamina + offset, 0, maxStamina) end
 end
 
-function MODULE:LocalVarChanged(client, key, _, newVar)
+function MODULE:NetVarChanged(client, key, _, newVar)
     if client ~= LocalPlayer() or key ~= "stamina" then return end
     predictedStamina = newVar
 end
@@ -66,5 +66,5 @@ function MODULE:OnReloaded()
     if not IsValid(client) then return end
     local char = client:getChar()
     if not char then return end
-    predictedStamina = client:getLocalVar("stamina", char:getMaxStamina())
+    predictedStamina = client:getNetVar("stamina", char:getMaxStamina())
 end

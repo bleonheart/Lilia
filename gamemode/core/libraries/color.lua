@@ -6,7 +6,7 @@ if CLIENT then
         lia.color.stored[name:lower()] = color
     end
 
-    function lia.color.Adjust(color, rOffset, gOffset, bOffset, aOffset)
+    function lia.color.adjust(color, rOffset, gOffset, bOffset, aOffset)
         return Color(math.Clamp(color.r + rOffset, 0, 255), math.Clamp(color.g + gOffset, 0, 255), math.Clamp(color.b + bOffset, 0, 255), math.Clamp((color.a or 255) + (aOffset or 0), 0, 255))
     end
 
@@ -151,17 +151,17 @@ if CLIENT then
         return istable(v) and isnumber(v.r) and isnumber(v.g) and isnumber(v.b) and isnumber(v.a)
     end
 
-    function lia.color.ReturnMainAdjustedColors()
+    function lia.color.returnMainAdjustedColors()
         local base = lia.color.getMainColor()
-        local background = lia.color.Adjust(base, -20, -10, -50, 0)
+        local background = lia.color.adjust(base, -20, -10, -50, 0)
         local brightness = background.r * 0.299 + background.g * 0.587 + background.b * 0.114
         local textColor = brightness > 128 and Color(30, 30, 30, 255) or Color(245, 245, 220, 255)
         return {
             background = background,
-            sidebar = lia.color.Adjust(base, -30, -15, -60, -55),
+            sidebar = lia.color.adjust(base, -30, -15, -60, -55),
             accent = base,
             text = textColor,
-            hover = lia.color.Adjust(base, -40, -25, -70, -35),
+            hover = lia.color.adjust(base, -40, -25, -70, -35),
             border = Color(255, 255, 255, 255),
             highlight = Color(255, 255, 255, 30)
         }

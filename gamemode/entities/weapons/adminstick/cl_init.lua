@@ -30,7 +30,7 @@ function SWEP:DrawHUD()
     local client = LocalPlayer()
     local x, y = ScrW() / 2, ScrH() / 2
     local target = IsValid(client.AdminStickTarget) and client.AdminStickTarget or client:GetEyeTrace().Entity
-    local themeColors = lia.color.ReturnMainAdjustedColors()
+    local themeColors = lia.color.returnMainAdjustedColors()
     local themeAccent = lia.color.theme.theme
     local information = {}
     if IsValid(target) then

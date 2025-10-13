@@ -6,7 +6,7 @@ function PANEL:filterCharacterModels(faction)
         if isstring(idx) and istable(data) then
             filteredModels[idx] = data
         else
-            local shouldInclude = hook.Run("FilterCharacterModels", LocalPlayer(), faction, data, idx)
+            local shouldInclude = hook.Run("FilterCharModels", LocalPlayer(), faction, data, idx)
             if shouldInclude ~= false then filteredModels[idx] = data end
         end
     end

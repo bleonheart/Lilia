@@ -517,7 +517,7 @@ function GM:PlayerLoadout(client)
     client:SetNoDraw(false)
     client:SetWeaponColor(Vector(0.30, 0.80, 0.10))
     client:StripWeapons()
-    client:setLocalVar("blur", nil)
+    client:setNetVar("blur", nil)
     client:SetModel(character:getModel())
     client:SetWalkSpeed(lia.config.get("WalkSpeed"))
     client:SetRunSpeed(lia.config.get("RunSpeed"))
@@ -951,21 +951,13 @@ function GM:CreateSalaryTimers()
                 pay = isnumber(pay) and pay or class and class.pay or faction and faction.pay or 0
                 local adjustedPay = hook.Run("OnSalaryAdjust", client)
                 if isnumber(adjustedPay) then pay = adjustedPay end
-                local limit = hook.Run("GetSalaryLimit", client, faction, class)
-                limit = isnumber(limit) and limit or class and class.payLimit or faction and faction.payLimit or lia.config.get("SalaryThreshold", 0)
                 if pay > 0 then
-                    local money = char:getMoney()
-                    if limit > 0 and money + pay > limit then
-                        client:notifyWarningLocalized("salaryLimitReached")
-                        char:setMoney(limit)
-                    else
-                        local handled = hook.Run("PreSalaryGive", client, char, pay, faction, class)
-                        if handled ~= true then
-                            local finalPay = hook.Run("OnSalaryGiven", client, char, pay, faction, class)
-                            if isnumber(finalPay) then pay = finalPay end
-                            char:giveMoney(pay)
-                            client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
-                        end
+                    local handled = hook.Run("PreSalaryGive", client, char, pay, faction, class)
+                    if handled ~= true then
+                        local finalPay = hook.Run("OnSalaryGiven", client, char, pay, faction, class)
+                        if isnumber(finalPay) then pay = finalPay end
+                        char:giveMoney(pay)
+                        client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
                     end
                 end
             end

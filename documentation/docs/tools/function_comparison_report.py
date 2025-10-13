@@ -33,7 +33,7 @@ if current_dir not in sys.path:
 
 try:
     from compare_functions import FunctionComparator, LuaFunctionExtractor, DocumentationParser
-    from missinghooks import scan_hooks, read_documented_hooks
+    from missinghooks import scan_hooks, read_documented_hooks, GMOD_HOOKS_BLACKLIST
     from localization_analysis_report import (
         analyze_data, write_framework_md, write_framework_txt,
         write_modules_md, write_modules_txt, DEFAULT_FRAMEWORK_GAMEMODE_DIR,
@@ -105,6 +105,12 @@ def get_exclusion_reason(function_name):
     return None
 
 @dataclass
+class FunctionInfo:
+    """Information about a function"""
+    name: str
+    parameters: List[str]
+
+@dataclass
 class CombinedReportData:
     """Container for all analysis results"""
     function_comparison: Dict[str, Dict]
@@ -119,9 +125,9 @@ class CombinedReportData:
     panels_found: List[str]  # New field for panels found in code
     panels_documented: List[str]  # New field for documented panels
     # Categorized missing documentation
-    missing_library_functions: List[str]
-    missing_hook_functions: List[str]
-    missing_meta_functions: List[str]
+    missing_library_functions: List[FunctionInfo]
+    missing_hook_functions: List[FunctionInfo]
+    missing_meta_functions: List[FunctionInfo]
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -630,7 +636,7 @@ class FunctionComparisonReportGenerator:
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
-    def _categorize_missing_functions(self, function_comparison: Dict[str, Dict]) -> Tuple[List[str], List[str], List[str]]:
+    def _categorize_missing_functions(self, function_comparison: Dict[str, Dict]) -> Tuple[List[FunctionInfo], List[FunctionInfo], List[FunctionInfo]]:
         """Categorize missing functions into library, hook, and meta types"""
         missing_library_functions = []
         missing_hook_functions = []
@@ -642,31 +648,44 @@ class FunctionComparisonReportGenerator:
         documented_meta = self._get_documented_meta_functions()
 
         # Process all missing functions from function_comparison
-        all_missing = []
         for file_data in function_comparison.values():
-            all_missing.extend(file_data.get('missing_functions', []))
+            for func_name in file_data.get('missing_functions', []):
+                # Get function info including parameters
+                func_info = file_data.get('functions', {}).get(func_name)
+                if not func_info:
+                    continue
 
-        for func_name in all_missing:
-            # Remove duplicates while preserving order
-            if func_name in missing_library_functions or func_name in missing_hook_functions or func_name in missing_meta_functions:
-                continue
+                # Create FunctionInfo object with name and parameters
+                function_info = FunctionInfo(
+                    name=func_name,
+                    parameters=func_info.get('parameters', [])
+                )
 
-            # Categorize based on naming patterns and existing documentation
-            if func_name in documented_libraries or self._is_library_function(func_name):
-                if func_name not in [f for f in missing_library_functions]:
-                    missing_library_functions.append(func_name)
-            elif func_name in documented_hooks or self._is_hook_function(func_name):
-                if func_name not in [f for f in missing_hook_functions]:
-                    missing_hook_functions.append(func_name)
-            elif func_name in documented_meta or self._is_meta_function(func_name):
-                if func_name not in [f for f in missing_meta_functions]:
-                    missing_meta_functions.append(func_name)
-            else:
-                # Default to library if we can't determine the type
-                if func_name not in [f for f in missing_library_functions]:
-                    missing_library_functions.append(func_name)
+                # Remove duplicates while preserving order
+                existing_names = {f.name for f in missing_library_functions + missing_hook_functions + missing_meta_functions}
+                if func_name in existing_names:
+                    continue
 
-        return sorted(missing_library_functions), sorted(missing_hook_functions), sorted(missing_meta_functions)
+                # Categorize based on naming patterns and existing documentation
+                if func_name in documented_libraries or self._is_library_function(func_name):
+                    missing_library_functions.append(function_info)
+                elif func_name in documented_hooks or self._is_hook_function(func_name):
+                    missing_hook_functions.append(function_info)
+                elif func_name in documented_meta or self._is_meta_function(func_name):
+                    missing_meta_functions.append(function_info)
+                else:
+                    # Default to library if we can't determine the type
+                    missing_library_functions.append(function_info)
+
+        return missing_library_functions, missing_hook_functions, missing_meta_functions
+
+    def _format_function_signature(self, func_info: FunctionInfo) -> str:
+        """Format a function signature with its actual parameters"""
+        if func_info.parameters:
+            param_str = ', '.join(func_info.parameters)
+            return f"{func_info.name}({param_str})"
+        else:
+            return f"{func_info.name}()"
 
     def _get_documented_library_functions(self) -> Set[str]:
         """Get all documented library functions"""
@@ -770,7 +789,7 @@ class FunctionComparisonReportGenerator:
         return documented_hooks
 
     def _scan_hook_registrations(self) -> List[str]:
-        """Scan Lua files for hook.Add() calls to find registered hooks"""
+        """Scan Lua files for all hook patterns to find registered hooks"""
         registered_hooks = set()
 
         # Scan gamemode files
@@ -785,20 +804,81 @@ class FunctionComparisonReportGenerator:
                 with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
 
-                # Find hook.Add() calls
-                # Pattern: hook.Add("HookName", "Identifier", function) or hook.Add('HookName', 'Identifier', function)
-                pattern = r'hook\.Add\s*\(\s*["\']([^"\']+)["\']'
-                matches = re.findall(pattern, content, re.IGNORECASE)
-
-                for hook_name in matches:
-                    if hook_name and hook_name.strip():
-                        registered_hooks.add(hook_name.strip())
+                # Use the updated hook extraction from missinghooks.py
+                file_hooks = self._extract_hooks_from_file_content(content)
+                registered_hooks.update(file_hooks)
 
             except Exception as e:
                 print(f"Warning: Error scanning {lua_file}: {e}")
                 continue
 
         return sorted(list(registered_hooks))
+
+    def _extract_hooks_from_file_content(self, content: str) -> Set[str]:
+        """Extract hooks from file content using all patterns"""
+        hooks = set()
+
+        # Pattern for hook.Add calls
+        # Matches: hook.Add("hook_name", ...)
+        hook_add_pattern = r'hook\.Add\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+        # Pattern for hook.Run calls
+        # Matches: hook.Run("hook_name", ...)
+        hook_run_pattern = r'hook\.Run\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+        # Pattern for hook.Call calls
+        # Matches: hook.Call("hook_name", ...)
+        hook_call_pattern = r'hook\.Call\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+        # Pattern for GM:HookName function definitions
+        # Matches: function GM:HookName(params)
+        gm_hook_pattern = r'function\s+GM:([A-Za-z_][A-Za-z0-9_]*)'
+
+        # Pattern for MODULE:HookName function definitions
+        # Matches: function MODULE:HookName(params)
+        module_hook_pattern = r'function\s+MODULE:([A-Za-z_][A-Za-z0-9_]*)'
+
+        # Pattern for SCHEMA:HookName function definitions
+        # Matches: function SCHEMA:HookName(params)
+        schema_hook_pattern = r'function\s+SCHEMA:([A-Za-z_][A-Za-z0-9_]*)'
+
+        # Find hook.Add calls
+        for match in re.finditer(hook_add_pattern, content):
+            hook_name = match.group(2)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                hooks.add(hook_name.strip())
+
+        # Find hook.Run calls
+        for match in re.finditer(hook_run_pattern, content):
+            hook_name = match.group(2)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                hooks.add(hook_name.strip())
+
+        # Find hook.Call calls
+        for match in re.finditer(hook_call_pattern, content):
+            hook_name = match.group(2)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                hooks.add(hook_name.strip())
+
+        # Find GM:HookName function definitions
+        for match in re.finditer(gm_hook_pattern, content):
+            hook_name = match.group(1)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                hooks.add(hook_name.strip())
+
+        # Find MODULE:HookName function definitions
+        for match in re.finditer(module_hook_pattern, content):
+            hook_name = match.group(1)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                hooks.add(hook_name.strip())
+
+        # Find SCHEMA:HookName function definitions
+        for match in re.finditer(schema_hook_pattern, content):
+            hook_name = match.group(1)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                hooks.add(hook_name.strip())
+
+        return hooks
 
     def _run_panels_analysis(self) -> Tuple[List[str], List[str]]:
         """Run panel documentation analysis"""
@@ -1137,13 +1217,13 @@ class FunctionComparisonReportGenerator:
             if undoc_hooks:
                 lines.append("- **Undocumented Hooks:**")
                 for h in undoc_hooks:
-                    lines.append(f"  - `{h}`")
+                    lines.append(f"  - `{h}(args)`")
             if undoc_functions:
                 if undoc_hooks:
                     lines.append("")
                 lines.append("- **Undocumented lia.* Functions:**")
                 for f in undoc_functions:
-                    lines.append(f"  - `{f}`")
+                    lines.append(f"  - `{f}(args)`")
             lines.append("")
 
         # Summary table
@@ -1450,29 +1530,35 @@ class FunctionComparisonReportGenerator:
             
             # Group functions by library prefix
             library_groups = {}
-            for func in data.missing_library_functions:
-                if '.' in func:
-                    # Extract library prefix (e.g., "lia.char" from "lia.char.something")
-                    parts = func.split('.')
+            for func_info in data.missing_library_functions:
+                func_name = func_info.name
+                if '.' in func_name:
+                    # Extract library prefix
+                    parts = func_name.split('.')
                     if len(parts) >= 2:
-                        library_prefix = '.'.join(parts[:2])  # e.g., "lia.char"
+                        # For core lia functions (like lia.error), use just "lia"
+                        if parts[0] == 'lia' and len(parts) == 2:
+                            library_prefix = 'lia'
+                        else:
+                            # For other functions (like lia.char.something), use "lia.char"
+                            library_prefix = '.'.join(parts[:2])
                     else:
                         library_prefix = parts[0]  # fallback
                 else:
                     library_prefix = "other"
-                
+
                 if library_prefix not in library_groups:
                     library_groups[library_prefix] = []
-                library_groups[library_prefix].append(func)
-            
+                library_groups[library_prefix].append(func_info)
+
             # Sort groups by prefix name
             for library_prefix in sorted(library_groups.keys()):
                 functions = library_groups[library_prefix]
                 lines.append(f"#### {library_prefix}")
                 lines.append(f"Count: {len(functions)} functions")
                 lines.append("")
-                for func in sorted(functions):
-                    lines.append(f"- `{func}`")
+                for func_info in sorted(functions, key=lambda f: f.name):
+                    lines.append(f"- `{self._format_function_signature(func_info)}`")
                 lines.append("")
 
         if data.missing_hook_functions:
@@ -1481,8 +1567,8 @@ class FunctionComparisonReportGenerator:
                 f"Total: {len(data.missing_hook_functions)} functions",
                 "",
             ])
-            for func in data.missing_hook_functions:
-                lines.append(f"- `{func}`")
+            for func_info in sorted(data.missing_hook_functions, key=lambda f: f.name):
+                lines.append(f"- `{self._format_function_signature(func_info)}`")
             lines.append("")
 
         if data.missing_meta_functions:
@@ -1494,30 +1580,31 @@ class FunctionComparisonReportGenerator:
             
             # Group meta functions by meta type
             meta_groups = {}
-            for func in data.missing_meta_functions:
+            for func_info in data.missing_meta_functions:
+                func_name = func_info.name
                 # Extract meta type from function name
                 # Common patterns: Character.something, Player.something, Entity.something, Panel.something, etc.
-                if '.' in func:
-                    meta_type = func.split('.')[0]  # e.g., "Character" from "Character.something"
+                if ':' in func_name:
+                    meta_type = func_name.split(':')[0]  # e.g., "characterMeta" from "characterMeta:something"
                 else:
                     meta_type = "other"
-                
+
                 if meta_type not in meta_groups:
                     meta_groups[meta_type] = []
-                meta_groups[meta_type].append(func)
-            
+                meta_groups[meta_type].append(func_info)
+
             # Sort groups by meta type name
             for meta_type in sorted(meta_groups.keys()):
                 functions = meta_groups[meta_type]
                 lines.append(f"#### {meta_type}")
                 lines.append(f"Count: {len(functions)} functions")
                 lines.append("")
-                for func in sorted(functions):
-                    lines.append(f"- `{func}`")
+                for func_info in sorted(functions, key=lambda f: f.name):
+                    lines.append(f"- `{self._format_function_signature(func_info)}`")
                 lines.append("")
 
         # Show uncategorized if any exist (shouldn't happen with proper categorization)
-        all_categorized = set(data.missing_library_functions + data.missing_hook_functions + data.missing_meta_functions)
+        all_categorized = {func_info.name for func_info in data.missing_library_functions + data.missing_hook_functions + data.missing_meta_functions}
         all_missing = []
         for file_data in data.function_comparison.values():
             all_missing.extend(file_data.get('missing_functions', []))
@@ -1560,14 +1647,14 @@ class FunctionComparisonReportGenerator:
             lines.append("### Missing Hook Documentation:")
             lines.append("These hooks are registered in code but missing from documentation:")
             for hook in data.hooks_missing:
-                lines.append(f"- `{hook}`")
+                lines.append(f"- `{hook}(args)`")
             lines.append("")
 
         if unused_hooks:
             lines.append("### Unused Hook Documentation:")
             lines.append("These hooks are documented but not registered in code:")
             for hook in sorted(unused_hooks):
-                lines.append(f"- `{hook}`")
+                lines.append(f"- `{hook}(args)`")
             lines.append("")
 
 
@@ -1645,7 +1732,7 @@ class FunctionComparisonReportGenerator:
             for filename, mismatches in sorted(file_mismatches.items()):
                 lines.append(f"#### {filename}")
                 for mismatch in sorted(mismatches, key=lambda x: x['line']):
-                    lines.append(f"- **Line {mismatch['line']}:** `{mismatch['key']}`")
+                    lines.append(f"- **Line {mismatch['line']}:** `{mismatch['key']}(args)`")
                     lines.append(f"  - Expected: {mismatch['expected']} args, Provided: {mismatch['provided']} args")
                     lines.append(f"  - Context: `{mismatch['context'][:80]}{'...' if len(mismatch['context']) > 80 else ''}`")
                 lines.append("")
@@ -1668,7 +1755,7 @@ class FunctionComparisonReportGenerator:
         if data.localization_data and loc_data.get('undefined_rows'):
             lines.append("### Undefined Localization Calls:")
             for row in loc_data['undefined_rows']:
-                lines.append(f"- `{row[4]}` in {row[0]}:{row[1]}:{row[2]} ({row[3]})")
+                lines.append(f"- `{row[4]}(args)` in {row[0]}:{row[1]}:{row[2]} ({row[3]})")
             lines.append("")
 
         return lines
@@ -1744,17 +1831,17 @@ class FunctionComparisonReportGenerator:
         return output_file
 
 def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: str,
-                           modules_paths: List[str], output_dir: Path, force: bool = False,
-                           no_module_docs: bool = False) -> Tuple[bool, bool, List[str]]:
+                           modules_paths: List[str], output_dir: Path, quiet: bool = False) -> Tuple[bool, List[str]]:
     """Display analysis actions and get user confirmation
 
     Returns:
-        Tuple[bool, bool, List[str]]: (proceed_with_analysis, generate_module_docs, approved_modules_paths)
+        Tuple[bool, List[str]]: (generate_module_docs, approved_modules_paths)
     """
-    if force:
-        return True, not no_module_docs, modules_paths
-
-    print("\nANALYSIS CONFIRMATION")
+    # In quiet mode, skip all prompts and don't generate module docs
+    if quiet:
+        return False, []
+    
+    print("\nANALYSIS CONFIGURATION")
     print("=" * 60)
 
     print("\nMAIN DIRECTORIES TO SCAN:")
@@ -1766,42 +1853,26 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
     print(f"   - Documentation directory: {output_dir}")
     print("   - The report.md file will be created/updated here")
 
-    print("\nPOTENTIAL FILESYSTEM CHANGES:")
-    print("   - The report.md file will be created/updated in the documentation directory")
-    if not no_module_docs:
-        print("   - 'docs' folders may be created in module directories")
-        print("   - 'libraries.md' and 'hooks.md' files may be created in module docs folders")
-
     print("\n" + "=" * 60)
 
-    # Ask about main analysis
+    # Ask about module documentation generation
+    print("\nMODULE DOCUMENTATION:")
+    print("   - Module documentation includes scanning external modules for undocumented items")
+    print("   - This can create 'docs' folders in module directories")
+    print("   - Main analysis will always run regardless of this choice")
+    
     while True:
-        response = input("Do you want to proceed with the main analysis? (y/n): ").strip().lower()
+        response = input("\nDo you want to generate module documentation? (y/n): ").strip().lower()
         if response in ['y', 'yes']:
+            generate_module_docs = True
             break
         elif response in ['n', 'no']:
-            print("Analysis cancelled by user.")
-            return False, False, []
+            generate_module_docs = False
+            print("Module documentation generation disabled. Proceeding with main analysis only.")
+            print("\nProceeding with analysis...\n")
+            return False, []
         else:
             print("Please enter 'y' for yes or 'n' for no.")
-
-    # Ask about module documentation generation
-    generate_module_docs = not no_module_docs
-    if not force:
-        print("\nMODULE DOCUMENTATION:")
-        print("   - Module documentation includes scanning external modules for undocumented items")
-        print("   - This can create 'docs' folders in module directories")
-        while True:
-            response = input("Do you want to generate module documentation? (y/n): ").strip().lower()
-            if response in ['y', 'yes']:
-                generate_module_docs = True
-                break
-            elif response in ['n', 'no']:
-                generate_module_docs = False
-                print("Module documentation generation disabled.")
-                break
-            else:
-                print("Please enter 'y' for yes or 'n' for no.")
 
     # Ask about each module path individually (only if module docs are enabled)
     approved_modules_paths = []
@@ -1809,42 +1880,35 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
         print("\nMODULE PATH CONFIRMATION:")
         print("-" * 40)
 
-    for i, path in enumerate(modules_paths, 1):
-        path_obj = Path(path)
-        status = "Exists" if path_obj.exists() else "Missing"
-        print(f"\n{i}. {path}")
-        print(f"   Status: {status}")
+        for i, path in enumerate(modules_paths, 1):
+            path_obj = Path(path)
+            status = "Exists" if path_obj.exists() else "Missing"
+            print(f"\n{i}. {path}")
+            print(f"   Status: {status}")
 
-        if not path_obj.exists():
-            print("   Directory does not exist - skipping")
-            continue
+            if not path_obj.exists():
+                print("   Directory does not exist - skipping")
+                continue
 
-        while True:
-            response = input(f"   Scan this module path? (y/n): ").strip().lower()
-            if response in ['y', 'yes']:
-                approved_modules_paths.append(path)
-                print("   Added to scan list")
-                break
-            elif response in ['n', 'no']:
-                print("   Skipped")
-                break
-            else:
-                print("   Please enter 'y' for yes or 'n' for no.")
+            while True:
+                response = input(f"   Scan this module path? (y/n): ").strip().lower()
+                if response in ['y', 'yes']:
+                    approved_modules_paths.append(path)
+                    print("   Added to scan list")
+                    break
+                elif response in ['n', 'no']:
+                    print("   Skipped")
+                    break
+                else:
+                    print("   Please enter 'y' for yes or 'n' for no.")
 
-    if not approved_modules_paths:
-        print("\nNo module paths approved for scanning.")
-        while True:
-            response = input("Continue with main analysis only? (y/n): ").strip().lower()
-            if response in ['y', 'yes']:
-                break
-            elif response in ['n', 'no']:
-                print("Analysis cancelled by user.")
-                return False, False, []
-            else:
-                print("Please enter 'y' for yes or 'n' for no.")
+        if not approved_modules_paths:
+            print("\nNo module paths approved for scanning.")
+            print("Proceeding with main analysis only.")
+            generate_module_docs = False
 
     print("\nProceeding with analysis...\n")
-    return True, generate_module_docs, approved_modules_paths
+    return generate_module_docs, approved_modules_paths
 
 def main():
     """Main function"""
@@ -1856,7 +1920,6 @@ Examples:
   python function_comparison_report.py
   python function_comparison_report.py --base-path /path/to/gamemode --docs-path /path/to/docs
   python function_comparison_report.py --output my_report.md --quiet
-  python function_comparison_report.py --force  # Skip confirmations
         """
     )
     parser.add_argument("--base-path", default=str(DEFAULT_GAMEMODE_ROOT),
@@ -1869,8 +1932,6 @@ Examples:
                        help=f"Paths to modules directories (default: {DEFAULT_MODULES_PATHS})")
     parser.add_argument("--output", "-o", help="Output file path (default: report.md)")
     parser.add_argument("--quiet", "-q", action="store_true", help="Suppress progress output")
-    parser.add_argument("--force", "-f", action="store_true", help="Skip confirmation prompts")
-    parser.add_argument("--no-module-docs", action="store_true", help="Skip generation of docs in module directories")
 
     args = parser.parse_args()
 
@@ -1890,12 +1951,10 @@ Examples:
     modules_paths = args.modules_path if args.modules_path else [str(p) for p in DEFAULT_MODULES_PATHS]
 
     # Confirm analysis actions with user
-    proceed, generate_module_docs, approved_modules_paths = confirm_analysis_actions(
+    generate_module_docs, approved_modules_paths = confirm_analysis_actions(
         base_path, docs_path, args.language_file, modules_paths,
-        DEFAULT_OUTPUT_DIR, args.force, args.no_module_docs
+        DEFAULT_OUTPUT_DIR, args.quiet
     )
-    if not proceed:
-        sys.exit(0)
 
     if not args.quiet:
         print("Starting comprehensive function comparison analysis...")

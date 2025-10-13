@@ -129,7 +129,6 @@ function SWEP:Think()
             end
         end
 
-        if not IsValid(self.heldEntity) and self:GetOwner():getLocalVar("IsHoldingObject", true) then self:GetOwner():setLocalVar("IsHoldingObject", false) end
     end
 end
 
@@ -188,7 +187,6 @@ end
 function SWEP:DropObject(bThrow)
     if not IsValid(self.heldEntity) or self.heldEntity.ixHeldOwner ~= self:GetOwner() then return end
     self.lastPlayerAngles = nil
-    self:GetOwner():setLocalVar("IsHoldingObject", false)
     SafeRemoveEntity(self.constraint)
     SafeRemoveEntity(self.holdEntity)
     self.heldEntity:StopMotionController()
@@ -354,7 +352,6 @@ function SWEP:SecondaryAttack()
             self:SetNextSecondaryFire(CurTime() + 1.5)
             self:SetNextPrimaryFire(CurTime() + 1.5)
         elseif not entity:IsNPC() and self:CanHoldObject(entity) then
-            self:GetOwner():setLocalVar("IsHoldingObject", true)
             self:PickupObject(entity)
             self:PlayPickupSound(trace.SurfaceProps)
             self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)

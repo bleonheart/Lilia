@@ -8,7 +8,12 @@ net.Receive("liaSetWaypointWithLogo", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
     local logo = net.ReadString()
-    LocalPlayer():setWaypointWithLogo(name, pos, logo)
+    local hasOnReach = net.ReadBool()
+    local onReach = nil
+    if hasOnReach then
+        onReach = net.ReadString()
+    end
+    LocalPlayer():setWaypointWithLogo(name, pos, logo, onReach)
 end)
 
 net.Receive("liaLoadingFailure", function()
@@ -115,7 +120,7 @@ net.Receive("liaInventoryInit", function()
 
     lia.inventory.instances[id] = instance
     hook.Run("InventoryInitialized", instance)
-    for _, character in pairs(lia.char.getAll()) do
+    for _, character in pairs(lia.char.loaded) do
         for idx, inventory in pairs(character.vars.inv) do
             if inventory:getID() == id then character.vars.inv[idx] = instance end
         end
@@ -215,7 +220,7 @@ net.Receive("liaCharVar", function()
         if character then
             local oldVar = character:getVar()[key]
             character:getVar()[key] = value
-            hook.Run("OnCharLocalVarChanged", character, key, oldVar, value)
+            hook.Run("OnCharNetVarChanged", character, key, oldVar, value)
         end
     end)
 end)
@@ -301,7 +306,7 @@ net.Receive("liaNetLocal", function()
     lia.net[idx] = lia.net[idx] or {}
     local oldValue = lia.net[idx][key]
     lia.net[idx][key] = value
-    hook.Run("LocalVarChanged", LocalPlayer(), key, oldValue, value)
+    hook.Run("NetVarChanged", LocalPlayer(), key, oldValue, value)
 end)
 
 net.Receive("liaActBar", function()
@@ -333,7 +338,7 @@ net.Receive("liaOpenInvMenu", function()
     myInventoryDerma:MoveLeftOf(inventoryDerma, 4)
 end)
 
-lia.net.readBigTable("liaSendTableUI", function(data) lia.util.CreateTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
+lia.net.readBigTable("liaSendTableUI", function(data) lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()

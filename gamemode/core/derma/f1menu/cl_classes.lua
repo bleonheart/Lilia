@@ -45,7 +45,7 @@ function PANEL:loadClasses()
         btn:SetTall(50)
         btn:Dock(TOP)
         btn:DockMargin(5, 5, 5, 5)
-        local textColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().text or color_white
+        local textColor = lia.color.returnMainAdjustedColors and lia.color.returnMainAdjustedColors().text or color_white
         btn:SetTextColor(textColor)
         btn:SetFont("liaMediumFont")
         btn:SetExpensiveShadow(1, Color(0, 0, 0, 100))
@@ -154,7 +154,7 @@ function PANEL:addClassDetails(parent, cl)
         local lbl = parent:Add("DLabel")
         lbl:SetFont("liaMediumFont")
         lbl:SetText(text)
-        local textColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().text or color_white
+        local textColor = lia.color.returnMainAdjustedColors and lia.color.returnMainAdjustedColors().text or color_white
         lbl:SetTextColor(textColor)
         lbl:SetWrap(true)
         lbl:Dock(TOP)
@@ -214,8 +214,8 @@ function PANEL:addJoinButton(parent, cl, canBe)
     btn:SetTall(45)
     btn:Dock(BOTTOM)
     btn:DockMargin(10, 10, 10, 10)
-    local textColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().text or color_white
-    local accentColor = lia.color.ReturnMainAdjustedColors and lia.color.ReturnMainAdjustedColors().accent or Color(100, 150, 255)
+    local textColor = lia.color.returnMainAdjustedColors and lia.color.returnMainAdjustedColors().text or color_white
+        local accentColor = lia.color.returnMainAdjustedColors and lia.color.returnMainAdjustedColors().accent or Color(100, 150, 255)
     btn:SetTextColor(textColor)
     btn:SetFont("liaMediumFont")
     btn:SetExpensiveShadow(1, Color(0, 0, 0, 150))

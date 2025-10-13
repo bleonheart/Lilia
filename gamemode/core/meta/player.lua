@@ -65,7 +65,7 @@ function playerMeta:removeRagdoll()
     local ragdoll = self:getRagdoll()
     ragdoll.liaIgnoreDelete = true
     SafeRemoveEntity(ragdoll)
-    self:setLocalVar("blur", nil)
+    self:setNetVar("blur", nil)
 end
 
 function playerMeta:getRagdoll()
@@ -453,13 +453,123 @@ function playerMeta:takeFlags(flags)
     if char then char:takeFlags(flags) end
 end
 
+function playerMeta:NetworkAnimation(active, boneData)
+    if SERVER then
+        net.Start("liaAnimationStatus")
+        net.WriteEntity(self)
+        net.WriteBool(active)
+        net.WriteTable(boneData)
+        net.Broadcast()
+    else
+        for name, ang in pairs(boneData) do
+            local i = self:LookupBone(name)
+            if i then self:ManipulateBoneAngles(i, active and ang or angle_zero) end
+        end
+    end
+end
+
+function playerMeta:getAllLiliaData()
+    if SERVER then
+        self.liaData = self.liaData or {}
+        return self.liaData
+    else
+        lia.localData = lia.localData or {}
+        return lia.localData
+    end
+end
+
+function playerMeta:setWaypointWithLogo(name, vector, logo, onReach)
+    if SERVER then
+        net.Start("liaSetWaypointWithLogo")
+        net.WriteString(name)
+        net.WriteVector(vector)
+        net.WriteString(logo)
+        net.WriteBool(onReach and true or false)
+        if onReach then net.WriteString(tostring(onReach)) end
+        net.Send(self)
+        -- Store the onReach callback for server-side execution
+        if onReach and isfunction(onReach) then self.waypointOnReach = onReach end
+    else
+        if not isstring(name) or not isvector(vector) then return end
+        local logoMaterial
+        if logo and isstring(logo) then
+            logoMaterial = Material(logo, "smooth mips noclamp")
+            if not logoMaterial or logoMaterial:IsError() then logoMaterial = nil end
+        end
+
+        if not logoMaterial then return end
+        local waypointID = "Waypoint_WithLogo_" .. tostring(self:SteamID64()) .. "_" .. tostring(math.random(100000, 999999))
+        hook.Add("HUDPaint", waypointID, function()
+            if not IsValid(self) then
+                hook.Remove("HUDPaint", waypointID)
+                return
+            end
+
+            local dist = self:GetPos():Distance(vector)
+            local spos = vector:ToScreen()
+            local howClose = math.Round(dist / 40)
+            if spos.visible then
+                if logoMaterial then
+                    local logoSize = 32
+                    surface.SetDrawColor(255, 255, 255, 255)
+                    surface.SetMaterial(logoMaterial)
+                    surface.DrawTexturedRect(spos.x - logoSize / 2, spos.y - logoSize / 2 - 40, logoSize, logoSize)
+                end
+
+                surface.SetFont("LiliaFont.40")
+                local nameText = name
+                local metersText = L("meters", howClose)
+                local nameTw, nameTh = surface.GetTextSize(nameText)
+                local metersTw, metersTh = surface.GetTextSize(metersText)
+                local containerTw = math.max(nameTw, metersTw)
+                local containerTh = nameTh + metersTh + 10
+                local bx, by = math.Round(spos.x - containerTw * 0.5 - 18), math.Round(spos.y - 12)
+                local bw, bh = containerTw + 36, containerTh + 24
+                local theme = lia.color.theme or {
+                    background_panelpopup = Color(30, 30, 30, 180),
+                    theme = Color(255, 255, 255),
+                    text = Color(255, 255, 255)
+                }
+
+                local fadeAlpha = 1
+                local headerColor = Color(theme.background_panelpopup.r, theme.background_panelpopup.g, theme.background_panelpopup.b, math.Clamp(theme.background_panelpopup.a * fadeAlpha, 0, 255))
+                local accentColor = Color(theme.theme.r, theme.theme.g, theme.theme.b, math.Clamp(theme.theme.a * fadeAlpha, 0, 255))
+                local textColor = Color(theme.text.r, theme.text.g, theme.text.b, math.Clamp(theme.text.a * fadeAlpha, 0, 255))
+                lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
+                lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
+                draw.SimpleText(nameText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+                draw.SimpleText(metersText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+            end
+
+            if howClose <= 3 then RunConsoleCommand("waypoint_withlogo_stop_" .. waypointID) end
+        end)
+
+        concommand.Add("waypoint_withlogo_stop_" .. waypointID, function()
+            hook.Remove("HUDPaint", waypointID)
+            concommand.Remove("waypoint_withlogo_stop_" .. waypointID)
+            if onReach and isfunction(onReach) then onReach(self) end
+            -- Notify server that waypoint was reached
+            if SERVER then
+                if self.waypointOnReach and isfunction(self.waypointOnReach) then
+                    self.waypointOnReach(self)
+                    self.waypointOnReach = nil -- Clear the callback
+                end
+            else
+                net.Start("liaWaypointReached")
+                net.SendToServer()
+            end
+        end)
+    end
+end
+
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
-        local current = self:getLocalVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
+        local current = self:getNetVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
         local maxStamina = char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100)
         local value = math.Clamp(current + amount, 0, maxStamina)
-        self:setLocalVar("stamina", value)
+        self:setNetVar("stamina", value)
         if value >= maxStamina * 0.25 and self:getNetVar("brth", false) then
             self:setNetVar("brth", nil)
             hook.Run("PlayerStaminaGained", self)
@@ -468,9 +578,9 @@ if SERVER then
 
     function playerMeta:consumeStamina(amount)
         local char = self:getChar()
-        local current = self:getLocalVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
+        local current = self:getNetVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
         local value = math.Clamp(current - amount, 0, char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
-        self:setLocalVar("stamina", value)
+        self:setNetVar("stamina", value)
         if value == 0 and not self:getNetVar("brth", false) then
             self:setNetVar("brth", true)
             hook.Run("PlayerStaminaLost", self)
@@ -481,23 +591,10 @@ if SERVER then
         local character = self:getChar()
         if not character then return false end
         local currentMoney = character:getMoney()
-        local maxMoneyLimit = lia.config.get("MoneyLimit") or 0
         local totalMoney = currentMoney + amount
-        if maxMoneyLimit > 0 and isnumber(maxMoneyLimit) and totalMoney > maxMoneyLimit then
-            local excessMoney = totalMoney - maxMoneyLimit
-            character:setMoney(maxMoneyLimit)
-            self:notifyMoneyLocalized("moneyLimitReached", lia.currency.get(maxMoneyLimit), lia.currency.plural, lia.currency.get(excessMoney), lia.currency.plural)
-            local money = lia.currency.spawn(self:getItemDropPos(), excessMoney)
-            if IsValid(money) then
-                money.client = self
-                money.charID = character:getID()
-            end
-
-            lia.log.add(self, "money", maxMoneyLimit - currentMoney)
-        else
-            character:setMoney(totalMoney)
-            lia.log.add(self, "money", amount)
-        end
+        character:setMoney(totalMoney)
+        lia.log.add(self, "money", amount)
+        return true
     end
 
     function playerMeta:takeMoney(amount)
@@ -613,32 +710,10 @@ if SERVER then
         net.Send(self)
     end
 
-    function playerMeta:setWaypointWithLogo(name, vector, logo)
-        net.Start("liaSetWaypointWithLogo")
-        net.WriteString(name)
-        net.WriteVector(vector)
-        net.WriteString(logo)
-        net.Send(self)
-    end
-
     function playerMeta:getLiliaData(key, default)
         local data = self.liaData and self.liaData[key]
         if data == nil then return default end
         return data
-    end
-
-    playerMeta.getData = playerMeta.getLiliaData
-    function playerMeta:getAllLiliaData()
-        self.liaData = self.liaData or {}
-        return self.liaData
-    end
-
-    function playerMeta:NetworkAnimation(active, boneData)
-        net.Start("liaAnimationStatus")
-        net.WriteEntity(self)
-        net.WriteBool(active)
-        net.WriteTable(boneData)
-        net.Broadcast()
     end
 
     function playerMeta:banPlayer(reason, duration, banner)
@@ -731,15 +806,6 @@ if SERVER then
         return stored + RealTime() - (self.liaJoinTime or RealTime())
     end
 
-    function playerMeta:getLastOnline()
-        local last = self:getLiliaData("lastOnline", os.time())
-        return lia.time.TimeSince(last)
-    end
-
-    function playerMeta:getLastOnlineTime()
-        return self:getLiliaData("lastOnline", os.time())
-    end
-
     function playerMeta:createRagdoll(freeze, isDead)
         local entity = ents.Create("prop_ragdoll")
         entity:SetPos(self:GetPos())
@@ -794,7 +860,7 @@ if SERVER then
             entity:setNetVar("player", self)
             entity:CallOnRemove("fixer", function()
                 if IsValid(self) then
-                    self:setLocalVar("blur", nil)
+                    self:setNetVar("blur", nil)
                     if self.liaStoredHealth then self:SetHealth(math.max(self.liaStoredHealth, 1)) end
                     if not entity.liaNoReset then self:SetPos(entity:GetPos()) end
                     self:SetNoDraw(false)
@@ -830,7 +896,7 @@ if SERVER then
                 end
             end)
 
-            self:setLocalVar("blur", 25)
+            self:setNetVar("blur", 25)
             self:setNetVar("ragdoll", entity)
             entity.liaWeapons = {}
             entity.liaAmmo = {}
@@ -902,7 +968,7 @@ if SERVER then
         end
     end
 
-    function playerMeta:setLocalVar(key, value)
+    function playerMeta:setNetVar(key, value)
         if checkBadType(key, value) then return end
         lia.net[self] = lia.net[self] or {}
         local oldValue = lia.net[self][key]
@@ -911,7 +977,7 @@ if SERVER then
         net.WriteString(key)
         net.WriteType(value)
         net.Send(self)
-        hook.Run("LocalVarChanged", self, key, oldValue, value)
+        hook.Run("NetVarChanged", self, key, oldValue, value)
     end
 else
     function playerMeta:CanOverrideView()
@@ -945,15 +1011,6 @@ else
     function playerMeta:getTotalOnlineTime()
         local stored = self:getLiliaData("totalOnlineTime", 0)
         return stored + RealTime() - (lia.joinTime or 0)
-    end
-
-    function playerMeta:getLastOnline()
-        local last = self:getLiliaData("lastOnline", os.time())
-        return lia.time.TimeSince(last)
-    end
-
-    function playerMeta:getLastOnlineTime()
-        return self:getLiliaData("lastOnline", os.time())
     end
 
     function playerMeta:setWaypoint(name, vector, onReach)
@@ -1002,69 +1059,6 @@ else
         end)
     end
 
-    function playerMeta:setWaypointWithLogo(name, vector, logo, onReach)
-        if not isstring(name) or not isvector(vector) then return end
-        local logoMaterial
-        if logo and isstring(logo) then
-            logoMaterial = Material(logo, "smooth mips noclamp")
-            if not logoMaterial or logoMaterial:IsError() then logoMaterial = nil end
-        end
-
-        if not logoMaterial then return end
-        local waypointID = "Waypoint_WithLogo_" .. tostring(self:SteamID64()) .. "_" .. tostring(math.random(100000, 999999))
-        hook.Add("HUDPaint", waypointID, function()
-            if not IsValid(self) then
-                hook.Remove("HUDPaint", waypointID)
-                return
-            end
-
-            local dist = self:GetPos():Distance(vector)
-            local spos = vector:ToScreen()
-            local howClose = math.Round(dist / 40)
-            if spos.visible then
-                if logoMaterial then
-                    local logoSize = 32
-                    surface.SetDrawColor(255, 255, 255, 255)
-                    surface.SetMaterial(logoMaterial)
-                    surface.DrawTexturedRect(spos.x - logoSize / 2, spos.y - logoSize / 2 - 40, logoSize, logoSize)
-                end
-
-                surface.SetFont("LiliaFont.40")
-                local nameText = name
-                local metersText = L("meters", howClose)
-                local nameTw, nameTh = surface.GetTextSize(nameText)
-                local metersTw, metersTh = surface.GetTextSize(metersText)
-                local containerTw = math.max(nameTw, metersTw)
-                local containerTh = nameTh + metersTh + 10
-                local bx, by = math.Round(spos.x - containerTw * 0.5 - 18), math.Round(spos.y - 12)
-                local bw, bh = containerTw + 36, containerTh + 24
-                local theme = lia.color.theme or {
-                    background_panelpopup = Color(30, 30, 30, 180),
-                    theme = Color(255, 255, 255),
-                    text = Color(255, 255, 255)
-                }
-
-                local fadeAlpha = 1
-                local headerColor = Color(theme.background_panelpopup.r, theme.background_panelpopup.g, theme.background_panelpopup.b, math.Clamp(theme.background_panelpopup.a * fadeAlpha, 0, 255))
-                local accentColor = Color(theme.theme.r, theme.theme.g, theme.theme.b, math.Clamp(theme.theme.a * fadeAlpha, 0, 255))
-                local textColor = Color(theme.text.r, theme.text.g, theme.text.b, math.Clamp(theme.text.a * fadeAlpha, 0, 255))
-                lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
-                lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
-                lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
-                draw.SimpleText(nameText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-                draw.SimpleText(metersText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-            end
-
-            if howClose <= 3 then RunConsoleCommand("waypoint_withlogo_stop_" .. waypointID) end
-        end)
-
-        concommand.Add("waypoint_withlogo_stop_" .. waypointID, function()
-            hook.Remove("HUDPaint", waypointID)
-            concommand.Remove("waypoint_withlogo_stop_" .. waypointID)
-            if onReach and isfunction(onReach) then onReach(self) end
-        end)
-    end
-
     function playerMeta:getLiliaData(key, default)
         local data = lia.localData and lia.localData[key]
         if data == nil then
@@ -1073,31 +1067,6 @@ else
             return data
         end
     end
-
-    playerMeta.getData = playerMeta.getLiliaData
-    function playerMeta:getAllLiliaData()
-        lia.localData = lia.localData or {}
-        return lia.localData
-    end
-
-    function playerMeta:hasFlags(flags)
-        for i = 1, #flags do
-            local flag = flags:sub(i, i)
-            if self:getFlags():find(flag, 1, true) then return true end
-        end
-        return hook.Run("CharHasFlags", self, flags) or false
-    end
-
-    function playerMeta:NetworkAnimation(active, boneData)
-        for name, ang in pairs(boneData) do
-            local i = self:LookupBone(name)
-            if i then self:ManipulateBoneAngles(i, active and ang or angle_zero) end
-        end
-    end
-end
-
-function playerMeta:setWeighPoint(name, vector, onReach)
-    self:setWaypoint(name, vector, onReach)
 end
 
 function playerMeta:hasFlags(flags)

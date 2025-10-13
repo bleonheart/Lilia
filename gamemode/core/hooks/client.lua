@@ -314,7 +314,7 @@ end
 
 function GM:CreateMove(cmd)
     local client = LocalPlayer()
-    if IsValid(client) and client:getLocalVar("bIsHoldingObject", false) and cmd:KeyDown(IN_ATTACK2) then
+    if IsValid(client) and client:getNetVar("bIsHoldingObject", false) and cmd:KeyDown(IN_ATTACK2) then
         cmd:ClearMovement()
         local angle = cmd:GetViewAngles()
         angle.z = 0
