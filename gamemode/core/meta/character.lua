@@ -6,10 +6,6 @@ function characterMeta:tostring()
     return L("character") .. "[" .. (self.id or 0) .. "]"
 end
 
-function characterMeta:eq(other)
-    return self:getID() == other:getID()
-end
-
 function characterMeta:getID()
     return self.id
 end

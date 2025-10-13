@@ -1,7 +1,8 @@
 ﻿net.Receive("liaSetWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
-    LocalPlayer():setWaypoint(name, pos)
+    local logo = net.ReadString()
+    LocalPlayer():setWaypoint(name, pos, logo ~= "" and logo or nil)
 end)
 
 net.Receive("liaSetWaypointWithLogo", function()
@@ -13,7 +14,7 @@ net.Receive("liaSetWaypointWithLogo", function()
     if hasOnReach then
         onReach = net.ReadString()
     end
-    LocalPlayer():setWaypointWithLogo(name, pos, logo, onReach)
+    LocalPlayer():setWaypoint(name, pos, logo, onReach)
 end)
 
 net.Receive("liaLoadingFailure", function()

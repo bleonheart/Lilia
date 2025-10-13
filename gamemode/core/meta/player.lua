@@ -51,25 +51,12 @@ function playerMeta:getCurrentVehicle()
     return nil
 end
 
-function playerMeta:hasValidVehicle()
-    return IsValid(self:getCurrentVehicle())
-end
-
-function playerMeta:isNoClipping()
-    return self:GetMoveType() == MOVETYPE_NOCLIP and not self:hasValidVehicle()
-end
-
 function playerMeta:removeRagdoll()
-    if not IsValid(self:getRagdoll()) then return end
-    local ragdoll = self:getRagdoll()
+    local ragdoll = self:getNetVar("ragdoll")
+    if not IsValid(ragdoll) then return end
     ragdoll.liaIgnoreDelete = true
     SafeRemoveEntity(ragdoll)
     self:setNetVar("blur", nil)
-end
-
-function playerMeta:getRagdoll()
-    if not IsValid(self:getNetVar("ragdoll")) then return end
-    return self:getNetVar("ragdoll")
 end
 
 function playerMeta:isStuck()
@@ -115,7 +102,7 @@ function playerMeta:isRunning()
     return vectorMeta.Length2D(self:GetVelocity()) > self:GetWalkSpeed() + 10
 end
 
-function playerMeta:IsFamilySharedAccount()
+function playerMeta:isFamilySharedAccount()
     return util.SteamIDFrom64(self:OwnerSteamID64()) ~= self:SteamID()
 end
 
@@ -280,7 +267,7 @@ function playerMeta:notifyAdminLocalized(key, ...)
     end
 end
 
-function playerMeta:CanEditVendor(vendor)
+function playerMeta:canEditVendor(vendor)
     local hookResult = hook.Run("CanPerformVendorEdit", self, vendor)
     if hookResult ~= nil then return hookResult end
     return self:hasPrivilege("canEditVendors")
@@ -452,7 +439,7 @@ function playerMeta:takeFlags(flags)
     if char then char:takeFlags(flags) end
 end
 
-function playerMeta:NetworkAnimation(active, boneData)
+function playerMeta:networkAnimation(active, boneData)
     if SERVER then
         net.Start("liaAnimationStatus")
         net.WriteEntity(self)
@@ -477,27 +464,23 @@ function playerMeta:getAllLiliaData()
     end
 end
 
-function playerMeta:setWaypointWithLogo(name, vector, logo, onReach)
+function playerMeta:setWaypoint(name, vector, logo, onReach)
     if SERVER then
-        net.Start("liaSetWaypointWithLogo")
+        net.Start("liaSetWaypoint")
         net.WriteString(name)
         net.WriteVector(vector)
-        net.WriteString(logo)
-        net.WriteBool(onReach and true or false)
-        if onReach then net.WriteString(tostring(onReach)) end
+        net.WriteString(logo or "")
         net.Send(self)
-        -- Store the onReach callback for server-side execution
-        if onReach and isfunction(onReach) then self.waypointOnReach = onReach end
     else
         if not isstring(name) or not isvector(vector) then return end
         local logoMaterial
-        if logo and isstring(logo) then
+        if logo and isstring(logo) and logo ~= "" then
             logoMaterial = Material(logo, "smooth mips noclamp")
             if not logoMaterial or logoMaterial:IsError() then logoMaterial = nil end
         end
 
-        if not logoMaterial then return end
-        local waypointID = "Waypoint_WithLogo_" .. tostring(self:SteamID64()) .. "_" .. tostring(math.random(100000, 999999))
+        if logo and not logoMaterial then return end
+        local waypointID = "Waypoint_" .. tostring(self:SteamID64()) .. "_" .. tostring(math.random(100000, 999999))
         hook.Add("HUDPaint", waypointID, function()
             if not IsValid(self) then
                 hook.Remove("HUDPaint", waypointID)
@@ -508,6 +491,7 @@ function playerMeta:setWaypointWithLogo(name, vector, logo, onReach)
             local spos = vector:ToScreen()
             local howClose = math.Round(dist / 40)
             if spos.visible then
+                -- Draw logo if provided
                 if logoMaterial then
                     local logoSize = 32
                     surface.SetDrawColor(255, 255, 255, 255)
@@ -515,7 +499,7 @@ function playerMeta:setWaypointWithLogo(name, vector, logo, onReach)
                     surface.DrawTexturedRect(spos.x - logoSize / 2, spos.y - logoSize / 2 - 40, logoSize, logoSize)
                 end
 
-                surface.SetFont("LiliaFont.40")
+                surface.SetFont("liaMediumFont")
                 local nameText = name
                 local metersText = L("meters", howClose)
                 local nameTw, nameTh = surface.GetTextSize(nameText)
@@ -537,16 +521,16 @@ function playerMeta:setWaypointWithLogo(name, vector, logo, onReach)
                 lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
                 lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
                 lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
-                draw.SimpleText(nameText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-                draw.SimpleText(metersText, "LiliaFont.40", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+                draw.SimpleText(nameText, "liaMediumFont", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+                draw.SimpleText(metersText, "liaMediumFont", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
             end
 
-            if howClose <= 3 then RunConsoleCommand("waypoint_withlogo_stop_" .. waypointID) end
+            if howClose <= 3 then RunConsoleCommand("waypoint_stop_" .. waypointID) end
         end)
 
-        concommand.Add("waypoint_withlogo_stop_" .. waypointID, function()
+        concommand.Add("waypoint_stop_" .. waypointID, function()
             hook.Remove("HUDPaint", waypointID)
-            concommand.Remove("waypoint_withlogo_stop_" .. waypointID)
+            concommand.Remove("waypoint_stop_" .. waypointID)
             if onReach and isfunction(onReach) then onReach(self) end
             -- Notify server that waypoint was reached
             if SERVER then
@@ -702,13 +686,6 @@ if SERVER then
         if not noSave then self:saveLiliaData() end
     end
 
-    function playerMeta:setWaypoint(name, vector)
-        net.Start("liaSetWaypoint")
-        net.WriteString(name)
-        net.WriteVector(vector)
-        net.Send(self)
-    end
-
     function playerMeta:getLiliaData(key, default)
         local data = self.liaData and self.liaData[key]
         if data == nil then return default end
@@ -800,11 +777,6 @@ if SERVER then
         return RealTime() - (self.liaJoinTime or RealTime())
     end
 
-    function playerMeta:getTotalOnlineTime()
-        local stored = self:getLiliaData("totalOnlineTime", 0)
-        return stored + RealTime() - (self.liaJoinTime or RealTime())
-    end
-
     function playerMeta:createRagdoll(freeze, isDead)
         local entity = ents.Create("prop_ragdoll")
         entity:SetPos(self:GetPos())
@@ -847,7 +819,7 @@ if SERVER then
 
     function playerMeta:setRagdolled(state, baseTime, getUpGrace, getUpMessage)
         getUpMessage = getUpMessage or L("wakingUp")
-        local ragdoll = self:getRagdoll()
+        local ragdoll = self:getNetVar("ragdoll")
         local time = hook.Run("GetRagdollTime", self, time) or baseTime or 10
         if state then
             self.liaStoredHealth = self:Health()
@@ -940,7 +912,7 @@ if SERVER then
                 entity:SetCollisionGroup(COLLISION_GROUP_NONE)
                 entity:SetCustomCollisionCheck(false)
             end
-        elseif IsValid(self:getRagdoll()) then
+        elseif IsValid(self:getNetVar("ragdoll")) then
             SafeRemoveEntity(self:getNetVar("ragdoll"))
             hook.Run("OnCharFallover", self, nil, false)
         end
@@ -979,16 +951,16 @@ if SERVER then
         hook.Run("NetVarChanged", self, key, oldValue, value)
     end
 else
-    function playerMeta:CanOverrideView()
-        local ragdoll = self:getRagdoll()
-        local isInVehicle = self:hasValidVehicle()
+    function playerMeta:canOverrideView()
+        local ragdoll = self:getNetVar("ragdoll")
+        local isInVehicle = IsValid(self:getCurrentVehicle())
         if IsValid(lia.gui.char) then return false end
         if isInVehicle then return false end
         if hook.Run("ShouldDisableThirdperson", self) == true then return false end
         return lia.option.get("thirdPersonEnabled", false) and lia.config.get("ThirdPersonEnabled", true) and IsValid(self) and self:getChar() and not IsValid(ragdoll)
     end
 
-    function playerMeta:IsInThirdPerson()
+    function playerMeta:isInThirdPerson()
         local thirdPersonEnabled = lia.config.get("ThirdPersonEnabled", true)
         local tpEnabled = lia.option.get("thirdPersonEnabled", false)
         return tpEnabled and thirdPersonEnabled
@@ -1005,57 +977,6 @@ else
 
         local diff = os.time(lia.time.toNumber(lia.lastJoin)) - os.time(lia.time.toNumber(lia.firstJoin))
         return diff + RealTime() - (lia.joinTime or 0)
-    end
-
-    function playerMeta:getTotalOnlineTime()
-        local stored = self:getLiliaData("totalOnlineTime", 0)
-        return stored + RealTime() - (lia.joinTime or 0)
-    end
-
-    function playerMeta:setWaypoint(name, vector, onReach)
-        hook.Add("HUDPaint", "WeighPoint", function()
-            if not IsValid(self) then
-                hook.Remove("HUDPaint", "WeighPoint")
-                return
-            end
-
-            local dist = self:GetPos():Distance(vector)
-            local spos = vector:ToScreen()
-            local howclose = math.Round(dist / 40)
-            if spos.visible then
-                surface.SetFont("liaMediumFont")
-                local nameText = name
-                local metersText = L("meters", howclose)
-                local nameTw, nameTh = surface.GetTextSize(nameText)
-                local metersTw, metersTh = surface.GetTextSize(metersText)
-                local containerTw = math.max(nameTw, metersTw)
-                local containerTh = nameTh + metersTh + 10
-                local bx, by = math.Round(spos.x - containerTw * 0.5 - 18), math.Round(spos.y - 12)
-                local bw, bh = containerTw + 36, containerTh + 24
-                local theme = lia.color.theme or {
-                    background_panelpopup = Color(30, 30, 30, 180),
-                    theme = Color(255, 255, 255),
-                    text = Color(255, 255, 255)
-                }
-
-                local fadeAlpha = 1
-                local headerColor = Color(theme.background_panelpopup.r, theme.background_panelpopup.g, theme.background_panelpopup.b, math.Clamp(theme.background_panelpopup.a * fadeAlpha, 0, 255))
-                local accentColor = Color(theme.theme.r, theme.theme.g, theme.theme.b, math.Clamp(theme.theme.a * fadeAlpha, 0, 255))
-                local textColor = Color(theme.text.r, theme.text.g, theme.text.b, math.Clamp(theme.text.a * fadeAlpha, 0, 255))
-                lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
-                lia.derma.rect(bx, by, bw, bh - 6):Radii(16, 16, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
-                lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 16, 16):Color(accentColor):Draw()
-                draw.SimpleText(nameText, "liaMediumFont", math.Round(spos.x), math.Round(spos.y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-                draw.SimpleText(metersText, "liaMediumFont", math.Round(spos.x), math.Round(spos.y - 2 + nameTh + 5), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-            end
-
-            if howclose <= 3 then RunConsoleCommand("weighpoint_stop") end
-        end)
-
-        concommand.Add("weighpoint_stop", function()
-            hook.Remove("HUDPaint", "WeighPoint")
-            if onReach and isfunction(onReach) then onReach() end
-        end)
     end
 
     function playerMeta:getLiliaData(key, default)

@@ -127,7 +127,7 @@ function GM:CanPlayerInteractItem(client, action, item)
     action = string.lower(action)
     if client:hasPrivilege("noItemCooldown") then return true end
     if not client:Alive() then return false, L("forbiddenActionStorage") end
-    if IsValid(client:getRagdoll()) then return false, L("forbiddenActionStorage") end
+    if IsValid(client:getNetVar("ragdoll")) then return false, L("forbiddenActionStorage") end
     if action == "drop" then
         if hook.Run("CanPlayerDropItem", client, item) ~= false then
             if not client.dropDelay then
@@ -295,7 +295,7 @@ end
 function GM:EntityTakeDamage(entity, dmgInfo)
     if not entity:IsPlayer() then return end
     if entity:isStaffOnDuty() and lia.config.get("StaffHasGodMode", true) then return true end
-    if entity:isNoClipping() then return true end
+    if entity:GetMoveType() == MOVETYPE_NOCLIP then return true end
     if IsValid(entity:getNetVar("player")) then
         if dmgInfo:IsDamageType(DMG_CRUSH) then
             if (entity.liaFallGrace or 0) < CurTime() then
@@ -378,7 +378,7 @@ end
 
 function GM:DoPlayerDeath(client, attacker)
     client:AddDeaths(1)
-    local existingRagdoll = client:getRagdoll()
+    local existingRagdoll = client:getNetVar("ragdoll")
     if IsValid(existingRagdoll) then
         existingRagdoll.liaIsDeadRagdoll = true
         existingRagdoll.liaNoReset = true
@@ -628,7 +628,7 @@ function GM:SaveData()
     local seen = {}
     local data = {}
     for _, ent in ents.Iterator() do
-        if ent:isLiliaPersistent() then
+        if ent.IsPersistent then
             local key = makeKey(ent)
             if key ~= "" and not seen[key] then
                 seen[key] = true
@@ -814,7 +814,7 @@ function GM:LoadData()
 end
 
 function GM:OnEntityCreated(ent)
-    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+    if not IsValid(ent) or not ent.IsPersistent then return end
     timer.Simple(0, function()
         if not IsValid(ent) then return end
         local saved = lia.data.getPersistence()
@@ -841,7 +841,7 @@ function GM:OnEntityCreated(ent)
 end
 
 function GM:UpdateEntityPersistence(ent)
-    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+    if not IsValid(ent) or not ent.IsPersistent then return end
     local saved = lia.data.getPersistence()
     local key = makeKey(ent)
     for _, data in ipairs(saved) do
@@ -865,7 +865,7 @@ function GM:UpdateEntityPersistence(ent)
 end
 
 function GM:EntityRemoved(ent)
-    if not IsValid(ent) or not ent:isLiliaPersistent() then return end
+    if not IsValid(ent) or not ent.IsPersistent then return end
     local saved = lia.data.getPersistence()
     local key = makeKey(ent)
     for i, data in ipairs(saved) do

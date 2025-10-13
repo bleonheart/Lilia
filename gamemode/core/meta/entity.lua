@@ -1,5 +1,4 @@
-﻿local playerMeta = FindMetaTable("Player")
-local entityMeta = FindMetaTable("Entity")
+﻿local entityMeta = FindMetaTable("Entity")
 local baseEmitSound = entityMeta.EmitSound
 local validClasses = {
     ["lvs_base"] = true,
@@ -52,12 +51,6 @@ end
 function entityMeta:isSimfphysCar()
     if not IsValid(self) then return false end
     return validClasses[self:GetClass()] or self.IsSimfphyscar or self.LVS or validClasses[self.Base]
-end
-
-function entityMeta:isLiliaPersistent()
-    if not IsValid(self) then return false end
-    if self.GetPersistent and self:GetPersistent() then return true end
-    return self.IsPersistent
 end
 
 function entityMeta:checkDoorAccess(client, access)
@@ -235,7 +228,7 @@ else
         return default
     end
 
-    function entityMeta:PlayFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, _, dsp)
+    function entityMeta:playFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, _, dsp)
         local v = math.Clamp(tonumber(volume) or 1, 0, 1)
         local follow = shouldFollow ~= false
         local fmin, fmax = tonumber(minDistance) or 0, tonumber(maxDistance) or 1200

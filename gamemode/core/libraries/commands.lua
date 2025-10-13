@@ -2380,10 +2380,10 @@ lia.command.add("forcefallover", {
         elseif not target:Alive() then
             target:notifyErrorLocalized("cmdDead")
             return
-        elseif target:hasValidVehicle() then
+        elseif IsValid(target:getCurrentVehicle()) then
             target:notifyWarningLocalized("cmdVehicle")
             return
-        elseif target:isNoClipping() then
+        elseif target:GetMoveType() == MOVETYPE_NOCLIP then
             target:notifyWarningLocalized("cmdNoclip")
             return
         end
@@ -2396,7 +2396,7 @@ lia.command.add("forcefallover", {
         end
 
         target:setNetVar("FallOverCooldown", true)
-        if not IsValid(target:getRagdoll()) then
+        if not IsValid(target:getNetVar("ragdoll")) then
             target:setRagdolled(true, time)
             timer.Simple(10, function() if IsValid(target) then target:setNetVar("FallOverCooldown", false) end end)
         end
@@ -2419,12 +2419,12 @@ lia.command.add("forcegetup", {
             return
         end
 
-        if not IsValid(target:getRagdoll()) then
+        if not IsValid(target:getNetVar("ragdoll")) then
             target:notifyErrorLocalized("noRagdoll")
             return
         end
 
-        local entity = target:getRagdoll()
+        local entity = target:getNetVar("ragdoll")
         if IsValid(entity) and entity.liaGrace and entity.liaGrace < CurTime() and entity:GetVelocity():Length2D() < 8 and not entity.liaWakingUp then
             entity.liaWakingUp = true
             target:setAction("gettingUp", 5, function()
@@ -2460,12 +2460,12 @@ lia.command.add("chargetup", {
     adminOnly = false,
     desc = "forceSelfGetUpDesc",
     onRun = function(client)
-        if not IsValid(client:getRagdoll()) then
+        if not IsValid(client:getNetVar("ragdoll")) then
             client:notifyErrorLocalized("noRagdoll")
             return
         end
 
-        local entity = client:getRagdoll()
+        local entity = client:getNetVar("ragdoll")
         if IsValid(entity) and entity.liaGrace and entity.liaGrace < CurTime() and entity:GetVelocity():Length2D() < 8 and not entity.liaWakingUp then
             entity.liaWakingUp = true
             client:setAction("gettingUp", 5, function()
@@ -2505,12 +2505,12 @@ lia.command.add("fallover", {
             return
         end
 
-        if client:hasValidVehicle() then
+        if IsValid(client:getCurrentVehicle()) then
             client:notifyWarningLocalized("cmdVehicle")
             return
         end
 
-        if client:isNoClipping() then
+        if client:GetMoveType() == MOVETYPE_NOCLIP then
             client:notifyWarningLocalized("cmdNoclip")
             return
         end
@@ -2523,7 +2523,7 @@ lia.command.add("fallover", {
         end
 
         client:setNetVar("FallOverCooldown", true)
-        if not IsValid(client:getRagdoll()) then
+        if not IsValid(client:getNetVar("ragdoll")) then
             client:setRagdolled(true, t)
             timer.Simple(10, function() if IsValid(client) then client:setNetVar("FallOverCooldown", false) end end)
         end

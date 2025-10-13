@@ -28,10 +28,6 @@ function ITEM:getQuantity()
     return self.quantity
 end
 
-function ITEM:eq(other)
-    return self:getID() == other:getID()
-end
-
 function ITEM:tostring()
     return L("item") .. "[" .. self.uniqueID .. "][" .. self.id .. "]"
 end

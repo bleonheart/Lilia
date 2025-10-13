@@ -761,7 +761,7 @@ function GM:CanProperty(client, property, entity)
 end
 
 function GM:DrawPhysgunBeam(client)
-    if client:isNoClipping() then return false end
+    if client:GetMoveType() == MOVETYPE_NOCLIP then return false end
 end
 
 function GM:PhysgunPickup(client, entity)
