@@ -5923,7 +5923,7 @@ lia.command.add("setclass", {
                     for _, v in pairs(lia.class.list) do
                         if v.faction == targetFaction then
                             local canAccess = true
-                            if lia.class.hasWhitelist(v.index) then canAccess = (target:getChar():getClasswhitelists() or {})[v.index] == true end
+                            if lia.class.hasWhitelist(v.index) then canAccess = target:getChar():getClasswhitelists()[v.index] end
                             if canAccess and target:getChar():getClass() ~= v.uniqueID then options[L(v.name)] = v.uniqueID end
                         end
                     end
@@ -6009,7 +6009,7 @@ lia.command.add("classwhitelist", {
         local classData = lia.class.list[classID]
         if target:Team() ~= classData.faction then
             client:notifyErrorLocalized("whitelistFactionMismatch")
-        elseif (target:getChar():getClasswhitelists() or {})[classID] == true then
+        elseif target:getChar():getClasswhitelists()[classID] then
             client:notifyInfoLocalized("alreadyWhitelisted")
         else
             target:classWhitelist(classID)
