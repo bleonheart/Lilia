@@ -352,7 +352,7 @@ function GM:CalcView(client, origin, angles, fov)
     local ragEntity = client:getNetVar("ragdoll")
     local ragdoll = client:GetRagdollEntity()
     local ent
-    if not IsValid(client:getCurrentVehicle()) and client:GetViewEntity() == client and not client:ShouldDrawLocalPlayer() then
+    if not IsValid(client:GetVehicle()) and client:GetViewEntity() == client and not client:ShouldDrawLocalPlayer() then
         if IsValid(ragEntity) and ragEntity:IsRagdoll() then
             ent = ragEntity
         elseif not client:Alive() and IsValid(ragdoll) then

@@ -86,7 +86,7 @@ GMOD_HOOKS_BLACKLIST = {
     "WeaponEquip", "WorkshopDownloadedFile", "WorkshopDownloadFile",
     "WorkshopDownloadProgress", "WorkshopDownloadTotals", "WorkshopEnd",
     "WorkshopExtractProgress", "WorkshopStart", "WorkshopSubscriptionsChanged",
-    "WorkshopSubscriptionsMessage", "WorkshopSubscriptionsProgress",
+    "WorkshopSubscriptionsMessage",     "WorkshopSubscriptionsProgress",
     # Additional spawn menu and tool menu hooks
     "AddGamemodeToolMenuCategories", "AddGamemodeToolMenuTabs", "AddToolMenuCategories",
     "AddToolMenuTabs", "CanArmDupe", "CanDrive", "CanTool", "ContentSidebarSelection",

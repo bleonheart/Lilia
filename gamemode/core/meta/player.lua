@@ -45,12 +45,6 @@ function playerMeta:hasPrivilege(privilegeName)
     return lia.administrator.hasAccess(self, privilegeName)
 end
 
-function playerMeta:getCurrentVehicle()
-    local vehicle = self:GetVehicle()
-    if vehicle and IsValid(vehicle) then return vehicle end
-    return nil
-end
-
 function playerMeta:removeRagdoll()
     local ragdoll = self:getNetVar("ragdoll")
     if not IsValid(ragdoll) then return end
@@ -303,20 +297,6 @@ function playerMeta:isStaffOnDuty()
     return self:Team() == FACTION_STAFF
 end
 
-function playerMeta:isFaction(faction)
-    local character = self:getChar()
-    if not character then return end
-    local pFaction = character:getFaction()
-    return pFaction and pFaction == faction
-end
-
-function playerMeta:isClass(class)
-    local character = self:getChar()
-    if not character then return end
-    local pClass = character:getClass()
-    return pClass and pClass == class
-end
-
 function playerMeta:hasWhitelist(faction)
     local data = lia.faction.indices[faction]
     if data then
@@ -326,11 +306,6 @@ function playerMeta:hasWhitelist(faction)
         return liaData[SCHEMA.folder] and liaData[SCHEMA.folder][data.uniqueID] or false
     end
     return false
-end
-
-function playerMeta:getClass()
-    local character = self:getChar()
-    if character then return character:getClass() end
 end
 
 function playerMeta:getClassData()
@@ -1070,7 +1045,7 @@ if SERVER then
 else
     function playerMeta:canOverrideView()
         local ragdoll = self:getNetVar("ragdoll")
-        local isInVehicle = IsValid(self:getCurrentVehicle())
+        local isInVehicle = IsValid(self:GetVehicle())
         if IsValid(lia.gui.char) then return false end
         if isInVehicle then return false end
         if hook.Run("ShouldDisableThirdperson", self) == true then return false end

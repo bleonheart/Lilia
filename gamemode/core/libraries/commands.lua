@@ -2380,7 +2380,7 @@ lia.command.add("forcefallover", {
         elseif not target:Alive() then
             target:notifyErrorLocalized("cmdDead")
             return
-        elseif IsValid(target:getCurrentVehicle()) then
+        elseif IsValid(target:GetVehicle()) then
             target:notifyWarningLocalized("cmdVehicle")
             return
         elseif target:GetMoveType() == MOVETYPE_NOCLIP then
@@ -2505,7 +2505,7 @@ lia.command.add("fallover", {
             return
         end
 
-        if IsValid(client:getCurrentVehicle()) then
+        if IsValid(client:GetVehicle()) then
             client:notifyWarningLocalized("cmdVehicle")
             return
         end
