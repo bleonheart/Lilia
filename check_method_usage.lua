@@ -25,7 +25,7 @@ local meta_methods = {
     "setAction",
     "doStaredAction",
     "stopAction",
-    "getPlayTime",
+    "GetPlayTime",
     "getSessionTime",
     "createRagdoll",
     "setRagdolled",

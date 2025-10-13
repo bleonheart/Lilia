@@ -63,9 +63,9 @@ function lia.option.set(key, value)
     local old = opt.value
     opt.value = value
     if opt.callback then opt.callback(old, value) end
-    hook.Run("liaOptionChanged", key, old, value)
+    hook.Run("LiaOptionChanged", key, old, value)
     lia.option.save()
-    if opt.shouldNetwork and SERVER then hook.Run("liaOptionReceived", nil, key, value) end
+    if opt.shouldNetwork and SERVER then hook.Run("LiaOptionReceived", nil, key, value) end
 end
 
 function lia.option.get(key, default)
@@ -631,7 +631,7 @@ lia.option.add("descriptionWidth", "descriptionWidth", "descriptionWidthDesc", 0
     decimals = 2
 })
 
-lia.option.add("thirdPersonEnabled", "thirdPersonEnabled", "thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("thirdPersonToggled", newValue) end, {
+lia.option.add("thirdPersonEnabled", "thirdPersonEnabled", "thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("ThirdPersonToggled", newValue) end, {
     category = "categoryThirdPerson",
     isQuick = true,
 })

@@ -702,8 +702,8 @@ end
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
-        local current = self:getNetVar("stamina", char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
-        local maxStamina = char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
+        local current = self:getNetVar("stamina", char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
+        local maxStamina = char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
         local value = math.Clamp(current + amount, 0, maxStamina)
         self:setNetVar("stamina", value)
         if value >= maxStamina * 0.25 and self:getNetVar("brth", false) then
@@ -714,8 +714,8 @@ if SERVER then
 
     function playerMeta:consumeStamina(amount)
         local char = self:getChar()
-        local current = self:getNetVar("stamina", char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
-        local value = math.Clamp(current - amount, 0, char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
+        local current = self:getNetVar("stamina", char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
+        local value = math.Clamp(current - amount, 0, char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
         self:setNetVar("stamina", value)
         if value == 0 and not self:getNetVar("brth", false) then
             self:setNetVar("brth", true)
@@ -878,7 +878,7 @@ if SERVER then
     end
 
     function playerMeta:getPlayTime()
-        local hookResult = hook.Run("getPlayTime", self)
+        local hookResult = hook.Run("GetPlayTime", self)
         if hookResult ~= nil then return hookResult end
         local char = self:getChar()
         if char then
@@ -1084,7 +1084,7 @@ else
     end
 
     function playerMeta:getPlayTime()
-        local hookResult = hook.Run("getPlayTime", self)
+        local hookResult = hook.Run("GetPlayTime", self)
         if hookResult ~= nil then return hookResult end
         local char = self:getChar()
         if char then

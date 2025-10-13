@@ -11,7 +11,7 @@
         end
 
         client.liaCharList = charList
-        self:syncCharList(client)
+        self:SyncCharList(client)
         client.liaLoaded = true
     end)
 end

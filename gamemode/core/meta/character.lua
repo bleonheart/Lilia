@@ -88,12 +88,12 @@ end
 
 function characterMeta:doesRecognize(id)
     if not isnumber(id) and id.getID then id = id:getID() end
-    return hook.Run("isCharRecognized", self, id) ~= false
+    return hook.Run("IsCharRecognized", self, id) ~= false
 end
 
 function characterMeta:doesFakeRecognize(id)
     if not isnumber(id) and id.getID then id = id:getID() end
-    return hook.Run("isCharFakeRecognized", self, id) ~= false
+    return hook.Run("IsCharFakeRecognized", self, id) ~= false
 end
 
 function characterMeta:setData(k, v, noReplication, receiver)

@@ -350,7 +350,7 @@ lia.chat.register("ooc", {
             return false
         end
 
-        local customDelay = hook.Run("getOOCDelay", speaker)
+        local customDelay = hook.Run("GetOOCDelay", speaker)
         local oocDelay = customDelay or lia.config.get("OOCDelay", 10)
         if not speaker:hasPrivilege("noOOCCooldown") and oocDelay > 0 and speaker.liaLastOOC then
             local lastOOC = CurTime() - speaker.liaLastOOC

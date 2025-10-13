@@ -22,16 +22,8 @@ function PANEL:Init()
     self.scroll:GetVBar():SetWide(8)
     self.lastY = 0
     self.list = {}
-    self.filtered = {}
     chat.GetChatBoxPos = function() return self:LocalToScreen(0, 0) end
     chat.GetChatBoxSize = function() return self:GetSize() end
-    local seenFilters = {}
-    for _, classData in SortedPairsByMemberValue(lia.chat.classes, "filter") do
-        if not seenFilters[classData.filter] then
-            self:addFilterButton(classData.filter)
-            seenFilters[classData.filter] = true
-        end
-    end
 end
 
 function PANEL:Paint(panelW, panelH)
@@ -228,45 +220,7 @@ local function OnDrawText(txt, fontName, xPos, yPos, clr, _, _, alpha)
     surface.DrawText(txt)
 end
 
-local function PaintFilterButton(btn, btnW, btnH)
-    if btn.active then
-        lia.derma.rect(0, 0, btnW, btnH):Rad(8):Color(Color(40, 40, 40, 200)):Shape(lia.derma.SHAPE_IOS):Draw()
-    else
-        local alpha = 120 + math.cos(RealTime() * 5) * 10
-        lia.derma.rect(0, 0, btnW, btnH):Rad(8):Color(ColorAlpha(lia.config.get("Color"), alpha)):Shape(lia.derma.SHAPE_IOS):Draw()
-    end
 
-    lia.derma.rect(0, 0, btnW, btnH):Rad(8):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
-end
-
-function PANEL:addFilterButton(filter)
-    local tab = self.tabs:Add("DButton")
-    tab:SetFont("LiliaFont.16")
-    tab:SetText(L(filter):upper())
-    tab:SizeToContents()
-    tab:DockMargin(0, 0, 3, 0)
-    tab:SetWide(tab:GetWide() + 32)
-    tab:Dock(LEFT)
-    tab:SetTextColor(color_white)
-    tab:SetExpensiveShadow(1, Color(0, 0, 0, 200))
-    tab.Paint = PaintFilterButton
-    tab.DoClick = function(selfBtn)
-        selfBtn.active = not selfBtn.active
-        local filters = LIA_CVAR_CHATFILTER:GetString():lower()
-        if filters == "none" then filters = "" end
-        if selfBtn.active then
-            filters = filters .. filter .. ","
-        else
-            filters = filters:gsub(filter .. "[,]", "")
-            if not filters:find("%S") then filters = "none" end
-        end
-
-        self:setFilter(filter, selfBtn.active)
-        RunConsoleCommand("lia_chatfilter", filters)
-    end
-
-    if LIA_CVAR_CHATFILTER:GetString():lower():find(filter) then tab.active = true end
-end
 
 function PANEL:addText(...)
     local markup = "<font=LiliaFont.16>"
@@ -306,48 +260,12 @@ function PANEL:addText(...)
     end
 
     self.list[#self.list + 1] = panel
-    local cls = CHAT_CLASS and CHAT_CLASS.filter and CHAT_CLASS.filter:lower() or "ic"
-    panel.filter = cls
-    if LIA_CVAR_CHATFILTER:GetString():lower():find(cls) then
-        self.filtered[panel] = cls
-        panel:SetVisible(false)
-    else
-        panel:SetPos(0, self.lastY)
-        self.lastY = self.lastY + panel:GetTall() + 2
-        timer.Simple(0.01, function() if IsValid(self.scroll) and IsValid(panel) then self.scroll:ScrollToChild(panel) end end)
-    end
+    panel:SetPos(0, self.lastY)
+    self.lastY = self.lastY + panel:GetTall() + 2
+    timer.Simple(0.01, function() if IsValid(self.scroll) and IsValid(panel) then self.scroll:ScrollToChild(panel) end end)
     return panel:IsVisible()
 end
 
-function PANEL:setFilter(filter, state)
-    if state then
-        for _, pnl in ipairs(self.list) do
-            if pnl.filter == filter then
-                pnl:SetVisible(false)
-                self.filtered[pnl] = filter
-            end
-        end
-    else
-        for pnl, f in pairs(self.filtered) do
-            if f == filter then
-                pnl:SetVisible(true)
-                self.filtered[pnl] = nil
-            end
-        end
-    end
-
-    self.lastY = 0
-    local lastChild
-    for _, pnl in ipairs(self.list) do
-        if pnl:IsVisible() then
-            pnl:SetPos(0, self.lastY)
-            self.lastY = self.lastY + pnl:GetTall() + 2
-            lastChild = pnl
-        end
-    end
-
-    if IsValid(lastChild) then timer.Simple(0.01, function() if IsValid(self.scroll) and IsValid(lastChild) then self.scroll:ScrollToChild(lastChild) end end) end
-end
 
 function PANEL:Think()
     if gui.IsGameUIVisible() and self.active then

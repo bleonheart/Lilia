@@ -681,7 +681,7 @@ MODULE.adminStickCategories = MODULE.adminStickCategories or {
 }
 
 MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {"playerInformation", "moderation", "characterManagement", "doorManagement", "teleportation", "utility"}
-function MODULE:addAdminStickCategory(key, data, index)
+function MODULE:AddAdminStickCategory(key, data, index)
     self.adminStickCategories = self.adminStickCategories or {}
     self.adminStickCategories[key] = data
     self.adminStickCategoryOrder = self.adminStickCategoryOrder or {}
@@ -692,7 +692,7 @@ function MODULE:addAdminStickCategory(key, data, index)
     end
 end
 
-function MODULE:addAdminStickSubCategory(catKey, subKey, data)
+function MODULE:AddAdminStickSubCategory(catKey, subKey, data)
     self.adminStickCategories = self.adminStickCategories or {}
     local category = self.adminStickCategories[catKey]
     if not category then return end
@@ -2441,7 +2441,7 @@ end)
 
 net.Receive("liaOnlineStaffData", function()
     local staffData = net.ReadTable() or {}
-    hook.Run("liaOnlineStaffDataReceived", staffData)
+    hook.Run("LiaOnlineStaffDataReceived", staffData)
 end)
 
 function MODULE:PrePlayerDraw(client)

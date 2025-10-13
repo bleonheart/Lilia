@@ -12,8 +12,8 @@
 
     offset = hook.Run("AdjustStaminaOffset", client, offset) or offset
     if CLIENT then return offset end
-    local max = hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
-    local current = client:getNetVar("stamina", hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+    local max = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
+    local current = client:getNetVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
     local value = math.Clamp(current + offset, 0, max)
     if current ~= value then
         client:setNetVar("stamina", value)
@@ -61,7 +61,7 @@ function MODULE:CanPlayerThrowPunch(client)
     if staminaUse > 0 then
         local char = client:getChar()
         if not char then return false, L("invalidCharacter") end
-        local currentStamina = client:getNetVar("stamina", hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+        local currentStamina = client:getNetVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
         if currentStamina < staminaUse then return false, L("notEnoughStaminaToPunch") end
     end
 end
