@@ -3,7 +3,7 @@ local vectorMeta = FindMetaTable("Vector")
 do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
     playerMeta.SteamName = playerMeta.steamName
-    function playerMeta:getChar()
+    function playerMeta:GetChar()
         return lia.char.getCharacter(self.getNetVar(self, "char"), self)
     end
 
@@ -21,7 +21,6 @@ do
         return character and character.getName(character) or self.steamName(self)
     end
 
-    playerMeta.GetCharacter = playerMeta.getChar
     playerMeta.Nick = playerMeta.Name
     playerMeta.GetName = playerMeta.Name
 end

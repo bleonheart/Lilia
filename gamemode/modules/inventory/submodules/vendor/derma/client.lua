@@ -107,7 +107,7 @@ function PANEL:Init()
         btn:SetText("Edit")
         btn:SetFont("liaMediumFont")
         btn:SetTextColor(lia.color.theme.text or color_white)
-        btn.DoClick = function() vgui.Create("VendorEditor"):SetZPos(99) end
+        btn.DoClick = function() vgui.Create("liaVendorEditor"):SetZPos(99) end
     end
 
     local leave = self:Add("liaSmallButton")
@@ -361,7 +361,7 @@ function PANEL:OnKeyCodePressed()
     if input.LookupBinding("+use", true) then self:Remove() end
 end
 
-vgui.Register("Vendor", PANEL, "EditablePanel")
+vgui.Register("liaVendor", PANEL, "EditablePanel")
 PANEL = {}
 local function drawIcon(mat, _, x, y)
     surface.SetDrawColor(color_white)
@@ -528,7 +528,7 @@ function PANEL:updateLabel()
     self.action:SetText(self.isSelling and L("vendorSellAction", priceSuffix) or L("vendorBuyAction", priceSuffix))
 end
 
-vgui.Register("VendorItem", PANEL, "DPanel")
+vgui.Register("liaVendorItem", PANEL, "DPanel")
 PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.vendorEditor) then lia.gui.vendorEditor:Remove() end
@@ -939,7 +939,7 @@ function PANEL:ReloadItemList(filter)
     end
 end
 
-vgui.Register("VendorEditor", PANEL, "liaFrame")
+vgui.Register("liaVendorEditor", PANEL, "liaFrame")
 PANEL = {}
 local function onFactionStateChanged(checkBox, state)
     lia.vendor.editor.faction(checkBox.factionID, state)
@@ -1006,7 +1006,7 @@ function PANEL:updateChecked()
     end
 end
 
-vgui.Register("VendorFactionEditor", PANEL, "liaFrame")
+vgui.Register("liaVendorFactionEditor", PANEL, "liaFrame")
 PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.vendorBodygroupEditor) then lia.gui.vendorBodygroupEditor:Remove() end
@@ -1049,4 +1049,4 @@ function PANEL:OnRemove()
     hook.Remove("VendorEdited", self)
 end
 
-vgui.Register("VendorBodygroupEditor", PANEL, "liaFrame")
+vgui.Register("liaVendorBodygroupEditor", PANEL, "liaFrame")
