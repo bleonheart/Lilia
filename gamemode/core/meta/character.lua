@@ -70,32 +70,9 @@ function characterMeta:getItemWeapon(requireEquip)
     return false
 end
 
-function characterMeta:getMaxStamina()
-    local maxStamina = hook.Run("getCharMaxStamina", self) or lia.config.get("DefaultStamina", 100)
-    return maxStamina
-end
-
-function characterMeta:getStamina()
-    local stamina = self:getPlayer():getNetVar("stamina", 100) or lia.config.get("DefaultStamina", 100)
-    return stamina
-end
-
-function characterMeta:hasClassWhitelist(class)
-    local wl = self:getClasswhitelists() or {}
-    return wl[class] == true
-end
-
-function characterMeta:isFaction(faction)
-    return self:getFaction() == faction
-end
-
-function characterMeta:isClass(class)
-    return self:getClass() == class
-end
-
 function characterMeta:getAttrib(key, default)
     local att = self:getAttribs()[key] or default or 0
-    local boosts = self:getBoosts()[key]
+    local boosts = self:getVar("boosts", {})[key]
     if boosts then
         for _, v in pairs(boosts) do
             att = att + v
@@ -105,12 +82,8 @@ function characterMeta:getAttrib(key, default)
 end
 
 function characterMeta:getBoost(attribID)
-    local boosts = self:getBoosts()
+    local boosts = self:getVar("boosts", {})
     return boosts[attribID]
-end
-
-function characterMeta:getBoosts()
-    return self:getVar("boosts", {})
 end
 
 function characterMeta:doesRecognize(id)

@@ -79,7 +79,6 @@ local meta_methods = {
     "isItem",
     "isMoney",
     "isSimfphysCar",
-    "isLiliaPersistent",
     "checkDoorAccess",
     "keysOwn",
     "keysLock",

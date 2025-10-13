@@ -1244,7 +1244,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
                 if classes and #classes > 0 then
                     local cw, cu = {}, {}
                     for _, c in ipairs(classes) do
-                        if not tgt:hasClassWhitelist(c.index) then
+                        if not ((tgt:getChar():getClasswhitelists() or {})[c.index] == true) then
                             table.insert(cw, {
                                 name = c.name,
                                 cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)

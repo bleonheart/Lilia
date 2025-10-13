@@ -333,12 +333,6 @@ function playerMeta:getClass()
     if character then return character:getClass() end
 end
 
-function playerMeta:hasClassWhitelist(class)
-    local char = self:getChar()
-    if not char then return false end
-    local wl = char:getClasswhitelists() or {}
-    return wl[class] == true
-end
 
 function playerMeta:getClassData()
     local character = self:getChar()
@@ -549,8 +543,8 @@ end
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
-        local current = self:getNetVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
-        local maxStamina = char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100)
+        local current = self:getNetVar("stamina", char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
+        local maxStamina = char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
         local value = math.Clamp(current + amount, 0, maxStamina)
         self:setNetVar("stamina", value)
         if value >= maxStamina * 0.25 and self:getNetVar("brth", false) then
@@ -561,8 +555,8 @@ if SERVER then
 
     function playerMeta:consumeStamina(amount)
         local char = self:getChar()
-        local current = self:getNetVar("stamina", char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
-        local value = math.Clamp(current - amount, 0, char and char:getMaxStamina() or lia.config.get("DefaultStamina", 100))
+        local current = self:getNetVar("stamina", char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
+        local value = math.Clamp(current - amount, 0, char and (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
         self:setNetVar("stamina", value)
         if value == 0 and not self:getNetVar("brth", false) then
             self:setNetVar("brth", true)

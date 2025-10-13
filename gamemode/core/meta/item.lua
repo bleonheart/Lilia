@@ -132,15 +132,15 @@ function ITEM:printData()
     end
 end
 
+function ITEM:getName()
+    return self.name
+end
+
+function ITEM:getDesc()
+    return self.desc
+end
+
 if SERVER then
-    function ITEM:getName()
-        return self.name
-    end
-
-    function ITEM:getDesc()
-        return self.desc
-    end
-
     function ITEM:removeFromInventory(preserveItem)
         local inventory = lia.inventory.instances[self.invID]
         self.invID = 0
@@ -404,14 +404,6 @@ if SERVER then
         self.player = oldPlayer
         self.entity = oldEntity
         return true
-    end
-else
-    function ITEM:getName()
-        return self.name
-    end
-
-    function ITEM:getDesc()
-        return self.desc
     end
 end
 

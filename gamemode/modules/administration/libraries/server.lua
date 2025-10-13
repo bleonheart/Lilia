@@ -971,7 +971,7 @@ function GM:CanTool(client, trace, tool)
             return true
         end
 
-        if (tool == "permaall" or tool == "blacklistandremove") and hook.Run("CanPersistEntity", entity) ~= false and (string.StartWith(entClass, "lia_") or entity:isLiliaPersistent() or entity:CreatedByMap()) then
+        if (tool == "permaall" or tool == "blacklistandremove") and hook.Run("CanPersistEntity", entity) ~= false and (string.StartWith(entClass, "lia_") or entity.IsPersistent or entity:CreatedByMap()) then
             lia.log.add(client, "toolDenied", tool)
             client:notifyErrorLocalized("toolCantUseEntity", tool)
             return false
