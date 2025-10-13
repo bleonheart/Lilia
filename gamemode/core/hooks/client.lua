@@ -508,7 +508,7 @@ function GM:PlayerStartVoice(client)
     end
 
     if not IsValid(client) then return end
-    pnl = g_VoicePanelList:Add("VoicePanel")
+    pnl = g_VoicePanelList:Add("liaVoicePanel")
     pnl:Setup(client)
     VoicePanels[client] = pnl
 end

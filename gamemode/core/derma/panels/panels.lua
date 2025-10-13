@@ -42,7 +42,7 @@ function BlurredDFrame:Paint(w, h)
     PaintFrame(self, w, h)
 end
 
-vgui.Register("BlurredDFrame", BlurredDFrame, "DFrame")
+vgui.Register("liaBlurredDFrame", BlurredDFrame, "DFrame")
 local TransparentDFrame = {}
 function TransparentDFrame:Init()
     self:SetTitle("")
@@ -60,13 +60,13 @@ function TransparentDFrame:Paint(w, h)
     PaintPanel(self, w, h)
 end
 
-vgui.Register("SemiTransparentDFrame", TransparentDFrame, "DFrame")
+vgui.Register("liaSemiTransparentDFrame", TransparentDFrame, "DFrame")
 local SimplePanel = {}
 function SimplePanel:Paint(w, h)
     PaintPanel(self, w, h)
 end
 
-vgui.Register("SemiTransparentDPanel", SimplePanel, "DPanel")
+vgui.Register("liaSemiTransparentDPanel", SimplePanel, "DPanel")
 timer.Create("derma_convar_fix", 0.5, 0, function()
     if len == 0 then return end
     local name

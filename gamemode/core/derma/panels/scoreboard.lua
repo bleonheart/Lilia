@@ -500,4 +500,4 @@ function PANEL:OnRemove()
     CloseDermaMenus()
 end
 
-vgui.Register("liaScoreboard", PANEL, "SemiTransparentDFrame")
+vgui.Register("liaScoreboard", PANEL, "liaSemiTransparentDFrame")

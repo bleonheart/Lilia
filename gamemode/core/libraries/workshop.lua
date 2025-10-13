@@ -129,7 +129,7 @@ else
         lbl:SetText(L("downloadingWorkshopAddonsTitle"))
         lbl:SizeToContents()
         lbl:SetPos(pad, pad)
-        panel.bar = vgui.Create("DProgressBar", panel)
+        panel.bar = vgui.Create("liaDProgressBar", panel)
         panel.bar:SetPos(pad, pad + th + pad)
         panel.bar:SetSize(w - pad * 2, bh)
         panel.bar:SetFraction(0)
