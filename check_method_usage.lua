@@ -1,6 +1,5 @@
--- Script to check meta method usage across the codebase
+﻿-- Script to check meta method usage across the codebase
 -- This script checks if meta methods are actually used in the code
-
 -- List of meta methods found from the grep searches (sample - truncated for brevity)
 local meta_methods = {
     -- Player meta methods from Lilia (sample)
@@ -19,9 +18,6 @@ local meta_methods = {
     "setWaypoint",
     "restoreStamina",
     "consumeStamina",
-    "classWhitelist",
-    "classUnWhitelist",
-    "setWhitelisted",
     "loadLiliaData",
     "saveLiliaData",
     "setLiliaData",
@@ -44,7 +40,6 @@ local meta_methods = {
     "binaryQuestion",
     "requestButtons",
     "requestDropdown",
-    "hasClassWhitelist",
     "doesRecognize",
     "doesFakeRecognize",
     "setData",
@@ -181,24 +176,14 @@ local meta_methods = {
 
 -- Generate the report using available tools
 print("Starting meta method usage analysis...")
-
 -- Check a few key methods to demonstrate the approach
-local test_methods = {
-    "isNearPlayer",
-    "getItemWeapon",
-    "isRunning",
-    "entitiesNearPlayer"
-}
-
+local test_methods = {"isNearPlayer", "getItemWeapon", "isRunning", "entitiesNearPlayer"}
 local unused_methods = {}
 local used_methods = {}
-
 for _, method_name in ipairs(test_methods) do
     print("Checking usage of: " .. method_name)
-
     -- Check for method usage patterns
     local usage_found = false
-
     -- Check for colon syntax: object:methodName(
     local result1 = grep({
         pattern = ":%s*" .. method_name .. "%s*%(",
@@ -214,7 +199,6 @@ for _, method_name in ipairs(test_methods) do
     })
 
     local total_usage = (result1 or 0) + (result2 or 0)
-
     if total_usage == 0 then
         table.insert(unused_methods, method_name)
         print("  -> UNUSED")
@@ -223,6 +207,7 @@ for _, method_name in ipairs(test_methods) do
             name = method_name,
             usage = total_usage
         })
+
         print("  -> USED (" .. total_usage .. " times)")
         usage_found = true
     end
@@ -237,7 +222,6 @@ if report_file then
     report_file:write("Total methods checked: " .. #test_methods .. "\n")
     report_file:write("Used methods: " .. #used_methods .. "\n")
     report_file:write("Unused methods: " .. #unused_methods .. "\n\n")
-
     if #unused_methods > 0 then
         report_file:write("## Unused Methods\n\n")
         for i, method_name in ipairs(unused_methods) do
@@ -257,7 +241,6 @@ if report_file then
     report_file:write("\n## Note\n")
     report_file:write("This is a sample analysis. For a complete analysis of all meta methods,\n")
     report_file:write("run the full script with all meta methods listed.\n")
-
     report_file:close()
     print("Sample report saved to unusedmethods.md")
 else
@@ -266,7 +249,6 @@ end
 
 print("Sample analysis complete!")
 print("Found " .. #unused_methods .. " unused methods out of " .. #test_methods .. " tested methods")
-
 -- Instructions for full analysis
 print("\nTo perform a complete analysis:")
 print("1. Add all meta methods to the meta_methods table")

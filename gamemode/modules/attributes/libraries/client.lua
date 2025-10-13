@@ -4,7 +4,7 @@ function MODULE:PlayerBindPress(client, bind, pressed)
     local char = client:getChar()
     if not char then return end
     local predicted = predictedStamina or 0
-        local actual = client:getNetVar("stamina", hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+    local actual = client:getNetVar("stamina", hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
     local jumpReq = lia.config.get("JumpStaminaCost", 25)
     if bind == "+jump" and predicted < jumpReq and actual < jumpReq then return true end
     local stamina = math.min(predicted, actual)

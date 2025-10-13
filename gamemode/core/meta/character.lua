@@ -187,18 +187,6 @@ if SERVER then
         return true
     end
 
-    function characterMeta:classWhitelist(class)
-        local wl = self:getClasswhitelists() or {}
-        wl[class] = true
-        self:setClasswhitelists(wl)
-    end
-
-    function characterMeta:classUnWhitelist(class)
-        local wl = self:getClasswhitelists() or {}
-        wl[class] = nil
-        self:setClasswhitelists(wl)
-    end
-
     function characterMeta:joinClass(class, isForced)
         if not class then
             self:kickClass()

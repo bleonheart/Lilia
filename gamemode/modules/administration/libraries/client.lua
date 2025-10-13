@@ -1,4 +1,5 @@
-﻿function GetIdentifier(ent)
+﻿local MODULE = MODULE
+local function GetIdentifier(ent)
     if not IsValid(ent) or not ent:IsPlayer() then return "" end
     if ent:IsBot() then return ent:Name() end
     return ent:SteamID()
@@ -566,7 +567,6 @@ spawnmenu.AddCreationTab(L("inventoryItems"), function()
     end
 end, "icon16/briefcase.png")
 
-local MODULE = MODULE
 AdminStickIsOpen = false
 local playerInfoLabel = L("player") .. " " .. L("information")
 MODULE.adminStickCategories = MODULE.adminStickCategories or {
@@ -1244,7 +1244,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
                 if classes and #classes > 0 then
                     local cw, cu = {}, {}
                     for _, c in ipairs(classes) do
-                        if not ((tgt:getChar():getClasswhitelists() or {})[c.index] == true) then
+                        if not tgt:getChar():getClasswhitelists()[c.index] then
                             table.insert(cw, {
                                 name = c.name,
                                 cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
@@ -2420,7 +2420,6 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     function list:OnRowRightClick(_, line)
         if not IsValid(line) or not line.steamID then return end
         local menu = lia.derma.dermaMenu()
-        if lia.command.hasAccess(LocalPlayer(), "charlist") then menu:AddOption(L("viewCharacterList"), function() LocalPlayer():ConCommand("say /charlist " .. line.steamID) end):SetIcon("icon16/page_copy.png") end
         menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(line.steamID)) end):SetIcon("icon16/world.png")
         if lia.command.hasAccess(LocalPlayer(), "viewwarns") then menu:AddOption(L("viewWarnings"), function() LocalPlayer():ConCommand("say /viewwarns " .. line.steamID) end):SetIcon("icon16/error.png") end
         if lia.command.hasAccess(LocalPlayer(), "viewtickets") then menu:AddOption(L("viewTicketRequests"), function() LocalPlayer():ConCommand("say /viewtickets " .. line.steamID) end):SetIcon("icon16/help.png") end

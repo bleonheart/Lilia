@@ -13,7 +13,7 @@
     offset = hook.Run("AdjustStaminaOffset", client, offset) or offset
     if CLIENT then return offset end
     local max = hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
-        local current = client:getNetVar("stamina", hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+    local current = client:getNetVar("stamina", hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
     local value = math.Clamp(current + offset, 0, max)
     if current ~= value then
         client:setNetVar("stamina", value)

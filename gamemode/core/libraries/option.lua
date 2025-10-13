@@ -489,7 +489,6 @@ lia.option.add("invertWeaponScroll", "invertWeaponScroll", "invertWeaponScrollDe
     isQuick = true,
 })
 
-
 lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
     category = "categoryESP",
     isQuick = true,

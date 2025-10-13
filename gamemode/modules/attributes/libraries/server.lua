@@ -40,7 +40,7 @@ function MODULE:KeyPress(client, key)
     if key == IN_JUMP and not (client:GetMoveType() == MOVETYPE_NOCLIP) and not client:InVehicle() and client:Alive() and client:OnGround() and (client.liaNextJump or 0) <= CurTime() then
         client.liaNextJump = CurTime() + 0.1
         local cost = lia.config.get("JumpStaminaCost", 25)
-        local maxStamina = (hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+        local maxStamina = hook.Run("getCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
         client:consumeStamina(cost)
         local newStamina = client:getNetVar("stamina", maxStamina)
         if newStamina <= 0 then

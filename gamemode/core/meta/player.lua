@@ -333,7 +333,6 @@ function playerMeta:getClass()
     if character then return character:getClass() end
 end
 
-
 function playerMeta:getClassData()
     local character = self:getChar()
     if character then
@@ -540,6 +539,166 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
     end
 end
 
+function playerMeta:getLiliaData(key, default)
+    local data
+    if SERVER then
+        data = self.liaData and self.liaData[key]
+    else
+        data = lia.localData and lia.localData[key]
+    end
+
+    if data == nil then
+        return default
+    else
+        return data
+    end
+end
+
+function playerMeta:hasFlags(flags)
+    for i = 1, #flags do
+        local flag = flags:sub(i, i)
+        if self:getFlags():find(flag, 1, true) then return true end
+    end
+    return hook.Run("CharHasFlags", self, flags) or false
+end
+
+function playerMeta:playTimeGreaterThan(time)
+    local playTime = self:getPlayTime()
+    if not playTime or not time then return false end
+    return playTime > time
+end
+
+function playerMeta:requestOptions(title, subTitle, options, limit, callback)
+    if SERVER then
+        self.liaOptionsReqs = self.liaOptionsReqs or {}
+        local id = table.insert(self.liaOptionsReqs, {
+            callback = callback,
+            allowed = options or {},
+            limit = tonumber(limit) or 1
+        })
+
+        net.Start("liaOptionsRequest")
+        net.WriteUInt(id, 32)
+        net.WriteString(title)
+        net.WriteString(subTitle)
+        net.WriteTable(options or {})
+        net.WriteUInt(tonumber(limit) or 1, 32)
+        net.Send(self)
+    else
+        lia.derma.requestOptions(title, subTitle, options, tonumber(limit) or 1, callback)
+    end
+end
+
+function playerMeta:requestString(title, subTitle, callback, default)
+    local d
+    if not isfunction(callback) and default == nil then
+        default = callback
+        d = deferred.new()
+        callback = function(value) d:resolve(value) end
+    end
+
+    if SERVER then
+        self.liaStrReqs = self.liaStrReqs or {}
+        local id = table.insert(self.liaStrReqs, callback)
+        net.Start("liaStringRequest")
+        net.WriteUInt(id, 32)
+        net.WriteString(title)
+        net.WriteString(subTitle)
+        net.WriteString(default or "")
+        net.Send(self)
+        return d
+    else
+        lia.derma.requestString(title, subTitle, callback, default or "")
+        return d
+    end
+end
+
+function playerMeta:requestArguments(title, argTypes, callback)
+    local d
+    if not isfunction(callback) then
+        d = deferred.new()
+        callback = function(value) d:resolve(value) end
+    end
+
+    if SERVER then
+        self.liaArgReqs = self.liaArgReqs or {}
+        local id = table.insert(self.liaArgReqs, {
+            callback = callback,
+            spec = argTypes or {}
+        })
+
+        net.Start("liaArgumentsRequest")
+        net.WriteUInt(id, 32)
+        net.WriteString(title or "")
+        net.WriteTable(argTypes or {})
+        net.Send(self)
+        return d
+    else
+        lia.derma.requestArguments(title, argTypes, callback)
+        return d
+    end
+end
+
+function playerMeta:binaryQuestion(question, option1, option2, manualDismiss, callback)
+    if SERVER then
+        self.liaBinaryReqs = self.liaBinaryReqs or {}
+        local id = table.insert(self.liaBinaryReqs, callback)
+        net.Start("liaBinaryQuestionRequest")
+        net.WriteUInt(id, 32)
+        net.WriteString(question)
+        net.WriteString(option1)
+        net.WriteString(option2)
+        net.WriteBool(manualDismiss)
+        net.Send(self)
+    else
+        lia.derma.binaryQuestion(question, option1, option2, manualDismiss, callback)
+    end
+end
+
+function playerMeta:requestButtons(title, buttons)
+    if SERVER then
+        self.buttonRequests = self.buttonRequests or {}
+        local labels = {}
+        local callbacks = {}
+        for i, data in ipairs(buttons) do
+            labels[i] = data.text or data[1] or ""
+            callbacks[i] = data.callback or data[2]
+        end
+
+        local id = table.insert(self.buttonRequests, callbacks)
+        net.Start("liaButtonRequest")
+        net.WriteUInt(id, 32)
+        net.WriteString(title or "")
+        net.WriteUInt(#labels, 8)
+        for _, lbl in ipairs(labels) do
+            net.WriteString(lbl)
+        end
+
+        net.Send(self)
+    else
+        lia.derma.requestButtons(title, buttons)
+    end
+end
+
+function playerMeta:requestDropdown(title, subTitle, options, callback)
+    if SERVER then
+        self.liaDropdownReqs = self.liaDropdownReqs or {}
+        local id = table.insert(self.liaDropdownReqs, {
+            callback = callback,
+            allowed = options or {}
+        })
+
+        net.Start("liaRequestDropdown")
+        net.WriteUInt(id, 32)
+        net.WriteString(title)
+        net.WriteString(subTitle)
+        net.WriteTable(options or {})
+        net.Send(self)
+    else
+        lia.derma.requestDropdown(title, subTitle, options, callback)
+    end
+end
+
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
@@ -577,36 +736,6 @@ if SERVER then
     function playerMeta:takeMoney(amount)
         local character = self:getChar()
         if character then character:giveMoney(-amount) end
-    end
-
-    function playerMeta:classWhitelist(class)
-        local char = self:getChar()
-        if not char then return end
-        local wl = char:getClasswhitelists() or {}
-        wl[class] = true
-        char:setClasswhitelists(wl)
-    end
-
-    function playerMeta:classUnWhitelist(class)
-        local char = self:getChar()
-        if not char then return end
-        local wl = char:getClasswhitelists() or {}
-        wl[class] = nil
-        char:setClasswhitelists(wl)
-    end
-
-    function playerMeta:setWhitelisted(faction, whitelisted)
-        if not whitelisted then whitelisted = nil end
-        local data = lia.faction.indices[faction]
-        if data then
-            if data.uniqueID == "staff" then return false end
-            local whitelists = self:getLiliaData("whitelists", {})
-            whitelists[SCHEMA.folder] = whitelists[SCHEMA.folder] or {}
-            whitelists[SCHEMA.folder][data.uniqueID] = whitelisted and true or nil
-            self:setLiliaData("whitelists", whitelists)
-            return true
-        end
-        return false
     end
 
     function playerMeta:loadLiliaData(callback)
@@ -678,12 +807,6 @@ if SERVER then
         end
 
         if not noSave then self:saveLiliaData() end
-    end
-
-    function playerMeta:getLiliaData(key, default)
-        local data = self.liaData and self.liaData[key]
-        if data == nil then return default end
-        return data
     end
 
     function playerMeta:banPlayer(reason, duration, banner)
@@ -971,159 +1094,5 @@ else
 
         local diff = os.time(lia.time.toNumber(lia.lastJoin)) - os.time(lia.time.toNumber(lia.firstJoin))
         return diff + RealTime() - (lia.joinTime or 0)
-    end
-
-    function playerMeta:getLiliaData(key, default)
-        local data = lia.localData and lia.localData[key]
-        if data == nil then
-            return default
-        else
-            return data
-        end
-    end
-end
-
-function playerMeta:hasFlags(flags)
-    for i = 1, #flags do
-        local flag = flags:sub(i, i)
-        if self:getFlags():find(flag, 1, true) then return true end
-    end
-    return hook.Run("CharHasFlags", self, flags) or false
-end
-
-function playerMeta:playTimeGreaterThan(time)
-    local playTime = self:getPlayTime()
-    if not playTime or not time then return false end
-    return playTime > time
-end
-
-function playerMeta:requestOptions(title, subTitle, options, limit, callback)
-    if SERVER then
-        self.liaOptionsReqs = self.liaOptionsReqs or {}
-        local id = table.insert(self.liaOptionsReqs, {
-            callback = callback,
-            allowed = options or {},
-            limit = tonumber(limit) or 1
-        })
-
-        net.Start("liaOptionsRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(title)
-        net.WriteString(subTitle)
-        net.WriteTable(options or {})
-        net.WriteUInt(tonumber(limit) or 1, 32)
-        net.Send(self)
-    else
-        lia.derma.requestOptions(title, subTitle, options, tonumber(limit) or 1, callback)
-    end
-end
-
-function playerMeta:requestString(title, subTitle, callback, default)
-    local d
-    if not isfunction(callback) and default == nil then
-        default = callback
-        d = deferred.new()
-        callback = function(value) d:resolve(value) end
-    end
-
-    if SERVER then
-        self.liaStrReqs = self.liaStrReqs or {}
-        local id = table.insert(self.liaStrReqs, callback)
-        net.Start("liaStringRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(title)
-        net.WriteString(subTitle)
-        net.WriteString(default or "")
-        net.Send(self)
-        return d
-    else
-        lia.derma.requestString(title, subTitle, callback, default or "")
-        return d
-    end
-end
-
-function playerMeta:requestArguments(title, argTypes, callback)
-    local d
-    if not isfunction(callback) then
-        d = deferred.new()
-        callback = function(value) d:resolve(value) end
-    end
-
-    if SERVER then
-        self.liaArgReqs = self.liaArgReqs or {}
-        local id = table.insert(self.liaArgReqs, {
-            callback = callback,
-            spec = argTypes or {}
-        })
-
-        net.Start("liaArgumentsRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(title or "")
-        net.WriteTable(argTypes or {})
-        net.Send(self)
-        return d
-    else
-        lia.derma.requestArguments(title, argTypes, callback)
-        return d
-    end
-end
-
-function playerMeta:binaryQuestion(question, option1, option2, manualDismiss, callback)
-    if SERVER then
-        self.liaBinaryReqs = self.liaBinaryReqs or {}
-        local id = table.insert(self.liaBinaryReqs, callback)
-        net.Start("liaBinaryQuestionRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(question)
-        net.WriteString(option1)
-        net.WriteString(option2)
-        net.WriteBool(manualDismiss)
-        net.Send(self)
-    else
-        lia.derma.binaryQuestion(question, option1, option2, manualDismiss, callback)
-    end
-end
-
-function playerMeta:requestButtons(title, buttons)
-    if SERVER then
-        self.buttonRequests = self.buttonRequests or {}
-        local labels = {}
-        local callbacks = {}
-        for i, data in ipairs(buttons) do
-            labels[i] = data.text or data[1] or ""
-            callbacks[i] = data.callback or data[2]
-        end
-
-        local id = table.insert(self.buttonRequests, callbacks)
-        net.Start("liaButtonRequest")
-        net.WriteUInt(id, 32)
-        net.WriteString(title or "")
-        net.WriteUInt(#labels, 8)
-        for _, lbl in ipairs(labels) do
-            net.WriteString(lbl)
-        end
-
-        net.Send(self)
-    else
-        lia.derma.requestButtons(title, buttons)
-    end
-end
-
-function playerMeta:requestDropdown(title, subTitle, options, callback)
-    if SERVER then
-        self.liaDropdownReqs = self.liaDropdownReqs or {}
-        local id = table.insert(self.liaDropdownReqs, {
-            callback = callback,
-            allowed = options or {}
-        })
-
-        net.Start("liaRequestDropdown")
-        net.WriteUInt(id, 32)
-        net.WriteString(title)
-        net.WriteString(subTitle)
-        net.WriteTable(options or {})
-        net.Send(self)
-    else
-        lia.derma.requestDropdown(title, subTitle, options, callback)
     end
 end

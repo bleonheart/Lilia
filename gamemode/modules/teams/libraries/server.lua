@@ -26,7 +26,7 @@ function MODULE:OnTransferred(client)
 end
 
 function MODULE:CanPlayerJoinClass(client, class)
-    if lia.class.hasWhitelist(class) and not ((client:getChar():getClasswhitelists() or {})[class] == true) then return false end
+    if lia.class.hasWhitelist(class) and not client:getChar():getClasswhitelists()[class] then return false end
     return true
 end
 

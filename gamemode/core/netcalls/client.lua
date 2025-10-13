@@ -11,9 +11,7 @@ net.Receive("liaSetWaypointWithLogo", function()
     local logo = net.ReadString()
     local hasOnReach = net.ReadBool()
     local onReach = nil
-    if hasOnReach then
-        onReach = net.ReadString()
-    end
+    if hasOnReach then onReach = net.ReadString() end
     LocalPlayer():setWaypoint(name, pos, logo, onReach)
 end)
 
@@ -271,10 +269,7 @@ net.Receive("liaDataSync", function()
     lia.lastJoin = last
 end)
 
-net.Receive("liaStorageSync", function()
-    lia.inventory.storage = net.ReadTable()
-end)
-
+net.Receive("liaStorageSync", function() lia.inventory.storage = net.ReadTable() end)
 net.Receive("liaDataSync", function()
     local key = net.ReadString()
     local value = net.ReadType()

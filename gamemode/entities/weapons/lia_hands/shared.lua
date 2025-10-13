@@ -128,7 +128,6 @@ function SWEP:Think()
                 if physics:GetStress() > self.maxHoldStress then self:DropObject() end
             end
         end
-
     end
 end
 

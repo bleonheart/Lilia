@@ -5800,7 +5800,13 @@ lia.command.add("plywhitelist", {
             return
         end
 
-        if target:setWhitelisted(faction.index, true) then
+        local data = lia.faction.indices[faction.index]
+        if data then
+            if data.uniqueID == "staff" then return end
+            local whitelists = target:getLiliaData("whitelists", {})
+            whitelists[SCHEMA.folder] = whitelists[SCHEMA.folder] or {}
+            whitelists[SCHEMA.folder][data.uniqueID] = true
+            target:setLiliaData("whitelists", whitelists)
             for _, v in player.Iterator() do
                 v:notifyInfoLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
             end
@@ -5849,12 +5855,20 @@ lia.command.add("plyunwhitelist", {
             return
         end
 
-        if faction and not faction.isDefault and target:setWhitelisted(faction.index, false) then
-            for _, v in player.Iterator() do
-                v:notifyInfoLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
-            end
+        if faction and not faction.isDefault then
+            local data = lia.faction.indices[faction.index]
+            if data then
+                if data.uniqueID == "staff" then return end
+                local whitelists = target:getLiliaData("whitelists", {})
+                whitelists[SCHEMA.folder] = whitelists[SCHEMA.folder] or {}
+                whitelists[SCHEMA.folder][data.uniqueID] = nil
+                target:setLiliaData("whitelists", whitelists)
+                for _, v in player.Iterator() do
+                    v:notifyInfoLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
+                end
 
-            lia.log.add(client, "plyUnwhitelist", target:Name(), faction.name)
+                lia.log.add(client, "plyUnwhitelist", target:Name(), faction.name)
+            end
         else
             client:notifyErrorLocalized("invalidFaction")
         end
@@ -6012,7 +6026,9 @@ lia.command.add("classwhitelist", {
         elseif target:getChar():getClasswhitelists()[classID] then
             client:notifyInfoLocalized("alreadyWhitelisted")
         else
-            target:classWhitelist(classID)
+            local wl = target:getChar():getClasswhitelists()
+            wl[classID] = true
+            target:getChar():setClasswhitelists(wl)
             client:notifySuccessLocalized("whitelistedSuccess")
             target:notifyInfoLocalized("classAssigned", L(classData.name))
             lia.log.add(client, "classWhitelist", target:Name(), classData.name)
@@ -6054,10 +6070,12 @@ lia.command.add("classunwhitelist", {
         local classData = lia.class.list[classID]
         if target:Team() ~= classData.faction then
             client:notifyErrorLocalized("whitelistFactionMismatch")
-        elseif not ((target:getChar():getClasswhitelists() or {})[classID] == true) then
+        elseif not target:getChar():getClasswhitelists()[classID] then
             client:notifyInfoLocalized("notWhitelisted")
         else
-            target:classUnWhitelist(classID)
+            local wl = target:getChar():getClasswhitelists()
+            wl[classID] = nil
+            target:getChar():setClasswhitelists(wl)
             client:notifySuccessLocalized("unwhitelistedSuccess")
             target:notifyInfoLocalized("classUnassigned", L(classData.name))
             lia.log.add(client, "classUnwhitelist", target:Name(), classData.name)

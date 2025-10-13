@@ -518,7 +518,6 @@ end, {
     max = 36000
 })
 
-
 lia.config.add("ThirdPersonEnabled", "thirdPersonEnabled", true, nil, {
     desc = "thirdPersonEnabledDesc",
     category = "categoryThirdPerson",
