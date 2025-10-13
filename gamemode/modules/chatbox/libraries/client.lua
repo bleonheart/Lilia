@@ -18,7 +18,7 @@ end
 function MODULE:PlayerBindPress(_, bind, pressed)
     bind = bind:lower()
     if bind:find("messagemode") and pressed then
-        if not IsValid(self.panel) then self:createChat() end
+        if not IsValid(self.panel) then self:CreateChat() end
         if not self.panel.active then self.panel:setActive(true) end
         return true
     end
