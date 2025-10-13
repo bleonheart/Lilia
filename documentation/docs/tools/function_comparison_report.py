@@ -117,6 +117,7 @@ class CombinedReportData:
     hooks_missing: List[str]
     hooks_documented: List[str]
     hooks_registered: List[str]  # New field for hooks registered in code
+    hooks_signatures: Dict[str, List[str]]  # New field for hook -> parameter names
     localization_data: Dict
     argument_mismatches: List[Dict]  # New field for argument mismatches
     modules_data: List
@@ -452,6 +453,65 @@ class FunctionComparisonReportGenerator:
 
         return len(args)
 
+    def _split_top_level_args(self, arg_str: str) -> List[str]:
+        """Split a Lua argument list into top-level arguments, respecting strings and nested parens."""
+        if not arg_str:
+            return []
+
+        args: List[str] = []
+        current_arg: List[str] = []
+        paren_depth = 0
+        in_string = False
+        string_char: Optional[str] = None
+        escape_next = False
+
+        i = 0
+        while i < len(arg_str):
+            char = arg_str[i]
+
+            if escape_next:
+                escape_next = False
+                current_arg.append(char)
+                i += 1
+                continue
+
+            if in_string:
+                if char == '\\':
+                    escape_next = True
+                    current_arg.append(char)
+                elif char == string_char:
+                    in_string = False
+                    string_char = None
+                    current_arg.append(char)
+                else:
+                    current_arg.append(char)
+                i += 1
+                continue
+
+            if char in ('"', "'"):
+                in_string = True
+                string_char = char
+                current_arg.append(char)
+            elif char == '(':
+                paren_depth += 1
+                current_arg.append(char)
+            elif char == ')':
+                paren_depth = max(0, paren_depth - 1)
+                current_arg.append(char)
+            elif char == ',' and paren_depth == 0:
+                args.append(''.join(current_arg).strip())
+                current_arg = []
+            else:
+                current_arg.append(char)
+
+            i += 1
+
+        if current_arg:
+            args.append(''.join(current_arg).strip())
+
+        # Drop empty entries
+        return [a for a in args if a]
+
     def _check_file_for_arg_mismatches(self, content: str, filename: str, lang_keys: Dict[str, int]) -> List[Dict]:
         """Check a single file for argument mismatches"""
         mismatches = []
@@ -623,6 +683,7 @@ class FunctionComparisonReportGenerator:
             hooks_missing=hooks_missing,
             hooks_documented=hooks_documented,
             hooks_registered=hooks_registered,
+            hooks_signatures=getattr(self, 'hooks_signatures', {}),
             localization_data=localization_data,
             argument_mismatches=argument_mismatches,
             modules_data=modules_data,
@@ -761,7 +822,8 @@ class FunctionComparisonReportGenerator:
     def _run_hooks_analysis(self) -> Tuple[List[str], List[str], List[str]]:
         """Run hooks documentation analysis"""
         try:
-            hooks_registered = self._scan_hook_registrations()
+            hooks_registered, hooks_signatures = self._scan_hook_registrations_with_signatures()
+            self.hooks_signatures = hooks_signatures
             hooks_documented = self._read_all_documented_hooks()
             hooks_missing = [h for h in hooks_registered if h not in hooks_documented]
             return sorted(hooks_missing), sorted(list(hooks_documented)), hooks_registered
@@ -788,9 +850,13 @@ class FunctionComparisonReportGenerator:
         
         return documented_hooks
 
-    def _scan_hook_registrations(self) -> List[str]:
-        """Scan Lua files for all hook patterns to find registered hooks"""
-        registered_hooks = set()
+    def _scan_hook_registrations_with_signatures(self) -> Tuple[List[str], Dict[str, List[str]]]:
+        """Scan Lua files for hooks and attempt to capture their parameter names.
+
+        Returns (registered_hooks_sorted, hook_signatures_map)
+        """
+        registered_hooks: Set[str] = set()
+        hook_signatures: Dict[str, List[str]] = {}
 
         # Scan gamemode files
         lua_files = list(self.base_path.rglob("*.lua"))
@@ -804,15 +870,22 @@ class FunctionComparisonReportGenerator:
                 with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
 
-                # Use the updated hook extraction from missinghooks.py
+                # Names only
                 file_hooks = self._extract_hooks_from_file_content(content)
                 registered_hooks.update(file_hooks)
+
+                # Signatures
+                file_signatures = self._extract_hook_signatures_from_file_content(content)
+                for hook_name, params in file_signatures.items():
+                    existing = hook_signatures.get(hook_name)
+                    if not existing or (len(params) > len(existing)):
+                        hook_signatures[hook_name] = params
 
             except Exception as e:
                 print(f"Warning: Error scanning {lua_file}: {e}")
                 continue
 
-        return sorted(list(registered_hooks))
+        return sorted(list(registered_hooks)), hook_signatures
 
     def _extract_hooks_from_file_content(self, content: str) -> Set[str]:
         """Extract hooks from file content using all patterns"""
@@ -879,6 +952,91 @@ class FunctionComparisonReportGenerator:
                 hooks.add(hook_name.strip())
 
         return hooks
+
+    def _extract_hook_signatures_from_file_content(self, content: str) -> Dict[str, List[str]]:
+        """Extract hook parameter names from callback and method definitions in file content."""
+        signatures: Dict[str, List[str]] = {}
+
+        # hook.Add("HookName", "id", function(a,b,c) ... end)
+        for m in re.finditer(r'hook\.Add\s*\(\s*([\'"`])([^\'"`]+)\1\s*,\s*[^,]*,\s*function\s*\(([^)]*)\)', content, re.DOTALL):
+            hook_name = m.group(2).strip()
+            params_str = (m.group(3) or '').strip()
+            params = [p.strip() for p in params_str.split(',') if p.strip()]
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+                existing = signatures.get(hook_name)
+                if not existing or len(params) > len(existing):
+                    signatures[hook_name] = params
+
+        # function GM:HookName(param1, param2)
+        for m in re.finditer(r'function\s+GM:([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)', content):
+            hook_name = m.group(1).strip()
+            params_str = (m.group(2) or '').strip()
+            params = [p.strip() for p in params_str.split(',') if p.strip()]
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+                existing = signatures.get(hook_name)
+                if not existing or len(params) > len(existing):
+                    signatures[hook_name] = params
+
+        # function MODULE:HookName(param1, param2)
+        for m in re.finditer(r'function\s+MODULE:([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)', content):
+            hook_name = m.group(1).strip()
+            params_str = (m.group(2) or '').strip()
+            params = [p.strip() for p in params_str.split(',') if p.strip()]
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+                existing = signatures.get(hook_name)
+                if not existing or len(params) > len(existing):
+                    signatures[hook_name] = params
+
+        # function SCHEMA:HookName(param1, param2)
+        for m in re.finditer(r'function\s+SCHEMA:([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)', content):
+            hook_name = m.group(1).strip()
+            params_str = (m.group(2) or '').strip()
+            params = [p.strip() for p in params_str.split(',') if p.strip()]
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+                existing = signatures.get(hook_name)
+                if not existing or len(params) > len(existing):
+                    signatures[hook_name] = params
+
+        # Fallback: infer param placeholders from hook.Run("HookName", a, b, c)
+        for m in re.finditer(r'hook\.Run\s*\(\s*([\'"`])([^\'"`]+)\1\s*,\s*(.*?)\)', content, re.DOTALL):
+            hook_name = m.group(2).strip()
+            raw_args = (m.group(3) or '').strip()
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
+                arg_list = self._split_top_level_args(raw_args)
+                if arg_list:
+                    # Prefer meaningful identifier names; fallback to argN when needed
+                    names: List[str] = []
+                    for i, tok in enumerate(arg_list, start=1):
+                        t = tok.strip()
+                        if self._is_simple_identifier(t) and t not in ('true', 'false', 'nil') and not self._is_number(t):
+                            names.append(t)
+                        else:
+                            names.append(f"arg{i}")
+
+                    existing = signatures.get(hook_name)
+                    if (not existing or len(names) > len(existing)
+                        or (len(names) == len(existing) and self._are_generic_names(existing) and not self._are_generic_names(names))):
+                        signatures[hook_name] = names
+
+        return signatures
+
+    def _is_number(self, value: str) -> bool:
+        """Check if a string represents a number"""
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    def _is_simple_identifier(self, token: str) -> bool:
+        """Return True for simple Lua identifiers (no dots, calls, or indexing)."""
+        return bool(re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', token))
+
+    def _are_generic_names(self, names: List[str]) -> bool:
+        """True if all names look like argN placeholders."""
+        if not names:
+            return False
+        return all(re.match(r'^arg\d+$', n) for n in names)
 
     def _run_panels_analysis(self) -> Tuple[List[str], List[str]]:
         """Run panel documentation analysis"""
@@ -1647,7 +1805,12 @@ class FunctionComparisonReportGenerator:
             lines.append("### Missing Hook Documentation:")
             lines.append("These hooks are registered in code but missing from documentation:")
             for hook in data.hooks_missing:
-                lines.append(f"- `{hook}(args)`")
+                params = data.hooks_signatures.get(hook, []) if hasattr(data, 'hooks_signatures') else []
+                if params:
+                    param_str = ', '.join(params)
+                    lines.append(f"- `{hook}({param_str})`")
+                else:
+                    lines.append(f"- `{hook}(args)`")
             lines.append("")
 
         if unused_hooks:

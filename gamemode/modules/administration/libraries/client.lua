@@ -2441,7 +2441,7 @@ end)
 
 net.Receive("liaOnlineStaffData", function()
     local staffData = net.ReadTable() or {}
-    hook.Run("LiaOnlineStaffDataReceived", staffData)
+    hook.Run("OnlineStaffDataReceived", staffData)
 end)
 
 function MODULE:PrePlayerDraw(client)

@@ -423,7 +423,7 @@ function MODULE:CreateMenuButtons(tabs)
                         end
                     end
 
-                    hook.Add("LiaOnlineStaffDataReceived", "liaF1MenuStaffData", onStaffDataReceived)
+                    hook.Add("OnlineStaffDataReceived", "liaF1MenuStaffData", onStaffDataReceived)
                     net.Start("liaRequestOnlineStaffData")
                     net.SendToServer()
                     panel.refreshTimer = timer.Create("liaAdminStaffTableRefresh", 30, 0, function()
@@ -436,7 +436,7 @@ function MODULE:CreateMenuButtons(tabs)
                     end)
 
                     panel.OnRemove = function()
-                        hook.Remove("LiaOnlineStaffDataReceived", "liaF1MenuStaffData")
+                        hook.Remove("OnlineStaffDataReceived", "liaF1MenuStaffData")
                         if timer.Exists("liaAdminStaffTableRefresh") then timer.Remove("liaAdminStaffTableRefresh") end
                         if panel.resizeTimer and timer.Exists(panel.resizeTimer) then timer.Remove(panel.resizeTimer) end
                         panel.staffTable = nil
