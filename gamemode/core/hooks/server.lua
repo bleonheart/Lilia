@@ -210,7 +210,7 @@ function GM:CanPlayerTakeItem(client, item)
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
         client:notifyErrorLocalized("forbiddenActionStorage")
         return false
-    elseif client:IsFamilySharedAccount() then
+    elseif client:isFamilySharedAccount() then
         client:notifyErrorLocalized("familySharedPickupDisabled")
         return false
     elseif IsValid(item.entity) then
