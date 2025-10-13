@@ -11,19 +11,110 @@ from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
 
-# Hardcoded paths
-DEFAULT_GAMEMODE_ROOT = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode")
-DEFAULT_DOCS_ROOT = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation")
-DEFAULT_LANGUAGE_FILE = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
-DEFAULT_MODULES_PATHS = [
-    Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
-    Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
-    Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
-]
-DEFAULT_OUTPUT_DIR = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation")
+# Dynamic paths based on file location
+def _get_paths_from_file_location():
+    """Determine paths based on the current file's location"""
+    current_file = Path(__file__).resolve()
+    file_path_str = str(current_file)
+
+    # Check if file is in the E:\GMOD\Server\garrysmod\gamemodes\Lilia\ structure
+    if r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
+        # File is in E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
+        lilia_root = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia")
+        gamemode_root = lilia_root / "gamemode"
+        docs_root = lilia_root / "documentation"
+        language_file = gamemode_root / "languages" / "english.lua"
+        modules_paths = [
+            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
+            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
+            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+        ]
+        output_dir = docs_root
+
+    # Check if file is in the D:\Lilia\ structure
+    elif r"D:\Lilia\documentation\docs\tools" in file_path_str:
+        # File is in D:\Lilia\documentation\docs\tools\
+        lilia_root = Path(r"D:\Lilia")
+        gamemode_root = lilia_root / "gamemode"
+        docs_root = lilia_root / "documentation"
+        language_file = gamemode_root / "languages" / "english.lua"
+        modules_paths = [
+            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
+            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
+            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+        ]
+        output_dir = docs_root
+
+    else:
+        # Fallback for other locations - try to derive from current file location
+        current_dir = current_file.parent
+
+        # Go up the directory tree to find the Lilia root (assuming standard structure)
+        lilia_root = None
+        check_dir = current_dir
+
+        # Look for gamemode directory by going up the tree
+        for _ in range(6):  # Reasonable depth limit
+            if (check_dir / "gamemode").exists() and (check_dir / "documentation").exists():
+                lilia_root = check_dir
+                break
+            check_dir = check_dir.parent
+
+        if lilia_root:
+            gamemode_root = lilia_root / "gamemode"
+            docs_root = lilia_root / "documentation"
+            language_file = gamemode_root / "languages" / "english.lua"
+            modules_paths = [
+                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
+                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
+                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+            ]
+            output_dir = docs_root
+        else:
+            # Ultimate fallback - use hardcoded defaults
+            print("Warning: Could not determine Lilia root from file location, using hardcoded defaults")
+            gamemode_root = Path(r"D:\Lilia\gamemode")
+            docs_root = Path(r"D:\Lilia\documentation")
+            language_file = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
+            modules_paths = [
+                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
+                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
+                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+            ]
+            output_dir = docs_root
+
+    return {
+        'gamemode_root': gamemode_root,
+        'docs_root': docs_root,
+        'language_file': language_file,
+        'modules_paths': modules_paths,
+        'output_dir': output_dir
+    }
+
+# Get paths based on file location
+_paths = _get_paths_from_file_location()
+
+DEFAULT_GAMEMODE_ROOT = _paths['gamemode_root']
+DEFAULT_DOCS_ROOT = _paths['docs_root']
+DEFAULT_LANGUAGE_FILE = _paths['language_file']
+DEFAULT_MODULES_PATHS = _paths['modules_paths']
+DEFAULT_OUTPUT_DIR = _paths['output_dir']
+
+# Debug output (only in non-quiet mode)
+import sys
+_is_quiet = '--quiet' in sys.argv or '-q' in sys.argv
+if not _is_quiet:
+    print("Detected file location and using the following paths:")
+    print(f"  Gamemode root: {DEFAULT_GAMEMODE_ROOT}")
+    print(f"  Documentation root: {DEFAULT_DOCS_ROOT}")
+    print(f"  Language file: {DEFAULT_LANGUAGE_FILE}")
+    print(f"  Output directory: {DEFAULT_OUTPUT_DIR}")
+    print(f"  Modules paths: {len(DEFAULT_MODULES_PATHS)} paths")
+    for i, path in enumerate(DEFAULT_MODULES_PATHS, 1):
+        print(f"    {i}. {path}")
+    print()
 
 # Import from existing files
-import sys
 import os
 
 # Add current directory to path for imports
@@ -1976,15 +2067,15 @@ class FunctionComparisonReportGenerator:
 
     def save_report(self, data: CombinedReportData, output_file: str = None):
         """Generate and save the comprehensive report"""
-        # Ensure output directory exists
-        DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        # Ensure output directory exists (use the dynamic docs_path)
+        self.docs_path.mkdir(parents=True, exist_ok=True)
 
         if output_file is None:
-            output_file = str(DEFAULT_OUTPUT_DIR / "report.md")
+            output_file = str(self.docs_path / "report.md")
         else:
-            # If user provided a relative path, make it relative to DEFAULT_OUTPUT_DIR
+            # If user provided a relative path, make it relative to self.docs_path
             if not Path(output_file).is_absolute():
-                output_file = str(DEFAULT_OUTPUT_DIR / output_file)
+                output_file = str(self.docs_path / output_file)
 
         report = self.generate_markdown_report(data)
 
@@ -2165,6 +2256,38 @@ Examples:
             traceback.print_exc()
         sys.exit(1)
 
+def test_path_detection():
+    """Test function to verify path detection works correctly"""
+    print("Testing path detection...")
+    paths = _get_paths_from_file_location()
+    print(f"Gamemode root: {paths['gamemode_root']}")
+    print(f"Documentation root: {paths['docs_root']}")
+    print(f"Language file: {paths['language_file']}")
+    print(f"Output directory: {paths['output_dir']}")
+    print(f"Modules paths: {len(paths['modules_paths'])} paths")
+    for i, path in enumerate(paths['modules_paths'], 1):
+        print(f"  {i}. {path}")
+
+    # Verify paths exist
+    all_good = True
+    if not paths['gamemode_root'].exists():
+        print(f"ERROR: Gamemode root does not exist: {paths['gamemode_root']}")
+        all_good = False
+    if not paths['docs_root'].exists():
+        print(f"ERROR: Documentation root does not exist: {paths['docs_root']}")
+        all_good = False
+
+    if all_good:
+        print("SUCCESS: Path detection test passed!")
+    else:
+        print("ERROR: Path detection test failed!")
+
+    return all_good
+
 if __name__ == "__main__":
-    # Always run comprehensive analysis (complex mode)
-    main()
+    # If run with --test-paths argument, just test path detection
+    if len(sys.argv) > 1 and sys.argv[1] == '--test-paths':
+        test_path_detection()
+    else:
+        # Always run comprehensive analysis (complex mode)
+        main()
