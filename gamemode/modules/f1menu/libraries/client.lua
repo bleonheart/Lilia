@@ -18,6 +18,11 @@ function MODULE:LoadCharInformation()
         local client = LocalPlayer()
         return client and lia.currency.get(client:getChar():getMoney()) or lia.currency.get(0)
     end)
+
+    hook.Run("AddTextField", L("generalInfo"), "playTime", L("playTime"), function()
+        local client = LocalPlayer()
+        return client and lia.time.formatDHM(client:getPlayTime()) or L("loading")
+    end)
 end
 
 function MODULE:AddSection(sectionName, color, priority, location)

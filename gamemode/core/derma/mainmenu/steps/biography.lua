@@ -45,11 +45,33 @@ function PANEL:makeFactionComboBox()
         surface.DrawRect(0, 0, w, h)
     end
 
-    combo.OnSelect = function(_, _, data)
-        if data then
-            local fac = lia.faction.teams[data]
-            if fac then self:onFactionSelected(fac) end
+    combo.OnSelect = function(index, text, data)
+        print("[DEBUG] Faction combobox OnSelect - data:", data, "text:", text)
+
+        local factionID = nil
+
+        -- The combobox is passing the display name as data, so find the faction by name
+        if data and type(data) == "string" then
+            print("[DEBUG] Looking for faction with display name:", data)
+            for id, fac in pairs(lia.faction.teams) do
+                if L(fac.name) == data then
+                    factionID = id
+                    print("[DEBUG] Found faction ID:", factionID)
+                    break
+                end
+            end
         end
+
+        -- If we have a valid faction ID, look up the faction
+        if factionID then
+            local fac = lia.faction.teams[factionID]
+            if fac then
+                self:onFactionSelected(fac)
+                return
+            end
+        end
+
+        print("[DEBUG] Could not find faction for selection")
     end
 
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
@@ -62,6 +84,7 @@ function PANEL:makeFactionComboBox()
     combo:FinishAddingOptions()
     return combo
 end
+
 
 function PANEL:addAttributes()
     local function makeLabel(key)
@@ -113,6 +136,7 @@ function PANEL:validate()
 end
 
 function PANEL:onFactionSelected(fac)
+    print("[DEBUG] Faction selected:", fac.name)
     self:setContext("faction", fac.index)
     self:setContext("model", 1)
     self:updateModelPanel()
@@ -126,7 +150,9 @@ function PANEL:updateContext()
         local factionUniqueID = self.factionCombo:GetSelectedData()
         if factionUniqueID then
             local faction = lia.faction.teams[factionUniqueID]
-            if faction then self:setContext("faction", faction.index) end
+            if faction then
+                self:setContext("faction", faction.index)
+            end
         end
     end
 end

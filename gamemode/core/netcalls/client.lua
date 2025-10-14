@@ -682,7 +682,7 @@ net.Receive("liaAnimationStatus", function()
     local ply = net.ReadEntity()
     local active = net.ReadBool()
     local boneData = net.ReadTable()
-    if IsValid(ply) then ply:NetworkAnimation(active, boneData) end
+    if IsValid(ply) then ply:networkAnimation(active, boneData) end
 end)
 
 net.Receive("liaCmdArgPrompt", function()
@@ -745,13 +745,13 @@ net.Receive("liaEmitUrlSound", function()
         local name = util.CRC(soundPath) .. "." .. ext
         local cachedPath = lia.websound.get(name)
         if cachedPath then
-            ent:PlayFollowingSound(cachedPath, volume, true, maxDistance, startDelay)
+            ent:playFollowingSound(cachedPath, volume, true, maxDistance, startDelay)
         else
-            lia.websound.register(name, soundPath, function(localPath) if localPath then ent:PlayFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
+            lia.websound.register(name, soundPath, function(localPath) if localPath then ent:playFollowingSound(localPath, volume, true, maxDistance, startDelay) end end)
         end
     elseif soundPath:find("^lilia/websounds/") or soundPath:find("^websounds/") then
         local maxDistance = soundLevel * 13.33
-        ent:PlayFollowingSound(soundPath, volume, true, maxDistance, startDelay)
+        ent:playFollowingSound(soundPath, volume, true, maxDistance, startDelay)
     else
         ent:EmitSound(soundPath, soundLevel, nil, volume, nil, nil, nil)
     end

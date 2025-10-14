@@ -310,7 +310,7 @@ if SERVER then
             end
         end
 
-        table.sort(output, function(a, b) return a:Distance(position) < b:Distance(position) end)
+        table.sort(output, function(a, b) return a:distance(position) < b:distance(position) end)
         return output
     end
 else
@@ -434,12 +434,22 @@ else
     function lia.util.drawBlur(panel, amount, passes, alpha)
         amount = amount or 5
         alpha = alpha or 255
+        passes = passes or 0.2
+
+        -- Performance optimization: reduce blur passes for better FPS
+        local maxPasses = 3
+
         surface.SetMaterial(lia.util.getMaterial("pp/blurscreen"))
         surface.SetDrawColor(255, 255, 255, alpha)
         local x, y = panel:LocalToScreen(0, 0)
-        for i = -(passes or 0.2), 1, 0.2 do
-            lia.util.getMaterial("pp/blurscreen"):SetFloat("$blur", i * amount)
-            lia.util.getMaterial("pp/blurscreen"):Recompute()
+
+        -- Cache the material to avoid repeated lookups
+        local blurMat = lia.util.getMaterial("pp/blurscreen")
+
+        for i = 0, maxPasses do
+            local blurValue = (i / maxPasses) * amount
+            blurMat:SetFloat("$blur", blurValue)
+            blurMat:Recompute()
             render.UpdateScreenEffectTexture()
             surface.DrawTexturedRect(x * -1, y * -1, ScrW(), ScrH())
         end

@@ -4137,14 +4137,69 @@ lia.command.add("exportprivileges", {
     end
 })
 
-lia.command.add("bots", {
+-- Helper function to find a safe spawn position around a player
+local function FindSafeBotSpawnPosition(client, maxDistance)
+    maxDistance = maxDistance or 200
+    -- Try to find a position near the client
+    for i = 1, 20 do -- Try up to 20 times
+        local randomAngle = math.random(0, 360)
+        local randomDistance = math.random(50, maxDistance)
+        local randomHeight = math.random(-32, 32)
+        local basePos = client:GetPos()
+        local offset = Vector(math.cos(randomAngle) * randomDistance, math.sin(randomAngle) * randomDistance, randomHeight)
+        local spawnPos = basePos + offset
+        -- Check if position is in world and not in solid
+        if util.IsInWorld(spawnPos) then
+            -- Trace from above to find ground
+            local trace = util.TraceLine({
+                start = spawnPos + Vector(0, 0, 64),
+                endpos = spawnPos - Vector(0, 0, 256),
+                filter = client,
+                mask = MASK_PLAYERSOLID
+            })
+
+            if trace.Hit and not trace.StartSolid then
+                local groundPos = trace.HitPos + Vector(0, 0, 16) -- Small offset above ground
+                -- Check if this position is safe (not in solid, good height)
+                local hullTrace = util.TraceHull({
+                    start = groundPos,
+                    endpos = groundPos,
+                    mins = Vector(-16, -16, 0),
+                    maxs = Vector(16, 16, 64),
+                    filter = client,
+                    mask = MASK_PLAYERSOLID
+                })
+
+                if not hullTrace.StartSolid and not hullTrace.Hit then
+                    -- Try to use navmesh if available
+                    if navmesh and navmesh.IsLoaded() then
+                        local navArea = navmesh.GetNearestNavArea(groundPos, false, 100, false)
+                        if navArea then return navArea:GetCenter() end
+                    end
+                    -- Fallback to our calculated position
+                    return groundPos
+                end
+            end
+        end
+    end
+    -- If all attempts fail, fall back to client's position with offset
+    return client:GetPos() + Vector(0, 0, 32)
+end
+
+lia.command.add("fillwithbots", {
     superAdminOnly = true,
     desc = "botsManageDesc",
+    alias = {"bots"},
     onRun = function(client)
         if not SERVER then return end
         if not timer.Exists("Bots_Add_Timer") then
+            -- Find a safe spawn position around the client for multiple bots
+            local spawnPos = FindSafeBotSpawnPosition(client, 400)
             timer.Create("Bots_Add_Timer", 2, 0, function()
                 if #player.GetAll() < game.MaxPlayers() then
+                    -- Store the spawn position and creator for each bot
+                    lia.botCreator = client
+                    lia.botSpawnPos = spawnPos + Vector(math.random(-100, 100), math.random(-100, 100), 0)
                     game.ConsoleCommand("bot\n")
                 else
                     timer.Remove("Bots_Add_Timer")
@@ -4161,8 +4216,161 @@ lia.command.add("bot", {
     desc = "botSpawnDesc",
     onRun = function(client)
         if not SERVER then return end
+        -- Find a safe spawn position around the player
+        local spawnPos = FindSafeBotSpawnPosition(client, 300)
+        -- Store the spawn position and creator for the bot
         lia.botCreator = client
+        lia.botSpawnPos = spawnPos
         game.ConsoleCommand("bot\n")
+    end
+})
+
+lia.command.add("spawnbots", {
+    superAdminOnly = true,
+    desc = "spawnBotsDesc",
+    arguments = {
+        {
+            name = "amount",
+            type = "number"
+        }
+    },
+    onRun = function(client, arguments)
+        if not SERVER then return end
+        local requestedAmount = math.max(1, math.floor(arguments.amount or 1))
+        local currentPlayers = #player.GetAll()
+        local maxPlayers = game.MaxPlayers()
+        local availableSlots = maxPlayers - currentPlayers
+        -- Check if we can spawn the requested amount
+        if requestedAmount > availableSlots then
+            client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots)
+            return
+        end
+
+        if requestedAmount <= 0 then
+            client:notifyErrorLocalized("spawnBotsInvalidAmount")
+            return
+        end
+
+        -- Find a safe spawn position around the player for multiple bots
+        local baseSpawnPos = FindSafeBotSpawnPosition(client, 400)
+        local botsSpawned = 0
+        client:notify("Spawning " .. requestedAmount .. " bots...")
+        -- Spawn bots one by one with slight position variation
+        for i = 1, requestedAmount do
+            timer.Simple((i - 1) * 0.5, function()
+                -- 0.5 second delay between spawns
+                if not IsValid(client) then return end
+                local spawnPos = baseSpawnPos + Vector(math.random(-150, 150), math.random(-150, 150), math.random(-32, 32))
+                -- Store the spawn position and creator for the bot
+                lia.botCreator = client
+                lia.botSpawnPos = spawnPos
+                game.ConsoleCommand("bot\n")
+                botsSpawned = botsSpawned + 1
+            end)
+        end
+
+        -- Notify completion after all bots should be spawned
+        timer.Simple(requestedAmount * 0.5 + 2, function() if IsValid(client) then client:notify("Successfully spawned " .. botsSpawned .. " bots!") end end)
+    end
+})
+
+lia.command.add("spawnbotoffaction", {
+    superAdminOnly = true,
+    desc = "spawnBotOfFactionDesc",
+    arguments = {
+        {
+            name = "faction",
+            type = "string"
+        }
+    },
+    onRun = function(client, arguments)
+        if not SERVER then return end
+        local factionName = arguments.faction
+        if not factionName then
+            client:notifyErrorLocalized("invalidArg")
+            return
+        end
+
+        local faction = lia.faction.teams[factionName] or lia.util.findFaction(client, factionName)
+        if not faction then
+            client:notifyErrorLocalized("invalidFaction")
+            return
+        end
+
+        -- Find a safe spawn position around the player
+        local spawnPos = FindSafeBotSpawnPosition(client, 300)
+        -- Store the spawn position, creator, and faction for the bot
+        lia.botCreator = client
+        lia.botSpawnPos = spawnPos
+        lia.botFaction = faction
+        client:notify("Spawning bot of faction: " .. faction.name)
+        game.ConsoleCommand("bot\n")
+    end
+})
+
+lia.command.add("botspeak", {
+    superAdminOnly = true,
+    desc = "botsSpeakDesc",
+    arguments = {
+        {
+            name = "phrases",
+            type = "number",
+            optional = true,
+            default = 50
+        }
+    },
+    onRun = function(client, arguments)
+        if not SERVER then return end
+        local phrasesPerBot = math.Clamp(arguments.phrases or 50, 1, 200) -- Limit between 1 and 200
+        local cooldown = 1 -- seconds
+        local bots = {}
+        -- Find all bots/NPCs
+        for _, ent in ipairs(ents.GetAll()) do
+            if ent:IsNPC() or ent:IsNextBot() or (ent:IsPlayer() and ent:IsBot()) then table.insert(bots, ent) end
+        end
+
+        if #bots == 0 then
+            client:notifyErrorLocalized("noBotsFound")
+            return
+        end
+
+        client:notify("Found " .. #bots .. " bots. Starting phrase sequence with " .. phrasesPerBot .. " phrases per bot...")
+        local randomPhrases = {"Hello there!", "What's going on?", "I need help!", "Over here!", "Watch out!", "Come on!", "Let's go!", "This way!", "Behind you!", "Enemy spotted!", "Clear!", "Move up!", "Hold position!", "Cover me!", "Reloading!", "Taking fire!", "Need backup!", "All clear!", "Contact!", "Engaging!", "Fall back!", "Push forward!", "Hold the line!", "Secure the area!", "Enemy down!", "Got one!", "Nice shot!", "Good work!", "Keep moving!", "Stay alert!"}
+        local phraseCount = {}
+        local activeTimers = {}
+        -- Initialize phrase count for each bot
+        for _, bot in ipairs(bots) do
+            phraseCount[bot] = 0
+        end
+
+        local function makeBotSpeak(bot)
+            if not IsValid(bot) then return end
+            if phraseCount[bot] < phrasesPerBot then
+                local randomPhrase = randomPhrases[math.random(#randomPhrases)]
+                bot:Say(randomPhrase)
+                phraseCount[bot] = phraseCount[bot] + 1
+                if phraseCount[bot] < phrasesPerBot then
+                    activeTimers[bot] = timer.Simple(cooldown, function() if IsValid(bot) then makeBotSpeak(bot) end end)
+                else
+                    client:notify("Bot " .. (bot:GetName() or tostring(bot)) .. " finished all " .. phrasesPerBot .. " phrases")
+                end
+            end
+        end
+
+        -- Start the phrase sequence for all bots
+        for _, bot in ipairs(bots) do
+            makeBotSpeak(bot)
+        end
+
+        -- Overall completion check
+        timer.Simple((phrasesPerBot * cooldown) + 5, function()
+            local totalPhrases = 0
+            for _, count in pairs(phraseCount) do
+                totalPhrases = totalPhrases + count
+            end
+
+            client:notify("All bots finished! Total phrases said: " .. totalPhrases)
+        end)
     end
 })
 
@@ -4362,14 +4570,14 @@ lia.command.add("trunk", {
             return
         end
 
-        if client:GetPos():Distance(entity:GetPos()) > maxDistance then
+        if client:GetPos():distance(entity:GetPos()) > maxDistance then
             client:notifyErrorLocalized("tooFarToOpenTrunk")
             return
         end
 
         client.liaStorageEntity = entity
         client:setAction(L("openingTrunk"), openTime, function()
-            if client:GetPos():Distance(entity:GetPos()) > maxDistance then
+            if client:GetPos():distance(entity:GetPos()) > maxDistance then
                 client.liaStorageEntity = nil
                 return
             end
@@ -5750,9 +5958,6 @@ lia.command.add("plytransfer", {
         local oldFactionName = lia.faction.indices[oldFaction] and lia.faction.indices[oldFaction].name or oldFaction
         targetChar.vars.faction = faction.uniqueID
         targetChar:setFaction(faction.index)
-        targetChar:kickClass()
-        local defaultClass = lia.faction.getDefaultClass(faction.index)
-        if defaultClass then targetChar:joinClass(defaultClass.index) end
         hook.Run("OnTransferred", targetPlayer)
         if faction.OnTransferred then faction:OnTransferred(targetPlayer, oldFaction) end
         client:notifySuccessLocalized("transferSuccess", targetPlayer:Name(), L(faction.name, client))
@@ -5929,18 +6134,14 @@ lia.command.add("setclass", {
                 local options = {}
                 local targetName = prefix and prefix[1]
                 local target = targetName and lia.util.findPlayer(client, targetName)
-                if not lia.class.list or table.IsEmpty(lia.class.list) then return options end
-                if target and target:getChar() then
-                    local targetFaction = target:Team()
-                    local factionClasses = lia.faction.getClasses(targetFaction)
-                    if not factionClasses or #factionClasses == 0 then return options end
-                    for _, v in pairs(lia.class.list) do
-                        if v.faction == targetFaction then
-                            local canAccess = true
-                            if lia.class.hasWhitelist(v.index) then canAccess = target:getChar():getClasswhitelists()[v.index] end
-                            if canAccess and target:getChar():getClass() ~= v.uniqueID then options[L(v.name)] = v.uniqueID end
-                        end
-                    end
+                if not target or not target:getChar() then return options end
+                local targetFaction = target:Team()
+                local factionClasses = lia.faction.getClasses(targetFaction)
+                if not factionClasses or #factionClasses == 0 then return options end
+                for _, v in pairs(factionClasses) do
+                    local canAccess = true
+                    if lia.class.hasWhitelist(v.index) then canAccess = target:getChar():getClasswhitelists()[v.index] end
+                    if canAccess and target:getChar():getClass() ~= v.uniqueID then options[L(v.name)] = v.uniqueID end
                 end
                 return options
             end
@@ -6192,7 +6393,7 @@ lia.command.add("spawnremoveinradius", {
                     if not (data.map and data.map:lower() ~= curMap) then
                         local spawn = data.pos or data
                         if not isvector(spawn) then spawn = lia.data.decodeVector(spawn) end
-                        if isvector(spawn) and spawn:Distance(position) <= radius then
+                        if isvector(spawn) and spawn:distance(position) <= radius then
                             table.remove(list, i)
                             removedCount = removedCount + 1
                         end

@@ -632,8 +632,10 @@ lia.derma.baseFuncs = {
         return self
     end,
     Material = function(self, mat)
-        local tex = mat:GetTexture("$basetexture")
-        if tex then TEXTURE = tex end
+        if mat and mat:IsValid() then
+            local tex = mat:GetTexture("$basetexture")
+            if tex then TEXTURE = tex end
+        end
         return self
     end,
     Outline = function(self, thickness)

@@ -236,7 +236,7 @@ lia.keybind.add("quickTakeItem", {
         if not client:getChar() then return end
         local entity = client:getTracedEntity()
         if IsValid(entity) and entity:isItem() then
-            if entity:GetPos():Distance(client:GetPos()) > 96 then return end
+            if entity:GetPos():distance(client:GetPos()) > 96 then return end
             local item = entity:getItemTable()
             if item and item.functions and item.functions.take then item:interact("take", client, entity) end
         end
@@ -251,7 +251,7 @@ lia.keybind.add("convertEntity", {
         local trace = client:GetEyeTrace()
         local targetEntity = trace.Entity
         if not IsValid(targetEntity) or targetEntity == client then return end
-        if trace.HitPos:Distance(client:GetPos()) > 200 then
+        if trace.HitPos:distance(client:GetPos()) > 200 then
             client:notifyErrorLocalized("entityTooFar")
             return
         end
@@ -365,9 +365,6 @@ if CLIENT then
         local j = util.TableToJSON(d, true)
         if j then
             file.Write(path, j)
-            print("[Keybind] Saved keybinds to " .. path)
-        else
-            print("[Keybind] Failed to serialize keybind data")
         end
     end
 
@@ -376,16 +373,13 @@ if CLIENT then
         local d = file.Read(path, "DATA")
         if d then
             local s = util.JSONToTable(d)
-            print("[Keybind] Loading keybinds from " .. path)
             for k, v in pairs(s) do
                 if lia.keybind.stored[k] then
                     if isstring(v) then
                         local keyCode = KeybindKeys[string.lower(v)]
                         lia.keybind.stored[k].value = keyCode or KEY_NONE
-                        print("[Keybind] Loaded " .. k .. " = " .. tostring(keyCode or KEY_NONE) .. " (from string: " .. v .. ")")
                     else
                         lia.keybind.stored[k].value = v
-                        print("[Keybind] Loaded " .. k .. " = " .. tostring(v))
                     end
                 end
             end
@@ -416,7 +410,7 @@ if CLIENT then
 
     hook.Add("PopulateConfigurationButtons", "PopulateKeybinds", function(pages)
         local KeybindFormatting = {
-            Keybind = function(action, data, parent, allowEdit, taken, buildKeybinds)
+            Keybind = function(action, data, parent, allowEdit, taken)
                 local container = vgui.Create("DPanel", parent)
                 container:SetTall(220)
                 container:Dock(TOP)
@@ -445,15 +439,29 @@ if CLIENT then
                     combo:DockMargin(300, 25, 300, 15)
                     combo:SetTall(60)
                     combo:SetFont("LiliaFont.18")
-                    local currentKeyName = isnumber(currentKey) and input.GetKeyName(currentKey) or "NONE"
+                    local currentKeyName = isnumber(currentKey) and (currentKey == KEY_NONE and "NONE" or input.GetKeyName(currentKey)) or "NONE"
                     combo:SetValue(currentKeyName)
                     local choices = {}
+                    local noneAdded = false
                     for name, code in pairs(KeybindKeys) do
-                        if not taken[code] or code == currentKey then
-                            choices[#choices + 1] = {
-                                txt = input.GetKeyName(code) or name,
-                                keycode = code
-                            }
+                        if not taken[code] or code == currentKey or code == KEY_NONE then
+                            local displayName = input.GetKeyName(code) or name
+                            -- Ensure NONE is displayed as "NONE" for consistency
+                            if code == KEY_NONE then
+                                displayName = "NONE"
+                                if not noneAdded then
+                                    noneAdded = true
+                                    choices[#choices + 1] = {
+                                        txt = displayName,
+                                        keycode = code
+                                    }
+                                end
+                            else
+                                choices[#choices + 1] = {
+                                    txt = displayName,
+                                    keycode = code
+                                }
+                            end
                         end
                     end
 
@@ -466,35 +474,32 @@ if CLIENT then
                     end)
 
                     for _, c in ipairs(choices) do
-                        print("[Keybind] Adding choice: " .. c.txt .. " -> " .. tostring(c.keycode) .. " (type: " .. type(c.keycode) .. ")")
                         combo:AddChoice(c.txt, c.keycode)
                     end
 
                     combo.OnSelect = function(index, text, newKey)
-                        print("[Keybind] OnSelect called with index=" .. tostring(index) .. ", text=" .. tostring(text) .. ", newKey=" .. tostring(newKey) .. " (type: " .. type(newKey) .. ")")
-                        if not newKey then return end
+                        if newKey == nil then return end
                         -- Ensure newKey is a number
                         if isstring(newKey) then
-                            print("[Keybind] Converting string key to number: " .. newKey)
                             -- Convert string key name to numeric key code
                             local keyCode = KeybindKeys[string.lower(newKey)]
                             if keyCode then
-                                print("[Keybind] Converted '" .. newKey .. "' to " .. tostring(keyCode))
                                 newKey = keyCode
                             else
-                                print("[Keybind] Unknown key name: " .. newKey .. ", using KEY_NONE")
                                 newKey = KEY_NONE
                             end
                         end
 
-                        -- Check if the new key is already taken by another action
-                        for tk, tv in pairs(taken) do
-                            if tk == newKey and tv ~= action then
-                                local keybindData = lia.keybind.stored[action]
-                                local currentKeyValue = keybindData.value
-                                local currentKeyDisplayName = isnumber(currentKeyValue) and input.GetKeyName(currentKeyValue) or "NONE"
-                                combo:SetValue(currentKeyDisplayName)
-                                return
+                        -- Check if the new key is already taken by another action (except KEY_NONE which can be shared)
+                        if newKey ~= KEY_NONE then
+                            for tk, tv in pairs(taken) do
+                                if tk == newKey and tv ~= action then
+                                    local keybindData = lia.keybind.stored[action]
+                                    local currentKeyValue = keybindData.value
+                                    local currentKeyDisplayName = isnumber(currentKeyValue) and (currentKeyValue == KEY_NONE and "NONE" or input.GetKeyName(currentKeyValue)) or "NONE"
+                                    combo:SetValue(currentKeyDisplayName)
+                                    return
+                                end
                             end
                         end
 
@@ -511,9 +516,8 @@ if CLIENT then
                         keybindData.value = newKey
                         lia.keybind.stored[newKey] = action
                         taken[newKey] = action
-                        print("[Keybind] Changed " .. action .. " to key " .. tostring(newKey) .. " (" .. (input.GetKeyName(newKey) or "NONE") .. ")")
                         -- Update the dropdown display
-                        local newKeyName = input.GetKeyName(newKey) or "NONE"
+                        local newKeyName = (newKey == KEY_NONE and "NONE" or input.GetKeyName(newKey)) or "NONE"
                         combo:SetValue(newKeyName)
                         -- Save the changes
                         lia.keybind.save()
@@ -529,7 +533,7 @@ if CLIENT then
                     keyLabel:DockMargin(10, 25, 10, 15)
                     keyLabel:SetTall(60)
                     keyLabel:SetText("")
-                    keyLabel.Paint = function(_, w, h) draw.SimpleText(isnumber(currentKey) and input.GetKeyName(currentKey) or "NONE", "LiliaFont.18", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                    keyLabel.Paint = function(_, w, h) draw.SimpleText(isnumber(currentKey) and (currentKey == KEY_NONE and "NONE" or input.GetKeyName(currentKey)) or "NONE", "LiliaFont.18", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 end
                 return container
             end

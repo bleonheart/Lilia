@@ -20,14 +20,14 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
             return true
         else
             local maxDistance = soundLevel and soundLevel * 13.33 or 1000
-            self:PlayFollowingSound(soundName, volume or 100, true, maxDistance)
+            self:playFollowingSound(soundName, volume or 100, true, maxDistance)
             return true
         end
     end
 
     if CLIENT and isstring(soundName) and lia.websound.get(soundName) then
         local maxDistance = soundLevel and soundLevel * 13.33 or 1000
-        self:PlayFollowingSound(soundName, volume or 100, true, maxDistance)
+        self:playFollowingSound(soundName, volume or 100, true, maxDistance)
         return true
     end
     return baseEmitSound(self, soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)
@@ -243,7 +243,7 @@ else
             local pos = anchor.WorldSpaceCenter and anchor:WorldSpaceCenter() or anchor:GetPos()
             local lp = LocalPlayer and LocalPlayer() or nil
             if not IsValid(lp) then return 0 end
-            return lp:GetPos():Distance(pos)
+            return lp:GetPos():distance(pos)
         end
 
         local function computeFadeFactor(dist)
@@ -301,7 +301,7 @@ else
                     local lp = LocalPlayer and LocalPlayer() or nil
                     if not IsValid(lp) then return end
                     local pos = anchor2.WorldSpaceCenter and anchor2:WorldSpaceCenter() or anchor2:GetPos()
-                    local dist = lp:GetPos():Distance(pos)
+                    local dist = lp:GetPos():distance(pos)
                     local fadeFactor = computeFadeFactor(dist)
                     if IsValid(ch) then
                         if manualAttenuation or fadeFactor < 1 then

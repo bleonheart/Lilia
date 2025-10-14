@@ -113,7 +113,7 @@ function PANEL:onFactionSelected(fac)
 end
 
 function PANEL:shouldSkip()
-    return true
+    return false
 end
 
 function PANEL:onSkip()

@@ -57,49 +57,24 @@ function PANEL:Init()
     self:ShowCloseButton(false)
     local header = self:Add("DPanel")
     header:Dock(TOP)
-    header:SetTall(80)
+    header:SetTall(40)
     header:DockMargin(0, 0, 0, 5)
     header.Paint = function() end
     local serverName = header:Add("DLabel")
     serverName:Dock(TOP)
+    serverName:DockMargin(0, -5, 0, 0)
     serverName:SetText(GetHostName())
-    serverName:SetFont("liaBigFont")
+    serverName:SetFont("liaMediumFont")
     serverName:SetContentAlignment(5)
     serverName:SetTextColor(color_white)
     serverName:SetExpensiveShadow(1, color_black)
     serverName:SizeToContentsY()
-    local stats = header:Add("DPanel")
-    stats:Dock(BOTTOM)
-    stats:DockMargin(10, 15, 10, 0)
-    stats:SetTall(24)
-    stats.Paint = function() end
-    local staffOnline = stats:Add("DLabel")
-    staffOnline:Dock(LEFT)
-    staffOnline:DockMargin(0, 0, 10, 0)
-    staffOnline:SetFont("liaSmallFont")
-    staffOnline:SetTextColor(color_white)
-    staffOnline:SetExpensiveShadow(1, color_black)
-    staffOnline:SetContentAlignment(4)
-    local playersOnline = stats:Add("DLabel")
-    playersOnline:Dock(FILL)
-    playersOnline:SetFont("liaSmallFont")
-    playersOnline:SetTextColor(color_white)
-    playersOnline:SetExpensiveShadow(1, color_black)
-    playersOnline:SetContentAlignment(5)
-    local staffOnDuty = stats:Add("DLabel")
-    staffOnDuty:Dock(RIGHT)
-    staffOnDuty:DockMargin(10, 0, 0, 0)
-    staffOnDuty:SetFont("liaSmallFont")
-    staffOnDuty:SetTextColor(color_white)
-    staffOnDuty:SetExpensiveShadow(1, color_black)
-    staffOnDuty:SetContentAlignment(6)
     local scroll = self:Add("liaScrollPanel")
     scroll:Dock(FILL)
     scroll:DockMargin(1, 0, 1, 0)
     scroll.VBar:SetWide(0)
     local layout = scroll:Add("DListLayout")
     layout:Dock(TOP)
-    self.staffOnline, self.playersOnline, self.staffOnDuty = staffOnline, playersOnline, staffOnDuty
     self.scroll, self.layout = scroll, layout
     self.playerSlots, self.factionLists = {}, {}
     for facID, facData in ipairs(lia.faction.indices) do
@@ -108,7 +83,7 @@ function PANEL:Init()
         facCat:SetLabel("")
         facCat:SetExpanded(true)
         if IsValid(facCat.Header) then
-            facCat.Header:SetTall(40)
+            facCat.Header:SetTall(30)
             facCat.Header.Paint = function(_, ww, hh)
                 local radius = 8
                 lia.derma.rect(0, 0, ww, hh):Rad(radius):Color(Color(facColor.r, facColor.g, facColor.b, 80)):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -163,7 +138,7 @@ function PANEL:Init()
                 cat:SetLabel("")
                 cat:SetExpanded(true)
                 if IsValid(cat.Header) then
-                    cat.Header:SetTall(28)
+                    cat.Header:SetTall(20)
                     cat.Header.Paint = function(_, ww, hh)
                         local c = clsData.color or facColor
                         local radius = 6
@@ -191,11 +166,11 @@ function PANEL:Init()
                 hlbl:SetExpensiveShadow(1, color_black)
                 hlbl:SetText(L(clsData.name))
                 hlbl:SizeToContents()
-                hlbl:SetContentAlignment(5)
+                hlbl:SetContentAlignment(4)
                 if IsValid(cat.Header) then
                     cat.Header.PerformLayout = function(_, ww, hh)
                         hlbl:SizeToContents()
-                        hlbl:SetPos((ww - hlbl:GetWide()) * 0.5, (hh - hlbl:GetTall()) * 0.5)
+                        hlbl:SetPos(10, (hh - hlbl:GetTall()) * 0.5)
                     end
                 end
 
@@ -209,21 +184,6 @@ function PANEL:Init()
     end
 end
 
-function PANEL:updateStaff()
-    local total, duty = 0, 0
-    for _, ply in player.Iterator() do
-        if ply:isStaff() then total = total + 1 end
-        if ply:isStaffOnDuty() then duty = duty + 1 end
-    end
-
-    local current, maximum = player.GetCount(), game.MaxPlayers()
-    self.staffOnline:SetText(L("staffOnline", total))
-    self.playersOnline:SetText(L("playersOnline", current .. "/" .. maximum))
-    self.staffOnDuty:SetText(L("staffOnDuty", duty))
-    self.staffOnline:SizeToContentsX()
-    self.playersOnline:SizeToContentsX()
-    self.staffOnDuty:SizeToContentsX()
-end
 
 function PANEL:Think()
     if (self.nextUpdate or 0) > CurTime() then return end
@@ -257,19 +217,18 @@ function PANEL:Think()
         if IsValid(slot) then slot:update() end
     end
 
-    self:updateStaff()
     self.nextUpdate = CurTime() + 0.1
 end
 
 function PANEL:addPlayer(ply, parent)
     local slot = parent:Add("DPanel")
     slot:Dock(TOP)
-    local height = ScrH() * 0.16
+    local height = ScrH() * 0.12
     slot:SetTall(height)
     slot.Paint = function() end
     slot.character = ply:getChar()
     ply.liaScoreSlot = slot
-    local margin, iconSize = 5, height * 0.9
+    local margin, iconSize = 5, height * 0.8
     slot.model = slot:Add("liaSpawnIcon")
     slot.model:SetPos(margin, (height - iconSize) * 0.5)
     slot.model:SetSize(iconSize, iconSize)
@@ -370,8 +329,8 @@ function PANEL:addPlayer(ply, parent)
         local availW = totalW - (iconSize + margin * 2) - extra - pingW - margin
         self.name:SetPos(iconSize + margin * 2, 0)
         self.name:SetWide(availW)
-        self.name:SetTall(50)
-        self.desc:SetPos(iconSize + margin * 2, 50)
+        self.name:SetTall(35)
+        self.desc:SetPos(iconSize + margin * 2, 35)
         self.desc:SetWide(availW)
         if hasLogo then
             self.classLogo:SetVisible(true)
@@ -425,7 +384,7 @@ function PANEL:addPlayer(ply, parent)
         local wrapped = wrap(desc, self.desc:GetWide(), "liaSmallFont")
         surface.SetFont("liaSmallFont")
         local _, lineH = surface.GetTextSize("W")
-        local maxLines = math.floor((height - 35) / lineH)
+        local maxLines = math.floor((height - 25) / lineH)
         if #wrapped > maxLines then
             wrapped[maxLines] = wrapped[maxLines] .. " (...)"
             for i = maxLines + 1, #wrapped do

@@ -146,7 +146,7 @@ end
 function playerMeta:getEyeEnt(distance)
     distance = distance or 150
     local e = self:GetEyeTrace().Entity
-    return e:GetPos():Distance(self:GetPos()) <= distance and e or nil
+    return e:GetPos():distance(self:GetPos()) <= distance and e or nil
 end
 
 function playerMeta:notify(message, notifType)
@@ -455,7 +455,7 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
                 return
             end
 
-            local dist = self:GetPos():Distance(vector)
+            local dist = self:GetPos():distance(vector)
             local spos = vector:ToScreen()
             local howClose = math.Round(dist / 40)
             if spos.visible then

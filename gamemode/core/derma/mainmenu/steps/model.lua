@@ -23,9 +23,18 @@ function PANEL:Init()
 end
 
 function PANEL:onDisplay()
+    print("[DEBUG] Model step onDisplay - context:", util.TableToJSON(self:getContext(), true))
     self.models:Clear()
-    local faction = lia.faction.indices[self:getContext("faction")]
-    if not faction then return end
+    local factionIndex = self:getContext("faction")
+    if not factionIndex then
+        print("[DEBUG] No faction context in model step")
+        return
+    end
+    local faction = lia.faction.indices[factionIndex]
+    if not faction then
+        print("[DEBUG] No faction found for index:", factionIndex)
+        return
+    end
     local modelsToDisplay = self:filterCharacterModels(faction)
     local modelCount = 0
     local firstIdx
@@ -33,6 +42,7 @@ function PANEL:onDisplay()
         modelCount = modelCount + 1
         if not firstIdx then firstIdx = idx end
     end
+    print("[DEBUG] Model count after filtering:", modelCount)
 
     local shouldCenter = modelCount <= 1
     if IsValid(self.title) then self.title:SetVisible(not shouldCenter) end

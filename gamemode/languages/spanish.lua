@@ -787,6 +787,9 @@ LANGUAGE = {
     ticketMessageToAdmins = "a los admins",
     steamID = "SteamID",
     playTime = "Tiempo de Juego",
+    totalPlayTime = "Tiempo Total de Juego",
+    characterPlayTime = "Tiempo de Personaje",
+    loading = "Cargando...",
     selectOptions = "Seleccionar Opciones",
     question = "Pregunta",
     table = "Tabla",
@@ -2950,4 +2953,10 @@ Recargar: Soltar]],
     vendorPresetDeleted = "El preset de vendedor '%s' ha sido eliminado.",
     vendorPresetList = "Presets disponibles: %s",
     vendorPresetNotFound = "Preset de vendedor '%s' no encontrado.",
+
+    -- Admin Stick Instructions
+    adminStickInstructionsTitle = "Controles del Admin Stick",
+    adminStickInstructions1 = "Clic Izquierdo: Abrir menú de administración para el objetivo",
+    adminStickInstructions2 = "Clic Derecho: Congelar/descongelar jugador",
+    adminStickInstructions3 = "Recargar + Mayús: Abrir menú de administración para ti mismo",
 }

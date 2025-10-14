@@ -205,7 +205,7 @@ net.Receive("liaInvAct", function(_, client)
     local item
     if isentity(rawItem) then
         if not IsValid(rawItem) then return end
-        if rawItem:GetPos():Distance(client:GetPos()) > 96 then return end
+        if rawItem:GetPos():distance(client:GetPos()) > 96 then return end
         if not rawItem.liaItemID then return end
         entity = rawItem
         item = lia.item.instances[rawItem.liaItemID]

@@ -584,6 +584,18 @@ function GM:SetupBotPlayer(client)
         table.remove(itemKeys, randomIndex)
     end
 
+    -- Handle bot spawn positioning
+    if lia.botSpawnPos and isvector(lia.botSpawnPos) then
+        client:SetPos(lia.botSpawnPos)
+        lia.botSpawnPos = nil -- Clear after use
+    end
+
+    -- Handle bot faction assignment
+    if lia.botFaction and character then
+        character:setFaction(lia.botFaction.index)
+        lia.botFaction = nil -- Clear after use
+    end
+
     if lia.botCreator and IsValid(lia.botCreator) then
         lia.botCreator:notifySuccessLocalized("botSpawned", character:getName())
         lia.botCreator = nil

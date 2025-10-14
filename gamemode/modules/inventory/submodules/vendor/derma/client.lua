@@ -100,7 +100,7 @@ function PANEL:Init()
     self:populateItems()
     self:createCategoryDropdown()
     local bw, bh = sw * 0.10, sh * 0.05
-    if ply:CanEditVendor(self.vendorPanel) then
+    if ply:canEditVendor(self.vendorPanel) then
         local btn = self:Add("liaSmallButton")
         btn:SetSize(bw, bh)
         btn:SetPos(sw * 0.88, sh * 0.82)

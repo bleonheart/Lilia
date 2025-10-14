@@ -1,7 +1,4 @@
 ﻿local vectorMeta = FindMetaTable("Vector")
-function vectorMeta:center(vec2)
-    return (self + vec2) / 2
-end
 
 function vectorMeta:distance(vec2)
     local x, y, z = self.x, self.y, self.z

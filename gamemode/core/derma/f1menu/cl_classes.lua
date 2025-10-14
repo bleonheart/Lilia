@@ -77,7 +77,7 @@ function PANEL:populateClassDetails(cl, canBe)
     if cl.logo then
         local img = container:Add("DImage")
         img:SetImage(cl.logo)
-        img:SetScaledSize(128, 128)
+        img:setScaledSize(128, 128)
         img.Think = function() img:SetPos(container:GetWide() - img:GetWide() - 10, 10) end
     end
 
