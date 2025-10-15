@@ -243,7 +243,7 @@ end
 function PANEL:addPlayer(ply, parent)
     local slot = parent:Add("DPanel")
     slot:Dock(TOP)
-    local height = ScrH() * 0.12
+    local height = ScrH() * 0.08
     slot:SetTall(height)
     slot.Paint = function() end
     slot.character = ply:getChar()
