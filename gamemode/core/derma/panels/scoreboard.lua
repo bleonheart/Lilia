@@ -83,7 +83,7 @@ function PANEL:Init()
         facCat:SetLabel("")
         facCat:SetExpanded(true)
         if IsValid(facCat.Header) then
-            facCat.Header:SetTall(30)
+            facCat.Header:SetTall(50)
             facCat.Header.Paint = function(_, ww, hh)
                 local radius = 8
                 lia.derma.rect(0, 0, ww, hh):Rad(radius):Color(Color(facColor.r, facColor.g, facColor.b, 80)):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -95,7 +95,7 @@ function PANEL:Init()
             local img = facCat.Header:Add("DImage")
             img:Dock(LEFT)
             img:DockMargin(5, 5, 5, 5)
-            img:SetWide(30)
+            img:SetWide(45)
             img:SetMaterial(Material(facData.logo))
         end
 

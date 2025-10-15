@@ -17,9 +17,20 @@ function PANEL:Init()
     self.title = self:addLabel(L("selectModel"))
     self.models = self:Add("DIconLayout")
     self.models:Dock(FILL)
+    self.models:DockMargin(0, 8, 0, 12)
     self.models:SetSpaceX(4)
     self.models:SetSpaceY(4)
     self.models:SetPaintBackground(false)
+end
+
+function PANEL:addLabel(text)
+    local lbl = self:Add("DLabel")
+    lbl:SetFont("liaMediumFont")
+    lbl:SetText(L(text):upper())
+    lbl:SizeToContents()
+    lbl:Dock(TOP)
+    lbl:DockMargin(0, 0, 0, 8)
+    return lbl
 end
 
 function PANEL:onDisplay()

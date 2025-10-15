@@ -54,6 +54,22 @@ function PANEL:Init()
     self.scroll:Dock(FILL)
     self.scroll:DockMargin(4, 4, 4, 36)
     self.scroll:GetVBar():SetWide(8)
+    -- Initially hide the scrollbar since chatbox starts inactive
+    self.scrollbarShouldBeVisible = false
+    self:setScrollbarVisible(false)
+    
+    -- Override the scrollbar's Paint method to hide it visually when needed
+    local vbar = self.scroll:GetVBar()
+    if IsValid(vbar) then
+        local originalPaint = vbar.Paint
+        vbar.Paint = function(s, w, h)
+            -- Only paint if we want the scrollbar to be visible
+            if self.scrollbarShouldBeVisible and originalPaint then
+                originalPaint(s, w, h)
+            end
+        end
+    end
+    
     self.lastY = 0
     self.list = {}
     chat.GetChatBoxPos = function() return self:LocalToScreen(0, 0) end
@@ -62,12 +78,30 @@ function PANEL:Init()
     hook.Add("OnThemeChanged", self, function() if IsValid(self) then self:OnThemeChanged() end end)
 end
 
+-- Helper function to manage scrollbar visibility
+function PANEL:setScrollbarVisible(visible)
+    if IsValid(self.scroll) and IsValid(self.scroll:GetVBar()) then
+        local vbar = self.scroll:GetVBar()
+        -- Store the desired visibility state
+        self.scrollbarShouldBeVisible = visible
+        -- Always allow the scrollbar to function internally, just control visual appearance
+        vbar:SetVisible(true) -- Keep it functional for scrolling
+        if visible then
+            vbar:SetWide(8)
+        else
+            vbar:SetWide(0) -- Hide it visually by making it 0 width
+        end
+    end
+end
+
 -- No custom paint or blur; liaFrame handles visuals
 function PANEL:setActive(state)
     self.active = state
     -- Update close button and dragging based on active state
     if IsValid(self.cls) then self.cls:SetVisible(state) end
     if IsValid(self.top_panel) then self.top_panel:SetVisible(state) end
+    -- Hide/show scrollbar based on active state
+    self:setScrollbarVisible(state)
     self:SetDraggable(state)
     self:SetMouseInputEnabled(state)
     self:SetKeyboardInputEnabled(state)
@@ -123,6 +157,8 @@ function PANEL:setActive(state)
                 -- Hide close button and disable dragging when inactive
                 if IsValid(self.cls) then self.cls:SetVisible(false) end
                 if IsValid(self.top_panel) then self.top_panel:SetVisible(false) end
+                -- Hide scrollbar when inactive
+                self:setScrollbarVisible(false)
                 self:SetDraggable(false)
                 self:SetMouseInputEnabled(false)
                 self:SetKeyboardInputEnabled(false)
@@ -220,6 +256,8 @@ function PANEL:setActive(state)
                 -- Hide close button and disable dragging when inactive
                 if IsValid(self.cls) then self.cls:SetVisible(false) end
                 if IsValid(self.top_panel) then self.top_panel:SetVisible(false) end
+                -- Hide scrollbar when inactive
+                self:setScrollbarVisible(false)
                 self:SetDraggable(false)
                 self:SetMouseInputEnabled(false)
                 self:SetKeyboardInputEnabled(false)
@@ -340,6 +378,8 @@ function PANEL:Think()
         -- Hide close button and disable dragging when inactive
         if IsValid(self.cls) then self.cls:SetVisible(false) end
         if IsValid(self.top_panel) then self.top_panel:SetVisible(false) end
+        -- Hide scrollbar when inactive
+        self:setScrollbarVisible(false)
         self:SetDraggable(false)
         self:SetMouseInputEnabled(false)
         self:SetKeyboardInputEnabled(false)

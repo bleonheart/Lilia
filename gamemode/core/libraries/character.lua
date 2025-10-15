@@ -2,8 +2,8 @@
 lia.char.vars = lia.char.vars or {}
 lia.char.loaded = lia.char.loaded or {}
 lia.char.varHooks = lia.char.varHooks or {}
-if SERVER then
-    function lia.char.getCharacter(charID, client, callback)
+function lia.char.getCharacter(charID, client, callback)
+    if SERVER then
         local character = lia.char.loaded[charID]
         if character then
             if callback then callback(character) end
@@ -11,10 +11,8 @@ if SERVER then
         end
 
         lia.char.loadSingleCharacter(charID, client, callback)
-    end
-else
-    lia.char.pendingRequests = lia.char.pendingRequests or {}
-    function lia.char.getCharacter(charID, _, callback)
+    else
+        lia.char.pendingRequests = lia.char.pendingRequests or {}
         if not charID then return end
         local character = lia.char.loaded[charID]
         if character then
@@ -308,7 +306,6 @@ lia.char.registerVar("faction", {
         local client = character:getPlayer()
         client:SetTeam(value)
         character.vars.faction = faction.uniqueID
-
         -- Assign default class when faction changes
         local defaultClass = lia.faction.getDefaultClass(value)
         if defaultClass then

@@ -308,42 +308,6 @@ end
 
 local origSurfacePlaySound = surface.PlaySound
 function surface.PlaySound(soundPath, mode, cb)
-    -- Handle backward compatibility - if only one parameter is provided, use original behavior
-    if not mode and not cb then
-        if isstring(soundPath) then
-            -- First check if it's registered in websound system
-            if lia.websound.stored[soundPath] then
-                local cachedPath = lia.websound.get(soundPath)
-                if cachedPath then
-                    -- Remove "data/" prefix for surface.PlaySound
-                    local surfacePath = cachedPath:gsub("^data/", "")
-                    return origSurfacePlaySound(surfacePath)
-                end
-                lia.websound.register(soundPath, lia.websound.stored[soundPath], function(localPath)
-                    if localPath then
-                        -- Remove "data/" prefix for surface.PlaySound
-                        local surfacePath = localPath:gsub("^data/", "")
-                        return origSurfacePlaySound(surfacePath)
-                    end
-                end)
-                return
-            end
-
-            -- Check if it's a websound file that exists but isn't registered
-            local normalizedName = normalizeName(soundPath)
-            local savePath = baseDir .. normalizedName
-            if file.Exists(savePath, "DATA") then
-                local path = buildPath(savePath)
-                cache[normalizedName] = path
-                -- Remove "data/" prefix for surface.PlaySound
-                local surfacePath = path:gsub("^data/", "")
-                return origSurfacePlaySound(surfacePath)
-            end
-        end
-        return origSurfacePlaySound(soundPath)
-    end
-
-    -- Enhanced behavior matching sound.PlayFile
     if isstring(soundPath) then
         soundPath = normalizeName(soundPath)
         if soundPath:find("^https?://") then
@@ -415,7 +379,8 @@ function surface.PlaySound(soundPath, mode, cb)
                         end
 
                         -- For surface.PlaySound, we don't have a channel to return, so we just play and call callback
-                        origSurfacePlaySound(localPath)
+                        local surfacePath = localPath:gsub("^data/", "")
+                        origSurfacePlaySound(surfacePath)
                         if cb then cb(true) end
                     end
 

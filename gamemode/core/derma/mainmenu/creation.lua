@@ -14,10 +14,8 @@ function PANEL:configureSteps()
 end
 
 function PANEL:updateModel()
-    print("[DEBUG] updateModel - context:", util.TableToJSON(self.context, true))
     local faction = lia.faction.indices[self.context.faction]
     if not faction then
-        print("[DEBUG] No faction for model update")
         return
     end
     local info = faction.models[self.context.model or 1]
@@ -189,8 +187,6 @@ function PANEL:getPreviousStep()
 end
 
 function PANEL:onStepChanged(oldStep, newStep)
-    print("[DEBUG] Step change:", oldStep and oldStep:GetName() or "none", "→", newStep and newStep:GetName() or "none")
-    print("[DEBUG] Context:", util.TableToJSON(self.context, true))
     local finish = self.curStep == #self.steps
     local key = finish and "finish" or "next"
     if IsValid(newStep) then

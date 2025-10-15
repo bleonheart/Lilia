@@ -2,12 +2,30 @@
 function PANEL:Init()
     self.brightness = 1
     self:SetCursor("none")
+
+    -- Add rotation instruction text
+    self.rotationText = self:Add("DLabel")
+    self.rotationText:SetText("Hold A and D to rotate")
+    self.rotationText:SetFont("liaMediumFont")
+    self.rotationText:SetTextColor(Color(200, 200, 200, 255))
+    self.rotationText:SizeToContents()
+    local textHeight = 20
+    self.rotationText:SetPos(10, self:GetTall() - textHeight - 10)
+    self.rotationText:SetVisible(false)
 end
 
 function PANEL:SetModel(model)
     DModelPanel.SetModel(self, model)
     local ent = self.Entity
     if not IsValid(ent) then return end
+
+    -- Show rotation text when model is set
+    if IsValid(self.rotationText) then
+        self.rotationText:SetVisible(true)
+        local textHeight = 20
+        self.rotationText:SetPos(10, self:GetTall() - textHeight - 10)
+    end
+
     local seq = ent:SelectWeightedSequence(ACT_IDLE)
     if seq <= 0 then seq = ent:LookupSequence("idle_unarmed") end
     if seq > 0 then
@@ -40,6 +58,12 @@ function PANEL:LayoutEntity()
         local ply = LocalPlayer()
         ent:SetSequence(ply:GetSequence())
         ent:SetPoseParameter("move_yaw", 360 * ply:GetPoseParameter("move_yaw") - 180)
+    end
+
+    -- Update rotation text position to be right under the model
+    if IsValid(self.rotationText) then
+        local textHeight = 20
+        self.rotationText:SetPos(10, self:GetTall() - textHeight - 10)
     end
 
     self:RunAnimation()

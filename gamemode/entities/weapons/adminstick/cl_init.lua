@@ -87,7 +87,7 @@ function SWEP:DrawHUD()
         for _, v in pairs(information) do
             local t_w, t_h = surface.GetTextSize(v)
             local centeredX = boxX + (boxWidth - t_w) / 2
-            lia.derma.drawText(v, centeredX, startPosY + buffer, themeColors.text, 0, 0, "LiliaFont.16")
+            lia.derma.drawText(v, centeredX, startPosY + buffer, Color(255, 255, 255), 0, 0, "LiliaFont.16")
             buffer = buffer + t_h + 4
         end
     end
@@ -119,9 +119,6 @@ function SWEP:DrawHUD()
 
     -- Draw instructions
     local textColor = Color(255, 255, 255)
-    if themeColors and themeColors.text then
-        textColor = themeColors.text
-    end
     local instStartY, instBuffer = instBoxY + 10, 0
     for _, v in pairs(instructions) do
         local _, t_h = surface.GetTextSize(v)

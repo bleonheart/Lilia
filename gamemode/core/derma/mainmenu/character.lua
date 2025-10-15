@@ -687,8 +687,8 @@ end
 
 function PANEL:UpdateLogoPosition()
     if not IsValid(self.logo) then return end
-    local pad = ScrH() * 0.01
-    local logoW, logoH = ScrW() * 0.13 * 0.95, ScrW() * 0.13 * 0.95
+    local pad = ScrH() * 0.03
+    local logoW, logoH = ScrW() * 0.20 * 0.95, ScrW() * 0.13 * 0.95
     local left, right, top = math.huge, -math.huge, math.huge
     for _, v in pairs(self.buttons) do
         if IsValid(v) then
@@ -826,14 +826,24 @@ function PANEL:Think()
         self:UpdateLogoPosition()
     end
 
+    -- Rotate model during character creation or load mode
+    local modelEntity = nil
+
     if self.isLoadMode and IsValid(self.modelEntity) then
-        local ang = self.modelEntity:GetAngles()
+        modelEntity = self.modelEntity
+    elseif not self.isLoadMode and IsValid(self.model) then
+        -- During character creation, get the entity from the model panel
+        modelEntity = self.model:GetEntity()
+    end
+
+    if IsValid(modelEntity) then
+        local ang = modelEntity:GetAngles()
         local rotate = 0
         if input.IsKeyDown(KEY_A) then rotate = rotate + FrameTime() * 120 end
         if input.IsKeyDown(KEY_D) then rotate = rotate - FrameTime() * 120 end
         if rotate ~= 0 then
             ang.y = ang.y + rotate
-            self.modelEntity:SetAngles(ang)
+            modelEntity:SetAngles(ang)
         end
     end
 end

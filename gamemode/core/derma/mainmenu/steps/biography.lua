@@ -46,17 +46,12 @@ function PANEL:makeFactionComboBox()
     end
 
     combo.OnSelect = function(index, text, data)
-        print("[DEBUG] Faction combobox OnSelect - data:", data, "text:", text)
-
         local factionID = nil
-
         -- The combobox is passing the display name as data, so find the faction by name
         if data and type(data) == "string" then
-            print("[DEBUG] Looking for faction with display name:", data)
             for id, fac in pairs(lia.faction.teams) do
                 if L(fac.name) == data then
                     factionID = id
-                    print("[DEBUG] Found faction ID:", factionID)
                     break
                 end
             end
@@ -70,8 +65,6 @@ function PANEL:makeFactionComboBox()
                 return
             end
         end
-
-        print("[DEBUG] Could not find faction for selection")
     end
 
     for id, fac in SortedPairsByMemberValue(lia.faction.teams, "name") do
@@ -84,7 +77,6 @@ function PANEL:makeFactionComboBox()
     combo:FinishAddingOptions()
     return combo
 end
-
 
 function PANEL:addAttributes()
     local function makeLabel(key)
@@ -136,11 +128,50 @@ function PANEL:validate()
 end
 
 function PANEL:onFactionSelected(fac)
-    print("[DEBUG] Faction selected:", fac.name)
     self:setContext("faction", fac.index)
     self:setContext("model", 1)
     self:updateModelPanel()
+    self:updateNameAndDescForFaction(fac.index)
     lia.gui.character:clickSound()
+end
+
+function PANEL:updateNameAndDescForFaction(factionIndex)
+    local client = LocalPlayer()
+    local context = self:getContext()
+
+    -- Get default name and description from hooks
+    local defaultName, nameOverride = hook.Run("GetDefaultCharName", client, factionIndex, context)
+    local defaultDesc, descOverride = hook.Run("GetDefaultCharDesc", client, factionIndex, context)
+
+    -- Update name field if hook provides a default name
+    if isstring(defaultName) and nameOverride and IsValid(self.nameEntry) then
+        local currentName = string.Trim(self.nameEntry:GetValue() or "")
+        -- Only update if field is empty or if we have a hook override
+        if currentName == "" or nameOverride then
+            -- Use a timer to ensure the text entry is ready
+            timer.Simple(0.01, function()
+                if IsValid(self) and IsValid(self.nameEntry) then
+                    self.nameEntry:SetValue(defaultName)
+                    self:setContext("name", defaultName)
+                end
+            end)
+        end
+    end
+
+    -- Update description field if hook provides a default description
+    if isstring(defaultDesc) and descOverride and IsValid(self.descEntry) then
+        local currentDesc = string.Trim(self.descEntry:GetValue() or "")
+        -- Only update if field is empty or if we have a hook override
+        if currentDesc == "" or descOverride then
+            -- Use a timer to ensure the text entry is ready
+            timer.Simple(0.01, function()
+                if IsValid(self) and IsValid(self.descEntry) then
+                    self.descEntry:SetValue(defaultDesc)
+                    self:setContext("desc", defaultDesc)
+                end
+            end)
+        end
+    end
 end
 
 function PANEL:updateContext()
@@ -150,9 +181,7 @@ function PANEL:updateContext()
         local factionUniqueID = self.factionCombo:GetSelectedData()
         if factionUniqueID then
             local faction = lia.faction.teams[factionUniqueID]
-            if faction then
-                self:setContext("faction", faction.index)
-            end
+            if faction then self:setContext("faction", faction.index) end
         end
     end
 end
@@ -168,6 +197,8 @@ function PANEL:onDisplay()
         self.factionCombo:ChooseOptionData(f)
         self:setContext("faction", f)
         self:updateModelPanel()
+        -- Update name and description based on current faction
+        self:updateNameAndDescForFaction(f)
     end
 
     if IsValid(self.attribsPanel) then
