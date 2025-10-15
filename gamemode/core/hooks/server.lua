@@ -495,6 +495,7 @@ function GM:PlayerInitialSpawn(client)
         end
 
         timer.Simple(1, function() lia.playerinteract.syncToClients(client) end)
+        print("[CHAR-DEBUG] Calling PlayerLiliaDataLoaded for", client:Name())
         hook.Run("PlayerLiliaDataLoaded", client)
         net.Start("liaAssureClientSideAssets")
         net.Send(client)
@@ -566,6 +567,7 @@ function GM:SetupBotPlayer(client)
     lia.char.addCharacter(botID, character)
     client:setNetVar("char", botID)
     character:setup()
+    character:sync()
     local randomMoney = math.random(1000, 10000)
     character:setMoney(randomMoney)
     local itemCount = math.random(1, 2)
@@ -581,10 +583,6 @@ function GM:SetupBotPlayer(client)
         table.remove(itemKeys, randomIndex)
     end
 
-    if lia.botCreator and IsValid(lia.botCreator) then
-        lia.botCreator:notifySuccessLocalized("botSpawned", character:getName())
-        lia.botCreator = nil
-    end
 
     client:Spawn()
 end

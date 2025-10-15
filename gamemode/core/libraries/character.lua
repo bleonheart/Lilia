@@ -27,6 +27,14 @@ function lia.char.getCharacter(charID, client, callback)
     end
 end
 
+function lia.char.getAll()
+    local charTable = {}
+    for _, client in player.Iterator() do
+        if client:getChar() then charTable[client] = client:getChar() end
+    end
+    return charTable
+end
+
 function lia.char.isLoaded(charID)
     return lia.char.loaded[charID] ~= nil
 end
@@ -44,7 +52,6 @@ function lia.char.removeCharacter(id)
 end
 
 function lia.char.new(data, id, client, steamID)
-    print("[lia.char.new] Creating new character...")
     local character = setmetatable({
         vars = {}
     }, lia.meta.character)
@@ -56,26 +63,18 @@ function lia.char.new(data, id, client, steamID)
             if istable(value) then value = table.Copy(value) end
         end
 
-        print("[lia.char.new] Setting var '" .. tostring(k) .. "' = " .. tostring(value))
         character.vars[k] = value
     end
 
     character.id = id or 0
     character.player = client
-    print("[lia.char.new] Assigned id: " .. tostring(character.id))
-    print("[lia.char.new] Assigned client: " .. tostring(client))
     if IsValid(client) or steamID then
         if IsValid(client) and isfunction(client.SteamID) then
             character.steamID = client:SteamID()
-            print("[lia.char.new] Using client SteamID: " .. tostring(character.steamID))
         else
             character.steamID = steamID
-            print("[lia.char.new] Using passed steamID: " .. tostring(character.steamID))
         end
-    else
-        print("[lia.char.new] No valid client or steamID provided.")
     end
-    print("[lia.char.new] Character creation complete.")
     return character
 end
 
@@ -553,7 +552,7 @@ end
 
 function lia.char.getOwnerByID(ID)
     ID = tonumber(ID)
-    for client, character in pairs(lia.char.loaded) do
+    for client, character in pairs(lia.char.getAll()) do
         if character and character:getID() == ID then return client end
     end
 end
