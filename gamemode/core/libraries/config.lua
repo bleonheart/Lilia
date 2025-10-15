@@ -834,7 +834,7 @@ lia.config.add("BackgroundURL", "mainMenuBackgroundURL", "", nil, {
     type = "Generic"
 })
 
-lia.config.add("CenterLogo", "mainMenuCenterLogo", "", nil, {
+lia.config.add("ServerLogo", "mainMenuCenterLogo", "", nil, {
     desc = "mainMenuCenterLogoDesc",
     category = "mainMenu",
     type = "Generic"

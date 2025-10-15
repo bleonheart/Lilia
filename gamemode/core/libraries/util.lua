@@ -431,7 +431,7 @@ else
         return lines, maxW
     end
 
-    function lia.util.drawBlur(panel, amount, passes, alpha)
+    function lia.util.drawBlur(panel, amount, _, alpha)
         amount = amount or 5
         alpha = alpha or 255
         local maxPasses = 3

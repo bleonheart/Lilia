@@ -142,7 +142,7 @@ function PANEL:createStartButton()
 
     local clientChar = client.getChar and client:getChar()
     local w, h, s = ScrW() * 0.2, ScrH() * 0.04, ScrH() * 0.01
-    local logoPath = lia.config.get("CenterLogo") or ""
+    local logoPath = lia.config.get("ServerLogo") or ""
     local discordURL = lia.config.get("DiscordURL", "")
     local workshopURL = lia.config.get("Workshop", "")
     local buttonsData = {}
@@ -824,24 +824,6 @@ function PANEL:Think()
         self.logo:SetZPos(9999)
         self.logo:MoveToFront()
         self:UpdateLogoPosition()
-    end
-
-    local modelEntity = nil
-    if self.isLoadMode and IsValid(self.modelEntity) then
-        modelEntity = self.modelEntity
-    elseif not self.isLoadMode and IsValid(self.model) then
-        modelEntity = self.model:GetEntity()
-    end
-
-    if IsValid(modelEntity) then
-        local ang = modelEntity:GetAngles()
-        local rotate = 0
-        if input.IsKeyDown(KEY_A) then rotate = rotate + FrameTime() * 120 end
-        if input.IsKeyDown(KEY_D) then rotate = rotate - FrameTime() * 120 end
-        if rotate ~= 0 then
-            ang.y = ang.y + rotate
-            modelEntity:SetAngles(ang)
-        end
     end
 end
 

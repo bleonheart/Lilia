@@ -166,7 +166,7 @@ function QuickPanel:Paint(w, h)
     if self.title and self.title ~= "" then draw.SimpleText(self.title, "LiliaFont.16", 6, 4, theme and theme.header_text or Color(255, 255, 255)) end
 end
 
-function QuickPanel:PerformLayout(w, h)
+function QuickPanel:PerformLayout(w)
     if IsValid(self.cls) then self.cls:SetPos(w - 22, 2) end
 end
 

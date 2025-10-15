@@ -69,6 +69,18 @@ function PANEL:Init()
     serverName:SetTextColor(color_white)
     serverName:SetExpensiveShadow(1, color_black)
     serverName:SizeToContentsY()
+    local serverIcon = header:Add("DImage")
+    serverIcon:Dock(RIGHT)
+    serverIcon:DockMargin(5, 5, 5, 5)
+    serverIcon:SetWide(30)
+    serverIcon:SetTall(30)
+    serverIcon:SetVisible(false)
+    local serverIconPath = lia.config.get("ServerLogo", "")
+    if serverIconPath and serverIconPath ~= "" then
+        serverIcon:SetMaterial(Material(serverIconPath))
+        serverIcon:SetVisible(true)
+    end
+
     local scroll = self:Add("liaScrollPanel")
     scroll:Dock(FILL)
     scroll:DockMargin(1, 0, 1, 0)
