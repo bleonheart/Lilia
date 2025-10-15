@@ -307,7 +307,7 @@ function sound.PlayURL(url, mode, cb)
 end
 
 local origSurfacePlaySound = surface.PlaySound
-function surface.PlaySound(soundPath, mode, cb)
+function surface.PlaySound(soundPath, _, cb)
     if isstring(soundPath) then
         soundPath = normalizeName(soundPath)
         if soundPath:find("^https?://") then
