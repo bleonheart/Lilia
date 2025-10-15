@@ -2952,8 +2952,6 @@ Nachladen: Fallenlassen]],
     vendorPresetDeleted = "Verkäufer-Preset '%s' wurde gelöscht.",
     vendorPresetList = "Verfügbare Presets: %s",
     vendorPresetNotFound = "Verkäufer-Preset '%s' nicht gefunden.",
-
-    -- Admin Stick Instructions
     adminStickInstructionsTitle = "Admin Stick Steuerung",
     adminStickInstructions1 = "Linksklick: Admin-Menü für Ziel öffnen",
     adminStickInstructions2 = "Rechtsklick: Spieler einfrieren/austauen",

@@ -459,7 +459,6 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
             local spos = vector:ToScreen()
             local howClose = math.Round(dist / 40)
             if spos.visible then
-                -- Draw logo if provided
                 if logoMaterial then
                     local logoSize = 32
                     surface.SetDrawColor(255, 255, 255, 255)
@@ -500,11 +499,10 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
             hook.Remove("HUDPaint", waypointID)
             concommand.Remove("waypoint_stop_" .. waypointID)
             if onReach and isfunction(onReach) then onReach(self) end
-            -- Notify server that waypoint was reached
             if SERVER then
                 if self.waypointOnReach and isfunction(self.waypointOnReach) then
                     self.waypointOnReach(self)
-                    self.waypointOnReach = nil -- Clear the callback
+                    self.waypointOnReach = nil
                 end
             else
                 net.Start("liaWaypointReached")

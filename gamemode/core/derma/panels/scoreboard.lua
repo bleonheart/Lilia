@@ -184,7 +184,6 @@ function PANEL:Init()
     end
 end
 
-
 function PANEL:Think()
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do

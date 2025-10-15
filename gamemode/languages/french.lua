@@ -2952,8 +2952,6 @@ Recharger : Lcher]],
     vendorPresetDeleted = "Le préréglage de vendeur '%s' a été supprimé.",
     vendorPresetList = "Préréglages disponibles : %s",
     vendorPresetNotFound = "Préréglage de vendeur '%s' introuvable.",
-
-    -- Admin Stick Instructions
     adminStickInstructionsTitle = "Contrôles du Bâton Admin",
     adminStickInstructions1 = "Clic gauche : Ouvrir le menu admin pour la cible",
     adminStickInstructions2 = "Clic droit : Geler/dégeler le joueur",

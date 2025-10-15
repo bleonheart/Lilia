@@ -319,7 +319,6 @@ function surface.PlaySound(soundPath, mode, cb)
 
             local cachedPath = lia.websound.get(name)
             if cachedPath then
-                -- Remove "data/" prefix for surface.PlaySound
                 local surfacePath = cachedPath:gsub("^data/", "")
                 origSurfacePlaySound(surfacePath)
                 if cb then cb(true) end
@@ -328,7 +327,6 @@ function surface.PlaySound(soundPath, mode, cb)
 
             lia.websound.register(name, soundPath, function(localPath)
                 if localPath then
-                    -- Remove "data/" prefix for surface.PlaySound
                     local surfacePath = localPath:gsub("^data/", "")
                     origSurfacePlaySound(surfacePath)
                     if cb then cb(true) end
@@ -378,7 +376,6 @@ function surface.PlaySound(soundPath, mode, cb)
                             return
                         end
 
-                        -- For surface.PlaySound, we don't have a channel to return, so we just play and call callback
                         local surfacePath = localPath:gsub("^data/", "")
                         origSurfacePlaySound(surfacePath)
                         if cb then cb(true) end
@@ -387,7 +384,6 @@ function surface.PlaySound(soundPath, mode, cb)
                     tryNext(1)
                     return
                 else
-                    -- Remove "data/" prefix for surface.PlaySound
                     local surfacePath = localPath:gsub("^data/", "")
                     origSurfacePlaySound(surfacePath)
                     if cb then cb(true) end

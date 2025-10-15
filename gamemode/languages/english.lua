@@ -2957,8 +2957,6 @@ Reload: Drop]],
     maybeYouShouldntHaveCheated = "Maybe you shouldn't have cheated",
     duplicateColumnName = "duplicate column name:",
     staffCharacterDiscord = "A Staff Character, Discord:",
-
-    -- Admin Stick Instructions
     adminStickInstructionsTitle = "Admin Stick Controls",
     adminStickInstructions1 = "Left Click: Open admin menu for target",
     adminStickInstructions2 = "Right Click: Freeze/unfreeze player",

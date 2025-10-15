@@ -306,7 +306,6 @@ lia.char.registerVar("faction", {
         local client = character:getPlayer()
         client:SetTeam(value)
         character.vars.faction = faction.uniqueID
-        -- Assign default class when faction changes
         local defaultClass = lia.faction.getDefaultClass(value)
         if defaultClass then
             character:setClass(defaultClass.index)

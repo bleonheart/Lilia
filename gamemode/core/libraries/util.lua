@@ -435,17 +435,11 @@ else
         amount = amount or 5
         alpha = alpha or 255
         passes = passes or 0.2
-
-        -- Performance optimization: reduce blur passes for better FPS
         local maxPasses = 3
-
         surface.SetMaterial(lia.util.getMaterial("pp/blurscreen"))
         surface.SetDrawColor(255, 255, 255, alpha)
         local x, y = panel:LocalToScreen(0, 0)
-
-        -- Cache the material to avoid repeated lookups
         local blurMat = lia.util.getMaterial("pp/blurscreen")
-
         for i = 0, maxPasses do
             local blurValue = (i / maxPasses) * amount
             blurMat:SetFloat("$blur", blurValue)

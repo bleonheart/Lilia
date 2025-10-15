@@ -9,14 +9,12 @@ function PANEL:Init()
     self.font = "LiliaFont.18"
     self.text = ""
     self:SetTall(60)
-
     self.valueLabel = vgui.Create("DLabel", self)
     self.valueLabel:Dock(TOP)
     self.valueLabel:DockMargin(10, 5, 10, 0)
     self.valueLabel:SetTall(20)
     self.valueLabel:SetContentAlignment(5)
     self.valueLabel:SetFont("LiliaFont.20")
-
     self.track = vgui.Create("DPanel", self)
     self.track:Dock(TOP)
     self.track:DockMargin(10, 10, 10, 10)

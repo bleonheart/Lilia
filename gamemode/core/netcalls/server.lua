@@ -459,6 +459,6 @@ end)
 net.Receive("liaWaypointReached", function(_, client)
     if client.waypointOnReach and isfunction(client.waypointOnReach) then
         client.waypointOnReach(client)
-        client.waypointOnReach = nil -- Clear the callback
+        client.waypointOnReach = nil
     end
 end)

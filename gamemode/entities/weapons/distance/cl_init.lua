@@ -38,12 +38,9 @@ function SWEP:DrawHUD()
     local instructionsHeight = 80
     local instructionsX = scrW - instructionsWidth - 50
     local instructionsY = 10
-
-    -- Draw instructions box like admin stick
     lia.util.drawBlurAt(instructionsX, instructionsY, instructionsWidth, instructionsHeight, 3, 3, 0.9)
     lia.derma.rect(instructionsX, instructionsY, instructionsWidth, instructionsHeight):Color(Color(0, 0, 0, 150)):Rad(8):Draw()
     lia.derma.rect(instructionsX, instructionsY, instructionsWidth, instructionsHeight):Color(lia.color.theme.theme):Rad(8):Outline(2):Draw()
-
     local centerX = scrW - instructionsWidth / 2 - 50
     local startY = 25
     local lines = string.Split(instructionsText, "\n")
@@ -60,13 +57,10 @@ function SWEP:DrawHUD()
     surface.DrawCircle(start.x, start.y, 5, lia.color.theme.theme.r, lia.color.theme.theme.g, lia.color.theme.theme.b, lia.color.theme.theme.a)
     local distance = self.StartPos:distance(tr.HitPos)
     local distanceText = L("distanceMeasureDistance", math.Round(distance))
-
-    -- Draw distance display box like admin stick
     local distanceBoxWidth = 200
     local distanceBoxHeight = 40
     local distanceBoxX = scrW / 2 - distanceBoxWidth / 2
     local distanceBoxY = 10
-
     lia.util.drawBlurAt(distanceBoxX, distanceBoxY, distanceBoxWidth, distanceBoxHeight, 3, 3, 0.9)
     lia.derma.rect(distanceBoxX, distanceBoxY, distanceBoxWidth, distanceBoxHeight):Color(Color(0, 0, 0, 150)):Rad(8):Draw()
     lia.derma.rect(distanceBoxX, distanceBoxY, distanceBoxWidth, distanceBoxHeight):Color(lia.color.theme.theme):Rad(8):Outline(2):Draw()

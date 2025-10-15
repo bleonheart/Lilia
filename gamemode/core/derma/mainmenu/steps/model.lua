@@ -41,11 +41,13 @@ function PANEL:onDisplay()
         print("[DEBUG] No faction context in model step")
         return
     end
+
     local faction = lia.faction.indices[factionIndex]
     if not faction then
         print("[DEBUG] No faction found for index:", factionIndex)
         return
     end
+
     local modelsToDisplay = self:filterCharacterModels(faction)
     local modelCount = 0
     local firstIdx
@@ -53,8 +55,8 @@ function PANEL:onDisplay()
         modelCount = modelCount + 1
         if not firstIdx then firstIdx = idx end
     end
-    print("[DEBUG] Model count after filtering:", modelCount)
 
+    print("[DEBUG] Model count after filtering:", modelCount)
     local shouldCenter = modelCount <= 1
     if IsValid(self.title) then self.title:SetVisible(not shouldCenter) end
     if IsValid(self.models) then self.models:SetVisible(not shouldCenter) end

@@ -2957,8 +2957,6 @@ Recarregar: Largar]],
     vendorPresetDeleted = "Preset de vendedor '%s' foi excluído.",
     vendorPresetList = "Presets disponíveis: %s",
     vendorPresetNotFound = "Preset de vendedor '%s' não encontrado.",
-
-    -- Admin Stick Instructions
     adminStickInstructionsTitle = "Controles do Admin Stick",
     adminStickInstructions1 = "Clique Esquerdo: Abrir menu de administração para o alvo",
     adminStickInstructions2 = "Clique Direito: Congelar/descongelar jogador",

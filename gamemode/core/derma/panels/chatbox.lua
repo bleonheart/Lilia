@@ -10,103 +10,75 @@ function PANEL:Init()
     self.commandIndex = 0
     self.commands = lia.command.list
     self.arguments = {}
-    -- Configure as liaFrame
     self:SetAlphaBackground(false)
     self:SetTitle("")
     self:SetCenterTitle("")
     self:ShowCloseButton(true)
     self:SetDraggable(true)
     self:SetSizable(false)
-    self:SetVisible(true) -- Chatbox should always be visible for chat messages
-    -- Override Paint function to hide frame when not active
+    self:SetVisible(true)
     self.Paint = function(s, w, h)
-        -- Only paint frame when active
         if not s.active then return end
-        -- Call the original frame paint function
         local originalPaint = s.BaseClass.Paint
         if originalPaint then originalPaint(s, w, h) end
     end
 
-    -- Override HitTest to prevent mouse input when not active
     self.HitTest = function(s, x, y)
-        -- Don't allow mouse input when not active
         if not s.active then return false end
         return s.BaseClass.HitTest(s, x, y)
     end
 
-    -- Override Think function to handle close button and dragging visibility
     local originalThink = self.Think
     self.Think = function(s)
-        -- Call original think function
         if originalThink then originalThink(s) end
-        -- Hide close button when not active
         if IsValid(s.cls) then s.cls:SetVisible(s.active) end
-        -- Hide top panel (dragging area) when not active
         if IsValid(s.top_panel) then s.top_panel:SetVisible(s.active) end
-        -- Disable dragging and input when not active
         s:SetDraggable(s.active)
         s:SetMouseInputEnabled(s.active)
         s:SetKeyboardInputEnabled(s.active)
     end
 
-    -- Content area
     self.scroll = self:Add("liaScrollPanel")
     self.scroll:Dock(FILL)
     self.scroll:DockMargin(4, 4, 4, 36)
     self.scroll:GetVBar():SetWide(8)
-    -- Initially hide the scrollbar since chatbox starts inactive
     self.scrollbarShouldBeVisible = false
     self:setScrollbarVisible(false)
-    
-    -- Override the scrollbar's Paint method to hide it visually when needed
     local vbar = self.scroll:GetVBar()
     if IsValid(vbar) then
         local originalPaint = vbar.Paint
-        vbar.Paint = function(s, w, h)
-            -- Only paint if we want the scrollbar to be visible
-            if self.scrollbarShouldBeVisible and originalPaint then
-                originalPaint(s, w, h)
-            end
-        end
+        vbar.Paint = function(s, w, h) if self.scrollbarShouldBeVisible and originalPaint then originalPaint(s, w, h) end end
     end
-    
+
     self.lastY = 0
     self.list = {}
     chat.GetChatBoxPos = function() return self:LocalToScreen(0, 0) end
     chat.GetChatBoxSize = function() return self:GetSize() end
-    -- Hook into theme changes
     hook.Add("OnThemeChanged", self, function() if IsValid(self) then self:OnThemeChanged() end end)
 end
 
--- Helper function to manage scrollbar visibility
 function PANEL:setScrollbarVisible(visible)
     if IsValid(self.scroll) and IsValid(self.scroll:GetVBar()) then
         local vbar = self.scroll:GetVBar()
-        -- Store the desired visibility state
         self.scrollbarShouldBeVisible = visible
-        -- Always allow the scrollbar to function internally, just control visual appearance
-        vbar:SetVisible(true) -- Keep it functional for scrolling
+        vbar:SetVisible(true)
         if visible then
             vbar:SetWide(8)
         else
-            vbar:SetWide(0) -- Hide it visually by making it 0 width
+            vbar:SetWide(0)
         end
     end
 end
 
--- No custom paint or blur; liaFrame handles visuals
 function PANEL:setActive(state)
     self.active = state
-    -- Update close button and dragging based on active state
     if IsValid(self.cls) then self.cls:SetVisible(state) end
     if IsValid(self.top_panel) then self.top_panel:SetVisible(state) end
-    -- Hide/show scrollbar based on active state
     self:setScrollbarVisible(state)
     self:SetDraggable(state)
     self:SetMouseInputEnabled(state)
     self:SetKeyboardInputEnabled(state)
     if state then
-        -- Chatbox is always visible, just show the input field
         self.entry = self:Add("liaEntry")
         self.entry:Dock(BOTTOM)
         self.entry:SetTall(28)
@@ -130,9 +102,7 @@ function PANEL:setActive(state)
                 net.SendToServer()
             end
 
-            -- Close chatbox immediately for regular chat, delay for commands
             if isCommand then
-                -- Delay closing for commands to allow server response
                 timer.Simple(0.1, function()
                     if not IsValid(self) then return end
                     self.active = false
@@ -152,12 +122,9 @@ function PANEL:setActive(state)
                     gui.EnableScreenClicker(false)
                 end)
             else
-                -- Close immediately for regular chat
                 self.active = false
-                -- Hide close button and disable dragging when inactive
                 if IsValid(self.cls) then self.cls:SetVisible(false) end
                 if IsValid(self.top_panel) then self.top_panel:SetVisible(false) end
-                -- Hide scrollbar when inactive
                 self:setScrollbarVisible(false)
                 self:SetDraggable(false)
                 self:SetMouseInputEnabled(false)
@@ -215,14 +182,10 @@ function PANEL:setActive(state)
                         self.commandListCreateTime = nil
                     end
 
-                    -- Set text color to theme color
                     btn:SetTextColor(lia.color.theme.text or Color(255, 255, 255))
-                    -- Add hover highlighting
                     local originalPaint = btn.Paint
                     btn.Paint = function(s, w, h)
-                        -- Call original paint first
                         if originalPaint then originalPaint(s, w, h) end
-                        -- Add selection highlight on top
                         local highlightColor = lia.color.theme.hover or Color(255, 255, 255, 30)
                         if s.isSelected then draw.RoundedBox(4, 0, 0, w, h, highlightColor) end
                     end
@@ -251,12 +214,9 @@ function PANEL:setActive(state)
                     self.commandListCreateTime = nil
                 end
 
-                -- Close the chatbox
                 self.active = false
-                -- Hide close button and disable dragging when inactive
                 if IsValid(self.cls) then self.cls:SetVisible(false) end
                 if IsValid(self.top_panel) then self.top_panel:SetVisible(false) end
-                -- Hide scrollbar when inactive
                 self:setScrollbarVisible(false)
                 self:SetDraggable(false)
                 self:SetMouseInputEnabled(false)
@@ -274,7 +234,6 @@ function PANEL:setActive(state)
                 if not IsValid(canvas) then return true end
                 local canvasChildren = canvas:GetChildren()
                 if #canvasChildren == 0 then return true end
-                -- Clear previous selection
                 for _, child in ipairs(canvasChildren) do
                     if IsValid(child) then child.isSelected = false end
                 end
@@ -290,7 +249,6 @@ function PANEL:setActive(state)
                     self.text:SetCaretPos(#self.text:GetText())
                 end
 
-                -- Auto-scroll to keep selected item visible
                 self.commandList:ScrollToChild(selected)
                 self.text:RequestFocus()
                 return true
@@ -343,7 +301,6 @@ function PANEL:addText(...)
     local panel = self.scroll:Add("liaMarkupPanel")
     panel:SetWide(self:GetWide() - 16)
     panel:setMarkup(markup)
-    -- Store the original arguments and current theme state for theme updates
     panel.originalArgs = {...}
     panel.markupArgs = {
         markup = markup,
@@ -375,10 +332,8 @@ end
 function PANEL:Think()
     if gui.IsGameUIVisible() and self.active then
         self.active = false
-        -- Hide close button and disable dragging when inactive
         if IsValid(self.cls) then self.cls:SetVisible(false) end
         if IsValid(self.top_panel) then self.top_panel:SetVisible(false) end
-        -- Hide scrollbar when inactive
         self:setScrollbarVisible(false)
         self:SetDraggable(false)
         self:SetMouseInputEnabled(false)
@@ -418,7 +373,6 @@ end
 
 function PANEL:OnThemeChanged()
     if not IsValid(self) then return end
-    -- Update command list colors if it exists
     if IsValid(self.commandList) then
         local canvas = self.commandList:GetCanvas()
         if IsValid(canvas) then
@@ -428,20 +382,13 @@ function PANEL:OnThemeChanged()
         end
     end
 
-    -- Update existing chat messages colors
     for _, panel in ipairs(self.list or {}) do
-        if IsValid(panel) and panel.markupArgs then
-            -- Rebuild markup with fresh theme colors
-            self:rebuildPanelMarkup(panel)
-        end
+        if IsValid(panel) and panel.markupArgs then self:rebuildPanelMarkup(panel) end
     end
-    -- Chatbox should always remain visible for chat messages
-    -- The active state only controls the input field visibility
 end
 
 function PANEL:rebuildPanelMarkup(panel)
     if not panel.markupArgs or not panel.markupArgs.themeState then return end
-    -- Get current theme colors
     local currentChatColor = lia.config.get("ChatColor", lia.color.theme.chat)
     local currentChatListenColor = lia.config.get("ChatListenColor", lia.color.theme.chatListen)
     local markup = "<font=LiliaFont.16>"
@@ -453,12 +400,9 @@ function PANEL:rebuildPanelMarkup(panel)
             markup = markup .. "<img=" .. matName .. "," .. item:Width() .. "x" .. item:Height() .. ">"
         elseif IsColor(item) then
             local color = item
-            -- Check if this color matches the stored theme colors and replace with new ones
             if panel.markupArgs.themeState.chatColor and color.r == panel.markupArgs.themeState.chatColor.r and color.g == panel.markupArgs.themeState.chatColor.g and color.b == panel.markupArgs.themeState.chatColor.b then
-                -- This was a ChatColor, use the current one
                 color = currentChatColor
             elseif panel.markupArgs.themeState.chatListenColor and color.r == panel.markupArgs.themeState.chatListenColor.r and color.g == panel.markupArgs.themeState.chatListenColor.g and color.b == panel.markupArgs.themeState.chatListenColor.b then
-                -- This was a ChatListenColor, use the current one
                 color = currentChatListenColor
             end
 
@@ -478,7 +422,6 @@ function PANEL:rebuildPanelMarkup(panel)
     markup = markup .. "</font>"
     panel:setMarkup(markup)
     panel.markupArgs.markup = markup
-    -- Update the stored theme state for future updates
     panel.markupArgs.themeState = {
         chatColor = currentChatColor,
         chatListenColor = currentChatListenColor

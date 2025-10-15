@@ -1,5 +1,4 @@
 ﻿local vectorMeta = FindMetaTable("Vector")
-
 function vectorMeta:distance(vec2)
     local x, y, z = self.x, self.y, self.z
     local x2, y2, z2 = vec2.x, vec2.y, vec2.z

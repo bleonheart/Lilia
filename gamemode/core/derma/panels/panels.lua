@@ -127,77 +127,56 @@ function QuickPanel:Init()
     lia.gui.quick = self
     self:SetSkin(lia.config.get("DermaSkin", L("liliaSkin")))
     self:SetTitle(L("quickSettings"))
-
-    -- Performance optimization: disable blur for liaQuick
     self:SetAlphaBackground(false)
-
     self.scroll = self:Add("liaScrollPanel")
     self.scroll:Dock(FILL)
-    -- Performance optimization: simplified scroll panel paint
-    self.scroll.Paint = function(_, w, h) 
+    self.scroll.Paint = function(_, w, h)
         local theme = lia.color.theme
         local panelColor = theme and theme.panel and theme.panel[1] or Color(50, 50, 50)
         draw.RoundedBox(8, 0, 0, w, h, panelColor)
     end
+
     self.items = {}
-    self.optionsCache = {} -- Cache for options to avoid reprocessing
+    self.optionsCache = {}
     self.lastOptionsUpdate = 0
     hook.Run("SetupQuickMenu", self)
     self:populateOptions()
-
-    -- Calculate the size based on content
     local h = 0
     for _, v in pairs(self.items) do
         if IsValid(v) then h = h + v:GetTall() + 1 end
     end
-    h = math.min(h, ScrH() * 0.5)
-    local targetHeight = math.max(h, 100) -- Minimum height of 100px
 
+    h = math.min(h, ScrH() * 0.5)
+    local targetHeight = math.max(h, 100)
     self:SetSize(400, targetHeight)
     self:SetPos(ScrW() - 400, 30)
     self:MakePopup()
     self:SetKeyboardInputEnabled(false)
     self:SetZPos(999)
     self:SetMouseInputEnabled(true)
-
     hook.Add("OnThemeChanged", self, function() if IsValid(self) then self:RefreshTheme() end end)
 end
 
--- Performance optimization: override Paint function for liaQuick to eliminate expensive operations
 function QuickPanel:Paint(w, h)
-    -- Minimal drawing for maximum performance
     local theme = lia.color.theme
     local bgColor = theme and theme.background_alpha or Color(34, 34, 34, 210)
     local headerColor = theme and theme.header or Color(34, 34, 34, 210)
-    
-    -- Simple background without expensive shadows or blur
     draw.RoundedBox(6, 0, 0, w, h, bgColor)
-    
-    -- Simple header
     draw.RoundedBox(6, 0, 0, w, 24, headerColor)
-    
-    -- Simple title
-    if self.title and self.title ~= "" then
-        draw.SimpleText(self.title, "LiliaFont.16", 6, 4, theme and theme.header_text or Color(255, 255, 255))
-    end
+    if self.title and self.title ~= "" then draw.SimpleText(self.title, "LiliaFont.16", 6, 4, theme and theme.header_text or Color(255, 255, 255)) end
 end
 
 function QuickPanel:PerformLayout(w, h)
-    if IsValid(self.cls) then
-        self.cls:SetPos(w - 22, 2)
-    end
+    if IsValid(self.cls) then self.cls:SetPos(w - 22, 2) end
 end
 
 local categoryDoClick = function(this)
     this.expanded = not this.expanded
     local items = lia.gui.quick.items
     local i0 = table.KeyFromValue(items, this)
-
     for i = i0 + 1, #items do
         if items[i].categoryLabel then break end
         if not items[i].h then items[i].w, items[i].h = items[i]:GetSize() end
-
-        -- Use faster animation with reduced duration for better performance
         local animDuration = this.expanded and 0.1 or 0.08
         items[i]:SizeTo(items[i].w, this.expanded and (items[i].h or 36) or 0, animDuration)
     end
@@ -215,17 +194,12 @@ function QuickPanel:addCategory(text)
     label:SetTextColor(lia.color.theme.text or color_white)
     label:SetExpensiveShadow(1, lia.color.theme.text and ColorAlpha(lia.color.theme.text, 150) or Color(0, 0, 0, 150))
     label:SetContentAlignment(5)
-    -- Performance optimization: simplified category paint
     label.Paint = function(panel, w, h)
         local theme = lia.color.theme
         local panelColor = theme and theme.panel and theme.panel[1] or Color(50, 50, 50)
         local borderColor = theme and theme.panel and theme.panel[3] or Color(80, 80, 80)
-        
-        -- Simple rounded rectangle without expensive operations
         draw.RoundedBox(4, 0, 0, w, h, panelColor)
         draw.RoundedBox(4, 0, 0, w, h, ColorAlpha(borderColor, 100))
-        
-        -- Render the text
         local textColor = theme and theme.text or Color(255, 255, 255)
         draw.SimpleText(panel:GetText(), "liaMediumFont", w * 0.5, h * 0.5, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
@@ -267,7 +241,6 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
     s:SetMax(max or 100)
     s:SetDecimals(dec or 0)
     s:SetValue(val or 0)
-
     if cb then
         s.OnValueChanged = function(this, newVal)
             local r = math.Round(newVal, dec or 0)
@@ -294,21 +267,11 @@ function QuickPanel:setIcon(ch)
     self.icon = ch
 end
 
--- Paint is handled by liaFrame
-
 function QuickPanel:RefreshTheme()
     if not IsValid(self) then return end
-    -- liaButton follows theme automatically
-
-    if IsValid(self.scroll) then
-        self.scroll.Paint = function(_, w, h)
-            lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
-        end
-    end
+    if IsValid(self.scroll) then self.scroll.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme and lia.color.theme.panel[1] or Color(50, 50, 50)):Shape(lia.derma.SHAPE_IOS):Draw() end end
     for _, item in ipairs(self.items or {}) do
-        if IsValid(item) and item.SetTextColor then
-            item:SetTextColor(lia.color.theme.text or color_white)
-        end
+        if IsValid(item) and item.SetTextColor then item:SetTextColor(lia.color.theme.text or color_white) end
     end
 
     self:InvalidateLayout(true)
@@ -320,25 +283,20 @@ function QuickPanel:OnRemove()
 end
 
 function QuickPanel:populateOptions()
-    -- Check if we can use cached options (performance optimization)
     local currentTime = CurTime()
     if self.optionsCache and self.lastOptionsUpdate and (currentTime - self.lastOptionsUpdate) < 1 then
-        -- Use cached options if they're recent
         for _, item in ipairs(self.optionsCache) do
-            if IsValid(item) then
-                self.items[#self.items + 1] = item
-            end
+            if IsValid(item) then self.items[#self.items + 1] = item end
         end
         return
     end
 
-    -- Clear existing items and cache
     for _, item in ipairs(self.items) do
         if IsValid(item) then item:Remove() end
     end
+
     self.items = {}
     self.optionsCache = {}
-
     local cats = {}
     for k, v in pairs(lia.option.stored) do
         if v and (v.isQuick or v.data and v.data.isQuick) then
@@ -361,7 +319,6 @@ function QuickPanel:populateOptions()
         names[#names + 1] = n
     end
 
-    -- Optimize sorting by caching the comparison function
     local generalCat = L("categoryGeneral")
     table.sort(names, function(a, b)
         if a == generalCat and b ~= generalCat then return true end
@@ -372,8 +329,6 @@ function QuickPanel:populateOptions()
     for i, cat in ipairs(names) do
         self:addCategory(cat)
         local list = cats[cat]
-
-        -- Group options by type within the category
         local groups = {
             Boolean = {},
             Int = {},
@@ -391,7 +346,6 @@ function QuickPanel:populateOptions()
             end
         end
 
-        -- Sort each group by name (optimize by caching name lookups)
         for _, group in pairs(groups) do
             table.sort(group, function(a, b)
                 local nameA = a.opt.name or a.key
@@ -400,24 +354,17 @@ function QuickPanel:populateOptions()
             end)
         end
 
-        -- Add groups in order: Boolean, Int, Float
         local groupOrder = {"Boolean", "Int", "Float"}
         local hasAddedItems = false
-
         for _, groupType in ipairs(groupOrder) do
             local group = groups[groupType]
             if #group > 0 then
-                if hasAddedItems then
-                    self:addSpacer()
-                end
-
-                -- Add items in this group
+                if hasAddedItems then self:addSpacer() end
                 for j, info in ipairs(group) do
                     local key = info.key
                     local opt = info.opt
                     local data = opt.data or {}
                     local val = lia.option.get(key, opt.default)
-
                     local item
                     if opt.type == "Boolean" then
                         item = self:addCheck(opt.name or key, function(_, state) lia.option.set(key, state) end, val)
@@ -425,11 +372,7 @@ function QuickPanel:populateOptions()
                         item = self:addSlider(opt.name or key, function(_, v) lia.option.set(key, v) end, val, data.min or 0, data.max or 100, opt.type == "Float" and (data.decimals or 2) or 0)
                     end
 
-                    -- Cache the item for future use
-                    if item then
-                        self.optionsCache[#self.optionsCache + 1] = item
-                    end
-
+                    if item then self.optionsCache[#self.optionsCache + 1] = item end
                     if j < #group then self:addSpacer() end
                 end
 
@@ -440,7 +383,6 @@ function QuickPanel:populateOptions()
         if i < #names then self:addSpacer() end
     end
 
-    -- Update cache timestamp
     self.lastOptionsUpdate = currentTime
 end
 

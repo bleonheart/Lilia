@@ -47,10 +47,7 @@ function PANEL:Init()
 
     self.cls = vgui.Create("Button", self)
     self.cls:SetText("")
-    self.cls.Paint = function(s, w, h)
-        draw.SimpleText("✕", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    end
-
+    self.cls.Paint = function(s, w, h) draw.SimpleText("✕", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
     self.cls.DoClick = function()
         surface.PlaySound("button_click.wav")
         if self.deleteOnClose then
@@ -214,29 +211,20 @@ end
 
 function PANEL:Paint(w, h)
     if self.backgroundBlur then Derma_DrawBackgroundBlur(self, self.backgroundBlurTime) end
-
-    -- Performance optimization: reduce shadow complexity for better FPS
-    local shadowIntensity = 8 -- Reduced from 10
-    local shadowBlur = 12 -- Reduced from 16
+    local shadowIntensity = 8
+    local shadowBlur = 12
     lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.window_shadow):Shadow(shadowIntensity, shadowBlur):Shape(lia.derma.SHAPE_IOS):Draw()
-
-    if not self.bool_lite then
-        lia.derma.rect(0, 0, w, 24):Radii(6, 6, 0, 0):Color(lia.color.theme.header):Draw()
-    end
-
+    if not self.bool_lite then lia.derma.rect(0, 0, w, 24):Radii(6, 6, 0, 0):Color(lia.color.theme.header):Draw() end
     local headerTall = self.bool_lite and 0 or 24
-
-    -- Performance optimization: reduce blur frequency and intensity
     if self.bool_alpha then
-        local blurAmount = math.min(self.blurAmount or 6, 4) -- Cap blur amount
-        local blurPasses = math.min(self.blurPasses or 0, 2) -- Cap blur passes
+        local blurAmount = math.min(self.blurAmount or 6, 4)
+        local blurPasses = math.min(self.blurPasses or 0, 2)
         local blurAlpha = self.blurAlpha or 255
         lia.util.drawBlur(self, blurAmount, blurPasses, blurAlpha)
     end
 
     local radiusTop = self.bool_lite and 6 or 0
     lia.derma.rect(0, headerTall, w, h - headerTall):Radii(radiusTop, radiusTop, 6, 6):Color(self.bool_alpha and lia.color.theme.background_alpha or self.panelColor):Draw()
-
     if not self.bool_lite then
         if self.iconMat then
             surface.SetMaterial(self.iconMat)
@@ -244,9 +232,7 @@ function PANEL:Paint(w, h)
             surface.DrawTexturedRect(6, 4, 16, 16)
         end
 
-        if self.center_title ~= "" then
-            draw.SimpleText(self.center_title, "LiliaFont.20b", w * 0.5, 12, lia.color.theme.header_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        end
+        if self.center_title ~= "" then draw.SimpleText(self.center_title, "LiliaFont.20b", w * 0.5, 12, lia.color.theme.header_text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
         local titleOffset = self.iconMat and 26 or 6
         draw.SimpleText(self.title, "LiliaFont.16", titleOffset, 4, lia.color.theme.header_text)
     end

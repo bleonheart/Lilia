@@ -358,14 +358,11 @@ if CLIENT then
         local path = "lilia/keybinds.json"
         local d = {}
         for k, v in pairs(lia.keybind.stored) do
-            -- Only save action entries (tables), not key code entries (strings)
             if istable(v) and v.value then d[k] = v.value end
         end
 
         local j = util.TableToJSON(d, true)
-        if j then
-            file.Write(path, j)
-        end
+        if j then file.Write(path, j) end
     end
 
     function lia.keybind.load()
@@ -446,7 +443,6 @@ if CLIENT then
                     for name, code in pairs(KeybindKeys) do
                         if not taken[code] or code == currentKey or code == KEY_NONE then
                             local displayName = input.GetKeyName(code) or name
-                            -- Ensure NONE is displayed as "NONE" for consistency
                             if code == KEY_NONE then
                                 displayName = "NONE"
                                 if not noneAdded then
@@ -466,10 +462,8 @@ if CLIENT then
                     end
 
                     table.sort(choices, function(a, b)
-                        -- Put "NONE" at the top
                         if a.txt == "NONE" then return true end
                         if b.txt == "NONE" then return false end
-                        -- Sort everything else alphabetically
                         return a.txt < b.txt
                     end)
 
@@ -479,9 +473,7 @@ if CLIENT then
 
                     combo.OnSelect = function(index, text, newKey)
                         if newKey == nil then return end
-                        -- Ensure newKey is a number
                         if isstring(newKey) then
-                            -- Convert string key name to numeric key code
                             local keyCode = KeybindKeys[string.lower(newKey)]
                             if keyCode then
                                 newKey = keyCode
@@ -490,7 +482,6 @@ if CLIENT then
                             end
                         end
 
-                        -- Check if the new key is already taken by another action (except KEY_NONE which can be shared)
                         if newKey ~= KEY_NONE then
                             for tk, tv in pairs(taken) do
                                 if tk == newKey and tv ~= action then
@@ -503,25 +494,19 @@ if CLIENT then
                             end
                         end
 
-                        -- Get the current key value from the keybind data
                         local keybindData = lia.keybind.stored[action]
                         local oldKey = keybindData.value
-                        -- Clear the old key assignment
                         if oldKey then
                             taken[oldKey] = nil
                             if lia.keybind.stored[oldKey] == action then lia.keybind.stored[oldKey] = nil end
                         end
 
-                        -- Set the new key assignment
                         keybindData.value = newKey
                         lia.keybind.stored[newKey] = action
                         taken[newKey] = action
-                        -- Update the dropdown display
                         local newKeyName = (newKey == KEY_NONE and "NONE" or input.GetKeyName(newKey)) or "NONE"
                         combo:SetValue(newKeyName)
-                        -- Save the changes
                         lia.keybind.save()
-                        -- Notify the user of successful change
                         local client = LocalPlayer()
                         if IsValid(client) then client:notifySuccess("Keybind '" .. action .. "' changed to " .. newKeyName) end
                     end

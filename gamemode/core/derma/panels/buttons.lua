@@ -48,6 +48,7 @@ function PANEL:SetIcon(icon, icon_size)
             self.icon = nil
         end
     end
+
     self.icon_size = icon_size or 16
 end
 

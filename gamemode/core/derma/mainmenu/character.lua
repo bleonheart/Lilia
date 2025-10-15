@@ -826,13 +826,10 @@ function PANEL:Think()
         self:UpdateLogoPosition()
     end
 
-    -- Rotate model during character creation or load mode
     local modelEntity = nil
-
     if self.isLoadMode and IsValid(self.modelEntity) then
         modelEntity = self.modelEntity
     elseif not self.isLoadMode and IsValid(self.model) then
-        -- During character creation, get the entity from the model panel
         modelEntity = self.model:GetEntity()
     end
 

@@ -47,7 +47,6 @@ function PANEL:makeFactionComboBox()
 
     combo.OnSelect = function(index, text, data)
         local factionID = nil
-        -- The combobox is passing the display name as data, so find the faction by name
         if data and type(data) == "string" then
             for id, fac in pairs(lia.faction.teams) do
                 if L(fac.name) == data then
@@ -57,7 +56,6 @@ function PANEL:makeFactionComboBox()
             end
         end
 
-        -- If we have a valid faction ID, look up the faction
         if factionID then
             local fac = lia.faction.teams[factionID]
             if fac then
@@ -138,17 +136,11 @@ end
 function PANEL:updateNameAndDescForFaction(factionIndex)
     local client = LocalPlayer()
     local context = self:getContext()
-
-    -- Get default name and description from hooks
     local defaultName, nameOverride = hook.Run("GetDefaultCharName", client, factionIndex, context)
     local defaultDesc, descOverride = hook.Run("GetDefaultCharDesc", client, factionIndex, context)
-
-    -- Update name field if hook provides a default name
     if isstring(defaultName) and nameOverride and IsValid(self.nameEntry) then
         local currentName = string.Trim(self.nameEntry:GetValue() or "")
-        -- Only update if field is empty or if we have a hook override
         if currentName == "" or nameOverride then
-            -- Use a timer to ensure the text entry is ready
             timer.Simple(0.01, function()
                 if IsValid(self) and IsValid(self.nameEntry) then
                     self.nameEntry:SetValue(defaultName)
@@ -158,12 +150,9 @@ function PANEL:updateNameAndDescForFaction(factionIndex)
         end
     end
 
-    -- Update description field if hook provides a default description
     if isstring(defaultDesc) and descOverride and IsValid(self.descEntry) then
         local currentDesc = string.Trim(self.descEntry:GetValue() or "")
-        -- Only update if field is empty or if we have a hook override
         if currentDesc == "" or descOverride then
-            -- Use a timer to ensure the text entry is ready
             timer.Simple(0.01, function()
                 if IsValid(self) and IsValid(self.descEntry) then
                     self.descEntry:SetValue(defaultDesc)
@@ -197,7 +186,6 @@ function PANEL:onDisplay()
         self.factionCombo:ChooseOptionData(f)
         self:setContext("faction", f)
         self:updateModelPanel()
-        -- Update name and description based on current faction
         self:updateNameAndDescForFaction(f)
     end
 

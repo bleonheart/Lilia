@@ -116,19 +116,10 @@ end
 function PANEL:updateNameAndDescForFaction(factionIndex)
     local client = LocalPlayer()
     local context = self:getContext()
-
-    -- Get default name and description from hooks
     local defaultName, nameOverride = hook.Run("GetDefaultCharName", client, factionIndex, context)
     local defaultDesc, descOverride = hook.Run("GetDefaultCharDesc", client, factionIndex, context)
-
-    -- Update context with default values if hooks provide them
-    if isstring(defaultName) and nameOverride then
-        self:setContext("name", defaultName)
-    end
-
-    if isstring(defaultDesc) and descOverride then
-        self:setContext("desc", defaultDesc)
-    end
+    if isstring(defaultName) and nameOverride then self:setContext("name", defaultName) end
+    if isstring(defaultDesc) and descOverride then self:setContext("desc", defaultDesc) end
 end
 
 function PANEL:shouldSkip()
