@@ -4127,47 +4127,6 @@ lia.command.add("exportprivileges", {
     end
 })
 
-local function FindSafeBotSpawnPosition(client, maxDistance)
-    maxDistance = maxDistance or 200
-    for _ = 1, 20 do
-        local randomAngle = math.random(0, 360)
-        local randomDistance = math.random(50, maxDistance)
-        local randomHeight = math.random(-32, 32)
-        local basePos = client:GetPos()
-        local offset = Vector(math.cos(randomAngle) * randomDistance, math.sin(randomAngle) * randomDistance, randomHeight)
-        local spawnPos = basePos + offset
-        if util.IsInWorld(spawnPos) then
-            local trace = util.TraceLine({
-                start = spawnPos + Vector(0, 0, 64),
-                endpos = spawnPos - Vector(0, 0, 256),
-                filter = client,
-                mask = MASK_PLAYERSOLID
-            })
-
-            if trace.Hit and not trace.StartSolid then
-                local groundPos = trace.HitPos + Vector(0, 0, 16)
-                local hullTrace = util.TraceHull({
-                    start = groundPos,
-                    endpos = groundPos,
-                    mins = Vector(-16, -16, 0),
-                    maxs = Vector(16, 16, 64),
-                    filter = client,
-                    mask = MASK_PLAYERSOLID
-                })
-
-                if not hullTrace.StartSolid and not hullTrace.Hit then
-                    if navmesh and navmesh.IsLoaded() then
-                        local navArea = navmesh.GetNearestNavArea(groundPos, false, 100, false)
-                        if navArea then return navArea:GetCenter() end
-                    end
-                    return groundPos
-                end
-            end
-        end
-    end
-    return client:GetPos() + Vector(0, 0, 32)
-end
-
 lia.command.add("fillwithbots", {
     superAdminOnly = true,
     desc = "botsManageDesc",
