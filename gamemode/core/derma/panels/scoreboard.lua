@@ -71,9 +71,9 @@ function PANEL:Init()
     serverName:SizeToContentsY()
     local serverIcon = header:Add("DImage")
     serverIcon:Dock(RIGHT)
-    serverIcon:DockMargin(25, 2, 5, 2)
-    serverIcon:SetWide(72)
-    serverIcon:SetTall(72)
+    serverIcon:DockMargin(15, -15, 5, 2)
+    serverIcon:SetWide(144)
+    serverIcon:SetTall(180)
     serverIcon:SetVisible(false)
     local serverIconPath = lia.config.get("ServerLogo", "")
     if serverIconPath and serverIconPath ~= "" then
@@ -341,12 +341,12 @@ function PANEL:addPlayer(ply, parent)
         local hasLogo = lia.config.get("ClassLogo", false) and self.classLogo:GetMaterial() and not self.hideLogo
         local extra = hasLogo and logoSize + logoOffset or 0
         local availW = totalW - (iconSize + margin * 2) - extra - pingW - margin
-        local descW = availW * 0.7
-        self.name:SetPos(iconSize + margin * 2, 0)
+        self.name:SetPos(iconSize + margin * 2, 10)
         self.name:SetWide(availW)
         self.name:SetTall(35)
-        self.desc:SetPos(iconSize + margin * 2, 35)
-        self.desc:SetWide(descW)
+        self.desc:SetPos(iconSize + margin * 2, 45)
+        self.desc:SetWide(availW - 5)
+        self.desc:SetTall(height * 0.4)
         if hasLogo then
             self.classLogo:SetVisible(true)
             self.classLogo:SetPos(totalW - pingW - logoSize - logoOffset, (height - logoSize) * 0.5)
@@ -399,7 +399,7 @@ function PANEL:addPlayer(ply, parent)
         local wrapped = wrap(desc, self.desc:GetWide(), "liaSmallFont")
         surface.SetFont("liaSmallFont")
         local _, lineH = surface.GetTextSize("W")
-        local maxLines = math.floor((height - 40) / lineH)
+        local maxLines = math.floor((height * 0.4) / lineH)
         if #wrapped > maxLines then
             wrapped[maxLines] = wrapped[maxLines] .. " (...)"
             for i = maxLines + 1, #wrapped do
