@@ -71,14 +71,17 @@ function PANEL:Init()
     serverName:SizeToContentsY()
     local serverIcon = header:Add("DImage")
     serverIcon:Dock(RIGHT)
-    serverIcon:DockMargin(5, 5, 5, 5)
-    serverIcon:SetWide(30)
-    serverIcon:SetTall(30)
+    serverIcon:DockMargin(25, 2, 5, 2)
+    serverIcon:SetWide(72)
+    serverIcon:SetTall(72)
     serverIcon:SetVisible(false)
     local serverIconPath = lia.config.get("ServerLogo", "")
     if serverIconPath and serverIconPath ~= "" then
-        serverIcon:SetMaterial(Material(serverIconPath))
-        serverIcon:SetVisible(true)
+        local material = Material(serverIconPath)
+        if material then
+            serverIcon:SetMaterial(material)
+            serverIcon:SetVisible(true)
+        end
     end
 
     local scroll = self:Add("liaScrollPanel")
@@ -136,7 +139,7 @@ function PANEL:Init()
         facCont.noClass = facCont:Add("DListLayout")
         facCont.noClass:Dock(TOP)
         facCont.classLists = {}
-        if lia.config.get("ClassHeaders", true) and lia.class and lia.class.list then
+        if lia.config.get("ClassHeaders", true) and lia.config.get("ClassDisplay", true) and lia.class and lia.class.list then
             for clsID, clsData in pairs(lia.class.list) do
                 if clsData.faction ~= facID then continue end
                 if clsData.scoreboardHidden then
@@ -150,7 +153,7 @@ function PANEL:Init()
                 cat:SetLabel("")
                 cat:SetExpanded(true)
                 if IsValid(cat.Header) then
-                    cat.Header:SetTall(20)
+                    cat.Header:SetTall(30)
                     cat.Header.Paint = function(_, ww, hh)
                         local c = clsData.color or facColor
                         local radius = 6
@@ -160,7 +163,7 @@ function PANEL:Init()
 
                 if clsData.logo and clsData.logo ~= "" and IsValid(cat.Header) then
                     local ico = cat.Header:Add("DImage")
-                    ico:Dock(LEFT)
+                    ico:Dock(RIGHT)
                     ico:DockMargin(5, 4, 5, 4)
                     ico:SetWide(20)
                     ico:SetMaterial(Material(clsData.logo))
@@ -173,7 +176,7 @@ function PANEL:Init()
                     hlbl = vgui.Create("DLabel")
                 end
 
-                hlbl:SetFont("liaMediumFont")
+                hlbl:SetFont("liaSmallFont")
                 hlbl:SetTextColor(color_white)
                 hlbl:SetExpensiveShadow(1, color_black)
                 hlbl:SetText(L(clsData.name))
@@ -338,11 +341,12 @@ function PANEL:addPlayer(ply, parent)
         local hasLogo = lia.config.get("ClassLogo", false) and self.classLogo:GetMaterial() and not self.hideLogo
         local extra = hasLogo and logoSize + logoOffset or 0
         local availW = totalW - (iconSize + margin * 2) - extra - pingW - margin
+        local descW = availW * 0.7
         self.name:SetPos(iconSize + margin * 2, 0)
         self.name:SetWide(availW)
         self.name:SetTall(35)
         self.desc:SetPos(iconSize + margin * 2, 35)
-        self.desc:SetWide(availW)
+        self.desc:SetWide(descW)
         if hasLogo then
             self.classLogo:SetVisible(true)
             self.classLogo:SetPos(totalW - pingW - logoSize - logoOffset, (height - logoSize) * 0.5)
@@ -395,7 +399,7 @@ function PANEL:addPlayer(ply, parent)
         local wrapped = wrap(desc, self.desc:GetWide(), "liaSmallFont")
         surface.SetFont("liaSmallFont")
         local _, lineH = surface.GetTextSize("W")
-        local maxLines = math.floor((height - 25) / lineH)
+        local maxLines = math.floor((height - 40) / lineH)
         if #wrapped > maxLines then
             wrapped[maxLines] = wrapped[maxLines] .. " (...)"
             for i = maxLines + 1, #wrapped do

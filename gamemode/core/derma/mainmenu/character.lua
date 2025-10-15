@@ -306,19 +306,9 @@ function PANEL:createStartButton()
             timer.Simple(0, function() if IsValid(img) then img:MoveToFront() end end)
         end
 
-        if logoPath:sub(1, 8) == "https://" then
-            http.Fetch(logoPath, function(body)
-                if not IsValid(self) then return end
-                file.Write("temp_logo.png", body)
-                self.logo = self:Add("DImage")
-                self.logo:SetImage("data/temp_logo.png")
-                setLogo(self.logo)
-            end)
-        else
-            self.logo = self:Add("DImage")
-            self.logo:SetImage(logoPath)
-            setLogo(self.logo)
-        end
+        self.logo = self:Add("DImage")
+        self.logo:SetImage(logoPath)
+        setLogo(self.logo)
     end
 end
 
