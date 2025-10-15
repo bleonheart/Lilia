@@ -45,7 +45,7 @@ function PANEL:makeFactionComboBox()
         surface.DrawRect(0, 0, w, h)
     end
 
-    combo.OnSelect = function(index, text, data)
+    combo.OnSelect = function(_, _, data)
         local factionID = nil
         if data and type(data) == "string" then
             for id, fac in pairs(lia.faction.teams) do

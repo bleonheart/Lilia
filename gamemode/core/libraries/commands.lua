@@ -4139,7 +4139,7 @@ lia.command.add("exportprivileges", {
 
 local function FindSafeBotSpawnPosition(client, maxDistance)
     maxDistance = maxDistance or 200
-    for i = 1, 20 do
+    for _ = 1, 20 do
         local randomAngle = math.random(0, 360)
         local randomDistance = math.random(50, maxDistance)
         local randomHeight = math.random(-32, 32)
@@ -4316,7 +4316,6 @@ lia.command.add("botspeak", {
         client:notify("Found " .. #bots .. " bots. Starting phrase sequence with " .. phrasesPerBot .. " phrases per bot...")
         local randomPhrases = {"Hello there!", "What's going on?", "I need help!", "Over here!", "Watch out!", "Come on!", "Let's go!", "This way!", "Behind you!", "Enemy spotted!", "Clear!", "Move up!", "Hold position!", "Cover me!", "Reloading!", "Taking fire!", "Need backup!", "All clear!", "Contact!", "Engaging!", "Fall back!", "Push forward!", "Hold the line!", "Secure the area!", "Enemy down!", "Got one!", "Nice shot!", "Good work!", "Keep moving!", "Stay alert!"}
         local phraseCount = {}
-        local activeTimers = {}
         for _, bot in ipairs(bots) do
             phraseCount[bot] = 0
         end
@@ -4328,7 +4327,7 @@ lia.command.add("botspeak", {
                 bot:Say(randomPhrase)
                 phraseCount[bot] = phraseCount[bot] + 1
                 if phraseCount[bot] < phrasesPerBot then
-                    activeTimers[bot] = timer.Simple(cooldown, function() if IsValid(bot) then makeBotSpeak(bot) end end)
+                    timer.Simple(cooldown, function() if IsValid(bot) then makeBotSpeak(bot) end end)
                 else
                     client:notify("Bot " .. (bot:GetName() or tostring(bot)) .. " finished all " .. phrasesPerBot .. " phrases")
                 end

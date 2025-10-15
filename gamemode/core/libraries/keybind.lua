@@ -471,7 +471,7 @@ if CLIENT then
                         combo:AddChoice(c.txt, c.keycode)
                     end
 
-                    combo.OnSelect = function(index, text, newKey)
+                    combo.OnSelect = function(_, _, newKey)
                         if newKey == nil then return end
                         if isstring(newKey) then
                             local keyCode = KeybindKeys[string.lower(newKey)]

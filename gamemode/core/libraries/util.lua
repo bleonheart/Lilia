@@ -434,7 +434,6 @@ else
     function lia.util.drawBlur(panel, amount, passes, alpha)
         amount = amount or 5
         alpha = alpha or 255
-        passes = passes or 0.2
         local maxPasses = 3
         surface.SetMaterial(lia.util.getMaterial("pp/blurscreen"))
         surface.SetDrawColor(255, 255, 255, alpha)

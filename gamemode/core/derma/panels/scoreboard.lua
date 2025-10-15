@@ -168,7 +168,7 @@ function PANEL:Init()
                 hlbl:SizeToContents()
                 hlbl:SetContentAlignment(4)
                 if IsValid(cat.Header) then
-                    cat.Header.PerformLayout = function(_, ww, hh)
+                    cat.Header.PerformLayout = function(_, _, hh)
                         hlbl:SizeToContents()
                         hlbl:SetPos(10, (hh - hlbl:GetTall()) * 0.5)
                     end
