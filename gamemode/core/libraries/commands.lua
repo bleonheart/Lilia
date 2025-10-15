@@ -754,10 +754,6 @@ if SERVER then
         lia.information(L("charsFixed"))
     end)
 
-
-
-
-
     concommand.Add("test_all_notifications", function()
         local notificationTypes = {
             {
