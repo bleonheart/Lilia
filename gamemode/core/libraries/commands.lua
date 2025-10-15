@@ -754,47 +754,9 @@ if SERVER then
         lia.information(L("charsFixed"))
     end)
 
-    concommand.Add("lia_character_status", function(client)
-        print("=== ONLINE PLAYERS CHARACTER STATUS ===")
-        local players = player.GetHumans()
-        local loadedCount = 0
-        local totalCount = #players
-        for _, ply in ipairs(players) do
-            local hasChar = ply:getChar() ~= nil
-            local status = hasChar and "LOADED" or "NO CHARACTER"
-            local charInfo = ""
-            if hasChar then
-                local char = ply:getChar()
-                charInfo = string.format(" (ID: %s, Name: %s)", char:getID(), char:getName())
-                loadedCount = loadedCount + 1
-            end
 
-            print(string.format("[%s] %s - %s%s", ply:SteamID(), ply:Name(), status, charInfo))
-        end
 
-        print(string.format("=== SUMMARY: %d/%d online players have characters loaded ===", loadedCount, totalCount))
-    end)
 
-    concommand.Add("lia_character_status_all", function(client)
-        print("=== ALL PLAYERS (INCLUDING BOTS) CHARACTER STATUS ===")
-        local players = player.GetAll()
-        local loadedCount = 0
-        local totalCount = #players
-        for _, ply in ipairs(players) do
-            local hasChar = ply.getChar and ply:getChar() ~= nil
-            local status = hasChar and "LOADED" or "NO CHARACTER"
-            local charInfo = ""
-            if hasChar then
-                local char = ply:getChar()
-                charInfo = string.format(" (ID: %s, Name: %s)", char:getID(), char:getName())
-                loadedCount = loadedCount + 1
-            end
-
-            print(string.format("[%s] %s%s - %s%s", ply:IsBot() and "BOT" or ply:SteamID(), ply:Name(), ply:IsBot() and " [BOT]" or "", status, charInfo))
-        end
-
-        print(string.format("=== SUMMARY: %d/%d total players have characters loaded ===", loadedCount, totalCount))
-    end)
 
     concommand.Add("test_all_notifications", function()
         local notificationTypes = {
@@ -4217,7 +4179,6 @@ lia.command.add("fillwithbots", {
     onRun = function(client)
         if not SERVER then return end
         if not timer.Exists("Bots_Add_Timer") then
-            local spawnPos = FindSafeBotSpawnPosition(client, 400)
             timer.Create("Bots_Add_Timer", 2, 0, function()
                 if #player.GetAll() < game.MaxPlayers() then
                     game.ConsoleCommand("bot\n")
@@ -4256,7 +4217,6 @@ lia.command.add("spawnbots", {
             return
         end
 
-        local baseSpawnPos = FindSafeBotSpawnPosition(client, 400)
         local botsSpawned = 0
         client:notify("Spawning " .. requestedAmount .. " bots...")
         for i = 1, requestedAmount do
