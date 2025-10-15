@@ -576,16 +576,6 @@ if SERVER then
         end
     end)
 
-    concommand.Add("lia_reload", function(client)
-        if IsValid(client) and not client:IsSuperAdmin() then
-            client:notifyErrorLocalized("staffPermissionDenied")
-            return
-        end
-
-        lia.loader.load()
-        lia.information(L("configReloaded"))
-    end)
-
     concommand.Add("lia_check_updates", function(client)
         if IsValid(client) and not client:IsSuperAdmin() then
             client:notifyErrorLocalized("staffPermissionDenied")
@@ -762,6 +752,29 @@ if SERVER then
 
         lia.db.fixCharacters()
         lia.information(L("charsFixed"))
+    end)
+
+    concommand.Add("lia_character_status", function(client)
+        print("=== ONLINE PLAYERS CHARACTER STATUS ===")
+        local players = player.GetHumans()
+        local loadedCount = 0
+        local totalCount = #players
+
+        for _, ply in ipairs(players) do
+            local hasChar = ply:getChar() ~= nil
+            local status = hasChar and "LOADED" or "NO CHARACTER"
+            local charInfo = ""
+
+            if hasChar then
+                local char = ply:getChar()
+                charInfo = string.format(" (ID: %s, Name: %s)", char:getID(), char:getName())
+                loadedCount = loadedCount + 1
+            end
+
+            print(string.format("[%s] %s - %s%s", ply:SteamID(), ply:Name(), status, charInfo))
+        end
+
+        print(string.format("=== SUMMARY: %d/%d online players have characters loaded ===", loadedCount, totalCount))
     end)
 
     concommand.Add("test_all_notifications", function()
@@ -4188,8 +4201,6 @@ lia.command.add("fillwithbots", {
             local spawnPos = FindSafeBotSpawnPosition(client, 400)
             timer.Create("Bots_Add_Timer", 2, 0, function()
                 if #player.GetAll() < game.MaxPlayers() then
-                    lia.botCreator = client
-                    lia.botSpawnPos = spawnPos + Vector(math.random(-100, 100), math.random(-100, 100), 0)
                     game.ConsoleCommand("bot\n")
                 else
                     timer.Remove("Bots_Add_Timer")
@@ -4206,9 +4217,6 @@ lia.command.add("bot", {
     desc = "botSpawnDesc",
     onRun = function(client)
         if not SERVER then return end
-        local spawnPos = FindSafeBotSpawnPosition(client, 300)
-        lia.botCreator = client
-        lia.botSpawnPos = spawnPos
         game.ConsoleCommand("bot\n")
     end
 })
@@ -4244,47 +4252,12 @@ lia.command.add("spawnbots", {
         for i = 1, requestedAmount do
             timer.Simple((i - 1) * 0.5, function()
                 if not IsValid(client) then return end
-                local spawnPos = baseSpawnPos + Vector(math.random(-150, 150), math.random(-150, 150), math.random(-32, 32))
-                lia.botCreator = client
-                lia.botSpawnPos = spawnPos
                 game.ConsoleCommand("bot\n")
                 botsSpawned = botsSpawned + 1
             end)
         end
 
         timer.Simple(requestedAmount * 0.5 + 2, function() if IsValid(client) then client:notify("Successfully spawned " .. botsSpawned .. " bots!") end end)
-    end
-})
-
-lia.command.add("spawnbotoffaction", {
-    superAdminOnly = true,
-    desc = "spawnBotOfFactionDesc",
-    arguments = {
-        {
-            name = "faction",
-            type = "string"
-        }
-    },
-    onRun = function(client, arguments)
-        if not SERVER then return end
-        local factionName = arguments.faction
-        if not factionName then
-            client:notifyErrorLocalized("invalidArg")
-            return
-        end
-
-        local faction = lia.faction.teams[factionName] or lia.util.findFaction(client, factionName)
-        if not faction then
-            client:notifyErrorLocalized("invalidFaction")
-            return
-        end
-
-        local spawnPos = FindSafeBotSpawnPosition(client, 300)
-        lia.botCreator = client
-        lia.botSpawnPos = spawnPos
-        lia.botFaction = faction
-        client:notify("Spawning bot of faction: " .. faction.name)
-        game.ConsoleCommand("bot\n")
     end
 })
 
@@ -6998,6 +6971,38 @@ lia.command.add("recogbots", {
         local fakeName = arguments[2]
         for _, ply in player.Iterator() do
             if ply:IsBot() then lia.module.get("recognition"):ForceRecognizeRange(ply, range, fakeName) end
+        end
+    end
+})
+
+lia.command.add("kickbots", {
+    privilege = "Manage Bots",
+    desc = "kickAllBotsDesc",
+    onRun = function(client)
+        local kickedCount = 0
+        for _, bot in player.Iterator() do
+            if bot:IsBot() then
+                bot:Kick(L("allBotsKicked"))
+                client:notifySuccessLocalized("plyKicked")
+                lia.log.add(client, "plyKick", bot:Name())
+                lia.db.insertTable({
+                    player = bot:Name(),
+                    playerSteamID = bot:SteamID(),
+                    steamID = bot:SteamID(),
+                    action = "plykick",
+                    staffName = client:Name(),
+                    staffSteamID = client:SteamID(),
+                    timestamp = os.time()
+                }, nil, "staffactions")
+
+                kickedCount = kickedCount + 1
+            end
+        end
+
+        if kickedCount == 0 then
+            client:notifyErrorLocalized("noBotsToKick")
+        else
+            client:notifyLocalized("botsKickedAll", kickedCount)
         end
     end
 })

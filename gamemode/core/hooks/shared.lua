@@ -5,6 +5,15 @@ function GM:OnCharVarChanged(character, varName, oldVar, newVar)
             v(character, oldVar, newVar)
         end
     end
+    --[[
+    if SERVER and varName == "faction" and oldVar ~= newVar then
+        local defaultClass = lia.faction.getDefaultClass(newVar)
+        if defaultClass then
+            character:setClass(defaultClass.index)
+        else
+            character:setClass(nil)
+        end
+    end]]
 end
 
 function GM:GetModelGender(model)

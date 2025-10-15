@@ -370,10 +370,7 @@ function GM:PostPlayerLoadout(client)
 end
 
 function GM:ShouldSpawnClientRagdoll(client)
-    if client:IsBot() then
-        client:Spawn()
-        return false
-    end
+    if client:IsBot() then return false end
 end
 
 function GM:DoPlayerDeath(client, attacker)
@@ -460,7 +457,7 @@ function GM:PlayerDisconnected(client)
     local character = client:getChar()
     if character then
         hook.Run("OnCharDisconnect", client, character)
-        character:save()
+        lia.char.unloadCharacter(character:getID())
     end
 
     client:removeRagdoll()
@@ -582,16 +579,6 @@ function GM:SetupBotPlayer(client)
         local randomItemID = itemKeys[randomIndex]
         inventory:add(randomItemID)
         table.remove(itemKeys, randomIndex)
-    end
-
-    if lia.botSpawnPos and isvector(lia.botSpawnPos) then
-        client:SetPos(lia.botSpawnPos)
-        lia.botSpawnPos = nil
-    end
-
-    if lia.botFaction and character then
-        character:setFaction(lia.botFaction.index)
-        lia.botFaction = nil
     end
 
     if lia.botCreator and IsValid(lia.botCreator) then
