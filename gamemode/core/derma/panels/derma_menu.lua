@@ -386,20 +386,14 @@ function PANEL:UpdateSize()
 end
 
 function PANEL:Open(x, y, skipanimation, ownerpanel)
-    if x and y then
-        self:SetPos(x, y)
-    end
-
+    if x and y then self:SetPos(x, y) end
     self:Open()
-
     if not skipanimation then
         self:SetAlpha(0)
         self:AlphaTo(255, 0.1, 0)
     end
 
-    if IsValid(ownerpanel) then
-        self.ownerPanel = ownerpanel
-    end
+    if IsValid(ownerpanel) then self.ownerPanel = ownerpanel end
 end
 
 function PANEL:Open()
@@ -415,9 +409,7 @@ end
 
 function PANEL:GetOpenSubMenu()
     for _, item in ipairs(self.Items) do
-        if IsValid(item) and item._submenu and item._submenu_open and IsValid(item._submenu) then
-            return item._submenu
-        end
+        if IsValid(item) and item._submenu and item._submenu_open and IsValid(item._submenu) then return item._submenu end
     end
     return nil
 end
@@ -479,9 +471,7 @@ end
 
 function PANEL:ClearHighlights()
     for _, item in ipairs(self.Items) do
-        if IsValid(item) and item.SetHovered then
-            item:SetHovered(false)
-        end
+        if IsValid(item) and item.SetHovered then item:SetHovered(false) end
     end
 end
 
@@ -496,11 +486,9 @@ function PANEL:HighlightItem(item)
     item:SetHovered(true)
 end
 
-function PANEL:OptionSelected(option, optionText)
+function PANEL:OptionSelected(option)
     -- Hook for when an option is selected
-    if option and IsValid(option) and option.Func then
-        option:DoClick()
-    end
+    if option and IsValid(option) and option.Func then option:DoClick() end
 end
 
 function PANEL:OptionSelectedInternal(option)
@@ -521,9 +509,7 @@ function PANEL:SetMinimumWidth(minWidth)
 end
 
 function PANEL:SetOpenSubMenu(item)
-    if IsValid(item) and item._submenu and not item._submenu_open then
-        item:OpenSubMenu()
-    end
+    if IsValid(item) and item._submenu and not item._submenu_open then item:OpenSubMenu() end
 end
 
 -- DScrollPanel methods
@@ -559,24 +545,17 @@ end
 function PANEL:ScrollToChild(panel)
     -- Scroll to make the child panel visible
     if not IsValid(panel) then return end
-
     local canvas = self:GetCanvas()
     if not IsValid(canvas) then return end
-
     local panelY = panel:GetY()
     local canvasY = canvas:GetY()
     local scrollY = panelY - canvasY
-
     local vbar = self:GetVBar()
-    if IsValid(vbar) then
-        vbar:AnimateTo(scrollY, 0.5, 0, 0.5)
-    end
+    if IsValid(vbar) then vbar:AnimateTo(scrollY, 0.5, 0, 0.5) end
 end
 
 function PANEL:SetCanvas(canvas)
-    if IsValid(self.canvas) then
-        self.canvas:Remove()
-    end
+    if IsValid(self.canvas) then self.canvas:Remove() end
     self.canvas = canvas
     if IsValid(canvas) then
         canvas:SetParent(self)

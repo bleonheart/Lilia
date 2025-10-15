@@ -317,7 +317,7 @@ function PANEL:GetIsMenu()
     return false
 end
 
-function PANEL:SetIsMenu(isMenu)
+function PANEL:SetIsMenu()
     -- liaFrame doesn't have menu-specific behavior, but this method is provided for compatibility
 end
 
@@ -337,7 +337,7 @@ function PANEL:GetPaintShadow()
     return true
 end
 
-function PANEL:SetPaintShadow(shouldPaint)
+function PANEL:SetPaintShadow()
     -- liaFrame always paints shadow, but this method is provided for compatibility
 end
 

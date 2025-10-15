@@ -179,7 +179,7 @@ function PANEL:OpenMenu()
                 spacer:Dock(TOP)
                 spacer:DockMargin(2, 2, 2, 0)
                 spacer:SetTall(8)
-                spacer.Paint = function(s, w, h)
+                spacer.Paint = function(_, w, h)
                     if not IsValid(self) then return end
                     surface.SetDrawColor(lia.color.theme.text:Unpack())
                     surface.DrawRect(0, h * 0.5 - 1, w, 2)
@@ -236,7 +236,7 @@ function PANEL:OpenMenu()
                 spacer:Dock(TOP)
                 spacer:DockMargin(2, 2, 2, 0)
                 spacer:SetTall(8)
-                spacer.Paint = function(s, w, h)
+                spacer.Paint = function(_, w, h)
                     if not IsValid(self) then return end
                     surface.SetDrawColor(lia.color.theme.text:Unpack())
                     surface.DrawRect(0, h * 0.5 - 1, w, 2)
@@ -310,7 +310,7 @@ function PANEL:GetOptionText(index)
 end
 
 function PANEL:GetOptionTextByData(data)
-    for i, choice in ipairs(self.choices) do
+    for _, choice in ipairs(self.choices) do
         if choice.data == data then return choice.text end
     end
     return nil

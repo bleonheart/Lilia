@@ -922,7 +922,7 @@ local function OpenReasonUI(tgt, cmd)
         ts:SetDecimals(0)
 
         -- Override Paint to position value above bar
-        ts.Paint = function(s, w, h)
+        ts.Paint = function(s, w)
             if not IsValid(s.Label) then return end
 
             -- Draw label above the slider

@@ -405,12 +405,12 @@ function PANEL:DoDoubleClick(lineID, line)
     if self.OnRowDoubleClick then self:OnRowDoubleClick(lineID, line) end
 end
 
-function PANEL:OnRowRightClick(lineID, line)
+function PANEL:OnRowRightClick(_, line)
     -- Default implementation - can be overridden
     if self.OnRightClick then self:OnRightClick(line) end
 end
 
-function PANEL:OnRowSelected(lineID, line)
+function PANEL:OnRowSelected()
     -- Default implementation - can be overridden
 end
 
@@ -419,7 +419,7 @@ function PANEL:OnClickLine(line, isSelected)
     if self.OnRowClick then self:OnRowClick(line, isSelected) end
 end
 
-function PANEL:OnRequestResize(line, iWidth, iHeight)
+function PANEL:OnRequestResize(_, iWidth, iHeight)
     -- Default implementation - can be overridden
     return iWidth, iHeight
 end

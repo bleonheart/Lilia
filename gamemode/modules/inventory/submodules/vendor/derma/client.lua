@@ -1033,7 +1033,7 @@ function PANEL:Init()
         slider.OnValueChanged = function(_, val) lia.vendor.editor.bodygroup(i, math.Round(val)) end
 
         -- Override Paint to position value above bar
-        slider.Paint = function(s, w, h)
+        slider.Paint = function(s, w)
             if not IsValid(s.Label) then return end
 
             -- Draw label above the slider
