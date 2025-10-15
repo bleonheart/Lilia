@@ -222,7 +222,6 @@ function sound.PlayFile(path, mode, cb)
                     local wants3d = reqMode:find("3d", 1, true) ~= nil
                     local attempts = {}
                     local seen = {}
-
                     local function add(m)
                         if m and m ~= "" and not seen[m] then
                             seen[m] = true
@@ -356,7 +355,6 @@ function surface.PlaySound(soundPath, mode, cb)
         end
     end
 
-    -- Fallback: try the original path if it's not a websound
     origSurfacePlaySound(soundPath)
     if cb then cb(true) end
 end

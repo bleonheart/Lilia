@@ -402,7 +402,6 @@ if SERVER then
             net.WriteUInt(self:getID(), 32)
             net.WriteEntity(self:getPlayer())
             net.Send(receiver)
-            -- Ensure the receiver also knows the player's char id via global netvar
             local ply = self:getPlayer()
             if IsValid(ply) then
                 lia.net[ply] = lia.net[ply] or {}

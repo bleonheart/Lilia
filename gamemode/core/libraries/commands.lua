@@ -744,44 +744,6 @@ if SERVER then
         end)
     end)
 
-    -- Debug: force restore and sync char list for a player by SteamID (server console only)
-    concommand.Add("lia_debug_restore_chars", function(ply, _, args)
-        if IsValid(ply) then
-            if IsValid(ply) then ply:notifyErrorLocalized("commandConsoleOnly") end
-            return
-        end
-
-        local steamID = args[1]
-        if not steamID or steamID == "" then
-            print("[CHAR-DEBUG] Usage: lia_debug_restore_chars <steamid>")
-            return
-        end
-
-        for _, client in player.Iterator() do
-            if client:SteamID() == steamID then
-                print("[CHAR-DEBUG] Forcing lia.char.restore for", client:Name(), steamID)
-                hook.Run("PlayerLiliaDataLoaded", client)
-                return
-            end
-        end
-
-        print("[CHAR-DEBUG] No online player with SteamID:", steamID)
-    end)
-
-    -- Debug: print server-side char list for all players
-    concommand.Add("lia_debug_list_chars", function(client)
-        if IsValid(client) then
-            client:notifyErrorLocalized("commandConsoleOnly")
-            return
-        end
-
-        print("[CHAR-DEBUG] Listing server-side character lists for online players:")
-        for _, ply in player.Iterator() do
-            local ids = ply.liaCharList or {}
-            print(string.format("- %s (%s): %s", ply:Name(), ply:SteamID(), (#ids > 0 and table.concat(ids, ", ") or "<none>")))
-        end
-    end)
-
     concommand.Add("lia_fix_characters", function(client)
         if IsValid(client) then
             client:notifyErrorLocalized("commandConsoleOnly")
@@ -797,12 +759,10 @@ if SERVER then
         local players = player.GetHumans()
         local loadedCount = 0
         local totalCount = #players
-
         for _, ply in ipairs(players) do
             local hasChar = ply:getChar() ~= nil
             local status = hasChar and "LOADED" or "NO CHARACTER"
             local charInfo = ""
-
             if hasChar then
                 local char = ply:getChar()
                 charInfo = string.format(" (ID: %s, Name: %s)", char:getID(), char:getName())
@@ -815,13 +775,11 @@ if SERVER then
         print(string.format("=== SUMMARY: %d/%d online players have characters loaded ===", loadedCount, totalCount))
     end)
 
-    -- Include bots in the character status
     concommand.Add("lia_character_status_all", function(client)
         print("=== ALL PLAYERS (INCLUDING BOTS) CHARACTER STATUS ===")
         local players = player.GetAll()
         local loadedCount = 0
         local totalCount = #players
-
         for _, ply in ipairs(players) do
             local hasChar = ply.getChar and ply:getChar() ~= nil
             local status = hasChar and "LOADED" or "NO CHARACTER"
@@ -4272,7 +4230,6 @@ lia.command.add("fillwithbots", {
         end
     end
 })
-
 
 lia.command.add("spawnbots", {
     superAdminOnly = true,

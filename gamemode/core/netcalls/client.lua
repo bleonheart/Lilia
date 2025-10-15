@@ -291,7 +291,6 @@ net.Receive("liaNetVar", function()
     lia.net[index] = lia.net[index] or {}
     local oldValue = lia.net[index][key]
     lia.net[index][key] = value
-
     local entity = Entity(index)
     if IsValid(entity) then hook.Run("NetVarChanged", entity, key, oldValue, value) end
 end)
@@ -304,36 +303,6 @@ net.Receive("liaNetLocal", function()
     local oldValue = lia.net[idx][key]
     lia.net[idx][key] = value
     hook.Run("NetVarChanged", LocalPlayer(), key, oldValue, value)
-end)
-
--- Client debug helper: print current client-side char state
-concommand.Add("lia_debug_client_char", function()
-    local ply = LocalPlayer()
-    local char = IsValid(ply) and ply.getChar and ply:getChar() or nil
-    print("[CHAR-DEBUG] Client char status:")
-    if char then
-        print("- CurrentCharID:", char:getID())
-        print("- Name:", char:getName())
-        print("- Faction:", char:getFaction())
-        local inv = char:getInv(true)
-        print("- Inventories:", istable(inv) and #inv or 0)
-    else
-        print("- No character loaded")
-    end
-
-    local list = lia.characters or {}
-    print("- Received lia.characters list:", #list > 0 and table.concat(list, ", ") or "<none>")
-end)
-
--- Client debug helper: list all players' netvar 'char' and resolved character
-concommand.Add("lia_debug_players_char", function()
-    print("[CHAR-DEBUG] Client-side view of players and their character linkage:")
-    for _, ply in ipairs(player.GetAll()) do
-        local id = ply:getNetVar("char") or nil
-        local ch = ply.getChar and ply:getChar() or nil
-        local chName = ch and ch.getName and ch:getName() or "<nil>"
-        print(string.format("- %s%s | netvar char: %s | hasChar: %s | charName: %s", ply:Name(), ply:IsBot() and " [BOT]" or "", tostring(id), tostring(ch ~= nil), chName))
-    end
 end)
 
 net.Receive("liaActBar", function()

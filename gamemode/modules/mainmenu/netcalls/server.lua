@@ -142,7 +142,6 @@ net.Receive("liaCharDelete", function(_, client)
     end
 end)
 
-
 hook.Add("PlayerLoadedChar", "StaffCharacterDiscordPrompt", function(client, character)
     if character:getFaction() ~= FACTION_STAFF then return end
     local storedDiscord = client:getLiliaData("staffDiscord")

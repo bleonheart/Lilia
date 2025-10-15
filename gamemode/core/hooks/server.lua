@@ -583,7 +583,6 @@ function GM:SetupBotPlayer(client)
         table.remove(itemKeys, randomIndex)
     end
 
-
     client:Spawn()
 end
 

@@ -154,8 +154,6 @@ end
 function MODULE:PlayerDeath(client, _, attacker)
     local char = client:getChar()
     if not char then return end
-
-    -- Bots don't get death restrictions since they respawn instantly
     if not client:IsBot() then
         client:setNetVar("IsDeadRestricted", true)
         client:setNetVar("lastDeathTime", os.time())
