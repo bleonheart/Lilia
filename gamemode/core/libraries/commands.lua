@@ -968,6 +968,39 @@ else
         end
     end)
 
+    local function findImagesRecursive(dir, result)
+        result = result or {}
+        local files, dirs = file.Find(dir .. "*", "DATA")
+        if files then
+            for _, fn in ipairs(files) do
+                table.insert(result, dir .. fn)
+            end
+        end
+
+        if dirs then
+            for _, subdir in ipairs(dirs) do
+                findImagesRecursive(dir .. subdir .. "/", result)
+            end
+        end
+        return result
+    end
+
+    local function deleteDirectoryRecursive(dir)
+        local files, dirs = file.Find(dir .. "*", "DATA")
+        if files then
+            for _, fn in ipairs(files) do
+                file.Delete(dir .. fn)
+            end
+        end
+
+        if dirs then
+            for _, subdir in ipairs(dirs) do
+                deleteDirectoryRecursive(dir .. subdir .. "/")
+                file.Delete(dir .. subdir)
+            end
+        end
+    end
+
     concommand.Add("lia_saved_images", function()
         local baseDir = "lilia/images/"
         local files = findImagesRecursive(baseDir)

@@ -161,7 +161,7 @@ function MODULE:PopulateAdminStick(AdminMenu, target)
 end
 
 -- Add door information to admin stick HUD
-function MODULE:AddToAdminStickHUD(client, target, information)
+function MODULE:AddToAdminStickHUD(_, target, information)
     if IsValid(target) and target:isDoor() then
         -- Allow other modules to add custom door information
         local extraInfo = {}

@@ -748,7 +748,7 @@ local function GenerateDynamicCategories()
     local categoryNames = {}
     -- Scan all commands to find categories and subcategories
     local adminStickCount = 0
-    for k, v in pairs(lia.command.list) do
+    for _, v in pairs(lia.command.list) do
         if v.AdminStick and istable(v.AdminStick) then
             adminStickCount = adminStickCount + 1
             local category = v.AdminStick.Category
@@ -812,7 +812,7 @@ local function GenerateDynamicCategories()
     end
 
     -- Localize category and subcategory names
-    for categoryKey, category in pairs(mergedCategories) do
+    for _, category in pairs(mergedCategories) do
         -- Try to get localized name for the category
         local localizedName = L(category.name)
         if localizedName ~= category.name then
@@ -846,7 +846,7 @@ local function GenerateDynamicCategories()
         end
 
         -- Localize subcategory names
-        for subKey, subCategory in pairs(category.subcategories) do
+        for _, subCategory in pairs(category.subcategories) do
             local localizedSubName = L(subCategory.name)
             if localizedSubName ~= subCategory.name then
                 subCategory.name = localizedSubName
@@ -1087,7 +1087,7 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
     for _, categoryKey in ipairs(categoryOrder) do
         local category = categories[categoryKey]
         if category then
-            local hasContent = false
+            local hasContent
             -- Check if category has content based on target type and permissions
             if categoryKey == "playerInformation" and tgt:IsPlayer() then
                 hasContent = true

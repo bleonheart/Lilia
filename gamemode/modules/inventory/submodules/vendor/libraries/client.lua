@@ -131,7 +131,7 @@ net.Receive("liaVendorAllowClass", function()
     hook.Run("VendorClassUpdated", vendor, id, allowed)
 end)
 
-function MODULE:AddToAdminStickHUD(client, target, information)
+function MODULE:AddToAdminStickHUD(_, target, information)
     if not IsValid(target) or not target.IsVendor then return end
     -- Add vendor name
     local name = target:getName()
