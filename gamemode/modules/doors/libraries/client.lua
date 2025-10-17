@@ -67,20 +67,17 @@ function MODULE:DrawEntityInfo(entity, alpha)
         local doorData = entity:getNetVar("doorData", {})
         if not (doorData.hidden or false) then
             if doorData.disabled then
-                local pos = entity:LocalToWorld(entity:OBBCenter()):ToScreen()
-                lia.util.drawText(L("doorDisabled"), pos.x, pos.y, ColorAlpha(color_white, alpha), 1, 1)
+                lia.util.drawEntText(entity, L("doorDisabled"), 0, alpha)
                 return
             end
 
-            local pos = entity:LocalToWorld(entity:OBBCenter()):ToScreen()
-            local x, y = pos.x, pos.y
             local doorInfo = {}
             hook.Run("GetDoorInfo", entity, doorData, doorInfo)
+            local yOffset = 0
             for _, info in ipairs(doorInfo) do
                 if info.text and info.text ~= "" then
-                    local color = info.color or ColorAlpha(color_white, alpha)
-                    lia.util.drawText(info.text, x, y, color, 1, 1)
-                    y = y + 20
+                    lia.util.drawEntText(entity, info.text, yOffset, alpha)
+                    yOffset = yOffset + 80 -- Increased spacing between entries
                 end
             end
         end

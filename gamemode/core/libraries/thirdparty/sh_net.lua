@@ -334,7 +334,7 @@ if SERVER then
         local bSendPVS = false
         if not istable(player) then
             if not player then
-                player = _player.GetAll()
+                player = player.GetAll()
             elseif type(player) == "Vector" then
                 bSendPVS = true
             else

@@ -970,10 +970,10 @@ end
 
 MODULE.adminStickCategories = MODULE.adminStickCategories or {}
 MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {}
-function MODULE:LiliaLoaded()
+function MODULE:InitializedModules()
     local categories, categoryOrder = GenerateDynamicCategories()
-    MODULE.adminStickCategories = categories
-    MODULE.adminStickCategoryOrder = categoryOrder
+    self.adminStickCategories = categories
+    self.adminStickCategoryOrder = categoryOrder
 end
 
 function MODULE:AddAdminStickCategory(key, data, index)
@@ -1756,11 +1756,53 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
     if IsValid(m) then
         local ic = data.AdminStick.Icon or "icon16/page.png"
         m:AddOption(L(name), function()
-            local id = GetIdentifier(tgt)
-            local cmd = "say /" .. key
-            if id ~= "" then cmd = cmd .. " " .. QuoteArgs(id) end
-            cl:ConCommand(cmd)
-            timer.Simple(0.1, function() AdminStickIsOpen = false end)
+            -- Check if the command has arguments defined
+            if data.arguments and #data.arguments > 0 then
+                local argTypes = {}
+                local defaults = {}
+                -- Build ordered argument types table
+                for _, arg in ipairs(data.arguments) do
+                    table.insert(argTypes, {arg.name, arg.type})
+                    if arg.optional then defaults[arg.name] = "" end
+                end
+
+                lia.derma.requestArguments(name .. " - Arguments", argTypes, function(success, argData)
+                    if not success or not argData then
+                        timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                        LocalPlayer().AdminStickTarget = nil
+                        return
+                    end
+
+                    local id = GetIdentifier(tgt)
+                    local cmd = "say /" .. key
+                    -- Check if the first argument is a target/player type
+                    local hasTargetArg = data.arguments[1] and (data.arguments[1].type == "player" or data.arguments[1].type == "target")
+                    -- Add target identifier if needed (only if command doesn't have a target argument)
+                    if id ~= "" and not hasTargetArg then cmd = cmd .. " " .. QuoteArgs(id) end
+                    -- Add command arguments in the order they appear in the command definition
+                    for _, arg in ipairs(data.arguments) do
+                        local value = argData[arg.name]
+                        if value and value ~= "" then
+                            -- If this is a target argument, use the target identifier instead
+                            if (arg.type == "player" or arg.type == "target") and id ~= "" then
+                                cmd = cmd .. " " .. QuoteArgs(id)
+                            else
+                                cmd = cmd .. " " .. QuoteArgs(value)
+                            end
+                        end
+                    end
+
+                    -- Test print to see the final command
+                    cl:ConCommand(cmd)
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end, defaults)
+            else
+                local id = GetIdentifier(tgt)
+                local cmd = "say /" .. key
+                if id ~= "" then cmd = cmd .. " " .. QuoteArgs(id) end
+                cl:ConCommand(cmd)
+                timer.Simple(0.1, function() AdminStickIsOpen = false end)
+            end
         end):SetIcon(ic)
     end
 end
