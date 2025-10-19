@@ -78,7 +78,6 @@ function PANEL:setActive(state)
     self:SetDraggable(state)
     self:SetMouseInputEnabled(state)
     self:SetKeyboardInputEnabled(state)
-    -- Ensure scrollbar is hidden when chatbox becomes inactive
     if not state then self:setScrollbarVisible(false) end
     if state then
         self.entry = self:Add("liaEntry")
@@ -293,7 +292,7 @@ function PANEL:addText(...)
             local str = tostring(item):gsub("<", "&lt;"):gsub(">", "&gt;")
             markup = markup .. str:gsub("%b**", function(val)
                 local inner = val:sub(2, -2)
-                if inner:find("%S") then return "<font=LiliaFont.20Italics>" .. inner .. "</font>" end
+                if inner:find("%S") then return "<font=LiliaFont.20i>" .. inner .. "</font>" end
             end)
         end
     end
@@ -352,11 +351,7 @@ function PANEL:Think()
         self.text = nil
     end
 
-    -- Ensure scrollbar is hidden when chatbox is not active
-    if not self.active then
-        self:setScrollbarVisible(false)
-    end
-
+    if not self.active then self:setScrollbarVisible(false) end
     if self.active and IsValid(self.text) and IsValid(self.commandList) then
         local textHasFocus = self.text:HasFocus()
         local currentText = self.text:GetText()
@@ -419,7 +414,7 @@ function PANEL:rebuildPanelMarkup(panel)
             local str = tostring(item):gsub("<", "&lt;"):gsub(">", "&gt;")
             markup = markup .. str:gsub("%b**", function(val)
                 local inner = val:sub(2, -2)
-                if inner:find("%S") then return "<font=LiliaFont.20Italics>" .. inner .. "</font>" end
+                if inner:find("%S") then return "<font=LiliaFont.20i>" .. inner .. "</font>" end
             end)
         end
     end

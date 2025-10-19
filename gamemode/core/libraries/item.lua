@@ -472,12 +472,12 @@ end
 function lia.item.generateAmmo()
     local entityList = {}
     local scriptedEntities = scripted_ents.GetList()
-    for className, _ in pairs(scriptedEntities) do
-        if className then entityList[className] = true end
+    for className, entityData in pairs(scriptedEntities) do
+        if type(className) == "string" and className then entityList[className] = true end
     end
 
     for className, _ in pairs(entityList) do
-        if not className then continue end
+        if not className or type(className) ~= "string" then continue end
         local isArc9Ammo = className:find("^arc9_ammo_")
         local isArccwAmmo = className:find("^arccw_ammo_")
         if not (isArc9Ammo or isArccwAmmo) then continue end
