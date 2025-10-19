@@ -18,7 +18,7 @@ net.Receive("liaStringRequestCancel", function(_, client)
     if client.liaStrReqs and client.liaStrReqs[id] then client.liaStrReqs[id] = nil end
 end)
 
-net.Receive("npc_weapon_change", function(_, ply)
+net.Receive("liaNPCWeaponChange", function(_, ply)
     local ent = net.ReadEntity()
     local wep = net.ReadString()
     if not IsValid(ent) or not ent:IsNPC() then return end

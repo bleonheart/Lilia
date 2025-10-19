@@ -134,7 +134,7 @@ end
 
 duplicator.RegisterEntityModifier("npc_weapon", GiveWeapon)
 local function changeWep(ent, wep)
-    net.Start("npc_weapon_change")
+    net.Start("liaNPCWeaponChange")
     net.WriteEntity(ent)
     net.WriteString(wep)
     net.SendToServer()
