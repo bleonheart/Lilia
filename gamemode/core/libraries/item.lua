@@ -472,7 +472,7 @@ end
 function lia.item.generateAmmo()
     local entityList = {}
     local scriptedEntities = scripted_ents.GetList()
-    for className, entityData in pairs(scriptedEntities) do
+    for className, _ in pairs(scriptedEntities) do
         if type(className) == "string" and className then entityList[className] = true end
     end
 
