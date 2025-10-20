@@ -17,6 +17,9 @@ function PANEL:Init()
     self:MakePopup()
     self:SetAlpha(0)
     self:AlphaTo(255, 0.2, 0)
+
+    -- Allow request dialogs to appear above this panel
+    self:SetZPos(50)
     self.buttons = self:Add("DPanel")
     self.buttons:DockMargin(0, 32, 0, 0)
     self.buttons:Dock(TOP)
@@ -231,7 +234,7 @@ function PANEL:updateItem(id, which, qty)
         container[id] = pnl
     end
 
-    if not isnumber(qty) then qty = which == "me" and LocalPlayer():getChar():getInv():getItemCount(id) or liaVendorEnt:getStock(id) end
+    if not isnumber(qty) then qty = which == "me" and LocalPlayer():getChar():getInv():getItemCount(id) or (IsValid(liaVendorEnt) and liaVendorEnt:getStock(id) or 0) end
     pnl:setQuantity(qty)
     return pnl
 end
@@ -265,6 +268,7 @@ function PANEL:applyCategoryFilter()
 
     self.items.vendor = {}
     self.items.me = {}
+    if not IsValid(liaVendorEnt) then return end
     local data = liaVendorEnt.items
     if not istable(data) then data = liaVendorEnt:getNetVar("items", {}) end
     for id in SortedPairs(data) do
@@ -515,6 +519,11 @@ function PANEL:updateLabel()
     local nameText = (self.suffix ~= "" and self.suffix or "") .. self.item:getName()
     self.name:SetText(nameText)
     self.description:SetText(self.item:getDesc() or L("noDesc"))
+    if not IsValid(liaVendorEnt) then
+        self.action:SetText(self.isSelling and L("vendorSellAction", "N/A") or L("vendorBuyAction", "N/A"))
+        return
+    end
+
     local price = liaVendorEnt:getPrice(self.item.uniqueID, self.isSelling)
     local priceSuffix
     if price == 0 then
@@ -534,6 +543,11 @@ function PANEL:Init()
     if IsValid(lia.gui.vendorEditor) then lia.gui.vendorEditor:Remove() end
     lia.gui.vendorEditor = self
     local entity = liaVendorEnt
+    if not IsValid(entity) then
+        self:Remove()
+        return
+    end
+
     local width = math.min(ScrW() * 0.95, 1000)
     local height = math.min(ScrH() * 0.90, 900)
     self:SetSize(width, height)
@@ -878,6 +892,11 @@ end
 
 function PANEL:OnRowRightClick(line)
     local entity = liaVendorEnt
+    if not IsValid(entity) then
+        LocalPlayer():notifyError("Vendor entity is not valid!")
+        return
+    end
+
     if IsValid(menu) then menu:Remove() end
     local uniqueID = line.item
     local itemTable = lia.item.list[uniqueID]
@@ -892,7 +911,7 @@ function PANEL:OnRowRightClick(line)
         LocalPlayer():requestString(itemTable:getName(), L("vendorPriceReq"), function(text)
             text = tonumber(text)
             lia.vendor.editor.price(uniqueID, text)
-        end, entity:getPrice(uniqueID)):SetParent(self)
+        end, entity:getPrice(uniqueID))
     end):SetImage("icon16/coins.png")
 
     local stock, stockPanel = menu:AddSubMenu(L("stock"))
@@ -903,14 +922,14 @@ function PANEL:OnRowRightClick(line)
         LocalPlayer():requestString(itemTable:getName(), L("vendorStockReq"), function(text)
             text = math.max(math.Round(tonumber(text) or 1), 1)
             lia.vendor.editor.stockMax(uniqueID, text)
-        end, max or 1):SetParent(self)
+        end, max or 1)
     end):SetImage("icon16/table_edit.png")
 
     stock:AddOption(L("vendorEditCurStock"), function()
         LocalPlayer():requestString(itemTable:getName(), L("vendorStockCurReq"), function(text)
             text = math.Round(tonumber(text) or 0)
             lia.vendor.editor.stock(uniqueID, text)
-        end, entity:getStock(uniqueID) or 0):SetParent(self)
+        end, entity:getStock(uniqueID) or 0)
     end):SetImage("icon16/table_edit.png")
 
     menu:Open()
@@ -918,6 +937,12 @@ end
 
 function PANEL:ReloadItemList(filter)
     local entity = liaVendorEnt
+    if not IsValid(entity) then
+        self.lines = {}
+        self.items:Clear()
+        return
+    end
+
     self.lines = {}
     self.items:Clear()
     for k, v in SortedPairsByMemberValue(lia.item.list, "name") do
