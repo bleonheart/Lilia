@@ -37,7 +37,6 @@ end
 
 function PANEL:Paint(w, h)
     if not IsValid(self.client) then return end
-    local vol = self.client:VoiceVolume()
     local themeAccent = lia.color.theme.theme
     -- Exact replication of adminstick drawBoxWithText styling
     local backgroundColor = Color(0, 0, 0, 150)
