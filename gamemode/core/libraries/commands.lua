@@ -1096,7 +1096,7 @@ else
         end
 
         if table.IsEmpty(factionOptions) then
-            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. "No factions found.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("noFactionsFound") .. "\n")
             return
         end
 
@@ -1278,16 +1278,16 @@ lia.command.add("demorequests", {
     privilege = "Staff",
     onRun = function(client)
         if SERVER then
-            client:notify("Opening request UI demo...")
-            client:binaryQuestion("Would you like to see all the request UI demos?", "Yes, show me!", "No, thanks", false, function(confirmed)
+            client:notify(L("openingDemo"))
+            client:binaryQuestion(L("demoQuestion"), L("yesShowMe"), L("noThanks"), false, function(confirmed)
                 if confirmed then
-                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
+                    client:requestDropdown(L("demoDropdownTitle"), L("chooseColor"), {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
                         if selected ~= nil then
-                            client:requestOptions("Demo: Multi-Select Options", "Select your favorite activities (max 3):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
+                            client:requestOptions(L("demoOptionsTitle"), L("selectFavoriteActivities"), {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
                                 if selectedOptions and #selectedOptions > 0 then
-                                    client:requestString("Demo: Text Input", "Enter a fun message (max 50 characters):", function(message)
+                                    client:requestString(L("demoTextInputTitle"), L("enterFunMessage"), function(message)
                                         if message then
-                                            client:requestArguments("Demo: Structured Input", {
+                                            client:requestArguments(L("demoStructuredTitle"), {
                                                 {"Name", "string"},
                                                 {
                                                     "Age",
@@ -1320,9 +1320,9 @@ lia.command.add("demorequests", {
                                                             text = "Exit Demo",
                                                             icon = "icon16/door.png"
                                                         }
-                                                    }, function(_, buttonText) client:notify("Demo completed! You selected: " .. buttonText) end, "Choose what to do next:")
+                                                    }, function(_, buttonText) client:notify(L("demoCompleted") .. buttonText) end, L("chooseNextAction"))
                                                 else
-                                                    client:notify("Arguments demo cancelled")
+                                                    client:notify(L("argumentsDemoCancelled"))
                                                 end
                                             end, {
                                                 Name = "Demo User",
@@ -1331,19 +1331,19 @@ lia.command.add("demorequests", {
                                                 ["Agree to Terms"] = true
                                             })
                                         else
-                                            client:notify("String input demo cancelled")
+                                            client:notify(L("stringInputDemoCancelled"))
                                         end
                                     end, "", 50)
                                 else
-                                    client:notify("Options demo cancelled")
+                                    client:notify(L("optionsDemoCancelled"))
                                 end
                             end)
                         else
-                            client:notify("Dropdown demo cancelled")
+                            client:notify(L("dropdownDemoCancelled"))
                         end
                     end)
                 else
-                    client:notify("Demo cancelled - no problem!")
+                    client:notify(L("demoCancelledNoProblem"))
                 end
             end)
         end
@@ -4243,8 +4243,8 @@ lia.command.add("botspeak", {
             return
         end
 
-        client:notify("Found " .. #bots .. " bots. Starting phrase sequence with " .. phrasesPerBot .. " phrases per bot...")
-        local randomPhrases = {"Hello there!", "What's going on?", "I need help!", "Over here!", "Watch out!", "Come on!", "Let's go!", "This way!", "Behind you!", "Enemy spotted!", "Clear!", "Move up!", "Hold position!", "Cover me!", "Reloading!", "Taking fire!", "Need backup!", "All clear!", "Contact!", "Engaging!", "Fall back!", "Push forward!", "Hold the line!", "Secure the area!", "Enemy down!", "Got one!", "Nice shot!", "Good work!", "Keep moving!", "Stay alert!"}
+        client:notify(L("foundBotsStarting", #bots, phrasesPerBot))
+        local randomPhrases = {L("chatHelloThere"), L("chatWhatsGoingOn"), L("chatNeedHelp"), L("chatOverHere"), L("chatWatchOut"), L("chatComeOn"), L("chatLetsGo"), L("chatThisWay"), L("chatBehindYou"), L("chatEnemySpotted"), L("chatClear"), L("chatMoveUp"), L("chatHoldPosition"), L("chatCoverMe"), L("chatReloading"), L("chatTakingFire"), L("chatNeedBackup"), L("chatAllClear"), L("chatContact"), L("chatEngaging"), L("chatFallBack"), L("chatPushForward"), L("chatHoldTheLine"), L("chatSecureArea"), L("chatEnemyDown"), L("chatGotOne"), L("chatNiceShot"), L("chatGoodWork"), L("chatKeepMoving"), L("chatStayAlert")}
         local phraseCount = {}
         for _, bot in ipairs(bots) do
             phraseCount[bot] = 0

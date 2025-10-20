@@ -922,7 +922,7 @@ end
     
     Example:
     -- Centered box
-    lia.derma.drawBoxWithText("Hello World", ScrW()/2, 100)
+    lia.derma.drawBoxWithText(L("helloWorld"), ScrW()/2, 100)
     
     -- Right-aligned box (x is the right edge)
     lia.derma.drawBoxWithText("Instructions", ScrW()-20, 20, {
