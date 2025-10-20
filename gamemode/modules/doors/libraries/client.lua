@@ -161,9 +161,6 @@ function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
     if fade <= 0 then return end
     -- Apply fade to colors
     local fadeAlpha = math.Clamp(fade, 0, 1)
-    local textColor = Color(255, 255, 255, math.floor(255 * fadeAlpha))
-    local backgroundColor = Color(0, 0, 0, math.floor(150 * fadeAlpha))
-    local borderColor = Color(lia.color.theme.theme.r, lia.color.theme.theme.g, lia.color.theme.theme.b, math.floor(255 * fadeAlpha))
     -- Draw at bottom center of screen
     local screenX = ScrW() / 2
     local screenY = ScrH() - 50 -- 50 pixels from bottom
