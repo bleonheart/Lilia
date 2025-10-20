@@ -42,6 +42,23 @@ function GM:PlayerLoadedChar(client, character)
     hook.Run("PlayerLoadout", client)
     if not timer.Exists("liaSalaryGlobal") then self:CreateSalaryTimers() end
     local ammoTable = character:getAmmo()
+    if character:getFaction() == FACTION_STAFF then
+        local storedDiscord = client:getLiliaData("staffDiscord")
+        if storedDiscord and storedDiscord ~= "" then
+            local description = L("staffCharacterDiscordSteamID", storedDiscord, client:SteamID())
+            character:setDesc(description)
+        else
+            if character:getDesc() == "" or character:getDesc():find(L("staffCharacter")) then
+                timer.Simple(2, function()
+                    if IsValid(client) and client:getChar() == character then
+                        net.Start("liaStaffDiscordPrompt")
+                        net.Send(client)
+                    end
+                end)
+            end
+        end
+    end
+
     if not table.IsEmpty(ammoTable) then
         timer.Simple(0.25, function()
             if not IsValid(ammoTable) then return end
