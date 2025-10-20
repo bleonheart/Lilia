@@ -612,7 +612,7 @@ if SERVER then
                     ply:notifyInfoLocalized("userGroupSetBy", target:getName(), usergroup)
                     lia.log.add(ply, "usergroup", target, usergroup)
                 else
-                    ply:notifyErrorLocalized(L("invalidUsergroup") .. " \"" .. usergroup .. "\"")
+                    ply:notifyErrorLocalized("invalidUsergroup" .. " \"" .. usergroup .. "\"")
                 end
             else
                 ply:notifyErrorLocalized("plyNoExist")
@@ -5566,7 +5566,7 @@ lia.command.add("doorid", {
             local mapID = door:MapCreationID()
             if mapID and mapID > 0 then
                 local pos = door:GetPos()
-                client:notifyInfoLocalized(L("doorID") .. " " .. mapID .. " | " .. L("position") .. ": " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
+                client:notifyInfoLocalized("doorID" .. " " .. mapID .. " | " .. L("position") .. ": " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
                 lia.log.add(client, "doorID", door, mapID)
             else
                 client:notifyErrorLocalized("doorNoValidMapID")

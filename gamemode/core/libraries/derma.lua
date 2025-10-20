@@ -890,53 +890,6 @@ function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
     }, 1, alpha or color.a * 0.575)
 end
 
---[[
-    Draws a box with text inside it, similar to admin stick and distance measurer HUD elements.
-    
-    Parameters:
-    - text: The text to display (string or table of strings for multiple lines)
-    - x, y: Position (behavior depends on textAlignX and textAlignY):
-        - TEXT_ALIGN_LEFT: x is the left edge of the box
-        - TEXT_ALIGN_CENTER: x is the center of the box
-        - TEXT_ALIGN_RIGHT: x is the right edge of the box
-        - TEXT_ALIGN_TOP: y is the top edge of the box
-        - TEXT_ALIGN_CENTER: y is the center of the box
-        - TEXT_ALIGN_BOTTOM: y is the bottom edge of the box
-    - options: Table with optional parameters:
-        - font: Font to use (default: "LiliaFont.16")
-        - textColor: Text color (default: Color(255, 255, 255))
-        - backgroundColor: Box background color (default: Color(0, 0, 0, 150))
-        - borderColor: Box border color (default: lia.color.theme.theme)
-        - borderRadius: Corner radius (default: 8)
-        - borderThickness: Border thickness (default: 2)
-        - padding: Internal padding (default: 20)
-        - blur: Blur settings {enabled, amount, passes, alpha} (default: enabled)
-        - textAlignX: Horizontal text alignment (default: TEXT_ALIGN_CENTER)
-        - textAlignY: Vertical text alignment (default: TEXT_ALIGN_CENTER)
-        - autoSize: Auto-size box to text (default: true)
-        - width: Fixed width (when autoSize = false)
-        - height: Fixed height (when autoSize = false)
-        - lineSpacing: Spacing between lines (default: 4)
-    
-    Returns: boxWidth, boxHeight
-    
-    Example:
-    -- Centered box
-    lia.derma.drawBoxWithText(L("helloWorld"), ScrW()/2, 100)
-    
-    -- Right-aligned box (x is the right edge)
-    lia.derma.drawBoxWithText(L("instructions"), ScrW()-20, 20, {
-        textAlignX = TEXT_ALIGN_RIGHT
-    })
-    
-    -- Bottom-aligned box (y is the bottom edge)
-    lia.derma.drawBoxWithText(L("information"), ScrW()/2, ScrH()-20, {
-        textAlignY = TEXT_ALIGN_BOTTOM
-    })
-    
-    -- Multiple lines
-    lia.derma.drawBoxWithText({"Line 1", "Line 2", "Line 3"}, ScrW()/2, 100)
-]]
 function lia.derma.drawBoxWithText(text, x, y, options)
     options = options or {}
     local font = options.font or "LiliaFont.16"
