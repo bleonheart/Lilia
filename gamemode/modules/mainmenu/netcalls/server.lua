@@ -122,42 +122,13 @@ net.Receive("liaCharCreate", function(_, client)
 end)
 
 net.Receive("liaCharDelete", function(_, client)
-    print("[TEST] liaCharDelete received from client:", IsValid(client) and client:Nick() or "nil")
     local id = net.ReadUInt(32)
-    print("[TEST] Character ID to delete:", id)
     local character = lia.char.getCharacter(id)
-    print("[TEST] Fetched character:", character)
     local steamID = client:SteamID()
-    print("[TEST] Client SteamID:", steamID)
     if character and character.steamID == steamID then
-        print("[TEST] Character valid and owned by client; proceeding with delete.")
         hook.Run("CharDeleted", client, character)
         character:delete()
-        timer.Simple(.5, function()
-            print("[TEST] SyncCharList timer fired, syncing list for client.")
-            lia.module.get("mainmenu"):SyncCharList(client)
-        end)
-    else
-        print("[TEST] Delete denied: character invalid or not owned by client.")
-    end
-end)
-
-hook.Add("PlayerLoadedChar", "StaffCharacterDiscordPrompt", function(client, character)
-    if character:getFaction() ~= FACTION_STAFF then return end
-    local storedDiscord = client:getLiliaData("staffDiscord")
-    if storedDiscord and storedDiscord ~= "" then
-        local description = L("staffCharacterDiscordSteamID", storedDiscord, client:SteamID())
-        character:setDesc(description)
-        return
-    end
-
-    if character:getDesc() == "" or character:getDesc():find(L("staffCharacter")) then
-        timer.Simple(2, function()
-            if IsValid(client) and client:getChar() == character then
-                net.Start("liaStaffDiscordPrompt")
-                net.Send(client)
-            end
-        end)
+        timer.Simple(.5, function() lia.module.get("mainmenu"):SyncCharList(client) end)
     end
 end)
 
