@@ -737,7 +737,7 @@ function GM:LoadData()
                             lia.error(debug.traceback())
                         end
                     else
-                        lia.error(string.format("Invalid angle for entity '%s' at %s: %s (%s)", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
+                        lia.error(L("invalidAngleEntity", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
                         lia.error(debug.traceback())
                     end
                 end

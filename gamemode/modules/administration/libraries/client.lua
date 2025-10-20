@@ -964,7 +964,7 @@ local function GenerateDynamicCategories()
             icon = "icon16/door.png",
             subcategories = {
                 doorActions = {
-                    name = L("adminStickSubCategoryDoorActions") or "Actions",
+                    name = L("adminStickSubCategoryDoorActions") or L("actions"),
                     icon = "icon16/lightning.png"
                 },
                 doorSettings = {

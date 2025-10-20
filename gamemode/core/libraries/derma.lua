@@ -925,12 +925,12 @@ end
     lia.derma.drawBoxWithText(L("helloWorld"), ScrW()/2, 100)
     
     -- Right-aligned box (x is the right edge)
-    lia.derma.drawBoxWithText("Instructions", ScrW()-20, 20, {
+    lia.derma.drawBoxWithText(L("instructions"), ScrW()-20, 20, {
         textAlignX = TEXT_ALIGN_RIGHT
     })
     
     -- Bottom-aligned box (y is the bottom edge)
-    lia.derma.drawBoxWithText("Information", ScrW()/2, ScrH()-20, {
+    lia.derma.drawBoxWithText(L("information"), ScrW()/2, ScrH()-20, {
         textAlignY = TEXT_ALIGN_BOTTOM
     })
     

@@ -31,7 +31,7 @@
 
     if factions and #factions > 0 then
         table.insert(doorInfo, {
-            text = "Allowed Factions:"
+            text = L("doorAllowedFactions") .. ":"
         })
 
         for _, id in ipairs(factions) do
@@ -55,7 +55,7 @@
 
         if #classData > 0 then
             table.insert(doorInfo, {
-                text = "Allowed Classes:"
+                text = L("doorAllowedClasses") .. ":"
             })
 
             for _, data in ipairs(classData) do
@@ -281,15 +281,15 @@ function MODULE:AddToAdminStickHUD(_, target, information)
         }
 
         local doorLabels = {
-            name = "Name",
-            price = "Price",
-            locked = "Locked",
-            disabled = "Disabled",
-            hidden = "Hidden",
-            noSell = "Can Be Sold",
-            ownable = "Can Be Owned",
-            factions = "Allowed Factions",
-            classes = "Allowed Classes"
+            name = L("name"),
+            price = L("price"),
+            locked = L("locked"),
+            disabled = L("disabled"),
+            hidden = L("hidden"),
+            noSell = L("doorCanBeSold"),
+            ownable = L("doorCanBeOwned"),
+            factions = L("doorAllowedFactions"),
+            classes = L("doorAllowedClasses")
         }
 
         for key, defaultValue in pairs(defaultDoorData) do
@@ -300,17 +300,17 @@ function MODULE:AddToAdminStickHUD(_, target, information)
                 if value == nil then displayValue = defaultValue end
                 if type(displayValue) == "boolean" then
                     local booleanLabels = {
-                        locked = function(val) return val and "Locked" or "Unlocked" end,
-                        disabled = function(val) return val and "Disabled" or "Enabled" end,
-                        hidden = function(val) return val and "Hidden" or "Visible" end,
-                        noSell = function(val) return val and "Cannot Be Sold" or "Can Be Sold" end,
-                        ownable = function(val) return val and "Can Be Owned" or "Cannot Be Owned" end
+                        locked = function(val) return val and L("locked") or L("unlocked") end,
+                        disabled = function(val) return val and L("disabled") or L("enabled") end,
+                        hidden = function(val) return val and L("hidden") or L("visible") end,
+                        noSell = function(val) return val and L("doorCannotBeSold") or L("doorCanBeSold") end,
+                        ownable = function(val) return val and L("doorCanBeOwned") or L("doorCannotBeOwned") end
                     }
 
                     if booleanLabels[key] then
                         displayValue = booleanLabels[key](displayValue)
                     else
-                        displayValue = displayValue and "Yes" or "No"
+                        displayValue = displayValue and L("yes") or L("no")
                     end
                 elseif type(displayValue) == "number" and key == "price" then
                     displayValue = lia.currency.get(displayValue)
@@ -335,7 +335,7 @@ function MODULE:AddToAdminStickHUD(_, target, information)
                 end
 
                 if #factionNames > 0 then
-                    table.insert(information, "Allowed Factions:")
+                    table.insert(information, L("doorAllowedFactions") .. ":")
                     for _, factionName in ipairs(factionNames) do
                         table.insert(information, "- " .. factionName)
                     end
@@ -355,7 +355,7 @@ function MODULE:AddToAdminStickHUD(_, target, information)
                 end
 
                 if #classNames > 0 then
-                    table.insert(information, "Allowed Classes:")
+                    table.insert(information, L("doorAllowedClasses") .. ":")
                     for _, className in ipairs(classNames) do
                         table.insert(information, "- " .. className)
                     end

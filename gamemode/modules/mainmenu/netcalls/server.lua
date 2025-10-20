@@ -138,7 +138,7 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     if not character or character:getFaction() ~= FACTION_STAFF then return end
     client:setLiliaData("staffDiscord", discord)
     local steamID = client:SteamID()
-    local description = "A Staff Character, Discord: " .. discord .. ", SteamID: " .. steamID
+    local description = L("staffCharacterDiscordSteamID", discord, steamID)
     character:setDesc(description)
     client:notifySuccessLocalized("staffDescUpdated")
 end)
