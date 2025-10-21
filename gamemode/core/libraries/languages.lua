@@ -224,9 +224,11 @@ end
     ```lua
     -- High: Complex localized string with multiple parameters and error handling
     local function displayItemInfo(itemName, quantity, price)
-        local template = lia.lang.getLocalizedString("itemInfo")
+        local lang = lia.config and lia.config.get("Language", "english") or "english"
+        local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
+        local template = langTable and langTable["itemInfo"] or "itemInfo"
         if template then
-            local message = lia.lang.getLocalizedString("itemInfo", itemName, quantity, price)
+            local message = lia.lang.getLocalizedString("itemInfo", itemName, "No description available")
             lia.notice.add(message, NOTIFY_GENERIC)
         else
             lia.notice.add("Item: " .. itemName .. " x" .. quantity .. " - $" .. price, NOTIFY_GENERIC)

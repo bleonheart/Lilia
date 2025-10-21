@@ -859,8 +859,8 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized notification with formatting
-        player:notifyLocalized("item_found", "success", "weapon_pistol")
-        player:notifyLocalized("health_low", "warning", player:Health())
+        player:notifyLocalized("item_found", "success")
+        player:notifyLocalized("health_low", "warning")
         ```
 
         High Complexity:
@@ -869,7 +869,7 @@ end
         local itemName = item:getName()
         local itemValue = item:getData("value", 0)
         local currency = lia.currency.get("money")
-        player:notifyLocalized("item_sold", "success", itemName, currency:format(itemValue))
+        player:notifyLocalized("item_sold", "success")
         ```
 ]]
 function playerMeta:notifyLocalized(message, notifType, ...)
@@ -1141,7 +1141,7 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized error with formatting
-        player:notifyErrorLocalized("error_permission_denied", "admin")
+        player:notifyErrorLocalized("error_permission_denied")
         ```
 
         High Complexity:
@@ -1154,7 +1154,7 @@ end
             local money = char:getData("money", 0)
             local required = 1000
             if money < required then
-                player:notifyErrorLocalized("error_insufficient_funds", required, money)
+                player:notifyErrorLocalized("error_insufficient_funds")
             end
         end
         ```
@@ -1185,7 +1185,7 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized warning with formatting
-        player:notifyWarningLocalized("warning_health_low", player:Health())
+        player:notifyWarningLocalized("warning_health_low")
         ```
 
         High Complexity:
@@ -1196,9 +1196,9 @@ end
             local health = player:Health()
             local armor = player:Armor()
             if health < 25 then
-                player:notifyWarningLocalized("warning_critical_health", health)
+                player:notifyWarningLocalized("warning_critical_health")
             elseif health < 50 and armor < 25 then
-                player:notifyWarningLocalized("warning_vulnerable", health, armor)
+                player:notifyWarningLocalized("warning_vulnerable")
             end
         end
         ```
@@ -1229,7 +1229,7 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized info with formatting
-        player:notifyInfoLocalized("info_ammo_count", player:GetAmmoCount("Pistol"))
+        player:notifyInfoLocalized("info_ammo_count")
         ```
 
         High Complexity:
@@ -1239,7 +1239,7 @@ end
         if char then
             local money = char:getData("money", 0)
             local level = char:getData("level", 1)
-            player:notifyInfoLocalized("info_character_stats", level, money)
+            player:notifyInfoLocalized("info_character_stats")
         end
         ```
 ]]
@@ -1269,7 +1269,7 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized success with formatting
-        player:notifySuccessLocalized("success_money_earned", amount)
+        player:notifySuccessLocalized("success_money_earned")
         ```
 
         High Complexity:
@@ -1280,7 +1280,7 @@ end
             local exp = char:getData("experience", 0)
             local newExp = exp + 100
             char:setData("experience", newExp)
-            player:notifySuccessLocalized("success_experience_gained", 100, newExp)
+            player:notifySuccessLocalized("success_experience_gained")
         end
         ```
 ]]
@@ -1310,7 +1310,7 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized money notification with formatting
-        player:notifyMoneyLocalized("money_payment_received", amount)
+        player:notifyMoneyLocalized("money_payment_received")
         ```
 
         High Complexity:
@@ -1321,7 +1321,7 @@ end
             local oldMoney = char:getData("money", 0)
             local newMoney = oldMoney + amount
             char:setData("money", newMoney)
-            player:notifyMoneyLocalized("money_balance_updated", oldMoney, newMoney)
+            player:notifyMoneyLocalized("money_balance_updated")
         end
         ```
 ]]
@@ -1351,7 +1351,7 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized admin notification with formatting
-        player:notifyAdminLocalized("admin_player_banned", target:Name())
+        player:notifyAdminLocalized("admin_player_banned")
         ```
 
         High Complexity:
@@ -1360,7 +1360,7 @@ end
         local adminName = player:Name()
         local targetName = target:Name()
         local reason = "Cheating"
-        player:notifyAdminLocalized("admin_ban_executed", targetName, reason)
+        player:notifyAdminLocalized("admin_ban_executed")
         lia.log.add("Admin " .. adminName .. " banned " .. targetName .. " for: " .. reason)
         ```
 ]]

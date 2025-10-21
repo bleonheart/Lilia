@@ -4749,7 +4749,7 @@ lia.command.add("spawnbots", {
         local maxPlayers = game.MaxPlayers()
         local availableSlots = maxPlayers - currentPlayers
         if requestedAmount > availableSlots then
-            client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots)
+            client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots, maxPlayers)
             return
         end
 
