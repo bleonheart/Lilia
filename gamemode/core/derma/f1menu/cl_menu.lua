@@ -94,11 +94,15 @@ function PANEL:Init()
     end
 
     leftArrow.DoClick = function()
+        print("[F1] Left arrow clicked")
+        lia.websound.playButtonSound() -- Play sound directly
         tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + baseBtnW + spacing
         tabsContainer:InvalidateLayout()
     end
 
     rightArrow.DoClick = function()
+        print("[F1] Right arrow clicked")
+        lia.websound.playButtonSound() -- Play sound directly
         tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - (baseBtnW + spacing)
         tabsContainer:InvalidateLayout()
     end
@@ -176,6 +180,8 @@ function PANEL:addTab(name, callback)
     tab:SetExpensiveShadow(1, Color(0, 0, 0, 100))
     tab:SetContentAlignment(5)
     tab.DoClick = function()
+        print("[F1] Tab button clicked:", name)
+        lia.websound.playButtonSound() -- Play sound directly
         if IsValid(lia.gui.info) then lia.gui.info:Remove() end
         for _, t in pairs(self.tabList) do
             t:SetSelected(false)
@@ -265,7 +271,7 @@ function PANEL:Think()
 
     if input.IsKeyDown(KEY_F1) and CurTime() > self.noAnchor and self.anchorMode then
         self.anchorMode = false
-        surface.PlaySound("buttons/lightswitch2.wav")
+        lia.websound.playButtonSound("buttons/lightswitch2.wav")
     end
 
     if not self.anchorMode and not input.IsKeyDown(KEY_F1) and not IsValid(self.info) then self:remove() end

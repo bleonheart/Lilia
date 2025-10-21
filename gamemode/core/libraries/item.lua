@@ -878,24 +878,6 @@ function lia.item.createInv(w, h, id)
     return instance
 end
 
-lia.item.holdTypeToWeaponCategory = {
-    grenade = "grenade",
-    pistol = "sidearm",
-    smg = "primary",
-    ar2 = "primary",
-    rpg = "primary",
-    shotgun = "primary",
-    crossbow = "primary",
-    normal = "primary",
-    melee = "secondary",
-    melee2 = "secondary",
-    fist = "secondary",
-    knife = "secondary",
-    physgun = "secondary",
-    slam = "secondary",
-    passive = "secondary"
-}
-
 lia.item.holdTypeSizeMapping = {
     grenade = {
         width = 1,
@@ -1132,7 +1114,7 @@ function lia.item.generateWeapons()
 
         ITEM.width = override.width or size.width
         ITEM.height = override.height or size.height
-        ITEM.weaponCategory = override.weaponCategory or lia.item.holdTypeToWeaponCategory[holdType] or "primary"
+        ITEM.weaponCategory = override.weaponCategory
     end
 end
 

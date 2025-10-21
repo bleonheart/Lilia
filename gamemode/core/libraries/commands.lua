@@ -1276,40 +1276,120 @@ else
     end)
 
     concommand.Add("lia_saved_sounds", function()
-        local baseDir = "lilia/sounds/"
-        local files = file.Find(baseDir .. "*", "DATA")
-        if not files or #files == 0 then return end
+        local baseDir = "lilia/websounds/"
+        local files = file.Find(baseDir .. "**", "DATA")
+        local soundFiles = {}
+        if files then
+            for _, fileName in ipairs(files) do
+                if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") then table.insert(soundFiles, fileName) end
+            end
+        end
+
+        if #soundFiles == 0 then
+            LocalPlayer():ChatPrint("No saved sounds found!")
+            return
+        end
+
         local f = vgui.Create("liaFrame")
         f:SetTitle(L("savedSounds"))
-        f:SetSize(500, 400)
+        f:SetSize(600, 500)
         f:Center()
         f:MakePopup()
-        local list = vgui.Create("liaDListView", f)
-        list:Dock(FILL)
-        list:DockMargin(5, 5, 5, 5)
-        list:AddColumn(L("soundName"))
-        for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".dat") then list:AddLine(string.StripExtension(fileName)) end
+        local scroll = vgui.Create("liaScrollPanel", f)
+        scroll:Dock(FILL)
+        scroll:DockMargin(5, 5, 5, 5)
+        for _, fileName in ipairs(soundFiles) do
+            local soundName = string.StripExtension(fileName)
+            local soundPath = baseDir .. fileName
+            local panel = vgui.Create("DPanel", scroll)
+            panel:Dock(TOP)
+            panel:SetTall(40)
+            panel:DockMargin(2, 2, 2, 2)
+            panel.Paint = function(s, w, h)
+                surface.SetDrawColor(60, 60, 60, 200)
+                surface.DrawRect(0, 0, w, h)
+                surface.SetDrawColor(100, 100, 100, 100)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local nameLabel = vgui.Create("DLabel", panel)
+            nameLabel:SetText(soundName)
+            nameLabel:SetFont("liaSmallFont")
+            nameLabel:SetTextColor(Color(255, 255, 255))
+            nameLabel:Dock(LEFT)
+            nameLabel:DockMargin(10, 0, 0, 0)
+            nameLabel:SetWide(300)
+            local playButton = vgui.Create("liaButton", panel)
+            playButton:SetText("▶ Play")
+            playButton:SetWide(80)
+            playButton:Dock(RIGHT)
+            playButton:DockMargin(5, 5, 5, 5)
+            -- Override the button's click behavior to prevent the default sound
+            playButton.DoClick = function()
+                -- Don't call the original DoClick to avoid button sound interference
+                if file.Exists(soundPath, "DATA") then
+                    local fullPath = "data/" .. soundPath
+                    print("[DEBUG] Attempting to play sound: " .. fullPath)
+                    -- Add a small delay to ensure the sound system is ready
+                    timer.Simple(0.1, function()
+                        sound.PlayFile(fullPath, "", function(channel, errorCode, errorString)
+                            print("[DEBUG] Sound callback - channel valid:", IsValid(channel), "errorCode:", errorCode, "errorString:", errorString)
+                            if IsValid(channel) then
+                                LocalPlayer():ChatPrint("Playing: " .. soundName)
+                            else
+                                LocalPlayer():ChatPrint("Failed to play: " .. soundName .. " (" .. (errorString or "unknown error") .. ")")
+                            end
+                        end)
+                    end)
+                else
+                    LocalPlayer():ChatPrint("Sound file not found: " .. soundName)
+                end
+            end
+
+            local stopButton = vgui.Create("liaButton", panel)
+            stopButton:SetText("⏹ Stop")
+            stopButton:SetWide(80)
+            stopButton:Dock(RIGHT)
+            stopButton:DockMargin(5, 5, 5, 5)
+            -- Override the button's click behavior to prevent the default sound
+            stopButton.DoClick = function()
+                -- Don't call the original DoClick to avoid button sound interference
+                timer.Simple(0.1, function()
+                    sound.PlayFile("", "", function() end) -- Stop all sounds
+                    LocalPlayer():ChatPrint("Stopped all sounds")
+                end)
+            end
         end
     end)
 
     concommand.Add("lia_wipe_sounds", function()
-        local baseDir = "lilia/sounds/"
-        local files = file.Find(baseDir .. "*", "DATA")
+        local baseDir = "lilia/websounds/"
+        local files = file.Find(baseDir .. "**", "DATA")
+        local deletedCount = 0
         for _, fn in ipairs(files) do
-            file.Delete(baseDir .. fn)
+            if string.EndsWith(fn, ".mp3") or string.EndsWith(fn, ".wav") or string.EndsWith(fn, ".ogg") or string.EndsWith(fn, ".dat") then
+                file.Delete(baseDir .. fn)
+                deletedCount = deletedCount + 1
+            end
         end
 
-        LocalPlayer():ChatPrint(L("soundsWiped"))
+        LocalPlayer():ChatPrint(L("soundsWiped") .. " (" .. deletedCount .. " files)")
     end)
 
     concommand.Add("lia_validate_sounds", function()
-        local baseDir = "lilia/sounds/"
+        local baseDir = "lilia/websounds/"
         local files = file.Find(baseDir .. "**", "DATA")
         local validCount = 0
         local invalidCount = 0
         for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".dat") then
+            if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") then
+                local data = file.Read(baseDir .. fileName, "DATA")
+                if data and #data > 0 then
+                    validCount = validCount + 1
+                else
+                    invalidCount = invalidCount + 1
+                end
+            elseif string.EndsWith(fileName, ".dat") then
                 local data = file.Read(baseDir .. fileName, "DATA")
                 if data then
                     local success, soundData = pcall(pon.decode, data)
@@ -1326,11 +1406,17 @@ else
     end)
 
     concommand.Add("lia_cleanup_sounds", function()
-        local baseDir = "lilia/sounds/"
+        local baseDir = "lilia/websounds/"
         local files = file.Find(baseDir .. "**", "DATA")
         local removedCount = 0
         for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".dat") then
+            if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") then
+                local data = file.Read(baseDir .. fileName, "DATA")
+                if not data or #data == 0 then
+                    file.Delete(baseDir .. fileName)
+                    removedCount = removedCount + 1
+                end
+            elseif string.EndsWith(fileName, ".dat") then
                 local data = file.Read(baseDir .. fileName, "DATA")
                 if not data then
                     file.Delete(baseDir .. fileName)
@@ -1349,12 +1435,12 @@ else
     end)
 
     concommand.Add("lia_list_sounds", function()
-        local baseDir = "lilia/sounds/"
+        local baseDir = "lilia/websounds/"
         local files = file.Find(baseDir .. "**", "DATA")
         if #files == 0 then return end
         LocalPlayer():ChatPrint(L("savedSounds"))
         for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint(L("soundFileList", string.StripExtension(fileName))) end
+            if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") or string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint(L("soundFileList", string.StripExtension(fileName))) end
         end
     end)
 
@@ -1392,25 +1478,81 @@ else
     end
 
     concommand.Add("lia_saved_images", function()
-        local baseDir = "lilia/images/"
+        local baseDir = "lilia/webimages/"
         local files = findImagesRecursive(baseDir)
-        if not files or #files == 0 then return end
+        local imageFiles = {}
+        if files then
+            for _, fileName in ipairs(files) do
+                if string.EndsWith(fileName, ".png") or string.EndsWith(fileName, ".jpg") or string.EndsWith(fileName, ".jpeg") then table.insert(imageFiles, fileName) end
+            end
+        end
+
+        if #imageFiles == 0 then
+            LocalPlayer():ChatPrint("No saved images found!")
+            return
+        end
+
         local f = vgui.Create("liaFrame")
         f:SetTitle(L("savedImages"))
-        f:SetSize(500, 400)
+        f:SetSize(700, 600)
         f:Center()
         f:MakePopup()
-        local list = vgui.Create("liaDListView", f)
-        list:Dock(FILL)
-        list:DockMargin(5, 5, 5, 5)
-        list:AddColumn(L("imageName"))
-        for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".png") or string.EndsWith(fileName, ".jpg") or string.EndsWith(fileName, ".jpeg") then list:AddLine(string.StripExtension(fileName)) end
+        local scroll = vgui.Create("liaScrollPanel", f)
+        scroll:Dock(FILL)
+        scroll:DockMargin(5, 5, 5, 5)
+        for _, fileName in ipairs(imageFiles) do
+            local imageName = string.StripExtension(fileName)
+            local imagePath = baseDir .. fileName
+            local panel = vgui.Create("DPanel", scroll)
+            panel:Dock(TOP)
+            panel:SetTall(120)
+            panel:DockMargin(2, 2, 2, 2)
+            panel.Paint = function(s, w, h)
+                surface.SetDrawColor(60, 60, 60, 200)
+                surface.DrawRect(0, 0, w, h)
+                surface.SetDrawColor(100, 100, 100, 100)
+                surface.DrawOutlinedRect(0, 0, w, h)
+            end
+
+            local imagePreview = vgui.Create("DImage", panel)
+            imagePreview:SetPos(10, 10)
+            imagePreview:SetSize(100, 100)
+            imagePreview:SetImage("data/" .. imagePath)
+            local nameLabel = vgui.Create("DLabel", panel)
+            nameLabel:SetText(imageName)
+            nameLabel:SetFont("liaSmallFont")
+            nameLabel:SetTextColor(Color(255, 255, 255))
+            nameLabel:SetPos(120, 10)
+            nameLabel:SetWide(300)
+            local viewButton = vgui.Create("liaButton", panel)
+            viewButton:SetText("👁 View")
+            viewButton:SetWide(80)
+            viewButton:SetPos(120, 40)
+            viewButton.DoClick = function()
+                local viewFrame = vgui.Create("liaFrame")
+                viewFrame:SetTitle("Image Viewer - " .. imageName)
+                viewFrame:SetSize(800, 600)
+                viewFrame:Center()
+                viewFrame:MakePopup()
+                local fullImage = vgui.Create("DImage", viewFrame)
+                fullImage:Dock(FILL)
+                fullImage:DockMargin(10, 10, 10, 10)
+                fullImage:SetImage("data/" .. imagePath)
+            end
+
+            local copyButton = vgui.Create("liaButton", panel)
+            copyButton:SetText("📋 Copy Path")
+            copyButton:SetWide(100)
+            copyButton:SetPos(210, 40)
+            copyButton.DoClick = function()
+                SetClipboardText("data/" .. imagePath)
+                LocalPlayer():ChatPrint("Image path copied to clipboard: data/" .. imagePath)
+            end
         end
     end)
 
     concommand.Add("lia_cleanup_images", function()
-        local baseDir = "lilia/images/"
+        local baseDir = "lilia/webimages/"
         local files = findImagesRecursive(baseDir)
         local removedCount = 0
         for _, filePath in ipairs(files) do
@@ -1452,6 +1594,65 @@ else
                 img:Dock(FILL)
                 img:SetImage(url)
             end
+        end
+    end)
+
+    concommand.Add("test_sound_playback", function()
+        local baseDir = "lilia/websounds/"
+        local files = file.Find(baseDir .. "**", "DATA")
+        local soundFiles = {}
+        if files then
+            for _, fileName in ipairs(files) do
+                if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") then table.insert(soundFiles, fileName) end
+            end
+        end
+
+        if #soundFiles > 0 then
+            local testFile = soundFiles[1]
+            local fullPath = "data/" .. baseDir .. testFile
+            print("[DEBUG] Testing direct sound playback: " .. fullPath)
+            sound.PlayFile(fullPath, "", function(channel, errorCode, errorString)
+                print("[DEBUG] Direct test callback - channel valid:", IsValid(channel), "errorCode:", errorCode, "errorString:", errorString)
+                if IsValid(channel) then
+                    LocalPlayer():ChatPrint("Direct test successful: " .. testFile)
+                else
+                    LocalPlayer():ChatPrint("Direct test failed: " .. testFile .. " (" .. (errorString or "unknown error") .. ")")
+                end
+            end)
+        else
+            LocalPlayer():ChatPrint("No sound files found for testing")
+        end
+    end)
+
+    concommand.Add("test_saved_commands", function()
+        print("Testing lia_saved_sounds command...")
+        local baseDir = "lilia/websounds/"
+        local files = file.Find(baseDir .. "**", "DATA")
+        local soundFiles = {}
+        if files then
+            for _, fileName in ipairs(files) do
+                if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") or string.EndsWith(fileName, ".dat") then table.insert(soundFiles, fileName) end
+            end
+        end
+
+        print("Found " .. #soundFiles .. " sound files in " .. baseDir)
+        for i, fileName in ipairs(soundFiles) do
+            print("  " .. i .. ": " .. fileName)
+        end
+
+        print("Testing lia_saved_images command...")
+        local baseDir2 = "lilia/webimages/"
+        local files2 = file.Find(baseDir2 .. "**", "DATA")
+        local imageFiles = {}
+        if files2 then
+            for _, fileName in ipairs(files2) do
+                if string.EndsWith(fileName, ".png") or string.EndsWith(fileName, ".jpg") or string.EndsWith(fileName, ".jpeg") then table.insert(imageFiles, fileName) end
+            end
+        end
+
+        print("Found " .. #imageFiles .. " image files in " .. baseDir2)
+        for i, fileName in ipairs(imageFiles) do
+            print("  " .. i .. ": " .. fileName)
         end
     end)
 
