@@ -544,4 +544,5 @@ lia.webimage.register("drug.png", "https://bleonheart.github.io/Samael-Assets/mi
 lia.webimage.register("armor.png", "https://bleonheart.github.io/Samael-Assets/misc/armor.png")
 lia.webimage.register("emptyframe.png", "https://bleonheart.github.io/Samael-Assets/misc/emptyframe.png")
 lia.webimage.register("cuffed.png", "https://bleonheart.github.io/Samael-Assets/misc/cuffed.png")
+lia.webimage.register("backgroundsquare.png", "https://bleonheart.github.io/Samael-Assets/misc/backgroundsquare.png")
 ensureDir(baseDir)
