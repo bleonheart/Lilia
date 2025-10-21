@@ -11,7 +11,6 @@
     The library ensures that all user preferences are maintained across sessions and provides
     hooks for modules to react to option changes.
 ]]
-
 local GM = GM or GAMEMODE
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
@@ -1280,7 +1279,6 @@ lia.config.add("YellRange", "yellRange", 840, nil, {
     min = 100,
     max = 2000
 })
-
 
 lia.config.add("OOCLimit", "oocCharacterLimit", 150, nil, {
     desc = "oocCharacterLimitDesc",
