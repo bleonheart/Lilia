@@ -786,6 +786,14 @@ end
 ]]
 function lia.db.select(fields, dbTable, condition, limit)
     local d = deferred.new()
+
+    -- Validate fields parameter
+    if fields == nil then
+        lia.error("lia.db.select called with nil fields parameter")
+        d:reject("Invalid fields parameter: nil")
+        return d
+    end
+
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
     local tableName = "lia_" .. (dbTable or "characters")
     local query = "SELECT " .. from .. " FROM " .. tableName
@@ -866,6 +874,14 @@ end
 ]]
 function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
     local d = deferred.new()
+
+    -- Validate fields parameter
+    if fields == nil then
+        lia.error("lia.db.selectWithCondition called with nil fields parameter")
+        d:reject("Invalid fields parameter: nil")
+        return d
+    end
+
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
     local tableName = "lia_" .. (dbTable or "characters")
     local query = "SELECT " .. from .. " FROM " .. tableName
@@ -1140,8 +1156,16 @@ end
 ]]
 function lia.db.selectOne(fields, dbTable, condition)
     local c = deferred.new()
+
+    -- Validate fields parameter
+    if fields == nil then
+        lia.error("lia.db.selectOne called with nil fields parameter")
+        c:reject("Invalid fields parameter: nil")
+        return c
+    end
+
     local tbl = "`lia_" .. dbTable .. "`"
-    local f = istable(fields) and table.concat(fields, ", ") or fields
+    local f = istable(fields) and table.concat(fields, ", ") or tostring(fields)
     local q = "SELECT " .. f .. " FROM " .. tbl
     q = q .. buildWhereClause(condition)
     q = q .. " LIMIT 1"
