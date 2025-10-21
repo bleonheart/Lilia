@@ -2173,6 +2173,72 @@ function lia.db.createColumn(tableName, columnName, columnType, defaultValue)
     return d
 end
 
+--[[
+    Purpose: Removes a database table and all its data from the database
+    When Called: When cleaning up unused tables, removing modules, or during database maintenance
+    Parameters:
+        - tableName (string): Table name without 'lia_' prefix
+    Returns: Deferred promise object resolving to true on success, false if table doesn't exist
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Remove a table
+        lia.db.removeTable("old_data"):next(function(success)
+            if success then
+                print("Table removed")
+            else
+                print("Table doesn't exist")
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Remove table with validation
+        local function cleanupOldModule(moduleName)
+            return lia.db.removeTable(moduleName .. "_data"):next(function(success)
+                if success then
+                    lia.logger.info("Removed table for module: " .. moduleName)
+                    hook.Run("OnModuleTableRemoved", moduleName)
+                else
+                    lia.logger.info("Table for module " .. moduleName .. " doesn't exist")
+                end
+            end):catch(function(err)
+                lia.logger.error("Failed to remove table: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Remove table with backup and validation
+        local function removeTableWithBackup(tableName)
+            return lia.db.tableExists("lia_" .. tableName):next(function(exists)
+                if not exists then
+                    lia.logger.info("Table " .. tableName .. " doesn't exist")
+                    return false
+                end
+                
+                -- Create backup before removal
+                return lia.db.createSnapshot(tableName):next(function(snapshot)
+                    lia.logger.info("Created backup: " .. snapshot.file)
+                    
+                    return lia.db.removeTable(tableName):next(function(success)
+                        if success then
+                            lia.logger.info("Table " .. tableName .. " removed successfully")
+                            hook.Run("OnTableRemoved", tableName, snapshot)
+                        end
+                        return success
+                    end)
+                end):catch(function(err)
+                    lia.logger.error("Failed to backup table " .. tableName .. ": " .. tostring(err))
+                    return false
+                end)
+            end)
+        end
+        ```
+]]
 function lia.db.removeTable(tableName)
     local d = deferred.new()
     local fullTableName = "lia_" .. tableName
@@ -2188,6 +2254,80 @@ function lia.db.removeTable(tableName)
     return d
 end
 
+--[[
+    Purpose: Removes a column from an existing database table using table recreation
+    When Called: When removing unused columns, cleaning up schemas, or during database migrations
+    Parameters:
+        - tableName (string): Table name without 'lia_' prefix
+        - columnName (string): Name of the column to remove
+    Returns: Deferred promise object resolving to true on success, false if column doesn't exist
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Remove a column
+        lia.db.removeColumn("characters", "old_field"):next(function(success)
+            if success then
+                print("Column removed")
+            else
+                print("Column doesn't exist")
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Remove column with validation
+        local function cleanupOldColumn(tableName, columnName)
+            return lia.db.removeColumn(tableName, columnName):next(function(success)
+                if success then
+                    lia.logger.info("Removed column " .. columnName .. " from " .. tableName)
+                    hook.Run("OnColumnRemoved", tableName, columnName)
+                else
+                    lia.logger.info("Column " .. columnName .. " doesn't exist in " .. tableName)
+                end
+            end):catch(function(err)
+                lia.logger.error("Failed to remove column: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Remove column with backup and validation
+        local function removeColumnWithBackup(tableName, columnName)
+            return lia.db.tableExists("lia_" .. tableName):next(function(tableExists)
+                if not tableExists then
+                    lia.logger.error("Table " .. tableName .. " doesn't exist")
+                    return false
+                end
+                
+                return lia.db.fieldExists("lia_" .. tableName, columnName):next(function(columnExists)
+                    if not columnExists then
+                        lia.logger.info("Column " .. columnName .. " doesn't exist")
+                        return false
+                    end
+                    
+                    -- Create backup before removal
+                    return lia.db.createSnapshot(tableName):next(function(snapshot)
+                        lia.logger.info("Created backup before column removal: " .. snapshot.file)
+                        
+                        return lia.db.removeColumn(tableName, columnName):next(function(success)
+                            if success then
+                                lia.logger.info("Column " .. columnName .. " removed from " .. tableName)
+                                hook.Run("OnColumnRemoved", tableName, columnName, snapshot)
+                            end
+                            return success
+                        end)
+                    end):catch(function(err)
+                        lia.logger.error("Failed to backup table before column removal: " .. tostring(err))
+                        return false
+                    end)
+                end)
+            end)
+        end
+        ```
+]]
 function lia.db.removeColumn(tableName, columnName)
     local d = deferred.new()
     local fullTableName = "lia_" .. tableName
@@ -2237,6 +2377,106 @@ function lia.db.removeColumn(tableName, columnName)
     return d
 end
 
+--[[
+    Purpose: Retrieves the column information for the lia_characters table
+    When Called: When analyzing character table structure, generating reports, or during schema validation
+    Parameters:
+        - callback (function): Function to call with the column information array
+    Returns: None (void function)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Get character table columns
+        lia.db.getCharacterTable(function(columns)
+            print("Character table has " .. #columns .. " columns")
+            for _, column in ipairs(columns) do
+                print("- " .. column)
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Get columns with analysis
+        local function analyzeCharacterTable()
+            lia.db.getCharacterTable(function(columns)
+                local requiredColumns = {"id", "steamID", "name", "model", "faction", "money"}
+                local missingColumns = {}
+                
+                for _, required in ipairs(requiredColumns) do
+                    if not table.HasValue(columns, required) then
+                        table.insert(missingColumns, required)
+                    end
+                end
+                
+                if #missingColumns > 0 then
+                    lia.logger.warn("Missing character columns: " .. table.concat(missingColumns, ", "))
+                else
+                    lia.logger.info("All required character columns present")
+                end
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Get columns with validation and error handling
+        local function validateCharacterSchema()
+            return lia.db.waitForTablesToLoad():next(function()
+                lia.db.getCharacterTable(function(columns)
+                    if not columns or #columns == 0 then
+                        lia.logger.error("Failed to get character table columns")
+                        return
+                    end
+                    
+                    local schemaValidation = {
+                        required = {"id", "steamID", "name", "model", "faction", "money"},
+                        optional = {"desc", "attribs", "schema", "createTime", "lastJoinTime", "recognition", "fakenames"}
+                    }
+                    
+                    local validationResults = {
+                        valid = true,
+                        missing = {},
+                        extra = {}
+                    }
+                    
+                    -- Check for missing required columns
+                    for _, required in ipairs(schemaValidation.required) do
+                        if not table.HasValue(columns, required) then
+                            table.insert(validationResults.missing, required)
+                            validationResults.valid = false
+                        end
+                    end
+                    
+                    -- Check for extra columns
+                    for _, column in ipairs(columns) do
+                        if not table.HasValue(schemaValidation.required, column) and 
+                           not table.HasValue(schemaValidation.optional, column) then
+                            table.insert(validationResults.extra, column)
+                        end
+                    end
+                    
+                    if validationResults.valid then
+                        lia.logger.info("Character table schema validation passed")
+                    else
+                        lia.logger.warn("Character table schema issues found")
+                        if #validationResults.missing > 0 then
+                            lia.logger.warn("Missing columns: " .. table.concat(validationResults.missing, ", "))
+                        end
+                        if #validationResults.extra > 0 then
+                            lia.logger.warn("Extra columns: " .. table.concat(validationResults.extra, ", "))
+                        end
+                    end
+                    
+                    hook.Run("OnCharacterSchemaValidated", validationResults)
+                end)
+            end):catch(function(err)
+                lia.logger.error("Character schema validation failed: " .. tostring(err))
+            end)
+        end
+        ```
+]]
 function lia.db.getCharacterTable(callback)
     local query = "PRAGMA table_info(lia_characters)"
     lia.db.query(query, function(results)
@@ -2250,6 +2490,78 @@ function lia.db.getCharacterTable(callback)
     end)
 end
 
+--[[
+    Purpose: Creates a backup snapshot of a database table and saves it to a JSON file
+    When Called: When backing up data before major operations, creating restore points, or archiving data
+    Parameters:
+        - tableName (string): Table name without 'lia_' prefix
+    Returns: Deferred promise object resolving to snapshot information (file, path, records)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Create a snapshot
+        lia.db.createSnapshot("characters"):next(function(snapshot)
+            print("Snapshot created: " .. snapshot.file)
+            print("Records backed up: " .. snapshot.records)
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Create snapshot with validation
+        local function backupTable(tableName)
+            return lia.db.createSnapshot(tableName):next(function(snapshot)
+                lia.logger.info("Backup created: " .. snapshot.file .. " (" .. snapshot.records .. " records)")
+                hook.Run("OnTableBackedUp", tableName, snapshot)
+                return snapshot
+            end):catch(function(err)
+                lia.logger.error("Failed to backup table " .. tableName .. ": " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Create snapshot with validation and error handling
+        local function createBackupWithValidation(tableName)
+            return lia.db.tableExists("lia_" .. tableName):next(function(exists)
+                if not exists then
+                    return deferred.new():reject("Table " .. tableName .. " doesn't exist")
+                end
+                
+                return lia.db.createSnapshot(tableName):next(function(snapshot)
+                    -- Validate snapshot data
+                    if snapshot.records == 0 then
+                        lia.logger.warn("Snapshot created but table is empty")
+                    end
+                    
+                    -- Create backup metadata
+                    local metadata = {
+                        table = tableName,
+                        timestamp = snapshot.timestamp,
+                        records = snapshot.records,
+                        file = snapshot.file,
+                        path = snapshot.path,
+                        server = GetHostName(),
+                        version = lia.version or "unknown"
+                    }
+                    
+                    -- Save metadata
+                    local metadataFile = "lilia/snapshots/" .. snapshot.file .. ".meta"
+                    file.Write(metadataFile, util.TableToJSON(metadata, true))
+                    
+                    lia.logger.info("Backup completed: " .. snapshot.file .. " (" .. snapshot.records .. " records)")
+                    hook.Run("OnBackupCreated", metadata)
+                    return metadata
+                end):catch(function(err)
+                    lia.logger.error("Backup failed for " .. tableName .. ": " .. tostring(err))
+                    return {success = false, error = err}
+                end)
+            end)
+        end
+        ```
+]]
 function lia.db.createSnapshot(tableName)
     local d = deferred.new()
     local fullTableName = "lia_" .. tableName
@@ -2286,6 +2598,83 @@ function lia.db.createSnapshot(tableName)
     return d
 end
 
+--[[
+    Purpose: Restores a database table from a previously created snapshot file
+    When Called: When restoring data from backups, recovering from errors, or migrating data
+    Parameters:
+        - fileName (string): Name of the snapshot file to load
+    Returns: Deferred promise object resolving to restore information (table, records, timestamp)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Load a snapshot
+        lia.db.loadSnapshot("snapshot_characters_1234567890.json"):next(function(result)
+            print("Restored " .. result.records .. " records to " .. result.table)
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Load snapshot with validation
+        local function restoreTable(fileName)
+            return lia.db.loadSnapshot(fileName):next(function(result)
+                lia.logger.info("Restored " .. result.records .. " records to " .. result.table)
+                hook.Run("OnTableRestored", result.table, result.records)
+                return result
+            end):catch(function(err)
+                lia.logger.error("Failed to restore from " .. fileName .. ": " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Load snapshot with validation and error handling
+        local function restoreWithValidation(fileName)
+            return lia.db.loadSnapshot(fileName):next(function(result)
+                -- Validate restore results
+                if result.records == 0 then
+                    lia.logger.warn("Restore completed but no records were loaded")
+                end
+                
+                -- Verify table exists and has data
+                return lia.db.count(result.table):next(function(count)
+                    if count ~= result.records then
+                        lia.logger.warn("Record count mismatch: expected " .. result.records .. ", got " .. count)
+                    end
+                    
+                    -- Create restore log entry
+                    local restoreLog = {
+                        fileName = fileName,
+                        table = result.table,
+                        records = result.records,
+                        timestamp = result.timestamp,
+                        restoredAt = os.time(),
+                        success = true
+                    }
+                    
+                    lia.logger.info("Restore completed successfully: " .. fileName)
+                    hook.Run("OnRestoreCompleted", restoreLog)
+                    return restoreLog
+                end)
+            end):catch(function(err)
+                lia.logger.error("Restore failed: " .. tostring(err))
+                
+                -- Log failed restore attempt
+                local failedLog = {
+                    fileName = fileName,
+                    error = tostring(err),
+                    failedAt = os.time(),
+                    success = false
+                }
+                
+                hook.Run("OnRestoreFailed", failedLog)
+                return failedLog
+            end)
+        end
+        ```
+]]
 function lia.db.loadSnapshot(fileName)
     local d = deferred.new()
     local filePath = "lilia/snapshots/" .. fileName
