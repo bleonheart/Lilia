@@ -321,7 +321,7 @@ function PANEL:addText(...)
         else
             -- Show messages for a longer time and with better visibility
             local alpha = (1 - math.TimeFraction(p.start, p.finish, CurTime())) * 255
-            p:SetAlpha(math.max(alpha, 50))
+            p:SetAlpha(math.max(alpha, 0))
         end
     end
 
