@@ -1,6 +1,11 @@
 ﻿--[[
     Database Library
 
+    Comprehensive database management system with SQLite support for the Lilia framework.
+]]
+
+--[[
+    Overview:
     The database library provides comprehensive database management functionality for the Lilia framework.
     It handles all database operations including connection management, table creation and modification,
     data insertion, updates, queries, and schema management. The library supports SQLite as the primary

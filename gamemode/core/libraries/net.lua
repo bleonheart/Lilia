@@ -1,6 +1,11 @@
 ﻿--[[
     Network Library
 
+    Network communication and data streaming system for the Lilia framework.
+]]
+
+--[[
+    Overview:
     The network library provides comprehensive functionality for managing network communication
     in the Lilia framework. It handles both simple message passing and complex data streaming
     between server and client. The library includes support for registering network message

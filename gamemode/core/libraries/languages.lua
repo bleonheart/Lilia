@@ -1,6 +1,11 @@
 ﻿--[[
     Languages Library
 
+    Internationalization (i18n) and localization system for the Lilia framework.
+]]
+
+--[[
+    Overview:
     The languages library provides comprehensive internationalization (i18n) functionality for the Lilia framework.
     It handles loading, storing, and retrieving localized strings from language files, supporting multiple languages
     with fallback mechanisms. The library automatically loads language files from directories, processes them into
