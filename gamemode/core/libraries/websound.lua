@@ -751,7 +751,7 @@ function lia.websound.playButtonSound(customSound, callback)
         -- Button sound found in cache, playing immediately
         -- Cached path: cachedPath
         -- Use sound.PlayFile directly with the full path (like lia_saved_sounds does)
-        sound.PlayFile(cachedPath, "", function(channel, errorCode, errorString)
+        sound.PlayFile(cachedPath, "", function()
             -- Button sound played or failed to play
         end)
 
@@ -767,11 +767,11 @@ function lia.websound.playButtonSound(customSound, callback)
     end
 
     -- Try to download and play
-    lia.websound.download("button_click.wav", nil, function(localPath, fromCache, error)
+    lia.websound.download("button_click.wav", nil, function(localPath)
         if localPath then
             -- Button sound downloaded successfully, playing
             -- Use sound.PlayFile directly with the full path (like lia_saved_sounds does)
-            sound.PlayFile(localPath, "", function(channel, errorCode, errorString)
+            sound.PlayFile(localPath, "", function()
                 -- Button sound played or failed to play
             end)
 
