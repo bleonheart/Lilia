@@ -859,8 +859,8 @@ end
         Medium Complexity:
         ```lua
         -- Medium: Send localized notification with formatting
-        player:notifyLocalized("item_found", "success")
-        player:notifyLocalized("health_low", "warning")
+        player:notifySuccessLocalized("item_found")
+        player:notifyWarningLocalized("health_low")
         ```
 
         High Complexity:
@@ -869,7 +869,7 @@ end
         local itemName = item:getName()
         local itemValue = item:getData("value", 0)
         local currency = lia.currency.get("money")
-        player:notifyLocalized("item_sold", "success")
+        player:notifySuccessLocalized("item_sold")
         ```
 ]]
 function playerMeta:notifyLocalized(message, notifType, ...)
