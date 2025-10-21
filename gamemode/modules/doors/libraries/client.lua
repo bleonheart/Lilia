@@ -163,7 +163,7 @@ function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
     local fadeAlpha = math.Clamp(fade, 0, 1)
     -- Draw at bottom center of screen
     local screenX = ScrW() / 2
-    local screenY = ScrH() - 50 -- 50 pixels from bottom
+    local screenY = ScrH() - 50
     -- Draw the door info box using drawBoxWithText
     lia.derma.drawBoxWithText(infoTexts, screenX, screenY, {
         font = "LiliaFont.18",

@@ -1,6 +1,6 @@
 ﻿--[[
     Languages Library
-    
+
     The languages library provides comprehensive internationalization (i18n) functionality for the Lilia framework.
     It handles loading, storing, and retrieving localized strings from language files, supporting multiple languages
     with fallback mechanisms. The library automatically loads language files from directories, processes them into
@@ -10,11 +10,9 @@
     the entire gamemode. It supports dynamic language switching and provides the global L() function for easy
     access to localized strings throughout the codebase.
 ]]
-
 lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
 lia.lang.stored = lia.lang.stored or {}
-
 --[[
     Purpose: Loads language files from a specified directory and processes them into the language storage system
     When Called: During gamemode initialization or when manually loading language files
@@ -22,13 +20,13 @@ lia.lang.stored = lia.lang.stored or {}
     Returns: None
     Realm: Server/Client
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load languages from default directory
     lia.lang.loadFromDir("lilia/gamemode/languages")
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load languages from custom module directory
@@ -37,7 +35,7 @@ lia.lang.stored = lia.lang.stored or {}
         lia.lang.loadFromDir(moduleDir)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load languages from multiple directories with validation
@@ -46,7 +44,7 @@ lia.lang.stored = lia.lang.stored or {}
         "lilia/gamemode/modules/custom/languages",
         "addons/mycustomaddon/languages"
     }
-    
+
     for _, dir in ipairs(languageDirs) do
         if file.Exists(dir, "LUA") then
             lia.lang.loadFromDir(dir)
@@ -88,7 +86,7 @@ end
     Returns: None
     Realm: Server/Client
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Add basic language strings
@@ -97,7 +95,7 @@ end
         goodbye = "Goodbye"
     })
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Add module-specific language strings
@@ -108,7 +106,7 @@ end
     }
     lia.lang.addTable("english", moduleLang)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Add multiple language tables with validation
@@ -117,7 +115,7 @@ end
         spanish = { title = "Título", desc = "Descripción" },
         french = { title = "Titre", desc = "Description" }
     }
-    
+
     for lang, strings in pairs(languages) do
         if type(strings) == "table" then
             lia.lang.addTable(lang, strings)
@@ -140,40 +138,40 @@ end
     Returns: table - Sorted array of language names with proper capitalization
     Realm: Server/Client
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get list of available languages
     local languages = lia.lang.getLanguages()
     print("Available languages:", table.concat(languages, ", "))
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Create language selection menu
     local languages = lia.lang.getLanguages()
     local menu = vgui.Create("DFrame")
     local combo = vgui.Create("DComboBox", menu)
-    
+
     for _, lang in ipairs(languages) do
         combo:AddChoice(lang)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Validate language selection with fallback
     local function setLanguage(langName)
         local languages = lia.lang.getLanguages()
         local found = false
-        
+
         for _, lang in ipairs(languages) do
             if lang:lower() == langName:lower() then
                 found = true
                 break
             end
         end
-        
+
         if found then
             lia.config.set("Language", langName:lower())
         else
@@ -201,14 +199,14 @@ end
     Returns: string - The localized and formatted string, or the key if not found
     Realm: Server/Client
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get basic localized string
     local message = lia.lang.getLocalizedString("hello")
     print(message) -- Outputs: "Hello" (in current language)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get localized string with parameters
@@ -216,7 +214,7 @@ end
     local welcomeMsg = lia.lang.getLocalizedString("welcomePlayer", playerName)
     print(welcomeMsg) -- Outputs: "Welcome, John!" (if template is "Welcome, %s!")
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Complex localized string with multiple parameters and error handling
@@ -267,13 +265,13 @@ end
     Returns: string - The localized and formatted string, or the key if not found
     Realm: Server/Client
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Use global L function for basic strings
     print(L("hello")) -- Outputs: "Hello" (in current language)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Use L function with parameters in chat
@@ -282,7 +280,7 @@ end
         chat.AddText(Color(255, 255, 255), welcomeMsg)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Use L function in complex UI with multiple languages
@@ -291,7 +289,7 @@ end
         local title = L("menuTitle")
         local description = L("menuDescription")
         local buttonText = L("confirmButton")
-        
+
         if IsValid(self.titleLabel) then
             self.titleLabel:SetText(title)
         end

@@ -1,6 +1,6 @@
 ﻿--[[
     Workshop Library
-    
+
     The workshop library provides comprehensive functionality for managing Steam Workshop addons
     in the Lilia framework. It handles automatic downloading, mounting, and management of
     workshop content required by the gamemode and its modules. The library operates on both
@@ -21,13 +21,13 @@ if SERVER then
         Returns: None
         Realm: Server
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Add a single workshop addon
         lia.workshop.addWorkshop("1234567890")
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Add workshop addon from module configuration
@@ -36,7 +36,7 @@ if SERVER then
             lia.workshop.addWorkshop(workshopId)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Add multiple workshop addons with validation
@@ -70,13 +70,13 @@ if SERVER then
         Returns: table - Table containing all workshop IDs that need to be downloaded
         Realm: Server
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Gather workshop IDs
         local workshopIds = lia.workshop.gather()
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Gather and validate workshop IDs
@@ -84,7 +84,7 @@ if SERVER then
         local count = table.Count(workshopIds)
         print("Found " .. count .. " workshop addons")
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Gather workshop IDs and send to specific players
@@ -131,13 +131,13 @@ if SERVER then
         Returns: None
         Realm: Server
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Send workshop IDs to a player
         lia.workshop.send(player.GetByID(1))
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Send workshop IDs to admin players only
@@ -147,7 +147,7 @@ if SERVER then
             end
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Send workshop IDs with validation and logging
@@ -157,7 +157,7 @@ if SERVER then
                 print("Sent workshop IDs to " .. ply:Name())
             end
         end
-        
+
         hook.Add("PlayerInitialSpawn", "CustomWorkshopSend", function(ply)
             timer.Simple(5, function()
                 sendToPlayer(ply)
@@ -222,7 +222,7 @@ else
         Returns: boolean - True if content needs to be downloaded, false otherwise
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Check if downloads are needed
@@ -230,7 +230,7 @@ else
             print("Workshop content needs to be downloaded")
         end
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Check and show notification
@@ -238,7 +238,7 @@ else
             notification.AddLegacy("Workshop content available for download", NOTIFY_GENERIC, 5)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Check downloads and create custom UI
@@ -249,7 +249,7 @@ else
                 frame:SetSize(400, 200)
                 frame:Center()
                 frame:MakePopup()
-                
+
                 local btn = vgui.Create("DButton", frame)
                 btn:SetText("Download Now")
                 btn:Dock(BOTTOM)
@@ -259,7 +259,7 @@ else
                 end
             end
         end
-        
+
         hook.Add("OnEntityCreated", "CheckWorkshopDownloads", function(ent)
             if ent == LocalPlayer() then
                 timer.Simple(1, checkDownloads)
@@ -395,13 +395,13 @@ else
         Returns: None
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Mount workshop content
         lia.workshop.mountContent()
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Mount content with custom callback
@@ -413,40 +413,40 @@ else
             end
         end)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Mount content with progress tracking and custom UI
         local function mountWithProgress()
             local needed = {}
             local ids = lia.workshop.serverIds or {}
-            
+
             for id in pairs(ids) do
                 if id ~= "3527535922" and not mounted(id) and not mountLocal(id) then
                     needed[#needed + 1] = id
                 end
             end
-            
+
             if #needed > 0 then
                 local frame = vgui.Create("DFrame")
                 frame:SetTitle("Workshop Content Download")
                 frame:SetSize(500, 300)
                 frame:Center()
                 frame:MakePopup()
-                
+
                 local progress = vgui.Create("DProgress", frame)
                 progress:Dock(TOP)
                 progress:SetHeight(30)
-                
+
                 local function updateProgress(current, total)
                     progress:SetFraction(current / total)
                     progress:SetText(current .. "/" .. total)
                 end
-                
+
                 lia.workshop.mountContent()
             end
         end
-        
+
         hook.Add("PlayerInitialSpawn", "MountWorkshopContent", function(ply)
             if ply == LocalPlayer() then
                 timer.Simple(3, mountWithProgress)

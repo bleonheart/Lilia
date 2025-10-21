@@ -1,6 +1,6 @@
 ﻿--[[
     Color Library
-    
+
     The color library provides comprehensive functionality for managing colors and themes
     in the Lilia framework. It handles color registration, theme management, color
     manipulation, and smooth theme transitions. The library operates primarily on the
@@ -10,7 +10,6 @@
     color usage across the entire gamemode interface and provides tools for creating
     custom themes and color schemes.
 ]]
-
 lia.color = lia.color or {}
 lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
@@ -18,25 +17,25 @@ if CLIENT then
     --[[
         Purpose: Registers a named color for use throughout the gamemode
         When Called: When defining custom colors or extending the color palette
-        Parameters: 
+        Parameters:
             name (string) - The name identifier for the color
             color (table) - Color table with r, g, b, a values or array format
         Returns: None
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Register a basic color
         lia.color.register("myred", {255, 0, 0})
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Register color with alpha channel
         lia.color.register("semitransparent", {255, 255, 255, 128})
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Register multiple colors from configuration
@@ -66,13 +65,13 @@ if CLIENT then
         Returns: Color - New adjusted color with clamped values
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Brighten a color
         local brightRed = lia.color.adjust(Color(100, 0, 0), 50, 0, 0)
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Create color variations
@@ -80,16 +79,16 @@ if CLIENT then
         local lighter = lia.color.adjust(baseColor, 30, 30, 30)
         local darker = lia.color.adjust(baseColor, -30, -30, -30)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Dynamic color adjustment based on conditions
         local function adjustColorForTime(color, timeOfDay)
             local multiplier = math.sin(timeOfDay * math.pi / 12) * 0.3
-            return lia.color.adjust(color, 
-                multiplier * 50, 
-                multiplier * 30, 
-                multiplier * 20, 
+            return lia.color.adjust(color,
+                multiplier * 50,
+                multiplier * 30,
+                multiplier * 20,
                 multiplier * 100
             )
         end
@@ -108,20 +107,20 @@ if CLIENT then
         Returns: Color - New darkened color with preserved alpha
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Darken a color slightly
         local darkBlue = lia.color.darken(Color(0, 0, 255))
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Create shadow effect
         local baseColor = Color(100, 150, 200)
         local shadowColor = lia.color.darken(baseColor, 0.5)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Dynamic darkening based on distance
@@ -144,14 +143,14 @@ if CLIENT then
         Returns: string - Current theme name in lowercase
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Check current theme
         local currentTheme = lia.color.getCurrentTheme()
         print("Current theme:", currentTheme)
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Conditional theme-based logic
@@ -159,7 +158,7 @@ if CLIENT then
             -- Apply dark theme specific settings
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Theme-based UI customization
@@ -184,14 +183,14 @@ if CLIENT then
         Returns: string - Current theme name with proper capitalization
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Display theme name
         local themeName = lia.color.getCurrentThemeName()
         print("Active theme:", themeName)
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Theme selection menu
@@ -201,14 +200,14 @@ if CLIENT then
             menu:SetTitle("Current Theme: " .. currentTheme)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Theme validation and fallback
         local function validateTheme()
             local themeName = lia.color.getCurrentThemeName()
             local availableThemes = lia.color.getAllThemes()
-            
+
             if not table.HasValue(availableThemes, themeName:lower()) then
                 lia.config.set("Theme", "Teal")
                 return "Teal"
@@ -228,13 +227,13 @@ if CLIENT then
         Returns: Color - The main color from current theme or default teal
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Get main theme color
         local mainColor = lia.color.getMainColor()
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Use main color for UI elements
@@ -245,7 +244,7 @@ if CLIENT then
             return button
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Dynamic color scheme generation
@@ -277,19 +276,19 @@ if CLIENT then
         Returns: None
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Apply theme without transition
         lia.color.applyTheme("dark")
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Apply theme with smooth transition
         lia.color.applyTheme("light", true)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Theme switching with validation and fallback
@@ -298,10 +297,10 @@ if CLIENT then
             if not table.HasValue(availableThemes, themeName:lower()) then
                 themeName = "teal"
             end
-            
+
             lia.color.applyTheme(themeName, true)
             lia.config.set("Theme", themeName)
-            
+
             -- Notify other systems of theme change
             hook.Run("OnThemeChanged", themeName, true)
         end
@@ -346,7 +345,7 @@ if CLIENT then
         Returns: boolean - True if transition is active, false otherwise
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Check if transition is running
@@ -354,7 +353,7 @@ if CLIENT then
             print("Theme transition in progress")
         end
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Prevent multiple transitions
@@ -366,7 +365,7 @@ if CLIENT then
             lia.color.applyTheme(themeName, true)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Queue theme changes during transitions
@@ -378,7 +377,7 @@ if CLIENT then
                 lia.color.applyTheme(themeName, true)
             end
         end
-        
+
         hook.Add("OnThemeChanged", "ProcessThemeQueue", function()
             if #themeQueue > 0 and not lia.color.isTransitionActive() then
                 local nextTheme = table.remove(themeQueue, 1)
@@ -399,13 +398,13 @@ if CLIENT then
         Returns: None
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Test theme transition
         lia.color.testThemeTransition("dark")
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Preview multiple themes
@@ -416,19 +415,19 @@ if CLIENT then
             end)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Theme preview system with cycling
         local previewThemes = {"dark", "light", "blue", "red"}
         local currentPreview = 1
-        
+
         local function cycleThemePreview()
             if lia.color.isTransitionActive() then return end
-            
+
             local theme = previewThemes[currentPreview]
             lia.color.testThemeTransition(theme)
-            
+
             currentPreview = (currentPreview % #previewThemes) + 1
             timer.Simple(3, cycleThemePreview)
         end
@@ -454,13 +453,13 @@ if CLIENT then
         Returns: None
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Start theme transition
         lia.color.startThemeTransition("dark")
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Transition with validation
@@ -469,20 +468,20 @@ if CLIENT then
                 print("Transition already in progress")
                 return
             end
-            
+
             local availableThemes = lia.color.getAllThemes()
             if table.HasValue(availableThemes, themeName:lower()) then
                 lia.color.startThemeTransition(themeName)
             end
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Custom transition with progress tracking
         local function customThemeTransition(themeName, callback)
             lia.color.startThemeTransition(themeName)
-            
+
             local function checkProgress()
                 if not lia.color.isTransitionActive() then
                     if callback then callback() end
@@ -569,7 +568,7 @@ if CLIENT then
         Returns: boolean - True if value is a valid color, false otherwise
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Check if value is color
@@ -577,7 +576,7 @@ if CLIENT then
             print("It's a color!")
         end
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Validate color data
@@ -589,7 +588,7 @@ if CLIENT then
             end
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Recursive color validation in nested tables
@@ -621,14 +620,14 @@ if CLIENT then
         Returns: table - Table containing adjusted colors (background, sidebar, accent, text, hover, border, highlight)
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Get theme colors
         local colors = lia.color.returnMainAdjustedColors()
         local bgColor = colors.background
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Apply colors to UI elements
@@ -643,13 +642,13 @@ if CLIENT then
             return panel
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Dynamic UI system with theme colors
         local function createAdvancedUI()
             local colors = lia.color.returnMainAdjustedColors()
-            
+
             local ui = {
                 background = colors.background,
                 primary = colors.accent,
@@ -659,13 +658,13 @@ if CLIENT then
                 border = colors.border,
                 highlight = colors.highlight
             }
-            
+
             -- Apply colors to multiple UI elements
             for _, element in ipairs(uiElements) do
                 element:SetColor(ui.primary)
                 element:SetTextColor(ui.text)
             end
-            
+
             return ui
         end
         ```
@@ -696,48 +695,48 @@ if CLIENT then
         Returns: Color - Interpolated color between col1 and col2
         Realm: Client
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Lerp between colors
         local blendedColor = lia.color.lerp(5, Color(255, 0, 0), Color(0, 255, 0))
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Smooth color transition
         local function fadeBetweenColors(startColor, endColor, duration)
             local startTime = CurTime()
-            
+
             hook.Add("Think", "ColorFade", function()
                 local elapsed = CurTime() - startTime
                 local progress = math.min(elapsed / duration, 1)
-                
+
                 if progress >= 1 then
                     hook.Remove("Think", "ColorFade")
                 end
-                
+
                 local currentColor = lia.color.lerp(10, startColor, endColor)
                 -- Use currentColor for UI elements
             end)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Multi-color gradient system
         local function createColorGradient(colors, steps)
             local gradient = {}
-            
+
             for i = 1, steps do
                 local t = (i - 1) / (steps - 1)
                 local colorIndex = math.floor(t * (#colors - 1)) + 1
                 local nextIndex = math.min(colorIndex + 1, #colors)
-                
+
                 local localT = (t * (#colors - 1)) - (colorIndex - 1)
                 gradient[i] = lia.color.lerp(1, colors[colorIndex], colors[nextIndex])
             end
-            
+
             return gradient
         end
         ```
@@ -799,7 +798,7 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic theme
@@ -809,7 +808,7 @@ end
         text = Color(255, 255, 255)
     })
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register theme with full color set
@@ -822,7 +821,7 @@ end
         accent = Color(106, 108, 197)
     })
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Dynamic theme generation
@@ -838,7 +837,7 @@ end
                 Color(config.panel3.r, config.panel3.g, config.panel3.b)
             }
         }
-        
+
         lia.color.registerTheme(config.name, themeData)
     end
     ```
@@ -855,21 +854,21 @@ end
     Returns: table - Array of theme names in alphabetical order
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get all themes
     local themes = lia.color.getAllThemes()
     print("Available themes:", table.concat(themes, ", "))
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Create theme selection menu
     local function createThemeMenu()
         local themes = lia.color.getAllThemes()
         local menu = vgui.Create("DFrame")
-        
+
         for _, themeName in ipairs(themes) do
             local button = vgui.Create("DButton", menu)
             button:SetText(themeName)
@@ -879,27 +878,27 @@ end
         end
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Theme validation and management system
     local function validateAndManageThemes()
         local themes = lia.color.getAllThemes()
         local validThemes = {}
-        
+
         for _, themeName in ipairs(themes) do
             local themeData = lia.color.themes[themeName]
             if themeData and themeData.maincolor then
                 table.insert(validThemes, {
                     name = themeName,
-                    displayName = themeName:gsub("_", " "):gsub("(%a)([%w]*)", function(first, rest) 
-                        return first:upper() .. rest:lower() 
+                    displayName = themeName:gsub("_", " "):gsub("(%a)([%w]*)", function(first, rest)
+                        return first:upper() .. rest:lower()
                     end),
                     mainColor = themeData.maincolor
                 })
             end
         end
-        
+
         return validThemes
     end
     ```

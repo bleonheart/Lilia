@@ -1,6 +1,6 @@
 ﻿--[[
     Inventory Library
-    
+
     The inventory library provides comprehensive functionality for managing inventory systems
     in the Lilia framework. It handles inventory type registration, instance creation, storage
     management, and database persistence. The library operates on both server and client sides,
@@ -9,7 +9,6 @@
     inventory types, storage containers, vehicle trunks, and character-based inventory management.
     The library ensures proper data validation, caching, and cleanup for optimal performance.
 ]]
-
 lia.inventory = lia.inventory or {}
 lia.inventory.types = lia.inventory.types or {}
 lia.inventory.storage = lia.inventory.storage or {}
@@ -41,13 +40,13 @@ end
 --[[
     Purpose: Registers a new inventory type with the system
     When Called: During module initialization or when defining custom inventory types
-    Parameters: 
+    Parameters:
         - typeID (string): Unique identifier for the inventory type
         - invTypeStruct (table): Structure containing inventory type configuration
     Returns: None
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic inventory type
@@ -57,7 +56,7 @@ end
         config = {w = 10, h = 5}
     })
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register inventory type with custom methods
@@ -71,7 +70,7 @@ end
     }
     lia.inventory.newType("player", playerInvType)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Register complex inventory type with validation
@@ -96,7 +95,6 @@ end
     lia.inventory.newType("complex", complexInvType)
     ```
 ]]
-
 function lia.inventory.newType(typeID, invTypeStruct)
     assert(not lia.inventory.types[typeID], L("duplicateInventoryType", typeID))
     assert(istable(invTypeStruct), L("expectedTableArg", 2))
@@ -108,18 +106,18 @@ end
 --[[
     Purpose: Creates a new inventory instance of the specified type
     When Called: When creating inventory instances for players, storage containers, or vehicles
-    Parameters: 
+    Parameters:
         - typeID (string): The inventory type identifier to create an instance of
     Returns: Inventory instance (table) with items and config properties
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Create a basic player inventory
     local playerInv = lia.inventory.new("player")
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Create inventory and configure it
@@ -127,7 +125,7 @@ end
     storageInv.config.w = 15
     storageInv.config.h = 8
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Create inventory with custom configuration
@@ -138,7 +136,6 @@ end
     customInv.items = {}
     ```
 ]]
-
 function lia.inventory.new(typeID)
     local class = lia.inventory.types[typeID]
     assert(class ~= nil, L("badInventoryType", typeID))
@@ -157,13 +154,13 @@ if SERVER then
     --[[
     Purpose: Loads an inventory instance by its ID from storage or cache
     When Called: When accessing an existing inventory that may be cached or needs to be loaded from database
-    Parameters: 
+    Parameters:
         - id (number): The inventory ID to load
         - noCache (boolean, optional): If true, bypasses cache and forces reload from storage
     Returns: Deferred promise that resolves to inventory instance
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load inventory by ID
@@ -171,7 +168,7 @@ if SERVER then
         print("Loaded inventory:", inv.id)
     end)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load inventory with error handling
@@ -183,7 +180,7 @@ if SERVER then
         print("Failed to load inventory:", err)
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load inventory with cache bypass and validation
@@ -224,13 +221,13 @@ if SERVER then
     --[[
     Purpose: Loads an inventory from the default database storage system
     When Called: When loadByID cannot find a custom loader and needs to use default storage
-    Parameters: 
+    Parameters:
         - id (number): The inventory ID to load from database
         - noCache (boolean, optional): If true, bypasses cache and forces reload from database
     Returns: Deferred promise that resolves to inventory instance
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load inventory from default storage
@@ -238,7 +235,7 @@ if SERVER then
         print("Loaded from database:", inv.id)
     end)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load with cache bypass
@@ -248,7 +245,7 @@ if SERVER then
         end
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load with comprehensive error handling and validation
@@ -258,13 +255,13 @@ if SERVER then
                 lia.error("Failed to load inventory " .. id .. " from database")
                 return deferred.reject("Inventory not found in database")
             end
-            
+
             -- Validate inventory structure
             if not inv.data or not inv.items then
                 lia.error("Invalid inventory structure for ID: " .. id)
                 return deferred.reject("Corrupted inventory data")
             end
-            
+
             -- Log successful load
             lia.log("Successfully loaded inventory " .. id .. " from database")
             return inv
@@ -308,13 +305,13 @@ if SERVER then
     --[[
     Purpose: Creates a new inventory instance and initializes it in storage
     When Called: When creating new inventories that need to be persisted to database
-    Parameters: 
+    Parameters:
         - typeID (string): The inventory type identifier
         - initialData (table, optional): Initial data to store with the inventory
     Returns: Deferred promise that resolves to the created inventory instance
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Create a new inventory instance
@@ -322,7 +319,7 @@ if SERVER then
         print("Created inventory:", inv.id)
     end)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Create inventory with initial data
@@ -332,7 +329,7 @@ if SERVER then
         print("Owner:", inv.data.owner)
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Create inventory with validation and error handling
@@ -340,17 +337,17 @@ if SERVER then
         if not lia.inventory.types[typeID] then
             return deferred.reject("Invalid inventory type: " .. typeID)
         end
-        
+
         return lia.inventory.instance(typeID, data):next(function(inv)
             if not inv or not inv.id then
                 return deferred.reject("Failed to create inventory instance")
             end
-            
+
             -- Validate created inventory
             if not inv.data or not inv.items then
                 return deferred.reject("Invalid inventory structure")
             end
-            
+
             lia.log("Successfully created inventory " .. inv.id .. " of type " .. typeID)
             return inv
         end):catch(function(err)
@@ -378,12 +375,12 @@ if SERVER then
     --[[
     Purpose: Loads all inventories associated with a specific character ID
     When Called: When a character logs in or when accessing all character inventories
-    Parameters: 
+    Parameters:
         - charID (number): The character ID to load inventories for
     Returns: Deferred promise that resolves to array of inventory instances
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load all inventories for a character
@@ -391,7 +388,7 @@ if SERVER then
         print("Loaded", #inventories, "inventories")
     end)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load inventories with error handling
@@ -406,7 +403,7 @@ if SERVER then
         print("Failed to load character inventories:", err)
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load inventories with validation and processing
@@ -415,7 +412,7 @@ if SERVER then
             if not inventories then
                 return deferred.reject("No inventories found for character " .. charID)
             end
-            
+
             local validInventories = {}
             for _, inv in ipairs(inventories) do
                 if inv and inv.id and inv.data then
@@ -427,7 +424,7 @@ if SERVER then
                     end
                 end
             end
-            
+
             lia.log("Loaded " .. #validInventories .. " valid inventories for character " .. charID)
             return validInventories
         end):catch(function(err)
@@ -450,18 +447,18 @@ if SERVER then
     --[[
     Purpose: Permanently deletes an inventory and all its associated data from the database
     When Called: When removing inventories that are no longer needed or during cleanup operations
-    Parameters: 
+    Parameters:
         - id (number): The inventory ID to delete
     Returns: None
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Delete an inventory by ID
     lia.inventory.deleteByID(123)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Delete inventory with validation
@@ -470,13 +467,13 @@ if SERVER then
             lia.error("Invalid inventory ID for deletion: " .. tostring(id))
             return false
         end
-        
+
         lia.inventory.deleteByID(id)
         lia.log("Deleted inventory ID: " .. id)
         return true
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Delete inventory with comprehensive cleanup
@@ -484,14 +481,14 @@ if SERVER then
         if not isnumber(id) or id <= 0 then
             return deferred.reject("Invalid inventory ID: " .. tostring(id))
         end
-        
+
         -- Check if inventory exists before deletion
         return lia.inventory.loadByID(id):next(function(inv)
             if not inv then
                 lia.warning("Attempted to delete non-existent inventory: " .. id)
                 return false
             end
-            
+
             -- Clean up any items in the inventory
             if inv.items then
                 for _, item in pairs(inv.items) do
@@ -500,7 +497,7 @@ if SERVER then
                     end
                 end
             end
-            
+
             -- Delete from database
             lia.inventory.deleteByID(id)
             lia.log("Successfully deleted inventory " .. id .. " and all associated data")
@@ -523,18 +520,18 @@ if SERVER then
     --[[
     Purpose: Destroys all inventory instances associated with a character
     When Called: When a character is deleted or during character cleanup operations
-    Parameters: 
+    Parameters:
         - character (table): The character object containing inventory references
     Returns: None
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Clean up character inventories
     lia.inventory.cleanUpForCharacter(character)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Clean up with validation
@@ -543,13 +540,13 @@ if SERVER then
             lia.error("Invalid character object for cleanup")
             return false
         end
-        
+
         lia.inventory.cleanUpForCharacter(character)
         lia.log("Cleaned up inventories for character: " .. character:getName())
         return true
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Clean up with comprehensive logging and validation
@@ -558,13 +555,13 @@ if SERVER then
             lia.error("Invalid character object for inventory cleanup")
             return false
         end
-        
+
         local inventories = character:getInv(true)
         if not inventories or table.IsEmpty(inventories) then
             lia.log("No inventories to clean up for character: " .. character:getName())
             return true
         end
-        
+
         local count = 0
         for _, inv in pairs(inventories) do
             if inv and inv.destroy then
@@ -572,7 +569,7 @@ if SERVER then
                 count = count + 1
             end
         end
-        
+
         lia.log("Cleaned up " .. count .. " inventories for character: " .. character:getName())
         return true
     end
@@ -587,13 +584,13 @@ if SERVER then
     --[[
     Purpose: Registers a storage container model with inventory configuration
     When Called: During module initialization to register storage containers like crates, lockers, etc.
-    Parameters: 
+    Parameters:
         - model (string): The model path of the storage container
         - data (table): Configuration data containing name, invType, and invData
     Returns: The registered storage data table
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic storage container
@@ -603,7 +600,7 @@ if SERVER then
         invData = {w = 5, h = 3}
     })
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register storage with custom configuration
@@ -619,7 +616,7 @@ if SERVER then
     }
     lia.inventory.registerStorage("models/props_c17/furnituremedicinecabinet001a.mdl", storageData)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Register multiple storage types with validation
@@ -642,7 +639,7 @@ if SERVER then
                 }
             }
         }
-        
+
         for _, storage in ipairs(storages) do
             if storage.model and storage.data then
                 lia.inventory.registerStorage(storage.model, storage.data)
@@ -665,12 +662,12 @@ if SERVER then
     --[[
     Purpose: Retrieves storage configuration data for a specific model
     When Called: When checking if a model has registered storage or accessing storage configuration
-    Parameters: 
+    Parameters:
         - model (string): The model path to look up storage data for
     Returns: Storage data table if found, nil otherwise
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get storage data for a model
@@ -679,7 +676,7 @@ if SERVER then
         print("Storage name:", storageData.name)
     end
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get storage with validation
@@ -687,7 +684,7 @@ if SERVER then
         if not model or not isstring(model) then
             return nil
         end
-        
+
         local storageData = lia.inventory.getStorage(model)
         if storageData then
             return {
@@ -699,7 +696,7 @@ if SERVER then
         return nil
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get storage with comprehensive validation and processing
@@ -708,19 +705,19 @@ if SERVER then
             lia.warning("Invalid model provided to getStorageConfiguration: " .. tostring(model))
             return nil
         end
-        
+
         local storageData = lia.inventory.getStorage(model)
         if not storageData then
             lia.log("No storage configuration found for model: " .. model)
             return nil
         end
-        
+
         -- Validate storage data structure
         if not storageData.name or not storageData.invType or not storageData.invData then
             lia.error("Invalid storage data structure for model: " .. model)
             return nil
         end
-        
+
         -- Process and return validated data
         return {
             name = storageData.name,
@@ -742,13 +739,13 @@ if SERVER then
     --[[
     Purpose: Registers a vehicle class with trunk inventory configuration
     When Called: During module initialization to register vehicle trunks
-    Parameters: 
+    Parameters:
         - vehicleClass (string): The vehicle class name
         - data (table): Configuration data containing name, invType, and invData
     Returns: The registered trunk data table
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic vehicle trunk
@@ -758,7 +755,7 @@ if SERVER then
         invData = {w = 8, h = 3}
     })
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register trunk with custom configuration
@@ -775,7 +772,7 @@ if SERVER then
     }
     lia.inventory.registerTrunk("prop_vehicle_police", trunkData)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Register multiple vehicle trunks with validation
@@ -806,7 +803,7 @@ if SERVER then
                 }
             }
         }
-        
+
         for _, vehicle in ipairs(vehicles) do
             if vehicle.class and vehicle.data then
                 lia.inventory.registerTrunk(vehicle.class, vehicle.data)
@@ -833,12 +830,12 @@ if SERVER then
     --[[
     Purpose: Retrieves trunk configuration data for a specific vehicle class
     When Called: When checking if a vehicle has a trunk or accessing trunk configuration
-    Parameters: 
+    Parameters:
         - vehicleClass (string): The vehicle class name to look up trunk data for
     Returns: Trunk data table if found, nil otherwise
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get trunk data for a vehicle
@@ -847,7 +844,7 @@ if SERVER then
         print("Trunk name:", trunkData.name)
     end
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get trunk with validation
@@ -855,7 +852,7 @@ if SERVER then
         if not vehicleClass or not isstring(vehicleClass) then
             return nil
         end
-        
+
         local trunkData = lia.inventory.getTrunk(vehicleClass)
         if trunkData then
             return {
@@ -868,7 +865,7 @@ if SERVER then
         return nil
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get trunk with comprehensive validation and processing
@@ -877,19 +874,19 @@ if SERVER then
             lia.warning("Invalid vehicle class provided: " .. tostring(vehicleClass))
             return nil
         end
-        
+
         local trunkData = lia.inventory.getTrunk(vehicleClass)
         if not trunkData then
             lia.log("No trunk configuration found for vehicle: " .. vehicleClass)
             return nil
         end
-        
+
         -- Validate trunk data structure
         if not trunkData.name or not trunkData.invType or not trunkData.invData then
             lia.error("Invalid trunk data structure for vehicle: " .. vehicleClass)
             return nil
         end
-        
+
         -- Process and return validated data
         return {
             name = trunkData.name,
@@ -917,7 +914,7 @@ if SERVER then
     Returns: Table containing all trunk configurations indexed by vehicle class
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get all trunks
@@ -926,14 +923,14 @@ if SERVER then
         print("Vehicle:", vehicleClass, "Trunk:", trunkData.name)
     end
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get trunks with processing
     local function getAllTrunkInfo()
         local trunks = lia.inventory.getAllTrunks()
         local trunkList = {}
-        
+
         for vehicleClass, trunkData in pairs(trunks) do
             table.insert(trunkList, {
                 vehicleClass = vehicleClass,
@@ -941,11 +938,11 @@ if SERVER then
                 size = trunkData.invData.w * trunkData.invData.h
             })
         end
-        
+
         return trunkList
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get trunks with comprehensive validation and categorization
@@ -957,13 +954,13 @@ if SERVER then
             military = {},
             other = {}
         }
-        
+
         for vehicleClass, trunkData in pairs(trunks) do
             if not trunkData or not trunkData.name or not trunkData.invData then
                 lia.warning("Invalid trunk data for vehicle: " .. vehicleClass)
                 goto continue
             end
-            
+
             local trunkInfo = {
                 vehicleClass = vehicleClass,
                 name = trunkData.name,
@@ -973,7 +970,7 @@ if SERVER then
                 maxWeight = trunkData.invData.maxWeight,
                 restricted = trunkData.invData.restricted or false
             }
-            
+
             -- Categorize based on vehicle class
             if string.find(vehicleClass:lower(), "police") or string.find(vehicleClass:lower(), "ambulance") then
                 table.insert(categorized.emergency, trunkInfo)
@@ -984,10 +981,10 @@ if SERVER then
             else
                 table.insert(categorized.other, trunkInfo)
             end
-            
+
             ::continue::
         end
-        
+
         return categorized
     end
     ```
@@ -1003,12 +1000,12 @@ if SERVER then
     --[[
     Purpose: Retrieves all registered storage configurations with optional trunk filtering
     When Called: When needing to iterate through all available storage containers
-    Parameters: 
+    Parameters:
         - includeTrunks (boolean, optional): If false, excludes vehicle trunks from results
     Returns: Table containing all storage configurations indexed by model/class
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get all storage (including trunks)
@@ -1017,14 +1014,14 @@ if SERVER then
         print("Storage:", key, "Name:", data.name)
     end
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get storage excluding trunks
     local function getStorageContainers()
         local storageOnly = lia.inventory.getAllStorage(false)
         local containers = {}
-        
+
         for model, data in pairs(storageOnly) do
             table.insert(containers, {
                 model = model,
@@ -1033,11 +1030,11 @@ if SERVER then
                 size = data.invData.w * data.invData.h
             })
         end
-        
+
         return containers
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get storage with comprehensive categorization and validation
@@ -1048,13 +1045,13 @@ if SERVER then
             trunks = {},
             invalid = {}
         }
-        
+
         for key, data in pairs(allStorage) do
             if not data or not data.name or not data.invData then
                 table.insert(categorized.invalid, {key = key, reason = "Invalid data structure"})
                 goto continue
             end
-            
+
             local storageInfo = {
                 key = key,
                 name = data.name,
@@ -1064,21 +1061,21 @@ if SERVER then
                 maxWeight = data.invData.maxWeight,
                 isTrunk = data.isTrunk or false
             }
-            
+
             if data.isTrunk then
                 table.insert(categorized.trunks, storageInfo)
             else
                 table.insert(categorized.containers, storageInfo)
             end
-            
+
             ::continue::
         end
-        
+
         lia.log("Categorized " .. #categorized.containers .. " containers and " .. #categorized.trunks .. " trunks")
         if #categorized.invalid > 0 then
             lia.warning("Found " .. #categorized.invalid .. " invalid storage entries")
         end
-        
+
         return categorized
     end
     ```
@@ -1095,22 +1092,22 @@ if SERVER then
         end
     end
 else
---[[
+    --[[
     Purpose: Displays an inventory panel to the client
     When Called: When a player opens an inventory (player inventory, storage container, etc.)
-    Parameters: 
+    Parameters:
         - inventory (table): The inventory instance to display
         - parent (panel, optional): Parent panel to attach the inventory panel to
     Returns: The created inventory panel
     Realm: Client
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Show inventory panel
     local panel = lia.inventory.show(inventory)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Show inventory with parent panel
@@ -1119,12 +1116,12 @@ else
         frame:SetSize(400, 300)
         frame:Center()
         frame:MakePopup()
-        
+
         local invPanel = lia.inventory.show(inventory, frame)
         return invPanel
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Show inventory with comprehensive validation and error handling
@@ -1133,31 +1130,31 @@ else
             lia.notify("Invalid inventory provided", "error")
             return nil
         end
-        
+
         -- Check if inventory is already open
         local globalName = "inv" .. inventory.id
         if IsValid(lia.gui[globalName]) then
             lia.gui[globalName]:Remove()
         end
-        
+
         -- Validate parent panel
         if parent and not IsValid(parent) then
             lia.warning("Invalid parent panel provided to showInventorySafely")
             parent = nil
         end
-        
+
         -- Create inventory panel
         local panel = lia.inventory.show(inventory, parent)
-        
+
         if not panel or not IsValid(panel) then
             lia.error("Failed to create inventory panel for inventory " .. inventory.id)
             return nil
         end
-        
+
         -- Add custom styling and behavior
         panel:SetPos(50, 50)
         panel:SetSize(600, 400)
-        
+
         -- Add close button
         local closeBtn = panel:Add("DButton")
         closeBtn:SetText("Close")
@@ -1166,12 +1163,13 @@ else
         closeBtn.DoClick = function()
             panel:Remove()
         end
-        
+
         lia.log("Successfully displayed inventory panel for inventory " .. inventory.id)
         return panel
     end
     ```
-]]--
+]]
+    --
     function lia.inventory.show(inventory, parent)
         local globalName = "inv" .. inventory.id
         if IsValid(lia.gui[globalName]) then lia.gui[globalName]:Remove() end

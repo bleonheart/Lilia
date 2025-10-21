@@ -296,7 +296,7 @@ end
                 originalValues[key] = lia.config.get(key)
                 lia.config.set(key, value)
             end
-            
+
             return function()
                 for key, value in pairs(originalValues) do
                     lia.config.set(key, value)
@@ -364,13 +364,13 @@ end
                 runSpeed = {"RunSpeed", "number", 275},
                 maxChars = {"MaxCharacters", "number", 5}
             }
-            
+
             for setting, data in pairs(configs) do
                 local key, expectedType, fallback = data[1], data[2], data[3]
                 local value = lia.config.get(key, fallback)
                 settings[setting] = type(value) == expectedType and value or fallback
             end
-            
+
             return settings
         end
         ```
@@ -510,7 +510,7 @@ if SERVER then
             local function exportChangedConfigs(filterFunc)
                 local changed = lia.config.getChangedValues()
                 local filtered = {}
-                
+
                 for key, value in pairs(changed) do
                     local config = lia.config.stored[key]
                     if config and (not filterFunc or filterFunc(key, value, config)) then
@@ -522,7 +522,7 @@ if SERVER then
                         }
                     end
                 end
-                
+
                 return filtered
             end
             ```
@@ -567,7 +567,7 @@ if SERVER then
             local function sendConfigsWithPriority(priority, filterFunc)
                 local changed = lia.config.getChangedValues()
                 local filtered = {}
-                
+
                 for key, value in pairs(changed) do
                     local config = lia.config.stored[key]
                     if config and (not filterFunc or filterFunc(key, value, config)) then
@@ -576,7 +576,7 @@ if SERVER then
                         end
                     end
                 end
-                
+
                 if table.Count(filtered) > 0 then
                     net.Start("liaCfgList")
                     net.WriteTable(filtered)
@@ -671,11 +671,11 @@ if SERVER then
             local function saveConfigsWithBackup()
                 local changed = lia.config.getChangedValues()
                 if table.Count(changed) == 0 then return end
-                
+
                 -- Create backup
                 local backup = util.TableToJSON(changed)
                 file.Write("config_backup_" .. os.time() .. ".json", backup)
-                
+
                 -- Save with validation
                 local success, err = pcall(lia.config.save)
                 if not success then
@@ -732,20 +732,20 @@ if SERVER then
             -- High: Reset configurations with selective restoration and logging
             local function resetConfigsSelectively(keepConfigs)
                 local originalValues = {}
-                
+
                 -- Store current values for configs to keep
                 for _, key in ipairs(keepConfigs) do
                     originalValues[key] = lia.config.get(key)
                 end
-                
+
                 -- Reset all configurations
                 lia.config.reset()
-                
+
                 -- Restore selected configurations
                 for key, value in pairs(originalValues) do
                     lia.config.set(key, value)
                 end
-                
+
                 print("Reset complete, restored " .. table.Count(originalValues) .. " configurations")
             end
             ```

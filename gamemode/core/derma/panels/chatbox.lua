@@ -313,15 +313,15 @@ function PANEL:addText(...)
         }
     }
 
-    panel.start = CurTime() + 8 -- Show messages for 8 seconds before starting fade
-    panel.finish = panel.start + 12 -- Total display time of 20 seconds
+    panel.start = CurTime() + 8
+    panel.finish = panel.start + 12
     panel.Think = function(p)
         if self.active then
             p:SetAlpha(255)
         else
             -- Show messages for a longer time and with better visibility
             local alpha = (1 - math.TimeFraction(p.start, p.finish, CurTime())) * 255
-            p:SetAlpha(math.max(alpha, 50)) -- Minimum alpha of 50 so messages are always somewhat visible
+            p:SetAlpha(math.max(alpha, 50))
         end
     end
 

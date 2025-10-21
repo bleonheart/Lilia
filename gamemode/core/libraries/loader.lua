@@ -1,6 +1,6 @@
 ﻿--[[
     Loader Library
-    
+
     The loader library is the core initialization system for the Lilia framework, responsible for
     managing the loading sequence of all framework components, modules, and dependencies. It handles
     file inclusion with proper realm detection (client, server, shared), manages module loading order,
@@ -763,7 +763,7 @@ end
                     table.insert(missingDeps, dep)
                 end
             end
-            
+
             if #missingDeps > 0 then
                 local warningMsg = string.format(
                     "Module '%s' is missing dependencies: %s",
@@ -811,7 +811,7 @@ end
             for _, module in pairs(lia.module.list) do
                 if module.loaded then loadedModules = loadedModules + 1 end
             end
-            
+
             local statusMsg = string.format(
                 "Framework Status: %d/%d modules loaded, %d entities registered",
                 loadedModules,
@@ -923,7 +923,7 @@ end
                 },
                 footer = {text = "Lilia Framework Status Bot"}
             }
-            
+
             if #players > 0 then
                 local playerList = {}
                 for _, ply in ipairs(players) do
@@ -935,7 +935,7 @@ end
                     inline = false
                 }
             end
-            
+
             lia.relaydiscordMessage(embed)
         end
         ```

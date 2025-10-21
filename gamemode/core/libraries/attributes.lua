@@ -10,10 +10,8 @@
     loading from directories, localization support for attribute names and
     descriptions, and hooks for custom attribute behavior.
 ]]
-
 lia.attribs = lia.attribs or {}
 lia.attribs.list = lia.attribs.list or {}
-
 --[[
     Purpose: Loads attribute definitions from a specified directory and registers them in the attributes system
     When Called: During gamemode initialization or when loading attribute modules
@@ -21,13 +19,13 @@ lia.attribs.list = lia.attribs.list or {}
     Returns: None (modifies lia.attribs.list)
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load attributes from a single directory
     lia.attribs.loadFromDir("gamemode/attributes")
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load attributes with conditional directory checking
@@ -36,7 +34,7 @@ lia.attribs.list = lia.attribs.list or {}
         lia.attribs.loadFromDir(attrDir)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load attributes from multiple directories with error handling
@@ -49,8 +47,8 @@ lia.attribs.list = lia.attribs.list or {}
         end
     end
     ```
-]]--
-
+]]
+--
 function lia.attribs.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local niceName = v:sub(1, 3) == "sh_" and v:sub(4, -5):lower() or v:sub(1, -5)
@@ -71,13 +69,13 @@ if SERVER then
         Returns: None
         Realm: Server
         Example Usage:
-        
+
         Low Complexity:
         ```lua
         -- Simple: Setup attributes for a client
         lia.attribs.setup(client)
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Setup attributes with validation
@@ -85,13 +83,13 @@ if SERVER then
             lia.attribs.setup(client)
         end
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Setup attributes with custom logic and error handling
         hook.Add("PlayerSpawn", "SetupAttributes", function(client)
             if not client:getChar() then return end
-            
+
             timer.Simple(0.1, function()
                 if IsValid(client) then
                     lia.attribs.setup(client)
@@ -100,8 +98,8 @@ if SERVER then
             end)
         end)
         ```
-    ]]--
-
+    ]]
+    --
     function lia.attribs.setup(client)
         local character = client:getChar()
         if not character then return end

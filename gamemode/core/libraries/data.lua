@@ -1,6 +1,6 @@
 ﻿--[[
     Data Library
-    
+
     The data library provides comprehensive functionality for data persistence, serialization,
     and management within the Lilia framework. It handles encoding and decoding of complex
     data types including vectors, angles, colors, and nested tables for database storage.
@@ -9,7 +9,6 @@
     It includes automatic serialization/deserialization, database integration, and caching
     mechanisms to ensure efficient data access and storage operations.
 ]]
-
 lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}
 --[[
@@ -19,14 +18,14 @@ lia.data.stored = lia.data.stored or {}
     Returns: table or any - Encoded representation suitable for JSON serialization
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Encode a vector
     local encoded = lia.data.encodetable(Vector(100, 200, 300))
     -- Returns: {100, 200, 300}
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Encode a color with alpha
@@ -34,7 +33,7 @@ lia.data.stored = lia.data.stored or {}
     local encoded = lia.data.encodetable(color)
     -- Returns: {255, 128, 64, 200}
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Encode nested table with mixed data types
@@ -209,14 +208,14 @@ end
     Returns: any - Decoded value with proper data types restored
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Decode a vector from encoded format
     local decoded = lia.data.decode({100, 200, 300})
     -- Returns: Vector(100, 200, 300)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Decode an angle from encoded format
@@ -224,7 +223,7 @@ end
     local decoded = lia.data.decode(encodedAngle)
     -- Returns: Angle(0, 90, 0)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Decode complex nested data structure
@@ -249,21 +248,21 @@ end
     Returns: string - JSON string representation of the encoded data
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Serialize a basic table
     local serialized = lia.data.serialize({name = "test", value = 42})
     -- Returns: '{"name":"test","value":42}'
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Serialize a vector
     local serialized = lia.data.serialize(Vector(100, 200, 300))
     -- Returns: '{"value":[100,200,300]}'
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Serialize complex nested data with mixed types
@@ -294,14 +293,14 @@ end
     Returns: any - Deserialized data with proper types restored, or nil if invalid
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Deserialize a JSON string
     local deserialized = lia.data.deserialize('{"name":"test","value":42}')
     -- Returns: {name = "test", value = 42}
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Deserialize encoded vector data
@@ -309,7 +308,7 @@ end
     local deserialized = lia.data.deserialize(jsonData)
     -- Returns: Vector(100, 200, 300)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Deserialize complex data with fallback handling
@@ -345,14 +344,14 @@ end
     Returns: Vector or any - Decoded Vector object, or original data if not vector format
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Decode vector from array format
     local vector = lia.data.decodeVector({100, 200, 300})
     -- Returns: Vector(100, 200, 300)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Decode vector from JSON string
@@ -360,7 +359,7 @@ end
     local vector = lia.data.decodeVector(jsonString)
     -- Returns: Vector(100, 200, 300)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Decode vector with multiple format fallbacks
@@ -395,14 +394,14 @@ end
     Returns: Angle or any - Decoded Angle object, or original data if not angle format
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Decode angle from array format
     local angle = lia.data.decodeAngle({0, 90, 0})
     -- Returns: Angle(0, 90, 0)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Decode angle from JSON string
@@ -410,7 +409,7 @@ end
     local angle = lia.data.decodeAngle(jsonString)
     -- Returns: Angle(0, 90, 0)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Decode angle with multiple format fallbacks
@@ -451,21 +450,21 @@ end
     Returns: string - Database path where data was stored
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Store basic data for current gamemode and map
     lia.data.set("playerCount", 25)
     -- Stores data scoped to current gamemode and map
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Store data globally across all gamemodes and maps
     lia.data.set("serverVersion", "1.0.0", true)
     -- Stores data globally, accessible from any gamemode/map
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Store complex data with custom scoping
@@ -512,21 +511,21 @@ end
     Returns: boolean - Always returns true
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Delete data for current gamemode and map
     lia.data.delete("playerCount")
     -- Removes data scoped to current gamemode and map
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Delete data globally across all gamemodes and maps
     lia.data.delete("serverVersion", true)
     -- Removes data from global scope
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Delete player data with custom scoping
@@ -567,14 +566,14 @@ end
     Returns: None
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load all data tables
     lia.data.loadTables()
     -- Loads global, gamemode, and map-specific data
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load data with custom initialization
@@ -582,7 +581,7 @@ end
     -- After loading, access specific data
     local playerCount = lia.data.get("playerCount", 0)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load data with validation and error handling
@@ -649,14 +648,14 @@ end
     Returns: Promise - Database operation promise
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load persistence schema
     lia.data.loadPersistence()
     -- Ensures all required columns exist in persistence table
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load persistence with error handling
@@ -666,7 +665,7 @@ end
         print("Failed to load persistence schema: " .. err)
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load persistence as part of initialization sequence
@@ -691,7 +690,7 @@ end
     Returns: None
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Save basic entity data
@@ -700,7 +699,7 @@ end
     }
     lia.data.savePersistence(entities)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Save entities with custom properties
@@ -716,7 +715,7 @@ end
     }
     lia.data.savePersistence(entities)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Save complex entities with dynamic properties
@@ -792,14 +791,14 @@ end
     Returns: Promise - Database operation promise
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load persistence data
     lia.data.loadPersistenceData()
     -- Loads entity data into cache
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load persistence data with callback
@@ -810,7 +809,7 @@ end
         end
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Load persistence data with entity spawning
@@ -822,7 +821,7 @@ end
                 ent:SetAngles(entData.angles)
                 ent:SetModel(entData.model)
                 ent:Spawn()
-                
+
                 -- Restore custom properties
                 for k, v in pairs(entData) do
                     if not defaultCols[k] then
@@ -866,14 +865,14 @@ end
     Returns: any - Stored data or default value if not found
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get basic data
     local playerCount = lia.data.get("playerCount", 0)
     -- Returns stored player count or 0 if not found
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get data with default fallback
@@ -883,7 +882,7 @@ end
     })
     -- Returns stored settings or default configuration
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get complex data with validation
@@ -916,14 +915,14 @@ end
     Returns: table - Array of entity data tables or empty table if none loaded
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get persistence data
     local entities = lia.data.getPersistence()
     print("Loaded " .. #entities .. " entities")
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get persistence data with filtering
@@ -936,7 +935,7 @@ end
     end
     print("Found " .. #vendors .. " vendors")
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get persistence data with processing
@@ -948,7 +947,7 @@ end
         end
         entityStats[ent.class] = entityStats[ent.class] + 1
     end
-    
+
     for class, count in pairs(entityStats) do
         print(class .. ": " .. count .. " entities")
     end

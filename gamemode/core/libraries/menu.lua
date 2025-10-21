@@ -1,6 +1,6 @@
 ﻿--[[
     Menu Library
-    
+
     The menu library provides a comprehensive context menu system for the Lilia framework.
     It enables the creation of interactive context menus that appear in 3D world space or
     attached to entities, allowing players to interact with objects and perform actions
@@ -55,7 +55,7 @@ end
 --[[
     Purpose: Creates and adds a new context menu to the menu system
     When Called: When you need to display a context menu with options for player interaction
-    Parameters: 
+    Parameters:
         - opts (table): Table of menu options where keys are display text and values are callback functions
         - pos (Vector|Entity, optional): World position or entity to attach menu to. If entity, menu attaches to entity's local position
         - onRemove (function, optional): Callback function called when menu is removed
@@ -70,7 +70,7 @@ end
             ["Drop"] = function() print("Dropped item") end
         })
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Create menu attached to an entity
@@ -81,26 +81,26 @@ end
             ["Destroy"] = function() ent:Remove() end
         }, ent)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Create menu with custom position and cleanup
         local menuData = {
-            ["Option 1"] = function() 
+            ["Option 1"] = function()
                 RunConsoleCommand("say", "Selected option 1")
             end,
-            ["Option 2"] = function() 
+            ["Option 2"] = function()
                 RunConsoleCommand("say", "Selected option 2")
             end,
-            ["Cancel"] = function() 
+            ["Cancel"] = function()
                 print("Menu cancelled")
             end
         }
-        
+
         local cleanupFunc = function()
             print("Menu was removed")
         end
-        
+
         local menuIndex = lia.menu.add(menuData, Vector(100, 200, 50), cleanupFunc)
         ```
 ]]
@@ -156,7 +156,7 @@ end
         -- This function is typically called from hooks like HUDPaint
         hook.Add("HUDPaint", "MenuDraw", lia.menu.drawAll)
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Custom rendering with additional checks
@@ -165,7 +165,7 @@ end
             lia.menu.drawAll()
         end)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Conditional rendering with performance optimization
@@ -173,7 +173,7 @@ end
         hook.Add("HUDPaint", "OptimizedMenuDraw", function()
             local currentTime = RealTime()
             if currentTime - lastDrawTime < 0.016 then return end -- Limit to ~60fps
-            
+
             if #lia.menu.list > 0 then
                 lia.menu.drawAll()
                 lastDrawTime = currentTime
@@ -244,7 +244,7 @@ end
             print("Player is hovering over menu item")
         end
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Handle menu interaction with validation
@@ -258,7 +258,7 @@ end
             end
         end)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Advanced menu interaction with cooldown and logging
@@ -267,12 +267,12 @@ end
             if button == MOUSE_LEFT then
                 local currentTime = RealTime()
                 if currentTime - lastMenuTime < 0.1 then return end -- Prevent spam
-                
+
                 local menuIndex, callback = lia.menu.getActiveMenu()
                 if callback then
                     lastMenuTime = currentTime
                     callback()
-                    
+
                     -- Log the interaction
                     print(string.format("Menu interaction at time %f, menu index %d", currentTime, menuIndex))
                 end
@@ -307,7 +307,7 @@ end
 --[[
     Purpose: Handles button press events for menu items and removes the menu
     When Called: When a menu item is clicked or activated by player input
-    Parameters: 
+    Parameters:
         - id (number): Index of the menu to remove from the menu list
         - cb (function, optional): Callback function to execute when button is pressed
     Returns: (boolean) True if callback was executed, false otherwise
@@ -321,7 +321,7 @@ end
             print("Menu button pressed!")
         end)
         ```
-        
+
         Medium Complexity:
         ```lua
         -- Medium: Handle menu interaction with validation
@@ -337,7 +337,7 @@ end
             end
         end)
         ```
-        
+
         High Complexity:
         ```lua
         -- High: Advanced menu handling with error checking and logging
@@ -346,22 +346,22 @@ end
                 print("Invalid menu index")
                 return false
             end
-            
+
             if not callback or type(callback) ~= "function" then
                 print("Invalid callback function")
                 return false
             end
-            
+
             local success = lia.menu.onButtonPressed(menuIndex, function()
                 local success, err = pcall(callback)
                 if not success then
                     print("Menu callback error: " .. tostring(err))
                 end
             end)
-            
+
             return success
         end
-        
+
         -- Usage
         local menuIndex, callback = lia.menu.getActiveMenu()
         if menuIndex then

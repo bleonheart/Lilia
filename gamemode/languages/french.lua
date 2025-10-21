@@ -2976,7 +2976,6 @@ Recharger : Lcher]],
     adminStickInstructions4 = "Recharger : Effacer la sélection de cible",
     invalidPhrase = "Vous devez fournir une phrase à envoyer.",
     sentToAllChats = "Phrase '%s' envoyée à %d types de chat.",
-
     -- Hardcoded notification strings that should be localized
     requiredFieldsMissing = "Veuillez remplir tous les champs requis.",
     factionNotFound = "Faction introuvable.",
@@ -2990,7 +2989,6 @@ Recharger : Lcher]],
     allBotsFinished = "Tous les bots ont terminé ! Total de phrases dites : %d",
     vendorEntityInvalid = "L'entité vendeur n'est pas valide !",
     keybindChanged = "Raccourci '%s' changé en %s",
-
     -- Console and debug messages
     debugFactionMapsUsage = "Utilisation : debugFactionMaps <nom_faction>",
     debugFactionInfo = "Informations de débogage pour la faction '%s' :",
@@ -3000,7 +2998,6 @@ Recharger : Lcher]],
     factionViewPosition = "ViewAsFaction : Position = %s",
     factionViewAngles = "ViewAsFaction : Angles = %s",
     noMainMenuPosition = "Aucun mainMenuPosition défini pour cette faction.",
-
     -- Error messages
     failedParseAddonJSON = "Échec de l'analyse du fichier addon.json",
     failedParseJSONData = "Échec de l'analyse des données JSON : %s",

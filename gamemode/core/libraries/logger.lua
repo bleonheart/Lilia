@@ -1,6 +1,6 @@
 ﻿--[[
     Logger Library
-    
+
     The logger library provides comprehensive logging functionality for the Lilia framework,
     enabling detailed tracking and recording of player actions, administrative activities,
     and system events. It operates on the server side and automatically categorizes log
@@ -257,14 +257,14 @@ end
 --[[
     Purpose: Registers a new log type with a custom formatting function and category
     When Called: When modules or external systems need to add custom log types
-    Parameters: 
+    Parameters:
         - logType (string): Unique identifier for the log type
         - func (function): Function that formats the log message, receives client and additional parameters
         - category (string): Category name for organizing log entries
     Returns: None
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Add a basic custom log type
@@ -272,7 +272,7 @@ end
         return client:Name() .. " performed " .. action
     end, "Custom")
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Add log type with validation and localization
@@ -281,7 +281,7 @@ end
         return L("logModuleEvent", client:Name(), moduleName, event, data or "")
     end, "Modules")
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Add complex log type with multiple parameters and error handling
@@ -289,7 +289,7 @@ end
         local clientName = IsValid(client) and client:Name() or "Console"
         local targetName = IsValid(target) and target:Name() or tostring(target)
         local timestamp = os.date("%H:%M:%S")
-        return string.format("[%s] %s %s %s (Amount: %s, Reason: %s)", 
+        return string.format("[%s] %s %s %s (Amount: %s, Reason: %s)",
             timestamp, clientName, action, targetName, amount or "N/A", reason or "None")
     end, "Advanced")
     ```
@@ -309,12 +309,12 @@ end
         - client (Player): The player who triggered the log event (can be nil for system events)
         - logType (string): The log type identifier to format
         - ... (vararg): Additional parameters passed to the log type's formatting function
-    Returns: 
+    Returns:
         - result (string): The formatted log message, or nil if log type doesn't exist or function fails
         - category (string): The category of the log type, or nil if log type doesn't exist
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get a basic log string
@@ -323,7 +323,7 @@ end
         print("Log: " .. message)
     end
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Get log string with multiple parameters
@@ -332,7 +332,7 @@ end
         hook.Run("CustomLogHandler", message, category)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Get log string with error handling and validation
@@ -344,7 +344,7 @@ end
             return "Failed to generate log: " .. tostring(logType), "Error"
         end
     end
-    
+
     local message, category = safeGetLogString(client, "adminAction", target, action, reason)
     ```
 ]]
@@ -368,13 +368,13 @@ end
     Returns: None
     Realm: Server
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Log a basic player action
     lia.log.add(client, "charCreate", character)
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Log with multiple parameters and validation
@@ -382,20 +382,20 @@ end
         lia.log.add(client, "itemTransfer", itemName, fromID, toID)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Log with conditional parameters and error handling
     local function logAdminAction(client, target, action, reason, amount)
         local logType = "adminAction"
         local params = {target, action}
-        
+
         if reason then table.insert(params, reason) end
         if amount then table.insert(params, amount) end
-        
+
         lia.log.add(client, logType, unpack(params))
     end
-    
+
     logAdminAction(client, target, "kick", "Rule violation", nil)
     ```
 ]]

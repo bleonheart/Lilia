@@ -2981,7 +2981,6 @@ Recarregar: Largar]],
     adminStickInstructions4 = "Recarregar: Limpar seleção de alvo",
     invalidPhrase = "Você deve fornecer uma frase para enviar.",
     sentToAllChats = "Frase '%s' enviada para %d tipos de chat.",
-
     -- Hardcoded notification strings that should be localized
     requiredFieldsMissing = "Por favor, preencha todos os campos obrigatórios.",
     factionNotFound = "Facção não encontrada.",
@@ -2995,7 +2994,6 @@ Recarregar: Largar]],
     allBotsFinished = "Todos os bots terminaram! Total de frases ditas: %d",
     vendorEntityInvalid = "A entidade do vendedor não é válida!",
     keybindChanged = "Atalho '%s' alterado para %s",
-
     -- Console and debug messages
     debugFactionMapsUsage = "Uso: debugFactionMaps <nome_facção>",
     debugFactionInfo = "Informações de depuração para a facção '%s':",
@@ -3005,7 +3003,6 @@ Recarregar: Largar]],
     factionViewPosition = "ViewAsFaction: Posição = %s",
     factionViewAngles = "ViewAsFaction: Ângulos = %s",
     noMainMenuPosition = "Nenhum mainMenuPosition definido para esta facção.",
-
     -- Error messages
     failedParseAddonJSON = "Falha ao analisar o arquivo addon.json",
     failedParseJSONData = "Falha ao analisar os dados JSON: %s",

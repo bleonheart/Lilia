@@ -1,6 +1,6 @@
 ﻿--[[
     Font Library
-    
+
     The font library provides comprehensive functionality for managing custom fonts in the Lilia framework.
     It handles font registration, loading, and automatic font creation for UI elements throughout the
     gamemode. The library operates on both server and client sides, with the server storing font
@@ -18,13 +18,13 @@ lia.font.stored = lia.font.stored or {}
     Returns: None
     Realm: Client-side only
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Load all fonts after registration
     lia.font.loadFonts()
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Load fonts after a delay to ensure config is ready
@@ -32,7 +32,7 @@ lia.font.stored = lia.font.stored or {}
         lia.font.loadFonts()
     end)
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Refresh fonts when configuration changes
@@ -72,7 +72,7 @@ end
     Returns: None (calls lia.error if parameters are invalid)
     Realm: Shared (server stores metadata, client creates actual font)
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic font
@@ -81,7 +81,7 @@ end
         size = 16
     })
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register a font with multiple properties
@@ -93,7 +93,7 @@ end
         extended = true
     })
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Register multiple fonts with different styles
@@ -102,7 +102,7 @@ end
         {name = "MenuText", size = 18, weight = 400},
         {name = "MenuSmall", size = 14, weight = 300}
     }
-    
+
     for _, config in ipairs(fontConfig) do
         lia.font.register(config.name, {
             font = "Montserrat",
@@ -131,14 +131,14 @@ end
         - list (table): An alphabetically sorted table of font name strings
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get all available fonts
     local fonts = lia.font.getAvailableFonts()
     print(table.concat(fonts, ", "))
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Populate a dropdown menu with available fonts
@@ -148,13 +148,13 @@ end
         dropdown:AddChoice(fontName)
     end
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Create a font preview panel with all available fonts
     local fonts = lia.font.getAvailableFonts()
     local panel = vgui.Create("DScrollPanel")
-    
+
     for i, fontName in ipairs(fonts) do
         local label = panel:Add("DLabel")
         label:SetText(fontName .. " - Preview Text")
@@ -183,14 +183,14 @@ end
         - (string): The bold variant of the font name
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Get bold version of a font
     local boldFont = lia.font.getBoldFontName("Montserrat Medium")
     -- Returns: "Montserrat Bold"
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register both normal and bold variants
@@ -198,13 +198,13 @@ end
     lia.font.register("NormalText", {font = baseFontName, size = 16})
     lia.font.register("BoldText", {font = lia.font.getBoldFontName(baseFontName), size = 16, weight = 700})
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Create matching pairs of normal and bold fonts for multiple sizes
     local baseFontName = "Montserrat Medium"
     local sizes = {14, 18, 24, 32}
-    
+
     for _, size in ipairs(sizes) do
         -- Normal variant
         lia.font.register("CustomFont" .. size, {
@@ -212,7 +212,7 @@ end
             size = size,
             weight = 500
         })
-        
+
         -- Bold variant
         lia.font.register("CustomFont" .. size .. "Bold", {
             font = lia.font.getBoldFontName(baseFontName),
@@ -238,24 +238,24 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-    
+
     Low Complexity:
     ```lua
     -- Simple: Register default fonts
     lia.font.registerFonts()
     ```
-    
+
     Medium Complexity:
     ```lua
     -- Medium: Register fonts with a custom base font
     lia.font.registerFonts("Roboto")
     ```
-    
+
     High Complexity:
     ```lua
     -- High: Register fonts and hook into completion
     lia.font.registerFonts("Montserrat Medium")
-    
+
     hook.Add("PostLoadFonts", "MyFontHook", function(mainFont, configuredFont)
         print("Fonts loaded with: " .. mainFont)
         -- Perform additional font-related setup
