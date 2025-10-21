@@ -191,7 +191,7 @@ end
                 if itemData.uniqueID and itemData.id then
                     local success = inventory:Add(itemData.uniqueID, itemData.id)
                     if not success then
-                        print("Failed to add item:", itemData.uniqueID)
+                        lia.log.add("Failed to add item: " .. tostring(itemData.uniqueID))
                     end
                 end
             end

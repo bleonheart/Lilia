@@ -970,7 +970,7 @@ function lia.relaydiscordMessage(embed)
         if not ForceHTTPMode then hook.Run("DiscordRelayUnavailable") end
         http.Post(lia.discordWebhook, {
             payload_json = util.TableToJSON(payload)
-        }, function() end, function(err) print(L("discordRelayHTTPFailed") .. " " .. tostring(err)) end)
+        }, function() end, function(err) lia.error("Discord relay HTTP failed: " .. tostring(err)) end)
     end
 
     hook.Run("DiscordRelayed", embed)
