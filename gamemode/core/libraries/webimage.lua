@@ -540,4 +540,8 @@ lia.webimage.register("dark_vignette.png", "https://bleonheart.github.io/Samael-
 lia.webimage.register("invslotblocked.png", "https://bleonheart.github.io/Samael-Assets/misc/invslotblocked.png")
 lia.webimage.register("settings.png", "https://bleonheart.github.io/Samael-Assets/misc/settings.png")
 lia.webimage.register("close_button.png", "https://bleonheart.github.io/Samael-Assets/misc/close_button.png")
+lia.webimage.register("drug.png", "https://bleonheart.github.io/Samael-Assets/misc/drug.png")
+lia.webimage.register("armor.png", "https://bleonheart.github.io/Samael-Assets/misc/armor.png")
+lia.webimage.register("emptyframe.png", "https://bleonheart.github.io/Samael-Assets/misc/emptyframe.png")
+lia.webimage.register("cuffed.png", "https://bleonheart.github.io/Samael-Assets/misc/cuffed.png")
 ensureDir(baseDir)

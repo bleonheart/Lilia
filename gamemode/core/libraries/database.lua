@@ -3,7 +3,6 @@
 
     Comprehensive database management system with SQLite support for the Lilia framework.
 ]]
-
 --[[
     Overview:
     The database library provides comprehensive database management functionality for the Lilia framework.
@@ -786,12 +785,10 @@ end
 ]]
 function lia.db.select(fields, dbTable, condition, limit)
     local d = deferred.new()
-
-    -- Validate fields parameter
+    -- Validate fields parameter and provide default
     if fields == nil then
-        lia.error("lia.db.select called with nil fields parameter")
-        d:reject("Invalid fields parameter: nil")
-        return d
+        lia.error("lia.db.select called with nil fields parameter - using default '*'")
+        fields = "*"
     end
 
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
@@ -874,12 +871,10 @@ end
 ]]
 function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
     local d = deferred.new()
-
-    -- Validate fields parameter
+    -- Validate fields parameter and provide default
     if fields == nil then
-        lia.error("lia.db.selectWithCondition called with nil fields parameter")
-        d:reject("Invalid fields parameter: nil")
-        return d
+        lia.error("lia.db.selectWithCondition called with nil fields parameter - using default '*'")
+        fields = "*"
     end
 
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
@@ -1156,12 +1151,10 @@ end
 ]]
 function lia.db.selectOne(fields, dbTable, condition)
     local c = deferred.new()
-
-    -- Validate fields parameter
+    -- Validate fields parameter and provide default
     if fields == nil then
-        lia.error("lia.db.selectOne called with nil fields parameter")
-        c:reject("Invalid fields parameter: nil")
-        return c
+        lia.error("lia.db.selectOne called with nil fields parameter - using default '*'")
+        fields = "*"
     end
 
     local tbl = "`lia_" .. dbTable .. "`"
