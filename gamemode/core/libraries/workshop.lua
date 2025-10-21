@@ -9,7 +9,6 @@
     user interface elements for download progress tracking and addon information display.
     The library ensures that all required workshop content is available before gameplay begins.
 ]]
-
 lia.workshop = lia.workshop or {}
 if SERVER then
     lia.workshop.ids = lia.workshop.ids or {}
