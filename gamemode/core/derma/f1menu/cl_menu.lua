@@ -95,14 +95,14 @@ function PANEL:Init()
 
     leftArrow.DoClick = function()
         print("[F1] Left arrow clicked")
-        lia.websound.playButtonSound() -- Play sound directly
+        lia.websound.playButtonSound()
         tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) + baseBtnW + spacing
         tabsContainer:InvalidateLayout()
     end
 
     rightArrow.DoClick = function()
         print("[F1] Right arrow clicked")
-        lia.websound.playButtonSound() -- Play sound directly
+        lia.websound.playButtonSound()
         tabsContainer.tabOffset = (tabsContainer.tabOffset or 0) - (baseBtnW + spacing)
         tabsContainer:InvalidateLayout()
     end
@@ -181,7 +181,7 @@ function PANEL:addTab(name, callback)
     tab:SetContentAlignment(5)
     tab.DoClick = function()
         print("[F1] Tab button clicked:", name)
-        lia.websound.playButtonSound() -- Play sound directly
+        lia.websound.playButtonSound()
         if IsValid(lia.gui.info) then lia.gui.info:Remove() end
         for _, t in pairs(self.tabList) do
             t:SetSelected(false)

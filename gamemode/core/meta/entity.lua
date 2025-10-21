@@ -10,7 +10,7 @@ local validClasses = {
 --[[
     Purpose: Emits a sound from the entity, with support for web sounds and URL-based audio
     When Called: When an entity needs to play a sound effect or audio
-    Parameters: 
+    Parameters:
         - soundName (string): The sound file path, URL, or websound identifier
         - soundLevel (number, optional): Sound level/distance (default: 100)
         - pitchPercent (number, optional): Pitch adjustment percentage
@@ -232,7 +232,7 @@ end
 --[[
     Purpose: Checks if a client has access to a door with the specified access level
     When Called: When you need to verify if a player can access a door
-    Parameters: 
+    Parameters:
         - client (Player): The player to check access for
         - access (number, optional): The required access level (default: DOOR_GUEST)
     Returns: boolean - True if the client has access, false otherwise
@@ -281,7 +281,7 @@ end
 --[[
     Purpose: Sets a client as the owner of a vehicle and updates ownership data
     When Called: When a player becomes the owner of a vehicle
-    Parameters: 
+    Parameters:
         - client (Player): The player to set as the owner
     Returns: None
     Realm: Server
@@ -531,7 +531,7 @@ end
 --[[
     Purpose: Calculates the position and angle for dropping items from an entity
     When Called: When an entity needs to drop an item at a specific location
-    Parameters: 
+    Parameters:
         - offset (number, optional): Distance to trace forward from entity (default: 64)
     Returns: Vector, Angle - The drop position and angle
     Realm: Shared (can be called on both server and client)
@@ -626,7 +626,7 @@ end
 --[[
     Purpose: Checks if the entity is near another entity within a specified radius
     When Called: When you need to check proximity between entities
-    Parameters: 
+    Parameters:
         - radius (number, optional): Search radius in units (default: 96)
         - otherEntity (Entity, optional): Specific entity to check for proximity
     Returns: boolean - True if near another entity, false otherwise
@@ -731,7 +731,7 @@ if SERVER then
     --[[
     Purpose: Sends a network variable to clients via network message
     When Called: When you need to synchronize entity data with clients
-    Parameters: 
+    Parameters:
         - key (string): The network variable key to send
         - receiver (Player, optional): Specific player to send to, or nil for all players
     Returns: None
@@ -774,7 +774,7 @@ if SERVER then
     --[[
     Purpose: Clears all network variables for the entity and notifies clients
     When Called: When you need to remove all network data from an entity
-    Parameters: 
+    Parameters:
         - receiver (Player, optional): Specific player to notify, or nil for all players
     Returns: None
     Realm: Server
@@ -859,7 +859,7 @@ if SERVER then
     --[[
     Purpose: Sets the locked state of an entity using network variables
     When Called: When you need to lock or unlock an entity
-    Parameters: 
+    Parameters:
         - state (boolean): True to lock, false to unlock
     Returns: None
     Realm: Server
@@ -893,7 +893,7 @@ if SERVER then
     --[[
     Purpose: Sets whether a vehicle can be owned or sold
     When Called: When you need to make a vehicle non-ownable or ownable
-    Parameters: 
+    Parameters:
         - state (boolean): True to make non-ownable, false to make ownable
     Returns: None
     Realm: Server
@@ -971,7 +971,7 @@ if SERVER then
     --[[
     Purpose: Sets a network variable for the entity and synchronizes it with clients
     When Called: When you need to store and sync data on an entity
-    Parameters: 
+    Parameters:
         - key (string): The network variable key
         - value (any): The value to store
         - receiver (Player, optional): Specific player to send to, or nil for all players
@@ -1012,7 +1012,7 @@ if SERVER then
     --[[
     Purpose: Gets a network variable from the entity (server-side)
     When Called: When you need to retrieve synchronized data from an entity on the server
-    Parameters: 
+    Parameters:
         - key (string): The network variable key to retrieve
         - default (any, optional): Default value if the key doesn't exist
     Returns: any - The network variable value or default
@@ -1089,7 +1089,7 @@ else
     --[[
     Purpose: Gets a network variable from the entity (client-side)
     When Called: When you need to retrieve synchronized data from an entity on the client
-    Parameters: 
+    Parameters:
         - key (string): The network variable key to retrieve
         - default (any, optional): Default value if the key doesn't exist
     Returns: any - The network variable value or default
@@ -1128,7 +1128,7 @@ else
     --[[
     Purpose: Plays a sound that follows the entity with 3D positioning and distance attenuation
     When Called: When you need to play a sound that moves with an entity
-    Parameters: 
+    Parameters:
         - soundPath (string): Path to the sound file or URL
         - volume (number, optional): Volume level (0-1, default: 1)
         - shouldFollow (boolean, optional): Whether sound should follow entity (default: true)

@@ -228,7 +228,7 @@ function PANEL:PerformLayout()
                     if i >= startIndex and i <= endIndex then
                         child:SetVisible(true)
                         local slotIndex = i - self.scroll_offset
-                        local finalWidth = math.max(widthPerTab + ((slotIndex <= remainder) and 1 or 0), 50) -- Minimum width of 50
+                        local finalWidth = math.max(widthPerTab + ((slotIndex <= remainder) and 1 or 0), 50)
                         child:SetWide(finalWidth)
                         child:DockMargin(0, 0, (slotIndex < visibleTabs) and self._baseMargin or 0, 0)
                     else

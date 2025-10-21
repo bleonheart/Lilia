@@ -56,6 +56,7 @@ function MODULE:StorageOpen(storage, isCar)
         else
             storageInvPanel:SetTitle(L("storageContainer"))
         end
+
         localInvPanel:ShowCloseButton(true)
         storageInvPanel:ShowCloseButton(true)
         local extraWidth = (storageInvPanel:GetWide() + 4) / 2

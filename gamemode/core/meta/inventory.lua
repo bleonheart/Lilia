@@ -16,14 +16,12 @@
     The metatable operates on both server and client sides, providing consistent inventory
     operations across the entire gamemode with proper access control and data validation.
 ]]
-
 local Inventory = lia.Inventory or {}
 Inventory.__index = Inventory
 lia.Inventory = Inventory
 Inventory.data = {}
 Inventory.items = {}
 Inventory.id = -1
-
 --[[
     Purpose: Retrieves data from the inventory's data table with optional default fallback
     When Called: Whenever inventory data needs to be accessed with a safe default value

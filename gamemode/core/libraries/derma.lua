@@ -241,7 +241,7 @@ function lia.derma.colorPicker(func, color_standart)
     btnClose:SetTxt(L("cancel"))
     btnClose:SetColorHover(color_close)
     btnClose.DoClick = function()
-        btnClose.BaseClass.DoClick(btnClose) -- Call parent DoClick for sound
+        btnClose.BaseClass.DoClick(btnClose)
         lia.derma.menuColorPicker:Remove()
     end
 
@@ -251,7 +251,7 @@ function lia.derma.colorPicker(func, color_standart)
     btnSelect:SetTxt(L("select"))
     btnSelect:SetColorHover(color_accept)
     btnSelect.DoClick = function()
-        btnSelect.BaseClass.DoClick(btnSelect) -- Call parent DoClick for sound
+        btnSelect.BaseClass.DoClick(btnSelect)
         func(selected_color)
         lia.derma.menuColorPicker:Remove()
     end
@@ -346,7 +346,7 @@ function lia.derma.playerSelector(do_click)
 
         card.DoClick = function()
             if IsValid(pl) then
-                card.BaseClass.DoClick(card) -- Call parent DoClick for sound
+                card.BaseClass.DoClick(card)
                 do_click(pl)
             end
 
@@ -476,7 +476,7 @@ function lia.derma.textBox(title, desc, func)
     btn_accept:SetTxt(L("apply"))
     btn_accept:SetColorHover(color_accept)
     btn_accept.DoClick = function()
-        btn_accept.BaseClass.DoClick(btn_accept) -- Call parent DoClick for sound
+        btn_accept.BaseClass.DoClick(btn_accept)
         apply_func()
     end
 end

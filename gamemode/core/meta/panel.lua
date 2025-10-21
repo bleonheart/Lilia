@@ -12,7 +12,6 @@
     sophisticated UI panels that automatically adapt to different screen resolutions and
     maintain consistent behavior across the Lilia gamemode ecosystem.
 ]]
-
 local panelMeta = FindMetaTable("Panel")
 --[[
     Purpose: Sets up event listeners for inventory changes on a panel

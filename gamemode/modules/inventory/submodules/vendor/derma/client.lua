@@ -109,9 +109,9 @@ function PANEL:Init()
         btn:SetText(L("vendorEditorButton"))
         btn:SetFont("liaMediumFont")
         btn:SetTextColor(lia.color.theme.text or color_white)
-        btn.DoClick = function() 
-            btn.BaseClass.DoClick(btn) -- Call parent DoClick for sound
-            vgui.Create("liaVendorEditor"):SetZPos(99) 
+        btn.DoClick = function()
+            btn.BaseClass.DoClick(btn)
+            vgui.Create("liaVendorEditor"):SetZPos(99)
         end
     end
 
@@ -121,9 +121,9 @@ function PANEL:Init()
     leave:SetText(L("leave"))
     leave:SetFont("liaMediumFont")
     leave:SetTextColor(lia.color.theme.text or color_white)
-    leave.DoClick = function() 
-        leave.BaseClass.DoClick(leave) -- Call parent DoClick for sound
-        self:Remove() 
+    leave.DoClick = function()
+        leave.BaseClass.DoClick(leave)
+        self:Remove()
     end
 end
 

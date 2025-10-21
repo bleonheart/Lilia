@@ -15,12 +15,9 @@ end
 function ENT:getStorageInfo()
     local model = self:GetModel()
     if not model then return end
-
     -- Ensure inventory library is available
     if not lia.inventory or not lia.inventory.getStorage then return end
-
     local storageInfo = lia.inventory.getStorage(model:lower())
-
     -- If no storage info found, provide a default
     if not storageInfo then
         storageInfo = {
@@ -33,6 +30,5 @@ function ENT:getStorageInfo()
             }
         }
     end
-
     return storageInfo
 end

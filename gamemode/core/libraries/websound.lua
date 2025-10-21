@@ -689,7 +689,7 @@ end
         -- High: Conditional button sounds with error handling
         local function handleButtonClick(buttonType, customSound)
             local soundToPlay = customSound or "button_click.wav"
-            
+
             lia.websound.playButtonSound(soundToPlay, function(success)
                 if success then
                     -- Played sound for button
@@ -708,7 +708,6 @@ end
 ]]
 function lia.websound.playButtonSound(customSound, callback)
     -- playButtonSound called with customSound
-
     -- If it's a custom sound and not the default, try to play it first
     if customSound and customSound ~= "button_click.wav" then
         -- Check if it's a websound
@@ -746,7 +745,6 @@ function lia.websound.playButtonSound(customSound, callback)
 
     -- Play default button sound using websound system
     -- Playing default button sound using websound system
-
     -- Check if the sound is already available
     local cachedPath = lia.websound.get("button_click.wav")
     if cachedPath then
@@ -756,6 +754,7 @@ function lia.websound.playButtonSound(customSound, callback)
         sound.PlayFile(cachedPath, "", function(channel, errorCode, errorString)
             -- Button sound played or failed to play
         end)
+
         if callback then callback(true) end
         return
     end
@@ -775,6 +774,7 @@ function lia.websound.playButtonSound(customSound, callback)
             sound.PlayFile(localPath, "", function(channel, errorCode, errorString)
                 -- Button sound played or failed to play
             end)
+
             if callback then callback(true) end
         else
             -- Button sound download failed
@@ -784,7 +784,6 @@ function lia.websound.playButtonSound(customSound, callback)
         end
     end)
 end
-
 
 lia.websound.register("button_click.wav", "https://bleonheart.github.io/Samael-Assets/misc/button_click.wav")
 lia.websound.register("ratio_button.wav", "https://bleonheart.github.io/Samael-Assets/misc/ratio_button.wav")

@@ -137,7 +137,7 @@ end
 --[[
     Purpose: Makes the player perform a gesture animation and synchronizes it across clients
     When Called: When triggering player animations for roleplay, emotes, or visual effects
-    Parameters: 
+    Parameters:
         a (number) - Gesture slot (0-15)
         b (number) - Gesture weight (0-255)
         c (boolean) - Whether to restart the gesture
@@ -184,7 +184,7 @@ end
 --[[
     Purpose: Checks if the player has a specific administrative privilege
     When Called: When validating player permissions for commands, features, or access control
-    Parameters: 
+    Parameters:
         privilegeName (string) - The name of the privilege to check
     Returns: boolean - True if player has the privilege, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -315,7 +315,7 @@ end
 --[[
     Purpose: Checks if the player is within a specified radius of another entity
     When Called: When implementing proximity-based features, interaction systems, or distance validation
-    Parameters: 
+    Parameters:
         radius (number) - The maximum distance to check
         entity (Entity) - The entity to check distance against
     Returns: boolean - True if player is within radius, false otherwise
@@ -358,7 +358,7 @@ end
 --[[
     Purpose: Gets all entities within a specified radius of the player
     When Called: When implementing area-of-effect systems, proximity detection, or entity scanning
-    Parameters: 
+    Parameters:
         radius (number) - The radius to search within
         playerOnly (boolean, optional) - If true, only returns player entities
     Returns: table - Array of entities within the radius
@@ -645,7 +645,7 @@ end
 --[[
     Purpose: Gets the entity that the player is looking at within a specified distance
     When Called: When implementing interaction systems, targeting, or line-of-sight detection
-    Parameters: 
+    Parameters:
         distance (number, optional) - Maximum trace distance (default: 96)
     Returns: Entity|nil - The traced entity if found, nil otherwise
     Realm: Shared (can be called on both server and client)
@@ -696,7 +696,7 @@ end
 --[[
     Purpose: Performs a hull trace from the player's position to detect collisions and surfaces
     When Called: When implementing collision detection, surface analysis, or spatial queries
-    Parameters: 
+    Parameters:
         distance (number, optional) - Maximum trace distance (default: 200)
     Returns: table - Trace result containing hit information, position, and entity data
     Realm: Shared (can be called on both server and client)
@@ -753,7 +753,7 @@ end
 --[[
     Purpose: Gets the entity that the player is looking at within a specified distance using eye trace
     When Called: When implementing precise targeting, interaction systems, or line-of-sight detection
-    Parameters: 
+    Parameters:
         distance (number, optional) - Maximum distance to check (default: 150)
     Returns: Entity|nil - The entity if within distance, nil otherwise
     Realm: Shared (can be called on both server and client)
@@ -800,7 +800,7 @@ end
 --[[
     Purpose: Sends a notification message to the player
     When Called: When displaying messages, alerts, or status updates to the player
-    Parameters: 
+    Parameters:
         message (string) - The message to display
         notifType (string, optional) - The type of notification (default: "default")
     Returns: None
@@ -843,7 +843,7 @@ end
 --[[
     Purpose: Sends a localized notification message to the player with string formatting
     When Called: When displaying translated messages, alerts, or status updates to the player
-    Parameters: 
+    Parameters:
         message (string) - The localization key for the message
         notifType (string, optional) - The type of notification (default: "default")
         ... (vararg) - Arguments to format into the localized string
@@ -883,7 +883,7 @@ end
 --[[
     Purpose: Sends an error notification message to the player
     When Called: When displaying error messages, failures, or critical alerts to the player
-    Parameters: 
+    Parameters:
         message (string) - The error message to display
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -926,7 +926,7 @@ end
 --[[
     Purpose: Sends a warning notification message to the player
     When Called: When displaying warning messages, cautions, or important alerts to the player
-    Parameters: 
+    Parameters:
         message (string) - The warning message to display
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -968,7 +968,7 @@ end
 --[[
     Purpose: Sends an informational notification message to the player
     When Called: When displaying informational messages, tips, or general updates to the player
-    Parameters: 
+    Parameters:
         message (string) - The informational message to display
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -1007,7 +1007,7 @@ end
 --[[
     Purpose: Sends a success notification message to the player
     When Called: When displaying success messages, achievements, or positive feedback to the player
-    Parameters: 
+    Parameters:
         message (string) - The success message to display
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -1047,7 +1047,7 @@ end
 --[[
     Purpose: Sends a money-related notification message to the player
     When Called: When displaying financial transactions, currency changes, or economic updates to the player
-    Parameters: 
+    Parameters:
         message (string) - The money-related message to display
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -1088,7 +1088,7 @@ end
 --[[
     Purpose: Sends an admin notification message to the player
     When Called: When displaying administrative messages, system alerts, or admin-specific information to the player
-    Parameters: 
+    Parameters:
         message (string) - The admin message to display
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -1126,7 +1126,7 @@ end
 --[[
     Purpose: Sends a localized error notification message to the player with string formatting
     When Called: When displaying translated error messages, failures, or critical alerts to the player
-    Parameters: 
+    Parameters:
         key (string) - The localization key for the error message
         ... (vararg) - Arguments to format into the localized string
     Returns: None
@@ -1170,7 +1170,7 @@ end
 --[[
     Purpose: Sends a localized warning notification message to the player with string formatting
     When Called: When displaying translated warning messages, cautions, or important alerts to the player
-    Parameters: 
+    Parameters:
         key (string) - The localization key for the warning message
         ... (vararg) - Arguments to format into the localized string
     Returns: None
@@ -1214,7 +1214,7 @@ end
 --[[
     Purpose: Sends a localized informational notification message to the player with string formatting
     When Called: When displaying translated informational messages, tips, or general updates to the player
-    Parameters: 
+    Parameters:
         key (string) - The localization key for the informational message
         ... (vararg) - Arguments to format into the localized string
     Returns: None
@@ -1254,7 +1254,7 @@ end
 --[[
     Purpose: Sends a localized success notification message to the player with string formatting
     When Called: When displaying translated success messages, achievements, or positive feedback to the player
-    Parameters: 
+    Parameters:
         key (string) - The localization key for the success message
         ... (vararg) - Arguments to format into the localized string
     Returns: None
@@ -1295,7 +1295,7 @@ end
 --[[
     Purpose: Sends a localized money-related notification message to the player with string formatting
     When Called: When displaying translated financial transactions, currency changes, or economic updates to the player
-    Parameters: 
+    Parameters:
         key (string) - The localization key for the money-related message
         ... (vararg) - Arguments to format into the localized string
     Returns: None
@@ -1336,7 +1336,7 @@ end
 --[[
     Purpose: Sends a localized admin notification message to the player with string formatting
     When Called: When displaying translated administrative messages, system alerts, or admin-specific information to the player
-    Parameters: 
+    Parameters:
         key (string) - The localization key for the admin message
         ... (vararg) - Arguments to format into the localized string
     Returns: None
@@ -1375,7 +1375,7 @@ end
 --[[
     Purpose: Checks if the player can edit a specific vendor entity
     When Called: When validating vendor editing permissions, implementing vendor management systems, or access control
-    Parameters: 
+    Parameters:
         vendor (Entity) - The vendor entity to check edit permissions for
     Returns: boolean - True if player can edit the vendor, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -1568,7 +1568,7 @@ end
 --[[
     Purpose: Checks if the player has whitelist access to a specific faction
     When Called: When validating faction access, implementing whitelist systems, or character creation restrictions
-    Parameters: 
+    Parameters:
         faction (string) - The faction unique ID to check whitelist for
     Returns: boolean - True if player has whitelist access, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -1669,7 +1669,7 @@ end
 --[[
     Purpose: Gets DarkRP-compatible variable values for the player (currently only supports money)
     When Called: When implementing DarkRP compatibility, accessing player money, or legacy system integration
-    Parameters: 
+    Parameters:
         var (string) - The variable name to get (currently only "money" is supported)
     Returns: number|nil - The money amount if var is "money", nil otherwise
     Realm: Shared (can be called on both server and client)
@@ -1760,7 +1760,7 @@ end
 --[[
     Purpose: Checks if the player can afford a specific amount of money
     When Called: When validating purchases, implementing economic systems, or checking financial capacity
-    Parameters: 
+    Parameters:
         amount (number) - The amount of money to check if player can afford
     Returns: boolean - True if player can afford the amount, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -1808,7 +1808,7 @@ end
 --[[
     Purpose: Checks if the player has a specific skill level or higher
     When Called: When validating skill requirements, implementing skill-based features, or character progression systems
-    Parameters: 
+    Parameters:
         skill (string) - The skill name to check
         level (number) - The minimum skill level required
     Returns: boolean - True if player has the required skill level, false otherwise
@@ -1859,7 +1859,7 @@ end
 --[[
     Purpose: Checks if the player meets all required skill levels for a task or feature
     When Called: When validating complex skill requirements, implementing multi-skill features, or character progression systems
-    Parameters: 
+    Parameters:
         requiredSkillLevels (table) - Table of skill names and required levels {skill = level, ...}
     Returns: boolean - True if player meets all requirements, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -1912,7 +1912,7 @@ end
 --[[
     Purpose: Forces the player to play a specific animation sequence with optional callback
     When Called: When implementing cutscenes, animations, or scripted sequences for the player
-    Parameters: 
+    Parameters:
         sequenceName (string) - The name of the animation sequence to play
         callback (function, optional) - Function to call when sequence completes
         time (number, optional) - Duration of the sequence (default: sequence duration)
@@ -2063,7 +2063,7 @@ end
 --[[
     Purpose: Gives flags to the player's character
     When Called: When granting character flags, implementing flag-based permissions, or character management
-    Parameters: 
+    Parameters:
         flags (string) - The flags to give to the character
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -2105,7 +2105,7 @@ end
 --[[
     Purpose: Takes flags from the player's character
     When Called: When removing character flags, implementing flag-based permissions, or character management
-    Parameters: 
+    Parameters:
         flags (string) - The flags to take from the character
     Returns: None
     Realm: Shared (can be called on both server and client)
@@ -2147,7 +2147,7 @@ end
 --[[
     Purpose: Networks bone animation data to all clients for the player
     When Called: When implementing custom animations, bone manipulation, or visual effects for the player
-    Parameters: 
+    Parameters:
         active (boolean) - Whether the animation is active
         boneData (table) - Table of bone names and angles {boneName = angle, ...}
     Returns: None
@@ -2249,7 +2249,7 @@ end
 --[[
     Purpose: Sets a waypoint for the player to navigate to
     When Called: When implementing navigation systems, quest objectives, or location guidance for the player
-    Parameters: 
+    Parameters:
         name (string) - The name of the waypoint
         vector (Vector) - The position of the waypoint
         logo (string, optional) - The material path for the waypoint icon
@@ -2365,7 +2365,7 @@ end
 --[[
     Purpose: Gets a specific Lilia data value for the player with optional default
     When Called: When accessing player data storage, implementing data management, or retrieving stored values
-    Parameters: 
+    Parameters:
         key (string) - The data key to retrieve
         default (any, optional) - The default value to return if key doesn't exist
     Returns: any - The data value or default if not found
@@ -2418,7 +2418,7 @@ end
 --[[
     Purpose: Checks if the player has any of the specified flags
     When Called: When validating flag-based permissions, implementing access control, or character management
-    Parameters: 
+    Parameters:
         flags (string) - The flags to check for (any one flag will return true)
     Returns: boolean - True if player has any of the specified flags, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -2467,7 +2467,7 @@ end
 --[[
     Purpose: Checks if the player's play time is greater than a specified amount
     When Called: When implementing time-based features, veteran rewards, or play time validation
-    Parameters: 
+    Parameters:
         time (number) - The minimum play time required in seconds
     Returns: boolean - True if player's play time is greater than the specified time, false otherwise
     Realm: Shared (can be called on both server and client)
@@ -2511,7 +2511,7 @@ end
 --[[
     Purpose: Requests the player to select from a list of options via a UI dialog
     When Called: When implementing interactive menus, choice systems, or user input dialogs for the player
-    Parameters: 
+    Parameters:
         title (string) - The title of the options dialog
         subTitle (string) - The subtitle or description of the options
         options (table) - Array of option strings to choose from
@@ -2579,7 +2579,7 @@ end
 --[[
     Purpose: Requests the player to input a string via a UI dialog
     When Called: When implementing text input systems, name entry, or string-based user input for the player
-    Parameters: 
+    Parameters:
         title (string) - The title of the string input dialog
         subTitle (string) - The subtitle or description of the input
         callback (function) - Function to call when player submits the string
@@ -2649,7 +2649,7 @@ end
 --[[
     Purpose: Requests the player to input multiple arguments via a UI dialog
     When Called: When implementing complex input systems, command interfaces, or multi-parameter user input for the player
-    Parameters: 
+    Parameters:
         title (string) - The title of the arguments input dialog
         argTypes (table) - Array of argument type specifications
         callback (function) - Function to call when player submits the arguments
@@ -2728,7 +2728,7 @@ end
 --[[
     Purpose: Presents a binary question to the player with two options
     When Called: When implementing yes/no dialogs, confirmation prompts, or binary choice systems for the player
-    Parameters: 
+    Parameters:
         question (string) - The question to ask the player
         option1 (string) - The first option (usually "Yes" or "Accept")
         option2 (string) - The second option (usually "No" or "Cancel")
@@ -2794,7 +2794,7 @@ end
 --[[
     Purpose: Presents a custom button dialog to the player with multiple action buttons
     When Called: When implementing custom action menus, button interfaces, or interactive dialogs for the player
-    Parameters: 
+    Parameters:
         title (string) - The title of the button dialog
         buttons (table) - Array of button data {text = "Button Text", callback = function() end} or {text, callback}
     Returns: None
@@ -2873,7 +2873,7 @@ end
 --[[
     Purpose: Presents a dropdown selection dialog to the player
     When Called: When implementing selection menus, choice systems, or dropdown interfaces for the player
-    Parameters: 
+    Parameters:
         title (string) - The title of the dropdown dialog
         subTitle (string) - The subtitle or description of the selection
         options (table) - Array of option strings to choose from
@@ -2943,7 +2943,7 @@ if SERVER then
     --[[
     Purpose: Restores stamina to the player's character
     When Called: When implementing stamina recovery, rest systems, or character healing for the player
-    Parameters: 
+    Parameters:
         amount (number) - The amount of stamina to restore
     Returns: None
     Realm: Server (only called on server side)
@@ -2992,7 +2992,7 @@ if SERVER then
     --[[
     Purpose: Consumes stamina from the player's character
     When Called: When implementing stamina usage, movement costs, or action requirements for the player
-    Parameters: 
+    Parameters:
         amount (number) - The amount of stamina to consume
     Returns: None
     Realm: Server (only called on server side)
@@ -3046,7 +3046,7 @@ if SERVER then
     --[[
     Purpose: Adds money to the player's character
     When Called: When implementing economic systems, rewards, or financial transactions for the player
-    Parameters: 
+    Parameters:
         amount (number) - The amount of money to add
     Returns: boolean - True if money was added successfully, false otherwise
     Realm: Server (only called on server side)
@@ -3094,7 +3094,7 @@ if SERVER then
     --[[
     Purpose: Takes money from the player's character
     When Called: When implementing economic systems, penalties, or financial transactions for the player
-    Parameters: 
+    Parameters:
         amount (number) - The amount of money to take
     Returns: None
     Realm: Server (only called on server side)
@@ -3143,7 +3143,7 @@ if SERVER then
     --[[
     Purpose: Loads Lilia data for the player from the database
     When Called: When initializing player data, loading saved information, or database operations for the player
-    Parameters: 
+    Parameters:
         callback (function, optional) - Function to call when data is loaded
     Returns: None
     Realm: Server (only called on server side)
@@ -3273,7 +3273,7 @@ if SERVER then
     --[[
     Purpose: Sets a Lilia data value for the player with optional networking and saving control
     When Called: When storing player data, implementing data management, or updating player information
-    Parameters: 
+    Parameters:
         key (string) - The data key to set
         value (any) - The value to store
         noNetworking (boolean, optional) - Whether to skip networking the change
@@ -3319,7 +3319,7 @@ if SERVER then
     --[[
     Purpose: Bans the player from the server with a reason and duration
     When Called: When implementing administrative actions, moderation systems, or player punishment for the player
-    Parameters: 
+    Parameters:
         reason (string, optional) - The reason for the ban (default: generic reason)
         duration (number, optional) - The duration of the ban in seconds (0 for permanent)
         banner (Player, optional) - The player who issued the ban
@@ -3367,7 +3367,7 @@ if SERVER then
     --[[
     Purpose: Sets an action for the player with optional duration and callback
     When Called: When implementing player actions, progress bars, or timed activities for the player
-    Parameters: 
+    Parameters:
         text (string) - The action text to display
         time (number, optional) - The duration of the action in seconds
         callback (function, optional) - Function to call when action completes
@@ -3427,7 +3427,7 @@ if SERVER then
     --[[
     Purpose: Makes the player perform an action by staring at an entity for a specified duration
     When Called: When implementing interaction systems, examination mechanics, or focused actions for the player
-    Parameters: 
+    Parameters:
         entity (Entity) - The entity to stare at
         callback (function) - Function to call when action completes
         time (number) - The duration to stare at the entity
@@ -3618,7 +3618,7 @@ if SERVER then
     --[[
     Purpose: Creates a ragdoll entity for the player with their current appearance and state
     When Called: When implementing death systems, ragdoll creation, or player state changes
-    Parameters: 
+    Parameters:
         freeze (boolean, optional) - Whether to freeze the ragdoll
         isDead (boolean, optional) - Whether the player is dead (affects ragdoll storage)
     Returns: Entity - The created ragdoll entity
@@ -3695,7 +3695,7 @@ if SERVER then
     --[[
     Purpose: Sets the player's ragdoll state (knocked down or standing up)
     When Called: When implementing knockdown systems, unconsciousness, or player state management
-    Parameters: 
+    Parameters:
         state (boolean) - Whether to ragdoll the player (true) or stand them up (false)
         baseTime (number, optional) - Base time for ragdoll duration (default: 10)
         getUpGrace (number, optional) - Grace period for getting up
@@ -3888,7 +3888,7 @@ if SERVER then
     --[[
     Purpose: Sets a network variable for the player that synchronizes to the client
     When Called: When updating player state, implementing networked properties, or client-server communication
-    Parameters: 
+    Parameters:
         key (string) - The network variable key
         value (any) - The value to set
     Returns: None

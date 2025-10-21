@@ -546,9 +546,7 @@ function MODULE:CreateMenuButtons(tabs)
             local sheet = themesPanel:Add("liaTabs")
             sheet:Dock(FILL)
             sheet:DockMargin(10, 10, 10, 10)
-            sheet.Paint = function(_, w, h)
-                lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.background):Draw()
-            end
+            sheet.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.background):Draw() end
             local function getLocalizedThemeName(themeID)
                 local properCaseName = themeID:gsub("(%a)([%w]*)", function(first, rest) return first:upper() .. rest:lower() end)
                 local localizationKey = "theme" .. properCaseName:gsub(" ", ""):gsub("-", "")

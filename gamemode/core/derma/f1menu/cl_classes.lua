@@ -50,7 +50,7 @@ function PANEL:loadClasses()
         btn:SetFont("liaMediumFont")
         btn:SetExpensiveShadow(1, Color(0, 0, 0, 100))
         btn.DoClick = function()
-            lia.websound.playButtonSound() -- Play sound directly
+            lia.websound.playButtonSound()
             for _, b in ipairs(self.tabList) do
                 b:SetSelected(b == btn)
             end
@@ -235,7 +235,7 @@ function PANEL:addJoinButton(parent, cl, canBe)
 
     btn:SetDisabled(isCurrent or not canBe)
     btn.DoClick = function()
-        lia.websound.playButtonSound() -- Play sound directly
+        lia.websound.playButtonSound()
         if canBe and not isCurrent then
             lia.command.send("beclass", cl.index)
             timer.Simple(0.1, function()

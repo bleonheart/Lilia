@@ -1355,7 +1355,7 @@ else
             stopButton.DoClick = function()
                 -- Don't call the original DoClick to avoid button sound interference
                 timer.Simple(0.1, function()
-                    sound.PlayFile("", "", function() end) -- Stop all sounds
+                    sound.PlayFile("", "", function() end)
                     LocalPlayer():ChatPrint("Stopped all sounds")
                 end)
             end
