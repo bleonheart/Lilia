@@ -1,4 +1,18 @@
-﻿lia.db = lia.db or {}
+﻿--[[
+    Database Library
+    
+    The database library provides comprehensive database management functionality for the Lilia framework.
+    It handles all database operations including connection management, table creation and modification,
+    data insertion, updates, queries, and schema management. The library supports SQLite as the primary
+    database engine with extensible module support for other database systems. It includes advanced features
+    such as prepared statements, transactions, bulk operations, data type conversion, and database
+    snapshots for backup and restore operations. The library ensures data persistence across server
+    restarts and provides robust error handling with deferred promise-based operations for asynchronous
+    database queries. It manages core gamemode tables for players, characters, inventories, items,
+    configuration, logs, and administrative data while supporting dynamic schema modifications.
+]]
+
+lia.db = lia.db or {}
 lia.db.queryQueue = lia.db.queue or {}
 lia.db.prepared = lia.db.prepared or {}
 lia.db.modules = {
@@ -43,6 +57,45 @@ lia.db.modules = {
 
 lia.db.escape = lia.db.escape or lia.db.modules.sqlite.escape
 lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueue + 1] = {...} end
+--[[
+    Purpose: Establishes a connection to the database using the configured database module
+    When Called: During server startup, module initialization, or when reconnecting to database
+    Parameters:
+        - callback (function, optional): Function to call after successful connection
+        - reconnect (boolean, optional): Force reconnection even if already connected
+    Returns: None (void function)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Connect to database with callback
+        lia.db.connect(function()
+            print("Database connected successfully!")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Connect with error handling and reconnection
+        lia.db.connect(function()
+            lia.logger.info("Database connection established")
+            lia.db.loadTables()
+        end, true)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Connect with conditional logic and module validation
+        if lia.db.module and lia.db.modules[lia.db.module] then
+            lia.db.connect(function()
+                lia.bootstrap("Database", "Connected to " .. lia.db.module)
+                hook.Run("OnDatabaseConnected")
+            end, not lia.db.connected)
+        else
+            lia.error("Invalid database module: " .. tostring(lia.db.module))
+        end
+        ```
+]]
 function lia.db.connect(callback, reconnect)
     local dbModule = lia.db.modules[lia.db.module]
     if dbModule then
@@ -65,6 +118,50 @@ function lia.db.connect(callback, reconnect)
     end
 end
 
+--[[
+    Purpose: Removes all Lilia database tables and their data from the database
+    When Called: During database reset operations, development testing, or administrative cleanup
+    Parameters:
+        - callback (function, optional): Function to call after all tables are wiped
+    Returns: None (void function)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Wipe all tables with confirmation
+        lia.db.wipeTables(function()
+            print("All database tables have been wiped!")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Wipe tables with logging and backup
+        lia.logger.warn("Starting database wipe operation")
+        lia.db.wipeTables(function()
+            lia.logger.info("Database wipe completed successfully")
+            hook.Run("OnDatabaseWiped")
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Wipe tables with confirmation and error handling
+        local function confirmWipe()
+            lia.db.wipeTables(function()
+                lia.bootstrap("Database", "All tables wiped successfully")
+                lia.db.loadTables() -- Reload empty tables
+                hook.Run("OnDatabaseReset")
+            end)
+        end
+        
+        if lia.config.get("allowDatabaseWipe", false) then
+            confirmWipe()
+        else
+            lia.logger.error("Database wipe not allowed by configuration")
+        end
+        ```
+]]
 function lia.db.wipeTables(callback)
     local wipedTables = {}
     local function realCallback()
@@ -92,6 +189,48 @@ function lia.db.wipeTables(callback)
     end)
 end
 
+--[[
+    Purpose: Creates all core Lilia database tables if they don't exist and initializes the database schema
+    When Called: During server startup after database connection, or when initializing a new database
+    Parameters: None
+    Returns: None (void function)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Load tables after connection
+        lia.db.connect(function()
+            lia.db.loadTables()
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Load tables with hook integration
+        lia.db.connect(function()
+            lia.db.loadTables()
+            lia.logger.info("Database tables loaded successfully")
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Load tables with conditional logic and error handling
+        local function initializeDatabase()
+            lia.db.connect(function()
+                lia.db.loadTables()
+                hook.Run("OnDatabaseInitialized")
+                lia.bootstrap("Database", "Schema loaded and ready")
+            end, true)
+        end
+        
+        if lia.db.module and lia.db.modules[lia.db.module] then
+            initializeDatabase()
+        else
+            lia.error("Cannot initialize database: invalid module")
+        end
+        ```
+]]
 function lia.db.loadTables()
     local function done()
         lia.db.addDatabaseFields()
@@ -267,6 +406,52 @@ CREATE TABLE IF NOT EXISTS lia_data (
     hook.Run("OnLoadTables")
 end
 
+--[[
+    Purpose: Returns a deferred promise that resolves when database tables have finished loading
+    When Called: Before performing database operations that require tables to be loaded
+    Parameters: None
+    Returns: Deferred promise object
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Wait for tables to load before proceeding
+        lia.db.waitForTablesToLoad():next(function()
+            print("Tables are ready!")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Wait for tables with error handling
+        lia.db.waitForTablesToLoad():next(function()
+            lia.logger.info("Database tables loaded, proceeding with initialization")
+            hook.Run("OnTablesReady")
+        end):catch(function(err)
+            lia.logger.error("Failed to load database tables: " .. tostring(err))
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Wait for tables with timeout and fallback
+        local function initializeAfterTables()
+            lia.db.waitForTablesToLoad():next(function()
+                lia.char.loadCharacters()
+                lia.inventory.loadInventories()
+                lia.bootstrap("Database", "All systems initialized")
+            end):catch(function(err)
+                lia.error("Critical database initialization failure: " .. tostring(err))
+                lia.db.connect(function()
+                    lia.db.loadTables()
+                    initializeAfterTables()
+                end, true)
+            end)
+        end
+        
+        initializeAfterTables()
+        ```
+]]
 function lia.db.waitForTablesToLoad()
     TABLE_WAIT_ID = TABLE_WAIT_ID or 0
     local d = deferred.new()
@@ -324,6 +509,59 @@ local function buildWhereClause(conditions)
     return ""
 end
 
+--[[
+    Purpose: Converts Lua values to SQL-compatible format with proper escaping and type handling
+    When Called: Internally by database functions when preparing data for SQL queries
+    Parameters:
+        - value (any): The value to convert to SQL format
+        - noEscape (boolean, optional): Skip escaping for raw SQL values
+    Returns: String representation of the value in SQL format
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Convert basic data types
+        local sqlString = lia.db.convertDataType("Hello World")
+        local sqlNumber = lia.db.convertDataType(42)
+        local sqlBool = lia.db.convertDataType(true)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Convert complex data with escaping
+        local playerData = {
+            name = "John Doe",
+            level = 25,
+            isActive = true,
+            inventory = {weapon = "pistol", ammo = 100}
+        }
+        
+        local sqlData = {}
+        for key, value in pairs(playerData) do
+            sqlData[key] = lia.db.convertDataType(value)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Convert with conditional logic and error handling
+        local function safeConvert(value, fieldName)
+            if value == nil then
+                return "NULL"
+            elseif type(value) == "table" then
+                local success, json = pcall(util.TableToJSON, value)
+                if success then
+                    return "'" .. lia.db.escape(json) .. "'"
+                else
+                    lia.logger.warn("Failed to convert table for field: " .. fieldName)
+                    return "NULL"
+                end
+            else
+                return lia.db.convertDataType(value)
+            end
+        end
+        ```
+]]
 function lia.db.convertDataType(value, noEscape)
     if value == nil then
         return "NULL"
@@ -347,6 +585,65 @@ function lia.db.convertDataType(value, noEscape)
     return value
 end
 
+--[[
+    Purpose: Inserts a new record into a specified database table
+    When Called: When creating new database records for players, characters, items, etc.
+    Parameters:
+        - value (table): Key-value pairs representing the data to insert
+        - callback (function, optional): Function to call after successful insertion
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'characters')
+    Returns: Deferred promise object with results and lastID
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Insert a new character
+        lia.db.insertTable({
+            steamID = "STEAM_0:1:12345678",
+            name = "John Doe",
+            model = "models/player/kleiner.mdl"
+        }, function(results, lastID)
+            print("Character created with ID:", lastID)
+        end, "characters")
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Insert with error handling and validation
+        local characterData = {
+            steamID = player:SteamID(),
+            name = player:Name(),
+            model = player:GetModel(),
+            faction = "citizen",
+            money = "0"
+        }
+        
+        lia.db.insertTable(characterData, function(results, lastID)
+            if lastID then
+                lia.logger.info("Character created for " .. player:Name())
+                hook.Run("OnCharacterCreated", player, lastID)
+            end
+        end, "characters")
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Insert with validation, error handling, and rollback
+        local function createCharacterWithValidation(playerData)
+            local validation = lia.char.validateData(playerData)
+            if not validation.valid then
+                return deferred.new():reject("Validation failed: " .. validation.error)
+            end
+            
+            return lia.db.insertTable(playerData, function(results, lastID)
+                if lastID then
+                    lia.char.cache[lastID] = playerData
+                    hook.Run("OnCharacterCreated", lastID, playerData)
+                end
+            end, "characters")
+        end
+        ```
+]]
 function lia.db.insertTable(value, callback, dbTable)
     local d = deferred.new()
     local query = "INSERT INTO " .. genInsertValues(value, dbTable)
@@ -360,6 +657,64 @@ function lia.db.insertTable(value, callback, dbTable)
     return d
 end
 
+--[[
+    Purpose: Updates existing records in a specified database table based on conditions
+    When Called: When modifying existing database records for players, characters, items, etc.
+    Parameters:
+        - value (table): Key-value pairs representing the data to update
+        - callback (function, optional): Function to call after successful update
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'characters')
+        - condition (table/string, optional): WHERE clause conditions for the update
+    Returns: Deferred promise object with results and lastID
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Update character money
+        lia.db.updateTable({
+            money = "1000"
+        }, function(results, lastID)
+            print("Character updated successfully!")
+        end, "characters", {id = 1})
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Update with complex conditions and logging
+        local updateData = {
+            lastJoinTime = os.date("%Y-%m-%d %H:%M:%S"),
+            money = tostring(character:getMoney())
+        }
+        
+        lia.db.updateTable(updateData, function(results, lastID)
+            if results then
+                lia.logger.info("Character " .. character:getName() .. " updated")
+                hook.Run("OnCharacterUpdated", character)
+            end
+        end, "characters", {id = character:getID()})
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Update with validation, transaction, and rollback
+        local function updateCharacterWithValidation(charID, updateData)
+            return lia.db.transaction({
+                "BEGIN TRANSACTION",
+                "UPDATE lia_characters SET " .. 
+                table.concat(lia.util.map(updateData, function(k, v) 
+                    return k .. " = " .. lia.db.convertDataType(v) 
+                end), ", ") .. 
+                " WHERE id = " .. charID,
+                "COMMIT"
+            }):next(function()
+                lia.char.cache[charID] = lia.util.merge(lia.char.cache[charID] or {}, updateData)
+                hook.Run("OnCharacterUpdated", charID, updateData)
+            end):catch(function(err)
+                lia.logger.error("Failed to update character " .. charID .. ": " .. tostring(err))
+            end)
+        end
+        ```
+]]
 function lia.db.updateTable(value, callback, dbTable, condition)
     local d = deferred.new()
     local query = "UPDATE " .. "lia_" .. (dbTable or "characters") .. " SET " .. genUpdateList(value) .. buildWhereClause(condition)
@@ -373,6 +728,58 @@ function lia.db.updateTable(value, callback, dbTable, condition)
     return d
 end
 
+--[[
+    Purpose: Performs a SELECT query on a specified database table with optional conditions and limits
+    When Called: When retrieving data from database tables for players, characters, items, etc.
+    Parameters:
+        - fields (string/table): Field names to select (string or table of strings)
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'characters')
+        - condition (table/string, optional): WHERE clause conditions for the query
+        - limit (number, optional): Maximum number of records to return
+    Returns: Deferred promise object with results array
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Select all characters
+        lia.db.select("*", "characters"):next(function(results)
+            print("Found " .. #results .. " characters")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Select with conditions and specific fields
+        lia.db.select({"name", "money", "faction"}, "characters", {
+            steamID = "STEAM_0:1:12345678"
+        }, 10):next(function(results)
+            for _, char in ipairs(results) do
+                print(char.name .. " has $" .. char.money)
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Select with complex conditions, pagination, and error handling
+        local function getCharactersByFaction(faction, page, pageSize)
+            local offset = (page - 1) * pageSize
+            return lia.db.select("*", "characters", {
+                faction = faction,
+                lastJoinTime = {operator = ">", value = os.date("%Y-%m-%d", os.time() - 86400)}
+            }, pageSize):next(function(results)
+                local characters = {}
+                for _, char in ipairs(results) do
+                    table.insert(characters, lia.char.new(char))
+                end
+                return characters
+            end):catch(function(err)
+                lia.logger.error("Failed to load characters: " .. tostring(err))
+                return {}
+            end)
+        end
+        ```
+]]
 function lia.db.select(fields, dbTable, condition, limit)
     local d = deferred.new()
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
@@ -389,6 +796,70 @@ function lia.db.select(fields, dbTable, condition, limit)
     return d
 end
 
+--[[
+    Purpose: Performs a SELECT query with advanced condition handling and optional ordering
+    When Called: When retrieving data with complex WHERE clauses and ORDER BY requirements
+    Parameters:
+        - fields (string/table): Field names to select (string or table of strings)
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'characters')
+        - conditions (table/string, optional): WHERE clause conditions with operator support
+        - limit (number, optional): Maximum number of records to return
+        - orderBy (string, optional): ORDER BY clause for sorting results
+    Returns: Deferred promise object with results array
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Select with basic condition
+        lia.db.selectWithCondition("*", "characters", {
+            faction = "citizen"
+        }):next(function(results)
+            print("Found " .. #results .. " citizens")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Select with operators and ordering
+        lia.db.selectWithCondition({"name", "money"}, "characters", {
+            money = {operator = ">", value = "1000"},
+            faction = "citizen"
+        }, 5, "money DESC"):next(function(results)
+            for _, char in ipairs(results) do
+                print(char.name .. " has $" .. char.money)
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Select with complex conditions, pagination, and error handling
+        local function searchCharacters(searchTerm, faction, minMoney, maxResults)
+            local conditions = {}
+            if searchTerm then
+                conditions.name = {operator = "LIKE", value = "%" .. searchTerm .. "%"}
+            end
+            if faction then
+                conditions.faction = faction
+            end
+            if minMoney then
+                conditions.money = {operator = ">=", value = tostring(minMoney)}
+            end
+            
+            return lia.db.selectWithCondition("*", "characters", conditions, 
+                maxResults, "lastJoinTime DESC"):next(function(results)
+                local characters = {}
+                for _, char in ipairs(results) do
+                    table.insert(characters, lia.char.new(char))
+                end
+                return characters
+            end):catch(function(err)
+                lia.logger.error("Character search failed: " .. tostring(err))
+                return {}
+            end)
+        end
+        ```
+]]
 function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
     local d = deferred.new()
     local from = istable(fields) and table.concat(fields, ", ") or tostring(fields)
@@ -427,6 +898,53 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
     return d
 end
 
+--[[
+    Purpose: Counts the number of records in a database table matching specified conditions
+    When Called: When checking record counts for statistics, validation, or pagination
+    Parameters:
+        - dbTable (string): Table name without 'lia_' prefix
+        - condition (table/string, optional): WHERE clause conditions for counting
+    Returns: Deferred promise object resolving to the count number
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Count all characters
+        lia.db.count("characters"):next(function(count)
+            print("Total characters: " .. count)
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Count with conditions
+        lia.db.count("characters", {
+            faction = "citizen",
+            money = {operator = ">", value = "1000"}
+        }):next(function(count)
+            print("Rich citizens: " .. count)
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Count with validation and error handling
+        local function getPlayerStats(steamID)
+            return lia.db.count("characters", {steamID = steamID}):next(function(charCount)
+                return lia.db.count("players", {steamID = steamID}):next(function(playerCount)
+                    return {
+                        characters = charCount,
+                        playerRecords = playerCount,
+                        isNewPlayer = playerCount == 0
+                    }
+                end)
+            end):catch(function(err)
+                lia.logger.error("Failed to get player stats: " .. tostring(err))
+                return {characters = 0, playerRecords = 0, isNewPlayer = true}
+            end)
+        end
+        ```
+]]
 function lia.db.count(dbTable, condition)
     local c = deferred.new()
     local tbl = "`lia_" .. dbTable .. "`"
@@ -441,6 +959,43 @@ function lia.db.count(dbTable, condition)
     return c
 end
 
+--[[
+    Purpose: Dynamically adds new columns to the lia_characters table based on character variables
+    When Called: During database initialization to ensure character table has all required fields
+    Parameters: None
+    Returns: None (void function)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Add fields after table creation
+        lia.db.loadTables() -- This automatically calls addDatabaseFields()
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Add fields with logging
+        lia.db.addDatabaseFields()
+        lia.logger.info("Database fields updated for character variables")
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Add fields with validation and error handling
+        local function ensureCharacterFields()
+            if not istable(lia.char.vars) then
+                lia.logger.warn("Character variables not defined, skipping field addition")
+                return
+            end
+            
+            lia.db.addDatabaseFields()
+            lia.logger.info("Character database fields synchronized")
+            hook.Run("OnCharacterFieldsUpdated")
+        end
+        
+        ensureCharacterFields()
+        ```
+]]
 function lia.db.addDatabaseFields()
     local typeMap = {
         string = function(d) return ("%s VARCHAR(%d)"):format(d.field, d.length or 255) end,
@@ -466,10 +1021,119 @@ function lia.db.addDatabaseFields()
     end
 end
 
+--[[
+    Purpose: Checks if any records exist in a database table matching specified conditions
+    When Called: When validating data existence before operations or for conditional logic
+    Parameters:
+        - dbTable (string): Table name without 'lia_' prefix
+        - condition (table/string, optional): WHERE clause conditions for checking existence
+    Returns: Deferred promise object resolving to boolean (true if records exist)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Check if player exists
+        lia.db.exists("players", {steamID = "STEAM_0:1:12345678"}):next(function(exists)
+            if exists then
+                print("Player found in database")
+            else
+                print("New player")
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Check with complex conditions
+        lia.db.exists("characters", {
+            steamID = player:SteamID(),
+            faction = "citizen",
+            money = {operator = ">", value = "1000"}
+        }):next(function(exists)
+            if exists then
+                lia.logger.info("Player has wealthy citizen character")
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Check with validation and error handling
+        local function validatePlayerData(steamID)
+            return lia.db.exists("players", {steamID = steamID}):next(function(playerExists)
+                if not playerExists then
+                    return lia.db.insertTable({
+                        steamID = steamID,
+                        steamName = "Unknown",
+                        firstJoin = os.date("%Y-%m-%d %H:%M:%S"),
+                        userGroup = "user"
+                    }, nil, "players")
+                end
+                return playerExists
+            end):catch(function(err)
+                lia.logger.error("Failed to validate player data: " .. tostring(err))
+                return false
+            end)
+        end
+        ```
+]]
 function lia.db.exists(dbTable, condition)
     return lia.db.count(dbTable, condition):next(function(n) return n > 0 end)
 end
 
+--[[
+    Purpose: Retrieves a single record from a database table matching specified conditions
+    When Called: When fetching unique records like player data, character info, or single items
+    Parameters:
+        - fields (string/table): Field names to select (string or table of strings)
+        - dbTable (string): Table name without 'lia_' prefix
+        - condition (table/string, optional): WHERE clause conditions for the query
+    Returns: Deferred promise object resolving to the first matching record or nil
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Get character by ID
+        lia.db.selectOne("*", "characters", {id = 1}):next(function(char)
+            if char then
+                print("Character name: " .. char.name)
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Get player data with specific fields
+        lia.db.selectOne({"steamName", "userGroup", "lastJoin"}, "players", {
+            steamID = player:SteamID()
+        }):next(function(playerData)
+            if playerData then
+                player:SetUserGroup(playerData.userGroup)
+                lia.logger.info("Loaded player: " .. playerData.steamName)
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Get with validation and error handling
+        local function loadCharacter(charID)
+            return lia.db.selectOne("*", "characters", {id = charID}):next(function(charData)
+                if not charData then
+                    return deferred.new():reject("Character not found")
+                end
+                
+                local character = lia.char.new(charData)
+                lia.char.cache[charID] = character
+                hook.Run("OnCharacterLoaded", character)
+                return character
+            end):catch(function(err)
+                lia.logger.error("Failed to load character " .. charID .. ": " .. tostring(err))
+                return nil
+            end)
+        end
+        ```
+]]
 function lia.db.selectOne(fields, dbTable, condition)
     local c = deferred.new()
     local tbl = "`lia_" .. dbTable .. "`"
@@ -487,6 +1151,83 @@ function lia.db.selectOne(fields, dbTable, condition)
     return c
 end
 
+--[[
+    Purpose: Inserts multiple records into a database table in a single operation for better performance
+    When Called: When inserting large amounts of data like inventory items, logs, or batch operations
+    Parameters:
+        - dbTable (string): Table name without 'lia_' prefix
+        - rows (table): Array of tables containing the data to insert
+    Returns: Deferred promise object resolving when all records are inserted
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Insert multiple items
+        local items = {
+            {uniqueID = "pistol", quantity = 1, x = 1, y = 1},
+            {uniqueID = "ammo", quantity = 50, x = 2, y = 1}
+        }
+        lia.db.bulkInsert("items", items):next(function()
+            print("Items inserted successfully")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Insert with validation and error handling
+        local function insertInventoryItems(invID, items)
+            local rows = {}
+            for _, item in ipairs(items) do
+                table.insert(rows, {
+                    invID = invID,
+                    uniqueID = item.uniqueID,
+                    data = util.TableToJSON(item.data or {}),
+                    quantity = item.quantity or 1,
+                    x = item.x or 1,
+                    y = item.y or 1
+                })
+            end
+            
+            return lia.db.bulkInsert("items", rows):next(function()
+                lia.logger.info("Inserted " .. #rows .. " items into inventory " .. invID)
+            end):catch(function(err)
+                lia.logger.error("Failed to insert items: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Insert with batching, validation, and progress tracking
+        local function bulkInsertWithBatching(dbTable, data, batchSize)
+            batchSize = batchSize or 100
+            local batches = {}
+            
+            for i = 1, #data, batchSize do
+                local batch = {}
+                for j = i, math.min(i + batchSize - 1, #data) do
+                    table.insert(batch, data[j])
+                end
+                table.insert(batches, batch)
+            end
+            
+            local currentBatch = 1
+            local function insertNextBatch()
+                if currentBatch > #batches then
+                    return deferred.new():resolve()
+                end
+                
+                return lia.db.bulkInsert(dbTable, batches[currentBatch]):next(function()
+                    lia.logger.info("Batch " .. currentBatch .. "/" .. #batches .. " completed")
+                    currentBatch = currentBatch + 1
+                    return insertNextBatch()
+                end)
+            end
+            
+            return insertNextBatch()
+        end
+        ```
+]]
 function lia.db.bulkInsert(dbTable, rows)
     if #rows == 0 then return deferred.new():resolve() end
     local c = deferred.new()
@@ -512,6 +1253,86 @@ function lia.db.bulkInsert(dbTable, rows)
     return c
 end
 
+--[[
+    Purpose: Performs bulk INSERT OR REPLACE operations for updating existing records or inserting new ones
+    When Called: When synchronizing data that may already exist, like configuration updates or data imports
+    Parameters:
+        - dbTable (string): Table name without 'lia_' prefix
+        - rows (table): Array of tables containing the data to upsert
+    Returns: Deferred promise object resolving when all records are upserted
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Upsert configuration data
+        local configs = {
+            {schema = "default", key = "maxPlayers", value = "32"},
+            {schema = "default", key = "serverName", value = "My Server"}
+        }
+        lia.db.bulkUpsert("config", configs):next(function()
+            print("Configuration updated")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Upsert with validation and error handling
+        local function syncPlayerData(players)
+            local rows = {}
+            for _, player in ipairs(players) do
+                table.insert(rows, {
+                    steamID = player:SteamID(),
+                    steamName = player:Name(),
+                    lastJoin = os.date("%Y-%m-%d %H:%M:%S"),
+                    lastIP = player:IPAddress(),
+                    userGroup = player:GetUserGroup()
+                })
+            end
+            
+            return lia.db.bulkUpsert("players", rows):next(function()
+                lia.logger.info("Synchronized " .. #rows .. " player records")
+            end):catch(function(err)
+                lia.logger.error("Failed to sync player data: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Upsert with conflict resolution and progress tracking
+        local function bulkSyncWithConflictResolution(dbTable, data, conflictFields)
+            local batches = {}
+            local batchSize = 50
+            
+            for i = 1, #data, batchSize do
+                local batch = {}
+                for j = i, math.min(i + batchSize - 1, #data) do
+                    local record = data[j]
+                    -- Add conflict resolution metadata
+                    record._syncTimestamp = os.time()
+                    record._conflictFields = conflictFields
+                    table.insert(batch, record)
+                end
+                table.insert(batches, batch)
+            end
+            
+            local completed = 0
+            local function processNextBatch()
+                if completed >= #batches then
+                    return deferred.new():resolve()
+                end
+                
+                return lia.db.bulkUpsert(dbTable, batches[completed + 1]):next(function()
+                    completed = completed + 1
+                    lia.logger.info("Batch " .. completed .. "/" .. #batches .. " synced")
+                    return processNextBatch()
+                end)
+            end
+            
+            return processNextBatch()
+        end
+        ```
+]]
 function lia.db.bulkUpsert(dbTable, rows)
     if #rows == 0 then return deferred.new():resolve() end
     local c = deferred.new()
@@ -537,6 +1358,68 @@ function lia.db.bulkUpsert(dbTable, rows)
     return c
 end
 
+--[[
+    Purpose: Inserts a record into a database table, ignoring the operation if it would cause a constraint violation
+    When Called: When inserting data that may already exist, like unique configurations or duplicate-safe operations
+    Parameters:
+        - value (table): Key-value pairs representing the data to insert
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'characters')
+    Returns: Deferred promise object with results and lastID
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Insert configuration without duplicates
+        lia.db.insertOrIgnore({
+            schema = "default",
+            key = "serverName",
+            value = "My Server"
+        }, "config"):next(function(results, lastID)
+            print("Configuration inserted or ignored")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Insert with validation and logging
+        local function ensureDefaultConfig(configs)
+            for _, config in ipairs(configs) do
+                lia.db.insertOrIgnore({
+                    schema = config.schema,
+                    key = config.key,
+                    value = config.value
+                }, "config"):next(function(results, lastID)
+                    if lastID then
+                        lia.logger.info("Added new config: " .. config.key)
+                    end
+                end)
+            end
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Insert with conflict detection and fallback
+        local function safeInsertWithFallback(data, dbTable, fallbackData)
+            return lia.db.insertOrIgnore(data, dbTable):next(function(results, lastID)
+                if lastID then
+                    -- Successfully inserted new record
+                    return {success = true, id = lastID, action = "inserted"}
+                else
+                    -- Record already exists, try fallback operation
+                    return lia.db.updateTable(fallbackData, nil, dbTable, {
+                        [data.primaryKey or "id"] = data.id
+                    }):next(function()
+                        return {success = true, action = "updated"}
+                    end)
+                end
+            end):catch(function(err)
+                lia.logger.error("Insert or ignore failed: " .. tostring(err))
+                return {success = false, error = err}
+            end)
+        end
+        ```
+]]
 function lia.db.insertOrIgnore(value, dbTable)
     local c = deferred.new()
     local tbl = "`lia_" .. (dbTable or "characters") .. "`"
@@ -557,6 +1440,71 @@ function lia.db.insertOrIgnore(value, dbTable)
     return c
 end
 
+--[[
+    Purpose: Checks if a database table exists in the current database
+    When Called: When validating table existence before operations or during schema validation
+    Parameters:
+        - tbl (string): Table name to check for existence
+    Returns: Deferred promise object resolving to boolean (true if table exists)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Check if table exists
+        lia.db.tableExists("lia_characters"):next(function(exists)
+            if exists then
+                print("Characters table exists")
+            else
+                print("Characters table missing")
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Check with conditional logic
+        lia.db.tableExists("lia_custom_table"):next(function(exists)
+            if not exists then
+                lia.logger.warn("Custom table missing, creating...")
+                lia.db.createTable("custom_table", "id", {
+                    {name = "id", type = "INTEGER", not_null = true},
+                    {name = "data", type = "TEXT"}
+                })
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Check with validation and error handling
+        local function validateDatabaseSchema()
+            local requiredTables = {"characters", "players", "items", "inventories"}
+            local missingTables = {}
+            
+            local function checkNextTable(index)
+                if index > #requiredTables then
+                    if #missingTables > 0 then
+                        lia.logger.error("Missing tables: " .. table.concat(missingTables, ", "))
+                        return lia.db.loadTables()
+                    else
+                        lia.logger.info("All required tables exist")
+                        return deferred.new():resolve()
+                    end
+                end
+                
+                local tableName = "lia_" .. requiredTables[index]
+                return lia.db.tableExists(tableName):next(function(exists)
+                    if not exists then
+                        table.insert(missingTables, tableName)
+                    end
+                    return checkNextTable(index + 1)
+                end)
+            end
+            
+            return checkNextTable(1)
+        end
+        ```
+]]
 function lia.db.tableExists(tbl)
     local d = deferred.new()
     local qt = "'" .. tbl:gsub("'", "''") .. "'"
@@ -564,6 +1512,68 @@ function lia.db.tableExists(tbl)
     return d
 end
 
+--[[
+    Purpose: Checks if a specific field/column exists in a database table
+    When Called: When validating column existence before operations or during schema migrations
+    Parameters:
+        - tbl (string): Table name to check
+        - field (string): Field/column name to check for existence
+    Returns: Deferred promise object resolving to boolean (true if field exists)
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Check if field exists
+        lia.db.fieldExists("lia_characters", "money"):next(function(exists)
+            if exists then
+                print("Money field exists")
+            else
+                print("Money field missing")
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Check with conditional field creation
+        lia.db.fieldExists("lia_characters", "newField"):next(function(exists)
+            if not exists then
+                lia.logger.info("Adding new field to characters table")
+                lia.db.createColumn("characters", "newField", "VARCHAR(255)", "default_value")
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Check with validation and error handling
+        local function validateCharacterFields()
+            local requiredFields = {"name", "steamID", "money", "faction", "model"}
+            local missingFields = {}
+            
+            local function checkNextField(index)
+                if index > #requiredFields then
+                    if #missingFields > 0 then
+                        lia.logger.error("Missing character fields: " .. table.concat(missingFields, ", "))
+                        return lia.db.addDatabaseFields()
+                    else
+                        lia.logger.info("All required character fields exist")
+                        return deferred.new():resolve()
+                    end
+                end
+                
+                return lia.db.fieldExists("lia_characters", requiredFields[index]):next(function(exists)
+                    if not exists then
+                        table.insert(missingFields, requiredFields[index])
+                    end
+                    return checkNextField(index + 1)
+                end)
+            end
+            
+            return checkNextField(1)
+        end
+        ```
+]]
 function lia.db.fieldExists(tbl, field)
     local d = deferred.new()
     lia.db.query("PRAGMA table_info(" .. tbl .. ")", function(res)
@@ -576,6 +1586,75 @@ function lia.db.fieldExists(tbl, field)
     return d
 end
 
+--[[
+    Purpose: Retrieves a list of all Lilia database tables in the current database
+    When Called: When auditing database structure, generating reports, or managing tables
+    Parameters: None
+    Returns: Deferred promise object resolving to array of table names
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Get all Lilia tables
+        lia.db.getTables():next(function(tables)
+            print("Found " .. #tables .. " Lilia tables")
+            for _, tableName in ipairs(tables) do
+                print("- " .. tableName)
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Get tables with analysis
+        lia.db.getTables():next(function(tables)
+            local coreTables = {"lia_characters", "lia_players", "lia_items"}
+            local missingTables = {}
+            
+            for _, coreTable in ipairs(coreTables) do
+                if not table.HasValue(tables, coreTable) then
+                    table.insert(missingTables, coreTable)
+                end
+            end
+            
+            if #missingTables > 0 then
+                lia.logger.warn("Missing core tables: " .. table.concat(missingTables, ", "))
+            else
+                lia.logger.info("All core tables present")
+            end
+        end)
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Get tables with validation and management
+        local function auditDatabaseStructure()
+            return lia.db.getTables():next(function(tables)
+                local tableStats = {}
+                local function analyzeNextTable(index)
+                    if index > #tables then
+                        lia.logger.info("Database audit complete:")
+                        for tableName, stats in pairs(tableStats) do
+                            lia.logger.info(tableName .. ": " .. stats.count .. " records")
+                        end
+                        return tableStats
+                    end
+                    
+                    local tableName = tables[index]
+                    return lia.db.count(tableName:sub(5)):next(function(count)
+                        tableStats[tableName] = {count = count}
+                        return analyzeNextTable(index + 1)
+                    end)
+                end
+                
+                return analyzeNextTable(1)
+            end):catch(function(err)
+                lia.logger.error("Database audit failed: " .. tostring(err))
+                return {}
+            end)
+        end
+        ```
+]]
 function lia.db.getTables()
     local d = deferred.new()
     lia.db.query("SELECT name FROM sqlite_master WHERE type='table'", function(res)
