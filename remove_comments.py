@@ -23,17 +23,21 @@ def remove_comments(content):
         if '--[[' in line:
             # Check if it's a complete block on one line
             if ']]' in line:
-                # Complete block on one line - preserve it
-                cleaned_lines.append(line)
+                # Complete block on one line - clean whitespace and preserve it
+                cleaned_line = line.rstrip()
+                cleaned_lines.append(cleaned_line)
             else:
-                # Multi-line block - preserve all lines until closing ]]
-                cleaned_lines.append(line)
+                # Multi-line block - clean whitespace and preserve all lines until closing ]]
+                cleaned_line = line.rstrip()
+                cleaned_lines.append(cleaned_line)
                 i += 1
                 while i < len(lines) and ']]' not in lines[i]:
-                    cleaned_lines.append(lines[i])
+                    cleaned_line = lines[i].rstrip()
+                    cleaned_lines.append(cleaned_line)
                     i += 1
                 if i < len(lines):
-                    cleaned_lines.append(lines[i])
+                    cleaned_line = lines[i].rstrip()
+                    cleaned_lines.append(cleaned_line)
             i += 1
             continue
 
@@ -41,9 +45,10 @@ def remove_comments(content):
         # But preserve lines that are purely comments
         stripped_line = line.strip()
         
-        # If line starts with --, it's a pure comment line - preserve it
+        # If line starts with --, it's a pure comment line - clean whitespace and preserve it
         if stripped_line.startswith('--'):
-            cleaned_lines.append(line)
+            cleaned_line = line.rstrip()
+            cleaned_lines.append(cleaned_line)
         else:
             # Remove inline comments (-- followed by text)
             line = re.sub(r'--.*', '', line)
