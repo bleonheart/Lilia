@@ -62,7 +62,7 @@ lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueu
     Parameters:
         - callback (function, optional): Function to call after successful connection
         - reconnect (boolean, optional): Force reconnection even if already connected
-    Returns: None (void function)
+    Returns: None
     Realm: Server
     Example Usage:
         Low Complexity:
@@ -122,7 +122,7 @@ end
     When Called: During database reset operations, development testing, or administrative cleanup
     Parameters:
         - callback (function, optional): Function to call after all tables are wiped
-    Returns: None (void function)
+    Returns: None
     Realm: Server
     Example Usage:
         Low Complexity:
@@ -192,7 +192,7 @@ end
     Purpose: Creates all core Lilia database tables if they don't exist and initializes the database schema
     When Called: During server startup after database connection, or when initializing a new database
     Parameters: None
-    Returns: None (void function)
+    Returns: None
     Realm: Server
     Example Usage:
         Low Complexity:
@@ -962,7 +962,7 @@ end
     Purpose: Dynamically adds new columns to the lia_characters table based on character variables
     When Called: During database initialization to ensure character table has all required fields
     Parameters: None
-    Returns: None (void function)
+    Returns: None
     Realm: Server
     Example Usage:
         Low Complexity:
@@ -2381,7 +2381,7 @@ end
     When Called: When analyzing character table structure, generating reports, or during schema validation
     Parameters:
         - callback (function): Function to call with the column information array
-    Returns: None (void function)
+    Returns: None
     Realm: Server
     Example Usage:
         Low Complexity:

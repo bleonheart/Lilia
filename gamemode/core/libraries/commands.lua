@@ -1331,7 +1331,7 @@ else
                     local fullPath = "data/" .. soundPath
                     -- Add a small delay to ensure the sound system is ready
                     timer.Simple(0.1, function()
-                        sound.PlayFile(fullPath, "", function(channel, errorCode, errorString)
+                        sound.PlayFile(fullPath, "", function(channel, _, errorString)
                             if IsValid(channel) then
                                 LocalPlayer():ChatPrint("Playing: " .. soundName)
                             else
@@ -1608,7 +1608,7 @@ else
         if #soundFiles > 0 then
             local testFile = soundFiles[1]
             local fullPath = "data/" .. baseDir .. testFile
-            sound.PlayFile(fullPath, "", function(channel, errorCode, errorString)
+            sound.PlayFile(fullPath, "", function(channel, _, errorString)
                 if IsValid(channel) then
                     LocalPlayer():ChatPrint("Direct test successful: " .. testFile)
                 else
