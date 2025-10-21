@@ -1668,6 +1668,80 @@ function lia.db.getTables()
     return d
 end
 
+--[[
+    Purpose: Executes multiple database queries as a single atomic transaction with rollback on failure
+    When Called: When performing complex operations that must succeed or fail together
+    Parameters:
+        - queries (table): Array of SQL query strings to execute in sequence
+    Returns: Deferred promise object resolving when all queries succeed or rejecting on failure
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Transfer money between characters
+        lia.db.transaction({
+            "UPDATE lia_characters SET money = money - 100 WHERE id = 1",
+            "UPDATE lia_characters SET money = money + 100 WHERE id = 2"
+        }):next(function()
+            print("Money transfer completed")
+        end):catch(function(err)
+            print("Transfer failed: " .. tostring(err))
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Create character with inventory
+        local function createCharacterWithInventory(charData)
+            local queries = {
+                "INSERT INTO lia_characters (steamID, name, faction) VALUES ('" .. 
+                    charData.steamID .. "', '" .. charData.name .. "', '" .. charData.faction .. "')",
+                "INSERT INTO lia_inventories (charID, invType) VALUES (last_insert_rowid(), 'pocket')"
+            }
+            
+            return lia.db.transaction(queries):next(function()
+                lia.logger.info("Character and inventory created successfully")
+                hook.Run("OnCharacterCreated", charData)
+            end):catch(function(err)
+                lia.logger.error("Failed to create character: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Complex transaction with validation and rollback
+        local function transferItemsWithValidation(fromChar, toChar, items)
+            local queries = {}
+            local validationQueries = {}
+            
+            -- Build validation queries
+            for _, item in ipairs(items) do
+                table.insert(validationQueries, 
+                    "SELECT COUNT(*) FROM lia_items WHERE invID = " .. fromChar.invID .. 
+                    " AND uniqueID = '" .. item.uniqueID .. "' AND quantity >= " .. item.quantity)
+            end
+            
+            -- Build transfer queries
+            for _, item in ipairs(items) do
+                table.insert(queries, 
+                    "UPDATE lia_items SET quantity = quantity - " .. item.quantity .. 
+                    " WHERE invID = " .. fromChar.invID .. " AND uniqueID = '" .. item.uniqueID .. "'")
+                table.insert(queries, 
+                    "INSERT OR REPLACE INTO lia_items (invID, uniqueID, quantity) VALUES (" .. 
+                    toChar.invID .. ", '" .. item.uniqueID .. "', " .. item.quantity .. ")")
+            end
+            
+            return lia.db.transaction(queries):next(function()
+                lia.logger.info("Items transferred successfully")
+                hook.Run("OnItemsTransferred", fromChar, toChar, items)
+            end):catch(function(err)
+                lia.logger.error("Item transfer failed: " .. tostring(err))
+                hook.Run("OnTransferFailed", fromChar, toChar, items, err)
+            end)
+        end
+        ```
+]]
 function lia.db.transaction(queries)
     local c = deferred.new()
     lia.db.query("BEGIN TRANSACTION", function()
@@ -1688,10 +1762,125 @@ function lia.db.transaction(queries)
     return c
 end
 
+--[[
+    Purpose: Escapes database identifiers (table names, column names) to prevent SQL injection
+    When Called: Internally by database functions when building SQL queries with dynamic identifiers
+    Parameters:
+        - id (string): Identifier to escape (table name, column name, etc.)
+    Returns: Escaped identifier string wrapped in backticks
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Escape a column name
+        local escapedColumn = lia.db.escapeIdentifier("user_name")
+        -- Returns: `user_name`
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Escape multiple identifiers
+        local function buildSelectQuery(tableName, columns)
+            local escapedTable = lia.db.escapeIdentifier(tableName)
+            local escapedColumns = {}
+            
+            for _, column in ipairs(columns) do
+                table.insert(escapedColumns, lia.db.escapeIdentifier(column))
+            end
+            
+            return "SELECT " .. table.concat(escapedColumns, ", ") .. " FROM " .. escapedTable
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Escape with validation and error handling
+        local function safeEscapeIdentifiers(identifiers)
+            local escaped = {}
+            for _, id in ipairs(identifiers) do
+                if type(id) == "string" and id:match("^[a-zA-Z_][a-zA-Z0-9_]*$") then
+                    table.insert(escaped, lia.db.escapeIdentifier(id))
+                else
+                    lia.logger.warn("Invalid identifier: " .. tostring(id))
+                    return nil
+                end
+            end
+            return escaped
+        end
+        ```
+]]
 function lia.db.escapeIdentifier(id)
     return "`" .. tostring(id):gsub("`", "``") .. "`"
 end
 
+--[[
+    Purpose: Inserts a new record or updates an existing one based on primary key conflicts
+    When Called: When synchronizing data that may already exist, like configuration updates or data imports
+    Parameters:
+        - value (table): Key-value pairs representing the data to upsert
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'characters')
+    Returns: Deferred promise object with results and lastID
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Upsert configuration
+        lia.db.upsert({
+            schema = "default",
+            key = "serverName",
+            value = "My Server"
+        }, "config"):next(function(results, lastID)
+            print("Configuration upserted")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Upsert with validation and logging
+        local function syncPlayerData(player)
+            local playerData = {
+                steamID = player:SteamID(),
+                steamName = player:Name(),
+                lastJoin = os.date("%Y-%m-%d %H:%M:%S"),
+                userGroup = player:GetUserGroup()
+            }
+            
+            return lia.db.upsert(playerData, "players"):next(function(results, lastID)
+                lia.logger.info("Player data synchronized: " .. player:Name())
+                hook.Run("OnPlayerDataSynced", player, lastID)
+            end):catch(function(err)
+                lia.logger.error("Failed to sync player data: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Upsert with conflict resolution and validation
+        local function upsertWithValidation(data, dbTable, validationRules)
+            local validation = validateData(data, validationRules)
+            if not validation.valid then
+                return deferred.new():reject("Validation failed: " .. validation.error)
+            end
+            
+            return lia.db.upsert(data, dbTable):next(function(results, lastID)
+                local action = lastID and "inserted" or "updated"
+                lia.logger.info("Record " .. action .. " in " .. dbTable)
+                
+                -- Update cache if applicable
+                if lia.char.cache and dbTable == "characters" then
+                    lia.char.cache[data.id or lastID] = data
+                end
+                
+                hook.Run("OnRecordUpserted", dbTable, data, action)
+                return {success = true, action = action, id = lastID}
+            end):catch(function(err)
+                lia.logger.error("Upsert failed: " .. tostring(err))
+                return {success = false, error = err}
+            end)
+        end
+        ```
+]]
 function lia.db.upsert(value, dbTable)
     local query = "INSERT OR REPLACE INTO " .. genInsertValues(value, dbTable)
     local d = deferred.new()
@@ -1704,6 +1893,66 @@ function lia.db.upsert(value, dbTable)
     return d
 end
 
+--[[
+    Purpose: Deletes records from a database table based on specified conditions
+    When Called: When removing data like deleted characters, expired items, or cleanup operations
+    Parameters:
+        - dbTable (string, optional): Table name without 'lia_' prefix (defaults to 'character')
+        - condition (table/string, optional): WHERE clause conditions for the deletion
+    Returns: Deferred promise object with results and lastID
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Delete character by ID
+        lia.db.delete("characters", {id = 1}):next(function(results, lastID)
+            print("Character deleted")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Delete with validation and logging
+        local function deleteCharacter(charID)
+            return lia.db.delete("characters", {id = charID}):next(function(results, lastID)
+                lia.logger.info("Character " .. charID .. " deleted")
+                hook.Run("OnCharacterDeleted", charID)
+                
+                -- Clean up related data
+                lia.db.delete("items", {invID = charID})
+                lia.db.delete("inventories", {charID = charID})
+            end):catch(function(err)
+                lia.logger.error("Failed to delete character: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Delete with cascade and transaction safety
+        local function deleteCharacterWithCascade(charID)
+            return lia.db.transaction({
+                "DELETE FROM lia_items WHERE invID IN (SELECT invID FROM lia_inventories WHERE charID = " .. charID .. ")",
+                "DELETE FROM lia_inventories WHERE charID = " .. charID,
+                "DELETE FROM lia_chardata WHERE charID = " .. charID,
+                "DELETE FROM lia_characters WHERE id = " .. charID
+            }):next(function()
+                lia.logger.info("Character " .. charID .. " and all related data deleted")
+                
+                -- Update cache
+                if lia.char.cache then
+                    lia.char.cache[charID] = nil
+                end
+                
+                hook.Run("OnCharacterDeleted", charID)
+                return {success = true, charID = charID}
+            end):catch(function(err)
+                lia.logger.error("Failed to delete character with cascade: " .. tostring(err))
+                return {success = false, error = err}
+            end)
+        end
+        ```
+]]
 function lia.db.delete(dbTable, condition)
     dbTable = "lia_" .. (dbTable or "character")
     local query = "DELETE FROM " .. dbTable .. buildWhereClause(condition)
@@ -1717,6 +1966,87 @@ function lia.db.delete(dbTable, condition)
     return d
 end
 
+--[[
+    Purpose: Creates a new database table with specified schema and primary key
+    When Called: When setting up custom tables for modules or extending the database schema
+    Parameters:
+        - dbName (string): Table name without 'lia_' prefix
+        - primaryKey (string, optional): Primary key column name
+        - schema (table): Array of column definitions with name, type, not_null, and default properties
+    Returns: Deferred promise object resolving to true on success
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Create a basic table
+        lia.db.createTable("custom_data", "id", {
+            {name = "id", type = "INTEGER", not_null = true},
+            {name = "data", type = "TEXT"}
+        }):next(function(success)
+            print("Table created successfully")
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Create table with validation
+        local function createPlayerStatsTable()
+            local schema = {
+                {name = "id", type = "INTEGER", not_null = true},
+                {name = "steamID", type = "VARCHAR(255)", not_null = true},
+                {name = "kills", type = "INTEGER", default = 0},
+                {name = "deaths", type = "INTEGER", default = 0},
+                {name = "score", type = "INTEGER", default = 0},
+                {name = "lastUpdated", type = "DATETIME", default = "CURRENT_TIMESTAMP"}
+            }
+            
+            return lia.db.createTable("player_stats", "id", schema):next(function(success)
+                if success then
+                    lia.logger.info("Player stats table created")
+                    hook.Run("OnPlayerStatsTableCreated")
+                end
+            end):catch(function(err)
+                lia.logger.error("Failed to create player stats table: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Create table with validation and error handling
+        local function createModuleTable(moduleName, tableConfig)
+            local function validateSchema(schema)
+                for _, column in ipairs(schema) do
+                    if not column.name or not column.type then
+                        return false, "Invalid column definition"
+                    end
+                end
+                return true
+            end
+            
+            local valid, error = validateSchema(tableConfig.schema)
+            if not valid then
+                return deferred.new():reject("Schema validation failed: " .. error)
+            end
+            
+            return lia.db.tableExists("lia_" .. moduleName .. "_" .. tableConfig.name):next(function(exists)
+                if exists then
+                    lia.logger.info("Table already exists: " .. moduleName .. "_" .. tableConfig.name)
+                    return true
+                end
+                
+                return lia.db.createTable(moduleName .. "_" .. tableConfig.name, 
+                    tableConfig.primaryKey, tableConfig.schema):next(function(success)
+                    if success then
+                        lia.logger.info("Module table created: " .. moduleName .. "_" .. tableConfig.name)
+                        hook.Run("OnModuleTableCreated", moduleName, tableConfig.name)
+                    end
+                    return success
+                end)
+            end)
+        end
+        ```
+]]
 function lia.db.createTable(dbName, primaryKey, schema)
     local d = deferred.new()
     local tableName = "lia_" .. dbName
@@ -1744,6 +2074,78 @@ function lia.db.createTable(dbName, primaryKey, schema)
     return d
 end
 
+--[[
+    Purpose: Adds a new column to an existing database table
+    When Called: When extending table schemas, adding new fields, or during database migrations
+    Parameters:
+        - tableName (string): Table name without 'lia_' prefix
+        - columnName (string): Name of the new column to add
+        - columnType (string): SQL data type for the column
+        - defaultValue (any, optional): Default value for the column
+    Returns: Deferred promise object resolving to true on success, false if column already exists
+    Realm: Server
+    Example Usage:
+        Low Complexity:
+        ```lua
+        -- Simple: Add a new column
+        lia.db.createColumn("characters", "level", "INTEGER", 1):next(function(success)
+            if success then
+                print("Level column added")
+            else
+                print("Column already exists")
+            end
+        end)
+        ```
+        
+        Medium Complexity:
+        ```lua
+        -- Medium: Add column with validation
+        local function addPlayerStatsColumn()
+            return lia.db.createColumn("players", "totalPlayTime", "FLOAT", 0):next(function(success)
+                if success then
+                    lia.logger.info("Added totalPlayTime column to players table")
+                    hook.Run("OnColumnAdded", "players", "totalPlayTime")
+                else
+                    lia.logger.info("totalPlayTime column already exists")
+                end
+            end):catch(function(err)
+                lia.logger.error("Failed to add column: " .. tostring(err))
+            end)
+        end
+        ```
+        
+        High Complexity:
+        ```lua
+        -- High: Add column with validation and error handling
+        local function migrateCharacterTable()
+            local newColumns = {
+                {name = "level", type = "INTEGER", default = 1},
+                {name = "experience", type = "INTEGER", default = 0},
+                {name = "lastLevelUp", type = "DATETIME", default = "CURRENT_TIMESTAMP"}
+            }
+            
+            local function addNextColumn(index)
+                if index > #newColumns then
+                    lia.logger.info("Character table migration completed")
+                    return deferred.new():resolve()
+                end
+                
+                local column = newColumns[index]
+                return lia.db.createColumn("characters", column.name, column.type, column.default):next(function(success)
+                    if success then
+                        lia.logger.info("Added column: " .. column.name)
+                    end
+                    return addNextColumn(index + 1)
+                end):catch(function(err)
+                    lia.logger.error("Failed to add column " .. column.name .. ": " .. tostring(err))
+                    return addNextColumn(index + 1)
+                end)
+            end
+            
+            return addNextColumn(1)
+        end
+        ```
+]]
 function lia.db.createColumn(tableName, columnName, columnType, defaultValue)
     local d = deferred.new()
     local fullTableName = "lia_" .. tableName
