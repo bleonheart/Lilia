@@ -3,7 +3,6 @@
 
     Comprehensive user group and privilege management system for the Lilia framework.
 ]]
-
 --[[
     Overview:
     The administrator library provides comprehensive functionality for managing user groups, privileges,
@@ -1454,6 +1453,8 @@ if SERVER then
             return true
         elseif cmd == "slay" then
             target:Kill()
+            -- Ensure death countdown appears by triggering a delayed death event
+            timer.Simple(0.05, function() if IsValid(target) and not target:Alive() then hook.Run("PlayerDeath", target, nil, admin) end end)
             admin:notifySuccessLocalized("plyKilled")
             lia.log.add(admin, "plySlay", target:Name())
             return true

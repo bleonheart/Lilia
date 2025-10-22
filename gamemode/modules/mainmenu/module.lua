@@ -23,7 +23,8 @@ else
 
     function MODULE:ResetCharacterPanel()
         if IsValid(lia.gui.character) then lia.gui.character:Remove() end
-        vgui.Create("liaCharacter")
+        local client = LocalPlayer()
+        if IsValid(client) and not client:getChar() then vgui.Create("liaCharacter") end
     end
 
     function MODULE:ChooseCharacter(id)

@@ -3,7 +3,6 @@
 
     Comprehensive character creation, management, and persistence system for the Lilia framework.
 ]]
-
 --[[
     Overview:
     The character library provides comprehensive functionality for managing player characters
@@ -1822,6 +1821,11 @@ if SERVER then
     --
     function lia.char.delete(id, client)
         assert(isnumber(id), L("idMustBeNumber"))
+        local playersToSync = {}
+        for _, ply in player.Iterator() do
+            if IsValid(ply) and ply.liaCharList and table.HasValue(ply.liaCharList, id) then table.insert(playersToSync, ply) end
+        end
+
         if IsValid(client) then
             removePlayer(client)
         else
@@ -1833,13 +1837,7 @@ if SERVER then
         end
 
         hook.Run("PreCharDelete", id)
-        for index, charID in pairs(client.liaCharList) do
-            if charID == id then
-                table.remove(client.liaCharList, index)
-                break
-            end
-        end
-
+        if IsValid(client) and client.liaCharList then table.RemoveByValue(client.liaCharList, id) end
         lia.char.loaded[id] = nil
         lia.db.query("DELETE FROM lia_characters WHERE id = " .. id)
         lia.db.delete("chardata", "charID = " .. id)
@@ -1863,11 +1861,11 @@ if SERVER then
             client:Spawn()
         end
 
-        for _, ply in player.Iterator() do
+        for _, ply in ipairs(playersToSync) do
             if IsValid(ply) then
                 net.Start("liaCharDeleted")
                 net.Send(ply)
-                if ply.liaCharList then lia.module.get("mainmenu"):SyncCharList(ply) end
+                lia.module.get("mainmenu"):SyncCharList(ply)
             end
         end
     end
