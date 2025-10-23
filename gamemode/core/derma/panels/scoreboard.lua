@@ -208,7 +208,7 @@ end
 function PANEL:Think()
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do
-        if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false then continue end
+        if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false or (lia.faction.indices[ply:Team()] and lia.faction.indices[ply:Team()].scoreboardHidden) then continue end
         local char = ply:getChar()
         if not char then continue end
         local facCont = self.factionLists[ply:Team()]
@@ -480,3 +480,38 @@ function PANEL:OnRemove()
 end
 
 vgui.Register("liaScoreboard", PANEL, "liaSemiTransparentDFrame")
+local function liaScoreboardHide()
+    if IsValid(lia.gui.score) and lia.gui.score:IsVisible() then
+        lia.gui.score:SetVisible(false)
+        CloseDermaMenus()
+        hook.Run("ScoreboardClosed", lia.gui.score)
+    end
+
+    gui.EnableScreenClicker(false)
+    return true
+end
+
+local function liaScoreboardShow()
+    local client = LocalPlayer()
+    if hook.Run("CanPlayerOpenScoreboard", LocalPlayer()) == false then return false end
+    local interactions = lia.playerinteract.getInteractions(client)
+    local hasInteractions = not table.IsEmpty(interactions)
+    if not hasInteractions then
+        if IsValid(lia.gui.score) then
+            if not lia.gui.score:IsVisible() then
+                lia.gui.score:SetVisible(true)
+                hook.Run("ScoreboardOpened", lia.gui.score)
+            end
+        else
+            vgui.Create("liaScoreboard")
+        end
+    end
+
+    gui.EnableScreenClicker(true)
+    return true
+end
+
+hook.Add("ScoreboardHide", "liaScoreboardHide", liaScoreboardHide)
+hook.Add("ScoreboardShow", "liaScoreboardShow", liaScoreboardShow)
+hook.Add("OnReloaded", "liaScoreboardCleanup", liaScoreboardHide)
+hook.Add("InteractionMenuOpened", "liaScoreboardInteractionMenuOpened", liaScoreboardHide)

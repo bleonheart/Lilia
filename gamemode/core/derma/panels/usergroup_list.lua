@@ -38,20 +38,25 @@ function PANEL:RefreshGroups()
     for _, groupName in ipairs(keys) do
         local groupData = self.groups[groupName]
         local isDefault = lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[groupName] ~= nil
-        local groupBtn = self.scrollPanel:Add("liaUserGroupButton")
+        local groupBtn = self.scrollPanel:Add("liaSmallButton")
         groupBtn:Dock(TOP)
-        groupBtn:SetTall(50)
+        groupBtn:SetTall(35)
         groupBtn:DockMargin(0, 0, 0, 5)
-        groupBtn:SetGroup(groupName, groupData, isDefault)
+        groupBtn:SetText(groupName)
         groupBtn.DoClick = function() self:SelectGroup(groupName) end
+        groupBtn.selected = false
+        groupBtn.isDefault = isDefault
+        groupBtn.groupName = groupName
+        groupBtn.groupData = groupData
+        -- Custom paint function to show selection state
         self.groupButtons[groupName] = groupBtn
     end
 end
 
 function PANEL:SelectGroup(groupName)
-    if self.selectedGroup and self.groupButtons[self.selectedGroup] then self.groupButtons[self.selectedGroup]:SetSelected(false) end
+    if self.selectedGroup and self.groupButtons[self.selectedGroup] then self.groupButtons[self.selectedGroup].selected = false end
     self.selectedGroup = groupName
-    if self.groupButtons[groupName] then self.groupButtons[groupName]:SetSelected(true) end
+    if self.groupButtons[groupName] then self.groupButtons[groupName].selected = true end
     if self.OnGroupSelected then self:OnGroupSelected(groupName) end
 end
 

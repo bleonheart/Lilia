@@ -38,7 +38,6 @@ local function SpawnPlayer(client)
     if not IsValid(client) then return end
     local character = client:getChar()
     if not character then return end
-
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
         if posData.pos and isvector(posData.pos) then client:SetPos(posData.pos) end
@@ -186,6 +185,5 @@ function MODULE:PlayerSpawn(client)
     client:SetDSP(0, false)
 end
 
--- Manual respawn request removed - using auto-respawn instead
 hook.Add("PostPlayerLoadedChar", "liaSpawns", SpawnPlayer)
 hook.Add("PostPlayerLoadout", "liaSpawns", SpawnPlayer)
