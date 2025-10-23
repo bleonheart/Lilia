@@ -1,11 +1,11 @@
-﻿local CharacterInformation = {}
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.info) then lia.gui.info:Remove() end
     lia.gui.info = self
     self:SetSize(ScrW() * 0.85, ScrH() * 0.8)
     self:SetPos(50, 50)
     self.Paint = function() end
+    self.CharacterInformation = {}
     local scroll = vgui.Create("liaScrollPanel", self)
     scroll:Dock(FILL)
     scroll:InvalidateLayout(true)
@@ -24,7 +24,7 @@ function PANEL:Init()
         if not IsValid(self) then return end
         local client = LocalPlayer()
         local char = client:getChar()
-        local info = CharacterInformation or {}
+        local info = self.CharacterInformation or {}
         if char and not table.IsEmpty(info) then
             self:GenerateSections()
             self:Refresh()
@@ -117,8 +117,8 @@ end
 
 function PANEL:GenerateSections()
     local secs = {}
-    if table.IsEmpty(CharacterInformation) then return end
-    for name, data in pairs(CharacterInformation) do
+    if table.IsEmpty(self.CharacterInformation) then return end
+    for name, data in pairs(self.CharacterInformation) do
         secs[#secs + 1] = {
             name = name,
             data = data
@@ -202,8 +202,8 @@ function PANEL:ApplyCurrentTheme()
 end
 
 function PANEL:setup()
-    if table.IsEmpty(CharacterInformation) then return end
-    for _, data in pairs(CharacterInformation) do
+    if table.IsEmpty(self.CharacterInformation) then return end
+    for _, data in pairs(self.CharacterInformation) do
         local fields = isfunction(data.fields) and data.fields() or data.fields
         for _, f in ipairs(fields) do
             local ctrl = self[f.name]
@@ -773,63 +773,86 @@ hook.Add("LoadCharInformation", "liaF1MenuGeneralInfo", function()
 end)
 
 -- AddSection hook
-hook.Add("F1MenuAddSection", "liaF1MenuAddSection", function(self, sectionName, color, priority, location)
-    hook.Run("F1OnAddSection", sectionName, color, priority, location)
-    local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
-    if not self.CharacterInformation[localizedSectionName] then
-        self.CharacterInformation[localizedSectionName] = {
-            fields = {},
-            color = color or Color(255, 255, 255),
-            priority = priority or 999,
-            location = location or 1
-        }
-    else
-        local info = self.CharacterInformation[localizedSectionName]
-        info.color = color or info.color
-        info.priority = priority or info.priority
-        info.location = location or info.location
+hook.Add("AddSection", "liaF1MenuAddSection", function(sectionName, color, priority, location)
+    if IsValid(lia.gui.info) then
+        local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
+        if not lia.gui.info.CharacterInformation[localizedSectionName] then
+            lia.gui.info.CharacterInformation[localizedSectionName] = {
+                fields = {},
+                color = color or Color(255, 255, 255),
+                priority = priority or 999,
+                location = location or 1
+            }
+        else
+            local info = lia.gui.info.CharacterInformation[localizedSectionName]
+            info.color = color or info.color
+            info.priority = priority or info.priority
+            info.location = location or info.location
+        end
     end
 end)
 
 -- AddTextField hook
-hook.Add("F1MenuAddTextField", "liaF1MenuAddTextField", function(self, sectionName, fieldName, labelText, valueFunc)
-    hook.Run("F1OnAddTextField", sectionName, fieldName, labelText, valueFunc)
-    local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
-    local localizedLabel = isstring(labelText) and L(labelText) or labelText
-    local section = self.CharacterInformation[localizedSectionName]
-    if section then
-        for _, field in ipairs(section.fields) do
-            if field.name == fieldName then return end
-        end
+hook.Add("AddTextField", "liaF1MenuAddTextField", function(sectionName, fieldName, labelText, valueFunc)
+    if IsValid(lia.gui.info) then
+        local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
+        local localizedLabel = isstring(labelText) and L(labelText) or labelText
+        local section = lia.gui.info.CharacterInformation[localizedSectionName]
+        if section then
+            for _, field in ipairs(section.fields) do
+                if field.name == fieldName then return end
+            end
 
-        table.insert(section.fields, {
-            type = "text",
-            name = fieldName,
-            label = localizedLabel,
-            value = valueFunc or function() return "" end
-        })
+            table.insert(section.fields, {
+                type = "text",
+                name = fieldName,
+                label = localizedLabel,
+                value = valueFunc or function() return "" end
+            })
+        end
+    end
+end)
+
+hook.Add("AddTextField", "liaF1MenuAddTextField", function(sectionName, fieldName, labelText, valueFunc)
+    if IsValid(lia.gui.info) then
+        local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
+        local localizedLabel = isstring(labelText) and L(labelText) or labelText
+        local section = lia.gui.info.CharacterInformation[localizedSectionName]
+        if section then
+            for _, field in ipairs(section.fields) do
+                if field.name == fieldName then return end
+            end
+
+            table.insert(section.fields, {
+                type = "text",
+                name = fieldName,
+                label = localizedLabel,
+                value = valueFunc or function() return "" end
+            })
+        end
     end
 end)
 
 -- AddBarField hook
-hook.Add("F1MenuAddBarField", "liaF1MenuAddBarField", function(self, sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)
-    hook.Run("F1OnAddBarField", sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)
-    local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
-    local localizedLabel = isstring(labelText) and L(labelText) or labelText
-    local section = self.CharacterInformation[localizedSectionName]
-    if section then
-        for _, field in ipairs(section.fields) do
-            if field.name == fieldName then return end
-        end
+hook.Add("AddBarField", "liaF1MenuAddBarField", function(sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)
+    if IsValid(lia.gui.info) then
+        local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
+        local localizedLabel = isstring(labelText) and L(labelText) or labelText
+        local section = lia.gui.info.CharacterInformation[localizedSectionName]
+        if section then
+            for _, field in ipairs(section.fields) do
+                if field.name == fieldName then return end
+            end
 
-        table.insert(section.fields, {
-            type = "bar",
-            name = fieldName,
-            label = localizedLabel,
-            min = minFunc or function() return 0 end,
-            max = maxFunc or function() return 100 end,
-            value = valueFunc or function() return 0 end
-        })
+            table.insert(section.fields, {
+                type = "bar",
+                name = fieldName,
+                label = localizedLabel,
+                min = minFunc or function() return 0 end,
+                max = maxFunc or function() return 100 end,
+                value = valueFunc or function() return 0 end
+            })
+        end
     end
 end)
 
