@@ -226,7 +226,7 @@ end
 --
 function lia.playerinteract.getCategorizedOptions(options)
     local flatList = {}
-    for name, entry in pairs(options) do
+    for _, entry in pairs(options) do
         flatList[#flatList + 1] = entry
     end
     return flatList
