@@ -38,6 +38,7 @@ local function SpawnPlayer(client)
     if not IsValid(client) then return end
     local character = client:getChar()
     if not character then return end
+
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
         if posData.pos and isvector(posData.pos) then client:SetPos(posData.pos) end
@@ -159,6 +160,9 @@ function MODULE:PlayerDeath(client, _, attacker)
         client:setNetVar("IsDeadRestricted", true)
         client:setNetVar("lastDeathTime", deathTime)
         timer.Simple(0.1, function() if IsValid(client) and client:getChar() and not client:Alive() then client:setNetVar("lastDeathTime", deathTime) end end)
+        -- Add auto respawn timer
+        local spawnTime = lia.config.get("SpawnTime", 5)
+        timer.Simple(spawnTime, function() if IsValid(client) and client:getChar() and not client:Alive() then client:Spawn() end end)
     end
 
     if attacker:IsPlayer() then

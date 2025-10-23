@@ -269,7 +269,7 @@ function PANEL:addPlayer(ply, parent)
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
         if #opts > 0 then
-            local frame = vgui.Create("liaFrame")
+            local frame = vgui.Create("liaFrame", self)
             frame:SetSize(300, 450)
             frame:Center()
             frame:MakePopup()
