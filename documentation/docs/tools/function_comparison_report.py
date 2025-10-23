@@ -1053,7 +1053,7 @@ class FunctionComparisonReportGenerator:
             hook_name = m.group(2).strip()
             params_str = (m.group(3) or '').strip()
             params = [p.strip() for p in params_str.split(',') if p.strip()]
-            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
                 existing = signatures.get(hook_name)
                 if not existing or len(params) > len(existing):
                     signatures[hook_name] = params
@@ -1063,7 +1063,7 @@ class FunctionComparisonReportGenerator:
             hook_name = m.group(1).strip()
             params_str = (m.group(2) or '').strip()
             params = [p.strip() for p in params_str.split(',') if p.strip()]
-            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
                 existing = signatures.get(hook_name)
                 if not existing or len(params) > len(existing):
                     signatures[hook_name] = params
@@ -1073,7 +1073,7 @@ class FunctionComparisonReportGenerator:
             hook_name = m.group(1).strip()
             params_str = (m.group(2) or '').strip()
             params = [p.strip() for p in params_str.split(',') if p.strip()]
-            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
                 existing = signatures.get(hook_name)
                 if not existing or len(params) > len(existing):
                     signatures[hook_name] = params
@@ -1083,7 +1083,7 @@ class FunctionComparisonReportGenerator:
             hook_name = m.group(1).strip()
             params_str = (m.group(2) or '').strip()
             params = [p.strip() for p in params_str.split(',') if p.strip()]
-            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST and params:
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
                 existing = signatures.get(hook_name)
                 if not existing or len(params) > len(existing):
                     signatures[hook_name] = params
@@ -1108,6 +1108,14 @@ class FunctionComparisonReportGenerator:
                     if (not existing or len(names) > len(existing)
                         or (len(names) == len(existing) and self._are_generic_names(existing) and not self._are_generic_names(names))):
                         signatures[hook_name] = names
+
+        # Handle hook.Run("HookName") with no arguments
+        for m in re.finditer(r'hook\.Run\s*\(\s*([\'"`])([^\'"`]+)\1\s*\)', content):
+            hook_name = m.group(2).strip()
+            if hook_name and hook_name not in GMOD_HOOKS_BLACKLIST:
+                existing = signatures.get(hook_name)
+                if not existing:
+                    signatures[hook_name] = []
 
         return signatures
 

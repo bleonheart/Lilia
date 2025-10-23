@@ -124,14 +124,13 @@ def parse_comment_block(comment_text):
             elif current_example and line.strip().startswith('```'):
                 # Start or end of code block
                 if not current_example['code']:
-                    # Start of code block
-                    current_example['code'].append(line)
+                    # Start of code block - skip the ```lua line
+                    current_example['in_code_block'] = True
                 else:
                     # End of code block
-                    current_example['code'].append(line)
                     parsed['examples'].append(current_example)
                     current_example = None
-            elif current_example and current_example['code']:
+            elif current_example and current_example.get('in_code_block', False):
                 # Inside code block - add the line
                 current_example['code'].append(line)
 
@@ -238,8 +237,8 @@ def find_functions_in_file(file_path):
     for match in re.finditer(comment_pattern, content, re.DOTALL):
         comments.append((match.start(), match.end(), match.group(0)))
 
-    # Find all function definitions (including meta methods and namespaced functions)
-    func_pattern = r'function\s+([\w\.:]+)\s*\('
+    # Find all function definitions (excluding local functions)
+    func_pattern = r'(?<!local\s)function\s+([\w\.:]+)\s*\('
     for match in re.finditer(func_pattern, content):
         func_name = match.group(1)
         func_line = content[:match.start()].count('\n') + 1

@@ -1115,25 +1115,6 @@ function MODULE:InitializedModules()
     self.adminStickCategoryOrder = categoryOrder
 end
 
-function MODULE:AddAdminStickCategory(key, data, index)
-    self.adminStickCategories = self.adminStickCategories or {}
-    self.adminStickCategories[key] = data
-    self.adminStickCategoryOrder = self.adminStickCategoryOrder or {}
-    if index then
-        table.insert(self.adminStickCategoryOrder, index, key)
-    else
-        table.insert(self.adminStickCategoryOrder, key)
-    end
-end
-
-function MODULE:AddAdminStickSubCategory(catKey, subKey, data)
-    self.adminStickCategories = self.adminStickCategories or {}
-    local category = self.adminStickCategories[catKey]
-    if not category then return end
-    category.subcategories = category.subcategories or {}
-    category.subcategories[subKey] = data
-end
-
 local function GetSubMenuIcon(name)
     if subMenuIcons[name] then return subMenuIcons[name] end
     local baseKey = name:match("^([^%(]+)") or name
