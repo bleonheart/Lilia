@@ -148,7 +148,7 @@ function PANEL:Init()
         if lia.config.get("ClassHeaders", true) and lia.config.get("ClassDisplay", true) and lia.class and lia.class.list then
             for clsID, clsData in pairs(lia.class.list) do
                 if clsData.faction ~= facID then continue end
-                if clsData.scoreboardHidden then
+                if clsData.scoreboardHidden or hook.Run("ShouldShowClassOnScoreboard", clsData) == false then
                     local lst = facCont:Add("DListLayout")
                     lst:Dock(TOP)
                     facCont.classLists[clsID] = lst
@@ -208,7 +208,7 @@ end
 function PANEL:Think()
     if (self.nextUpdate or 0) > CurTime() then return end
     for _, ply in player.Iterator() do
-        if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false or (lia.faction.indices[ply:Team()] and lia.faction.indices[ply:Team()].scoreboardHidden) then continue end
+        if hook.Run("ShouldShowPlayerOnScoreboard", ply) == false or hook.Run("ShouldShowFactionOnScoreboard", ply) == false or (lia.faction.indices[ply:Team()] and lia.faction.indices[ply:Team()].scoreboardHidden) then continue end
         local char = ply:getChar()
         if not char then continue end
         local facCont = self.factionLists[ply:Team()]
@@ -430,7 +430,7 @@ function PANEL:addPlayer(ply, parent)
         end
 
         local clsData = lia.class.list[char:getClass()]
-        local showLogo = lia.config.get("ClassLogo", false) and clsData and not clsData.scoreboardHidden and clsData.logo and clsData.logo ~= ""
+        local showLogo = lia.config.get("ClassLogo", false) and clsData and not clsData.scoreboardHidden and hook.Run("ShouldShowClassOnScoreboard", clsData) ~= false and clsData.logo and clsData.logo ~= ""
         if showLogo then
             local logoMat = clsData.logo
             if self.lastClassLogo ~= logoMat then

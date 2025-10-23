@@ -395,3 +395,76 @@ This page documents the hook functions available in the Lilia framework.
 
 ---
 
+### ShouldShowPlayerOnScoreboard
+
+**Description:** Called to determine if a player should be shown on the scoreboard.
+
+**Realm:** Client
+
+**Parameters:**
+
+* `ply` (*Player*): The player to check visibility for
+
+**Returns:** `false` to hide the player, any other value (including `nil`) to show the player
+
+**Example Usage:**
+```lua
+hook.Add("ShouldShowPlayerOnScoreboard", "HideAdmins", function(ply)
+    -- Hide staff members from regular players
+    if ply:isStaffOnDuty() and not LocalPlayer():isStaffOnDuty() then
+        return false
+    end
+end)
+```
+
+---
+
+### ShouldShowFactionOnScoreboard
+
+**Description:** Called to determine if a faction should be shown on the scoreboard for a specific player.
+
+**Realm:** Client
+
+**Parameters:**
+
+* `ply` (*Player*): The player to check faction visibility for
+
+**Returns:** `false` to hide the player's faction, any other value (including `nil`) to show the faction
+
+**Example Usage:**
+```lua
+hook.Add("ShouldShowFactionOnScoreboard", "HidePoliceFaction", function(ply)
+    -- Hide police faction from non-police players
+    local char = ply:getChar()
+    if char and char:getFaction() == FACTION_POLICE and not LocalPlayer():getChar():getFaction() == FACTION_POLICE then
+        return false
+    end
+end)
+```
+
+---
+
+### ShouldShowClassOnScoreboard
+
+**Description:** Called to determine if a class should be shown on the scoreboard.
+
+**Realm:** Client
+
+**Parameters:**
+
+* `classData` (*table*): The class data table to check visibility for
+
+**Returns:** `false` to hide the class, any other value (including `nil`) to show the class
+
+**Example Usage:**
+```lua
+hook.Add("ShouldShowClassOnScoreboard", "HideEliteClasses", function(classData)
+    -- Hide elite classes from regular players
+    if classData.isWhitelisted and not LocalPlayer():hasPrivilege("seeEliteClasses") then
+        return false
+    end
+end)
+```
+
+---
+
