@@ -81,11 +81,13 @@ MODULE.version = 0
 MODULE.versionID = ""
 --[[
     MODULE.uniqueID
-    Purpose: Sets the unique identifier for the module
+    Purpose: Unique identifier for the module (INTERNAL - set automatically when loaded)
+    When Called: Set automatically during module loading
+    Note: This property is internal and should not be modified directly
     Example Usage:
         ```lua
-        -- Set a unique identifier for the module
-        MODULE.uniqueID = "inventory"
+        -- This is set automatically when the module is loaded from its folder name
+        -- Module in folder "inventory" will have uniqueID = "inventory"
         ```
 ]]
 MODULE.uniqueID = ""

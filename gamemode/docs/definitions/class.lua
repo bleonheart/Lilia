@@ -10,13 +10,25 @@
     Overview:
     The class system provides comprehensive functionality for defining character classes
     within the Lilia framework. Classes represent specific roles or professions that
-    characters can assume within factions, each with unique properties, behaviors, and
-    restrictions. The system supports both server-side logic for gameplay mechanics
-    and client-side properties for user interface and experience.
+    characters can assume within factions, creating a hierarchical structure where
+    factions serve as parent containers for classes.
 
-    **Important:** CLASS settings overpower the ones from faction. This means that any
-    properties defined in a class will take precedence over the same properties defined
-    in the parent faction.
+    **Faction-Class Relationship:**
+    - **Factions** are the main organizational units (Citizens, Police, Medical, etc.)
+    - **Classes** are sub-divisions within factions (Officer, Detective, Captain within Police)
+    - Each character belongs to exactly ONE faction and ONE class within that faction
+    - Classes inherit all properties from their parent faction by default
+    - **CLASS settings overpower FACTION settings** - any property defined in a class
+      takes precedence over the same property in the parent faction
+
+    **Example Hierarchy:**
+    ```
+    Faction: Police Department
+    ├── Class: Police Officer (inherits police models, weapons, color)
+    ├── Class: Police Detective (inherits police properties, overrides with detective-specific items)
+    ├── Class: Police Captain (inherits police properties, overrides with command-specific permissions)
+    └── Class: SWAT Officer (inherits police properties, overrides with tactical gear)
+    ```
 
     Classes are defined using the CLASS table structure, which includes properties for
     identification, visual representation, gameplay mechanics, and access control. The
@@ -132,8 +144,9 @@ CLASS.scoreboardHidden = false
 CLASS.pay = 0
 --[[
     CLASS.uniqueID
-    Purpose: Unique identifier for the class (set automatically when registered)
+    Purpose: Unique identifier for the class (INTERNAL - set automatically when registered)
     When Called: Set automatically during class registration
+    Note: This property is internal and should not be modified directly
     Example Usage:
         ```lua
         -- This is set automatically when you register the class
@@ -157,7 +170,7 @@ CLASS.uniqueID = ""
         })
         ```
 ]]
-CLASS.index = 0
+CLASS.index = FACTION_EXAMPLE
 --[[
     CLASS.Color
     Purpose: Sets the team/class color for UI elements and identification

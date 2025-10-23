@@ -1474,13 +1474,13 @@ class FunctionComparisonReportGenerator:
             if undoc_hooks:
                 lines.append("- **Undocumented Hooks:**")
                 for h in undoc_hooks:
-                    lines.append(f"  - `{h}(args)`")
+                    lines.append(f"  - `{h}()`")
             if undoc_functions:
                 if undoc_hooks:
                     lines.append("")
                 lines.append("- **Undocumented lia.* Functions:**")
                 for f in undoc_functions:
-                    lines.append(f"  - `{f}(args)`")
+                    lines.append(f"  - `{f}()`")
             lines.append("")
 
         # Summary table
@@ -1874,7 +1874,7 @@ class FunctionComparisonReportGenerator:
                 "",
             ])
             for func in sorted(uncategorized):
-                lines.append(f"- `{func}`")
+                lines.append(f"- `{func}()`")
             lines.append("")
 
         return lines
@@ -1909,14 +1909,14 @@ class FunctionComparisonReportGenerator:
                     param_str = ', '.join(params)
                     lines.append(f"- `{hook}({param_str})`")
                 else:
-                    lines.append(f"- `{hook}(args)`")
+                    lines.append(f"- `{hook}()`")
             lines.append("")
 
         if unused_hooks:
             lines.append("### Unused Hook Documentation:")
             lines.append("These hooks are documented but not registered in code:")
             for hook in sorted(unused_hooks):
-                lines.append(f"- `{hook}(args)`")
+                lines.append(f"- `{hook}()`")
             lines.append("")
 
 
@@ -1945,13 +1945,13 @@ class FunctionComparisonReportGenerator:
         if panels_missing:
             lines.append("### Missing Panel Documentation:")
             for panel in sorted(panels_missing):
-                lines.append(f"- `{panel}`")
+                lines.append(f"- `{panel}()`")
             lines.append("")
 
         if data.panels_documented:
             lines.append("### Documented Panels:")
             for panel in sorted(data.panels_documented):
-                lines.append(f"- `{panel}`")
+                lines.append(f"- `{panel}()`")
             lines.append("")
 
         return lines
@@ -2065,7 +2065,7 @@ class FunctionComparisonReportGenerator:
                     if missing_keys:
                         lines.append(f"  - **From {other_lang.title()}:** {len(missing_keys)} keys")
                         for key in missing_keys:
-                            lines.append(f"    - `{key}`")
+                            lines.append(f"    - `{key}()`")
                 lines.append("")
             else:
                 lines.append("- **No missing keys from other languages**")
