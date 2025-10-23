@@ -15,7 +15,7 @@
 end)
 
 local ulxCommands = {
-    kick = function(id, dur, reason) RunConsoleCommand("ulx", "kick", id, reason or "") end,
+    kick = function(id, _, reason) RunConsoleCommand("ulx", "kick", id, reason or "") end,
     ban = function(id, dur, reason) RunConsoleCommand("ulx", "banid", id, tostring(dur or 0), reason or "") end,
     unban = function(id) RunConsoleCommand("ulx", "unban", id) end,
     mute = function(id) RunConsoleCommand("ulx", "mute", id) end,

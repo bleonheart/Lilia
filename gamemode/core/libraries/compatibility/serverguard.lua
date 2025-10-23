@@ -57,7 +57,7 @@ if SERVER then
 else
     RegisterPrivileges()
     local sgCommands = {
-        kick = function(id, dur, reason) RunConsoleCommand("serverguard", "kick", id, reason or "") end,
+        kick = function(id, _, reason) RunConsoleCommand("serverguard", "kick", id, reason or "") end,
         ban = function(id, dur, reason) RunConsoleCommand("serverguard", "ban", id, tostring(dur or 0), reason or "") end,
         unban = function(id) RunConsoleCommand("serverguard", "unban", id) end,
         mute = function(id, dur) RunConsoleCommand("serverguard", "mute", id, tostring(dur or 0)) end,
