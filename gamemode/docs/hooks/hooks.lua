@@ -1,4 +1,18 @@
 --[[
+    Lilia Framework Hooks
+
+    Comprehensive hook system for the Lilia framework.
+]]
+--[[
+    Overview:
+    The Lilia framework provides an extensive hook system that allows developers
+    to extend and customize the gamemode's behavior. Hooks are categorized into
+    three main types: Server-side hooks, Client-side hooks, and Shared hooks.
+
+    All hooks follow the standard Garry's Mod hook system and can be overridden
+    or extended by addons and modules to customize the framework's behavior.
+]]
+--[[
     Purpose: Loads attribute definitions from a specified directory and registers them in the attributes system
     When Called: During gamemode initialization or when loading attribute modules
     Parameters: directory (string) - The directory path to search for attribute files
@@ -463,7 +477,7 @@ end
     ```
 ]]
 --
-function CanBeTransfered(targetChar, faction, arg3)
+function CanBeTransfered(targetChar, faction, client)
 end
 
 --[[
@@ -502,7 +516,7 @@ end
     ```
 ]]
 --
-function CanCharBeTransfered(targetChar, faction, arg3)
+function CanCharBeTransfered(targetChar, faction, client)
 end
 
 --[[
@@ -541,7 +555,7 @@ end
     ```
 ]]
 --
-function CanDeleteChar(_, character)
+function CanDeleteChar(client, character)
 end
 
 --[[
@@ -697,7 +711,7 @@ end
     ```
 ]]
 --
-function CanItemBeTransfered(nestedItem, bagInventory, bagInventory, arg4)
+function CanItemBeTransfered(item, fromInventory, toInventory, client)
 end
 
 --[[
@@ -1204,7 +1218,7 @@ end
     ```
 ]]
 --
-function CanPlayerHoldObject(_, entity)
+function CanPlayerHoldObject(client, entity)
 end
 
 --[[
@@ -1906,7 +1920,7 @@ end
     ```
 ]]
 --
-function CanPlayerUseDoor(_, door)
+function CanPlayerUseDoor(client, door)
 end
 
 --[[
@@ -3934,7 +3948,7 @@ end
     ```
 ]]
 --
-function DrawCharInfo(c, _, info)
+function DrawCharInfo(client, character, info)
 end
 
 --[[
@@ -4012,7 +4026,7 @@ end
     ```
 ]]
 --
-function DrawEntityInfo(e, a, pos)
+function DrawEntityInfo(entity, alpha, position)
 end
 
 --[[
