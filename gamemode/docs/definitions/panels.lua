@@ -24,445 +24,445 @@
     Explanation of Panel: A panel that shows and allows editing of character biography text
     When Used: In character creation, character info display, or biography editing interfaces
 ]]
-Panel liaCharacterBiography
+liaCharacterBiography
 
 --[[
     Purpose: Displays and manages character faction selection
     Explanation of Panel: A panel for selecting and displaying character factions
     When Used: During character creation or faction management interfaces
 ]]
-Panel liaCharacterFaction
+liaCharacterFaction
 
 --[[
     Purpose: Displays character model with customization options
     Explanation of Panel: A model panel specifically designed for character model display and customization
     When Used: In character creation, model selection, or character preview interfaces
 ]]
-Panel liaCharacterModel
+liaCharacterModel
 
 --[[
     Purpose: Manages character background music selection
     Explanation of Panel: A panel for selecting and previewing background music for characters
     When Used: In character creation or settings interfaces
 ]]
-Panel liaCharBGMusic
+liaCharBGMusic
 
 --[[
     Purpose: Main character display and management panel
     Explanation of Panel: The primary panel for character information display and basic management
     When Used: In character selection, character info screens, or character management interfaces
 ]]
-Panel liaCharacter
+liaCharacter
 
 --[[
     Purpose: Character confirmation dialog
     Explanation of Panel: A confirmation panel for character-related actions
     When Used: When confirming character creation, deletion, or other character actions
 ]]
-Panel liaCharacterConfirm
+liaCharacterConfirm
 
 --[[
     Purpose: Character creation interface
     Explanation of Panel: The main panel for creating new characters
     When Used: During the character creation process
 ]]
-Panel liaCharacterCreation
+liaCharacterCreation
 
 --[[
     Purpose: Individual character creation step
     Explanation of Panel: A panel representing a single step in character creation
     When Used: As part of the character creation process
 ]]
-Panel liaCharacterCreateStep
+liaCharacterCreateStep
 
 --[[
     Purpose: Displays attribute progress bar
     Explanation of Panel: A progress bar specifically designed for displaying attribute values
     When Used: In character creation, attribute display, or skill interfaces
 ]]
-Panel liaAttribBar
+liaAttribBar
 
 --[[
     Purpose: Character attributes management panel
     Explanation of Panel: A panel for managing and displaying character attributes
     When Used: In character creation, attribute allocation, or character info screens
 ]]
-Panel liaCharacterAttribs
+liaCharacterAttribs
 
 --[[
     Purpose: Individual attribute row in attributes panel
     Explanation of Panel: A single row representing one attribute with controls
     When Used: As part of the character attributes panel
 ]]
-Panel liaCharacterAttribsRow
+liaCharacterAttribsRow
 
 --[[
     Purpose: Styled button with Lilia theming
     Explanation of Panel: A custom button panel with Lilia's visual styling and effects
     When Used: Throughout the UI for interactive elements
 ]]
-Panel liaButton
+liaButton
 
 --[[
     Purpose: Category header for organizing UI elements
     Explanation of Panel: A collapsible category header for grouping related UI elements
     When Used: In settings panels, option menus, or any organized interface
 ]]
-Panel liaCategory
+liaCategory
 
 --[[
     Purpose: Main chat interface
     Explanation of Panel: The primary chat system interface with message display and input
     When Used: For all chat communication in the game
 ]]
-Panel liaChatBox
+liaChatBox
 
 --[[
     Purpose: Custom checkbox with Lilia styling
     Explanation of Panel: A toggle checkbox with custom visual design
     When Used: For boolean options, settings, or toggles
 ]]
-Panel liaCheckbox
+liaCheckbox
 
 --[[
     Purpose: Simple checkbox variant
     Explanation of Panel: A simplified checkbox without complex styling
     When Used: For basic boolean inputs where simple styling is preferred
 ]]
-Panel liaSimpleCheckbox
+liaSimpleCheckbox
 
 --[[
     Purpose: Character information display
     Explanation of Panel: A panel for displaying detailed character information
     When Used: In character selection, info screens, or character management
 ]]
-Panel liaCharInfo
+liaCharInfo
 
 --[[
     Purpose: Menu container panel
     Explanation of Panel: A container panel designed for menu layouts
     When Used: For main menus, submenus, or menu-based interfaces
 ]]
-Panel liaMenu
+liaMenu
 
 --[[
     Purpose: Character class selection
     Explanation of Panel: A panel for selecting character classes or jobs
     When Used: In character creation or class selection interfaces
 ]]
-Panel liaClasses
+liaClasses
 
 --[[
     Purpose: Dropdown combo box
     Explanation of Panel: A dropdown selection box with custom styling
     When Used: For selecting from multiple options
 ]]
-Panel liaComboBox
+liaComboBox
 
 --[[
     Purpose: Custom context menu
     Explanation of Panel: A styled context menu for right-click actions
     When Used: For context menus, right-click menus, or popup menus
 ]]
-Panel liaDermaMenu
+liaDermaMenu
 
 --[[
     Purpose: Custom list view
     Explanation of Panel: A styled list view with custom theming
     When Used: For displaying lists of items, data, or options
 ]]
-Panel liaDListView
+liaDListView
 
 --[[
     Purpose: Door interaction menu
     Explanation of Panel: A specialized menu for door interactions
     When Used: When interacting with doors or similar entities
 ]]
-Panel liaDoorMenu
+liaDoorMenu
 
 --[[
     Purpose: Progress bar with custom styling
     Explanation of Panel: A progress bar with Lilia theming and animations
     When Used: For loading bars, progress indicators, or value displays
 ]]
-Panel liaDProgressBar
+liaDProgressBar
 
 --[[
     Purpose: Text input entry field
     Explanation of Panel: A styled text input field with custom theming
     When Used: For text input, forms, or data entry
 ]]
-Panel liaEntry
+liaEntry
 
 --[[
     Purpose: Main frame container
     Explanation of Panel: The primary frame panel with title bar, close button, and theming
     When Used: As the main container for most UI windows and dialogs
 ]]
-Panel liaFrame
+liaFrame
 
 --[[
     Purpose: Item list display
     Explanation of Panel: A panel for displaying lists of items with icons and information
     When Used: In inventory interfaces, item selection, or item browsing
 ]]
-Panel liaItemList
+liaItemList
 
 --[[
     Purpose: Item selection interface
     Explanation of Panel: A specialized panel for selecting items from a list
     When Used: In item trading, crafting, or selection interfaces
 ]]
-Panel liaItemSelector
+liaItemSelector
 
 --[[
     Purpose: Horizontal scroll container
     Explanation of Panel: A container that provides horizontal scrolling
     When Used: For horizontal layouts that need scrolling
 ]]
-Panel liaHorizontalScroll
+liaHorizontalScroll
 
 --[[
     Purpose: Horizontal scroll bar
     Explanation of Panel: A horizontal scroll bar control
     When Used: With horizontal scroll panels
 ]]
-Panel liaHorizontalScrollBar
+liaHorizontalScrollBar
 
 --[[
     Purpose: Item icon display
     Explanation of Panel: A panel for displaying item icons with tooltips
     When Used: In inventory, item lists, or item displays
 ]]
-Panel liaItemIcon
+liaItemIcon
 
 --[[
     Purpose: Tab button for tabbed interfaces
     Explanation of Panel: A button designed for tab navigation
     When Used: In tabbed interfaces or tab navigation
 ]]
-Panel liaTabButton
+liaTabButton
 
 --[[
     Purpose: Loading failure display
     Explanation of Panel: A panel shown when loading fails
     When Used: When content fails to load
 ]]
-Panel liaLoadingFailure
+liaLoadingFailure
 
 --[[
     Purpose: 3D model display panel
     Explanation of Panel: A panel for displaying 3D models with camera controls
     When Used: For model previews, character display, or 3D content
 ]]
-Panel liaModelPanel
+liaModelPanel
 
 --[[
     Purpose: Facing model panel for character display
     Explanation of Panel: A specialized model panel that faces the camera
     When Used: For character portraits or facing displays
 ]]
-Panel liaFacingModelPanel
+liaFacingModelPanel
 
 --[[
     Purpose: Notification display
     Explanation of Panel: A panel for displaying notifications or alerts
     When Used: For system notifications, alerts, or messages
 ]]
-Panel liaNotice
+liaNotice
 
 --[[
     Purpose: Notice panel container
     Explanation of Panel: A container for multiple notice panels
     When Used: For managing multiple notifications
 ]]
-Panel liaNoticePanel
+liaNoticePanel
 
 --[[
     Purpose: Numeric slider control
     Explanation of Panel: A slider for numeric value input
     When Used: For numeric input with visual feedback
 ]]
-Panel liaNumSlider
+liaNumSlider
 
 --[[
     Purpose: Blurred frame background
     Explanation of Panel: A frame with blurred background effect
     When Used: For modal dialogs or overlay frames
 ]]
-Panel liaBlurredDFrame
+liaBlurredDFrame
 
 --[[
     Purpose: Semi-transparent frame
     Explanation of Panel: A frame with semi-transparent background
     When Used: For overlay panels or semi-transparent windows
 ]]
-Panel liaSemiTransparentDFrame
+liaSemiTransparentDFrame
 
 --[[
     Purpose: Semi-transparent panel
     Explanation of Panel: A panel with semi-transparent background
     When Used: For overlay elements or semi-transparent containers
 ]]
-Panel liaSemiTransparentDPanel
+liaSemiTransparentDPanel
 
 --[[
     Purpose: Quick settings panel
     Explanation of Panel: A panel for quick access to settings and options
     When Used: For quick settings access or option panels
 ]]
-Panel liaQuick
+liaQuick
 
 --[[
     Purpose: Privilege row display
     Explanation of Panel: A row displaying privilege information
     When Used: In admin panels or privilege management
 ]]
-Panel liaPrivilegeRow
+liaPrivilegeRow
 
 --[[
     Purpose: Radial panel for circular layouts
     Explanation of Panel: A panel that arranges children in a radial pattern
     When Used: For radial menus, circular layouts, or radial interfaces
 ]]
-Panel liaRadialPanel
+liaRadialPanel
 
 --[[
     Purpose: Player scoreboard
     Explanation of Panel: A panel displaying player scores and information
     When Used: For displaying player rankings, scores, or statistics
 ]]
-Panel liaScoreboard
+liaScoreboard
 
 --[[
     Purpose: Scrollable panel container
     Explanation of Panel: A panel that provides vertical scrolling for content
     When Used: For content that exceeds panel size
 ]]
-Panel liaScrollPanel
+liaScrollPanel
 
 --[[
     Purpose: Tabbed sheet container
     Explanation of Panel: A container that manages multiple tabbed panels
     When Used: For organizing content into tabs
 ]]
-Panel liaSheet
+liaSheet
 
 --[[
     Purpose: Sliding box container
     Explanation of Panel: A container that slides content in and out
     When Used: For sliding panels or animated content
 ]]
-Panel liaSlideBox
+liaSlideBox
 
 --[[
     Purpose: Spawn icon display
     Explanation of Panel: A panel for displaying spawn icons with tooltips
     When Used: For entity spawning, model selection, or icon displays
 ]]
-Panel liaSpawnIcon
+liaSpawnIcon
 
 --[[
     Purpose: Data table display
     Explanation of Panel: A panel for displaying tabular data
     When Used: For data tables, lists, or structured information
 ]]
-Panel liaTable
+liaTable
 
 --[[
     Purpose: Tab navigation container
     Explanation of Panel: A container that manages tab navigation
     When Used: For tabbed interfaces or navigation
 ]]
-Panel liaTabs
+liaTabs
 
 --[[
     Purpose: User group button
     Explanation of Panel: A button representing a user group
     When Used: In admin panels or user management
 ]]
-Panel liaUserGroupButton
+liaUserGroupButton
 
 --[[
     Purpose: User group list
     Explanation of Panel: A list displaying user groups
     When Used: In admin panels or user management interfaces
 ]]
-Panel liaUserGroupList
+liaUserGroupList
 
 --[[
     Purpose: Voice panel for voice chat
     Explanation of Panel: A panel for voice chat controls and indicators
     When Used: For voice chat interfaces or voice controls
 ]]
-Panel liaVoicePanel
+liaVoicePanel
 
 --[[
     Purpose: Markup text display panel
     Explanation of Panel: A panel for displaying formatted markup text
     When Used: For rich text display, formatted content, or styled text
 ]]
-Panel liaMarkupPanel
+liaMarkupPanel
 
 --[[
     Purpose: Grid inventory item
     Explanation of Panel: A single item in a grid-based inventory
     When Used: In grid inventory displays
 ]]
-Panel liaGridInvItem
+liaGridInvItem
 
 --[[
     Purpose: Grid inventory panel
     Explanation of Panel: A panel displaying inventory in grid format
     When Used: For grid-based inventory systems
 ]]
-Panel liaGridInventoryPanel
+liaGridInventoryPanel
 
 --[[
     Purpose: Main inventory interface
     Explanation of Panel: The primary inventory management interface
     When Used: For inventory management and item handling
 ]]
-Panel liaInventory
+liaInventory
 
 --[[
     Purpose: Grid inventory container
     Explanation of Panel: A container for grid-based inventory systems
     When Used: As the main container for grid inventories
 ]]
-Panel liaGridInventory
+liaGridInventory
 
 --[[
     Purpose: Vendor interface
     Explanation of Panel: A panel for vendor interactions and trading
     When Used: For NPC vendors, trading interfaces, or shops
 ]]
-Panel liaVendor
+liaVendor
 
 --[[
     Purpose: Vendor item display
     Explanation of Panel: A panel for displaying individual vendor items
     When Used: In vendor interfaces for item display
 ]]
-Panel liaVendorItem
+liaVendorItem
 
 --[[
     Purpose: Vendor editor interface
     Explanation of Panel: A panel for editing vendor settings and items
     When Used: In admin panels for vendor management
 ]]
-Panel liaVendorEditor
+liaVendorEditor
 
 --[[
     Purpose: Vendor faction editor
     Explanation of Panel: A panel for editing vendor faction restrictions
     When Used: In admin panels for vendor faction management
 ]]
-Panel liaVendorFactionEditor
+liaVendorFactionEditor
 
 --[[
     Purpose: Vendor bodygroup editor
     Explanation of Panel: A panel for editing vendor bodygroup settings
     When Used: In admin panels for vendor appearance management
 ]]
-Panel liaVendorBodygroupEditor
+liaVendorBodygroupEditor
