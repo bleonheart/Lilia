@@ -98,6 +98,47 @@ def parse_comment_block(comment_text):
             parsed['when_used'] = line[10:].strip()
         elif line.startswith('Parameters:'):
             current_section = 'parameters'
+            # Handle inline parameter on same line (e.g., "Parameters: name (Type): Description")
+            inline = line[len('Parameters:'):].strip()
+            if inline:
+                m = re.match(r'-\s*([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', inline)
+                if m:
+                    parsed['parameters'].append({'name': m.group(1), 'type': m.group(2), 'description': m.group(3)})
+                else:
+                    m = re.match(r'([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', inline)
+                    if m:
+                        parsed['parameters'].append({'name': m.group(1), 'type': m.group(2), 'description': m.group(3)})
+                    else:
+                        m = re.match(r'([A-Za-z_][\w]*)\s*-\s*([^:]+):\s*(.+)', inline)
+                        if m:
+                            parsed['parameters'].append({'name': m.group(1), 'type': m.group(2).strip(), 'description': m.group(3)})
+        elif current_section == 'parameters':
+            # Parse parameter lines (various formats)
+            if line.strip() and not line.startswith('--'):
+                # Bullet: - name (Type): Description
+                m = re.match(r'-\s*([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', line)
+                if m:
+                    parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                else:
+                    # Bullet without type: - name: Description
+                    m = re.match(r'-\s*([A-Za-z_][\w]*)\s*:\s*(.+)', line)
+                    if m:
+                        parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
+                    else:
+                        # Inline no bullet: name (Type): Description
+                        m = re.match(r'([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', line)
+                        if m:
+                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                        else:
+                            # Simple: name - type: Description
+                            m = re.match(r'\s*([^\-\s]+)\s*-\s*([^:]+):\s*(.+)', line)
+                            if m:
+                                parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                            else:
+                                # Fallback: name - Description
+                                m = re.match(r'\s*([^\-\s]+)\s*-\s*(.+)', line)
+                                if m:
+                                    parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
         elif line.startswith('Returns:'):
             current_section = 'returns'
             # Extract returns info (format varies)
@@ -112,26 +153,6 @@ def parse_comment_block(comment_text):
             parsed['explanation'] = line[len('Explanation of Panel:'):].strip()
         elif line.startswith('Example Usage:'):
             current_section = 'examples'
-        elif current_section == 'parameters':
-            # Parse parameter lines (various formats)
-            if line.strip() and not line.startswith('*') and not line.startswith('--'):
-                # Simple format: param - type: Description
-                param_match = re.match(r'\s*([^-\s]+)\s*-\s*([^:]+):\s*(.+)', line)
-                if param_match:
-                    parsed['parameters'].append({
-                        'name': param_match.group(1).strip(),
-                        'type': param_match.group(2).strip(),
-                        'description': param_match.group(3).strip()
-                    })
-                else:
-                    # Alternative format or continuation
-                    param_match = re.match(r'\s*([^-\s]+)\s*-\s*(.+)', line)
-                    if param_match:
-                        parsed['parameters'].append({
-                            'name': param_match.group(1).strip(),
-                            'type': 'unknown',
-                            'description': param_match.group(2).strip()
-                        })
         elif current_section == 'examples':
             # Handle example sections
             complexity_match = re.match(r'(\w+)\s+Complexity:', line)
@@ -211,25 +232,32 @@ def parse_overview_section(overview_text):
     # Remove "Overview:" prefix if present
     content = re.sub(r'^\s*Overview:\s*', '', content, flags=re.MULTILINE)
 
-    lines = content.split('\n')
+    raw_lines = content.split('\n')
     formatted_lines = []
 
-    for line in lines:
-        line = line.strip()
-        # Skip empty lines
-        if not line:
+    for raw in raw_lines:
+        # Remove leading per-line comment markers
+        line = re.sub(r'^\s*--\s*', '', raw.rstrip())
+        # Preserve blank lines as paragraph breaks
+        if not line.strip():
+            formatted_lines.append('')
             continue
-        # Remove leading comment dashes and whitespace
-        line = re.sub(r'^--\s*', '', line)
-        if line:
-            formatted_lines.append(line)
+        line = re.sub(r'[ \t]+', ' ', line.strip())
+        formatted_lines.append(line)
 
-    # Join the lines and clean up extra whitespace
-    content = '\n'.join(formatted_lines)
-    content = re.sub(r'\s+', ' ', content)
-    content = content.strip()
+    # Collapse multiple blank lines to a single blank line
+    out_lines = []
+    blank = False
+    for ln in formatted_lines:
+        if ln == '':
+            if not blank:
+                out_lines.append('')
+                blank = True
+        else:
+            out_lines.append(ln)
+            blank = False
 
-    return content
+    return '\n\n'.join(out_lines).strip()
 
 
 def extract_function_name_from_comment(comment_text, file_path):
@@ -484,22 +512,24 @@ def parse_definition_property_blocks(file_path: Path, entity_prefixes: Tuple[str
     entries: List[Dict[str, object]] = []
 
     for block in comment_blocks:
-        # Attempt to find a first line that names the property, e.g. "CLASS.name" or "FACTION.limit"
+        # Clean block markers and pull first meaningful line
+        inner = re.sub(r'^\s*--\[\[', '', block.strip())
+        inner = re.sub(r'\]\]\s*$', '', inner)
         first_line = ''
-        for raw in block.strip().split('\n'):
-            s = raw.strip().lstrip('-').strip()
+        for raw in inner.split('\n'):
+            s = re.sub(r'^\s*--\s*', '', raw).strip()
             if s:
                 first_line = s
                 break
 
         prop_name = ''
         for prefix in entity_prefixes:
-            if first_line.startswith(prefix + '.'):
-                prop_name = first_line
+            m = re.match(rf'{prefix}\.([A-Za-z_][\w]*)', first_line)
+            if m:
+                prop_name = m.group(1)  # Only the property name (suffix)
                 break
 
         parsed = parse_comment_block(block)
-        # Fallback name when not in the first line but still a function below (rare in definitions)
         if not prop_name:
             prop_name = first_line or 'Unnamed'
 
