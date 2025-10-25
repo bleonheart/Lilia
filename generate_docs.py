@@ -50,14 +50,14 @@ def parse_comment_block(comment_text):
     Realm: [realm]
     Example Usage:
         Low Complexity:
-        ```lua
+    ```lua
         [code]
-        ```
+    ```
 
         Medium Complexity:
-        ```lua
+    ```lua
         [code]
-        ```
+    ```
     ]]
     """
 
@@ -79,6 +79,7 @@ def parse_comment_block(comment_text):
     example_complexity = None
 
     for line in lines:
+        original_line = line
         line = line.strip()
 
         # Skip comment markers and empty lines
@@ -115,30 +116,64 @@ def parse_comment_block(comment_text):
         elif current_section == 'parameters':
             # Parse parameter lines (various formats)
             if line.strip() and not line.startswith('--'):
-                # Bullet: - name (Type): Description
-                m = re.match(r'-\s*([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', line)
-                if m:
-                    parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
-                else:
-                    # Bullet without type: - name: Description
-                    m = re.match(r'-\s*([A-Za-z_][\w]*)\s*:\s*(.+)', line)
+                # First check if this is a new section header (even if indented)
+                if line.startswith('Returns:'):
+                    current_section = 'returns'
+                    parsed['returns'] = line[8:].strip()
+                elif line.startswith('Realm:'):
+                    current_section = 'realm'
+                    parsed['realm'] = line[6:].strip()
+                elif line.startswith('Example Usage:'):
+                    current_section = 'examples'
+                # Check if this line is indented (parameter) or a new section header
+                elif original_line.startswith('    ') or original_line.startswith('\t'):
+                    # Indented format: name (Type) - Description (common in hooks)
+                    m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*-\s*(.+)', original_line)
                     if m:
-                        parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
+                        parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
                     else:
-                        # Inline no bullet: name (Type): Description
-                        m = re.match(r'([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', line)
+                        # Fallback for indented lines without parentheses
+                        m = re.match(r'^\s+([A-Za-z_][\w]*)\s*-\s*(.+)', original_line)
                         if m:
-                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
+                else:
+                    # Not indented, might be a new section - reset current_section
+                    current_section = None
+                    # Continue processing this line as a potential new section
+                    if line.startswith('Returns:'):
+                        current_section = 'returns'
+                        parsed['returns'] = line[8:].strip()
+                    elif line.startswith('Realm:'):
+                        current_section = 'realm'
+                        parsed['realm'] = line[6:].strip()
+                    elif line.startswith('Example Usage:'):
+                        current_section = 'examples'
+                # If still in parameters section, try other formats
+                if current_section == 'parameters':
+                    # Bullet: - name (Type): Description
+                    m = re.match(r'-\s*([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', line)
+                    if m:
+                        parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                    else:
+                        # Bullet without type: - name: Description
+                        m = re.match(r'-\s*([A-Za-z_][\w]*)\s*:\s*(.+)', line)
+                        if m:
+                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
                         else:
-                            # Simple: name - type: Description
-                            m = re.match(r'\s*([^\-\s]+)\s*-\s*([^:]+):\s*(.+)', line)
+                            # Inline no bullet: name (Type): Description
+                            m = re.match(r'([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*:\s*(.+)', line)
                             if m:
                                 parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
                             else:
-                                # Fallback: name - Description
-                                m = re.match(r'\s*([^\-\s]+)\s*-\s*(.+)', line)
+                                # Simple: name - type: Description
+                                m = re.match(r'\s*([^\-\s]+)\s*-\s*([^:]+):\s*(.+)', line)
                                 if m:
-                                    parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
+                                    parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                                else:
+                                    # Fallback: name - Description
+                                    m = re.match(r'\s*([^\-\s]+)\s*-\s*(.+)', line)
+                                    if m:
+                                        parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
         elif line.startswith('Returns:'):
             current_section = 'returns'
             # Extract returns info (format varies)
@@ -153,9 +188,16 @@ def parse_comment_block(comment_text):
             parsed['explanation'] = line[len('Explanation of Panel:'):].strip()
         elif line.startswith('Example Usage:'):
             current_section = 'examples'
+        elif line.startswith('Example Item:'):
+            current_section = 'examples'
         elif current_section == 'examples':
-            # Handle example sections
-            complexity_match = re.match(r'(\w+)\s+Complexity:', line)
+            # Handle example sections - but only if we're not inside a code block
+            complexity_match = None
+            if not (current_example and current_example.get('in_code_block', False)):
+                complexity_match = re.match(r'(\w+)(?:\s+Complexity)?(?:\s+Example)?:', line)
+                # Also handle special cases like "Hook Implementation Example:"
+                if not complexity_match and 'Example:' in line:
+                    complexity_match = re.match(r'(.+?)\s+Example:', line)
             if complexity_match:
                 if current_example:
                     parsed['examples'].append(current_example)
@@ -165,18 +207,37 @@ def parse_comment_block(comment_text):
                     'complexity': example_complexity,
                     'code': []
                 }
+            elif not current_example and line.strip().startswith('```'):
+                # Start of code block without complexity - create default example
+                current_example = {
+                    'complexity': 'example',
+                    'code': []
+                }
+                current_example['in_code_block'] = True
             elif current_example and line.strip().startswith('```'):
                 # Start or end of code block
-                if not current_example['code']:
+                if not current_example.get('in_code_block', False):
                     # Start of code block - skip the ```lua line
                     current_example['in_code_block'] = True
                 else:
-                    # End of code block
-                    parsed['examples'].append(current_example)
-                    current_example = None
+                    # End of code block - but don't end the example yet
+                    # Only end the example if we encounter a new complexity level
+                    current_example['in_code_block'] = False
+                    # Add a blank line to separate multiple code blocks
+                    current_example['code'].append('')
             elif current_example and current_example.get('in_code_block', False):
-                # Inside code block - add the line
-                current_example['code'].append(line)
+                # Inside code block - check for complexity level in comments
+                if line.strip().startswith('--') and ':' in line:
+                    # Check if this is a complexity level comment like "-- Low:"
+                    complexity_match = re.match(r'--\s*(\w+):', line.strip())
+                    if complexity_match and complexity_match.group(1).lower() in ['low', 'medium', 'high']:
+                        # This is a complexity level comment, update the current example
+                        current_example['complexity'] = complexity_match.group(1).lower()
+                # Add the line to code (preserve original indentation from original_line)
+                # Remove the leading whitespace that was added by the comment block indentation
+                # but preserve the relative indentation within the code block
+                # Strip only trailing whitespace, keep leading indentation
+                current_example['code'].append(original_line.rstrip())
 
     # Add final example if exists
     if current_example:
@@ -222,6 +283,40 @@ def parse_file_header(header_text):
     return ""
 
 
+def format_lua_code(code_lines):
+    """
+    Format Lua code blocks with proper indentation and spacing.
+    """
+    if not code_lines:
+        return code_lines
+    
+    # Find the minimum indentation (excluding empty lines)
+    min_indent = float('inf')
+    for line in code_lines:
+        stripped = line.strip()
+        if stripped:  # Skip only empty lines
+            indent = len(line) - len(line.lstrip())
+            min_indent = min(min_indent, indent)
+    
+    # If no valid indentation found, return as-is
+    if min_indent == float('inf') or min_indent == 0:
+        return code_lines
+    
+    # Remove the minimum indentation from all lines
+    formatted_lines = []
+    for line in code_lines:
+        stripped = line.strip()
+        if stripped:  # Non-empty line
+            if len(line) >= min_indent:
+                formatted_lines.append(line[min_indent:])
+            else:
+                formatted_lines.append(line)
+        else:  # Empty line
+            formatted_lines.append('')
+    
+    return formatted_lines
+
+
 def parse_overview_section(overview_text):
     """
     Parse and format the overview section comment.
@@ -257,7 +352,11 @@ def parse_overview_section(overview_text):
             out_lines.append(ln)
             blank = False
 
-    return '\n\n'.join(out_lines).strip()
+    # Join with single newlines, then replace double newlines with paragraph breaks
+    result = '\n'.join(out_lines).strip()
+    # Replace multiple newlines with double newlines for proper paragraph spacing
+    result = re.sub(r'\n{3,}', '\n\n', result)
+    return result
 
 
 def extract_function_name_from_comment(comment_text, file_path):
@@ -366,7 +465,8 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
             complexity = example['complexity'].title()
             md += f'**{complexity} Complexity:**\n'
             md += '```lua\n'
-            md += '\n'.join(example['code'])
+            formatted_code = format_lua_code(example['code'])
+            md += '\n'.join(formatted_code)
             md += '\n```\n\n'
 
     return md
@@ -392,10 +492,10 @@ def find_comment_blocks_in_file(file_path):
     for match in re.finditer(comment_pattern, content, re.DOTALL):
         comment_text = match.group(0)
         # Check if this comment block has the structured format we expect (function comments)
-        if any(header in comment_text for header in ['Purpose:', 'When Called:', 'When Used:', 'Parameters:', 'Returns:', 'Realm:', 'Explanation of Panel:', 'Example Usage:']):
+        if any(header in comment_text for header in ['Purpose:', 'When Called:', 'When Used:', 'Parameters:', 'Returns:', 'Realm:', 'Explanation of Panel:', 'Example Usage:', 'Example Item:']):
             comment_blocks.append(comment_text)
         # Check if this is a file header (first comment block that doesn't have function structure or overview)
-        elif file_header is None and not any(header in comment_text for header in ['Purpose:', 'When Called:', 'Parameters:', 'Returns:', 'Realm:', 'Example Usage:', 'Overview:']):
+        elif file_header is None and not any(header in comment_text for header in ['Purpose:', 'When Called:', 'Parameters:', 'Returns:', 'Realm:', 'Example Usage:', 'Overview:', 'Example Item:']):
             file_header = comment_text
         # Check if this is an overview section (contains "Overview:")
         elif 'Overview:' in comment_text and overview_section is None:
@@ -576,11 +676,21 @@ def generate_markdown_for_definition_entries(title: str, subtitle: str, overview
         if parsed.get('examples'):
             md_parts.append('**Example Usage**\n\n')
             for example in parsed['examples']:
-                complexity = (example.get('complexity') or 'Example').title()
-                md_parts.append(f'**{complexity} Complexity:**\n')
-                md_parts.append('```lua\n')
-                md_parts.append('\n'.join(example.get('code', [])))
-                md_parts.append('\n```\n\n')
+                complexity = example.get('complexity', 'example')
+                if complexity == 'example':
+                    # Simple example without complexity level
+                    md_parts.append('```lua\n')
+                    formatted_code = format_lua_code(example.get('code', []))
+                    md_parts.append('\n'.join(formatted_code))
+                    md_parts.append('\n```\n\n')
+                else:
+                    # Complex example with complexity level
+                    complexity_title = complexity.title()
+                    md_parts.append(f'**{complexity_title} Complexity:**\n')
+                    md_parts.append('```lua\n')
+                    formatted_code = format_lua_code(example.get('code', []))
+                    md_parts.append('\n'.join(formatted_code))
+                    md_parts.append('\n```\n\n')
         md_parts.append('---\n\n')
 
     return ''.join(md_parts)
@@ -653,14 +763,25 @@ def generate_documentation_for_panels(file_path: Path, output_path: Path) -> Non
 def generate_documentation_for_definitions_file(file_path: Path, output_dir: Path) -> None:
     name = file_path.stem.lower()
     output_filename = f'{name}.md'
-    output_path = output_dir / output_filename
+    
+    # Check if this is an item definition file
+    if file_path.parent.name == 'items':
+        # Put item files in an items subdirectory
+        output_path = output_dir / 'items' / output_filename
+    else:
+        output_path = output_dir / output_filename
 
     if name == 'panels':
         generate_documentation_for_panels(file_path, output_path)
         return
 
-    # Generic CLASS/FACTION/MODULE definitions
-    entity_prefixes: Tuple[str, ...] = ('CLASS', 'FACTION', 'MODULE')
+    # Check if this is an item definition file
+    if file_path.parent.name == 'items':
+        # This is an item definition file
+        entity_prefixes: Tuple[str, ...] = ('ITEM',)
+    else:
+        # Generic CLASS/FACTION/MODULE definitions
+        entity_prefixes: Tuple[str, ...] = ('CLASS', 'FACTION', 'MODULE')
     comment_blocks, file_header, overview_section = find_comment_blocks_in_file(file_path)
     entries = parse_definition_property_blocks(file_path, entity_prefixes)
 
@@ -676,7 +797,7 @@ def generate_documentation_for_definitions_file(file_path: Path, output_dir: Pat
                 subtitle = parts[1].strip()
 
     md = generate_markdown_for_definition_entries(title, subtitle, overview_section, entries)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(md)
     print(f"  Generated {output_path.name}")
@@ -787,6 +908,12 @@ def main():
                 p = input_dir / name
                 if p.exists():
                     files_to_process.append(str(p))
+            
+            # Process items subdirectory
+            items_dir = input_dir / 'items'
+            if items_dir.exists():
+                for item_file in items_dir.glob('*.lua'):
+                    files_to_process.append(str(item_file))
         elif args.type == 'hooks':
             for name in ('client.lua', 'server.lua', 'shared.lua'):
                 p = input_dir / name

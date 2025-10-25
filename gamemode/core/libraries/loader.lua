@@ -1,19 +1,10 @@
 ﻿--[[
     Loader Library
-
     Core initialization and module loading system for the Lilia framework.
 ]]
 --[[
     Overview:
-    The loader library is the core initialization system for the Lilia framework, responsible for
-    managing the loading sequence of all framework components, modules, and dependencies. It handles
-    file inclusion with proper realm detection (client, server, shared), manages module loading order,
-    provides compatibility layer support for third-party addons, and includes update checking
-    functionality. The library ensures that all framework components are loaded in the correct order
-    and context, handles hot-reloading during development, and provides comprehensive logging and
-    error handling throughout the initialization process. It also manages entity registration for
-    weapons, tools, effects, and custom entities, and provides Discord webhook integration for
-    logging and notifications.
+    The loader library is the core initialization system for the Lilia framework, responsible for managing the loading sequence of all framework components, modules, and dependencies. It handles file inclusion with proper realm detection (client, server, shared), manages module loading order, provides compatibility layer support for third-party addons, and includes update checking functionality. The library ensures that all framework components are loaded in the correct order and context, handles hot-reloading during development, and provides comprehensive logging and error handling throughout the initialization process. It also manages entity registration for weapons, tools, effects, and custom entities, and provides Discord webhook integration for logging and notifications.
 ]]
 lia = lia or {
     util = {},
@@ -297,33 +288,31 @@ local ConditionalFiles = {
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
-        -- Simple: Include a shared library file
-        lia.loader.include("lilia/gamemode/core/libraries/util.lua")
-        ```
-
+    Low Complexity:
+    ```lua
+    -- Simple: Include a shared library file
+    lia.loader.include("lilia/gamemode/core/libraries/util.lua")
+    ```
         Medium Complexity Example:
-        ```lua
-        -- Medium: Include a file with explicit realm specification
-        lia.loader.include("lilia/gamemode/core/libraries/logger.lua", "server")
-        ```
-
+    ```lua
+    -- Medium: Include a file with explicit realm specification
+    lia.loader.include("lilia/gamemode/core/libraries/logger.lua", "server")
+    ```
         High Complexity Example:
-        ```lua
-        -- High: Include files based on conditions with error handling
-        local filesToLoad = {
-            "lilia/gamemode/core/libraries/net.lua",
-            "lilia/gamemode/core/libraries/commands.lua"
-        }
-        for _, filePath in ipairs(filesToLoad) do
-            if file.Exists(filePath, "LUA") then
-                lia.loader.include(filePath)
-            else
-                lia.warning("File not found: " .. filePath)
-            end
+    ```lua
+    -- High: Include files based on conditions with error handling
+    local filesToLoad = {
+        "lilia/gamemode/core/libraries/net.lua",
+        "lilia/gamemode/core/libraries/commands.lua"
+    }
+    for _, filePath in ipairs(filesToLoad) do
+        if file.Exists(filePath, "LUA") then
+            lia.loader.include(filePath)
+        else
+            lia.warning("File not found: " .. filePath)
         end
-        ```
+    end
+    ```
 ]]
 function lia.loader.include(path, realm)
     if not path then lia.error(L("missingFilePath")) end
@@ -369,20 +358,18 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Include all files in a directory
         lia.loader.includeDir("lilia/gamemode/core/libraries")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Include files with specific realm and deep search
         lia.loader.includeDir("lilia/gamemode/modules", false, true, "shared")
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Include multiple directories with different settings
         local dirsToLoad = {
             {path = "lilia/gamemode/core/libraries", raw = false, deep = false, realm = "shared"},
@@ -392,7 +379,7 @@ end
         for _, dir in ipairs(dirsToLoad) do
             lia.loader.includeDir(dir.path, dir.raw, dir.deep, dir.realm)
         end
-        ```
+    ```
 ]]
 function lia.loader.includeDir(dir, raw, deep, realm)
     local root = raw and dir or (SCHEMA and SCHEMA.folder and SCHEMA.loading and SCHEMA.folder .. "/schema" or "lilia/gamemode") .. "/" .. dir
@@ -422,20 +409,18 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Include files with automatic realm detection
         lia.loader.includeGroupedDir("lilia/gamemode/core/libraries")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Include files recursively with forced realm
         lia.loader.includeGroupedDir("lilia/gamemode/modules", false, true, "shared")
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Include multiple directories with different settings and error handling
         local dirsToLoad = {
             {path = "lilia/gamemode/core/libraries", raw = false, recursive = false, forceRealm = nil},
@@ -449,7 +434,7 @@ end
                 lia.warning("Directory not found: " .. dir.path)
             end
         end
-        ```
+    ```
 ]]
 function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
     local baseDir = raw and dir or (SCHEMA and SCHEMA.folder and SCHEMA.loading and SCHEMA.folder .. "/schema" or "lilia/gamemode") .. "/" .. dir
@@ -525,14 +510,13 @@ local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
     Returns: None
     Realm: Server
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Check for updates during server startup
         lia.loader.checkForUpdates()
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Check for updates with custom error handling
         local function safeUpdateCheck()
             local success, err = pcall(lia.loader.checkForUpdates)
@@ -541,10 +525,9 @@ local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
             end
         end
         safeUpdateCheck()
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Check for updates with custom timing and logging
         local function scheduledUpdateCheck()
             timer.Create("update_checker", 3600, 0, function() -- Check every hour
@@ -554,7 +537,7 @@ local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
             end)
         end
         scheduledUpdateCheck()
-        ```
+    ```
 ]]
 function lia.loader.checkForUpdates()
     local publicModules = {}
@@ -686,14 +669,13 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Display a basic error message
         lia.error("Failed to load module")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Display error with context information
         local function loadConfig()
             local success, err = pcall(function()
@@ -703,10 +685,9 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
                 lia.error("Config loading failed: " .. tostring(err))
             end
         end
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Display detailed error with stack trace and context
         local function safeModuleLoad(moduleName)
             local success, err = pcall(function()
@@ -722,7 +703,7 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
                 lia.error(errorMsg)
             end
         end
-        ```
+    ```
 ]]
 function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
@@ -737,24 +718,22 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Display a basic warning message
         lia.warning("Module version mismatch detected")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Display warning with context information
         local function checkModuleCompatibility(module)
             if module.version < "1.0.0" then
                 lia.warning("Module '" .. module.name .. "' is using an outdated version")
             end
         end
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Display warning with detailed information and conditional logic
         local function validateModuleDependencies(module)
             local missingDeps = {}
@@ -763,7 +742,6 @@ end
                     table.insert(missingDeps, dep)
                 end
             end
-
             if #missingDeps > 0 then
                 local warningMsg = string.format(
                     "Module '%s' is missing dependencies: %s",
@@ -773,7 +751,7 @@ end
                 lia.warning(warningMsg)
             end
         end
-        ```
+    ```
 ]]
 function lia.warning(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
@@ -788,22 +766,20 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Display a basic information message
         lia.information("Framework initialized successfully")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Display information with context
         local function reportModuleStatus(module)
             lia.information("Module '" .. module.name .. "' loaded successfully")
         end
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Display detailed information with statistics
         local function reportFrameworkStatus()
             local moduleCount = table.Count(lia.module.list)
@@ -811,7 +787,6 @@ end
             for _, module in pairs(lia.module.list) do
                 if module.loaded then loadedModules = loadedModules + 1 end
             end
-
             local statusMsg = string.format(
                 "Framework Status: %d/%d modules loaded, %d entities registered",
                 loadedModules,
@@ -820,7 +795,7 @@ end
             )
             lia.information(statusMsg)
         end
-        ```
+    ```
 ]]
 function lia.information(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
@@ -836,22 +811,20 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Display a basic bootstrap message
         lia.bootstrap("Database", "Connection established")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Display bootstrap progress with context
         local function reportModuleLoading(moduleName, status)
             lia.bootstrap("Modules", "Loading " .. moduleName .. ": " .. status)
         end
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Display detailed bootstrap progress with timing and statistics
         local function reportBootstrapProgress(section, current, total, startTime)
             local elapsed = CurTime() - startTime
@@ -865,7 +838,7 @@ end
             )
             lia.bootstrap(section, msg)
         end
-        ```
+    ```
 ]]
 function lia.bootstrap(section, msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
@@ -881,17 +854,16 @@ end
     Returns: None
     Realm: Server
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Send a basic Discord message
         lia.relaydiscordMessage({
             title = "Server Started",
             description = "The server has been initialized successfully"
         })
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Send a detailed Discord message with custom formatting
         local function notifyPlayerJoin(player)
             lia.relaydiscordMessage({
@@ -904,10 +876,9 @@ end
                 }
             })
         end
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Send complex Discord message with error handling and custom logic
         local function sendServerStatus()
             local players = player.GetAll()
@@ -923,7 +894,6 @@ end
                 },
                 footer = {text = "Lilia Framework Status Bot"}
             }
-
             if #players > 0 then
                 local playerList = {}
                 for _, ply in ipairs(players) do
@@ -935,10 +905,9 @@ end
                     inline = false
                 }
             end
-
             lia.relaydiscordMessage(embed)
         end
-        ```
+    ```
 ]]
 function lia.relaydiscordMessage(embed)
     if not lia.discordWebhook or not istable(embed) then return end
@@ -988,14 +957,13 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-        Low Complexity:
-        ```lua
+    Low Complexity:
+    ```lua
         -- Simple: Include entities from the default gamemode path
         lia.loader.includeEntities("lilia/gamemode/entities")
-        ```
-
+    ```
         Medium Complexity Example:
-        ```lua
+    ```lua
         -- Medium: Include entities from multiple paths with error handling
         local entityPaths = {
             "lilia/gamemode/entities",
@@ -1008,10 +976,9 @@ end
                 lia.warning("Entity path not found: " .. path)
             end
         end
-        ```
-
+    ```
         High Complexity Example:
-        ```lua
+    ```lua
         -- High: Include entities with custom registration and validation
         local function safeEntityInclusion(path)
             local success, err = pcall(function()
@@ -1024,7 +991,7 @@ end
             end
         end
         safeEntityInclusion("lilia/gamemode/entities")
-        ```
+    ```
 ]]
 function lia.loader.includeEntities(path)
     local function IncludeFiles(path2)
