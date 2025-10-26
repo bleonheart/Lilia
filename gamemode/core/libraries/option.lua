@@ -1,5 +1,6 @@
 ﻿--[[
     Option Library
+
     User-configurable settings management system for the Lilia framework.
 ]]
 --[[
@@ -21,16 +22,17 @@ lia.option.stored = lia.option.stored or {}
     Returns: None
     Realm: Shared
     Example Usage:
-    Low Complexity:
-    ```lua
+        Low Complexity:
+        ```lua
         -- Simple: Add a boolean toggle option
         lia.option.add("showHUD", "Show HUD", "Toggle HUD visibility", true, nil, {
             category = "categoryGeneral",
             isQuick = true
         })
-    ```
-    Medium Complexity:
-    ```lua
+        ```
+
+        Medium Complexity:
+        ```lua
         -- Medium: Add a numeric slider with callback
         lia.option.add("volume", "Volume", "Master volume level", 0.8, function(oldVal, newVal)
             RunConsoleCommand("volume", tostring(newVal))
@@ -40,9 +42,10 @@ lia.option.stored = lia.option.stored or {}
             max = 1,
             decimals = 2
         })
-    ```
-    High Complexity:
-    ```lua
+        ```
+
+        High Complexity:
+        ```lua
         -- High: Add a color picker with visibility condition and networking
         lia.option.add("espColor", "ESP Color", "Color for ESP display", Color(255, 0, 0), nil, {
             category = "categoryESP",
@@ -52,7 +55,7 @@ lia.option.stored = lia.option.stored or {}
             shouldNetwork = true,
             type = "Color"
         })
-    ```
+        ```
 ]]
 function lia.option.add(key, name, desc, default, callback, data)
     assert(isstring(key), L("optionKeyString", type(key)))
@@ -100,23 +103,25 @@ end
     Returns: table - Array of available option choices (localized strings)
     Realm: Shared
     Example Usage:
-    Low Complexity:
-    ```lua
+        Low Complexity:
+        ```lua
         -- Simple: Get static options for a dropdown
         local options = lia.option.getOptions("weaponSelectorPosition")
         -- Returns: {"Left", "Right", "Center"}
-    ```
-    Medium Complexity:
-    ```lua
+        ```
+
+        Medium Complexity:
+        ```lua
         -- Medium: Use options in UI creation
         local combo = vgui.Create("liaComboBox")
         local options = lia.option.getOptions("language")
         for _, option in pairs(options) do
             combo:AddChoice(option, option)
         end
-    ```
-    High Complexity:
-    ```lua
+        ```
+
+        High Complexity:
+        ```lua
         -- High: Dynamic options with validation
         local options = lia.option.getOptions("teamSelection")
         if #options > 0 then
@@ -128,7 +133,7 @@ end
         else
             teamCombo:AddChoice("No teams available", "")
         end
-    ```
+        ```
 ]]
 function lia.option.getOptions(key)
     local option = lia.option.stored[key]
@@ -158,32 +163,35 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
-    Low Complexity:
-    ```lua
+        Low Complexity:
+        ```lua
         -- Simple: Set a boolean option
         lia.option.set("showHUD", true)
-    ```
-    Medium Complexity:
-    ```lua
+        ```
+
+        Medium Complexity:
+        ```lua
         -- Medium: Set option with callback execution
         lia.option.set("volume", 0.5)
         -- This will trigger the callback function if one was defined
-    ```
-    High Complexity:
-    ```lua
+        ```
+
+        High Complexity:
+        ```lua
         -- High: Set multiple options with validation
         local optionsToSet = {
             {"showHUD", true},
             {"volume", 0.8},
             {"espColor", Color(255, 0, 0)}
         }
+
         for _, optionData in ipairs(optionsToSet) do
             local key, value = optionData[1], optionData[2]
             if lia.option.stored[key] then
                 lia.option.set(key, value)
             end
         end
-    ```
+        ```
 ]]
 function lia.option.set(key, value)
     local opt = lia.option.stored[key]
@@ -205,36 +213,40 @@ end
     Returns: any - The current option value, default value, or provided fallback
     Realm: Shared
     Example Usage:
-    Low Complexity:
-    ```lua
+        Low Complexity:
+        ```lua
         -- Simple: Get a boolean option
         local showHUD = lia.option.get("showHUD")
         if showHUD then
             -- HUD is enabled
         end
-    ```
-    Medium Complexity:
-    ```lua
+        ```
+
+        Medium Complexity:
+        ```lua
         -- Medium: Get option with fallback
         local volume = lia.option.get("volume", 0.5)
         RunConsoleCommand("volume", tostring(volume))
-    ```
-    High Complexity:
-    ```lua
+        ```
+
+        High Complexity:
+        ```lua
         -- High: Get multiple options with validation and type checking
         local config = {
             showHUD = lia.option.get("showHUD", true),
             volume = lia.option.get("volume", 0.8),
             espColor = lia.option.get("espColor", Color(255, 0, 0))
         }
+
         -- Validate and apply configuration
         if type(config.showHUD) == "boolean" then
             hook.Run("HUDVisibilityChanged", config.showHUD)
         end
+
         if type(config.volume) == "number" and config.volume >= 0 and config.volume <= 1 then
             RunConsoleCommand("volume", tostring(config.volume))
         end
-    ```
+        ```
 ]]
 function lia.option.get(key, default)
     local opt = lia.option.stored[key]
@@ -252,14 +264,15 @@ end
     Returns: None
     Realm: Client
     Example Usage:
-    Low Complexity:
-    ```lua
+        Low Complexity:
+        ```lua
         -- Simple: Save options after changes
         lia.option.set("showHUD", true)
         lia.option.save() -- Automatically called, but can be called manually
-    ```
-    Medium Complexity:
-    ```lua
+        ```
+
+        Medium Complexity:
+        ```lua
         -- Medium: Save options with error handling
         local function saveOptionsSafely()
             local success, err = pcall(lia.option.save)
@@ -268,9 +281,10 @@ end
             end
         end
         saveOptionsSafely()
-    ```
-    High Complexity:
-    ```lua
+        ```
+
+        High Complexity:
+        ```lua
         -- High: Batch save with validation and backup
         local function batchSaveOptions()
             -- Create backup of current options
@@ -279,8 +293,10 @@ end
             if currentData then
                 file.Write(backupPath, currentData)
             end
+
             -- Save current options
             lia.option.save()
+
             -- Verify save was successful
             local savedData = file.Read("lilia/options.json", "DATA")
             if savedData then
@@ -290,7 +306,7 @@ end
             end
         end
         batchSaveOptions()
-    ```
+        ```
 ]]
 function lia.option.save()
     local path = "lilia/options.json"
@@ -310,14 +326,15 @@ end
     Returns: None
     Realm: Client
     Example Usage:
-    Low Complexity:
-    ```lua
+        Low Complexity:
+        ```lua
         -- Simple: Load options at startup
         lia.option.load()
         -- This is typically called automatically during initialization
-    ```
-    Medium Complexity:
-    ```lua
+        ```
+
+        Medium Complexity:
+        ```lua
         -- Medium: Load options with error handling
         local function loadOptionsSafely()
             local success, err = pcall(lia.option.load)
@@ -330,9 +347,10 @@ end
             end
         end
         loadOptionsSafely()
-    ```
-    High Complexity:
-    ```lua
+        ```
+
+        High Complexity:
+        ```lua
         -- High: Load options with validation and migration
         local function loadOptionsWithMigration()
             -- Check if options file exists
@@ -360,11 +378,12 @@ end
                 -- No saved options, use defaults
                 lia.option.load()
             end
+
             -- Trigger initialization hook
             hook.Run("InitializedOptions")
         end
         loadOptionsWithMigration()
-    ```
+        ```
 ]]
 function lia.option.load()
     local path = "lilia/options.json"
@@ -946,8 +965,7 @@ lia.option.add("ChatShowTime", "chatShowTime", "chatShowTimeDesc", false, nil, {
 lia.option.add("voiceRange", "voiceRange", "voiceRangeDesc", false, nil, {
     category = "categoryHUD",
     isQuick = true,
-    type = "Boolean",
-    visible = function() return LocalPlayer():IsSuperAdmin() end
+    type = "Boolean"
 })
 
 lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelectorPositionDesc", "Left", nil, {

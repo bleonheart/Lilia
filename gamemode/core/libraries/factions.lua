@@ -1,5 +1,6 @@
 ﻿--[[
     Faction Library
+
     Comprehensive faction (team) management and registration system for the Lilia framework.
 ]]
 --[[
@@ -21,6 +22,7 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
         - faction (table): The complete faction data table
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic faction
@@ -30,6 +32,7 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
         color = Color(150, 150, 150)
     })
     ```
+
     Medium Complexity:
     ```lua
     -- Medium: Register faction with custom models and weapons
@@ -42,6 +45,7 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
         isDefault = false
     })
     ```
+
     High Complexity:
     ```lua
     -- High: Register faction with complex model data and bodygroups
@@ -112,35 +116,38 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Cache basic string models
-        lia.faction.cacheModels({"models/player/police.mdl", "models/player/swat.mdl"})
+    -- Simple: Cache basic string models
+    lia.faction.cacheModels({"models/player/police.mdl", "models/player/swat.mdl"})
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Cache mixed model data types
-        local models = {
-            "models/player/police.mdl",
-            {"models/player/swat.mdl", "SWAT Officer"},
-            {"models/player/fbi.mdl", "FBI Agent", {1, 2, 3}}
-        }
-        lia.faction.cacheModels(models)
+    -- Medium: Cache mixed model data types
+    local models = {
+        "models/player/police.mdl",
+        {"models/player/swat.mdl", "SWAT Officer"},
+        {"models/player/fbi.mdl", "FBI Agent", {1, 2, 3}}
+    }
+    lia.faction.cacheModels(models)
     ```
+
     High Complexity:
     ```lua
-        -- High: Cache categorized models with bodygroup data
-        local models = {
-            "male" = {
-                {"models/player/police_male.mdl", "Male Officer", {1, 2}},
-                {"models/player/swat_male.mdl", "Male SWAT", {0, 1, 2, 3}}
-            },
-            "female" = {
-                {"models/player/police_female.mdl", "Female Officer", {1}},
-                {"models/player/swat_female.mdl", "Female SWAT", {0, 1, 2}}
-            }
+    -- High: Cache categorized models with bodygroup data
+    local models = {
+        "male" = {
+            {"models/player/police_male.mdl", "Male Officer", {1, 2}},
+            {"models/player/swat_male.mdl", "Male SWAT", {0, 1, 2, 3}}
+        },
+        "female" = {
+            {"models/player/police_female.mdl", "Female Officer", {1}},
+            {"models/player/swat_female.mdl", "Female SWAT", {0, 1, 2}}
         }
-        lia.faction.cacheModels(models)
+    }
+    lia.faction.cacheModels(models)
     ```
 ]]
 --
@@ -162,33 +169,37 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Load factions from a basic directory
-        lia.faction.loadFromDir("gamemode/factions")
+    -- Simple: Load factions from a basic directory
+    lia.faction.loadFromDir("gamemode/factions")
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Load factions from module directory with error handling
-        local factionDir = "gamemode/modules/customfactions/factions"
-        if file.Exists(factionDir, "LUA") then
-            lia.faction.loadFromDir(factionDir)
-        end
+    -- Medium: Load factions from module directory with error handling
+    local factionDir = "gamemode/modules/customfactions/factions"
+    if file.Exists(factionDir, "LUA") then
+        lia.faction.loadFromDir(factionDir)
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Load factions from multiple directories with validation
-        local factionDirs = {
-            "gamemode/factions",
-            "gamemode/modules/customfactions/factions",
-            "gamemode/schema/factions"
-        }
-        for _, dir in ipairs(factionDirs) do
-            if file.Exists(dir, "LUA") then
-                print("Loading factions from: " .. dir)
-                lia.faction.loadFromDir(dir)
-            end
+    -- High: Load factions from multiple directories with validation
+    local factionDirs = {
+        "gamemode/factions",
+        "gamemode/modules/customfactions/factions",
+        "gamemode/schema/factions"
+    }
+
+    for _, dir in ipairs(factionDirs) do
+        if file.Exists(dir, "LUA") then
+            print("Loading factions from: " .. dir)
+            lia.faction.loadFromDir(dir)
         end
+    end
     ```
 ]]
 --
@@ -252,40 +263,44 @@ end
         - faction (table): The faction data table, or nil if not found
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Get faction by unique ID
-        local faction = lia.faction.get("citizen")
-        if faction then
-            print("Faction name: " .. faction.name)
-        end
+    -- Simple: Get faction by unique ID
+    local faction = lia.faction.get("citizen")
+    if faction then
+        print("Faction name: " .. faction.name)
+    end
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Get faction by index with validation
-        local factionIndex = 1
-        local faction = lia.faction.get(factionIndex)
-        if faction then
-            print("Faction: " .. faction.name .. " (Index: " .. faction.index .. ")")
-        else
-            print("Faction not found")
-        end
+    -- Medium: Get faction by index with validation
+    local factionIndex = 1
+    local faction = lia.faction.get(factionIndex)
+    if faction then
+        print("Faction: " .. faction.name .. " (Index: " .. faction.index .. ")")
+    else
+        print("Faction not found")
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Get faction with fallback and error handling
-        local function getFactionSafely(identifier)
-            local faction = lia.faction.get(identifier)
-            if not faction then
-                if isnumber(identifier) then
-                    error("Faction with index " .. identifier .. " not found")
-                else
-                    error("Faction with ID '" .. identifier .. "' not found")
-                end
+    -- High: Get faction with fallback and error handling
+    local function getFactionSafely(identifier)
+        local faction = lia.faction.get(identifier)
+        if not faction then
+            if isnumber(identifier) then
+                error("Faction with index " .. identifier .. " not found")
+            else
+                error("Faction with ID '" .. identifier .. "' not found")
             end
-            return faction
         end
-        local faction = getFactionSafely("police")
+        return faction
+    end
+
+    local faction = getFactionSafely("police")
     ```
 ]]
 --
@@ -302,39 +317,44 @@ end
         - index (number): The faction's team index, or nil if not found
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Get faction index
-        local index = lia.faction.getIndex("citizen")
-        if index then
-            print("Citizen faction index: " .. index)
-        end
+    -- Simple: Get faction index
+    local index = lia.faction.getIndex("citizen")
+    if index then
+        print("Citizen faction index: " .. index)
+    end
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Get faction index with validation
-        local factionID = "police"
-        local index = lia.faction.getIndex(factionID)
-        if index then
-            print("Faction '" .. factionID .. "' has index: " .. index)
-        else
-            print("Faction '" .. factionID .. "' not found")
-        end
+    -- Medium: Get faction index with validation
+    local factionID = "police"
+    local index = lia.faction.getIndex(factionID)
+    if index then
+        print("Faction '" .. factionID .. "' has index: " .. index)
+    else
+        print("Faction '" .. factionID .. "' not found")
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Get multiple faction indices with error handling
-        local factionIDs = {"citizen", "police", "medic", "staff"}
-        local indices = {}
-        for _, id in ipairs(factionIDs) do
-            local index = lia.faction.getIndex(id)
-            if index then
-                indices[id] = index
-            else
-                print("Warning: Faction '" .. id .. "' not found")
-            end
+    -- High: Get multiple faction indices with error handling
+    local factionIDs = {"citizen", "police", "medic", "staff"}
+    local indices = {}
+
+    for _, id in ipairs(factionIDs) do
+        local index = lia.faction.getIndex(id)
+        if index then
+            indices[id] = index
+        else
+            print("Warning: Faction '" .. id .. "' not found")
         end
-        return indices
+    end
+
+    return indices
     ```
 ]]
 --
@@ -351,48 +371,55 @@ end
         - classes (table): Table of class objects belonging to the faction
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Get all classes for a faction
-        local classes = lia.faction.getClasses("citizen")
-        print("Citizen classes: " .. #classes)
+    -- Simple: Get all classes for a faction
+    local classes = lia.faction.getClasses("citizen")
+    print("Citizen classes: " .. #classes)
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Get classes with validation and display
-        local factionID = "police"
-        local classes = lia.faction.getClasses(factionID)
-        if #classes > 0 then
-            print("Classes for " .. factionID .. ":")
-            for _, class in ipairs(classes) do
-                print("- " .. class.name)
-            end
-        else
-            print("No classes found for " .. factionID)
+    -- Medium: Get classes with validation and display
+    local factionID = "police"
+    local classes = lia.faction.getClasses(factionID)
+    if #classes > 0 then
+        print("Classes for " .. factionID .. ":")
+        for _, class in ipairs(classes) do
+            print("- " .. class.name)
         end
+    else
+        print("No classes found for " .. factionID)
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Get classes for multiple factions with filtering
-        local function getFactionClasses(factionID)
-            local faction = lia.faction.get(factionID)
-            if not faction then
-                return {}
-            end
-            local classes = lia.faction.getClasses(factionID)
-            local result = {}
-            for _, class in ipairs(classes) do
-                if class.isDefault or not class.isDefault then -- Include all classes
-                    table.insert(result, {
-                        name = class.name,
-                        desc = class.desc,
-                        isDefault = class.isDefault
-                    })
-                end
-            end
-            return result
+    -- High: Get classes for multiple factions with filtering
+    local function getFactionClasses(factionID)
+        local faction = lia.faction.get(factionID)
+        if not faction then
+            return {}
         end
-        local policeClasses = getFactionClasses("police")
+
+        local classes = lia.faction.getClasses(factionID)
+        local result = {}
+
+        for _, class in ipairs(classes) do
+            if class.isDefault or not class.isDefault then -- Include all classes
+                table.insert(result, {
+                    name = class.name,
+                    desc = class.desc,
+                    isDefault = class.isDefault
+                })
+            end
+        end
+
+        return result
+    end
+
+    local policeClasses = getFactionClasses("police")
     ```
 ]]
 --
@@ -413,47 +440,53 @@ end
         - players (table): Table of player entities in the faction
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Get all players in a faction
-        local players = lia.faction.getPlayers("citizen")
-        print("Citizen players: " .. #players)
+    -- Simple: Get all players in a faction
+    local players = lia.faction.getPlayers("citizen")
+    print("Citizen players: " .. #players)
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Get players with validation and display
-        local factionID = "police"
-        local players = lia.faction.getPlayers(factionID)
-        if #players > 0 then
-            print("Players in " .. factionID .. ":")
-            for _, ply in ipairs(players) do
-                print("- " .. ply:Name())
-            end
-        else
-            print("No players in " .. factionID)
+    -- Medium: Get players with validation and display
+    local factionID = "police"
+    local players = lia.faction.getPlayers(factionID)
+    if #players > 0 then
+        print("Players in " .. factionID .. ":")
+        for _, ply in ipairs(players) do
+            print("- " .. ply:Name())
         end
+    else
+        print("No players in " .. factionID)
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Get players with additional character data
-        local function getFactionPlayers(factionID)
-            local players = lia.faction.getPlayers(factionID)
-            local result = {}
-            for _, ply in ipairs(players) do
-                local char = ply:getChar()
-                if char then
-                    table.insert(result, {
-                        player = ply,
-                        name = ply:Name(),
-                        charName = char:getName(),
-                        steamID = ply:SteamID(),
-                        isAlive = ply:Alive()
-                    })
-                end
+    -- High: Get players with additional character data
+    local function getFactionPlayers(factionID)
+        local players = lia.faction.getPlayers(factionID)
+        local result = {}
+
+        for _, ply in ipairs(players) do
+            local char = ply:getChar()
+            if char then
+                table.insert(result, {
+                    player = ply,
+                    name = ply:Name(),
+                    charName = char:getName(),
+                    steamID = ply:SteamID(),
+                    isAlive = ply:Alive()
+                })
             end
-            return result
         end
-        local policePlayers = getFactionPlayers("police")
+
+        return result
+    end
+
+    local policePlayers = getFactionPlayers("police")
     ```
 ]]
 --
@@ -475,40 +508,46 @@ end
         - count (number): Number of players in the faction
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Get player count for a faction
-        local count = lia.faction.getPlayerCount("citizen")
-        print("Citizen players: " .. count)
+    -- Simple: Get player count for a faction
+    local count = lia.faction.getPlayerCount("citizen")
+    print("Citizen players: " .. count)
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Get player count with validation
-        local factionID = "police"
-        local count = lia.faction.getPlayerCount(factionID)
-        if count > 0 then
-            print("There are " .. count .. " players in " .. factionID)
-        else
-            print("No players in " .. factionID)
-        end
+    -- Medium: Get player count with validation
+    local factionID = "police"
+    local count = lia.faction.getPlayerCount(factionID)
+    if count > 0 then
+        print("There are " .. count .. " players in " .. factionID)
+    else
+        print("No players in " .. factionID)
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Get player counts for multiple factions with statistics
-        local function getFactionStatistics()
-            local factions = {"citizen", "police", "medic", "staff"}
-            local stats = {}
-            local totalPlayers = 0
-            for _, factionID in ipairs(factions) do
-                local count = lia.faction.getPlayerCount(factionID)
-                stats[factionID] = count
-                totalPlayers = totalPlayers + count
-            end
-            stats.total = totalPlayers
-            return stats
+    -- High: Get player counts for multiple factions with statistics
+    local function getFactionStatistics()
+        local factions = {"citizen", "police", "medic", "staff"}
+        local stats = {}
+        local totalPlayers = 0
+
+        for _, factionID in ipairs(factions) do
+            local count = lia.faction.getPlayerCount(factionID)
+            stats[factionID] = count
+            totalPlayers = totalPlayers + count
         end
-        local stats = getFactionStatistics()
-        print("Total players: " .. stats.total)
+
+        stats.total = totalPlayers
+        return stats
+    end
+
+    local stats = getFactionStatistics()
+    print("Total players: " .. stats.total)
     ```
 ]]
 --
@@ -531,47 +570,55 @@ end
         - isCategory (boolean): True if the faction is in the category, false otherwise
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Check if faction is in a category
-        local lawEnforcement = {"police", "swat", "fbi"}
-        local isLawEnforcement = lia.faction.isFactionCategory("police", lawEnforcement)
-        print("Is police law enforcement: " .. tostring(isLawEnforcement))
+    -- Simple: Check if faction is in a category
+    local lawEnforcement = {"police", "swat", "fbi"}
+    local isLawEnforcement = lia.faction.isFactionCategory("police", lawEnforcement)
+    print("Is police law enforcement: " .. tostring(isLawEnforcement))
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Check faction category with validation
-        local medicalFactions = {"medic", "doctor", "paramedic"}
-        local factionID = "medic"
-        if lia.faction.isFactionCategory(factionID, medicalFactions) then
-            print(factionID .. " is a medical faction")
-        else
-            print(factionID .. " is not a medical faction")
-        end
+    -- Medium: Check faction category with validation
+    local medicalFactions = {"medic", "doctor", "paramedic"}
+    local factionID = "medic"
+
+    if lia.faction.isFactionCategory(factionID, medicalFactions) then
+        print(factionID .. " is a medical faction")
+    else
+        print(factionID .. " is not a medical faction")
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Check multiple factions against multiple categories
-        local function categorizeFactions(factionIDs)
-            local categories = {
-                lawEnforcement = {"police", "swat", "fbi", "security"},
-                medical = {"medic", "doctor", "paramedic", "nurse"},
-                civilian = {"citizen", "businessman", "unemployed"}
-            }
-            local results = {}
-            for _, factionID in ipairs(factionIDs) do
-                local category = "unknown"
-                for catName, catFactions in pairs(categories) do
-                    if lia.faction.isFactionCategory(factionID, catFactions) then
-                        category = catName
-                        break
-                    end
+    -- High: Check multiple factions against multiple categories
+    local function categorizeFactions(factionIDs)
+        local categories = {
+            lawEnforcement = {"police", "swat", "fbi", "security"},
+            medical = {"medic", "doctor", "paramedic", "nurse"},
+            civilian = {"citizen", "businessman", "unemployed"}
+        }
+
+        local results = {}
+
+        for _, factionID in ipairs(factionIDs) do
+            local category = "unknown"
+            for catName, catFactions in pairs(categories) do
+                if lia.faction.isFactionCategory(factionID, catFactions) then
+                    category = catName
+                    break
                 end
-                results[factionID] = category
             end
-            return results
+            results[factionID] = category
         end
-        local factionCategories = categorizeFactions({"police", "medic", "citizen"})
+
+        return results
+    end
+
+    local factionCategories = categorizeFactions({"police", "medic", "citizen"})
     ```
 ]]
 --
@@ -593,32 +640,38 @@ end
         - faction (table): The generated faction data table
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Generate a basic faction
-        local faction = lia.faction.jobGenerate(1, "Citizen", Color(150, 150, 150), true)
+    -- Simple: Generate a basic faction
+    local faction = lia.faction.jobGenerate(1, "Citizen", Color(150, 150, 150), true)
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Generate faction with custom models
-        local models = {"models/player/police.mdl", "models/player/swat.mdl"}
-        local faction = lia.faction.jobGenerate(2, "Police", Color(0, 0, 255), false, models)
+    -- Medium: Generate faction with custom models
+    local models = {"models/player/police.mdl", "models/player/swat.mdl"}
+    local faction = lia.faction.jobGenerate(2, "Police", Color(0, 0, 255), false, models)
     ```
+
     High Complexity:
     ```lua
-        -- High: Generate faction with complex model data
-        local function generateCustomFaction(index, name, color, isDefault)
-            local models = {
-                {"models/player/police_male.mdl", "Male Officer", {1, 2}},
-                {"models/player/police_female.mdl", "Female Officer", {1}},
-                {"models/player/swat.mdl", "SWAT Officer", {0, 1, 2, 3}}
-            }
-            local faction = lia.faction.jobGenerate(index, name, color, isDefault, models)
-            faction.uniqueID = string.lower(name:gsub(" ", "_"))
-            faction.desc = "A " .. name .. " faction"
-            return faction
-        end
-        local policeFaction = generateCustomFaction(2, "Police Officer", Color(0, 0, 255), false)
+    -- High: Generate faction with complex model data
+    local function generateCustomFaction(index, name, color, isDefault)
+        local models = {
+            {"models/player/police_male.mdl", "Male Officer", {1, 2}},
+            {"models/player/police_female.mdl", "Female Officer", {1}},
+            {"models/player/swat.mdl", "SWAT Officer", {0, 1, 2, 3}}
+        }
+
+        local faction = lia.faction.jobGenerate(index, name, color, isDefault, models)
+        faction.uniqueID = string.lower(name:gsub(" ", "_"))
+        faction.desc = "A " .. name .. " faction"
+
+        return faction
+    end
+
+    local policeFaction = generateCustomFaction(2, "Police Officer", Color(0, 0, 255), false)
     ```
 ]]
 --
@@ -694,36 +747,44 @@ end
     Returns: None
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
-        -- Simple: Format all faction model data
-        lia.faction.formatModelData()
+    -- Simple: Format all faction model data
+    lia.faction.formatModelData()
     ```
+
     Medium Complexity:
     ```lua
-        -- Medium: Format model data with validation
-        if lia.faction.teams and table.Count(lia.faction.teams) > 0 then
-            print("Formatting model data for " .. table.Count(lia.faction.teams) .. " factions")
-            lia.faction.formatModelData()
-            print("Model data formatting complete")
-        end
+    -- Medium: Format model data with validation
+    if lia.faction.teams and table.Count(lia.faction.teams) > 0 then
+        print("Formatting model data for " .. table.Count(lia.faction.teams) .. " factions")
+        lia.faction.formatModelData()
+        print("Model data formatting complete")
+    end
     ```
+
     High Complexity:
     ```lua
-        -- High: Format model data with progress tracking and error handling
-        local function formatFactionModels()
-            local factionCount = table.Count(lia.faction.teams)
-            local processed = 0
-            print("Starting model data formatting for " .. factionCount .. " factions")
-            local success, err = pcall(lia.faction.formatModelData)
-            if success then
-                print("Successfully formatted model data for all factions")
-            else
-                print("Error formatting model data: " .. tostring(err))
-            end
-            return success
+    -- High: Format model data with progress tracking and error handling
+    local function formatFactionModels()
+        local factionCount = table.Count(lia.faction.teams)
+        local processed = 0
+
+        print("Starting model data formatting for " .. factionCount .. " factions")
+
+        local success, err = pcall(lia.faction.formatModelData)
+
+        if success then
+            print("Successfully formatted model data for all factions")
+        else
+            print("Error formatting model data: " .. tostring(err))
         end
-        local success = formatFactionModels()
+
+        return success
+    end
+
+    local success = formatFactionModels()
     ```
 ]]
 --
@@ -756,44 +817,51 @@ end
         - categories (table): Table of category names for the faction's models
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get categories for a faction
     local categories = lia.faction.getCategories("police")
     print("Police categories: " .. table.concat(categories, ", "))
     ```
+
     Medium Complexity:
     ```lua
     -- Medium: Get categories with validation
     local factionID = "medic"
     local categories = lia.faction.getCategories(factionID)
+
     if #categories > 0 then
-    print("Categories for " .. factionID .. ":")
-    for _, category in ipairs(categories) do
-    print("- " .. category)
-    end
+        print("Categories for " .. factionID .. ":")
+        for _, category in ipairs(categories) do
+            print("- " .. category)
+        end
     else
-    print("No categories found for " .. factionID)
+        print("No categories found for " .. factionID)
     end
     ```
+
     High Complexity:
     ```lua
     -- High: Get categories for multiple factions with detailed info
     local function getFactionCategories(factionIDs)
-    local results = {}
-    for _, factionID in ipairs(factionIDs) do
-    local faction = lia.faction.get(factionID)
-    if faction then
-    local categories = lia.faction.getCategories(factionID)
-    results[factionID] = {
-    name = faction.name,
-    categories = categories,
-    categoryCount = #categories
-    }
+        local results = {}
+
+        for _, factionID in ipairs(factionIDs) do
+            local faction = lia.faction.get(factionID)
+            if faction then
+                local categories = lia.faction.getCategories(factionID)
+                results[factionID] = {
+                    name = faction.name,
+                    categories = categories,
+                    categoryCount = #categories
+                }
+            end
+        end
+
+        return results
     end
-    end
-    return results
-    end
+
     local factionData = getFactionCategories({"police", "medic", "citizen"})
     ```
 ]]
@@ -819,47 +887,54 @@ end
         - models (table): Table of models in the specified category
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get models from a category
     local models = lia.faction.getModelsFromCategory("police", "male")
     print("Male police models: " .. table.Count(models))
     ```
+
     Medium Complexity:
     ```lua
     -- Medium: Get models with validation
     local factionID = "medic"
     local category = "female"
     local models = lia.faction.getModelsFromCategory(factionID, category)
+
     if table.Count(models) > 0 then
-    print("Female medic models:")
-    for index, model in pairs(models) do
-    print("- " .. index .. ": " .. tostring(model))
-    end
+        print("Female medic models:")
+        for index, model in pairs(models) do
+            print("- " .. index .. ": " .. tostring(model))
+        end
     else
-    print("No models found in " .. category .. " category for " .. factionID)
+        print("No models found in " .. category .. " category for " .. factionID)
     end
     ```
+
     High Complexity:
     ```lua
     -- High: Get models from multiple categories with detailed processing
     local function getFactionModelsByCategory(factionID, categories)
-    local results = {}
-    for _, category in ipairs(categories) do
-    local models = lia.faction.getModelsFromCategory(factionID, category)
-    if table.Count(models) > 0 then
-    results[category] = {}
-    for index, model in pairs(models) do
-    table.insert(results[category], {
-    index = index,
-    model = model,
-    modelPath = istable(model) and model[1] or model
-    })
+        local results = {}
+
+        for _, category in ipairs(categories) do
+            local models = lia.faction.getModelsFromCategory(factionID, category)
+            if table.Count(models) > 0 then
+                results[category] = {}
+                for index, model in pairs(models) do
+                    table.insert(results[category], {
+                        index = index,
+                        model = model,
+                        modelPath = istable(model) and model[1] or model
+                    })
+                end
+            end
+        end
+
+        return results
     end
-    end
-    end
-    return results
-    end
+
     local modelData = getFactionModelsByCategory("police", {"male", "female", "special"})
     ```
 ]]
@@ -884,54 +959,61 @@ end
         - defaultClass (table): The default class object, or nil if not found
     Realm: Shared
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get default class for a faction
     local defaultClass = lia.faction.getDefaultClass("citizen")
     if defaultClass then
-    print("Default citizen class: " .. defaultClass.name)
+        print("Default citizen class: " .. defaultClass.name)
     end
     ```
+
     Medium Complexity:
     ```lua
     -- Medium: Get default class with validation
     local factionID = "police"
     local defaultClass = lia.faction.getDefaultClass(factionID)
+
     if defaultClass then
-    print("Default class for " .. factionID .. ": " .. defaultClass.name)
-    print("Description: " .. defaultClass.desc)
+        print("Default class for " .. factionID .. ": " .. defaultClass.name)
+        print("Description: " .. defaultClass.desc)
     else
-    print("No default class found for " .. factionID)
+        print("No default class found for " .. factionID)
     end
     ```
+
     High Complexity:
     ```lua
     -- High: Get default classes for multiple factions with fallback handling
     local function getDefaultClasses(factionIDs)
-    local results = {}
-    for _, factionID in ipairs(factionIDs) do
-    local defaultClass = lia.faction.getDefaultClass(factionID)
-    if defaultClass then
-    results[factionID] = {
-    name = defaultClass.name,
-    desc = defaultClass.desc,
-    class = defaultClass
-    }
-    else
-    -- Fallback to first available class
-    local classes = lia.faction.getClasses(factionID)
-    if #classes > 0 then
-    results[factionID] = {
-    name = classes[1].name,
-    desc = classes[1].desc,
-    class = classes[1],
-    isFallback = true
-    }
+        local results = {}
+
+        for _, factionID in ipairs(factionIDs) do
+            local defaultClass = lia.faction.getDefaultClass(factionID)
+            if defaultClass then
+                results[factionID] = {
+                    name = defaultClass.name,
+                    desc = defaultClass.desc,
+                    class = defaultClass
+                }
+            else
+                -- Fallback to first available class
+                local classes = lia.faction.getClasses(factionID)
+                if #classes > 0 then
+                    results[factionID] = {
+                        name = classes[1].name,
+                        desc = classes[1].desc,
+                        class = classes[1],
+                        isFallback = true
+                    }
+                end
+            end
+        end
+
+        return results
     end
-    end
-    end
-    return results
-    end
+
     local defaultClasses = getDefaultClasses({"citizen", "police", "medic"})
     ```
 ]]
@@ -965,42 +1047,49 @@ FACTION_STAFF = lia.faction.register("staff", {
         - hasWhitelist (boolean): True if the faction has whitelist restrictions, false otherwise
     Realm: Client
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if faction has whitelist
     local hasWhitelist = lia.faction.hasWhitelist("police")
     print("Police has whitelist: " .. tostring(hasWhitelist))
     ```
+
     Medium Complexity:
     ```lua
     -- Medium: Check whitelist with validation
     local factionID = "medic"
     local hasWhitelist = lia.faction.hasWhitelist(factionID)
+
     if hasWhitelist then
-    print("Faction " .. factionID .. " requires whitelist")
+        print("Faction " .. factionID .. " requires whitelist")
     else
-    print("Faction " .. factionID .. " is open to all players")
+        print("Faction " .. factionID .. " is open to all players")
     end
     ```
+
     High Complexity:
     ```lua
     -- High: Check whitelist for multiple factions with detailed info
     local function checkFactionWhitelists(factionIDs)
-    local results = {}
-    for _, factionID in ipairs(factionIDs) do
-    local faction = lia.faction.get(factionID)
-    if faction then
-    local hasWhitelist = lia.faction.hasWhitelist(factionID)
-    results[factionID] = {
-    name = faction.name,
-    hasWhitelist = hasWhitelist,
-    isDefault = faction.isDefault,
-    canAccess = not hasWhitelist or faction.isDefault
-    }
+        local results = {}
+
+        for _, factionID in ipairs(factionIDs) do
+            local faction = lia.faction.get(factionID)
+            if faction then
+                local hasWhitelist = lia.faction.hasWhitelist(factionID)
+                results[factionID] = {
+                    name = faction.name,
+                    hasWhitelist = hasWhitelist,
+                    isDefault = faction.isDefault,
+                    canAccess = not hasWhitelist or faction.isDefault
+                }
+            end
+        end
+
+        return results
     end
-    end
-    return results
-    end
+
     local whitelistInfo = checkFactionWhitelists({"citizen", "police", "medic", "staff"})
     ```
 ]]
@@ -1029,42 +1118,49 @@ if CLIENT then
         - hasWhitelist (boolean): True if the faction has whitelist restrictions, false otherwise
     Realm: Server
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if faction has whitelist
     local hasWhitelist = lia.faction.hasWhitelist("police")
     print("Police has whitelist: " .. tostring(hasWhitelist))
     ```
+
     Medium Complexity:
     ```lua
     -- Medium: Check whitelist with validation
     local factionID = "medic"
     local hasWhitelist = lia.faction.hasWhitelist(factionID)
+
     if hasWhitelist then
-    print("Faction " .. factionID .. " requires whitelist")
+        print("Faction " .. factionID .. " requires whitelist")
     else
-    print("Faction " .. factionID .. " is open to all players")
+        print("Faction " .. factionID .. " is open to all players")
     end
     ```
+
     High Complexity:
     ```lua
     -- High: Check whitelist for multiple factions with detailed info
     local function checkFactionWhitelists(factionIDs)
-    local results = {}
-    for _, factionID in ipairs(factionIDs) do
-    local faction = lia.faction.get(factionID)
-    if faction then
-    local hasWhitelist = lia.faction.hasWhitelist(factionID)
-    results[factionID] = {
-    name = faction.name,
-    hasWhitelist = hasWhitelist,
-    isDefault = faction.isDefault,
-    canAccess = not hasWhitelist or faction.isDefault
-    }
+        local results = {}
+
+        for _, factionID in ipairs(factionIDs) do
+            local faction = lia.faction.get(factionID)
+            if faction then
+                local hasWhitelist = lia.faction.hasWhitelist(factionID)
+                results[factionID] = {
+                    name = faction.name,
+                    hasWhitelist = hasWhitelist,
+                    isDefault = faction.isDefault,
+                    canAccess = not hasWhitelist or faction.isDefault
+                }
+            end
+        end
+
+        return results
     end
-    end
-    return results
-    end
+
     local whitelistInfo = checkFactionWhitelists({"citizen", "police", "medic", "staff"})
     ```
 ]]
