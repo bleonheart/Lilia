@@ -2669,6 +2669,95 @@ function GetInjuredText(c)
 end
 
 --[[
+    Purpose: Allows modification of the voice indicator text displayed when a player is speaking
+    When Called: When the voice indicator is being drawn during voice chat
+    Parameters:
+        client (Player) - The LocalPlayer() who is currently speaking
+        voiceText (string) - The current voice indicator text (e.g., "You are talking - 3 people can hear you")
+        voiceType (string) - The voice type string (e.g., "talking", "whispering", "yelling")
+    Returns: string|nil - Return a string to replace the voice text, or return nil/false to keep the original text
+    Realm: Client
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Add emojis to voice indicator
+    hook.Add("ModifyVoiceIndicatorText", "AddVoiceEmojis", function(client, voiceText, voiceType)
+        if voiceType == L("whispering") then
+            return "🔇 " .. voiceText .. " 🔇"
+        elseif voiceType == L("yelling") then
+            return "📢 " .. voiceText .. " 📢"
+        elseif voiceType == L("talking") then
+            return "💬 " .. voiceText .. " 💬"
+        end
+        return nil -- Keep original text
+    end)
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Custom formatting based on voice type
+    hook.Add("ModifyVoiceIndicatorText", "CustomVoiceFormat", function(client, voiceText, voiceType)
+        local char = client:getChar()
+        if not char then return nil end
+        local name = char:getName()
+        if voiceType == L("whispering") then
+            return name .. " is whispering quietly..."
+        elseif voiceType == L("yelling") then
+            return name .. " is YELLING LOUDLY!"
+        elseif voiceType == L("talking") then
+            return name .. " is speaking normally"
+        end
+        return nil -- Keep original text
+    end)
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Advanced voice indicator with listener count calculation
+    hook.Add("ModifyVoiceIndicatorText", "AdvancedVoiceIndicator", function(client, voiceText, voiceType)
+        local char = client:getChar()
+        if not char then return nil end
+        
+        -- Extract listener count if voice range is enabled
+        local listenerCount = 0
+        if lia.option.get("voiceRange", false) then
+            local match = voiceText:match("(%d+) people can hear you")
+            if match then
+                listenerCount = tonumber(match)
+            end
+        end
+        
+        -- Custom formatting with color codes
+        local prefix = ""
+        local suffix = ""
+        
+        if voiceType == L("whispering") then
+            prefix = "[QUIET] "
+            suffix = " whispers softly"
+        elseif voiceType == L("yelling") then
+            prefix = "[LOUD] "
+            suffix = " YELLS LOUDLY"
+        elseif voiceType == L("talking") then
+            prefix = "[NORMAL] "
+            suffix = " speaks"
+        end
+        
+        local result = prefix .. voiceText:gsub("You are ", ""):gsub(" - %d+ people can hear you", "") .. suffix
+        
+        -- Add listener count back if it was present
+        if listenerCount > 0 then
+            result = result .. " - " .. listenerCount .. " people can hear you"
+        end
+        
+        return result
+    end)
+    ```
+]]
+function ModifyVoiceIndicatorText(client, voiceText, voiceType)
+end
+
+--[[
     Purpose: Called to get main menu position
     When Called: When positioning the main menu UI
     Parameters:
