@@ -2015,7 +2015,7 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     if #cmds > 0 then hasOptions = true end
-    hook.Run("PopulateAdminStick", tempMenu, tgt)
+    hook.Run("PopulateAdminStick", tempMenu, tgt, stores)
     tempMenu:Remove()
     if not hasOptions then
         cl:notifyInfoLocalized("adminStickNoOptions")
@@ -2113,7 +2113,7 @@ function MODULE:OpenAdminStickUI(tgt)
         end
     end
 
-    hook.Run("PopulateAdminStick", menu, tgt)
+    hook.Run("PopulateAdminStick", menu, tgt, stores)
     function menu:OnRemove()
         cl.AdminStickTarget = nil
         AdminStickIsOpen = false

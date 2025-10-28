@@ -152,31 +152,43 @@ function PANEL:CreateSection(parent, title)
     frame:Dock(TOP)
     frame:DockMargin(0, 10, 0, 10)
     frame:SetTall(200)
+    local maxSectionHeight = ScrH() * 0.45
     frame.Paint = function(_, w)
         draw.SimpleText(L(title), "liaSmallFont", w / 2, 8, lia.color.theme.text or Color(210, 235, 235), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         surface.SetDrawColor(lia.color.theme.theme.r, lia.color.theme.theme.g, lia.color.theme.theme.b, 100)
         surface.DrawLine(12, 28, w - 12, 28)
     end
 
-    local contents = vgui.Create("DPanel", frame)
-    contents:Dock(FILL)
-    contents:DockPadding(8, 35, 8, 10)
+    local header = vgui.Create("DPanel", frame)
+    header:SetTall(35)
+    header:Dock(TOP)
+    header:DockPadding(0, 0, 0, 0)
+    header.Paint = function() end
+
+    local scroll = vgui.Create("liaScrollPanel", frame)
+    scroll:Dock(FILL)
+    scroll.Paint = function() end
+    local contents = scroll:GetCanvas()
+    contents:DockPadding(8, 8, 8, 10)
     contents.Paint = function() end
-    contents.PerformLayout = function(s)
-        local contentHeight = 35
-        for _, child in ipairs(s:GetChildren()) do
+
+    frame.PerformLayout = function(f)
+        local estimatedHeight = 35
+        for _, child in ipairs(contents:GetChildren()) do
             if IsValid(child) then
-                contentHeight = contentHeight + child:GetTall()
+                estimatedHeight = estimatedHeight + child:GetTall()
                 if child.GetDockMargin then
-                    local _, top = child:GetDockMargin()
-                    if top then contentHeight = contentHeight + top end
+                    local _, top, _, bottom = child:GetDockMargin()
+                    if top then estimatedHeight = estimatedHeight + top end
+                    if bottom then estimatedHeight = estimatedHeight + bottom end
                 end
             end
         end
 
-        contentHeight = contentHeight + 10
-        frame:SetTall(math.max(60, contentHeight))
+        estimatedHeight = estimatedHeight + 10
+        f:SetTall(math.max(100, math.min(estimatedHeight, maxSectionHeight)))
     end
+
     return contents
 end
 

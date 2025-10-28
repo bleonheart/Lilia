@@ -5153,6 +5153,7 @@ end
     Parameters:
         tempMenu (Menu) - The menu being populated
         tgt (Entity) - The target entity
+        stores (table) - A table containing references to existing submenu categories
     Returns: None
     Realm: Client
     Example Usage:
@@ -5160,7 +5161,7 @@ end
     Low Complexity:
     ```lua
     -- Simple: Add basic option
-    hook.Add("PopulateAdminStick", "MyAddon", function(tempMenu, tgt)
+    hook.Add("PopulateAdminStick", "MyAddon", function(tempMenu, tgt, stores)
         tempMenu:AddOption("Custom Action", function()
             print("Custom action performed")
         end)
@@ -5170,7 +5171,7 @@ end
     Medium Complexity:
     ```lua
     -- Medium: Add conditional options
-    hook.Add("PopulateAdminStick", "ConditionalAdminOptions", function(tempMenu, tgt)
+    hook.Add("PopulateAdminStick", "ConditionalAdminOptions", function(tempMenu, tgt, stores)
         if IsValid(tgt) and tgt:IsPlayer() then
             tempMenu:AddOption("Teleport To", function()
                 RunConsoleCommand("lia_plyteleporttome", tgt:SteamID())
@@ -5182,7 +5183,7 @@ end
     High Complexity:
     ```lua
     -- High: Complex admin stick menu
-    hook.Add("PopulateAdminStick", "AdvancedAdminStick", function(tempMenu, tgt)
+    hook.Add("PopulateAdminStick", "AdvancedAdminStick", function(tempMenu, tgt, stores)
         if not IsValid(tgt) then return end
 
         -- Player options
@@ -5210,8 +5211,28 @@ end
         end)
     end)
     ```
+
+    Using Stores to Add to Existing Categories:
+    ```lua
+    -- Add to existing submenu categories
+    hook.Add("PopulateAdminStick", "AddToExistingMenus", function(tempMenu, tgt, stores)
+        -- Add to existing teleportation submenu
+        if stores and stores["teleportation"] and IsValid(stores["teleportation"]) then
+            stores["teleportation"]:AddOption("Custom Teleport", function()
+                RunConsoleCommand("lia_customteleport", tgt:SteamID())
+            end)
+        end
+
+        -- Add to existing utility commands submenu
+        if stores and stores["utility_commands"] and IsValid(stores["utility_commands"]) then
+            stores["utility_commands"]:AddOption("Custom Utility", function()
+                print("Custom utility command")
+            end)
+        end
+    end)
+    ```
 ]]
-function PopulateAdminStick(tempMenu, tgt)
+function PopulateAdminStick(tempMenu, tgt, stores)
 end
 
 --[[
