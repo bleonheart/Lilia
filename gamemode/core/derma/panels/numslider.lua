@@ -30,12 +30,9 @@ function PANEL:Init()
         local sliderWidth = 20
         local sliderHeight = h
         local sliderX = ((self.value - self.min) / (self.max - self.min)) * (trackWidth - sliderWidth)
-
-        -- Use standard draw.RoundedBox for performance instead of expensive lia.derma operations
         local trackColor = lia.color.theme.slider_track or Color(60, 60, 60)
         draw.RoundedBox(16, 0, 0, w, h, trackColor)
         draw.RoundedBox(16, sliderX, 0, sliderWidth, h, lia.color.theme.theme)
-
         if s:IsHovered() or self.dragging then
             self.hoverAnim = math.Clamp(self.hoverAnim + FrameTime() * 8, 0, 1)
         else

@@ -143,7 +143,7 @@ function QuickPanel:Init()
 
     self.items = {}
     self.optionsCache = {}
-    self.forceRepopulate = true -- Force initial population
+    self.forceRepopulate = true
     hook.Run("SetupQuickMenu", self)
     self:populateOptions()
     local h = 0
@@ -160,11 +160,7 @@ function QuickPanel:Init()
     self:SetZPos(999)
     self:SetMouseInputEnabled(true)
     hook.Add("OnThemeChanged", self, function() if IsValid(self) then self:RefreshTheme() end end)
-    hook.Add("OptionAdded", self, function(_, key, option)
-        if (option.isQuick or (option.data and option.data.isQuick)) and IsValid(self) then
-            self:InvalidateCache()
-        end
-    end)
+    hook.Add("OptionAdded", self, function(_, key, option) if (option.isQuick or (option.data and option.data.isQuick)) and IsValid(self) then self:InvalidateCache() end end)
 end
 
 function QuickPanel:Paint(w, h)
@@ -179,7 +175,6 @@ end
 function QuickPanel:PerformLayout(w)
     if IsValid(self.cls) then self.cls:SetPos(w - 22, 2) end
 end
-
 
 function QuickPanel:addButton(text, cb)
     local btn = self.scroll:Add("liaButton")
@@ -247,12 +242,12 @@ function QuickPanel:RefreshTheme()
     if not IsValid(self) then return end
     if IsValid(self.scroll) then
         self.scroll.Paint = function(_, w, h)
-            -- Use standard Garry's Mod drawing instead of expensive lia.derma for performance
             local theme = lia.color.theme
             local panelColor = theme and theme.panel and theme.panel[1] or Color(50, 50, 50)
             draw.RoundedBox(8, 0, 0, w, h, panelColor)
         end
     end
+
     for _, item in ipairs(self.items or {}) do
         if IsValid(item) and item.SetTextColor then item:SetTextColor(lia.color.theme.text or color_white) end
     end
@@ -271,24 +266,18 @@ function QuickPanel:OnRemove()
 end
 
 function QuickPanel:OnClose()
-    -- Override close behavior to hide instead of remove when panel is persistent
     self:SetVisible(false)
-    return false -- Prevent default close behavior
+    return false
 end
 
 function QuickPanel:populateOptions()
-    -- Use a more aggressive caching system to prevent FPS drops from frequent right-clicks
     if self.optionsCache and #self.optionsCache > 0 and not self.forceRepopulate then
-        -- Re-add cached items without recreating them
         for _, item in ipairs(self.optionsCache) do
-            if IsValid(item) then
-                self.items[#self.items + 1] = item
-            end
+            if IsValid(item) then self.items[#self.items + 1] = item end
         end
         return
     end
 
-    -- Clear existing items only if we're force repopulating
     if self.forceRepopulate then
         for _, item in ipairs(self.items) do
             if IsValid(item) then item:Remove() end
@@ -298,7 +287,6 @@ function QuickPanel:populateOptions()
     self.items = {}
     self.optionsCache = {}
     self.forceRepopulate = false
-
     local allOptions = {}
     for k, v in pairs(lia.option.stored) do
         if v and (v.isQuick or v.data and v.data.isQuick) then

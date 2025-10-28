@@ -4263,13 +4263,11 @@ if SERVER then
         lia.net[self] = lia.net[self] or {}
         local oldValue = lia.net[self][key]
         lia.net[self][key] = value
-        -- Send to all clients so they can see other players' states (like handcuffs)
         net.Start("liaNetVar")
         net.WriteUInt(self:EntIndex(), 16)
         net.WriteString(key)
         net.WriteType(value)
         net.Broadcast()
-        -- Also send locally for immediate feedback
         if not self:IsBot() then
             net.Start("liaNetLocal")
             net.WriteString(key)

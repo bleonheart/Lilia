@@ -29,4 +29,3 @@ function SWEP:Reload()
     lia.websound.playButtonSound("buttons/button17.wav")
     owner:ChatPrint(L("distanceMeasureDistance", math.Round(distance)))
 end
-

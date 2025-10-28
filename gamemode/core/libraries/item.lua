@@ -83,7 +83,7 @@ local DefaultFunctions = {
                 local h = newRot and (item.width or 1) or item.height or 1
                 local invW, invH = inv:getSize()
                 if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then
-                    if item.player and item.player.notifyLocalized then item.player:notifyErrorLocalized("itemNoFit", w, h) end
+                    item.player:notifyErrorLocalized("itemNoFit", w, h)
                     return false
                 end
 
@@ -96,7 +96,7 @@ local DefaultFunctions = {
                             local x2 = x + w - 1
                             local y2 = y + h - 1
                             if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then
-                                if item.player and item.player.notifyLocalized then item.player:notifyErrorLocalized("itemNoFit", w, h) end
+                                item.player:notifyErrorLocalized("itemNoFit", w, h)
                                 return false
                             end
                         end

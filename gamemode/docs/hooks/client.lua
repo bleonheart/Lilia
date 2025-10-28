@@ -5434,6 +5434,98 @@ function GetAdminStickLists(tgt, lists)
 end
 
 --[[
+    Purpose: Called to register custom subcategories for admin stick menu categories
+    When Called: During admin stick menu generation, before menu population
+    Parameters:
+        categories (table) - The categories table to modify by reference
+    Returns: None (modified by reference)
+    Realm: Client
+    Category Structure:
+        categories[categoryKey] should be a table with:
+        - name (string) - Display name of the category
+        - icon (string) - Icon path for the category
+        - subcategories (table) - Table of subcategories
+
+        Each subcategory in subcategories[subKey] should be a table with:
+        - name (string) - Display name of the subcategory
+        - icon (string) - Icon path for the subcategory
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Add a single subcategory to an existing category
+    hook.Add("RegisterAdminStickSubcategories", "MyAddonSubcategories", function(categories)
+        if categories.characterManagement then
+            categories.characterManagement.subcategories = categories.characterManagement.subcategories or {}
+            categories.characterManagement.subcategories.myAddon = {
+                name = "My Addon Tools",
+                icon = "icon16/plugin.png"
+            }
+        end
+    end)
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Add multiple subcategories and ensure category exists
+    hook.Add("RegisterAdminStickSubcategories", "BankingSubcategories", function(categories)
+        -- Ensure banking category exists
+        categories.banking = categories.banking or {
+            name = "Banking",
+            icon = "icon16/money.png",
+            subcategories = {}
+        }
+
+        -- Add subcategories
+        categories.banking.subcategories.admin = {
+            name = "Admin Banking",
+            icon = "icon16/shield.png"
+        }
+        categories.banking.subcategories.player = {
+            name = "Player Banking",
+            icon = "icon16/user_green.png"
+        }
+    end)
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Complex addon with multiple categories and subcategories
+    hook.Add("RegisterAdminStickSubcategories", "ComplexAddon", function(categories)
+        -- Create main category
+        categories.myComplexAddon = {
+            name = "My Complex Addon",
+            icon = "icon16/application.png",
+            subcategories = {
+                management = {
+                    name = "Management",
+                    icon = "icon16/cog.png"
+                },
+                statistics = {
+                    name = "Statistics",
+                    icon = "icon16/chart_bar.png"
+                },
+                maintenance = {
+                    name = "Maintenance",
+                    icon = "icon16/wrench.png"
+                }
+            }
+        }
+
+        -- Add to existing category
+        if categories.characterManagement then
+            categories.characterManagement.subcategories.myAddon = {
+                name = "My Addon Integration",
+                icon = "icon16/plugin_add.png"
+            }
+        end
+    end)
+    ```
+]]
+function RegisterAdminStickSubcategories(categories)
+end
+
+--[[
     Purpose: Called to populate admin tabs
     When Called: When building the admin panel tabs
     Parameters:

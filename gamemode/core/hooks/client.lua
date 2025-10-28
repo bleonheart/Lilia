@@ -324,7 +324,6 @@ function GM:HUDPaint()
                         font = info.font or "LiliaFont.20"
                     }
 
-                    -- Add optional styling properties
                     if info.backgroundColor then drawOptions.backgroundColor = info.backgroundColor end
                     if info.borderColor then drawOptions.borderColor = info.borderColor end
                     if info.borderRadius then drawOptions.borderRadius = info.borderRadius end
@@ -335,7 +334,6 @@ function GM:HUDPaint()
                     if info.lineSpacing then drawOptions.lineSpacing = info.lineSpacing end
                     if info.autoSize then drawOptions.autoSize = info.autoSize end
                     if info.blur then drawOptions.blur = info.blur end
-
                     lia.derma.drawBoxWithText(info.text, info.position.x, info.position.y, drawOptions)
                 end
             end
@@ -528,7 +526,6 @@ function GM:OnContextMenuOpen()
     else
         lia.gui.quick:SetVisible(true)
         lia.gui.quick:MakePopup()
-        -- Refresh options in case they changed while hidden
         lia.gui.quick:populateOptions()
     end
 end
@@ -631,40 +628,6 @@ end
 
 function GM:DrawDeathNotice()
     return false
-end
-
-function GM:RefreshFonts()
-    local function refreshPanel(panel)
-        if not IsValid(panel) then return end
-        panel:InvalidateLayout(true)
-        panel:SetVisible(false)
-        panel:SetVisible(true)
-        for _, child in pairs(panel:GetChildren()) do
-            refreshPanel(child)
-        end
-    end
-
-    if lia.gui.menu and IsValid(lia.gui.menu) then
-        lia.gui.menu:Update()
-        refreshPanel(lia.gui.menu)
-    end
-
-    if lia.gui.character and IsValid(lia.gui.character) then
-        lia.gui.character:Update()
-        refreshPanel(lia.gui.character)
-    end
-
-    if lia.gui.score and IsValid(lia.gui.score) then
-        lia.gui.score:Update()
-        refreshPanel(lia.gui.score)
-    end
-
-    if lia.gui.chat and IsValid(lia.gui.chat) then
-        lia.gui.chat:Update()
-        refreshPanel(lia.gui.chat)
-    end
-
-    hook.Run("OnFontsRefreshed")
 end
 
 function GM:GetMainMenuPosition(character)

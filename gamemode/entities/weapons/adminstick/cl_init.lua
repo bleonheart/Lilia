@@ -27,7 +27,6 @@ function SWEP:GetTarget()
     return target
 end
 
-
 function SWEP:Reload()
     if self.NextReload and self.NextReload > SysTime() then return end
     self.NextReload = SysTime() + 0.5

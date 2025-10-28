@@ -52,12 +52,10 @@ end
 function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if not IsValid(client) or not IsValid(target) then return end
-    -- Allow admins/superadmins to see options, or users with specific privileges
     local userGroup = client:GetUserGroup()
     local isAdmin = userGroup == "admin" or userGroup == "superadmin" or userGroup == "owner" or userGroup == "moderator"
     if not (isAdmin or client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or (client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty())) then return end
     local orderedOptions = {}
-    -- Add basic copy options
     table.insert(orderedOptions, {
         name = L("nameCopyFormat", target:Name()),
         image = "icon16/page_copy.png",
@@ -88,7 +86,6 @@ function MODULE:ShowPlayerOptions(target, options)
         end
     })
 
-    -- Add conditional options
     local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
     if not isBlinded then
         table.insert(orderedOptions, {
@@ -138,14 +135,12 @@ function MODULE:ShowPlayerOptions(target, options)
         })
     end
 
-    -- Always available options
     table.insert(orderedOptions, {
         name = L("slay"),
         image = "icon16/bomb.png",
         func = function() lia.administrator.execCommand("slay", target) end
     })
 
-    -- Unconditional options (bring, goto, etc.)
     table.insert(orderedOptions, {
         name = L("bring"),
         image = "icon16/arrow_down.png",
@@ -170,7 +165,6 @@ function MODULE:ShowPlayerOptions(target, options)
         func = function() lia.administrator.execCommand("return", target) end
     })
 
-    -- Add remaining conditional options
     if isBlinded then
         table.insert(orderedOptions, {
             name = L("unblind"),
@@ -1089,6 +1083,9 @@ local function GenerateDynamicCategories()
     end
 
     hook.Run("RegisterAdminStickSubcategories", mergedCategories)
+    for key, _ in pairs(mergedCategories) do
+        if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
+    end
     return mergedCategories, orderedCategories
 end
 
@@ -1143,7 +1140,17 @@ end
 local function GetOrCreateCategoryMenu(parent, categoryKey, store)
     if not parent or not IsValid(parent) then return end
     local category = MODULE.adminStickCategories[categoryKey]
-    if not category then return parent end
+    if not category then
+        MODULE.adminStickCategories[categoryKey] = {
+            name = L(categoryKey) ~= categoryKey and L(categoryKey) or categoryKey:gsub("(%l)(%w*)", function(a, b) return string.upper(a) .. b end):gsub("_", " "),
+            icon = GetIconForCategory(categoryKey),
+            subcategories = {}
+        }
+
+        category = MODULE.adminStickCategories[categoryKey]
+        if MODULE.adminStickCategoryOrder and not table.HasValue(MODULE.adminStickCategoryOrder, categoryKey) then table.insert(MODULE.adminStickCategoryOrder, categoryKey) end
+    end
+
     if not store[categoryKey] then
         local menu, option = parent:AddSubMenu(category.name, function() end)
         if category.icon and option then option:SetIcon(category.icon) end
@@ -1159,7 +1166,16 @@ end
 local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, store)
     if not parent or not IsValid(parent) then return end
     local category = MODULE.adminStickCategories[categoryKey]
-    if not category or not category.subcategories or not category.subcategories[subcategoryKey] then return parent end
+    if not category then category = GetOrCreateCategoryMenu(parent, categoryKey, store) and MODULE.adminStickCategories[categoryKey] end
+    if not category then return parent end
+    category.subcategories = category.subcategories or {}
+    if not category.subcategories[subcategoryKey] then
+        category.subcategories[subcategoryKey] = {
+            name = L(subcategoryKey) ~= subcategoryKey and L(subcategoryKey) or subcategoryKey:gsub("(%l)(%w*)", function(a, b) return string.upper(a) .. b end):gsub("_", " "),
+            icon = GetIconForCategory(subcategoryKey)
+        }
+    end
+
     local subcategory = category.subcategories[subcategoryKey]
     local fullKey = categoryKey .. "_" .. subcategoryKey
     if not store[fullKey] then
@@ -1178,23 +1194,16 @@ local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
     local menu = existingMenu or lia.derma.dermaMenu()
     if not IsValid(menu) then return menu end
     local cl = LocalPlayer()
-    local categories, categoryOrder
-    if not MODULE.adminStickCategories or table.Count(MODULE.adminStickCategories) == 0 then
-        categories, categoryOrder = GenerateDynamicCategories()
-        MODULE.adminStickCategories = categories
-        MODULE.adminStickCategoryOrder = categoryOrder
-    else
-        categories = MODULE.adminStickCategories
-        categoryOrder = MODULE.adminStickCategoryOrder
-    end
-
+    local categories, categoryOrder = GenerateDynamicCategories()
+    MODULE.adminStickCategories = categories
+    MODULE.adminStickCategoryOrder = categoryOrder
     for _, categoryKey in ipairs(categoryOrder) do
         local category = categories[categoryKey]
         if category then
             local hasContent
             if categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
-            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() or cl:IsAdmin()) then
+            elseif categoryKey == "characterManagement" and tgt:IsPlayer() then
                 hasContent = true
             elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
@@ -1225,7 +1234,7 @@ local function OpenPlayerModelUI(tgt)
     AdminStickIsOpen = true
     local fr = vgui.Create("liaFrame")
     fr:SetTitle(L("changePlayerModel"))
-    fr:SetSize(450, 300)
+    fr:SetSize(800, 600)
     fr:Center()
     function fr:OnClose()
         fr:Remove()
@@ -1264,10 +1273,147 @@ local function OpenPlayerModelUI(tgt)
     for _, md in ipairs(modList) do
         local ic = wr:Add("SpawnIcon")
         ic:SetModel(md.mdl)
-        ic:SetSize(64, 64)
+        ic:SetSize(128, 128)
         ic:SetTooltip(md.name)
         ic.model_path = md.mdl
         ic.DoClick = function() ed:SetValue(ic.model_path) end
+    end
+
+    fr:MakePopup()
+end
+
+local function OpenFactionPlayerModelUI(tgt)
+    AdminStickIsOpen = true
+    local fr = vgui.Create("liaFrame")
+    fr:SetTitle(L("changePlayerModel") .. " - " .. L("faction"))
+    fr:SetSize(800, 600)
+    fr:Center()
+    function fr:OnClose()
+        fr:Remove()
+        LocalPlayer().AdminStickTarget = nil
+        AdminStickIsOpen = false
+    end
+
+    local sc = vgui.Create("liaScrollPanel", fr)
+    sc:Dock(FILL)
+    local wr = vgui.Create("DIconLayout", sc)
+    wr:Dock(FILL)
+    local ed = vgui.Create("liaEntry", fr)
+    ed:Dock(BOTTOM)
+    ed:SetText(tgt:GetModel())
+    local bt = vgui.Create("liaButton", fr)
+    bt:SetText(L("change"))
+    bt:Dock(TOP)
+    function bt:DoClick()
+        local txt = ed:GetValue()
+        local id = GetIdentifier(tgt)
+        if id ~= "" then RunConsoleCommand("say", "/charsetmodel " .. QuoteArgs(id, txt)) end
+        fr:Remove()
+        LocalPlayer().AdminStickTarget = nil
+        AdminStickIsOpen = false
+    end
+
+    local factionList = {}
+    for k, v in pairs(lia.faction.teams) do
+        table.insert(factionList, {
+            name = v.name,
+            uniqueID = k,
+            faction = v
+        })
+    end
+
+    table.sort(factionList, function(a, b) return a.name < b.name end)
+    for _, factionData in ipairs(factionList) do
+        local fac = factionData.faction
+        local ic = wr:Add("SpawnIcon")
+        ic:SetModel(fac.models and (istable(fac.models) and #fac.models > 0 and fac.models[1] or fac.models) or "models/player/group01/male_01.mdl")
+        ic:SetSize(128, 128)
+        ic:SetTooltip(factionData.name)
+        ic.factionData = fac
+        ic.DoClick = function()
+            wr:Clear()
+            local backBtn = vgui.Create("liaButton", fr)
+            backBtn:SetText(L("back"))
+            backBtn:Dock(TOP)
+            function backBtn:DoClick()
+                backBtn:Remove()
+                OpenFactionPlayerModelUI(tgt)
+            end
+
+            local models = fac.models or {}
+            local modList = {}
+            if istable(models) then
+                if models.male or models.female then
+                    if models.male then
+                        for _, modelData in ipairs(models.male) do
+                            if istable(modelData) then
+                                table.insert(modList, {
+                                    name = modelData[2] or factionData.name,
+                                    mdl = modelData[1],
+                                    faction = factionData.name
+                                })
+                            else
+                                table.insert(modList, {
+                                    name = factionData.name,
+                                    mdl = modelData,
+                                    faction = factionData.name
+                                })
+                            end
+                        end
+                    end
+
+                    if models.female then
+                        for _, modelData in ipairs(models.female) do
+                            if istable(modelData) then
+                                table.insert(modList, {
+                                    name = modelData[2] or factionData.name,
+                                    mdl = modelData[1],
+                                    faction = factionData.name
+                                })
+                            else
+                                table.insert(modList, {
+                                    name = factionData.name,
+                                    mdl = modelData,
+                                    faction = factionData.name
+                                })
+                            end
+                        end
+                    end
+                else
+                    for _, modelData in ipairs(models) do
+                        if istable(modelData) then
+                            table.insert(modList, {
+                                name = modelData[2] or factionData.name,
+                                mdl = modelData[1],
+                                faction = factionData.name
+                            })
+                        else
+                            table.insert(modList, {
+                                name = factionData.name,
+                                mdl = modelData,
+                                faction = factionData.name
+                            })
+                        end
+                    end
+                end
+            else
+                table.insert(modList, {
+                    name = factionData.name,
+                    mdl = models,
+                    faction = factionData.name
+                })
+            end
+
+            table.sort(modList, function(a, b) return a.name < b.name end)
+            for _, md in ipairs(modList) do
+                local modelIc = wr:Add("SpawnIcon")
+                modelIc:SetModel(md.mdl)
+                modelIc:SetSize(128, 128)
+                modelIc:SetTooltip(md.name .. " (" .. md.faction .. ")")
+                modelIc.model_path = md.mdl
+                modelIc.DoClick = function() ed:SetValue(modelIc.model_path) end
+            end
+        end
     end
 
     fr:MakePopup()
@@ -1325,7 +1471,7 @@ end
 
 local function IncludeAdminMenu(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() or cl:IsAdmin()) then return end
+    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
     local modCategory = GetOrCreateCategoryMenu(menu, "moderation", stores)
     if not modCategory then return end
     local modSubCategory = GetOrCreateSubCategoryMenu(modCategory, "moderation", "moderationTools", stores)
@@ -1533,6 +1679,11 @@ local function IncludeCharacterManagement(tgt, menu, stores)
             OpenPlayerModelUI(tgt)
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/user_suit.png")
+
+        attributesSubCategory:AddOption(L("changePlayerModel") .. " - " .. L("faction"), function()
+            OpenFactionPlayerModelUI(tgt)
+            timer.Simple(0.1, function() AdminStickIsOpen = false end)
+        end):SetIcon("icon16/group.png")
 
         if attributesSubCategory.UpdateSize then attributesSubCategory:UpdateSize() end
     end
@@ -1852,7 +2003,6 @@ function MODULE:OpenAdminStickUI(tgt)
     AdminStickIsOpen = true
     local menu = lia.derma.dermaMenu()
     if not IsValid(menu) then return end
-    -- Add info items FIRST before categories (for player targets)
     if tgt:IsPlayer() then
         local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
         local info = {
@@ -1898,11 +2048,9 @@ function MODULE:OpenAdminStickUI(tgt)
             option:SetZPos(-100)
         end
 
-        -- Add separator
         menu:AddSpacer()
     end
 
-    -- Now create and populate categories
     CreateOrganizedAdminStickMenu(tgt, stores, menu)
     menu:Center()
     menu:MakePopup()
@@ -3484,3 +3632,168 @@ function MODULE:OnAdminStickMenuClosed()
     local client = LocalPlayer()
     if IsValid(client) and client.AdminStickTarget == client then client.AdminStickTarget = nil end
 end
+
+lia.command.add("testsounds", {
+    desc = "Open websound testing interface",
+    privilege = "adminChat",
+    adminOnly = true,
+    onRun = function(client)
+        local frame = vgui.Create("liaFrame")
+        frame:SetTitle("WebSound Test Interface")
+        frame:SetSize(600, 500)
+        frame:Center()
+        frame:MakePopup()
+
+        -- Get registered websounds
+        local websounds = lia.websound.stored or {}
+        local soundList = {}
+        for name, url in pairs(websounds) do
+            table.insert(soundList, name)
+        end
+        table.sort(soundList)
+
+        -- Sound selection combobox
+        local soundLabel = vgui.Create("DLabel", frame)
+        soundLabel:SetText("Select WebSound:")
+        soundLabel:Dock(TOP)
+        soundLabel:DockMargin(5, 5, 5, 0)
+
+        local soundCombo = vgui.Create("liaComboBox", frame)
+        soundCombo:Dock(TOP)
+        soundCombo:DockMargin(5, 0, 5, 5)
+        soundCombo:PostInit()
+
+        for _, soundName in ipairs(soundList) do
+            soundCombo:AddChoice(soundName, soundName)
+        end
+
+        if #soundList > 0 then
+            soundCombo:SetValue(soundList[1])
+        end
+
+        -- Test buttons panel
+        local buttonPanel = vgui.Create("DPanel", frame)
+        buttonPanel:Dock(FILL)
+        buttonPanel:DockMargin(5, 5, 5, 5)
+
+        -- EmitSound test
+        local emitSoundBtn = vgui.Create("liaSmallButton", buttonPanel)
+        emitSoundBtn:SetText("Test EmitSound (on player)")
+        emitSoundBtn:Dock(TOP)
+        emitSoundBtn:DockMargin(0, 0, 0, 5)
+        emitSoundBtn.DoClick = function()
+            local selectedSound = soundCombo:GetSelected()
+            if selectedSound then
+                client:EmitSound(selectedSound)
+                client:notifySuccess("Played EmitSound: " .. selectedSound)
+            end
+        end
+
+        -- Surface.PlaySound test
+        local surfaceSoundBtn = vgui.Create("liaSmallButton", buttonPanel)
+        surfaceSoundBtn:SetText("Test surface.PlaySound")
+        surfaceSoundBtn:Dock(TOP)
+        surfaceSoundBtn:DockMargin(0, 0, 0, 5)
+        surfaceSoundBtn.DoClick = function()
+            local selectedSound = soundCombo:GetSelected()
+            if selectedSound then
+                surface.PlaySound(selectedSound)
+                client:notifySuccess("Played surface.PlaySound: " .. selectedSound)
+            end
+        end
+
+        -- Sound.PlayFile test
+        local playFileBtn = vgui.Create("liaSmallButton", buttonPanel)
+        playFileBtn:SetText("Test sound.PlayFile")
+        playFileBtn:Dock(TOP)
+        playFileBtn:DockMargin(0, 0, 0, 5)
+        playFileBtn.DoClick = function()
+            local selectedSound = soundCombo:GetSelected()
+            if selectedSound then
+                sound.PlayFile(selectedSound, "", function(channel)
+                    if IsValid(channel) then
+                        client:notifySuccess("Played sound.PlayFile: " .. selectedSound)
+                    else
+                        client:notifyError("Failed to play sound.PlayFile: " .. selectedSound)
+                    end
+                end)
+            end
+        end
+
+        -- Divider
+        local divider = vgui.Create("DPanel", buttonPanel)
+        divider:Dock(TOP)
+        divider:SetTall(2)
+        divider:DockMargin(0, 10, 0, 10)
+        divider.Paint = function(self, w, h)
+            surface.SetDrawColor(100, 100, 100, 255)
+            surface.DrawRect(0, 0, w, h)
+        end
+
+        -- Manual sound entry
+        local manualLabel = vgui.Create("DLabel", buttonPanel)
+        manualLabel:SetText("Manual Sound Entry:")
+        manualLabel:Dock(TOP)
+        manualLabel:DockMargin(0, 0, 0, 5)
+
+        local manualEntry = vgui.Create("DTextEntry", buttonPanel)
+        manualEntry:Dock(TOP)
+        manualEntry:DockMargin(0, 0, 0, 5)
+        manualEntry:SetPlaceholderText("Enter sound name (e.g. cuffs/handcuffs_close.wav)")
+
+        -- Manual test buttons
+        local manualPanel = vgui.Create("DPanel", buttonPanel)
+        manualPanel:Dock(TOP)
+        manualPanel:SetTall(30)
+        manualPanel:DockMargin(0, 0, 0, 5)
+
+        local manualEmitBtn = vgui.Create("DButton", manualPanel)
+        manualEmitBtn:SetText("EmitSound")
+        manualEmitBtn:SetSize(100, 30)
+        manualEmitBtn:SetPos(0, 0)
+        manualEmitBtn.DoClick = function()
+            local soundName = manualEntry:GetValue()
+            if soundName and soundName ~= "" then
+                client:EmitSound(soundName)
+                client:notifySuccess("Played manual EmitSound: " .. soundName)
+            end
+        end
+
+        local manualSurfaceBtn = vgui.Create("DButton", manualPanel)
+        manualSurfaceBtn:SetText("PlaySound")
+        manualSurfaceBtn:SetSize(100, 30)
+        manualSurfaceBtn:SetPos(110, 0)
+        manualSurfaceBtn.DoClick = function()
+            local soundName = manualEntry:GetValue()
+            if soundName and soundName ~= "" then
+                surface.PlaySound(soundName)
+                client:notifySuccess("Played manual surface.PlaySound: " .. soundName)
+            end
+        end
+
+        local manualPlayFileBtn = vgui.Create("DButton", manualPanel)
+        manualPlayFileBtn:SetText("PlayFile")
+        manualPlayFileBtn:SetSize(100, 30)
+        manualPlayFileBtn:SetPos(220, 0)
+        manualPlayFileBtn.DoClick = function()
+            local soundName = manualEntry:GetValue()
+            if soundName and soundName ~= "" then
+                sound.PlayFile(soundName, "", function(channel)
+                    if IsValid(channel) then
+                        client:notifySuccess("Played manual sound.PlayFile: " .. soundName)
+                    else
+                        client:notifyError("Failed to play manual sound.PlayFile: " .. soundName)
+                    end
+                end)
+            end
+        end
+
+        -- Info panel
+        local infoLabel = vgui.Create("DLabel", buttonPanel)
+        infoLabel:Dock(BOTTOM)
+        infoLabel:DockMargin(0, 10, 0, 0)
+        infoLabel:SetText("This interface tests the websound automap feature.\nRegistered websounds can be called directly without 'lilia/websounds/' prefix.")
+        infoLabel:SetWrap(true)
+        infoLabel:SetAutoStretchVertical(true)
+    end
+})

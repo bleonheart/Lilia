@@ -471,6 +471,23 @@ function sound.PlayFile(path, mode, cb)
                 else
                     return origPlayFile(localPath, mode or "", cb)
                 end
+            else
+                -- If it's a registered websounds entry but not yet cached, download then play
+                local url = lia.websound.stored and lia.websound.stored[webPath]
+                if url then
+                    lia.websound.register(webPath, url, function(downloadedPath)
+                        if not downloadedPath then
+                            if cb then cb(nil, nil, "failed") end
+                            return
+                        end
+                        if webPath:match("%.wav$") then
+                            origPlayFile(downloadedPath, mode or "", cb)
+                        else
+                            origPlayFile(downloadedPath, mode or "", cb)
+                        end
+                    end)
+                    return
+                end
             end
         end
     end
@@ -562,6 +579,21 @@ function surface.PlaySound(soundPath, _, cb)
                 origSurfacePlaySound(surfacePath)
                 if cb then cb(true) end
                 return
+            else
+                -- If registered but not cached yet, download then play
+                local url = lia.websound.stored and lia.websound.stored[webPath]
+                if url then
+                    lia.websound.register(webPath, url, function(downloadedPath)
+                        if downloadedPath then
+                            local surfacePath = downloadedPath:gsub("^data/", "")
+                            origSurfacePlaySound(surfacePath)
+                            if cb then cb(true) end
+                        elseif cb then
+                            cb(false, "failed")
+                        end
+                    end)
+                    return
+                end
             end
         end
     end

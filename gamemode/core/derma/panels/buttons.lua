@@ -109,7 +109,6 @@ function PANEL:Paint(w, h)
     local activeTarget = showActiveShadow and 10 or 0
     local activeSpeed = (activeTarget > 0) and 7 or 3
     self._activeShadowLerp = Lerp(FrameTime() * activeSpeed, self._activeShadowLerp, activeTarget)
-    -- Use standard draw.RoundedBox for performance instead of expensive lia.derma operations
     if self._activeShadowLerp > 0 then
         local col = Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, math.Clamp(self.col_hov.a * 1.5, 0, 255))
         draw.RoundedBox(self.radius, 0, 0, w, h, col)
@@ -117,7 +116,6 @@ function PANEL:Paint(w, h)
 
     draw.RoundedBox(self.radius, 0, 0, w, h, self.col)
     if self.bool_gradient then
-        -- Use simple gradient instead of lia.util.drawGradient for better performance
         surface.SetDrawColor(lia.color.theme.button_shadow)
         surface.SetMaterial(Material("vgui/gradient-d"))
         surface.DrawTexturedRect(0, 0, w, h)
@@ -132,7 +130,6 @@ function PANEL:Paint(w, h)
         self.click_alpha = math_clamp(self.click_alpha - FrameTime() * self.ripple_speed, 0, 1)
         local ripple_size = (1 - self.click_alpha) * math.max(w, h) * 2
         local ripple_color = Color(self.ripple_color.r, self.ripple_color.g, self.ripple_color.b, self.ripple_color.a * self.click_alpha)
-        -- Use draw.RoundedBox for ripple effect too
         draw.RoundedBox(ripple_size * 0.5, self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size, ripple_color)
     end
 
@@ -143,7 +140,6 @@ function PANEL:Paint(w, h)
             surface.SetFont(self.font)
             local posX = (w - surface.GetTextSize(self.text) - iconSize) * 0.5 - 2
             local posY = (h - iconSize) * 0.5
-            -- Use surface drawing for icons instead of lia.derma
             surface.SetMaterial(self.icon)
             surface.SetDrawColor(color_white)
             surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
@@ -151,7 +147,6 @@ function PANEL:Paint(w, h)
     elseif self.icon and self.icon ~= "" then
         local posX = (w - iconSize) * 0.5
         local posY = (h - iconSize) * 0.5
-        -- Use surface drawing for icons instead of lia.derma
         surface.SetMaterial(self.icon)
         surface.SetDrawColor(color_white)
         surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
@@ -166,7 +161,6 @@ local function PaintButton(self, w, h)
     local b = (colorTable and colorTable.b) or 255
     local cornerRadius = 8
     if self.Base then
-        -- Use standard drawing for performance
         draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 150))
         draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 100))
     end
@@ -176,7 +170,6 @@ local function PaintButton(self, w, h)
         self.startTime = self.startTime or CurTime()
         local elapsed = CurTime() - self.startTime
         local anim = math.min(w, elapsed / animDuration * w) / 2
-        -- Use standard drawing for performance
         draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 30))
         draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(r, g, b, 40))
         if anim > 0 then
