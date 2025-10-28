@@ -29,6 +29,8 @@ local subMenuIcons = {
     adminStickUnwhitelistName = "icon16/group_delete.png",
     adminStickClassWhitelistName = "icon16/user_add.png",
     adminStickClassUnwhitelistName = "icon16/user_delete.png",
+    adminStickSubCategoryRanking = "icon16/user_green.png",
+    Ranks = "icon16/user_green.png",
     server = "icon16/cog.png",
     permissions = "icon16/key.png",
 }
@@ -1541,158 +1543,8 @@ end
 
 local function IncludeCharacterManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    local canFaction = cl:hasPrivilege("manageTransfers")
-    local canClass = cl:hasPrivilege("manageClasses")
-    local canWhitelist = cl:hasPrivilege("manageWhitelists")
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
     if not charCategory then return end
-    local char = tgt:getChar()
-    if char then
-        local facID = char:getFaction()
-        if facID then
-            if canFaction then
-                local facOptions = {}
-                for _, f in pairs(lia.faction.teams) do
-                    if f.index == facID then
-                        for _, v in pairs(lia.faction.teams) do
-                            table.insert(facOptions, {
-                                name = v.name,
-                                cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
-                            })
-                        end
-
-                        break
-                    end
-                end
-
-                table.sort(facOptions, function(a, b) return a.name < b.name end)
-                if #facOptions > 0 then
-                    local factionsSubCategory = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "factions", stores)
-                    if factionsSubCategory and IsValid(factionsSubCategory) then
-                        for _, o in ipairs(facOptions) do
-                            factionsSubCategory:AddOption(L(o.name), function()
-                                cl:ConCommand(o.cmd)
-                                timer.Simple(0.1, function() AdminStickIsOpen = false end)
-                            end):SetIcon("icon16/group.png")
-                        end
-
-                        if factionsSubCategory.UpdateSize then factionsSubCategory:UpdateSize() end
-                    end
-                end
-            end
-
-            local classes = lia.faction.getClasses and lia.faction.getClasses(facID) or {}
-            if classes and #classes > 1 and canClass then
-                local cls = {}
-                for _, c in ipairs(classes) do
-                    table.insert(cls, {
-                        name = c.name,
-                        cmd = 'say /setclass ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                    })
-                end
-
-                table.sort(cls, function(a, b) return a.name < b.name end)
-                local classesSubCategory = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "classes", stores)
-                if classesSubCategory and IsValid(classesSubCategory) then
-                    for _, o in ipairs(cls) do
-                        classesSubCategory:AddOption(L(o.name), function()
-                            cl:ConCommand(o.cmd)
-                            timer.Simple(0.1, function()
-                                LocalPlayer().AdminStickTarget = nil
-                                AdminStickIsOpen = false
-                            end)
-                        end):SetIcon("icon16/user.png")
-                    end
-
-                    if classesSubCategory.UpdateSize then classesSubCategory:UpdateSize() end
-                end
-            end
-
-            if canWhitelist then
-                local facAdd, facRemove = {}, {}
-                for _, v in pairs(lia.faction.teams) do
-                    if not v.isDefault then
-                        if not tgt:hasWhitelist(v.index) then
-                            table.insert(facAdd, {
-                                name = v.name,
-                                cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
-                            })
-                        else
-                            table.insert(facRemove, {
-                                name = v.name,
-                                cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
-                            })
-                        end
-                    end
-                end
-
-                table.sort(facAdd, function(a, b) return a.name < b.name end)
-                table.sort(facRemove, function(a, b) return a.name < b.name end)
-                local whitelistsSubCategory = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "whitelists", stores)
-                if whitelistsSubCategory and IsValid(whitelistsSubCategory) then
-                    for _, o in ipairs(facAdd) do
-                        whitelistsSubCategory:AddOption(L(o.name), function()
-                            cl:ConCommand(o.cmd)
-                            timer.Simple(0.1, function()
-                                LocalPlayer().AdminStickTarget = nil
-                                AdminStickIsOpen = false
-                            end)
-                        end):SetIcon("icon16/group_add.png")
-                    end
-
-                    for _, o in ipairs(facRemove) do
-                        whitelistsSubCategory:AddOption(L(o.name), function()
-                            cl:ConCommand(o.cmd)
-                            timer.Simple(0.1, function()
-                                LocalPlayer().AdminStickTarget = nil
-                                AdminStickIsOpen = false
-                            end)
-                        end):SetIcon("icon16/group_delete.png")
-                    end
-
-                    if whitelistsSubCategory.UpdateSize then whitelistsSubCategory:UpdateSize() end
-                end
-
-                if classes and #classes > 0 then
-                    local cw, cu = {}, {}
-                    for _, c in ipairs(classes) do
-                        if not tgt:getChar():getClasswhitelists()[c.index] then
-                            table.insert(cw, {
-                                name = c.name,
-                                cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                            })
-                        else
-                            table.insert(cu, {
-                                name = c.name,
-                                cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                            })
-                        end
-                    end
-
-                    table.sort(cw, function(a, b) return a.name < b.name end)
-                    table.sort(cu, function(a, b) return a.name < b.name end)
-                    if whitelistsSubCategory and IsValid(whitelistsSubCategory) then
-                        for _, o in ipairs(cw) do
-                            whitelistsSubCategory:AddOption(L(o.name), function()
-                                cl:ConCommand(o.cmd)
-                                timer.Simple(0.1, function() AdminStickIsOpen = false end)
-                            end):SetIcon("icon16/user_add.png")
-                        end
-
-                        for _, o in ipairs(cu) do
-                            whitelistsSubCategory:AddOption(L(o.name), function()
-                                cl:ConCommand(o.cmd)
-                                timer.Simple(0.1, function() AdminStickIsOpen = false end)
-                            end):SetIcon("icon16/user_delete.png")
-                        end
-
-                        if whitelistsSubCategory.UpdateSize then whitelistsSubCategory:UpdateSize() end
-                    end
-                end
-            end
-        end
-    end
-
     if cl:hasPrivilege("manageCharacterInformation") then
         local attributesSubCategory = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "attributes", stores)
         attributesSubCategory:AddOption(L("changePlayerModel"), function()
@@ -2110,6 +1962,194 @@ function MODULE:OpenAdminStickUI(tgt)
             end):SetIcon(ic)
         end
     end
+
+    hook.Add("GetAdminStickLists", "liaDefaultAdminStickLists", function(target, lists)
+        local cl = LocalPlayer()
+        local canFaction = cl:hasPrivilege("manageTransfers")
+        local canClass = cl:hasPrivilege("manageClasses")
+        local canWhitelist = cl:hasPrivilege("manageWhitelists")
+        local char = tgt:getChar()
+        if char then
+            local facID = char:getFaction()
+            if facID then
+                if canFaction then
+                    local facOptions = {}
+                    for _, f in pairs(lia.faction.teams) do
+                        if f.index == facID then
+                            for _, v in pairs(lia.faction.teams) do
+                                table.insert(facOptions, {
+                                    name = v.name,
+                                    icon = "icon16/group.png",
+                                    callback = function(tgt, item)
+                                        local cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
+                                        cl:ConCommand(cmd)
+                                    end
+                                })
+                            end
+
+                            break
+                        end
+                    end
+
+                    if #facOptions > 0 then
+                        table.insert(lists, {
+                            name = "Factions",
+                            category = "characterManagement",
+                            subcategory = "factions",
+                            items = facOptions
+                        })
+                    end
+                end
+
+                local classes = lia.faction.getClasses and lia.faction.getClasses(facID) or {}
+                if classes and #classes > 1 and canClass then
+                    local cls = {}
+                    for _, c in ipairs(classes) do
+                        table.insert(cls, {
+                            name = c.name,
+                            icon = "icon16/user.png",
+                            callback = function(tgt, item)
+                                local cmd = 'say /setclass ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                                cl:ConCommand(cmd)
+                            end
+                        })
+                    end
+
+                    if #cls > 0 then
+                        table.insert(lists, {
+                            name = "Classes",
+                            category = "characterManagement",
+                            subcategory = "classes",
+                            items = cls
+                        })
+                    end
+                end
+
+                if canWhitelist then
+                    local facAdd, facRemove = {}, {}
+                    for _, v in pairs(lia.faction.teams) do
+                        if not v.isDefault then
+                            if not tgt:hasWhitelist(v.index) then
+                                table.insert(facAdd, {
+                                    name = v.name,
+                                    icon = "icon16/group_add.png",
+                                    callback = function(tgt, item)
+                                        local cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
+                                        cl:ConCommand(cmd)
+                                    end
+                                })
+                            else
+                                table.insert(facRemove, {
+                                    name = v.name,
+                                    icon = "icon16/group_delete.png",
+                                    callback = function(tgt, item)
+                                        local cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
+                                        cl:ConCommand(cmd)
+                                    end
+                                })
+                            end
+                        end
+                    end
+
+                    local whitelistItems = {}
+                    for _, item in ipairs(facAdd) do
+                        table.insert(whitelistItems, item)
+                    end
+
+                    for _, item in ipairs(facRemove) do
+                        table.insert(whitelistItems, item)
+                    end
+
+                    if #whitelistItems > 0 then
+                        table.insert(lists, {
+                            name = "Whitelists",
+                            category = "characterManagement",
+                            subcategory = "whitelists",
+                            items = whitelistItems
+                        })
+                    end
+
+                    if classes and #classes > 0 then
+                        local cw, cu = {}, {}
+                        for _, c in ipairs(classes) do
+                            if not tgt:getChar():getClasswhitelists()[c.index] then
+                                table.insert(cw, {
+                                    name = c.name,
+                                    icon = "icon16/user_add.png",
+                                    callback = function(tgt, item)
+                                        local cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                                        cl:ConCommand(cmd)
+                                    end
+                                })
+                            else
+                                table.insert(cu, {
+                                    name = c.name,
+                                    icon = "icon16/user_delete.png",
+                                    callback = function(tgt, item)
+                                        local cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
+                                        cl:ConCommand(cmd)
+                                    end
+                                })
+                            end
+                        end
+
+                        local classWhitelistItems = {}
+                        for _, item in ipairs(cw) do
+                            table.insert(classWhitelistItems, item)
+                        end
+
+                        for _, item in ipairs(cu) do
+                            table.insert(classWhitelistItems, item)
+                        end
+
+                        if #classWhitelistItems > 0 then
+                            table.insert(lists, {
+                                name = "Class Whitelists",
+                                category = "characterManagement",
+                                subcategory = "whitelists",
+                                items = classWhitelistItems
+                            })
+                        end
+                    end
+                end
+            end
+        end
+    end)
+
+    hook.Add("PopulateAdminStick", "liaAddAdminStickLists", function(currentMenu, currentTarget, currentStores)
+        local lists = {}
+        hook.Run("GetAdminStickLists", currentTarget, lists)
+        for _, listData in ipairs(lists) do
+            local listName = listData.name
+            local categoryKey = listData.category
+            local subcategoryKey = listData.subcategory
+            local items = listData.items
+            if listName and categoryKey and subcategoryKey and items and #items > 0 then
+                local category = GetOrCreateCategoryMenu(currentMenu, categoryKey, currentStores)
+                if category and IsValid(category) then
+                    local subcategory = GetOrCreateSubCategoryMenu(category, categoryKey, subcategoryKey, currentStores)
+                    if subcategory and IsValid(subcategory) then
+                        table.sort(items, function(a, b) return (a.name or "") < (b.name or "") end)
+                        local icon = subMenuIcons[listName] or "icon16/page.png"
+                        for _, item in ipairs(items) do
+                            local option = subcategory:AddOption(L(item.name), function()
+                                if item.callback then item.callback(currentTarget, item) end
+                                timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                            end)
+
+                            if item.icon and IsValid(option) then
+                                option:SetIcon(item.icon)
+                            elseif icon and icon ~= "icon16/page.png" and IsValid(option) then
+                                option:SetIcon(icon)
+                            end
+                        end
+
+                        if subcategory.UpdateSize then subcategory:UpdateSize() end
+                    end
+                end
+            end
+        end
+    end)
 
     hook.Run("PopulateAdminStick", menu, tgt, stores)
     function menu:OnRemove()

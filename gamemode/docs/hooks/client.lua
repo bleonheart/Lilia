@@ -5236,6 +5236,111 @@ function PopulateAdminStick(tempMenu, tgt, stores)
 end
 
 --[[
+    Purpose: Called to add custom list options to the admin stick menu
+    When Called: When building the admin stick context menu, before it's populated
+    Parameters:
+        tgt (Entity) - The target entity
+        lists (table) - The table to populate with list data
+    Returns: None (modified by reference)
+    Realm: Client
+    List Data Structure:
+        Each entry in lists should be a table with:
+        - name (string) - The display name of the list
+        - category (string) - The category key (e.g., "characterManagement", "utility")
+        - subcategory (string) - The subcategory key within the category
+        - items (table) - Array of items to display
+
+        Each item in items should be a table with:
+        - name (string) - The display name of the option
+        - callback (function) - Function to execute when clicked (receives target and item as parameters)
+        - icon (string, optional) - Icon path to display
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Add a list of custom options
+    hook.Add("GetAdminStickLists", "MyAddon", function(tgt, lists)
+        table.insert(lists, {
+            name = "Custom Weapons",
+            category = "characterManagement",
+            subcategory = "items",
+            items = {
+                { name = "Gun 1", callback = function(target, item) RunConsoleCommand("say", "/give", target:SteamID(), "weapon_pistol") end },
+                { name = "Gun 2", callback = function(target, item) RunConsoleCommand("say", "/give", target:SteamID(), "weapon_rifle") end }
+            }
+        })
+    end)
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Add conditional list based on target
+    hook.Add("GetAdminStickLists", "ConditionalLists", function(tgt, lists)
+        if tgt:IsPlayer() and tgt:getChar() then
+            table.insert(lists, {
+                name = "Quick Factions",
+                category = "characterManagement",
+                subcategory = "factions",
+                items = {
+                    {
+                        name = "Police",
+                        icon = "icon16/user_police.png",
+                        callback = function(target, item)
+                            RunConsoleCommand("say", "/setfaction", target:SteamID(), "police")
+                        end
+                    },
+                    {
+                        name = "Medic",
+                        icon = "icon16/user_medical.png",
+                        callback = function(target, item)
+                            RunConsoleCommand("say", "/setfaction", target:SteamID(), "medic")
+                        end
+                    }
+                }
+            })
+        end
+    end)
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Add multiple lists with dynamic data
+    hook.Add("GetAdminStickLists", "AdvancedLists", function(tgt, lists)
+        if not IsValid(tgt) or not tgt:IsPlayer() then return end
+
+        -- Add available ranks based on target's class
+        local targetChar = tgt:getChar()
+        if targetChar then
+            local targetClass = targetChar:getClass()
+            local ranks = lia.ranking.rankTable[targetClass]
+            if ranks then
+                local rankItems = {}
+                for rankKey, rankData in pairs(ranks) do
+                    table.insert(rankItems, {
+                        name = rankData.RankName or rankKey,
+                        icon = "icon16/user_green.png",
+                        callback = function(target, item)
+                            local cmd = 'say /setrank ' .. QuoteArgs(GetIdentifier(target), rankKey)
+                            LocalPlayer():ConCommand(cmd)
+                        end
+                    })
+                end
+
+                table.insert(lists, {
+                    name = "Ranks",
+                    category = "characterManagement",
+                    subcategory = "ranking",
+                    items = rankItems
+                })
+            end
+        end
+    end)
+    ```
+]]
+function GetAdminStickLists(tgt, lists)
+end
+
+--[[
     Purpose: Called to populate admin tabs
     When Called: When building the admin panel tabs
     Parameters:
