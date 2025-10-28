@@ -1062,7 +1062,6 @@ local function GenerateDynamicCategories()
         }
     }
 
-
     for key, data in pairs(hardcodedCategories) do
         if not mergedCategories[key] then
             mergedCategories[key] = data
@@ -1071,7 +1070,6 @@ local function GenerateDynamicCategories()
     end
 
     hook.Run("RegisterAdminStickSubcategories", mergedCategories)
-
     return mergedCategories, orderedCategories
 end
 
@@ -1943,14 +1941,17 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = L("adminStickSubCategoryFactions") or "Factions",
                 icon = "icon16/group.png"
             }
+
             categories.characterManagement.subcategories.classes = {
                 name = L("adminStickSubCategoryClasses") or "Classes",
                 icon = "icon16/group_edit.png"
             }
+
             categories.characterManagement.subcategories.whitelists = {
                 name = L("adminStickSubCategoryWhitelists") or "Whitelists",
                 icon = "icon16/group_key.png"
             }
+
             categories.characterManagement.subcategories.flags = {
                 name = L("adminStickSubCategoryFlags") or "Flags",
                 icon = "icon16/flag_red.png"
