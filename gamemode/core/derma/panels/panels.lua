@@ -270,6 +270,12 @@ function QuickPanel:OnRemove()
     if lia.gui.quick == self then lia.gui.quick = nil end
 end
 
+function QuickPanel:OnClose()
+    -- Override close behavior to hide instead of remove when panel is persistent
+    self:SetVisible(false)
+    return false -- Prevent default close behavior
+end
+
 function QuickPanel:populateOptions()
     -- Use a more aggressive caching system to prevent FPS drops from frequent right-clicks
     if self.optionsCache and #self.optionsCache > 0 and not self.forceRepopulate then

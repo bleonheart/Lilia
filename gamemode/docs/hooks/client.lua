@@ -2906,6 +2906,99 @@ function GetWeaponName(weapon)
 end
 
 --[[
+    Purpose: Called to display player HUD information, primarily for admin tools
+    When Called: Every frame during HUD rendering to allow modules to add custom HUD information
+    Parameters:
+        client (Player) - The local player
+        hudInfos (table) - Array of HUD information objects to display, each containing text, position, color, and font properties
+    Returns: None
+    Realm: Client
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Add basic player health info
+    hook.Add("DisplayPlayerHUDInformation", "BasicHUDInfo", function(client, hudInfos)
+        table.insert(hudInfos, {
+            text = "Health: " .. client:Health(),
+            position = Vector(10, 10),
+            color = Color(255, 0, 0)
+        })
+    end)
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Add character and faction info
+    hook.Add("DisplayPlayerHUDInformation", "CharacterHUDInfo", function(client, hudInfos)
+        local char = client:getChar()
+        if char then
+            table.insert(hudInfos, {
+                text = "Name: " .. char:getName(),
+                position = Vector(10, 30),
+                color = Color(255, 255, 255)
+            })
+
+            local faction = lia.faction.indices[client:Team()]
+            if faction then
+                table.insert(hudInfos, {
+                    text = "Faction: " .. faction.name,
+                    position = Vector(10, 50),
+                    color = faction.color or Color(100, 100, 100)
+                })
+            end
+        end
+    end)
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Advanced admin HUD with multiple info panels
+    hook.Add("DisplayPlayerHUDInformation", "AdvancedAdminHUD", function(client, hudInfos)
+        if not client:IsAdmin() then return end
+
+        -- Player count info
+        local playerCount = #player.GetAll()
+        table.insert(hudInfos, {
+            text = "Players: " .. playerCount,
+            position = Vector(ScrW() - 200, 10),
+            color = Color(0, 255, 0),
+            font = "liaMediumFont"
+        })
+
+        -- Server time
+        local time = os.date("%H:%M:%S")
+        table.insert(hudInfos, {
+            text = "Server Time: " .. time,
+            position = Vector(ScrW() - 200, 30),
+            color = Color(255, 255, 0)
+        })
+
+        -- Performance info
+        local fps = 1 / FrameTime()
+        table.insert(hudInfos, {
+            text = string.format("FPS: %.0f", fps),
+            position = Vector(ScrW() - 200, 50),
+            color = fps > 30 and Color(0, 255, 0) or Color(255, 0, 0)
+        })
+
+        -- Character info if available
+        local char = client:getChar()
+        if char then
+            local money = char:getMoney()
+            table.insert(hudInfos, {
+                text = "Money: " .. lia.currency.format(money),
+                position = Vector(ScrW() - 200, 70),
+                color = Color(0, 255, 255)
+            })
+        end
+    end)
+    ```
+]]
+function DisplayPlayerHUDInformation(client, hudInfos)
+end
+
+--[[
     Purpose: Called when HUD visibility changes
     When Called: When the HUD is shown or hidden
     Parameters:

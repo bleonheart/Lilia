@@ -109,7 +109,6 @@ function PANEL:Paint(w, h)
     local activeTarget = showActiveShadow and 10 or 0
     local activeSpeed = (activeTarget > 0) and 7 or 3
     self._activeShadowLerp = Lerp(FrameTime() * activeSpeed, self._activeShadowLerp, activeTarget)
-
     -- Use standard draw.RoundedBox for performance instead of expensive lia.derma operations
     if self._activeShadowLerp > 0 then
         local col = Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, math.Clamp(self.col_hov.a * 1.5, 0, 255))
@@ -117,7 +116,6 @@ function PANEL:Paint(w, h)
     end
 
     draw.RoundedBox(self.radius, 0, 0, w, h, self.col)
-
     if self.bool_gradient then
         -- Use simple gradient instead of lia.util.drawGradient for better performance
         surface.SetDrawColor(lia.color.theme.button_shadow)
@@ -168,8 +166,9 @@ local function PaintButton(self, w, h)
     local b = (colorTable and colorTable.b) or 255
     local cornerRadius = 8
     if self.Base then
-        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Use standard drawing for performance
+        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 150))
+        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 100))
     end
 
     draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -177,12 +176,13 @@ local function PaintButton(self, w, h)
         self.startTime = self.startTime or CurTime()
         local elapsed = CurTime() - self.startTime
         local anim = math.min(w, elapsed / animDuration * w) / 2
-        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(0, 0, 0, 30)):Shape(lia.derma.SHAPE_IOS):Shadow(2, 8):Draw()
-        lia.derma.rect(0, 0, w, h):Rad(cornerRadius):Color(Color(r, g, b, 40)):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Use standard drawing for performance
+        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 30))
+        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(r, g, b, 40))
         if anim > 0 then
             local lineWidth = math.min(w - cornerRadius * 2, anim * 2)
             local lineX = (w - lineWidth) / 2
-            lia.derma.rect(lineX, h - 3, lineWidth, 2):Rad(1):Color(Color(r, g, b)):Draw()
+            draw.RoundedBox(1, lineX, h - 3, lineWidth, 2, Color(r, g, b))
         end
     else
         self.startTime = nil

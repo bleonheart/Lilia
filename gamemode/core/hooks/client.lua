@@ -314,6 +314,32 @@ function GM:HUDPaint()
         local wpn = client:GetActiveWeapon()
         if canDrawAmmo(wpn) then drawAmmo(wpn) end
         if canDrawCrosshair() then drawCrosshair() end
+        local hudInfos = {}
+        hook.Run("DisplayPlayerHUDInformation", client, hudInfos)
+        if #hudInfos > 0 then
+            for _, info in ipairs(hudInfos) do
+                if info.text and info.position then
+                    local drawOptions = {
+                        textColor = info.color or Color(255, 255, 255),
+                        font = info.font or "LiliaFont.20"
+                    }
+
+                    -- Add optional styling properties
+                    if info.backgroundColor then drawOptions.backgroundColor = info.backgroundColor end
+                    if info.borderColor then drawOptions.borderColor = info.borderColor end
+                    if info.borderRadius then drawOptions.borderRadius = info.borderRadius end
+                    if info.borderThickness then drawOptions.borderThickness = info.borderThickness end
+                    if info.padding then drawOptions.padding = info.padding end
+                    if info.textAlignX then drawOptions.textAlignX = info.textAlignX end
+                    if info.textAlignY then drawOptions.textAlignY = info.textAlignY end
+                    if info.lineSpacing then drawOptions.lineSpacing = info.lineSpacing end
+                    if info.autoSize then drawOptions.autoSize = info.autoSize end
+                    if info.blur then drawOptions.blur = info.blur end
+
+                    lia.derma.drawBoxWithText(info.text, info.position.x, info.position.y, drawOptions)
+                end
+            end
+        end
     end
 
     drawVoiceIndicator()
@@ -497,12 +523,19 @@ end
 
 function GM:OnContextMenuOpen()
     self.BaseClass:OnContextMenuOpen()
-    vgui.Create("liaQuick")
+    if not IsValid(lia.gui.quick) then
+        lia.gui.quick = vgui.Create("liaQuick")
+    else
+        lia.gui.quick:SetVisible(true)
+        lia.gui.quick:MakePopup()
+        -- Refresh options in case they changed while hidden
+        lia.gui.quick:populateOptions()
+    end
 end
 
 function GM:OnContextMenuClose()
     self.BaseClass:OnContextMenuClose()
-    if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
+    if IsValid(lia.gui.quick) then lia.gui.quick:SetVisible(false) end
 end
 
 function GM:CharListLoaded()

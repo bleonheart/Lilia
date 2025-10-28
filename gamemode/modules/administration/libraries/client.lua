@@ -1194,7 +1194,7 @@ local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
             local hasContent
             if categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
-            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() or cl:IsAdmin()) then
                 hasContent = true
             elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
@@ -1325,7 +1325,7 @@ end
 
 local function IncludeAdminMenu(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
+    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() or cl:IsAdmin()) then return end
     local modCategory = GetOrCreateCategoryMenu(menu, "moderation", stores)
     if not modCategory then return end
     local modSubCategory = GetOrCreateSubCategoryMenu(modCategory, "moderation", "moderationTools", stores)

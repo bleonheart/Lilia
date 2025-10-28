@@ -310,7 +310,7 @@ if CLIENT then
             themeName = "Teal"
             themeData = lia.color.themes[themeName]
             if not themeData then
-                ErrorNoHalt("[Lilia] " .. L("themeNoValidThemesFallback") .. "\n")
+                -- [Lilia] " .. L("themeNoValidThemesFallback")
                 lia.color.theme = {
                     maincolor = Color(80, 180, 180),
                     background = Color(24, 32, 32),
@@ -496,7 +496,7 @@ if CLIENT then
             name = "Teal"
             targetTheme = lia.color.themes[name:lower()]
             if not targetTheme then
-                ErrorNoHalt("[Lilia] " .. L("warning") .. ": " .. L("themeNoValidThemes") .. "\n")
+                -- [Lilia] Warning: " .. L("themeNoValidThemes")
                 return
             end
         end
@@ -1319,7 +1319,7 @@ lia.config.add("Theme", "theme", "Teal", function(_, newValue)
         if not lia.color.themes[newValue] then
             newValue = "Teal"
             if not lia.color.themes[newValue] then
-                ErrorNoHalt("[Lilia] " .. L("warning") .. ": " .. L("themeInvalidTheme", tostring(newValue)) .. "\n")
+                -- [Lilia] Warning: " .. L("themeInvalidTheme", tostring(newValue))
                 return
             end
         end
