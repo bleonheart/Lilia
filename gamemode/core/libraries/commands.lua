@@ -1330,12 +1330,9 @@ else
             playButton:SetWide(80)
             playButton:Dock(RIGHT)
             playButton:DockMargin(5, 5, 5, 5)
-            -- Override the button's click behavior to prevent the default sound
             playButton.DoClick = function()
-                -- Don't call the original DoClick to avoid button sound interference
                 if file.Exists(soundPath, "DATA") then
                     local fullPath = "data/" .. soundPath
-                    -- Add a small delay to ensure the sound system is ready
                     timer.Simple(0.1, function()
                         sound.PlayFile(fullPath, "", function(channel, _, errorString)
                             if IsValid(channel) then
@@ -1355,9 +1352,7 @@ else
             stopButton:SetWide(80)
             stopButton:Dock(RIGHT)
             stopButton:DockMargin(5, 5, 5, 5)
-            -- Override the button's click behavior to prevent the default sound
             stopButton.DoClick = function()
-                -- Don't call the original DoClick to avoid button sound interference
                 timer.Simple(0.1, function()
                     sound.PlayFile("", "", function() end)
                     LocalPlayer():ChatPrint("Stopped all sounds")

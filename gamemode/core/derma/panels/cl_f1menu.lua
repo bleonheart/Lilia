@@ -475,10 +475,7 @@ function PANEL:OnKeyCodePressed(key)
 end
 
 function PANEL:Update()
-    -- Don't recreate the menu during font updates - just refresh the layout
-    -- The menu should only be recreated when explicitly opened by the user
     if self:IsVisible() and not self.closing then
-        -- Just refresh the layout instead of recreating the entire menu
         self:InvalidateLayout(true)
         for _, child in pairs(self:GetChildren()) do
             if IsValid(child) then child:InvalidateLayout(true) end
@@ -781,7 +778,6 @@ hook.Add("LoadCharInformation", "liaF1MenuGeneralInfo", function()
     end)
 end)
 
--- AddSection hook
 hook.Add("AddSection", "liaF1MenuAddSection", function(sectionName, color, priority, location)
     if IsValid(lia.gui.info) then
         local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
@@ -801,7 +797,6 @@ hook.Add("AddSection", "liaF1MenuAddSection", function(sectionName, color, prior
     end
 end)
 
--- AddTextField hook
 hook.Add("AddTextField", "liaF1MenuAddTextField", function(sectionName, fieldName, labelText, valueFunc)
     if IsValid(lia.gui.info) then
         local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
@@ -842,7 +837,6 @@ hook.Add("AddTextField", "liaF1MenuAddTextField", function(sectionName, fieldNam
     end
 end)
 
--- AddBarField hook
 hook.Add("AddBarField", "liaF1MenuAddBarField", function(sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)
     if IsValid(lia.gui.info) then
         local localizedSectionName = isstring(sectionName) and L(sectionName) or sectionName
@@ -865,7 +859,6 @@ hook.Add("AddBarField", "liaF1MenuAddBarField", function(sectionName, fieldName,
     end
 end)
 
--- PlayerBindPress as hook
 hook.Add("PlayerBindPress", "liaF1MenuPlayerBindPress", function(client, bind, pressed)
     if bind:lower():find("gm_showhelp") and pressed then
         if IsValid(lia.gui.menu) then
@@ -877,7 +870,6 @@ hook.Add("PlayerBindPress", "liaF1MenuPlayerBindPress", function(client, bind, p
     end
 end)
 
--- CreateMenuButtons as hook
 hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     tabs["you"] = function(statusPanel)
         statusPanel.info = vgui.Create("liaCharInfo", statusPanel)
@@ -1442,7 +1434,6 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     end
 end)
 
--- CanDisplayCharInfo as a hook
 hook.Add("CanDisplayCharInfo", "liaF1MenuCanDisplayCharInfo", function(name)
     local client = LocalPlayer()
     if not client then return true end

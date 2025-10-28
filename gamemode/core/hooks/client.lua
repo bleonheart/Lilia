@@ -276,7 +276,6 @@ local function drawVoiceIndicator()
     if not IsValid(client) or not client:IsSpeaking() then return end
     local voiceType = client:getNetVar("VoiceType", L("talking"))
     local voiceText = L("youAre") .. " " .. voiceType
-    -- Calculate listener count if voice range is enabled
     if lia.option.get("voiceRange", false) then
         local radius = VoiceRanges[voiceType] or VoiceRanges[L("talking")]
         local clientPos = client:GetPos()
@@ -293,10 +292,8 @@ local function drawVoiceIndicator()
 
     local modifiedText = hook.Run("ModifyVoiceIndicatorText", client, voiceText, voiceType)
     if modifiedText then voiceText = modifiedText end
-    -- Calculate position (top center)
     local boxX = ScrW() / 2
     local boxY = 50
-    -- Draw box with text using the new function
     lia.derma.drawBoxWithText(voiceText, boxX, boxY, {
         font = "LiliaFont.18",
         textColor = Color(255, 255, 255),
@@ -319,7 +316,6 @@ function GM:HUDPaint()
         if canDrawCrosshair() then drawCrosshair() end
     end
 
-    -- Draw voice chat indicator
     drawVoiceIndicator()
 end
 

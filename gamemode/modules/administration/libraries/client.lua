@@ -80,7 +80,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 SetClipboardText(target:SteamID())
             end
         },
-        -- Only show blind option if player is not currently blinded
         (function()
             local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
             if not isBlinded then
@@ -91,7 +90,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show freeze option if player is not currently frozen
         (function()
             if not target:IsFrozen() then
                 return {
@@ -101,7 +99,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show gag option if player is not currently gagged
         (function()
             if not target:getNetVar("liaGagged", false) then
                 return {
@@ -111,7 +108,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show ignite option if player is not currently on fire
         (function()
             if not target:IsOnFire() then
                 return {
@@ -121,7 +117,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show jail option if player is not currently jailed
         (function()
             if not target:isLocked() then
                 return {
@@ -131,7 +126,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show mute option if player is not currently muted
         (function()
             if not (target:getChar() and target:getLiliaData("VoiceBan", false)) then
                 return {
@@ -146,7 +140,6 @@ function MODULE:ShowPlayerOptions(target, options)
             image = "icon16/bomb.png",
             func = function() lia.administrator.execCommand("slay", target) end
         },
-        -- Only show unblind option if player is currently blinded
         (function()
             local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
             if isBlinded then
@@ -157,7 +150,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show ungag option if player is currently gagged
         (function()
             if target:getNetVar("liaGagged", false) then
                 return {
@@ -167,7 +159,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show unfreeze option if player is currently frozen
         (function()
             if target:IsFrozen() then
                 return {
@@ -177,7 +168,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show unmute option if player is currently muted
         (function()
             if target:getChar() and target:getLiliaData("VoiceBan", false) then
                 return {
@@ -207,7 +197,6 @@ function MODULE:ShowPlayerOptions(target, options)
             image = "icon16/arrow_redo.png",
             func = function() lia.administrator.execCommand("return", target) end
         },
-        -- Only show extinguish option if player is currently on fire
         (function()
             if target:IsOnFire() then
                 return {
@@ -217,7 +206,6 @@ function MODULE:ShowPlayerOptions(target, options)
                 }
             end
         end)(),
-        -- Only show unjail option if player is currently jailed
         (function()
             if target:isLocked() then
                 return {
@@ -1312,7 +1300,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
     local modSubCategory = GetOrCreateSubCategoryMenu(modCategory, "moderation", "moderationTools", stores)
     if not modSubCategory then return end
     local mods = {}
-    -- Add blind/unblind options conditionally based on player state
     local isBlinded = timer.Exists("liaBlind" .. tgt:SteamID())
     if isBlinded then
         mods[#mods + 1] = {
@@ -1328,7 +1315,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     end
 
-    -- Add freeze/unfreeze options conditionally
     if tgt:IsFrozen() then
         mods[#mods + 1] = {
             name = L("unfreeze"),
@@ -1343,7 +1329,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     end
 
-    -- Add gag/ungag options conditionally
     if tgt:getNetVar("liaGagged", false) then
         mods[#mods + 1] = {
             name = L("ungag"),
@@ -1358,7 +1343,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     end
 
-    -- Add mute/unmute options conditionally
     if tgt:getChar() and tgt:getLiliaData("VoiceBan", false) then
         mods[#mods + 1] = {
             name = L("unmute"),
@@ -1373,7 +1357,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     end
 
-    -- Add ignite/extinguish options conditionally
     if tgt:IsOnFire() then
         mods[#mods + 1] = {
             name = L("extinguish"),
@@ -1388,7 +1371,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     end
 
-    -- Add jail/unjail options conditionally
     if tgt:isLocked() then
         mods[#mods + 1] = {
             name = L("unjail"),
@@ -1403,7 +1385,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     end
 
-    -- Add other single-action options
     local otherMods = {
         {
             name = L("slay"),
@@ -1412,7 +1393,6 @@ local function IncludeAdminMenu(tgt, menu, stores)
         }
     }
 
-    -- Add other moderation options to the main mods array
     for _, mod in ipairs(otherMods) do
         mods[#mods + 1] = mod
     end

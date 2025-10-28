@@ -2718,7 +2718,7 @@ end
     hook.Add("ModifyVoiceIndicatorText", "AdvancedVoiceIndicator", function(client, voiceText, voiceType)
         local char = client:getChar()
         if not char then return nil end
-        
+
         -- Extract listener count if voice range is enabled
         local listenerCount = 0
         if lia.option.get("voiceRange", false) then
@@ -2727,11 +2727,11 @@ end
                 listenerCount = tonumber(match)
             end
         end
-        
+
         -- Custom formatting with color codes
         local prefix = ""
         local suffix = ""
-        
+
         if voiceType == L("whispering") then
             prefix = "[QUIET] "
             suffix = " whispers softly"
@@ -2742,14 +2742,14 @@ end
             prefix = "[NORMAL] "
             suffix = " speaks"
         end
-        
+
         local result = prefix .. voiceText:gsub("You are ", ""):gsub(" - %d+ people can hear you", "") .. suffix
-        
+
         -- Add listener count back if it was present
         if listenerCount > 0 then
             result = result .. " - " .. listenerCount .. " people can hear you"
         end
-        
+
         return result
     end)
     ```
