@@ -168,10 +168,20 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
         print("[DOOR DEBUG] Target is not valid or not a door, returning")
         return
     end
-    print("[DOOR DEBUG] Target is a valid door, proceeding with menu generation")
+
+    local client = LocalPlayer()
+    if not client:hasPrivilege("manageDoors") and not client:isStaffOnDuty() then
+        print("[DOOR DEBUG] Player does not have manageDoors privilege or is not staff on duty")
+        return
+    end
+
+    print("[DOOR DEBUG] Target is a valid door and player has privileges, proceeding with menu generation")
     local doorData = tgt:getNetVar("doorData", {})
+    print("[DOOR DEBUG] Door data: " .. util.TableToJSON(doorData))
     local factionsAssigned = doorData.factions or {}
     local existingClasses = doorData.classes or {}
+    print("[DOOR DEBUG] Factions assigned to door: " .. table.Count(factionsAssigned))
+    print("[DOOR DEBUG] Classes assigned to door: " .. table.Count(existingClasses))
     local items = {}
     for _, faction in pairs(lia.faction.teams) do
         if not table.HasValue(factionsAssigned, faction.uniqueID) then
@@ -233,6 +243,8 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
     end
 
     print("[DOOR DEBUG] Generated " .. #items .. " door management items")
+    print("[DOOR DEBUG] Factions available: " .. table.Count(lia.faction.teams))
+    print("[DOOR DEBUG] Classes available: " .. table.Count(lia.class.list))
     if #items > 0 then
         print("[DOOR DEBUG] Adding door management list to admin stick menu")
         table.insert(lists, {

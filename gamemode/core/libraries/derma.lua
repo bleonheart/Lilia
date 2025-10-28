@@ -3112,10 +3112,10 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
         end
     end
 
-    dropdown.OnSelect = function(_, text, data)
-        dropdown.selectedText = text
+    dropdown.OnSelect = function(_, index, value, data)
+        dropdown.selectedText = value
         dropdown.selectedData = data
-        dropdown.selected = text
+        dropdown.selected = value
     end
 
     local buttonPanel = vgui.Create("Panel", frame)

@@ -35,7 +35,7 @@ local subMenuIcons = {
     permissions = "icon16/key.png",
 }
 
-local function GetIdentifier(ent)
+function GetIdentifier(ent)
     if not IsValid(ent) or not ent:IsPlayer() then return "" end
     if ent:IsBot() then return ent:Name() end
     return ent:SteamID()
@@ -890,7 +890,6 @@ local function GetIconForCategory(name)
 end
 
 local function GenerateDynamicCategories()
-    print("[ADMIN STICK DEBUG] GenerateDynamicCategories called")
     local categories = {}
     local categoryNames = {}
     local adminStickCount = 0
@@ -913,9 +912,6 @@ local function GenerateDynamicCategories()
                     }
 
                     table.insert(categoryNames, category)
-                    if category == "characterManagement" then
-                        print("[ADMIN STICK DEBUG] Created characterManagement category dynamically")
-                    end
                 end
 
                 if subcategory then
@@ -930,9 +926,6 @@ local function GenerateDynamicCategories()
         end
     end
 
-    print("[ADMIN STICK DEBUG] Found " .. adminStickCount .. " admin stick commands")
-    print("[ADMIN STICK DEBUG] Created categories: " .. table.concat(categoryNames, ", "))
-    print("[ADMIN STICK DEBUG] characterManagement in categories: " .. tostring(categories["characterManagement"] ~= nil))
 
     local mergedCategories = {}
     local mergedCategoryNames = {}
@@ -1084,34 +1077,21 @@ local function GenerateDynamicCategories()
     }
 
     for key, data in pairs(hardcodedCategories) do
-        if key == "characterManagement" then
-            print("[ADMIN STICK DEBUG] Processing hardcoded characterManagement category")
-            print("[ADMIN STICK DEBUG] characterManagement already exists in mergedCategories: " .. tostring(mergedCategories[key] ~= nil))
-        end
 
         if not mergedCategories[key] then
             mergedCategories[key] = data
-            if key == "characterManagement" then
-                print("[ADMIN STICK DEBUG] Added hardcoded characterManagement to mergedCategories")
-            end
         else
             -- merge subcategories from hardcoded into existing category
             if not mergedCategories[key].subcategories then mergedCategories[key].subcategories = {} end
             for subKey, subData in pairs(data.subcategories or {}) do
                 if not mergedCategories[key].subcategories[subKey] then
                     mergedCategories[key].subcategories[subKey] = subData
-                    if key == "characterManagement" then
-                        print("[ADMIN STICK DEBUG] Merged hardcoded subcategory " .. subKey .. " into characterManagement")
-                    end
                 end
             end
         end
 
         if not table.HasValue(orderedCategories, key) then
             table.insert(orderedCategories, key)
-            if key == "characterManagement" then
-                print("[ADMIN STICK DEBUG] Added characterManagement to orderedCategories")
-            end
         end
     end
 
@@ -1120,16 +1100,6 @@ local function GenerateDynamicCategories()
         if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
     end
 
-    print("[ADMIN STICK DEBUG] Final orderedCategories: " .. table.concat(orderedCategories, ", "))
-    print("[ADMIN STICK DEBUG] characterManagement in final orderedCategories: " .. tostring(table.HasValue(orderedCategories, "characterManagement")))
-    print("[ADMIN STICK DEBUG] characterManagement in mergedCategories: " .. tostring(mergedCategories["characterManagement"] ~= nil))
-    if mergedCategories["characterManagement"] then
-        local subcats = {}
-        for k, _ in pairs(mergedCategories["characterManagement"].subcategories or {}) do
-            table.insert(subcats, k)
-        end
-        print("[ADMIN STICK DEBUG] characterManagement subcategories: " .. table.concat(subcats, ", "))
-    end
 
     return mergedCategories, orderedCategories
 end
@@ -1715,28 +1685,24 @@ local function IncludeUtility(tgt, menu, stores)
 end
 
 local function IncludeCharacterManagement(tgt, menu, stores)
-    print("[ADMIN STICK DEBUG] IncludeCharacterManagement: Checking if characterManagement exists in MODULE.adminStickCategories: " .. tostring(MODULE.adminStickCategories["characterManagement"] ~= nil))
     local cl = LocalPlayer()
-    print("[ADMIN STICK DEBUG] IncludeCharacterManagement: Calling GetOrCreateCategoryMenu for characterManagement")
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
-    print("[ADMIN STICK DEBUG] IncludeCharacterManagement: GetOrCreateCategoryMenu returned: " .. tostring(charCategory))
-    if not charCategory then
-        print("[ADMIN STICK DEBUG] IncludeCharacterManagement: No charCategory, returning")
-        return
-    end
+    if not charCategory then return end
     if cl:hasPrivilege("manageCharacterInformation") then
         local attributesSubCategory = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "attributes", stores)
-        attributesSubCategory:AddOption(L("changePlayerModel"), function()
-            OpenPlayerModelUI(tgt)
-            timer.Simple(0.1, function() AdminStickIsOpen = false end)
-        end):SetIcon("icon16/user_suit.png")
+        if attributesSubCategory then
+            attributesSubCategory:AddOption(L("changePlayerModel"), function()
+                OpenPlayerModelUI(tgt)
+                timer.Simple(0.1, function() AdminStickIsOpen = false end)
+            end):SetIcon("icon16/user_suit.png")
 
-        attributesSubCategory:AddOption(L("changePlayerModel") .. " - " .. L("faction"), function()
-            OpenFactionPlayerModelUI(tgt)
-            timer.Simple(0.1, function() AdminStickIsOpen = false end)
-        end):SetIcon("icon16/group.png")
+            attributesSubCategory:AddOption(L("changePlayerModel") .. " - " .. L("faction"), function()
+                OpenFactionPlayerModelUI(tgt)
+                timer.Simple(0.1, function() AdminStickIsOpen = false end)
+            end):SetIcon("icon16/group.png")
 
-        if attributesSubCategory.UpdateSize then attributesSubCategory:UpdateSize() end
+            if attributesSubCategory.UpdateSize then attributesSubCategory:UpdateSize() end
+        end
     end
 end
 
@@ -1781,6 +1747,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
                 timer.Simple(0.1, function() AdminStickIsOpen = false end)
             end):SetIcon(f.icon)
         end
+        if cf.UpdateSize then cf:UpdateSize() end
     end
 
     if cf and IsValid(cf) then
@@ -1988,14 +1955,12 @@ local function hasAdminStickTargetClass(class)
 end
 
 function MODULE:OpenAdminStickUI(tgt)
-    print("[ADMIN STICK DEBUG] OpenAdminStickUI called for target: " .. tostring(tgt) .. " (player: " .. tostring(tgt:IsPlayer()) .. ")")
     local cl = LocalPlayer()
     if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return end
     if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
     local tempMenu = lia.derma.dermaMenu()
     local stores = {}
     -- Clear any existing stores to ensure fresh menu creation
-    print("[ADMIN STICK DEBUG] Clearing existing adminStickCategories and adminStickCategoryOrder")
     MODULE.adminStickCategories = {}
     MODULE.adminStickCategoryOrder = {}
     local hasOptions = false
@@ -2049,7 +2014,8 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     if #cmds > 0 then hasOptions = true end
-    hook.Run("PopulateAdminStick", tempMenu, tgt, stores)
+    local tempStores = {} -- Use separate stores for temp menu to avoid polluting the real stores
+    hook.Run("PopulateAdminStick", tempMenu, tgt, tempStores)
     tempMenu:Remove()
     if not hasOptions then
         cl:notifyInfoLocalized("adminStickNoOptions")
@@ -2107,22 +2073,15 @@ function MODULE:OpenAdminStickUI(tgt)
         menu:AddSpacer()
     end
 
-    print("[ADMIN STICK DEBUG] Calling CreateOrganizedAdminStickMenu")
     CreateOrganizedAdminStickMenu(tgt, stores, menu)
-    print("[ADMIN STICK DEBUG] CreateOrganizedAdminStickMenu completed")
     menu:Center()
     menu:MakePopup()
     if tgt:IsPlayer() then
-        print("[ADMIN STICK DEBUG] Target is player, calling include functions")
         IncludeAdminMenu(tgt, menu, stores)
-        print("[ADMIN STICK DEBUG] Calling IncludeCharacterManagement")
         IncludeCharacterManagement(tgt, menu, stores)
-        print("[ADMIN STICK DEBUG] IncludeCharacterManagement completed")
         IncludeFlagManagement(tgt, menu, stores)
         IncludeTeleportation(tgt, menu, stores)
         IncludeUtility(tgt, menu, stores)
-    else
-        print("[ADMIN STICK DEBUG] Target is not player, skipping include functions")
     end
 
     table.sort(cmds, function(a, b) return a.name < b.name end)
