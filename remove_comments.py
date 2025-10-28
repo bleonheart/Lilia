@@ -111,7 +111,7 @@ def main():
         count = 0
         for root, dirs, files in os.walk(target):
             # Skip gamemode/docs directory
-            if 'gamemode' in root and 'docs' in root:
+            if os.path.join('gamemode', 'docs') in root:
                 continue
                 
             for file in files:

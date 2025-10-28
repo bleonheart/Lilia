@@ -164,14 +164,12 @@ function PANEL:CreateSection(parent, title)
     header:Dock(TOP)
     header:DockPadding(0, 0, 0, 0)
     header.Paint = function() end
-
     local scroll = vgui.Create("liaScrollPanel", frame)
     scroll:Dock(FILL)
     scroll.Paint = function() end
     local contents = scroll:GetCanvas()
     contents:DockPadding(8, 8, 8, 10)
     contents.Paint = function() end
-
     frame.PerformLayout = function(f)
         local estimatedHeight = 35
         for _, child in ipairs(contents:GetChildren()) do
@@ -188,7 +186,6 @@ function PANEL:CreateSection(parent, title)
         estimatedHeight = estimatedHeight + 10
         f:SetTall(math.max(100, math.min(estimatedHeight, maxSectionHeight)))
     end
-
     return contents
 end
 

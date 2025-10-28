@@ -2017,7 +2017,6 @@ function MODULE:OpenAdminStickUI(tgt)
 
     AdminStickIsOpen = true
     local menu = CreateOrganizedAdminStickMenu(tgt, stores)
-
     if tgt:IsPlayer() then
         local info = {
             {
@@ -2047,6 +2046,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedCharID")
                         SetClipboardText(tgt:getChar():getID())
                     end
+
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2055,7 +2055,6 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         table.sort(info, function(a, b) return a.name < b.name end)
-
         for _, o in ipairs(info) do
             local option = menu:AddOption(L(o.name), o.cmd)
             option:SetIcon(o.icon)
@@ -2065,7 +2064,6 @@ function MODULE:OpenAdminStickUI(tgt)
 
     menu:Center()
     menu:MakePopup()
-
     if tgt:IsPlayer() then
         IncludeAdminMenu(tgt, menu, stores)
         IncludeCharacterManagement(tgt, menu, stores)
