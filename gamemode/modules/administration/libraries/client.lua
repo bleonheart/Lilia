@@ -1020,7 +1020,7 @@ local function GenerateDynamicCategories()
         end
     end
 
-    local preferredOrder = {"playerInformation", "moderation", "characterManagement", "doorManagement", "teleportation", "utility"}
+    local preferredOrder = {"moderation", "characterManagement", "doorManagement", "teleportation", "utility"}
     local orderedCategories = {}
     for _, preferredCategory in ipairs(preferredOrder) do
         if mergedCategories[preferredCategory] then table.insert(orderedCategories, preferredCategory) end
@@ -1052,11 +1052,6 @@ local function GenerateDynamicCategories()
                     icon = "icon16/information.png"
                 }
             }
-        },
-        playerInformation = {
-            name = L("adminStickCategoryPlayerInformation") or "Player Information",
-            icon = "icon16/user.png",
-            subcategories = {}
         },
         teleportation = {
             name = L("adminStickCategoryTeleportation") or "Teleportation",
@@ -1205,9 +1200,7 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
         local category = categories[categoryKey]
         if category then
             local hasContent
-            if categoryKey == "playerInformation" and tgt:IsPlayer() then
-                hasContent = true
-            elseif categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+            if categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
             elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation") or cl:hasPrivilege("manageFlags")) then
                 hasContent = true
@@ -2061,11 +2054,10 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         table.sort(info, function(a, b) return a.name < b.name end)
-        local infoCategory = GetOrCreateCategoryMenu(menu, "playerInformation", stores)
-        if not infoCategory then return end
         for _, o in ipairs(info) do
-            infoCategory:AddOption(L(o.name), o.cmd):SetIcon(o.icon)
+            menu:AddOption(L(o.name), o.cmd):SetIcon(o.icon)
         end
+        menu:AddSpacer()
 
         IncludeAdminMenu(tgt, menu, stores)
         IncludeCharacterManagement(tgt, menu, stores)
