@@ -32,9 +32,10 @@ def remove_comments(content):
                 cleaned_lines.append(cleaned_line)
                 i += 1
                 while i < len(lines) and ']]' not in lines[i]:
-                    # Preserve empty lines within comment blocks
-                    cleaned_line = lines[i].rstrip() if lines[i].strip() else lines[i]
-                    cleaned_lines.append(cleaned_line)
+                    cleaned_line = lines[i].rstrip()
+                    # Skip empty lines within comment blocks to satisfy linter
+                    if cleaned_line:
+                        cleaned_lines.append(cleaned_line)
                     i += 1
                 if i < len(lines):
                     cleaned_line = lines[i].rstrip()
@@ -110,10 +111,6 @@ def main():
         # Directory - first remove comments from all files
         count = 0
         for root, dirs, files in os.walk(target):
-            # Skip gamemode/docs directory
-            if os.path.join('gamemode', 'docs') in root:
-                continue
-                
             for file in files:
                 if file.endswith('.lua'):
                     if process_file(os.path.join(root, file)):
