@@ -4779,6 +4779,42 @@ lia.command.add("spawnbots", {
     end
 })
 
+lia.command.add("bot", {
+    superAdminOnly = true,
+    desc = "spawnBotDesc",
+    onRun = function(client)
+        if not SERVER then return end
+        local currentPlayers = #player.GetAll()
+        local maxPlayers = game.MaxPlayers()
+        if currentPlayers >= maxPlayers then
+            client:notifyErrorLocalized("spawnBotsLimit", 1, 0, maxPlayers)
+            return
+        end
+
+        client:notifylocalized("spawningBots", 1)
+        game.ConsoleCommand("bot\n")
+        timer.Simple(0.5, function()
+            if not IsValid(client) then return end
+            -- Find the most recently spawned bot
+            local bots = {}
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:IsBot() then table.insert(bots, ply) end
+            end
+
+            -- Sort bots by when they were created (newest first)
+            table.sort(bots, function(a, b) return a:UserID() > b:UserID() end)
+            local bot = bots[1]
+            if IsValid(bot) then
+                -- Bring the bot to the client
+                bot:SetPos(client:GetPos() + client:GetForward() * 50)
+                client:notifylocalized("botSpawnedAndBrought", bot:Name())
+            else
+                client:notifyErrorLocalized("botSpawnFailed")
+            end
+        end)
+    end
+})
+
 lia.command.add("botspeak", {
     superAdminOnly = true,
     desc = "botsSpeakDesc",

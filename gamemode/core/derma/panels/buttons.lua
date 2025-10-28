@@ -109,19 +109,33 @@ function PANEL:Paint(w, h)
     local activeTarget = showActiveShadow and 10 or 0
     local activeSpeed = (activeTarget > 0) and 7 or 3
     self._activeShadowLerp = Lerp(FrameTime() * activeSpeed, self._activeShadowLerp, activeTarget)
+
+    -- Use standard draw.RoundedBox for performance instead of expensive lia.derma operations
     if self._activeShadowLerp > 0 then
         local col = Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, math.Clamp(self.col_hov.a * 1.5, 0, 255))
-        lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(col):Shape(btnFlags):Shadow(self._activeShadowLerp * 1.5, 24):Draw()
+        draw.RoundedBox(self.radius, 0, 0, w, h, col)
     end
 
-    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(self.col):Shape(btnFlags):Draw()
-    if self.bool_gradient then lia.util.drawGradient(0, 0, w, h, 1, lia.color.theme.button_shadow, self.radius, btnFlags) end
-    if self.bool_hover then lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, self.hover_status * 255)):Shape(btnFlags):Draw() end
+    draw.RoundedBox(self.radius, 0, 0, w, h, self.col)
+
+    if self.bool_gradient then
+        -- Use simple gradient instead of lia.util.drawGradient for better performance
+        surface.SetDrawColor(lia.color.theme.button_shadow)
+        surface.SetMaterial(Material("vgui/gradient-d"))
+        surface.DrawTexturedRect(0, 0, w, h)
+    end
+
+    if self.bool_hover and self.hover_status > 0 then
+        local hoverCol = Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, self.hover_status * 255)
+        draw.RoundedBox(self.radius, 0, 0, w, h, hoverCol)
+    end
+
     if self.click_alpha > 0 then
         self.click_alpha = math_clamp(self.click_alpha - FrameTime() * self.ripple_speed, 0, 1)
         local ripple_size = (1 - self.click_alpha) * math.max(w, h) * 2
         local ripple_color = Color(self.ripple_color.r, self.ripple_color.g, self.ripple_color.b, self.ripple_color.a * self.click_alpha)
-        lia.derma.rect(self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size):Rad(100):Color(ripple_color):Shape(btnFlags):Draw()
+        -- Use draw.RoundedBox for ripple effect too
+        draw.RoundedBox(ripple_size * 0.5, self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size, ripple_color)
     end
 
     local iconSize = self.icon_size or 16
@@ -131,12 +145,18 @@ function PANEL:Paint(w, h)
             surface.SetFont(self.font)
             local posX = (w - surface.GetTextSize(self.text) - iconSize) * 0.5 - 2
             local posY = (h - iconSize) * 0.5
-            lia.derma.rect(posX, posY, iconSize, iconSize):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
+            -- Use surface drawing for icons instead of lia.derma
+            surface.SetMaterial(self.icon)
+            surface.SetDrawColor(color_white)
+            surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
         end
     elseif self.icon and self.icon ~= "" then
         local posX = (w - iconSize) * 0.5
         local posY = (h - iconSize) * 0.5
-        lia.derma.rect(posX, posY, iconSize, iconSize):Material(self.icon):Color(color_white):Shape(btnFlags):Draw()
+        -- Use surface drawing for icons instead of lia.derma
+        surface.SetMaterial(self.icon)
+        surface.SetDrawColor(color_white)
+        surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
     end
 end
 

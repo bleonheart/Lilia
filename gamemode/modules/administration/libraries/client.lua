@@ -52,170 +52,172 @@ end
 function MODULE:ShowPlayerOptions(target, options)
     local client = LocalPlayer()
     if not IsValid(client) or not IsValid(target) then return end
-    if not (client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty()) then return end
-    local orderedOptions = {
-        {
-            name = L("nameCopyFormat", target:Name()),
-            image = "icon16/page_copy.png",
-            func = function()
-                client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("name"))
-                SetClipboardText(target:Name())
+    -- Allow admins/superadmins to see options, or users with specific privileges
+    local userGroup = client:GetUserGroup()
+    local isAdmin = userGroup == "admin" or userGroup == "superadmin" or userGroup == "owner" or userGroup == "moderator"
+    if not (isAdmin or client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or (client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty())) then return end
+    local orderedOptions = {}
+    -- Add basic copy options
+    table.insert(orderedOptions, {
+        name = L("nameCopyFormat", target:Name()),
+        image = "icon16/page_copy.png",
+        func = function()
+            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("name"))
+            SetClipboardText(target:Name())
+        end
+    })
+
+    local charID = target:getChar() and target:getChar():getID() or L("na")
+    table.insert(orderedOptions, {
+        name = L("charIDCopyFormat", charID),
+        image = "icon16/page_copy.png",
+        func = function()
+            if target:getChar() then
+                client:notifySuccessLocalized("copiedCharID", target:getChar():getID())
+                SetClipboardText(target:getChar():getID())
             end
-        },
-        {
-            name = L("charIDCopyFormat", target:getChar() and target:getChar():getID() or L("na")),
-            image = "icon16/page_copy.png",
-            func = function()
-                if target:getChar() then
-                    client:notifySuccessLocalized("copiedCharID", target:getChar():getID())
-                    SetClipboardText(target:getChar():getID())
-                end
-            end
-        },
-        {
-            name = L("steamIDCopyFormat", target:SteamID()),
-            image = "icon16/page_copy.png",
-            func = function()
-                client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("steamID"))
-                SetClipboardText(target:SteamID())
-            end
-        },
-        (function()
-            local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
-            if not isBlinded then
-                return {
-                    name = L("blind"),
-                    image = "icon16/eye.png",
-                    func = function() lia.administrator.execCommand("blind", target) end
-                }
-            end
-        end)(),
-        (function()
-            if not target:IsFrozen() then
-                return {
-                    name = L("freeze"),
-                    image = "icon16/lock.png",
-                    func = function() lia.administrator.execCommand("freeze", target) end
-                }
-            end
-        end)(),
-        (function()
-            if not target:getNetVar("liaGagged", false) then
-                return {
-                    name = L("gag"),
-                    image = "icon16/sound_mute.png",
-                    func = function() lia.administrator.execCommand("gag", target) end
-                }
-            end
-        end)(),
-        (function()
-            if not target:IsOnFire() then
-                return {
-                    name = L("ignite"),
-                    image = "icon16/fire.png",
-                    func = function() lia.administrator.execCommand("ignite", target) end
-                }
-            end
-        end)(),
-        (function()
-            if not target:isLocked() then
-                return {
-                    name = L("jail"),
-                    image = "icon16/lock.png",
-                    func = function() lia.administrator.execCommand("jail", target) end
-                }
-            end
-        end)(),
-        (function()
-            if not (target:getChar() and target:getLiliaData("VoiceBan", false)) then
-                return {
-                    name = L("mute"),
-                    image = "icon16/sound_delete.png",
-                    func = function() lia.administrator.execCommand("mute", target) end
-                }
-            end
-        end)(),
-        {
-            name = L("slay"),
-            image = "icon16/bomb.png",
-            func = function() lia.administrator.execCommand("slay", target) end
-        },
-        (function()
-            local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
-            if isBlinded then
-                return {
-                    name = L("unblind"),
-                    image = "icon16/eye.png",
-                    func = function() lia.administrator.execCommand("unblind", target) end
-                }
-            end
-        end)(),
-        (function()
-            if target:getNetVar("liaGagged", false) then
-                return {
-                    name = L("ungag"),
-                    image = "icon16/sound_low.png",
-                    func = function() lia.administrator.execCommand("ungag", target) end
-                }
-            end
-        end)(),
-        (function()
-            if target:IsFrozen() then
-                return {
-                    name = L("unfreeze"),
-                    image = "icon16/accept.png",
-                    func = function() lia.administrator.execCommand("unfreeze", target) end
-                }
-            end
-        end)(),
-        (function()
-            if target:getChar() and target:getLiliaData("VoiceBan", false) then
-                return {
-                    name = L("unmute"),
-                    image = "icon16/sound_add.png",
-                    func = function() lia.administrator.execCommand("unmute", target) end
-                }
-            end
-        end)(),
-        {
-            name = L("bring"),
-            image = "icon16/arrow_down.png",
-            func = function() lia.administrator.execCommand("bring", target) end
-        },
-        {
-            name = L("goTo"),
-            image = "icon16/arrow_right.png",
-            func = function() lia.administrator.execCommand("goto", target) end
-        },
-        {
-            name = L("respawn"),
-            image = "icon16/arrow_refresh.png",
-            func = function() lia.administrator.execCommand("respawn", target) end
-        },
-        {
-            name = L("returnText"),
-            image = "icon16/arrow_redo.png",
-            func = function() lia.administrator.execCommand("return", target) end
-        },
-        (function()
-            if target:IsOnFire() then
-                return {
-                    name = L("extinguish"),
-                    image = "icon16/fire_delete.png",
-                    func = function() lia.administrator.execCommand("extinguish", target) end
-                }
-            end
-        end)(),
-        (function()
-            if target:isLocked() then
-                return {
-                    name = L("unjail"),
-                    image = "icon16/lock_open.png",
-                    func = function() lia.administrator.execCommand("unjail", target) end
-                }
-            end
-        end)()
-    }
+        end
+    })
+
+    table.insert(orderedOptions, {
+        name = L("steamIDCopyFormat", target:SteamID()),
+        image = "icon16/page_copy.png",
+        func = function()
+            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("steamID"))
+            SetClipboardText(target:SteamID())
+        end
+    })
+
+    -- Add conditional options
+    local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
+    if not isBlinded then
+        table.insert(orderedOptions, {
+            name = L("blind"),
+            image = "icon16/eye.png",
+            func = function() lia.administrator.execCommand("blind", target) end
+        })
+    end
+
+    if not target:IsFrozen() then
+        table.insert(orderedOptions, {
+            name = L("freeze"),
+            image = "icon16/lock.png",
+            func = function() lia.administrator.execCommand("freeze", target) end
+        })
+    end
+
+    if not target:getNetVar("liaGagged", false) then
+        table.insert(orderedOptions, {
+            name = L("gag"),
+            image = "icon16/sound_mute.png",
+            func = function() lia.administrator.execCommand("gag", target) end
+        })
+    end
+
+    if not target:IsOnFire() then
+        table.insert(orderedOptions, {
+            name = L("ignite"),
+            image = "icon16/fire.png",
+            func = function() lia.administrator.execCommand("ignite", target) end
+        })
+    end
+
+    if not target:isLocked() then
+        table.insert(orderedOptions, {
+            name = L("jail"),
+            image = "icon16/lock.png",
+            func = function() lia.administrator.execCommand("jail", target) end
+        })
+    end
+
+    if not (target:getChar() and target:getLiliaData("VoiceBan", false)) then
+        table.insert(orderedOptions, {
+            name = L("mute"),
+            image = "icon16/sound_delete.png",
+            func = function() lia.administrator.execCommand("mute", target) end
+        })
+    end
+
+    -- Always available options
+    table.insert(orderedOptions, {
+        name = L("slay"),
+        image = "icon16/bomb.png",
+        func = function() lia.administrator.execCommand("slay", target) end
+    })
+
+    -- Unconditional options (bring, goto, etc.)
+    table.insert(orderedOptions, {
+        name = L("bring"),
+        image = "icon16/arrow_down.png",
+        func = function() lia.administrator.execCommand("bring", target) end
+    })
+
+    table.insert(orderedOptions, {
+        name = L("goTo"),
+        image = "icon16/arrow_right.png",
+        func = function() lia.administrator.execCommand("goto", target) end
+    })
+
+    table.insert(orderedOptions, {
+        name = L("respawn"),
+        image = "icon16/arrow_refresh.png",
+        func = function() lia.administrator.execCommand("respawn", target) end
+    })
+
+    table.insert(orderedOptions, {
+        name = L("returnText"),
+        image = "icon16/arrow_redo.png",
+        func = function() lia.administrator.execCommand("return", target) end
+    })
+
+    -- Add remaining conditional options
+    if isBlinded then
+        table.insert(orderedOptions, {
+            name = L("unblind"),
+            image = "icon16/eye.png",
+            func = function() lia.administrator.execCommand("unblind", target) end
+        })
+    end
+
+    if target:getNetVar("liaGagged", false) then
+        table.insert(orderedOptions, {
+            name = L("ungag"),
+            image = "icon16/sound_low.png",
+            func = function() lia.administrator.execCommand("ungag", target) end
+        })
+    end
+
+    if target:IsFrozen() then
+        table.insert(orderedOptions, {
+            name = L("unfreeze"),
+            image = "icon16/accept.png",
+            func = function() lia.administrator.execCommand("unfreeze", target) end
+        })
+    end
+
+    if target:getChar() and target:getLiliaData("VoiceBan", false) then
+        table.insert(orderedOptions, {
+            name = L("unmute"),
+            image = "icon16/sound_add.png",
+            func = function() lia.administrator.execCommand("unmute", target) end
+        })
+    end
+
+    if target:IsOnFire() then
+        table.insert(orderedOptions, {
+            name = L("extinguish"),
+            image = "icon16/fire_delete.png",
+            func = function() lia.administrator.execCommand("extinguish", target) end
+        })
+    end
+
+    if target:isLocked() then
+        table.insert(orderedOptions, {
+            name = L("unjail"),
+            image = "icon16/lock_open.png",
+            func = function() lia.administrator.execCommand("unjail", target) end
+        })
+    end
 
     for _, v in ipairs(orderedOptions) do
         if v then options[#options + 1] = v end
@@ -676,7 +678,8 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
                 local ply = character:getPlayer()
                 if IsValid(ply) then
                     local steamID = ply:SteamID() or ""
-                    combo:AddChoice(L("characterSteamIDFormat", character:getName() or L("unknown"), steamID), steamID)
+                    local charName = character:getName() or L("unknown")
+                    combo:AddChoice(L("characterSteamIDFormat", charName, steamID), steamID)
                 end
             end
 
@@ -1021,31 +1024,59 @@ local function GenerateDynamicCategories()
     end
 
     local hardcodedCategories = {
+        moderation = {
+            name = L("adminStickCategoryModeration") or "Moderation",
+            icon = "icon16/shield.png",
+            subcategories = {}
+        },
+        characterManagement = {
+            name = L("adminStickCategoryCharacterManagement") or "Character Management",
+            icon = "icon16/user_gray.png",
+            subcategories = {
+                factions = {
+                    name = L("adminStickSubCategoryFactions") or "Factions",
+                    icon = "icon16/group.png"
+                },
+                classes = {
+                    name = L("adminStickSubCategoryClasses") or "Classes",
+                    icon = "icon16/user.png"
+                },
+                whitelists = {
+                    name = L("adminStickSubCategoryWhitelists") or "Whitelists",
+                    icon = "icon16/group_add.png"
+                }
+            }
+        },
         doorManagement = {
-            name = L("adminStickCategoryDoorManagement") or "Door Management",
+            name = L("adminStickCategoryDoorManagement"),
             icon = "icon16/door.png",
             subcategories = {
                 doorActions = {
-                    name = L("adminStickSubCategoryDoorActions") or L("actions"),
+                    name = L("adminStickSubCategoryDoorActions") or L("adminStickSubCategoryActions"),
                     icon = "icon16/lightning.png"
                 },
                 doorSettings = {
-                    name = L("adminStickSubCategoryDoorSettings") or "Settings",
+                    name = L("adminStickSubCategoryDoorSettings") or L("adminStickSubCategorySettings"),
                     icon = "icon16/cog.png"
                 },
                 doorMaintenance = {
-                    name = L("adminStickSubCategoryDoorMaintenance") or "Maintenance",
+                    name = L("adminStickSubCategoryDoorMaintenance") or L("adminStickSubCategoryMaintenance"),
                     icon = "icon16/wrench.png"
                 },
                 doorInformation = {
-                    name = L("adminStickSubCategoryDoorInformation") or "Information",
+                    name = L("adminStickSubCategoryDoorInformation") or L("adminStickSubCategoryInformation"),
                     icon = "icon16/information.png"
                 }
             }
         },
         teleportation = {
-            name = L("adminStickCategoryTeleportation") or "Teleportation",
+            name = L("adminStickCategoryTeleportation"),
             icon = "icon16/world.png",
+            subcategories = {}
+        },
+        utility = {
+            name = L("adminStickCategoryUtility") or "Utility",
+            icon = "icon16/application_view_tile.png",
             subcategories = {}
         }
     }
@@ -1143,9 +1174,9 @@ local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, s
     return store[fullKey] or parent
 end
 
-local function CreateOrganizedAdminStickMenu(tgt, stores)
-    local menu = lia.derma.dermaMenu()
-    if not IsValid(menu) then return end
+local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
+    local menu = existingMenu or lia.derma.dermaMenu()
+    if not IsValid(menu) then return menu end
     local cl = LocalPlayer()
     local categories, categoryOrder
     if not MODULE.adminStickCategories or table.Count(MODULE.adminStickCategories) == 0 then
@@ -1163,9 +1194,9 @@ local function CreateOrganizedAdminStickMenu(tgt, stores)
             local hasContent
             if categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
-            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation") or cl:hasPrivilege("manageFlags")) then
+            elseif categoryKey == "characterManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
-            elseif categoryKey == "flagManagement" and tgt:IsPlayer() and cl:hasPrivilege("manageFlags") then
+            elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
             elseif categoryKey == "doorManagement" and tgt:isDoor() then
                 hasContent = true
@@ -1762,9 +1793,10 @@ function MODULE:OpenAdminStickUI(tgt)
     local stores = {}
     local hasOptions = false
     if tgt:IsPlayer() then
+        local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
         local info = {
             {
-                name = L("charIDCopyFormat", tgt:getChar() and tgt:getChar():getID() or L("na")),
+                name = L("charIDCopyFormat", charID),
                 cmd = function() end,
                 icon = "icon16/page_copy.png"
             },
@@ -1782,7 +1814,6 @@ function MODULE:OpenAdminStickUI(tgt)
 
         if #info > 0 then hasOptions = true end
         if cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() then hasOptions = true end
-        if cl:hasPrivilege("manageTransfers") or cl:hasPrivilege("manageClasses") or cl:hasPrivilege("manageWhitelists") or cl:hasPrivilege("manageCharacterInformation") then hasOptions = true end
     end
 
     local tgtClass = tgt:GetClass()
@@ -1819,8 +1850,11 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     AdminStickIsOpen = true
-    local menu = CreateOrganizedAdminStickMenu(tgt, stores)
+    local menu = lia.derma.dermaMenu()
+    if not IsValid(menu) then return end
+    -- Add info items FIRST before categories (for player targets)
     if tgt:IsPlayer() then
+        local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
         local info = {
             {
                 name = L("steamIDCopyFormat", tgt:SteamID()),
@@ -1843,7 +1877,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = L("charIDCopyFormat", tgt:getChar() and tgt:getChar():getID() or L("na")),
+                name = L("charIDCopyFormat", charID),
                 cmd = function()
                     if tgt:getChar() then
                         cl:notifySuccessLocalized("adminStickCopiedCharID")
@@ -1861,10 +1895,15 @@ function MODULE:OpenAdminStickUI(tgt)
         for _, o in ipairs(info) do
             local option = menu:AddOption(L(o.name), o.cmd)
             option:SetIcon(o.icon)
-            option:SetZPos(0)
+            option:SetZPos(-100)
         end
+
+        -- Add separator
+        menu:AddSpacer()
     end
 
+    -- Now create and populate categories
+    CreateOrganizedAdminStickMenu(tgt, stores, menu)
     menu:Center()
     menu:MakePopup()
     if tgt:IsPlayer() then
