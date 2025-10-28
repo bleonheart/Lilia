@@ -480,6 +480,7 @@ function sound.PlayFile(path, mode, cb)
                             if cb then cb(nil, nil, "failed") end
                             return
                         end
+
                         if webPath:match("%.wav$") then
                             origPlayFile(downloadedPath, mode or "", cb)
                         else

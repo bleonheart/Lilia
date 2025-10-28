@@ -890,6 +890,7 @@ local function GetIconForCategory(name)
 end
 
 local function GenerateDynamicCategories()
+    print("[ADMIN STICK DEBUG] GenerateDynamicCategories called")
     local categories = {}
     local categoryNames = {}
     local adminStickCount = 0
@@ -912,6 +913,9 @@ local function GenerateDynamicCategories()
                     }
 
                     table.insert(categoryNames, category)
+                    if category == "characterManagement" then
+                        print("[ADMIN STICK DEBUG] Created characterManagement category dynamically")
+                    end
                 end
 
                 if subcategory then
@@ -925,6 +929,10 @@ local function GenerateDynamicCategories()
             end
         end
     end
+
+    print("[ADMIN STICK DEBUG] Found " .. adminStickCount .. " admin stick commands")
+    print("[ADMIN STICK DEBUG] Created categories: " .. table.concat(categoryNames, ", "))
+    print("[ADMIN STICK DEBUG] characterManagement in categories: " .. tostring(categories["characterManagement"] ~= nil))
 
     local mergedCategories = {}
     local mergedCategoryNames = {}
@@ -1076,9 +1084,34 @@ local function GenerateDynamicCategories()
     }
 
     for key, data in pairs(hardcodedCategories) do
+        if key == "characterManagement" then
+            print("[ADMIN STICK DEBUG] Processing hardcoded characterManagement category")
+            print("[ADMIN STICK DEBUG] characterManagement already exists in mergedCategories: " .. tostring(mergedCategories[key] ~= nil))
+        end
+
         if not mergedCategories[key] then
             mergedCategories[key] = data
-            if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
+            if key == "characterManagement" then
+                print("[ADMIN STICK DEBUG] Added hardcoded characterManagement to mergedCategories")
+            end
+        else
+            -- merge subcategories from hardcoded into existing category
+            if not mergedCategories[key].subcategories then mergedCategories[key].subcategories = {} end
+            for subKey, subData in pairs(data.subcategories or {}) do
+                if not mergedCategories[key].subcategories[subKey] then
+                    mergedCategories[key].subcategories[subKey] = subData
+                    if key == "characterManagement" then
+                        print("[ADMIN STICK DEBUG] Merged hardcoded subcategory " .. subKey .. " into characterManagement")
+                    end
+                end
+            end
+        end
+
+        if not table.HasValue(orderedCategories, key) then
+            table.insert(orderedCategories, key)
+            if key == "characterManagement" then
+                print("[ADMIN STICK DEBUG] Added characterManagement to orderedCategories")
+            end
         end
     end
 
@@ -1086,6 +1119,18 @@ local function GenerateDynamicCategories()
     for key, _ in pairs(mergedCategories) do
         if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
     end
+
+    print("[ADMIN STICK DEBUG] Final orderedCategories: " .. table.concat(orderedCategories, ", "))
+    print("[ADMIN STICK DEBUG] characterManagement in final orderedCategories: " .. tostring(table.HasValue(orderedCategories, "characterManagement")))
+    print("[ADMIN STICK DEBUG] characterManagement in mergedCategories: " .. tostring(mergedCategories["characterManagement"] ~= nil))
+    if mergedCategories["characterManagement"] then
+        local subcats = {}
+        for k, _ in pairs(mergedCategories["characterManagement"].subcategories or {}) do
+            table.insert(subcats, k)
+        end
+        print("[ADMIN STICK DEBUG] characterManagement subcategories: " .. table.concat(subcats, ", "))
+    end
+
     return mergedCategories, orderedCategories
 end
 
@@ -1670,9 +1715,15 @@ local function IncludeUtility(tgt, menu, stores)
 end
 
 local function IncludeCharacterManagement(tgt, menu, stores)
+    print("[ADMIN STICK DEBUG] IncludeCharacterManagement: Checking if characterManagement exists in MODULE.adminStickCategories: " .. tostring(MODULE.adminStickCategories["characterManagement"] ~= nil))
     local cl = LocalPlayer()
+    print("[ADMIN STICK DEBUG] IncludeCharacterManagement: Calling GetOrCreateCategoryMenu for characterManagement")
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
-    if not charCategory then return end
+    print("[ADMIN STICK DEBUG] IncludeCharacterManagement: GetOrCreateCategoryMenu returned: " .. tostring(charCategory))
+    if not charCategory then
+        print("[ADMIN STICK DEBUG] IncludeCharacterManagement: No charCategory, returning")
+        return
+    end
     if cl:hasPrivilege("manageCharacterInformation") then
         local attributesSubCategory = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "attributes", stores)
         attributesSubCategory:AddOption(L("changePlayerModel"), function()
@@ -1937,11 +1988,16 @@ local function hasAdminStickTargetClass(class)
 end
 
 function MODULE:OpenAdminStickUI(tgt)
+    print("[ADMIN STICK DEBUG] OpenAdminStickUI called for target: " .. tostring(tgt) .. " (player: " .. tostring(tgt:IsPlayer()) .. ")")
     local cl = LocalPlayer()
     if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return end
     if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
     local tempMenu = lia.derma.dermaMenu()
     local stores = {}
+    -- Clear any existing stores to ensure fresh menu creation
+    print("[ADMIN STICK DEBUG] Clearing existing adminStickCategories and adminStickCategoryOrder")
+    MODULE.adminStickCategories = {}
+    MODULE.adminStickCategoryOrder = {}
     local hasOptions = false
     if tgt:IsPlayer() then
         local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
@@ -2051,15 +2107,22 @@ function MODULE:OpenAdminStickUI(tgt)
         menu:AddSpacer()
     end
 
+    print("[ADMIN STICK DEBUG] Calling CreateOrganizedAdminStickMenu")
     CreateOrganizedAdminStickMenu(tgt, stores, menu)
+    print("[ADMIN STICK DEBUG] CreateOrganizedAdminStickMenu completed")
     menu:Center()
     menu:MakePopup()
     if tgt:IsPlayer() then
+        print("[ADMIN STICK DEBUG] Target is player, calling include functions")
         IncludeAdminMenu(tgt, menu, stores)
+        print("[ADMIN STICK DEBUG] Calling IncludeCharacterManagement")
         IncludeCharacterManagement(tgt, menu, stores)
+        print("[ADMIN STICK DEBUG] IncludeCharacterManagement completed")
         IncludeFlagManagement(tgt, menu, stores)
         IncludeTeleportation(tgt, menu, stores)
         IncludeUtility(tgt, menu, stores)
+    else
+        print("[ADMIN STICK DEBUG] Target is not player, skipping include functions")
     end
 
     table.sort(cmds, function(a, b) return a.name < b.name end)
@@ -2139,7 +2202,10 @@ function MODULE:OpenAdminStickUI(tgt)
         local canFaction = cl:hasPrivilege("manageTransfers")
         local canClass = cl:hasPrivilege("manageClasses")
         local canWhitelist = cl:hasPrivilege("manageWhitelists")
-        local char = tgt:getChar()
+        -- Only proceed if target is valid and is a player
+        if not target or not IsValid(target) or not target:IsPlayer() then return end
+        local char = target:getChar()
+        if not char then return end
         if char then
             local facID = char:getFaction()
             if facID then
@@ -2200,7 +2266,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     local facAdd, facRemove = {}, {}
                     for _, v in pairs(lia.faction.teams) do
                         if not v.isDefault then
-                            if not tgt:hasWhitelist(v.index) then
+                            if not target:hasWhitelist(v.index) then
                                 table.insert(facAdd, {
                                     name = v.name,
                                     icon = "icon16/group_add.png",
@@ -2243,7 +2309,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     if classes and #classes > 0 then
                         local cw, cu = {}, {}
                         for _, c in ipairs(classes) do
-                            if not tgt:getChar():getClasswhitelists()[c.index] then
+                            if not target:getChar():getClasswhitelists()[c.index] then
                                 table.insert(cw, {
                                     name = c.name,
                                     icon = "icon16/user_add.png",
@@ -3643,39 +3709,32 @@ lia.command.add("testsounds", {
         frame:SetSize(600, 500)
         frame:Center()
         frame:MakePopup()
-
         -- Get registered websounds
         local websounds = lia.websound.stored or {}
         local soundList = {}
         for name, url in pairs(websounds) do
             table.insert(soundList, name)
         end
-        table.sort(soundList)
 
+        table.sort(soundList)
         -- Sound selection combobox
         local soundLabel = vgui.Create("DLabel", frame)
         soundLabel:SetText("Select WebSound:")
         soundLabel:Dock(TOP)
         soundLabel:DockMargin(5, 5, 5, 0)
-
         local soundCombo = vgui.Create("liaComboBox", frame)
         soundCombo:Dock(TOP)
         soundCombo:DockMargin(5, 0, 5, 5)
         soundCombo:PostInit()
-
         for _, soundName in ipairs(soundList) do
             soundCombo:AddChoice(soundName, soundName)
         end
 
-        if #soundList > 0 then
-            soundCombo:SetValue(soundList[1])
-        end
-
+        if #soundList > 0 then soundCombo:SetValue(soundList[1]) end
         -- Test buttons panel
         local buttonPanel = vgui.Create("DPanel", frame)
         buttonPanel:Dock(FILL)
         buttonPanel:DockMargin(5, 5, 5, 5)
-
         -- EmitSound test
         local emitSoundBtn = vgui.Create("liaSmallButton", buttonPanel)
         emitSoundBtn:SetText("Test EmitSound (on player)")
@@ -3735,18 +3794,15 @@ lia.command.add("testsounds", {
         manualLabel:SetText("Manual Sound Entry:")
         manualLabel:Dock(TOP)
         manualLabel:DockMargin(0, 0, 0, 5)
-
         local manualEntry = vgui.Create("DTextEntry", buttonPanel)
         manualEntry:Dock(TOP)
         manualEntry:DockMargin(0, 0, 0, 5)
         manualEntry:SetPlaceholderText("Enter sound name (e.g. cuffs/handcuffs_close.wav)")
-
         -- Manual test buttons
         local manualPanel = vgui.Create("DPanel", buttonPanel)
         manualPanel:Dock(TOP)
         manualPanel:SetTall(30)
         manualPanel:DockMargin(0, 0, 0, 5)
-
         local manualEmitBtn = vgui.Create("DButton", manualPanel)
         manualEmitBtn:SetText("EmitSound")
         manualEmitBtn:SetSize(100, 30)
