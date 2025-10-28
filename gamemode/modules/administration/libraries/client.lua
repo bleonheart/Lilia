@@ -2017,18 +2017,15 @@ function MODULE:OpenAdminStickUI(tgt)
 
     AdminStickIsOpen = true
     local menu = CreateOrganizedAdminStickMenu(tgt, stores)
-    menu:Center()
-    menu:MakePopup()
+
     if tgt:IsPlayer() then
         local info = {
             {
-                name = L("charIDCopyFormat", tgt:getChar() and tgt:getChar():getID() or L("na")),
+                name = L("steamIDCopyFormat", tgt:SteamID()),
                 cmd = function()
-                    if tgt:getChar() then
-                        cl:notifySuccessLocalized("adminStickCopiedCharID")
-                        SetClipboardText(tgt:getChar():getID())
-                    end
-
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    SetClipboardText(tgt:SteamID())
+                    menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
@@ -2038,15 +2035,19 @@ function MODULE:OpenAdminStickUI(tgt)
                 cmd = function()
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                     SetClipboardText(tgt:Name())
+                    menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
             },
             {
-                name = L("steamIDCopyFormat", tgt:SteamID()),
+                name = L("charIDCopyFormat", tgt:getChar() and tgt:getChar():getID() or L("na")),
                 cmd = function()
-                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                    SetClipboardText(tgt:SteamID())
+                    if tgt:getChar() then
+                        cl:notifySuccessLocalized("adminStickCopiedCharID")
+                        SetClipboardText(tgt:getChar():getID())
+                    end
+                    menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
@@ -2054,11 +2055,18 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         table.sort(info, function(a, b) return a.name < b.name end)
-        for _, o in ipairs(info) do
-            menu:AddOption(L(o.name), o.cmd):SetIcon(o.icon)
-        end
-        menu:AddSpacer()
 
+        for _, o in ipairs(info) do
+            local option = menu:AddOption(L(o.name), o.cmd)
+            option:SetIcon(o.icon)
+            option:SetZPos(0)
+        end
+    end
+
+    menu:Center()
+    menu:MakePopup()
+
+    if tgt:IsPlayer() then
         IncludeAdminMenu(tgt, menu, stores)
         IncludeCharacterManagement(tgt, menu, stores)
         IncludeFlagManagement(tgt, menu, stores)

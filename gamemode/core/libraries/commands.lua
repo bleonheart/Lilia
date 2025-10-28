@@ -989,6 +989,7 @@ if SERVER then
                     target.liaUserGroup = usergroup
                     target:notifyInfoLocalized("userGroupSet", usergroup)
                     lia.log.add(nil, "usergroup", target, usergroup)
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set " .. target:getName() .. " (" .. target:SteamID() .. ") to usergroup: " .. usergroup .. "\n")
                 else
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " \"" .. usergroup .. "\"\n")
                 end
@@ -1002,6 +1003,7 @@ if SERVER then
                     target:notifyInfoLocalized("userGroupSet", usergroup)
                     ply:notifyInfoLocalized("userGroupSetBy", target:getName(), usergroup)
                     lia.log.add(ply, "usergroup", target, usergroup)
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set " .. target:getName() .. " (" .. target:SteamID() .. ") to usergroup: " .. usergroup .. "\n")
                 else
                     ply:notifyErrorLocalized("invalidUsergroup" .. " \"" .. usergroup .. "\"")
                 end
