@@ -1062,36 +1062,6 @@ local function GenerateDynamicCategories()
         }
     }
 
-    if mergedCategories.characterManagement then
-        mergedCategories.characterManagement.subcategories = mergedCategories.characterManagement.subcategories or {}
-        mergedCategories.characterManagement.subcategories.factions = {
-            name = L("adminStickSubCategoryFactions") or "Factions",
-            icon = "icon16/group.png"
-        }
-
-        mergedCategories.characterManagement.subcategories.classes = {
-            name = L("adminStickSubCategoryClasses") or "Classes",
-            icon = "icon16/group_edit.png"
-        }
-
-        mergedCategories.characterManagement.subcategories.whitelists = {
-            name = L("adminStickSubCategoryWhitelists") or "Whitelists",
-            icon = "icon16/group_key.png"
-        }
-
-        mergedCategories.characterManagement.subcategories.flags = {
-            name = L("adminStickSubCategoryFlags") or "Flags",
-            icon = "icon16/flag_red.png"
-        }
-    end
-
-    if mergedCategories.utility then
-        mergedCategories.utility.subcategories = mergedCategories.utility.subcategories or {}
-        mergedCategories.utility.subcategories.commands = {
-            name = L("adminStickSubCategoryCommands") or "Commands",
-            icon = "icon16/script.png"
-        }
-    end
 
     for key, data in pairs(hardcodedCategories) do
         if not mergedCategories[key] then
@@ -1099,6 +1069,9 @@ local function GenerateDynamicCategories()
             if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
         end
     end
+
+    hook.Run("RegisterAdminStickSubcategories", mergedCategories)
+
     return mergedCategories, orderedCategories
 end
 
@@ -1962,6 +1935,36 @@ function MODULE:OpenAdminStickUI(tgt)
             end):SetIcon(ic)
         end
     end
+
+    hook.Add("RegisterAdminStickSubcategories", "liaDefaultSubcategories", function(categories)
+        if categories.characterManagement then
+            categories.characterManagement.subcategories = categories.characterManagement.subcategories or {}
+            categories.characterManagement.subcategories.factions = {
+                name = L("adminStickSubCategoryFactions") or "Factions",
+                icon = "icon16/group.png"
+            }
+            categories.characterManagement.subcategories.classes = {
+                name = L("adminStickSubCategoryClasses") or "Classes",
+                icon = "icon16/group_edit.png"
+            }
+            categories.characterManagement.subcategories.whitelists = {
+                name = L("adminStickSubCategoryWhitelists") or "Whitelists",
+                icon = "icon16/group_key.png"
+            }
+            categories.characterManagement.subcategories.flags = {
+                name = L("adminStickSubCategoryFlags") or "Flags",
+                icon = "icon16/flag_red.png"
+            }
+        end
+
+        if categories.utility then
+            categories.utility.subcategories = categories.utility.subcategories or {}
+            categories.utility.subcategories.commands = {
+                name = L("adminStickSubCategoryCommands") or "Commands",
+                icon = "icon16/script.png"
+            }
+        end
+    end)
 
     hook.Add("GetAdminStickLists", "liaDefaultAdminStickLists", function(target, lists)
         local cl = LocalPlayer()
