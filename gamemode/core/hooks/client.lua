@@ -277,7 +277,6 @@ local function drawVoiceIndicator()
     local voiceType = client:getNetVar("VoiceType", L("talking"))
     local voiceText = L("youAre") .. " " .. voiceType
     -- Calculate listener count if voice range is enabled
-    local listenerCount = 0
     if lia.option.get("voiceRange", false) then
         local radius = VoiceRanges[voiceType] or VoiceRanges[L("talking")]
         local clientPos = client:GetPos()
@@ -289,8 +288,7 @@ local function drawVoiceIndicator()
             end
         end
 
-        listenerCount = count
-        if listenerCount > 0 then voiceText = voiceText .. " - " .. listenerCount .. " people can hear you" end
+        if count > 0 then voiceText = voiceText .. " - " .. count .. " people can hear you" end
     end
 
     local modifiedText = hook.Run("ModifyVoiceIndicatorText", client, voiceText, voiceType)
