@@ -163,7 +163,12 @@ function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
 end
 
 hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
-    if not IsValid(tgt) or not tgt:isDoor() then return end
+    print("[DOOR DEBUG] GetAdminStickLists called for target: " .. tostring(tgt) .. " (isDoor: " .. tostring(tgt:isDoor()) .. ")")
+    if not IsValid(tgt) or not tgt:isDoor() then
+        print("[DOOR DEBUG] Target is not valid or not a door, returning")
+        return
+    end
+    print("[DOOR DEBUG] Target is a valid door, proceeding with menu generation")
     local doorData = tgt:getNetVar("doorData", {})
     local factionsAssigned = doorData.factions or {}
     local existingClasses = doorData.classes or {}
@@ -173,7 +178,7 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
             table.insert(items, {
                 name = L("doorAddFaction") .. ": " .. faction.name,
                 icon = "icon16/group_add.png",
-                callback = function(target) LocalPlayer():ConCommand("say /dooraddfaction '" .. faction.uniqueID .. "'") end
+                callback = function() LocalPlayer():ConCommand("say /dooraddfaction '" .. faction.uniqueID .. "'") end
             })
         end
     end
@@ -184,7 +189,7 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
             table.insert(items, {
                 name = L("doorRemoveFactionAdmin") .. ": " .. faction.name,
                 icon = "icon16/group_delete.png",
-                callback = function(target) LocalPlayer():ConCommand("say /doorremovefaction '" .. faction.uniqueID .. "'") end
+                callback = function() LocalPlayer():ConCommand("say /doorremovefaction '" .. faction.uniqueID .. "'") end
             })
         end
     end
@@ -202,7 +207,7 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
             table.insert(items, {
                 name = L("set") .. " " .. L("door") .. " " .. L("class") .. ": " .. classData.name,
                 icon = "icon16/tag_blue.png",
-                callback = function(target) LocalPlayer():ConCommand("say /doorsetclass '" .. classID .. "'") end
+                callback = function() LocalPlayer():ConCommand("say /doorsetclass '" .. classID .. "'") end
             })
         end
     end
@@ -214,7 +219,7 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
             table.insert(items, {
                 name = L("remove") .. " " .. L("door") .. " " .. L("class") .. ": " .. classInfo.name,
                 icon = "icon16/delete.png",
-                callback = function(target) LocalPlayer():ConCommand("say /doorremoveclass '" .. classUID .. "'") end
+                callback = function() LocalPlayer():ConCommand("say /doorremoveclass '" .. classUID .. "'") end
             })
         end
     end
@@ -223,17 +228,21 @@ hook.Add("GetAdminStickLists", "liaDoorSettingsAdminStick", function(tgt, lists)
         table.insert(items, {
             name = L("remove") .. " " .. L("all") .. " " .. L("classes"),
             icon = "icon16/delete.png",
-            callback = function(target) LocalPlayer():ConCommand("say /doorremoveclass ''") end
+            callback = function() LocalPlayer():ConCommand("say /doorremoveclass ''") end
         })
     end
 
+    print("[DOOR DEBUG] Generated " .. #items .. " door management items")
     if #items > 0 then
+        print("[DOOR DEBUG] Adding door management list to admin stick menu")
         table.insert(lists, {
             name = L("adminStickSubCategoryDoorSettings") or L("adminStickSubCategorySettings"),
             category = "doorManagement",
             subcategory = "doorSettings",
             items = items
         })
+    else
+        print("[DOOR DEBUG] No items generated, door management menu will be empty")
     end
 end)
 
