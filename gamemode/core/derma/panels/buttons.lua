@@ -95,7 +95,6 @@ function PANEL:DoClick()
 end
 
 local math_clamp = math.Clamp
-local btnFlags = lia.derma.SHAPE_IOS
 function PANEL:Paint(w, h)
     if self:IsHovered() then
         self.hover_status = math_clamp(self.hover_status + 4 * FrameTime(), 0, 1)

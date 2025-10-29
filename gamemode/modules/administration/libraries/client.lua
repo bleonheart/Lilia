@@ -2204,7 +2204,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         table.insert(cls, {
                             name = c.name,
                             icon = "icon16/user.png",
-                            callback = function(tgt, item)
+                            callback = function(tgt)
                                 local cmd = 'say /setclass ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
                                 cl:ConCommand(cmd)
                             end

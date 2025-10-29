@@ -3112,7 +3112,7 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
         end
     end
 
-    dropdown.OnSelect = function(_, index, value, data)
+    dropdown.OnSelect = function(_, _, value, data)
         dropdown.selectedText = value
         dropdown.selectedData = data
         dropdown.selected = value
